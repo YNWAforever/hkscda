@@ -15,6 +15,7 @@ import { Footer } from "../components/site/Footer";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { organizationSchema, websiteSchema } from "../lib/schema";
+import { initGA4 } from "../lib/analytics";
 
 function NotFoundComponent() {
   return (
@@ -134,11 +135,6 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtag/js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','G-XXXXXXXXXX');window.gtag=function(){window.dataLayer.push(arguments);};window.gtag('js',new Date());window.gtag('config','G-XXXXXXXXXX')`,
-          }}
-        />
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:px-4 focus:py-2 focus:bg-[var(--color-primary)] focus:text-white focus:rounded-md focus:font-bold focus:text-sm"
@@ -156,6 +152,10 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const { location } = useRouterState();
   const isAdmin = location.pathname.startsWith("/admin");
+
+  useEffect(() => {
+    initGA4(import.meta.env.VITE_GA_MEASUREMENT_ID ?? 'G-XXXXXXXXXX');
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
