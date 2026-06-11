@@ -9,38 +9,270 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SponsorsRouteImport } from './routes/sponsors'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AboutIndexRouteImport } from './routes/about/index'
+import { Route as SponsorsIdRouteImport } from './routes/sponsors_.$id'
+import { Route as AnimalsDogRouteImport } from './routes/animals/dog'
+import { Route as AnimalsCatRouteImport } from './routes/animals/cat'
+import { Route as AdoptionInstructionsRouteImport } from './routes/adoption/instructions'
+import { Route as AdoptionApplyRouteImport } from './routes/adoption/apply'
+import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as AboutTnrRouteImport } from './routes/about/tnr'
+import { Route as AboutTeamRouteImport } from './routes/about/team'
+import { Route as AboutPrivacyRouteImport } from './routes/about/privacy'
+import { Route as AboutCccpRouteImport } from './routes/about/cccp'
+import { Route as AnimalsDogIdRouteImport } from './routes/animals/dog_.$id'
+import { Route as AnimalsCatIdRouteImport } from './routes/animals/cat_.$id'
+import { Route as AdminAnimalsNewRouteImport } from './routes/admin/animals/new'
+import { Route as AdminAnimalsIdEditRouteImport } from './routes/admin/animals/$id.edit'
 
+const SponsorsRoute = SponsorsRouteImport.update({
+  id: '/sponsors',
+  path: '/sponsors',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutIndexRoute = AboutIndexRouteImport.update({
+  id: '/about/',
+  path: '/about/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SponsorsIdRoute = SponsorsIdRouteImport.update({
+  id: '/sponsors_/$id',
+  path: '/sponsors/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnimalsDogRoute = AnimalsDogRouteImport.update({
+  id: '/animals/dog',
+  path: '/animals/dog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnimalsCatRoute = AnimalsCatRouteImport.update({
+  id: '/animals/cat',
+  path: '/animals/cat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdoptionInstructionsRoute = AdoptionInstructionsRouteImport.update({
+  id: '/adoption/instructions',
+  path: '/adoption/instructions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdoptionApplyRoute = AdoptionApplyRouteImport.update({
+  id: '/adoption/apply',
+  path: '/adoption/apply',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutTnrRoute = AboutTnrRouteImport.update({
+  id: '/about/tnr',
+  path: '/about/tnr',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutTeamRoute = AboutTeamRouteImport.update({
+  id: '/about/team',
+  path: '/about/team',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutPrivacyRoute = AboutPrivacyRouteImport.update({
+  id: '/about/privacy',
+  path: '/about/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutCccpRoute = AboutCccpRouteImport.update({
+  id: '/about/cccp',
+  path: '/about/cccp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnimalsDogIdRoute = AnimalsDogIdRouteImport.update({
+  id: '/animals/dog_/$id',
+  path: '/animals/dog/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnimalsCatIdRoute = AnimalsCatIdRouteImport.update({
+  id: '/animals/cat_/$id',
+  path: '/animals/cat/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAnimalsNewRoute = AdminAnimalsNewRouteImport.update({
+  id: '/admin/animals/new',
+  path: '/admin/animals/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAnimalsIdEditRoute = AdminAnimalsIdEditRouteImport.update({
+  id: '/admin/animals/$id/edit',
+  path: '/admin/animals/$id/edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/sponsors': typeof SponsorsRoute
+  '/about/cccp': typeof AboutCccpRoute
+  '/about/privacy': typeof AboutPrivacyRoute
+  '/about/team': typeof AboutTeamRoute
+  '/about/tnr': typeof AboutTnrRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/adoption/apply': typeof AdoptionApplyRoute
+  '/adoption/instructions': typeof AdoptionInstructionsRoute
+  '/animals/cat': typeof AnimalsCatRoute
+  '/animals/dog': typeof AnimalsDogRoute
+  '/sponsors/$id': typeof SponsorsIdRoute
+  '/about/': typeof AboutIndexRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/animals/new': typeof AdminAnimalsNewRoute
+  '/animals/cat/$id': typeof AnimalsCatIdRoute
+  '/animals/dog/$id': typeof AnimalsDogIdRoute
+  '/admin/animals/$id/edit': typeof AdminAnimalsIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/sponsors': typeof SponsorsRoute
+  '/about/cccp': typeof AboutCccpRoute
+  '/about/privacy': typeof AboutPrivacyRoute
+  '/about/team': typeof AboutTeamRoute
+  '/about/tnr': typeof AboutTnrRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/adoption/apply': typeof AdoptionApplyRoute
+  '/adoption/instructions': typeof AdoptionInstructionsRoute
+  '/animals/cat': typeof AnimalsCatRoute
+  '/animals/dog': typeof AnimalsDogRoute
+  '/sponsors/$id': typeof SponsorsIdRoute
+  '/about': typeof AboutIndexRoute
+  '/admin': typeof AdminIndexRoute
+  '/admin/animals/new': typeof AdminAnimalsNewRoute
+  '/animals/cat/$id': typeof AnimalsCatIdRoute
+  '/animals/dog/$id': typeof AnimalsDogIdRoute
+  '/admin/animals/$id/edit': typeof AdminAnimalsIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/sponsors': typeof SponsorsRoute
+  '/about/cccp': typeof AboutCccpRoute
+  '/about/privacy': typeof AboutPrivacyRoute
+  '/about/team': typeof AboutTeamRoute
+  '/about/tnr': typeof AboutTnrRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/adoption/apply': typeof AdoptionApplyRoute
+  '/adoption/instructions': typeof AdoptionInstructionsRoute
+  '/animals/cat': typeof AnimalsCatRoute
+  '/animals/dog': typeof AnimalsDogRoute
+  '/sponsors_/$id': typeof SponsorsIdRoute
+  '/about/': typeof AboutIndexRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/animals/new': typeof AdminAnimalsNewRoute
+  '/animals/cat_/$id': typeof AnimalsCatIdRoute
+  '/animals/dog_/$id': typeof AnimalsDogIdRoute
+  '/admin/animals/$id/edit': typeof AdminAnimalsIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/sponsors'
+    | '/about/cccp'
+    | '/about/privacy'
+    | '/about/team'
+    | '/about/tnr'
+    | '/admin/login'
+    | '/adoption/apply'
+    | '/adoption/instructions'
+    | '/animals/cat'
+    | '/animals/dog'
+    | '/sponsors/$id'
+    | '/about/'
+    | '/admin/'
+    | '/admin/animals/new'
+    | '/animals/cat/$id'
+    | '/animals/dog/$id'
+    | '/admin/animals/$id/edit'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/sponsors'
+    | '/about/cccp'
+    | '/about/privacy'
+    | '/about/team'
+    | '/about/tnr'
+    | '/admin/login'
+    | '/adoption/apply'
+    | '/adoption/instructions'
+    | '/animals/cat'
+    | '/animals/dog'
+    | '/sponsors/$id'
+    | '/about'
+    | '/admin'
+    | '/admin/animals/new'
+    | '/animals/cat/$id'
+    | '/animals/dog/$id'
+    | '/admin/animals/$id/edit'
+  id:
+    | '__root__'
+    | '/'
+    | '/sponsors'
+    | '/about/cccp'
+    | '/about/privacy'
+    | '/about/team'
+    | '/about/tnr'
+    | '/admin/login'
+    | '/adoption/apply'
+    | '/adoption/instructions'
+    | '/animals/cat'
+    | '/animals/dog'
+    | '/sponsors_/$id'
+    | '/about/'
+    | '/admin/'
+    | '/admin/animals/new'
+    | '/animals/cat_/$id'
+    | '/animals/dog_/$id'
+    | '/admin/animals/$id/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SponsorsRoute: typeof SponsorsRoute
+  AboutCccpRoute: typeof AboutCccpRoute
+  AboutPrivacyRoute: typeof AboutPrivacyRoute
+  AboutTeamRoute: typeof AboutTeamRoute
+  AboutTnrRoute: typeof AboutTnrRoute
+  AdminLoginRoute: typeof AdminLoginRoute
+  AdoptionApplyRoute: typeof AdoptionApplyRoute
+  AdoptionInstructionsRoute: typeof AdoptionInstructionsRoute
+  AnimalsCatRoute: typeof AnimalsCatRoute
+  AnimalsDogRoute: typeof AnimalsDogRoute
+  SponsorsIdRoute: typeof SponsorsIdRoute
+  AboutIndexRoute: typeof AboutIndexRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+  AdminAnimalsNewRoute: typeof AdminAnimalsNewRoute
+  AnimalsCatIdRoute: typeof AnimalsCatIdRoute
+  AnimalsDogIdRoute: typeof AnimalsDogIdRoute
+  AdminAnimalsIdEditRoute: typeof AdminAnimalsIdEditRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sponsors': {
+      id: '/sponsors'
+      path: '/sponsors'
+      fullPath: '/sponsors'
+      preLoaderRoute: typeof SponsorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,12 +280,151 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about/': {
+      id: '/about/'
+      path: '/about'
+      fullPath: '/about/'
+      preLoaderRoute: typeof AboutIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sponsors_/$id': {
+      id: '/sponsors_/$id'
+      path: '/sponsors/$id'
+      fullPath: '/sponsors/$id'
+      preLoaderRoute: typeof SponsorsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/animals/dog': {
+      id: '/animals/dog'
+      path: '/animals/dog'
+      fullPath: '/animals/dog'
+      preLoaderRoute: typeof AnimalsDogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/animals/cat': {
+      id: '/animals/cat'
+      path: '/animals/cat'
+      fullPath: '/animals/cat'
+      preLoaderRoute: typeof AnimalsCatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/adoption/instructions': {
+      id: '/adoption/instructions'
+      path: '/adoption/instructions'
+      fullPath: '/adoption/instructions'
+      preLoaderRoute: typeof AdoptionInstructionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/adoption/apply': {
+      id: '/adoption/apply'
+      path: '/adoption/apply'
+      fullPath: '/adoption/apply'
+      preLoaderRoute: typeof AdoptionApplyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about/tnr': {
+      id: '/about/tnr'
+      path: '/about/tnr'
+      fullPath: '/about/tnr'
+      preLoaderRoute: typeof AboutTnrRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about/team': {
+      id: '/about/team'
+      path: '/about/team'
+      fullPath: '/about/team'
+      preLoaderRoute: typeof AboutTeamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about/privacy': {
+      id: '/about/privacy'
+      path: '/about/privacy'
+      fullPath: '/about/privacy'
+      preLoaderRoute: typeof AboutPrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about/cccp': {
+      id: '/about/cccp'
+      path: '/about/cccp'
+      fullPath: '/about/cccp'
+      preLoaderRoute: typeof AboutCccpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/animals/dog_/$id': {
+      id: '/animals/dog_/$id'
+      path: '/animals/dog/$id'
+      fullPath: '/animals/dog/$id'
+      preLoaderRoute: typeof AnimalsDogIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/animals/cat_/$id': {
+      id: '/animals/cat_/$id'
+      path: '/animals/cat/$id'
+      fullPath: '/animals/cat/$id'
+      preLoaderRoute: typeof AnimalsCatIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/animals/new': {
+      id: '/admin/animals/new'
+      path: '/admin/animals/new'
+      fullPath: '/admin/animals/new'
+      preLoaderRoute: typeof AdminAnimalsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/animals/$id/edit': {
+      id: '/admin/animals/$id/edit'
+      path: '/admin/animals/$id/edit'
+      fullPath: '/admin/animals/$id/edit'
+      preLoaderRoute: typeof AdminAnimalsIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SponsorsRoute: SponsorsRoute,
+  AboutCccpRoute: AboutCccpRoute,
+  AboutPrivacyRoute: AboutPrivacyRoute,
+  AboutTeamRoute: AboutTeamRoute,
+  AboutTnrRoute: AboutTnrRoute,
+  AdminLoginRoute: AdminLoginRoute,
+  AdoptionApplyRoute: AdoptionApplyRoute,
+  AdoptionInstructionsRoute: AdoptionInstructionsRoute,
+  AnimalsCatRoute: AnimalsCatRoute,
+  AnimalsDogRoute: AnimalsDogRoute,
+  SponsorsIdRoute: SponsorsIdRoute,
+  AboutIndexRoute: AboutIndexRoute,
+  AdminIndexRoute: AdminIndexRoute,
+  AdminAnimalsNewRoute: AdminAnimalsNewRoute,
+  AnimalsCatIdRoute: AnimalsCatIdRoute,
+  AnimalsDogIdRoute: AnimalsDogIdRoute,
+  AdminAnimalsIdEditRoute: AdminAnimalsIdEditRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
