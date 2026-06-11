@@ -6,7 +6,7 @@ export function Footer() {
       id="contact"
       className="bg-[var(--color-footer-bg)] text-[var(--color-text-inverse)] px-6 py-16"
     >
-      <div className="container-wide grid md:grid-cols-3 gap-10">
+      <div className="container-wide grid md:grid-cols-4 gap-10">
         <div>
           <div className="flex items-center gap-3 mb-4">
             <div className="h-10 w-10 rounded-full bg-[var(--color-primary)] flex items-center justify-center">
@@ -64,6 +64,17 @@ export function Footer() {
           <p className="text-xs text-white/60 leading-relaxed">
             每月25日前提交退稅收條申請，正式收條於次月中發出。
           </p>
+        </div>
+        <div>
+          <h4 className="font-display font-bold text-sm mb-4 uppercase tracking-wider">
+            透明度
+          </h4>
+          <ul className="space-y-2 text-sm text-white/80">
+            <li><a href="/report/adoption" className="hover:text-white transition-colors">每月領養報告</a></li>
+            <li><a href="/report/audit" className="hover:text-white transition-colors">年度核數報告</a></li>
+            <li><a href="/donate" className="hover:text-white transition-colors">捐助我們</a></li>
+            <li><a href="/volunteer" className="hover:text-white transition-colors">加入義工團隊</a></li>
+          </ul>
         </div>
       </div>
       <div className="container-wide mt-12 pt-6 border-t border-white/10 text-xs text-white/50 flex flex-wrap gap-3 justify-between">
