@@ -9,11 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VolunteerRouteImport } from './routes/volunteer'
 import { Route as SponsorsRouteImport } from './routes/sponsors'
+import { Route as DonateRouteImport } from './routes/donate'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
 import { Route as SponsorsIdRouteImport } from './routes/sponsors_.$id'
+import { Route as ReportAuditRouteImport } from './routes/report/audit'
+import { Route as ReportAdoptionRouteImport } from './routes/report/adoption'
 import { Route as AnimalsDogRouteImport } from './routes/animals/dog'
 import { Route as AnimalsCatRouteImport } from './routes/animals/cat'
 import { Route as AdoptionInstructionsRouteImport } from './routes/adoption/instructions'
@@ -28,9 +32,19 @@ import { Route as AnimalsCatIdRouteImport } from './routes/animals/cat_.$id'
 import { Route as AdminAnimalsNewRouteImport } from './routes/admin/animals/new'
 import { Route as AdminAnimalsIdEditRouteImport } from './routes/admin/animals/$id.edit'
 
+const VolunteerRoute = VolunteerRouteImport.update({
+  id: '/volunteer',
+  path: '/volunteer',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SponsorsRoute = SponsorsRouteImport.update({
   id: '/sponsors',
   path: '/sponsors',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DonateRoute = DonateRouteImport.update({
+  id: '/donate',
+  path: '/donate',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -51,6 +65,16 @@ const AboutIndexRoute = AboutIndexRouteImport.update({
 const SponsorsIdRoute = SponsorsIdRouteImport.update({
   id: '/sponsors_/$id',
   path: '/sponsors/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportAuditRoute = ReportAuditRouteImport.update({
+  id: '/report/audit',
+  path: '/report/audit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportAdoptionRoute = ReportAdoptionRouteImport.update({
+  id: '/report/adoption',
+  path: '/report/adoption',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnimalsDogRoute = AnimalsDogRouteImport.update({
@@ -121,7 +145,9 @@ const AdminAnimalsIdEditRoute = AdminAnimalsIdEditRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/donate': typeof DonateRoute
   '/sponsors': typeof SponsorsRoute
+  '/volunteer': typeof VolunteerRoute
   '/about/cccp': typeof AboutCccpRoute
   '/about/privacy': typeof AboutPrivacyRoute
   '/about/team': typeof AboutTeamRoute
@@ -131,6 +157,8 @@ export interface FileRoutesByFullPath {
   '/adoption/instructions': typeof AdoptionInstructionsRoute
   '/animals/cat': typeof AnimalsCatRoute
   '/animals/dog': typeof AnimalsDogRoute
+  '/report/adoption': typeof ReportAdoptionRoute
+  '/report/audit': typeof ReportAuditRoute
   '/sponsors/$id': typeof SponsorsIdRoute
   '/about/': typeof AboutIndexRoute
   '/admin/': typeof AdminIndexRoute
@@ -141,7 +169,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/donate': typeof DonateRoute
   '/sponsors': typeof SponsorsRoute
+  '/volunteer': typeof VolunteerRoute
   '/about/cccp': typeof AboutCccpRoute
   '/about/privacy': typeof AboutPrivacyRoute
   '/about/team': typeof AboutTeamRoute
@@ -151,6 +181,8 @@ export interface FileRoutesByTo {
   '/adoption/instructions': typeof AdoptionInstructionsRoute
   '/animals/cat': typeof AnimalsCatRoute
   '/animals/dog': typeof AnimalsDogRoute
+  '/report/adoption': typeof ReportAdoptionRoute
+  '/report/audit': typeof ReportAuditRoute
   '/sponsors/$id': typeof SponsorsIdRoute
   '/about': typeof AboutIndexRoute
   '/admin': typeof AdminIndexRoute
@@ -162,7 +194,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/donate': typeof DonateRoute
   '/sponsors': typeof SponsorsRoute
+  '/volunteer': typeof VolunteerRoute
   '/about/cccp': typeof AboutCccpRoute
   '/about/privacy': typeof AboutPrivacyRoute
   '/about/team': typeof AboutTeamRoute
@@ -172,6 +206,8 @@ export interface FileRoutesById {
   '/adoption/instructions': typeof AdoptionInstructionsRoute
   '/animals/cat': typeof AnimalsCatRoute
   '/animals/dog': typeof AnimalsDogRoute
+  '/report/adoption': typeof ReportAdoptionRoute
+  '/report/audit': typeof ReportAuditRoute
   '/sponsors_/$id': typeof SponsorsIdRoute
   '/about/': typeof AboutIndexRoute
   '/admin/': typeof AdminIndexRoute
@@ -184,7 +220,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/donate'
     | '/sponsors'
+    | '/volunteer'
     | '/about/cccp'
     | '/about/privacy'
     | '/about/team'
@@ -194,6 +232,8 @@ export interface FileRouteTypes {
     | '/adoption/instructions'
     | '/animals/cat'
     | '/animals/dog'
+    | '/report/adoption'
+    | '/report/audit'
     | '/sponsors/$id'
     | '/about/'
     | '/admin/'
@@ -204,7 +244,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/donate'
     | '/sponsors'
+    | '/volunteer'
     | '/about/cccp'
     | '/about/privacy'
     | '/about/team'
@@ -214,6 +256,8 @@ export interface FileRouteTypes {
     | '/adoption/instructions'
     | '/animals/cat'
     | '/animals/dog'
+    | '/report/adoption'
+    | '/report/audit'
     | '/sponsors/$id'
     | '/about'
     | '/admin'
@@ -224,7 +268,9 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/donate'
     | '/sponsors'
+    | '/volunteer'
     | '/about/cccp'
     | '/about/privacy'
     | '/about/team'
@@ -234,6 +280,8 @@ export interface FileRouteTypes {
     | '/adoption/instructions'
     | '/animals/cat'
     | '/animals/dog'
+    | '/report/adoption'
+    | '/report/audit'
     | '/sponsors_/$id'
     | '/about/'
     | '/admin/'
@@ -245,7 +293,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DonateRoute: typeof DonateRoute
   SponsorsRoute: typeof SponsorsRoute
+  VolunteerRoute: typeof VolunteerRoute
   AboutCccpRoute: typeof AboutCccpRoute
   AboutPrivacyRoute: typeof AboutPrivacyRoute
   AboutTeamRoute: typeof AboutTeamRoute
@@ -255,6 +305,8 @@ export interface RootRouteChildren {
   AdoptionInstructionsRoute: typeof AdoptionInstructionsRoute
   AnimalsCatRoute: typeof AnimalsCatRoute
   AnimalsDogRoute: typeof AnimalsDogRoute
+  ReportAdoptionRoute: typeof ReportAdoptionRoute
+  ReportAuditRoute: typeof ReportAuditRoute
   SponsorsIdRoute: typeof SponsorsIdRoute
   AboutIndexRoute: typeof AboutIndexRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -266,11 +318,25 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/volunteer': {
+      id: '/volunteer'
+      path: '/volunteer'
+      fullPath: '/volunteer'
+      preLoaderRoute: typeof VolunteerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sponsors': {
       id: '/sponsors'
       path: '/sponsors'
       fullPath: '/sponsors'
       preLoaderRoute: typeof SponsorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/donate': {
+      id: '/donate'
+      path: '/donate'
+      fullPath: '/donate'
+      preLoaderRoute: typeof DonateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -299,6 +365,20 @@ declare module '@tanstack/react-router' {
       path: '/sponsors/$id'
       fullPath: '/sponsors/$id'
       preLoaderRoute: typeof SponsorsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/report/audit': {
+      id: '/report/audit'
+      path: '/report/audit'
+      fullPath: '/report/audit'
+      preLoaderRoute: typeof ReportAuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/report/adoption': {
+      id: '/report/adoption'
+      path: '/report/adoption'
+      fullPath: '/report/adoption'
+      preLoaderRoute: typeof ReportAdoptionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/animals/dog': {
@@ -397,7 +477,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DonateRoute: DonateRoute,
   SponsorsRoute: SponsorsRoute,
+  VolunteerRoute: VolunteerRoute,
   AboutCccpRoute: AboutCccpRoute,
   AboutPrivacyRoute: AboutPrivacyRoute,
   AboutTeamRoute: AboutTeamRoute,
@@ -407,6 +489,8 @@ const rootRouteChildren: RootRouteChildren = {
   AdoptionInstructionsRoute: AdoptionInstructionsRoute,
   AnimalsCatRoute: AnimalsCatRoute,
   AnimalsDogRoute: AnimalsDogRoute,
+  ReportAdoptionRoute: ReportAdoptionRoute,
+  ReportAuditRoute: ReportAuditRoute,
   SponsorsIdRoute: SponsorsIdRoute,
   AboutIndexRoute: AboutIndexRoute,
   AdminIndexRoute: AdminIndexRoute,
