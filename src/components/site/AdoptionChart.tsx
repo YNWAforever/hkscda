@@ -74,6 +74,9 @@ export function AdoptionChart({ animals }: AdoptionChartProps) {
         <h2 className="font-display text-lg font-bold mb-4">
           每月領養趨勢（近12個月）
         </h2>
+        <div className="sr-only">
+          過去12個月每月貓狗領養數據趨勢圖，貓以啡紅色標示，狗以藍色標示。
+        </div>
         <div className="h-72 lg:h-80">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data}>

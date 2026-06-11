@@ -1,7 +1,7 @@
 import * as NavigationMenu from '@radix-ui/react-navigation-menu'
 import { Link } from '@tanstack/react-router'
 import { useState } from 'react'
-import { PawPrint, Heart, Menu, X, ChevronDown } from 'lucide-react'
+import { PawPrint, Heart, Menu, X, ChevronDown, Users } from 'lucide-react'
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -97,13 +97,45 @@ export function Header() {
             </NavigationMenu.Item>
 
             <NavigationMenu.Item>
+              <NavigationMenu.Trigger className="px-3 py-2 rounded-md text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-highlight)] transition-colors flex items-center gap-1 select-none">
+                透明度 <ChevronDown className="h-3 w-3 opacity-60" />
+              </NavigationMenu.Trigger>
+              <NavigationMenu.Content className="absolute top-full left-0 mt-2 w-44 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl shadow-lg py-1.5 z-50">
+                {[
+                  { to: '/report/adoption', label: '每月領養報告' },
+                  { to: '/report/audit', label: '年度核數報告' },
+                ].map(({ to, label }) => (
+                  <NavigationMenu.Link key={to} asChild>
+                    <Link
+                      to={to}
+                      className="block px-4 py-2 text-sm text-[var(--color-text-muted)] hover:bg-[var(--color-surface-offset)] hover:text-[var(--color-text)]"
+                    >
+                      {label}
+                    </Link>
+                  </NavigationMenu.Link>
+                ))}
+              </NavigationMenu.Content>
+            </NavigationMenu.Item>
+
+            <NavigationMenu.Item>
               <NavigationMenu.Link asChild>
-                <a
-                  href="/#donate"
+                <Link
+                  to="/volunteer"
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-highlight)] transition-colors"
+                >
+                  <Users className="h-3.5 w-3.5" /> 加入義工
+                </Link>
+              </NavigationMenu.Link>
+            </NavigationMenu.Item>
+
+            <NavigationMenu.Item>
+              <NavigationMenu.Link asChild>
+                <Link
+                  to="/donate"
                   className="ml-2 inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-[var(--color-primary)] text-white text-sm font-bold hover:bg-[var(--color-primary-hover)] transition-colors"
                 >
                   <Heart className="h-4 w-4" fill="currentColor" /> 立即捐助
-                </a>
+                </Link>
               </NavigationMenu.Link>
             </NavigationMenu.Item>
 
@@ -161,14 +193,30 @@ export function Header() {
                 助養區
               </Link>
             </li>
+            <li className="px-4 pt-3 pb-1 text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider">透明度</li>
+            {[
+              { to: '/report/adoption', label: '每月領養報告' },
+              { to: '/report/audit', label: '年度核數報告' },
+            ].map(({ to, label }) => (
+              <li key={to}>
+                <Link to={to} onClick={() => setMobileOpen(false)} className="block px-4 py-2.5 rounded-lg text-sm pl-8 hover:bg-[var(--color-surface-offset)]">
+                  {label}
+                </Link>
+              </li>
+            ))}
             <li>
-              <a
-                href="/#donate"
+              <Link to="/volunteer" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 px-4 py-3 rounded-lg text-base font-medium hover:bg-[var(--color-surface-offset)]">
+                <Users className="h-4 w-4" /> 加入義工
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/donate"
                 onClick={() => setMobileOpen(false)}
                 className="flex items-center justify-center gap-1.5 mt-2 px-4 py-3 rounded-full bg-[var(--color-primary)] text-white text-center font-bold"
               >
                 <Heart className="h-4 w-4" fill="currentColor" /> 立即捐助
-              </a>
+              </Link>
             </li>
           </ul>
         </div>

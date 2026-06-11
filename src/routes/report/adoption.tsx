@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, Link } from "@tanstack/react-router"
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { Cat, Dog, PawPrint, TrendingUp } from "lucide-react"
@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase"
 import { ReportHeader } from "@/components/site/ReportHeader"
 import { StatCard } from "@/components/site/StatCard"
 import { AdoptionChart } from "@/components/site/AdoptionChart"
+import { Skeleton } from "@/components/ui/skeleton"
 import { datasetSchema, renderJsonLd } from "@/lib/schema"
 
 export const Route = createFileRoute("/report/adoption")({
@@ -70,6 +71,12 @@ function AdoptionReportPage() {
     <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
       {renderJsonLd(schema)}
 
+      <nav className="text-sm text-[var(--color-text-muted)] mb-2" aria-label="麵包屑導航">
+        <Link to="/" className="hover:text-[var(--color-primary)] transition-colors">主頁</Link>
+        <span className="mx-2">/</span>
+        <span className="text-[var(--color-text)]">每月領養報告</span>
+      </nav>
+
       <ReportHeader
         title="每月領養報告"
         subtitle="支持領養等於拯救生命 — 每隻成功領養的動物都是我們的驕傲"
@@ -79,7 +86,15 @@ function AdoptionReportPage() {
       />
 
       {isLoading ? (
-        <div className="text-center py-12 text-[var(--color-text-muted)]">載入中…</div>
+        <div className="space-y-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-28 rounded-2xl" />
+            ))}
+          </div>
+          <Skeleton className="h-80 rounded-2xl" />
+          <Skeleton className="h-48 rounded-2xl" />
+        </div>
       ) : (
         <>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

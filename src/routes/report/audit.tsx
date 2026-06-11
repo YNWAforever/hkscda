@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, Link } from "@tanstack/react-router"
 import { useState } from "react"
 import { TrendingUp, TrendingDown, Building, FileText } from "lucide-react"
 import { ReportHeader } from "@/components/site/ReportHeader"
@@ -20,11 +20,11 @@ const auditData = {
   expenditure: {
     total: 1620000,
     breakdown: [
-      { name: "醫療及藥物", value: 680000, color: "#c04a2a" },
-      { name: "糧食及物資", value: 420000, color: "#e87a3a" },
-      { name: "營運及租金", value: 320000, color: "#2a6ab0" },
-      { name: "外展及教育", value: 130000, color: "#3a7a45" },
-      { name: "其他支出", value: 70000, color: "#c07820" },
+      { name: "醫療及藥物", value: 680000, color: "var(--color-primary)" },
+      { name: "糧食及物資", value: 420000, color: "var(--color-secondary)" },
+      { name: "營運及租金", value: 320000, color: "var(--color-dog)" },
+      { name: "外展及教育", value: 130000, color: "var(--color-success)" },
+      { name: "其他支出", value: 70000, color: "var(--color-warning)" },
     ],
   },
   surplus: 230000,
@@ -62,6 +62,12 @@ function AuditReportPage() {
     <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
       {renderJsonLd(schema)}
 
+      <nav className="text-sm text-[var(--color-text-muted)] mb-2" aria-label="麵包屑導航">
+        <Link to="/" className="hover:text-[var(--color-primary)] transition-colors">主頁</Link>
+        <span className="mx-2">/</span>
+        <span className="text-[var(--color-text)]">核數報告</span>
+      </nav>
+
       <ReportHeader
         title="核數報告"
         subtitle="透明度是信任的基石 — 我們對每一位捐款者負責"
@@ -87,12 +93,12 @@ function AuditReportPage() {
           本會為政府認可慈善機構（91/14493）及稅務局 §88 免稅機構。
           完整核數報告 PDF 可供下載查閱。捐款 HK$100 以上可申請退稅收條。
         </p>
-        <a
-          href="/#donate"
+        <Link
+          to="/donate"
           className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[var(--color-primary)] text-white font-bold text-sm hover:bg-[var(--color-primary-hover)] transition-colors"
         >
           申請退稅收條
-        </a>
+        </Link>
       </div>
 
       <div className="bg-[var(--color-surface-offset)] border border-[var(--color-border)] rounded-2xl p-6">

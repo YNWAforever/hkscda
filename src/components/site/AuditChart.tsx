@@ -18,6 +18,9 @@ export function AuditChart({ title, data, total, totalLabel }: AuditChartProps) 
   return (
     <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6">
       <h2 className="font-display text-lg font-bold mb-4">{title}</h2>
+      <div className="sr-only">
+        {title}分佈數據圖表。各項目以不同顏色標示，總計HK${total.toLocaleString()}。
+      </div>
       <div className="grid md:grid-cols-2 gap-6 items-center">
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
