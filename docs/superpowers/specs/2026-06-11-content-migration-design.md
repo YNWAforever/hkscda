@@ -27,6 +27,7 @@
 | `/animals/cat/$id` | `src/routes/animals/cat_.$id.tsx` | Cat detail page |
 | `/animals/dog/$id` | `src/routes/animals/dog_.$id.tsx` | Dog detail page |
 | `/sponsors` | `src/routes/sponsors.tsx` | Sponsor listing — same grid layout, payment info header |
+| `/sponsors/$id` | `src/routes/sponsors_.$id.tsx` | Sponsor animal detail page (same two-column layout as cat/dog) |
 
 ### Admin pages (auth-protected)
 
@@ -36,6 +37,7 @@
 | `/admin` | `src/routes/admin/index.tsx` | Dashboard: sidebar nav (貓/狗/助養) + data table |
 | `/admin/animals/new` | `src/routes/admin/animals/new.tsx` | Add animal form |
 | `/admin/animals/$id/edit` | `src/routes/admin/animals/$id.edit.tsx` | Edit animal form |
+| `/adoption/apply` | `src/routes/adoption/apply.tsx` | Adoption application form (pre-filled with animal name/id via query params) |
 
 ---
 
@@ -137,7 +139,7 @@ Mobile: existing hamburger menu expands to show all links in a flat list with se
 If `image_url` is null, show a breed-appropriate placeholder (🐱 or 🐶 emoji on coloured background). No ID badge — UUIDs are not human-readable display values.
 
 ### Sponsors page
-Same grid layout but with a payment info section above the grid showing all donation methods (FPS, bank transfer, PayMe, PayPal, Give.asia, Alipay). Query is filtered to `type='sponsor'` only. Age filter tabs apply (BB / 成 / 老). No individual detail page — the "助養" button scrolls to the payment methods section above.
+Same grid layout but with a payment info section above the grid showing all donation methods (FPS, bank transfer, PayMe, PayPal, Give.asia, Alipay). Query is filtered to `type='sponsor'` only. Age filter tabs apply (BB / 成 / 老). Each card links to `/sponsors/$id`. The card CTA reads "立即助養" instead of "申請領養".
 
 ---
 
@@ -159,9 +161,68 @@ Same grid layout but with a payment info section above the grid showing all dona
 └─────────────────┴────────────────────────────┘
 ```
 - On mobile: stacks vertically (photo top, info below)
-- "申請領養" button: `mailto:adoption@hkscda.com?subject=領養申請 - [name]` or link to `#contact` section
+- "申請領養" button: navigates to `/adoption/apply?animalId=[id]&animalName=[name]&type=[cat|dog|sponsor]`
 - Data: `useQuery` keyed on `id`, `supabase.from('animals').select().eq('id', id).single()`
 - If animal not found or status !== 'available': show "此動物已被領養" message with link back to listing
+
+### Sponsor detail page (`/sponsors/$id`)
+Same two-column layout as cat/dog detail (photo left, info right). CTA button reads "立即助養" and navigates to `/adoption/apply?animalId=[id]&animalName=[name]&type=sponsor`. "返回" link goes to `/sponsors`.
+
+---
+
+## 5b. Adoption Application Form (`/adoption/apply`)
+
+### Purpose
+Linked to from every "申請領養" / "立即助養" button. Pre-fills animal info from URL query params (`animalId`, `animalName`, `type`).
+
+### Form fields
+- 動物名字 (pre-filled, read-only if passed via query param)
+- 申請人姓名 (required)
+- 聯絡電話 (required)
+- 電郵地址 (required)
+- 住址 (required — home visit needed)
+- 住宅類型 (select: 私人樓宇 / 居屋 / 公屋 / 村屋 / 其他)
+- 家庭成員人數 (number)
+- 家中現有寵物 (text, optional)
+- 領養原因 (textarea, required)
+- 同意條款 (checkbox linking to `/adoption/instructions`, required)
+
+### Submission
+1. Validate with zod
+2. Insert into `adoption_applications` Supabase table
+3. Trigger email to `adoption@hkscda.com` via **Resend** (server function in TanStack Start)
+4. Show success page with "我們將盡快與您聯絡" message and link back to listing
+
+### `adoption_applications` table
+```sql
+create table adoption_applications (
+  id            uuid        primary key default gen_random_uuid(),
+  animal_id     uuid        references animals(id),
+  animal_name   text        not null,
+  animal_type   text        not null,
+  applicant_name text       not null,
+  phone         text        not null,
+  email         text        not null,
+  address       text        not null,
+  housing_type  text        not null,
+  family_size   integer,
+  existing_pets text,
+  reason        text        not null,
+  status        text        not null default 'pending'
+                            check (status in ('pending', 'approved', 'rejected')),
+  created_at    timestamptz default now()
+);
+
+-- Only authenticated admins can read applications
+alter table adoption_applications enable row level security;
+
+create policy "admin only"
+  on adoption_applications for all
+  using (auth.role() = 'authenticated');
+```
+
+### Admin: Applications view
+Add a fourth sidebar item "📋 申請" to the admin panel. Shows a table of pending applications with applicant name, animal, date, status. Admin can update status (pending → approved / rejected). No email sent on status change in v1.
 
 ---
 
@@ -177,7 +238,7 @@ All `/admin/*` routes check `supabase.auth.getSession()` in `beforeLoad`. If no 
 - Error: show inline error message
 
 ### Dashboard (`/admin`)
-**Sidebar (dark, fixed):** HKSCDA logo, nav items: 🐱 貓貓 / 🐶 狗狗 / 💛 助養 / 登出 button at bottom.
+**Sidebar (dark, fixed):** HKSCDA logo, nav items: 🐱 貓貓 / 🐶 狗狗 / 💛 助養 / 📋 申請 / 登出 button at bottom.
 
 **Main area:**
 - Active section heading + animal count
@@ -248,12 +309,21 @@ All text is in Traditional Chinese. Each static page is a plain React component 
 - Activities / events — not in the requested pages
 - Online donation flow — existing `#donate` section on homepage handles this
 - Multi-language support (English) — site is Traditional Chinese only
-- Animal detail pages for sponsors — sponsor animals link to the listing page, not individual detail pages
+- Email status updates to applicants on approval/rejection — admin sees status in dashboard only (v1)
 
 ---
 
 ## 10. Dependencies to Add
 
-- `@supabase/supabase-js` — Supabase client
+- `@supabase/supabase-js` — Supabase client + auth + storage
+- `resend` — transactional email (new application notifications to `adoption@hkscda.com`)
 
 Everything else (TanStack Query, react-hook-form, zod, Radix UI NavigationMenu) is already installed.
+
+### Environment variables to add
+```
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
+RESEND_API_KEY=           # server-side only, no VITE_ prefix
+NOTIFICATION_EMAIL=adoption@hkscda.com
+```
