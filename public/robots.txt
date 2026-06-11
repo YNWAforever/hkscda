@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /adoption/apply
+
+Sitemap: https://hkscda.com/sitemap.xml

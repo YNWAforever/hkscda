@@ -1,0 +1,14 @@
+# HKSCDA — Hong Kong Saving Cat And Dog Association
+> 香港拯救貓狗協會，成立於2007年的不殺慈善機構，為流浪貓狗提供糧食、醫療、絕育及領養服務。
+
+## Core Pages
+- /: 主頁 — 協會使命、最新領養動物、捐款方式
+- /animals/cat: 待領養貓貓列表
+- /animals/dog: 待領養狗狗列表
+- /sponsors: 助養動物區
+- /adoption/instructions: 領養需知及規則
+- /report/adoption: 每月領養報告
+- /report/audit: 年度核數報告
+- /donate: 捐款方式
+- /volunteer: 義工招募
+- /about: 協會簡介

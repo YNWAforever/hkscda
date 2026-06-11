@@ -14,6 +14,7 @@ import { Footer } from "../components/site/Footer";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { organizationSchema, websiteSchema } from "../lib/schema";
 
 function NotFoundComponent() {
   return (
@@ -109,6 +110,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@300;400;500;700;900&family=Noto+Serif+HK:wght@400;600;700&display=swap",
       },
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(organizationSchema()),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(websiteSchema()),
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -123,6 +134,11 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var m='G-XXXXXXXXXX';var s=document.createElement('script');s.src='https://www.googletagmanager.com/gtag/js?id='+m;s.async=true;document.head.appendChild(s);window.dataLayer=window.dataLayer||[];function gtag(){window.dataLayer.push(arguments);}gtag('js',new Date());gtag('config',m);})()`,
+          }}
+        />
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:px-4 focus:py-2 focus:bg-[var(--color-primary)] focus:text-white focus:rounded-md focus:font-bold focus:text-sm"
