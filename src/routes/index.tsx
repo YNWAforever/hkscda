@@ -1,10 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Header } from "@/components/site/Header";
 import { Hero } from "@/components/site/Hero";
 import { SocialProof } from "@/components/site/SocialProof";
 import { VolunteerCarousel } from "@/components/site/VolunteerCarousel";
 import { SocialWall } from "@/components/site/SocialWall";
-import { Footer } from "@/components/site/Footer";
 import heroImg from "@/assets/hero.jpg";
 import cat1 from "@/assets/cat1.jpg";
 import cat2 from "@/assets/cat2.jpg";
@@ -66,7 +64,6 @@ const donateMethods = [
 function Index() {
   return (
     <div>
-      <Header />
       <main>
         <Hero />
 
@@ -269,7 +266,6 @@ function Index() {
           </div>
         </section>
       </main>
-      <Footer />
     </div>
   );
 }
