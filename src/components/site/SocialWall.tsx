@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Smartphone } from "lucide-react";
 import cat1 from "@/assets/cat1.jpg";
 import cat2 from "@/assets/cat2.jpg";
 import dog1 from "@/assets/dog1.jpg";
@@ -26,8 +27,8 @@ export function SocialWall() {
     >
       <div className="container-wide">
         <div className="text-center mb-10">
-          <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3">
-            📱 社群動態
+          <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3 flex items-center justify-center gap-1.5">
+            <Smartphone className="h-3.5 w-3.5" /> 社群動態
           </div>
           <h2 className="font-display text-3xl lg:text-5xl font-bold mb-4">
             追蹤我們，與毛孩同步
@@ -41,8 +42,8 @@ export function SocialWall() {
         <div className="flex justify-center gap-2 mb-8 border-b border-[var(--color-border)]">
           {(
             [
-              ["fb", "📘 Facebook"],
-              ["ig", "📸 Instagram"],
+              ["fb", "Facebook"],
+              ["ig", "Instagram"],
             ] as const
           ).map(([k, label]) => (
             <button
@@ -76,7 +77,9 @@ export function SocialWall() {
               />
             </div>
             <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-6">
-              <div className="text-4xl mb-3">📘</div>
+              <svg className="h-8 w-8 mb-3 text-[#1877F2]" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+              </svg>
               <h3 className="font-display text-xl font-bold mb-2">
                 HKSCDA Facebook
               </h3>
@@ -92,7 +95,7 @@ export function SocialWall() {
                 前往 Facebook 專頁 →
               </a>
               <div className="mt-6 pt-6 border-t border-[var(--color-border)] text-xs text-[var(--color-text-muted)]">
-                <p>💡 提示：如未能載入專頁內容，請允許瀏覽器接受第三方Cookie。</p>
+                <p>提示：如未能載入專頁內容，請允許瀏覽器接受第三方Cookie。</p>
               </div>
             </div>
           </div>
@@ -135,7 +138,7 @@ export function SocialWall() {
                     "linear-gradient(45deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%)",
                 }}
               >
-                📸 在 Instagram 追蹤 @{IG_HANDLE}
+                在 Instagram 追蹤 @{IG_HANDLE}
               </a>
             </div>
           </div>

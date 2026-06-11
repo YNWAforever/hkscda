@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useState } from 'react'
+import { PartyPopper } from 'lucide-react'
 import { submitApplication } from '../../lib/api/submit-application.functions'
 
 const formSchema = z.object({
@@ -59,14 +60,14 @@ function ApplyPage() {
       })
       setSuccess(true)
     } catch {
-      setServerError('提交失敗，請稍後再試')
+      setServerError('提交失敗，請檢查網絡連接後再試，或直接 WhatsApp 9864 1089 聯絡我們。')
     }
   }
 
   if (success) {
     return (
       <main className="max-w-lg mx-auto px-4 py-16 text-center space-y-6">
-        <div className="text-6xl">🎉</div>
+        <PartyPopper className="h-16 w-16 text-[var(--color-primary)] mx-auto" />
         <h1 className="font-display text-2xl font-bold">申請已提交！</h1>
         <p className="text-[var(--color-text-muted)]">
           感謝您的申請，我們將盡快與您聯絡安排面見及家訪。
@@ -96,25 +97,25 @@ function ApplyPage() {
         <div>
           <label className="block text-sm font-medium mb-1">申請人姓名 *</label>
           <input {...register('applicant_name')} className={inputClass} />
-          {errors.applicant_name && <p className="text-red-500 text-xs mt-1">{errors.applicant_name.message}</p>}
+          {errors.applicant_name && <p className="text-red-500 text-xs mt-1" role="alert">{errors.applicant_name.message}</p>}
         </div>
 
         <div>
           <label className="block text-sm font-medium mb-1">聯絡電話 *</label>
           <input {...register('phone')} type="tel" className={inputClass} />
-          {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
+          {errors.phone && <p className="text-red-500 text-xs mt-1" role="alert">{errors.phone.message}</p>}
         </div>
 
         <div>
           <label className="block text-sm font-medium mb-1">電郵地址 *</label>
           <input {...register('email')} type="email" className={inputClass} />
-          {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+          {errors.email && <p className="text-red-500 text-xs mt-1" role="alert">{errors.email.message}</p>}
         </div>
 
         <div>
           <label className="block text-sm font-medium mb-1">住址 *</label>
           <input {...register('address')} className={inputClass} />
-          {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address.message}</p>}
+          {errors.address && <p className="text-red-500 text-xs mt-1" role="alert">{errors.address.message}</p>}
         </div>
 
         <div>
@@ -125,7 +126,7 @@ function ApplyPage() {
               <option key={t} value={t}>{t}</option>
             ))}
           </select>
-          {errors.housing_type && <p className="text-red-500 text-xs mt-1">{errors.housing_type.message}</p>}
+          {errors.housing_type && <p className="text-red-500 text-xs mt-1" role="alert">{errors.housing_type.message}</p>}
         </div>
 
         <div>
@@ -141,19 +142,19 @@ function ApplyPage() {
         <div>
           <label className="block text-sm font-medium mb-1">領養原因 *</label>
           <textarea {...register('reason')} rows={4} className={inputClass} />
-          {errors.reason && <p className="text-red-500 text-xs mt-1">{errors.reason.message}</p>}
+          {errors.reason && <p className="text-red-500 text-xs mt-1" role="alert">{errors.reason.message}</p>}
         </div>
 
         <div className="flex items-start gap-2">
-          <input {...register('agree_terms')} type="checkbox" id="agree_terms" className="mt-1" />
-          <label htmlFor="agree_terms" className="text-sm text-[var(--color-text-muted)]">
+          <input {...register('agree_terms')} type="checkbox" id="agree_terms" className="mt-1 cursor-pointer" />
+          <label htmlFor="agree_terms" className="text-sm text-[var(--color-text-muted)] cursor-pointer">
             我已閱讀並同意{' '}
             <Link to="/adoption/instructions" className="text-[var(--color-primary)] hover:underline" target="_blank">領養條款</Link>
           </label>
         </div>
-        {errors.agree_terms && <p className="text-red-500 text-xs">{errors.agree_terms.message}</p>}
+        {errors.agree_terms && <p className="text-red-500 text-xs" role="alert">{errors.agree_terms.message}</p>}
 
-        {serverError && <p className="text-red-500 text-sm">{serverError}</p>}
+        {serverError && <p className="text-red-500 text-sm" role="alert">{serverError}</p>}
 
         <button
           type="submit"

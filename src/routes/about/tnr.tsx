@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { Box, Stethoscope, House } from 'lucide-react'
 
 export const Route = createFileRoute('/about/tnr')({
   component: TNRPage,
@@ -22,12 +23,14 @@ function TNRPage() {
         <h2 className="font-display text-xl font-bold">TNR三個階段</h2>
         <div className="grid gap-4 md:grid-cols-3">
           {[
-            { step: '1', title: '誘捕 Trap', icon: '🪤', desc: '義工使用人道捕捉籠，安全捕捉目標流浪貓，過程不傷害動物。' },
-            { step: '2', title: '絕育 Neuter', icon: '🏥', desc: '將捕捉到的貓送往合作獸醫診所進行絕育手術，同時進行基本健康檢查及注射疫苗。' },
-            { step: '3', title: '放回 Return', icon: '🏠', desc: '手術後在原地放回，耳尖剪作識別記號，繼續由CCCP義工照顧。' },
-          ].map(({ step, title, icon, desc }) => (
+            { step: '1', title: '誘捕 Trap', Icon: Box, desc: '義工使用人道捕捉籠，安全捕捉目標流浪貓，過程不傷害動物。' },
+            { step: '2', title: '絕育 Neuter', Icon: Stethoscope, desc: '將捕捉到的貓送往合作獸醫診所進行絕育手術，同時進行基本健康檢查及注射疫苗。' },
+            { step: '3', title: '放回 Return', Icon: House, desc: '手術後在原地放回，耳尖剪作識別記號，繼續由CCCP義工照顧。' },
+          ].map(({ step, title, Icon, desc }) => (
             <div key={step} className="bg-[var(--color-surface-offset)] rounded-xl p-5 space-y-2">
-              <div className="text-3xl">{icon}</div>
+              <div className="h-10 w-10 rounded-lg bg-[var(--color-primary-highlight)] flex items-center justify-center">
+                <Icon className="h-5 w-5 text-[var(--color-primary)]" />
+              </div>
               <div className="font-bold text-[var(--color-primary)]">第{step}步</div>
               <div className="font-semibold">{title}</div>
               <p className="text-sm text-[var(--color-text-muted)]">{desc}</p>

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { PawPrint, Heart, House, Shield, Star, Check, Users, Cat, Dog, Scissors, Siren, Pill, BarChart3, Smartphone, Zap, Building, Globe, Stethoscope, Handshake, ReceiptText } from "lucide-react";
 import { Hero } from "@/components/site/Hero";
 import { SocialProof } from "@/components/site/SocialProof";
 import { VolunteerCarousel } from "@/components/site/VolunteerCarousel";
@@ -46,19 +47,19 @@ const animals = {
 };
 
 const programs = [
-  { icon: "🚨", title: "緊急救援", desc: "接報後迅速行動，拯救受傷、被棄養或來自繁殖場的貓狗，提供即時醫療護理。" },
-  { icon: "🐱", title: "貓隻領域護理 CCCP", desc: "為社區貓隻提供持續餵食、健康監察及環境管理。" },
-  { icon: "✂️", title: "TNR 捕捉絕育放回", desc: "透過絕育有效控制流浪動物數量，減少苦難循環。" },
-  { icon: "🏡", title: "暫托安置", desc: "由義工家庭提供臨時安置，讓動物在溫暖環境中等待領養。" },
-  { icon: "💊", title: "每月助養計劃", desc: "每月 HK$100，助養一隻貓或狗，支援日常膳食及醫療。" },
-  { icon: "📊", title: "透明工作報告", desc: "定期發布月度領養及核數報告，對每一位支持者負責。" },
+  { Icon: Siren, title: "緊急救援", desc: "接報後迅速行動，拯救受傷、被棄養或來自繁殖場的貓狗，提供即時醫療護理。" },
+  { Icon: Cat, title: "貓隻領域護理 CCCP", desc: "為社區貓隻提供持續餵食、健康監察及環境管理。" },
+  { Icon: Scissors, title: "TNR 捕捉絕育放回", desc: "透過絕育有效控制流浪動物數量，減少苦難循環。" },
+  { Icon: House, title: "暫托安置", desc: "由義工家庭提供臨時安置，讓動物在溫暖環境中等待領養。" },
+  { Icon: Pill, title: "每月助養計劃", desc: "每月 HK$100，助養一隻貓或狗，支援日常膳食及醫療。" },
+  { Icon: BarChart3, title: "透明工作報告", desc: "定期發布月度領養及核數報告，對每一位支持者負責。" },
 ];
 
 const donateMethods = [
-  { icon: "📱", title: "PayMe Business", desc: "WhatsApp 至 9864 1089 索取 QR Code 過數" },
-  { icon: "⚡", title: "轉數快 FPS", desc: "電話 9864 1089 · FPS ID 8727588" },
-  { icon: "🏦", title: "銀行入帳", desc: "匯豐 124-511320-838 · 中銀 012-351-1-025023-2" },
-  { icon: "🌐", title: "PayPal / GIVE.asia", desc: "支持每月定額捐款，持續支援救助行動" },
+  { Icon: Smartphone, title: "PayMe Business", desc: "WhatsApp 至 9864 1089 索取 QR Code 過數" },
+  { Icon: Zap, title: "轉數快 FPS", desc: "電話 9864 1089 · FPS ID 8727588" },
+  { Icon: Building, title: "銀行入帳", desc: "匯豐 124-511320-838 · 中銀 012-351-1-025023-2" },
+  { Icon: Globe, title: "PayPal / GIVE.asia", desc: "支持每月定額捐款，持續支援救助行動" },
 ];
 
 function Index() {
@@ -87,8 +88,8 @@ function Index() {
         {/* Adoption */}
         <section id="adoption" className="px-6 py-16 lg:py-24 bg-[var(--color-surface)]">
           <div className="container-wide">
-            <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3">
-              🐾 領養動物
+            <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3 flex items-center gap-1.5">
+              <PawPrint className="h-3.5 w-3.5" /> 領養動物
             </div>
             <h2 className="font-display text-3xl lg:text-5xl font-bold mb-4">
               牠們在等待一個家
@@ -98,7 +99,7 @@ function Index() {
             </p>
 
             <h3 className="font-display text-xl font-bold mb-5 flex items-center gap-2">
-              🐱 待領養貓貓
+              <Cat className="h-5 w-5 text-[var(--color-cat)]" /> 待領養貓貓
               <span className="text-sm bg-[var(--color-cat-bg)] text-[var(--color-cat)] px-3 py-1 rounded-full">
                 {animals.cats.length} 隻精選
               </span>
@@ -110,7 +111,7 @@ function Index() {
             </div>
 
             <h3 className="font-display text-xl font-bold mb-5 flex items-center gap-2">
-              🐶 待領養狗狗
+              <Dog className="h-5 w-5 text-[var(--color-dog)]" /> 待領養狗狗
               <span className="text-sm bg-[var(--color-dog-bg)] text-[var(--color-dog)] px-3 py-1 rounded-full">
                 {animals.dogs.length} 隻精選
               </span>
@@ -127,8 +128,8 @@ function Index() {
         <section id="about" className="px-6 py-16 lg:py-24 bg-[var(--color-bg)]">
           <div className="container-wide grid lg:grid-cols-2 gap-12 items-start">
             <div>
-              <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3">
-                🏠 關於協會
+              <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3 flex items-center gap-1.5">
+                <House className="h-3.5 w-3.5" /> 關於協會
               </div>
               <h2 className="font-display text-3xl lg:text-5xl font-bold mb-6 leading-tight">
                 拯救生命的使命
@@ -162,16 +163,18 @@ function Index() {
             </div>
             <div className="grid gap-4">
               {[
-                ["🏥", "醫療救援", "為拯救的貓狗提供全面醫療護理，包括絕育、疫苗及日常保健。"],
-                ["🏠", "領養媒合", "透過嚴格家訪審核，為每隻動物配對最適合的永久家庭。"],
-                ["🌍", "社區教育", "推廣領養代替購買、愛護動物及生育控制理念。"],
-                ["🤝", "跨機構合作", "與其他動物組織保持開放合作，共同改善流浪動物福祉。"],
-              ].map(([icon, t, d]) => (
+                [Stethoscope, "醫療救援", "為拯救的貓狗提供全面醫療護理，包括絕育、疫苗及日常保健。"],
+                [House, "領養媒合", "透過嚴格家訪審核，為每隻動物配對最適合的永久家庭。"],
+                [Globe, "社區教育", "推廣領養代替購買、愛護動物及生育控制理念。"],
+                [Handshake, "跨機構合作", "與其他動物組織保持開放合作，共同改善流浪動物福祉。"],
+              ].map(([Icon, t, d]) => (
                 <div
                   key={t}
                   className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5 flex gap-4 hover:shadow-md transition-shadow"
                 >
-                  <div className="text-3xl shrink-0">{icon}</div>
+                  <div className="h-11 w-11 rounded-lg bg-[var(--color-primary-highlight)] flex items-center justify-center shrink-0">
+                    <Icon className="h-5 w-5 text-[var(--color-primary)]" />
+                  </div>
                   <div>
                     <h3 className="font-display font-bold mb-1">{t}</h3>
                     <p className="text-sm text-[var(--color-text-muted)]">{d}</p>
@@ -185,9 +188,9 @@ function Index() {
         {/* Programs */}
         <section id="programs" className="px-6 py-16 lg:py-24 bg-[var(--color-surface-offset)]">
           <div className="container-wide">
-            <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3">
-              🛡️ 服務計劃
-            </div>
+              <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3 flex items-center gap-1.5">
+                <Shield className="h-3.5 w-3.5" /> 服務計劃
+              </div>
             <h2 className="font-display text-3xl lg:text-5xl font-bold mb-4">
               全面照顧流浪動物
             </h2>
@@ -200,7 +203,9 @@ function Index() {
                   key={p.title}
                   className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 hover:shadow-md hover:-translate-y-1 transition-all"
                 >
-                  <div className="text-3xl mb-3">{p.icon}</div>
+                  <div className="h-11 w-11 rounded-lg bg-[var(--color-primary-highlight)] flex items-center justify-center mb-3">
+                    <p.Icon className="h-5 w-5 text-[var(--color-primary)]" />
+                  </div>
                   <h3 className="font-display font-bold mb-2">{p.title}</h3>
                   <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">
                     {p.desc}
@@ -224,8 +229,8 @@ function Index() {
         <section id="donate" className="px-6 py-16 lg:py-24 bg-[var(--color-bg)]">
           <div className="container-wide grid lg:grid-cols-5 gap-10 items-start">
             <div className="lg:col-span-2">
-              <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3">
-                💛 捐助我們
+              <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3 flex items-center gap-1.5">
+                <Heart className="h-3.5 w-3.5" /> 捐助我們
               </div>
               <h2 className="font-display text-3xl lg:text-5xl font-bold mb-6 leading-tight">
                 您的每一份善意
@@ -235,8 +240,8 @@ function Index() {
               <p className="text-[var(--color-text-muted)] mb-6">
                 本會為政府認可慈善機構（91/14493），捐款 HK$100 以上可申請退稅收條（IRD §88）。所有善款均用於小動物醫療及護理。
               </p>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-success-highlight)] text-[var(--color-success)] text-xs font-bold">
-                ✅ 稅務局認可 IRD §88 免稅機構
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--color-success-highlight)] text-[var(--color-success)] text-xs font-bold">
+                <Check className="h-3 w-3" /> 稅務局認可 IRD §88 免稅機構
               </div>
             </div>
             <div className="lg:col-span-3 grid sm:grid-cols-2 gap-4">
@@ -245,8 +250,8 @@ function Index() {
                   key={d.title}
                   className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5 flex gap-4 hover:shadow-md transition-shadow"
                 >
-                  <div className="h-11 w-11 rounded-lg bg-[var(--color-primary-highlight)] flex items-center justify-center text-xl shrink-0">
-                    {d.icon}
+                  <div className="h-11 w-11 rounded-lg bg-[var(--color-primary-highlight)] flex items-center justify-center shrink-0">
+                    <d.Icon className="h-5 w-5 text-[var(--color-primary)]" />
                   </div>
                   <div className="min-w-0">
                     <h3 className="font-bold text-sm mb-1">{d.title}</h3>
@@ -258,9 +263,9 @@ function Index() {
               ))}
               <a
                 href="#contact"
-                className="sm:col-span-2 mt-2 inline-flex items-center justify-center px-6 py-4 rounded-full bg-[var(--color-primary)] text-white font-bold hover:bg-[var(--color-primary-hover)] transition-colors"
+                className="sm:col-span-2 mt-2 inline-flex items-center justify-center gap-2 px-6 py-4 rounded-full bg-[var(--color-primary)] text-white font-bold hover:bg-[var(--color-primary-hover)] transition-colors"
               >
-                🧾 申請退稅收條 / 聯絡我們
+                <ReceiptText className="h-4 w-4" /> 申請退稅收條 / 聯絡我們
               </a>
             </div>
           </div>

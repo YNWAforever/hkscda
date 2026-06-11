@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router'
+import { Cat, Dog } from 'lucide-react'
 import type { Animal } from '../../types/animal'
 
 interface AnimalCardProps {
@@ -13,7 +14,6 @@ export function AnimalCard({ animal }: AnimalCardProps) {
 
   const ctaLabel = animal.type === 'sponsor' ? '立即助養' : '申請領養'
 
-  const placeholder = animal.type === 'dog' ? '🐶' : '🐱'
   const placeholderBg = animal.type === 'dog' ? 'var(--color-dog-bg)' : 'var(--color-cat-bg)'
 
   return (
@@ -27,10 +27,14 @@ export function AnimalCard({ animal }: AnimalCardProps) {
           />
         ) : (
           <div
-            className="w-full aspect-square flex items-center justify-center text-5xl"
+            className="w-full aspect-square flex items-center justify-center"
             style={{ background: placeholderBg }}
           >
-            {placeholder}
+            {animal.type === 'dog' ? (
+              <Dog className="h-16 w-16 text-[var(--color-dog)] opacity-30" strokeWidth={1} />
+            ) : (
+              <Cat className="h-16 w-16 text-[var(--color-cat)] opacity-30" strokeWidth={1} />
+            )}
           </div>
         )}
       </Link>

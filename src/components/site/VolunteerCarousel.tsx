@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
+import { Users, ChevronLeft, ChevronRight, UserPlus } from "lucide-react";
 
 const stories = [
   {
@@ -85,8 +86,8 @@ export function VolunteerCarousel() {
       <div className="container-wide">
         <div className="flex flex-wrap items-end justify-between gap-6 mb-10">
           <div>
-            <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3">
-              🙋 義工故事
+            <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3 flex items-center gap-1.5">
+              <Users className="h-3.5 w-3.5" /> 義工故事
             </div>
             <h2 className="font-display text-3xl lg:text-5xl font-bold mb-4">
               他們，是毛孩的第一個家人
@@ -98,17 +99,17 @@ export function VolunteerCarousel() {
           <div className="flex gap-2">
             <button
               onClick={scrollPrev}
-              aria-label="上一個"
+              aria-label="上一個故事"
               className="h-11 w-11 rounded-full border border-[var(--color-border)] bg-[var(--color-surface-offset)] hover:bg-[var(--color-primary-highlight)] hover:border-[var(--color-primary)] flex items-center justify-center transition-colors"
             >
-              ←
+              <ChevronLeft className="h-5 w-5" />
             </button>
             <button
               onClick={scrollNext}
-              aria-label="下一個"
+              aria-label="下一個故事"
               className="h-11 w-11 rounded-full border border-[var(--color-border)] bg-[var(--color-surface-offset)] hover:bg-[var(--color-primary-highlight)] hover:border-[var(--color-primary)] flex items-center justify-center transition-colors"
             >
-              →
+              <ChevronRight className="h-5 w-5" />
             </button>
           </div>
         </div>
@@ -162,7 +163,7 @@ export function VolunteerCarousel() {
             href="#volunteer-apply"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[var(--color-primary)] text-white font-bold text-sm hover:bg-[var(--color-primary-hover)] transition-colors"
           >
-            🙋 加入義工團隊
+            <UserPlus className="h-4 w-4" /> 加入義工團隊
           </a>
         </div>
       </div>

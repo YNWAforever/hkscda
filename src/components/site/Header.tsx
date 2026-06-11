@@ -1,6 +1,7 @@
 import * as NavigationMenu from '@radix-ui/react-navigation-menu'
 import { Link } from '@tanstack/react-router'
 import { useState } from 'react'
+import { PawPrint, Heart, Menu, X, ChevronDown } from 'lucide-react'
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -10,8 +11,8 @@ export function Header() {
       <div className="container-wide flex h-[68px] items-center gap-4">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3 shrink-0">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-primary)] text-2xl">
-            🐾
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-primary)]">
+            <PawPrint className="h-5 w-5 text-white" strokeWidth={1.5} />
           </div>
           <div className="flex flex-col leading-tight">
             <span className="font-display text-sm font-bold text-[var(--color-primary)]">
@@ -40,7 +41,7 @@ export function Header() {
 
             <NavigationMenu.Item>
               <NavigationMenu.Trigger className="px-3 py-2 rounded-md text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-highlight)] transition-colors flex items-center gap-1 select-none">
-                關於協會 <span className="text-xs opacity-60">▾</span>
+                關於協會 <ChevronDown className="h-3 w-3 opacity-60" />
               </NavigationMenu.Trigger>
               <NavigationMenu.Content className="absolute top-full left-0 mt-2 w-44 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl shadow-lg py-1.5 z-50">
                 {[
@@ -64,7 +65,7 @@ export function Header() {
 
             <NavigationMenu.Item>
               <NavigationMenu.Trigger className="px-3 py-2 rounded-md text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-highlight)] transition-colors flex items-center gap-1 select-none">
-                領養 <span className="text-xs opacity-60">▾</span>
+                領養 <ChevronDown className="h-3 w-3 opacity-60" />
               </NavigationMenu.Trigger>
               <NavigationMenu.Content className="absolute top-full left-0 mt-2 w-44 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl shadow-lg py-1.5 z-50">
                 {[
@@ -99,9 +100,9 @@ export function Header() {
               <NavigationMenu.Link asChild>
                 <a
                   href="/#donate"
-                  className="ml-2 px-5 py-2 rounded-full bg-[var(--color-primary)] text-white text-sm font-bold hover:bg-[var(--color-primary-hover)] transition-colors"
+                  className="ml-2 inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-[var(--color-primary)] text-white text-sm font-bold hover:bg-[var(--color-primary-hover)] transition-colors"
                 >
-                  💛 立即捐助
+                  <Heart className="h-4 w-4" fill="currentColor" /> 立即捐助
                 </a>
               </NavigationMenu.Link>
             </NavigationMenu.Item>
@@ -112,11 +113,11 @@ export function Header() {
 
         {/* Mobile hamburger */}
         <button
-          aria-label="Menu"
+          aria-label={mobileOpen ? '關閉選單' : '開啟選單'}
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="ml-auto lg:hidden h-10 w-10 flex items-center justify-center rounded-md"
+          className="ml-auto lg:hidden h-10 w-10 flex items-center justify-center rounded-md hover:bg-[var(--color-surface-offset)] transition-colors"
         >
-          <span className="text-2xl">{mobileOpen ? '✕' : '☰'}</span>
+          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
 
@@ -164,9 +165,9 @@ export function Header() {
               <a
                 href="/#donate"
                 onClick={() => setMobileOpen(false)}
-                className="block mt-2 px-4 py-3 rounded-full bg-[var(--color-primary)] text-white text-center font-bold"
+                className="flex items-center justify-center gap-1.5 mt-2 px-4 py-3 rounded-full bg-[var(--color-primary)] text-white text-center font-bold"
               >
-                💛 立即捐助
+                <Heart className="h-4 w-4" fill="currentColor" /> 立即捐助
               </a>
             </li>
           </ul>

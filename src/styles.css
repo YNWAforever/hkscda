@@ -27,6 +27,11 @@
   --color-dog: #2a6ab0;
   --color-cat-bg: #fdf0ec;
   --color-dog-bg: #ecf2fd;
+  --color-footer-bg: #2a1f14;
+  --color-accent-warm: #ff8c5a;
+  --color-hero-gradient-start: #2a1f14;
+  --color-hero-gradient-mid: #5c3420;
+  --color-hero-gradient-end: #8a2a14;
 
   --font-display: "Noto Serif HK", Georgia, serif;
   --font-body: "Noto Sans HK", "Helvetica Neue", sans-serif;
@@ -53,6 +58,11 @@
     background: var(--color-primary-highlight);
     color: var(--color-text);
   }
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
 }
 
 @utility container-wide {
@@ -61,7 +71,20 @@
   padding-inline: 1.5rem;
 }
 
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(1.3); }
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.3); }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
 }

@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 import { supabase } from '../../lib/supabase'
 import { AnimalGrid } from '../../components/site/AnimalGrid'
+import { Skeleton } from '../../components/ui/skeleton'
 import type { AgeFilter } from '../../types/animal'
 
 const PAGE_SIZE = 16
@@ -37,7 +38,24 @@ function CatListingPage() {
   })
 
   if (isLoading) return (
-    <div className="max-w-6xl mx-auto px-4 py-12 text-center text-[var(--color-text-muted)]">載入中…</div>
+    <main className="max-w-6xl mx-auto px-4 py-8">
+      <h1 className="font-display text-3xl font-bold mb-8">待領養貓貓</h1>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="rounded-xl overflow-hidden border border-[var(--color-border)]">
+            <Skeleton className="aspect-square w-full rounded-none" />
+            <div className="p-3 space-y-2">
+              <Skeleton className="h-4 w-2/3" />
+              <div className="flex gap-1">
+                <Skeleton className="h-5 w-10 rounded-full" />
+                <Skeleton className="h-5 w-12 rounded-full" />
+              </div>
+              <Skeleton className="h-8 w-full rounded-full" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </main>
   )
 
   return (

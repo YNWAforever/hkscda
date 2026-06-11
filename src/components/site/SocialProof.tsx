@@ -1,3 +1,5 @@
+import { Star } from 'lucide-react'
+
 const stats = [
   { n: "5,000+", l: "貓咪成功領養" },
   { n: "1,800+", l: "狗狗成功領養" },
@@ -55,8 +57,8 @@ export function SocialProof() {
     >
       <div className="container-wide">
         <div className="text-center mb-12">
-          <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3">
-            ⭐ 信譽與成就
+          <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3 flex items-center gap-1.5">
+            <Star className="h-3.5 w-3.5" /> 信譽與成就
           </div>
           <h2 className="font-display text-3xl lg:text-5xl font-bold mb-4">
             18 年來，與香港同行

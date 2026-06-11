@@ -1,4 +1,5 @@
 import heroImg from "@/assets/hero.jpg";
+import { PawPrint, Heart } from "lucide-react";
 
 export function Hero() {
   return (
@@ -7,7 +8,7 @@ export function Hero() {
       className="relative overflow-hidden px-6 py-16 lg:py-24"
       style={{
         background:
-          "linear-gradient(135deg,#2a1f14 0%,#5c3420 50%,#8a2a14 100%)",
+          "linear-gradient(135deg,var(--color-hero-gradient-start) 0%,var(--color-hero-gradient-mid) 50%,var(--color-hero-gradient-end) 100%)",
       }}
       aria-label="主頁橫幅"
     >
@@ -22,7 +23,7 @@ export function Hero() {
         <div className="text-white">
           <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full border border-white/20 bg-white/10 backdrop-blur text-xs font-medium text-white/85">
             <span
-              className="h-2 w-2 rounded-full bg-[#ff8c5a]"
+              className="h-2 w-2 rounded-full bg-[var(--color-accent-warm)]"
               style={{ animation: "pulse-dot 2s infinite" }}
             />
             本會為「不殺」(No Kill) 政府認可慈善機構
@@ -30,7 +31,7 @@ export function Hero() {
           <h1 className="font-display font-bold text-[clamp(2.5rem,1rem+4vw,4.5rem)] leading-tight mb-6">
             領養代替購買
             <br />
-            <span className="text-[#ff8c5a]">拯救一個生命</span>
+            <span className="text-[var(--color-accent-warm)]">拯救一個生命</span>
           </h1>
           <p className="text-base lg:text-lg text-white/80 max-w-[48ch] mb-8">
             香港拯救貓狗協會自2007年成立，致力為流浪貓狗提供糧食、醫療、絕育及領養服務，每年救助超過600隻毛孩。
@@ -52,13 +53,13 @@ export function Hero() {
               href="#adoption"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[var(--color-primary)] text-white font-bold text-sm hover:bg-[var(--color-primary-hover)] hover:-translate-y-0.5 transition-all shadow-lg"
             >
-              🐾 瀏覽待領養動物
+              <PawPrint className="h-4 w-4" /> 瀏覽待領養動物
             </a>
             <a
               href="#donate"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 border-white/50 text-white font-bold text-sm hover:bg-white/10 hover:border-white transition-all"
             >
-              💛 支持我們
+              <Heart className="h-4 w-4" /> 支持我們
             </a>
           </div>
         </div>

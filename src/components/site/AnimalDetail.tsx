@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router'
+import { Cat, Dog } from 'lucide-react'
 import type { Animal } from '../../types/animal'
 
 interface AnimalDetailProps {
@@ -10,7 +11,6 @@ interface AnimalDetailProps {
 export function AnimalDetail({ animal, backHref, backLabel }: AnimalDetailProps) {
   const ctaLabel = animal.type === 'sponsor' ? '立即助養' : '申請領養'
   const applyHref = `/adoption/apply?animalId=${animal.id}&animalName=${encodeURIComponent(animal.name)}&type=${animal.type}`
-  const placeholder = animal.type === 'dog' ? '🐶' : '🐱'
   const placeholderBg = animal.type === 'dog' ? 'var(--color-dog-bg)' : 'var(--color-cat-bg)'
 
   return (
@@ -30,10 +30,14 @@ export function AnimalDetail({ animal, backHref, backLabel }: AnimalDetailProps)
             />
           ) : (
             <div
-              className="w-full aspect-square flex items-center justify-center text-[100px]"
+              className="w-full aspect-square flex items-center justify-center"
               style={{ background: placeholderBg }}
             >
-              {placeholder}
+              {animal.type === 'dog' ? (
+                <Dog className="h-24 w-24 text-[var(--color-dog)] opacity-25" strokeWidth={1} />
+              ) : (
+                <Cat className="h-24 w-24 text-[var(--color-cat)] opacity-25" strokeWidth={1} />
+              )}
             </div>
           )}
         </div>
@@ -68,7 +72,7 @@ export function AnimalDetail({ animal, backHref, backLabel }: AnimalDetailProps)
               to={applyHref}
               className="text-center py-3 rounded-full bg-[var(--color-primary)] text-white font-semibold hover:bg-[var(--color-primary-hover)] transition-colors"
             >
-              📩 {ctaLabel}
+              申請{ctaLabel}
             </Link>
             <Link
               to={backHref}
