@@ -126,7 +126,6 @@ export function Header() {
               </NavigationMenu.Item>
 
             </NavigationMenu.List>
-            <NavigationMenu.Viewport className="absolute top-full right-0 mt-2 w-[var(--radix-navigation-menu-viewport-width)] bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl shadow-[0_12px_40px_rgba(42,31,20,0.12)] overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-top-1 data-[state=open]:slide-in-from-top-1 duration-200" />
           </NavigationMenu.Root>
 
           {/* Mobile hamburger */}
@@ -201,7 +200,7 @@ function NavDropdown({ trigger, links }: { trigger: string; links: { to: string;
         {trigger} <ChevronDown className="h-3 w-3 opacity-50 transition-transform duration-200 group-data-[state=open]/trigger:rotate-180" />
         <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-0 rounded-full bg-[var(--color-primary)] transition-all duration-300 group-hover/trigger:w-4/5" />
       </NavigationMenu.Trigger>
-      <NavigationMenu.Content className="absolute top-full left-0 mt-2 w-[260px] bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl shadow-[0_12px_40px_rgba(42,31,20,0.12)] p-2 z-50">
+      <NavigationMenu.Content className="absolute top-full left-0 mt-2 w-[260px] bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl shadow-[0_12px_40px_rgba(42,31,20,0.12)] p-2 z-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 duration-200">
         {links.map((link, i) => (
           <NavigationMenu.Link key={link.to} asChild>
             <Link
