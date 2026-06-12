@@ -2,6 +2,9 @@ import { createFileRoute } from '@tanstack/react-router'
 import * as Tabs from '@radix-ui/react-tabs'
 
 export const Route = createFileRoute('/adoption/instructions')({
+  head: () => ({
+    links: [{ rel: 'canonical', href: 'https://hkscda.com/adoption/instructions' }],
+  }),
   component: InstructionsPage,
 })
 

@@ -15,6 +15,9 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute('/animals/dog')({
   validateSearch: searchSchema,
+  head: () => ({
+    links: [{ rel: 'canonical', href: 'https://hkscda.com/animals/dog' }],
+  }),
   component: DogListingPage,
 })
 

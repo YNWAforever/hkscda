@@ -32,6 +32,7 @@ export const Route = createFileRoute("/")({
       { property: "og:image", content: heroImg },
       { property: "og:type", content: "website" },
     ],
+    links: [{ rel: "canonical", href: "https://hkscda.com/" }],
   }),
   component: Index,
 });

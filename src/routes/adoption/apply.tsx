@@ -28,6 +28,9 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute('/adoption/apply')({
   validateSearch: searchSchema,
+  head: () => ({
+    links: [{ rel: 'canonical', href: 'https://hkscda.com/adoption/apply' }],
+  }),
   component: ApplyPage,
 })
 

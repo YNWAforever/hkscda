@@ -15,6 +15,9 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute('/sponsors')({
   validateSearch: searchSchema,
+  head: () => ({
+    links: [{ rel: 'canonical', href: 'https://hkscda.com/sponsors' }],
+  }),
   component: SponsorsPage,
 })
 

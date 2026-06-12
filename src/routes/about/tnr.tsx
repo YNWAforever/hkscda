@@ -2,6 +2,9 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Box, Stethoscope, House } from 'lucide-react'
 
 export const Route = createFileRoute('/about/tnr')({
+  head: () => ({
+    links: [{ rel: 'canonical', href: 'https://hkscda.com/about/tnr' }],
+  }),
   component: TNRPage,
 })
 

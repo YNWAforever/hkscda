@@ -1,6 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/about/cccp')({
+  head: () => ({
+    links: [{ rel: 'canonical', href: 'https://hkscda.com/about/cccp' }],
+  }),
   component: CCCPPage,
 })
 

@@ -1,6 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/about/privacy')({
+  head: () => ({
+    links: [{ rel: 'canonical', href: 'https://hkscda.com/about/privacy' }],
+  }),
   component: PrivacyPage,
 })
 
