@@ -60,7 +60,7 @@ src/
 - Create: `src/lib/analytics.ts`
 - Modify: `src/routes/__root.tsx`
 
-- [ ] **Step 1: Create `public/robots.txt`**
+- [x] **Step 1: Create `public/robots.txt`**
 
 ```txt
 User-agent: *
@@ -71,7 +71,7 @@ Disallow: /adoption/apply
 Sitemap: https://hkscda.com/sitemap.xml
 ```
 
-- [ ] **Step 2: Create `public/llms.txt`**
+- [x] **Step 2: Create `public/llms.txt`**
 
 ```txt
 # HKSCDA — Hong Kong Saving Cat And Dog Association
@@ -90,7 +90,7 @@ Sitemap: https://hkscda.com/sitemap.xml
 - /about: 協會簡介
 ```
 
-- [ ] **Step 3: Create `src/lib/analytics.ts`**
+- [x] **Step 3: Create `src/lib/analytics.ts`**
 
 ```typescript
 declare global {
@@ -123,7 +123,7 @@ export function gtagEvent(action: string, params?: Record<string, unknown>) {
 }
 ```
 
-- [ ] **Step 4: Create `src/lib/schema.ts`**
+- [x] **Step 4: Create `src/lib/schema.ts`**
 
 ```typescript
 const BASE_URL = 'https://hkscda.com'
@@ -221,7 +221,7 @@ export function renderJsonLd(schema: Record<string, unknown>) {
 }
 ```
 
-- [ ] **Step 5: Add GA4 script to `src/routes/__root.tsx`**
+- [x] **Step 5: Add GA4 script to `src/routes/__root.tsx`**
 
 Add the import and script element in `RootShell`:
 
@@ -239,7 +239,7 @@ import { initGA4 } from "../lib/analytics";
   <a href="#main-content" ...>
 ```
 
-- [ ] **Step 6: Add Organization + WebSite schema to `__root.tsx` head export**
+- [x] **Step 6: Add Organization + WebSite schema to `__root.tsx` head export**
 
 ```tsx
 // In the head export of __root.tsx, add:
@@ -258,12 +258,12 @@ scripts: [
 ],
 ```
 
-- [ ] **Step 7: Verify build**
+- [x] **Step 7: Verify build**
 
 Run: `bun run build`
 Expected: Build succeeds with no errors.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add public/ src/lib/schema.ts src/lib/analytics.ts src/routes/__root.tsx
@@ -278,7 +278,7 @@ git commit -m "feat: add SEO infrastructure (robots.txt, llms.txt, GA4, schema l
 - Create: `src/components/site/StatCard.tsx`
 - Create: `src/components/site/ReportHeader.tsx`
 
-- [ ] **Step 1: Create `src/components/site/StatCard.tsx`**
+- [x] **Step 1: Create `src/components/site/StatCard.tsx`**
 
 ```tsx
 import type { LucideIcon } from "lucide-react"
@@ -310,7 +310,7 @@ export function StatCard({ value, label, icon: Icon, color }: StatCardProps) {
 }
 ```
 
-- [ ] **Step 2: Create `src/components/site/ReportHeader.tsx`**
+- [x] **Step 2: Create `src/components/site/ReportHeader.tsx`**
 
 ```tsx
 interface ReportHeaderProps {
@@ -369,12 +369,12 @@ export function ReportHeader({
 }
 ```
 
-- [ ] **Step 3: Verify build**
+- [x] **Step 3: Verify build**
 
 Run: `bun run build`
 Expected: Build succeeds.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/components/site/StatCard.tsx src/components/site/ReportHeader.tsx
@@ -389,7 +389,7 @@ git commit -m "feat: add shared report components (StatCard, ReportHeader)"
 - Create: `src/components/site/AdoptionChart.tsx`
 - Create: `src/routes/report/adoption.tsx`
 
-- [ ] **Step 1: Create `src/components/site/AdoptionChart.tsx`**
+- [x] **Step 1: Create `src/components/site/AdoptionChart.tsx`**
 
 ```tsx
 import {
@@ -547,7 +547,7 @@ export function AdoptionChart({ animals }: AdoptionChartProps) {
 }
 ```
 
-- [ ] **Step 2: Create `src/routes/report/adoption.tsx`**
+- [x] **Step 2: Create `src/routes/report/adoption.tsx`**
 
 ```tsx
 import { createFileRoute } from "@tanstack/react-router"
@@ -711,12 +711,12 @@ function AdoptionReportPage() {
 }
 ```
 
-- [ ] **Step 3: Verify build**
+- [x] **Step 3: Verify build**
 
 Run: `bun run build`
 Expected: Build succeeds. New route `/report/adoption` is registered.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/routes/report/ src/components/site/AdoptionChart.tsx src/components/site/StatCard.tsx src/components/site/ReportHeader.tsx
@@ -731,7 +731,7 @@ git commit -m "feat: add adoption report page with charts and stats"
 - Create: `src/components/site/AuditChart.tsx`
 - Create: `src/routes/report/audit.tsx`
 
-- [ ] **Step 1: Create `src/components/site/AuditChart.tsx`**
+- [x] **Step 1: Create `src/components/site/AuditChart.tsx`**
 
 ```tsx
 import {
@@ -815,7 +815,7 @@ export function AuditChart({ title, data, total, totalLabel }: AuditChartProps) 
 }
 ```
 
-- [ ] **Step 2: Create `src/routes/report/audit.tsx`**
+- [x] **Step 2: Create `src/routes/report/audit.tsx`**
 
 ```tsx
 import { createFileRoute } from "@tanstack/react-router"
@@ -970,12 +970,12 @@ function AuditReportPage() {
 }
 ```
 
-- [ ] **Step 3: Verify build**
+- [x] **Step 3: Verify build**
 
 Run: `bun run build`
 Expected: Build succeeds. New route `/report/audit` is registered.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/routes/report/audit.tsx src/components/site/AuditChart.tsx
@@ -989,7 +989,7 @@ git commit -m "feat: add audit report page with financial charts"
 **Files:**
 - Create: `src/routes/donate.tsx`
 
-- [ ] **Step 1: Create `src/routes/donate.tsx`**
+- [x] **Step 1: Create `src/routes/donate.tsx`**
 
 ```tsx
 import { createFileRoute } from "@tanstack/react-router"
@@ -1085,12 +1085,12 @@ function DonatePage() {
 }
 ```
 
-- [ ] **Step 2: Verify build**
+- [x] **Step 2: Verify build**
 
 Run: `bun run build`
 Expected: Build succeeds.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/routes/donate.tsx
@@ -1104,7 +1104,7 @@ git commit -m "feat: add standalone donate page with payment methods"
 **Files:**
 - Create: `src/routes/volunteer.tsx`
 
-- [ ] **Step 1: Create `src/routes/volunteer.tsx`**
+- [x] **Step 1: Create `src/routes/volunteer.tsx`**
 
 ```tsx
 import { createFileRoute } from "@tanstack/react-router"
@@ -1188,12 +1188,12 @@ function VolunteerPage() {
 }
 ```
 
-- [ ] **Step 2: Verify build**
+- [x] **Step 2: Verify build**
 
 Run: `bun run build`
 Expected: Build succeeds.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/routes/volunteer.tsx
@@ -1210,14 +1210,14 @@ git commit -m "feat: add standalone volunteer recruitment page"
 - Modify: `src/routes/adoption/instructions.tsx`, `apply.tsx`
 - Modify: `src/routes/index.tsx`
 
-- [ ] **Step 1: Add canonical link to `src/routes/index.tsx` head export**
+- [x] **Step 1: Add canonical link to `src/routes/index.tsx` head export**
 
 ```tsx
 // In the existing head export, add to the links array:
 links: [{ rel: "canonical", href: "https://hkscda.com/" }],
 ```
 
-- [ ] **Step 2: Add canonical links to listing pages**
+- [x] **Step 2: Add canonical links to listing pages**
 
 In `src/routes/animals/cat.tsx` head export (add head export if not present):
 ```tsx
@@ -1228,7 +1228,7 @@ head: () => ({
 
 Same for `dog.tsx` (URL: `hkscda.com/animals/dog`), `sponsors.tsx` (URL: `hkscda.com/sponsors`).
 
-- [ ] **Step 3: Add canonical links to about pages**
+- [x] **Step 3: Add canonical links to about pages**
 
 In each about route (`about/index.tsx`, `cccp.tsx`, `tnr.tsx`, `team.tsx`, `privacy.tsx`), add:
 ```tsx
@@ -1238,7 +1238,7 @@ head: () => ({
 ```
 Use the appropriate canonical URL for each page.
 
-- [ ] **Step 4: Add canonical links to adoption pages**
+- [x] **Step 4: Add canonical links to adoption pages**
 
 In `adoption/instructions.tsx` and `adoption/apply.tsx`, add:
 ```tsx
@@ -1247,12 +1247,12 @@ head: () => ({
 }),
 ```
 
-- [ ] **Step 5: Verify build**
+- [x] **Step 5: Verify build**
 
 Run: `bun run build`
 Expected: Build succeeds.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/routes/
@@ -1266,7 +1266,7 @@ git commit -m "feat: add canonical URLs to all public pages"
 **Files:**
 - Modify: `src/components/site/Footer.tsx`
 
-- [ ] **Step 1: Add report, donate, volunteer links to Footer**
+- [x] **Step 1: Add report, donate, volunteer links to Footer**
 
 In `Footer.tsx`, add a 4th column or add links under existing sections:
 
@@ -1285,16 +1285,16 @@ In `Footer.tsx`, add a 4th column or add links under existing sections:
 </div>
 ```
 
-- [ ] **Step 2: Update the grid class**
+- [x] **Step 2: Update the grid class**
 
 Change `md:grid-cols-3` to `md:grid-cols-4` on the Footer grid.
 
-- [ ] **Step 3: Verify build**
+- [x] **Step 3: Verify build**
 
 Run: `bun run build`
 Expected: Build succeeds.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/components/site/Footer.tsx
@@ -1308,7 +1308,7 @@ git commit -m "feat: add report/donate/volunteer links to footer"
 **Files:**
 - Modify: `vite.config.ts`
 
-- [ ] **Step 1: Add sitemap to Nitro config**
+- [x] **Step 1: Add sitemap to Nitro config**
 
 In `vite.config.ts`, add a sitemap route via Nitro server handler:
 
@@ -1364,12 +1364,12 @@ ${routes.map((r) => `  <url><loc>${BASE}${r}</loc><changefreq>weekly</changefreq
 }
 ```
 
-- [ ] **Step 2: Verify build**
+- [x] **Step 2: Verify build**
 
 Run: `bun run build`
 Expected: Build succeeds.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/routes/sitemap.xml.tsx
@@ -1380,22 +1380,24 @@ git commit -m "feat: add dynamic sitemap.xml generation"
 
 ### Task 10: Final Verification — Build + Lint
 
-- [ ] **Step 1: Run lint**
+- [x] **Step 1: Run lint**
 
 Run: `bun run lint`
 Expected: No errors or warnings.
 
-- [ ] **Step 2: Run build**
+> Note (2026-06-12): lint run — all errors are pre-existing repo-wide `prettier/prettier` formatting issues (455+, present on files untouched by this plan and on HEAD versions). No errors introduced by plan changes. A separate `bun run format` pass would be needed to clean the baseline.
+
+- [x] **Step 2: Run build**
 
 Run: `bun run build`
 Expected: Build succeeds with all new routes.
 
-- [ ] **Step 3: Verify route tree**
+- [x] **Step 3: Verify route tree**
 
 Run: `ls src/routes/report/`
 Expected: `adoption.tsx`, `audit.tsx`
 
-- [ ] **Step 4: Final commit**
+- [x] **Step 4: Final commit**
 
 ```bash
 git add .
