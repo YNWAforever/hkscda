@@ -8,10 +8,12 @@
 
 | Element | Value |
 |---------|-------|
-| Primary Color | #D44D66 (Rescue Rose) |
-| Secondary Color | #232A5E (Guardian Navy) |
-| Accent Color | #EE8295 (Soft Salmon) |
+| Primary Color | #E05C78 (Rescue Rose) |
+| Secondary Color | #1D2353 (Guardian Navy) |
+| Accent Color | #F27D92 (Soft Salmon) |
 | Background | #FDF7F4 (Warm Cream) |
+| Lavender Zone | #E9E9F6 |
+| Pink Strip | #F298A4 |
 | Display Font | Baloo 2 (Latin) + Noto Sans HK |
 | Body Font | Noto Sans HK |
 
@@ -27,25 +29,28 @@ Warm, approachable, and trustworthy. The blush-pink-and-navy palette signals com
 
 | Shade | Hex | Usage |
 |-------|-----|-------|
-| **Rescue Rose** | #D44D66 | CTAs, links, cat accents, progress bars |
-| **Rescue Rose Dark** | #BF3E57 | Hover states |
+| **Rescue Rose** | #E05C78 | Links, eyebrows, cat accents, progress bars |
+| **Rescue Rose Hover** | #CF4A66 | Hover states |
+| **Rescue Rose Active** | #B93D58 | Pressed states |
 | **Rescue Rose Light** | #FADFE4 | Highlight backgrounds, icon chips |
 
 ### Secondary Colors
 
 | Shade | Hex | Usage |
 |-------|-----|-------|
-| **Guardian Navy** | #232A5E | Headings, dark sections, footer, dog accents |
-| **Guardian Navy Dark** | #1D2353 | Footer background, top utility bar |
-| **Guardian Navy Light** | #E9EBF7 | Dog badge backgrounds, soft navy surfaces |
+| **Guardian Navy** | #1D2353 | Headings, full-bleed dark bands, footer, dog accents |
+| **Guardian Navy 2** | #283066 | Inset panels on navy (footer logo card) |
+| **Lavender** | #E9E9F6 | Light section zones, soft navy surfaces |
+| **Lavender Deep** | #DCDCF0 | Borders/dividers on lavender zones |
 
 ### Accent Colors
 
 | Shade | Hex | Usage |
 |-------|-----|-------|
-| **Soft Salmon** | #EE8295 | Stat numbers, star ratings, floating badges |
-| **Soft Salmon Dark** | #D96E81 | Salmon hover states |
+| **Soft Salmon** | #F27D92 | CTA pills, stat numbers, star ratings, footer headings |
+| **Soft Salmon Hover** | #EE6781 | CTA hover states |
 | **Soft Salmon Light** | #FCE8EB | Blush section backgrounds (hero) |
+| **Pink Strip** | #F298A4 | Footer copyright strip, thin brand bands |
 
 ## Typography
 
@@ -57,8 +62,10 @@ Warm, approachable, and trustworthy. The blush-pink-and-navy palette signals com
 
 - Pill-shaped buttons and nav bar (`rounded-full`)
 - Large card radii (`rounded-2xl` to `rounded-[2.5rem]`)
-- Circular icon badges; blob-masked photography (`rounded-[3rem]`)
+- **Dashed-border rounded cards** (`card-dashed` utility) — the signature Poofyco card style for checklists, volunteer cards, info panels
+- Circular icon badges; arch-masked photography (`arch-mask` utility)
 - Topographic contour texture (`bg-topo` utility) on light sections
+- Dashed dividers (`border-dashed`) between stats and feature columns
 
 ## Voice & Tone
 

@@ -1,11 +1,11 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/about/')({
+export const Route = createFileRoute("/about/")({
   head: () => ({
-    links: [{ rel: 'canonical', href: 'https://hkscda.com/about' }],
+    links: [{ rel: "canonical", href: "https://hkscda.com/about" }],
   }),
   component: AboutPage,
-})
+});
 
 function AboutPage() {
   return (
@@ -24,13 +24,13 @@ function AboutPage() {
         <h2 className="font-display text-xl font-bold">協會宗旨</h2>
         <ul className="space-y-2 list-none">
           {[
-            '拯救流浪及被遺棄的貓狗',
-            '提供臨時住所及醫療照顧',
-            '推廣負責任的寵物主人文化',
-            '協助動物尋找永久愛心家庭',
-            '推行絕育計劃減少流浪動物數目',
-            '提高社會人士對動物福利的關注',
-            '與政府及其他動物福利機構合作',
+            "拯救流浪及被遺棄的貓狗",
+            "提供臨時住所及醫療照顧",
+            "推廣負責任的寵物主人文化",
+            "協助動物尋找永久愛心家庭",
+            "推行絕育計劃減少流浪動物數目",
+            "提高社會人士對動物福利的關注",
+            "與政府及其他動物福利機構合作",
           ].map((item) => (
             <li key={item} className="flex items-start gap-2 text-[var(--color-text-muted)]">
               <span className="text-[var(--color-primary)] mt-1">•</span>
@@ -68,9 +68,9 @@ function AboutPage() {
             </thead>
             <tbody>
               {[
-                ['領養費', 'HK$800', 'HK$1,000'],
-                ['絕育手術（已包含在領養費內）', '✓', '✓'],
-                ['晶片及疫苗（已包含在領養費內）', '✓', '✓'],
+                ["領養費", "HK$800", "HK$1,000"],
+                ["絕育手術（已包含在領養費內）", "✓", "✓"],
+                ["晶片及疫苗（已包含在領養費內）", "✓", "✓"],
               ].map(([service, cat, dog]) => (
                 <tr key={service} className="border-b border-[var(--color-border)]">
                   <td className="p-3 border border-[var(--color-border)]">{service}</td>
@@ -83,5 +83,5 @@ function AboutPage() {
         </div>
       </section>
     </main>
-  )
+  );
 }

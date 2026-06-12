@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "scrape:hkscda": "node scripts/scrape-hkscda.js"
+    "scrape:hkscda": "node scripts/scrape-hkscda-animals.js",
+    "import:hkscda": "node scripts/import-hkscda-animals.js",
+    "seed:admin": "node scripts/seed-admin.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

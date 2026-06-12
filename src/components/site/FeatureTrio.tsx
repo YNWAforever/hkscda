@@ -1,5 +1,6 @@
 import { Siren, Stethoscope, House, ArrowRight } from "lucide-react";
 import heroImg from "@/assets/hero.jpg";
+import { Reveal } from "@/lib/reveal";
 
 const features = [
   {
@@ -27,7 +28,7 @@ export function FeatureTrio() {
     <section className="bg-[var(--color-panel)] px-6 py-12 lg:py-16">
       <div className="container-wide grid lg:grid-cols-[300px_1fr] gap-10 items-center">
         {/* Photo card with coral arrow badge */}
-        <div className="relative max-w-[320px]">
+        <Reveal className="relative max-w-[320px]">
           <img
             src={heroImg}
             alt="義工與獲救的毛孩"
@@ -41,12 +42,13 @@ export function FeatureTrio() {
           >
             <ArrowRight className="h-5 w-5" />
           </a>
-        </div>
+        </Reveal>
 
         {/* Three pillars separated by dashed dividers */}
         <div className="grid md:grid-cols-3">
           {features.map((f, i) => (
-            <a
+            <Reveal
+              as="a"
               key={f.title}
               href={f.href}
               className={`group py-6 md:py-2 md:px-8 ${
@@ -66,7 +68,7 @@ export function FeatureTrio() {
                 <ArrowRight className="h-4 w-4 opacity-0 -translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0" />
               </h3>
               <p className="text-sm text-white/70 leading-relaxed">{f.desc}</p>
-            </a>
+            </Reveal>
           ))}
         </div>
       </div>

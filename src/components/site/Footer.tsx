@@ -1,4 +1,4 @@
-import { PawPrint, Mail, Smartphone, BadgeCheck, Building2, ReceiptText } from 'lucide-react'
+import { PawPrint, Mail, Smartphone, BadgeCheck, Building2, ReceiptText } from "lucide-react";
 
 export function Footer() {
   return (
@@ -26,11 +26,21 @@ export function Footer() {
             聯絡我們
           </h4>
           <ul className="space-y-2 text-sm text-white/80">
-            <li className="flex items-center gap-2"><Mail className="h-4 w-4 opacity-70" /> info@hkscda.com</li>
-            <li className="flex items-center gap-2"><Smartphone className="h-4 w-4 opacity-70" /> WhatsApp / FPS: 9864 1089</li>
-            <li className="flex items-center gap-2"><BadgeCheck className="h-4 w-4 opacity-70" /> 慈善牌照：91/14493</li>
-            <li className="flex items-center gap-2"><Building2 className="h-4 w-4 opacity-70" /> 漁農署 ORG-00041</li>
-            <li className="flex items-center gap-2"><ReceiptText className="h-4 w-4 opacity-70" /> IRD §88 免稅機構</li>
+            <li className="flex items-center gap-2">
+              <Mail className="h-4 w-4 opacity-70" /> info@hkscda.com
+            </li>
+            <li className="flex items-center gap-2">
+              <Smartphone className="h-4 w-4 opacity-70" /> WhatsApp / FPS: 9864 1089
+            </li>
+            <li className="flex items-center gap-2">
+              <BadgeCheck className="h-4 w-4 opacity-70" /> 慈善牌照：91/14493
+            </li>
+            <li className="flex items-center gap-2">
+              <Building2 className="h-4 w-4 opacity-70" /> 漁農署 ORG-00041
+            </li>
+            <li className="flex items-center gap-2">
+              <ReceiptText className="h-4 w-4 opacity-70" /> IRD §88 免稅機構
+            </li>
           </ul>
         </div>
         <div>
@@ -70,10 +80,26 @@ export function Footer() {
             透明度
           </h4>
           <ul className="space-y-2 text-sm text-white/80">
-            <li><a href="/report/adoption" className="hover:text-white transition-colors">每月領養報告</a></li>
-            <li><a href="/report/audit" className="hover:text-white transition-colors">年度核數報告</a></li>
-            <li><a href="/donate" className="hover:text-white transition-colors">捐助我們</a></li>
-            <li><a href="/volunteer" className="hover:text-white transition-colors">加入義工團隊</a></li>
+            <li>
+              <a href="/report/adoption" className="hover:text-white transition-colors">
+                每月領養報告
+              </a>
+            </li>
+            <li>
+              <a href="/report/audit" className="hover:text-white transition-colors">
+                年度核數報告
+              </a>
+            </li>
+            <li>
+              <a href="/donate" className="hover:text-white transition-colors">
+                捐助我們
+              </a>
+            </li>
+            <li>
+              <a href="/volunteer" className="hover:text-white transition-colors">
+                加入義工團隊
+              </a>
+            </li>
           </ul>
         </div>
       </div>

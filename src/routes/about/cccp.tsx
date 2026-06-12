@@ -1,17 +1,19 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/about/cccp')({
+export const Route = createFileRoute("/about/cccp")({
   head: () => ({
-    links: [{ rel: 'canonical', href: 'https://hkscda.com/about/cccp' }],
+    links: [{ rel: "canonical", href: "https://hkscda.com/about/cccp" }],
   }),
   component: CCCPPage,
-})
+});
 
 function CCCPPage() {
   return (
     <main className="max-w-3xl mx-auto px-4 py-12 space-y-10">
       <h1 className="font-display text-3xl font-bold">CCCP計劃</h1>
-      <p className="text-[var(--color-text-muted)] text-lg">社區貓照顧計劃（Community Cat Care Program）</p>
+      <p className="text-[var(--color-text-muted)] text-lg">
+        社區貓照顧計劃（Community Cat Care Program）
+      </p>
 
       <section className="space-y-4">
         <h2 className="font-display text-xl font-bold">什麼是CCCP？</h2>
@@ -43,16 +45,20 @@ function CCCPPage() {
             </thead>
             <tbody>
               {[
-                ['貓隻管理', '移除/撲殺', '原地絕育照顧'],
-                ['貓隻數目', '短期減少，長期回升', '逐步穩定減少'],
-                ['社區衝突', '頻繁', '顯著減少'],
-                ['動物福利', '低', '高'],
-                ['費用效益', '持續高費用', '一次性投入，長期效益'],
+                ["貓隻管理", "移除/撲殺", "原地絕育照顧"],
+                ["貓隻數目", "短期減少，長期回升", "逐步穩定減少"],
+                ["社區衝突", "頻繁", "顯著減少"],
+                ["動物福利", "低", "高"],
+                ["費用效益", "持續高費用", "一次性投入，長期效益"],
               ].map(([item, traditional, cccp]) => (
                 <tr key={item}>
                   <td className="p-3 border border-[var(--color-border)] font-medium">{item}</td>
-                  <td className="p-3 border border-[var(--color-border)] text-[var(--color-error)]">{traditional}</td>
-                  <td className="p-3 border border-[var(--color-border)] text-[var(--color-success)]">{cccp}</td>
+                  <td className="p-3 border border-[var(--color-border)] text-[var(--color-error)]">
+                    {traditional}
+                  </td>
+                  <td className="p-3 border border-[var(--color-border)] text-[var(--color-success)]">
+                    {cccp}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -72,10 +78,9 @@ function CCCPPage() {
       <section className="space-y-4">
         <h2 className="font-display text-xl font-bold">如何支持CCCP</h2>
         <p className="text-[var(--color-text-muted)] leading-relaxed">
-          您可以透過擔任義工、捐款或捐贈物資支持CCCP計劃。
-          如有興趣參與，請透過協會電郵聯絡我們。
+          您可以透過擔任義工、捐款或捐贈物資支持CCCP計劃。 如有興趣參與，請透過協會電郵聯絡我們。
         </p>
       </section>
     </main>
-  )
+  );
 }

@@ -8,8 +8,7 @@ const stories = [
     color: "var(--color-primary)",
     name: "Linda Tse",
     role: "創辦人 · 服務18年",
-    quote:
-      "2007年成立協會時，從沒想過會走到今天。每隻被救助的毛孩都教會我堅持的意義。",
+    quote: "2007年成立協會時，從沒想過會走到今天。每隻被救助的毛孩都教會我堅持的意義。",
   },
   {
     initials: "Ka",
@@ -24,32 +23,28 @@ const stories = [
     color: "var(--color-success)",
     name: "Wing",
     role: "TNR 隊長 · 7年",
-    quote:
-      "凌晨四點蹲在後巷等貓進籠，這份工作很冷。但想到牠們不會再生育受苦，心就暖了。",
+    quote: "凌晨四點蹲在後巷等貓進籠，這份工作很冷。但想到牠們不會再生育受苦，心就暖了。",
   },
   {
     initials: "Sam",
     color: "var(--color-warning)",
     name: "Sam Chan",
     role: "醫療助理 · 3年",
-    quote:
-      "我曾經害怕看到傷殘的動物。現在我親手照料牠們康復，發現自己也被治癒。",
+    quote: "我曾經害怕看到傷殘的動物。現在我親手照料牠們康復，發現自己也被治癒。",
   },
   {
     initials: "May",
     color: "var(--color-accent-warm)",
     name: "May Lam",
     role: "暫托家庭 · 4年",
-    quote:
-      "短短幾個月把牠們從怕人養到撒嬌，然後送去新家庭。每次都不捨，但這就是我們的使命。",
+    quote: "短短幾個月把牠們從怕人養到撒嬌，然後送去新家庭。每次都不捨，但這就是我們的使命。",
   },
   {
     initials: "Eric",
     color: "var(--color-panel-2)",
     name: "Eric Wong",
     role: "活動義工 · 2年",
-    quote:
-      "我太忙不能領養，但每月領養日來幫手、搬糧食，就是我能做的事。每個人都可以出一份力。",
+    quote: "我太忙不能領養，但每月領養日來幫手、搬糧食，就是我能做的事。每個人都可以出一份力。",
   },
 ];
 
@@ -58,16 +53,14 @@ export function VolunteerCarousel() {
     align: "start",
     loop: true,
     slidesToScroll: 1,
+    duration: 25,
   });
   const [selected, setSelected] = useState(0);
   const [count, setCount] = useState(0);
 
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
-  const scrollTo = useCallback(
-    (i: number) => emblaApi?.scrollTo(i),
-    [emblaApi]
-  );
+  const scrollTo = useCallback((i: number) => emblaApi?.scrollTo(i), [emblaApi]);
 
   useEffect(() => {
     if (!emblaApi) return;
@@ -78,11 +71,28 @@ export function VolunteerCarousel() {
     emblaApi.on("reInit", onSelect);
   }, [emblaApi]);
 
+  // Autoplay: 3s cadence, pause while the pointer is over the carousel.
+  useEffect(() => {
+    if (!emblaApi) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const root = emblaApi.rootNode();
+    let paused = false;
+    const pause = () => (paused = true);
+    const resume = () => (paused = false);
+    root.addEventListener("pointerenter", pause);
+    root.addEventListener("pointerleave", resume);
+    const id = setInterval(() => {
+      if (!paused && !document.hidden) emblaApi.scrollNext();
+    }, 3000);
+    return () => {
+      clearInterval(id);
+      root.removeEventListener("pointerenter", pause);
+      root.removeEventListener("pointerleave", resume);
+    };
+  }, [emblaApi]);
+
   return (
-    <section
-      id="stories"
-      className="px-6 py-16 lg:py-24 bg-[var(--color-surface)]"
-    >
+    <section id="stories" className="px-6 py-16 lg:py-24 bg-[var(--color-surface)]">
       <div className="container-wide">
         <div className="flex flex-wrap items-end justify-between gap-6 mb-10">
           <div>
@@ -150,9 +160,7 @@ export function VolunteerCarousel() {
               onClick={() => scrollTo(i)}
               aria-label={`Slide ${i + 1}`}
               className={`h-2 rounded-full transition-all ${
-                i === selected
-                  ? "w-8 bg-[var(--color-primary)]"
-                  : "w-2 bg-[var(--color-border)]"
+                i === selected ? "w-8 bg-[var(--color-primary)]" : "w-2 bg-[var(--color-border)]"
               }`}
             />
           ))}

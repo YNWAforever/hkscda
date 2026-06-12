@@ -20,7 +20,11 @@ import fs from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
 
-const BASE = "https://hkscda.com";
+// Override with SCRAPE_BASE to scrape another deployment of the same site,
+// e.g. SCRAPE_BASE=http://localhost:8080 to bypass Cloudflare via local dev.
+// Output URLs are always rewritten to PUBLIC_BASE regardless of scrape target.
+const BASE = process.env.SCRAPE_BASE || "https://hkscda.com";
+const PUBLIC_BASE = "https://hkscda.com";
 const CATEGORIES = [
   { type: "cat", url: `${BASE}/animals/cat` },
   { type: "dog", url: `${BASE}/animals/dog` },
@@ -79,7 +83,16 @@ function extractCardsInPage() {
 
   const roots = new Set();
 
-  // Pass 1: label-anchored cards
+  // Pass 0: HKSCDA card markup — anchors to /animals/<type>/<id> detail pages
+  for (const a of document.querySelectorAll("a[href]")) {
+    const href = a.getAttribute("href") || "";
+    if (/\/animals\/(cat|dog)\/[^/]+\/?$/.test(href) && !inChrome(a)) {
+      const root = a.closest('div[class*="rounded"]') || a.parentElement;
+      if (root) roots.add(root);
+    }
+  }
+
+  // Pass 1: label-anchored cards (older site markup)
   const labelRe = /名字|性別|年齡/;
   for (const el of document.querySelectorAll("main *, body *")) {
     if (el.childElementCount === 0 && labelRe.test(el.textContent || "") && !inChrome(el)) {
@@ -180,7 +193,10 @@ function parseCard(card, type) {
   }
   let gender = parseField(text, "性別");
   if (!gender) gender = (text.match(/(?:^|\s)(公|母)(?:$|\s|，)/) || [])[1] || null;
-  const age = parseField(text, "年齡");
+  let age = parseField(text, "年齡");
+  if (!age) {
+    age = (text.match(/(約?\s*\d+(?:\.\d+)?\s*(?:歲|個月|月大))/) || [])[1]?.trim() || null;
+  }
 
   return {
     type,
@@ -266,7 +282,8 @@ async function waitForContentOrChallenge(page) {
         const txt = document.body?.innerText || "";
         return (
           /名字|性別|年齡/.test(txt) ||
-          document.querySelectorAll("main img, article img").length > 0
+          !!document.querySelector('a[href*="/animals/"], main img, article img') ||
+          txt.length > 600
         );
       },
       { timeout: CHALLENGE_TIMEOUT_MS, polling: 1000 },
@@ -278,7 +295,18 @@ async function waitForContentOrChallenge(page) {
 }
 
 async function launchBrowser(headless) {
-  const browser = await chromium.launch({ headless });
+  const opts = {
+    headless,
+    args: ["--disable-blink-features=AutomationControlled"],
+  };
+  // Real Chrome passes Cloudflare Turnstile far more reliably than the bundled
+  // Playwright Chromium, where the checkbox tends to loop forever.
+  let browser;
+  try {
+    browser = await chromium.launch({ ...opts, channel: "chrome" });
+  } catch {
+    browser = await chromium.launch(opts);
+  }
   const context = await browser.newContext({
     userAgent: headless ? UA : undefined, // headed: keep the real browser UA for the challenge
     locale: "zh-HK",
@@ -354,8 +382,9 @@ async function main() {
 
         const ready = await waitForContentOrChallenge(page);
         if (!ready) {
-          console.warn(`  ! Timed out waiting for content on ${pageUrl} — skipping.`);
-          break;
+          console.warn(
+            `  ! Content signal timeout on ${pageUrl} — extracting whatever is present.`,
+          );
         }
         // Persist the session as soon as we're through the challenge.
         await context.storageState({ path: STATE_FILE });
@@ -428,6 +457,12 @@ async function main() {
     }
   } finally {
     await browser.close();
+  }
+
+  const toPublic = (u) => (u && u.startsWith(BASE) ? PUBLIC_BASE + u.slice(BASE.length) : u);
+  for (const a of animals) {
+    a.detail_url = toPublic(a.detail_url);
+    a.photo_url = toPublic(a.photo_url);
   }
 
   await fs.writeFile(JSON_FILE, JSON.stringify(animals, null, 2));

@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/accordion";
 import { MessageCircleQuestion } from "lucide-react";
 import dog1 from "@/assets/dog1.jpg";
+import { Reveal } from "@/lib/reveal";
 
 const faqs = [
   {
@@ -32,9 +33,12 @@ const faqs = [
 
 export function FAQ() {
   return (
-    <section className="px-6 py-16 lg:py-24 bg-[var(--color-surface-offset)]" aria-labelledby="faq-h">
+    <section
+      className="px-6 py-16 lg:py-24 bg-[var(--color-surface-offset)]"
+      aria-labelledby="faq-h"
+    >
       <div className="container-wide grid lg:grid-cols-5 gap-10 lg:gap-14 items-start">
-        <div className="lg:col-span-2">
+        <Reveal className="lg:col-span-2">
           <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3 flex items-center gap-1.5">
             <MessageCircleQuestion className="h-3.5 w-3.5" /> 常見問題
           </div>
@@ -50,7 +54,10 @@ export function FAQ() {
             找不到答案？歡迎 WhatsApp 9864 1089 或電郵 info@hkscda.com 查詢。
           </p>
           <div className="relative hidden lg:block">
-            <div className="absolute inset-3 arch-mask -rotate-3 bg-[var(--color-accent-soft)]" aria-hidden="true" />
+            <div
+              className="absolute inset-3 arch-mask -rotate-3 bg-[var(--color-accent-soft)]"
+              aria-hidden="true"
+            />
             <img
               src={dog1}
               alt="等待領養的唐狗"
@@ -58,9 +65,9 @@ export function FAQ() {
               className="relative arch-mask w-full aspect-[4/3] object-cover shadow-soft"
             />
           </div>
-        </div>
+        </Reveal>
 
-        <div className="lg:col-span-3">
+        <Reveal className="lg:col-span-3">
           <div className="rounded-[2rem] bg-[var(--color-panel)] text-white px-6 py-4 mb-4 font-display font-bold flex items-center gap-2">
             <MessageCircleQuestion className="h-5 w-5 text-[var(--color-accent-warm)]" />
             Frequently Asked Questions
@@ -81,7 +88,7 @@ export function FAQ() {
               </AccordionItem>
             ))}
           </Accordion>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

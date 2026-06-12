@@ -24,15 +24,15 @@
           "$type": "color"
         },
         "500": {
-          "$value": "#D44D66",
+          "$value": "#E05C78",
           "$type": "color"
         },
         "600": {
-          "$value": "#BF3E57",
+          "$value": "#CF4A66",
           "$type": "color"
         },
         "700": {
-          "$value": "#88011A",
+          "$value": "#B93D58",
           "$type": "color"
         },
         "800": {
@@ -46,15 +46,15 @@
       },
       "guardian-navy": {
         "50": {
-          "$value": "#E9EBF7",
+          "$value": "#E9E9F6",
           "$type": "color"
         },
         "100": {
-          "$value": "#E9EBF7",
+          "$value": "#E9E9F6",
           "$type": "color"
         },
         "200": {
-          "$value": "#BCC3F7",
+          "$value": "#DCDCF0",
           "$type": "color"
         },
         "300": {
@@ -62,15 +62,15 @@
           "$type": "color"
         },
         "400": {
-          "$value": "#565D91",
+          "$value": "#283066",
           "$type": "color"
         },
         "500": {
-          "$value": "#232A5E",
+          "$value": "#1D2353",
           "$type": "color"
         },
         "600": {
-          "$value": "#1D2353",
+          "$value": "#283066",
           "$type": "color"
         },
         "700": {
@@ -100,7 +100,7 @@
           "$type": "color"
         },
         "300": {
-          "$value": "#FFE8FB",
+          "$value": "#F298A4",
           "$type": "color"
         },
         "400": {
@@ -108,11 +108,11 @@
           "$type": "color"
         },
         "500": {
-          "$value": "#EE8295",
+          "$value": "#F27D92",
           "$type": "color"
         },
         "600": {
-          "$value": "#D96E81",
+          "$value": "#EE6781",
           "$type": "color"
         },
         "700": {

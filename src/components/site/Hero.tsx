@@ -2,6 +2,7 @@ import heroImg from "@/assets/hero.jpg";
 import cat1 from "@/assets/cat1.jpg";
 import dog1 from "@/assets/dog1.jpg";
 import { PawPrint, Heart, Star } from "lucide-react";
+import { Reveal } from "@/lib/reveal";
 
 export function Hero() {
   return (
@@ -17,7 +18,9 @@ export function Hero() {
       />
       <div
         className="absolute -bottom-32 -left-32 h-[480px] w-[480px] rounded-full pointer-events-none"
-        style={{ background: "radial-gradient(circle,var(--color-primary-highlight) 0%,transparent 70%)" }}
+        style={{
+          background: "radial-gradient(circle,var(--color-primary-highlight) 0%,transparent 70%)",
+        }}
       />
       <svg
         className="absolute top-16 left-[46%] h-10 w-10 text-[var(--color-accent-warm)] opacity-60 pointer-events-none hidden lg:block"
@@ -30,14 +33,17 @@ export function Hero() {
 
       <div className="container-wide relative grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
         <div>
-          <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-[var(--color-primary-highlight)] text-xs font-bold text-[var(--color-primary)]">
+          <Reveal className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-[var(--color-primary-highlight)] text-xs font-bold text-[var(--color-primary)]">
             <span
               className="h-2 w-2 rounded-full bg-[var(--color-accent-warm)]"
               style={{ animation: "pulse-dot 2s infinite" }}
             />
             本會為「不殺」(No Kill) 政府認可慈善機構
-          </div>
-          <h1 className="font-display font-bold text-[var(--color-panel)] text-[clamp(2.5rem,1rem+4vw,4.25rem)] leading-tight mb-6">
+          </Reveal>
+          <Reveal
+            as="h1"
+            className="font-display font-bold text-[var(--color-panel)] text-[clamp(2.5rem,1rem+4vw,4.25rem)] leading-tight mb-6"
+          >
             領養代替購買
             <br />
             <span className="relative inline-block text-[var(--color-primary)]">
@@ -48,24 +54,33 @@ export function Hero() {
                 preserveAspectRatio="none"
                 aria-hidden="true"
               >
-                <path d="M2 9 Q 50 2 100 7 T 198 5" stroke="currentColor" strokeWidth="4" fill="none" strokeLinecap="round" />
+                <path
+                  d="M2 9 Q 50 2 100 7 T 198 5"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  fill="none"
+                  strokeLinecap="round"
+                />
               </svg>
             </span>
-          </h1>
-          <p className="text-base lg:text-lg text-[var(--color-text-muted)] max-w-[46ch] mb-8">
+          </Reveal>
+          <Reveal
+            as="p"
+            className="text-base lg:text-lg text-[var(--color-text-muted)] max-w-[46ch] mb-8"
+          >
             香港拯救貓狗協會自2007年成立，致力為流浪貓狗提供糧食、醫療、絕育及領養服務，每年救助超過600隻毛孩。
-          </p>
-          <div className="flex flex-wrap gap-4 mb-10">
+          </Reveal>
+          <Reveal className="flex flex-wrap gap-4 mb-10">
             <a href="#adoption" className="btn-cta">
               <PawPrint className="h-4 w-4" /> 瀏覽待領養動物
             </a>
             <a href="#donate" className="btn-outline">
               <Heart className="h-4 w-4" /> 支持我們
             </a>
-          </div>
+          </Reveal>
 
           {/* Members pill */}
-          <div className="inline-flex items-center gap-4 rounded-full bg-[var(--color-surface)] border border-[var(--color-border)] py-2.5 pl-3 pr-6 shadow-soft">
+          <Reveal className="inline-flex items-center gap-4 rounded-full bg-[var(--color-surface)] border border-[var(--color-border)] py-2.5 pl-3 pr-6 shadow-soft">
             <div className="flex -space-x-3">
               {[heroImg, cat1, dog1].map((img, i) => (
                 <img
@@ -84,10 +99,10 @@ export function Hero() {
               <div className="font-display text-lg font-bold text-[var(--color-panel)]">3.5K+</div>
               <div className="text-[11px] text-[var(--color-text-muted)]">義工及支持者社群</div>
             </div>
-          </div>
+          </Reveal>
         </div>
 
-        <div className="relative">
+        <Reveal className="relative">
           {/* Photo blob backdrop */}
           <div
             className="absolute -inset-1 arch-mask rotate-3 bg-[var(--color-accent-soft)]"
@@ -130,7 +145,7 @@ export function Hero() {
               ))}
             </div>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

@@ -1,5 +1,26 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { PawPrint, Heart, House, Shield, Star, Check, Users, Cat, Dog, Scissors, Siren, Pill, BarChart3, Smartphone, Zap, Building, Globe, Stethoscope, Handshake, ReceiptText } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+  PawPrint,
+  Heart,
+  House,
+  Shield,
+  Star,
+  Check,
+  Users,
+  Cat,
+  Dog,
+  Scissors,
+  Siren,
+  Pill,
+  BarChart3,
+  Smartphone,
+  Zap,
+  Building,
+  Globe,
+  Stethoscope,
+  Handshake,
+  ReceiptText,
+} from "lucide-react";
 import { Hero } from "@/components/site/Hero";
 import { FeatureTrio } from "@/components/site/FeatureTrio";
 import { BestRescue } from "@/components/site/BestRescue";
@@ -9,6 +30,7 @@ import { FAQ } from "@/components/site/FAQ";
 import { SocialProof } from "@/components/site/SocialProof";
 import { VolunteerCarousel } from "@/components/site/VolunteerCarousel";
 import { SocialWall } from "@/components/site/SocialWall";
+import { PhotoMarquee } from "@/components/site/PhotoMarquee";
 import heroImg from "@/assets/hero.jpg";
 import cat1 from "@/assets/cat1.jpg";
 import cat2 from "@/assets/cat2.jpg";
@@ -53,12 +75,24 @@ const animals = {
 };
 
 const programs = [
-  { Icon: Siren, title: "緊急救援", desc: "接報後迅速行動，拯救受傷、被棄養或來自繁殖場的貓狗，提供即時醫療護理。" },
+  {
+    Icon: Siren,
+    title: "緊急救援",
+    desc: "接報後迅速行動，拯救受傷、被棄養或來自繁殖場的貓狗，提供即時醫療護理。",
+  },
   { Icon: Cat, title: "貓隻領域護理 CCCP", desc: "為社區貓隻提供持續餵食、健康監察及環境管理。" },
-  { Icon: Scissors, title: "TNR 捕捉絕育放回", desc: "透過絕育有效控制流浪動物數量，減少苦難循環。" },
+  {
+    Icon: Scissors,
+    title: "TNR 捕捉絕育放回",
+    desc: "透過絕育有效控制流浪動物數量，減少苦難循環。",
+  },
   { Icon: House, title: "暫托安置", desc: "由義工家庭提供臨時安置，讓動物在溫暖環境中等待領養。" },
   { Icon: Pill, title: "每月助養計劃", desc: "每月 HK$100，助養一隻貓或狗，支援日常膳食及醫療。" },
-  { Icon: BarChart3, title: "透明工作報告", desc: "定期發布月度領養及核數報告，對每一位支持者負責。" },
+  {
+    Icon: BarChart3,
+    title: "透明工作報告",
+    desc: "定期發布月度領養及核數報告，對每一位支持者負責。",
+  },
 ];
 
 const donateMethods = [
@@ -80,15 +114,16 @@ function Index() {
         {/* Best rescue: checklist + stats — NEW */}
         <BestRescue />
 
+        {/* Community photo conveyor (reference: slow gallery marquee) */}
+        <PhotoMarquee />
+
         {/* Adoption */}
         <section id="adoption" className="px-6 py-16 lg:py-24 bg-[var(--color-surface)]">
           <div className="container-wide">
             <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3 flex items-center gap-1.5">
               <PawPrint className="h-3.5 w-3.5" /> 領養動物
             </div>
-            <h2 className="font-display text-3xl lg:text-5xl font-bold mb-4">
-              牠們在等待一個家
-            </h2>
+            <h2 className="font-display text-3xl lg:text-5xl font-bold mb-4">牠們在等待一個家</h2>
             <p className="text-[var(--color-text-muted)] max-w-[52ch] mb-10">
               現時待領養的貓貓和狗狗，所有動物均需家訪審核。貓咪領養費 HK$500 · 唐狗免費。
             </p>
@@ -96,7 +131,7 @@ function Index() {
             <h3 className="font-display text-xl font-bold mb-5 flex items-center gap-2">
               <Cat className="h-5 w-5 text-[var(--color-cat)]" /> 待領養貓貓
               <span className="text-sm bg-[var(--color-cat-bg)] text-[var(--color-cat)] px-3 py-1 rounded-full">
-                {animals.cats.length} 隻精選
+                {animals.cats.length} 隻
               </span>
             </h3>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-12">
@@ -108,7 +143,7 @@ function Index() {
             <h3 className="font-display text-xl font-bold mb-5 flex items-center gap-2">
               <Dog className="h-5 w-5 text-[var(--color-dog)]" /> 待領養狗狗
               <span className="text-sm bg-[var(--color-dog-bg)] text-[var(--color-dog)] px-3 py-1 rounded-full">
-                {animals.dogs.length} 隻精選
+                {animals.dogs.length} 隻
               </span>
             </h3>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
@@ -134,18 +169,22 @@ function Index() {
               </div>
               <h2 className="font-display text-3xl lg:text-5xl font-bold mb-6 leading-tight">
                 拯救生命的使命
-                <br />
-                從 2007 年延續至今
+                <br />從 2007 年延續至今
               </h2>
               <div className="space-y-4 text-[var(--color-text)]">
                 <p>
-                  香港拯救貓狗協會（HKSCDA）於 <strong>2007 年 4 月 1 日</strong> 成立，以「<strong>支持領養等於拯救生命</strong>」為宗旨，為本地非牟利慈善機構（檔案 91/14493）。
+                  香港拯救貓狗協會（HKSCDA）於 <strong>2007 年 4 月 1 日</strong> 成立，以「
+                  <strong>支持領養等於拯救生命</strong>」為宗旨，為本地非牟利慈善機構（檔案
+                  91/14493）。
                 </p>
                 <p>
-                  本會致力為流浪貓狗提供糧食、醫療、絕育及領養服務，同時積極援救街頭受傷或被遺棄的小動物，為牠們尋找<strong>永久的家</strong>。
+                  本會致力為流浪貓狗提供糧食、醫療、絕育及領養服務，同時積極援救街頭受傷或被遺棄的小動物，為牠們尋找
+                  <strong>永久的家</strong>。
                 </p>
                 <p>
-                  我們是一個「<strong>不殺（No Kill）</strong>」機構，只要小動物一息尚存，絕不放棄任何生命。平均每 14 小時就有一隻動物獲成功領養。
+                  我們是一個「<strong>不殺（No Kill）</strong>
+                  」機構，只要小動物一息尚存，絕不放棄任何生命。平均每 14
+                  小時就有一隻動物獲成功領養。
                 </p>
               </div>
               <div className="flex flex-wrap gap-2 mt-6">
@@ -157,13 +196,17 @@ function Index() {
                     >
                       {b}
                     </span>
-                  )
+                  ),
                 )}
               </div>
             </div>
             <div className="grid gap-4">
               {[
-                [Stethoscope, "醫療救援", "為拯救的貓狗提供全面醫療護理，包括絕育、疫苗及日常保健。"],
+                [
+                  Stethoscope,
+                  "醫療救援",
+                  "為拯救的貓狗提供全面醫療護理，包括絕育、疫苗及日常保健。",
+                ],
                 [House, "領養媒合", "透過嚴格家訪審核，為每隻動物配對最適合的永久家庭。"],
                 [Globe, "社區教育", "推廣領養代替購買、愛護動物及生育控制理念。"],
                 [Handshake, "跨機構合作", "與其他動物組織保持開放合作，共同改善流浪動物福祉。"],
@@ -188,12 +231,10 @@ function Index() {
         {/* Programs */}
         <section id="programs" className="px-6 py-16 lg:py-24 bg-[var(--color-surface-offset)]">
           <div className="container-wide">
-              <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3 flex items-center gap-1.5">
-                <Shield className="h-3.5 w-3.5" /> 服務計劃
-              </div>
-            <h2 className="font-display text-3xl lg:text-5xl font-bold mb-4">
-              全面照顧流浪動物
-            </h2>
+            <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3 flex items-center gap-1.5">
+              <Shield className="h-3.5 w-3.5" /> 服務計劃
+            </div>
+            <h2 className="font-display text-3xl lg:text-5xl font-bold mb-4">全面照顧流浪動物</h2>
             <p className="text-[var(--color-text-muted)] max-w-[52ch] mb-10">
               從緊急拯救到永久領養，我們提供全方位的動物福利服務。
             </p>
@@ -207,9 +248,7 @@ function Index() {
                     <p.Icon className="h-5 w-5 text-[var(--color-primary)]" />
                   </div>
                   <h3 className="font-display font-bold mb-2">{p.title}</h3>
-                  <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">
-                    {p.desc}
-                  </p>
+                  <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">{p.desc}</p>
                 </div>
               ))}
             </div>
@@ -242,7 +281,8 @@ function Index() {
                   都是生命的希望
                 </h2>
                 <p className="text-white/70 mb-6">
-                  本會為政府認可慈善機構（91/14493），捐款 HK$100 以上可申請退稅收條（IRD §88）。所有善款均用於小動物醫療及護理。
+                  本會為政府認可慈善機構（91/14493），捐款 HK$100 以上可申請退稅收條（IRD
+                  §88）。所有善款均用於小動物醫療及護理。
                 </p>
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-[var(--color-accent-soft)] text-xs font-bold">
                   <Check className="h-3 w-3" /> 稅務局認可 IRD §88 免稅機構
@@ -259,9 +299,7 @@ function Index() {
                     </div>
                     <div className="min-w-0">
                       <h3 className="font-bold text-sm text-white mb-1">{d.title}</h3>
-                      <p className="text-xs text-white/60 leading-relaxed break-words">
-                        {d.desc}
-                      </p>
+                      <p className="text-xs text-white/60 leading-relaxed break-words">{d.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -316,9 +354,12 @@ function AnimalCard({
             </span>
           ))}
         </div>
-        <a href="#contact" className="btn-cta w-full px-4! py-2! text-sm!">
+        <Link
+          to={type === "cat" ? "/animals/cat" : "/animals/dog"}
+          className="btn-cta w-full px-4! py-2! text-sm!"
+        >
           申請領養
-        </a>
+        </Link>
       </div>
     </article>
   );

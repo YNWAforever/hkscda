@@ -1,0 +1,132 @@
+/**
+ * Admin Account Seeder  —  scripts/seed-admin.js
+ *
+ * Creates or updates an admin user in Supabase Auth so you can log in at:
+ *   http://localhost:8080/admin/login
+ *
+ * Auth system: Supabase Auth (signInWithPassword). No custom user table.
+ * Password hashing: handled by Supabase internally (bcrypt).
+ * Admin creation requires the service_role key (bypasses email confirmation).
+ *
+ * Requirements:
+ *   VITE_SUPABASE_URL=...          (already in .env)
+ *   SUPABASE_SERVICE_ROLE_KEY=...  (Supabase Dashboard → Settings → API → service_role)
+ *   ADMIN_EMAIL=admin@example.com
+ *   ADMIN_PASSWORD=your-password
+ *   ADMIN_NAME=Admin               (optional, defaults to "Admin")
+ *
+ * Run:
+ *   ADMIN_EMAIL=admin@example.com ADMIN_PASSWORD=change-this npm run seed:admin
+ *   node scripts/seed-admin.js
+ */
+
+import { createClient } from "@supabase/supabase-js";
+import { readFileSync, existsSync } from "node:fs";
+
+// ── Env loading ──────────────────────────────────────────────────────────────
+
+function readEnv() {
+  const merged = {};
+  for (const file of [".env", ".env.local"]) {
+    if (!existsSync(file)) continue;
+    for (const line of readFileSync(file, "utf8").split("\n")) {
+      const m = line.trim().match(/^([^#=][^=]*?)\s*=\s*(.*)$/);
+      if (m) merged[m[1]] = m[2].replace(/^["']|["']$/g, "");
+    }
+  }
+  return { ...merged, ...process.env };
+}
+
+const env = readEnv();
+
+const SUPABASE_URL = env.VITE_SUPABASE_URL || env.SUPABASE_URL;
+const SERVICE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
+const ADMIN_EMAIL = env.ADMIN_EMAIL;
+const ADMIN_PASSWORD = env.ADMIN_PASSWORD;
+const ADMIN_NAME = env.ADMIN_NAME || "Admin";
+
+// ── Validation ───────────────────────────────────────────────────────────────
+
+if (!SUPABASE_URL) {
+  console.error("✗ VITE_SUPABASE_URL not set.");
+  process.exit(1);
+}
+if (!SERVICE_KEY) {
+  console.error("✗ SUPABASE_SERVICE_ROLE_KEY not set.");
+  console.error("  Get it: Supabase Dashboard → Project Settings → API → service_role");
+  console.error("  Add to .env: SUPABASE_SERVICE_ROLE_KEY=eyJ...");
+  process.exit(1);
+}
+if (!ADMIN_EMAIL) {
+  console.error("✗ ADMIN_EMAIL not set.");
+  console.error("  Example: ADMIN_EMAIL=admin@example.com npm run seed:admin");
+  process.exit(1);
+}
+if (!ADMIN_PASSWORD) {
+  console.error("✗ ADMIN_PASSWORD not set.");
+  process.exit(1);
+}
+if (ADMIN_PASSWORD.length < 8) {
+  console.error("✗ ADMIN_PASSWORD must be at least 8 characters.");
+  process.exit(1);
+}
+
+const supabase = createClient(SUPABASE_URL, SERVICE_KEY, {
+  auth: { autoRefreshToken: false, persistSession: false },
+});
+
+// ── Main ─────────────────────────────────────────────────────────────────────
+
+async function main() {
+  console.log(`Admin seeder — target: ${ADMIN_EMAIL}\n`);
+
+  const {
+    data: { users },
+    error: listErr,
+  } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+  if (listErr) {
+    console.error("✗ Cannot list users:", listErr.message);
+    console.error("  Verify SUPABASE_SERVICE_ROLE_KEY is the service_role key, not the anon key.");
+    process.exit(1);
+  }
+
+  const existing = users.find((u) => u.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase());
+
+  if (existing) {
+    const { error } = await supabase.auth.admin.updateUserById(existing.id, {
+      password: ADMIN_PASSWORD,
+      email_confirm: true,
+      user_metadata: { name: ADMIN_NAME, role: "admin" },
+      app_metadata: { role: "admin" },
+    });
+    if (error) {
+      console.error("✗ Update failed:", error.message);
+      process.exit(1);
+    }
+    console.log("✓ Admin updated (existing account)");
+  } else {
+    const { error } = await supabase.auth.admin.createUser({
+      email: ADMIN_EMAIL,
+      password: ADMIN_PASSWORD,
+      email_confirm: true,
+      user_metadata: { name: ADMIN_NAME, role: "admin" },
+      app_metadata: { role: "admin" },
+    });
+    if (error) {
+      console.error("✗ Create failed:", error.message);
+      process.exit(1);
+    }
+    console.log("✓ Admin created");
+  }
+
+  console.log("");
+  console.log(`  Login URL : http://localhost:8080/admin/login`);
+  console.log(`  Email     : ${ADMIN_EMAIL}`);
+  console.log(`  Password  : [hidden]`);
+  console.log(`  Name      : ${ADMIN_NAME}`);
+}
+
+main().catch((e) => {
+  console.error("Fatal:", e);
+  process.exit(1);
+});

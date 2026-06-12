@@ -1,21 +1,24 @@
-import { Link } from '@tanstack/react-router'
-import { Cat, Dog } from 'lucide-react'
-import type { Animal } from '../../types/animal'
+import { Link } from "@tanstack/react-router";
+import { Cat, Dog } from "lucide-react";
+import type { Animal } from "../../types/animal";
 
 interface AnimalDetailProps {
-  animal: Animal
-  backHref: string
-  backLabel: string
+  animal: Animal;
+  backHref: string;
+  backLabel: string;
 }
 
 export function AnimalDetail({ animal, backHref, backLabel }: AnimalDetailProps) {
-  const ctaLabel = animal.type === 'sponsor' ? '立即助養' : '申請領養'
-  const applyHref = `/adoption/apply?animalId=${animal.id}&animalName=${encodeURIComponent(animal.name)}&type=${animal.type}`
-  const placeholderBg = animal.type === 'dog' ? 'var(--color-dog-bg)' : 'var(--color-cat-bg)'
+  const ctaLabel = animal.type === "sponsor" ? "立即助養" : "申請領養";
+  const applyHref = `/adoption/apply?animalId=${animal.id}&animalName=${encodeURIComponent(animal.name)}&type=${animal.type}`;
+  const placeholderBg = animal.type === "dog" ? "var(--color-dog-bg)" : "var(--color-cat-bg)";
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-8 space-y-6">
-      <Link to={backHref} className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-primary)] flex items-center gap-1">
+      <Link
+        to={backHref}
+        className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-primary)] flex items-center gap-1"
+      >
         ← {backLabel}
       </Link>
 
@@ -33,7 +36,7 @@ export function AnimalDetail({ animal, backHref, backLabel }: AnimalDetailProps)
               className="w-full aspect-square flex items-center justify-center"
               style={{ background: placeholderBg }}
             >
-              {animal.type === 'dog' ? (
+              {animal.type === "dog" ? (
                 <Dog className="h-24 w-24 text-[var(--color-dog)] opacity-25" strokeWidth={1} />
               ) : (
                 <Cat className="h-24 w-24 text-[var(--color-cat)] opacity-25" strokeWidth={1} />
@@ -45,13 +48,11 @@ export function AnimalDetail({ animal, backHref, backLabel }: AnimalDetailProps)
         {/* Info */}
         <div className="space-y-4">
           <h1 className="font-display text-3xl font-bold">{animal.name}</h1>
-          {animal.name_en && (
-            <p className="text-[var(--color-text-muted)]">{animal.name_en}</p>
-          )}
+          {animal.name_en && <p className="text-[var(--color-text-muted)]">{animal.name_en}</p>}
 
           <div className="flex flex-wrap gap-2">
             <span className="px-3 py-1 rounded-full text-sm bg-[var(--color-surface-offset)]">
-              {animal.gender === 'male' ? '公' : '母'}
+              {animal.gender === "male" ? "公" : "母"}
             </span>
             <span className="px-3 py-1 rounded-full text-sm bg-[var(--color-surface-offset)]">
               {animal.age}
@@ -68,11 +69,8 @@ export function AnimalDetail({ animal, backHref, backLabel }: AnimalDetailProps)
           )}
 
           <div className="flex flex-col gap-2 pt-2">
-            <Link
-              to={applyHref}
-              className="btn-cta py-3!"
-            >
-              申請{ctaLabel}
+            <Link to={applyHref} className="btn-cta py-3!">
+              {ctaLabel}
             </Link>
             <Link
               to={backHref}
@@ -84,5 +82,5 @@ export function AnimalDetail({ animal, backHref, backLabel }: AnimalDetailProps)
         </div>
       </div>
     </main>
-  )
+  );
 }

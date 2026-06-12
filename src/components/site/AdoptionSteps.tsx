@@ -1,4 +1,5 @@
 import { Search, FileText, House, PawPrint } from "lucide-react";
+import { Reveal } from "@/lib/reveal";
 
 const steps = [
   {
@@ -31,7 +32,7 @@ export function AdoptionSteps() {
   return (
     <section className="px-6 py-16 lg:py-24 bg-[var(--color-bg)]" aria-labelledby="steps-h">
       <div className="container-wide">
-        <div className="text-center mb-12">
+        <Reveal className="text-center mb-12">
           <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3">
             領養流程
           </div>
@@ -44,7 +45,7 @@ export function AdoptionSteps() {
           <p className="text-[var(--color-text-muted)] max-w-[52ch] mx-auto">
             由認識到接回家，全程有義工陪伴指導。貓咪領養費 HK$500 · 唐狗免費。
           </p>
-        </div>
+        </Reveal>
 
         <ol className="relative grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           <div
@@ -52,9 +53,10 @@ export function AdoptionSteps() {
             aria-hidden="true"
           />
           {steps.map((s, i) => (
-            <li
+            <Reveal
+              as="li"
               key={s.n}
-              className="relative bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[1.75rem] p-6 pt-8 hover:-translate-y-1 hover:shadow-lg transition-all"
+              className="relative bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[1.75rem] p-6 pt-8 hover:shadow-lg hover:border-[var(--color-accent-warm)]/60 transition-[box-shadow,border-color] duration-300"
             >
               <span
                 className={`absolute -top-5 left-6 h-10 w-10 rounded-full flex items-center justify-center font-display font-bold text-sm shadow-md ${
@@ -70,7 +72,7 @@ export function AdoptionSteps() {
               </div>
               <h3 className="font-display font-bold text-[var(--color-panel)] mb-2">{s.title}</h3>
               <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">{s.desc}</p>
-            </li>
+            </Reveal>
           ))}
         </ol>
       </div>

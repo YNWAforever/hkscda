@@ -1,6 +1,8 @@
 import { PawPrint } from "lucide-react";
 import cat2 from "@/assets/cat2.jpg";
 import dog2 from "@/assets/dog2.jpg";
+import { Reveal } from "@/lib/reveal";
+import { useCountUp } from "@/lib/useCountUp";
 
 const checklist = [
   "不殺（No Kill）承諾 — 絕不放棄任何一息尚存的生命",
@@ -16,13 +18,29 @@ const stats = [
   { n: "78K+", l: "社群支持者" },
 ];
 
+// Rose stat number that counts up once on scroll-into-view ("6,800+" keeps its
+// thousands separator and suffix).
+function StatNum({ n }: { n: string }) {
+  const m = n.match(/^([\d,]+)(.*)$/);
+  const target = m ? parseInt(m[1].replace(/,/g, ""), 10) : 0;
+  const hasComma = m ? m[1].includes(",") : false;
+  const { ref, value } = useCountUp(target);
+  if (!m) return <>{n}</>;
+  return (
+    <span ref={ref}>
+      {hasComma ? value.toLocaleString("en-US") : value}
+      {m[2]}
+    </span>
+  );
+}
+
 export function BestRescue() {
   return (
     <section className="px-6 py-16 lg:py-24 bg-[var(--color-bg)]" aria-labelledby="best-rescue-h">
       <div className="container-wide">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center mb-14">
           {/* Image cluster */}
-          <div className="relative">
+          <Reveal className="relative">
             <div className="grid grid-cols-2 gap-4">
               <img
                 src={dog2}
@@ -44,10 +62,10 @@ export function BestRescue() {
               <PawPrint className="h-4 w-4" />
               <span className="font-display font-bold text-sm">自 2007 年服務香港</span>
             </div>
-          </div>
+          </Reveal>
 
           {/* Copy + checklist */}
-          <div>
+          <Reveal>
             <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3">
               我們的承諾
             </div>
@@ -77,7 +95,7 @@ export function BestRescue() {
             <a href="#about" className="btn-navy">
               認識協會
             </a>
-          </div>
+          </Reveal>
         </div>
 
         {/* Stats row */}
@@ -88,7 +106,7 @@ export function BestRescue() {
               className={`text-center ${i > 0 ? "lg:border-l-2 lg:border-dashed lg:border-[var(--color-divider)]" : ""}`}
             >
               <div className="font-display text-4xl lg:text-5xl font-bold text-[var(--color-accent-warm)]">
-                {s.n}
+                <StatNum n={s.n} />
               </div>
               <div className="text-xs lg:text-sm text-[var(--color-text-muted)] mt-1.5">{s.l}</div>
             </div>
