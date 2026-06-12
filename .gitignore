@@ -31,3 +31,6 @@ dist-ssr
 *.sln
 *.sw?
 .vercel
+
+# Scraper session cookies (scripts/scrape-hkscda.js)
+data/.cf-state.json
