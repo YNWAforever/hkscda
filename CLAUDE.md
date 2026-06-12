@@ -36,9 +36,10 @@ src/
 
 ## Brand Theme (Poofyco-inspired redesign, 2026-06)
 Colour tokens in `src/styles.css` follow the Poofyco pet-rescue template style:
-- Deep navy `#232a5e` (`--color-panel` / `--color-secondary`) — dark sections, headings, footer
-- Rose `#d44d66` (`--color-primary`) — CTAs, links, cat accents
-- Salmon `#ee8295` (`--color-accent-warm`) — stat numbers, badges
+- Deep indigo `#1d2353` (`--color-panel` / `--color-secondary`) — full-bleed dark bands, headings, footer
+- Coral `#e05c78` (`--color-primary`) — links, eyebrows, cat accents
+- Soft coral `#f27d92` (`--color-accent-warm` / `--color-cta`) — pills, stat numbers, badges, footer headings
+- Lavender `#e9e9f6` zones, pink strip `#f298a4`; dashed-border rounded cards (`card-dashed` utility) are the signature card style
 - Blush surfaces `#fce8eb` / cream bg `#fdf7f4`; body text `#2b2d42`
 - Display font: "Baloo 2" (+ Noto Sans HK for Chinese); body: Noto Sans HK
 - `bg-topo` utility adds the topographic contour texture (hero)

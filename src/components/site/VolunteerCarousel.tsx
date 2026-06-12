@@ -121,20 +121,20 @@ export function VolunteerCarousel() {
                 key={s.name}
                 className="flex-[0_0_85%] sm:flex-[0_0_60%] md:flex-[0_0_42%] lg:flex-[0_0_33.333%] px-2"
               >
-                <div className="h-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-2xl p-6 flex flex-col">
+                <div className="h-full card-dashed p-4 flex flex-col">
                   <div
-                    className="h-16 w-16 rounded-full flex items-center justify-center text-white font-display font-bold text-lg mb-4"
+                    className="h-24 rounded-2xl flex items-center justify-center text-white font-display font-bold text-2xl"
                     style={{ background: s.color }}
                   >
                     {s.initials.slice(0, 2)}
                   </div>
-                  <h3 className="font-display text-lg font-bold mb-1">
-                    {s.name}
-                  </h3>
-                  <p className="text-xs font-medium text-[var(--color-primary)] mb-4">
-                    {s.role}
-                  </p>
-                  <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">
+                  <div className="-mt-5 mx-4 rounded-xl bg-[var(--color-surface)] shadow-soft px-3 py-2 text-center mb-4">
+                    <h3 className="font-display text-base font-bold text-[var(--color-panel)]">
+                      {s.name}
+                    </h3>
+                    <p className="text-xs font-medium text-[var(--color-primary)]">{s.role}</p>
+                  </div>
+                  <p className="text-sm text-[var(--color-text-muted)] leading-relaxed px-2 pb-2">
                     “{s.quote}”
                   </p>
                 </div>

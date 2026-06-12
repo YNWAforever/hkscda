@@ -4,10 +4,10 @@ export function Footer() {
   return (
     <footer
       id="contact"
-      className="bg-[var(--color-footer-bg)] text-[var(--color-text-inverse)] px-6 py-16"
+      className="bg-[var(--color-footer-bg)] text-[var(--color-text-inverse)] px-6 pt-16"
     >
       <div className="container-wide grid md:grid-cols-4 gap-10">
-        <div>
+        <div className="rounded-3xl bg-[var(--color-panel-2)] p-6 -mt-2 self-start">
           <div className="flex items-center gap-3 mb-4">
             <div className="h-10 w-10 rounded-full bg-[var(--color-primary)] flex items-center justify-center">
               <PawPrint className="h-5 w-5 text-white" strokeWidth={1.5} />
@@ -22,7 +22,7 @@ export function Footer() {
           </p>
         </div>
         <div>
-          <h4 className="font-display font-bold text-sm mb-4 uppercase tracking-wider">
+          <h4 className="font-display font-bold text-sm mb-4 uppercase tracking-wider text-[var(--color-accent-warm)]">
             聯絡我們
           </h4>
           <ul className="space-y-2 text-sm text-white/80">
@@ -34,7 +34,7 @@ export function Footer() {
           </ul>
         </div>
         <div>
-          <h4 className="font-display font-bold text-sm mb-4 uppercase tracking-wider">
+          <h4 className="font-display font-bold text-sm mb-4 uppercase tracking-wider text-[var(--color-accent-warm)]">
             追蹤我們
           </h4>
           <div className="flex gap-3 mb-4">
@@ -42,7 +42,7 @@ export function Footer() {
               href="https://www.facebook.com/HKSCDA"
               target="_blank"
               rel="noopener noreferrer"
-              className="h-10 w-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+              className="h-10 w-10 rounded-full bg-[var(--color-accent-warm)] text-[var(--color-panel)] hover:bg-[var(--color-cta-hover)] flex items-center justify-center transition-colors"
               aria-label="Facebook 專頁"
             >
               <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -53,7 +53,7 @@ export function Footer() {
               href="https://www.instagram.com/hkscda/"
               target="_blank"
               rel="noopener noreferrer"
-              className="h-10 w-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+              className="h-10 w-10 rounded-full bg-[var(--color-accent-warm)] text-[var(--color-panel)] hover:bg-[var(--color-cta-hover)] flex items-center justify-center transition-colors"
               aria-label="Instagram 專頁"
             >
               <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -66,7 +66,7 @@ export function Footer() {
           </p>
         </div>
         <div>
-          <h4 className="font-display font-bold text-sm mb-4 uppercase tracking-wider">
+          <h4 className="font-display font-bold text-sm mb-4 uppercase tracking-wider text-[var(--color-accent-warm)]">
             透明度
           </h4>
           <ul className="space-y-2 text-sm text-white/80">
@@ -77,9 +77,12 @@ export function Footer() {
           </ul>
         </div>
       </div>
-      <div className="container-wide mt-12 pt-6 border-t border-white/10 text-xs text-white/50 flex flex-wrap gap-3 justify-between">
+      <div className="container-wide mt-12 pb-8 text-xs text-white/50 flex flex-wrap gap-3 justify-between">
         <span>© 2007–{new Date().getFullYear()} HK Saving Cat And Dog Association Limited</span>
         <span>支持領養 · 拯救生命</span>
+      </div>
+      <div className="-mx-6 bg-[var(--color-pink-strip)] text-[var(--color-panel)] text-xs font-bold text-center py-3 px-6">
+        支持領養等於拯救生命 🐾 HKSCDA
       </div>
     </footer>
   );

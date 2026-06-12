@@ -90,7 +90,7 @@ export function Hero() {
         <div className="relative">
           {/* Photo blob backdrop */}
           <div
-            className="absolute inset-4 arch-mask rotate-3 bg-white/70"
+            className="absolute -inset-1 arch-mask rotate-3 bg-[var(--color-accent-soft)]"
             aria-hidden="true"
           />
           <img

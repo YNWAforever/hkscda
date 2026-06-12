@@ -15,30 +15,33 @@
   --color-text-muted: #6b6e85;
   --color-text-faint: #a3a5b8;
   --color-text-inverse: #fdf7f4;
-  --color-primary: #d44d66;
-  --color-primary-hover: #bf3e57;
-  --color-primary-active: #a53349;
+  --color-primary: #e05c78;
+  --color-primary-hover: #cf4a66;
+  --color-primary-active: #b93d58;
   --color-primary-highlight: #fadfe4;
-  --color-secondary: #232a5e;
+  --color-secondary: #1d2353;
   --color-success: #3a7a45;
   --color-success-highlight: #d0e8d5;
   --color-warning: #c07820;
   --color-error: #b02828;
-  --color-cat: #d44d66;
-  --color-dog: #232a5e;
+  --color-cat: #e05c78;
+  --color-dog: #1d2353;
   --color-cat-bg: #fdeef1;
   --color-dog-bg: #e9ebf7;
   --color-footer-bg: #1d2353;
-  --color-accent-warm: #ee8295;
+  --color-accent-warm: #f27d92;
   --color-accent-soft: #fce8eb;
-  --color-panel: #232a5e;
-  --color-panel-2: #2f3875;
-  --color-hero-gradient-start: #1d2353;
-  --color-hero-gradient-mid: #232a5e;
-  --color-hero-gradient-end: #2f3875;
+  --color-lavender: #e9e9f6;
+  --color-lavender-deep: #dcdcf0;
+  --color-pink-strip: #f298a4;
+  --color-panel: #1d2353;
+  --color-panel-2: #283066;
+  --color-hero-gradient-start: #171c45;
+  --color-hero-gradient-mid: #1d2353;
+  --color-hero-gradient-end: #283066;
 
-  --color-cta: #ee8295;
-  --color-cta-hover: #e96e84;
+  --color-cta: #f27d92;
+  --color-cta-hover: #ee6781;
 
   --radius-card: 1.5rem;
   --radius-panel: 2.5rem;
@@ -150,6 +153,13 @@
   box-shadow: 0 24px 60px rgba(29, 35, 83, 0.25);
 }
 
+/* Poofyco signature: rounded card with dashed outline */
+@utility card-dashed {
+  border: 2px dashed color-mix(in srgb, var(--color-panel) 25%, transparent);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+
 /* Poofyco arch-top photo mask */
 @utility arch-mask {
   border-radius: 999px 999px 24px 24px;
@@ -157,7 +167,7 @@
 
 /* Poofyco-style topographic contour texture — overlay on light sections */
 @utility bg-topo {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Cg fill='none' stroke='%23d44d66' stroke-opacity='0.05' stroke-width='1.5'%3E%3Cpath d='M50 200q50-80 150-60t150 80'/%3E%3Cpath d='M30 230q60-90 170-70t170 90'/%3E%3Cpath d='M10 260q70-100 190-80t190 100'/%3E%3Cpath d='M70 170q40-70 130-50t130 70'/%3E%3Cpath d='M90 140q30-60 110-40t110 60'/%3E%3C/g%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Cg fill='none' stroke='%23f27d92' stroke-opacity='0.07' stroke-width='1.5'%3E%3Cpath d='M50 200q50-80 150-60t150 80'/%3E%3Cpath d='M30 230q60-90 170-70t170 90'/%3E%3Cpath d='M10 260q70-100 190-80t190 100'/%3E%3Cpath d='M70 170q40-70 130-50t130 70'/%3E%3Cpath d='M90 140q30-60 110-40t110 60'/%3E%3C/g%3E%3C/svg%3E");
   background-size: 400px 400px;
 }
 

@@ -1,4 +1,4 @@
-import { Check, PawPrint } from "lucide-react";
+import { PawPrint } from "lucide-react";
 import cat2 from "@/assets/cat2.jpg";
 import dog2 from "@/assets/dog2.jpg";
 
@@ -37,6 +37,9 @@ export function BestRescue() {
                 className="rounded-[2rem] aspect-[3/4] object-cover w-full shadow-lg mt-10"
               />
             </div>
+            <div className="absolute left-4 top-4 bg-white rounded-full px-4 py-1.5 shadow-soft flex items-center gap-1.5 text-[var(--color-accent-warm)] text-sm font-bold tracking-wider">
+              ★★★★★ <span className="text-[var(--color-panel)] text-xs tracking-normal">(5/5)</span>
+            </div>
             <div className="absolute left-1/2 -translate-x-1/2 -bottom-5 bg-[var(--color-accent-warm)] text-white rounded-full px-6 py-3 shadow-xl flex items-center gap-2 whitespace-nowrap">
               <PawPrint className="h-4 w-4" />
               <span className="font-display font-bold text-sm">自 2007 年服務香港</span>
@@ -59,12 +62,14 @@ export function BestRescue() {
             <p className="text-[var(--color-text-muted)] mb-7 max-w-[48ch]">
               一支紮根香港十八年的義工團隊，從深夜街頭救援到康復照護，每一步都以毛孩福祉為先。
             </p>
-            <ul className="space-y-3.5 mb-8">
+            <ul className="card-dashed bg-[var(--color-surface-2)] p-6 space-y-3.5 mb-8">
               {checklist.map((c) => (
                 <li key={c} className="flex items-start gap-3">
-                  <span className="h-6 w-6 rounded-full bg-[var(--color-cta)] flex items-center justify-center shrink-0 mt-0.5">
-                    <Check className="h-3.5 w-3.5 text-[var(--color-panel)]" strokeWidth={3} />
-                  </span>
+                  <PawPrint
+                    className="h-4 w-4 text-[var(--color-primary)] shrink-0 mt-1"
+                    fill="currentColor"
+                    strokeWidth={0}
+                  />
                   <span className="text-sm text-[var(--color-text)]">{c}</span>
                 </li>
               ))}
@@ -76,10 +81,13 @@ export function BestRescue() {
         </div>
 
         {/* Stats row */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 border-t border-[var(--color-divider)] pt-10">
-          {stats.map((s) => (
-            <div key={s.l} className="text-center">
-              <div className="font-display text-3xl lg:text-4xl font-bold text-[var(--color-accent-warm)]">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-8 border-t-2 border-dashed border-[var(--color-divider)] pt-10">
+          {stats.map((s, i) => (
+            <div
+              key={s.l}
+              className={`text-center ${i > 0 ? "lg:border-l-2 lg:border-dashed lg:border-[var(--color-divider)]" : ""}`}
+            >
+              <div className="font-display text-4xl lg:text-5xl font-bold text-[var(--color-accent-warm)]">
                 {s.n}
               </div>
               <div className="text-xs lg:text-sm text-[var(--color-text-muted)] mt-1.5">{s.l}</div>
