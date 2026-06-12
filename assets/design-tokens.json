@@ -1,0 +1,213 @@
+{
+  "brand": "HKSCDA - Warm Rescue",
+  "primitive": {
+    "color": {
+      "rescue-rose": {
+        "50": {
+          "$value": "#FADFE4",
+          "$type": "color"
+        },
+        "100": {
+          "$value": "#FADFE4",
+          "$type": "color"
+        },
+        "200": {
+          "$value": "#FFE6FF",
+          "$type": "color"
+        },
+        "300": {
+          "$value": "#FFB3CC",
+          "$type": "color"
+        },
+        "400": {
+          "$value": "#FF8099",
+          "$type": "color"
+        },
+        "500": {
+          "$value": "#D44D66",
+          "$type": "color"
+        },
+        "600": {
+          "$value": "#BF3E57",
+          "$type": "color"
+        },
+        "700": {
+          "$value": "#88011A",
+          "$type": "color"
+        },
+        "800": {
+          "$value": "#610000",
+          "$type": "color"
+        },
+        "900": {
+          "$value": "#3B0000",
+          "$type": "color"
+        }
+      },
+      "guardian-navy": {
+        "50": {
+          "$value": "#E9EBF7",
+          "$type": "color"
+        },
+        "100": {
+          "$value": "#E9EBF7",
+          "$type": "color"
+        },
+        "200": {
+          "$value": "#BCC3F7",
+          "$type": "color"
+        },
+        "300": {
+          "$value": "#8990C4",
+          "$type": "color"
+        },
+        "400": {
+          "$value": "#565D91",
+          "$type": "color"
+        },
+        "500": {
+          "$value": "#232A5E",
+          "$type": "color"
+        },
+        "600": {
+          "$value": "#1D2353",
+          "$type": "color"
+        },
+        "700": {
+          "$value": "#000012",
+          "$type": "color"
+        },
+        "800": {
+          "$value": "#000000",
+          "$type": "color"
+        },
+        "900": {
+          "$value": "#000000",
+          "$type": "color"
+        }
+      },
+      "soft-salmon": {
+        "50": {
+          "$value": "#FCE8EB",
+          "$type": "color"
+        },
+        "100": {
+          "$value": "#FCE8EB",
+          "$type": "color"
+        },
+        "200": {
+          "$value": "#FFFFFF",
+          "$type": "color"
+        },
+        "300": {
+          "$value": "#FFE8FB",
+          "$type": "color"
+        },
+        "400": {
+          "$value": "#FFB5C8",
+          "$type": "color"
+        },
+        "500": {
+          "$value": "#EE8295",
+          "$type": "color"
+        },
+        "600": {
+          "$value": "#D96E81",
+          "$type": "color"
+        },
+        "700": {
+          "$value": "#A23649",
+          "$type": "color"
+        },
+        "800": {
+          "$value": "#7B0F22",
+          "$type": "color"
+        },
+        "900": {
+          "$value": "#550000",
+          "$type": "color"
+        }
+      }
+    }
+  },
+  "semantic": {
+    "color": {
+      "primary": {
+        "$value": "{primitive.color.rescue-rose.500}",
+        "$type": "color"
+      },
+      "primary-hover": {
+        "$value": "{primitive.color.rescue-rose.600}",
+        "$type": "color"
+      },
+      "primary-active": {
+        "$value": "{primitive.color.rescue-rose.700}",
+        "$type": "color"
+      },
+      "primary-light": {
+        "$value": "{primitive.color.rescue-rose.400}",
+        "$type": "color"
+      },
+      "primary-lighter": {
+        "$value": "{primitive.color.rescue-rose.100}",
+        "$type": "color"
+      },
+      "primary-dark": {
+        "$value": "{primitive.color.rescue-rose.600}",
+        "$type": "color"
+      },
+      "secondary": {
+        "$value": "{primitive.color.guardian-navy.500}",
+        "$type": "color"
+      },
+      "secondary-hover": {
+        "$value": "{primitive.color.guardian-navy.600}",
+        "$type": "color"
+      },
+      "secondary-light": {
+        "$value": "{primitive.color.guardian-navy.300}",
+        "$type": "color"
+      },
+      "secondary-dark": {
+        "$value": "{primitive.color.guardian-navy.600}",
+        "$type": "color"
+      },
+      "accent": {
+        "$value": "{primitive.color.soft-salmon.500}",
+        "$type": "color"
+      },
+      "accent-hover": {
+        "$value": "{primitive.color.soft-salmon.600}",
+        "$type": "color"
+      },
+      "accent-light": {
+        "$value": "{primitive.color.soft-salmon.300}",
+        "$type": "color"
+      },
+      "success": {
+        "$value": "{primitive.color.soft-salmon.500}",
+        "$type": "color"
+      },
+      "success-light": {
+        "$value": "{primitive.color.soft-salmon.300}",
+        "$type": "color"
+      },
+      "error": {
+        "$value": "{primitive.color.rescue-rose.500}",
+        "$type": "color"
+      },
+      "error-light": {
+        "$value": "{primitive.color.rescue-rose.300}",
+        "$type": "color"
+      },
+      "info": {
+        "$value": "{primitive.color.guardian-navy.500}",
+        "$type": "color"
+      },
+      "info-light": {
+        "$value": "{primitive.color.guardian-navy.300}",
+        "$type": "color"
+      }
+    }
+  }
+}

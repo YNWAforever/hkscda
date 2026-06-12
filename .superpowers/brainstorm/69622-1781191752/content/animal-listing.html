@@ -1,0 +1,91 @@
+<h2>Animal Listing Page Layout</h2>
+<p class="subtitle">How should /animals/cat and /animals/dog present their listings? (16 animals per page, paginated)</p>
+
+<div class="cards" style="margin-top:24px">
+
+  <!-- Option A: Photo-first grid -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px;background:#f8f9fa">
+      <div style="font-size:11px;font-weight:700;color:#666;margin-bottom:10px">4-COLUMN PHOTO GRID</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+        <!-- 4 sample cards -->
+        <div style="background:#fff;border-radius:8px;overflow:hidden;border:1px solid #e0e0e0;font-size:11px">
+          <div style="background:#d4e8ff;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:20px">🐱</div>
+          <div style="padding:6px">
+            <div style="font-weight:700">TIGER</div>
+            <div style="color:#666;font-size:10px">女 · 6歲</div>
+            <div style="margin-top:4px;background:#e8f5e9;color:#2e7d32;font-size:9px;padding:2px 4px;border-radius:4px;display:inline-block">親人</div>
+          </div>
+        </div>
+        <div style="background:#fff;border-radius:8px;overflow:hidden;border:1px solid #e0e0e0;font-size:11px">
+          <div style="background:#ffe0cc;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:20px">🐱</div>
+          <div style="padding:6px">
+            <div style="font-weight:700">蝦米</div>
+            <div style="color:#666;font-size:10px">女 · 7個月</div>
+            <div style="margin-top:4px;background:#fff3e0;color:#e65100;font-size:9px;padding:2px 4px;border-radius:4px;display:inline-block">BB</div>
+          </div>
+        </div>
+        <div style="background:#fff;border-radius:8px;overflow:hidden;border:1px solid #e0e0e0;font-size:11px">
+          <div style="background:#e8d5ff;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:20px">🐱</div>
+          <div style="padding:6px">
+            <div style="font-weight:700">朗朗</div>
+            <div style="color:#666;font-size:10px">男 · 4個月</div>
+          </div>
+        </div>
+        <div style="background:#fff;border-radius:8px;overflow:hidden;border:1px solid #e0e0e0;font-size:11px">
+          <div style="background:#ffd5e8;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:20px">🐱</div>
+          <div style="padding:6px">
+            <div style="font-weight:700">臭臭</div>
+            <div style="color:#666;font-size:10px">男 · 2歲</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:10px;display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:10px;color:#666">Filter: 全部 / 貓BB / 成貓 / 老貓</span>
+        <span style="font-size:10px;background:#e8f0fe;color:#1a73e8;padding:3px 8px;border-radius:4px">← 1 2 3 4 5 6 →</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Photo grid with filters <span style="font-size:12px;background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:99px;font-weight:600;margin-left:6px">Recommended</span></h3>
+      <p>4 columns on desktop, 2 on mobile. Age-group filter tabs (全部 / BB / 成貓 / 老貓). Clean, visual-first. Each card links to the detail page.</p>
+    </div>
+  </div>
+
+  <!-- Option B: List with more detail -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px;background:#f8f9fa">
+      <div style="font-size:11px;font-weight:700;color:#666;margin-bottom:10px">HORIZONTAL LIST</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="background:#fff;border-radius:8px;border:1px solid #e0e0e0;padding:10px;display:flex;gap:12px;align-items:center;font-size:11px">
+          <div style="background:#d4e8ff;width:48px;height:48px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px">🐱</div>
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:13px">TIGER</div>
+            <div style="color:#666">女 · 6歲 · 親人 · 可與其他動物同住</div>
+          </div>
+          <div style="background:#3a7bd5;color:#fff;padding:4px 10px;border-radius:99px;font-size:10px;white-space:nowrap">申請領養</div>
+        </div>
+        <div style="background:#fff;border-radius:8px;border:1px solid #e0e0e0;padding:10px;display:flex;gap:12px;align-items:center;font-size:11px">
+          <div style="background:#ffe0cc;width:48px;height:48px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px">🐱</div>
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:13px">蝦米</div>
+            <div style="color:#666">女 · 7個月 · BB貓</div>
+          </div>
+          <div style="background:#3a7bd5;color:#fff;padding:4px 10px;border-radius:99px;font-size:10px;white-space:nowrap">申請領養</div>
+        </div>
+        <div style="background:#fff;border-radius:8px;border:1px solid #e0e0e0;padding:10px;display:flex;gap:12px;align-items:center;font-size:11px">
+          <div style="background:#e8d5ff;width:48px;height:48px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px">🐱</div>
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:13px">朗朗</div>
+            <div style="color:#666">男 · 4個月</div>
+          </div>
+          <div style="background:#3a7bd5;color:#fff;padding:4px 10px;border-radius:99px;font-size:10px;white-space:nowrap">申請領養</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Horizontal list</h3>
+      <p>One row per animal with thumbnail + description inline. More text-dense, no detail page needed since key info is visible. Better if photos are unavailable.</p>
+    </div>
+  </div>
+
+</div>

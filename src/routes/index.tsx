@@ -1,6 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PawPrint, Heart, House, Shield, Star, Check, Users, Cat, Dog, Scissors, Siren, Pill, BarChart3, Smartphone, Zap, Building, Globe, Stethoscope, Handshake, ReceiptText } from "lucide-react";
 import { Hero } from "@/components/site/Hero";
+import { FeatureTrio } from "@/components/site/FeatureTrio";
+import { BestRescue } from "@/components/site/BestRescue";
+import { FundraisingCard } from "@/components/site/FundraisingCard";
+import { AdoptionSteps } from "@/components/site/AdoptionSteps";
+import { FAQ } from "@/components/site/FAQ";
 import { SocialProof } from "@/components/site/SocialProof";
 import { VolunteerCarousel } from "@/components/site/VolunteerCarousel";
 import { SocialWall } from "@/components/site/SocialWall";
@@ -68,22 +73,11 @@ function Index() {
       <main>
         <Hero />
 
-        {/* Impact bar */}
-        <div className="bg-[var(--color-primary)] px-6 py-6">
-          <div className="container-wide grid grid-cols-2 md:grid-cols-4 gap-6 text-center text-white">
-            {[
-              ["600+", "每年救助毛孩"],
-              ["每14小時", "一隻動物獲領養"],
-              ["HK$100+", "捐款可申請退稅"],
-              ["不殺承諾", "No Kill 機構"],
-            ].map(([n, l]) => (
-              <div key={l}>
-                <div className="font-display text-xl lg:text-2xl font-bold">{n}</div>
-                <div className="text-xs text-white/80 mt-1">{l}</div>
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* Feature trio on navy panel — NEW */}
+        <FeatureTrio />
+
+        {/* Best rescue: checklist + stats — NEW */}
+        <BestRescue />
 
         {/* Adoption */}
         <section id="adoption" className="px-6 py-16 lg:py-24 bg-[var(--color-surface)]">
@@ -123,6 +117,12 @@ function Index() {
             </div>
           </div>
         </section>
+
+        {/* Fundraising progress — NEW */}
+        <FundraisingCard />
+
+        {/* Adoption steps — NEW */}
+        <AdoptionSteps />
 
         {/* About */}
         <section id="about" className="px-6 py-16 lg:py-24 bg-[var(--color-bg)]">
@@ -224,6 +224,9 @@ function Index() {
 
         {/* Social media wall — NEW */}
         <SocialWall />
+
+        {/* FAQ accordion — NEW */}
+        <FAQ />
 
         {/* Donate */}
         <section id="donate" className="px-6 py-16 lg:py-24 bg-[var(--color-bg)]">

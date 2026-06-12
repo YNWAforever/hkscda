@@ -1,0 +1,43 @@
+/* HKSCDA - Warm Rescue · generated from assets/design-tokens.json */
+/* Note: the live site theme is src/styles.css; this file mirrors tokens for external/design use */
+
+:root {
+  /* Primitive · rescue-rose */
+  --color-rescue-rose-50: #FADFE4;
+  --color-rescue-rose-100: #FADFE4;
+  --color-rescue-rose-500: #D44D66;
+  --color-rescue-rose-600: #BF3E57;
+  --color-rescue-rose-700: #A53349;
+
+  /* Primitive · guardian-navy */
+  --color-guardian-navy-50: #E9EBF7;
+  --color-guardian-navy-100: #E9EBF7;
+  --color-guardian-navy-500: #232A5E;
+  --color-guardian-navy-600: #1D2353;
+  --color-guardian-navy-700: #2F3875;
+
+  /* Primitive · soft-salmon */
+  --color-soft-salmon-50: #FCE8EB;
+  --color-soft-salmon-100: #FCE8EB;
+  --color-soft-salmon-500: #EE8295;
+  --color-soft-salmon-600: #D96E81;
+
+  /* Semantic */
+  --color-primary: var(--color-rescue-rose-500);
+  --color-primary-hover: var(--color-rescue-rose-600);
+  --color-primary-active: var(--color-rescue-rose-700);
+  --color-primary-lighter: var(--color-rescue-rose-100);
+  --color-secondary: var(--color-guardian-navy-500);
+  --color-secondary-hover: var(--color-guardian-navy-600);
+  --color-accent: var(--color-soft-salmon-500);
+  --color-accent-hover: var(--color-soft-salmon-600);
+  --color-accent-light: var(--color-soft-salmon-50);
+
+  /* Base surfaces */
+  --color-bg: #FDF7F4;
+  --color-text: #2B2D42;
+
+  /* Typography */
+  --font-display: "Baloo 2", "Noto Sans HK", sans-serif;
+  --font-body: "Noto Sans HK", "Helvetica Neue", sans-serif;
+}

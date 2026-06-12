@@ -1,7 +1,7 @@
 import * as NavigationMenu from '@radix-ui/react-navigation-menu'
 import { Link } from '@tanstack/react-router'
 import { useState, useEffect, useRef } from 'react'
-import { PawPrint, Heart, Menu, X, ChevronDown, Users, BookOpen, BarChart3, FileText } from 'lucide-react'
+import { PawPrint, Heart, Menu, X, ChevronDown, Users, Phone, Mail, MapPin, Facebook, Instagram } from 'lucide-react'
 
 const aboutLinks = [
   { to: '/about', label: '協會簡介', desc: '了解我們的使命與歷史' },
@@ -65,18 +65,58 @@ export function Header() {
         }
       `}</style>
 
+      {/* Top utility bar */}
+      <div className="bg-[var(--color-panel)] text-white/85 text-[12px]">
+        <div className="container-wide flex items-center justify-between gap-4 h-9">
+          <div className="flex items-center gap-5 min-w-0">
+            <a href="tel:+85298641089" className="hidden sm:flex items-center gap-1.5 hover:text-white transition-colors">
+              <Phone className="h-3 w-3" aria-hidden="true" /> 9864 1089
+            </a>
+            <a href="mailto:info@hkscda.com" className="flex items-center gap-1.5 hover:text-white transition-colors truncate">
+              <Mail className="h-3 w-3 shrink-0" aria-hidden="true" /> info@hkscda.com
+            </a>
+            <span className="hidden lg:flex items-center gap-1.5 text-white/60">
+              <MapPin className="h-3 w-3" aria-hidden="true" /> 香港 · 服務全港十八區
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <a
+              href="https://www.facebook.com/HKSCDA"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Facebook"
+              className="h-9 w-9 -my-0 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors"
+            >
+              <Facebook className="h-3.5 w-3.5" />
+            </a>
+            <a
+              href="https://www.instagram.com/hkscda/"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Instagram"
+              className="h-9 w-9 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors"
+            >
+              <Instagram className="h-3.5 w-3.5" />
+            </a>
+          </div>
+        </div>
+      </div>
+
       <header
         ref={headerRef}
-        className={`sticky top-0 z-50 transition-all duration-300 ${
-          scrolled
-            ? 'border-b border-[var(--color-border)] bg-[var(--color-surface)]/95 backdrop-blur-md shadow-[0_1px_3px_rgba(42,31,20,0.06)]'
-            : 'border-b border-transparent bg-[var(--color-surface)]/90 backdrop-blur-sm'
-        }`}
+        className="sticky top-0 z-50 px-3 sm:px-6 pt-3 pointer-events-none"
       >
-        <div className="container-wide flex h-[70px] items-center gap-4">
+        <div
+          className={`container-wide pointer-events-auto rounded-full border transition-all duration-300 ${
+            scrolled
+              ? 'border-[var(--color-border)] bg-[var(--color-surface)]/95 backdrop-blur-md shadow-[0_8px_30px_rgba(29,35,83,0.12)]'
+              : 'border-[var(--color-divider)]/60 bg-[var(--color-surface)]/90 backdrop-blur-sm shadow-[0_4px_20px_rgba(29,35,83,0.08)]'
+          }`}
+        >
+        <div className="flex h-[64px] items-center gap-4 px-5 lg:px-7">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 shrink-0 group">
-            <div className="relative flex h-[42px] w-[42px] items-center justify-center rounded-full bg-[var(--color-primary)] shadow-[0_2px_8px_rgba(192,74,42,0.25)] transition-shadow group-hover:shadow-[0_4px_16px_rgba(192,74,42,0.35)]">
+            <div className="relative flex h-[42px] w-[42px] items-center justify-center rounded-full bg-[var(--color-primary)] shadow-[0_2px_8px_rgba(212,77,102,0.25)] transition-shadow group-hover:shadow-[0_4px_16px_rgba(212,77,102,0.35)]">
               <PawPrint className="h-[22px] w-[22px] text-white transition-transform duration-300 group-hover:scale-110" strokeWidth={1.5} />
             </div>
             <div className="flex flex-col leading-tight">
@@ -117,7 +157,7 @@ export function Header() {
                 <NavigationMenu.Link asChild>
                   <Link
                     to="/donate"
-                    className="group/donate relative inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[var(--color-primary)] text-white text-[13px] font-bold shadow-[0_2px_8px_rgba(192,74,42,0.3)] hover:shadow-[0_4px_16px_rgba(192,74,42,0.4)] hover:bg-[var(--color-primary-hover)] hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200 overflow-hidden"
+                    className="group/donate relative inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[var(--color-primary)] text-white text-[13px] font-bold shadow-[0_2px_8px_rgba(212,77,102,0.3)] hover:shadow-[0_4px_16px_rgba(212,77,102,0.4)] hover:bg-[var(--color-primary-hover)] hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200 overflow-hidden"
                   >
                     <span className="shimmer-surface absolute inset-0 animate-[shimmer_3s_ease-in-out_infinite] pointer-events-none" />
                     <Heart className="relative h-4 w-4 transition-transform duration-300 group-hover/donate:scale-110" fill="currentColor" aria-hidden="true" /> 立即捐助
@@ -142,10 +182,11 @@ export function Header() {
             </span>
           </button>
         </div>
+        </div>
 
         {/* Mobile menu */}
         {mobileOpen && (
-          <div className="lg:hidden mobile-enter border-t border-[var(--color-border)] bg-[var(--color-surface)]">
+          <div className="lg:hidden mobile-enter pointer-events-auto container-wide mt-2 rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[0_16px_50px_rgba(29,35,83,0.15)]">
             <div className="px-5 py-5 space-y-1 max-h-[calc(100vh-80px)] overflow-y-auto">
               <MobileSheetLink to="/" setOpen={setMobileOpen}>主頁</MobileSheetLink>
 
@@ -200,7 +241,7 @@ function NavDropdown({ trigger, links }: { trigger: string; links: { to: string;
         {trigger} <ChevronDown className="h-3 w-3 opacity-50 transition-transform duration-200 group-data-[state=open]/trigger:rotate-180" />
         <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-0 rounded-full bg-[var(--color-primary)] transition-all duration-300 group-hover/trigger:w-4/5" />
       </NavigationMenu.Trigger>
-      <NavigationMenu.Content className="absolute top-full left-0 mt-2 w-[260px] bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl shadow-[0_12px_40px_rgba(42,31,20,0.12)] p-2 z-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 duration-200">
+      <NavigationMenu.Content className="absolute top-full left-0 mt-2 w-[260px] bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl shadow-[0_12px_40px_rgba(29,35,83,0.12)] p-2 z-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 duration-200">
         {links.map((link, i) => (
           <NavigationMenu.Link key={link.to} asChild>
             <Link

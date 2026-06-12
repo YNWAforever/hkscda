@@ -5,7 +5,7 @@ import { Users, ChevronLeft, ChevronRight, UserPlus } from "lucide-react";
 const stories = [
   {
     initials: "Linda",
-    color: "#c04a2a",
+    color: "#d44d66",
     name: "Linda Tse",
     role: "創辦人 · 服務18年",
     quote:
@@ -13,7 +13,7 @@ const stories = [
   },
   {
     initials: "Ka",
-    color: "#2a6ab0",
+    color: "#232a5e",
     name: "Ka Yan",
     role: "家訪義工 · 5年",
     quote:
@@ -37,7 +37,7 @@ const stories = [
   },
   {
     initials: "May",
-    color: "#7d2a16",
+    color: "#ee8295",
     name: "May Lam",
     role: "暫托家庭 · 4年",
     quote:
@@ -45,7 +45,7 @@ const stories = [
   },
   {
     initials: "Eric",
-    color: "#2a1f14",
+    color: "#2f3875",
     name: "Eric Wong",
     role: "活動義工 · 2年",
     quote:

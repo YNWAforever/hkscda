@@ -1,0 +1,80 @@
+<h2>Animal Detail Page Layout</h2>
+<p class="subtitle">What appears on /animals/cat/[id] and /animals/dog/[id] — clicked from the listing grid</p>
+
+<div class="cards" style="margin-top:24px">
+
+  <!-- Option A: Photo left, info right -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px;background:#f8f9fa">
+      <div style="font-size:11px;font-weight:700;color:#666;margin-bottom:10px">PHOTO LEFT · INFO RIGHT</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="background:#d4e8ff;border-radius:10px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:48px">🐱</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font-size:18px;font-weight:800">TIGER</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span style="background:#e8f5e9;color:#2e7d32;font-size:10px;padding:2px 7px;border-radius:99px">女</span>
+            <span style="background:#e8f0fe;color:#3a7bd5;font-size:10px;padding:2px 7px;border-radius:99px">6歲</span>
+            <span style="background:#fff3e0;color:#e65100;font-size:10px;padding:2px 7px;border-radius:99px">親人</span>
+          </div>
+          <div style="font-size:11px;color:#555;line-height:1.5;background:#fff;border-radius:6px;padding:8px;border:1px solid #e0e0e0">Tiger是一隻非常親人的貓咪，喜歡被抱抱，適合有小孩的家庭…</div>
+          <div style="background:#3a7bd5;color:#fff;padding:7px;border-radius:99px;font-size:11px;font-weight:700;text-align:center">📩 申請領養</div>
+          <div style="border:1px solid #3a7bd5;color:#3a7bd5;padding:6px;border-radius:99px;font-size:11px;text-align:center">← 返回貓貓列表</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Two-column hero <span style="font-size:12px;background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:99px;font-weight:600;margin-left:6px">Recommended</span></h3>
+      <p>Large photo on the left, name + tags + description + CTA on the right. Clean and focused. Works perfectly for adoption.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Photo top, info below -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px;background:#f8f9fa">
+      <div style="font-size:11px;font-weight:700;color:#666;margin-bottom:10px">PHOTO TOP · INFO BELOW</div>
+      <div style="display:flex;flex-direction:column;gap:8px;max-width:220px;margin:0 auto">
+        <div style="background:#d4e8ff;border-radius:10px;height:100px;display:flex;align-items:center;justify-content:center;font-size:40px">🐱</div>
+        <div style="font-size:16px;font-weight:800;text-align:center">TIGER</div>
+        <div style="display:flex;gap:5px;justify-content:center">
+          <span style="background:#e8f5e9;color:#2e7d32;font-size:10px;padding:2px 7px;border-radius:99px">女</span>
+          <span style="background:#e8f0fe;color:#3a7bd5;font-size:10px;padding:2px 7px;border-radius:99px">6歲</span>
+          <span style="background:#fff3e0;color:#e65100;font-size:10px;padding:2px 7px;border-radius:99px">親人</span>
+        </div>
+        <div style="font-size:10px;color:#555;line-height:1.5;background:#fff;border-radius:6px;padding:8px;border:1px solid #e0e0e0">Tiger是一隻非常親人的貓咪，喜歡被抱抱，適合有小孩的家庭…</div>
+        <div style="background:#3a7bd5;color:#fff;padding:6px;border-radius:99px;font-size:10px;font-weight:700;text-align:center">📩 申請領養</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Single column stack</h3>
+      <p>Photo on top, details below. Simpler, mobile-first. Works well but feels less premium — the photo is smaller and the page is very tall on desktop.</p>
+    </div>
+  </div>
+
+  <!-- Option C: Full-width photo + floating card -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px;background:#f8f9fa">
+      <div style="font-size:11px;font-weight:700;color:#666;margin-bottom:10px">FULL-WIDTH PHOTO + FLOATING CARD</div>
+      <div style="position:relative;border-radius:10px;overflow:hidden">
+        <div style="background:linear-gradient(135deg,#d4e8ff,#b8d4f8);height:90px;display:flex;align-items:center;justify-content:center;font-size:40px">🐱</div>
+        <div style="background:#fff;border-radius:10px;border:1px solid #e0e0e0;padding:12px;margin-top:8px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div>
+              <div style="font-size:16px;font-weight:800">TIGER</div>
+              <div style="display:flex;gap:5px;margin-top:4px">
+                <span style="background:#e8f5e9;color:#2e7d32;font-size:9px;padding:1px 6px;border-radius:99px">女</span>
+                <span style="background:#e8f0fe;color:#3a7bd5;font-size:9px;padding:1px 6px;border-radius:99px">6歲</span>
+              </div>
+            </div>
+            <div style="background:#3a7bd5;color:#fff;padding:5px 10px;border-radius:99px;font-size:10px;font-weight:700">申請領養</div>
+          </div>
+          <div style="font-size:10px;color:#555;margin-top:8px;line-height:1.4">Tiger是一隻非常親人的貓咪…</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Hero banner + card</h3>
+      <p>Full-width photo as a banner, info in a floating card below. Very impactful visually, especially with good photos. Best if you'll have high-quality images.</p>
+    </div>
+  </div>
+
+</div>
