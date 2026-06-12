@@ -2,6 +2,7 @@
 
 > 香港拯救貓狗協會 · HK Saving Cat And Dog Association
 > Visual direction referenced from the Poofyco pet-rescue design language (ThemeForest #55964358), adapted to HKSCDA's identity. Implemented in `src/styles.css` theme tokens.
+> Design-token exports live in `brand/design-tokens.{json,css}` — NOT `assets/` (that's Nitro's server-assets dir and breaks the build).
 
 ## Quick Reference
 
@@ -65,6 +66,12 @@ Warm, approachable, and trustworthy. The blush-pink-and-navy palette signals com
 - Compassionate but factual — lead with the animal's story, back with transparent data
 - Core message: 「支持領養等於拯救生命」/ "Adoption saves lives"
 - Always credibility-anchored: charity licence 91/14493, No-Kill commitment, IRD §88
+
+### Hard bans (site copy)
+
+- **No comparative superlatives** vs other rescue groups（全港最…、第一、best in HK）— ranks peer organisations and invites offence; describe commitment, not competition（e.g. 「日夜堅守前線」not「全港最用心」）
+- **No founder-centric framing** in organisational copy（由創辦人 X 帶領…）— the work is collective; speak as 義工團隊/協會. Personal names are fine inside first-person volunteer stories/testimonials only
+- Comparative section labels like 「為何選擇我們」→ prefer commitment framing（「我們的承諾」）
 
 ## AI Image Generation
 

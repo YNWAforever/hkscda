@@ -37,6 +37,13 @@
   --color-hero-gradient-mid: #232a5e;
   --color-hero-gradient-end: #2f3875;
 
+  --color-cta: #ee8295;
+  --color-cta-hover: #e96e84;
+
+  --radius-card: 1.5rem;
+  --radius-panel: 2.5rem;
+  --radius-blob: 3rem;
+
   --font-display: "Baloo 2", "Noto Sans HK", "Helvetica Neue", sans-serif;
   --font-body: "Noto Sans HK", "Helvetica Neue", sans-serif;
 }
@@ -75,6 +82,77 @@
   max-width: 1200px;
   margin-inline: auto;
   padding-inline: 1.5rem;
+}
+
+/* Poofyco button system — salmon pill with navy text is the signature CTA */
+@utility btn-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  border-radius: 9999px;
+  background: var(--color-cta);
+  color: var(--color-panel);
+  font-weight: 700;
+  font-size: 0.875rem;
+  box-shadow: 0 8px 24px rgba(238, 130, 149, 0.4);
+  transition: all 0.2s;
+}
+.btn-cta:hover {
+  background: var(--color-cta-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(238, 130, 149, 0.5);
+}
+
+@utility btn-navy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  border-radius: 9999px;
+  background: var(--color-panel);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.875rem;
+  box-shadow: 0 8px 24px rgba(29, 35, 83, 0.3);
+  transition: all 0.2s;
+}
+.btn-navy:hover {
+  background: var(--color-panel-2);
+  transform: translateY(-2px);
+}
+
+@utility btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  border-radius: 9999px;
+  border: 2px solid var(--color-panel);
+  color: var(--color-panel);
+  font-weight: 700;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+.btn-outline:hover {
+  background: var(--color-panel);
+  color: #ffffff;
+}
+
+/* Token-tinted shadows — replace hardcoded rgba values in components */
+@utility shadow-soft {
+  box-shadow: 0 8px 30px rgba(29, 35, 83, 0.1);
+}
+@utility shadow-panel {
+  box-shadow: 0 24px 60px rgba(29, 35, 83, 0.25);
+}
+
+/* Poofyco arch-top photo mask */
+@utility arch-mask {
+  border-radius: 999px 999px 24px 24px;
 }
 
 /* Poofyco-style topographic contour texture — overlay on light sections */

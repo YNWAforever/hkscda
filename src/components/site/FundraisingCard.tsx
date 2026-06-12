@@ -76,10 +76,7 @@ export function FundraisingCard() {
               </div>
             </div>
 
-            <a
-              href="#donate"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--color-primary)] text-white font-bold text-sm hover:bg-[var(--color-primary-hover)] hover:-translate-y-0.5 transition-all shadow-[0_8px_24px_rgba(212,77,102,0.35)]"
-            >
+            <a href="#donate" className="btn-cta px-8! py-4!">
               <Heart className="h-4 w-4" fill="currentColor" /> 立即捐助
             </a>
           </div>

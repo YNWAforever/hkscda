@@ -48,8 +48,8 @@ function CCCPPage() {
               ].map(([item, traditional, cccp]) => (
                 <tr key={item}>
                   <td className="p-3 border border-[var(--color-border)] font-medium">{item}</td>
-                  <td className="p-3 border border-[var(--color-border)] text-red-600">{traditional}</td>
-                  <td className="p-3 border border-[var(--color-border)] text-green-600">{cccp}</td>
+                  <td className="p-3 border border-[var(--color-border)] text-[var(--color-error)]">{traditional}</td>
+                  <td className="p-3 border border-[var(--color-border)] text-[var(--color-success)]">{cccp}</td>
                 </tr>
               ))}
             </tbody>

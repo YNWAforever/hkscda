@@ -109,14 +109,14 @@ export function Header() {
         <div
           className={`container-wide pointer-events-auto rounded-full border transition-all duration-300 ${
             scrolled
-              ? 'border-[var(--color-border)] bg-[var(--color-surface)]/95 backdrop-blur-md shadow-[0_8px_30px_rgba(29,35,83,0.12)]'
-              : 'border-[var(--color-divider)]/60 bg-[var(--color-surface)]/90 backdrop-blur-sm shadow-[0_4px_20px_rgba(29,35,83,0.08)]'
+              ? 'border-[var(--color-border)] bg-[var(--color-surface)]/95 backdrop-blur-md shadow-soft'
+              : 'border-[var(--color-divider)]/60 bg-[var(--color-surface)]/90 backdrop-blur-sm shadow-soft'
           }`}
         >
         <div className="flex h-[64px] items-center gap-4 px-5 lg:px-7">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 shrink-0 group">
-            <div className="relative flex h-[42px] w-[42px] items-center justify-center rounded-full bg-[var(--color-primary)] shadow-[0_2px_8px_rgba(212,77,102,0.25)] transition-shadow group-hover:shadow-[0_4px_16px_rgba(212,77,102,0.35)]">
+            <div className="relative flex h-[42px] w-[42px] items-center justify-center rounded-full bg-[var(--color-primary)] shadow-soft">
               <PawPrint className="h-[22px] w-[22px] text-white transition-transform duration-300 group-hover:scale-110" strokeWidth={1.5} />
             </div>
             <div className="flex flex-col leading-tight">
@@ -157,7 +157,7 @@ export function Header() {
                 <NavigationMenu.Link asChild>
                   <Link
                     to="/donate"
-                    className="group/donate relative inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[var(--color-primary)] text-white text-[13px] font-bold shadow-[0_2px_8px_rgba(212,77,102,0.3)] hover:shadow-[0_4px_16px_rgba(212,77,102,0.4)] hover:bg-[var(--color-primary-hover)] hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200 overflow-hidden"
+                    className="btn-cta group/donate relative overflow-hidden px-5! py-2.5! text-[13px]!"
                   >
                     <span className="shimmer-surface absolute inset-0 animate-[shimmer_3s_ease-in-out_infinite] pointer-events-none" />
                     <Heart className="relative h-4 w-4 transition-transform duration-300 group-hover/donate:scale-110" fill="currentColor" aria-hidden="true" /> 立即捐助
@@ -186,7 +186,7 @@ export function Header() {
 
         {/* Mobile menu */}
         {mobileOpen && (
-          <div className="lg:hidden mobile-enter pointer-events-auto container-wide mt-2 rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[0_16px_50px_rgba(29,35,83,0.15)]">
+          <div className="lg:hidden mobile-enter pointer-events-auto container-wide mt-2 rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-panel">
             <div className="px-5 py-5 space-y-1 max-h-[calc(100vh-80px)] overflow-y-auto">
               <MobileSheetLink to="/" setOpen={setMobileOpen}>主頁</MobileSheetLink>
 
@@ -205,7 +205,7 @@ export function Header() {
                 <Link
                   to="/donate"
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-center gap-2 py-3.5 rounded-full bg-[var(--color-primary)] text-white font-bold text-[15px] shadow-lg hover:bg-[var(--color-primary-hover)] transition-colors"
+                  className="btn-cta w-full text-[15px]!"
                 >
                   <Heart className="h-4 w-4" fill="currentColor" aria-hidden="true" /> 立即捐助
                 </Link>
@@ -241,7 +241,7 @@ function NavDropdown({ trigger, links }: { trigger: string; links: { to: string;
         {trigger} <ChevronDown className="h-3 w-3 opacity-50 transition-transform duration-200 group-data-[state=open]/trigger:rotate-180" />
         <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-0 rounded-full bg-[var(--color-primary)] transition-all duration-300 group-hover/trigger:w-4/5" />
       </NavigationMenu.Trigger>
-      <NavigationMenu.Content className="absolute top-full left-0 mt-2 w-[260px] bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl shadow-[0_12px_40px_rgba(29,35,83,0.12)] p-2 z-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 duration-200">
+      <NavigationMenu.Content className="absolute top-full left-0 mt-2 w-[260px] bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl shadow-soft p-2 z-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 duration-200">
         {links.map((link, i) => (
           <NavigationMenu.Link key={link.to} asChild>
             <Link

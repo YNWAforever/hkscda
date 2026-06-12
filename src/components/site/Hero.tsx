@@ -56,22 +56,16 @@ export function Hero() {
             香港拯救貓狗協會自2007年成立，致力為流浪貓狗提供糧食、醫療、絕育及領養服務，每年救助超過600隻毛孩。
           </p>
           <div className="flex flex-wrap gap-4 mb-10">
-            <a
-              href="#adoption"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-[var(--color-primary)] text-white font-bold text-sm hover:bg-[var(--color-primary-hover)] hover:-translate-y-0.5 transition-all shadow-[0_8px_24px_rgba(212,77,102,0.35)]"
-            >
+            <a href="#adoption" className="btn-cta">
               <PawPrint className="h-4 w-4" /> 瀏覽待領養動物
             </a>
-            <a
-              href="#donate"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full border-2 border-[var(--color-primary)] text-[var(--color-primary)] font-bold text-sm hover:bg-[var(--color-primary)] hover:text-white transition-all"
-            >
+            <a href="#donate" className="btn-outline">
               <Heart className="h-4 w-4" /> 支持我們
             </a>
           </div>
 
           {/* Members pill */}
-          <div className="inline-flex items-center gap-4 rounded-full bg-[var(--color-surface)] border border-[var(--color-border)] py-2.5 pl-3 pr-6 shadow-[0_6px_24px_rgba(29,35,83,0.08)]">
+          <div className="inline-flex items-center gap-4 rounded-full bg-[var(--color-surface)] border border-[var(--color-border)] py-2.5 pl-3 pr-6 shadow-soft">
             <div className="flex -space-x-3">
               {[heroImg, cat1, dog1].map((img, i) => (
                 <img
@@ -96,7 +90,7 @@ export function Hero() {
         <div className="relative">
           {/* Photo blob backdrop */}
           <div
-            className="absolute inset-4 rounded-[3rem] rotate-3 bg-white/70"
+            className="absolute inset-4 arch-mask rotate-3 bg-white/70"
             aria-hidden="true"
           />
           <img
@@ -104,7 +98,7 @@ export function Hero() {
             alt="義工懷抱獲救小動物"
             width={1280}
             height={1024}
-            className="relative rounded-[3rem] shadow-2xl w-full h-auto aspect-[5/4] object-cover"
+            className="relative arch-mask shadow-panel w-full h-auto aspect-[5/4] object-cover"
           />
 
           {/* Floating rating badge */}

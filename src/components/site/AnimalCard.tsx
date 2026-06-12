@@ -58,7 +58,7 @@ export function AnimalCard({ animal }: AnimalCardProps) {
 
         <Link
           to={detailHref}
-          className="mt-auto text-center text-xs py-1.5 px-3 rounded-full border border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:text-white transition-colors"
+          className="btn-cta mt-auto text-xs! py-1.5! px-3!"
         >
           {ctaLabel} →
         </Link>

@@ -138,8 +138,7 @@ function Index() {
               </h2>
               <div className="space-y-4 text-[var(--color-text)]">
                 <p>
-                  香港拯救貓狗協會（HKSCDA）於 <strong>2007 年 4 月 1 日</strong> 成立，由創辦人{" "}
-                  <strong>Linda Tse</strong> 帶領，以「<strong>支持領養等於拯救生命</strong>」為宗旨，為本地非牟利慈善機構（檔案 91/14493）。
+                  香港拯救貓狗協會（HKSCDA）於 <strong>2007 年 4 月 1 日</strong> 成立，以「<strong>支持領養等於拯救生命</strong>」為宗旨，為本地非牟利慈善機構（檔案 91/14493）。
                 </p>
                 <p>
                   本會致力為流浪貓狗提供糧食、醫療、絕育及領養服務，同時積極援救街頭受傷或被遺棄的小動物，為牠們尋找<strong>永久的家</strong>。
@@ -230,46 +229,45 @@ function Index() {
 
         {/* Donate */}
         <section id="donate" className="px-6 py-16 lg:py-24 bg-[var(--color-bg)]">
-          <div className="container-wide grid lg:grid-cols-5 gap-10 items-start">
-            <div className="lg:col-span-2">
-              <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3 flex items-center gap-1.5">
-                <Heart className="h-3.5 w-3.5" /> 捐助我們
-              </div>
-              <h2 className="font-display text-3xl lg:text-5xl font-bold mb-6 leading-tight">
-                您的每一份善意
-                <br />
-                都是生命的希望
-              </h2>
-              <p className="text-[var(--color-text-muted)] mb-6">
-                本會為政府認可慈善機構（91/14493），捐款 HK$100 以上可申請退稅收條（IRD §88）。所有善款均用於小動物醫療及護理。
-              </p>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--color-success-highlight)] text-[var(--color-success)] text-xs font-bold">
-                <Check className="h-3 w-3" /> 稅務局認可 IRD §88 免稅機構
-              </div>
-            </div>
-            <div className="lg:col-span-3 grid sm:grid-cols-2 gap-4">
-              {donateMethods.map((d) => (
-                <div
-                  key={d.title}
-                  className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5 flex gap-4 hover:shadow-md transition-shadow"
-                >
-                  <div className="h-11 w-11 rounded-lg bg-[var(--color-primary-highlight)] flex items-center justify-center shrink-0">
-                    <d.Icon className="h-5 w-5 text-[var(--color-primary)]" />
-                  </div>
-                  <div className="min-w-0">
-                    <h3 className="font-bold text-sm mb-1">{d.title}</h3>
-                    <p className="text-xs text-[var(--color-text-muted)] leading-relaxed break-words">
-                      {d.desc}
-                    </p>
-                  </div>
+          <div className="container-wide">
+            <div className="rounded-[2.5rem] bg-[var(--color-panel)] shadow-panel p-8 lg:p-12 grid lg:grid-cols-5 gap-10 items-start">
+              <div className="lg:col-span-2">
+                <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-accent-warm)] mb-3 flex items-center gap-1.5">
+                  <Heart className="h-3.5 w-3.5" /> 捐助我們
                 </div>
-              ))}
-              <a
-                href="#contact"
-                className="sm:col-span-2 mt-2 inline-flex items-center justify-center gap-2 px-6 py-4 rounded-full bg-[var(--color-primary)] text-white font-bold hover:bg-[var(--color-primary-hover)] transition-colors"
-              >
-                <ReceiptText className="h-4 w-4" /> 申請退稅收條 / 聯絡我們
-              </a>
+                <h2 className="font-display text-3xl lg:text-5xl font-bold text-white mb-6 leading-tight">
+                  您的每一份善意
+                  <br />
+                  都是生命的希望
+                </h2>
+                <p className="text-white/70 mb-6">
+                  本會為政府認可慈善機構（91/14493），捐款 HK$100 以上可申請退稅收條（IRD §88）。所有善款均用於小動物醫療及護理。
+                </p>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-[var(--color-accent-soft)] text-xs font-bold">
+                  <Check className="h-3 w-3" /> 稅務局認可 IRD §88 免稅機構
+                </div>
+              </div>
+              <div className="lg:col-span-3 grid sm:grid-cols-2 gap-4">
+                {donateMethods.map((d) => (
+                  <div
+                    key={d.title}
+                    className="bg-white/10 border border-white/10 rounded-[1.5rem] p-5 flex gap-4 hover:bg-white/15 transition-colors"
+                  >
+                    <div className="h-11 w-11 rounded-full bg-[var(--color-cta)] flex items-center justify-center shrink-0">
+                      <d.Icon className="h-5 w-5 text-[var(--color-panel)]" />
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="font-bold text-sm text-white mb-1">{d.title}</h3>
+                      <p className="text-xs text-white/60 leading-relaxed break-words">
+                        {d.desc}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                <a href="#contact" className="btn-cta sm:col-span-2 mt-2 py-4!">
+                  <ReceiptText className="h-4 w-4" /> 申請退稅收條 / 聯絡我們
+                </a>
+              </div>
             </div>
           </div>
         </section>
@@ -287,7 +285,7 @@ function AnimalCard({
 }) {
   const isCat = type === "cat";
   return (
-    <article className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-2xl overflow-hidden hover:-translate-y-1 hover:shadow-md transition-all">
+    <article className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[1.5rem] overflow-hidden hover:-translate-y-1 hover:shadow-soft transition-all">
       <div className="relative aspect-square overflow-hidden">
         <img
           src={a.img}
@@ -317,14 +315,7 @@ function AnimalCard({
             </span>
           ))}
         </div>
-        <a
-          href="#contact"
-          className={`block text-center w-full px-4 py-2 rounded-full text-sm font-bold border-[1.5px] transition-colors ${
-            isCat
-              ? "bg-[var(--color-cat-bg)] text-[var(--color-cat)] border-[var(--color-cat)] hover:bg-[var(--color-cat)] hover:text-white"
-              : "bg-[var(--color-dog-bg)] text-[var(--color-dog)] border-[var(--color-dog)] hover:bg-[var(--color-dog)] hover:text-white"
-          }`}
-        >
+        <a href="#contact" className="btn-cta w-full px-4! py-2! text-sm!">
           申請領養
         </a>
       </div>

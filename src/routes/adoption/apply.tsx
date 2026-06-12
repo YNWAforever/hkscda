@@ -97,25 +97,25 @@ function ApplyPage() {
         <div>
           <label className="block text-sm font-medium mb-1">申請人姓名 *</label>
           <input {...register('applicant_name')} className={inputClass} />
-          {errors.applicant_name && <p className="text-red-500 text-xs mt-1" role="alert">{errors.applicant_name.message}</p>}
+          {errors.applicant_name && <p className="text-[var(--color-error)] text-xs mt-1" role="alert">{errors.applicant_name.message}</p>}
         </div>
 
         <div>
           <label className="block text-sm font-medium mb-1">聯絡電話 *</label>
           <input {...register('phone')} type="tel" className={inputClass} />
-          {errors.phone && <p className="text-red-500 text-xs mt-1" role="alert">{errors.phone.message}</p>}
+          {errors.phone && <p className="text-[var(--color-error)] text-xs mt-1" role="alert">{errors.phone.message}</p>}
         </div>
 
         <div>
           <label className="block text-sm font-medium mb-1">電郵地址 *</label>
           <input {...register('email')} type="email" className={inputClass} />
-          {errors.email && <p className="text-red-500 text-xs mt-1" role="alert">{errors.email.message}</p>}
+          {errors.email && <p className="text-[var(--color-error)] text-xs mt-1" role="alert">{errors.email.message}</p>}
         </div>
 
         <div>
           <label className="block text-sm font-medium mb-1">住址 *</label>
           <input {...register('address')} className={inputClass} />
-          {errors.address && <p className="text-red-500 text-xs mt-1" role="alert">{errors.address.message}</p>}
+          {errors.address && <p className="text-[var(--color-error)] text-xs mt-1" role="alert">{errors.address.message}</p>}
         </div>
 
         <div>
@@ -126,7 +126,7 @@ function ApplyPage() {
               <option key={t} value={t}>{t}</option>
             ))}
           </select>
-          {errors.housing_type && <p className="text-red-500 text-xs mt-1" role="alert">{errors.housing_type.message}</p>}
+          {errors.housing_type && <p className="text-[var(--color-error)] text-xs mt-1" role="alert">{errors.housing_type.message}</p>}
         </div>
 
         <div>
@@ -142,7 +142,7 @@ function ApplyPage() {
         <div>
           <label className="block text-sm font-medium mb-1">領養原因 *</label>
           <textarea {...register('reason')} rows={4} className={inputClass} />
-          {errors.reason && <p className="text-red-500 text-xs mt-1" role="alert">{errors.reason.message}</p>}
+          {errors.reason && <p className="text-[var(--color-error)] text-xs mt-1" role="alert">{errors.reason.message}</p>}
         </div>
 
         <div className="flex items-start gap-2">
@@ -152,9 +152,9 @@ function ApplyPage() {
             <Link to="/adoption/instructions" className="text-[var(--color-primary)] hover:underline" target="_blank">領養條款</Link>
           </label>
         </div>
-        {errors.agree_terms && <p className="text-red-500 text-xs" role="alert">{errors.agree_terms.message}</p>}
+        {errors.agree_terms && <p className="text-[var(--color-error)] text-xs" role="alert">{errors.agree_terms.message}</p>}
 
-        {serverError && <p className="text-red-500 text-sm" role="alert">{serverError}</p>}
+        {serverError && <p className="text-[var(--color-error)] text-sm" role="alert">{serverError}</p>}
 
         <button
           type="submit"

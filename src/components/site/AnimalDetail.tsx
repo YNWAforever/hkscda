@@ -70,7 +70,7 @@ export function AnimalDetail({ animal, backHref, backLabel }: AnimalDetailProps)
           <div className="flex flex-col gap-2 pt-2">
             <Link
               to={applyHref}
-              className="text-center py-3 rounded-full bg-[var(--color-primary)] text-white font-semibold hover:bg-[var(--color-primary-hover)] transition-colors"
+              className="btn-cta py-3!"
             >
               申請{ctaLabel}
             </Link>

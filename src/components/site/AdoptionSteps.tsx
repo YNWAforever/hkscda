@@ -46,7 +46,11 @@ export function AdoptionSteps() {
           </p>
         </div>
 
-        <ol className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <ol className="relative grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div
+            className="hidden lg:block absolute top-0 left-[12%] right-[12%] border-t-2 border-dashed border-[var(--color-accent-warm)]/60"
+            aria-hidden="true"
+          />
           {steps.map((s, i) => (
             <li
               key={s.n}

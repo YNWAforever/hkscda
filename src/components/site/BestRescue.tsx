@@ -46,33 +46,30 @@ export function BestRescue() {
           {/* Copy + checklist */}
           <div>
             <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3">
-              為何選擇我們
+              我們的承諾
             </div>
             <h2
               id="best-rescue-h"
               className="font-display text-3xl lg:text-5xl font-bold text-[var(--color-panel)] mb-5 leading-tight"
             >
-              全港最用心的
+              日夜堅守前線的
               <br />
-              動物救援團隊
+              動物救援義工團隊
             </h2>
             <p className="text-[var(--color-text-muted)] mb-7 max-w-[48ch]">
-              由創辦人 Linda Tse 帶領的義工團隊，十八年來堅守前線。從深夜街頭救援到康復照護，每一步都以毛孩福祉為先。
+              一支紮根香港十八年的義工團隊，從深夜街頭救援到康復照護，每一步都以毛孩福祉為先。
             </p>
             <ul className="space-y-3.5 mb-8">
               {checklist.map((c) => (
                 <li key={c} className="flex items-start gap-3">
-                  <span className="h-6 w-6 rounded-full bg-[var(--color-primary-highlight)] flex items-center justify-center shrink-0 mt-0.5">
-                    <Check className="h-3.5 w-3.5 text-[var(--color-primary)]" strokeWidth={3} />
+                  <span className="h-6 w-6 rounded-full bg-[var(--color-cta)] flex items-center justify-center shrink-0 mt-0.5">
+                    <Check className="h-3.5 w-3.5 text-[var(--color-panel)]" strokeWidth={3} />
                   </span>
                   <span className="text-sm text-[var(--color-text)]">{c}</span>
                 </li>
               ))}
             </ul>
-            <a
-              href="#about"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-[var(--color-panel)] text-white font-bold text-sm hover:bg-[var(--color-panel-2)] hover:-translate-y-0.5 transition-all shadow-lg"
-            >
+            <a href="#about" className="btn-navy">
               認識協會
             </a>
           </div>

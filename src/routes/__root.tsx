@@ -23,9 +23,7 @@ function NotFoundComponent() {
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-[var(--color-text)]">404</h1>
         <h2 className="mt-4 text-xl font-semibold text-[var(--color-text)]">找不到頁面</h2>
-        <p className="mt-2 text-sm text-[var(--color-text-muted)]">
-          您要找的頁面不存在或已移動。
-        </p>
+        <p className="mt-2 text-sm text-[var(--color-text-muted)]">您要找的頁面不存在或已移動。</p>
         <div className="mt-6">
           <Link
             to="/"
@@ -154,7 +152,7 @@ function RootComponent() {
   const isAdmin = location.pathname.startsWith("/admin");
 
   useEffect(() => {
-    initGA4(import.meta.env.VITE_GA_MEASUREMENT_ID ?? 'G-XXXXXXXXXX');
+    initGA4(import.meta.env.VITE_GA_MEASUREMENT_ID ?? "G-XXXXXXXXXX");
   }, []);
 
   return (

@@ -50,12 +50,12 @@ export function FAQ() {
             找不到答案？歡迎 WhatsApp 9864 1089 或電郵 info@hkscda.com 查詢。
           </p>
           <div className="relative hidden lg:block">
-            <div className="absolute inset-3 rounded-[2rem] -rotate-3 bg-[var(--color-accent-soft)]" aria-hidden="true" />
+            <div className="absolute inset-3 arch-mask -rotate-3 bg-[var(--color-accent-soft)]" aria-hidden="true" />
             <img
               src={dog1}
               alt="等待領養的唐狗"
               loading="lazy"
-              className="relative rounded-[2rem] w-full aspect-[4/3] object-cover shadow-lg"
+              className="relative arch-mask w-full aspect-[4/3] object-cover shadow-soft"
             />
           </div>
         </div>
