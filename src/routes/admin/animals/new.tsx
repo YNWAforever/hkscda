@@ -1,15 +1,17 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
-import { supabase } from '../../../lib/supabase'
-import { AdminLayout } from '../../../components/admin/AdminLayout'
-import { AnimalForm } from '../../../components/admin/AnimalForm'
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { supabase } from "../../../lib/supabase";
+import { AdminLayout } from "../../../components/admin/AdminLayout";
+import { AnimalForm } from "../../../components/admin/AnimalForm";
 
-export const Route = createFileRoute('/admin/animals/new')({
+export const Route = createFileRoute("/admin/animals/new")({
   beforeLoad: async () => {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) throw redirect({ to: '/admin/login' })
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session) throw redirect({ to: "/admin/login" });
   },
   component: NewAnimalPage,
-})
+});
 
 function NewAnimalPage() {
   return (
@@ -19,5 +21,5 @@ function NewAnimalPage() {
         <AnimalForm />
       </div>
     </AdminLayout>
-  )
+  );
 }

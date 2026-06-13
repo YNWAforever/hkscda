@@ -54,6 +54,7 @@ src/
 ### Task 1: SEO Infrastructure — robots.txt, llms.txt, GA4, Schema Library
 
 **Files:**
+
 - Create: `public/robots.txt`
 - Create: `public/llms.txt`
 - Create: `src/lib/schema.ts`
@@ -95,30 +96,30 @@ Sitemap: https://hkscda.com/sitemap.xml
 ```typescript
 declare global {
   interface Window {
-    gtag: (...args: unknown[]) => void
-    dataLayer: unknown[]
+    gtag: (...args: unknown[]) => void;
+    dataLayer: unknown[];
   }
 }
 
 export function initGA4(measurementId: string) {
-  if (typeof window === 'undefined') return
+  if (typeof window === "undefined") return;
 
-  const script = document.createElement('script')
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`
-  script.async = true
-  document.head.appendChild(script)
+  const script = document.createElement("script");
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
+  script.async = true;
+  document.head.appendChild(script);
 
-  window.dataLayer = window.dataLayer || []
+  window.dataLayer = window.dataLayer || [];
   window.gtag = function () {
-    window.dataLayer.push(arguments)
-  }
-  window.gtag('js', new Date())
-  window.gtag('config', measurementId)
+    window.dataLayer.push(arguments);
+  };
+  window.gtag("js", new Date());
+  window.gtag("config", measurementId);
 }
 
 export function gtagEvent(action: string, params?: Record<string, unknown>) {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', action, params)
+  if (typeof window !== "undefined" && window.gtag) {
+    window.gtag("event", action, params);
   }
 }
 ```
@@ -275,19 +276,20 @@ git commit -m "feat: add SEO infrastructure (robots.txt, llms.txt, GA4, schema l
 ### Task 2: Shared Report Components — StatCard, ReportHeader
 
 **Files:**
+
 - Create: `src/components/site/StatCard.tsx`
 - Create: `src/components/site/ReportHeader.tsx`
 
 - [x] **Step 1: Create `src/components/site/StatCard.tsx`**
 
 ```tsx
-import type { LucideIcon } from "lucide-react"
+import type { LucideIcon } from "lucide-react";
 
 interface StatCardProps {
-  value: string
-  label: string
-  icon?: LucideIcon
-  color?: string
+  value: string;
+  label: string;
+  icon?: LucideIcon;
+  color?: string;
 }
 
 export function StatCard({ value, label, icon: Icon, color }: StatCardProps) {
@@ -295,18 +297,18 @@ export function StatCard({ value, label, icon: Icon, color }: StatCardProps) {
     <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 text-center">
       {Icon && (
         <div className="mb-3 flex justify-center">
-          <Icon
-            className="h-8 w-8"
-            style={{ color: color ?? "var(--color-primary)" }}
-          />
+          <Icon className="h-8 w-8" style={{ color: color ?? "var(--color-primary)" }} />
         </div>
       )}
-      <div className="font-display text-3xl lg:text-4xl font-bold" style={{ color: color ?? "var(--color-text)" }}>
+      <div
+        className="font-display text-3xl lg:text-4xl font-bold"
+        style={{ color: color ?? "var(--color-text)" }}
+      >
         {value}
       </div>
       <div className="text-xs lg:text-sm text-[var(--color-text-muted)] mt-2">{label}</div>
     </div>
-  )
+  );
 }
 ```
 
@@ -314,12 +316,12 @@ export function StatCard({ value, label, icon: Icon, color }: StatCardProps) {
 
 ```tsx
 interface ReportHeaderProps {
-  title: string
-  subtitle?: string
-  period?: string
-  periods?: { value: string; label: string }[]
-  selectedPeriod?: string
-  onPeriodChange?: (period: string) => void
+  title: string;
+  subtitle?: string;
+  period?: string;
+  periods?: { value: string; label: string }[];
+  selectedPeriod?: string;
+  onPeriodChange?: (period: string) => void;
 }
 
 export function ReportHeader({
@@ -337,12 +339,8 @@ export function ReportHeader({
       </div>
       <div className="flex flex-wrap items-end justify-between gap-4 mb-4">
         <div>
-          <h1 className="font-display text-3xl lg:text-5xl font-bold mb-2">
-            {title}
-          </h1>
-          {subtitle && (
-            <p className="text-[var(--color-text-muted)]">{subtitle}</p>
-          )}
+          <h1 className="font-display text-3xl lg:text-5xl font-bold mb-2">{title}</h1>
+          {subtitle && <p className="text-[var(--color-text-muted)]">{subtitle}</p>}
         </div>
         {periods && onPeriodChange && selectedPeriod && (
           <select
@@ -359,13 +357,9 @@ export function ReportHeader({
           </select>
         )}
       </div>
-      {period && (
-        <p className="text-sm text-[var(--color-text-muted)]">
-          報告期間：{period}
-        </p>
-      )}
+      {period && <p className="text-sm text-[var(--color-text-muted)]">報告期間：{period}</p>}
     </div>
-  )
+  );
 }
 ```
 
@@ -386,6 +380,7 @@ git commit -m "feat: add shared report components (StatCard, ReportHeader)"
 ### Task 3: Adoption Report Page — `/report/adoption`
 
 **Files:**
+
 - Create: `src/components/site/AdoptionChart.tsx`
 - Create: `src/routes/report/adoption.tsx`
 
@@ -404,27 +399,27 @@ import {
   Pie,
   Cell,
   Legend,
-} from "recharts"
-import { Cat, Dog } from "lucide-react"
-import type { Animal } from "@/types/animal"
+} from "recharts";
+import { Cat, Dog } from "lucide-react";
+import type { Animal } from "@/types/animal";
 
 interface MonthData {
-  month: string
-  cats: number
-  dogs: number
-  total: number
+  month: string;
+  cats: number;
+  dogs: number;
+  total: number;
 }
 
 function groupByMonth(animals: Animal[]): MonthData[] {
-  const map = new Map<string, { cats: number; dogs: number }>()
+  const map = new Map<string, { cats: number; dogs: number }>();
 
   for (const a of animals) {
-    const d = new Date(a.updated_at ?? a.created_at ?? "")
-    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`
-    const entry = map.get(key) ?? { cats: 0, dogs: 0 }
-    if (a.type === "cat") entry.cats++
-    else entry.dogs++
-    map.set(key, entry)
+    const d = new Date(a.updated_at ?? a.created_at ?? "");
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    const entry = map.get(key) ?? { cats: 0, dogs: 0 };
+    if (a.type === "cat") entry.cats++;
+    else entry.dogs++;
+    map.set(key, entry);
   }
 
   return Array.from(map.entries())
@@ -435,31 +430,31 @@ function groupByMonth(animals: Animal[]): MonthData[] {
       cats: v.cats,
       dogs: v.dogs,
       total: v.cats + v.dogs,
-    }))
+    }));
 }
 
 interface AdoptionChartProps {
-  animals: Animal[]
+  animals: Animal[];
 }
 
-const CAT_COLOR = "var(--color-cat)"
-const DOG_COLOR = "var(--color-dog)"
+const CAT_COLOR = "var(--color-cat)";
+const DOG_COLOR = "var(--color-dog)";
 
 export function AdoptionChart({ animals }: AdoptionChartProps) {
-  const data = groupByMonth(animals)
-  const totalCats = animals.filter((a) => a.type === "cat").length
-  const totalDogs = animals.filter((a) => a.type === "dog").length
+  const data = groupByMonth(animals);
+  const totalCats = animals.filter((a) => a.type === "cat").length;
+  const totalDogs = animals.filter((a) => a.type === "dog").length;
   const pieData = [
     { name: "貓", value: totalCats, color: CAT_COLOR, icon: Cat },
     { name: "狗", value: totalDogs, color: DOG_COLOR, icon: Dog },
-  ]
+  ];
 
   if (data.length === 0) {
     return (
       <p className="text-center py-16 text-[var(--color-text-muted)]">
         暫無領養數據。數據將在動物成功獲領養後自動更新。
       </p>
-    )
+    );
   }
 
   return (
@@ -523,7 +518,10 @@ export function AdoptionChart({ animals }: AdoptionChartProps) {
             {pieData.map(({ name, value, color, icon: Icon }) => (
               <div key={name} className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full flex items-center justify-center" style={{ background: `${color}15` }}>
+                  <div
+                    className="h-10 w-10 rounded-full flex items-center justify-center"
+                    style={{ background: `${color}15` }}
+                  >
                     <Icon className="h-5 w-5" style={{ color }} />
                   </div>
                   <span className="font-bold">{name}總領養</span>
@@ -543,22 +541,22 @@ export function AdoptionChart({ animals }: AdoptionChartProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 ```
 
 - [x] **Step 2: Create `src/routes/report/adoption.tsx`**
 
 ```tsx
-import { createFileRoute } from "@tanstack/react-router"
-import { useQuery } from "@tanstack/react-query"
-import { useState } from "react"
-import { Cat, Dog, PawPrint, TrendingUp } from "lucide-react"
-import { supabase } from "@/lib/supabase"
-import { ReportHeader } from "@/components/site/ReportHeader"
-import { StatCard } from "@/components/site/StatCard"
-import { AdoptionChart } from "@/components/site/AdoptionChart"
-import { datasetSchema, renderJsonLd } from "@/lib/schema"
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { Cat, Dog, PawPrint, TrendingUp } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { ReportHeader } from "@/components/site/ReportHeader";
+import { StatCard } from "@/components/site/StatCard";
+import { AdoptionChart } from "@/components/site/AdoptionChart";
+import { datasetSchema, renderJsonLd } from "@/lib/schema";
 
 export const Route = createFileRoute("/report/adoption")({
   head: () => ({
@@ -566,7 +564,8 @@ export const Route = createFileRoute("/report/adoption")({
       { title: "每月領養報告 — 香港拯救貓狗協會 HKSCDA" },
       {
         name: "description",
-        content: "查看香港拯救貓狗協會每月貓狗領養數據、領養趨勢圖表及成功領養記錄。透明度報告定期更新。",
+        content:
+          "查看香港拯救貓狗協會每月貓狗領養數據、領養趨勢圖表及成功領養記錄。透明度報告定期更新。",
       },
       { property: "og:title", content: "每月領養報告 — HKSCDA" },
       { property: "og:description", content: "每月貓狗領養數據及趨勢圖表" },
@@ -575,10 +574,10 @@ export const Route = createFileRoute("/report/adoption")({
     links: [{ rel: "canonical", href: "https://hkscda.com/report/adoption" }],
   }),
   component: AdoptionReportPage,
-})
+});
 
 function AdoptionReportPage() {
-  const [selectedMonth, setSelectedMonth] = useState("all")
+  const [selectedMonth, setSelectedMonth] = useState("all");
 
   const { data, isLoading } = useQuery({
     queryKey: ["adoption-report"],
@@ -587,25 +586,25 @@ function AdoptionReportPage() {
         .from("animals")
         .select("*")
         .eq("status", "adopted")
-        .order("updated_at", { ascending: false })
-      if (error) throw error
-      return data ?? []
+        .order("updated_at", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
     },
-  })
+  });
 
-  const animals = data ?? []
-  const thisYearCats = animals.filter((a) => a.type === "cat").length
-  const thisYearDogs = animals.filter((a) => a.type === "dog").length
-  const totalAdopted = animals.length
+  const animals = data ?? [];
+  const thisYearCats = animals.filter((a) => a.type === "cat").length;
+  const thisYearDogs = animals.filter((a) => a.type === "dog").length;
+  const totalAdopted = animals.length;
 
   const months = Array.from(
     new Set(
       animals.map((a) => {
-        const d = new Date(a.updated_at ?? a.created_at ?? "")
-        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`
-      })
-    )
-  ).sort((a, b) => b.localeCompare(a))
+        const d = new Date(a.updated_at ?? a.created_at ?? "");
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+      }),
+    ),
+  ).sort((a, b) => b.localeCompare(a));
 
   const periodOptions = [
     { value: "all", label: "全部時期" },
@@ -613,14 +612,11 @@ function AdoptionReportPage() {
       value: m,
       label: m.replace("-", "年") + "月",
     })),
-  ]
+  ];
 
   // Render JSON-LD schema (already in head scripts via route head export)
   // But we render inline schema via component for Dataset type
-  const schema = datasetSchema(
-    "HKSCDA 每月領養報告",
-    "香港拯救貓狗協會每月貓狗領養數據統計"
-  )
+  const schema = datasetSchema("HKSCDA 每月領養報告", "香港拯救貓狗協會每月貓狗領養數據統計");
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
@@ -674,11 +670,21 @@ function AdoptionReportPage() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-[var(--color-divider)]">
-                      <th className="text-left p-3 font-medium text-[var(--color-text-muted)]">名稱</th>
-                      <th className="text-left p-3 font-medium text-[var(--color-text-muted)]">種類</th>
-                      <th className="text-left p-3 font-medium text-[var(--color-text-muted)]">性別</th>
-                      <th className="text-left p-3 font-medium text-[var(--color-text-muted)]">年齡</th>
-                      <th className="text-left p-3 font-medium text-[var(--color-text-muted)]">領養日期</th>
+                      <th className="text-left p-3 font-medium text-[var(--color-text-muted)]">
+                        名稱
+                      </th>
+                      <th className="text-left p-3 font-medium text-[var(--color-text-muted)]">
+                        種類
+                      </th>
+                      <th className="text-left p-3 font-medium text-[var(--color-text-muted)]">
+                        性別
+                      </th>
+                      <th className="text-left p-3 font-medium text-[var(--color-text-muted)]">
+                        年齡
+                      </th>
+                      <th className="text-left p-3 font-medium text-[var(--color-text-muted)]">
+                        領養日期
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -693,9 +699,7 @@ function AdoptionReportPage() {
                         </td>
                         <td className="p-3 text-[var(--color-text-muted)]">{a.age}</td>
                         <td className="p-3 text-[var(--color-text-muted)]">
-                          {a.updated_at
-                            ? new Date(a.updated_at).toLocaleDateString("zh-HK")
-                            : "—"}
+                          {a.updated_at ? new Date(a.updated_at).toLocaleDateString("zh-HK") : "—"}
                         </td>
                       </tr>
                     ))}
@@ -707,7 +711,7 @@ function AdoptionReportPage() {
         </>
       )}
     </main>
-  )
+  );
 }
 ```
 
@@ -728,33 +732,27 @@ git commit -m "feat: add adoption report page with charts and stats"
 ### Task 4: Audit Report Page — `/report/audit`
 
 **Files:**
+
 - Create: `src/components/site/AuditChart.tsx`
 - Create: `src/routes/report/audit.tsx`
 
 - [x] **Step 1: Create `src/components/site/AuditChart.tsx`**
 
 ```tsx
-import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Tooltip,
-  Legend,
-} from "recharts"
-import { ReceiptText } from "lucide-react"
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
+import { ReceiptText } from "lucide-react";
 
 interface AuditDataItem {
-  name: string
-  value: number
-  color: string
+  name: string;
+  value: number;
+  color: string;
 }
 
 interface AuditChartProps {
-  title: string
-  data: AuditDataItem[]
-  total: number
-  totalLabel: string
+  title: string;
+  data: AuditDataItem[];
+  total: number;
+  totalLabel: string;
 }
 
 export function AuditChart({ title, data, total, totalLabel }: AuditChartProps) {
@@ -765,14 +763,7 @@ export function AuditChart({ title, data, total, totalLabel }: AuditChartProps) 
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
-              <Pie
-                data={data}
-                cx="50%"
-                cy="50%"
-                innerRadius={50}
-                outerRadius={90}
-                dataKey="value"
-              >
+              <Pie data={data} cx="50%" cy="50%" innerRadius={50} outerRadius={90} dataKey="value">
                 {data.map((entry, i) => (
                   <Cell key={i} fill={entry.color} />
                 ))}
@@ -811,25 +802,20 @@ export function AuditChart({ title, data, total, totalLabel }: AuditChartProps) 
         </div>
       </div>
     </div>
-  )
+  );
 }
 ```
 
 - [x] **Step 2: Create `src/routes/report/audit.tsx`**
 
 ```tsx
-import { createFileRoute } from "@tanstack/react-router"
-import { useState } from "react"
-import {
-  TrendingUp,
-  TrendingDown,
-  Building,
-  FileText,
-} from "lucide-react"
-import { ReportHeader } from "@/components/site/ReportHeader"
-import { StatCard } from "@/components/site/StatCard"
-import { AuditChart } from "@/components/site/AuditChart"
-import { datasetSchema, renderJsonLd } from "@/lib/schema"
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { TrendingUp, TrendingDown, Building, FileText } from "lucide-react";
+import { ReportHeader } from "@/components/site/ReportHeader";
+import { StatCard } from "@/components/site/StatCard";
+import { AuditChart } from "@/components/site/AuditChart";
+import { datasetSchema, renderJsonLd } from "@/lib/schema";
 
 // Static audit data — to be replaced with Supabase `reports` table queries
 const auditData = {
@@ -854,13 +840,13 @@ const auditData = {
     ],
   },
   surplus: 230000,
-}
+};
 
 const yearOptions = [
   { value: "2025-2026", label: "2025-2026年度" },
   { value: "2024-2025", label: "2024-2025年度 (即將推出)" },
   { value: "2023-2024", label: "2023-2024年度 (即將推出)" },
-]
+];
 
 export const Route = createFileRoute("/report/audit")({
   head: () => ({
@@ -868,7 +854,8 @@ export const Route = createFileRoute("/report/audit")({
       { title: "核數報告 — 香港拯救貓狗協會 HKSCDA" },
       {
         name: "description",
-        content: "香港拯救貓狗協會年度核數報告，公開透明展示協會收入、支出及善款運用情況。慈善牌照91/14493，IRD §88免稅機構。",
+        content:
+          "香港拯救貓狗協會年度核數報告，公開透明展示協會收入、支出及善款運用情況。慈善牌照91/14493，IRD §88免稅機構。",
       },
       { property: "og:title", content: "核數報告 — HKSCDA" },
       { property: "og:description", content: "協會年度核數報告，公開透明展示收入及支出" },
@@ -877,17 +864,14 @@ export const Route = createFileRoute("/report/audit")({
     links: [{ rel: "canonical", href: "https://hkscda.com/report/audit" }],
   }),
   component: AuditReportPage,
-})
+});
 
 function AuditReportPage() {
-  const [selectedYear, setSelectedYear] = useState("2025-2026")
+  const [selectedYear, setSelectedYear] = useState("2025-2026");
 
-  const schema = datasetSchema(
-    "HKSCDA 核數報告",
-    "香港拯救貓狗協會年度財務核數報告"
-  )
+  const schema = datasetSchema("HKSCDA 核數報告", "香港拯救貓狗協會年度財務核數報告");
 
-  const { income, expenditure, surplus, fiscalYear } = auditData
+  const { income, expenditure, surplus, fiscalYear } = auditData;
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
@@ -921,12 +905,7 @@ function AuditReportPage() {
           icon={Building}
           color="var(--color-dog)"
         />
-        <StatCard
-          value="—"
-          label="下載完整報告"
-          icon={FileText}
-          color="var(--color-text-muted)"
-        />
+        <StatCard value="—" label="下載完整報告" icon={FileText} color="var(--color-text-muted)" />
       </div>
 
       <AuditChart
@@ -946,8 +925,8 @@ function AuditReportPage() {
       <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 text-center space-y-4">
         <h2 className="font-display text-lg font-bold">完整核數報告</h2>
         <p className="text-sm text-[var(--color-text-muted)] max-w-[52ch] mx-auto">
-          本會為政府認可慈善機構（91/14493）及稅務局 §88 免稅機構。
-          完整核數報告 PDF 可供下載查閱。捐款 HK$100 以上可申請退稅收條。
+          本會為政府認可慈善機構（91/14493）及稅務局 §88 免稅機構。 完整核數報告 PDF
+          可供下載查閱。捐款 HK$100 以上可申請退稅收條。
         </p>
         <a
           href="/#donate"
@@ -961,12 +940,12 @@ function AuditReportPage() {
         <h2 className="font-display text-lg font-bold mb-4">鳴謝</h2>
         <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">
           感謝所有捐款者、企業贊助商及義工對本會的持續支持。
-          每一分善款均用於動物醫療、糧食及絕育服務。
-          如欲查閱詳細核數報告，請電郵至 info@hkscda.com。
+          每一分善款均用於動物醫療、糧食及絕育服務。 如欲查閱詳細核數報告，請電郵至
+          info@hkscda.com。
         </p>
       </div>
     </main>
-  )
+  );
 }
 ```
 
@@ -987,20 +966,30 @@ git commit -m "feat: add audit report page with financial charts"
 ### Task 5: Donate Page — `/donate`
 
 **Files:**
+
 - Create: `src/routes/donate.tsx`
 
 - [x] **Step 1: Create `src/routes/donate.tsx`**
 
 ```tsx
-import { createFileRoute } from "@tanstack/react-router"
-import { Heart, Smartphone, Zap, Building, Globe, ReceiptText, Check, PawPrint } from "lucide-react"
+import { createFileRoute } from "@tanstack/react-router";
+import {
+  Heart,
+  Smartphone,
+  Zap,
+  Building,
+  Globe,
+  ReceiptText,
+  Check,
+  PawPrint,
+} from "lucide-react";
 
 const donateMethods = [
   { Icon: Smartphone, title: "PayMe Business", desc: "WhatsApp 至 9864 1089 索取 QR Code 過數" },
   { Icon: Zap, title: "轉數快 FPS", desc: "電話 9864 1089 · FPS ID 8727588" },
   { Icon: Building, title: "銀行入帳", desc: "匯豐 124-511320-838 · 中銀 012-351-1-025023-2" },
   { Icon: Globe, title: "PayPal / GIVE.asia", desc: "支持每月定額捐款，持續支援救助行動" },
-]
+];
 
 export const Route = createFileRoute("/donate")({
   head: () => ({
@@ -1008,16 +997,20 @@ export const Route = createFileRoute("/donate")({
       { title: "捐助我們 — 香港拯救貓狗協會 HKSCDA" },
       {
         name: "description",
-        content: "支持香港拯救貓狗協會，捐款HK$100可申請退稅。PayMe、轉數快FPS、銀行入帳、PayPal多種捐款方式。慈善牌照91/14493。",
+        content:
+          "支持香港拯救貓狗協會，捐款HK$100可申請退稅。PayMe、轉數快FPS、銀行入帳、PayPal多種捐款方式。慈善牌照91/14493。",
       },
       { property: "og:title", content: "捐助我們 — HKSCDA" },
-      { property: "og:description", content: "您的每一份善意，都是生命的希望。立即捐款支持流浪貓狗。" },
+      {
+        property: "og:description",
+        content: "您的每一份善意，都是生命的希望。立即捐款支持流浪貓狗。",
+      },
       { property: "og:type", content: "website" },
     ],
     links: [{ rel: "canonical", href: "https://hkscda.com/donate" }],
   }),
   component: DonatePage,
-})
+});
 
 function DonatePage() {
   return (
@@ -1032,7 +1025,8 @@ function DonatePage() {
           都是生命的希望
         </h1>
         <p className="text-[var(--color-text-muted)] max-w-[52ch]">
-          本會為政府認可慈善機構（91/14493），捐款 HK$100 以上可申請退稅收條（IRD §88）。所有善款均用於小動物醫療及護理。
+          本會為政府認可慈善機構（91/14493），捐款 HK$100 以上可申請退稅收條（IRD
+          §88）。所有善款均用於小動物醫療及護理。
         </p>
       </div>
 
@@ -1051,7 +1045,9 @@ function DonatePage() {
             </div>
             <div className="min-w-0">
               <h2 className="font-bold text-sm mb-1">{d.title}</h2>
-              <p className="text-xs text-[var(--color-text-muted)] leading-relaxed break-words">{d.desc}</p>
+              <p className="text-xs text-[var(--color-text-muted)] leading-relaxed break-words">
+                {d.desc}
+              </p>
             </div>
           </div>
         ))}
@@ -1062,7 +1058,8 @@ function DonatePage() {
           <ReceiptText className="h-5 w-5 text-[var(--color-primary)]" /> 退稅收條申請
         </h2>
         <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">
-          每月25日前提交退稅收條申請，正式收條於次月中發出。請WhatsApp 致 9864 1089 或電郵至 info@hkscda.com 提交以下資料：
+          每月25日前提交退稅收條申請，正式收條於次月中發出。請WhatsApp 致 9864 1089 或電郵至
+          info@hkscda.com 提交以下資料：
         </p>
         <ul className="text-sm text-[var(--color-text-muted)] space-y-1 list-disc pl-5">
           <li>捐款人全名（須與報稅姓名一致）</li>
@@ -1081,7 +1078,7 @@ function DonatePage() {
         </a>
       </div>
     </main>
-  )
+  );
 }
 ```
 
@@ -1102,22 +1099,47 @@ git commit -m "feat: add standalone donate page with payment methods"
 ### Task 6: Volunteer Page — `/volunteer`
 
 **Files:**
+
 - Create: `src/routes/volunteer.tsx`
 
 - [x] **Step 1: Create `src/routes/volunteer.tsx`**
 
 ```tsx
-import { createFileRoute } from "@tanstack/react-router"
-import { Users, UserPlus, House, Cat, Dog, Scissors, Heart } from "lucide-react"
+import { createFileRoute } from "@tanstack/react-router";
+import { Users, UserPlus, House, Cat, Dog, Scissors, Heart } from "lucide-react";
 
 const volunteerRoles = [
-  { Icon: House, title: "暫托家庭", desc: "為等待領養的動物提供臨時居所，讓牠們在溫暖的家中等待領養。需家訪審核。" },
-  { Icon: Cat, title: "貓舍義工", desc: "清潔貓舍、餵食、社交化貓咪、協助領養日活動。彈性時間，適合學生或在職人士。" },
-  { Icon: Dog, title: "狗舍義工", desc: "溜狗、清潔狗舍、餵食、協助基本訓練。需要體力，適合喜歡戶外活動的人士。" },
-  { Icon: Scissors, title: "TNR義工", desc: "協助捕捉、運送及放回流浪貓。需要耐性和體力，通常於清晨或晚間行動。" },
-  { Icon: UserPlus, title: "領養日義工", desc: "協助每月領養日佈置、接待訪客、介紹動物。適合喜歡與人交流的人士。" },
-  { Icon: Heart, title: "專業義工", desc: "如你擁有獸醫、攝影、設計、翻譯等專業技能，歡迎以專業支持協會。" },
-]
+  {
+    Icon: House,
+    title: "暫托家庭",
+    desc: "為等待領養的動物提供臨時居所，讓牠們在溫暖的家中等待領養。需家訪審核。",
+  },
+  {
+    Icon: Cat,
+    title: "貓舍義工",
+    desc: "清潔貓舍、餵食、社交化貓咪、協助領養日活動。彈性時間，適合學生或在職人士。",
+  },
+  {
+    Icon: Dog,
+    title: "狗舍義工",
+    desc: "溜狗、清潔狗舍、餵食、協助基本訓練。需要體力，適合喜歡戶外活動的人士。",
+  },
+  {
+    Icon: Scissors,
+    title: "TNR義工",
+    desc: "協助捕捉、運送及放回流浪貓。需要耐性和體力，通常於清晨或晚間行動。",
+  },
+  {
+    Icon: UserPlus,
+    title: "領養日義工",
+    desc: "協助每月領養日佈置、接待訪客、介紹動物。適合喜歡與人交流的人士。",
+  },
+  {
+    Icon: Heart,
+    title: "專業義工",
+    desc: "如你擁有獸醫、攝影、設計、翻譯等專業技能，歡迎以專業支持協會。",
+  },
+];
 
 export const Route = createFileRoute("/volunteer")({
   head: () => ({
@@ -1125,16 +1147,20 @@ export const Route = createFileRoute("/volunteer")({
       { title: "加入義工團隊 — 香港拯救貓狗協會 HKSCDA" },
       {
         name: "description",
-        content: "加入香港拯救貓狗協會義工團隊。暫托家庭、貓狗舍義工、TNR行動、領養日義工等多種義工機會。一起拯救生命。",
+        content:
+          "加入香港拯救貓狗協會義工團隊。暫托家庭、貓狗舍義工、TNR行動、領養日義工等多種義工機會。一起拯救生命。",
       },
       { property: "og:title", content: "加入義工團隊 — HKSCDA" },
-      { property: "og:description", content: "多種義工機會：暫托、貓舍、狗舍、TNR、領養日。一起為毛孩出力。" },
+      {
+        property: "og:description",
+        content: "多種義工機會：暫托、貓舍、狗舍、TNR、領養日。一起為毛孩出力。",
+      },
       { property: "og:type", content: "website" },
     ],
     links: [{ rel: "canonical", href: "https://hkscda.com/volunteer" }],
   }),
   component: VolunteerPage,
-})
+});
 
 function VolunteerPage() {
   return (
@@ -1170,21 +1196,29 @@ function VolunteerPage() {
         <h2 className="font-display text-lg font-bold">如何加入？</h2>
         <div className="space-y-3 text-sm text-[var(--color-text-muted)]">
           <div className="flex gap-3">
-            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--color-primary)] text-white text-xs flex items-center justify-center font-bold">1</span>
-            <span>透過電郵 info@hkscda.com 或 WhatsApp 9864 1089 聯絡我們，說明你想參與的義工崗位。</span>
+            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--color-primary)] text-white text-xs flex items-center justify-center font-bold">
+              1
+            </span>
+            <span>
+              透過電郵 info@hkscda.com 或 WhatsApp 9864 1089 聯絡我們，說明你想參與的義工崗位。
+            </span>
           </div>
           <div className="flex gap-3">
-            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--color-primary)] text-white text-xs flex items-center justify-center font-bold">2</span>
+            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--color-primary)] text-white text-xs flex items-center justify-center font-bold">
+              2
+            </span>
             <span>我們會安排一次簡短面談，了解你的背景、可付出的時間及期望。</span>
           </div>
           <div className="flex gap-3">
-            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--color-primary)] text-white text-xs flex items-center justify-center font-bold">3</span>
+            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--color-primary)] text-white text-xs flex items-center justify-center font-bold">
+              3
+            </span>
             <span>完成基本培訓後，即可開始義工服務。協會會為所有義工提供持續支援及指導。</span>
           </div>
         </div>
       </div>
     </main>
-  )
+  );
 }
 ```
 
@@ -1205,6 +1239,7 @@ git commit -m "feat: add standalone volunteer recruitment page"
 ### Task 7: Canonical URLs on Existing Pages
 
 **Files:**
+
 - Modify: `src/routes/animals/cat.tsx`, `dog.tsx`, `sponsors.tsx`
 - Modify: `src/routes/about/index.tsx`, `cccp.tsx`, `tnr.tsx`, `team.tsx`, `privacy.tsx`
 - Modify: `src/routes/adoption/instructions.tsx`, `apply.tsx`
@@ -1220,6 +1255,7 @@ links: [{ rel: "canonical", href: "https://hkscda.com/" }],
 - [x] **Step 2: Add canonical links to listing pages**
 
 In `src/routes/animals/cat.tsx` head export (add head export if not present):
+
 ```tsx
 head: () => ({
   links: [{ rel: "canonical", href: "https://hkscda.com/animals/cat" }],
@@ -1231,16 +1267,19 @@ Same for `dog.tsx` (URL: `hkscda.com/animals/dog`), `sponsors.tsx` (URL: `hkscda
 - [x] **Step 3: Add canonical links to about pages**
 
 In each about route (`about/index.tsx`, `cccp.tsx`, `tnr.tsx`, `team.tsx`, `privacy.tsx`), add:
+
 ```tsx
 head: () => ({
   links: [{ rel: "canonical", href: "https://hkscda.com/about" }],
 }),
 ```
+
 Use the appropriate canonical URL for each page.
 
 - [x] **Step 4: Add canonical links to adoption pages**
 
 In `adoption/instructions.tsx` and `adoption/apply.tsx`, add:
+
 ```tsx
 head: () => ({
   links: [{ rel: "canonical", href: "https://hkscda.com/adoption/instructions" }],
@@ -1264,6 +1303,7 @@ git commit -m "feat: add canonical URLs to all public pages"
 ### Task 8: Navigation Links — Add new pages to Footer
 
 **Files:**
+
 - Modify: `src/components/site/Footer.tsx`
 
 - [x] **Step 1: Add report, donate, volunteer links to Footer**
@@ -1273,14 +1313,28 @@ In `Footer.tsx`, add a 4th column or add links under existing sections:
 ```tsx
 // Add this as a new column in the grid (change md:grid-cols-3 to md:grid-cols-4)
 <div>
-  <h4 className="font-display font-bold text-sm mb-4 uppercase tracking-wider">
-    透明度
-  </h4>
+  <h4 className="font-display font-bold text-sm mb-4 uppercase tracking-wider">透明度</h4>
   <ul className="space-y-2 text-sm text-white/80">
-    <li><a href="/report/adoption" className="hover:text-white transition-colors">每月領養報告</a></li>
-    <li><a href="/report/audit" className="hover:text-white transition-colors">年度核數報告</a></li>
-    <li><a href="/donate" className="hover:text-white transition-colors">捐助我們</a></li>
-    <li><a href="/volunteer" className="hover:text-white transition-colors">加入義工團隊</a></li>
+    <li>
+      <a href="/report/adoption" className="hover:text-white transition-colors">
+        每月領養報告
+      </a>
+    </li>
+    <li>
+      <a href="/report/audit" className="hover:text-white transition-colors">
+        年度核數報告
+      </a>
+    </li>
+    <li>
+      <a href="/donate" className="hover:text-white transition-colors">
+        捐助我們
+      </a>
+    </li>
+    <li>
+      <a href="/volunteer" className="hover:text-white transition-colors">
+        加入義工團隊
+      </a>
+    </li>
   </ul>
 </div>
 ```
@@ -1306,6 +1360,7 @@ git commit -m "feat: add report/donate/volunteer links to footer"
 ### Task 9: Sitemap XML Generation
 
 **Files:**
+
 - Modify: `vite.config.ts`
 
 - [x] **Step 1: Add sitemap to Nitro config**
@@ -1327,9 +1382,9 @@ Alternatively, create a server route for sitemap. For now, the build generates s
 Create `src/routes/sitemap.xml.tsx`:
 
 ```tsx
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router";
 
-const BASE = "https://hkscda.com"
+const BASE = "https://hkscda.com";
 
 const routes = [
   "/",
@@ -1346,21 +1401,21 @@ const routes = [
   "/report/audit",
   "/donate",
   "/volunteer",
-]
+];
 
 export const Route = createFileRoute("/sitemap.xml")({
   component: SitemapRoute,
-})
+});
 
 function SitemapRoute() {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${routes.map((r) => `  <url><loc>${BASE}${r}</loc><changefreq>weekly</changefreq><priority>${r === "/" ? "1.0" : "0.8"}</priority></url>`).join("\n")}
-</urlset>`
+</urlset>`;
 
   return new Response(xml, {
     headers: { "Content-Type": "application/xml; charset=utf-8" },
-  })
+  });
 }
 ```
 

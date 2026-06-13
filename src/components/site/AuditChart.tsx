@@ -1,17 +1,17 @@
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts"
-import { ReceiptText } from "lucide-react"
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
+import { ReceiptText } from "lucide-react";
 
 interface AuditDataItem {
-  name: string
-  value: number
-  color: string
+  name: string;
+  value: number;
+  color: string;
 }
 
 interface AuditChartProps {
-  title: string
-  data: AuditDataItem[]
-  total: number
-  totalLabel: string
+  title: string;
+  data: AuditDataItem[];
+  total: number;
+  totalLabel: string;
 }
 
 export function AuditChart({ title, data, total, totalLabel }: AuditChartProps) {
@@ -64,5 +64,5 @@ export function AuditChart({ title, data, total, totalLabel }: AuditChartProps) 
         </div>
       </div>
     </div>
-  )
+  );
 }

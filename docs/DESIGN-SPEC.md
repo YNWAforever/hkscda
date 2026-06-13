@@ -18,9 +18,10 @@ and media-query parsing. Full-page captures in `docs/poofyco-study/`
 ## 1. MOVEMENT
 
 ### Scroll behavior
+
 - **No parallax, no scroll-jacking, no sticky elements.** Header is `position:
-  relative` at every scroll depth — it scrolls away. Zero `motion_fx` (Elementor
-  motion effects) in any `data-settings`. The page reads as *calm*: movement comes
+relative` at every scroll depth — it scrolls away. Zero `motion_fx` (Elementor
+  motion effects) in any `data-settings`. The page reads as _calm_: movement comes
   only from entrance reveals and two slow carousels.
 - **Reveal-on-enter, once.** 37 elements start `.elementor-invisible` (opacity 0)
   and reveal when they intersect the viewport. Measured reveal waves at scroll
@@ -33,10 +34,11 @@ and media-query parsing. Full-page captures in `docs/poofyco-study/`
   fire in the same wave.
 
 ### Hover / cursor interactions
+
 - **No custom cursor.** All interaction is conventional hover.
 - **One global hover transition** carried by 169 elements:
   `transition: background .3s ease, border .3s ease, box-shadow .3s ease,
-  transform .4s ease`. Hover effects are **color swaps and soft shadows** —
+transform .4s ease`. Hover effects are **color swaps and soft shadows** —
   cards do NOT lift/translate. The 0.4s transform slot is used by:
   - nav menu pointer effects (underline/frame `scale(0)→scale(1)` on hover)
   - gallery captions sliding up `translateY(100%)→0` inside image bounds
@@ -45,6 +47,7 @@ and media-query parsing. Full-page captures in `docs/poofyco-study/`
   background/text color swap on hover. No scale, no shadow growth.
 
 ### Reveal timing (the "feel")
+
 - Reveal = `fadeInUp`, `1.25s`, `ease`, fill-forwards, once per element.
 - The travel distance is `translate3d(0, 100%, 0)` — **100% of the element's own
   height**, so small captions barely drift while photos travel far. This is why the
@@ -59,6 +62,7 @@ and media-query parsing. Full-page captures in `docs/poofyco-study/`
 ## 2. GRID
 
 ### Column system
+
 - **Boxed container: `min(100%, 1300px)`**, centered (`--container-max-width: 1300px`).
 - **Universal gutter: 20px** (`--widgets-spacing: 20px 20px`). Almost every flex
   gap on the page is exactly 20px; one exception is the photo marquee (53px).
@@ -79,6 +83,7 @@ and media-query parsing. Full-page captures in `docs/poofyco-study/`
     4 link columns, then a **47px salmon strip** (copyright) as the page's last band.
 
 ### Card language
+
 - Card radius: **25px** dominant (29 uses); pills `999px` / `99px` (17 uses);
   large arch/blob shapes on feature photos (`222px`, `30px` mixes).
 - **Dashed borders are the signature**: adoption-step cards, FAQ wrapper, and
@@ -87,6 +92,7 @@ and media-query parsing. Full-page captures in `docs/poofyco-study/`
   padding (e.g. 62px/52px), all spacing in multiples of ~4 with 20px as the beat.
 
 ### Responsive reflow
+
 - Elementor stock breakpoints: **≤1024px (tablet), ≤767px (mobile)**
   (media queries confirmed in compiled CSS; a few widget-level 480px rules).
 - At **1024**: multi-column rows collapse to single column (measured: the 2-col
@@ -104,8 +110,9 @@ and media-query parsing. Full-page captures in `docs/poofyco-study/`
 ## 3. ANIMATION
 
 ### Entrance animations
+
 - **One motif everywhere: `fadeInUp` 1.25s ease** (`0% { opacity:0;
-  translate3d(0,100%,0) } 100% { opacity:1; transform:none }`), once, on viewport
+translate3d(0,100%,0) } 100% { opacity:1; transform:none }`), once, on viewport
   entry. ~47 elements; applies equally to headings, text blocks, buttons, images,
   and whole sub-containers.
 - Single accent: `zoomIn` 1.25s on the hero video play button.
@@ -114,31 +121,35 @@ and media-query parsing. Full-page captures in `docs/poofyco-study/`
   design decision.**
 
 ### Stagger / sequence
+
 - No `animation-delay` anywhere (all 0s). Sequencing = document order + viewport
   geometry. Replicating the feel does NOT require orchestration tooling — it
   requires per-element (not per-section) reveal triggers.
 
 ### Easing & durations (complete palette)
-| Use | Duration | Easing |
-|---|---|---|
-| Entrance reveals | 1.25s | `ease` |
-| Hover color/border/shadow | 0.3s | `ease` |
-| Hover transforms (captions, nav pointer) | 0.4s | `ease` |
-| Photo marquee slide | 7000ms per snap, 500ms dwell | linear-feel glide |
-| Testimonial slide | 1000ms | swiper default (ease-out-ish) |
+
+| Use                                      | Duration                     | Easing                        |
+| ---------------------------------------- | ---------------------------- | ----------------------------- |
+| Entrance reveals                         | 1.25s                        | `ease`                        |
+| Hover color/border/shadow                | 0.3s                         | `ease`                        |
+| Hover transforms (captions, nav pointer) | 0.4s                         | `ease`                        |
+| Photo marquee slide                      | 7000ms per snap, 500ms dwell | linear-feel glide             |
+| Testimonial slide                        | 1000ms                       | swiper default (ease-out-ish) |
 
 No cubic-bezier customs anywhere — the kit lives entirely on `ease` + durations.
 
 ### Looping motifs
+
 - **Photo marquee** (community gallery): Swiper, `slidesPerView: 2 (≈3 visible
-  with peek), spaceBetween: 53, speed: 7000, autoplay delay: 500, loop: true` —
+with peek), spaceBetween: 53, speed: 7000, autoplay delay: 500, loop: true` —
   i.e. a near-continuous slow conveyor of rescue photos.
 - **Testimonials:** Swiper, 2-up, `speed: 1000, autoplay: 3000, loop: false`,
   dot pagination.
 - No other infinite animations run (verified: zero `animation-iteration-count:
-  infinite` elements outside UI chrome at every scroll depth).
+infinite` elements outside UI chrome at every scroll depth).
 
 ### Color/type tokens observed (for cross-checking, already in our brand)
+
 - Indigo `rgb(11,5,76)`, rose/salmon `rgb(236,133,142)`, body grey
   `rgb(65,66,67)`, cool surface `rgb(240,243,247)`, lavender-blue top bar
   `rgb(210,220,232)`.
@@ -153,21 +164,22 @@ Stack available: React 19 + TanStack Start, Tailwind v4 (CSS-first), shadcn/ui,
 `embla-carousel-react` (already used in `VolunteerCarousel.tsx`), `tw-animate-css`,
 existing tokens in `src/styles.css`. **No new dependencies required.**
 
-| Reference effect | Our implementation |
-|---|---|
-| Reveal-on-enter `fadeInUp` 1.25s ease, once | Small `useReveal` hook (one shared `IntersectionObserver`, `unobserve` after fire) toggling a class; CSS in `styles.css`: `.reveal { opacity:0; translate:0 40px } .reveal-in { transition: opacity 1.25s ease, translate 1.25s ease; opacity:1; translate:0 }`. Fixed 40px travel instead of 100%-of-height (same perceived motion on text/cards, avoids huge jumps on tall images; can use 64px for media blocks). Gate with `@media (prefers-reduced-motion: reduce)`. |
-| Per-element cascade, no delays | Apply the hook per element (heading, paragraph, button each) exactly like the reference — not per section. No orchestration library needed. |
-| `zoomIn` accent on video button | Same hook with a `variant="zoom"` class (`scale(.6)→1`). |
-| Hover language (color/shadow only, no lifts) | Tailwind utilities standardized: `transition-[background,border-color,box-shadow] duration-300` on cards/buttons, `duration-[400ms]` for transform-based bits (caption slide-ups). Encode once as small `@utility` entries in `styles.css`. |
-| Nav pointer underline grow | CSS `::after` scale-x 0→1, `transition: transform .4s ease` on Header links. |
-| Photo marquee (7000ms conveyor) | **Pure CSS marquee** — duplicated track + `@keyframes marquee { to { translate: -50% 0 } }`, `animation: marquee 40s linear infinite`, `:hover { animation-play-state: paused }`. Closer to the linear glide than embla autoplay, zero JS. (Alternative: embla + its auto-scroll plugin = new dep — not needed.) |
-| Testimonial 2-up autoplay slider | Existing `embla-carousel-react` (pattern already in `VolunteerCarousel.tsx`); autoplay via a 3000ms `setInterval` → `scrollNext()` with pause-on-hover (no plugin). 1000ms feel via embla's `duration: 25`. |
-| Stat counters (rose numbers) | `useCountUp` hook driven by the same IntersectionObserver (800ms, `requestAnimationFrame`), fires once. `AdoptionChart`/`StatCard` already exist to receive it. |
-| 1300px boxed / 20px gutter | Already close: keep our `container-wide`; align section gaps to a `--gap-grid: 20px` token. |
-| Dashed-border signature | Already present (`card-dashed` utility) — extend to step separators. |
-| 47px salmon strip, ghost step numbers, cut-out overlap | Static CSS, already partially present in our sections; itemized in build plan. |
+| Reference effect                                       | Our implementation                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Reveal-on-enter `fadeInUp` 1.25s ease, once            | Small `useReveal` hook (one shared `IntersectionObserver`, `unobserve` after fire) toggling a class; CSS in `styles.css`: `.reveal { opacity:0; translate:0 40px } .reveal-in { transition: opacity 1.25s ease, translate 1.25s ease; opacity:1; translate:0 }`. Fixed 40px travel instead of 100%-of-height (same perceived motion on text/cards, avoids huge jumps on tall images; can use 64px for media blocks). Gate with `@media (prefers-reduced-motion: reduce)`. |
+| Per-element cascade, no delays                         | Apply the hook per element (heading, paragraph, button each) exactly like the reference — not per section. No orchestration library needed.                                                                                                                                                                                                                                                                                                                               |
+| `zoomIn` accent on video button                        | Same hook with a `variant="zoom"` class (`scale(.6)→1`).                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Hover language (color/shadow only, no lifts)           | Tailwind utilities standardized: `transition-[background,border-color,box-shadow] duration-300` on cards/buttons, `duration-[400ms]` for transform-based bits (caption slide-ups). Encode once as small `@utility` entries in `styles.css`.                                                                                                                                                                                                                               |
+| Nav pointer underline grow                             | CSS `::after` scale-x 0→1, `transition: transform .4s ease` on Header links.                                                                                                                                                                                                                                                                                                                                                                                              |
+| Photo marquee (7000ms conveyor)                        | **Pure CSS marquee** — duplicated track + `@keyframes marquee { to { translate: -50% 0 } }`, `animation: marquee 40s linear infinite`, `:hover { animation-play-state: paused }`. Closer to the linear glide than embla autoplay, zero JS. (Alternative: embla + its auto-scroll plugin = new dep — not needed.)                                                                                                                                                          |
+| Testimonial 2-up autoplay slider                       | Existing `embla-carousel-react` (pattern already in `VolunteerCarousel.tsx`); autoplay via a 3000ms `setInterval` → `scrollNext()` with pause-on-hover (no plugin). 1000ms feel via embla's `duration: 25`.                                                                                                                                                                                                                                                               |
+| Stat counters (rose numbers)                           | `useCountUp` hook driven by the same IntersectionObserver (800ms, `requestAnimationFrame`), fires once. `AdoptionChart`/`StatCard` already exist to receive it.                                                                                                                                                                                                                                                                                                           |
+| 1300px boxed / 20px gutter                             | Already close: keep our `container-wide`; align section gaps to a `--gap-grid: 20px` token.                                                                                                                                                                                                                                                                                                                                                                               |
+| Dashed-border signature                                | Already present (`card-dashed` utility) — extend to step separators.                                                                                                                                                                                                                                                                                                                                                                                                      |
+| 47px salmon strip, ghost step numbers, cut-out overlap | Static CSS, already partially present in our sections; itemized in build plan.                                                                                                                                                                                                                                                                                                                                                                                            |
 
 ### Accessibility / performance constraints for the build
+
 - All reveals and marquee respect `prefers-reduced-motion: reduce` (show final state,
   pause marquee).
 - Reveals must not shift layout (`opacity`/`translate` only, never `height/top`).

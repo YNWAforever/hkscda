@@ -1,10 +1,11 @@
-
 ## Goal
+
 Rebuild a Lovable version of HKSCDA's site reusing their existing colors, imagery, and Chinese content, then extend it with three new sections: social proof, a social media wall (Facebook + Instagram), and a volunteer story carousel.
 
 ## Steps
 
 ### 1. Source content & assets from hkscda.com
+
 - Fetch hkscda.com (home + key subpages: About, Adopt, Donate, Volunteer, Contact) to extract:
   - Section copy (Chinese 繁體)
   - Hero/about/adoption images
@@ -13,6 +14,7 @@ Rebuild a Lovable version of HKSCDA's site reusing their existing colors, imager
 - Reuse the color tokens already defined in the uploaded `hkscda.html` (warm cream/orange palette) — port them verbatim into `src/styles.css` as semantic tokens. Use Noto Serif HK / Noto Sans HK.
 
 ### 2. Page structure (single-page TanStack route at `/`)
+
 1. Sticky nav + logo
 2. Hero (mission tagline + Adopt/Donate CTAs, hero image from hkscda.com)
 3. Mission / About summary
@@ -32,12 +34,14 @@ Rebuild a Lovable version of HKSCDA's site reusing their existing colors, imager
 10. Footer (contact, address, socials, copyright)
 
 ### 3. New components
+
 - `src/components/SocialProof.tsx` — stats counters, logo strips, testimonial cards
 - `src/components/VolunteerCarousel.tsx` — embla carousel
 - `src/components/SocialWall.tsx` — Tabs with FB Page Plugin + IG embeds
 - Reusable `StatCounter`, `LogoStrip`, `TestimonialCard`, `VolunteerCard`
 
 ### 4. Technical notes
+
 - Add `embla-carousel-react` dependency.
 - Facebook Page Plugin: load `https://connect.facebook.net/zh_HK/sdk.js` in `__root.tsx` once; render `<div class="fb-page" data-href="https://www.facebook.com/HKSCDA">`.
 - Instagram embeds: load `https://www.instagram.com/embed.js`; needs specific post URLs (I'll pull 6 latest visible from their public IG).
@@ -45,8 +49,10 @@ Rebuild a Lovable version of HKSCDA's site reusing their existing colors, imager
 - All copy in 繁體中文 to match brand.
 
 ### 5. Out of scope (will note to user)
+
 - Live, auto-refreshing IG/FB feeds require API keys + backend. Embeds render real current posts but updates depend on the embed script, not a custom API.
 - If user later wants a true live feed, we'd add Instagram Graph API + a server function.
 
 ## Open question handled later
+
 If hkscda.com blocks scraping for some images, I'll substitute with generated placeholders matching the warm rescue-shelter aesthetic and flag them.

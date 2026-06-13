@@ -3,26 +3,26 @@
 
 :root {
   /* Primitive · rescue-rose */
-  --color-rescue-rose-50: #FADFE4;
-  --color-rescue-rose-100: #FADFE4;
-  --color-rescue-rose-500: #E05C78;
-  --color-rescue-rose-600: #CF4A66;
-  --color-rescue-rose-700: #B93D58;
+  --color-rescue-rose-50: #fadfe4;
+  --color-rescue-rose-100: #fadfe4;
+  --color-rescue-rose-500: #e05c78;
+  --color-rescue-rose-600: #cf4a66;
+  --color-rescue-rose-700: #b93d58;
 
   /* Primitive · guardian-navy */
-  --color-guardian-navy-50: #E9E9F6;
-  --color-guardian-navy-100: #E9E9F6;
-  --color-guardian-navy-200: #DCDCF0;
+  --color-guardian-navy-50: #e9e9f6;
+  --color-guardian-navy-100: #e9e9f6;
+  --color-guardian-navy-200: #dcdcf0;
   --color-guardian-navy-400: #283066;
-  --color-guardian-navy-500: #1D2353;
+  --color-guardian-navy-500: #1d2353;
   --color-guardian-navy-600: #283066;
 
   /* Primitive · soft-salmon */
-  --color-soft-salmon-50: #FCE8EB;
-  --color-soft-salmon-100: #FCE8EB;
-  --color-soft-salmon-300: #F298A4;
-  --color-soft-salmon-500: #F27D92;
-  --color-soft-salmon-600: #EE6781;
+  --color-soft-salmon-50: #fce8eb;
+  --color-soft-salmon-100: #fce8eb;
+  --color-soft-salmon-300: #f298a4;
+  --color-soft-salmon-500: #f27d92;
+  --color-soft-salmon-600: #ee6781;
 
   /* Semantic */
   --color-primary: var(--color-rescue-rose-500);
@@ -38,8 +38,8 @@
   --color-lavender: var(--color-guardian-navy-50);
 
   /* Base surfaces */
-  --color-bg: #FDF7F4;
-  --color-text: #2B2D42;
+  --color-bg: #fdf7f4;
+  --color-text: #2b2d42;
 
   /* Typography */
   --font-display: "Baloo 2", "Noto Sans HK", sans-serif;

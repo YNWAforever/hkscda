@@ -1,69 +1,274 @@
 <h2>Navigation Structure</h2>
-<p class="subtitle">We're adding 11 new pages — the header needs to handle them cleanly. Two approaches:</p>
+<p class="subtitle">
+  We're adding 11 new pages — the header needs to handle them cleanly. Two approaches:
+</p>
 
-<div class="split" style="gap:24px;margin-top:24px">
-
+<div class="split" style="gap: 24px; margin-top: 24px">
   <!-- Option A -->
-  <div class="card" data-choice="a" onclick="toggleSelect(this)" style="flex:1;cursor:pointer">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)" style="flex: 1; cursor: pointer">
     <div class="card-body">
-      <div class="letter" style="display:inline-block;margin-bottom:12px">A</div>
-      <h3>Dropdown menus <span style="font-size:12px;background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:99px;font-weight:600;margin-left:6px">Recommended</span></h3>
-      <p style="margin-bottom:16px">Top-level nav items expand on hover. Mirrors the existing hkscda.com structure.</p>
-      <div style="background:#f8f9fa;border:1px solid #dee2e6;border-radius:10px;padding:14px;font-family:sans-serif">
-        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;border-bottom:1px solid #dee2e6;padding-bottom:10px;margin-bottom:10px">
-          <span style="font-size:13px;font-weight:700;color:#3a7bd5;margin-right:4px">🐾 HKSCDA</span>
-          <span style="font-size:12px;padding:4px 10px;border-radius:4px;background:#fff;border:1px solid #dee2e6">主頁</span>
-          <span style="font-size:12px;padding:4px 10px;border-radius:4px;background:#e8f0fe;border:1px solid #3a7bd5;color:#3a7bd5">關於協會 ▾</span>
-          <span style="font-size:12px;padding:4px 10px;border-radius:4px;background:#fff;border:1px solid #dee2e6">領養 ▾</span>
-          <span style="font-size:12px;padding:4px 10px;border-radius:4px;background:#fff;border:1px solid #dee2e6">助養區</span>
-          <span style="font-size:12px;padding:4px 10px;border-radius:99px;background:#3a7bd5;color:#fff;font-weight:600;margin-left:auto">💛 捐助</span>
+      <div class="letter" style="display: inline-block; margin-bottom: 12px">A</div>
+      <h3>
+        Dropdown menus
+        <span
+          style="
+            font-size: 12px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 2px 8px;
+            border-radius: 99px;
+            font-weight: 600;
+            margin-left: 6px;
+          "
+          >Recommended</span
+        >
+      </h3>
+      <p style="margin-bottom: 16px">
+        Top-level nav items expand on hover. Mirrors the existing hkscda.com structure.
+      </p>
+      <div
+        style="
+          background: #f8f9fa;
+          border: 1px solid #dee2e6;
+          border-radius: 10px;
+          padding: 14px;
+          font-family: sans-serif;
+        "
+      >
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+          "
+        >
+          <span style="font-size: 13px; font-weight: 700; color: #3a7bd5; margin-right: 4px"
+            >🐾 HKSCDA</span
+          >
+          <span
+            style="
+              font-size: 12px;
+              padding: 4px 10px;
+              border-radius: 4px;
+              background: #fff;
+              border: 1px solid #dee2e6;
+            "
+            >主頁</span
+          >
+          <span
+            style="
+              font-size: 12px;
+              padding: 4px 10px;
+              border-radius: 4px;
+              background: #e8f0fe;
+              border: 1px solid #3a7bd5;
+              color: #3a7bd5;
+            "
+            >關於協會 ▾</span
+          >
+          <span
+            style="
+              font-size: 12px;
+              padding: 4px 10px;
+              border-radius: 4px;
+              background: #fff;
+              border: 1px solid #dee2e6;
+            "
+            >領養 ▾</span
+          >
+          <span
+            style="
+              font-size: 12px;
+              padding: 4px 10px;
+              border-radius: 4px;
+              background: #fff;
+              border: 1px solid #dee2e6;
+            "
+            >助養區</span
+          >
+          <span
+            style="
+              font-size: 12px;
+              padding: 4px 10px;
+              border-radius: 99px;
+              background: #3a7bd5;
+              color: #fff;
+              font-weight: 600;
+              margin-left: auto;
+            "
+            >💛 捐助</span
+          >
         </div>
-        <div style="display:flex;gap:16px">
-          <div style="background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:10px;min-width:120px">
-            <p style="font-size:11px;font-weight:700;color:#666;margin-bottom:6px">關於協會</p>
-            <p style="font-size:12px;padding:3px 0;border-bottom:1px solid #f0f0f0">協會簡介</p>
-            <p style="font-size:12px;padding:3px 0;border-bottom:1px solid #f0f0f0">CCCP計劃</p>
-            <p style="font-size:12px;padding:3px 0;border-bottom:1px solid #f0f0f0">TNR計劃</p>
-            <p style="font-size:12px;padding:3px 0;border-bottom:1px solid #f0f0f0">團隊</p>
-            <p style="font-size:12px;padding:3px 0">私隱聲明</p>
+        <div style="display: flex; gap: 16px">
+          <div
+            style="
+              background: #fff;
+              border: 1px solid #dee2e6;
+              border-radius: 8px;
+              padding: 10px;
+              min-width: 120px;
+            "
+          >
+            <p style="font-size: 11px; font-weight: 700; color: #666; margin-bottom: 6px">
+              關於協會
+            </p>
+            <p style="font-size: 12px; padding: 3px 0; border-bottom: 1px solid #f0f0f0">
+              協會簡介
+            </p>
+            <p style="font-size: 12px; padding: 3px 0; border-bottom: 1px solid #f0f0f0">
+              CCCP計劃
+            </p>
+            <p style="font-size: 12px; padding: 3px 0; border-bottom: 1px solid #f0f0f0">TNR計劃</p>
+            <p style="font-size: 12px; padding: 3px 0; border-bottom: 1px solid #f0f0f0">團隊</p>
+            <p style="font-size: 12px; padding: 3px 0">私隱聲明</p>
           </div>
-          <div style="background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:10px;min-width:120px">
-            <p style="font-size:11px;font-weight:700;color:#666;margin-bottom:6px">領養</p>
-            <p style="font-size:12px;padding:3px 0;border-bottom:1px solid #f0f0f0">領養需知</p>
-            <p style="font-size:12px;padding:3px 0;border-bottom:1px solid #f0f0f0">待領養貓貓</p>
-            <p style="font-size:12px;padding:3px 0">待領養狗狗</p>
+          <div
+            style="
+              background: #fff;
+              border: 1px solid #dee2e6;
+              border-radius: 8px;
+              padding: 10px;
+              min-width: 120px;
+            "
+          >
+            <p style="font-size: 11px; font-weight: 700; color: #666; margin-bottom: 6px">領養</p>
+            <p style="font-size: 12px; padding: 3px 0; border-bottom: 1px solid #f0f0f0">
+              領養需知
+            </p>
+            <p style="font-size: 12px; padding: 3px 0; border-bottom: 1px solid #f0f0f0">
+              待領養貓貓
+            </p>
+            <p style="font-size: 12px; padding: 3px 0">待領養狗狗</p>
           </div>
         </div>
       </div>
-      <div class="pros-cons" style="margin-top:12px">
-        <div class="pros"><h4>Pros</h4><ul><li>Familiar from old site</li><li>Groups related pages</li><li>Clean top bar</li></ul></div>
-        <div class="cons"><h4>Cons</h4><ul><li>Hover-only menus can be awkward on touch</li></ul></div>
+      <div class="pros-cons" style="margin-top: 12px">
+        <div class="pros">
+          <h4>Pros</h4>
+          <ul>
+            <li>Familiar from old site</li>
+            <li>Groups related pages</li>
+            <li>Clean top bar</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h4>Cons</h4>
+          <ul>
+            <li>Hover-only menus can be awkward on touch</li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- Option B -->
-  <div class="card" data-choice="b" onclick="toggleSelect(this)" style="flex:1;cursor:pointer">
+  <div class="card" data-choice="b" onclick="toggleSelect(this)" style="flex: 1; cursor: pointer">
     <div class="card-body">
-      <div class="letter" style="display:inline-block;margin-bottom:12px">B</div>
+      <div class="letter" style="display: inline-block; margin-bottom: 12px">B</div>
       <h3>Flat with mobile drawer</h3>
-      <p style="margin-bottom:16px">All pages reachable from a full-width mobile drawer. No hover dropdowns.</p>
-      <div style="background:#f8f9fa;border:1px solid #dee2e6;border-radius:10px;padding:14px;font-family:sans-serif">
-        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;border-bottom:1px solid #dee2e6;padding-bottom:10px;margin-bottom:10px">
-          <span style="font-size:13px;font-weight:700;color:#3a7bd5;margin-right:4px">🐾 HKSCDA</span>
-          <span style="font-size:12px;padding:4px 10px;border-radius:4px;background:#fff;border:1px solid #dee2e6">協會簡介</span>
-          <span style="font-size:12px;padding:4px 10px;border-radius:4px;background:#fff;border:1px solid #dee2e6">領養貓貓</span>
-          <span style="font-size:12px;padding:4px 10px;border-radius:4px;background:#fff;border:1px solid #dee2e6">領養狗狗</span>
-          <span style="font-size:12px;padding:4px 10px;border-radius:4px;background:#fff;border:1px solid #dee2e6">助養區</span>
-          <span style="font-size:12px;padding:4px 10px;border-radius:99px;background:#3a7bd5;color:#fff;font-weight:600;margin-left:auto">💛 捐助</span>
+      <p style="margin-bottom: 16px">
+        All pages reachable from a full-width mobile drawer. No hover dropdowns.
+      </p>
+      <div
+        style="
+          background: #f8f9fa;
+          border: 1px solid #dee2e6;
+          border-radius: 10px;
+          padding: 14px;
+          font-family: sans-serif;
+        "
+      >
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+          "
+        >
+          <span style="font-size: 13px; font-weight: 700; color: #3a7bd5; margin-right: 4px"
+            >🐾 HKSCDA</span
+          >
+          <span
+            style="
+              font-size: 12px;
+              padding: 4px 10px;
+              border-radius: 4px;
+              background: #fff;
+              border: 1px solid #dee2e6;
+            "
+            >協會簡介</span
+          >
+          <span
+            style="
+              font-size: 12px;
+              padding: 4px 10px;
+              border-radius: 4px;
+              background: #fff;
+              border: 1px solid #dee2e6;
+            "
+            >領養貓貓</span
+          >
+          <span
+            style="
+              font-size: 12px;
+              padding: 4px 10px;
+              border-radius: 4px;
+              background: #fff;
+              border: 1px solid #dee2e6;
+            "
+            >領養狗狗</span
+          >
+          <span
+            style="
+              font-size: 12px;
+              padding: 4px 10px;
+              border-radius: 4px;
+              background: #fff;
+              border: 1px solid #dee2e6;
+            "
+            >助養區</span
+          >
+          <span
+            style="
+              font-size: 12px;
+              padding: 4px 10px;
+              border-radius: 99px;
+              background: #3a7bd5;
+              color: #fff;
+              font-weight: 600;
+              margin-left: auto;
+            "
+            >💛 捐助</span
+          >
         </div>
-        <p style="font-size:11px;color:#999;text-align:center">Sub-pages (CCCP, TNR, Team, etc.) accessible via breadcrumbs or footer only</p>
+        <p style="font-size: 11px; color: #999; text-align: center">
+          Sub-pages (CCCP, TNR, Team, etc.) accessible via breadcrumbs or footer only
+        </p>
       </div>
-      <div class="pros-cons" style="margin-top:12px">
-        <div class="pros"><h4>Pros</h4><ul><li>Simpler to implement</li><li>Great on mobile</li></ul></div>
-        <div class="cons"><h4>Cons</h4><ul><li>Sub-pages buried</li><li>CCCP/TNR/Team hard to find</li></ul></div>
+      <div class="pros-cons" style="margin-top: 12px">
+        <div class="pros">
+          <h4>Pros</h4>
+          <ul>
+            <li>Simpler to implement</li>
+            <li>Great on mobile</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h4>Cons</h4>
+          <ul>
+            <li>Sub-pages buried</li>
+            <li>CCCP/TNR/Team hard to find</li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
-
 </div>

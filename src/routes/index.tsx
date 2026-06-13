@@ -3,15 +3,9 @@ import {
   PawPrint,
   Heart,
   House,
-  Star,
   Check,
-  Users,
   Cat,
   Dog,
-  Scissors,
-  Siren,
-  Pill,
-  BarChart3,
   Smartphone,
   Zap,
   Building,
@@ -75,23 +69,14 @@ const animals = {
 
 const programs = [
   {
-    Icon: Siren,
     title: "緊急救援",
     desc: "接報後迅速行動，拯救受傷、被棄養或來自繁殖場的貓狗，提供即時醫療護理。",
   },
-  { Icon: Cat, title: "貓隻領域護理 CCCP", desc: "為社區貓隻提供持續餵食、健康監察及環境管理。" },
-  {
-    Icon: Scissors,
-    title: "TNR 捕捉絕育放回",
-    desc: "透過絕育有效控制流浪動物數量，減少苦難循環。",
-  },
-  { Icon: House, title: "暫托安置", desc: "由義工家庭提供臨時安置，讓動物在溫暖環境中等待領養。" },
-  { Icon: Pill, title: "每月助養計劃", desc: "每月 HK$100，助養一隻貓或狗，支援日常膳食及醫療。" },
-  {
-    Icon: BarChart3,
-    title: "透明工作報告",
-    desc: "定期發布月度領養及核數報告，對每一位支持者負責。",
-  },
+  { title: "貓隻領域護理 CCCP", desc: "為社區貓隻提供持續餵食、健康監察及環境管理。" },
+  { title: "TNR 捕捉絕育放回", desc: "透過絕育有效控制流浪動物數量，減少苦難循環。" },
+  { title: "暫托安置", desc: "由義工家庭提供臨時安置，讓動物在溫暖環境中等待領養。" },
+  { title: "每月助養計劃", desc: "每月 HK$100，助養一隻貓或狗，支援日常膳食及醫療。" },
+  { title: "透明工作報告", desc: "定期發布月度領養及核數報告，對每一位支持者負責。" },
 ];
 
 const donateMethods = [
@@ -234,17 +219,23 @@ function Index() {
             <p className="text-[var(--color-text-muted)] max-w-[52ch] mb-10">
               從緊急拯救到永久領養，我們提供全方位的動物福利服務。
             </p>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {programs.map((p) => (
+            <div className="divide-y divide-[var(--color-border)]">
+              {programs.map((p, i) => (
                 <div
                   key={p.title}
-                  className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 hover:shadow-md hover:-translate-y-1 transition-all"
+                  className="grid grid-cols-[3.5rem_1fr] lg:grid-cols-[4rem_18ch_1fr] gap-x-6 py-5 items-start"
                 >
-                  <div className="h-11 w-11 rounded-lg bg-[var(--color-primary-highlight)] flex items-center justify-center mb-3">
-                    <p.Icon className="h-5 w-5 text-[var(--color-primary)]" />
+                  <span className="font-display text-2xl font-bold text-[var(--color-primary)] tabular-nums leading-none pt-1">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div className="lg:contents">
+                    <h3 className="font-display font-bold text-[var(--color-panel)] mb-1 lg:mb-0 lg:pt-1">
+                      {p.title}
+                    </h3>
+                    <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">
+                      {p.desc}
+                    </p>
                   </div>
-                  <h3 className="font-display font-bold mb-2">{p.title}</h3>
-                  <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">{p.desc}</p>
                 </div>
               ))}
             </div>

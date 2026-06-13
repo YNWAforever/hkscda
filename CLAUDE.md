@@ -1,6 +1,7 @@
 # Project Instructions
 
 ## Tech Stack
+
 - **Language**: TypeScript 5.x
 - **Framework**: TanStack Start (SSR React 19 + TanStack Router + Vite 7 + Nitro)
 - **Styling**: Tailwind CSS v4 (utility-first, CSS variables for theming)
@@ -10,12 +11,14 @@
 - **Deploy target**: Vercel (Nitro `vercel` preset → `.vercel/output`)
 
 ## Build & Run
+
 - Dev: `bun run dev`
 - Build: `bun run build`
 - Lint: `bun run lint`
 - Format: `bun run format`
 
 ## Project Structure
+
 ```
 src/
   routes/       # File-based routes (TanStack Router)
@@ -28,6 +31,7 @@ src/
 ```
 
 ## Conventions
+
 - File naming: PascalCase for components, camelCase for utilities
 - Routes: file-based via `src/routes/` — add new pages here
 - CSS theming: use `var(--color-*)` tokens defined in `styles.css`, not hardcoded colours
@@ -35,7 +39,9 @@ src/
 - Commits: Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`, `refactor:`)
 
 ## Brand Theme (Poofyco-inspired redesign, 2026-06)
+
 Colour tokens in `src/styles.css` follow the Poofyco pet-rescue template style:
+
 - Deep indigo `#1d2353` (`--color-panel` / `--color-secondary`) — full-bleed dark bands, headings, footer
 - Coral `#e05c78` (`--color-primary`) — links, eyebrows, cat accents
 - Soft coral `#f27d92` (`--color-accent-warm` / `--color-cta`) — pills, stat numbers, badges, footer headings
@@ -46,11 +52,13 @@ Colour tokens in `src/styles.css` follow the Poofyco pet-rescue template style:
 - Never hardcode colours in components — always go through the tokens
 
 ## Adding Pages / Sections
+
 - New routes go in `src/routes/` — TanStack Router auto-generates `routeTree.gen.ts`
 - New UI sections go in `src/components/site/`
 - New shadcn/ui primitives: use `bunx shadcn add <component>` (writes to `src/components/ui/`)
 
 ## Deployment
+
 - Linked to Vercel project `hkscda` under `ynwaforevers-projects`
 - Push to `main` triggers a production deployment automatically
 - Preview: `vercel deploy --scope ynwaforevers-projects`

@@ -1,29 +1,29 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
-import { supabase } from '../../lib/supabase'
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { supabase } from "../../lib/supabase";
 
-export const Route = createFileRoute('/admin/login')({
+export const Route = createFileRoute("/admin/login")({
   component: AdminLoginPage,
-})
+});
 
 function AdminLoginPage() {
-  const navigate = useNavigate()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setError(null)
-    setLoading(true)
-    const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
-    setLoading(false)
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
+    setLoading(false);
     if (authError) {
-      setError('電郵或密碼錯誤')
-      return
+      setError("電郵或密碼錯誤");
+      return;
     }
-    navigate({ to: '/admin' })
+    navigate({ to: "/admin" });
   }
 
   return (
@@ -40,7 +40,7 @@ function AdminLoginPage() {
             <input
               type="email"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
             />
@@ -50,7 +50,7 @@ function AdminLoginPage() {
             <input
               type="password"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               required
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
             />
@@ -61,10 +61,10 @@ function AdminLoginPage() {
             disabled={loading}
             className="w-full py-2.5 bg-slate-800 text-white rounded-lg font-medium hover:bg-slate-700 transition-colors disabled:opacity-60"
           >
-            {loading ? '登入中…' : '登入'}
+            {loading ? "登入中…" : "登入"}
           </button>
         </form>
       </div>
     </main>
-  )
+  );
 }

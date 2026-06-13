@@ -1,126 +1,365 @@
 <!doctype html>
 <html lang="zh-HK">
-<head>
-<meta charset="utf-8">
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Noto+Sans+HK:wght@400;500;700;900&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --rose:#E05C78; --rose-dark:#CF4A66; --navy:#1D2353; --navy-2:#283066;
-    --salmon:#F27D92; --salmon-light:#F298A4; --blush:#FCE8EB; --cream:#FDF7F4;
-    --lavender:#E9E9F6; --ink:#2B2D42; --muted:#6b6e85;
-    --display:"Baloo 2","Noto Sans HK",sans-serif; --body:"Noto Sans HK",sans-serif;
-  }
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{width:1920px;height:800px;overflow:hidden}
-  .banner{position:relative;width:1920px;height:800px;background:var(--cream);font-family:var(--body);overflow:hidden}
+  <head>
+    <meta charset="utf-8" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Noto+Sans+HK:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --rose: #e05c78;
+        --rose-dark: #cf4a66;
+        --navy: #1d2353;
+        --navy-2: #283066;
+        --salmon: #f27d92;
+        --salmon-light: #f298a4;
+        --blush: #fce8eb;
+        --cream: #fdf7f4;
+        --lavender: #e9e9f6;
+        --ink: #2b2d42;
+        --muted: #6b6e85;
+        --display: "Baloo 2", "Noto Sans HK", sans-serif;
+        --body: "Noto Sans HK", sans-serif;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        width: 1920px;
+        height: 800px;
+        overflow: hidden;
+      }
+      .banner {
+        position: relative;
+        width: 1920px;
+        height: 800px;
+        background: var(--cream);
+        font-family: var(--body);
+        overflow: hidden;
+      }
 
-  /* topographic contour texture, echoes the site's bg-topo */
-  .topo{position:absolute;inset:0;opacity:.5}
-  .blob-tr{position:absolute;top:-180px;right:520px;width:560px;height:560px;border-radius:50%;
-    background:radial-gradient(circle,rgba(252,232,235,.9) 0%,transparent 70%)}
-  .blob-bl{position:absolute;bottom:-220px;left:-160px;width:620px;height:620px;border-radius:50%;
-    background:radial-gradient(circle,var(--lavender) 0%,transparent 70%)}
+      /* topographic contour texture, echoes the site's bg-topo */
+      .topo {
+        position: absolute;
+        inset: 0;
+        opacity: 0.5;
+      }
+      .blob-tr {
+        position: absolute;
+        top: -180px;
+        right: 520px;
+        width: 560px;
+        height: 560px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(252, 232, 235, 0.9) 0%, transparent 70%);
+      }
+      .blob-bl {
+        position: absolute;
+        bottom: -220px;
+        left: -160px;
+        width: 620px;
+        height: 620px;
+        border-radius: 50%;
+        background: radial-gradient(circle, var(--lavender) 0%, transparent 70%);
+      }
 
-  .content{position:absolute;left:130px;top:50%;transform:translateY(-50%);width:780px}
-  .badge{display:inline-flex;align-items:center;gap:10px;background:var(--blush);border-radius:999px;
-    padding:11px 24px;font-size:20px;font-weight:700;color:var(--rose);margin-bottom:32px}
-  .badge .dot{width:10px;height:10px;border-radius:50%;background:var(--salmon)}
-  h1{font-family:var(--display);font-weight:800;font-size:88px;line-height:1.16;color:var(--navy);margin-bottom:26px}
-  h1 .accent{position:relative;color:var(--rose);display:inline-block}
-  h1 .accent svg{position:absolute;left:0;bottom:-10px;width:100%;height:14px;color:var(--salmon)}
-  .sub{font-size:26px;line-height:1.65;color:var(--muted);max-width:42ch;margin-bottom:40px;font-weight:500}
-  .org-row{display:flex;align-items:center;gap:22px}
-  .org-pill{display:inline-flex;align-items:center;gap:16px;background:#fff;border:2px dashed var(--salmon-light);
-    border-radius:999px;padding:14px 30px 14px 16px}
-  .faces{display:flex}
-  .faces img{width:52px;height:52px;border-radius:50%;border:3px solid #fff;object-fit:cover;margin-left:-14px}
-  .faces img:first-child{margin-left:0}
-  .org-pill .txt b{display:block;font-family:var(--display);font-size:24px;color:var(--navy);line-height:1.2}
-  .org-pill .txt span{font-size:15px;color:var(--muted)}
+      .content {
+        position: absolute;
+        left: 130px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 780px;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--blush);
+        border-radius: 999px;
+        padding: 11px 24px;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--rose);
+        margin-bottom: 32px;
+      }
+      .badge .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--salmon);
+      }
+      h1 {
+        font-family: var(--display);
+        font-weight: 800;
+        font-size: 88px;
+        line-height: 1.16;
+        color: var(--navy);
+        margin-bottom: 26px;
+      }
+      h1 .accent {
+        position: relative;
+        color: var(--rose);
+        display: inline-block;
+      }
+      h1 .accent svg {
+        position: absolute;
+        left: 0;
+        bottom: -10px;
+        width: 100%;
+        height: 14px;
+        color: var(--salmon);
+      }
+      .sub {
+        font-size: 26px;
+        line-height: 1.65;
+        color: var(--muted);
+        max-width: 42ch;
+        margin-bottom: 40px;
+        font-weight: 500;
+      }
+      .org-row {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+      }
+      .org-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 16px;
+        background: #fff;
+        border: 2px dashed var(--salmon-light);
+        border-radius: 999px;
+        padding: 14px 30px 14px 16px;
+      }
+      .faces {
+        display: flex;
+      }
+      .faces img {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        border: 3px solid #fff;
+        object-fit: cover;
+        margin-left: -14px;
+      }
+      .faces img:first-child {
+        margin-left: 0;
+      }
+      .org-pill .txt b {
+        display: block;
+        font-family: var(--display);
+        font-size: 24px;
+        color: var(--navy);
+        line-height: 1.2;
+      }
+      .org-pill .txt span {
+        font-size: 15px;
+        color: var(--muted);
+      }
 
-  /* photo arch panel — the site's signature mask */
-  .photo-wrap{position:absolute;right:150px;top:90px;width:600px;height:620px}
-  .arch-bg{position:absolute;inset:-14px;background:var(--blush);border-radius:300px 300px 36px 36px;transform:rotate(3deg)}
-  .arch{position:absolute;inset:0;border-radius:300px 300px 32px 32px;overflow:hidden;box-shadow:0 30px 70px rgba(29,35,83,.22)}
-  .arch img{width:100%;height:100%;object-fit:cover;object-position:center 30%}
-  .rating{position:absolute;top:46px;right:-40px;background:var(--navy);color:#fff;border-radius:20px;
-    padding:16px 24px;display:flex;align-items:center;gap:14px;box-shadow:0 18px 44px rgba(29,35,83,.35)}
-  .rating .num{font-family:var(--display);font-weight:800;font-size:34px}
-  .rating .stars{color:var(--salmon);font-size:15px;letter-spacing:2px}
-  .rating .lbl{font-size:13px;color:rgba(255,255,255,.7);margin-top:2px}
-  .est{position:absolute;bottom:-26px;left:-60px;background:rgba(255,255,255,.96);border:1px solid var(--lavender);
-    border-radius:20px;padding:18px 28px;box-shadow:0 18px 44px rgba(29,35,83,.16);display:flex;align-items:center;gap:16px}
-  .est .yr{font-family:var(--display);font-weight:800;font-size:38px;color:var(--rose)}
-  .est .lbl{font-size:16px;color:var(--ink);font-weight:700;line-height:1.45}
-  .est .lbl small{display:block;font-size:13px;color:var(--muted);font-weight:500}
+      /* photo arch panel — the site's signature mask */
+      .photo-wrap {
+        position: absolute;
+        right: 150px;
+        top: 90px;
+        width: 600px;
+        height: 620px;
+      }
+      .arch-bg {
+        position: absolute;
+        inset: -14px;
+        background: var(--blush);
+        border-radius: 300px 300px 36px 36px;
+        transform: rotate(3deg);
+      }
+      .arch {
+        position: absolute;
+        inset: 0;
+        border-radius: 300px 300px 32px 32px;
+        overflow: hidden;
+        box-shadow: 0 30px 70px rgba(29, 35, 83, 0.22);
+      }
+      .arch img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center 30%;
+      }
+      .rating {
+        position: absolute;
+        top: 46px;
+        right: -40px;
+        background: var(--navy);
+        color: #fff;
+        border-radius: 20px;
+        padding: 16px 24px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        box-shadow: 0 18px 44px rgba(29, 35, 83, 0.35);
+      }
+      .rating .num {
+        font-family: var(--display);
+        font-weight: 800;
+        font-size: 34px;
+      }
+      .rating .stars {
+        color: var(--salmon);
+        font-size: 15px;
+        letter-spacing: 2px;
+      }
+      .rating .lbl {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.7);
+        margin-top: 2px;
+      }
+      .est {
+        position: absolute;
+        bottom: -26px;
+        left: -60px;
+        background: rgba(255, 255, 255, 0.96);
+        border: 1px solid var(--lavender);
+        border-radius: 20px;
+        padding: 18px 28px;
+        box-shadow: 0 18px 44px rgba(29, 35, 83, 0.16);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .est .yr {
+        font-family: var(--display);
+        font-weight: 800;
+        font-size: 38px;
+        color: var(--rose);
+      }
+      .est .lbl {
+        font-size: 16px;
+        color: var(--ink);
+        font-weight: 700;
+        line-height: 1.45;
+      }
+      .est .lbl small {
+        display: block;
+        font-size: 13px;
+        color: var(--muted);
+        font-weight: 500;
+      }
 
-  .org-footer{position:absolute;left:130px;bottom:52px;display:flex;align-items:center;gap:14px}
-  .paw{width:46px;height:46px;border-radius:50%;background:var(--rose);display:flex;align-items:center;justify-content:center}
-  .paw svg{width:24px;height:24px;fill:#fff}
-  .org-footer .name{font-family:var(--display);font-weight:700;font-size:24px;color:var(--navy)}
-  .org-footer .en{font-size:14px;color:var(--muted);letter-spacing:.12em}
-</style>
-</head>
-<body>
-<div class="banner">
-  <svg class="topo" viewBox="0 0 1920 800" preserveAspectRatio="none" aria-hidden="true">
-    <g fill="none" stroke="#F2D8DD" stroke-width="1.5" opacity=".55">
-      <path d="M-50 120 Q 300 40 640 130 T 1300 110 T 1990 150"/>
-      <path d="M-50 230 Q 320 140 660 240 T 1320 215 T 1990 260"/>
-      <path d="M-50 360 Q 340 260 690 360 T 1340 340 T 1990 380"/>
-      <path d="M-50 500 Q 300 410 650 500 T 1310 480 T 1990 520"/>
-      <path d="M-50 640 Q 330 550 670 640 T 1330 615 T 1990 660"/>
-      <path d="M-50 760 Q 310 680 660 760 T 1320 740 T 1990 780"/>
-    </g>
-  </svg>
-  <div class="blob-tr"></div>
-  <div class="blob-bl"></div>
+      .org-footer {
+        position: absolute;
+        left: 130px;
+        bottom: 52px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .paw {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        background: var(--rose);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .paw svg {
+        width: 24px;
+        height: 24px;
+        fill: #fff;
+      }
+      .org-footer .name {
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 24px;
+        color: var(--navy);
+      }
+      .org-footer .en {
+        font-size: 14px;
+        color: var(--muted);
+        letter-spacing: 0.12em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="banner">
+      <svg class="topo" viewBox="0 0 1920 800" preserveAspectRatio="none" aria-hidden="true">
+        <g fill="none" stroke="#F2D8DD" stroke-width="1.5" opacity=".55">
+          <path d="M-50 120 Q 300 40 640 130 T 1300 110 T 1990 150" />
+          <path d="M-50 230 Q 320 140 660 240 T 1320 215 T 1990 260" />
+          <path d="M-50 360 Q 340 260 690 360 T 1340 340 T 1990 380" />
+          <path d="M-50 500 Q 300 410 650 500 T 1310 480 T 1990 520" />
+          <path d="M-50 640 Q 330 550 670 640 T 1330 615 T 1990 660" />
+          <path d="M-50 760 Q 310 680 660 760 T 1320 740 T 1990 780" />
+        </g>
+      </svg>
+      <div class="blob-tr"></div>
+      <div class="blob-bl"></div>
 
-  <div class="content">
-    <div class="badge"><span class="dot"></span>本會為「不殺」(No Kill) 政府認可慈善機構</div>
-    <h1>領養代替購買<br>
-      <span class="accent">拯救一個生命
-        <svg viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true">
-          <path d="M2 9 Q 50 2 100 7 T 198 5" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round"/>
-        </svg>
-      </span>
-    </h1>
-    <p class="sub">自2007年成立，致力為流浪貓狗提供糧食、醫療、絕育及領養服務，每年救助超過600隻毛孩。</p>
-    <div class="org-row">
-      <div class="org-pill">
-        <div class="faces">
-          <img src="../../src/assets/cat1.jpg" alt="">
-          <img src="../../src/assets/dog1.jpg" alt="">
-          <img src="../../src/assets/cat2.jpg" alt="">
-          <img src="../../src/assets/dog2.jpg" alt="">
+      <div class="content">
+        <div class="badge"><span class="dot"></span>本會為「不殺」(No Kill) 政府認可慈善機構</div>
+        <h1>
+          領養代替購買<br />
+          <span class="accent"
+            >拯救一個生命
+            <svg viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true">
+              <path
+                d="M2 9 Q 50 2 100 7 T 198 5"
+                stroke="currentColor"
+                stroke-width="4"
+                fill="none"
+                stroke-linecap="round"
+              />
+            </svg>
+          </span>
+        </h1>
+        <p class="sub">
+          自2007年成立，致力為流浪貓狗提供糧食、醫療、絕育及領養服務，每年救助超過600隻毛孩。
+        </p>
+        <div class="org-row">
+          <div class="org-pill">
+            <div class="faces">
+              <img src="../../src/assets/cat1.jpg" alt="" />
+              <img src="../../src/assets/dog1.jpg" alt="" />
+              <img src="../../src/assets/cat2.jpg" alt="" />
+              <img src="../../src/assets/dog2.jpg" alt="" />
+            </div>
+            <div class="txt"><b>3.5K+ 義工及支持者</b><span>與我們一起守護毛孩</span></div>
+          </div>
         </div>
-        <div class="txt"><b>3.5K+ 義工及支持者</b><span>與我們一起守護毛孩</span></div>
+      </div>
+
+      <div class="photo-wrap">
+        <div class="arch-bg"></div>
+        <div class="arch"><img src="../../src/assets/hero.jpg" alt="義工懷抱獲救小動物" /></div>
+        <div class="rating">
+          <div class="num">4.9</div>
+          <div>
+            <div class="stars">★★★★★</div>
+            <div class="lbl">領養者好評</div>
+          </div>
+        </div>
+        <div class="est">
+          <div class="yr">600+</div>
+          <div class="lbl">每年救助毛孩<small>糧食 · 醫療 · 絕育 · 領養</small></div>
+        </div>
+      </div>
+
+      <div class="org-footer">
+        <div class="paw">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M8.35 3c1.18-.17 2.43 1.12 2.79 2.9.36 1.77-.29 3.35-1.47 3.53-1.17.18-2.43-1.11-2.8-2.89-.37-1.77.3-3.35 1.48-3.54zm7.3 0c1.19.19 1.85 1.77 1.5 3.54-.38 1.78-1.63 3.07-2.81 2.89-1.18-.18-1.84-1.76-1.47-3.53.36-1.78 1.61-3.07 2.78-2.9zm-12 5.8c1.08-.5 2.6.34 3.4 1.88.8 1.55.57 3.21-.5 3.71-1.07.51-2.59-.33-3.39-1.87-.8-1.55-.58-3.21.49-3.72zm16.7 0c1.07.51 1.29 2.17.49 3.72-.8 1.54-2.32 2.38-3.39 1.87-1.07-.5-1.3-2.16-.5-3.71.8-1.54 2.32-2.38 3.4-1.88zM12 11c2.5 0 6 3.5 6 6.5 0 1.93-1.57 3.5-3.5 3.5-.95 0-1.74-.5-2.5-.5s-1.55.5-2.5.5C7.57 21 6 19.43 6 17.5 6 14.5 9.5 11 12 11z"
+            />
+          </svg>
+        </div>
+        <div>
+          <div class="name">香港拯救貓狗協會</div>
+          <div class="en">HONG KONG SAVING CAT &amp; DOG ASSOCIATION</div>
+        </div>
       </div>
     </div>
-  </div>
-
-  <div class="photo-wrap">
-    <div class="arch-bg"></div>
-    <div class="arch"><img src="../../src/assets/hero.jpg" alt="義工懷抱獲救小動物"></div>
-    <div class="rating">
-      <div class="num">4.9</div>
-      <div><div class="stars">★★★★★</div><div class="lbl">領養者好評</div></div>
-    </div>
-    <div class="est">
-      <div class="yr">600+</div>
-      <div class="lbl">每年救助毛孩<small>糧食 · 醫療 · 絕育 · 領養</small></div>
-    </div>
-  </div>
-
-  <div class="org-footer">
-    <div class="paw">
-      <svg viewBox="0 0 24 24"><path d="M8.35 3c1.18-.17 2.43 1.12 2.79 2.9.36 1.77-.29 3.35-1.47 3.53-1.17.18-2.43-1.11-2.8-2.89-.37-1.77.3-3.35 1.48-3.54zm7.3 0c1.19.19 1.85 1.77 1.5 3.54-.38 1.78-1.63 3.07-2.81 2.89-1.18-.18-1.84-1.76-1.47-3.53.36-1.78 1.61-3.07 2.78-2.9zm-12 5.8c1.08-.5 2.6.34 3.4 1.88.8 1.55.57 3.21-.5 3.71-1.07.51-2.59-.33-3.39-1.87-.8-1.55-.58-3.21.49-3.72zm16.7 0c1.07.51 1.29 2.17.49 3.72-.8 1.54-2.32 2.38-3.39 1.87-1.07-.5-1.3-2.16-.5-3.71.8-1.54 2.32-2.38 3.4-1.88zM12 11c2.5 0 6 3.5 6 6.5 0 1.93-1.57 3.5-3.5 3.5-.95 0-1.74-.5-2.5-.5s-1.55.5-2.5.5C7.57 21 6 19.43 6 17.5 6 14.5 9.5 11 12 11z"/></svg>
-    </div>
-    <div>
-      <div class="name">香港拯救貓狗協會</div>
-      <div class="en">HONG KONG SAVING CAT &amp; DOG ASSOCIATION</div>
-    </div>
-  </div>
-</div>
-</body>
+  </body>
 </html>

@@ -6,16 +6,16 @@
 
 ## Quick Reference
 
-| Element | Value |
-|---------|-------|
-| Primary Color | #E05C78 (Rescue Rose) |
-| Secondary Color | #1D2353 (Guardian Navy) |
-| Accent Color | #F27D92 (Soft Salmon) |
-| Background | #FDF7F4 (Warm Cream) |
-| Lavender Zone | #E9E9F6 |
-| Pink Strip | #F298A4 |
-| Display Font | Baloo 2 (Latin) + Noto Sans HK |
-| Body Font | Noto Sans HK |
+| Element         | Value                          |
+| --------------- | ------------------------------ |
+| Primary Color   | #E05C78 (Rescue Rose)          |
+| Secondary Color | #1D2353 (Guardian Navy)        |
+| Accent Color    | #F27D92 (Soft Salmon)          |
+| Background      | #FDF7F4 (Warm Cream)           |
+| Lavender Zone   | #E9E9F6                        |
+| Pink Strip      | #F298A4                        |
+| Display Font    | Baloo 2 (Latin) + Noto Sans HK |
+| Body Font       | Noto Sans HK                   |
 
 ## Brand Concept
 
@@ -27,30 +27,30 @@ Warm, approachable, and trustworthy. The blush-pink-and-navy palette signals com
 
 ### Primary Colors
 
-| Shade | Hex | Usage |
-|-------|-----|-------|
-| **Rescue Rose** | #E05C78 | Links, eyebrows, cat accents, progress bars |
-| **Rescue Rose Hover** | #CF4A66 | Hover states |
-| **Rescue Rose Active** | #B93D58 | Pressed states |
-| **Rescue Rose Light** | #FADFE4 | Highlight backgrounds, icon chips |
+| Shade                  | Hex     | Usage                                       |
+| ---------------------- | ------- | ------------------------------------------- |
+| **Rescue Rose**        | #E05C78 | Links, eyebrows, cat accents, progress bars |
+| **Rescue Rose Hover**  | #CF4A66 | Hover states                                |
+| **Rescue Rose Active** | #B93D58 | Pressed states                              |
+| **Rescue Rose Light**  | #FADFE4 | Highlight backgrounds, icon chips           |
 
 ### Secondary Colors
 
-| Shade | Hex | Usage |
-|-------|-----|-------|
-| **Guardian Navy** | #1D2353 | Headings, full-bleed dark bands, footer, dog accents |
-| **Guardian Navy 2** | #283066 | Inset panels on navy (footer logo card) |
-| **Lavender** | #E9E9F6 | Light section zones, soft navy surfaces |
-| **Lavender Deep** | #DCDCF0 | Borders/dividers on lavender zones |
+| Shade               | Hex     | Usage                                                |
+| ------------------- | ------- | ---------------------------------------------------- |
+| **Guardian Navy**   | #1D2353 | Headings, full-bleed dark bands, footer, dog accents |
+| **Guardian Navy 2** | #283066 | Inset panels on navy (footer logo card)              |
+| **Lavender**        | #E9E9F6 | Light section zones, soft navy surfaces              |
+| **Lavender Deep**   | #DCDCF0 | Borders/dividers on lavender zones                   |
 
 ### Accent Colors
 
-| Shade | Hex | Usage |
-|-------|-----|-------|
-| **Soft Salmon** | #F27D92 | CTA pills, stat numbers, star ratings, footer headings |
-| **Soft Salmon Hover** | #EE6781 | CTA hover states |
-| **Soft Salmon Light** | #FCE8EB | Blush section backgrounds (hero) |
-| **Pink Strip** | #F298A4 | Footer copyright strip, thin brand bands |
+| Shade                 | Hex     | Usage                                                  |
+| --------------------- | ------- | ------------------------------------------------------ |
+| **Soft Salmon**       | #F27D92 | CTA pills, stat numbers, star ratings, footer headings |
+| **Soft Salmon Hover** | #EE6781 | CTA hover states                                       |
+| **Soft Salmon Light** | #FCE8EB | Blush section backgrounds (hero)                       |
+| **Pink Strip**        | #F298A4 | Footer copyright strip, thin brand bands               |
 
 ## Typography
 

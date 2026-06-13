@@ -13,6 +13,7 @@
 ## File Map
 
 ### New files to create
+
 ```
 src/lib/supabase.ts                          — Supabase client singleton
 src/types/animal.ts                          — Animal, AdoptionApplication TS types
@@ -47,6 +48,7 @@ src/routes/admin/animals/$id.edit.tsx        — /admin/animals/$id/edit
 ```
 
 ### Files to modify
+
 ```
 src/components/site/Header.tsx               — Replace anchor hrefs with <Link>, add Radix dropdowns
 ```
@@ -58,6 +60,7 @@ src/components/site/Header.tsx               — Replace anchor hrefs with <Link
 ### Task 1: Install dependencies + environment setup
 
 **Files:**
+
 - Modify: `package.json` (via bun add)
 - Create: `.env.local` (gitignored)
 
@@ -164,6 +167,7 @@ create policy "public insert"
 In Supabase dashboard: Storage → New bucket → name: `animal-images`, Public: ON.
 
 Add storage policy:
+
 ```sql
 -- authenticated users can upload
 create policy "admin upload"
@@ -177,6 +181,7 @@ create policy "admin upload"
 ### Task 3: Supabase client + TypeScript types
 
 **Files:**
+
 - Create: `src/lib/supabase.ts`
 - Create: `src/types/animal.ts`
 
@@ -185,12 +190,12 @@ create policy "admin upload"
 Create `src/lib/supabase.ts`:
 
 ```ts
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from "@supabase/supabase-js";
 
 export const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL as string,
-  import.meta.env.VITE_SUPABASE_ANON_KEY as string
-)
+  import.meta.env.VITE_SUPABASE_ANON_KEY as string,
+);
 ```
 
 - [ ] **Step 2: Create TypeScript types**
@@ -198,51 +203,51 @@ export const supabase = createClient(
 Create `src/types/animal.ts`:
 
 ```ts
-export type AnimalType = 'cat' | 'dog' | 'sponsor'
-export type AnimalStatus = 'available' | 'adopted' | 'fostered'
-export type AgeFilter = 'all' | 'bb' | 'adult' | 'senior'
-export type HousingType = '私人樓宇' | '居屋' | '公屋' | '村屋' | '其他'
+export type AnimalType = "cat" | "dog" | "sponsor";
+export type AnimalStatus = "available" | "adopted" | "fostered";
+export type AgeFilter = "all" | "bb" | "adult" | "senior";
+export type HousingType = "私人樓宇" | "居屋" | "公屋" | "村屋" | "其他";
 
 export interface Animal {
-  id: string
-  type: AnimalType
-  name: string
-  name_en: string | null
-  gender: 'male' | 'female'
-  age: string
-  description: string | null
-  notes: string | null
-  status: AnimalStatus
-  image_url: string | null
-  created_at: string
-  updated_at: string
+  id: string;
+  type: AnimalType;
+  name: string;
+  name_en: string | null;
+  gender: "male" | "female";
+  age: string;
+  description: string | null;
+  notes: string | null;
+  status: AnimalStatus;
+  image_url: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface AdoptionApplication {
-  id: string
-  animal_id: string | null
-  animal_name: string
-  animal_type: string
-  applicant_name: string
-  phone: string
-  email: string
-  address: string
-  housing_type: HousingType
-  family_size: number | null
-  existing_pets: string | null
-  reason: string
-  status: 'pending' | 'approved' | 'rejected'
-  created_at: string
+  id: string;
+  animal_id: string | null;
+  animal_name: string;
+  animal_type: string;
+  applicant_name: string;
+  phone: string;
+  email: string;
+  address: string;
+  housing_type: HousingType;
+  family_size: number | null;
+  existing_pets: string | null;
+  reason: string;
+  status: "pending" | "approved" | "rejected";
+  created_at: string;
 }
 
 export function parseAgeFilter(age: string): AgeFilter {
-  if (age.includes('個月')) return 'bb'
-  const match = age.match(/(\d+)/)
-  if (!match) return 'adult'
-  const years = parseInt(match[1], 10)
-  if (years < 1) return 'bb'
-  if (years <= 7) return 'adult'
-  return 'senior'
+  if (age.includes("個月")) return "bb";
+  const match = age.match(/(\d+)/);
+  if (!match) return "adult";
+  const years = parseInt(match[1], 10);
+  if (years < 1) return "bb";
+  if (years <= 7) return "adult";
+  return "senior";
 }
 ```
 
@@ -258,6 +263,7 @@ git commit -m "feat: add Supabase client and Animal/AdoptionApplication types"
 ### Task 4: Header navigation refactor
 
 **Files:**
+
 - Modify: `src/components/site/Header.tsx`
 
 - [ ] **Step 1: Read current Header**
@@ -271,12 +277,12 @@ cat src/components/site/Header.tsx
 Replace the entire file content with:
 
 ```tsx
-import * as NavigationMenu from '@radix-ui/react-navigation-menu'
-import { Link } from '@tanstack/react-router'
-import { useState } from 'react'
+import * as NavigationMenu from "@radix-ui/react-navigation-menu";
+import { Link } from "@tanstack/react-router";
+import { useState } from "react";
 
 export function Header() {
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 bg-[var(--color-surface)] border-b border-[var(--color-border)]">
@@ -288,10 +294,12 @@ export function Header() {
         {/* Desktop nav */}
         <NavigationMenu.Root className="hidden md:flex">
           <NavigationMenu.List className="flex items-center gap-1">
-
             <NavigationMenu.Item>
               <NavigationMenu.Link asChild>
-                <Link to="/" className="px-3 py-2 text-sm hover:text-[var(--color-primary)] transition-colors">
+                <Link
+                  to="/"
+                  className="px-3 py-2 text-sm hover:text-[var(--color-primary)] transition-colors"
+                >
                   主頁
                 </Link>
               </NavigationMenu.Link>
@@ -303,19 +311,44 @@ export function Header() {
               </NavigationMenu.Trigger>
               <NavigationMenu.Content className="absolute top-full left-0 mt-1 w-44 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg shadow-lg py-1">
                 <NavigationMenu.Link asChild>
-                  <Link to="/about" className="block px-4 py-2 text-sm hover:bg-[var(--color-surface-offset)]">協會簡介</Link>
+                  <Link
+                    to="/about"
+                    className="block px-4 py-2 text-sm hover:bg-[var(--color-surface-offset)]"
+                  >
+                    協會簡介
+                  </Link>
                 </NavigationMenu.Link>
                 <NavigationMenu.Link asChild>
-                  <Link to="/about/cccp" className="block px-4 py-2 text-sm hover:bg-[var(--color-surface-offset)]">CCCP計劃</Link>
+                  <Link
+                    to="/about/cccp"
+                    className="block px-4 py-2 text-sm hover:bg-[var(--color-surface-offset)]"
+                  >
+                    CCCP計劃
+                  </Link>
                 </NavigationMenu.Link>
                 <NavigationMenu.Link asChild>
-                  <Link to="/about/tnr" className="block px-4 py-2 text-sm hover:bg-[var(--color-surface-offset)]">TNR計劃</Link>
+                  <Link
+                    to="/about/tnr"
+                    className="block px-4 py-2 text-sm hover:bg-[var(--color-surface-offset)]"
+                  >
+                    TNR計劃
+                  </Link>
                 </NavigationMenu.Link>
                 <NavigationMenu.Link asChild>
-                  <Link to="/about/team" className="block px-4 py-2 text-sm hover:bg-[var(--color-surface-offset)]">團隊</Link>
+                  <Link
+                    to="/about/team"
+                    className="block px-4 py-2 text-sm hover:bg-[var(--color-surface-offset)]"
+                  >
+                    團隊
+                  </Link>
                 </NavigationMenu.Link>
                 <NavigationMenu.Link asChild>
-                  <Link to="/about/privacy" className="block px-4 py-2 text-sm hover:bg-[var(--color-surface-offset)]">私隱聲明</Link>
+                  <Link
+                    to="/about/privacy"
+                    className="block px-4 py-2 text-sm hover:bg-[var(--color-surface-offset)]"
+                  >
+                    私隱聲明
+                  </Link>
                 </NavigationMenu.Link>
               </NavigationMenu.Content>
             </NavigationMenu.Item>
@@ -326,20 +359,38 @@ export function Header() {
               </NavigationMenu.Trigger>
               <NavigationMenu.Content className="absolute top-full left-0 mt-1 w-44 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg shadow-lg py-1">
                 <NavigationMenu.Link asChild>
-                  <Link to="/adoption/instructions" className="block px-4 py-2 text-sm hover:bg-[var(--color-surface-offset)]">領養需知</Link>
+                  <Link
+                    to="/adoption/instructions"
+                    className="block px-4 py-2 text-sm hover:bg-[var(--color-surface-offset)]"
+                  >
+                    領養需知
+                  </Link>
                 </NavigationMenu.Link>
                 <NavigationMenu.Link asChild>
-                  <Link to="/animals/cat" className="block px-4 py-2 text-sm hover:bg-[var(--color-surface-offset)]">待領養貓貓</Link>
+                  <Link
+                    to="/animals/cat"
+                    className="block px-4 py-2 text-sm hover:bg-[var(--color-surface-offset)]"
+                  >
+                    待領養貓貓
+                  </Link>
                 </NavigationMenu.Link>
                 <NavigationMenu.Link asChild>
-                  <Link to="/animals/dog" className="block px-4 py-2 text-sm hover:bg-[var(--color-surface-offset)]">待領養狗狗</Link>
+                  <Link
+                    to="/animals/dog"
+                    className="block px-4 py-2 text-sm hover:bg-[var(--color-surface-offset)]"
+                  >
+                    待領養狗狗
+                  </Link>
                 </NavigationMenu.Link>
               </NavigationMenu.Content>
             </NavigationMenu.Item>
 
             <NavigationMenu.Item>
               <NavigationMenu.Link asChild>
-                <Link to="/sponsors" className="px-3 py-2 text-sm hover:text-[var(--color-primary)] transition-colors">
+                <Link
+                  to="/sponsors"
+                  className="px-3 py-2 text-sm hover:text-[var(--color-primary)] transition-colors"
+                >
                   助養區
                 </Link>
               </NavigationMenu.Link>
@@ -347,12 +398,14 @@ export function Header() {
 
             <NavigationMenu.Item>
               <NavigationMenu.Link asChild>
-                <a href="/#donate" className="px-4 py-2 text-sm bg-[var(--color-primary)] text-white rounded-full hover:bg-[var(--color-primary-hover)] transition-colors">
+                <a
+                  href="/#donate"
+                  className="px-4 py-2 text-sm bg-[var(--color-primary)] text-white rounded-full hover:bg-[var(--color-primary-hover)] transition-colors"
+                >
                   💛 立即捐助
                 </a>
               </NavigationMenu.Link>
             </NavigationMenu.Item>
-
           </NavigationMenu.List>
           <NavigationMenu.Viewport className="absolute top-full left-0 w-full" />
         </NavigationMenu.Root>
@@ -360,33 +413,93 @@ export function Header() {
         {/* Mobile hamburger */}
         <button
           className="md:hidden p-2"
-          onClick={() => setMobileOpen(v => !v)}
+          onClick={() => setMobileOpen((v) => !v)}
           aria-label="Toggle menu"
         >
-          {mobileOpen ? '✕' : '☰'}
+          {mobileOpen ? "✕" : "☰"}
         </button>
       </div>
 
       {/* Mobile menu */}
       {mobileOpen && (
         <div className="md:hidden border-t border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 space-y-1">
-          <Link to="/" onClick={() => setMobileOpen(false)} className="block py-2 text-sm">主頁</Link>
-          <div className="text-xs font-semibold text-[var(--color-text-muted)] pt-2 pb-1">關於協會</div>
-          <Link to="/about" onClick={() => setMobileOpen(false)} className="block py-2 text-sm pl-3">協會簡介</Link>
-          <Link to="/about/cccp" onClick={() => setMobileOpen(false)} className="block py-2 text-sm pl-3">CCCP計劃</Link>
-          <Link to="/about/tnr" onClick={() => setMobileOpen(false)} className="block py-2 text-sm pl-3">TNR計劃</Link>
-          <Link to="/about/team" onClick={() => setMobileOpen(false)} className="block py-2 text-sm pl-3">團隊</Link>
-          <Link to="/about/privacy" onClick={() => setMobileOpen(false)} className="block py-2 text-sm pl-3">私隱聲明</Link>
+          <Link to="/" onClick={() => setMobileOpen(false)} className="block py-2 text-sm">
+            主頁
+          </Link>
+          <div className="text-xs font-semibold text-[var(--color-text-muted)] pt-2 pb-1">
+            關於協會
+          </div>
+          <Link
+            to="/about"
+            onClick={() => setMobileOpen(false)}
+            className="block py-2 text-sm pl-3"
+          >
+            協會簡介
+          </Link>
+          <Link
+            to="/about/cccp"
+            onClick={() => setMobileOpen(false)}
+            className="block py-2 text-sm pl-3"
+          >
+            CCCP計劃
+          </Link>
+          <Link
+            to="/about/tnr"
+            onClick={() => setMobileOpen(false)}
+            className="block py-2 text-sm pl-3"
+          >
+            TNR計劃
+          </Link>
+          <Link
+            to="/about/team"
+            onClick={() => setMobileOpen(false)}
+            className="block py-2 text-sm pl-3"
+          >
+            團隊
+          </Link>
+          <Link
+            to="/about/privacy"
+            onClick={() => setMobileOpen(false)}
+            className="block py-2 text-sm pl-3"
+          >
+            私隱聲明
+          </Link>
           <div className="text-xs font-semibold text-[var(--color-text-muted)] pt-2 pb-1">領養</div>
-          <Link to="/adoption/instructions" onClick={() => setMobileOpen(false)} className="block py-2 text-sm pl-3">領養需知</Link>
-          <Link to="/animals/cat" onClick={() => setMobileOpen(false)} className="block py-2 text-sm pl-3">待領養貓貓</Link>
-          <Link to="/animals/dog" onClick={() => setMobileOpen(false)} className="block py-2 text-sm pl-3">待領養狗狗</Link>
-          <Link to="/sponsors" onClick={() => setMobileOpen(false)} className="block py-2 text-sm">助養區</Link>
-          <a href="/#donate" onClick={() => setMobileOpen(false)} className="block py-2 text-sm text-[var(--color-primary)]">💛 立即捐助</a>
+          <Link
+            to="/adoption/instructions"
+            onClick={() => setMobileOpen(false)}
+            className="block py-2 text-sm pl-3"
+          >
+            領養需知
+          </Link>
+          <Link
+            to="/animals/cat"
+            onClick={() => setMobileOpen(false)}
+            className="block py-2 text-sm pl-3"
+          >
+            待領養貓貓
+          </Link>
+          <Link
+            to="/animals/dog"
+            onClick={() => setMobileOpen(false)}
+            className="block py-2 text-sm pl-3"
+          >
+            待領養狗狗
+          </Link>
+          <Link to="/sponsors" onClick={() => setMobileOpen(false)} className="block py-2 text-sm">
+            助養區
+          </Link>
+          <a
+            href="/#donate"
+            onClick={() => setMobileOpen(false)}
+            className="block py-2 text-sm text-[var(--color-primary)]"
+          >
+            💛 立即捐助
+          </a>
         </div>
       )}
     </header>
-  )
+  );
 }
 ```
 
@@ -412,6 +525,7 @@ git commit -m "feat: refactor header to Radix NavigationMenu with TanStack Route
 ### Task 5: /about page
 
 **Files:**
+
 - Create: `src/routes/about/index.tsx`
 
 - [ ] **Step 1: Create the route file**
@@ -419,11 +533,11 @@ git commit -m "feat: refactor header to Radix NavigationMenu with TanStack Route
 Create `src/routes/about/index.tsx`:
 
 ```tsx
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/about/')({
+export const Route = createFileRoute("/about/")({
   component: AboutPage,
-})
+});
 
 function AboutPage() {
   return (
@@ -442,13 +556,13 @@ function AboutPage() {
         <h2 className="font-display text-xl font-bold">協會宗旨</h2>
         <ul className="space-y-2 list-none">
           {[
-            '拯救流浪及被遺棄的貓狗',
-            '提供臨時住所及醫療照顧',
-            '推廣負責任的寵物主人文化',
-            '協助動物尋找永久愛心家庭',
-            '推行絕育計劃減少流浪動物數目',
-            '提高社會人士對動物福利的關注',
-            '與政府及其他動物福利機構合作',
+            "拯救流浪及被遺棄的貓狗",
+            "提供臨時住所及醫療照顧",
+            "推廣負責任的寵物主人文化",
+            "協助動物尋找永久愛心家庭",
+            "推行絕育計劃減少流浪動物數目",
+            "提高社會人士對動物福利的關注",
+            "與政府及其他動物福利機構合作",
           ].map((item) => (
             <li key={item} className="flex items-start gap-2 text-[var(--color-text-muted)]">
               <span className="text-[var(--color-primary)] mt-1">•</span>
@@ -486,9 +600,9 @@ function AboutPage() {
             </thead>
             <tbody>
               {[
-                ['領養費', 'HK$800', 'HK$1,000'],
-                ['絕育手術（已包含在領養費內）', '✓', '✓'],
-                ['晶片及疫苗（已包含在領養費內）', '✓', '✓'],
+                ["領養費", "HK$800", "HK$1,000"],
+                ["絕育手術（已包含在領養費內）", "✓", "✓"],
+                ["晶片及疫苗（已包含在領養費內）", "✓", "✓"],
               ].map(([service, cat, dog]) => (
                 <tr key={service} className="border-b border-[var(--color-border)]">
                   <td className="p-3 border border-[var(--color-border)]">{service}</td>
@@ -501,7 +615,7 @@ function AboutPage() {
         </div>
       </section>
     </main>
-  )
+  );
 }
 ```
 
@@ -525,6 +639,7 @@ git commit -m "feat: add /about static page"
 ### Task 6: /about/cccp, /about/tnr, /about/team, /about/privacy
 
 **Files:**
+
 - Create: `src/routes/about/cccp.tsx`
 - Create: `src/routes/about/tnr.tsx`
 - Create: `src/routes/about/team.tsx`
@@ -535,17 +650,19 @@ git commit -m "feat: add /about static page"
 Create `src/routes/about/cccp.tsx`:
 
 ```tsx
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/about/cccp')({
+export const Route = createFileRoute("/about/cccp")({
   component: CCCPPage,
-})
+});
 
 function CCCPPage() {
   return (
     <main className="max-w-3xl mx-auto px-4 py-12 space-y-10">
       <h1 className="font-display text-3xl font-bold">CCCP計劃</h1>
-      <p className="text-[var(--color-text-muted)] text-lg">社區貓照顧計劃（Community Cat Care Program）</p>
+      <p className="text-[var(--color-text-muted)] text-lg">
+        社區貓照顧計劃（Community Cat Care Program）
+      </p>
 
       <section className="space-y-4">
         <h2 className="font-display text-xl font-bold">什麼是CCCP？</h2>
@@ -577,15 +694,17 @@ function CCCPPage() {
             </thead>
             <tbody>
               {[
-                ['貓隻管理', '移除/撲殺', '原地絕育照顧'],
-                ['貓隻數目', '短期減少，長期回升', '逐步穩定減少'],
-                ['社區衝突', '頻繁', '顯著減少'],
-                ['動物福利', '低', '高'],
-                ['費用效益', '持續高費用', '一次性投入，長期效益'],
+                ["貓隻管理", "移除/撲殺", "原地絕育照顧"],
+                ["貓隻數目", "短期減少，長期回升", "逐步穩定減少"],
+                ["社區衝突", "頻繁", "顯著減少"],
+                ["動物福利", "低", "高"],
+                ["費用效益", "持續高費用", "一次性投入，長期效益"],
               ].map(([item, traditional, cccp]) => (
                 <tr key={item}>
                   <td className="p-3 border border-[var(--color-border)] font-medium">{item}</td>
-                  <td className="p-3 border border-[var(--color-border)] text-red-600">{traditional}</td>
+                  <td className="p-3 border border-[var(--color-border)] text-red-600">
+                    {traditional}
+                  </td>
                   <td className="p-3 border border-[var(--color-border)] text-green-600">{cccp}</td>
                 </tr>
               ))}
@@ -606,12 +725,11 @@ function CCCPPage() {
       <section className="space-y-4">
         <h2 className="font-display text-xl font-bold">如何支持CCCP</h2>
         <p className="text-[var(--color-text-muted)] leading-relaxed">
-          您可以透過擔任義工、捐款或捐贈物資支持CCCP計劃。
-          如有興趣參與，請透過協會電郵聯絡我們。
+          您可以透過擔任義工、捐款或捐贈物資支持CCCP計劃。 如有興趣參與，請透過協會電郵聯絡我們。
         </p>
       </section>
     </main>
-  )
+  );
 }
 ```
 
@@ -620,11 +738,11 @@ function CCCPPage() {
 Create `src/routes/about/tnr.tsx`:
 
 ```tsx
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/about/tnr')({
+export const Route = createFileRoute("/about/tnr")({
   component: TNRPage,
-})
+});
 
 function TNRPage() {
   return (
@@ -645,22 +763,22 @@ function TNRPage() {
         <div className="grid gap-4 md:grid-cols-3">
           {[
             {
-              step: '1',
-              title: '誘捕 Trap',
-              icon: '🪤',
-              desc: '義工使用人道捕捉籠，安全捕捉目標流浪貓，過程不傷害動物。',
+              step: "1",
+              title: "誘捕 Trap",
+              icon: "🪤",
+              desc: "義工使用人道捕捉籠，安全捕捉目標流浪貓，過程不傷害動物。",
             },
             {
-              step: '2',
-              title: '絕育 Neuter',
-              icon: '🏥',
-              desc: '將捕捉到的貓送往合作獸醫診所進行絕育手術，同時進行基本健康檢查及注射疫苗。',
+              step: "2",
+              title: "絕育 Neuter",
+              icon: "🏥",
+              desc: "將捕捉到的貓送往合作獸醫診所進行絕育手術，同時進行基本健康檢查及注射疫苗。",
             },
             {
-              step: '3',
-              title: '放回 Return',
-              icon: '🏠',
-              desc: '手術後在原地放回，耳尖剪作識別記號，繼續由CCCP義工照顧。',
+              step: "3",
+              title: "放回 Return",
+              icon: "🏠",
+              desc: "手術後在原地放回，耳尖剪作識別記號，繼續由CCCP義工照顧。",
             },
           ].map(({ step, title, icon, desc }) => (
             <div key={step} className="bg-[var(--color-surface-offset)] rounded-xl p-5 space-y-2">
@@ -682,7 +800,7 @@ function TNRPage() {
         </p>
       </section>
     </main>
-  )
+  );
 }
 ```
 
@@ -691,11 +809,11 @@ function TNRPage() {
 Create `src/routes/about/team.tsx`:
 
 ```tsx
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/about/team')({
+export const Route = createFileRoute("/about/team")({
   component: TeamPage,
-})
+});
 
 function TeamPage() {
   return (
@@ -706,8 +824,8 @@ function TeamPage() {
         <h2 className="font-display text-xl font-bold">董事會</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           {[
-            { role: '主席', name: '謝曉梅女士', desc: '帶領協會多年，致力推動香港動物福利發展。' },
-            { role: '名譽主席', name: '鄧殷女士', desc: '支持協會工作，積極推廣動物友善社區。' },
+            { role: "主席", name: "謝曉梅女士", desc: "帶領協會多年，致力推動香港動物福利發展。" },
+            { role: "名譽主席", name: "鄧殷女士", desc: "支持協會工作，積極推廣動物友善社區。" },
           ].map(({ role, name, desc }) => (
             <div key={name} className="bg-[var(--color-surface-offset)] rounded-xl p-6 space-y-2">
               <div className="text-sm text-[var(--color-primary)] font-semibold">{role}</div>
@@ -726,7 +844,7 @@ function TeamPage() {
         </p>
       </section>
     </main>
-  )
+  );
 }
 ```
 
@@ -735,11 +853,11 @@ function TeamPage() {
 Create `src/routes/about/privacy.tsx`:
 
 ```tsx
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/about/privacy')({
+export const Route = createFileRoute("/about/privacy")({
   component: PrivacyPage,
-})
+});
 
 function PrivacyPage() {
   return (
@@ -749,32 +867,32 @@ function PrivacyPage() {
 
       {[
         {
-          title: '1. 個人資料的收集',
+          title: "1. 個人資料的收集",
           content: `香港拯救貓狗協會（「協會」）可能收集您的個人資料，包括姓名、聯絡電話、電郵地址及住址等，
             以處理領養申請、接受捐款及提供相關服務。我們只會收集所需的最少個人資料。`,
         },
         {
-          title: '2. 個人資料的使用',
+          title: "2. 個人資料的使用",
           content: `您的個人資料將只用於：處理您的領養或助養申請；與您聯絡有關您的申請事宜；
             如您同意，向您發送協會的最新消息及活動資訊。我們不會將您的個人資料出售或出租予第三方。`,
         },
         {
-          title: '3. 個人資料的安全',
+          title: "3. 個人資料的安全",
           content: `協會採取合理措施保護您的個人資料，防止未經授權的存取、披露、複製、使用或修改。
             所有個人資料均儲存在安全的系統內。`,
         },
         {
-          title: '4. 個人資料的披露',
+          title: "4. 個人資料的披露",
           content: `在以下情況下，協會可能需要披露您的個人資料：根據法律規定；為保護協會的合法權益；
             獲得您的事先同意。`,
         },
         {
-          title: '5. 個人資料的保留',
+          title: "5. 個人資料的保留",
           content: `協會只會在達到收集目的所需的期限內保留您的個人資料，
             或根據適用法律規定的保留期限內保留。`,
         },
         {
-          title: '6. 查閱及更正權利',
+          title: "6. 查閱及更正權利",
           content: `根據《個人資料（私隱）條例》，您有權查閱及更正我們持有的您的個人資料。
             如需提出要求，請電郵至協會的聯絡電郵。`,
         },
@@ -785,7 +903,7 @@ function PrivacyPage() {
         </section>
       ))}
     </main>
-  )
+  );
 }
 ```
 
@@ -809,6 +927,7 @@ git commit -m "feat: add /about/cccp, /about/tnr, /about/team, /about/privacy st
 ### Task 7: /adoption/instructions page
 
 **Files:**
+
 - Create: `src/routes/adoption/instructions.tsx`
 
 - [ ] **Step 1: Create the route**
@@ -816,108 +935,116 @@ git commit -m "feat: add /about/cccp, /about/tnr, /about/team, /about/privacy st
 Create `src/routes/adoption/instructions.tsx`:
 
 ```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import * as Tabs from '@radix-ui/react-tabs'
+import { createFileRoute } from "@tanstack/react-router";
+import * as Tabs from "@radix-ui/react-tabs";
 
-export const Route = createFileRoute('/adoption/instructions')({
+export const Route = createFileRoute("/adoption/instructions")({
   component: InstructionsPage,
-})
+});
 
 const adoptionRules = [
-  '申請人須年滿18歲，並持有香港居留權或工作證。',
-  '申請人須提供真實個人資料及住址，以便協會進行家訪。',
-  '領養前須繳付領養費（貓：HK$800；狗：HK$1,000），費用包括絕育、晶片及疫苗。',
-  '領養後不得遺棄、轉讓或出售動物，如無法繼續飼養須通知協會安排。',
-  '須確保動物生活在安全、舒適的室內環境。',
-  '須定期帶動物進行健康檢查及接種疫苗。',
-  '如住所為租住單位，須提供業主同意飼養寵物的書面証明。',
-  '申請人須同意協會進行跟進家訪，以確保動物受到妥善照顧。',
-  '每個家庭最多可領養兩隻動物（特殊情況除外，需協會批准）。',
-  '申請人須了解並接受動物的生理及行為特性，有耐心照顧。',
-  '領養後如動物出現健康問題，須立即尋求獸醫協助。',
-  '協會保留拒絕不合適申請的權利，並無需解釋原因。',
-]
+  "申請人須年滿18歲，並持有香港居留權或工作證。",
+  "申請人須提供真實個人資料及住址，以便協會進行家訪。",
+  "領養前須繳付領養費（貓：HK$800；狗：HK$1,000），費用包括絕育、晶片及疫苗。",
+  "領養後不得遺棄、轉讓或出售動物，如無法繼續飼養須通知協會安排。",
+  "須確保動物生活在安全、舒適的室內環境。",
+  "須定期帶動物進行健康檢查及接種疫苗。",
+  "如住所為租住單位，須提供業主同意飼養寵物的書面証明。",
+  "申請人須同意協會進行跟進家訪，以確保動物受到妥善照顧。",
+  "每個家庭最多可領養兩隻動物（特殊情況除外，需協會批准）。",
+  "申請人須了解並接受動物的生理及行為特性，有耐心照顧。",
+  "領養後如動物出現健康問題，須立即尋求獸醫協助。",
+  "協會保留拒絕不合適申請的權利，並無需解釋原因。",
+];
 
 const catCareTopics = [
   {
-    value: 'home',
-    label: '家居',
-    content: '為貓貓提供安全的室內環境。安裝防護網防止貓咪跌出窗外或逃跑。移除家中有毒植物及危險物品。提供足夠的躲藏空間及高處休息位置。',
+    value: "home",
+    label: "家居",
+    content:
+      "為貓貓提供安全的室內環境。安裝防護網防止貓咪跌出窗外或逃跑。移除家中有毒植物及危險物品。提供足夠的躲藏空間及高處休息位置。",
   },
   {
-    value: 'collection',
-    label: '領取',
-    content: '領取當日請自備貓籠。建議準備毛巾蓋住貓籠，減少貓咪緊張情緒。回家後讓貓咪在安靜的房間慢慢適應新環境，不要急於介紹給家中其他寵物。',
+    value: "collection",
+    label: "領取",
+    content:
+      "領取當日請自備貓籠。建議準備毛巾蓋住貓籠，減少貓咪緊張情緒。回家後讓貓咪在安靜的房間慢慢適應新環境，不要急於介紹給家中其他寵物。",
   },
   {
-    value: 'food',
-    label: '糧食',
-    content: '提供高質素的貓糧，可混合乾糧及濕糧。確保隨時有新鮮清水。避免餵食人類食物，特別是洋蔥、大蒜、朱古力及葡萄。',
+    value: "food",
+    label: "糧食",
+    content:
+      "提供高質素的貓糧，可混合乾糧及濕糧。確保隨時有新鮮清水。避免餵食人類食物，特別是洋蔥、大蒜、朱古力及葡萄。",
   },
   {
-    value: 'cleaning',
-    label: '清潔',
-    content: '每日清潔貓砂盆，定期更換貓砂。每月為貓咪梳毛，長毛貓需更頻繁。定期修剪指甲。',
+    value: "cleaning",
+    label: "清潔",
+    content: "每日清潔貓砂盆，定期更換貓砂。每月為貓咪梳毛，長毛貓需更頻繁。定期修剪指甲。",
   },
   {
-    value: 'health',
-    label: '保健',
-    content: '每年接種疫苗及進行健康檢查。定期驅蟲（體內及體外）。留意貓咪的飲食及排便習慣，如有異常盡快求醫。',
+    value: "health",
+    label: "保健",
+    content:
+      "每年接種疫苗及進行健康檢查。定期驅蟲（體內及體外）。留意貓咪的飲食及排便習慣，如有異常盡快求醫。",
   },
   {
-    value: 'supplies',
-    label: '用品',
-    content: '必備用品：貓籠/外出籠、貓砂盆及貓砂、食具及水具、抓板及玩具、梳毛工具。',
+    value: "supplies",
+    label: "用品",
+    content: "必備用品：貓籠/外出籠、貓砂盆及貓砂、食具及水具、抓板及玩具、梳毛工具。",
   },
   {
-    value: 'window',
-    label: '安窗',
-    content: '必須安裝貓網或防護網，防止貓咪從高處墜落或走失。市面上有多款適合不同窗型的貓網，請在貓咪到來前安裝妥當。',
+    value: "window",
+    label: "安窗",
+    content:
+      "必須安裝貓網或防護網，防止貓咪從高處墜落或走失。市面上有多款適合不同窗型的貓網，請在貓咪到來前安裝妥當。",
   },
-]
+];
 
 const dogCareTopics = [
   {
-    value: 'home',
-    label: '家居',
-    content: '為狗狗提供安全的空間，移除危險物品。準備舒適的狗床或睡墊。確保門窗關閉防止逃跑。',
+    value: "home",
+    label: "家居",
+    content: "為狗狗提供安全的空間，移除危險物品。準備舒適的狗床或睡墊。確保門窗關閉防止逃跑。",
   },
   {
-    value: 'collection',
-    label: '領取',
-    content: '領取當日請自備狗籠或牽引繩。讓狗狗有時間適應新家，保持安靜環境。',
+    value: "collection",
+    label: "領取",
+    content: "領取當日請自備狗籠或牽引繩。讓狗狗有時間適應新家，保持安靜環境。",
   },
   {
-    value: 'food',
-    label: '食物',
-    content: '提供適合體型及年齡的優質狗糧。確保隨時有新鮮清水。避免洋蔥、大蒜、朱古力、葡萄及過鹹食物。',
+    value: "food",
+    label: "食物",
+    content:
+      "提供適合體型及年齡的優質狗糧。確保隨時有新鮮清水。避免洋蔥、大蒜、朱古力、葡萄及過鹹食物。",
   },
   {
-    value: 'rest',
-    label: '休息',
-    content: '為狗狗提供固定的休息位置。幼犬每日需要較多睡眠，勿過度打擾。',
+    value: "rest",
+    label: "休息",
+    content: "為狗狗提供固定的休息位置。幼犬每日需要較多睡眠，勿過度打擾。",
   },
   {
-    value: 'cleaning',
-    label: '清潔',
-    content: '定期洗澡及梳毛。定期清潔耳朵及修剪指甲。訓練狗狗在指定地點排便。',
+    value: "cleaning",
+    label: "清潔",
+    content: "定期洗澡及梳毛。定期清潔耳朵及修剪指甲。訓練狗狗在指定地點排便。",
   },
   {
-    value: 'health',
-    label: '保健',
-    content: '每年接種疫苗及驅蟲。定期獸醫檢查。注意狗狗的飲食及行為變化。',
+    value: "health",
+    label: "保健",
+    content: "每年接種疫苗及驅蟲。定期獸醫檢查。注意狗狗的飲食及行為變化。",
   },
   {
-    value: 'walk',
-    label: '溜狗',
-    content: '每日帶狗狗外出散步，提供適量運動。外出時必須使用牽引繩及佩戴狗牌。在允許的地方才可讓狗狗放開繩子。',
+    value: "walk",
+    label: "溜狗",
+    content:
+      "每日帶狗狗外出散步，提供適量運動。外出時必須使用牽引繩及佩戴狗牌。在允許的地方才可讓狗狗放開繩子。",
   },
   {
-    value: 'training',
-    label: '教育',
-    content: '盡早開始基本服從訓練，如坐下、等待、召回等。使用正向強化方法，避免體罰。如有行為問題，可尋求專業訓練師協助。',
+    value: "training",
+    label: "教育",
+    content:
+      "盡早開始基本服從訓練，如坐下、等待、召回等。使用正向強化方法，避免體罰。如有行為問題，可尋求專業訓練師協助。",
   },
-]
+];
 
 function InstructionsPage() {
   return (
@@ -942,7 +1069,7 @@ function InstructionsPage() {
         <h2 className="font-display text-xl font-bold">養貓需知</h2>
         <Tabs.Root defaultValue="home">
           <Tabs.List className="flex flex-wrap gap-1 border-b border-[var(--color-border)] mb-4">
-            {catCareTopics.map(t => (
+            {catCareTopics.map((t) => (
               <Tabs.Trigger
                 key={t.value}
                 value={t.value}
@@ -952,8 +1079,12 @@ function InstructionsPage() {
               </Tabs.Trigger>
             ))}
           </Tabs.List>
-          {catCareTopics.map(t => (
-            <Tabs.Content key={t.value} value={t.value} className="text-[var(--color-text-muted)] leading-relaxed">
+          {catCareTopics.map((t) => (
+            <Tabs.Content
+              key={t.value}
+              value={t.value}
+              className="text-[var(--color-text-muted)] leading-relaxed"
+            >
               {t.content}
             </Tabs.Content>
           ))}
@@ -964,7 +1095,7 @@ function InstructionsPage() {
         <h2 className="font-display text-xl font-bold">養狗需知</h2>
         <Tabs.Root defaultValue="home">
           <Tabs.List className="flex flex-wrap gap-1 border-b border-[var(--color-border)] mb-4">
-            {dogCareTopics.map(t => (
+            {dogCareTopics.map((t) => (
               <Tabs.Trigger
                 key={t.value}
                 value={t.value}
@@ -974,15 +1105,19 @@ function InstructionsPage() {
               </Tabs.Trigger>
             ))}
           </Tabs.List>
-          {dogCareTopics.map(t => (
-            <Tabs.Content key={t.value} value={t.value} className="text-[var(--color-text-muted)] leading-relaxed">
+          {dogCareTopics.map((t) => (
+            <Tabs.Content
+              key={t.value}
+              value={t.value}
+              className="text-[var(--color-text-muted)] leading-relaxed"
+            >
               {t.content}
             </Tabs.Content>
           ))}
         </Tabs.Root>
       </section>
     </main>
-  )
+  );
 }
 ```
 
@@ -1008,6 +1143,7 @@ git commit -m "feat: add /adoption/instructions with tabbed care guides"
 ### Task 8: AnimalCard component
 
 **Files:**
+
 - Create: `src/components/site/AnimalCard.tsx`
 
 - [ ] **Step 1: Create AnimalCard**
@@ -1015,23 +1151,21 @@ git commit -m "feat: add /adoption/instructions with tabbed care guides"
 Create `src/components/site/AnimalCard.tsx`:
 
 ```tsx
-import { Link } from '@tanstack/react-router'
-import type { Animal } from '../../types/animal'
+import { Link } from "@tanstack/react-router";
+import type { Animal } from "../../types/animal";
 
 interface AnimalCardProps {
-  animal: Animal
+  animal: Animal;
 }
 
 export function AnimalCard({ animal }: AnimalCardProps) {
   const detailHref =
-    animal.type === 'sponsor'
-      ? `/sponsors/${animal.id}`
-      : `/animals/${animal.type}/${animal.id}`
+    animal.type === "sponsor" ? `/sponsors/${animal.id}` : `/animals/${animal.type}/${animal.id}`;
 
-  const ctaLabel = animal.type === 'sponsor' ? '立即助養' : '申請領養'
+  const ctaLabel = animal.type === "sponsor" ? "立即助養" : "申請領養";
 
-  const placeholder = animal.type === 'dog' ? '🐶' : '🐱'
-  const placeholderBg = animal.type === 'dog' ? 'var(--color-dog-bg)' : 'var(--color-cat-bg)'
+  const placeholder = animal.type === "dog" ? "🐶" : "🐱";
+  const placeholderBg = animal.type === "dog" ? "var(--color-dog-bg)" : "var(--color-cat-bg)";
 
   return (
     <div className="bg-[var(--color-surface)] rounded-xl overflow-hidden border border-[var(--color-border)] flex flex-col hover:shadow-md transition-shadow">
@@ -1057,7 +1191,7 @@ export function AnimalCard({ animal }: AnimalCardProps) {
 
         <div className="flex flex-wrap gap-1">
           <span className="px-2 py-0.5 rounded-full text-xs bg-[var(--color-surface-offset)] text-[var(--color-text-muted)]">
-            {animal.gender === 'male' ? '公' : '母'}
+            {animal.gender === "male" ? "公" : "母"}
           </span>
           <span className="px-2 py-0.5 rounded-full text-xs bg-[var(--color-surface-offset)] text-[var(--color-text-muted)]">
             {animal.age}
@@ -1077,7 +1211,7 @@ export function AnimalCard({ animal }: AnimalCardProps) {
         </Link>
       </div>
     </div>
-  )
+  );
 }
 ```
 
@@ -1086,6 +1220,7 @@ export function AnimalCard({ animal }: AnimalCardProps) {
 ### Task 9: AnimalGrid component
 
 **Files:**
+
 - Create: `src/components/site/AnimalGrid.tsx`
 
 - [ ] **Step 1: Create AnimalGrid**
@@ -1093,26 +1228,26 @@ export function AnimalCard({ animal }: AnimalCardProps) {
 Create `src/components/site/AnimalGrid.tsx`:
 
 ```tsx
-import { useNavigate, useSearch } from '@tanstack/react-router'
-import { AnimalCard } from './AnimalCard'
-import type { Animal, AgeFilter } from '../../types/animal'
-import { parseAgeFilter } from '../../types/animal'
+import { useNavigate, useSearch } from "@tanstack/react-router";
+import { AnimalCard } from "./AnimalCard";
+import type { Animal, AgeFilter } from "../../types/animal";
+import { parseAgeFilter } from "../../types/animal";
 
 interface AnimalGridProps {
-  animals: Animal[]
-  total: number
-  page: number
-  ageFilter: AgeFilter
-  pageSize?: number
-  animalLabel?: string
+  animals: Animal[];
+  total: number;
+  page: number;
+  ageFilter: AgeFilter;
+  pageSize?: number;
+  animalLabel?: string;
 }
 
 const AGE_TABS: { value: AgeFilter; label: string }[] = [
-  { value: 'all', label: '全部' },
-  { value: 'bb', label: 'BB' },
-  { value: 'adult', label: '成' },
-  { value: 'senior', label: '老' },
-]
+  { value: "all", label: "全部" },
+  { value: "bb", label: "BB" },
+  { value: "adult", label: "成" },
+  { value: "senior", label: "老" },
+];
 
 export function AnimalGrid({
   animals,
@@ -1120,35 +1255,34 @@ export function AnimalGrid({
   page,
   ageFilter,
   pageSize = 16,
-  animalLabel = '動物',
+  animalLabel = "動物",
 }: AnimalGridProps) {
-  const navigate = useNavigate()
-  const totalPages = Math.ceil(total / pageSize)
+  const navigate = useNavigate();
+  const totalPages = Math.ceil(total / pageSize);
 
-  const filtered = ageFilter === 'all'
-    ? animals
-    : animals.filter(a => parseAgeFilter(a.age) === ageFilter)
+  const filtered =
+    ageFilter === "all" ? animals : animals.filter((a) => parseAgeFilter(a.age) === ageFilter);
 
   function setFilter(f: AgeFilter) {
-    navigate({ search: (prev: Record<string, unknown>) => ({ ...prev, filter: f, page: 1 }) })
+    navigate({ search: (prev: Record<string, unknown>) => ({ ...prev, filter: f, page: 1 }) });
   }
 
   function setPage(p: number) {
-    navigate({ search: (prev: Record<string, unknown>) => ({ ...prev, page: p }) })
+    navigate({ search: (prev: Record<string, unknown>) => ({ ...prev, page: p }) });
   }
 
   return (
     <div className="space-y-6">
       {/* Filter tabs */}
       <div className="flex gap-2 flex-wrap">
-        {AGE_TABS.map(tab => (
+        {AGE_TABS.map((tab) => (
           <button
             key={tab.value}
             onClick={() => setFilter(tab.value)}
             className={`px-4 py-1.5 rounded-full text-sm transition-colors ${
               ageFilter === tab.value
-                ? 'bg-[var(--color-primary)] text-white'
-                : 'bg-[var(--color-surface-offset)] text-[var(--color-text-muted)] hover:bg-[var(--color-border)]'
+                ? "bg-[var(--color-primary)] text-white"
+                : "bg-[var(--color-surface-offset)] text-[var(--color-text-muted)] hover:bg-[var(--color-border)]"
             }`}
           >
             {tab.label}
@@ -1161,10 +1295,12 @@ export function AnimalGrid({
 
       {/* Grid */}
       {filtered.length === 0 ? (
-        <p className="text-center py-12 text-[var(--color-text-muted)]">暫時沒有符合條件的{animalLabel}</p>
+        <p className="text-center py-12 text-[var(--color-text-muted)]">
+          暫時沒有符合條件的{animalLabel}
+        </p>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {filtered.map(animal => (
+          {filtered.map((animal) => (
             <AnimalCard key={animal.id} animal={animal} />
           ))}
         </div>
@@ -1180,14 +1316,14 @@ export function AnimalGrid({
           >
             ←
           </button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
             <button
               key={p}
               onClick={() => setPage(p)}
               className={`px-3 py-1.5 rounded text-sm ${
                 p === page
-                  ? 'bg-[var(--color-primary)] text-white'
-                  : 'hover:bg-[var(--color-surface-offset)]'
+                  ? "bg-[var(--color-primary)] text-white"
+                  : "hover:bg-[var(--color-surface-offset)]"
               }`}
             >
               {p}
@@ -1203,7 +1339,7 @@ export function AnimalGrid({
         </div>
       )}
     </div>
-  )
+  );
 }
 ```
 
@@ -1212,6 +1348,7 @@ export function AnimalGrid({
 ### Task 10: AnimalDetail component
 
 **Files:**
+
 - Create: `src/components/site/AnimalDetail.tsx`
 
 - [ ] **Step 1: Create AnimalDetail**
@@ -1219,24 +1356,27 @@ export function AnimalGrid({
 Create `src/components/site/AnimalDetail.tsx`:
 
 ```tsx
-import { Link } from '@tanstack/react-router'
-import type { Animal } from '../../types/animal'
+import { Link } from "@tanstack/react-router";
+import type { Animal } from "../../types/animal";
 
 interface AnimalDetailProps {
-  animal: Animal
-  backHref: string
-  backLabel: string
+  animal: Animal;
+  backHref: string;
+  backLabel: string;
 }
 
 export function AnimalDetail({ animal, backHref, backLabel }: AnimalDetailProps) {
-  const ctaLabel = animal.type === 'sponsor' ? '立即助養' : '申請領養'
-  const applyHref = `/adoption/apply?animalId=${animal.id}&animalName=${encodeURIComponent(animal.name)}&type=${animal.type}`
-  const placeholder = animal.type === 'dog' ? '🐶' : '🐱'
-  const placeholderBg = animal.type === 'dog' ? 'var(--color-dog-bg)' : 'var(--color-cat-bg)'
+  const ctaLabel = animal.type === "sponsor" ? "立即助養" : "申請領養";
+  const applyHref = `/adoption/apply?animalId=${animal.id}&animalName=${encodeURIComponent(animal.name)}&type=${animal.type}`;
+  const placeholder = animal.type === "dog" ? "🐶" : "🐱";
+  const placeholderBg = animal.type === "dog" ? "var(--color-dog-bg)" : "var(--color-cat-bg)";
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-8 space-y-6">
-      <Link to={backHref} className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-primary)] flex items-center gap-1">
+      <Link
+        to={backHref}
+        className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-primary)] flex items-center gap-1"
+      >
         ← {backLabel}
       </Link>
 
@@ -1262,13 +1402,11 @@ export function AnimalDetail({ animal, backHref, backLabel }: AnimalDetailProps)
         {/* Info */}
         <div className="space-y-4">
           <h1 className="font-display text-3xl font-bold">{animal.name}</h1>
-          {animal.name_en && (
-            <p className="text-[var(--color-text-muted)]">{animal.name_en}</p>
-          )}
+          {animal.name_en && <p className="text-[var(--color-text-muted)]">{animal.name_en}</p>}
 
           <div className="flex flex-wrap gap-2">
             <span className="px-3 py-1 rounded-full text-sm bg-[var(--color-surface-offset)]">
-              {animal.gender === 'male' ? '公' : '母'}
+              {animal.gender === "male" ? "公" : "母"}
             </span>
             <span className="px-3 py-1 rounded-full text-sm bg-[var(--color-surface-offset)]">
               {animal.age}
@@ -1301,7 +1439,7 @@ export function AnimalDetail({ animal, backHref, backLabel }: AnimalDetailProps)
         </div>
       </div>
     </main>
-  )
+  );
 }
 ```
 
@@ -1319,6 +1457,7 @@ git commit -m "feat: add AnimalCard, AnimalGrid, AnimalDetail shared components"
 ### Task 11: Cat listing + detail routes
 
 **Files:**
+
 - Create: `src/routes/animals/cat.tsx`
 - Create: `src/routes/animals/cat_.$id.tsx`
 
@@ -1327,45 +1466,50 @@ git commit -m "feat: add AnimalCard, AnimalGrid, AnimalDetail shared components"
 Create `src/routes/animals/cat.tsx`:
 
 ```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
-import { z } from 'zod'
-import { supabase } from '../../lib/supabase'
-import { AnimalGrid } from '../../components/site/AnimalGrid'
-import type { AgeFilter } from '../../types/animal'
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { z } from "zod";
+import { supabase } from "../../lib/supabase";
+import { AnimalGrid } from "../../components/site/AnimalGrid";
+import type { AgeFilter } from "../../types/animal";
 
-const PAGE_SIZE = 16
+const PAGE_SIZE = 16;
 
 const searchSchema = z.object({
   page: z.number().int().positive().catch(1),
-  filter: z.enum(['all', 'bb', 'adult', 'senior']).catch('all'),
-})
+  filter: z.enum(["all", "bb", "adult", "senior"]).catch("all"),
+});
 
-export const Route = createFileRoute('/animals/cat')({
+export const Route = createFileRoute("/animals/cat")({
   validateSearch: searchSchema,
   component: CatListingPage,
-})
+});
 
 function CatListingPage() {
-  const { page, filter } = Route.useSearch()
+  const { page, filter } = Route.useSearch();
 
   const { data, isLoading } = useQuery({
-    queryKey: ['animals', 'cat', page, filter],
+    queryKey: ["animals", "cat", page, filter],
     queryFn: async () => {
-      const from = (page - 1) * PAGE_SIZE
-      const to = from + PAGE_SIZE - 1
+      const from = (page - 1) * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
       const { data, count, error } = await supabase
-        .from('animals')
-        .select('*', { count: 'exact' })
-        .eq('type', 'cat')
-        .eq('status', 'available')
-        .range(from, to)
-      if (error) throw error
-      return { animals: data ?? [], total: count ?? 0 }
+        .from("animals")
+        .select("*", { count: "exact" })
+        .eq("type", "cat")
+        .eq("status", "available")
+        .range(from, to);
+      if (error) throw error;
+      return { animals: data ?? [], total: count ?? 0 };
     },
-  })
+  });
 
-  if (isLoading) return <div className="max-w-6xl mx-auto px-4 py-12 text-center text-[var(--color-text-muted)]">載入中…</div>
+  if (isLoading)
+    return (
+      <div className="max-w-6xl mx-auto px-4 py-12 text-center text-[var(--color-text-muted)]">
+        載入中…
+      </div>
+    );
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-8">
@@ -1379,7 +1523,7 @@ function CatListingPage() {
         animalLabel="貓"
       />
     </main>
-  )
+  );
 }
 ```
 
@@ -1388,43 +1532,46 @@ function CatListingPage() {
 Create `src/routes/animals/cat_.$id.tsx`:
 
 ```tsx
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
-import { supabase } from '../../lib/supabase'
-import { AnimalDetail } from '../../components/site/AnimalDetail'
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "../../lib/supabase";
+import { AnimalDetail } from "../../components/site/AnimalDetail";
 
-export const Route = createFileRoute('/animals/cat_/$id')({
+export const Route = createFileRoute("/animals/cat_/$id")({
   component: CatDetailPage,
-})
+});
 
 function CatDetailPage() {
-  const { id } = Route.useParams()
+  const { id } = Route.useParams();
 
   const { data: animal, isLoading } = useQuery({
-    queryKey: ['animal', id],
+    queryKey: ["animal", id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('animals')
-        .select('*')
-        .eq('id', id)
-        .single()
-      if (error) throw error
-      return data
+      const { data, error } = await supabase.from("animals").select("*").eq("id", id).single();
+      if (error) throw error;
+      return data;
     },
-  })
+  });
 
-  if (isLoading) return <div className="max-w-4xl mx-auto px-4 py-12 text-center text-[var(--color-text-muted)]">載入中…</div>
+  if (isLoading)
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-12 text-center text-[var(--color-text-muted)]">
+        載入中…
+      </div>
+    );
 
-  if (!animal || animal.status !== 'available') {
+  if (!animal || animal.status !== "available") {
     return (
       <main className="max-w-4xl mx-auto px-4 py-12 text-center space-y-4">
         <p className="text-xl text-[var(--color-text-muted)]">此動物已被領養 🎉</p>
-        <Link to="/animals/cat" className="text-[var(--color-primary)] hover:underline">← 返回貓貓列表</Link>
+        <Link to="/animals/cat" className="text-[var(--color-primary)] hover:underline">
+          ← 返回貓貓列表
+        </Link>
       </main>
-    )
+    );
   }
 
-  return <AnimalDetail animal={animal} backHref="/animals/cat" backLabel="返回貓貓列表" />
+  return <AnimalDetail animal={animal} backHref="/animals/cat" backLabel="返回貓貓列表" />;
 }
 ```
 
@@ -1440,6 +1587,7 @@ git commit -m "feat: add /animals/cat listing and detail routes"
 ### Task 12: Dog listing + detail routes
 
 **Files:**
+
 - Create: `src/routes/animals/dog.tsx`
 - Create: `src/routes/animals/dog_.$id.tsx`
 
@@ -1448,45 +1596,50 @@ git commit -m "feat: add /animals/cat listing and detail routes"
 Create `src/routes/animals/dog.tsx`:
 
 ```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
-import { z } from 'zod'
-import { supabase } from '../../lib/supabase'
-import { AnimalGrid } from '../../components/site/AnimalGrid'
-import type { AgeFilter } from '../../types/animal'
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { z } from "zod";
+import { supabase } from "../../lib/supabase";
+import { AnimalGrid } from "../../components/site/AnimalGrid";
+import type { AgeFilter } from "../../types/animal";
 
-const PAGE_SIZE = 16
+const PAGE_SIZE = 16;
 
 const searchSchema = z.object({
   page: z.number().int().positive().catch(1),
-  filter: z.enum(['all', 'bb', 'adult', 'senior']).catch('all'),
-})
+  filter: z.enum(["all", "bb", "adult", "senior"]).catch("all"),
+});
 
-export const Route = createFileRoute('/animals/dog')({
+export const Route = createFileRoute("/animals/dog")({
   validateSearch: searchSchema,
   component: DogListingPage,
-})
+});
 
 function DogListingPage() {
-  const { page, filter } = Route.useSearch()
+  const { page, filter } = Route.useSearch();
 
   const { data, isLoading } = useQuery({
-    queryKey: ['animals', 'dog', page, filter],
+    queryKey: ["animals", "dog", page, filter],
     queryFn: async () => {
-      const from = (page - 1) * PAGE_SIZE
-      const to = from + PAGE_SIZE - 1
+      const from = (page - 1) * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
       const { data, count, error } = await supabase
-        .from('animals')
-        .select('*', { count: 'exact' })
-        .eq('type', 'dog')
-        .eq('status', 'available')
-        .range(from, to)
-      if (error) throw error
-      return { animals: data ?? [], total: count ?? 0 }
+        .from("animals")
+        .select("*", { count: "exact" })
+        .eq("type", "dog")
+        .eq("status", "available")
+        .range(from, to);
+      if (error) throw error;
+      return { animals: data ?? [], total: count ?? 0 };
     },
-  })
+  });
 
-  if (isLoading) return <div className="max-w-6xl mx-auto px-4 py-12 text-center text-[var(--color-text-muted)]">載入中…</div>
+  if (isLoading)
+    return (
+      <div className="max-w-6xl mx-auto px-4 py-12 text-center text-[var(--color-text-muted)]">
+        載入中…
+      </div>
+    );
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-8">
@@ -1500,7 +1653,7 @@ function DogListingPage() {
         animalLabel="狗"
       />
     </main>
-  )
+  );
 }
 ```
 
@@ -1509,43 +1662,46 @@ function DogListingPage() {
 Create `src/routes/animals/dog_.$id.tsx`:
 
 ```tsx
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
-import { supabase } from '../../lib/supabase'
-import { AnimalDetail } from '../../components/site/AnimalDetail'
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "../../lib/supabase";
+import { AnimalDetail } from "../../components/site/AnimalDetail";
 
-export const Route = createFileRoute('/animals/dog_/$id')({
+export const Route = createFileRoute("/animals/dog_/$id")({
   component: DogDetailPage,
-})
+});
 
 function DogDetailPage() {
-  const { id } = Route.useParams()
+  const { id } = Route.useParams();
 
   const { data: animal, isLoading } = useQuery({
-    queryKey: ['animal', id],
+    queryKey: ["animal", id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('animals')
-        .select('*')
-        .eq('id', id)
-        .single()
-      if (error) throw error
-      return data
+      const { data, error } = await supabase.from("animals").select("*").eq("id", id).single();
+      if (error) throw error;
+      return data;
     },
-  })
+  });
 
-  if (isLoading) return <div className="max-w-4xl mx-auto px-4 py-12 text-center text-[var(--color-text-muted)]">載入中…</div>
+  if (isLoading)
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-12 text-center text-[var(--color-text-muted)]">
+        載入中…
+      </div>
+    );
 
-  if (!animal || animal.status !== 'available') {
+  if (!animal || animal.status !== "available") {
     return (
       <main className="max-w-4xl mx-auto px-4 py-12 text-center space-y-4">
         <p className="text-xl text-[var(--color-text-muted)]">此動物已被領養 🎉</p>
-        <Link to="/animals/dog" className="text-[var(--color-primary)] hover:underline">← 返回狗狗列表</Link>
+        <Link to="/animals/dog" className="text-[var(--color-primary)] hover:underline">
+          ← 返回狗狗列表
+        </Link>
       </main>
-    )
+    );
   }
 
-  return <AnimalDetail animal={animal} backHref="/animals/dog" backLabel="返回狗狗列表" />
+  return <AnimalDetail animal={animal} backHref="/animals/dog" backLabel="返回狗狗列表" />;
 }
 ```
 
@@ -1561,6 +1717,7 @@ git commit -m "feat: add /animals/dog listing and detail routes"
 ### Task 13: Sponsors listing + detail routes
 
 **Files:**
+
 - Create: `src/routes/sponsors.tsx`
 - Create: `src/routes/sponsors_.$id.tsx`
 
@@ -1569,52 +1726,52 @@ git commit -m "feat: add /animals/dog listing and detail routes"
 Create `src/routes/sponsors.tsx`:
 
 ```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
-import { z } from 'zod'
-import { supabase } from '../lib/supabase'
-import { AnimalGrid } from '../components/site/AnimalGrid'
-import type { AgeFilter } from '../types/animal'
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { z } from "zod";
+import { supabase } from "../lib/supabase";
+import { AnimalGrid } from "../components/site/AnimalGrid";
+import type { AgeFilter } from "../types/animal";
 
-const PAGE_SIZE = 16
+const PAGE_SIZE = 16;
 
 const searchSchema = z.object({
   page: z.number().int().positive().catch(1),
-  filter: z.enum(['all', 'bb', 'adult', 'senior']).catch('all'),
-})
+  filter: z.enum(["all", "bb", "adult", "senior"]).catch("all"),
+});
 
-export const Route = createFileRoute('/sponsors')({
+export const Route = createFileRoute("/sponsors")({
   validateSearch: searchSchema,
   component: SponsorsPage,
-})
+});
 
 const paymentMethods = [
-  { label: 'FPS 轉數快', value: '12345678' },
-  { label: '銀行轉帳', value: '012-345-678901 (Bank Name)' },
-  { label: 'PayMe', value: '@hkscda' },
-  { label: 'PayPal', value: 'paypal@hkscda.com' },
-  { label: 'Give.asia', value: 'give.asia/hkscda' },
-  { label: 'Alipay', value: '香港支付寶請掃碼' },
-]
+  { label: "FPS 轉數快", value: "12345678" },
+  { label: "銀行轉帳", value: "012-345-678901 (Bank Name)" },
+  { label: "PayMe", value: "@hkscda" },
+  { label: "PayPal", value: "paypal@hkscda.com" },
+  { label: "Give.asia", value: "give.asia/hkscda" },
+  { label: "Alipay", value: "香港支付寶請掃碼" },
+];
 
 function SponsorsPage() {
-  const { page, filter } = Route.useSearch()
+  const { page, filter } = Route.useSearch();
 
   const { data, isLoading } = useQuery({
-    queryKey: ['animals', 'sponsor', page, filter],
+    queryKey: ["animals", "sponsor", page, filter],
     queryFn: async () => {
-      const from = (page - 1) * PAGE_SIZE
-      const to = from + PAGE_SIZE - 1
+      const from = (page - 1) * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
       const { data, count, error } = await supabase
-        .from('animals')
-        .select('*', { count: 'exact' })
-        .eq('type', 'sponsor')
-        .eq('status', 'available')
-        .range(from, to)
-      if (error) throw error
-      return { animals: data ?? [], total: count ?? 0 }
+        .from("animals")
+        .select("*", { count: "exact" })
+        .eq("type", "sponsor")
+        .eq("status", "available")
+        .range(from, to);
+      if (error) throw error;
+      return { animals: data ?? [], total: count ?? 0 };
     },
-  })
+  });
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
@@ -1624,7 +1781,7 @@ function SponsorsPage() {
       <div className="bg-[var(--color-surface-offset)] rounded-2xl p-6">
         <h2 className="font-semibold mb-4">助養付款方式</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          {paymentMethods.map(m => (
+          {paymentMethods.map((m) => (
             <div key={m.label} className="bg-[var(--color-surface)] rounded-lg p-3 space-y-1">
               <div className="text-xs font-semibold text-[var(--color-text-muted)]">{m.label}</div>
               <div className="text-sm">{m.value}</div>
@@ -1646,7 +1803,7 @@ function SponsorsPage() {
         />
       )}
     </main>
-  )
+  );
 }
 ```
 
@@ -1655,43 +1812,46 @@ function SponsorsPage() {
 Create `src/routes/sponsors_.$id.tsx`:
 
 ```tsx
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
-import { supabase } from '../lib/supabase'
-import { AnimalDetail } from '../components/site/AnimalDetail'
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "../lib/supabase";
+import { AnimalDetail } from "../components/site/AnimalDetail";
 
-export const Route = createFileRoute('/sponsors_/$id')({
+export const Route = createFileRoute("/sponsors_/$id")({
   component: SponsorDetailPage,
-})
+});
 
 function SponsorDetailPage() {
-  const { id } = Route.useParams()
+  const { id } = Route.useParams();
 
   const { data: animal, isLoading } = useQuery({
-    queryKey: ['animal', id],
+    queryKey: ["animal", id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('animals')
-        .select('*')
-        .eq('id', id)
-        .single()
-      if (error) throw error
-      return data
+      const { data, error } = await supabase.from("animals").select("*").eq("id", id).single();
+      if (error) throw error;
+      return data;
     },
-  })
+  });
 
-  if (isLoading) return <div className="max-w-4xl mx-auto px-4 py-12 text-center text-[var(--color-text-muted)]">載入中…</div>
+  if (isLoading)
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-12 text-center text-[var(--color-text-muted)]">
+        載入中…
+      </div>
+    );
 
-  if (!animal || animal.status !== 'available') {
+  if (!animal || animal.status !== "available") {
     return (
       <main className="max-w-4xl mx-auto px-4 py-12 text-center space-y-4">
         <p className="text-xl text-[var(--color-text-muted)]">此動物已完成助養</p>
-        <Link to="/sponsors" className="text-[var(--color-primary)] hover:underline">← 返回助養區</Link>
+        <Link to="/sponsors" className="text-[var(--color-primary)] hover:underline">
+          ← 返回助養區
+        </Link>
       </main>
-    )
+    );
   }
 
-  return <AnimalDetail animal={animal} backHref="/sponsors" backLabel="返回助養區" />
+  return <AnimalDetail animal={animal} backHref="/sponsors" backLabel="返回助養區" />;
 }
 ```
 
@@ -1709,6 +1869,7 @@ git commit -m "feat: add /sponsors listing and detail routes"
 ### Task 14: submitApplication server function
 
 **Files:**
+
 - Create: `src/lib/api/submit-application.functions.ts`
 
 - [ ] **Step 1: Create server function**
@@ -1716,8 +1877,8 @@ git commit -m "feat: add /sponsors listing and detail routes"
 Create `src/lib/api/submit-application.functions.ts`:
 
 ```ts
-import { createServerFn } from '@tanstack/react-start'
-import { z } from 'zod'
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 
 const applicationSchema = z.object({
   animal_id: z.string().uuid().optional(),
@@ -1727,45 +1888,43 @@ const applicationSchema = z.object({
   phone: z.string().min(8),
   email: z.string().email(),
   address: z.string().min(5),
-  housing_type: z.enum(['私人樓宇', '居屋', '公屋', '村屋', '其他']),
+  housing_type: z.enum(["私人樓宇", "居屋", "公屋", "村屋", "其他"]),
   family_size: z.number().int().positive().optional(),
   existing_pets: z.string().optional(),
   reason: z.string().min(10),
-})
+});
 
-export const submitApplication = createServerFn({ method: 'POST' })
+export const submitApplication = createServerFn({ method: "POST" })
   .inputValidator(applicationSchema)
   .handler(async ({ data }) => {
-    const { createClient } = await import('@supabase/supabase-js')
-    const { Resend } = await import('resend')
+    const { createClient } = await import("@supabase/supabase-js");
+    const { Resend } = await import("resend");
 
     const supabase = createClient(
       process.env.VITE_SUPABASE_URL!,
-      process.env.VITE_SUPABASE_ANON_KEY!
-    )
+      process.env.VITE_SUPABASE_ANON_KEY!,
+    );
 
-    const { error: dbError } = await supabase
-      .from('adoption_applications')
-      .insert({
-        animal_id: data.animal_id ?? null,
-        animal_name: data.animal_name,
-        animal_type: data.animal_type,
-        applicant_name: data.applicant_name,
-        phone: data.phone,
-        email: data.email,
-        address: data.address,
-        housing_type: data.housing_type,
-        family_size: data.family_size ?? null,
-        existing_pets: data.existing_pets ?? null,
-        reason: data.reason,
-      })
+    const { error: dbError } = await supabase.from("adoption_applications").insert({
+      animal_id: data.animal_id ?? null,
+      animal_name: data.animal_name,
+      animal_type: data.animal_type,
+      applicant_name: data.applicant_name,
+      phone: data.phone,
+      email: data.email,
+      address: data.address,
+      housing_type: data.housing_type,
+      family_size: data.family_size ?? null,
+      existing_pets: data.existing_pets ?? null,
+      reason: data.reason,
+    });
 
-    if (dbError) throw new Error('Failed to save application')
+    if (dbError) throw new Error("Failed to save application");
 
-    const resend = new Resend(process.env.RESEND_API_KEY!)
+    const resend = new Resend(process.env.RESEND_API_KEY!);
     await resend.emails.send({
-      from: 'HKSCDA <noreply@hkscda.com>',
-      to: process.env.NOTIFICATION_EMAIL ?? 'adoption@hkscda.com',
+      from: "HKSCDA <noreply@hkscda.com>",
+      to: process.env.NOTIFICATION_EMAIL ?? "adoption@hkscda.com",
       subject: `新領養申請：${data.animal_name}（${data.applicant_name}）`,
       html: `
         <h2>新領養申請</h2>
@@ -1775,14 +1934,14 @@ export const submitApplication = createServerFn({ method: 'POST' })
         <p><strong>電郵：</strong>${data.email}</p>
         <p><strong>住址：</strong>${data.address}</p>
         <p><strong>住宅類型：</strong>${data.housing_type}</p>
-        <p><strong>家庭人數：</strong>${data.family_size ?? '未填寫'}</p>
-        <p><strong>現有寵物：</strong>${data.existing_pets || '沒有'}</p>
+        <p><strong>家庭人數：</strong>${data.family_size ?? "未填寫"}</p>
+        <p><strong>現有寵物：</strong>${data.existing_pets || "沒有"}</p>
         <p><strong>領養原因：</strong>${data.reason}</p>
       `,
-    })
+    });
 
-    return { success: true }
-  })
+    return { success: true };
+  });
 ```
 
 ---
@@ -1790,6 +1949,7 @@ export const submitApplication = createServerFn({ method: 'POST' })
 ### Task 15: /adoption/apply page
 
 **Files:**
+
 - Create: `src/routes/adoption/apply.tsx`
 
 - [ ] **Step 1: Create adoption apply route**
@@ -1797,56 +1957,60 @@ export const submitApplication = createServerFn({ method: 'POST' })
 Create `src/routes/adoption/apply.tsx`:
 
 ```tsx
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { useState } from 'react'
-import { submitApplication } from '../../lib/api/submit-application.functions'
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useState } from "react";
+import { submitApplication } from "../../lib/api/submit-application.functions";
 
 const formSchema = z.object({
-  applicant_name: z.string().min(1, '請填寫姓名'),
-  phone: z.string().min(8, '請填寫有效電話號碼'),
-  email: z.string().email('請填寫有效電郵'),
-  address: z.string().min(5, '請填寫完整住址'),
-  housing_type: z.enum(['私人樓宇', '居屋', '公屋', '村屋', '其他']),
+  applicant_name: z.string().min(1, "請填寫姓名"),
+  phone: z.string().min(8, "請填寫有效電話號碼"),
+  email: z.string().email("請填寫有效電郵"),
+  address: z.string().min(5, "請填寫完整住址"),
+  housing_type: z.enum(["私人樓宇", "居屋", "公屋", "村屋", "其他"]),
   family_size: z.number().int().positive().optional(),
   existing_pets: z.string().optional(),
-  reason: z.string().min(10, '請填寫至少10個字的領養原因'),
-  agree_terms: z.literal(true, { errorMap: () => ({ message: '請同意條款' }) }),
-})
+  reason: z.string().min(10, "請填寫至少10個字的領養原因"),
+  agree_terms: z.literal(true, { errorMap: () => ({ message: "請同意條款" }) }),
+});
 
-type FormValues = z.infer<typeof formSchema>
+type FormValues = z.infer<typeof formSchema>;
 
 const searchSchema = z.object({
   animalId: z.string().optional(),
   animalName: z.string().optional(),
   type: z.string().optional(),
-})
+});
 
-export const Route = createFileRoute('/adoption/apply')({
+export const Route = createFileRoute("/adoption/apply")({
   validateSearch: searchSchema,
   component: ApplyPage,
-})
+});
 
 function ApplyPage() {
-  const { animalId, animalName, type } = Route.useSearch()
-  const navigate = useNavigate()
-  const [success, setSuccess] = useState(false)
-  const [serverError, setServerError] = useState<string | null>(null)
+  const { animalId, animalName, type } = Route.useSearch();
+  const navigate = useNavigate();
+  const [success, setSuccess] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormValues>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-  })
+  });
 
   async function onSubmit(values: FormValues) {
-    setServerError(null)
+    setServerError(null);
     try {
       await submitApplication({
         data: {
           animal_id: animalId,
-          animal_name: animalName ?? '未指定',
-          animal_type: type ?? 'unknown',
+          animal_name: animalName ?? "未指定",
+          animal_type: type ?? "unknown",
           applicant_name: values.applicant_name,
           phone: values.phone,
           email: values.email,
@@ -1856,10 +2020,10 @@ function ApplyPage() {
           existing_pets: values.existing_pets,
           reason: values.reason,
         },
-      })
-      setSuccess(true)
+      });
+      setSuccess(true);
     } catch {
-      setServerError('提交失敗，請稍後再試')
+      setServerError("提交失敗，請稍後再試");
     }
   }
 
@@ -1872,81 +2036,121 @@ function ApplyPage() {
           感謝您的申請，我們將盡快與您聯絡安排面見及家訪。
         </p>
         <Link
-          to={type === 'sponsor' ? '/sponsors' : type === 'dog' ? '/animals/dog' : '/animals/cat'}
+          to={type === "sponsor" ? "/sponsors" : type === "dog" ? "/animals/dog" : "/animals/cat"}
           className="inline-block px-6 py-3 bg-[var(--color-primary)] text-white rounded-full hover:bg-[var(--color-primary-hover)] transition-colors"
         >
           返回列表
         </Link>
       </main>
-    )
+    );
   }
 
   return (
     <main className="max-w-lg mx-auto px-4 py-8">
       <h1 className="font-display text-2xl font-bold mb-2">
-        {type === 'sponsor' ? '助養申請' : '領養申請'}
+        {type === "sponsor" ? "助養申請" : "領養申請"}
       </h1>
-      {animalName && (
-        <p className="text-[var(--color-text-muted)] mb-6">申請動物：{animalName}</p>
-      )}
+      {animalName && <p className="text-[var(--color-text-muted)] mb-6">申請動物：{animalName}</p>}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
           <label className="block text-sm font-medium mb-1">申請人姓名 *</label>
-          <input {...register('applicant_name')} className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-primary)]" />
-          {errors.applicant_name && <p className="text-red-500 text-xs mt-1">{errors.applicant_name.message}</p>}
+          <input
+            {...register("applicant_name")}
+            className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-primary)]"
+          />
+          {errors.applicant_name && (
+            <p className="text-red-500 text-xs mt-1">{errors.applicant_name.message}</p>
+          )}
         </div>
 
         <div>
           <label className="block text-sm font-medium mb-1">聯絡電話 *</label>
-          <input {...register('phone')} type="tel" className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-primary)]" />
+          <input
+            {...register("phone")}
+            type="tel"
+            className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-primary)]"
+          />
           {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
         </div>
 
         <div>
           <label className="block text-sm font-medium mb-1">電郵地址 *</label>
-          <input {...register('email')} type="email" className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-primary)]" />
+          <input
+            {...register("email")}
+            type="email"
+            className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-primary)]"
+          />
           {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
         </div>
 
         <div>
           <label className="block text-sm font-medium mb-1">住址 *</label>
-          <input {...register('address')} className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-primary)]" />
+          <input
+            {...register("address")}
+            className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-primary)]"
+          />
           {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address.message}</p>}
         </div>
 
         <div>
           <label className="block text-sm font-medium mb-1">住宅類型 *</label>
-          <select {...register('housing_type')} className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-primary)]">
+          <select
+            {...register("housing_type")}
+            className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-primary)]"
+          >
             <option value="">請選擇</option>
-            {['私人樓宇', '居屋', '公屋', '村屋', '其他'].map(t => (
-              <option key={t} value={t}>{t}</option>
+            {["私人樓宇", "居屋", "公屋", "村屋", "其他"].map((t) => (
+              <option key={t} value={t}>
+                {t}
+              </option>
             ))}
           </select>
-          {errors.housing_type && <p className="text-red-500 text-xs mt-1">{errors.housing_type.message}</p>}
+          {errors.housing_type && (
+            <p className="text-red-500 text-xs mt-1">{errors.housing_type.message}</p>
+          )}
         </div>
 
         <div>
           <label className="block text-sm font-medium mb-1">家庭成員人數</label>
-          <input {...register('family_size', { valueAsNumber: true })} type="number" min={1} className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-primary)]" />
+          <input
+            {...register("family_size", { valueAsNumber: true })}
+            type="number"
+            min={1}
+            className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-primary)]"
+          />
         </div>
 
         <div>
           <label className="block text-sm font-medium mb-1">家中現有寵物</label>
-          <input {...register('existing_pets')} placeholder="如沒有請留空" className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-primary)]" />
+          <input
+            {...register("existing_pets")}
+            placeholder="如沒有請留空"
+            className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-primary)]"
+          />
         </div>
 
         <div>
           <label className="block text-sm font-medium mb-1">領養原因 *</label>
-          <textarea {...register('reason')} rows={4} className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-primary)]" />
+          <textarea
+            {...register("reason")}
+            rows={4}
+            className="w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-primary)]"
+          />
           {errors.reason && <p className="text-red-500 text-xs mt-1">{errors.reason.message}</p>}
         </div>
 
         <div className="flex items-start gap-2">
-          <input {...register('agree_terms')} type="checkbox" id="agree_terms" className="mt-1" />
+          <input {...register("agree_terms")} type="checkbox" id="agree_terms" className="mt-1" />
           <label htmlFor="agree_terms" className="text-sm text-[var(--color-text-muted)]">
-            我已閱讀並同意{' '}
-            <Link to="/adoption/instructions" className="text-[var(--color-primary)] hover:underline" target="_blank">領養條款</Link>
+            我已閱讀並同意{" "}
+            <Link
+              to="/adoption/instructions"
+              className="text-[var(--color-primary)] hover:underline"
+              target="_blank"
+            >
+              領養條款
+            </Link>
           </label>
         </div>
         {errors.agree_terms && <p className="text-red-500 text-xs">{errors.agree_terms.message}</p>}
@@ -1958,11 +2162,11 @@ function ApplyPage() {
           disabled={isSubmitting}
           className="w-full py-3 bg-[var(--color-primary)] text-white rounded-full font-semibold hover:bg-[var(--color-primary-hover)] transition-colors disabled:opacity-60"
         >
-          {isSubmitting ? '提交中…' : '提交申請'}
+          {isSubmitting ? "提交中…" : "提交申請"}
         </button>
       </form>
     </main>
-  )
+  );
 }
 ```
 
@@ -1988,6 +2192,7 @@ git commit -m "feat: add adoption application form with Supabase + Resend notifi
 ### Task 16: AdminLayout component + auth guard pattern
 
 **Files:**
+
 - Create: `src/components/admin/AdminLayout.tsx`
 
 - [ ] **Step 1: Create AdminLayout**
@@ -1995,47 +2200,49 @@ git commit -m "feat: add adoption application form with Supabase + Resend notifi
 Create `src/components/admin/AdminLayout.tsx`:
 
 ```tsx
-import { Link, useNavigate } from '@tanstack/react-router'
-import { supabase } from '../../lib/supabase'
+import { Link, useNavigate } from "@tanstack/react-router";
+import { supabase } from "../../lib/supabase";
 
-type AdminSection = 'cat' | 'dog' | 'sponsor' | 'applications'
+type AdminSection = "cat" | "dog" | "sponsor" | "applications";
 
 interface AdminLayoutProps {
-  children: React.ReactNode
-  activeSection: AdminSection
+  children: React.ReactNode;
+  activeSection: AdminSection;
 }
 
 export function AdminLayout({ children, activeSection }: AdminLayoutProps) {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   async function handleLogout() {
-    await supabase.auth.signOut()
-    navigate({ to: '/admin/login' })
+    await supabase.auth.signOut();
+    navigate({ to: "/admin/login" });
   }
 
   const navItems: { section: AdminSection; label: string; href: string }[] = [
-    { section: 'cat', label: '🐱 貓貓', href: '/admin?section=cat' },
-    { section: 'dog', label: '🐶 狗狗', href: '/admin?section=dog' },
-    { section: 'sponsor', label: '💛 助養', href: '/admin?section=sponsor' },
-    { section: 'applications', label: '📋 申請', href: '/admin?section=applications' },
-  ]
+    { section: "cat", label: "🐱 貓貓", href: "/admin?section=cat" },
+    { section: "dog", label: "🐶 狗狗", href: "/admin?section=dog" },
+    { section: "sponsor", label: "💛 助養", href: "/admin?section=sponsor" },
+    { section: "applications", label: "📋 申請", href: "/admin?section=applications" },
+  ];
 
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
       <aside className="w-52 bg-slate-900 text-slate-100 flex flex-col flex-shrink-0">
         <div className="p-4 border-b border-slate-700">
-          <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">HKSCDA Admin</div>
+          <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+            HKSCDA Admin
+          </div>
         </div>
         <nav className="flex-1 p-2 space-y-1">
-          {navItems.map(item => (
+          {navItems.map((item) => (
             <Link
               key={item.section}
               to={item.href}
               className={`block px-3 py-2 rounded-lg text-sm transition-colors ${
                 activeSection === item.section
-                  ? 'bg-slate-700 text-white'
-                  : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'
+                  ? "bg-slate-700 text-white"
+                  : "text-slate-400 hover:bg-slate-800 hover:text-slate-100"
               }`}
             >
               {item.label}
@@ -2053,11 +2260,9 @@ export function AdminLayout({ children, activeSection }: AdminLayoutProps) {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 bg-gray-50 overflow-auto">
-        {children}
-      </main>
+      <main className="flex-1 bg-gray-50 overflow-auto">{children}</main>
     </div>
-  )
+  );
 }
 ```
 
@@ -2066,6 +2271,7 @@ export function AdminLayout({ children, activeSection }: AdminLayoutProps) {
 ### Task 17: Admin login page
 
 **Files:**
+
 - Create: `src/routes/admin/login.tsx`
 
 - [ ] **Step 1: Create login route**
@@ -2073,32 +2279,32 @@ export function AdminLayout({ children, activeSection }: AdminLayoutProps) {
 Create `src/routes/admin/login.tsx`:
 
 ```tsx
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
-import { supabase } from '../../lib/supabase'
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { supabase } from "../../lib/supabase";
 
-export const Route = createFileRoute('/admin/login')({
+export const Route = createFileRoute("/admin/login")({
   component: AdminLoginPage,
-})
+});
 
 function AdminLoginPage() {
-  const navigate = useNavigate()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setError(null)
-    setLoading(true)
-    const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
-    setLoading(false)
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
+    setLoading(false);
     if (authError) {
-      setError('電郵或密碼錯誤')
-      return
+      setError("電郵或密碼錯誤");
+      return;
     }
-    navigate({ to: '/admin' })
+    navigate({ to: "/admin" });
   }
 
   return (
@@ -2115,7 +2321,7 @@ function AdminLoginPage() {
             <input
               type="email"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
             />
@@ -2125,7 +2331,7 @@ function AdminLoginPage() {
             <input
               type="password"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               required
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
             />
@@ -2136,12 +2342,12 @@ function AdminLoginPage() {
             disabled={loading}
             className="w-full py-2.5 bg-slate-800 text-white rounded-lg font-medium hover:bg-slate-700 transition-colors disabled:opacity-60"
           >
-            {loading ? '登入中…' : '登入'}
+            {loading ? "登入中…" : "登入"}
           </button>
         </form>
       </div>
     </main>
-  )
+  );
 }
 ```
 
@@ -2150,6 +2356,7 @@ function AdminLoginPage() {
 ### Task 18: AnimalsTable component
 
 **Files:**
+
 - Create: `src/components/admin/AnimalsTable.tsx`
 
 - [ ] **Step 1: Create AnimalsTable**
@@ -2157,42 +2364,43 @@ function AdminLoginPage() {
 Create `src/components/admin/AnimalsTable.tsx`:
 
 ```tsx
-import { Link } from '@tanstack/react-router'
-import { useState } from 'react'
-import { supabase } from '../../lib/supabase'
-import type { Animal } from '../../types/animal'
+import { Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { supabase } from "../../lib/supabase";
+import type { Animal } from "../../types/animal";
 
 interface AnimalsTableProps {
-  animals: Animal[]
-  onDeleted: () => void
+  animals: Animal[];
+  onDeleted: () => void;
 }
 
 const statusLabels: Record<string, { label: string; className: string }> = {
-  available: { label: '可領養', className: 'bg-green-100 text-green-700' },
-  adopted: { label: '已領養', className: 'bg-orange-100 text-orange-700' },
-  fostered: { label: '暫托中', className: 'bg-blue-100 text-blue-700' },
-}
+  available: { label: "可領養", className: "bg-green-100 text-green-700" },
+  adopted: { label: "已領養", className: "bg-orange-100 text-orange-700" },
+  fostered: { label: "暫托中", className: "bg-blue-100 text-blue-700" },
+};
 
 export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
-  const [search, setSearch] = useState('')
-  const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
+  const [search, setSearch] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
-  const filtered = animals.filter(a =>
-    a.name.toLowerCase().includes(search.toLowerCase()) ||
-    (a.name_en ?? '').toLowerCase().includes(search.toLowerCase())
-  )
+  const filtered = animals.filter(
+    (a) =>
+      a.name.toLowerCase().includes(search.toLowerCase()) ||
+      (a.name_en ?? "").toLowerCase().includes(search.toLowerCase()),
+  );
 
   async function handleDelete(id: string) {
-    await supabase.from('animals').delete().eq('id', id)
-    setConfirmDelete(null)
-    onDeleted()
+    await supabase.from("animals").delete().eq("id", id);
+    setConfirmDelete(null);
+    onDeleted();
   }
 
   return (
     <div className="space-y-4">
       <input
         value={search}
-        onChange={e => setSearch(e.target.value)}
+        onChange={(e) => setSearch(e.target.value)}
         placeholder="搜尋名字…"
         className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full max-w-xs"
       />
@@ -2210,53 +2418,86 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
             </tr>
           </thead>
           <tbody>
-            {filtered.map(animal => {
-              const status = statusLabels[animal.status]
+            {filtered.map((animal) => {
+              const status = statusLabels[animal.status];
               return (
                 <tr key={animal.id} className="border-b border-gray-100 hover:bg-gray-50">
                   <td className="p-3">
                     {animal.image_url ? (
-                      <img src={animal.image_url} alt="" className="w-10 h-10 rounded object-cover" />
+                      <img
+                        src={animal.image_url}
+                        alt=""
+                        className="w-10 h-10 rounded object-cover"
+                      />
                     ) : (
                       <div className="w-10 h-10 rounded bg-gray-100 flex items-center justify-center text-lg">
-                        {animal.type === 'dog' ? '🐶' : '🐱'}
+                        {animal.type === "dog" ? "🐶" : "🐱"}
                       </div>
                     )}
                   </td>
-                  <td className="p-3 font-medium">{animal.name}{animal.name_en && <span className="text-gray-400 ml-1 font-normal">{animal.name_en}</span>}</td>
-                  <td className="p-3">{animal.gender === 'male' ? '公' : '母'}</td>
+                  <td className="p-3 font-medium">
+                    {animal.name}
+                    {animal.name_en && (
+                      <span className="text-gray-400 ml-1 font-normal">{animal.name_en}</span>
+                    )}
+                  </td>
+                  <td className="p-3">{animal.gender === "male" ? "公" : "母"}</td>
                   <td className="p-3">{animal.age}</td>
                   <td className="p-3">
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${status.className}`}>
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-xs font-medium ${status.className}`}
+                    >
                       {status.label}
                     </span>
                   </td>
                   <td className="p-3">
                     <div className="flex gap-3">
-                      <Link to={`/admin/animals/${animal.id}/edit`} className="text-blue-600 hover:underline text-xs">編輯</Link>
+                      <Link
+                        to={`/admin/animals/${animal.id}/edit`}
+                        className="text-blue-600 hover:underline text-xs"
+                      >
+                        編輯
+                      </Link>
                       {confirmDelete === animal.id ? (
                         <span className="flex gap-2 text-xs">
-                          <button onClick={() => handleDelete(animal.id)} className="text-red-600 hover:underline">確認</button>
-                          <button onClick={() => setConfirmDelete(null)} className="text-gray-500 hover:underline">取消</button>
+                          <button
+                            onClick={() => handleDelete(animal.id)}
+                            className="text-red-600 hover:underline"
+                          >
+                            確認
+                          </button>
+                          <button
+                            onClick={() => setConfirmDelete(null)}
+                            className="text-gray-500 hover:underline"
+                          >
+                            取消
+                          </button>
                         </span>
                       ) : (
-                        <button onClick={() => setConfirmDelete(animal.id)} className="text-red-500 hover:underline text-xs">刪除</button>
+                        <button
+                          onClick={() => setConfirmDelete(animal.id)}
+                          className="text-red-500 hover:underline text-xs"
+                        >
+                          刪除
+                        </button>
                       )}
                     </div>
                   </td>
                 </tr>
-              )
+              );
             })}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={6} className="p-6 text-center text-gray-400">沒有結果</td>
+                <td colSpan={6} className="p-6 text-center text-gray-400">
+                  沒有結果
+                </td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
     </div>
-  )
+  );
 }
 ```
 
@@ -2265,6 +2506,7 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
 ### Task 19: AnimalForm component
 
 **Files:**
+
 - Create: `src/components/admin/AnimalForm.tsx`
 
 - [ ] **Step 1: Create AnimalForm**
@@ -2272,105 +2514,124 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
 Create `src/components/admin/AnimalForm.tsx`:
 
 ```tsx
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
-import { supabase } from '../../lib/supabase'
-import type { Animal } from '../../types/animal'
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { supabase } from "../../lib/supabase";
+import type { Animal } from "../../types/animal";
 
 const animalSchema = z.object({
-  name: z.string().min(1, '請填寫名字'),
+  name: z.string().min(1, "請填寫名字"),
   name_en: z.string().optional(),
-  type: z.enum(['cat', 'dog', 'sponsor']),
-  gender: z.enum(['male', 'female']),
-  age: z.string().min(1, '請填寫年齡'),
+  type: z.enum(["cat", "dog", "sponsor"]),
+  gender: z.enum(["male", "female"]),
+  age: z.string().min(1, "請填寫年齡"),
   notes: z.string().optional(),
   description: z.string().optional(),
-  status: z.enum(['available', 'adopted', 'fostered']),
-})
+  status: z.enum(["available", "adopted", "fostered"]),
+});
 
-type FormValues = z.infer<typeof animalSchema>
+type FormValues = z.infer<typeof animalSchema>;
 
 interface AnimalFormProps {
-  existing?: Animal
+  existing?: Animal;
 }
 
 export function AnimalForm({ existing }: AnimalFormProps) {
-  const navigate = useNavigate()
-  const [imageFile, setImageFile] = useState<File | null>(null)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const navigate = useNavigate();
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>({
     resolver: zodResolver(animalSchema),
     defaultValues: existing
       ? {
           name: existing.name,
-          name_en: existing.name_en ?? '',
+          name_en: existing.name_en ?? "",
           type: existing.type,
           gender: existing.gender,
           age: existing.age,
-          notes: existing.notes ?? '',
-          description: existing.description ?? '',
+          notes: existing.notes ?? "",
+          description: existing.description ?? "",
           status: existing.status,
         }
-      : { type: 'cat', gender: 'female', status: 'available' },
-  })
+      : { type: "cat", gender: "female", status: "available" },
+  });
 
   async function onSubmit(values: FormValues) {
-    setSaving(true)
-    setError(null)
+    setSaving(true);
+    setError(null);
 
-    let image_url = existing?.image_url ?? null
+    let image_url = existing?.image_url ?? null;
 
     if (imageFile) {
-      const animalId = existing?.id ?? crypto.randomUUID()
+      const animalId = existing?.id ?? crypto.randomUUID();
       const { error: uploadError } = await supabase.storage
-        .from('animal-images')
-        .upload(`${animalId}.jpg`, imageFile, { upsert: true })
-      if (uploadError) { setError('圖片上載失敗'); setSaving(false); return }
-      const { data: urlData } = supabase.storage.from('animal-images').getPublicUrl(`${animalId}.jpg`)
-      image_url = urlData.publicUrl
+        .from("animal-images")
+        .upload(`${animalId}.jpg`, imageFile, { upsert: true });
+      if (uploadError) {
+        setError("圖片上載失敗");
+        setSaving(false);
+        return;
+      }
+      const { data: urlData } = supabase.storage
+        .from("animal-images")
+        .getPublicUrl(`${animalId}.jpg`);
+      image_url = urlData.publicUrl;
     }
 
     if (existing) {
       const { error: updateError } = await supabase
-        .from('animals')
+        .from("animals")
         .update({ ...values, image_url, updated_at: new Date().toISOString() })
-        .eq('id', existing.id)
-      if (updateError) { setError('儲存失敗'); setSaving(false); return }
+        .eq("id", existing.id);
+      if (updateError) {
+        setError("儲存失敗");
+        setSaving(false);
+        return;
+      }
     } else {
       const { error: insertError } = await supabase
-        .from('animals')
-        .insert({ ...values, image_url })
-      if (insertError) { setError('儲存失敗'); setSaving(false); return }
+        .from("animals")
+        .insert({ ...values, image_url });
+      if (insertError) {
+        setError("儲存失敗");
+        setSaving(false);
+        return;
+      }
     }
 
-    navigate({ to: '/admin' })
+    navigate({ to: "/admin" });
   }
 
-  const field = 'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500'
+  const field =
+    "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500";
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="max-w-lg space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium mb-1">名字 *</label>
-          <input {...register('name')} className={field} />
+          <input {...register("name")} className={field} />
           {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
         </div>
         <div>
           <label className="block text-sm font-medium mb-1">英文名</label>
-          <input {...register('name_en')} className={field} />
+          <input {...register("name_en")} className={field} />
         </div>
       </div>
 
       <div className="grid grid-cols-3 gap-4">
         <div>
           <label className="block text-sm font-medium mb-1">類別 *</label>
-          <select {...register('type')} className={field}>
+          <select {...register("type")} className={field}>
             <option value="cat">貓</option>
             <option value="dog">狗</option>
             <option value="sponsor">助養</option>
@@ -2378,14 +2639,14 @@ export function AnimalForm({ existing }: AnimalFormProps) {
         </div>
         <div>
           <label className="block text-sm font-medium mb-1">性別 *</label>
-          <select {...register('gender')} className={field}>
+          <select {...register("gender")} className={field}>
             <option value="female">母</option>
             <option value="male">公</option>
           </select>
         </div>
         <div>
           <label className="block text-sm font-medium mb-1">狀態 *</label>
-          <select {...register('status')} className={field}>
+          <select {...register("status")} className={field}>
             <option value="available">可領養</option>
             <option value="adopted">已領養</option>
             <option value="fostered">暫托中</option>
@@ -2396,18 +2657,18 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium mb-1">年齡 *</label>
-          <input {...register('age')} placeholder="如：6歲 / 4個月" className={field} />
+          <input {...register("age")} placeholder="如：6歲 / 4個月" className={field} />
           {errors.age && <p className="text-red-500 text-xs mt-1">{errors.age.message}</p>}
         </div>
         <div>
           <label className="block text-sm font-medium mb-1">備注標籤</label>
-          <input {...register('notes')} placeholder="如：親人、BB一對" className={field} />
+          <input {...register("notes")} placeholder="如：親人、BB一對" className={field} />
         </div>
       </div>
 
       <div>
         <label className="block text-sm font-medium mb-1">描述</label>
-        <textarea {...register('description')} rows={4} className={field} />
+        <textarea {...register("description")} rows={4} className={field} />
       </div>
 
       <div>
@@ -2415,7 +2676,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
         <input
           type="file"
           accept="image/*"
-          onChange={e => setImageFile(e.target.files?.[0] ?? null)}
+          onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
           className="text-sm"
         />
         {existing?.image_url && !imageFile && (
@@ -2431,18 +2692,18 @@ export function AnimalForm({ existing }: AnimalFormProps) {
           disabled={saving}
           className="px-6 py-2.5 bg-slate-800 text-white rounded-lg font-medium hover:bg-slate-700 transition-colors disabled:opacity-60"
         >
-          {saving ? '儲存中…' : '儲存'}
+          {saving ? "儲存中…" : "儲存"}
         </button>
         <button
           type="button"
-          onClick={() => navigate({ to: '/admin' })}
+          onClick={() => navigate({ to: "/admin" })}
           className="px-6 py-2.5 border border-gray-300 rounded-lg text-sm hover:bg-gray-50"
         >
           取消
         </button>
       </div>
     </form>
-  )
+  );
 }
 ```
 
@@ -2451,6 +2712,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
 ### Task 20: Admin dashboard + CRUD routes
 
 **Files:**
+
 - Create: `src/routes/admin/index.tsx`
 - Create: `src/routes/admin/animals/new.tsx`
 - Create: `src/routes/admin/animals/$id.edit.tsx`
@@ -2460,73 +2722,75 @@ export function AnimalForm({ existing }: AnimalFormProps) {
 Create `src/routes/admin/index.tsx`:
 
 ```tsx
-import { createFileRoute, redirect } from '@tanstack/react-router'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { z } from 'zod'
-import { Link } from '@tanstack/react-router'
-import { supabase } from '../../lib/supabase'
-import { AdminLayout } from '../../components/admin/AdminLayout'
-import { AnimalsTable } from '../../components/admin/AnimalsTable'
-import type { AnimalType } from '../../types/animal'
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { z } from "zod";
+import { Link } from "@tanstack/react-router";
+import { supabase } from "../../lib/supabase";
+import { AdminLayout } from "../../components/admin/AdminLayout";
+import { AnimalsTable } from "../../components/admin/AnimalsTable";
+import type { AnimalType } from "../../types/animal";
 
 const searchSchema = z.object({
-  section: z.enum(['cat', 'dog', 'sponsor', 'applications']).catch('cat'),
-})
+  section: z.enum(["cat", "dog", "sponsor", "applications"]).catch("cat"),
+});
 
-export const Route = createFileRoute('/admin/')({
+export const Route = createFileRoute("/admin/")({
   validateSearch: searchSchema,
   beforeLoad: async () => {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) throw redirect({ to: '/admin/login' })
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session) throw redirect({ to: "/admin/login" });
   },
   component: AdminDashboard,
-})
+});
 
 const sectionLabels: Record<string, string> = {
-  cat: '貓貓',
-  dog: '狗狗',
-  sponsor: '助養動物',
-  applications: '領養申請',
-}
+  cat: "貓貓",
+  dog: "狗狗",
+  sponsor: "助養動物",
+  applications: "領養申請",
+};
 
 function AdminDashboard() {
-  const { section } = Route.useSearch()
-  const queryClient = useQueryClient()
+  const { section } = Route.useSearch();
+  const queryClient = useQueryClient();
 
   const { data: animals = [], isLoading } = useQuery({
-    queryKey: ['admin-animals', section],
+    queryKey: ["admin-animals", section],
     queryFn: async () => {
-      if (section === 'applications') return []
+      if (section === "applications") return [];
       const { data, error } = await supabase
-        .from('animals')
-        .select('*')
-        .eq('type', section)
-        .order('created_at', { ascending: false })
-      if (error) throw error
-      return data
+        .from("animals")
+        .select("*")
+        .eq("type", section)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
     },
-    enabled: section !== 'applications',
-  })
+    enabled: section !== "applications",
+  });
 
   const { data: applications = [] } = useQuery({
-    queryKey: ['admin-applications'],
+    queryKey: ["admin-applications"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('adoption_applications')
-        .select('*')
-        .order('created_at', { ascending: false })
-      if (error) throw error
-      return data
+        .from("adoption_applications")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
     },
-    enabled: section === 'applications',
-  })
+    enabled: section === "applications",
+  });
 
   return (
-    <AdminLayout activeSection={section as 'cat' | 'dog' | 'sponsor' | 'applications'}>
+    <AdminLayout activeSection={section as "cat" | "dog" | "sponsor" | "applications"}>
       <div className="p-6 space-y-4">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold">{sectionLabels[section]}</h1>
-          {section !== 'applications' && (
+          {section !== "applications" && (
             <Link
               to="/admin/animals/new"
               className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors"
@@ -2536,7 +2800,7 @@ function AdminDashboard() {
           )}
         </div>
 
-        {section === 'applications' ? (
+        {section === "applications" ? (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -2550,29 +2814,43 @@ function AdminDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {applications.map((app: { id: string; applicant_name: string; animal_name: string; phone: string; created_at: string; status: string }) => (
-                  <tr key={app.id} className="border-b border-gray-100">
-                    <td className="p-3">{app.applicant_name}</td>
-                    <td className="p-3">{app.animal_name}</td>
-                    <td className="p-3">{app.phone}</td>
-                    <td className="p-3">{new Date(app.created_at).toLocaleDateString('zh-HK')}</td>
-                    <td className="p-3">
-                      <select
-                        defaultValue={app.status}
-                        onChange={async e => {
-                          await supabase.from('adoption_applications').update({ status: e.target.value }).eq('id', app.id)
-                          queryClient.invalidateQueries({ queryKey: ['admin-applications'] })
-                        }}
-                        className="border border-gray-300 rounded text-xs px-2 py-1"
-                      >
-                        <option value="pending">待處理</option>
-                        <option value="approved">已批准</option>
-                        <option value="rejected">已拒絕</option>
-                      </select>
-                    </td>
-                    <td className="p-3 text-gray-400 text-xs">{app.id.slice(0, 8)}…</td>
-                  </tr>
-                ))}
+                {applications.map(
+                  (app: {
+                    id: string;
+                    applicant_name: string;
+                    animal_name: string;
+                    phone: string;
+                    created_at: string;
+                    status: string;
+                  }) => (
+                    <tr key={app.id} className="border-b border-gray-100">
+                      <td className="p-3">{app.applicant_name}</td>
+                      <td className="p-3">{app.animal_name}</td>
+                      <td className="p-3">{app.phone}</td>
+                      <td className="p-3">
+                        {new Date(app.created_at).toLocaleDateString("zh-HK")}
+                      </td>
+                      <td className="p-3">
+                        <select
+                          defaultValue={app.status}
+                          onChange={async (e) => {
+                            await supabase
+                              .from("adoption_applications")
+                              .update({ status: e.target.value })
+                              .eq("id", app.id);
+                            queryClient.invalidateQueries({ queryKey: ["admin-applications"] });
+                          }}
+                          className="border border-gray-300 rounded text-xs px-2 py-1"
+                        >
+                          <option value="pending">待處理</option>
+                          <option value="approved">已批准</option>
+                          <option value="rejected">已拒絕</option>
+                        </select>
+                      </td>
+                      <td className="p-3 text-gray-400 text-xs">{app.id.slice(0, 8)}…</td>
+                    </tr>
+                  ),
+                )}
               </tbody>
             </table>
           </div>
@@ -2581,12 +2859,14 @@ function AdminDashboard() {
         ) : (
           <AnimalsTable
             animals={animals}
-            onDeleted={() => queryClient.invalidateQueries({ queryKey: ['admin-animals', section] })}
+            onDeleted={() =>
+              queryClient.invalidateQueries({ queryKey: ["admin-animals", section] })
+            }
           />
         )}
       </div>
     </AdminLayout>
-  )
+  );
 }
 ```
 
@@ -2595,18 +2875,20 @@ function AdminDashboard() {
 Create `src/routes/admin/animals/new.tsx`:
 
 ```tsx
-import { createFileRoute, redirect } from '@tanstack/react-router'
-import { supabase } from '../../../lib/supabase'
-import { AdminLayout } from '../../../components/admin/AdminLayout'
-import { AnimalForm } from '../../../components/admin/AnimalForm'
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { supabase } from "../../../lib/supabase";
+import { AdminLayout } from "../../../components/admin/AdminLayout";
+import { AnimalForm } from "../../../components/admin/AnimalForm";
 
-export const Route = createFileRoute('/admin/animals/new')({
+export const Route = createFileRoute("/admin/animals/new")({
   beforeLoad: async () => {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) throw redirect({ to: '/admin/login' })
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session) throw redirect({ to: "/admin/login" });
   },
   component: NewAnimalPage,
-})
+});
 
 function NewAnimalPage() {
   return (
@@ -2616,7 +2898,7 @@ function NewAnimalPage() {
         <AnimalForm />
       </div>
     </AdminLayout>
-  )
+  );
 }
 ```
 
@@ -2625,43 +2907,45 @@ function NewAnimalPage() {
 Create `src/routes/admin/animals/$id.edit.tsx`:
 
 ```tsx
-import { createFileRoute, redirect } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
-import { supabase } from '../../../lib/supabase'
-import { AdminLayout } from '../../../components/admin/AdminLayout'
-import { AnimalForm } from '../../../components/admin/AnimalForm'
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "../../../lib/supabase";
+import { AdminLayout } from "../../../components/admin/AdminLayout";
+import { AnimalForm } from "../../../components/admin/AnimalForm";
 
-export const Route = createFileRoute('/admin/animals/$id/edit')({
+export const Route = createFileRoute("/admin/animals/$id/edit")({
   beforeLoad: async () => {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) throw redirect({ to: '/admin/login' })
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session) throw redirect({ to: "/admin/login" });
   },
   component: EditAnimalPage,
-})
+});
 
 function EditAnimalPage() {
-  const { id } = Route.useParams()
+  const { id } = Route.useParams();
 
   const { data: animal, isLoading } = useQuery({
-    queryKey: ['admin-animal', id],
+    queryKey: ["admin-animal", id],
     queryFn: async () => {
-      const { data, error } = await supabase.from('animals').select('*').eq('id', id).single()
-      if (error) throw error
-      return data
+      const { data, error } = await supabase.from("animals").select("*").eq("id", id).single();
+      if (error) throw error;
+      return data;
     },
-  })
+  });
 
-  if (isLoading) return <div className="p-6 text-gray-400">載入中…</div>
-  if (!animal) return <div className="p-6 text-gray-400">找不到此動物</div>
+  if (isLoading) return <div className="p-6 text-gray-400">載入中…</div>;
+  if (!animal) return <div className="p-6 text-gray-400">找不到此動物</div>;
 
   return (
-    <AdminLayout activeSection={animal.type as 'cat' | 'dog' | 'sponsor' | 'applications'}>
+    <AdminLayout activeSection={animal.type as "cat" | "dog" | "sponsor" | "applications"}>
       <div className="p-6 space-y-4">
         <h1 className="text-xl font-bold">編輯：{animal.name}</h1>
         <AnimalForm existing={animal} />
       </div>
     </AdminLayout>
-  )
+  );
 }
 ```
 
@@ -2694,6 +2978,7 @@ git commit -m "feat: add admin panel (login, dashboard, add/edit/delete animals,
 - [ ] **Step 1: Add env vars to Vercel**
 
 In Vercel dashboard for project `hkscda`:
+
 - Settings → Environment Variables
 - Add: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `RESEND_API_KEY`, `NOTIFICATION_EMAIL`
 - Scope: Production + Preview
@@ -2717,6 +3002,7 @@ Vercel auto-deploys from `main`. Check deployment URL.
 - [ ] **Step 4: Smoke test production**
 
 Visit deployed URL. Test:
+
 - [ ] Header dropdowns work
 - [ ] `/about` renders
 - [ ] `/animals/cat` loads from Supabase (empty state is fine)
@@ -2729,20 +3015,20 @@ Visit deployed URL. Test:
 
 **Spec coverage check:**
 
-| Spec section | Task |
-|---|---|
-| Routes — static pages | Tasks 5–7 |
-| Routes — cat/dog listing + detail | Tasks 11–12 |
-| Routes — sponsors listing + detail | Task 13 |
-| Routes — admin panel | Tasks 17, 20 |
-| Routes — adoption form | Task 15 |
-| Database schema | Task 2 |
-| Supabase client + types | Task 3 |
-| Navigation header | Task 4 |
-| AnimalCard, AnimalGrid, AnimalDetail | Tasks 8–10 |
+| Spec section                          | Task            |
+| ------------------------------------- | --------------- |
+| Routes — static pages                 | Tasks 5–7       |
+| Routes — cat/dog listing + detail     | Tasks 11–12     |
+| Routes — sponsors listing + detail    | Task 13         |
+| Routes — admin panel                  | Tasks 17, 20    |
+| Routes — adoption form                | Task 15         |
+| Database schema                       | Task 2          |
+| Supabase client + types               | Task 3          |
+| Navigation header                     | Task 4          |
+| AnimalCard, AnimalGrid, AnimalDetail  | Tasks 8–10      |
 | AdminLayout, AnimalsTable, AnimalForm | Tasks 16, 18–19 |
-| submitApplication server fn + Resend | Task 14 |
-| Dependencies install | Task 1 |
-| Deploy | Task 21 |
+| submitApplication server fn + Resend  | Task 14         |
+| Dependencies install                  | Task 1          |
+| Deploy                                | Task 21         |
 
 All spec sections are covered. No TBD or placeholder steps.

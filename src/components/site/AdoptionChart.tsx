@@ -10,27 +10,27 @@ import {
   Pie,
   Cell,
   Legend,
-} from "recharts"
-import { Cat, Dog } from "lucide-react"
-import type { Animal } from "@/types/animal"
+} from "recharts";
+import { Cat, Dog } from "lucide-react";
+import type { Animal } from "@/types/animal";
 
 interface MonthData {
-  month: string
-  cats: number
-  dogs: number
-  total: number
+  month: string;
+  cats: number;
+  dogs: number;
+  total: number;
 }
 
 function groupByMonth(animals: Animal[]): MonthData[] {
-  const map = new Map<string, { cats: number; dogs: number }>()
+  const map = new Map<string, { cats: number; dogs: number }>();
 
   for (const a of animals) {
-    const d = new Date(a.updated_at ?? a.created_at ?? "")
-    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`
-    const entry = map.get(key) ?? { cats: 0, dogs: 0 }
-    if (a.type === "cat") entry.cats++
-    else entry.dogs++
-    map.set(key, entry)
+    const d = new Date(a.updated_at ?? a.created_at ?? "");
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    const entry = map.get(key) ?? { cats: 0, dogs: 0 };
+    if (a.type === "cat") entry.cats++;
+    else entry.dogs++;
+    map.set(key, entry);
   }
 
   return Array.from(map.entries())
@@ -41,39 +41,37 @@ function groupByMonth(animals: Animal[]): MonthData[] {
       cats: v.cats,
       dogs: v.dogs,
       total: v.cats + v.dogs,
-    }))
+    }));
 }
 
 interface AdoptionChartProps {
-  animals: Animal[]
+  animals: Animal[];
 }
 
-const CAT_COLOR = "var(--color-cat)"
-const DOG_COLOR = "var(--color-dog)"
+const CAT_COLOR = "var(--color-cat)";
+const DOG_COLOR = "var(--color-dog)";
 
 export function AdoptionChart({ animals }: AdoptionChartProps) {
-  const data = groupByMonth(animals)
-  const totalCats = animals.filter((a) => a.type === "cat").length
-  const totalDogs = animals.filter((a) => a.type === "dog").length
+  const data = groupByMonth(animals);
+  const totalCats = animals.filter((a) => a.type === "cat").length;
+  const totalDogs = animals.filter((a) => a.type === "dog").length;
   const pieData = [
     { name: "貓", value: totalCats, color: CAT_COLOR, icon: Cat },
     { name: "狗", value: totalDogs, color: DOG_COLOR, icon: Dog },
-  ]
+  ];
 
   if (data.length === 0) {
     return (
       <p className="text-center py-16 text-[var(--color-text-muted)]">
         暫無領養數據。數據將在動物成功獲領養後自動更新。
       </p>
-    )
+    );
   }
 
   return (
     <div className="space-y-10">
       <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6">
-        <h2 className="font-display text-lg font-bold mb-4">
-          每月領養趨勢（近12個月）
-        </h2>
+        <h2 className="font-display text-lg font-bold mb-4">每月領養趨勢（近12個月）</h2>
         <div className="sr-only">
           過去12個月每月貓狗領養數據趨勢圖，貓以啡紅色標示，狗以藍色標示。
         </div>
@@ -157,5 +155,5 @@ export function AdoptionChart({ animals }: AdoptionChartProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }
