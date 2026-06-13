@@ -34,7 +34,7 @@ function CCCPPage() {
 
       <section className="space-y-4">
         <h2 className="font-display text-xl font-bold">CCCP vs 傳統方式對比</h2>
-        <div className="overflow-x-auto">
+        <div className="card-dashed overflow-x-auto p-4">
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr className="bg-[var(--color-surface-offset)]">
@@ -78,8 +78,15 @@ function CCCPPage() {
       <section className="space-y-4">
         <h2 className="font-display text-xl font-bold">如何支持CCCP</h2>
         <p className="text-[var(--color-text-muted)] leading-relaxed">
-          您可以透過擔任義工、捐款或捐贈物資支持CCCP計劃。 如有興趣參與，請透過協會電郵聯絡我們。
+          您可以透過擔任義工、捐款或捐贈物資支持CCCP計劃。如有興趣參與，請電郵至{" "}
+          <a href="mailto:info@hkscda.com" className="text-[var(--color-primary)] underline">
+            info@hkscda.com
+          </a>{" "}
+          或 WhatsApp 9864 1089 聯絡我們。
         </p>
+        <a href="mailto:info@hkscda.com" className="btn-cta">
+          電郵聯絡我們
+        </a>
       </section>
     </main>
   );

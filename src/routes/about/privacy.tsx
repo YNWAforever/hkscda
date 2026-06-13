@@ -2,6 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/about/privacy")({
   head: () => ({
+    meta: [
+      { title: "私隱聲明 · 香港拯救貓狗協會 HKSCDA" },
+      {
+        name: "description",
+        content: "香港拯救貓狗協會私隱聲明：說明我們如何收集、使用及保護您的個人資料。",
+      },
+    ],
     links: [{ rel: "canonical", href: "https://hkscda.com/about/privacy" }],
   }),
   component: PrivacyPage,
@@ -10,8 +17,8 @@ export const Route = createFileRoute("/about/privacy")({
 function PrivacyPage() {
   return (
     <main className="max-w-3xl mx-auto px-4 py-12 space-y-8">
-      <h1 className="font-display text-3xl font-bold">私隱聲明</h1>
-      <p className="text-[var(--color-text-muted)]">最後更新：2024年</p>
+      <h1 className="font-display text-3xl font-bold text-[var(--color-panel)]">私隱聲明</h1>
+      <p className="text-[var(--color-text-muted)]">最後更新：2026年6月</p>
 
       {[
         {
@@ -41,8 +48,15 @@ function PrivacyPage() {
         },
         {
           title: "6. 查閱及更正權利",
-          content:
-            "根據《個人資料（私隱）條例》，您有權查閱及更正我們持有的您的個人資料。如需提出要求，請電郵至協會的聯絡電郵。",
+          content: (
+            <>
+              根據《個人資料（私隱）條例》，您有權查閱及更正我們持有的您的個人資料。如需提出要求，請電郵至{" "}
+              <a href="mailto:info@hkscda.com" className="text-[var(--color-primary)] underline">
+                info@hkscda.com
+              </a>
+              。
+            </>
+          ),
         },
       ].map(({ title, content }) => (
         <section key={title} className="space-y-3">

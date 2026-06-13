@@ -22,18 +22,17 @@ export const Route = createFileRoute("/sponsors")({
 });
 
 const paymentMethods = [
-  { label: "FPS 轉數快", value: "12345678" },
-  { label: "銀行轉帳", value: "012-345-678901 (Bank Name)" },
+  { label: "FPS 轉數快", value: "9864 1089" },
+  { label: "銀行轉帳", value: "匯豐銀行 012-345-678901" },
   { label: "PayMe", value: "@hkscda" },
   { label: "PayPal", value: "paypal@hkscda.com" },
   { label: "Give.asia", value: "give.asia/hkscda" },
-  { label: "Alipay", value: "香港支付寶請掃碼" },
 ];
 
 function SponsorsPage() {
   const { page, filter } = Route.useSearch();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["animals", "sponsor", page, filter],
     queryFn: async () => {
       const from = (page - 1) * PAGE_SIZE;
@@ -54,7 +53,8 @@ function SponsorsPage() {
       <h1 className="font-display text-3xl font-bold">助養區</h1>
 
       <div className="bg-[var(--color-surface-offset)] rounded-2xl p-6">
-        <h2 className="font-semibold mb-4">助養付款方式</h2>
+        <h2 className="font-semibold mb-1">助養付款方式</h2>
+        <p className="text-sm text-[var(--color-text-muted)] mb-4">每月助養 HK$100</p>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {paymentMethods.map((m) => (
             <div key={m.label} className="bg-[var(--color-surface)] rounded-lg p-3 space-y-1">
@@ -65,7 +65,11 @@ function SponsorsPage() {
         </div>
       </div>
 
-      {isLoading ? (
+      {isError ? (
+        <p className="text-center py-12 text-[var(--color-text-muted)]">
+          載入助養動物時發生錯誤，請稍後再試。
+        </p>
+      ) : isLoading ? (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="rounded-xl overflow-hidden border border-[var(--color-border)]">

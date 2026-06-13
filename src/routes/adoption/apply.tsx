@@ -101,48 +101,99 @@ function ApplyPage() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-1">申請人姓名 *</label>
-          <input {...register("applicant_name")} className={inputClass} />
+          <label htmlFor="applicant_name" className="block text-sm font-medium mb-1">
+            申請人姓名 *
+          </label>
+          <input
+            {...register("applicant_name")}
+            id="applicant_name"
+            aria-required
+            aria-invalid={!!errors.applicant_name}
+            aria-describedby={errors.applicant_name ? "applicant_name-error" : undefined}
+            className={inputClass}
+          />
           {errors.applicant_name && (
-            <p className="text-[var(--color-error)] text-xs mt-1" role="alert">
+            <p
+              id="applicant_name-error"
+              className="text-[var(--color-error)] text-xs mt-1"
+              role="alert"
+            >
               {errors.applicant_name.message}
             </p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">聯絡電話 *</label>
-          <input {...register("phone")} type="tel" className={inputClass} />
+          <label htmlFor="phone" className="block text-sm font-medium mb-1">
+            聯絡電話 *
+          </label>
+          <input
+            {...register("phone")}
+            id="phone"
+            type="tel"
+            aria-required
+            aria-invalid={!!errors.phone}
+            aria-describedby={errors.phone ? "phone-error" : undefined}
+            className={inputClass}
+          />
           {errors.phone && (
-            <p className="text-[var(--color-error)] text-xs mt-1" role="alert">
+            <p id="phone-error" className="text-[var(--color-error)] text-xs mt-1" role="alert">
               {errors.phone.message}
             </p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">電郵地址 *</label>
-          <input {...register("email")} type="email" className={inputClass} />
+          <label htmlFor="email" className="block text-sm font-medium mb-1">
+            電郵地址 *
+          </label>
+          <input
+            {...register("email")}
+            id="email"
+            type="email"
+            aria-required
+            aria-invalid={!!errors.email}
+            aria-describedby={errors.email ? "email-error" : undefined}
+            className={inputClass}
+          />
           {errors.email && (
-            <p className="text-[var(--color-error)] text-xs mt-1" role="alert">
+            <p id="email-error" className="text-[var(--color-error)] text-xs mt-1" role="alert">
               {errors.email.message}
             </p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">住址 *</label>
-          <input {...register("address")} className={inputClass} />
+          <label htmlFor="address" className="block text-sm font-medium mb-1">
+            住址 *
+          </label>
+          <input
+            {...register("address")}
+            id="address"
+            aria-required
+            aria-invalid={!!errors.address}
+            aria-describedby={errors.address ? "address-error" : undefined}
+            className={inputClass}
+          />
           {errors.address && (
-            <p className="text-[var(--color-error)] text-xs mt-1" role="alert">
+            <p id="address-error" className="text-[var(--color-error)] text-xs mt-1" role="alert">
               {errors.address.message}
             </p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">住宅類型 *</label>
-          <select {...register("housing_type")} className={inputClass}>
+          <label htmlFor="housing_type" className="block text-sm font-medium mb-1">
+            住宅類型 *
+          </label>
+          <select
+            {...register("housing_type")}
+            id="housing_type"
+            aria-required
+            aria-invalid={!!errors.housing_type}
+            aria-describedby={errors.housing_type ? "housing_type-error" : undefined}
+            className={inputClass}
+          >
             <option value="">請選擇</option>
             {(["私人樓宇", "居屋", "公屋", "村屋", "其他"] as const).map((t) => (
               <option key={t} value={t}>
@@ -151,16 +202,23 @@ function ApplyPage() {
             ))}
           </select>
           {errors.housing_type && (
-            <p className="text-[var(--color-error)] text-xs mt-1" role="alert">
+            <p
+              id="housing_type-error"
+              className="text-[var(--color-error)] text-xs mt-1"
+              role="alert"
+            >
               {errors.housing_type.message}
             </p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">家庭成員人數</label>
+          <label htmlFor="family_size" className="block text-sm font-medium mb-1">
+            家庭成員人數
+          </label>
           <input
             {...register("family_size", { valueAsNumber: true })}
+            id="family_size"
             type="number"
             min={1}
             className={inputClass}
@@ -168,15 +226,32 @@ function ApplyPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">家中現有寵物</label>
-          <input {...register("existing_pets")} placeholder="如沒有請留空" className={inputClass} />
+          <label htmlFor="existing_pets" className="block text-sm font-medium mb-1">
+            家中現有寵物
+          </label>
+          <input
+            {...register("existing_pets")}
+            id="existing_pets"
+            placeholder="如沒有請留空"
+            className={inputClass}
+          />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">領養原因 *</label>
-          <textarea {...register("reason")} rows={4} className={inputClass} />
+          <label htmlFor="reason" className="block text-sm font-medium mb-1">
+            領養原因 *
+          </label>
+          <textarea
+            {...register("reason")}
+            id="reason"
+            rows={4}
+            aria-required
+            aria-invalid={!!errors.reason}
+            aria-describedby={errors.reason ? "reason-error" : undefined}
+            className={inputClass}
+          />
           {errors.reason && (
-            <p className="text-[var(--color-error)] text-xs mt-1" role="alert">
+            <p id="reason-error" className="text-[var(--color-error)] text-xs mt-1" role="alert">
               {errors.reason.message}
             </p>
           )}

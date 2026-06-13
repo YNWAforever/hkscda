@@ -1,32 +1,59 @@
-import { createFileRoute } from "@tanstack/react-router"
-import { Users, UserPlus, House, Cat, Dog, Scissors, Heart } from "lucide-react"
+import { createFileRoute } from "@tanstack/react-router";
+import { Users, UserPlus, House, Cat, Dog, Scissors, Heart } from "lucide-react";
 
 const volunteerRoles = [
-  { Icon: House, title: "暫托家庭", desc: "為等待領養的動物提供臨時居所，讓牠們在溫暖的家中等待領養。需家訪審核。" },
-  { Icon: Cat, title: "貓舍義工", desc: "清潔貓舍、餵食、社交化貓咪、協助領養日活動。彈性時間，適合學生或在職人士。" },
-  { Icon: Dog, title: "狗舍義工", desc: "溜狗、清潔狗舍、餵食、協助基本訓練。需要體力，適合喜歡戶外活動的人士。" },
-  { Icon: Scissors, title: "TNR義工", desc: "協助捕捉、運送及放回流浪貓。需要耐性和體力，通常於清晨或晚間行動。" },
-  { Icon: UserPlus, title: "領養日義工", desc: "協助每月領養日佈置、接待訪客、介紹動物。適合喜歡與人交流的人士。" },
-  { Icon: Heart, title: "專業義工", desc: "如你擁有獸醫、攝影、設計、翻譯等專業技能，歡迎以專業支持協會。" },
-]
+  {
+    Icon: House,
+    title: "暫托家庭",
+    desc: "為等待領養的動物提供臨時居所，讓牠們在溫暖的家中等待領養。需家訪審核。",
+  },
+  {
+    Icon: Cat,
+    title: "貓舍義工",
+    desc: "清潔貓舍、餵食、社交化貓咪、協助領養日活動。彈性時間，適合學生或在職人士。",
+  },
+  {
+    Icon: Dog,
+    title: "狗舍義工",
+    desc: "溜狗、清潔狗舍、餵食、協助基本訓練。需要體力，適合喜歡戶外活動的人士。",
+  },
+  {
+    Icon: Scissors,
+    title: "TNR義工",
+    desc: "協助捕捉、運送及放回流浪貓。需要耐性和體力，通常於清晨或晚間行動。",
+  },
+  {
+    Icon: UserPlus,
+    title: "領養日義工",
+    desc: "協助每月領養日佈置、接待訪客、介紹動物。適合喜歡與人交流的人士。",
+  },
+  {
+    Icon: Heart,
+    title: "專業義工",
+    desc: "如你擁有獸醫、攝影、設計、翻譯等專業技能，歡迎以專業支持協會。",
+  },
+];
 
 export const Route = createFileRoute("/volunteer")({
   head: () => ({
     meta: [
-      { title: "加入義工團隊 — 香港拯救貓狗協會 HKSCDA" },
+      { title: "加入義工團隊 · 香港拯救貓狗協會 HKSCDA" },
       {
         name: "description",
         content:
           "加入香港拯救貓狗協會義工團隊。暫托家庭、貓狗舍義工、TNR行動、領養日義工等多種義工機會。一起拯救生命。",
       },
-      { property: "og:title", content: "加入義工團隊 — HKSCDA" },
-      { property: "og:description", content: "多種義工機會：暫托、貓舍、狗舍、TNR、領養日。一起為毛孩出力。" },
+      { property: "og:title", content: "加入義工團隊 · HKSCDA" },
+      {
+        property: "og:description",
+        content: "多種義工機會：暫托、貓舍、狗舍、TNR、領養日。一起為毛孩出力。",
+      },
       { property: "og:type", content: "website" },
     ],
     links: [{ rel: "canonical", href: "https://hkscda.com/volunteer" }],
   }),
   component: VolunteerPage,
-})
+});
 
 function VolunteerPage() {
   return (
@@ -45,7 +72,10 @@ function VolunteerPage() {
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {volunteerRoles.map(({ Icon, title, desc }) => (
-          <div key={title} className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 hover:shadow-md transition-shadow">
+          <div
+            key={title}
+            className="card-dashed bg-[var(--color-surface)] p-6 hover:shadow-md transition-shadow"
+          >
             <div className="h-11 w-11 rounded-lg bg-[var(--color-primary-highlight)] flex items-center justify-center mb-4">
               <Icon className="h-5 w-5 text-[var(--color-primary)]" />
             </div>
@@ -55,7 +85,7 @@ function VolunteerPage() {
         ))}
       </div>
 
-      <div className="bg-[var(--color-surface-offset)] border border-[var(--color-border)] rounded-2xl p-6 space-y-4">
+      <div className="card-dashed bg-[var(--color-surface-offset)] p-6 space-y-4">
         <h2 className="font-display text-lg font-bold">如何加入？</h2>
         <div className="space-y-3 text-sm text-[var(--color-text-muted)]">
           {[
@@ -73,5 +103,5 @@ function VolunteerPage() {
         </div>
       </div>
     </main>
-  )
+  );
 }

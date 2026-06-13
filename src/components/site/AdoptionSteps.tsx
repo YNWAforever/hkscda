@@ -33,9 +33,6 @@ export function AdoptionSteps() {
     <section className="px-6 py-16 lg:py-24 bg-[var(--color-bg)]" aria-labelledby="steps-h">
       <div className="container-wide">
         <Reveal className="text-center mb-12">
-          <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3">
-            領養流程
-          </div>
           <h2
             id="steps-h"
             className="font-display text-3xl lg:text-5xl font-bold text-[var(--color-panel)] mb-4"

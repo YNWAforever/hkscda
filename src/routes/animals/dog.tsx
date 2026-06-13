@@ -24,7 +24,7 @@ export const Route = createFileRoute("/animals/dog")({
 function DogListingPage() {
   const { page, filter } = Route.useSearch();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["animals", "dog", page, filter],
     queryFn: async () => {
       const from = (page - 1) * PAGE_SIZE;
@@ -59,6 +59,16 @@ function DogListingPage() {
             </div>
           ))}
         </div>
+      </main>
+    );
+
+  if (isError)
+    return (
+      <main className="max-w-6xl mx-auto px-4 py-8">
+        <h1 className="font-display text-3xl font-bold mb-8">待領養狗狗</h1>
+        <p className="text-center py-12 text-[var(--color-text-muted)]">
+          載入狗狗資料時發生問題，請稍後再試。
+        </p>
       </main>
     );
 

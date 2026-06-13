@@ -97,7 +97,7 @@ export function Hero() {
             </div>
             <div className="leading-tight">
               <div className="font-display text-lg font-bold text-[var(--color-panel)]">3.5K+</div>
-              <div className="text-[11px] text-[var(--color-text-muted)]">義工及支持者社群</div>
+              <div className="text-[11px] text-[var(--color-text-muted)]">活躍義工團隊</div>
             </div>
           </Reveal>
         </div>

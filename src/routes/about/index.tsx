@@ -16,7 +16,8 @@ function AboutPage() {
         <h2 className="font-display text-xl font-bold">關於香港拯救貓狗協會</h2>
         <p className="text-[var(--color-text-muted)] leading-relaxed">
           香港拯救貓狗協會（HKSCDA）是一個非牟利慈善團體，致力於拯救、照顧及為流浪及被遺棄的貓狗尋找領養家庭。
-          協會成立以來，已協助數以百計的動物重獲新生，在愛心義工及捐助者的支持下持續運作。
+          協會自 2007 年成立，至今逾 18 年，每年救助超過 600 隻動物，已成功為超過 6,800
+          隻貓狗尋找領養家庭，並在愛心義工及捐助者的支持下持續運作。
         </p>
       </section>
 
@@ -68,7 +69,7 @@ function AboutPage() {
             </thead>
             <tbody>
               {[
-                ["領養費", "HK$800", "HK$1,000"],
+                ["領養費", "HK$500", "唐狗免費"],
                 ["絕育手術（已包含在領養費內）", "✓", "✓"],
                 ["晶片及疫苗（已包含在領養費內）", "✓", "✓"],
               ].map(([service, cat, dog]) => (

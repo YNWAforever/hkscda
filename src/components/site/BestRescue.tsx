@@ -5,7 +5,7 @@ import { Reveal } from "@/lib/reveal";
 import { useCountUp } from "@/lib/useCountUp";
 
 const checklist = [
-  "不殺（No Kill）承諾 — 絕不放棄任何一息尚存的生命",
+  "不殺（No Kill）承諾，絕不放棄任何一息尚存的生命",
   "政府認可慈善機構，捐款可申請 IRD §88 退稅",
   "嚴格家訪審核，確保每隻毛孩找到真正合適的家",
   "每月公開領養及核數報告，全面透明",
@@ -66,9 +66,6 @@ export function BestRescue() {
 
           {/* Copy + checklist */}
           <Reveal>
-            <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3">
-              我們的承諾
-            </div>
             <h2
               id="best-rescue-h"
               className="font-display text-3xl lg:text-5xl font-bold text-[var(--color-panel)] mb-5 leading-tight"

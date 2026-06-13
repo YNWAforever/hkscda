@@ -1,10 +1,10 @@
 interface ReportHeaderProps {
-  title: string
-  subtitle?: string
-  period?: string
-  periods?: { value: string; label: string }[]
-  selectedPeriod?: string
-  onPeriodChange?: (period: string) => void
+  title: string;
+  subtitle?: string;
+  period?: string;
+  periods?: { value: string; label: string }[];
+  selectedPeriod?: string;
+  onPeriodChange?: (period: string) => void;
 }
 
 export function ReportHeader({
@@ -17,17 +17,10 @@ export function ReportHeader({
 }: ReportHeaderProps) {
   return (
     <div>
-      <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3">
-        透明度報告
-      </div>
       <div className="flex flex-wrap items-end justify-between gap-4 mb-4">
         <div>
-          <h1 className="font-display text-3xl lg:text-5xl font-bold mb-2">
-            {title}
-          </h1>
-          {subtitle && (
-            <p className="text-[var(--color-text-muted)]">{subtitle}</p>
-          )}
+          <h1 className="font-display text-3xl lg:text-5xl font-bold mb-2">{title}</h1>
+          {subtitle && <p className="text-[var(--color-text-muted)]">{subtitle}</p>}
         </div>
         {periods && onPeriodChange && selectedPeriod && (
           <select
@@ -44,11 +37,7 @@ export function ReportHeader({
           </select>
         )}
       </div>
-      {period && (
-        <p className="text-sm text-[var(--color-text-muted)]">
-          報告期間：{period}
-        </p>
-      )}
+      {period && <p className="text-sm text-[var(--color-text-muted)]">報告期間：{period}</p>}
     </div>
-  )
+  );
 }

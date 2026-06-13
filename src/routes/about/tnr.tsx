@@ -12,7 +12,7 @@ function TNRPage() {
   return (
     <main className="max-w-3xl mx-auto px-4 py-12 space-y-10">
       <h1 className="font-display text-3xl font-bold">TNR計劃</h1>
-      <p className="text-[var(--color-text-muted)] text-lg">誘捕—絕育—放回（Trap-Neuter-Return）</p>
+      <p className="text-[var(--color-text-muted)] text-lg">誘捕-絕育-放回（Trap-Neuter-Return）</p>
 
       <section className="space-y-4">
         <h2 className="font-display text-xl font-bold">什麼是TNR？</h2>

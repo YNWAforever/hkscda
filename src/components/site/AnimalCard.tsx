@@ -1,23 +1,21 @@
-import { Link } from '@tanstack/react-router'
-import { Cat, Dog } from 'lucide-react'
-import type { Animal } from '../../types/animal'
+import { Link } from "@tanstack/react-router";
+import { Cat, Dog } from "lucide-react";
+import type { Animal } from "../../types/animal";
 
 interface AnimalCardProps {
-  animal: Animal
+  animal: Animal;
 }
 
 export function AnimalCard({ animal }: AnimalCardProps) {
   const detailHref =
-    animal.type === 'sponsor'
-      ? `/sponsors/${animal.id}`
-      : `/animals/${animal.type}/${animal.id}`
+    animal.type === "sponsor" ? `/sponsors/${animal.id}` : `/animals/${animal.type}/${animal.id}`;
 
-  const ctaLabel = animal.type === 'sponsor' ? '立即助養' : '申請領養'
+  const ctaLabel = animal.type === "sponsor" ? "立即助養" : "申請領養";
 
-  const placeholderBg = animal.type === 'dog' ? 'var(--color-dog-bg)' : 'var(--color-cat-bg)'
+  const placeholderBg = animal.type === "dog" ? "var(--color-dog-bg)" : "var(--color-cat-bg)";
 
   return (
-    <div className="bg-[var(--color-surface)] rounded-xl overflow-hidden border border-[var(--color-border)] flex flex-col hover:shadow-md transition-shadow">
+    <div className="bg-[var(--color-surface)] rounded-2xl overflow-hidden border border-[var(--color-border)] flex flex-col hover:shadow-md transition-shadow">
       <Link to={detailHref} className="block">
         {animal.image_url ? (
           <img
@@ -30,7 +28,7 @@ export function AnimalCard({ animal }: AnimalCardProps) {
             className="w-full aspect-square flex items-center justify-center"
             style={{ background: placeholderBg }}
           >
-            {animal.type === 'dog' ? (
+            {animal.type === "dog" ? (
               <Dog className="h-16 w-16 text-[var(--color-dog)] opacity-30" strokeWidth={1} />
             ) : (
               <Cat className="h-16 w-16 text-[var(--color-cat)] opacity-30" strokeWidth={1} />
@@ -44,7 +42,7 @@ export function AnimalCard({ animal }: AnimalCardProps) {
 
         <div className="flex flex-wrap gap-1">
           <span className="px-2 py-0.5 rounded-full text-xs bg-[var(--color-surface-offset)] text-[var(--color-text-muted)]">
-            {animal.gender === 'male' ? '公' : '母'}
+            {animal.gender === "male" ? "公" : "母"}
           </span>
           <span className="px-2 py-0.5 rounded-full text-xs bg-[var(--color-surface-offset)] text-[var(--color-text-muted)]">
             {animal.age}
@@ -56,13 +54,10 @@ export function AnimalCard({ animal }: AnimalCardProps) {
           )}
         </div>
 
-        <Link
-          to={detailHref}
-          className="btn-cta mt-auto text-xs! py-1.5! px-3!"
-        >
+        <Link to={detailHref} className="btn-cta mt-auto text-xs! py-1.5! px-3!">
           {ctaLabel} →
         </Link>
       </div>
     </div>
-  )
+  );
 }

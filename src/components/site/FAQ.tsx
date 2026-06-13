@@ -39,9 +39,6 @@ export function FAQ() {
     >
       <div className="container-wide grid lg:grid-cols-5 gap-10 lg:gap-14 items-start">
         <Reveal className="lg:col-span-2">
-          <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3 flex items-center gap-1.5">
-            <MessageCircleQuestion className="h-3.5 w-3.5" /> 常見問題
-          </div>
           <h2
             id="faq-h"
             className="font-display text-3xl lg:text-4xl font-bold text-[var(--color-panel)] mb-4 leading-tight"

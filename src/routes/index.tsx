@@ -3,7 +3,6 @@ import {
   PawPrint,
   Heart,
   House,
-  Shield,
   Star,
   Check,
   Users,
@@ -231,9 +230,6 @@ function Index() {
         {/* Programs */}
         <section id="programs" className="px-6 py-16 lg:py-24 bg-[var(--color-surface-offset)]">
           <div className="container-wide">
-            <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3 flex items-center gap-1.5">
-              <Shield className="h-3.5 w-3.5" /> 服務計劃
-            </div>
             <h2 className="font-display text-3xl lg:text-5xl font-bold mb-4">全面照顧流浪動物</h2>
             <p className="text-[var(--color-text-muted)] max-w-[52ch] mb-10">
               從緊急拯救到永久領養，我們提供全方位的動物福利服務。

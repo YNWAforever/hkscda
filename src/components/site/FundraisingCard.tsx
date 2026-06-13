@@ -31,9 +31,6 @@ export function FundraisingCard() {
           </Reveal>
 
           <Reveal className="relative">
-            <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3">
-              緊急醫療籌款
-            </div>
             <h2
               id="fundraising-h"
               className="font-display text-3xl lg:text-4xl font-bold text-[var(--color-panel)] mb-4 leading-tight"

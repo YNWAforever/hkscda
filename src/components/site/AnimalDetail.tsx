@@ -72,12 +72,6 @@ export function AnimalDetail({ animal, backHref, backLabel }: AnimalDetailProps)
             <Link to={applyHref} className="btn-cta py-3!">
               {ctaLabel}
             </Link>
-            <Link
-              to={backHref}
-              className="text-center py-3 rounded-full border border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-[var(--color-primary-highlight)] transition-colors"
-            >
-              ← {backLabel}
-            </Link>
           </div>
         </div>
       </div>

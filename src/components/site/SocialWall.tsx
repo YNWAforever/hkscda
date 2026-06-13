@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Smartphone } from "lucide-react";
 import cat1 from "@/assets/cat1.jpg";
 import cat2 from "@/assets/cat2.jpg";
 import dog1 from "@/assets/dog1.jpg";
@@ -21,21 +20,12 @@ const igPosts = [
 export function SocialWall() {
   const [tab, setTab] = useState<"fb" | "ig">("fb");
   return (
-    <section
-      id="social"
-      className="px-6 py-16 lg:py-24 bg-[var(--color-surface-offset)]"
-    >
+    <section id="social" className="px-6 py-16 lg:py-24 bg-[var(--color-surface-offset)]">
       <div className="container-wide">
         <div className="text-center mb-10">
-          <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3 flex items-center justify-center gap-1.5">
-            <Smartphone className="h-3.5 w-3.5" /> 社群動態
-          </div>
-          <h2 className="font-display text-3xl lg:text-5xl font-bold mb-4">
-            追蹤我們，與毛孩同步
-          </h2>
+          <h2 className="font-display text-3xl lg:text-5xl font-bold mb-4">追蹤我們，與毛孩同步</h2>
           <p className="text-[var(--color-text-muted)] max-w-[52ch] mx-auto">
-            每日最新領養動物、義工活動、TNR 行動報告，都在我們的 Facebook 與
-            Instagram。
+            每日最新領養動物、義工活動、TNR 行動報告，都在我們的 Facebook 與 Instagram。
           </p>
         </div>
 
@@ -66,7 +56,7 @@ export function SocialWall() {
               <iframe
                 title="HKSCDA Facebook Page"
                 src={`https://www.facebook.com/plugins/page.php?href=${encodeURIComponent(
-                  FB_PAGE
+                  FB_PAGE,
                 )}&tabs=timeline&width=500&height=700&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&locale=zh_HK`}
                 width="100%"
                 height={700}
@@ -77,12 +67,15 @@ export function SocialWall() {
               />
             </div>
             <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] p-6">
-              <svg className="h-8 w-8 mb-3 text-[#1877F2]" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <svg
+                className="h-8 w-8 mb-3 text-[#1877F2]"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
               </svg>
-              <h3 className="font-display text-xl font-bold mb-2">
-                HKSCDA Facebook
-              </h3>
+              <h3 className="font-display text-xl font-bold mb-2">HKSCDA Facebook</h3>
               <p className="text-sm text-[var(--color-text-muted)] mb-5">
                 追蹤本會官方專頁，獲取最新領養通告、義工招募、緊急救援報告及月度透明報表。
               </p>
@@ -119,9 +112,7 @@ export function SocialWall() {
                     className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4 text-white">
-                    <p className="text-xs lg:text-sm font-medium line-clamp-3">
-                      {p.caption}
-                    </p>
+                    <p className="text-xs lg:text-sm font-medium line-clamp-3">{p.caption}</p>
                     <div className="text-xs mt-2 opacity-80">♥ {p.likes}</div>
                   </div>
                 </a>

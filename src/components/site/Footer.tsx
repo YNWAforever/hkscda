@@ -18,7 +18,7 @@ export function Footer() {
             </div>
           </div>
           <p className="text-sm text-white/70 leading-relaxed">
-            「支持領養等於拯救生命」— 為流浪貓狗提供糧食、醫療、絕育及領養服務的「不殺」機構。
+            「支持領養等於拯救生命」，為流浪貓狗提供糧食、醫療、絕育及領養服務的「不殺」機構。
           </p>
         </div>
         <div>
@@ -104,7 +104,7 @@ export function Footer() {
         </div>
       </div>
       <div className="container-wide mt-12 pb-8 text-xs text-white/50 flex flex-wrap gap-3 justify-between">
-        <span>© 2007–{new Date().getFullYear()} HK Saving Cat And Dog Association Limited</span>
+        <span>© 2007-{new Date().getFullYear()} HK Saving Cat And Dog Association Limited</span>
         <span>支持領養 · 拯救生命</span>
       </div>
       <div className="-mx-6 bg-[var(--color-pink-strip)] text-[var(--color-panel)] text-xs font-bold text-center py-3 px-6">

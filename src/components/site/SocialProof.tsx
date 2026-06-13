@@ -1,4 +1,3 @@
-import { Star } from "lucide-react";
 import { Reveal } from "@/lib/reveal";
 import { StatCard } from "@/components/site/StatCard";
 
@@ -46,9 +45,6 @@ export function SocialProof() {
     <section id="impact" className="px-6 py-16 lg:py-24 bg-[var(--color-surface-offset)]">
       <div className="container-wide">
         <Reveal className="text-center mb-12">
-          <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3 flex items-center justify-center gap-1.5">
-            <Star className="h-3.5 w-3.5" /> 信譽與成就
-          </div>
           <h2 className="font-display text-3xl lg:text-5xl font-bold mb-4">18 年來，與香港同行</h2>
           <p className="text-[var(--color-text-muted)] max-w-[52ch] mx-auto">
             來自香港社會各界、傳媒及合作夥伴的信任，是我們繼續救助每一個生命的力量。
@@ -64,7 +60,7 @@ export function SocialProof() {
 
         {/* Press */}
         <div className="mb-12">
-          <p className="text-center text-xs uppercase tracking-widest text-[var(--color-text-muted)] mb-6 font-bold">
+          <p className="text-center text-xs text-[var(--color-text-muted)] mb-6 font-semibold">
             傳媒報導
           </p>
           <div className="flex flex-wrap justify-center items-center gap-x-10 gap-y-4">
@@ -81,7 +77,7 @@ export function SocialProof() {
 
         {/* Partners */}
         <div className="mb-16">
-          <p className="text-center text-xs uppercase tracking-widest text-[var(--color-text-muted)] mb-6 font-bold">
+          <p className="text-center text-xs text-[var(--color-text-muted)] mb-6 font-semibold">
             合作夥伴及贊助機構
           </p>
           <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-3">
