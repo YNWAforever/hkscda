@@ -18,6 +18,7 @@ import { Route as AboutIndexRouteImport } from './routes/about/index'
 import { Route as SponsorsIdRouteImport } from './routes/sponsors_.$id'
 import { Route as ReportAuditRouteImport } from './routes/report/audit'
 import { Route as ReportAdoptionRouteImport } from './routes/report/adoption'
+import { Route as ApiDonationsRouteImport } from './routes/api/donations'
 import { Route as AnimalsDogRouteImport } from './routes/animals/dog'
 import { Route as AnimalsCatRouteImport } from './routes/animals/cat'
 import { Route as AdoptionInstructionsRouteImport } from './routes/adoption/instructions'
@@ -27,10 +28,15 @@ import { Route as AboutTnrRouteImport } from './routes/about/tnr'
 import { Route as AboutTeamRouteImport } from './routes/about/team'
 import { Route as AboutPrivacyRouteImport } from './routes/about/privacy'
 import { Route as AboutCccpRouteImport } from './routes/about/cccp'
+import { Route as ApiWebhooksStripeRouteImport } from './routes/api/webhooks/stripe'
+import { Route as ApiWebhooksPaypalRouteImport } from './routes/api/webhooks/paypal'
+import { Route as ApiAdminReceiptsRouteImport } from './routes/api/admin/receipts'
+import { Route as ApiAdminPaymentsRouteImport } from './routes/api/admin/payments'
 import { Route as AnimalsDogIdRouteImport } from './routes/animals/dog_.$id'
 import { Route as AnimalsCatIdRouteImport } from './routes/animals/cat_.$id'
 import { Route as AdminAnimalsNewRouteImport } from './routes/admin/animals/new'
 import { Route as AdminAnimalsIdEditRouteImport } from './routes/admin/animals/$id.edit'
+import { Route as ApiAdminPaymentsIdReconcileRouteImport } from './routes/api/admin/payments/$id/reconcile'
 
 const VolunteerRoute = VolunteerRouteImport.update({
   id: '/volunteer',
@@ -75,6 +81,11 @@ const ReportAuditRoute = ReportAuditRouteImport.update({
 const ReportAdoptionRoute = ReportAdoptionRouteImport.update({
   id: '/report/adoption',
   path: '/report/adoption',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiDonationsRoute = ApiDonationsRouteImport.update({
+  id: '/api/donations',
+  path: '/api/donations',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnimalsDogRoute = AnimalsDogRouteImport.update({
@@ -122,6 +133,26 @@ const AboutCccpRoute = AboutCccpRouteImport.update({
   path: '/about/cccp',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiWebhooksStripeRoute = ApiWebhooksStripeRouteImport.update({
+  id: '/api/webhooks/stripe',
+  path: '/api/webhooks/stripe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiWebhooksPaypalRoute = ApiWebhooksPaypalRouteImport.update({
+  id: '/api/webhooks/paypal',
+  path: '/api/webhooks/paypal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminReceiptsRoute = ApiAdminReceiptsRouteImport.update({
+  id: '/api/admin/receipts',
+  path: '/api/admin/receipts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminPaymentsRoute = ApiAdminPaymentsRouteImport.update({
+  id: '/api/admin/payments',
+  path: '/api/admin/payments',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AnimalsDogIdRoute = AnimalsDogIdRouteImport.update({
   id: '/animals/dog_/$id',
   path: '/animals/dog/$id',
@@ -142,6 +173,12 @@ const AdminAnimalsIdEditRoute = AdminAnimalsIdEditRouteImport.update({
   path: '/admin/animals/$id/edit',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminPaymentsIdReconcileRoute =
+  ApiAdminPaymentsIdReconcileRouteImport.update({
+    id: '/$id/reconcile',
+    path: '/$id/reconcile',
+    getParentRoute: () => ApiAdminPaymentsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -157,6 +194,7 @@ export interface FileRoutesByFullPath {
   '/adoption/instructions': typeof AdoptionInstructionsRoute
   '/animals/cat': typeof AnimalsCatRoute
   '/animals/dog': typeof AnimalsDogRoute
+  '/api/donations': typeof ApiDonationsRoute
   '/report/adoption': typeof ReportAdoptionRoute
   '/report/audit': typeof ReportAuditRoute
   '/sponsors/$id': typeof SponsorsIdRoute
@@ -165,7 +203,12 @@ export interface FileRoutesByFullPath {
   '/admin/animals/new': typeof AdminAnimalsNewRoute
   '/animals/cat/$id': typeof AnimalsCatIdRoute
   '/animals/dog/$id': typeof AnimalsDogIdRoute
+  '/api/admin/payments': typeof ApiAdminPaymentsRouteWithChildren
+  '/api/admin/receipts': typeof ApiAdminReceiptsRoute
+  '/api/webhooks/paypal': typeof ApiWebhooksPaypalRoute
+  '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/admin/animals/$id/edit': typeof AdminAnimalsIdEditRoute
+  '/api/admin/payments/$id/reconcile': typeof ApiAdminPaymentsIdReconcileRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -181,6 +224,7 @@ export interface FileRoutesByTo {
   '/adoption/instructions': typeof AdoptionInstructionsRoute
   '/animals/cat': typeof AnimalsCatRoute
   '/animals/dog': typeof AnimalsDogRoute
+  '/api/donations': typeof ApiDonationsRoute
   '/report/adoption': typeof ReportAdoptionRoute
   '/report/audit': typeof ReportAuditRoute
   '/sponsors/$id': typeof SponsorsIdRoute
@@ -189,7 +233,12 @@ export interface FileRoutesByTo {
   '/admin/animals/new': typeof AdminAnimalsNewRoute
   '/animals/cat/$id': typeof AnimalsCatIdRoute
   '/animals/dog/$id': typeof AnimalsDogIdRoute
+  '/api/admin/payments': typeof ApiAdminPaymentsRouteWithChildren
+  '/api/admin/receipts': typeof ApiAdminReceiptsRoute
+  '/api/webhooks/paypal': typeof ApiWebhooksPaypalRoute
+  '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/admin/animals/$id/edit': typeof AdminAnimalsIdEditRoute
+  '/api/admin/payments/$id/reconcile': typeof ApiAdminPaymentsIdReconcileRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -206,6 +255,7 @@ export interface FileRoutesById {
   '/adoption/instructions': typeof AdoptionInstructionsRoute
   '/animals/cat': typeof AnimalsCatRoute
   '/animals/dog': typeof AnimalsDogRoute
+  '/api/donations': typeof ApiDonationsRoute
   '/report/adoption': typeof ReportAdoptionRoute
   '/report/audit': typeof ReportAuditRoute
   '/sponsors_/$id': typeof SponsorsIdRoute
@@ -214,7 +264,12 @@ export interface FileRoutesById {
   '/admin/animals/new': typeof AdminAnimalsNewRoute
   '/animals/cat_/$id': typeof AnimalsCatIdRoute
   '/animals/dog_/$id': typeof AnimalsDogIdRoute
+  '/api/admin/payments': typeof ApiAdminPaymentsRouteWithChildren
+  '/api/admin/receipts': typeof ApiAdminReceiptsRoute
+  '/api/webhooks/paypal': typeof ApiWebhooksPaypalRoute
+  '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/admin/animals/$id/edit': typeof AdminAnimalsIdEditRoute
+  '/api/admin/payments/$id/reconcile': typeof ApiAdminPaymentsIdReconcileRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -232,6 +287,7 @@ export interface FileRouteTypes {
     | '/adoption/instructions'
     | '/animals/cat'
     | '/animals/dog'
+    | '/api/donations'
     | '/report/adoption'
     | '/report/audit'
     | '/sponsors/$id'
@@ -240,7 +296,12 @@ export interface FileRouteTypes {
     | '/admin/animals/new'
     | '/animals/cat/$id'
     | '/animals/dog/$id'
+    | '/api/admin/payments'
+    | '/api/admin/receipts'
+    | '/api/webhooks/paypal'
+    | '/api/webhooks/stripe'
     | '/admin/animals/$id/edit'
+    | '/api/admin/payments/$id/reconcile'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -256,6 +317,7 @@ export interface FileRouteTypes {
     | '/adoption/instructions'
     | '/animals/cat'
     | '/animals/dog'
+    | '/api/donations'
     | '/report/adoption'
     | '/report/audit'
     | '/sponsors/$id'
@@ -264,7 +326,12 @@ export interface FileRouteTypes {
     | '/admin/animals/new'
     | '/animals/cat/$id'
     | '/animals/dog/$id'
+    | '/api/admin/payments'
+    | '/api/admin/receipts'
+    | '/api/webhooks/paypal'
+    | '/api/webhooks/stripe'
     | '/admin/animals/$id/edit'
+    | '/api/admin/payments/$id/reconcile'
   id:
     | '__root__'
     | '/'
@@ -280,6 +347,7 @@ export interface FileRouteTypes {
     | '/adoption/instructions'
     | '/animals/cat'
     | '/animals/dog'
+    | '/api/donations'
     | '/report/adoption'
     | '/report/audit'
     | '/sponsors_/$id'
@@ -288,7 +356,12 @@ export interface FileRouteTypes {
     | '/admin/animals/new'
     | '/animals/cat_/$id'
     | '/animals/dog_/$id'
+    | '/api/admin/payments'
+    | '/api/admin/receipts'
+    | '/api/webhooks/paypal'
+    | '/api/webhooks/stripe'
     | '/admin/animals/$id/edit'
+    | '/api/admin/payments/$id/reconcile'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -305,6 +378,7 @@ export interface RootRouteChildren {
   AdoptionInstructionsRoute: typeof AdoptionInstructionsRoute
   AnimalsCatRoute: typeof AnimalsCatRoute
   AnimalsDogRoute: typeof AnimalsDogRoute
+  ApiDonationsRoute: typeof ApiDonationsRoute
   ReportAdoptionRoute: typeof ReportAdoptionRoute
   ReportAuditRoute: typeof ReportAuditRoute
   SponsorsIdRoute: typeof SponsorsIdRoute
@@ -313,6 +387,10 @@ export interface RootRouteChildren {
   AdminAnimalsNewRoute: typeof AdminAnimalsNewRoute
   AnimalsCatIdRoute: typeof AnimalsCatIdRoute
   AnimalsDogIdRoute: typeof AnimalsDogIdRoute
+  ApiAdminPaymentsRoute: typeof ApiAdminPaymentsRouteWithChildren
+  ApiAdminReceiptsRoute: typeof ApiAdminReceiptsRoute
+  ApiWebhooksPaypalRoute: typeof ApiWebhooksPaypalRoute
+  ApiWebhooksStripeRoute: typeof ApiWebhooksStripeRoute
   AdminAnimalsIdEditRoute: typeof AdminAnimalsIdEditRoute
 }
 
@@ -381,6 +459,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReportAdoptionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/donations': {
+      id: '/api/donations'
+      path: '/api/donations'
+      fullPath: '/api/donations'
+      preLoaderRoute: typeof ApiDonationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/animals/dog': {
       id: '/animals/dog'
       path: '/animals/dog'
@@ -444,6 +529,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutCccpRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/webhooks/stripe': {
+      id: '/api/webhooks/stripe'
+      path: '/api/webhooks/stripe'
+      fullPath: '/api/webhooks/stripe'
+      preLoaderRoute: typeof ApiWebhooksStripeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/webhooks/paypal': {
+      id: '/api/webhooks/paypal'
+      path: '/api/webhooks/paypal'
+      fullPath: '/api/webhooks/paypal'
+      preLoaderRoute: typeof ApiWebhooksPaypalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/receipts': {
+      id: '/api/admin/receipts'
+      path: '/api/admin/receipts'
+      fullPath: '/api/admin/receipts'
+      preLoaderRoute: typeof ApiAdminReceiptsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/payments': {
+      id: '/api/admin/payments'
+      path: '/api/admin/payments'
+      fullPath: '/api/admin/payments'
+      preLoaderRoute: typeof ApiAdminPaymentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/animals/dog_/$id': {
       id: '/animals/dog_/$id'
       path: '/animals/dog/$id'
@@ -472,8 +585,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAnimalsIdEditRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/payments/$id/reconcile': {
+      id: '/api/admin/payments/$id/reconcile'
+      path: '/$id/reconcile'
+      fullPath: '/api/admin/payments/$id/reconcile'
+      preLoaderRoute: typeof ApiAdminPaymentsIdReconcileRouteImport
+      parentRoute: typeof ApiAdminPaymentsRoute
+    }
   }
 }
+
+interface ApiAdminPaymentsRouteChildren {
+  ApiAdminPaymentsIdReconcileRoute: typeof ApiAdminPaymentsIdReconcileRoute
+}
+
+const ApiAdminPaymentsRouteChildren: ApiAdminPaymentsRouteChildren = {
+  ApiAdminPaymentsIdReconcileRoute: ApiAdminPaymentsIdReconcileRoute,
+}
+
+const ApiAdminPaymentsRouteWithChildren =
+  ApiAdminPaymentsRoute._addFileChildren(ApiAdminPaymentsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -489,6 +620,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdoptionInstructionsRoute: AdoptionInstructionsRoute,
   AnimalsCatRoute: AnimalsCatRoute,
   AnimalsDogRoute: AnimalsDogRoute,
+  ApiDonationsRoute: ApiDonationsRoute,
   ReportAdoptionRoute: ReportAdoptionRoute,
   ReportAuditRoute: ReportAuditRoute,
   SponsorsIdRoute: SponsorsIdRoute,
@@ -497,6 +629,10 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAnimalsNewRoute: AdminAnimalsNewRoute,
   AnimalsCatIdRoute: AnimalsCatIdRoute,
   AnimalsDogIdRoute: AnimalsDogIdRoute,
+  ApiAdminPaymentsRoute: ApiAdminPaymentsRouteWithChildren,
+  ApiAdminReceiptsRoute: ApiAdminReceiptsRoute,
+  ApiWebhooksPaypalRoute: ApiWebhooksPaypalRoute,
+  ApiWebhooksStripeRoute: ApiWebhooksStripeRoute,
   AdminAnimalsIdEditRoute: AdminAnimalsIdEditRoute,
 }
 export const routeTree = rootRouteImport
