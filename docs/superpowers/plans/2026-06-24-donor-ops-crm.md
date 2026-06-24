@@ -1559,15 +1559,15 @@ function applySupporterFilters(query: any, filters: SupporterSearch | ExportSear
 
 async function findSupporterIdsByOperationalSearch(client: SupabaseClient, q: string) {
   const escaped = q.replaceAll("%", "\\%").replaceAll("_", "\\_");
+  const purpose = ["general", "medical", "sponsor"].includes(q) ? q : null;
   const [emailSupporters, donations, payments, receipts] = await Promise.all([
     client
       .from("supporter")
       .select("id")
       .eq("email", q.toLowerCase()),
-    client
-      .from("donation")
-      .select("supporter_id")
-      .or(`purpose.ilike.%${escaped}%,id.eq.${q}`),
+    purpose
+      ? client.from("donation").select("supporter_id").eq("purpose", purpose)
+      : client.from("donation").select("supporter_id").eq("id", q),
     client
       .from("payment")
       .select("donation:donation_id(supporter_id)")
