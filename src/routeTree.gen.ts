@@ -23,6 +23,7 @@ import { Route as AnimalsDogRouteImport } from './routes/animals/dog'
 import { Route as AnimalsCatRouteImport } from './routes/animals/cat'
 import { Route as AdoptionInstructionsRouteImport } from './routes/adoption/instructions'
 import { Route as AdoptionApplyRouteImport } from './routes/adoption/apply'
+import { Route as AdminSupportersRouteImport } from './routes/admin/supporters'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AboutTnrRouteImport } from './routes/about/tnr'
 import { Route as AboutTeamRouteImport } from './routes/about/team'
@@ -112,6 +113,11 @@ const AdoptionInstructionsRoute = AdoptionInstructionsRouteImport.update({
 const AdoptionApplyRoute = AdoptionApplyRouteImport.update({
   id: '/adoption/apply',
   path: '/adoption/apply',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSupportersRoute = AdminSupportersRouteImport.update({
+  id: '/admin/supporters',
+  path: '/admin/supporters',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
@@ -229,6 +235,7 @@ export interface FileRoutesByFullPath {
   '/about/team': typeof AboutTeamRoute
   '/about/tnr': typeof AboutTnrRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/supporters': typeof AdminSupportersRoute
   '/adoption/apply': typeof AdoptionApplyRoute
   '/adoption/instructions': typeof AdoptionInstructionsRoute
   '/animals/cat': typeof AnimalsCatRoute
@@ -265,6 +272,7 @@ export interface FileRoutesByTo {
   '/about/team': typeof AboutTeamRoute
   '/about/tnr': typeof AboutTnrRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/supporters': typeof AdminSupportersRoute
   '/adoption/apply': typeof AdoptionApplyRoute
   '/adoption/instructions': typeof AdoptionInstructionsRoute
   '/animals/cat': typeof AnimalsCatRoute
@@ -302,6 +310,7 @@ export interface FileRoutesById {
   '/about/team': typeof AboutTeamRoute
   '/about/tnr': typeof AboutTnrRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/supporters': typeof AdminSupportersRoute
   '/adoption/apply': typeof AdoptionApplyRoute
   '/adoption/instructions': typeof AdoptionInstructionsRoute
   '/animals/cat': typeof AnimalsCatRoute
@@ -340,6 +349,7 @@ export interface FileRouteTypes {
     | '/about/team'
     | '/about/tnr'
     | '/admin/login'
+    | '/admin/supporters'
     | '/adoption/apply'
     | '/adoption/instructions'
     | '/animals/cat'
@@ -376,6 +386,7 @@ export interface FileRouteTypes {
     | '/about/team'
     | '/about/tnr'
     | '/admin/login'
+    | '/admin/supporters'
     | '/adoption/apply'
     | '/adoption/instructions'
     | '/animals/cat'
@@ -412,6 +423,7 @@ export interface FileRouteTypes {
     | '/about/team'
     | '/about/tnr'
     | '/admin/login'
+    | '/admin/supporters'
     | '/adoption/apply'
     | '/adoption/instructions'
     | '/animals/cat'
@@ -449,6 +461,7 @@ export interface RootRouteChildren {
   AboutTeamRoute: typeof AboutTeamRoute
   AboutTnrRoute: typeof AboutTnrRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminSupportersRoute: typeof AdminSupportersRoute
   AdoptionApplyRoute: typeof AdoptionApplyRoute
   AdoptionInstructionsRoute: typeof AdoptionInstructionsRoute
   AnimalsCatRoute: typeof AnimalsCatRoute
@@ -571,6 +584,13 @@ declare module '@tanstack/react-router' {
       path: '/adoption/apply'
       fullPath: '/adoption/apply'
       preLoaderRoute: typeof AdoptionApplyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/supporters': {
+      id: '/admin/supporters'
+      path: '/admin/supporters'
+      fullPath: '/admin/supporters'
+      preLoaderRoute: typeof AdminSupportersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/login': {
@@ -759,6 +779,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutTeamRoute: AboutTeamRoute,
   AboutTnrRoute: AboutTnrRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminSupportersRoute: AdminSupportersRoute,
   AdoptionApplyRoute: AdoptionApplyRoute,
   AdoptionInstructionsRoute: AdoptionInstructionsRoute,
   AnimalsCatRoute: AnimalsCatRoute,

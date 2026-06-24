@@ -147,16 +147,23 @@ function AdminDashboard() {
   return (
     <AdminLayout activeSection={section as "cat" | "dog" | "sponsor" | "applications" | "payments"}>
       <div className="p-6 space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3">
           <h1 className="text-xl font-bold">{sectionLabels[section]}</h1>
-          {section !== "applications" && section !== "payments" && (
+          {section === "payments" ? (
+            <Link
+              to="/admin/supporters"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors"
+            >
+              捐款人紀錄
+            </Link>
+          ) : section !== "applications" ? (
             <Link
               to="/admin/animals/new"
               className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors"
             >
               + 新增
             </Link>
-          )}
+          ) : null}
         </div>
 
         {section === "payments" ? (

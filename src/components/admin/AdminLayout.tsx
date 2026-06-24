@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { supabase } from "../../lib/supabase";
 
-type AdminSection = "cat" | "dog" | "sponsor" | "applications" | "payments";
+type AdminSection = "cat" | "dog" | "sponsor" | "applications" | "payments" | "supporters";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -22,6 +22,7 @@ export function AdminLayout({ children, activeSection }: AdminLayoutProps) {
     { section: "sponsor", label: "💛 助養", to: "/admin?section=sponsor" },
     { section: "applications", label: "📋 申請", to: "/admin?section=applications" },
     { section: "payments", label: "收款", to: "/admin?section=payments" },
+    { section: "supporters", label: "捐款人", to: "/admin/supporters" },
   ];
 
   return (
