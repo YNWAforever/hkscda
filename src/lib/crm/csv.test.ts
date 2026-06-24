@@ -7,6 +7,14 @@ describe("crm csv", () => {
     expect(escapeCsvValue('Ada, "Cat"\nHK')).toBe('"Ada, ""Cat""\nHK"');
   });
 
+  test("neutralizes spreadsheet formula prefixes", () => {
+    expect(escapeCsvValue("=cmd|' /C calc'!A0")).toBe("'=cmd|' /C calc'!A0");
+    expect(escapeCsvValue("+85291234567")).toBe("'+85291234567");
+    expect(escapeCsvValue("-100")).toBe("'-100");
+    expect(escapeCsvValue("@name")).toBe("'@name");
+    expect(escapeCsvValue("\tTabbed")).toBe("'\tTabbed");
+  });
+
   test("builds supporter export columns", () => {
     const csv = buildSupporterCsv([
       {

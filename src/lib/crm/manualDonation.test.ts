@@ -38,4 +38,30 @@ describe("manual donation records", () => {
       reconciled_by: "admin-1",
     });
   });
+
+  test("builds pending manual payment records without reconciliation fields", () => {
+    const records = buildManualDonationRecords({
+      supporterId: "s1",
+      donationIdSeed: "11111111-2222-4333-8444-555555555555",
+      input: {
+        supporterId: "s1",
+        amountCents: 15000,
+        currency: "HKD",
+        purpose: "general",
+        method: "fps",
+        paymentStatus: "pending",
+        receiptRequested: false,
+      },
+      actorUserId: "admin-1",
+      now: () => new Date("2026-06-24T09:00:00.000Z"),
+    });
+
+    expect(records.donation.status).toBe("pending");
+    expect(records.payment).toMatchObject({
+      status: "pending",
+      received_at: null,
+      reconciled_by: null,
+      bank_reference: null,
+    });
+  });
 });
