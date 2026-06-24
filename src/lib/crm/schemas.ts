@@ -19,12 +19,15 @@ const optionalTrimmed = z
   });
 
 const booleanSearch = z
-  .preprocess((value) => {
-    if (value === "") return undefined;
-    if (value === true) return "true";
-    if (value === false) return "false";
-    return value;
-  }, z.enum(["true", "false"]).optional())
+  .preprocess(
+    (value) => {
+      if (value === "") return undefined;
+      if (value === true) return "true";
+      if (value === false) return "false";
+      return value;
+    },
+    z.enum(["true", "false"]).optional(),
+  )
   .transform((value) => (value === undefined ? undefined : value === "true"));
 
 const pageNumber = z.coerce.number().int().min(1).catch(1);
@@ -34,9 +37,7 @@ const normalizedTags = z
   .array(z.string())
   .optional()
   .default([])
-  .transform((tags) =>
-    [...new Set(tags.map((tag) => tag.trim()).filter((tag) => tag.length > 0))],
-  );
+  .transform((tags) => [...new Set(tags.map((tag) => tag.trim()).filter((tag) => tag.length > 0))]);
 
 const nullableTrimmed = z
   .string()
