@@ -13,7 +13,10 @@ export const Route = createFileRoute("/api/admin/payments")({
         try {
           const client = createSupabaseServiceClient();
           await requireAdmin(request, ["staff", "treasurer", "admin"], client);
-          return Response.json({ payments: await listAdminPayments(client) });
+          return Response.json(
+            { payments: await listAdminPayments(client) },
+            { headers: { "cache-control": "no-store" } },
+          );
         } catch (error) {
           if (error instanceof Response) return error;
           console.error(error);

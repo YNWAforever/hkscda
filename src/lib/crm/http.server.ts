@@ -92,8 +92,9 @@ export function createCrmHandlers({ requireTreasurer, service }: CreateCrmHandle
 
     getSupporter({ request, params }: HandlerContext) {
       return withCrmErrors(async () => {
+        const supporterId = requiredId(params);
         await requireTreasurer(request);
-        const supporter = await service.getSupporterDetail(requiredId(params));
+        const supporter = await service.getSupporterDetail(supporterId);
         if (!supporter) {
           return jsonResponse({ error: "Supporter not found" }, { status: 404 });
         }
@@ -103,10 +104,11 @@ export function createCrmHandlers({ requireTreasurer, service }: CreateCrmHandle
 
     updateSupporter({ request, params }: HandlerContext) {
       return withCrmErrors(async () => {
+        const supporterId = requiredId(params);
         const admin = await requireTreasurer(request);
         await service.updateSupporter({
           actorUserId: admin.authUserId,
-          supporterId: requiredId(params),
+          supporterId,
           input: await jsonBody(request),
         });
         return jsonResponse({ ok: true });
@@ -115,11 +117,12 @@ export function createCrmHandlers({ requireTreasurer, service }: CreateCrmHandle
 
     appendConsents({ request, params }: HandlerContext) {
       return withCrmErrors(async () => {
+        const supporterId = requiredId(params);
         const admin = await requireTreasurer(request);
         return jsonResponse(
           await service.appendConsents({
             actorUserId: admin.authUserId,
-            supporterId: requiredId(params),
+            supporterId,
             input: await jsonBody(request),
           }),
           { status: 201 },

@@ -135,8 +135,12 @@ describe("createCrmHandlers", () => {
 
   test("rejects malformed supporter ids before service work", async () => {
     const service = createService();
+    let authCalls = 0;
     const handlers = createCrmHandlers({
-      requireTreasurer: async () => admin,
+      requireTreasurer: async () => {
+        authCalls += 1;
+        return admin;
+      },
       service,
     });
 
@@ -147,6 +151,7 @@ describe("createCrmHandlers", () => {
 
     expect(response.status).toBe(400);
     expect(await response.json()).toEqual({ error: "Invalid supporter id" });
+    expect(authCalls).toBe(0);
     expect(service.calls).toEqual([]);
   });
 
