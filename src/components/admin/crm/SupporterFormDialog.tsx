@@ -80,7 +80,11 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
         <div className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="supporter-name">Name</Label>
-            <Input id="supporter-name" value={name} onChange={(event) => setName(event.target.value)} />
+            <Input
+              id="supporter-name"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+            />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="supporter-email">Email</Label>
@@ -93,11 +97,18 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
           </div>
           <div className="grid gap-2">
             <Label htmlFor="supporter-phone">Phone</Label>
-            <Input id="supporter-phone" value={phone} onChange={(event) => setPhone(event.target.value)} />
+            <Input
+              id="supporter-phone"
+              value={phone}
+              onChange={(event) => setPhone(event.target.value)}
+            />
           </div>
           <div className="grid gap-2">
             <Label>Language</Label>
-            <Select value={language} onValueChange={(value) => setLanguage(value as "zh-HK" | "en")}>
+            <Select
+              value={language}
+              onValueChange={(value) => setLanguage(value as "zh-HK" | "en")}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -109,7 +120,11 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
           </div>
           <div className="grid gap-2">
             <Label htmlFor="supporter-tags">Tags</Label>
-            <Input id="supporter-tags" value={tags} onChange={(event) => setTags(event.target.value)} />
+            <Input
+              id="supporter-tags"
+              value={tags}
+              onChange={(event) => setTags(event.target.value)}
+            />
           </div>
           {mutation.error && (
             <p className="text-sm text-[var(--color-destructive)]">{mutation.error.message}</p>

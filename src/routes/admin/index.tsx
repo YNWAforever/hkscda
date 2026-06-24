@@ -152,7 +152,7 @@ function AdminDashboard() {
           {section === "payments" ? (
             <Link
               to="/admin/supporters"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors"
+              className="rounded border border-[var(--color-border)] px-3 py-2 text-sm font-medium text-[var(--color-panel)] hover:bg-[var(--color-primary-highlight)]"
             >
               捐款人紀錄
             </Link>

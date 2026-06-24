@@ -85,7 +85,10 @@ export function SupporterList() {
             )}
             {error && (
               <TableRow>
-                <TableCell colSpan={5} className="py-10 text-center text-[var(--color-destructive)]">
+                <TableCell
+                  colSpan={5}
+                  className="py-10 text-center text-[var(--color-destructive)]"
+                >
                   Could not load supporters
                 </TableCell>
               </TableRow>
@@ -110,7 +113,8 @@ export function SupporterList() {
                   <div className="text-xs text-[var(--color-text-muted)]">{supporter.email}</div>
                 </TableCell>
                 <TableCell className="text-xs">
-                  Email {supporter.emailConsent ?? "-"} / WhatsApp {supporter.whatsappConsent ?? "-"}
+                  Email {supporter.emailConsent ?? "-"} / WhatsApp{" "}
+                  {supporter.whatsappConsent ?? "-"}
                 </TableCell>
                 <TableCell>{formatHkd(supporter.lifetimeAmountCents)}</TableCell>
                 <TableCell>{formatHkd(supporter.lastGiftAmountCents)}</TableCell>
@@ -120,7 +124,9 @@ export function SupporterList() {
           </TableBody>
         </Table>
       </div>
-      {data && <p className="text-xs text-[var(--color-text-muted)]">{data.total} total supporters</p>}
+      {data && (
+        <p className="text-xs text-[var(--color-text-muted)]">{data.total} total supporters</p>
+      )}
     </div>
   );
 }
