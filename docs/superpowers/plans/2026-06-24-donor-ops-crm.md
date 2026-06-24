@@ -110,8 +110,8 @@ Paste this SQL into the generated migration file:
 ```sql
 create extension if not exists pg_trgm;
 
-create index if not exists supporter_active_email_lower_idx
-  on public.supporter (lower(email::text))
+create index if not exists supporter_active_email_trgm_idx
+  on public.supporter using gin ((email::text) gin_trgm_ops)
   where deleted_at is null;
 
 create index if not exists supporter_active_name_trgm_idx
@@ -119,8 +119,9 @@ create index if not exists supporter_active_name_trgm_idx
   where deleted_at is null;
 
 create index if not exists supporter_active_phone_trgm_idx
-  on public.supporter using gin (coalesce(phone, '') gin_trgm_ops)
-  where deleted_at is null;
+  on public.supporter using gin (phone gin_trgm_ops)
+  where deleted_at is null
+    and phone is not null;
 
 create index if not exists supporter_tags_gin_idx
   on public.supporter using gin (tags);
@@ -140,8 +141,9 @@ create index if not exists donation_supporter_created_idx
 create index if not exists donation_purpose_created_idx
   on public.donation (purpose, created_at desc);
 
-create index if not exists donation_status_receipt_created_idx
-  on public.donation (status, receipt_requested, created_at desc);
+create index if not exists donation_receipt_requested_created_idx
+  on public.donation (receipt_requested, created_at desc)
+  where receipt_requested = true;
 
 create index if not exists payment_donation_status_created_idx
   on public.payment (donation_id, status, created_at desc);
