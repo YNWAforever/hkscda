@@ -119,6 +119,19 @@ function intersect(left: string[] | undefined, right: string[]) {
   return left.filter((id) => next.has(id));
 }
 
+async function collectIds<T>(
+  queries: Array<PromiseLike<{ data: T[] | null; error: unknown }>>,
+  map: (row: T) => string | null | undefined,
+) {
+  const results = await Promise.all(queries);
+  const ids: string[] = [];
+  for (const result of results) {
+    if (result.error) throw result.error;
+    ids.push(...((result.data ?? []).map(map).filter(Boolean) as string[]));
+  }
+  return ids;
+}
+
 function mapConsent(row: ConsentRow): ConsentHistoryRow {
   return {
     id: row.id,
@@ -200,12 +213,16 @@ async function resolveSupporterIds(client: SupabaseClient, filters: SearchFilter
     const like = `%${escapeLike(q)}%`;
     const qIds: string[] = [];
 
-    const { data: supporterMatches, error: supporterError } = await client
-      .from("supporter")
-      .select("id")
-      .or(`email.eq.${q.toLowerCase()},name.ilike.${like},phone.ilike.${like}`);
-    if (supporterError) throw supporterError;
-    qIds.push(...((supporterMatches ?? []) as Array<{ id: string }>).map((row) => row.id));
+    qIds.push(
+      ...(await collectIds(
+        [
+          client.from("supporter").select("id").eq("email", q.toLowerCase()),
+          client.from("supporter").select("id").ilike("name", like),
+          client.from("supporter").select("id").ilike("phone", like),
+        ],
+        (row: { id: string }) => row.id,
+      )),
+    );
 
     if (uuidPattern.test(q)) {
       const { data: donationMatches, error: donationError } = await client
@@ -233,13 +250,14 @@ async function resolveSupporterIds(client: SupabaseClient, filters: SearchFilter
       );
     }
 
-    const { data: paymentMatches, error: paymentError } = await client
-      .from("payment")
-      .select("donation_id")
-      .or(`provider_ref.ilike.${like},bank_reference.ilike.${like}`);
-    if (paymentError) throw paymentError;
     const paymentDonationIds = unique(
-      ((paymentMatches ?? []) as Array<{ donation_id: string }>).map((row) => row.donation_id),
+      await collectIds(
+        [
+          client.from("payment").select("donation_id").ilike("provider_ref", like),
+          client.from("payment").select("donation_id").ilike("bank_reference", like),
+        ],
+        (row: { donation_id: string }) => row.donation_id,
+      ),
     );
     if (paymentDonationIds.length > 0) {
       const { data: paymentDonations, error: paymentDonationError } = await client
@@ -279,14 +297,23 @@ async function resolveSupporterIds(client: SupabaseClient, filters: SearchFilter
   }
 
   if (filters.consentChannel || filters.consentStatus) {
-    let query = client.from("consent").select("supporter_id");
+    let query = client
+      .from("consent")
+      .select("id,supporter_id,channel,status,source,timestamp")
+      .order("timestamp", { ascending: false });
     if (filters.consentChannel) query = query.eq("channel", filters.consentChannel);
-    if (filters.consentStatus) query = query.eq("status", filters.consentStatus);
     const { data, error } = await query;
     if (error) throw error;
+    const latest = new Map<string, ConsentRow>();
+    for (const row of (data ?? []) as ConsentRow[]) {
+      const key = filters.consentChannel ? row.supporter_id : `${row.supporter_id}:${row.channel}`;
+      if (!latest.has(key)) latest.set(key, row);
+    }
     ids = intersect(
       ids,
-      ((data ?? []) as Array<{ supporter_id: string }>).map((row) => row.supporter_id),
+      [...latest.values()]
+        .filter((row) => !filters.consentStatus || row.status === filters.consentStatus)
+        .map((row) => row.supporter_id),
     );
   }
 
@@ -305,6 +332,32 @@ async function resolveSupporterIds(client: SupabaseClient, filters: SearchFilter
   }
 
   return ids;
+}
+
+async function resolveEligibleSupporterIds(
+  client: SupabaseClient,
+  filters: SearchFilters | ExportFilters,
+  range?: { from: number; to: number },
+) {
+  const ids = await resolveSupporterIds(client, filters);
+  if (ids?.length === 0) return { ids: [], total: 0 };
+
+  let query = client
+    .from("supporter")
+    .select("id", { count: "exact" })
+    .order("created_at", { ascending: false });
+
+  if (!filters.includeDeleted) query = query.is("deleted_at", null);
+  if (filters.tag) query = query.contains("tags", [filters.tag]);
+  if (ids) query = query.in("id", ids);
+  if (range) query = query.range(range.from, range.to);
+
+  const { data, error, count } = await query;
+  if (error) throw error;
+  return {
+    ids: ((data ?? []) as Array<{ id: string }>).map((row) => row.id),
+    total: count ?? 0,
+  };
 }
 
 async function hydrateSupporters(client: SupabaseClient, rows: SupporterRow[]) {
@@ -384,25 +437,21 @@ async function fetchSupporterSummaries(
   filters: SearchFilters | ExportFilters,
   range: { from: number; to: number },
 ) {
-  const ids = await resolveSupporterIds(client, filters);
-  if (ids?.length === 0) return { supporters: [], total: 0 };
+  const eligible = await resolveEligibleSupporterIds(client, filters, range);
+  if (eligible.ids.length === 0) return { supporters: [], total: 0 };
 
-  let query = client
+  const query = client
     .from("supporter")
-    .select("*", { count: "exact" })
+    .select("*")
     .order("created_at", { ascending: false })
-    .range(range.from, range.to);
+    .in("id", eligible.ids);
 
-  if (!filters.includeDeleted) query = query.is("deleted_at", null);
-  if (filters.tag) query = query.contains("tags", [filters.tag]);
-  if (ids) query = query.in("id", ids);
-
-  const { data, error, count } = await query;
+  const { data, error } = await query;
   if (error) throw error;
 
   return {
     supporters: await hydrateSupporters(client, (data ?? []) as SupporterRow[]),
-    total: count ?? 0,
+    total: eligible.total,
   };
 }
 
@@ -544,7 +593,12 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
 
     async updateSupporter(id, input) {
       const payload = toSupporterUpdatePayload(input);
-      const { error } = await client.from("supporter").update(payload).eq("id", id);
+      const { error } = await client
+        .from("supporter")
+        .update(payload)
+        .eq("id", id)
+        .select("id")
+        .single();
       if (error) throw error;
     },
 
@@ -589,12 +643,8 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
     },
 
     async listDonationsForExport(input) {
-      const supporterResult = await fetchSupporterSummaries(client, input, {
-        from: 0,
-        to: exportLimit - 1,
-      });
-      const supporterIds = supporterResult.supporters.map((supporter) => supporter.id);
-      if (supporterIds?.length === 0) return [];
+      const eligible = await resolveEligibleSupporterIds(client, input);
+      if (eligible.ids.length === 0) return [];
 
       let query = client
         .from("donation")
@@ -604,7 +654,7 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
       if (input.purpose) query = query.eq("purpose", input.purpose);
       if (input.receiptNeeded !== undefined)
         query = query.eq("receipt_requested", input.receiptNeeded);
-      query = query.in("supporter_id", supporterIds);
+      query = query.in("supporter_id", eligible.ids);
 
       const { data, error } = await query;
       if (error) throw error;

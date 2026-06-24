@@ -214,10 +214,17 @@ describe("createCrmService", () => {
     expect(repo.calls.map((call) => call.name)).toEqual([
       "upsertSupporter",
       "ensureSupporterRole",
-      "insertManualDonation",
       "insertConsentRows",
+      "insertManualDonation",
     ]);
-    expect(repo.calls[2].payload).toMatchObject({
+    expect(repo.calls[2].payload).toMatchObject([
+      {
+        channel: "whatsapp",
+        status: "opt_in",
+        source: "admin_manual",
+      },
+    ]);
+    expect(repo.calls[3].payload).toMatchObject({
       donation: {
         supporter_id: "8bda8e40-cf39-4659-8be8-f2d74f9d2046",
         amount_cents: 30000,
@@ -234,13 +241,6 @@ describe("createCrmService", () => {
         entity: "donation",
       },
     });
-    expect(repo.calls[3].payload).toMatchObject([
-      {
-        channel: "whatsapp",
-        status: "opt_in",
-        source: "admin_manual",
-      },
-    ]);
   });
 
   test("audits supporter export row count and returns CSV", async () => {

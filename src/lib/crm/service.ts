@@ -150,7 +150,6 @@ export function createCrmService({ repo, now = () => new Date() }: CreateCrmServ
         actorUserId: args.actorUserId,
         now,
       });
-      const result = await repo.insertManualDonation(records);
 
       if (hasProvidedConsents(input.consents)) {
         await repo.insertConsentRows(
@@ -166,7 +165,7 @@ export function createCrmService({ repo, now = () => new Date() }: CreateCrmServ
         );
       }
 
-      return result;
+      return repo.insertManualDonation(records);
     },
 
     async exportSupporters(args: { actorUserId: string | null; rawSearch: unknown }) {
