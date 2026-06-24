@@ -1,19 +1,25 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
-import { issueReceiptForDonation } from "../../../lib/donations/reconcile.server";
-import { createSupabaseServiceClient, requireAdmin } from "../../../lib/donations/supabase.server";
+import { voidReceipt } from "../../../../../lib/donations/reconcile.server";
+import {
+  createSupabaseServiceClient,
+  requireAdmin,
+} from "../../../../../lib/donations/supabase.server";
 
-const issueReceiptSchema = z.object({
-  donationId: z.string().uuid(),
+const voidReceiptSchema = z.object({
   supporterId: z.string().uuid().optional(),
 });
 
-async function jsonBody(request: Request) {
+const voidReceiptParamsSchema = z.object({
+  id: z.string().uuid(),
+});
+
+async function optionalJsonBody(request: Request) {
   try {
     return await request.json();
   } catch {
-    throw new z.ZodError([]);
+    return {};
   }
 }
 
@@ -23,26 +29,27 @@ function jsonResponse(body: unknown, init?: ResponseInit) {
   return Response.json(body, { ...init, headers });
 }
 
-export const Route = createFileRoute("/api/admin/receipts")({
+export const Route = createFileRoute("/api/admin/receipts/$id/void")({
   server: {
     handlers: {
-      POST: async ({ request }) => {
+      POST: async ({ request, params }) => {
         try {
           const client = createSupabaseServiceClient();
           const admin = await requireAdmin(request, ["treasurer", "admin"], client);
-          const body = issueReceiptSchema.parse(await jsonBody(request));
+          const paramsBody = voidReceiptParamsSchema.parse(params);
+          const body = voidReceiptSchema.parse(await optionalJsonBody(request));
           return jsonResponse(
-            await issueReceiptForDonation(client, body.donationId, admin.authUserId, {
+            await voidReceipt(client, paramsBody.id, admin.authUserId, {
               supporterId: body.supporterId,
             }),
           );
         } catch (error) {
           if (error instanceof Response) return error;
           if (error instanceof z.ZodError) {
-            return jsonResponse({ error: "Invalid receipt request" }, { status: 400 });
+            return jsonResponse({ error: "Invalid void receipt request" }, { status: 400 });
           }
           console.error(error);
-          return jsonResponse({ error: "Could not issue receipt" }, { status: 500 });
+          return jsonResponse({ error: "Could not void receipt" }, { status: 500 });
         }
       },
     },

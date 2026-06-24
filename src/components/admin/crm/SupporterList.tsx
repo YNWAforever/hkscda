@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
@@ -102,7 +103,13 @@ export function SupporterList() {
             {data?.supporters.map((supporter) => (
               <TableRow key={supporter.id}>
                 <TableCell>
-                  <div className="font-semibold text-[var(--color-panel)]">{supporter.name}</div>
+                  <Link
+                    to="/admin/supporters/$id"
+                    params={{ id: supporter.id }}
+                    className="font-semibold text-[var(--color-primary)] hover:underline"
+                  >
+                    {supporter.name}
+                  </Link>
                   <div className="text-xs text-[var(--color-text-muted)]">{supporter.email}</div>
                 </TableCell>
                 <TableCell className="text-xs">

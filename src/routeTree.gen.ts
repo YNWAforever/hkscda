@@ -36,6 +36,7 @@ import { Route as ApiAdminReceiptsRouteImport } from './routes/api/admin/receipt
 import { Route as ApiAdminPaymentsRouteImport } from './routes/api/admin/payments'
 import { Route as AnimalsDogIdRouteImport } from './routes/animals/dog_.$id'
 import { Route as AnimalsCatIdRouteImport } from './routes/animals/cat_.$id'
+import { Route as AdminSupportersIdRouteImport } from './routes/admin/supporters/$id'
 import { Route as AdminAnimalsNewRouteImport } from './routes/admin/animals/new'
 import { Route as ApiAdminSupportersIdRouteImport } from './routes/api/admin/supporters/$id'
 import { Route as ApiAdminExportsSupportersDotcsvRouteImport } from './routes/api/admin/exports/supporters[.]csv'
@@ -43,6 +44,7 @@ import { Route as ApiAdminExportsDonationsDotcsvRouteImport } from './routes/api
 import { Route as ApiAdminDonationsManualRouteImport } from './routes/api/admin/donations/manual'
 import { Route as AdminAnimalsIdEditRouteImport } from './routes/admin/animals/$id.edit'
 import { Route as ApiAdminSupportersIdConsentsRouteImport } from './routes/api/admin/supporters/$id/consents'
+import { Route as ApiAdminReceiptsIdVoidRouteImport } from './routes/api/admin/receipts/$id/void'
 import { Route as ApiAdminPaymentsIdReconcileRouteImport } from './routes/api/admin/payments/$id/reconcile'
 
 const VolunteerRoute = VolunteerRouteImport.update({
@@ -180,6 +182,11 @@ const AnimalsCatIdRoute = AnimalsCatIdRouteImport.update({
   path: '/animals/cat/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminSupportersIdRoute = AdminSupportersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdminSupportersRoute,
+} as any)
 const AdminAnimalsNewRoute = AdminAnimalsNewRouteImport.update({
   id: '/admin/animals/new',
   path: '/admin/animals/new',
@@ -218,6 +225,11 @@ const ApiAdminSupportersIdConsentsRoute =
     path: '/consents',
     getParentRoute: () => ApiAdminSupportersIdRoute,
   } as any)
+const ApiAdminReceiptsIdVoidRoute = ApiAdminReceiptsIdVoidRouteImport.update({
+  id: '/$id/void',
+  path: '/$id/void',
+  getParentRoute: () => ApiAdminReceiptsRoute,
+} as any)
 const ApiAdminPaymentsIdReconcileRoute =
   ApiAdminPaymentsIdReconcileRouteImport.update({
     id: '/$id/reconcile',
@@ -235,7 +247,7 @@ export interface FileRoutesByFullPath {
   '/about/team': typeof AboutTeamRoute
   '/about/tnr': typeof AboutTnrRoute
   '/admin/login': typeof AdminLoginRoute
-  '/admin/supporters': typeof AdminSupportersRoute
+  '/admin/supporters': typeof AdminSupportersRouteWithChildren
   '/adoption/apply': typeof AdoptionApplyRoute
   '/adoption/instructions': typeof AdoptionInstructionsRoute
   '/animals/cat': typeof AnimalsCatRoute
@@ -247,10 +259,11 @@ export interface FileRoutesByFullPath {
   '/about/': typeof AboutIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/animals/new': typeof AdminAnimalsNewRoute
+  '/admin/supporters/$id': typeof AdminSupportersIdRoute
   '/animals/cat/$id': typeof AnimalsCatIdRoute
   '/animals/dog/$id': typeof AnimalsDogIdRoute
   '/api/admin/payments': typeof ApiAdminPaymentsRouteWithChildren
-  '/api/admin/receipts': typeof ApiAdminReceiptsRoute
+  '/api/admin/receipts': typeof ApiAdminReceiptsRouteWithChildren
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
   '/api/webhooks/paypal': typeof ApiWebhooksPaypalRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
@@ -260,6 +273,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/exports/supporters.csv': typeof ApiAdminExportsSupportersDotcsvRoute
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
   '/api/admin/payments/$id/reconcile': typeof ApiAdminPaymentsIdReconcileRoute
+  '/api/admin/receipts/$id/void': typeof ApiAdminReceiptsIdVoidRoute
   '/api/admin/supporters/$id/consents': typeof ApiAdminSupportersIdConsentsRoute
 }
 export interface FileRoutesByTo {
@@ -272,7 +286,7 @@ export interface FileRoutesByTo {
   '/about/team': typeof AboutTeamRoute
   '/about/tnr': typeof AboutTnrRoute
   '/admin/login': typeof AdminLoginRoute
-  '/admin/supporters': typeof AdminSupportersRoute
+  '/admin/supporters': typeof AdminSupportersRouteWithChildren
   '/adoption/apply': typeof AdoptionApplyRoute
   '/adoption/instructions': typeof AdoptionInstructionsRoute
   '/animals/cat': typeof AnimalsCatRoute
@@ -284,10 +298,11 @@ export interface FileRoutesByTo {
   '/about': typeof AboutIndexRoute
   '/admin': typeof AdminIndexRoute
   '/admin/animals/new': typeof AdminAnimalsNewRoute
+  '/admin/supporters/$id': typeof AdminSupportersIdRoute
   '/animals/cat/$id': typeof AnimalsCatIdRoute
   '/animals/dog/$id': typeof AnimalsDogIdRoute
   '/api/admin/payments': typeof ApiAdminPaymentsRouteWithChildren
-  '/api/admin/receipts': typeof ApiAdminReceiptsRoute
+  '/api/admin/receipts': typeof ApiAdminReceiptsRouteWithChildren
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
   '/api/webhooks/paypal': typeof ApiWebhooksPaypalRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
@@ -297,6 +312,7 @@ export interface FileRoutesByTo {
   '/api/admin/exports/supporters.csv': typeof ApiAdminExportsSupportersDotcsvRoute
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
   '/api/admin/payments/$id/reconcile': typeof ApiAdminPaymentsIdReconcileRoute
+  '/api/admin/receipts/$id/void': typeof ApiAdminReceiptsIdVoidRoute
   '/api/admin/supporters/$id/consents': typeof ApiAdminSupportersIdConsentsRoute
 }
 export interface FileRoutesById {
@@ -310,7 +326,7 @@ export interface FileRoutesById {
   '/about/team': typeof AboutTeamRoute
   '/about/tnr': typeof AboutTnrRoute
   '/admin/login': typeof AdminLoginRoute
-  '/admin/supporters': typeof AdminSupportersRoute
+  '/admin/supporters': typeof AdminSupportersRouteWithChildren
   '/adoption/apply': typeof AdoptionApplyRoute
   '/adoption/instructions': typeof AdoptionInstructionsRoute
   '/animals/cat': typeof AnimalsCatRoute
@@ -322,10 +338,11 @@ export interface FileRoutesById {
   '/about/': typeof AboutIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/animals/new': typeof AdminAnimalsNewRoute
+  '/admin/supporters/$id': typeof AdminSupportersIdRoute
   '/animals/cat_/$id': typeof AnimalsCatIdRoute
   '/animals/dog_/$id': typeof AnimalsDogIdRoute
   '/api/admin/payments': typeof ApiAdminPaymentsRouteWithChildren
-  '/api/admin/receipts': typeof ApiAdminReceiptsRoute
+  '/api/admin/receipts': typeof ApiAdminReceiptsRouteWithChildren
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
   '/api/webhooks/paypal': typeof ApiWebhooksPaypalRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
@@ -335,6 +352,7 @@ export interface FileRoutesById {
   '/api/admin/exports/supporters.csv': typeof ApiAdminExportsSupportersDotcsvRoute
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
   '/api/admin/payments/$id/reconcile': typeof ApiAdminPaymentsIdReconcileRoute
+  '/api/admin/receipts/$id/void': typeof ApiAdminReceiptsIdVoidRoute
   '/api/admin/supporters/$id/consents': typeof ApiAdminSupportersIdConsentsRoute
 }
 export interface FileRouteTypes {
@@ -361,6 +379,7 @@ export interface FileRouteTypes {
     | '/about/'
     | '/admin/'
     | '/admin/animals/new'
+    | '/admin/supporters/$id'
     | '/animals/cat/$id'
     | '/animals/dog/$id'
     | '/api/admin/payments'
@@ -374,6 +393,7 @@ export interface FileRouteTypes {
     | '/api/admin/exports/supporters.csv'
     | '/api/admin/supporters/$id'
     | '/api/admin/payments/$id/reconcile'
+    | '/api/admin/receipts/$id/void'
     | '/api/admin/supporters/$id/consents'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -398,6 +418,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/admin/animals/new'
+    | '/admin/supporters/$id'
     | '/animals/cat/$id'
     | '/animals/dog/$id'
     | '/api/admin/payments'
@@ -411,6 +432,7 @@ export interface FileRouteTypes {
     | '/api/admin/exports/supporters.csv'
     | '/api/admin/supporters/$id'
     | '/api/admin/payments/$id/reconcile'
+    | '/api/admin/receipts/$id/void'
     | '/api/admin/supporters/$id/consents'
   id:
     | '__root__'
@@ -435,6 +457,7 @@ export interface FileRouteTypes {
     | '/about/'
     | '/admin/'
     | '/admin/animals/new'
+    | '/admin/supporters/$id'
     | '/animals/cat_/$id'
     | '/animals/dog_/$id'
     | '/api/admin/payments'
@@ -448,6 +471,7 @@ export interface FileRouteTypes {
     | '/api/admin/exports/supporters.csv'
     | '/api/admin/supporters/$id'
     | '/api/admin/payments/$id/reconcile'
+    | '/api/admin/receipts/$id/void'
     | '/api/admin/supporters/$id/consents'
   fileRoutesById: FileRoutesById
 }
@@ -461,7 +485,7 @@ export interface RootRouteChildren {
   AboutTeamRoute: typeof AboutTeamRoute
   AboutTnrRoute: typeof AboutTnrRoute
   AdminLoginRoute: typeof AdminLoginRoute
-  AdminSupportersRoute: typeof AdminSupportersRoute
+  AdminSupportersRoute: typeof AdminSupportersRouteWithChildren
   AdoptionApplyRoute: typeof AdoptionApplyRoute
   AdoptionInstructionsRoute: typeof AdoptionInstructionsRoute
   AnimalsCatRoute: typeof AnimalsCatRoute
@@ -476,7 +500,7 @@ export interface RootRouteChildren {
   AnimalsCatIdRoute: typeof AnimalsCatIdRoute
   AnimalsDogIdRoute: typeof AnimalsDogIdRoute
   ApiAdminPaymentsRoute: typeof ApiAdminPaymentsRouteWithChildren
-  ApiAdminReceiptsRoute: typeof ApiAdminReceiptsRoute
+  ApiAdminReceiptsRoute: typeof ApiAdminReceiptsRouteWithChildren
   ApiAdminSupportersRoute: typeof ApiAdminSupportersRouteWithChildren
   ApiWebhooksPaypalRoute: typeof ApiWebhooksPaypalRoute
   ApiWebhooksStripeRoute: typeof ApiWebhooksStripeRoute
@@ -677,6 +701,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnimalsCatIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/supporters/$id': {
+      id: '/admin/supporters/$id'
+      path: '/$id'
+      fullPath: '/admin/supporters/$id'
+      preLoaderRoute: typeof AdminSupportersIdRouteImport
+      parentRoute: typeof AdminSupportersRoute
+    }
     '/admin/animals/new': {
       id: '/admin/animals/new'
       path: '/admin/animals/new'
@@ -726,6 +757,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminSupportersIdConsentsRouteImport
       parentRoute: typeof ApiAdminSupportersIdRoute
     }
+    '/api/admin/receipts/$id/void': {
+      id: '/api/admin/receipts/$id/void'
+      path: '/$id/void'
+      fullPath: '/api/admin/receipts/$id/void'
+      preLoaderRoute: typeof ApiAdminReceiptsIdVoidRouteImport
+      parentRoute: typeof ApiAdminReceiptsRoute
+    }
     '/api/admin/payments/$id/reconcile': {
       id: '/api/admin/payments/$id/reconcile'
       path: '/$id/reconcile'
@@ -735,6 +773,18 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AdminSupportersRouteChildren {
+  AdminSupportersIdRoute: typeof AdminSupportersIdRoute
+}
+
+const AdminSupportersRouteChildren: AdminSupportersRouteChildren = {
+  AdminSupportersIdRoute: AdminSupportersIdRoute,
+}
+
+const AdminSupportersRouteWithChildren = AdminSupportersRoute._addFileChildren(
+  AdminSupportersRouteChildren,
+)
 
 interface ApiAdminPaymentsRouteChildren {
   ApiAdminPaymentsIdReconcileRoute: typeof ApiAdminPaymentsIdReconcileRoute
@@ -746,6 +796,17 @@ const ApiAdminPaymentsRouteChildren: ApiAdminPaymentsRouteChildren = {
 
 const ApiAdminPaymentsRouteWithChildren =
   ApiAdminPaymentsRoute._addFileChildren(ApiAdminPaymentsRouteChildren)
+
+interface ApiAdminReceiptsRouteChildren {
+  ApiAdminReceiptsIdVoidRoute: typeof ApiAdminReceiptsIdVoidRoute
+}
+
+const ApiAdminReceiptsRouteChildren: ApiAdminReceiptsRouteChildren = {
+  ApiAdminReceiptsIdVoidRoute: ApiAdminReceiptsIdVoidRoute,
+}
+
+const ApiAdminReceiptsRouteWithChildren =
+  ApiAdminReceiptsRoute._addFileChildren(ApiAdminReceiptsRouteChildren)
 
 interface ApiAdminSupportersIdRouteChildren {
   ApiAdminSupportersIdConsentsRoute: typeof ApiAdminSupportersIdConsentsRoute
@@ -779,7 +840,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutTeamRoute: AboutTeamRoute,
   AboutTnrRoute: AboutTnrRoute,
   AdminLoginRoute: AdminLoginRoute,
-  AdminSupportersRoute: AdminSupportersRoute,
+  AdminSupportersRoute: AdminSupportersRouteWithChildren,
   AdoptionApplyRoute: AdoptionApplyRoute,
   AdoptionInstructionsRoute: AdoptionInstructionsRoute,
   AnimalsCatRoute: AnimalsCatRoute,
@@ -794,7 +855,7 @@ const rootRouteChildren: RootRouteChildren = {
   AnimalsCatIdRoute: AnimalsCatIdRoute,
   AnimalsDogIdRoute: AnimalsDogIdRoute,
   ApiAdminPaymentsRoute: ApiAdminPaymentsRouteWithChildren,
-  ApiAdminReceiptsRoute: ApiAdminReceiptsRoute,
+  ApiAdminReceiptsRoute: ApiAdminReceiptsRouteWithChildren,
   ApiAdminSupportersRoute: ApiAdminSupportersRouteWithChildren,
   ApiWebhooksPaypalRoute: ApiWebhooksPaypalRoute,
   ApiWebhooksStripeRoute: ApiWebhooksStripeRoute,

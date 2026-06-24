@@ -42,6 +42,10 @@ type PaymentWithDonation = {
   };
 };
 
+type ReceiptActionContext = {
+  supporterId?: string;
+};
+
 async function recordWebhookEvent(args: ReconcileProviderArgs) {
   const { error } = await args.client.from("webhook_event").insert({
     provider: args.provider,
@@ -216,6 +220,7 @@ export async function issueReceiptForDonation(
   client: SupabaseClient,
   donationId: string,
   actorUserId: string,
+  context: ReceiptActionContext = {},
 ) {
   const { data, error } = await client
     .from("payment")
@@ -228,12 +233,46 @@ export async function issueReceiptForDonation(
   if (error) throw error;
 
   const receiptNo = await issueReceiptIfNeeded(client, data as unknown as PaymentWithDonation);
-  await client.from("audit_log").insert({
+  const { error: auditError } = await client.from("audit_log").insert({
     actor_user_id: actorUserId,
     action: "receipt.issue",
     entity: "donation",
     entity_id: donationId,
-    detail: { receiptNo },
+    detail: { receiptNo, supporterId: context.supporterId ?? null },
   });
+  if (auditError) throw auditError;
   return { receiptNo };
+}
+
+export async function voidReceipt(
+  client: SupabaseClient,
+  receiptId: string,
+  actorUserId: string,
+  context: ReceiptActionContext = {},
+) {
+  const voidedAt = new Date().toISOString();
+  const { data, error } = await client
+    .from("receipt")
+    .update({
+      status: "void",
+      voided_at: voidedAt,
+      voided_by: actorUserId,
+    })
+    .eq("id", receiptId)
+    .eq("status", "issued")
+    .select("id")
+    .single();
+  if (error) throw error;
+  if (!data) throw new Error("Receipt not found or already voided");
+
+  const { error: auditError } = await client.from("audit_log").insert({
+    actor_user_id: actorUserId,
+    action: "receipt.void",
+    entity: "receipt",
+    entity_id: receiptId,
+    detail: { voidedAt, supporterId: context.supporterId ?? null },
+  });
+  if (auditError) throw auditError;
+
+  return { receiptId, status: "void" as const };
 }
