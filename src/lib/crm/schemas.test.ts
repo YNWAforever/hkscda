@@ -121,6 +121,7 @@ describe("crm schemas", () => {
 
   test("normalizes explicit empty supporter update phone to null", () => {
     expect(supporterUpdateSchema.parse({ phone: "" })).toEqual({ phone: null });
+    expect(supporterUpdateSchema.parse({ phone: null })).toEqual({ phone: null });
   });
 
   test("dedupes supporter input tags", () => {

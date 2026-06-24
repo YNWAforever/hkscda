@@ -40,9 +40,11 @@ const normalizedTags = z
 
 const nullableTrimmed = z
   .string()
+  .nullable()
   .optional()
   .transform((value) => {
     if (value === undefined) return undefined;
+    if (value === null) return null;
     const trimmed = value.trim();
     return trimmed ? trimmed : null;
   });
