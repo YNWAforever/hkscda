@@ -589,7 +589,11 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
     },
 
     async listDonationsForExport(input) {
-      const supporterIds = await resolveSupporterIds(client, input);
+      const supporterResult = await fetchSupporterSummaries(client, input, {
+        from: 0,
+        to: exportLimit - 1,
+      });
+      const supporterIds = supporterResult.supporters.map((supporter) => supporter.id);
       if (supporterIds?.length === 0) return [];
 
       let query = client
@@ -600,7 +604,7 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
       if (input.purpose) query = query.eq("purpose", input.purpose);
       if (input.receiptNeeded !== undefined)
         query = query.eq("receipt_requested", input.receiptNeeded);
-      if (supporterIds) query = query.in("supporter_id", supporterIds);
+      query = query.in("supporter_id", supporterIds);
 
       const { data, error } = await query;
       if (error) throw error;
