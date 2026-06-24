@@ -4,6 +4,7 @@ import {
   consentUpdateSchema,
   exportSearchSchema,
   manualDonationSchema,
+  supporterInputSchema,
   supporterSearchSchema,
   supporterUpdateSchema,
 } from "./schemas";
@@ -31,6 +32,16 @@ describe("crm schemas", () => {
       purpose: undefined,
       includeDeleted: false,
     });
+  });
+
+  test("normalizes empty boolean params as omitted", () => {
+    const parsed = supporterSearchSchema.parse({
+      receiptNeeded: "",
+      includeDeleted: "",
+    });
+
+    expect(parsed.receiptNeeded).toBeUndefined();
+    expect(parsed.includeDeleted).toBe(false);
   });
 
   test("rejects unsupported manual donation method", () => {
@@ -64,6 +75,32 @@ describe("crm schemas", () => {
     ).toThrow("bankReference");
   });
 
+  test("requires exactly one manual donation supporter identity", () => {
+    expect(() =>
+      manualDonationSchema.parse({
+        supporterId: "8ddfd279-4ba7-4c2b-9e3c-1dbf17bb5ead",
+        supporter: { name: "Ada", email: "ada@example.com", language: "zh-HK" },
+        amountCents: 10000,
+        currency: "HKD",
+        purpose: "general",
+        method: "manual",
+        paymentStatus: "pending",
+        receiptRequested: true,
+      }),
+    ).toThrow("Exactly one");
+
+    expect(() =>
+      manualDonationSchema.parse({
+        amountCents: 10000,
+        currency: "HKD",
+        purpose: "general",
+        method: "manual",
+        paymentStatus: "pending",
+        receiptRequested: true,
+      }),
+    ).toThrow("Exactly one");
+  });
+
   test("normalizes supporter updates", () => {
     const parsed = supporterUpdateSchema.parse({
       name: "  Ada Wong  ",
@@ -80,6 +117,22 @@ describe("crm schemas", () => {
       tags: ["major donor", "medical"],
       deleted: false,
     });
+  });
+
+  test("normalizes explicit empty supporter update phone to null", () => {
+    expect(supporterUpdateSchema.parse({ phone: "" })).toEqual({ phone: null });
+  });
+
+  test("dedupes supporter input tags", () => {
+    const parsed = supporterInputSchema.parse({
+      name: "Ada",
+      email: "ADA@example.com",
+      language: "zh-HK",
+      tags: [" medical ", "medical", "", " donor "],
+    });
+
+    expect(parsed.email).toBe("ada@example.com");
+    expect(parsed.tags).toEqual(["medical", "donor"]);
   });
 
   test("accepts partial channel consent updates", () => {

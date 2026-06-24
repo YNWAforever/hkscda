@@ -20,6 +20,7 @@ const optionalTrimmed = z
 
 const booleanSearch = z
   .preprocess((value) => {
+    if (value === "") return undefined;
     if (value === true) return "true";
     if (value === false) return "false";
     return value;
@@ -36,6 +37,15 @@ const normalizedTags = z
   .transform((tags) =>
     [...new Set(tags.map((tag) => tag.trim()).filter((tag) => tag.length > 0))],
   );
+
+const nullableTrimmed = z
+  .string()
+  .optional()
+  .transform((value) => {
+    if (value === undefined) return undefined;
+    const trimmed = value.trim();
+    return trimmed ? trimmed : null;
+  });
 
 const supporterSearchObject = z.object({
   q: optionalTrimmed,
@@ -78,7 +88,7 @@ export const supporterInputSchema = z.object({
 
 export const supporterUpdateSchema = z.object({
   name: z.string().trim().min(1).max(120).optional(),
-  phone: optionalTrimmed,
+  phone: nullableTrimmed,
   language: z.enum(crmLanguages).optional(),
   tags: normalizedTags.optional(),
   deleted: z.boolean().optional(),
@@ -113,8 +123,8 @@ export const manualDonationSchema = z
       })
       .optional(),
   })
-  .refine((value) => Boolean(value.supporterId || value.supporter), {
-    message: "Either supporterId or supporter is required",
+  .refine((value) => Boolean(value.supporterId) !== Boolean(value.supporter), {
+    message: "Exactly one of supporterId or supporter is required",
   })
   .refine((value) => value.paymentStatus !== "succeeded" || Boolean(value.bankReference), {
     message: "bankReference is required for succeeded manual payments",
