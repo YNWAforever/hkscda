@@ -20,7 +20,20 @@ function searchParams(request: Request) {
 }
 
 async function jsonBody(request: Request) {
-  return request.json();
+  try {
+    return await request.json();
+  } catch {
+    throw new Response(JSON.stringify({ error: "Invalid JSON body" }), {
+      status: 400,
+      headers: { "content-type": "application/json", "cache-control": "no-store" },
+    });
+  }
+}
+
+function jsonResponse(body: unknown, init?: ResponseInit) {
+  const headers = new Headers(init?.headers);
+  headers.set("cache-control", "no-store");
+  return Response.json(body, { ...init, headers });
 }
 
 function csvResponse(csv: string, filename: "supporters.csv" | "donations.csv") {
@@ -39,18 +52,18 @@ async function withCrmErrors(operation: () => Promise<Response>) {
   } catch (error) {
     if (error instanceof Response) return error;
     if (error instanceof z.ZodError) {
-      return Response.json({ error: "Invalid CRM request" }, { status: 400 });
+      return jsonResponse({ error: "Invalid CRM request" }, { status: 400 });
     }
 
     console.error(error);
-    return Response.json({ error: "Could not process CRM request" }, { status: 500 });
+    return jsonResponse({ error: "Could not process CRM request" }, { status: 500 });
   }
 }
 
 function requiredId(params: HandlerContext["params"]) {
   const id = params?.id;
-  if (!id) {
-    throw new Response("Missing supporter id", { status: 400 });
+  if (!id || !z.string().uuid().safeParse(id).success) {
+    throw jsonResponse({ error: "Invalid supporter id" }, { status: 400 });
   }
   return id;
 }
@@ -60,14 +73,14 @@ export function createCrmHandlers({ requireTreasurer, service }: CreateCrmHandle
     listSupporters({ request }: HandlerContext) {
       return withCrmErrors(async () => {
         await requireTreasurer(request);
-        return Response.json(await service.listSupporters(searchParams(request)));
+        return jsonResponse(await service.listSupporters(searchParams(request)));
       });
     },
 
     createSupporter({ request }: HandlerContext) {
       return withCrmErrors(async () => {
         const admin = await requireTreasurer(request);
-        return Response.json(
+        return jsonResponse(
           await service.createSupporter({
             actorUserId: admin.authUserId,
             input: await jsonBody(request),
@@ -82,9 +95,9 @@ export function createCrmHandlers({ requireTreasurer, service }: CreateCrmHandle
         await requireTreasurer(request);
         const supporter = await service.getSupporterDetail(requiredId(params));
         if (!supporter) {
-          return Response.json({ error: "Supporter not found" }, { status: 404 });
+          return jsonResponse({ error: "Supporter not found" }, { status: 404 });
         }
-        return Response.json({ supporter });
+        return jsonResponse({ supporter });
       });
     },
 
@@ -96,14 +109,14 @@ export function createCrmHandlers({ requireTreasurer, service }: CreateCrmHandle
           supporterId: requiredId(params),
           input: await jsonBody(request),
         });
-        return Response.json({ ok: true });
+        return jsonResponse({ ok: true });
       });
     },
 
     appendConsents({ request, params }: HandlerContext) {
       return withCrmErrors(async () => {
         const admin = await requireTreasurer(request);
-        return Response.json(
+        return jsonResponse(
           await service.appendConsents({
             actorUserId: admin.authUserId,
             supporterId: requiredId(params),
@@ -117,7 +130,7 @@ export function createCrmHandlers({ requireTreasurer, service }: CreateCrmHandle
     createManualDonation({ request }: HandlerContext) {
       return withCrmErrors(async () => {
         const admin = await requireTreasurer(request);
-        return Response.json(
+        return jsonResponse(
           await service.createManualDonation({
             actorUserId: admin.authUserId,
             input: await jsonBody(request),

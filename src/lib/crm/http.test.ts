@@ -110,6 +110,62 @@ describe("createCrmHandlers", () => {
 
     expect(response.status).toBe(400);
     expect(response.headers.get("content-type")).toContain("application/json");
+    expect(response.headers.get("cache-control")).toBe("no-store");
     expect(await response.json()).toEqual({ error: "Invalid CRM request" });
+  });
+
+  test("maps malformed JSON bodies to a 400 response before service work", async () => {
+    const service = createService();
+    const handlers = createCrmHandlers({
+      requireTreasurer: async () => admin,
+      service,
+    });
+
+    const response = await handlers.createSupporter({
+      request: new Request("https://example.com/api/admin/supporters", {
+        method: "POST",
+        body: "{",
+      }),
+    });
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({ error: "Invalid JSON body" });
+    expect(service.calls).toEqual([]);
+  });
+
+  test("rejects malformed supporter ids before service work", async () => {
+    const service = createService();
+    const handlers = createCrmHandlers({
+      requireTreasurer: async () => admin,
+      service,
+    });
+
+    const response = await handlers.getSupporter({
+      request: new Request("https://example.com/api/admin/supporters/not-a-uuid"),
+      params: { id: "not-a-uuid" },
+    });
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({ error: "Invalid supporter id" });
+    expect(service.calls).toEqual([]);
+  });
+
+  test("sets no-store on supporter JSON responses", async () => {
+    const service = createService({
+      async listSupporters() {
+        return { supporters: [], total: 0 };
+      },
+    });
+    const handlers = createCrmHandlers({
+      requireTreasurer: async () => admin,
+      service,
+    });
+
+    const response = await handlers.listSupporters({
+      request: new Request("https://example.com/api/admin/supporters"),
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("cache-control")).toBe("no-store");
   });
 });
