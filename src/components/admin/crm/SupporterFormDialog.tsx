@@ -24,11 +24,21 @@ function splitTags(value: string) {
 export function SupporterFormDialog(props: SupporterFormDialogProps) {
   const queryClient = useQueryClient();
   const existing = props.mode === "edit" ? props.supporter : null;
+  const [open, setOpen] = useState(false);
   const [name, setName] = useState(existing?.name ?? "");
   const [email, setEmail] = useState(existing?.email ?? "");
   const [phone, setPhone] = useState(existing?.phone ?? "");
   const [language, setLanguage] = useState<"zh-HK" | "en">(existing?.language ?? "zh-HK");
   const [tags, setTags] = useState(existing?.tags.join(", ") ?? "");
+
+  function resetCreateForm() {
+    if (props.mode === "edit") return;
+    setName("");
+    setEmail("");
+    setPhone("");
+    setLanguage("zh-HK");
+    setTags("");
+  }
 
   const mutation = useMutation({
     mutationFn: () => {
@@ -62,11 +72,19 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
       if (props.mode === "edit") {
         queryClient.invalidateQueries({ queryKey: ["crm-supporter", props.supporter.id] });
       }
+      resetCreateForm();
+      setOpen(false);
     },
   });
 
   return (
-    <Dialog>
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        setOpen(nextOpen);
+        if (!nextOpen) mutation.reset();
+      }}
+    >
       <DialogTrigger asChild>
         <Button type="button" variant={props.mode === "edit" ? "outline" : "default"}>
           {props.mode === "edit" ? <Edit className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
@@ -104,12 +122,12 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
             />
           </div>
           <div className="grid gap-2">
-            <Label>Language</Label>
+            <Label htmlFor="supporter-language">Language</Label>
             <Select
               value={language}
               onValueChange={(value) => setLanguage(value as "zh-HK" | "en")}
             >
-              <SelectTrigger>
+              <SelectTrigger id="supporter-language" aria-label="Language">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -129,7 +147,13 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
           {mutation.error && (
             <p className="text-sm text-[var(--color-destructive)]">{mutation.error.message}</p>
           )}
-          <Button type="button" onClick={() => mutation.mutate()} disabled={mutation.isPending}>
+          <Button
+            type="button"
+            onClick={() => mutation.mutate()}
+            disabled={
+              mutation.isPending || !name.trim() || (props.mode === "create" && !email.trim())
+            }
+          >
             Save supporter
           </Button>
         </div>
