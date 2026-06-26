@@ -16,7 +16,7 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "applications",
     section: "applications",
     label: "📋 申請",
-    to: "/admin?section=applications",
+    to: "/admin/applications",
   },
   {
     id: "coordinator-statuses",

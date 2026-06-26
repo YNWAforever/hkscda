@@ -25,10 +25,12 @@ import { Route as AdoptionInstructionsRouteImport } from './routes/adoption/inst
 import { Route as AdoptionApplyRouteImport } from './routes/adoption/apply'
 import { Route as AdminSupportersRouteImport } from './routes/admin/supporters'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as AdminApplicationsRouteImport } from './routes/admin/applications'
 import { Route as AboutTnrRouteImport } from './routes/about/tnr'
 import { Route as AboutTeamRouteImport } from './routes/about/team'
 import { Route as AboutPrivacyRouteImport } from './routes/about/privacy'
 import { Route as AboutCccpRouteImport } from './routes/about/cccp'
+import { Route as AdminApplicationsIndexRouteImport } from './routes/admin/applications/index'
 import { Route as ApiWebhooksStripeRouteImport } from './routes/api/webhooks/stripe'
 import { Route as ApiWebhooksPaypalRouteImport } from './routes/api/webhooks/paypal'
 import { Route as ApiAdminSupportersRouteImport } from './routes/api/admin/supporters'
@@ -38,6 +40,7 @@ import { Route as AnimalsDogIdRouteImport } from './routes/animals/dog_.$id'
 import { Route as AnimalsCatIdRouteImport } from './routes/animals/cat_.$id'
 import { Route as AdminSupportersIdRouteImport } from './routes/admin/supporters/$id'
 import { Route as AdminCoordinatorStatusesRouteImport } from './routes/admin/coordinator/statuses'
+import { Route as AdminApplicationsIdRouteImport } from './routes/admin/applications/$id'
 import { Route as AdminAnimalsNewRouteImport } from './routes/admin/animals/new'
 import { Route as ApiAdminSupportersIdRouteImport } from './routes/api/admin/supporters/$id'
 import { Route as ApiAdminExportsSupportersDotcsvRouteImport } from './routes/api/admin/exports/supporters[.]csv'
@@ -136,6 +139,11 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminApplicationsRoute = AdminApplicationsRouteImport.update({
+  id: '/admin/applications',
+  path: '/admin/applications',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutTnrRoute = AboutTnrRouteImport.update({
   id: '/about/tnr',
   path: '/about/tnr',
@@ -155,6 +163,11 @@ const AboutCccpRoute = AboutCccpRouteImport.update({
   id: '/about/cccp',
   path: '/about/cccp',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminApplicationsIndexRoute = AdminApplicationsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminApplicationsRoute,
 } as any)
 const ApiWebhooksStripeRoute = ApiWebhooksStripeRouteImport.update({
   id: '/api/webhooks/stripe',
@@ -202,6 +215,11 @@ const AdminCoordinatorStatusesRoute =
     path: '/admin/coordinator/statuses',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminApplicationsIdRoute = AdminApplicationsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdminApplicationsRoute,
+} as any)
 const AdminAnimalsNewRoute = AdminAnimalsNewRouteImport.update({
   id: '/admin/animals/new',
   path: '/admin/animals/new',
@@ -308,6 +326,7 @@ export interface FileRoutesByFullPath {
   '/about/privacy': typeof AboutPrivacyRoute
   '/about/team': typeof AboutTeamRoute
   '/about/tnr': typeof AboutTnrRoute
+  '/admin/applications': typeof AdminApplicationsRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/admin/supporters': typeof AdminSupportersRouteWithChildren
   '/adoption/apply': typeof AdoptionApplyRoute
@@ -321,6 +340,7 @@ export interface FileRoutesByFullPath {
   '/about/': typeof AboutIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/animals/new': typeof AdminAnimalsNewRoute
+  '/admin/applications/$id': typeof AdminApplicationsIdRoute
   '/admin/coordinator/statuses': typeof AdminCoordinatorStatusesRoute
   '/admin/supporters/$id': typeof AdminSupportersIdRoute
   '/animals/cat/$id': typeof AnimalsCatIdRoute
@@ -330,6 +350,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
   '/api/webhooks/paypal': typeof ApiWebhooksPaypalRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
+  '/admin/applications/': typeof AdminApplicationsIndexRoute
   '/admin/animals/$id/edit': typeof AdminAnimalsIdEditRoute
   '/api/admin/adoptions/cases': typeof ApiAdminAdoptionsCasesRouteWithChildren
   '/api/admin/adoptions/statuses': typeof ApiAdminAdoptionsStatusesRouteWithChildren
@@ -369,6 +390,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutIndexRoute
   '/admin': typeof AdminIndexRoute
   '/admin/animals/new': typeof AdminAnimalsNewRoute
+  '/admin/applications/$id': typeof AdminApplicationsIdRoute
   '/admin/coordinator/statuses': typeof AdminCoordinatorStatusesRoute
   '/admin/supporters/$id': typeof AdminSupportersIdRoute
   '/animals/cat/$id': typeof AnimalsCatIdRoute
@@ -378,6 +400,7 @@ export interface FileRoutesByTo {
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
   '/api/webhooks/paypal': typeof ApiWebhooksPaypalRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
+  '/admin/applications': typeof AdminApplicationsIndexRoute
   '/admin/animals/$id/edit': typeof AdminAnimalsIdEditRoute
   '/api/admin/adoptions/cases': typeof ApiAdminAdoptionsCasesRouteWithChildren
   '/api/admin/adoptions/statuses': typeof ApiAdminAdoptionsStatusesRouteWithChildren
@@ -405,6 +428,7 @@ export interface FileRoutesById {
   '/about/privacy': typeof AboutPrivacyRoute
   '/about/team': typeof AboutTeamRoute
   '/about/tnr': typeof AboutTnrRoute
+  '/admin/applications': typeof AdminApplicationsRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/admin/supporters': typeof AdminSupportersRouteWithChildren
   '/adoption/apply': typeof AdoptionApplyRoute
@@ -418,6 +442,7 @@ export interface FileRoutesById {
   '/about/': typeof AboutIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/animals/new': typeof AdminAnimalsNewRoute
+  '/admin/applications/$id': typeof AdminApplicationsIdRoute
   '/admin/coordinator/statuses': typeof AdminCoordinatorStatusesRoute
   '/admin/supporters/$id': typeof AdminSupportersIdRoute
   '/animals/cat_/$id': typeof AnimalsCatIdRoute
@@ -427,6 +452,7 @@ export interface FileRoutesById {
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
   '/api/webhooks/paypal': typeof ApiWebhooksPaypalRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
+  '/admin/applications/': typeof AdminApplicationsIndexRoute
   '/admin/animals/$id/edit': typeof AdminAnimalsIdEditRoute
   '/api/admin/adoptions/cases': typeof ApiAdminAdoptionsCasesRouteWithChildren
   '/api/admin/adoptions/statuses': typeof ApiAdminAdoptionsStatusesRouteWithChildren
@@ -455,6 +481,7 @@ export interface FileRouteTypes {
     | '/about/privacy'
     | '/about/team'
     | '/about/tnr'
+    | '/admin/applications'
     | '/admin/login'
     | '/admin/supporters'
     | '/adoption/apply'
@@ -468,6 +495,7 @@ export interface FileRouteTypes {
     | '/about/'
     | '/admin/'
     | '/admin/animals/new'
+    | '/admin/applications/$id'
     | '/admin/coordinator/statuses'
     | '/admin/supporters/$id'
     | '/animals/cat/$id'
@@ -477,6 +505,7 @@ export interface FileRouteTypes {
     | '/api/admin/supporters'
     | '/api/webhooks/paypal'
     | '/api/webhooks/stripe'
+    | '/admin/applications/'
     | '/admin/animals/$id/edit'
     | '/api/admin/adoptions/cases'
     | '/api/admin/adoptions/statuses'
@@ -516,6 +545,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/admin/animals/new'
+    | '/admin/applications/$id'
     | '/admin/coordinator/statuses'
     | '/admin/supporters/$id'
     | '/animals/cat/$id'
@@ -525,6 +555,7 @@ export interface FileRouteTypes {
     | '/api/admin/supporters'
     | '/api/webhooks/paypal'
     | '/api/webhooks/stripe'
+    | '/admin/applications'
     | '/admin/animals/$id/edit'
     | '/api/admin/adoptions/cases'
     | '/api/admin/adoptions/statuses'
@@ -551,6 +582,7 @@ export interface FileRouteTypes {
     | '/about/privacy'
     | '/about/team'
     | '/about/tnr'
+    | '/admin/applications'
     | '/admin/login'
     | '/admin/supporters'
     | '/adoption/apply'
@@ -564,6 +596,7 @@ export interface FileRouteTypes {
     | '/about/'
     | '/admin/'
     | '/admin/animals/new'
+    | '/admin/applications/$id'
     | '/admin/coordinator/statuses'
     | '/admin/supporters/$id'
     | '/animals/cat_/$id'
@@ -573,6 +606,7 @@ export interface FileRouteTypes {
     | '/api/admin/supporters'
     | '/api/webhooks/paypal'
     | '/api/webhooks/stripe'
+    | '/admin/applications/'
     | '/admin/animals/$id/edit'
     | '/api/admin/adoptions/cases'
     | '/api/admin/adoptions/statuses'
@@ -600,6 +634,7 @@ export interface RootRouteChildren {
   AboutPrivacyRoute: typeof AboutPrivacyRoute
   AboutTeamRoute: typeof AboutTeamRoute
   AboutTnrRoute: typeof AboutTnrRoute
+  AdminApplicationsRoute: typeof AdminApplicationsRouteWithChildren
   AdminLoginRoute: typeof AdminLoginRoute
   AdminSupportersRoute: typeof AdminSupportersRouteWithChildren
   AdoptionApplyRoute: typeof AdoptionApplyRoute
@@ -743,6 +778,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/applications': {
+      id: '/admin/applications'
+      path: '/admin/applications'
+      fullPath: '/admin/applications'
+      preLoaderRoute: typeof AdminApplicationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about/tnr': {
       id: '/about/tnr'
       path: '/about/tnr'
@@ -770,6 +812,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/about/cccp'
       preLoaderRoute: typeof AboutCccpRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/applications/': {
+      id: '/admin/applications/'
+      path: '/'
+      fullPath: '/admin/applications/'
+      preLoaderRoute: typeof AdminApplicationsIndexRouteImport
+      parentRoute: typeof AdminApplicationsRoute
     }
     '/api/webhooks/stripe': {
       id: '/api/webhooks/stripe'
@@ -833,6 +882,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/coordinator/statuses'
       preLoaderRoute: typeof AdminCoordinatorStatusesRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/applications/$id': {
+      id: '/admin/applications/$id'
+      path: '/$id'
+      fullPath: '/admin/applications/$id'
+      preLoaderRoute: typeof AdminApplicationsIdRouteImport
+      parentRoute: typeof AdminApplicationsRoute
     }
     '/admin/animals/new': {
       id: '/admin/animals/new'
@@ -956,6 +1012,19 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminApplicationsRouteChildren {
+  AdminApplicationsIdRoute: typeof AdminApplicationsIdRoute
+  AdminApplicationsIndexRoute: typeof AdminApplicationsIndexRoute
+}
+
+const AdminApplicationsRouteChildren: AdminApplicationsRouteChildren = {
+  AdminApplicationsIdRoute: AdminApplicationsIdRoute,
+  AdminApplicationsIndexRoute: AdminApplicationsIndexRoute,
+}
+
+const AdminApplicationsRouteWithChildren =
+  AdminApplicationsRoute._addFileChildren(AdminApplicationsRouteChildren)
+
 interface AdminSupportersRouteChildren {
   AdminSupportersIdRoute: typeof AdminSupportersIdRoute
 }
@@ -1071,6 +1140,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutPrivacyRoute: AboutPrivacyRoute,
   AboutTeamRoute: AboutTeamRoute,
   AboutTnrRoute: AboutTnrRoute,
+  AdminApplicationsRoute: AdminApplicationsRouteWithChildren,
   AdminLoginRoute: AdminLoginRoute,
   AdminSupportersRoute: AdminSupportersRouteWithChildren,
   AdoptionApplyRoute: AdoptionApplyRoute,
