@@ -34,7 +34,7 @@ export function buildReconciliationPlan(input: ReconciliationInput): Reconciliat
     return { kind: "duplicate" };
   }
 
-  if (input.payment.status === "succeeded" || input.donation.status === "succeeded") {
+  if (input.payment.status === "succeeded" && input.donation.status === "succeeded") {
     return { kind: "duplicate" };
   }
 

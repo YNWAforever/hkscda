@@ -6,6 +6,7 @@ import { centsToHkd } from "./domain";
 
 type EmailInput = {
   supporterId: string;
+  donationId: string;
   to: string;
   donorName: string;
   amountCents: number;
@@ -15,11 +16,26 @@ type EmailInput = {
 
 export async function sendDonationAcknowledgement(client: SupabaseClient, input: EmailInput) {
   const config = getEmailConfig();
-  if (!config.resendApiKey) return;
+  const payload = {
+    kind: "donation_acknowledgement",
+    donationId: input.donationId,
+    subject:
+      input.language === "en" ? "Thank you for supporting HKSCDA" : "多謝您支持香港拯救貓狗協會",
+    receiptNo: input.receiptNo ?? null,
+  };
+
+  if (!config.resendApiKey) {
+    await client.from("message").insert({
+      supporter_id: input.supporterId,
+      channel: "email",
+      status: "queued",
+      payload,
+    });
+    return;
+  }
 
   const resend = new Resend(config.resendApiKey);
-  const subject =
-    input.language === "en" ? "Thank you for supporting HKSCDA" : "多謝您支持香港拯救貓狗協會";
+  const subject = payload.subject;
   const receiptLine = input.receiptNo
     ? input.language === "en"
       ? `<p>Your receipt number is <strong>${input.receiptNo}</strong>.</p>`
@@ -41,7 +57,7 @@ export async function sendDonationAcknowledgement(client: SupabaseClient, input:
     supporter_id: input.supporterId,
     channel: "email",
     status: "sent",
-    payload: { subject, receiptNo: input.receiptNo ?? null },
+    payload,
     sent_at: new Date().toISOString(),
   });
 }
