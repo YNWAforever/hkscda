@@ -83,6 +83,10 @@ export function createAdoptionCoordinatorService({
       return repo.listStatuses(category);
     },
 
+    getStatus(statusId: string) {
+      return repo.getStatus(statusId);
+    },
+
     async createStatus(args: { actorUserId: string | null; input: unknown }) {
       const input = statusInputSchema.parse(args.input);
       const status = await repo.createStatus(input);
