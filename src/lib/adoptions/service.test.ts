@@ -82,6 +82,10 @@ function createRepo(
       calls.push({ name: "createFollowup", payload: input });
       return { id: "followup-1" };
     },
+    async createCaseFromPublicApplication(input) {
+      calls.push({ name: "createCaseFromPublicApplication", payload: input });
+      return { id: caseId };
+    },
     async finalizeAdoption(input) {
       calls.push({ name: "finalizeAdoption", payload: input });
       return { id: "success-1" };
@@ -91,6 +95,51 @@ function createRepo(
 }
 
 describe("createAdoptionCoordinatorService", () => {
+  test("creates coordinator cases from normalized public applications", async () => {
+    const publicApplicationId = "99999999-aaaa-4bbb-8ccc-dddddddddddd";
+    const repo = createRepo();
+    const service = createAdoptionCoordinatorService({ repo });
+
+    await expect(
+      service.createCaseFromPublicApplication({
+        publicApplicationId,
+        input: {
+          animal_id: animalId,
+          animal_name: "Mochi",
+          animal_type: "cat",
+          applicant_name: " Ada ",
+          phone: " 9123 4567 ",
+          email: "ADA@EXAMPLE.COM",
+          address: "  HK Island  ",
+          housing_type: "私人樓宇",
+          family_size: 3,
+          existing_pets: "   ",
+          reason: " I can provide a safe home. ",
+        },
+      }),
+    ).resolves.toEqual({ id: caseId });
+
+    expect(repo.calls).toEqual([
+      {
+        name: "createCaseFromPublicApplication",
+        payload: {
+          publicApplicationId,
+          requestedAnimalId: animalId,
+          animalType: "cat",
+          applicantName: "Ada",
+          applicantPhone: "9123 4567",
+          applicantEmail: "ada@example.com",
+          applicantAddress: "HK Island",
+          housingType: "私人樓宇",
+          familySize: 3,
+          existingPets: null,
+          reason: "I can provide a safe home.",
+          preferences: { animalName: "Mochi" },
+        },
+      },
+    ]);
+  });
+
   test("prevents deleting system statuses before repository mutation", async () => {
     const repo = createRepo();
     const service = createAdoptionCoordinatorService({ repo });

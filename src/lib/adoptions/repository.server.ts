@@ -1,6 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import type { AdoptionCoordinatorRepository, StatusUpdate } from "./service";
+import type {
+  AdoptionCoordinatorRepository,
+  CaseFromPublicApplicationInput,
+  StatusUpdate,
+} from "./service";
 import type {
   AdoptionCaseDetail,
   AdoptionCaseSummary,
@@ -232,6 +236,104 @@ function toStatusUpdatePayload(input: StatusUpdate) {
   return payload;
 }
 
+async function loadNewAdoptionCaseStatusId(client: SupabaseClient) {
+  const { data, error } = await client
+    .from("coordinator_status")
+    .select("id")
+    .eq("category", "adoption_case")
+    .eq("key", "new")
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) throw new Error("Missing adoption_case/new coordinator status");
+  return (data as { id: string }).id;
+}
+
+async function findActiveSupporterByEmail(client: SupabaseClient, email: string) {
+  const { data, error } = await client
+    .from("supporter")
+    .select("id")
+    .eq("email", email)
+    .is("deleted_at", null)
+    .maybeSingle();
+  if (error) throw error;
+  return data ? { id: (data as { id: string }).id } : null;
+}
+
+async function createPublicApplicationSupporter(
+  client: SupabaseClient,
+  input: CaseFromPublicApplicationInput,
+) {
+  const { data, error } = await client
+    .from("supporter")
+    .insert({
+      name: input.applicantName,
+      email: input.applicantEmail,
+      phone: input.applicantPhone,
+      language: "zh-HK",
+      source: "adoption_form",
+    })
+    .select("id")
+    .single();
+  if (error) throw error;
+  return { id: (data as { id: string }).id };
+}
+
+async function ensurePublicApplicationSupporter(
+  client: SupabaseClient,
+  input: CaseFromPublicApplicationInput,
+) {
+  return (
+    (await findActiveSupporterByEmail(client, input.applicantEmail)) ??
+    (await createPublicApplicationSupporter(client, input))
+  );
+}
+
+async function ensureAdopterRole(client: SupabaseClient, supporterId: string) {
+  const { error } = await client
+    .from("supporter_role")
+    .upsert({ supporter_id: supporterId, role: "adopter" }, { onConflict: "supporter_id,role" });
+  if (error) throw error;
+}
+
+async function findAdopterProfileBySupporterId(client: SupabaseClient, supporterId: string) {
+  const { data, error } = await client
+    .from("adopter_profile")
+    .select("id")
+    .eq("supporter_id", supporterId)
+    .maybeSingle();
+  if (error) throw error;
+  return data ? { id: (data as { id: string }).id } : null;
+}
+
+async function createAdopterProfile(
+  client: SupabaseClient,
+  input: CaseFromPublicApplicationInput,
+  supporterId: string,
+) {
+  const { data, error } = await client
+    .from("adopter_profile")
+    .insert({
+      supporter_id: supporterId,
+      address: input.applicantAddress,
+      household_size: input.familySize === null ? null : String(input.familySize),
+    })
+    .select("id")
+    .single();
+  if (error) throw error;
+  return { id: (data as { id: string }).id };
+}
+
+async function ensureAdopterProfile(
+  client: SupabaseClient,
+  input: CaseFromPublicApplicationInput,
+  supporterId: string,
+) {
+  return (
+    (await findAdopterProfileBySupporterId(client, supporterId)) ??
+    (await createAdopterProfile(client, input, supporterId))
+  );
+}
+
 export function createSupabaseAdoptionCoordinatorRepository(
   client: SupabaseClient,
 ): AdoptionCoordinatorRepository {
@@ -391,6 +493,37 @@ export function createSupabaseAdoptionCoordinatorRepository(
         followups: followupRows.map((followup) => mapFollowup(followup, statuses)),
         successfulAdoption: mapSuccessfulAdoption(successRow),
       } satisfies AdoptionCaseDetail;
+    },
+
+    async createCaseFromPublicApplication(input) {
+      const statusId = await loadNewAdoptionCaseStatusId(client);
+      const supporter = await ensurePublicApplicationSupporter(client, input);
+      await ensureAdopterRole(client, supporter.id);
+      const adopterProfile = await ensureAdopterProfile(client, input, supporter.id);
+
+      const { data, error } = await client
+        .from("adoption_case")
+        .insert({
+          public_application_id: input.publicApplicationId,
+          status_id: statusId,
+          adopter_profile_id: adopterProfile.id,
+          supporter_id: supporter.id,
+          requested_animal_id: input.requestedAnimalId,
+          animal_type: input.animalType,
+          applicant_name: input.applicantName,
+          applicant_phone: input.applicantPhone,
+          applicant_email: input.applicantEmail,
+          applicant_address: input.applicantAddress,
+          housing_type: input.housingType,
+          family_size: input.familySize,
+          existing_pets: input.existingPets,
+          reason: input.reason,
+          preferences: input.preferences,
+        })
+        .select("id")
+        .single();
+      if (error) throw error;
+      return { id: (data as { id: string }).id };
     },
 
     async changeCaseStatus(input) {

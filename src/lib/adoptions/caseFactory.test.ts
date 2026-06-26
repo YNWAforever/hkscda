@@ -27,4 +27,26 @@ describe("buildCaseFromPublicApplication", () => {
       preferences: { animalName: "Mochi" },
     });
   });
+
+  test("maps requested animal ids from public forms", () => {
+    const baseInput = {
+      animal_name: "Mochi",
+      animal_type: "cat",
+      applicant_name: "Ada",
+      phone: "9123 4567",
+      email: "ada@example.com",
+      address: "HK",
+      housing_type: "私人樓宇",
+      reason: "I can provide a safe home.",
+    };
+
+    expect(
+      buildCaseFromPublicApplication({
+        ...baseInput,
+        animal_id: "77777777-8888-4333-8444-555555555555",
+      }).requestedAnimalId,
+    ).toBe("77777777-8888-4333-8444-555555555555");
+
+    expect(buildCaseFromPublicApplication(baseInput).requestedAnimalId).toBeNull();
+  });
 });

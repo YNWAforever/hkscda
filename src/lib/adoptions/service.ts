@@ -1,5 +1,6 @@
 import type { z } from "zod";
 
+import { buildCaseFromPublicApplication, type PublicApplicationInput } from "./caseFactory";
 import { assertCanMutateStatus } from "./status";
 import {
   caseSearchSchema,
@@ -18,6 +19,9 @@ export type CaseSearch = z.infer<typeof caseSearchSchema>;
 export type MatchInput = z.infer<typeof matchInputSchema>;
 export type FollowupInput = z.infer<typeof followupInputSchema>;
 export type FinalizeAdoptionInput = z.infer<typeof finalizeAdoptionSchema>;
+export type CaseFromPublicApplicationInput = ReturnType<typeof buildCaseFromPublicApplication> & {
+  publicApplicationId: string;
+};
 
 export type AuditLogInsert = {
   actor_user_id: string | null;
@@ -36,6 +40,7 @@ export type AdoptionCoordinatorRepository = {
   deleteStatus(id: string): Promise<void>;
   listCases(input: CaseSearch): Promise<{ cases: AdoptionCaseSummary[]; total: number }>;
   getCaseDetail(id: string): Promise<AdoptionCaseDetail | null>;
+  createCaseFromPublicApplication(input: CaseFromPublicApplicationInput): Promise<{ id: string }>;
   changeCaseStatus(input: {
     caseId: string;
     statusId: string;
@@ -147,6 +152,19 @@ export function createAdoptionCoordinatorService({
 
     getCaseDetail(caseId: string) {
       return repo.getCaseDetail(caseId);
+    },
+
+    createCaseFromPublicApplication(args: {
+      publicApplicationId: string;
+      input: PublicApplicationInput;
+    }) {
+      return repo.createCaseFromPublicApplication({
+        ...buildCaseFromPublicApplication({
+          ...args.input,
+          id: args.publicApplicationId,
+        }),
+        publicApplicationId: args.publicApplicationId,
+      });
     },
 
     async changeCaseStatus(args: { actorUserId: string; caseId: string; input: unknown }) {
