@@ -31,7 +31,10 @@ const booleanSearch = z.preprocess((value) => {
 
 export const statusInputSchema = z.object({
   category: z.enum(statusCategories),
-  key: z.string().trim().regex(/^[a-z][a-z0-9_]*$/),
+  key: z
+    .string()
+    .trim()
+    .regex(/^[a-z][a-z0-9_]*$/),
   labelZh: z.string().trim().min(1),
   labelEn: z.string().trim().min(1),
   sortOrder: z.coerce.number().int().min(0).default(0),

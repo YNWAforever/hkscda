@@ -1,7 +1,10 @@
 import type { CoordinatorStatus } from "./types";
 
 export function normalizeStatusKey(value: string) {
-  const key = value.trim().toLowerCase().replace(/[\s-]+/g, "_");
+  const key = value
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, "_");
   return /^[a-z][a-z0-9_]*$/.test(key) ? key : "";
 }
 
