@@ -37,6 +37,7 @@ import { Route as ApiAdminPaymentsRouteImport } from './routes/api/admin/payment
 import { Route as AnimalsDogIdRouteImport } from './routes/animals/dog_.$id'
 import { Route as AnimalsCatIdRouteImport } from './routes/animals/cat_.$id'
 import { Route as AdminSupportersIdRouteImport } from './routes/admin/supporters/$id'
+import { Route as AdminCoordinatorStatusesRouteImport } from './routes/admin/coordinator/statuses'
 import { Route as AdminAnimalsNewRouteImport } from './routes/admin/animals/new'
 import { Route as ApiAdminSupportersIdRouteImport } from './routes/api/admin/supporters/$id'
 import { Route as ApiAdminExportsSupportersDotcsvRouteImport } from './routes/api/admin/exports/supporters[.]csv'
@@ -195,6 +196,12 @@ const AdminSupportersIdRoute = AdminSupportersIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AdminSupportersRoute,
 } as any)
+const AdminCoordinatorStatusesRoute =
+  AdminCoordinatorStatusesRouteImport.update({
+    id: '/admin/coordinator/statuses',
+    path: '/admin/coordinator/statuses',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminAnimalsNewRoute = AdminAnimalsNewRouteImport.update({
   id: '/admin/animals/new',
   path: '/admin/animals/new',
@@ -314,6 +321,7 @@ export interface FileRoutesByFullPath {
   '/about/': typeof AboutIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/animals/new': typeof AdminAnimalsNewRoute
+  '/admin/coordinator/statuses': typeof AdminCoordinatorStatusesRoute
   '/admin/supporters/$id': typeof AdminSupportersIdRoute
   '/animals/cat/$id': typeof AnimalsCatIdRoute
   '/animals/dog/$id': typeof AnimalsDogIdRoute
@@ -361,6 +369,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutIndexRoute
   '/admin': typeof AdminIndexRoute
   '/admin/animals/new': typeof AdminAnimalsNewRoute
+  '/admin/coordinator/statuses': typeof AdminCoordinatorStatusesRoute
   '/admin/supporters/$id': typeof AdminSupportersIdRoute
   '/animals/cat/$id': typeof AnimalsCatIdRoute
   '/animals/dog/$id': typeof AnimalsDogIdRoute
@@ -409,6 +418,7 @@ export interface FileRoutesById {
   '/about/': typeof AboutIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/animals/new': typeof AdminAnimalsNewRoute
+  '/admin/coordinator/statuses': typeof AdminCoordinatorStatusesRoute
   '/admin/supporters/$id': typeof AdminSupportersIdRoute
   '/animals/cat_/$id': typeof AnimalsCatIdRoute
   '/animals/dog_/$id': typeof AnimalsDogIdRoute
@@ -458,6 +468,7 @@ export interface FileRouteTypes {
     | '/about/'
     | '/admin/'
     | '/admin/animals/new'
+    | '/admin/coordinator/statuses'
     | '/admin/supporters/$id'
     | '/animals/cat/$id'
     | '/animals/dog/$id'
@@ -505,6 +516,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/admin/animals/new'
+    | '/admin/coordinator/statuses'
     | '/admin/supporters/$id'
     | '/animals/cat/$id'
     | '/animals/dog/$id'
@@ -552,6 +564,7 @@ export interface FileRouteTypes {
     | '/about/'
     | '/admin/'
     | '/admin/animals/new'
+    | '/admin/coordinator/statuses'
     | '/admin/supporters/$id'
     | '/animals/cat_/$id'
     | '/animals/dog_/$id'
@@ -600,6 +613,7 @@ export interface RootRouteChildren {
   AboutIndexRoute: typeof AboutIndexRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminAnimalsNewRoute: typeof AdminAnimalsNewRoute
+  AdminCoordinatorStatusesRoute: typeof AdminCoordinatorStatusesRoute
   AnimalsCatIdRoute: typeof AnimalsCatIdRoute
   AnimalsDogIdRoute: typeof AnimalsDogIdRoute
   ApiAdminPaymentsRoute: typeof ApiAdminPaymentsRouteWithChildren
@@ -812,6 +826,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/supporters/$id'
       preLoaderRoute: typeof AdminSupportersIdRouteImport
       parentRoute: typeof AdminSupportersRoute
+    }
+    '/admin/coordinator/statuses': {
+      id: '/admin/coordinator/statuses'
+      path: '/admin/coordinator/statuses'
+      fullPath: '/admin/coordinator/statuses'
+      preLoaderRoute: typeof AdminCoordinatorStatusesRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/animals/new': {
       id: '/admin/animals/new'
@@ -1063,6 +1084,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutIndexRoute: AboutIndexRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminAnimalsNewRoute: AdminAnimalsNewRoute,
+  AdminCoordinatorStatusesRoute: AdminCoordinatorStatusesRoute,
   AnimalsCatIdRoute: AnimalsCatIdRoute,
   AnimalsDogIdRoute: AnimalsDogIdRoute,
   ApiAdminPaymentsRoute: ApiAdminPaymentsRouteWithChildren,
