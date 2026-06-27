@@ -33,6 +33,7 @@ dist-ssr
 .vercel
 supabase/.temp/
 .superpowers/
+.worktrees/
 
 # Scraper session cookies (scripts/scrape-hkscda.js)
 data/.cf-state.json
