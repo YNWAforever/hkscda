@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 
 import type { AnimalPipelineRow } from "./animalPipelineLogic";
 import {
+  buildAnimalTaskSearchParams,
   buildAnimalPipelineSearchParams,
   filterAnimalPipelineRows,
   groupAnimalPipelineRows,
@@ -145,5 +146,14 @@ describe("animal pipeline logic", () => {
       "animalId=animal-1",
     );
     expect(buildAnimalPipelineSearchParams({ animalId: " " }).toString()).toBe("");
+  });
+
+  test("builds open task search params for an animal id", () => {
+    expect(buildAnimalTaskSearchParams({ animalId: " animal-1 " }).toString()).toBe(
+      "animalId=animal-1&openOnly=true&page=1&pageSize=10",
+    );
+    expect(buildAnimalTaskSearchParams({ animalId: "" }).toString()).toBe(
+      "openOnly=true&page=1&pageSize=10",
+    );
   });
 });

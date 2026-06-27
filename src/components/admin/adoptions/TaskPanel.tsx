@@ -23,12 +23,18 @@ import {
   isoToDatetimeLocal,
   statusesForTaskControl,
 } from "./taskPanelLogic";
-import type { CreateTaskFormState, UpdateTaskFormState } from "./taskPanelLogic";
+import type {
+  CreateTaskFormState,
+  TaskPanelDefaultLinks,
+  UpdateTaskFormState,
+} from "./taskPanelLogic";
 
 type TaskPanelProps = {
-  adoptionCaseId: string;
+  title?: string;
+  subtitle?: string;
   tasks: CoordinatorTask[];
   statuses: CoordinatorStatus[];
+  defaultLinks?: TaskPanelDefaultLinks;
   onChanged?: () => Promise<void> | void;
 };
 
@@ -53,6 +59,8 @@ const CONTACT_CHANNELS: Array<{ value: CoordinatorTaskContactChannel; label: str
   { value: "internal", label: "Internal" },
 ];
 
+const EMPTY_DEFAULT_LINKS: TaskPanelDefaultLinks = {};
+
 const STATUS_DOT_CLASSES: Record<string, string> = {
   amber: "bg-[var(--color-warning)]",
   blue: "bg-[var(--color-panel)]",
@@ -65,9 +73,12 @@ const STATUS_DOT_CLASSES: Record<string, string> = {
   slate: "bg-[var(--color-text-muted)]",
 };
 
-function emptyCreateForm(adoptionCaseId: string, statusId = ""): CreateTaskFormState {
+function emptyCreateForm(
+  defaultLinks: TaskPanelDefaultLinks = {},
+  statusId = "",
+): CreateTaskFormState {
   return {
-    adoptionCaseId,
+    defaultLinks,
     statusId,
     title: "",
     priority: "normal",
@@ -417,20 +428,35 @@ function TaskItem({
   );
 }
 
-export function TaskPanel({ adoptionCaseId, tasks, statuses, onChanged }: TaskPanelProps) {
+export function TaskPanel({
+  title = "Follow-ups",
+  subtitle,
+  tasks,
+  statuses,
+  defaultLinks = EMPTY_DEFAULT_LINKS,
+  onChanged,
+}: TaskPanelProps) {
   const defaultStatusId = useMemo(() => getDefaultFollowupStatusId(statuses), [statuses]);
   const followupStatuses = useMemo(() => statusesForTaskControl(statuses), [statuses]);
+  const defaultLinksForForm = useMemo(
+    () => ({
+      adoptionCaseId: defaultLinks.adoptionCaseId,
+      adopterProfileId: defaultLinks.adopterProfileId,
+      animalId: defaultLinks.animalId,
+    }),
+    [defaultLinks.adoptionCaseId, defaultLinks.adopterProfileId, defaultLinks.animalId],
+  );
   const [form, setForm] = useState<CreateTaskFormState>(() =>
-    emptyCreateForm(adoptionCaseId, defaultStatusId),
+    emptyCreateForm(defaultLinksForForm, defaultStatusId),
   );
 
   useEffect(() => {
     setForm((current) => ({
       ...current,
-      adoptionCaseId,
+      defaultLinks: defaultLinksForForm,
       statusId: current.statusId || defaultStatusId,
     }));
-  }, [adoptionCaseId, defaultStatusId]);
+  }, [defaultLinksForForm, defaultStatusId]);
 
   const createPayload = useMemo(() => buildCreateTaskPayload(form), [form]);
   const createMutation = useMutation<MutateTaskResponse, Error, void>({
@@ -444,7 +470,7 @@ export function TaskPanel({ adoptionCaseId, tasks, statuses, onChanged }: TaskPa
       });
     },
     onSuccess: async () => {
-      setForm(emptyCreateForm(adoptionCaseId, defaultStatusId));
+      setForm(emptyCreateForm(defaultLinksForForm, defaultStatusId));
       await onChanged?.();
     },
   });
@@ -455,9 +481,9 @@ export function TaskPanel({ adoptionCaseId, tasks, statuses, onChanged }: TaskPa
     <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
       <div className="flex min-h-14 items-center justify-between gap-3 border-b border-[var(--color-border)] px-4">
         <div>
-          <h2 className="text-base font-semibold text-[var(--color-panel)]">Follow-ups</h2>
+          <h2 className="text-base font-semibold text-[var(--color-panel)]">{title}</h2>
           <p className="text-xs text-[var(--color-text-muted)]">
-            {tasks.length} scheduled or completed
+            {subtitle ?? `${tasks.length} scheduled or completed`}
           </p>
         </div>
       </div>

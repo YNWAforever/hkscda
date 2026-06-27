@@ -91,7 +91,7 @@ describe("task panel logic", () => {
   test("builds a trimmed case-linked follow-up create payload", () => {
     expect(
       buildCreateTaskPayload({
-        adoptionCaseId: "case-1",
+        defaultLinks: { adoptionCaseId: "case-1" },
         statusId: "status-1",
         title: " First call ",
         priority: "high",
@@ -114,11 +114,47 @@ describe("task panel logic", () => {
     });
   });
 
+  test("builds an animal-linked follow-up create payload from default links", () => {
+    expect(
+      buildCreateTaskPayload({
+        defaultLinks: { animalId: " animal-1 " },
+        statusId: "status-1",
+        title: " Check medical hold ",
+        priority: "normal",
+        dueAt: "",
+        scheduledAt: "",
+        volunteer: "",
+        contactChannel: "",
+        remarks: "",
+      }),
+    ).toEqual({
+      animalId: "animal-1",
+      statusId: "status-1",
+      title: "Check medical hold",
+      taskType: "followup",
+      priority: "normal",
+    });
+  });
+
   test("returns null create payload when required fields are missing", () => {
     expect(
       buildCreateTaskPayload({
-        adoptionCaseId: "case-1",
+        defaultLinks: { adoptionCaseId: "case-1" },
         statusId: "",
+        title: " First call ",
+        priority: "normal",
+        dueAt: "",
+        scheduledAt: "",
+        volunteer: "",
+        contactChannel: "",
+        remarks: "",
+      }),
+    ).toBeNull();
+
+    expect(
+      buildCreateTaskPayload({
+        defaultLinks: {},
+        statusId: "status-1",
         title: " First call ",
         priority: "normal",
         dueAt: "",

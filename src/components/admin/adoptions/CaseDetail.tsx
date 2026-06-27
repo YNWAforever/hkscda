@@ -435,9 +435,9 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
       />
 
       <TaskPanel
-        adoptionCaseId={caseId}
         tasks={adoptionCase.followups}
         statuses={statuses}
+        defaultLinks={{ adoptionCaseId: caseId }}
         onChanged={invalidateCase}
       />
 

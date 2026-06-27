@@ -6,7 +6,7 @@ import type {
 import { filterStatusesByCategory } from "./caseWorkflowLogic";
 
 export type CreateTaskFormState = {
-  adoptionCaseId: string;
+  defaultLinks: TaskPanelDefaultLinks;
   statusId: string;
   title: string;
   priority: CoordinatorTaskPriority;
@@ -15,6 +15,12 @@ export type CreateTaskFormState = {
   volunteer: string;
   contactChannel: CoordinatorTaskContactChannel | "";
   remarks: string;
+};
+
+export type TaskPanelDefaultLinks = {
+  adoptionCaseId?: string;
+  adopterProfileId?: string;
+  animalId?: string;
 };
 
 export type UpdateTaskFormState = {
@@ -31,7 +37,9 @@ export type UpdateTaskFormState = {
 };
 
 export type CreateTaskPayload = {
-  adoptionCaseId: string;
+  adoptionCaseId?: string;
+  adopterProfileId?: string;
+  animalId?: string;
   statusId: string;
   title: string;
   taskType: "followup";
@@ -118,14 +126,15 @@ function nullableString(value: string) {
 }
 
 export function buildCreateTaskPayload(form: CreateTaskFormState): CreateTaskPayload | null {
-  const adoptionCaseId = trimmed(form.adoptionCaseId);
+  const adoptionCaseId = trimmed(form.defaultLinks.adoptionCaseId);
+  const adopterProfileId = trimmed(form.defaultLinks.adopterProfileId);
+  const animalId = trimmed(form.defaultLinks.animalId);
   const statusId = trimmed(form.statusId);
   const title = trimmed(form.title);
 
-  if (!adoptionCaseId || !statusId || !title) return null;
+  if ((!adoptionCaseId && !adopterProfileId && !animalId) || !statusId || !title) return null;
 
   const payload: CreateTaskPayload = {
-    adoptionCaseId,
     statusId,
     title,
     taskType: "followup",
@@ -136,6 +145,9 @@ export function buildCreateTaskPayload(form: CreateTaskFormState): CreateTaskPay
   const volunteer = optionalString(form.volunteer);
   const remarks = optionalString(form.remarks);
 
+  if (adoptionCaseId) payload.adoptionCaseId = adoptionCaseId;
+  if (adopterProfileId) payload.adopterProfileId = adopterProfileId;
+  if (animalId) payload.animalId = animalId;
   if (dueAt) payload.dueAt = dueAt;
   if (scheduledAt) payload.scheduledAt = scheduledAt;
   if (volunteer) payload.volunteer = volunteer;

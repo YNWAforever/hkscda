@@ -83,6 +83,16 @@ export function buildAnimalPipelineSearchParams(filters: { animalId?: string | n
   return params;
 }
 
+export function buildAnimalTaskSearchParams(filters: { animalId?: string | null }) {
+  const params = new URLSearchParams();
+  const animalId = trimmed(filters.animalId);
+  if (animalId) params.set("animalId", animalId);
+  params.set("openOnly", "true");
+  params.set("page", "1");
+  params.set("pageSize", "10");
+  return params;
+}
+
 export function filterAnimalPipelineRows(
   rows: AnimalPipelineRow[],
   filters: AnimalPipelineFilters,
