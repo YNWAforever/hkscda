@@ -32,4 +32,20 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("add column if not exists processing_owner text");
     expect(sql).toContain("webhook_event_processing_idx");
   });
+
+  test("extends adoption followups into coordinator tasks", () => {
+    const sql = readMigration("20260627110000_coordinator_task_timeline.sql");
+
+    expect(sql).toContain("adopter_profile_id uuid");
+    expect(sql).toContain("animal_id uuid");
+    expect(sql).toContain("drop constraint if exists adoption_followup_adoption_case_id_not_null");
+    expect(sql).toContain("adoption_followup_link_required");
+    expect(sql).toContain("task_type text not null default 'followup'");
+    expect(sql).toContain("priority text not null default 'normal'");
+    expect(sql).toContain("contact_channel");
+    expect(sql).toContain("adoption_followup_status_due_idx");
+    expect(sql).toContain("adoption_followup_adopter_due_idx");
+    expect(sql).toContain("adoption_followup_animal_due_idx");
+    expect(sql).toContain("adoption_followup_overdue_idx");
+  });
 });
