@@ -250,9 +250,30 @@ function mapCoordinatorTask(
     score: row.score,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
-    adoptionCase: null,
-    adopterProfile: null,
-    animal: null,
+    adoptionCase: row.adoption_case_id
+      ? {
+          id: row.adoption_case_id,
+          applicantName: "",
+          animalType: "",
+        }
+      : null,
+    adopterProfile: row.adopter_profile_id
+      ? {
+          id: row.adopter_profile_id,
+          supporterId: null,
+          displayName: null,
+          isBlacklisted: false,
+        }
+      : null,
+    animal: row.animal_id
+      ? {
+          id: row.animal_id,
+          name: "",
+          nameEn: null,
+          type: "",
+          status: "",
+        }
+      : null,
   };
 }
 
