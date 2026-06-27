@@ -45,6 +45,10 @@ const badRequestDomainErrors = new Set([
   "Inactive match status",
   "Invalid followup status",
   "Inactive followup status",
+  "Invalid coordinator task links",
+  "Completed tasks require a completed date",
+  "Completed tasks require an outcome or remarks",
+  "Cancelled tasks require an outcome or remarks",
   "Invalid adoption outcome status",
   "Inactive adoption outcome status",
   "Invalid successful adoption outcome status",
@@ -52,6 +56,7 @@ const badRequestDomainErrors = new Set([
 
 const notFoundDomainErrors = new Set([
   "Status not found",
+  "Task not found",
   "Adoption case not found",
   "Match not found for adoption case",
 ]);

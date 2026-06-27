@@ -559,6 +559,27 @@ describe("createAdoptionCoordinatorHandlers", () => {
     expect(await response.json()).toEqual({ error: "Invalid case status" });
   });
 
+  test("task completion validation errors return 400 JSON from followup create", async () => {
+    const { service } = createFakeService({
+      async createFollowup() {
+        throw new Error("Completed tasks require a completed date");
+      },
+    });
+    const handlers = createHandlers({ service });
+
+    const response = await handlers.createFollowup({
+      request: jsonRequest(
+        `https://example.test/api/admin/adoptions/cases/${caseId}/followups`,
+        followupRequestBody,
+      ),
+      params: { id: caseId },
+    });
+
+    expect(response.status).toBe(400);
+    expectNoStoreJson(response);
+    expect(await response.json()).toEqual({ error: "Completed tasks require a completed date" });
+  });
+
   test("repository not-found domain errors return 404 JSON", async () => {
     const notFoundCases = [
       {

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
 import { createAdoptionCoordinatorService, type AdoptionCoordinatorRepository } from "./service";
-import type { CoordinatorStatus } from "./types";
+import type { CoordinatorStatus, CoordinatorTask } from "./types";
 
 const adminId = "11111111-2222-4333-8444-555555555555";
 const caseId = "22222222-3333-4333-8444-555555555555";
@@ -26,6 +26,38 @@ function status(overrides: Partial<CoordinatorStatus> = {}): CoordinatorStatus {
     isSystem: true,
     isClosing: false,
     isFinal: false,
+    ...overrides,
+  };
+}
+
+function task(overrides: Partial<CoordinatorTask> = {}): CoordinatorTask {
+  return {
+    id: "followup-1",
+    title: "Home visit",
+    status: status({ id: followupStatusId, category: "followup", key: "scheduled" }),
+    taskType: "followup",
+    priority: "normal",
+    dueAt: null,
+    scheduledAt: null,
+    completedAt: null,
+    assignedTo: null,
+    volunteer: null,
+    contactChannel: null,
+    outcome: null,
+    nextStepAt: null,
+    remarks: null,
+    hasWindowNet: null,
+    environment: null,
+    score: null,
+    createdAt: "2026-06-27T08:00:00.000Z",
+    updatedAt: "2026-06-27T08:00:00.000Z",
+    adoptionCase: {
+      id: caseId,
+      applicantName: "Ada",
+      animalType: "cat",
+    },
+    adopterProfile: null,
+    animal: null,
     ...overrides,
   };
 }
@@ -467,6 +499,10 @@ describe("createAdoptionCoordinatorService", () => {
 
   test("updates coordinator task and audits complete action", async () => {
     const repo = createRepo({
+      async getTask(id) {
+        repo.calls.push({ name: "getTask", payload: id });
+        return task();
+      },
       async getStatus(id) {
         repo.calls.push({ name: "getStatus", payload: id });
         return status({
@@ -498,14 +534,73 @@ describe("createAdoptionCoordinatorService", () => {
     });
 
     expect(repo.calls.map((call) => call.name)).toEqual([
+      "getTask",
       "getStatus",
       "updateTask",
       "insertAuditLog",
     ]);
-    expect(repo.calls[2].payload).toMatchObject({
+    expect(repo.calls[3].payload).toMatchObject({
       action: "coordinator_task.complete",
       entity: "adoption_followup",
       entity_id: "followup-1",
     });
+  });
+
+  test("rejects task updates that remove the last linked entity before repository mutation", async () => {
+    const repo = createRepo({
+      async getTask(id) {
+        repo.calls.push({ name: "getTask", payload: id });
+        return task({
+          adoptionCase: {
+            id: caseId,
+            applicantName: "Ada",
+            animalType: "cat",
+          },
+          adopterProfile: null,
+          animal: null,
+        });
+      },
+    });
+    const service = createAdoptionCoordinatorService({ repo });
+
+    await expect(
+      service.updateTask({
+        actorUserId: adminId,
+        taskId: "followup-1",
+        input: { adoptionCaseId: null },
+      }),
+    ).rejects.toThrow("Invalid coordinator task links");
+
+    expect(repo.calls.map((call) => call.name)).toEqual(["getTask"]);
+  });
+
+  test("rejects task updates that invalidate existing completed task details before mutation", async () => {
+    const repo = createRepo({
+      async getTask(id) {
+        repo.calls.push({ name: "getTask", payload: id });
+        return task({
+          status: status({
+            id: followupStatusId,
+            category: "followup",
+            key: "completed",
+            isFinal: true,
+            isClosing: true,
+          }),
+          completedAt: "2026-06-27T09:30:00.000Z",
+          outcome: "Visit completed",
+        });
+      },
+    });
+    const service = createAdoptionCoordinatorService({ repo });
+
+    await expect(
+      service.updateTask({
+        actorUserId: adminId,
+        taskId: "followup-1",
+        input: { completedAt: null },
+      }),
+    ).rejects.toThrow("Completed tasks require a completed date");
+
+    expect(repo.calls.map((call) => call.name)).toEqual(["getTask"]);
   });
 });
