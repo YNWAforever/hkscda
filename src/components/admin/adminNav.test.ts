@@ -23,4 +23,10 @@ describe("admin nav active state", () => {
       getActiveAdminNavItemIds(ADMIN_NAV_ITEMS, "/admin/coordinator/statuses", "applications"),
     ).toEqual(["coordinator-statuses"]);
   });
+
+  test("uses only the coordinator tasks item on the task center route", () => {
+    expect(
+      getActiveAdminNavItemIds(ADMIN_NAV_ITEMS, "/admin/coordinator/tasks", "applications"),
+    ).toEqual(["coordinator-tasks"]);
+  });
 });
