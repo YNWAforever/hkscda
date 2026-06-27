@@ -1,7 +1,9 @@
 import { describe, expect, test } from "bun:test";
 
 import {
+  adopterSearchSchema,
   caseSearchSchema,
+  coordinatorExportKindSchema,
   coordinatorTaskInputSchema,
   coordinatorTaskUpdateSchema,
   followupInputSchema,
@@ -27,6 +29,46 @@ describe("adoption coordinator schemas", () => {
     expect(caseSearchSchema.parse({ openOnly: "0" }).openOnly).toBe(false);
     expect(caseSearchSchema.parse({ openOnly: "true" }).openOnly).toBe(true);
     expect(caseSearchSchema.parse({ openOnly: "1" }).openOnly).toBe(true);
+  });
+
+  test("normalizes adopter search defaults and boolean filters", () => {
+    expect(
+      adopterSearchSchema.parse({
+        q: " Ada ",
+        blacklisted: "yes",
+        hasOpenCases: "true",
+        hasOpenTasks: "1",
+        page: "2",
+        pageSize: "50",
+      }),
+    ).toEqual({
+      q: "Ada",
+      blacklisted: "yes",
+      hasOpenCases: true,
+      hasOpenTasks: true,
+      page: 2,
+      pageSize: 50,
+    });
+
+    expect(adopterSearchSchema.parse({})).toEqual({
+      q: undefined,
+      blacklisted: "all",
+      hasOpenCases: false,
+      hasOpenTasks: false,
+      page: 1,
+      pageSize: 25,
+    });
+  });
+
+  test("accepts only supported coordinator export kinds", () => {
+    expect(coordinatorExportKindSchema.parse("cases")).toBe("cases");
+    expect(coordinatorExportKindSchema.parse("adopters")).toBe("adopters");
+    expect(coordinatorExportKindSchema.parse("successful-adoptions")).toBe(
+      "successful-adoptions",
+    );
+    expect(coordinatorExportKindSchema.parse("animals")).toBe("animals");
+    expect(coordinatorExportKindSchema.parse("tasks")).toBe("tasks");
+    expect(() => coordinatorExportKindSchema.parse("payments")).toThrow();
   });
 
   test("rejects invalid status keys", () => {
