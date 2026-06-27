@@ -15,6 +15,7 @@ import { Switch } from "../../ui/switch";
 import { fetchCoordinatorJson } from "./api";
 import { TaskPanel, TaskPanelAsyncError } from "./TaskPanel";
 import {
+  TASK_CENTER_DUE_FILTER_OPTIONS,
   buildTaskCenterSummary,
   buildTaskListSearchParams,
   TASK_CENTER_PAGE_SIZE,
@@ -30,15 +31,6 @@ type TaskListResponse = {
 type StatusesResponse = {
   statuses: CoordinatorStatus[];
 };
-
-const DUE_OPTIONS: Array<{ value: TaskCenterDueFilter; label: string }> = [
-  { value: "all", label: "All due dates" },
-  { value: "overdue", label: "Overdue" },
-  { value: "today", label: "Due today" },
-  { value: "upcoming", label: "Upcoming" },
-  { value: "none", label: "No due date" },
-  { value: "done", label: "Completed" },
-];
 
 const PRIORITY_OPTIONS: Array<{ value: TaskCenterPriorityFilter; label: string }> = [
   { value: "all", label: "All priorities" },
@@ -157,7 +149,7 @@ export function TaskCenter() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {DUE_OPTIONS.map((option) => (
+              {TASK_CENTER_DUE_FILTER_OPTIONS.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
                   {option.label}
                 </SelectItem>
