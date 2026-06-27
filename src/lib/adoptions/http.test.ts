@@ -40,6 +40,7 @@ const matchId = "55555555-6666-4333-8444-555555555555";
 const followupId = "66666666-7777-4333-8444-555555555555";
 const adoptionId = "77777777-8888-4333-8444-555555555555";
 const taskId = "aaaaaaaa-bbbb-4333-8444-555555555555";
+const adopterProfileId = "bbbbbbbb-cccc-4333-8444-555555555555";
 
 const matchRequestBody = {
   animalId,
@@ -113,6 +114,14 @@ function createFakeService(overrides: Partial<AdoptionCoordinatorService> = {}) 
     async listTasks(rawSearch) {
       calls.push({ name: "listTasks", payload: rawSearch });
       return { tasks: [], total: 0 };
+    },
+    async listAdopters(rawSearch) {
+      calls.push({ name: "listAdopters", payload: rawSearch });
+      return { adopters: [], total: 0 };
+    },
+    async getAdopterDetail(id) {
+      calls.push({ name: "getAdopterDetail", payload: id });
+      return { id: adopterProfileId, requestedId: id };
     },
     async getTask(id) {
       calls.push({ name: "getTask", payload: id });
@@ -595,6 +604,63 @@ describe("createAdoptionCoordinatorHandlers", () => {
     expect(response.status).toBe(400);
     expectNoStoreJson(response);
     expect(await response.json()).toEqual({ error: "Completed tasks require a completed date" });
+  });
+
+  test("adopter list requires coordinator auth and returns no-store JSON", async () => {
+    const { calls, service } = createFakeService({
+      async listAdopters(rawSearch) {
+        calls.push({ name: "listAdopters", payload: rawSearch });
+        return { adopters: [], total: 0 };
+      },
+    });
+    const handlers = createHandlers({ service });
+
+    const response = await handlers.listAdopters({
+      request: new Request("https://example.test/api/admin/adoptions/adopters?q=Ada"),
+    });
+
+    expectNoStoreJson(response);
+    expect(await response.json()).toEqual({ adopters: [], total: 0 });
+    expect(calls).toEqual([{ name: "listAdopters", payload: { q: "Ada" } }]);
+  });
+
+  test("adopter detail validates id before auth or service work", async () => {
+    const { calls, service } = createFakeService();
+    const handlers = createHandlers({
+      service,
+      requireCoordinator: async () => {
+        throw new Error("auth should not run");
+      },
+      requireStatusAdmin: async () => {
+        throw new Error("auth should not run");
+      },
+    });
+
+    const response = await handlers.getAdopter({
+      request: new Request("https://example.test/api/admin/adoptions/adopters/not-uuid"),
+      params: { id: "not-uuid" },
+    });
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({ error: "Invalid id" });
+    expect(calls).toEqual([]);
+  });
+
+  test("adopter detail returns 404 when service returns null", async () => {
+    const { service } = createFakeService({
+      async getAdopterDetail() {
+        return null;
+      },
+    });
+    const handlers = createHandlers({ service });
+
+    const response = await handlers.getAdopter({
+      request: new Request(`https://example.test/api/admin/adoptions/adopters/${adopterProfileId}`),
+      params: { id: adopterProfileId },
+    });
+
+    expect(response.status).toBe(404);
+    expect(await response.json()).toEqual({ error: "Adopter profile not found" });
   });
 
   test("task list requires coordinator auth and returns no-store JSON", async () => {

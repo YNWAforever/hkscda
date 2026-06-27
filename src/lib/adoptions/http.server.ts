@@ -58,6 +58,7 @@ const notFoundDomainErrors = new Set([
   "Status not found",
   "Task not found",
   "Adoption case not found",
+  "Adopter profile not found",
   "Match not found for adoption case",
 ]);
 
@@ -208,6 +209,26 @@ export function createAdoptionCoordinatorHandlers({
         await requireCoordinator(request);
         const search = Object.fromEntries(new URL(request.url).searchParams);
         return jsonResponse(await service.listTasks(search));
+      });
+    },
+
+    listAdopters({ request }: HandlerContext) {
+      return withErrors(async () => {
+        await requireCoordinator(request);
+        const search = Object.fromEntries(new URL(request.url).searchParams);
+        return jsonResponse(await service.listAdopters(search));
+      });
+    },
+
+    getAdopter({ request, params }: HandlerContext) {
+      return withErrors(async () => {
+        const adopterProfileId = requiredUuid(params, "id");
+        await requireCoordinator(request);
+        const adopter = await service.getAdopterDetail(adopterProfileId);
+        if (!adopter) {
+          return jsonResponse({ error: "Adopter profile not found" }, { status: 404 });
+        }
+        return jsonResponse({ adopter });
       });
     },
 
