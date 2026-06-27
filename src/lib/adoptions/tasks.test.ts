@@ -75,6 +75,13 @@ describe("coordinator task helpers", () => {
     ).toBe("done");
   });
 
+  test("classifies today and upcoming against Hong Kong midnight", () => {
+    const now = new Date("2026-06-27T15:00:00.000Z");
+
+    expect(getTaskDueBucket(task({ dueAt: "2026-06-27T15:30:00.000Z" }), now)).toBe("today");
+    expect(getTaskDueBucket(task({ dueAt: "2026-06-27T17:00:00.000Z" }), now)).toBe("upcoming");
+  });
+
   test("sorts open urgent overdue tasks before completed and undated tasks", () => {
     const rows = [
       task({ id: "done", completedAt: "2026-06-27T09:00:00.000Z" }),

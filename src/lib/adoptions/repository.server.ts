@@ -8,6 +8,7 @@ import type {
   StatusUpdate,
   TaskListSearch,
 } from "./service";
+import { hongKongDayBounds } from "./tasks";
 import type {
   AdoptionCaseDetail,
   AdoptionCaseSummary,
@@ -16,6 +17,8 @@ import type {
   CoordinatorTask,
   SuccessfulAdoption,
 } from "./types";
+
+export { hongKongDayBounds } from "./tasks";
 
 type StatusRow = {
   id: string;
@@ -490,18 +493,6 @@ const taskSelectColumns = [
   "created_at",
   "updated_at",
 ].join(",");
-
-const hongKongOffsetMs = 8 * 60 * 60 * 1000;
-
-export function hongKongDayBounds(now: Date) {
-  const hongKongDate = new Date(now.getTime() + hongKongOffsetMs);
-  const start =
-    Date.UTC(hongKongDate.getUTCFullYear(), hongKongDate.getUTCMonth(), hongKongDate.getUTCDate()) -
-    hongKongOffsetMs;
-  const end = start + 24 * 60 * 60 * 1000;
-
-  return { start: new Date(start).toISOString(), end: new Date(end).toISOString() };
-}
 
 async function loadNewAdoptionCaseStatusId(client: SupabaseClient) {
   const { data, error } = await client

@@ -9,8 +9,16 @@ const PRIORITY_WEIGHT: Record<CoordinatorTaskPriority, number> = {
   low: 3,
 };
 
-function startOfDay(value: Date) {
-  return new Date(value.getFullYear(), value.getMonth(), value.getDate()).getTime();
+const hongKongOffsetMs = 8 * 60 * 60 * 1000;
+
+export function hongKongDayBounds(now: Date) {
+  const hongKongDate = new Date(now.getTime() + hongKongOffsetMs);
+  const start =
+    Date.UTC(hongKongDate.getUTCFullYear(), hongKongDate.getUTCMonth(), hongKongDate.getUTCDate()) -
+    hongKongOffsetMs;
+  const end = start + 24 * 60 * 60 * 1000;
+
+  return { start: new Date(start).toISOString(), end: new Date(end).toISOString() };
 }
 
 function parseTaskDate(value: string | null | undefined) {
@@ -38,10 +46,8 @@ export function getTaskDueBucket(
   const due = parseTaskDate(task.dueAt);
   if (!due) return "none";
 
-  const dueDay = startOfDay(due);
-  const today = startOfDay(now);
   if (due.getTime() < now.getTime()) return "overdue";
-  if (dueDay === today) return "today";
+  if (due.getTime() < new Date(hongKongDayBounds(now).end).getTime()) return "today";
   return "upcoming";
 }
 
