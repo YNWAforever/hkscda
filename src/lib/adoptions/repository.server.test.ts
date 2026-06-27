@@ -1,7 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { createSupabaseAdoptionCoordinatorRepository } from "./repository.server";
+import {
+  createSupabaseAdoptionCoordinatorRepository,
+  hongKongDayBounds,
+} from "./repository.server";
 import type { CaseFromPublicApplicationInput } from "./service";
 
 const statusId = "33333333-4444-4333-8444-555555555555";
@@ -344,7 +347,40 @@ function caseInsertPayload(calls: QueryCall[]) {
   return calls.find((call) => call.table === "adoption_case" && call.method === "insert")?.payload;
 }
 
+async function withFixedDate<T>(iso: string, run: () => Promise<T>) {
+  const RealDate = globalThis.Date;
+  const fixedTime = new RealDate(iso).getTime();
+
+  class FixedDate extends RealDate {
+    constructor(value?: string | number | Date) {
+      super(value ?? fixedTime);
+    }
+
+    static now() {
+      return fixedTime;
+    }
+  }
+
+  globalThis.Date = FixedDate as DateConstructor;
+  try {
+    return await run();
+  } finally {
+    globalThis.Date = RealDate;
+  }
+}
+
 describe("createSupabaseAdoptionCoordinatorRepository", () => {
+  test("computes Hong Kong day bounds across local midnight", () => {
+    expect(hongKongDayBounds(new Date("2026-06-27T15:59:59.000Z"))).toEqual({
+      start: "2026-06-26T16:00:00.000Z",
+      end: "2026-06-27T16:00:00.000Z",
+    });
+    expect(hongKongDayBounds(new Date("2026-06-27T16:00:00.000Z"))).toEqual({
+      start: "2026-06-27T16:00:00.000Z",
+      end: "2026-06-28T16:00:00.000Z",
+    });
+  });
+
   test("creates a public application case with new supporter and adopter profile records", async () => {
     const { client, calls } = createFakeClient();
     const repo = createSupabaseAdoptionCoordinatorRepository(client);
@@ -699,25 +735,75 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     });
   });
 
-  test("applies today, upcoming, and none due filters", async () => {
+  test("sanitizes grammar-sensitive q text before building task search or filters", async () => {
     const { client, calls } = createFakeClient({
       followupRows: [followupRow()],
     });
     const repo = createSupabaseAdoptionCoordinatorRepository(client);
 
-    await repo.listTasks({ page: 1, pageSize: 10, due: "today", openOnly: false });
+    await repo.listTasks({
+      page: 1,
+      pageSize: 10,
+      due: "all",
+      openOnly: false,
+      q: "Ada, (call)%_",
+    });
+
+    const payload = callsFor(calls, "adoption_followup", "or")[0]?.payload as string;
+
+    expect(payload).toBe(
+      "title.ilike.%Ada call\\%\\_%,remarks.ilike.%Ada call\\%\\_%,outcome.ilike.%Ada call\\%\\_%",
+    );
+    expect(payload).not.toContain("Ada,");
+    expect(payload).not.toContain("(");
+    expect(payload).not.toContain(")");
+  });
+
+  test("applies today due filter from now to next Hong Kong midnight", async () => {
+    const { client, calls } = createFakeClient({
+      followupRows: [followupRow()],
+    });
+    const repo = createSupabaseAdoptionCoordinatorRepository(client);
+
+    await withFixedDate("2026-06-27T03:30:00.000Z", () =>
+      repo.listTasks({ page: 1, pageSize: 10, due: "today", openOnly: false }),
+    );
+
+    expect(calls).toContainEqual({
+      table: "adoption_followup",
+      method: "gte",
+      payload: { column: "due_at", value: "2026-06-27T03:30:00.000Z" },
+    });
+    expect(calls).toContainEqual({
+      table: "adoption_followup",
+      method: "lt",
+      payload: { column: "due_at", value: "2026-06-27T16:00:00.000Z" },
+    });
+    expect(calls).toContainEqual({
+      table: "adoption_followup",
+      method: "is",
+      payload: { column: "completed_at", value: null },
+    });
+  });
+
+  test("applies upcoming and none due filters", async () => {
+    const { client, calls } = createFakeClient({
+      followupRows: [followupRow()],
+    });
+    const repo = createSupabaseAdoptionCoordinatorRepository(client);
+
     await repo.listTasks({ page: 1, pageSize: 10, due: "upcoming", openOnly: false });
     await repo.listTasks({ page: 1, pageSize: 10, due: "none", openOnly: false });
 
-    expect(callsFor(calls, "adoption_followup", "gte")).toHaveLength(2);
-    expect(callsFor(calls, "adoption_followup", "lt")).toHaveLength(1);
+    expect(callsFor(calls, "adoption_followup", "gte")).toHaveLength(1);
+    expect(callsFor(calls, "adoption_followup", "lt")).toHaveLength(0);
     expect(callPayloads(calls, "adoption_followup", "is")).toEqual(
       expect.arrayContaining([
         { column: "completed_at", value: null },
         { column: "due_at", value: null },
       ]),
     );
-    expect(callsFor(calls, "adoption_followup", "is")).toHaveLength(3);
+    expect(callsFor(calls, "adoption_followup", "is")).toHaveLength(2);
   });
 
   test("maps case detail followups with linked task summaries", async () => {
