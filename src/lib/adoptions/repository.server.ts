@@ -11,7 +11,6 @@ import type {
 import type {
   AdoptionCaseDetail,
   AdoptionCaseSummary,
-  AdoptionFollowup,
   AnimalMatchSummary,
   CoordinatorStatus,
   CoordinatorTask,
@@ -93,6 +92,34 @@ type FollowupRow = {
   updated_at: string;
 };
 
+type TaskCaseRow = {
+  id: string;
+  applicant_name: string;
+  animal_type: string;
+};
+
+type TaskAdopterRow = {
+  id: string;
+  supporter_id: string | null;
+  is_blacklisted: boolean | null;
+  supporter:
+    | {
+        name: string | null;
+      }
+    | Array<{
+        name: string | null;
+      }>
+    | null;
+};
+
+type TaskAnimalRow = {
+  id: string;
+  name: string;
+  name_en: string | null;
+  type: string;
+  status: string;
+};
+
 type SuccessfulAdoptionRow = {
   id: string;
   adoption_case_id: string;
@@ -157,6 +184,67 @@ async function loadAnimalsByIds(client: SupabaseClient, ids: string[]) {
   return new Map(((data ?? []) as AnimalRow[]).map((row) => [row.id, row]));
 }
 
+async function loadTaskCasesByIds(client: SupabaseClient, ids: Array<string | null | undefined>) {
+  const uniqueIds = unique(ids);
+  if (uniqueIds.length === 0) return new Map<string, TaskCaseRow>();
+
+  const { data, error } = await client
+    .from("adoption_case")
+    .select("id,applicant_name,animal_type")
+    .in("id", uniqueIds);
+  if (error) throw error;
+
+  return new Map(((data ?? []) as TaskCaseRow[]).map((row) => [row.id, row]));
+}
+
+async function loadTaskAdoptersByIds(
+  client: SupabaseClient,
+  ids: Array<string | null | undefined>,
+) {
+  const uniqueIds = unique(ids);
+  if (uniqueIds.length === 0) return new Map<string, TaskAdopterRow>();
+
+  const { data, error } = await client
+    .from("adopter_profile")
+    .select("id,supporter_id,is_blacklisted,supporter:supporter_id(name)")
+    .in("id", uniqueIds);
+  if (error) throw error;
+
+  return new Map(((data ?? []) as TaskAdopterRow[]).map((row) => [row.id, row]));
+}
+
+async function loadTaskAnimalsByIds(client: SupabaseClient, ids: Array<string | null | undefined>) {
+  const uniqueIds = unique(ids);
+  if (uniqueIds.length === 0) return new Map<string, TaskAnimalRow>();
+
+  const { data, error } = await client
+    .from("animals")
+    .select("id,name,name_en,type,status")
+    .in("id", uniqueIds);
+  if (error) throw error;
+
+  return new Map(((data ?? []) as TaskAnimalRow[]).map((row) => [row.id, row]));
+}
+
+async function loadTaskLinks(client: SupabaseClient, rows: FollowupRow[]) {
+  const [cases, adopters, animals] = await Promise.all([
+    loadTaskCasesByIds(
+      client,
+      rows.map((row) => row.adoption_case_id),
+    ),
+    loadTaskAdoptersByIds(
+      client,
+      rows.map((row) => row.adopter_profile_id),
+    ),
+    loadTaskAnimalsByIds(
+      client,
+      rows.map((row) => row.animal_id),
+    ),
+  ]);
+
+  return { cases, adopters, animals };
+}
+
 async function searchCaseIds(client: SupabaseClient, q: string) {
   const like = `%${escapeLike(q)}%`;
   const columns = ["applicant_name", "applicant_phone", "applicant_email"] as const;
@@ -214,22 +302,25 @@ function mapMatchSummary(
   };
 }
 
-function mapFollowup(row: FollowupRow, statuses: Map<string, CoordinatorStatus>): AdoptionFollowup {
-  return {
-    id: row.id,
-    title: row.title,
-    status: requireStatus(statuses, row.status_id),
-    scheduledAt: row.scheduled_at,
-    completedAt: row.completed_at,
-    volunteer: row.volunteer,
-    remarks: row.remarks,
-  };
+type TaskLinks = Awaited<ReturnType<typeof loadTaskLinks>>;
+
+function supporterName(row: TaskAdopterRow | undefined) {
+  if (!row) return null;
+  const supporter = Array.isArray(row.supporter) ? row.supporter[0] : row.supporter;
+  return supporter?.name ?? null;
 }
 
 function mapCoordinatorTask(
   row: FollowupRow,
   statuses: Map<string, CoordinatorStatus>,
+  links?: TaskLinks,
 ): CoordinatorTask {
+  const adoptionCase = row.adoption_case_id ? links?.cases.get(row.adoption_case_id) : undefined;
+  const adopterProfile = row.adopter_profile_id
+    ? links?.adopters.get(row.adopter_profile_id)
+    : undefined;
+  const animal = row.animal_id ? links?.animals.get(row.animal_id) : undefined;
+
   return {
     id: row.id,
     title: row.title,
@@ -253,25 +344,25 @@ function mapCoordinatorTask(
     adoptionCase: row.adoption_case_id
       ? {
           id: row.adoption_case_id,
-          applicantName: "",
-          animalType: "",
+          applicantName: adoptionCase?.applicant_name ?? "",
+          animalType: adoptionCase?.animal_type ?? "",
         }
       : null,
     adopterProfile: row.adopter_profile_id
       ? {
           id: row.adopter_profile_id,
-          supporterId: null,
-          displayName: null,
-          isBlacklisted: false,
+          supporterId: adopterProfile?.supporter_id ?? null,
+          displayName: supporterName(adopterProfile),
+          isBlacklisted: adopterProfile?.is_blacklisted ?? false,
         }
       : null,
     animal: row.animal_id
       ? {
           id: row.animal_id,
-          name: "",
-          nameEn: null,
-          type: "",
-          status: "",
+          name: animal?.name ?? "",
+          nameEn: animal?.name_en ?? null,
+          type: animal?.type ?? "",
+          status: animal?.status ?? "",
         }
       : null,
   };
@@ -614,7 +705,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
           .order("created_at", { ascending: false }),
         client
           .from("adoption_followup")
-          .select("id,adoption_case_id,status_id,title,scheduled_at,completed_at,volunteer,remarks")
+          .select(taskSelectColumns)
           .eq("adoption_case_id", id)
           .order("scheduled_at", { ascending: false }),
         client.from("successful_adoption").select("*").eq("adoption_case_id", id).maybeSingle(),
@@ -627,7 +718,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
       const followupRows = (followupsResult.data ?? []) as FollowupRow[];
       const successRow = (successResult.data ?? null) as SuccessfulAdoptionRow | null;
 
-      const [statuses, animals] = await Promise.all([
+      const [statuses, animals, taskLinks] = await Promise.all([
         loadStatusesByIds(client, [
           row.status_id,
           ...matchRows.map((match) => match.status_id),
@@ -637,6 +728,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
           row.requested_animal_id ?? "",
           ...matchRows.map((match) => match.animal_id),
         ]),
+        loadTaskLinks(client, followupRows),
       ]);
 
       return {
@@ -651,7 +743,9 @@ export function createSupabaseAdoptionCoordinatorRepository(
         assessment: row.assessment,
         preferences: row.preferences,
         matches: matchRows.map((match) => mapMatchSummary(match, statuses, animals)),
-        followups: followupRows.map((followup) => mapFollowup(followup, statuses)),
+        followups: followupRows.map((followup) =>
+          mapCoordinatorTask(followup, statuses, taskLinks),
+        ),
         successfulAdoption: mapSuccessfulAdoption(successRow),
       } satisfies AdoptionCaseDetail;
     },
@@ -702,32 +796,44 @@ export function createSupabaseAdoptionCoordinatorRepository(
       if (input.adoptionCaseId) query = query.eq("adoption_case_id", input.adoptionCaseId);
       if (input.adopterProfileId) query = query.eq("adopter_profile_id", input.adopterProfileId);
       if (input.animalId) query = query.eq("animal_id", input.animalId);
-      if (input.assignedTo) query = query.eq("assigned_to", input.assignedTo);
-      if (input.openOnly) query = query.is("completed_at", null);
-      if (input.q) query = query.ilike("title", `%${escapeLike(input.q)}%`);
+      if (input.assignedTo) query = query.ilike("assigned_to", `%${escapeLike(input.assignedTo)}%`);
+      if (input.q) {
+        const like = `%${escapeLike(input.q)}%`;
+        query = query.or(`title.ilike.${like},remarks.ilike.${like},outcome.ilike.${like}`);
+      }
 
+      let openOnly = input.openOnly;
       if (input.due === "none") {
         query = query.is("due_at", null);
       } else if (input.due === "overdue") {
-        query = query.lt("due_at", new Date().toISOString()).is("completed_at", null);
+        query = query.lt("due_at", new Date().toISOString());
+        openOnly = true;
       } else if (input.due === "upcoming") {
-        query = query.gte("due_at", new Date().toISOString());
+        const { end } = dayBounds(new Date());
+        query = query.gte("due_at", end);
+        openOnly = true;
       } else if (input.due === "today") {
         const { start, end } = dayBounds(new Date());
         query = query.gte("due_at", start).lt("due_at", end);
+        openOnly = true;
       }
+
+      if (openOnly) query = query.is("completed_at", null);
 
       const { data, error, count } = await query;
       if (error) throw error;
 
       const rows = (data ?? []) as FollowupRow[];
-      const statuses = await loadStatusesByIds(
-        client,
-        rows.map((row) => row.status_id),
-      );
+      const [statuses, taskLinks] = await Promise.all([
+        loadStatusesByIds(
+          client,
+          rows.map((row) => row.status_id),
+        ),
+        loadTaskLinks(client, rows),
+      ]);
 
       return {
-        tasks: rows.map((row) => mapCoordinatorTask(row, statuses)),
+        tasks: rows.map((row) => mapCoordinatorTask(row, statuses, taskLinks)),
         total: count ?? 0,
       };
     },
@@ -742,8 +848,11 @@ export function createSupabaseAdoptionCoordinatorRepository(
       if (!data) return null;
 
       const row = data as FollowupRow;
-      const statuses = await loadStatusesByIds(client, [row.status_id]);
-      return mapCoordinatorTask(row, statuses);
+      const [statuses, taskLinks] = await Promise.all([
+        loadStatusesByIds(client, [row.status_id]),
+        loadTaskLinks(client, [row]),
+      ]);
+      return mapCoordinatorTask(row, statuses, taskLinks);
     },
 
     async createTask(input) {
