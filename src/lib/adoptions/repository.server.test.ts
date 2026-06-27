@@ -336,6 +336,10 @@ function callsFor(calls: QueryCall[], table: string, method: string) {
   return calls.filter((call) => call.table === table && call.method === method);
 }
 
+function callPayloads(calls: QueryCall[], table: string, method: string) {
+  return callsFor(calls, table, method).map((call) => call.payload);
+}
+
 function caseInsertPayload(calls: QueryCall[]) {
   return calls.find((call) => call.table === "adoption_case" && call.method === "insert")?.payload;
 }
@@ -588,6 +592,26 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     });
   });
 
+  test("maps missing linked summaries to stable id fallbacks", async () => {
+    const { client } = createFakeClient({
+      followupRow: followupRow(),
+    });
+    const repo = createSupabaseAdoptionCoordinatorRepository(client);
+
+    const task = await repo.getTask(followupId);
+
+    expect(task).toMatchObject({
+      adoptionCase: { id: adoptionCaseId, applicantName: adoptionCaseId, animalType: "" },
+      adopterProfile: {
+        id: existingProfileId,
+        supporterId: null,
+        displayName: existingProfileId,
+        isBlacklisted: false,
+      },
+      animal: { id: animalId, name: animalId, nameEn: null, type: "", status: "" },
+    });
+  });
+
   test("lists open overdue coordinator tasks with assignee search and linked summaries", async () => {
     const { client, calls } = createFakeClient({
       followupRows: [followupRow()],
@@ -630,6 +654,70 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     expect(calls.some((call) => call.table === "adoption_followup" && call.method === "lt")).toBe(
       true,
     );
+  });
+
+  test("applies coordinator task list equality filters and q search", async () => {
+    const { client, calls } = createFakeClient({
+      followupRows: [followupRow()],
+    });
+    const repo = createSupabaseAdoptionCoordinatorRepository(client);
+
+    await repo.listTasks({
+      page: 2,
+      pageSize: 5,
+      due: "all",
+      openOnly: false,
+      statusId,
+      priority: "urgent",
+      taskType: "handover",
+      adoptionCaseId,
+      adopterProfileId: existingProfileId,
+      animalId,
+      q: "call_%",
+    });
+
+    expect(callPayloads(calls, "adoption_followup", "eq")).toEqual(
+      expect.arrayContaining([
+        { column: "status_id", value: statusId },
+        { column: "priority", value: "urgent" },
+        { column: "task_type", value: "handover" },
+        { column: "adoption_case_id", value: adoptionCaseId },
+        { column: "adopter_profile_id", value: existingProfileId },
+        { column: "animal_id", value: animalId },
+      ]),
+    );
+    expect(calls).toContainEqual({
+      table: "adoption_followup",
+      method: "or",
+      payload: "title.ilike.%call\\_\\%%,remarks.ilike.%call\\_\\%%,outcome.ilike.%call\\_\\%%",
+      options: undefined,
+    });
+    expect(calls).toContainEqual({
+      table: "adoption_followup",
+      method: "range",
+      payload: { from: 5, to: 9 },
+    });
+  });
+
+  test("applies today, upcoming, and none due filters", async () => {
+    const { client, calls } = createFakeClient({
+      followupRows: [followupRow()],
+    });
+    const repo = createSupabaseAdoptionCoordinatorRepository(client);
+
+    await repo.listTasks({ page: 1, pageSize: 10, due: "today", openOnly: false });
+    await repo.listTasks({ page: 1, pageSize: 10, due: "upcoming", openOnly: false });
+    await repo.listTasks({ page: 1, pageSize: 10, due: "none", openOnly: false });
+
+    expect(callsFor(calls, "adoption_followup", "gte")).toHaveLength(2);
+    expect(callsFor(calls, "adoption_followup", "lt")).toHaveLength(1);
+    expect(callPayloads(calls, "adoption_followup", "is")).toEqual(
+      expect.arrayContaining([
+        { column: "completed_at", value: null },
+        { column: "due_at", value: null },
+      ]),
+    );
+    expect(callsFor(calls, "adoption_followup", "is")).toHaveLength(3);
   });
 
   test("maps case detail followups with linked task summaries", async () => {

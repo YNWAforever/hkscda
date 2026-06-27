@@ -109,10 +109,7 @@ export type AnimalMatchSummary = {
   notes: string | null;
 };
 
-export type AdoptionFollowup = Pick<
-  CoordinatorTask,
-  "id" | "title" | "status" | "scheduledAt" | "completedAt" | "volunteer" | "remarks"
->;
+export type AdoptionFollowup = CoordinatorTask;
 
 export type SuccessfulAdoption = {
   id: string;
