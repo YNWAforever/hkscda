@@ -651,31 +651,26 @@ function countOpenTasks(
   return openTaskIds.size;
 }
 
-function matchesText(value: unknown, q: string) {
-  return typeof value === "string" && value.toLowerCase().includes(q.toLowerCase());
-}
-
-function matchesAdopterSearch(row: Record<string, unknown>, q?: string) {
-  if (!q) return true;
-  const supporter = adopterSupporter(row);
-  return [
-    row.name_english,
-    row.name_chinese,
-    row.address,
-    supporter?.name,
-    supporter?.email,
-    supporter?.phone,
-  ].some((value) => matchesText(value, q));
-}
-
 function mergeFollowupRows(...groups: FollowupRow[][]) {
-  const rows = new Map<string, FollowupRow>();
+  const rows = new Map<string, { row: FollowupRow; index: number }>();
+  let index = 0;
   for (const group of groups) {
     for (const row of group) {
-      if (!rows.has(row.id)) rows.set(row.id, row);
+      if (!rows.has(row.id)) rows.set(row.id, { row, index });
+      index += 1;
     }
   }
-  return [...rows.values()];
+
+  return [...rows.values()]
+    .sort((left, right) => {
+      if (left.row.due_at && right.row.due_at) {
+        return left.row.due_at.localeCompare(right.row.due_at) || left.index - right.index;
+      }
+      if (left.row.due_at) return -1;
+      if (right.row.due_at) return 1;
+      return left.index - right.index;
+    })
+    .map(({ row }) => row);
 }
 
 async function loadFollowupsByColumn(
@@ -714,6 +709,104 @@ async function loadFollowupsForAdopters(
   ]);
 
   return mergeFollowupRows(directRows, caseRowsLinked);
+}
+
+function intersectCandidateIds(current: Set<string> | null, next: Set<string>) {
+  if (!current) return next;
+  return new Set([...current].filter((id) => next.has(id)));
+}
+
+async function searchAdopterIds(client: SupabaseClient, q: string) {
+  const like = `%${sanitizeOrLikeValue(q)}%`;
+  const [profileResult, supporterResult] = await Promise.all([
+    client
+      .from("adopter_profile")
+      .select("id")
+      .or(`name_english.ilike.${like},name_chinese.ilike.${like},address.ilike.${like}`),
+    client
+      .from("supporter")
+      .select("id")
+      .or(`name.ilike.${like},email.ilike.${like},phone.ilike.${like}`),
+  ]);
+  if (profileResult.error) throw profileResult.error;
+  if (supporterResult.error) throw supporterResult.error;
+
+  const profileIds = (profileResult.data ?? []).map((row) => (row as { id: string }).id);
+  const supporterIds = unique(
+    (supporterResult.data ?? []).map((row) => (row as { id: string }).id),
+  );
+  if (supporterIds.length === 0) return unique(profileIds);
+
+  const { data, error } = await client
+    .from("adopter_profile")
+    .select("id")
+    .in("supporter_id", supporterIds);
+  if (error) throw error;
+
+  return unique([...profileIds, ...(data ?? []).map((row) => (row as { id: string }).id)]);
+}
+
+async function loadOpenCaseAdopterIds(client: SupabaseClient) {
+  const { data, error } = await client
+    .from("adoption_case")
+    .select("adopter_profile_id")
+    .is("closed_at", null);
+  if (error) throw error;
+
+  return unique((data ?? []).map((row) => (row as AdoptionCaseRow).adopter_profile_id));
+}
+
+async function loadOpenTaskAdopterIds(client: SupabaseClient) {
+  const { data, error } = await client
+    .from("adoption_followup")
+    .select("id,adopter_profile_id,adoption_case_id")
+    .is("completed_at", null);
+  if (error) throw error;
+
+  const taskRows = (data ?? []) as unknown as FollowupRow[];
+  const caseIds = unique(taskRows.map((row) => row.adoption_case_id));
+  let caseAdopterIds: Array<string | null> = [];
+
+  if (caseIds.length > 0) {
+    const caseResult = await client
+      .from("adoption_case")
+      .select("id,adopter_profile_id")
+      .in("id", caseIds);
+    if (caseResult.error) throw caseResult.error;
+    caseAdopterIds = ((caseResult.data ?? []) as AdoptionCaseRow[]).map(
+      (row) => row.adopter_profile_id,
+    );
+  }
+
+  return unique([...taskRows.map((row) => row.adopter_profile_id), ...caseAdopterIds]);
+}
+
+async function resolveAdopterCandidateIds(
+  client: SupabaseClient,
+  input: { q?: string; hasOpenCases: boolean; hasOpenTasks: boolean },
+) {
+  let candidateIds: Set<string> | null = null;
+
+  if (input.q) {
+    candidateIds = intersectCandidateIds(
+      candidateIds,
+      new Set(await searchAdopterIds(client, input.q)),
+    );
+  }
+  if (input.hasOpenCases) {
+    candidateIds = intersectCandidateIds(
+      candidateIds,
+      new Set(await loadOpenCaseAdopterIds(client)),
+    );
+  }
+  if (input.hasOpenTasks) {
+    candidateIds = intersectCandidateIds(
+      candidateIds,
+      new Set(await loadOpenTaskAdopterIds(client)),
+    );
+  }
+
+  return candidateIds;
 }
 
 export function createSupabaseAdoptionCoordinatorRepository(
@@ -882,23 +975,26 @@ export function createSupabaseAdoptionCoordinatorRepository(
 
     async listAdopters(input) {
       const from = (input.page - 1) * input.pageSize;
-      const requiresInMemoryFiltering = Boolean(
-        input.q || input.hasOpenCases || input.hasOpenTasks,
-      );
+      const candidateIdSet = await resolveAdopterCandidateIds(client, input);
+      if (candidateIdSet && candidateIdSet.size === 0) {
+        return { adopters: [], total: 0 };
+      }
+
       let query = client
         .from("adopter_profile")
         .select(
           "*,supporter:supporter_id(id,name,email,phone),living_area:living_area_id(name_zh,name_en)",
           { count: "exact" },
         )
-        .order("created_at", { ascending: false });
-
-      if (!requiresInMemoryFiltering) {
-        query = query.range(from, from + input.pageSize - 1);
-      }
+        .order("created_at", { ascending: false })
+        .range(from, from + input.pageSize - 1);
 
       if (input.blacklisted === "yes") query = query.eq("is_blacklisted", true);
       if (input.blacklisted === "no") query = query.eq("is_blacklisted", false);
+      if (candidateIdSet) {
+        // TODO(Q1): Move large candidate ID filters to an indexed SQL/RPC search path.
+        query = query.in("id", [...candidateIdSet]);
+      }
 
       const { data, error, count } = await query;
       if (error) throw error;
@@ -906,10 +1002,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
       const rows = (data ?? []) as Record<string, unknown>[];
       const adopterIds = rows.map((row) => row.id as string);
       if (adopterIds.length === 0) {
-        return {
-          adopters: [],
-          total: requiresInMemoryFiltering ? 0 : (count ?? 0),
-        };
+        return { adopters: [], total: count ?? 0 };
       }
 
       const [caseResult, successResult] = await Promise.all([
@@ -935,51 +1028,35 @@ export function createSupabaseAdoptionCoordinatorRepository(
       const successRows = (successResult.data ?? []) as SuccessfulAdoptionRow[];
       const caseAdopterProfiles = caseAdopterProfileMap(caseRows);
 
-      const adoptersWithRows = rows
-        .map((row) => {
-          const id = row.id as string;
-          const supporter = adopterSupporter(row);
-          const livingArea = row.living_area as {
-            name_zh?: string | null;
-            name_en?: string | null;
-          } | null;
-          const casesForAdopter = caseRows.filter((caseRow) => caseRow.adopter_profile_id === id);
+      const adopters = rows.map((row) => {
+        const id = row.id as string;
+        const supporter = adopterSupporter(row);
+        const livingArea = row.living_area as {
+          name_zh?: string | null;
+          name_en?: string | null;
+        } | null;
+        const casesForAdopter = caseRows.filter((caseRow) => caseRow.adopter_profile_id === id);
 
-          return {
-            row,
-            adopter: {
-              id,
-              supporterId: supporter?.id ?? (row.supporter_id as string | null) ?? null,
-              displayName: adopterDisplayName(row),
-              email: supporter?.email ?? null,
-              phone: supporter?.phone ?? null,
-              livingArea: livingArea?.name_zh ?? livingArea?.name_en ?? null,
-              isBlacklisted: Boolean(row.is_blacklisted),
-              openCaseCount: countOpenCases(caseRows, id),
-              successfulAdoptionCount: successRows.filter(
-                (success) => success.adopter_profile_id === id,
-              ).length,
-              openTaskCount: countOpenTasks(taskRows, id, caseAdopterProfiles),
-              latestCaseAt:
-                casesForAdopter
-                  .map((caseRow) => caseRow.created_at)
-                  .sort()
-                  .at(-1) ?? null,
-            },
-          };
-        })
-        .filter(({ row }) => matchesAdopterSearch(row, input.q))
-        .filter(({ adopter }) => !input.hasOpenCases || adopter.openCaseCount > 0)
-        .filter(({ adopter }) => !input.hasOpenTasks || adopter.openTaskCount > 0);
-
-      const adopters = adoptersWithRows.map(({ adopter }) => adopter);
-
-      if (requiresInMemoryFiltering) {
         return {
-          adopters: adopters.slice(from, from + input.pageSize),
-          total: adopters.length,
+          id,
+          supporterId: supporter?.id ?? (row.supporter_id as string | null) ?? null,
+          displayName: adopterDisplayName(row),
+          email: supporter?.email ?? null,
+          phone: supporter?.phone ?? null,
+          livingArea: livingArea?.name_zh ?? livingArea?.name_en ?? null,
+          isBlacklisted: Boolean(row.is_blacklisted),
+          openCaseCount: countOpenCases(caseRows, id),
+          successfulAdoptionCount: successRows.filter(
+            (success) => success.adopter_profile_id === id,
+          ).length,
+          openTaskCount: countOpenTasks(taskRows, id, caseAdopterProfiles),
+          latestCaseAt:
+            casesForAdopter
+              .map((caseRow) => caseRow.created_at)
+              .sort()
+              .at(-1) ?? null,
         };
-      }
+      });
 
       return { adopters, total: count ?? adopters.length };
     },
