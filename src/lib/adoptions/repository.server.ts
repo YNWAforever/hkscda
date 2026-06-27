@@ -344,7 +344,7 @@ function mapCoordinatorTask(
     adoptionCase: row.adoption_case_id
       ? {
           id: row.adoption_case_id,
-          applicantName: adoptionCase?.applicant_name ?? "",
+          applicantName: adoptionCase?.applicant_name ?? row.adoption_case_id,
           animalType: adoptionCase?.animal_type ?? "",
         }
       : null,
@@ -352,14 +352,14 @@ function mapCoordinatorTask(
       ? {
           id: row.adopter_profile_id,
           supporterId: adopterProfile?.supporter_id ?? null,
-          displayName: supporterName(adopterProfile),
+          displayName: supporterName(adopterProfile) ?? row.adopter_profile_id,
           isBlacklisted: adopterProfile?.is_blacklisted ?? false,
         }
       : null,
     animal: row.animal_id
       ? {
           id: row.animal_id,
-          name: animal?.name ?? "",
+          name: animal?.name ?? row.animal_id,
           nameEn: animal?.name_en ?? null,
           type: animal?.type ?? "",
           status: animal?.status ?? "",
@@ -715,7 +715,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
       if (successResult.error) throw successResult.error;
 
       const matchRows = (matchesResult.data ?? []) as AnimalMatchRow[];
-      const followupRows = (followupsResult.data ?? []) as FollowupRow[];
+      const followupRows = (followupsResult.data ?? []) as unknown as FollowupRow[];
       const successRow = (successResult.data ?? null) as SuccessfulAdoptionRow | null;
 
       const [statuses, animals, taskLinks] = await Promise.all([
@@ -823,7 +823,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
       const { data, error, count } = await query;
       if (error) throw error;
 
-      const rows = (data ?? []) as FollowupRow[];
+      const rows = (data ?? []) as unknown as FollowupRow[];
       const [statuses, taskLinks] = await Promise.all([
         loadStatusesByIds(
           client,
@@ -847,7 +847,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
       if (error) throw error;
       if (!data) return null;
 
-      const row = data as FollowupRow;
+      const row = data as unknown as FollowupRow;
       const [statuses, taskLinks] = await Promise.all([
         loadStatusesByIds(client, [row.status_id]),
         loadTaskLinks(client, [row]),
