@@ -145,8 +145,12 @@ export function buildCreateTaskPayload(form: CreateTaskFormState): CreateTaskPay
   return payload;
 }
 
-export function buildUpdateTaskPayload(form: UpdateTaskFormState): UpdateTaskPayload {
+export function buildUpdateTaskPayload(
+  form: UpdateTaskFormState,
+  originalStatusId?: string | null,
+): UpdateTaskPayload {
   const statusId = trimmed(form.statusId);
+  const currentStatusId = trimmed(originalStatusId);
   const payload: UpdateTaskPayload = {
     priority: form.priority,
     dueAt: datetimeLocalToIso(form.dueAt, "null"),
@@ -159,6 +163,6 @@ export function buildUpdateTaskPayload(form: UpdateTaskFormState): UpdateTaskPay
     remarks: nullableString(form.remarks),
   };
 
-  if (statusId) payload.statusId = statusId;
+  if (statusId && statusId !== currentStatusId) payload.statusId = statusId;
   return payload;
 }

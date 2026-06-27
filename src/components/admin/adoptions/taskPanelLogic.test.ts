@@ -132,18 +132,21 @@ describe("task panel logic", () => {
 
   test("builds an update payload with nullable cleared fields", () => {
     expect(
-      buildUpdateTaskPayload({
-        statusId: "status-2",
-        priority: "urgent",
-        dueAt: "",
-        scheduledAt: "2026-06-02T09:00",
-        completedAt: "",
-        volunteer: " ",
-        contactChannel: "",
-        outcome: " Completed ",
-        nextStepAt: "",
-        remarks: " ",
-      }),
+      buildUpdateTaskPayload(
+        {
+          statusId: "status-2",
+          priority: "urgent",
+          dueAt: "",
+          scheduledAt: "2026-06-02T09:00",
+          completedAt: "",
+          volunteer: " ",
+          contactChannel: "",
+          outcome: " Completed ",
+          nextStepAt: "",
+          remarks: " ",
+        },
+        "status-1",
+      ),
     ).toEqual({
       statusId: "status-2",
       priority: "urgent",
@@ -155,6 +158,59 @@ describe("task panel logic", () => {
       outcome: "Completed",
       nextStepAt: null,
       remarks: null,
+    });
+  });
+
+  test("omits statusId from update payload when selected status is unchanged", () => {
+    expect(
+      buildUpdateTaskPayload(
+        {
+          statusId: "inactive-current",
+          priority: "normal",
+          dueAt: "",
+          scheduledAt: "",
+          completedAt: "",
+          volunteer: "",
+          contactChannel: "",
+          outcome: "",
+          nextStepAt: "",
+          remarks: " New remarks ",
+        },
+        "inactive-current",
+      ),
+    ).toEqual({
+      priority: "normal",
+      dueAt: null,
+      scheduledAt: null,
+      completedAt: null,
+      volunteer: null,
+      contactChannel: null,
+      outcome: null,
+      nextStepAt: null,
+      remarks: "New remarks",
+    });
+  });
+
+  test("includes statusId in update payload when selected status changes", () => {
+    expect(
+      buildUpdateTaskPayload(
+        {
+          statusId: "active-next",
+          priority: "normal",
+          dueAt: "",
+          scheduledAt: "",
+          completedAt: "",
+          volunteer: "",
+          contactChannel: "",
+          outcome: "",
+          nextStepAt: "",
+          remarks: "",
+        },
+        "inactive-current",
+      ),
+    ).toMatchObject({
+      statusId: "active-next",
+      priority: "normal",
     });
   });
 });

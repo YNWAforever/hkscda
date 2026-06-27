@@ -245,7 +245,7 @@ function TaskItem({
         `/api/admin/adoptions/tasks/${encodeURIComponent(task.id)}`,
         {
           method: "PATCH",
-          body: JSON.stringify(buildUpdateTaskPayload(form)),
+          body: JSON.stringify(buildUpdateTaskPayload(form, task.status.id)),
         },
       ),
     onSuccess: async () => {
