@@ -19,6 +19,10 @@ const followupId = "aaaaaaaa-bbbb-4333-8444-555555555555";
 const linkedSupporterId = "supporter-1";
 const existingCaseId = adoptionCaseId;
 const existingTaskId = followupId;
+const secondProfileId = "bbbbbbbb-cccc-4333-8444-555555555555";
+const secondSupporterId = "supporter-2";
+const secondCaseId = "cccccccc-dddd-4333-8444-555555555555";
+const caseLinkedTaskId = "dddddddd-eeee-4333-8444-555555555555";
 
 const statusRow = {
   id: statusId,
@@ -61,6 +65,11 @@ class FakeQuery {
   private action: "select" | "insert" | "upsert" | "update" | null = null;
   private mutationPayload: unknown;
   private selectedColumns: string | null = null;
+  private eqFilters: Array<{ column: string; value: unknown }> = [];
+  private inFilters: Array<{ column: string; value: unknown[] }> = [];
+  private isFilters: Array<{ column: string; value: unknown }> = [];
+  private orFilters: string[] = [];
+  private rangeBounds: { from: number; to: number } | null = null;
 
   constructor(
     private readonly state: FakeState,
@@ -76,16 +85,19 @@ class FakeQuery {
 
   eq(column: string, value: unknown) {
     this.state.calls.push({ table: this.table, method: "eq", payload: { column, value } });
+    this.eqFilters.push({ column, value });
     return this;
   }
 
   is(column: string, value: unknown) {
     this.state.calls.push({ table: this.table, method: "is", payload: { column, value } });
+    this.isFilters.push({ column, value });
     return this;
   }
 
   in(column: string, value: unknown) {
     this.state.calls.push({ table: this.table, method: "in", payload: { column, value } });
+    this.inFilters.push({ column, value: Array.isArray(value) ? value : [] });
     return this;
   }
 
@@ -96,6 +108,7 @@ class FakeQuery {
 
   or(filters: string, options?: unknown) {
     this.state.calls.push({ table: this.table, method: "or", payload: filters, options });
+    this.orFilters.push(filters);
     return this;
   }
 
@@ -116,6 +129,7 @@ class FakeQuery {
 
   range(from: number, to: number) {
     this.state.calls.push({ table: this.table, method: "range", payload: { from, to } });
+    this.rangeBounds = { from, to };
     return this;
   }
 
@@ -200,8 +214,40 @@ class FakeQuery {
   }
 
   private collection(rows: Record<string, unknown>[]) {
-    return { data: rows, error: null, count: rows.length };
+    const filtered = this.applyFilters(rows);
+    const count = filtered.length;
+    const ranged = this.rangeBounds
+      ? filtered.slice(this.rangeBounds.from, this.rangeBounds.to + 1)
+      : filtered;
+    return { data: ranged, error: null, count };
   }
+
+  private applyFilters(rows: Record<string, unknown>[]) {
+    return rows
+      .filter((row) => this.eqFilters.every((filter) => row[filter.column] === filter.value))
+      .filter((row) => this.inFilters.every((filter) => filter.value.includes(row[filter.column])))
+      .filter((row) => this.isFilters.every((filter) => row[filter.column] === filter.value))
+      .filter((row) => this.orFilters.every((filter) => matchesOrFilter(row, filter)));
+  }
+}
+
+function matchesLike(value: unknown, pattern: string) {
+  if (value === null || value === undefined) return false;
+  const needle = pattern
+    .replace(/^%/, "")
+    .replace(/%$/, "")
+    .replaceAll("\\%", "%")
+    .replaceAll("\\_", "_")
+    .toLowerCase();
+  return String(value).toLowerCase().includes(needle);
+}
+
+function matchesOrFilter(row: Record<string, unknown>, filter: string) {
+  return filter.split(",").some((part) => {
+    const [column, pattern] = part.split(".ilike.");
+    if (!column || !pattern || column.includes(".")) return false;
+    return matchesLike(row[column], pattern);
+  });
 }
 
 function createFakeClient(
@@ -492,6 +538,178 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
         latestCaseAt: "2026-06-27T08:00:00.000Z",
       }),
     ]);
+  });
+
+  test("searches adopters by supporter identity without cross-table or filters", async () => {
+    const { repo, calls } = setupRepository({
+      adopterRows: [
+        adopterRow({
+          name_english: null,
+          name_chinese: null,
+          address: null,
+          supporter_id: existingSupporterId,
+          supporter: {
+            id: existingSupporterId,
+            name: "Ada",
+            email: "ada@example.test",
+            phone: "61234567",
+          },
+        }),
+        adopterRow({
+          id: secondProfileId,
+          supporter_id: secondSupporterId,
+          name_english: "Grace",
+          name_chinese: null,
+          address: null,
+          supporter: {
+            id: secondSupporterId,
+            name: "Grace",
+            email: "grace@example.test",
+            phone: "69876543",
+          },
+        }),
+      ],
+    });
+
+    const result = await repo.listAdopters({
+      q: "ada@example.test",
+      blacklisted: "all",
+      hasOpenCases: false,
+      hasOpenTasks: false,
+      page: 1,
+      pageSize: 25,
+    });
+
+    expect(result).toMatchObject({
+      total: 1,
+      adopters: [
+        expect.objectContaining({
+          id: existingProfileId,
+          email: "ada@example.test",
+        }),
+      ],
+    });
+    expect(
+      callsFor(calls, "adopter_profile", "or").some((call) =>
+        String(call.payload).includes("supporter."),
+      ),
+    ).toBe(false);
+  });
+
+  test("filters open-case adopters before paginating list results", async () => {
+    const { repo } = setupRepository({
+      adopterRows: [
+        adopterRow({ id: existingProfileId, supporter_id: existingSupporterId }),
+        adopterRow({ id: secondProfileId, supporter_id: secondSupporterId }),
+      ],
+      caseRows: [
+        caseRow({
+          id: secondCaseId,
+          adopter_profile_id: secondProfileId,
+          closed_at: null,
+        }),
+      ],
+    });
+
+    const result = await repo.listAdopters({
+      blacklisted: "all",
+      hasOpenCases: true,
+      hasOpenTasks: false,
+      page: 1,
+      pageSize: 1,
+    });
+
+    expect(result).toMatchObject({
+      total: 1,
+      adopters: [expect.objectContaining({ id: secondProfileId, openCaseCount: 1 })],
+    });
+  });
+
+  test("filters open-task adopters before paginating list results", async () => {
+    const { repo } = setupRepository({
+      adopterRows: [
+        adopterRow({ id: existingProfileId, supporter_id: existingSupporterId }),
+        adopterRow({ id: secondProfileId, supporter_id: secondSupporterId }),
+      ],
+      followupRows: [
+        followupRow({
+          id: "second-open-task",
+          adopter_profile_id: secondProfileId,
+          completed_at: null,
+        }),
+      ],
+    });
+
+    const result = await repo.listAdopters({
+      blacklisted: "all",
+      hasOpenCases: false,
+      hasOpenTasks: true,
+      page: 1,
+      pageSize: 1,
+    });
+
+    expect(result).toMatchObject({
+      total: 1,
+      adopters: [expect.objectContaining({ id: secondProfileId, openTaskCount: 1 })],
+    });
+  });
+
+  test("counts open tasks linked through an adopter case", async () => {
+    const { repo } = setupRepository({
+      adopterRows: [adopterRow()],
+      caseRows: [caseRow({ id: existingCaseId, adopter_profile_id: existingProfileId })],
+      followupRows: [
+        followupRow({
+          id: caseLinkedTaskId,
+          adoption_case_id: existingCaseId,
+          adopter_profile_id: null,
+          completed_at: null,
+        }),
+      ],
+    });
+
+    const result = await repo.listAdopters({
+      blacklisted: "all",
+      hasOpenCases: false,
+      hasOpenTasks: false,
+      page: 1,
+      pageSize: 25,
+    });
+
+    expect(result.adopters).toEqual([
+      expect.objectContaining({
+        id: existingProfileId,
+        openTaskCount: 1,
+      }),
+    ]);
+  });
+
+  test("includes tasks linked through adopter cases in adopter detail", async () => {
+    const { repo } = setupRepository({
+      adopterRows: [adopterRow()],
+      caseRows: [caseRow({ id: existingCaseId, adopter_profile_id: existingProfileId })],
+      followupRows: [
+        followupRow({
+          id: caseLinkedTaskId,
+          adoption_case_id: existingCaseId,
+          adopter_profile_id: null,
+        }),
+      ],
+      taskCaseRows: [taskCaseRow({ id: existingCaseId })],
+      animalRows: [animalRow()],
+    });
+
+    const detail = await repo.getAdopterDetail(existingProfileId);
+
+    expect(detail).toMatchObject({
+      openTaskCount: 1,
+      tasks: [
+        expect.objectContaining({
+          id: caseLinkedTaskId,
+          adoptionCase: expect.objectContaining({ id: existingCaseId }),
+        }),
+      ],
+    });
   });
 
   test("returns adopter detail with cases, successful adoptions, and tasks", async () => {

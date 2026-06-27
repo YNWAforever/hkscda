@@ -592,8 +592,20 @@ async function ensureAdopterProfile(
   );
 }
 
+type AdopterSupporter = {
+  id?: string | null;
+  name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+};
+
+function adopterSupporter(row: Record<string, unknown>) {
+  const supporter = row.supporter as AdopterSupporter | AdopterSupporter[] | null;
+  return Array.isArray(supporter) ? (supporter[0] ?? null) : supporter;
+}
+
 function adopterDisplayName(row: Record<string, unknown>) {
-  const supporter = row.supporter as { name?: string | null } | null;
+  const supporter = adopterSupporter(row);
   return (
     (row.name_english as string | null) ||
     (row.name_chinese as string | null) ||
@@ -606,9 +618,102 @@ function countOpenCases(rows: AdoptionCaseRow[], adopterProfileId: string) {
   return rows.filter((row) => row.adopter_profile_id === adopterProfileId && !row.closed_at).length;
 }
 
-function countOpenTasks(rows: FollowupRow[], adopterProfileId: string) {
-  return rows.filter((row) => row.adopter_profile_id === adopterProfileId && !row.completed_at)
-    .length;
+function caseAdopterProfileMap(rows: AdoptionCaseRow[]) {
+  return new Map(rows.map((row) => [row.id, row.adopter_profile_id]));
+}
+
+function taskBelongsToAdopter(
+  row: FollowupRow,
+  adopterProfileId: string,
+  caseAdopterProfiles: Map<string, string | null>,
+) {
+  return (
+    row.adopter_profile_id === adopterProfileId ||
+    (row.adoption_case_id
+      ? caseAdopterProfiles.get(row.adoption_case_id) === adopterProfileId
+      : false)
+  );
+}
+
+function countOpenTasks(
+  rows: FollowupRow[],
+  adopterProfileId: string,
+  caseAdopterProfiles: Map<string, string | null>,
+) {
+  const openTaskIds = new Set(
+    rows
+      .filter(
+        (row) =>
+          !row.completed_at && taskBelongsToAdopter(row, adopterProfileId, caseAdopterProfiles),
+      )
+      .map((row) => row.id),
+  );
+  return openTaskIds.size;
+}
+
+function matchesText(value: unknown, q: string) {
+  return typeof value === "string" && value.toLowerCase().includes(q.toLowerCase());
+}
+
+function matchesAdopterSearch(row: Record<string, unknown>, q?: string) {
+  if (!q) return true;
+  const supporter = adopterSupporter(row);
+  return [
+    row.name_english,
+    row.name_chinese,
+    row.address,
+    supporter?.name,
+    supporter?.email,
+    supporter?.phone,
+  ].some((value) => matchesText(value, q));
+}
+
+function mergeFollowupRows(...groups: FollowupRow[][]) {
+  const rows = new Map<string, FollowupRow>();
+  for (const group of groups) {
+    for (const row of group) {
+      if (!rows.has(row.id)) rows.set(row.id, row);
+    }
+  }
+  return [...rows.values()];
+}
+
+async function loadFollowupsByColumn(
+  client: SupabaseClient,
+  column: "adopter_profile_id" | "adoption_case_id",
+  ids: Array<string | null | undefined>,
+  columns: string,
+) {
+  const uniqueIds = unique(ids);
+  if (uniqueIds.length === 0) return [];
+
+  const { data, error } = await client
+    .from("adoption_followup")
+    .select(columns)
+    .in(column, uniqueIds)
+    .order("due_at", { ascending: true });
+  if (error) throw error;
+
+  return (data ?? []) as unknown as FollowupRow[];
+}
+
+async function loadFollowupsForAdopters(
+  client: SupabaseClient,
+  adopterIds: string[],
+  caseRows: AdoptionCaseRow[],
+  columns: string,
+) {
+  const [directRows, caseRowsLinked] = await Promise.all([
+    loadFollowupsByColumn(client, "adopter_profile_id", adopterIds, columns),
+    loadFollowupsByColumn(
+      client,
+      "adoption_case_id",
+      caseRows.map((row) => row.id),
+      columns,
+    ),
+  ]);
+
+  return mergeFollowupRows(directRows, caseRowsLinked);
 }
 
 export function createSupabaseAdoptionCoordinatorRepository(
@@ -777,39 +882,40 @@ export function createSupabaseAdoptionCoordinatorRepository(
 
     async listAdopters(input) {
       const from = (input.page - 1) * input.pageSize;
+      const requiresInMemoryFiltering = Boolean(
+        input.q || input.hasOpenCases || input.hasOpenTasks,
+      );
       let query = client
         .from("adopter_profile")
         .select(
           "*,supporter:supporter_id(id,name,email,phone),living_area:living_area_id(name_zh,name_en)",
           { count: "exact" },
         )
-        .order("created_at", { ascending: false })
-        .range(from, from + input.pageSize - 1);
+        .order("created_at", { ascending: false });
+
+      if (!requiresInMemoryFiltering) {
+        query = query.range(from, from + input.pageSize - 1);
+      }
 
       if (input.blacklisted === "yes") query = query.eq("is_blacklisted", true);
       if (input.blacklisted === "no") query = query.eq("is_blacklisted", false);
-      if (input.q) {
-        const like = `%${sanitizeOrLikeValue(input.q)}%`;
-        query = query.or(
-          `name_english.ilike.${like},name_chinese.ilike.${like},address.ilike.${like},supporter.name.ilike.${like},supporter.email.ilike.${like},supporter.phone.ilike.${like}`,
-        );
-      }
 
       const { data, error, count } = await query;
       if (error) throw error;
 
       const rows = (data ?? []) as Record<string, unknown>[];
       const adopterIds = rows.map((row) => row.id as string);
-      if (adopterIds.length === 0) return { adopters: [], total: count ?? 0 };
+      if (adopterIds.length === 0) {
+        return {
+          adopters: [],
+          total: requiresInMemoryFiltering ? 0 : (count ?? 0),
+        };
+      }
 
-      const [caseResult, taskResult, successResult] = await Promise.all([
+      const [caseResult, successResult] = await Promise.all([
         client
           .from("adoption_case")
           .select("id,adopter_profile_id,closed_at,created_at")
-          .in("adopter_profile_id", adopterIds),
-        client
-          .from("adoption_followup")
-          .select("id,adopter_profile_id,completed_at")
           .in("adopter_profile_id", adopterIds),
         client
           .from("successful_adoption")
@@ -817,21 +923,22 @@ export function createSupabaseAdoptionCoordinatorRepository(
           .in("adopter_profile_id", adopterIds),
       ]);
       if (caseResult.error) throw caseResult.error;
-      if (taskResult.error) throw taskResult.error;
       if (successResult.error) throw successResult.error;
 
       const caseRows = (caseResult.data ?? []) as AdoptionCaseRow[];
-      const taskRows = (taskResult.data ?? []) as unknown as FollowupRow[];
+      const taskRows = await loadFollowupsForAdopters(
+        client,
+        adopterIds,
+        caseRows,
+        "id,adoption_case_id,adopter_profile_id,completed_at",
+      );
       const successRows = (successResult.data ?? []) as SuccessfulAdoptionRow[];
+      const caseAdopterProfiles = caseAdopterProfileMap(caseRows);
 
-      const adopters = rows
+      const adoptersWithRows = rows
         .map((row) => {
           const id = row.id as string;
-          const supporter = row.supporter as {
-            id?: string;
-            email?: string | null;
-            phone?: string | null;
-          } | null;
+          const supporter = adopterSupporter(row);
           const livingArea = row.living_area as {
             name_zh?: string | null;
             name_en?: string | null;
@@ -839,27 +946,40 @@ export function createSupabaseAdoptionCoordinatorRepository(
           const casesForAdopter = caseRows.filter((caseRow) => caseRow.adopter_profile_id === id);
 
           return {
-            id,
-            supporterId: supporter?.id ?? (row.supporter_id as string | null) ?? null,
-            displayName: adopterDisplayName(row),
-            email: supporter?.email ?? null,
-            phone: supporter?.phone ?? null,
-            livingArea: livingArea?.name_zh ?? livingArea?.name_en ?? null,
-            isBlacklisted: Boolean(row.is_blacklisted),
-            openCaseCount: countOpenCases(caseRows, id),
-            successfulAdoptionCount: successRows.filter(
-              (success) => success.adopter_profile_id === id,
-            ).length,
-            openTaskCount: countOpenTasks(taskRows, id),
-            latestCaseAt:
-              casesForAdopter
-                .map((caseRow) => caseRow.created_at)
-                .sort()
-                .at(-1) ?? null,
+            row,
+            adopter: {
+              id,
+              supporterId: supporter?.id ?? (row.supporter_id as string | null) ?? null,
+              displayName: adopterDisplayName(row),
+              email: supporter?.email ?? null,
+              phone: supporter?.phone ?? null,
+              livingArea: livingArea?.name_zh ?? livingArea?.name_en ?? null,
+              isBlacklisted: Boolean(row.is_blacklisted),
+              openCaseCount: countOpenCases(caseRows, id),
+              successfulAdoptionCount: successRows.filter(
+                (success) => success.adopter_profile_id === id,
+              ).length,
+              openTaskCount: countOpenTasks(taskRows, id, caseAdopterProfiles),
+              latestCaseAt:
+                casesForAdopter
+                  .map((caseRow) => caseRow.created_at)
+                  .sort()
+                  .at(-1) ?? null,
+            },
           };
         })
-        .filter((adopter) => !input.hasOpenCases || adopter.openCaseCount > 0)
-        .filter((adopter) => !input.hasOpenTasks || adopter.openTaskCount > 0);
+        .filter(({ row }) => matchesAdopterSearch(row, input.q))
+        .filter(({ adopter }) => !input.hasOpenCases || adopter.openCaseCount > 0)
+        .filter(({ adopter }) => !input.hasOpenTasks || adopter.openTaskCount > 0);
+
+      const adopters = adoptersWithRows.map(({ adopter }) => adopter);
+
+      if (requiresInMemoryFiltering) {
+        return {
+          adopters: adopters.slice(from, from + input.pageSize),
+          total: adopters.length,
+        };
+      }
 
       return { adopters, total: count ?? adopters.length };
     },
@@ -875,17 +995,12 @@ export function createSupabaseAdoptionCoordinatorRepository(
       if (error) throw error;
       if (!data) return null;
 
-      const [casesResult, tasksResult, successResult] = await Promise.all([
+      const [casesResult, successResult] = await Promise.all([
         client
           .from("adoption_case")
           .select("*")
           .eq("adopter_profile_id", id)
           .order("created_at", { ascending: false }),
-        client
-          .from("adoption_followup")
-          .select(taskSelectColumns)
-          .eq("adopter_profile_id", id)
-          .order("due_at", { ascending: true }),
         client
           .from("successful_adoption")
           .select("*")
@@ -893,11 +1008,10 @@ export function createSupabaseAdoptionCoordinatorRepository(
           .order("approval_date", { ascending: false }),
       ]);
       if (casesResult.error) throw casesResult.error;
-      if (tasksResult.error) throw tasksResult.error;
       if (successResult.error) throw successResult.error;
 
       const caseRows = (casesResult.data ?? []) as AdoptionCaseRow[];
-      const taskRows = (tasksResult.data ?? []) as unknown as FollowupRow[];
+      const taskRows = await loadFollowupsForAdopters(client, [id], caseRows, taskSelectColumns);
       const successRows = (successResult.data ?? []) as SuccessfulAdoptionRow[];
       const [statuses, animals, taskLinks] = await Promise.all([
         loadStatusesByIds(client, [
@@ -912,15 +1026,12 @@ export function createSupabaseAdoptionCoordinatorRepository(
       ]);
 
       const row = data as Record<string, unknown>;
-      const supporter = row.supporter as {
-        id?: string;
-        email?: string | null;
-        phone?: string | null;
-      } | null;
+      const supporter = adopterSupporter(row);
       const livingArea = row.living_area as {
         name_zh?: string | null;
         name_en?: string | null;
       } | null;
+      const caseAdopterProfiles = caseAdopterProfileMap(caseRows);
 
       return {
         id,
@@ -932,7 +1043,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
         isBlacklisted: Boolean(row.is_blacklisted),
         openCaseCount: countOpenCases(caseRows, id),
         successfulAdoptionCount: successRows.length,
-        openTaskCount: countOpenTasks(taskRows, id),
+        openTaskCount: countOpenTasks(taskRows, id, caseAdopterProfiles),
         latestCaseAt:
           caseRows
             .map((caseRow) => caseRow.created_at)
