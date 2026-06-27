@@ -3,6 +3,7 @@ import { describe, expect, test } from "bun:test";
 import {
   buildCoordinatorAdopterCsv,
   buildCoordinatorCaseCsv,
+  buildCoordinatorSuccessfulAdoptionCsv,
   buildCoordinatorTaskCsv,
 } from "./csv";
 
@@ -30,7 +31,7 @@ describe("coordinator csv builders", () => {
     expect(csv).toContain("'=Ada");
   });
 
-  test("builds case and task CSVs with HKD cents formatted as dollars", () => {
+  test("builds case, successful adoption, and task CSVs with HKD cents formatted as dollars", () => {
     expect(
       buildCoordinatorCaseCsv([
         {
@@ -48,6 +49,23 @@ describe("coordinator csv builders", () => {
         },
       ]),
     ).toContain("case-1,Ada,1234");
+
+    expect(
+      buildCoordinatorSuccessfulAdoptionCsv([
+        {
+          successfulAdoptionId: "adoption-1",
+          caseId: "case-1",
+          caseNumber: "A-001",
+          adopterProfileId: "profile-1",
+          supporterId: "supporter-1",
+          animalId: "animal-1",
+          animalName: "Mochi",
+          adoptionFeeCents: 12345,
+          approvalDate: "2026-06-27",
+          pickupDate: null,
+        },
+      ]),
+    ).toContain("adoption-1,case-1,A-001,profile-1,supporter-1,animal-1,Mochi,123.45");
 
     expect(
       buildCoordinatorTaskCsv([

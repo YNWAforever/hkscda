@@ -63,9 +63,7 @@ describe("adoption coordinator schemas", () => {
   test("accepts only supported coordinator export kinds", () => {
     expect(coordinatorExportKindSchema.parse("cases")).toBe("cases");
     expect(coordinatorExportKindSchema.parse("adopters")).toBe("adopters");
-    expect(coordinatorExportKindSchema.parse("successful-adoptions")).toBe(
-      "successful-adoptions",
-    );
+    expect(coordinatorExportKindSchema.parse("successful-adoptions")).toBe("successful-adoptions");
     expect(coordinatorExportKindSchema.parse("animals")).toBe("animals");
     expect(coordinatorExportKindSchema.parse("tasks")).toBe("tasks");
     expect(() => coordinatorExportKindSchema.parse("payments")).toThrow();
