@@ -1,10 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { ChevronLeft, ChevronRight, Download, RefreshCw, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, RefreshCw, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import type { AdopterSummary } from "../../../lib/adoptions/types";
-import { supabase } from "../../../lib/supabase";
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
 import { Checkbox } from "../../ui/checkbox";
@@ -14,10 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../ui/table";
 import { fetchCoordinatorJson } from "./api";
 import { formatDate, formatFallback } from "./caseWorkflowLogic";
-import {
-  buildAdopterListSearchParams,
-  buildCoordinatorExportUrl,
-} from "./adopterWorkflowLogic";
+import { buildAdopterListSearchParams } from "./adopterWorkflowLogic";
+import { ExportButton } from "./ExportButton";
 
 type AdopterListResponse = {
   adopters: AdopterSummary[];
@@ -60,28 +57,6 @@ function formatCount(value: number) {
   return value.toLocaleString("en-US");
 }
 
-async function downloadCsv(path: string, filename: string) {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  if (!session?.access_token) throw new Error("未登入");
-
-  const response = await fetch(path, {
-    headers: { authorization: `Bearer ${session.access_token}` },
-  });
-  if (!response.ok) throw new Error("Export failed");
-
-  const blob = await response.blob();
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = filename;
-  document.body.append(anchor);
-  anchor.click();
-  anchor.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 0);
-}
-
 export function AdopterList() {
   const [query, setQuery] = useState("");
   const [blacklisted, setBlacklisted] = useState<BlacklistFilter>("all");
@@ -89,8 +64,6 @@ export function AdopterList() {
   const [hasOpenTasks, setHasOpenTasks] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<(typeof ADOPTER_PAGE_SIZE_OPTIONS)[number]>(25);
-  const [isExporting, setIsExporting] = useState(false);
-  const [exportError, setExportError] = useState("");
 
   const searchParams = useMemo(
     () =>
@@ -103,11 +76,6 @@ export function AdopterList() {
         pageSize,
       }),
     [blacklisted, hasOpenCases, hasOpenTasks, page, pageSize, query],
-  );
-
-  const exportUrl = useMemo(
-    () => buildCoordinatorExportUrl("adopters", searchParams),
-    [searchParams],
   );
 
   const { data, error, isLoading, isFetching, refetch } = useQuery<AdopterListResponse, Error>({
@@ -126,18 +94,6 @@ export function AdopterList() {
     setPage(1);
   }
 
-  async function handleExport() {
-    setExportError("");
-    setIsExporting(true);
-    try {
-      await downloadCsv(exportUrl, "adopters.csv");
-    } catch (nextError) {
-      setExportError(nextError instanceof Error ? nextError.message : "Export failed");
-    } finally {
-      setIsExporting(false);
-    }
-  }
-
   return (
     <div className="space-y-5 p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -148,15 +104,7 @@ export function AdopterList() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => void handleExport()}
-            disabled={isExporting}
-          >
-            <Download className="h-4 w-4" />
-            Export CSV
-          </Button>
+          <ExportButton kind="adopters" searchParams={searchParams} label="Export CSV" />
           <Button type="button" variant="outline" onClick={() => refetch()} disabled={isFetching}>
             <RefreshCw className="h-4 w-4" />
             Refresh
@@ -223,14 +171,6 @@ export function AdopterList() {
             Open tasks
           </label>
         </div>
-        {exportError && (
-          <div
-            className="border-t border-[var(--color-border)] px-4 py-2 text-sm text-[var(--color-error)]"
-            role="alert"
-          >
-            {exportError}
-          </div>
-        )}
       </section>
 
       <section className="overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
@@ -274,9 +214,7 @@ export function AdopterList() {
               </TableHead>
               <TableHead className="min-w-52 text-[var(--color-text-muted)]">Contact</TableHead>
               <TableHead className="min-w-56 text-[var(--color-text-muted)]">History</TableHead>
-              <TableHead className="min-w-32 text-[var(--color-text-muted)]">
-                Latest case
-              </TableHead>
+              <TableHead className="min-w-32 text-[var(--color-text-muted)]">Latest case</TableHead>
               <TableHead className="w-32 text-[var(--color-text-muted)]">Action</TableHead>
             </TableRow>
           </TableHeader>

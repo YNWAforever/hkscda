@@ -3,6 +3,7 @@ import { describe, expect, test } from "bun:test";
 import {
   buildAdopterListSearchParams,
   buildCoordinatorExportUrl,
+  getCoordinatorExportFilename,
 } from "./adopterWorkflowLogic";
 
 describe("adopter workflow logic", () => {
@@ -37,5 +38,18 @@ describe("adopter workflow logic", () => {
     expect(buildCoordinatorExportUrl("adopters", params)).toBe(
       "/api/admin/adoptions/exports/adopters.csv?q=Ada&page=1&pageSize=25",
     );
+  });
+
+  test("uses content-disposition filename for coordinator exports", () => {
+    expect(
+      getCoordinatorExportFilename(
+        "adopters",
+        'attachment; filename="coordinator-adopters-2026.csv"',
+      ),
+    ).toBe("coordinator-adopters-2026.csv");
+  });
+
+  test("falls back to coordinator export filename when header is missing", () => {
+    expect(getCoordinatorExportFilename("tasks", null)).toBe("coordinator-tasks.csv");
   });
 });
