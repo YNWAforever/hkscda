@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, RefreshCw, Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import type {
   CoordinatorStatus,
@@ -18,6 +18,7 @@ import {
   TASK_CENTER_DUE_FILTER_OPTIONS,
   buildTaskCenterSummary,
   buildTaskListSearchParams,
+  clampTaskCenterPage,
   TASK_CENTER_PAGE_SIZE,
   type TaskCenterDueFilter,
   type TaskCenterPriorityFilter,
@@ -93,6 +94,11 @@ export function TaskCenter() {
   const totalPages = Math.max(1, Math.ceil(total / TASK_CENTER_PAGE_SIZE));
   const summary = useMemo(() => buildTaskCenterSummary(tasks), [tasks]);
   const isFetching = statusesQuery.isFetching || tasksQuery.isFetching;
+
+  useEffect(() => {
+    if (!tasksQuery.data) return;
+    setPage((current) => clampTaskCenterPage(current, tasksQuery.data.total));
+  }, [tasksQuery.data]);
 
   function resetToFirstPage() {
     setPage(1);

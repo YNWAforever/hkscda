@@ -5,6 +5,7 @@ import {
   TASK_CENTER_DUE_FILTER_OPTIONS,
   buildTaskCenterSummary,
   buildTaskListSearchParams,
+  clampTaskCenterPage,
 } from "./taskCenterLogic";
 
 function task(overrides: Partial<CoordinatorTask> = {}): CoordinatorTask {
@@ -82,6 +83,12 @@ describe("task center logic", () => {
     });
 
     expect(params.toString()).toBe("due=overdue&priority=urgent&page=3&pageSize=25");
+  });
+
+  test("clamps task center pages when totals shrink", () => {
+    expect(clampTaskCenterPage(3, 25)).toBe(1);
+    expect(clampTaskCenterPage(3, 51)).toBe(3);
+    expect(clampTaskCenterPage(0, 0)).toBe(1);
   });
 
   test("summarizes the current page by due bucket and urgent priority", () => {
