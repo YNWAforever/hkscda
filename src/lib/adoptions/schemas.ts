@@ -68,17 +68,92 @@ export const matchInputSchema = z.object({
   notes: optionalTrimmed,
 });
 
-export const followupInputSchema = z.object({
+const linkedTaskEntitySchema = z
+  .object({
+    adoptionCaseId: z.string().uuid().optional(),
+    adopterProfileId: z.string().uuid().optional(),
+    animalId: z.string().uuid().optional(),
+  })
+  .refine(
+    (value) => Boolean(value.adoptionCaseId || value.adopterProfileId || value.animalId),
+    "At least one task link is required",
+  );
+
+export const taskPrioritySchema = z.enum(["low", "normal", "high", "urgent"]);
+export const taskContactChannelSchema = z.enum([
+  "phone",
+  "whatsapp",
+  "email",
+  "in_person",
+  "internal",
+]);
+
+const taskFieldsSchema = z.object({
   title: z.string().trim().min(1),
   statusId: z.string().uuid(),
+  taskType: optionalTrimmed.default("followup"),
+  priority: taskPrioritySchema.default("normal"),
+  dueAt: z.string().datetime().optional(),
   scheduledAt: z.string().datetime().optional(),
   completedAt: z.string().datetime().optional(),
+  assignedTo: optionalTrimmed,
+  volunteer: optionalTrimmed,
+  contactChannel: taskContactChannelSchema.optional(),
+  outcome: optionalTrimmed,
+  nextStepAt: z.string().datetime().optional(),
+  remarks: optionalTrimmed,
   hasWindowNet: z.boolean().optional(),
   environment: optionalTrimmed,
   score: optionalTrimmed,
-  volunteer: optionalTrimmed,
-  remarks: optionalTrimmed,
 });
+
+export const taskListSearchSchema = z.object({
+  q: optionalTrimmed,
+  statusId: z.string().uuid().optional(),
+  priority: taskPrioritySchema.optional(),
+  taskType: optionalTrimmed,
+  due: z.enum(["overdue", "today", "upcoming", "none", "all"]).catch("all"),
+  adoptionCaseId: z.string().uuid().optional(),
+  adopterProfileId: z.string().uuid().optional(),
+  animalId: z.string().uuid().optional(),
+  assignedTo: optionalTrimmed,
+  openOnly: booleanSearch.default(false),
+  page: z.coerce.number().int().min(1).catch(1),
+  pageSize: z.coerce.number().int().min(1).max(100).catch(25),
+});
+
+export const coordinatorTaskInputSchema = linkedTaskEntitySchema.and(taskFieldsSchema);
+
+export const coordinatorTaskUpdateSchema = z
+  .object({
+    title: z.string().trim().min(1).optional(),
+    statusId: z.string().uuid().optional(),
+    adoptionCaseId: z.string().uuid().nullable().optional(),
+    adopterProfileId: z.string().uuid().nullable().optional(),
+    animalId: z.string().uuid().nullable().optional(),
+    taskType: optionalTrimmed,
+    priority: taskPrioritySchema.optional(),
+    dueAt: z.string().datetime().nullable().optional(),
+    scheduledAt: z.string().datetime().nullable().optional(),
+    completedAt: z.string().datetime().nullable().optional(),
+    assignedTo: optionalTrimmed.nullable().optional(),
+    volunteer: optionalTrimmed.nullable().optional(),
+    contactChannel: taskContactChannelSchema.nullable().optional(),
+    outcome: optionalTrimmed.nullable().optional(),
+    nextStepAt: z.string().datetime().nullable().optional(),
+    remarks: optionalTrimmed.nullable().optional(),
+    hasWindowNet: z.boolean().nullable().optional(),
+    environment: optionalTrimmed.nullable().optional(),
+    score: optionalTrimmed.nullable().optional(),
+  })
+  .refine((value) => Object.keys(value).length > 0, "Task update cannot be empty");
+
+export const followupInputSchema = taskFieldsSchema.and(
+  z.object({
+    adopterProfileId: z.string().uuid().optional(),
+    animalId: z.string().uuid().optional(),
+  }),
+);
 
 export const finalizeAdoptionSchema = z.object({
   matchId: z.string().uuid(),
