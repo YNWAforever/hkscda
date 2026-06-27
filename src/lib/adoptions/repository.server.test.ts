@@ -12,6 +12,7 @@ const existingProfileId = "55555555-6666-4333-8444-555555555555";
 const adoptionCaseId = "66666666-7777-4333-8444-555555555555";
 const publicApplicationId = "99999999-aaaa-4bbb-8ccc-dddddddddddd";
 const animalId = "77777777-8888-4333-8444-555555555555";
+const followupId = "aaaaaaaa-bbbb-4333-8444-555555555555";
 
 type QueryCall = {
   table: string;
@@ -100,6 +101,7 @@ class FakeQuery {
     if (this.table === "supporter") return { data: { id: createdSupporterId }, error: null };
     if (this.table === "adopter_profile") return { data: { id: createdProfileId }, error: null };
     if (this.table === "adoption_case") return { data: { id: adoptionCaseId }, error: null };
+    if (this.table === "adoption_followup") return { data: { id: followupId }, error: null };
     return { data: this.mutationPayload, error: null };
   }
 
@@ -287,6 +289,99 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
       applicant_phone: "0000 0000",
       applicant_address: "Public form address",
       family_size: 7,
+    });
+  });
+
+  test("creates coordinator tasks with all supported followup columns", async () => {
+    const { client, calls } = createFakeClient();
+    const repo = createSupabaseAdoptionCoordinatorRepository(client);
+
+    await expect(
+      repo.createTask({
+        title: "Post-adoption call",
+        statusId,
+        adoptionCaseId,
+        adopterProfileId: existingProfileId,
+        animalId,
+        taskType: "followup",
+        priority: "high",
+        dueAt: "2026-06-28T10:00:00.000Z",
+        scheduledAt: "2026-06-28T09:00:00.000Z",
+        completedAt: "2026-06-28T11:00:00.000Z",
+        assignedTo: "Ada",
+        volunteer: "Ben",
+        contactChannel: "phone",
+        outcome: "Reached adopter",
+        nextStepAt: "2026-07-01T10:00:00.000Z",
+        remarks: "Call notes",
+        hasWindowNet: true,
+        environment: "Flat",
+        score: "A",
+        createdBy: createdSupporterId,
+      }),
+    ).resolves.toEqual({ id: followupId });
+
+    expect(calls).toContainEqual({
+      table: "adoption_followup",
+      method: "insert",
+      payload: {
+        adoption_case_id: adoptionCaseId,
+        adopter_profile_id: existingProfileId,
+        animal_id: animalId,
+        status_id: statusId,
+        title: "Post-adoption call",
+        task_type: "followup",
+        priority: "high",
+        due_at: "2026-06-28T10:00:00.000Z",
+        scheduled_at: "2026-06-28T09:00:00.000Z",
+        completed_at: "2026-06-28T11:00:00.000Z",
+        assigned_to: "Ada",
+        volunteer: "Ben",
+        contact_channel: "phone",
+        outcome: "Reached adopter",
+        next_step_at: "2026-07-01T10:00:00.000Z",
+        remarks: "Call notes",
+        has_window_net: true,
+        environment: "Flat",
+        score: "A",
+        created_by: createdSupporterId,
+        updated_by: createdSupporterId,
+      },
+    });
+  });
+
+  test("updates coordinator tasks with changed followup columns", async () => {
+    const { client, calls } = createFakeClient();
+    const repo = createSupabaseAdoptionCoordinatorRepository(client);
+
+    await expect(
+      repo.updateTask({
+        taskId: followupId,
+        statusId,
+        priority: "urgent",
+        dueAt: null,
+        assignedTo: null,
+        outcome: "Completed",
+        updatedBy: existingSupporterId,
+      }),
+    ).resolves.toEqual({ id: followupId });
+
+    expect(calls).toContainEqual({
+      table: "adoption_followup",
+      method: "update",
+      payload: {
+        status_id: statusId,
+        priority: "urgent",
+        due_at: null,
+        assigned_to: null,
+        outcome: "Completed",
+        updated_by: existingSupporterId,
+      },
+    });
+    expect(calls).toContainEqual({
+      table: "adoption_followup",
+      method: "eq",
+      payload: { column: "id", value: followupId },
     });
   });
 });
