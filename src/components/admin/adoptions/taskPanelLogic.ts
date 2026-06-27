@@ -68,6 +68,16 @@ function trimmed(value: string | null | undefined) {
   return value?.trim() ?? "";
 }
 
+const taskDateTimeFormatter = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "Asia/Hong_Kong",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false,
+});
+
 function sortedStatuses(statuses: CoordinatorStatus[]) {
   return [...statuses].sort(
     (left, right) => left.sortOrder - right.sortOrder || left.labelZh.localeCompare(right.labelZh),
@@ -115,6 +125,23 @@ export function datetimeLocalToIso(value: string | null | undefined, emptyMode: 
   if (!Number.isFinite(date.getTime())) return emptyMode === "null" ? null : undefined;
 
   return date.toISOString();
+}
+
+export function formatTaskDateTime(value: string | null | undefined) {
+  const nextValue = trimmed(value);
+  if (!nextValue) return "-";
+
+  const date = new Date(nextValue);
+  if (!Number.isFinite(date.getTime())) return "-";
+
+  const parts = Object.fromEntries(
+    taskDateTimeFormatter
+      .formatToParts(date)
+      .filter((part) => part.type !== "literal")
+      .map((part) => [part.type, part.value]),
+  );
+
+  return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}`;
 }
 
 function optionalString(value: string) {

@@ -15,10 +15,11 @@ import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Textarea } from "../../ui/textarea";
 import { fetchCoordinatorJson } from "./api";
-import { formatDate, formatFallback } from "./caseWorkflowLogic";
+import { formatFallback } from "./caseWorkflowLogic";
 import {
   buildCreateTaskPayload,
   buildUpdateTaskPayload,
+  formatTaskDateTime,
   getDefaultFollowupStatusId,
   isoToDatetimeLocal,
   statusesForTaskControl,
@@ -282,10 +283,10 @@ function TaskItem({
               </Badge>
             </div>
             <div className="grid gap-2 text-xs text-[var(--color-text-muted)] sm:grid-cols-2">
-              <span>Due: {formatDate(task.dueAt)}</span>
-              <span>Scheduled: {formatDate(task.scheduledAt)}</span>
-              <span>Completed: {formatDate(task.completedAt)}</span>
-              <span>Next step: {formatDate(task.nextStepAt)}</span>
+              <span>Due: {formatTaskDateTime(task.dueAt)}</span>
+              <span>Scheduled: {formatTaskDateTime(task.scheduledAt)}</span>
+              <span>Completed: {formatTaskDateTime(task.completedAt)}</span>
+              <span>Next step: {formatTaskDateTime(task.nextStepAt)}</span>
               <span>Volunteer: {formatFallback(task.volunteer ?? task.assignedTo)}</span>
               <span>Channel: {contactChannelLabel(task.contactChannel)}</span>
             </div>
