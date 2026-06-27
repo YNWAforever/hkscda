@@ -4,14 +4,23 @@ import { buildCaseFromPublicApplication, type PublicApplicationInput } from "./c
 import { assertCanMutateStatus } from "./status";
 import {
   caseSearchSchema,
+  coordinatorTaskInputSchema,
+  coordinatorTaskUpdateSchema,
   finalizeAdoptionSchema,
   followupInputSchema,
   matchInputSchema,
   statusInputSchema,
   statusTransitionSchema,
   statusUpdateSchema,
+  taskListSearchSchema,
 } from "./schemas";
-import type { AdoptionCaseDetail, AdoptionCaseSummary, CoordinatorStatus } from "./types";
+import { buildTaskAuditAction, validateTaskCompletion } from "./tasks";
+import type {
+  AdoptionCaseDetail,
+  AdoptionCaseSummary,
+  CoordinatorStatus,
+  CoordinatorTask,
+} from "./types";
 
 export type StatusInput = z.infer<typeof statusInputSchema>;
 export type StatusUpdate = z.infer<typeof statusUpdateSchema>;
@@ -19,6 +28,9 @@ export type CaseSearch = z.infer<typeof caseSearchSchema>;
 export type MatchInput = z.infer<typeof matchInputSchema>;
 export type FollowupInput = z.infer<typeof followupInputSchema>;
 export type FinalizeAdoptionInput = z.infer<typeof finalizeAdoptionSchema>;
+export type TaskListSearch = z.infer<typeof taskListSearchSchema>;
+export type CoordinatorTaskInput = z.infer<typeof coordinatorTaskInputSchema>;
+export type CoordinatorTaskUpdate = z.infer<typeof coordinatorTaskUpdateSchema>;
 export type CaseFromPublicApplicationInput = ReturnType<typeof buildCaseFromPublicApplication> & {
   publicApplicationId: string;
 };
@@ -41,6 +53,19 @@ export type AdoptionCoordinatorRepository = {
   listCases(input: CaseSearch): Promise<{ cases: AdoptionCaseSummary[]; total: number }>;
   getCaseDetail(id: string): Promise<AdoptionCaseDetail | null>;
   createCaseFromPublicApplication(input: CaseFromPublicApplicationInput): Promise<{ id: string }>;
+  listTasks(input: TaskListSearch): Promise<{ tasks: CoordinatorTask[]; total: number }>;
+  getTask(id: string): Promise<CoordinatorTask | null>;
+  createTask(
+    input: CoordinatorTaskInput & {
+      createdBy: string;
+    },
+  ): Promise<{ id: string }>;
+  updateTask(
+    input: CoordinatorTaskUpdate & {
+      taskId: string;
+      updatedBy: string;
+    },
+  ): Promise<{ id: string }>;
   changeCaseStatus(input: {
     caseId: string;
     statusId: string;
@@ -83,7 +108,7 @@ export function createAdoptionCoordinatorService({
   repo,
   now = () => new Date(),
 }: CreateAdoptionCoordinatorServiceArgs) {
-  return {
+  const service = {
     listStatuses(category?: string) {
       return repo.listStatuses(category);
     },
@@ -154,6 +179,14 @@ export function createAdoptionCoordinatorService({
       return repo.getCaseDetail(caseId);
     },
 
+    listTasks(rawSearch: unknown) {
+      return repo.listTasks(taskListSearchSchema.parse(rawSearch));
+    },
+
+    getTask(taskId: string) {
+      return repo.getTask(taskId);
+    },
+
     createCaseFromPublicApplication(args: {
       publicApplicationId: string;
       input: PublicApplicationInput;
@@ -165,6 +198,78 @@ export function createAdoptionCoordinatorService({
         }),
         publicApplicationId: args.publicApplicationId,
       });
+    },
+
+    async createTask(args: { actorUserId: string; input: unknown }) {
+      const input = coordinatorTaskInputSchema.parse(args.input);
+      const status = await repo.getStatus(input.statusId);
+      if (!status || status.category !== "followup") throw new Error("Invalid followup status");
+      if (!status.isActive) throw new Error("Inactive followup status");
+
+      validateTaskCompletion({
+        status,
+        completedAt: input.completedAt ?? null,
+        outcome: input.outcome ?? null,
+        remarks: input.remarks ?? null,
+      });
+
+      const task = await repo.createTask({
+        ...input,
+        createdBy: args.actorUserId,
+      });
+
+      await repo.insertAuditLog({
+        actor_user_id: args.actorUserId,
+        action: buildTaskAuditAction({ created: true, status }),
+        entity: "adoption_followup",
+        entity_id: task.id,
+        timestamp: timestamp(now),
+        detail: {
+          adoptionCaseId: input.adoptionCaseId ?? null,
+          adopterProfileId: input.adopterProfileId ?? null,
+          animalId: input.animalId ?? null,
+          statusId: input.statusId,
+          priority: input.priority,
+          dueAt: input.dueAt ?? null,
+        },
+      });
+
+      return task;
+    },
+
+    async updateTask(args: { actorUserId: string; taskId: string; input: unknown }) {
+      const input = coordinatorTaskUpdateSchema.parse(args.input);
+      let status: CoordinatorStatus | null = null;
+      if (input.statusId) {
+        status = await repo.getStatus(input.statusId);
+        if (!status || status.category !== "followup") throw new Error("Invalid followup status");
+        if (!status.isActive) throw new Error("Inactive followup status");
+        validateTaskCompletion({
+          status,
+          completedAt: input.completedAt ?? null,
+          outcome: input.outcome ?? null,
+          remarks: input.remarks ?? null,
+        });
+      }
+
+      const task = await repo.updateTask({
+        ...input,
+        taskId: args.taskId,
+        updatedBy: args.actorUserId,
+      });
+
+      await repo.insertAuditLog({
+        actor_user_id: args.actorUserId,
+        action: status
+          ? buildTaskAuditAction({ created: false, status })
+          : "coordinator_task.update",
+        entity: "adoption_followup",
+        entity_id: task.id,
+        timestamp: timestamp(now),
+        detail: input,
+      });
+
+      return task;
     },
 
     async changeCaseStatus(args: { actorUserId: string; caseId: string; input: unknown }) {
@@ -197,15 +302,12 @@ export function createAdoptionCoordinatorService({
     },
 
     async createFollowup(args: { actorUserId: string; caseId: string; input: unknown }) {
-      const input = followupInputSchema.parse(args.input);
-      const status = await repo.getStatus(input.statusId);
-      if (!status || status.category !== "followup") throw new Error("Invalid followup status");
-      if (!status.isActive) throw new Error("Inactive followup status");
-
-      return repo.createFollowup({
-        ...input,
-        adoptionCaseId: args.caseId,
-        createdBy: args.actorUserId,
+      return service.createTask({
+        actorUserId: args.actorUserId,
+        input: {
+          ...(args.input as Record<string, unknown>),
+          adoptionCaseId: args.caseId,
+        },
       });
     },
 
@@ -228,4 +330,6 @@ export function createAdoptionCoordinatorService({
       });
     },
   };
+
+  return service;
 }
