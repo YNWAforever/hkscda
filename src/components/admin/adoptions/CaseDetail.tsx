@@ -13,7 +13,6 @@ import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../ui/table";
 import { Textarea } from "../../ui/textarea";
 import { fetchCoordinatorJson } from "./api";
 import {
@@ -25,6 +24,7 @@ import {
 } from "./caseWorkflowLogic";
 import { FinalizationPanel } from "./FinalizationPanel";
 import { MatchPanel } from "./MatchPanel";
+import { TaskPanel } from "./TaskPanel";
 
 type CaseDetailProps = {
   caseId: string;
@@ -181,59 +181,6 @@ function statusesForControl(
   if (activeStatuses.some((status) => status.id === currentStatus.id)) return activeStatuses;
   return [...activeStatuses, currentStatus].sort(
     (left, right) => left.sortOrder - right.sortOrder || left.labelZh.localeCompare(right.labelZh),
-  );
-}
-
-function FollowupsSection({ adoptionCase }: { adoptionCase: AdoptionCaseDetail }) {
-  return (
-    <Section
-      title="Follow-ups"
-      subtitle={`${adoptionCase.followups.length} scheduled or completed`}
-    >
-      <Table>
-        <TableHeader>
-          <TableRow className="h-11 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-2)]">
-            <TableHead className="px-4 text-[var(--color-text-muted)]">Title</TableHead>
-            <TableHead className="text-[var(--color-text-muted)]">Status</TableHead>
-            <TableHead className="text-[var(--color-text-muted)]">Scheduled</TableHead>
-            <TableHead className="text-[var(--color-text-muted)]">Completed</TableHead>
-            <TableHead className="text-[var(--color-text-muted)]">Volunteer</TableHead>
-            <TableHead className="text-[var(--color-text-muted)]">Remarks</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {adoptionCase.followups.length === 0 && (
-            <TableRow className="h-16">
-              <TableCell colSpan={6} className="px-4 text-[var(--color-text-muted)]">
-                No follow-ups recorded
-              </TableCell>
-            </TableRow>
-          )}
-          {adoptionCase.followups.map((followup) => (
-            <TableRow key={followup.id} className="h-16">
-              <TableCell className="px-4 font-medium text-[var(--color-panel)]">
-                {followup.title}
-              </TableCell>
-              <TableCell>
-                <StatusChip status={followup.status} />
-              </TableCell>
-              <TableCell className="text-[var(--color-text-muted)]">
-                {formatDate(followup.scheduledAt)}
-              </TableCell>
-              <TableCell className="text-[var(--color-text-muted)]">
-                {formatDate(followup.completedAt)}
-              </TableCell>
-              <TableCell className="text-[var(--color-text-muted)]">
-                {formatFallback(followup.volunteer)}
-              </TableCell>
-              <TableCell className="max-w-md text-[var(--color-text-muted)]">
-                {formatFallback(followup.remarks)}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </Section>
   );
 }
 
@@ -487,7 +434,12 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
         onChanged={invalidateCase}
       />
 
-      <FollowupsSection adoptionCase={adoptionCase} />
+      <TaskPanel
+        adoptionCaseId={caseId}
+        tasks={adoptionCase.followups}
+        statuses={statuses}
+        onChanged={invalidateCase}
+      />
 
       <FinalizationPanel
         caseId={caseId}
