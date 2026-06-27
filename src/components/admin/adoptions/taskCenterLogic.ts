@@ -18,6 +18,14 @@ export type TaskCenterSummary = Record<TaskDueBucket, number> & {
 };
 
 export const TASK_CENTER_PAGE_SIZE = 25;
+export const TASK_CENTER_DUE_FILTER_OPTIONS: Array<{ value: TaskCenterDueFilter; label: string }> =
+  [
+    { value: "all", label: "All due dates" },
+    { value: "overdue", label: "Overdue" },
+    { value: "today", label: "Due today" },
+    { value: "upcoming", label: "Upcoming" },
+    { value: "none", label: "No due date" },
+  ];
 
 function addTrimmed(params: URLSearchParams, key: string, value: string) {
   const trimmed = value.trim();

@@ -1,7 +1,11 @@
 import { describe, expect, test } from "bun:test";
 
 import type { CoordinatorTask } from "../../../lib/adoptions/types";
-import { buildTaskCenterSummary, buildTaskListSearchParams } from "./taskCenterLogic";
+import {
+  TASK_CENTER_DUE_FILTER_OPTIONS,
+  buildTaskCenterSummary,
+  buildTaskListSearchParams,
+} from "./taskCenterLogic";
 
 function task(overrides: Partial<CoordinatorTask> = {}): CoordinatorTask {
   return {
@@ -44,6 +48,16 @@ function task(overrides: Partial<CoordinatorTask> = {}): CoordinatorTask {
 }
 
 describe("task center logic", () => {
+  test("does not offer completed as a due filter because the API does not support due=done", () => {
+    expect(TASK_CENTER_DUE_FILTER_OPTIONS.map((option) => option.value)).toEqual([
+      "all",
+      "overdue",
+      "today",
+      "upcoming",
+      "none",
+    ]);
+  });
+
   test("builds trimmed task list search params and omits all filters", () => {
     const params = buildTaskListSearchParams({
       q: "  window net  ",
