@@ -28,15 +28,6 @@ const sectionLabels: Record<string, string> = {
   payments: "收款紀錄",
 };
 
-type ApplicationRow = {
-  id: string;
-  applicant_name: string;
-  animal_name: string;
-  phone: string;
-  created_at: string;
-  status: string;
-};
-
 type PaymentRow = {
   id: string;
   provider: string;
@@ -102,19 +93,6 @@ function AdminDashboard() {
       return data;
     },
     enabled: section !== "applications" && section !== "payments",
-  });
-
-  const { data: applications = [] } = useQuery<ApplicationRow[]>({
-    queryKey: ["admin-applications"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("adoption_applications")
-        .select("*")
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data;
-    },
-    enabled: section === "applications",
   });
 
   const { data: payments = [], isLoading: paymentsLoading } = useQuery<PaymentRow[]>({
@@ -240,46 +218,21 @@ function AdminDashboard() {
             </div>
           )
         ) : section === "applications" ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-gray-100 text-gray-600 text-xs uppercase">
-                  <th className="text-left p-3">申請人</th>
-                  <th className="text-left p-3">動物</th>
-                  <th className="text-left p-3">電話</th>
-                  <th className="text-left p-3">日期</th>
-                  <th className="text-left p-3">狀態</th>
-                </tr>
-              </thead>
-              <tbody>
-                {applications.map((app) => (
-                  <tr key={app.id} className="border-b border-gray-100">
-                    <td className="p-3">{app.applicant_name}</td>
-                    <td className="p-3">{app.animal_name}</td>
-                    <td className="p-3">{app.phone}</td>
-                    <td className="p-3">{new Date(app.created_at).toLocaleDateString("zh-HK")}</td>
-                    <td className="p-3">
-                      <select
-                        defaultValue={app.status}
-                        onChange={async (e) => {
-                          await supabase
-                            .from("adoption_applications")
-                            .update({ status: e.target.value })
-                            .eq("id", app.id);
-                          queryClient.invalidateQueries({ queryKey: ["admin-applications"] });
-                        }}
-                        className="border border-gray-300 rounded text-xs px-2 py-1"
-                      >
-                        <option value="pending">待處理</option>
-                        <option value="approved">已批准</option>
-                        <option value="rejected">已拒絕</option>
-                      </select>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
+            <h2 className="text-lg font-semibold text-[var(--color-panel)]">
+              領養申請已移至協調員工作流程
+            </h2>
+            <p className="mt-2 max-w-2xl text-sm text-[var(--color-text-muted)]">
+              Use the coordinator case list for application review, status changes, animal matches,
+              follow-ups, and finalization.
+            </p>
+            <Link
+              to="/admin/applications"
+              className="mt-4 inline-flex items-center rounded border border-[var(--color-border)] px-3 py-2 text-sm font-medium text-[var(--color-panel)] hover:bg-[var(--color-primary-highlight)]"
+            >
+              Open adoption cases
+            </Link>
+          </section>
         ) : isLoading ? (
           <div className="text-center py-12 text-gray-400">載入中…</div>
         ) : (

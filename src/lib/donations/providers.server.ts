@@ -110,6 +110,19 @@ export async function createPayPalOrder(
   return { providerRef: data.id, url: approveLink.href };
 }
 
+export function assertPayPalCaptureCompleted(httpStatus: number, body: unknown) {
+  const payload = body as {
+    status?: string;
+    details?: Array<{ issue?: string }>;
+  };
+  const issue = payload.details?.[0]?.issue;
+
+  if (payload.status === "COMPLETED") return;
+  if (httpStatus === 422 && issue === "ORDER_ALREADY_CAPTURED") return;
+
+  throw new Error("PayPal capture did not complete");
+}
+
 export async function capturePayPalOrder(orderId: string) {
   const config = getPayPalConfig();
   const token = await getPayPalAccessToken();
@@ -120,10 +133,13 @@ export async function capturePayPalOrder(orderId: string) {
       "content-type": "application/json",
     },
   });
+  const body = await response.json().catch(() => ({}));
 
   if (!response.ok && response.status !== 422) {
     throw new Error(`PayPal capture failed with ${response.status}`);
   }
+
+  assertPayPalCaptureCompleted(response.status, body);
 }
 
 export async function verifyPayPalWebhook(request: Request, body: unknown) {

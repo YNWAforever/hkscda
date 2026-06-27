@@ -1,6 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { randomUUID } from "node:crypto";
 
 import { getSupabaseServerConfig } from "./config.server";
+import { isReceiptEligible } from "./domain";
 import { buildReconciliationPlan } from "./reconciliation";
 import { generateReceiptPdf } from "./receipt-pdf.server";
 import { sendDonationAcknowledgement } from "./notifications.server";
@@ -46,18 +48,78 @@ type ReceiptActionContext = {
   supporterId?: string;
 };
 
-async function recordWebhookEvent(args: ReconcileProviderArgs) {
+const WEBHOOK_PROCESSING_LEASE_MS = 5 * 60 * 1000;
+
+async function reserveWebhookEvent(args: ReconcileProviderArgs) {
+  const processingOwner = randomUUID();
+  const now = new Date();
+  const processingStartedAt = now.toISOString();
+  const processingExpiresAt = new Date(now.getTime() + WEBHOOK_PROCESSING_LEASE_MS).toISOString();
+
   const { error } = await args.client.from("webhook_event").insert({
     provider: args.provider,
     provider_event_id: args.providerEventId,
     event_type: args.eventType,
     payload: args.payload,
-    processed_at: new Date().toISOString(),
+    processing_started_at: processingStartedAt,
+    processing_expires_at: processingExpiresAt,
+    processing_owner: processingOwner,
   });
 
-  if (!error) return true;
-  if (error.code === "23505") return false;
+  if (!error) return { kind: "claimed" as const, processingOwner };
+  if (error.code === "23505") {
+    const { data, error: lookupError } = await args.client
+      .from("webhook_event")
+      .select("processed_at,processing_expires_at")
+      .eq("provider", args.provider)
+      .eq("provider_event_id", args.providerEventId)
+      .single();
+    if (lookupError) throw lookupError;
+    if (data?.processed_at) return { kind: "duplicate" as const };
+
+    const processingExpires = data?.processing_expires_at
+      ? new Date(data.processing_expires_at).getTime()
+      : 0;
+    if (processingExpires > now.getTime()) return { kind: "duplicate" as const };
+
+    let claimQuery = args.client
+      .from("webhook_event")
+      .update({
+        processing_started_at: processingStartedAt,
+        processing_expires_at: processingExpiresAt,
+        processing_owner: processingOwner,
+      })
+      .eq("provider", args.provider)
+      .eq("provider_event_id", args.providerEventId)
+      .is("processed_at", null);
+
+    claimQuery = data?.processing_expires_at
+      ? claimQuery.eq("processing_expires_at", data.processing_expires_at)
+      : claimQuery.is("processing_expires_at", null);
+
+    const { data: claimed, error: claimError } = await claimQuery.select("id").maybeSingle();
+    if (claimError) throw claimError;
+    if (!claimed) return { kind: "duplicate" as const };
+    return { kind: "claimed" as const, processingOwner };
+  }
   throw error;
+}
+
+async function markWebhookEventProcessed(args: ReconcileProviderArgs, processingOwner: string) {
+  const { error } = await args.client
+    .from("webhook_event")
+    .update({
+      processed_at: new Date().toISOString(),
+      processing_started_at: null,
+      processing_expires_at: null,
+      processing_owner: null,
+    })
+    .eq("provider", args.provider)
+    .eq("provider_event_id", args.providerEventId)
+    .eq("processing_owner", processingOwner)
+    .is("processed_at", null);
+
+  if (error) throw error;
 }
 
 async function findPaymentByProvider(
@@ -138,12 +200,56 @@ async function issueReceiptIfNeeded(client: SupabaseClient, payment: PaymentWith
   return receiptNo as string;
 }
 
+async function hasDonationAcknowledgement(client: SupabaseClient, payment: PaymentWithDonation) {
+  const { data, error } = await client
+    .from("message")
+    .select("id")
+    .eq("supporter_id", payment.donation.supporter_id)
+    .eq("channel", "email")
+    .contains("payload", {
+      kind: "donation_acknowledgement",
+      donationId: payment.donation.id,
+    })
+    .maybeSingle();
+
+  if (error) throw error;
+  return Boolean(data?.id);
+}
+
+async function completeDonationSideEffects(client: SupabaseClient, payment: PaymentWithDonation) {
+  const donation = payment.donation;
+  const receiptNo = isReceiptEligible({
+    amountCents: donation.amount_cents,
+    receiptRequested: donation.receipt_requested,
+  })
+    ? await issueReceiptIfNeeded(client, payment)
+    : undefined;
+
+  if (!(await hasDonationAcknowledgement(client, payment))) {
+    await sendDonationAcknowledgement(client, {
+      supporterId: donation.supporter_id,
+      donationId: donation.id,
+      to: donation.supporter.email,
+      donorName: donation.supporter.name,
+      amountCents: donation.amount_cents,
+      language: donation.supporter.language,
+      receiptNo,
+    });
+  }
+
+  return receiptNo;
+}
+
 async function applySucceededPayment(
   client: SupabaseClient,
   payment: PaymentWithDonation,
   actorUserId?: string,
   bankReference?: string,
 ) {
+  if (payment.amount_cents !== payment.donation.amount_cents) {
+    throw new Error("Payment amount does not match donation amount");
+  }
+
   const plan = buildReconciliationPlan({
     providerEventId: payment.provider_ref ?? payment.id,
     seenProviderEventIds: new Set(),
@@ -152,6 +258,7 @@ async function applySucceededPayment(
   });
 
   if (plan.kind === "duplicate") {
+    await completeDonationSideEffects(client, payment);
     return { kind: "duplicate" as const, donationId: payment.donation.id };
   }
 
@@ -173,27 +280,19 @@ async function applySucceededPayment(
     .eq("id", payment.donation.id);
   if (donationError) throw donationError;
 
-  const receiptNo = plan.shouldIssueReceipt
-    ? await issueReceiptIfNeeded(client, payment)
-    : undefined;
-  await sendDonationAcknowledgement(client, {
-    supporterId: payment.donation.supporter_id,
-    to: payment.donation.supporter.email,
-    donorName: payment.donation.supporter.name,
-    amountCents: payment.donation.amount_cents,
-    language: payment.donation.supporter.language,
-    receiptNo,
-  });
+  const receiptNo = await completeDonationSideEffects(client, payment);
 
   return { kind: "applied" as const, donationId: payment.donation.id, receiptNo };
 }
 
 export async function reconcileProviderPayment(args: ReconcileProviderArgs) {
-  const shouldProcess = await recordWebhookEvent(args);
-  if (!shouldProcess) return { kind: "duplicate" as const };
+  const reservation = await reserveWebhookEvent(args);
+  if (reservation.kind === "duplicate") return { kind: "duplicate" as const };
 
   const payment = await findPaymentByProvider(args.client, args.provider, args.providerRef);
-  return applySucceededPayment(args.client, payment);
+  const result = await applySucceededPayment(args.client, payment);
+  await markWebhookEventProcessed(args, reservation.processingOwner);
+  return result;
 }
 
 export async function reconcileManualPayment(args: ReconcileManualArgs) {

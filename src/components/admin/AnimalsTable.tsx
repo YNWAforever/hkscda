@@ -87,7 +87,15 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
                   <td className="p-3">
                     <div className="flex gap-3">
                       <Link
-                        to={`/admin/animals/${animal.id}/edit`}
+                        to="/admin/coordinator/animals"
+                        search={{ animalId: animal.id }}
+                        className="text-[var(--color-primary)] hover:underline text-xs"
+                      >
+                        流程
+                      </Link>
+                      <Link
+                        to="/admin/animals/$id/edit"
+                        params={{ id: animal.id }}
                         className="text-blue-600 hover:underline text-xs"
                       >
                         編輯

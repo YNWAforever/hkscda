@@ -17,8 +17,16 @@ type PayPalWebhook = {
   };
 };
 
-function getPayPalOrderId(event: PayPalWebhook) {
+export function getPayPalOrderId(event: PayPalWebhook) {
   return event.resource?.supplementary_data?.related_ids?.order_id ?? event.resource?.id;
+}
+
+export function shouldCapturePayPalEvent(eventType: string) {
+  return eventType === "CHECKOUT.ORDER.APPROVED";
+}
+
+export function shouldReconcilePayPalEvent(eventType: string) {
+  return eventType === "PAYMENT.CAPTURE.COMPLETED";
 }
 
 export const Route = createFileRoute("/api/webhooks/paypal")({
@@ -32,14 +40,11 @@ export const Route = createFileRoute("/api/webhooks/paypal")({
         const orderId = getPayPalOrderId(payload);
         if (!orderId) return Response.json({ received: true, skipped: "missing_order_id" });
 
-        if (payload.event_type === "CHECKOUT.ORDER.APPROVED") {
+        if (shouldCapturePayPalEvent(payload.event_type)) {
           await capturePayPalOrder(orderId);
         }
 
-        if (
-          payload.event_type === "CHECKOUT.ORDER.APPROVED" ||
-          payload.event_type === "PAYMENT.CAPTURE.COMPLETED"
-        ) {
+        if (shouldReconcilePayPalEvent(payload.event_type)) {
           await reconcileProviderPayment({
             client: createSupabaseServiceClient(),
             provider: "paypal",
