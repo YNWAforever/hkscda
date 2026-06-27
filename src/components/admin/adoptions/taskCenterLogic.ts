@@ -46,6 +46,11 @@ export function buildTaskListSearchParams(filters: TaskCenterFilters) {
   return params;
 }
 
+export function clampTaskCenterPage(page: number, total: number) {
+  const totalPages = Math.max(1, Math.ceil(total / TASK_CENTER_PAGE_SIZE));
+  return Math.min(Math.max(1, page || 1), totalPages);
+}
+
 export function buildTaskCenterSummary(
   tasks: CoordinatorTask[],
   now = new Date(),
