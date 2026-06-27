@@ -12,11 +12,24 @@ describe("adopter workflow logic", () => {
         q: " Ada ",
         blacklisted: "yes",
         hasOpenCases: true,
-        hasOpenTasks: false,
+        hasOpenTasks: true,
         page: 2,
         pageSize: 50,
       }).toString(),
-    ).toBe("q=Ada&blacklisted=yes&hasOpenCases=true&page=2&pageSize=50");
+    ).toBe("q=Ada&blacklisted=yes&hasOpenCases=true&hasOpenTasks=true&page=2&pageSize=50");
+  });
+
+  test("omits false adopter list boolean filters", () => {
+    expect(
+      buildAdopterListSearchParams({
+        q: "",
+        blacklisted: "all",
+        hasOpenCases: false,
+        hasOpenTasks: false,
+        page: 1,
+        pageSize: 25,
+      }).toString(),
+    ).toBe("page=1&pageSize=25");
   });
 
   test("builds coordinator export urls with existing filters", () => {
