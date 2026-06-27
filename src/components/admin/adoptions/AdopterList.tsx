@@ -57,6 +57,33 @@ function formatCount(value: number) {
   return value.toLocaleString("en-US");
 }
 
+function latestCaseStatusText(latestCase: AdopterSummary["latestCase"]) {
+  if (!latestCase) return null;
+  return latestCase.status.labelZh || latestCase.status.labelEn || latestCase.status.key;
+}
+
+function LatestCaseCell({ latestCase }: { latestCase: AdopterSummary["latestCase"] }) {
+  if (!latestCase) {
+    return <span className="text-[var(--color-text-muted)]">{formatFallback(null)}</span>;
+  }
+
+  return (
+    <div className="space-y-1 text-sm">
+      <Link
+        to="/admin/applications/$id"
+        params={{ id: latestCase.id }}
+        className="font-medium text-[var(--color-primary)] hover:underline"
+      >
+        {formatDate(latestCase.createdAt)}
+      </Link>
+      <div className="text-xs text-[var(--color-text-muted)]">
+        {latestCaseStatusText(latestCase)} · {latestCase.animalType}
+        {latestCase.requestedAnimalName ? ` · ${latestCase.requestedAnimalName}` : ""}
+      </div>
+    </div>
+  );
+}
+
 export function AdopterList() {
   const [query, setQuery] = useState("");
   const [blacklisted, setBlacklisted] = useState<BlacklistFilter>("all");
@@ -304,8 +331,8 @@ export function AdopterList() {
                     </Badge>
                   </div>
                 </TableCell>
-                <TableCell className="text-[var(--color-text-muted)]">
-                  {formatDate(adopter.latestCaseAt)}
+                <TableCell>
+                  <LatestCaseCell latestCase={adopter.latestCase} />
                 </TableCell>
                 <TableCell>
                   <Link

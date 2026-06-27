@@ -664,6 +664,25 @@ describe("createAdoptionCoordinatorHandlers", () => {
     expect(calls).toEqual([{ name: "listAdopters", payload: { q: "Ada" } }]);
   });
 
+  test("oversized adopter filters return 400 JSON", async () => {
+    const { service } = createFakeService({
+      async listAdopters() {
+        throw new Error("Adopter filters match too many records");
+      },
+    });
+    const handlers = createHandlers({ service });
+
+    const response = await handlers.listAdopters({
+      request: new Request("https://example.test/api/admin/adoptions/adopters?hasOpenCases=true"),
+    });
+
+    expect(response.status).toBe(400);
+    expectNoStoreJson(response);
+    expect(await response.json()).toEqual({
+      error: "Adopter filters match too many records",
+    });
+  });
+
   test("adopter detail validates id before auth or service work", async () => {
     const { calls, service } = createFakeService();
     const handlers = createHandlers({

@@ -58,6 +58,7 @@ type FakeState = {
   caseRows: Record<string, unknown>[];
   taskCaseRows: Record<string, unknown>[];
   adopterRows: Record<string, unknown>[];
+  consentRows: Record<string, unknown>[];
   animalRows: Record<string, unknown>[];
   internalProfileRows: Record<string, unknown>[];
   animalPositionRows: Record<string, unknown>[];
@@ -223,6 +224,7 @@ class FakeQuery {
       return this.collection(this.state.caseRows);
     }
     if (this.table === "supporter") return this.collection(this.state.supporterRows);
+    if (this.table === "consent") return this.collection(this.state.consentRows);
     if (this.table === "adopter_profile") return this.collection(this.state.adopterRows);
     if (this.table === "animals") return this.collection(this.state.animalRows);
     if (this.table === "animal_profile_internal") {
@@ -282,6 +284,7 @@ function createFakeClient(
     caseRows?: Record<string, unknown>[];
     taskCaseRows?: Record<string, unknown>[];
     adopterRows?: Record<string, unknown>[];
+    consentRows?: Record<string, unknown>[];
     animalRows?: Record<string, unknown>[];
     internalProfileRows?: Record<string, unknown>[];
     animalPositionRows?: Record<string, unknown>[];
@@ -302,6 +305,7 @@ function createFakeClient(
     caseRows: options.caseRows ?? [],
     taskCaseRows: options.taskCaseRows ?? [],
     adopterRows: options.adopterRows ?? [],
+    consentRows: options.consentRows ?? [],
     animalRows: options.animalRows ?? [],
     internalProfileRows: options.internalProfileRows ?? [],
     animalPositionRows: options.animalPositionRows ?? [],
@@ -540,12 +544,15 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
         },
       ],
       caseRows: [
-        {
+        caseRow({
           id: existingCaseId,
           adopter_profile_id: existingProfileId,
+          requested_animal_id: animalId,
+          animal_type: "cat",
+          applicant_name: "Ada",
           closed_at: null,
           created_at: "2026-06-27T08:00:00.000Z",
-        },
+        }),
       ],
       followupRows: [
         {
@@ -555,6 +562,7 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
         },
       ],
       successRows: [],
+      animalRows: [animalRow({ name_en: null })],
     });
 
     const result = await repo.listAdopters({
@@ -577,6 +585,14 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
         successfulAdoptionCount: 0,
         openTaskCount: 1,
         latestCaseAt: "2026-06-27T08:00:00.000Z",
+        latestCase: expect.objectContaining({
+          id: existingCaseId,
+          applicantName: "Ada",
+          animalType: "cat",
+          requestedAnimalName: "Mochi",
+          status: expect.objectContaining({ id: statusId }),
+          createdAt: "2026-06-27T08:00:00.000Z",
+        }),
       }),
     ]);
   });
@@ -758,6 +774,94 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
       total: 1,
       adopters: [expect.objectContaining({ id: secondProfileId, openTaskCount: 1 })],
     });
+  });
+
+  test("rejects oversized adopter candidate filters before building a large in query", async () => {
+    const { repo, calls } = setupRepository({
+      caseRows: Array.from({ length: 1001 }, (_, index) =>
+        caseRow({
+          id: `case-${index}`,
+          adopter_profile_id: `profile-${index}`,
+          closed_at: null,
+        }),
+      ),
+    });
+
+    await expect(
+      repo.listAdopters({
+        blacklisted: "all",
+        hasOpenCases: true,
+        hasOpenTasks: false,
+        page: 1,
+        pageSize: 25,
+      }),
+    ).rejects.toThrow("Adopter filters match too many records");
+    expect(
+      callsFor(calls, "adopter_profile", "in").some(
+        (call) =>
+          (call.payload as { column?: string; value?: unknown[] }).column === "id" &&
+          ((call.payload as { value?: unknown[] }).value?.length ?? 0) > 1000,
+      ),
+    ).toBe(false);
+  });
+
+  test("rejects broad supporter identity searches before building a large supporter id query", async () => {
+    const { repo, calls } = setupRepository({
+      supporterRows: Array.from({ length: 1001 }, (_, index) => ({
+        id: `supporter-${index}`,
+        name: `Ada ${index}`,
+        email: `ada-${index}@example.test`,
+        phone: `6000${index}`,
+      })),
+    });
+
+    await expect(
+      repo.listAdopters({
+        q: "Ada",
+        blacklisted: "all",
+        hasOpenCases: false,
+        hasOpenTasks: false,
+        page: 1,
+        pageSize: 25,
+      }),
+    ).rejects.toThrow("Adopter filters match too many records");
+    expect(
+      callsFor(calls, "adopter_profile", "in").some(
+        (call) =>
+          (call.payload as { column?: string; value?: unknown[] }).column === "supporter_id" &&
+          ((call.payload as { value?: unknown[] }).value?.length ?? 0) > 1000,
+      ),
+    ).toBe(false);
+  });
+
+  test("rejects broad case-linked task filters before building a large case id query", async () => {
+    const { repo, calls } = setupRepository({
+      followupRows: Array.from({ length: 1001 }, (_, index) =>
+        followupRow({
+          id: `task-${index}`,
+          adoption_case_id: `case-${index}`,
+          adopter_profile_id: null,
+          completed_at: null,
+        }),
+      ),
+    });
+
+    await expect(
+      repo.listAdopters({
+        blacklisted: "all",
+        hasOpenCases: false,
+        hasOpenTasks: true,
+        page: 1,
+        pageSize: 25,
+      }),
+    ).rejects.toThrow("Adopter filters match too many records");
+    expect(
+      callsFor(calls, "adoption_case", "in").some(
+        (call) =>
+          (call.payload as { column?: string; value?: unknown[] }).column === "id" &&
+          ((call.payload as { value?: unknown[] }).value?.length ?? 0) > 1000,
+      ),
+    ).toBe(false);
   });
 
   test("counts open tasks linked through an adopter case", async () => {
@@ -1021,6 +1125,32 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
       caseRows: [caseRow({ adopter_profile_id: existingProfileId })],
       followupRows: [followupRow({ adopter_profile_id: existingProfileId })],
       successRows: [successfulAdoptionRow({ adopter_profile_id: existingProfileId })],
+      consentRows: [
+        {
+          id: "consent-email-old",
+          supporter_id: linkedSupporterId,
+          channel: "email",
+          status: "opt_out",
+          source: "manual",
+          timestamp: "2026-06-20T08:00:00.000Z",
+        },
+        {
+          id: "consent-email-new",
+          supporter_id: linkedSupporterId,
+          channel: "email",
+          status: "opt_in",
+          source: "manual",
+          timestamp: "2026-06-27T08:00:00.000Z",
+        },
+        {
+          id: "consent-whatsapp",
+          supporter_id: linkedSupporterId,
+          channel: "whatsapp",
+          status: "opt_out",
+          source: "donation_form",
+          timestamp: "2026-06-26T08:00:00.000Z",
+        },
+      ],
       taskCaseRows: [taskCaseRow()],
       animalRows: [animalRow()],
     });
@@ -1030,6 +1160,8 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     expect(detail).toMatchObject({
       id: existingProfileId,
       cases: [expect.objectContaining({ id: existingCaseId })],
+      emailConsent: "opt_in",
+      whatsappConsent: "opt_out",
       successfulAdoptions: [expect.objectContaining({ caseNumber: "AC-2026-001" })],
       tasks: [
         expect.objectContaining({

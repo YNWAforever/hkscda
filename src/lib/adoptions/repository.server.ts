@@ -1,5 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { latestConsentByChannel } from "../crm/consent";
+import type { ConsentChannel, ConsentHistoryRow, ConsentStatus } from "../crm/types";
+
 import type {
   AdoptionCoordinatorRepository,
   AdopterSearch,
@@ -14,6 +17,7 @@ import { hongKongDayBounds } from "./tasks";
 import type {
   AdoptionCaseDetail,
   AdoptionCaseSummary,
+  AdopterCaseHistoryRow,
   AdopterSummary,
   AnimalMatchSummary,
   CoordinatorAdopterExportRow,
@@ -27,6 +31,9 @@ import type {
 } from "./types";
 
 export { hongKongDayBounds } from "./tasks";
+
+const ADOPTER_CANDIDATE_ID_LIMIT = 1000;
+const ADOPTER_FILTER_TOO_BROAD_ERROR = "Adopter filters match too many records";
 
 type StatusRow = {
   id: string;
@@ -168,6 +175,15 @@ type SuccessfulAdoptionRow = {
   adoption_fee_cents: number | null;
   approval_date: string;
   pickup_date: string | null;
+};
+
+type ConsentRow = {
+  id: string;
+  supporter_id: string;
+  channel: ConsentChannel;
+  status: ConsentStatus;
+  source: string;
+  timestamp: string;
 };
 
 function escapeLike(value: string) {
@@ -432,6 +448,66 @@ function mapSuccessfulAdoption(row: SuccessfulAdoptionRow | null): SuccessfulAdo
     adoptionFeeCents: row.adoption_fee_cents,
     approvalDate: row.approval_date,
     pickupDate: row.pickup_date,
+  };
+}
+
+function mapAdopterCaseHistoryRow(
+  caseRow: AdoptionCaseRow,
+  statuses: Map<string, CoordinatorStatus>,
+  animals: Map<string, AnimalRow>,
+): AdopterCaseHistoryRow {
+  return {
+    id: caseRow.id,
+    applicantName: caseRow.applicant_name,
+    animalType: caseRow.animal_type,
+    status: requireStatus(statuses, caseRow.status_id),
+    requestedAnimalName: caseRow.requested_animal_id
+      ? animalName(animals.get(caseRow.requested_animal_id))
+      : null,
+    createdAt: caseRow.created_at,
+    closedAt: caseRow.closed_at,
+  };
+}
+
+function latestCaseForAdopter(
+  caseRows: AdoptionCaseRow[],
+  statuses: Map<string, CoordinatorStatus>,
+  animals: Map<string, AnimalRow>,
+) {
+  const latestCase = [...caseRows]
+    .sort((left, right) => left.created_at.localeCompare(right.created_at))
+    .at(-1);
+  return latestCase ? mapAdopterCaseHistoryRow(latestCase, statuses, animals) : null;
+}
+
+async function loadConsentStatusesForSupporter(client: SupabaseClient, supporterId: string | null) {
+  if (!supporterId) {
+    return { emailConsent: null, whatsappConsent: null };
+  }
+
+  const { data, error } = await client
+    .from("consent")
+    .select("id,supporter_id,channel,status,source,timestamp")
+    .eq("supporter_id", supporterId)
+    .order("timestamp", { ascending: false });
+  if (error) throw error;
+
+  const latest = latestConsentByChannel(
+    ((data ?? []) as ConsentRow[]).map(
+      (row): ConsentHistoryRow => ({
+        id: row.id,
+        supporterId: row.supporter_id,
+        channel: row.channel,
+        status: row.status,
+        source: row.source,
+        timestamp: row.timestamp,
+      }),
+    ),
+  );
+
+  return {
+    emailConsent: latest.email?.status ?? null,
+    whatsappConsent: latest.whatsapp?.status ?? null,
   };
 }
 
@@ -775,6 +851,7 @@ async function searchAdopterIds(client: SupabaseClient, q: string) {
     (supporterResult.data ?? []).map((row) => (row as { id: string }).id),
   );
   if (supporterIds.length === 0) return unique(profileIds);
+  assertAdopterCandidateIdArrayLimit(supporterIds);
 
   const { data, error } = await client
     .from("adopter_profile")
@@ -807,6 +884,7 @@ async function loadOpenTaskAdopterIds(client: SupabaseClient) {
   let caseAdopterIds: Array<string | null> = [];
 
   if (caseIds.length > 0) {
+    assertAdopterCandidateIdArrayLimit(caseIds);
     const caseResult = await client
       .from("adoption_case")
       .select("id,adopter_profile_id")
@@ -848,9 +926,22 @@ async function resolveAdopterCandidateIds(
   return candidateIds;
 }
 
+function assertAdopterCandidateIdLimit(candidateIds: Set<string> | null) {
+  if (candidateIds && candidateIds.size > ADOPTER_CANDIDATE_ID_LIMIT) {
+    throw new Error(ADOPTER_FILTER_TOO_BROAD_ERROR);
+  }
+}
+
+function assertAdopterCandidateIdArrayLimit(candidateIds: string[]) {
+  if (candidateIds.length > ADOPTER_CANDIDATE_ID_LIMIT) {
+    throw new Error(ADOPTER_FILTER_TOO_BROAD_ERROR);
+  }
+}
+
 async function listAdopterSummaries(client: SupabaseClient, input: AdopterSearch) {
   const from = (input.page - 1) * input.pageSize;
   const candidateIdSet = await resolveAdopterCandidateIds(client, input);
+  assertAdopterCandidateIdLimit(candidateIdSet);
   if (candidateIdSet && candidateIdSet.size === 0) {
     return { adopters: [], total: 0 };
   }
@@ -883,7 +974,9 @@ async function listAdopterSummaries(client: SupabaseClient, input: AdopterSearch
   const [caseResult, successResult] = await Promise.all([
     client
       .from("adoption_case")
-      .select("id,adopter_profile_id,closed_at,created_at")
+      .select(
+        "id,status_id,requested_animal_id,animal_type,applicant_name,adopter_profile_id,closed_at,created_at",
+      )
       .in("adopter_profile_id", adopterIds),
     client
       .from("successful_adoption")
@@ -894,12 +987,22 @@ async function listAdopterSummaries(client: SupabaseClient, input: AdopterSearch
   if (successResult.error) throw successResult.error;
 
   const caseRows = (caseResult.data ?? []) as AdoptionCaseRow[];
-  const taskRows = await loadFollowupsForAdopters(
-    client,
-    adopterIds,
-    caseRows,
-    "id,adoption_case_id,adopter_profile_id,completed_at",
-  );
+  const [statuses, animals, taskRows] = await Promise.all([
+    loadStatusesByIds(
+      client,
+      caseRows.map((row) => row.status_id),
+    ),
+    loadAnimalsByIds(
+      client,
+      caseRows.map((row) => row.requested_animal_id ?? ""),
+    ),
+    loadFollowupsForAdopters(
+      client,
+      adopterIds,
+      caseRows,
+      "id,adoption_case_id,adopter_profile_id,completed_at",
+    ),
+  ]);
   const successRows = (successResult.data ?? []) as SuccessfulAdoptionRow[];
   const caseAdopterProfiles = caseAdopterProfileMap(caseRows);
 
@@ -929,6 +1032,7 @@ async function listAdopterSummaries(client: SupabaseClient, input: AdopterSearch
           .map((caseRow) => caseRow.created_at)
           .sort()
           .at(-1) ?? null,
+      latestCase: latestCaseForAdopter(casesForAdopter, statuses, animals),
     };
   });
 
@@ -1263,7 +1367,15 @@ export function createSupabaseAdoptionCoordinatorRepository(
       if (error) throw error;
       if (!data) return null;
 
-      const [casesResult, successResult] = await Promise.all([
+      const row = data as Record<string, unknown>;
+      const supporter = adopterSupporter(row);
+      const supporterId = supporter?.id ?? (row.supporter_id as string | null) ?? null;
+      const livingArea = row.living_area as {
+        name_zh?: string | null;
+        name_en?: string | null;
+      } | null;
+
+      const [casesResult, successResult, consentStatuses] = await Promise.all([
         client
           .from("adoption_case")
           .select("*")
@@ -1274,6 +1386,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
           .select("*")
           .eq("adopter_profile_id", id)
           .order("approval_date", { ascending: false }),
+        loadConsentStatusesForSupporter(client, supporterId),
       ]);
       if (casesResult.error) throw casesResult.error;
       if (successResult.error) throw successResult.error;
@@ -1293,17 +1406,11 @@ export function createSupabaseAdoptionCoordinatorRepository(
         loadTaskLinks(client, taskRows),
       ]);
 
-      const row = data as Record<string, unknown>;
-      const supporter = adopterSupporter(row);
-      const livingArea = row.living_area as {
-        name_zh?: string | null;
-        name_en?: string | null;
-      } | null;
       const caseAdopterProfiles = caseAdopterProfileMap(caseRows);
 
       return {
         id,
-        supporterId: supporter?.id ?? (row.supporter_id as string | null) ?? null,
+        supporterId,
         displayName: adopterDisplayName(row),
         email: supporter?.email ?? null,
         phone: supporter?.phone ?? null,
@@ -1317,6 +1424,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
             .map((caseRow) => caseRow.created_at)
             .sort()
             .at(-1) ?? null,
+        latestCase: latestCaseForAdopter(caseRows, statuses, animals),
         nameEnglish: row.name_english as string | null,
         nameChinese: row.name_chinese as string | null,
         gender: row.gender as string | null,
@@ -1328,17 +1436,9 @@ export function createSupabaseAdoptionCoordinatorRepository(
         address: row.address as string | null,
         floorArea: row.floor_area as string | null,
         blacklistReason: row.blacklist_reason as string | null,
-        cases: caseRows.map((caseRow) => ({
-          id: caseRow.id,
-          applicantName: caseRow.applicant_name,
-          animalType: caseRow.animal_type,
-          status: requireStatus(statuses, caseRow.status_id),
-          requestedAnimalName: caseRow.requested_animal_id
-            ? animalName(animals.get(caseRow.requested_animal_id))
-            : null,
-          createdAt: caseRow.created_at,
-          closedAt: caseRow.closed_at,
-        })),
+        emailConsent: consentStatuses.emailConsent,
+        whatsappConsent: consentStatuses.whatsappConsent,
+        cases: caseRows.map((caseRow) => mapAdopterCaseHistoryRow(caseRow, statuses, animals)),
         successfulAdoptions: successRows.map((successRow) => ({
           id: successRow.id,
           caseNumber: successRow.case_number,

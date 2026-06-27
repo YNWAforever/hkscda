@@ -62,6 +62,7 @@ const badRequestDomainErrors = new Set([
   "Invalid adoption outcome status",
   "Inactive adoption outcome status",
   "Invalid successful adoption outcome status",
+  "Adopter filters match too many records",
 ]);
 
 const notFoundDomainErrors = new Set([

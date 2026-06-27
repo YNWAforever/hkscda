@@ -49,6 +49,37 @@ function formatCount(value: number) {
   return value.toLocaleString("en-US");
 }
 
+function formatConsentStatus(status: AdopterDetailData["emailConsent"]) {
+  if (status === "opt_in") return "Opted in";
+  if (status === "opt_out") return "Opted out";
+  return formatFallback(null);
+}
+
+function latestCaseStatusText(latestCase: AdopterDetailData["latestCase"]) {
+  if (!latestCase) return null;
+  return latestCase.status.labelZh || latestCase.status.labelEn || latestCase.status.key;
+}
+
+function LatestCaseLink({ latestCase }: { latestCase: AdopterDetailData["latestCase"] }) {
+  if (!latestCase) return formatDate(null);
+
+  return (
+    <div className="space-y-1">
+      <Link
+        to="/admin/applications/$id"
+        params={{ id: latestCase.id }}
+        className="font-medium text-[var(--color-primary)] hover:underline"
+      >
+        {formatDate(latestCase.createdAt)}
+      </Link>
+      <div className="text-xs text-[var(--color-text-muted)]">
+        {latestCaseStatusText(latestCase)} · {latestCase.animalType}
+        {latestCase.requestedAnimalName ? ` · ${latestCase.requestedAnimalName}` : ""}
+      </div>
+    </div>
+  );
+}
+
 function StatusChip({ status }: { status: CoordinatorStatus }) {
   return (
     <Badge
@@ -242,7 +273,12 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
               label: "Blacklist status",
               value: <BlacklistBadge isBlacklisted={adopter.isBlacklisted} />,
             },
-            { label: "Latest case", value: formatDate(adopter.latestCaseAt) },
+            { label: "Email consent", value: formatConsentStatus(adopter.emailConsent) },
+            {
+              label: "WhatsApp consent",
+              value: formatConsentStatus(adopter.whatsappConsent),
+            },
+            { label: "Latest case", value: <LatestCaseLink latestCase={adopter.latestCase} /> },
           ]}
         />
         {adopter.isBlacklisted && (

@@ -1,3 +1,5 @@
+import type { ConsentStatus } from "../crm/types";
+
 export type CoordinatorStatusCategory =
   | "adoption_case"
   | "animal_lifecycle"
@@ -142,6 +144,8 @@ export type AdopterSuccessfulAdoptionRow = {
   pickupDate: string | null;
 };
 
+export type AdopterLatestCaseSummary = AdopterCaseHistoryRow;
+
 export type AdopterSummary = {
   id: string;
   supporterId: string | null;
@@ -154,6 +158,7 @@ export type AdopterSummary = {
   successfulAdoptionCount: number;
   openTaskCount: number;
   latestCaseAt: string | null;
+  latestCase: AdopterLatestCaseSummary | null;
 };
 
 export type AdopterDetail = AdopterSummary & {
@@ -168,6 +173,8 @@ export type AdopterDetail = AdopterSummary & {
   address: string | null;
   floorArea: string | null;
   blacklistReason: string | null;
+  emailConsent: ConsentStatus | null;
+  whatsappConsent: ConsentStatus | null;
   cases: AdopterCaseHistoryRow[];
   successfulAdoptions: AdopterSuccessfulAdoptionRow[];
   tasks: CoordinatorTask[];
