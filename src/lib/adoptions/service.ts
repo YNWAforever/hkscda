@@ -104,6 +104,24 @@ function timestamp(now: () => Date) {
   return now().toISOString();
 }
 
+function hasEffectiveTaskLink(current: CoordinatorTask, input: CoordinatorTaskUpdate) {
+  const adoptionCaseId =
+    input.adoptionCaseId !== undefined ? input.adoptionCaseId : current.adoptionCase?.id;
+  const adopterProfileId =
+    input.adopterProfileId !== undefined ? input.adopterProfileId : current.adopterProfile?.id;
+  const animalId = input.animalId !== undefined ? input.animalId : current.animal?.id;
+
+  return Boolean(adoptionCaseId || adopterProfileId || animalId);
+}
+
+function effectiveTaskCompletion(current: CoordinatorTask, input: CoordinatorTaskUpdate) {
+  return {
+    completedAt: input.completedAt !== undefined ? input.completedAt : current.completedAt,
+    outcome: input.outcome !== undefined ? input.outcome : current.outcome,
+    remarks: input.remarks !== undefined ? input.remarks : current.remarks,
+  };
+}
+
 export function createAdoptionCoordinatorService({
   repo,
   now = () => new Date(),
@@ -239,18 +257,28 @@ export function createAdoptionCoordinatorService({
 
     async updateTask(args: { actorUserId: string; taskId: string; input: unknown }) {
       const input = coordinatorTaskUpdateSchema.parse(args.input);
-      let status: CoordinatorStatus | null = null;
+      const current = await repo.getTask(args.taskId);
+      if (!current) throw new Error("Task not found");
+
+      let statusForAudit: CoordinatorStatus | null = null;
+      let effectiveStatus = current.status;
       if (input.statusId) {
-        status = await repo.getStatus(input.statusId);
-        if (!status || status.category !== "followup") throw new Error("Invalid followup status");
-        if (!status.isActive) throw new Error("Inactive followup status");
-        validateTaskCompletion({
-          status,
-          completedAt: input.completedAt ?? null,
-          outcome: input.outcome ?? null,
-          remarks: input.remarks ?? null,
-        });
+        statusForAudit = await repo.getStatus(input.statusId);
+        if (!statusForAudit || statusForAudit.category !== "followup") {
+          throw new Error("Invalid followup status");
+        }
+        if (!statusForAudit.isActive) throw new Error("Inactive followup status");
+        effectiveStatus = statusForAudit;
       }
+
+      if (!hasEffectiveTaskLink(current, input)) {
+        throw new Error("Invalid coordinator task links");
+      }
+
+      validateTaskCompletion({
+        status: effectiveStatus,
+        ...effectiveTaskCompletion(current, input),
+      });
 
       const task = await repo.updateTask({
         ...input,
@@ -260,8 +288,8 @@ export function createAdoptionCoordinatorService({
 
       await repo.insertAuditLog({
         actor_user_id: args.actorUserId,
-        action: status
-          ? buildTaskAuditAction({ created: false, status })
+        action: statusForAudit
+          ? buildTaskAuditAction({ created: false, status: statusForAudit })
           : "coordinator_task.update",
         entity: "adoption_followup",
         entity_id: task.id,
