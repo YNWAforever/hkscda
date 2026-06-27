@@ -39,6 +39,7 @@ import { Route as ApiAdminPaymentsRouteImport } from './routes/api/admin/payment
 import { Route as AnimalsDogIdRouteImport } from './routes/animals/dog_.$id'
 import { Route as AnimalsCatIdRouteImport } from './routes/animals/cat_.$id'
 import { Route as AdminSupportersIdRouteImport } from './routes/admin/supporters/$id'
+import { Route as AdminCoordinatorTasksRouteImport } from './routes/admin/coordinator/tasks'
 import { Route as AdminCoordinatorStatusesRouteImport } from './routes/admin/coordinator/statuses'
 import { Route as AdminCoordinatorAnimalsRouteImport } from './routes/admin/coordinator/animals'
 import { Route as AdminApplicationsIdRouteImport } from './routes/admin/applications/$id'
@@ -214,6 +215,11 @@ const AdminSupportersIdRoute = AdminSupportersIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AdminSupportersRoute,
 } as any)
+const AdminCoordinatorTasksRoute = AdminCoordinatorTasksRouteImport.update({
+  id: '/admin/coordinator/tasks',
+  path: '/admin/coordinator/tasks',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminCoordinatorStatusesRoute =
   AdminCoordinatorStatusesRouteImport.update({
     id: '/admin/coordinator/statuses',
@@ -376,6 +382,7 @@ export interface FileRoutesByFullPath {
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
   '/admin/coordinator/animals': typeof AdminCoordinatorAnimalsRoute
   '/admin/coordinator/statuses': typeof AdminCoordinatorStatusesRoute
+  '/admin/coordinator/tasks': typeof AdminCoordinatorTasksRoute
   '/admin/supporters/$id': typeof AdminSupportersIdRoute
   '/animals/cat/$id': typeof AnimalsCatIdRoute
   '/animals/dog/$id': typeof AnimalsDogIdRoute
@@ -431,6 +438,7 @@ export interface FileRoutesByTo {
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
   '/admin/coordinator/animals': typeof AdminCoordinatorAnimalsRoute
   '/admin/coordinator/statuses': typeof AdminCoordinatorStatusesRoute
+  '/admin/coordinator/tasks': typeof AdminCoordinatorTasksRoute
   '/admin/supporters/$id': typeof AdminSupportersIdRoute
   '/animals/cat/$id': typeof AnimalsCatIdRoute
   '/animals/dog/$id': typeof AnimalsDogIdRoute
@@ -488,6 +496,7 @@ export interface FileRoutesById {
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
   '/admin/coordinator/animals': typeof AdminCoordinatorAnimalsRoute
   '/admin/coordinator/statuses': typeof AdminCoordinatorStatusesRoute
+  '/admin/coordinator/tasks': typeof AdminCoordinatorTasksRoute
   '/admin/supporters/$id': typeof AdminSupportersIdRoute
   '/animals/cat_/$id': typeof AnimalsCatIdRoute
   '/animals/dog_/$id': typeof AnimalsDogIdRoute
@@ -546,6 +555,7 @@ export interface FileRouteTypes {
     | '/admin/applications/$id'
     | '/admin/coordinator/animals'
     | '/admin/coordinator/statuses'
+    | '/admin/coordinator/tasks'
     | '/admin/supporters/$id'
     | '/animals/cat/$id'
     | '/animals/dog/$id'
@@ -601,6 +611,7 @@ export interface FileRouteTypes {
     | '/admin/applications/$id'
     | '/admin/coordinator/animals'
     | '/admin/coordinator/statuses'
+    | '/admin/coordinator/tasks'
     | '/admin/supporters/$id'
     | '/animals/cat/$id'
     | '/animals/dog/$id'
@@ -657,6 +668,7 @@ export interface FileRouteTypes {
     | '/admin/applications/$id'
     | '/admin/coordinator/animals'
     | '/admin/coordinator/statuses'
+    | '/admin/coordinator/tasks'
     | '/admin/supporters/$id'
     | '/animals/cat_/$id'
     | '/animals/dog_/$id'
@@ -713,6 +725,7 @@ export interface RootRouteChildren {
   AdminAnimalsNewRoute: typeof AdminAnimalsNewRoute
   AdminCoordinatorAnimalsRoute: typeof AdminCoordinatorAnimalsRoute
   AdminCoordinatorStatusesRoute: typeof AdminCoordinatorStatusesRoute
+  AdminCoordinatorTasksRoute: typeof AdminCoordinatorTasksRoute
   AnimalsCatIdRoute: typeof AnimalsCatIdRoute
   AnimalsDogIdRoute: typeof AnimalsDogIdRoute
   ApiAdminPaymentsRoute: typeof ApiAdminPaymentsRouteWithChildren
@@ -942,6 +955,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/supporters/$id'
       preLoaderRoute: typeof AdminSupportersIdRouteImport
       parentRoute: typeof AdminSupportersRoute
+    }
+    '/admin/coordinator/tasks': {
+      id: '/admin/coordinator/tasks'
+      path: '/admin/coordinator/tasks'
+      fullPath: '/admin/coordinator/tasks'
+      preLoaderRoute: typeof AdminCoordinatorTasksRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/coordinator/statuses': {
       id: '/admin/coordinator/statuses'
@@ -1272,6 +1292,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAnimalsNewRoute: AdminAnimalsNewRoute,
   AdminCoordinatorAnimalsRoute: AdminCoordinatorAnimalsRoute,
   AdminCoordinatorStatusesRoute: AdminCoordinatorStatusesRoute,
+  AdminCoordinatorTasksRoute: AdminCoordinatorTasksRoute,
   AnimalsCatIdRoute: AnimalsCatIdRoute,
   AnimalsDogIdRoute: AnimalsDogIdRoute,
   ApiAdminPaymentsRoute: ApiAdminPaymentsRouteWithChildren,

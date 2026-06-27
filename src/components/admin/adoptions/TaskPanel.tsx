@@ -35,6 +35,8 @@ type TaskPanelProps = {
   tasks: CoordinatorTask[];
   statuses: CoordinatorStatus[];
   defaultLinks?: TaskPanelDefaultLinks;
+  showCreateForm?: boolean;
+  emptyMessage?: string;
   onChanged?: () => Promise<void> | void;
 };
 
@@ -434,6 +436,8 @@ export function TaskPanel({
   tasks,
   statuses,
   defaultLinks = EMPTY_DEFAULT_LINKS,
+  showCreateForm = true,
+  emptyMessage = "No follow-ups recorded",
   onChanged,
 }: TaskPanelProps) {
   const defaultStatusId = useMemo(() => getDefaultFollowupStatusId(statuses), [statuses]);
@@ -488,101 +492,107 @@ export function TaskPanel({
         </div>
       </div>
 
-      <div className="grid gap-4 border-b border-[var(--color-border)] p-4 lg:grid-cols-[minmax(220px,1fr)_200px_180px_180px_minmax(220px,1fr)_auto]">
-        <div className="space-y-1.5">
-          <Label htmlFor="task-title">Title</Label>
-          <Input
-            id="task-title"
-            value={form.title}
-            onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
-            placeholder="Post-adoption call"
-          />
+      {showCreateForm && (
+        <div className="grid gap-4 border-b border-[var(--color-border)] p-4 lg:grid-cols-[minmax(220px,1fr)_200px_180px_180px_minmax(220px,1fr)_auto]">
+          <div className="space-y-1.5">
+            <Label htmlFor="task-title">Title</Label>
+            <Input
+              id="task-title"
+              value={form.title}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, title: event.target.value }))
+              }
+              placeholder="Post-adoption call"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="task-status">Status</Label>
+            <StatusSelect
+              id="task-status"
+              value={form.statusId}
+              statuses={followupStatuses}
+              onChange={(value) => setForm((current) => ({ ...current, statusId: value }))}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="task-priority">Priority</Label>
+            <PrioritySelect
+              id="task-priority"
+              value={form.priority}
+              onChange={(value) => setForm((current) => ({ ...current, priority: value }))}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="task-create-channel">Channel</Label>
+            <ContactChannelSelect
+              id="task-create-channel"
+              value={form.contactChannel}
+              onChange={(value) => setForm((current) => ({ ...current, contactChannel: value }))}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="task-volunteer">Volunteer</Label>
+            <Input
+              id="task-volunteer"
+              value={form.volunteer}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, volunteer: event.target.value }))
+              }
+              placeholder="Optional"
+            />
+          </div>
+          <div className="flex items-end">
+            <Button type="button" onClick={() => createMutation.mutate()} disabled={!canCreate}>
+              <Plus className="h-4 w-4" />
+              Add task
+            </Button>
+          </div>
+          <div className="space-y-1.5 lg:col-span-2">
+            <Label htmlFor="task-due">Due</Label>
+            <Input
+              id="task-due"
+              type="datetime-local"
+              value={form.dueAt}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, dueAt: event.target.value }))
+              }
+            />
+          </div>
+          <div className="space-y-1.5 lg:col-span-2">
+            <Label htmlFor="task-scheduled">Scheduled</Label>
+            <Input
+              id="task-scheduled"
+              type="datetime-local"
+              value={form.scheduledAt}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, scheduledAt: event.target.value }))
+              }
+            />
+          </div>
+          <div className="space-y-1.5 lg:col-span-2">
+            <Label htmlFor="task-remarks">Remarks</Label>
+            <Textarea
+              id="task-remarks"
+              value={form.remarks}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, remarks: event.target.value }))
+              }
+              className="min-h-9"
+              placeholder="Optional coordinator note"
+            />
+          </div>
         </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="task-status">Status</Label>
-          <StatusSelect
-            id="task-status"
-            value={form.statusId}
-            statuses={followupStatuses}
-            onChange={(value) => setForm((current) => ({ ...current, statusId: value }))}
-          />
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="task-priority">Priority</Label>
-          <PrioritySelect
-            id="task-priority"
-            value={form.priority}
-            onChange={(value) => setForm((current) => ({ ...current, priority: value }))}
-          />
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="task-create-channel">Channel</Label>
-          <ContactChannelSelect
-            id="task-create-channel"
-            value={form.contactChannel}
-            onChange={(value) => setForm((current) => ({ ...current, contactChannel: value }))}
-          />
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="task-volunteer">Volunteer</Label>
-          <Input
-            id="task-volunteer"
-            value={form.volunteer}
-            onChange={(event) =>
-              setForm((current) => ({ ...current, volunteer: event.target.value }))
-            }
-            placeholder="Optional"
-          />
-        </div>
-        <div className="flex items-end">
-          <Button type="button" onClick={() => createMutation.mutate()} disabled={!canCreate}>
-            <Plus className="h-4 w-4" />
-            Add task
-          </Button>
-        </div>
-        <div className="space-y-1.5 lg:col-span-2">
-          <Label htmlFor="task-due">Due</Label>
-          <Input
-            id="task-due"
-            type="datetime-local"
-            value={form.dueAt}
-            onChange={(event) => setForm((current) => ({ ...current, dueAt: event.target.value }))}
-          />
-        </div>
-        <div className="space-y-1.5 lg:col-span-2">
-          <Label htmlFor="task-scheduled">Scheduled</Label>
-          <Input
-            id="task-scheduled"
-            type="datetime-local"
-            value={form.scheduledAt}
-            onChange={(event) =>
-              setForm((current) => ({ ...current, scheduledAt: event.target.value }))
-            }
-          />
-        </div>
-        <div className="space-y-1.5 lg:col-span-2">
-          <Label htmlFor="task-remarks">Remarks</Label>
-          <Textarea
-            id="task-remarks"
-            value={form.remarks}
-            onChange={(event) =>
-              setForm((current) => ({ ...current, remarks: event.target.value }))
-            }
-            className="min-h-9"
-            placeholder="Optional coordinator note"
-          />
-        </div>
-      </div>
+      )}
 
-      {createMutation.error && <TaskPanelAsyncError message={createMutation.error.message} />}
-      {followupStatuses.length === 0 && (
+      {showCreateForm && createMutation.error && (
+        <TaskPanelAsyncError message={createMutation.error.message} />
+      )}
+      {showCreateForm && followupStatuses.length === 0 && (
         <TaskPanelAsyncError message="Create an active follow-up status before adding tasks." />
       )}
 
       {tasks.length === 0 ? (
-        <div className="px-4 py-6 text-sm text-[var(--color-text-muted)]">
-          No follow-ups recorded
-        </div>
+        <div className="px-4 py-6 text-sm text-[var(--color-text-muted)]">{emptyMessage}</div>
       ) : (
         <div>
           {tasks.map((task) => (

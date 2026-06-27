@@ -25,6 +25,13 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     to: "/admin/coordinator/statuses",
     activePath: "/admin/coordinator/statuses",
   },
+  {
+    id: "coordinator-tasks",
+    section: "applications",
+    label: "工作跟進",
+    to: "/admin/coordinator/tasks",
+    activePath: "/admin/coordinator/tasks",
+  },
   { id: "payments", section: "payments", label: "收款", to: "/admin?section=payments" },
   { id: "supporters", section: "supporters", label: "捐款人", to: "/admin/supporters" },
 ];
