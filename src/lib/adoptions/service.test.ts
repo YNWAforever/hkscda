@@ -11,6 +11,7 @@ const followupStatusId = "55555555-6666-4333-8444-555555555555";
 const finalOutcomeStatusId = "66666666-7777-4333-8444-555555555555";
 const animalId = "77777777-8888-4333-8444-555555555555";
 const matchId = "88888888-9999-4333-8444-555555555555";
+const adopterProfileId = "99999999-aaaa-4333-8444-555555555555";
 
 function status(overrides: Partial<CoordinatorStatus> = {}): CoordinatorStatus {
   return {
@@ -67,6 +68,22 @@ function createRepo(
     async getCaseDetail(id) {
       calls.push({ name: "getCaseDetail", payload: id });
       return null;
+    },
+    async listTasks(input) {
+      calls.push({ name: "listTasks", payload: input });
+      return { tasks: [], total: 0 };
+    },
+    async getTask(id) {
+      calls.push({ name: "getTask", payload: id });
+      return null;
+    },
+    async createTask(input) {
+      calls.push({ name: "createTask", payload: input });
+      return { id: "followup-1" };
+    },
+    async updateTask(input) {
+      calls.push({ name: "updateTask", payload: input });
+      return { id: input.taskId };
     },
     async changeCaseStatus(input) {
       calls.push({ name: "changeCaseStatus", payload: input });
@@ -362,5 +379,133 @@ describe("createAdoptionCoordinatorService", () => {
     ).rejects.toThrow("Invalid successful adoption outcome status");
 
     expect(repo.calls.map((call) => call.name)).toEqual(["getStatus"]);
+  });
+
+  test("creates a coordinator task linked to case adopter and animal and audits it", async () => {
+    const repo = createRepo();
+    const service = createAdoptionCoordinatorService({
+      repo,
+      now: () => new Date("2026-06-27T10:00:00.000Z"),
+    });
+
+    await service.createTask({
+      actorUserId: adminId,
+      input: {
+        title: "Post-adoption call",
+        statusId: followupStatusId,
+        adoptionCaseId: caseId,
+        adopterProfileId,
+        animalId,
+        priority: "high",
+        dueAt: "2026-06-28T10:00:00.000Z",
+        contactChannel: "phone",
+      },
+    });
+
+    expect(repo.calls.map((call) => call.name)).toEqual([
+      "getStatus",
+      "createTask",
+      "insertAuditLog",
+    ]);
+    expect(repo.calls[1].payload).toMatchObject({
+      title: "Post-adoption call",
+      adoptionCaseId: caseId,
+      adopterProfileId,
+      animalId,
+      priority: "high",
+      createdBy: adminId,
+    });
+    expect(repo.calls[2].payload).toMatchObject({
+      action: "coordinator_task.create",
+      entity: "adoption_followup",
+      actor_user_id: adminId,
+    });
+  });
+
+  test("rejects coordinator tasks without linked entities before repository mutation", async () => {
+    const repo = createRepo();
+    const service = createAdoptionCoordinatorService({ repo });
+
+    await expect(
+      service.createTask({
+        actorUserId: adminId,
+        input: { title: "Unlinked", statusId: followupStatusId },
+      }),
+    ).rejects.toThrow();
+
+    expect(repo.calls).toEqual([]);
+  });
+
+  test("rejects completed task status without completion details before repository mutation", async () => {
+    const repo = createRepo({
+      async getStatus(id) {
+        repo.calls.push({ name: "getStatus", payload: id });
+        return status({
+          id,
+          category: "followup",
+          key: "completed",
+          isFinal: true,
+          isClosing: true,
+        });
+      },
+    });
+    const service = createAdoptionCoordinatorService({ repo });
+
+    await expect(
+      service.createTask({
+        actorUserId: adminId,
+        input: {
+          title: "Complete home visit",
+          statusId: followupStatusId,
+          adoptionCaseId: caseId,
+        },
+      }),
+    ).rejects.toThrow("Completed tasks require a completed date");
+
+    expect(repo.calls.map((call) => call.name)).toEqual(["getStatus"]);
+  });
+
+  test("updates coordinator task and audits complete action", async () => {
+    const repo = createRepo({
+      async getStatus(id) {
+        repo.calls.push({ name: "getStatus", payload: id });
+        return status({
+          id,
+          category: "followup",
+          key: "completed",
+          isFinal: true,
+          isClosing: true,
+        });
+      },
+      async updateTask(input) {
+        repo.calls.push({ name: "updateTask", payload: input });
+        return { id: "followup-1" };
+      },
+    });
+    const service = createAdoptionCoordinatorService({
+      repo,
+      now: () => new Date("2026-06-27T10:00:00.000Z"),
+    });
+
+    await service.updateTask({
+      actorUserId: adminId,
+      taskId: "followup-1",
+      input: {
+        statusId: followupStatusId,
+        completedAt: "2026-06-27T09:30:00.000Z",
+        outcome: "Visit completed",
+      },
+    });
+
+    expect(repo.calls.map((call) => call.name)).toEqual([
+      "getStatus",
+      "updateTask",
+      "insertAuditLog",
+    ]);
+    expect(repo.calls[2].payload).toMatchObject({
+      action: "coordinator_task.complete",
+      entity: "adoption_followup",
+      entity_id: "followup-1",
+    });
   });
 });
