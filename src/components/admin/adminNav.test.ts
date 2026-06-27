@@ -29,4 +29,20 @@ describe("admin nav active state", () => {
       getActiveAdminNavItemIds(ADMIN_NAV_ITEMS, "/admin/coordinator/tasks", "applications"),
     ).toEqual(["coordinator-tasks"]);
   });
+
+  test("uses only the coordinator adopters item on adopter routes", () => {
+    expect(
+      getActiveAdminNavItemIds(ADMIN_NAV_ITEMS, "/admin/coordinator/adopters", "applications"),
+    ).toEqual(["coordinator-adopters"]);
+  });
+
+  test("uses the coordinator adopters item on nested adopter detail routes", () => {
+    expect(
+      getActiveAdminNavItemIds(
+        ADMIN_NAV_ITEMS,
+        "/admin/coordinator/adopters/99999999-aaaa-4333-8444-555555555555",
+        "applications",
+      ),
+    ).toEqual(["coordinator-adopters"]);
+  });
 });

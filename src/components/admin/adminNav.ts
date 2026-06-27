@@ -32,6 +32,13 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     to: "/admin/coordinator/tasks",
     activePath: "/admin/coordinator/tasks",
   },
+  {
+    id: "coordinator-adopters",
+    section: "applications",
+    label: "領養人",
+    to: "/admin/coordinator/adopters",
+    activePath: "/admin/coordinator/adopters",
+  },
   { id: "payments", section: "payments", label: "收款", to: "/admin?section=payments" },
   { id: "supporters", section: "supporters", label: "捐款人", to: "/admin/supporters" },
 ];
@@ -41,11 +48,17 @@ export function getActiveAdminNavItemIds(
   pathname: string,
   activeSection: AdminSection,
 ) {
-  const hasPathSpecificActive = items.some((item) => item.activePath === pathname);
+  const hasPathSpecificActive = items.some((item) =>
+    item.activePath
+      ? pathname === item.activePath || pathname.startsWith(`${item.activePath}/`)
+      : false,
+  );
 
   return items
     .filter((item) => {
-      if (item.activePath) return item.activePath === pathname;
+      if (item.activePath) {
+        return pathname === item.activePath || pathname.startsWith(`${item.activePath}/`);
+      }
       if (hasPathSpecificActive) return false;
       return activeSection === item.section;
     })

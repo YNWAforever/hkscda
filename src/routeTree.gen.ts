@@ -42,6 +42,7 @@ import { Route as AdminSupportersIdRouteImport } from './routes/admin/supporters
 import { Route as AdminCoordinatorTasksRouteImport } from './routes/admin/coordinator/tasks'
 import { Route as AdminCoordinatorStatusesRouteImport } from './routes/admin/coordinator/statuses'
 import { Route as AdminCoordinatorAnimalsRouteImport } from './routes/admin/coordinator/animals'
+import { Route as AdminCoordinatorAdoptersRouteImport } from './routes/admin/coordinator/adopters'
 import { Route as AdminApplicationsIdRouteImport } from './routes/admin/applications/$id'
 import { Route as AdminAnimalsNewRouteImport } from './routes/admin/animals/new'
 import { Route as ApiAdminSupportersIdRouteImport } from './routes/api/admin/supporters/$id'
@@ -52,6 +53,7 @@ import { Route as ApiAdminAdoptionsTasksRouteImport } from './routes/api/admin/a
 import { Route as ApiAdminAdoptionsStatusesRouteImport } from './routes/api/admin/adoptions/statuses'
 import { Route as ApiAdminAdoptionsCasesRouteImport } from './routes/api/admin/adoptions/cases'
 import { Route as ApiAdminAdoptionsAdoptersRouteImport } from './routes/api/admin/adoptions/adopters'
+import { Route as AdminCoordinatorAdoptersIdRouteImport } from './routes/admin/coordinator/adopters/$id'
 import { Route as AdminAnimalsIdEditRouteImport } from './routes/admin/animals/$id.edit'
 import { Route as ApiAdminSupportersIdConsentsRouteImport } from './routes/api/admin/supporters/$id/consents'
 import { Route as ApiAdminReceiptsIdVoidRouteImport } from './routes/api/admin/receipts/$id/void'
@@ -233,6 +235,12 @@ const AdminCoordinatorAnimalsRoute = AdminCoordinatorAnimalsRouteImport.update({
   path: '/admin/coordinator/animals',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminCoordinatorAdoptersRoute =
+  AdminCoordinatorAdoptersRouteImport.update({
+    id: '/admin/coordinator/adopters',
+    path: '/admin/coordinator/adopters',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminApplicationsIdRoute = AdminApplicationsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -286,6 +294,12 @@ const ApiAdminAdoptionsAdoptersRoute =
     id: '/api/admin/adoptions/adopters',
     path: '/api/admin/adoptions/adopters',
     getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminCoordinatorAdoptersIdRoute =
+  AdminCoordinatorAdoptersIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AdminCoordinatorAdoptersRoute,
   } as any)
 const AdminAnimalsIdEditRoute = AdminAnimalsIdEditRouteImport.update({
   id: '/admin/animals/$id/edit',
@@ -394,6 +408,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/admin/animals/new': typeof AdminAnimalsNewRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
+  '/admin/coordinator/adopters': typeof AdminCoordinatorAdoptersRouteWithChildren
   '/admin/coordinator/animals': typeof AdminCoordinatorAnimalsRoute
   '/admin/coordinator/statuses': typeof AdminCoordinatorStatusesRoute
   '/admin/coordinator/tasks': typeof AdminCoordinatorTasksRoute
@@ -407,6 +422,7 @@ export interface FileRoutesByFullPath {
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/admin/applications/': typeof AdminApplicationsIndexRoute
   '/admin/animals/$id/edit': typeof AdminAnimalsIdEditRoute
+  '/admin/coordinator/adopters/$id': typeof AdminCoordinatorAdoptersIdRoute
   '/api/admin/adoptions/adopters': typeof ApiAdminAdoptionsAdoptersRouteWithChildren
   '/api/admin/adoptions/cases': typeof ApiAdminAdoptionsCasesRouteWithChildren
   '/api/admin/adoptions/statuses': typeof ApiAdminAdoptionsStatusesRouteWithChildren
@@ -452,6 +468,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/admin/animals/new': typeof AdminAnimalsNewRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
+  '/admin/coordinator/adopters': typeof AdminCoordinatorAdoptersRouteWithChildren
   '/admin/coordinator/animals': typeof AdminCoordinatorAnimalsRoute
   '/admin/coordinator/statuses': typeof AdminCoordinatorStatusesRoute
   '/admin/coordinator/tasks': typeof AdminCoordinatorTasksRoute
@@ -465,6 +482,7 @@ export interface FileRoutesByTo {
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/admin/applications': typeof AdminApplicationsIndexRoute
   '/admin/animals/$id/edit': typeof AdminAnimalsIdEditRoute
+  '/admin/coordinator/adopters/$id': typeof AdminCoordinatorAdoptersIdRoute
   '/api/admin/adoptions/adopters': typeof ApiAdminAdoptionsAdoptersRouteWithChildren
   '/api/admin/adoptions/cases': typeof ApiAdminAdoptionsCasesRouteWithChildren
   '/api/admin/adoptions/statuses': typeof ApiAdminAdoptionsStatusesRouteWithChildren
@@ -512,6 +530,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/admin/animals/new': typeof AdminAnimalsNewRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
+  '/admin/coordinator/adopters': typeof AdminCoordinatorAdoptersRouteWithChildren
   '/admin/coordinator/animals': typeof AdminCoordinatorAnimalsRoute
   '/admin/coordinator/statuses': typeof AdminCoordinatorStatusesRoute
   '/admin/coordinator/tasks': typeof AdminCoordinatorTasksRoute
@@ -525,6 +544,7 @@ export interface FileRoutesById {
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/admin/applications/': typeof AdminApplicationsIndexRoute
   '/admin/animals/$id/edit': typeof AdminAnimalsIdEditRoute
+  '/admin/coordinator/adopters/$id': typeof AdminCoordinatorAdoptersIdRoute
   '/api/admin/adoptions/adopters': typeof ApiAdminAdoptionsAdoptersRouteWithChildren
   '/api/admin/adoptions/cases': typeof ApiAdminAdoptionsCasesRouteWithChildren
   '/api/admin/adoptions/statuses': typeof ApiAdminAdoptionsStatusesRouteWithChildren
@@ -573,6 +593,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/animals/new'
     | '/admin/applications/$id'
+    | '/admin/coordinator/adopters'
     | '/admin/coordinator/animals'
     | '/admin/coordinator/statuses'
     | '/admin/coordinator/tasks'
@@ -586,6 +607,7 @@ export interface FileRouteTypes {
     | '/api/webhooks/stripe'
     | '/admin/applications/'
     | '/admin/animals/$id/edit'
+    | '/admin/coordinator/adopters/$id'
     | '/api/admin/adoptions/adopters'
     | '/api/admin/adoptions/cases'
     | '/api/admin/adoptions/statuses'
@@ -631,6 +653,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/animals/new'
     | '/admin/applications/$id'
+    | '/admin/coordinator/adopters'
     | '/admin/coordinator/animals'
     | '/admin/coordinator/statuses'
     | '/admin/coordinator/tasks'
@@ -644,6 +667,7 @@ export interface FileRouteTypes {
     | '/api/webhooks/stripe'
     | '/admin/applications'
     | '/admin/animals/$id/edit'
+    | '/admin/coordinator/adopters/$id'
     | '/api/admin/adoptions/adopters'
     | '/api/admin/adoptions/cases'
     | '/api/admin/adoptions/statuses'
@@ -690,6 +714,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/animals/new'
     | '/admin/applications/$id'
+    | '/admin/coordinator/adopters'
     | '/admin/coordinator/animals'
     | '/admin/coordinator/statuses'
     | '/admin/coordinator/tasks'
@@ -703,6 +728,7 @@ export interface FileRouteTypes {
     | '/api/webhooks/stripe'
     | '/admin/applications/'
     | '/admin/animals/$id/edit'
+    | '/admin/coordinator/adopters/$id'
     | '/api/admin/adoptions/adopters'
     | '/api/admin/adoptions/cases'
     | '/api/admin/adoptions/statuses'
@@ -749,6 +775,7 @@ export interface RootRouteChildren {
   AboutIndexRoute: typeof AboutIndexRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminAnimalsNewRoute: typeof AdminAnimalsNewRoute
+  AdminCoordinatorAdoptersRoute: typeof AdminCoordinatorAdoptersRouteWithChildren
   AdminCoordinatorAnimalsRoute: typeof AdminCoordinatorAnimalsRoute
   AdminCoordinatorStatusesRoute: typeof AdminCoordinatorStatusesRoute
   AdminCoordinatorTasksRoute: typeof AdminCoordinatorTasksRoute
@@ -1004,6 +1031,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCoordinatorAnimalsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/coordinator/adopters': {
+      id: '/admin/coordinator/adopters'
+      path: '/admin/coordinator/adopters'
+      fullPath: '/admin/coordinator/adopters'
+      preLoaderRoute: typeof AdminCoordinatorAdoptersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/applications/$id': {
       id: '/admin/applications/$id'
       path: '/$id'
@@ -1073,6 +1107,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/admin/adoptions/adopters'
       preLoaderRoute: typeof ApiAdminAdoptionsAdoptersRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/coordinator/adopters/$id': {
+      id: '/admin/coordinator/adopters/$id'
+      path: '/$id'
+      fullPath: '/admin/coordinator/adopters/$id'
+      preLoaderRoute: typeof AdminCoordinatorAdoptersIdRouteImport
+      parentRoute: typeof AdminCoordinatorAdoptersRoute
     }
     '/admin/animals/$id/edit': {
       id: '/admin/animals/$id/edit'
@@ -1199,6 +1240,20 @@ const AdminSupportersRouteChildren: AdminSupportersRouteChildren = {
 const AdminSupportersRouteWithChildren = AdminSupportersRoute._addFileChildren(
   AdminSupportersRouteChildren,
 )
+
+interface AdminCoordinatorAdoptersRouteChildren {
+  AdminCoordinatorAdoptersIdRoute: typeof AdminCoordinatorAdoptersIdRoute
+}
+
+const AdminCoordinatorAdoptersRouteChildren: AdminCoordinatorAdoptersRouteChildren =
+  {
+    AdminCoordinatorAdoptersIdRoute: AdminCoordinatorAdoptersIdRoute,
+  }
+
+const AdminCoordinatorAdoptersRouteWithChildren =
+  AdminCoordinatorAdoptersRoute._addFileChildren(
+    AdminCoordinatorAdoptersRouteChildren,
+  )
 
 interface ApiAdminPaymentsRouteChildren {
   ApiAdminPaymentsIdReconcileRoute: typeof ApiAdminPaymentsIdReconcileRoute
@@ -1345,6 +1400,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutIndexRoute: AboutIndexRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminAnimalsNewRoute: AdminAnimalsNewRoute,
+  AdminCoordinatorAdoptersRoute: AdminCoordinatorAdoptersRouteWithChildren,
   AdminCoordinatorAnimalsRoute: AdminCoordinatorAnimalsRoute,
   AdminCoordinatorStatusesRoute: AdminCoordinatorStatusesRoute,
   AdminCoordinatorTasksRoute: AdminCoordinatorTasksRoute,
