@@ -101,6 +101,26 @@ function createRepo(
       calls.push({ name: "listAdopters", payload: input });
       return { adopters: [], total: 0 };
     },
+    async listCaseExportRows(input) {
+      calls.push({ name: "listCaseExportRows", payload: input });
+      return [];
+    },
+    async listAdopterExportRows(input) {
+      calls.push({ name: "listAdopterExportRows", payload: input });
+      return [];
+    },
+    async listSuccessfulAdoptionExportRows() {
+      calls.push({ name: "listSuccessfulAdoptionExportRows" });
+      return [];
+    },
+    async listAnimalExportRows() {
+      calls.push({ name: "listAnimalExportRows" });
+      return [];
+    },
+    async listTaskExportRows(input) {
+      calls.push({ name: "listTaskExportRows", payload: input });
+      return [];
+    },
     async getAdopterDetail(id) {
       calls.push({ name: "getAdopterDetail", payload: id });
       return id === adopterProfileId
@@ -189,6 +209,62 @@ function setup(overrides: Partial<AdoptionCoordinatorRepository> = {}) {
 }
 
 describe("createAdoptionCoordinatorService", () => {
+  test("exports coordinator CSV and audits row count", async () => {
+    const { service, calls } = setup();
+
+    const result = await service.exportCoordinatorCsv({
+      actorUserId: adminId,
+      kind: "adopters",
+      rawSearch: { q: "Ada" },
+    });
+
+    expect(result).toEqual({
+      csv: "adopter_profile_id,supporter_id,display_name,email,phone,living_area,is_blacklisted,open_case_count,successful_adoption_count,open_task_count,latest_case_at",
+      filename: "coordinator-adopters.csv",
+      rowCount: 0,
+    });
+    expect(calls).toContainEqual({
+      name: "insertAuditLog",
+      payload: expect.objectContaining({
+        action: "coordinator_export.adopters",
+        entity: "coordinator_export",
+        entity_id: "adopters",
+        detail: {
+          filters: {
+            q: "Ada",
+            blacklisted: "all",
+            hasOpenCases: false,
+            hasOpenTasks: false,
+            page: 1,
+            pageSize: 25,
+          },
+          rowCount: 0,
+        },
+      }),
+    });
+  });
+
+  test("exports paginated coordinator CSV kinds from the first capped page", async () => {
+    const { service, calls } = setup();
+
+    await service.exportCoordinatorCsv({
+      actorUserId: adminId,
+      kind: "tasks",
+      rawSearch: { q: "call", page: "3", pageSize: "10" },
+    });
+
+    expect(calls).toContainEqual({
+      name: "listTaskExportRows",
+      payload: {
+        q: "call",
+        due: "all",
+        openOnly: false,
+        page: 1,
+        pageSize: 1000,
+      },
+    });
+  });
+
   test("lists adopters with normalized filters", async () => {
     const { service, calls } = setup();
 

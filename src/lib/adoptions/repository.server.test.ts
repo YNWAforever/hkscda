@@ -24,6 +24,8 @@ const secondSupporterId = "supporter-2";
 const secondCaseId = "cccccccc-dddd-4333-8444-555555555555";
 const caseLinkedTaskId = "dddddddd-eeee-4333-8444-555555555555";
 const unknownProfileId = "eeeeeeee-ffff-4333-8444-555555555555";
+const animalPositionId = "12345678-aaaa-4333-8444-555555555555";
+const arrivalSourceId = "87654321-bbbb-4333-8444-555555555555";
 
 const statusRow = {
   id: statusId,
@@ -57,6 +59,9 @@ type FakeState = {
   taskCaseRows: Record<string, unknown>[];
   adopterRows: Record<string, unknown>[];
   animalRows: Record<string, unknown>[];
+  internalProfileRows: Record<string, unknown>[];
+  animalPositionRows: Record<string, unknown>[];
+  arrivalSourceRows: Record<string, unknown>[];
   caseDetailRow: Record<string, unknown> | null;
   matchRows: Record<string, unknown>[];
   successRow: Record<string, unknown> | null;
@@ -217,6 +222,11 @@ class FakeQuery {
     if (this.table === "supporter") return this.collection(this.state.supporterRows);
     if (this.table === "adopter_profile") return this.collection(this.state.adopterRows);
     if (this.table === "animals") return this.collection(this.state.animalRows);
+    if (this.table === "animal_profile_internal") {
+      return this.collection(this.state.internalProfileRows);
+    }
+    if (this.table === "animal_position") return this.collection(this.state.animalPositionRows);
+    if (this.table === "arrival_source") return this.collection(this.state.arrivalSourceRows);
     if (this.table === "animal_match") return this.collection(this.state.matchRows);
     if (this.table === "successful_adoption") return this.collection(this.state.successRows);
     return this.executeMaybeSingle();
@@ -270,6 +280,9 @@ function createFakeClient(
     taskCaseRows?: Record<string, unknown>[];
     adopterRows?: Record<string, unknown>[];
     animalRows?: Record<string, unknown>[];
+    internalProfileRows?: Record<string, unknown>[];
+    animalPositionRows?: Record<string, unknown>[];
+    arrivalSourceRows?: Record<string, unknown>[];
     caseDetailRow?: Record<string, unknown> | null;
     matchRows?: Record<string, unknown>[];
     successRow?: Record<string, unknown> | null;
@@ -287,6 +300,9 @@ function createFakeClient(
     taskCaseRows: options.taskCaseRows ?? [],
     adopterRows: options.adopterRows ?? [],
     animalRows: options.animalRows ?? [],
+    internalProfileRows: options.internalProfileRows ?? [],
+    animalPositionRows: options.animalPositionRows ?? [],
+    arrivalSourceRows: options.arrivalSourceRows ?? [],
     caseDetailRow: options.caseDetailRow ?? null,
     matchRows: options.matchRows ?? [],
     successRow: options.successRow ?? null,
@@ -758,6 +774,156 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
         openTaskCount: 1,
       }),
     ]);
+  });
+
+  test("exports adopters by supporter identity without cross-table or filters", async () => {
+    const { repo, calls } = setupRepository({
+      supporterRows: [
+        { id: existingSupporterId, name: "Ada", email: "ada@example.test", phone: "61234567" },
+      ],
+      adopterRows: [
+        adopterRow({
+          supporter_id: existingSupporterId,
+          name_english: null,
+          name_chinese: null,
+          supporter: {
+            id: existingSupporterId,
+            name: "Ada",
+            email: "ada@example.test",
+            phone: "61234567",
+          },
+        }),
+      ],
+      caseRows: [
+        caseRow({
+          id: existingCaseId,
+          adopter_profile_id: existingProfileId,
+          closed_at: null,
+          created_at: "2026-06-27T08:00:00.000Z",
+        }),
+      ],
+      followupRows: [],
+      successRows: [successfulAdoptionRow({ adopter_profile_id: existingProfileId })],
+    });
+
+    const rows = await repo.listAdopterExportRows({
+      q: "ada@example.test",
+      blacklisted: "all",
+      hasOpenCases: false,
+      hasOpenTasks: false,
+      page: 1,
+      pageSize: 25,
+    });
+
+    expect(rows).toEqual([
+      {
+        adopterProfileId: existingProfileId,
+        supporterId: existingSupporterId,
+        displayName: "Ada",
+        email: "ada@example.test",
+        phone: "61234567",
+        livingArea: null,
+        isBlacklisted: false,
+        openCaseCount: 1,
+        successfulAdoptionCount: 1,
+        openTaskCount: 0,
+        latestCaseAt: "2026-06-27T08:00:00.000Z",
+      },
+    ]);
+    expect(
+      callsFor(calls, "adopter_profile", "or").some((call) =>
+        String(call.payload).includes("supporter."),
+      ),
+    ).toBe(false);
+    expect(calls).toContainEqual({
+      table: "supporter",
+      method: "or",
+      payload:
+        "name.ilike.%ada@example.test%,email.ilike.%ada@example.test%,phone.ilike.%ada@example.test%",
+      options: undefined,
+    });
+    expect(calls).toContainEqual({
+      table: "adopter_profile",
+      method: "range",
+      payload: { from: 0, to: 24 },
+    });
+  });
+
+  test("adopter export counts open tasks linked through adopter cases", async () => {
+    const { repo } = setupRepository({
+      adopterRows: [adopterRow()],
+      caseRows: [caseRow({ id: existingCaseId, adopter_profile_id: existingProfileId })],
+      followupRows: [
+        followupRow({
+          id: caseLinkedTaskId,
+          adoption_case_id: existingCaseId,
+          adopter_profile_id: null,
+          completed_at: null,
+        }),
+      ],
+    });
+
+    const rows = await repo.listAdopterExportRows({
+      blacklisted: "all",
+      hasOpenCases: false,
+      hasOpenTasks: false,
+      page: 1,
+      pageSize: 25,
+    });
+
+    expect(rows).toEqual([
+      expect.objectContaining({
+        adopterProfileId: existingProfileId,
+        openTaskCount: 1,
+      }),
+    ]);
+  });
+
+  test("exports animals with internal profile and lookup labels", async () => {
+    const { repo, calls } = setupRepository({
+      animalRows: [
+        animalRow({
+          type: "cat",
+          status: "fostered",
+        }),
+      ],
+      internalProfileRows: [
+        {
+          animal_id: animalId,
+          internal_code: "CAT-204",
+          arrival_source_id: arrivalSourceId,
+          current_position_id: animalPositionId,
+          is_adoptable: false,
+          is_inside_support_pool: true,
+          adopted_at: null,
+          deceased_at: null,
+        },
+      ],
+      animalPositionRows: [{ id: animalPositionId, name: "Foster home" }],
+      arrivalSourceRows: [{ id: arrivalSourceId, name_zh: "街上救援", name_en: "Street rescue" }],
+    });
+
+    const rows = await repo.listAnimalExportRows();
+
+    expect(rows).toEqual([
+      {
+        animalId,
+        type: "cat",
+        name: "Mochi",
+        nameEn: "Mochi",
+        status: "fostered",
+        internalCode: "CAT-204",
+        currentPosition: "Foster home",
+        arrivalSource: "街上救援",
+        isAdoptable: false,
+        isInsideSupportPool: true,
+        adoptedAt: null,
+        deceasedAt: null,
+      },
+    ]);
+    expect(callsFor(calls, "animal_profile_internal", "select")).toHaveLength(1);
+    expect(callsFor(calls, "animal_position", "select")).toHaveLength(1);
+    expect(callsFor(calls, "arrival_source", "select")).toHaveLength(1);
   });
 
   test("includes tasks linked through adopter cases in adopter detail", async () => {

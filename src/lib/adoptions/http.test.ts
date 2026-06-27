@@ -119,6 +119,14 @@ function createFakeService(overrides: Partial<AdoptionCoordinatorService> = {}) 
       calls.push({ name: "listAdopters", payload: rawSearch });
       return { adopters: [], total: 0 };
     },
+    async exportCoordinatorCsv(payload) {
+      calls.push({ name: "exportCoordinatorCsv", payload });
+      return {
+        csv: "adopter_profile_id\nprofile-1",
+        filename: "coordinator-adopters.csv",
+        rowCount: 1,
+      };
+    },
     async getAdopterDetail(id) {
       calls.push({ name: "getAdopterDetail", payload: id });
       return { id: adopterProfileId, requestedId: id };
@@ -253,6 +261,38 @@ describe("createAdoptionCoordinatorHandlers", () => {
     expect(await response.json()).toEqual({
       statuses: [status],
     });
+  });
+
+  test("coordinator export requires auth and returns no-store CSV", async () => {
+    const { service } = createFakeService({
+      async exportCoordinatorCsv(input) {
+        expect(input).toEqual({
+          actorUserId: staff.authUserId,
+          kind: "adopters",
+          rawSearch: { q: "Ada" },
+        });
+        return {
+          csv: "adopter_profile_id\nprofile-1",
+          filename: "coordinator-adopters.csv",
+          rowCount: 1,
+        };
+      },
+    });
+    const handlers = createHandlers({
+      service,
+      requireCoordinator: async () => staff,
+      requireStatusAdmin: async () => admin,
+    });
+
+    const response = await handlers.exportCoordinatorCsv({
+      request: new Request("https://example.test/api/admin/adoptions/exports/adopters.csv?q=Ada"),
+      params: { kind: "adopters" },
+    });
+
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(response.headers.get("content-type")).toContain("text/csv");
+    expect(response.headers.get("content-disposition")).toContain("coordinator-adopters.csv");
+    expect(await response.text()).toBe("adopter_profile_id\nprofile-1");
   });
 
   test("status GET uses coordinator auth callback and returns no-store { status }", async () => {

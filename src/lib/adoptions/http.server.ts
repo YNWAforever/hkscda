@@ -22,6 +22,16 @@ function jsonResponse(body: unknown, init?: ResponseInit) {
   return Response.json(body, { ...init, headers });
 }
 
+function csvResponse(csv: string, filename: string) {
+  return new Response(csv, {
+    headers: {
+      "content-type": "text/csv; charset=utf-8",
+      "content-disposition": `attachment; filename="${filename}"`,
+      "cache-control": "no-store",
+    },
+  });
+}
+
 async function jsonBody(request: Request) {
   try {
     return await request.json();
@@ -217,6 +227,18 @@ export function createAdoptionCoordinatorHandlers({
         await requireCoordinator(request);
         const search = Object.fromEntries(new URL(request.url).searchParams);
         return jsonResponse(await service.listAdopters(search));
+      });
+    },
+
+    exportCoordinatorCsv({ request, params }: HandlerContext) {
+      return withErrors(async () => {
+        const admin = await requireCoordinator(request);
+        const result = await service.exportCoordinatorCsv({
+          actorUserId: admin.authUserId,
+          kind: params?.kind,
+          rawSearch: Object.fromEntries(new URL(request.url).searchParams),
+        });
+        return csvResponse(result.csv, result.filename);
       });
     },
 

@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type {
   AdoptionCoordinatorRepository,
+  AdopterSearch,
   CaseFromPublicApplicationInput,
   CoordinatorTaskInput,
   CoordinatorTaskUpdate,
@@ -12,9 +13,15 @@ import { hongKongDayBounds } from "./tasks";
 import type {
   AdoptionCaseDetail,
   AdoptionCaseSummary,
+  AdopterSummary,
   AnimalMatchSummary,
+  CoordinatorAdopterExportRow,
+  CoordinatorAnimalExportRow,
+  CoordinatorCaseExportRow,
   CoordinatorStatus,
   CoordinatorTask,
+  CoordinatorSuccessfulAdoptionExportRow,
+  CoordinatorTaskExportRow,
   SuccessfulAdoption,
 } from "./types";
 
@@ -58,6 +65,33 @@ type AdoptionCaseRow = {
 type AnimalRow = {
   id: string;
   name: string;
+  name_en: string | null;
+};
+
+type AnimalExportAnimalRow = AnimalRow & {
+  type: string;
+  status: string;
+};
+
+type AnimalInternalProfileRow = {
+  animal_id: string;
+  internal_code: string | null;
+  current_position_id: string | null;
+  arrival_source_id: string | null;
+  is_adoptable: boolean | null;
+  is_inside_support_pool: boolean | null;
+  adopted_at: string | null;
+  deceased_at: string | null;
+};
+
+type AnimalPositionRow = {
+  id: string;
+  name: string;
+};
+
+type ArrivalSourceRow = {
+  id: string;
+  name_zh: string | null;
   name_en: string | null;
 };
 
@@ -168,6 +202,10 @@ export function mapStatus(row: StatusRow): CoordinatorStatus {
     isClosing: row.is_closing,
     isFinal: row.is_final,
   };
+}
+
+function statusLabel(status: CoordinatorStatus) {
+  return status.labelEn || status.labelZh || status.key;
 }
 
 function animalName(row: AnimalRow | undefined) {
@@ -809,6 +847,186 @@ async function resolveAdopterCandidateIds(
   return candidateIds;
 }
 
+async function listAdopterSummaries(client: SupabaseClient, input: AdopterSearch) {
+  const from = (input.page - 1) * input.pageSize;
+  const candidateIdSet = await resolveAdopterCandidateIds(client, input);
+  if (candidateIdSet && candidateIdSet.size === 0) {
+    return { adopters: [], total: 0 };
+  }
+
+  let query = client
+    .from("adopter_profile")
+    .select(
+      "*,supporter:supporter_id(id,name,email,phone),living_area:living_area_id(name_zh,name_en)",
+      { count: "exact" },
+    )
+    .order("created_at", { ascending: false })
+    .range(from, from + input.pageSize - 1);
+
+  if (input.blacklisted === "yes") query = query.eq("is_blacklisted", true);
+  if (input.blacklisted === "no") query = query.eq("is_blacklisted", false);
+  if (candidateIdSet) {
+    // TODO(Q1): Move large candidate ID filters to an indexed SQL/RPC search path.
+    query = query.in("id", [...candidateIdSet]);
+  }
+
+  const { data, error, count } = await query;
+  if (error) throw error;
+
+  const rows = (data ?? []) as Record<string, unknown>[];
+  const adopterIds = rows.map((row) => row.id as string);
+  if (adopterIds.length === 0) {
+    return { adopters: [], total: count ?? 0 };
+  }
+
+  const [caseResult, successResult] = await Promise.all([
+    client
+      .from("adoption_case")
+      .select("id,adopter_profile_id,closed_at,created_at")
+      .in("adopter_profile_id", adopterIds),
+    client
+      .from("successful_adoption")
+      .select("id,adopter_profile_id")
+      .in("adopter_profile_id", adopterIds),
+  ]);
+  if (caseResult.error) throw caseResult.error;
+  if (successResult.error) throw successResult.error;
+
+  const caseRows = (caseResult.data ?? []) as AdoptionCaseRow[];
+  const taskRows = await loadFollowupsForAdopters(
+    client,
+    adopterIds,
+    caseRows,
+    "id,adoption_case_id,adopter_profile_id,completed_at",
+  );
+  const successRows = (successResult.data ?? []) as SuccessfulAdoptionRow[];
+  const caseAdopterProfiles = caseAdopterProfileMap(caseRows);
+
+  const adopters: AdopterSummary[] = rows.map((row) => {
+    const id = row.id as string;
+    const supporter = adopterSupporter(row);
+    const livingArea = row.living_area as {
+      name_zh?: string | null;
+      name_en?: string | null;
+    } | null;
+    const casesForAdopter = caseRows.filter((caseRow) => caseRow.adopter_profile_id === id);
+
+    return {
+      id,
+      supporterId: supporter?.id ?? (row.supporter_id as string | null) ?? null,
+      displayName: adopterDisplayName(row),
+      email: supporter?.email ?? null,
+      phone: supporter?.phone ?? null,
+      livingArea: livingArea?.name_zh ?? livingArea?.name_en ?? null,
+      isBlacklisted: Boolean(row.is_blacklisted),
+      openCaseCount: countOpenCases(caseRows, id),
+      successfulAdoptionCount: successRows.filter((success) => success.adopter_profile_id === id)
+        .length,
+      openTaskCount: countOpenTasks(taskRows, id, caseAdopterProfiles),
+      latestCaseAt:
+        casesForAdopter
+          .map((caseRow) => caseRow.created_at)
+          .sort()
+          .at(-1) ?? null,
+    };
+  });
+
+  return { adopters, total: count ?? adopters.length };
+}
+
+function mapAdopterExportRow(adopter: AdopterSummary): CoordinatorAdopterExportRow {
+  return {
+    adopterProfileId: adopter.id,
+    supporterId: adopter.supporterId,
+    displayName: adopter.displayName,
+    email: adopter.email,
+    phone: adopter.phone,
+    livingArea: adopter.livingArea,
+    isBlacklisted: adopter.isBlacklisted,
+    openCaseCount: adopter.openCaseCount,
+    successfulAdoptionCount: adopter.successfulAdoptionCount,
+    openTaskCount: adopter.openTaskCount,
+    latestCaseAt: adopter.latestCaseAt,
+  };
+}
+
+async function listCoordinatorTasks(client: SupabaseClient, input: TaskListSearch) {
+  const from = (input.page - 1) * input.pageSize;
+  let query = client
+    .from("adoption_followup")
+    .select(taskSelectColumns, { count: "exact" })
+    .order("due_at", { ascending: true })
+    .order("created_at", { ascending: false })
+    .range(from, from + input.pageSize - 1);
+
+  if (input.statusId) query = query.eq("status_id", input.statusId);
+  if (input.priority) query = query.eq("priority", input.priority);
+  if (input.taskType) query = query.eq("task_type", input.taskType);
+  if (input.adoptionCaseId) query = query.eq("adoption_case_id", input.adoptionCaseId);
+  if (input.adopterProfileId) query = query.eq("adopter_profile_id", input.adopterProfileId);
+  if (input.animalId) query = query.eq("animal_id", input.animalId);
+  if (input.assignedTo) query = query.ilike("assigned_to", `%${escapeLike(input.assignedTo)}%`);
+  if (input.q) {
+    const like = `%${sanitizeOrLikeValue(input.q)}%`;
+    query = query.or(`title.ilike.${like},remarks.ilike.${like},outcome.ilike.${like}`);
+  }
+
+  let openOnly = input.openOnly;
+  if (input.due === "none") {
+    query = query.is("due_at", null);
+  } else if (input.due === "overdue") {
+    query = query.lt("due_at", new Date().toISOString());
+    openOnly = true;
+  } else if (input.due === "upcoming") {
+    const { end } = hongKongDayBounds(new Date());
+    query = query.gte("due_at", end);
+    openOnly = true;
+  } else if (input.due === "today") {
+    const now = new Date();
+    const { end } = hongKongDayBounds(now);
+    query = query.gte("due_at", now.toISOString()).lt("due_at", end);
+    openOnly = true;
+  }
+
+  if (openOnly) query = query.is("completed_at", null);
+
+  const { data, error, count } = await query;
+  if (error) throw error;
+
+  const rows = (data ?? []) as unknown as FollowupRow[];
+  const [statuses, taskLinks] = await Promise.all([
+    loadStatusesByIds(
+      client,
+      rows.map((row) => row.status_id),
+    ),
+    loadTaskLinks(client, rows),
+  ]);
+
+  return {
+    tasks: rows.map((row) => mapCoordinatorTask(row, statuses, taskLinks)),
+    total: count ?? 0,
+  };
+}
+
+function mapTaskExportRow(task: CoordinatorTask): CoordinatorTaskExportRow {
+  return {
+    taskId: task.id,
+    title: task.title,
+    status: statusLabel(task.status),
+    priority: task.priority,
+    dueAt: task.dueAt,
+    completedAt: task.completedAt,
+    adoptionCaseId: task.adoptionCase?.id ?? null,
+    adopterProfileId: task.adopterProfile?.id ?? null,
+    animalId: task.animal?.id ?? null,
+    assignedTo: task.assignedTo,
+    volunteer: task.volunteer,
+    contactChannel: task.contactChannel,
+    outcome: task.outcome,
+    remarks: task.remarks,
+  };
+}
+
 export function createSupabaseAdoptionCoordinatorRepository(
   client: SupabaseClient,
 ): AdoptionCoordinatorRepository {
@@ -910,6 +1128,57 @@ export function createSupabaseAdoptionCoordinatorRepository(
       };
     },
 
+    async listCaseExportRows(input) {
+      const from = (input.page - 1) * input.pageSize;
+      let query = client
+        .from("adoption_case")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .range(from, from + input.pageSize - 1);
+
+      if (input.statusId) query = query.eq("status_id", input.statusId);
+      if (input.animalType) query = query.eq("animal_type", input.animalType);
+      if (input.openOnly) query = query.is("closed_at", null);
+      if (input.q) {
+        const ids = await searchCaseIds(client, input.q);
+        if (ids.length === 0) return [];
+        query = query.in("id", ids);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      const rows = (data ?? []) as AdoptionCaseRow[];
+      const [statuses, animals] = await Promise.all([
+        loadStatusesByIds(
+          client,
+          rows.map((row) => row.status_id),
+        ),
+        loadAnimalsByIds(
+          client,
+          rows.map((row) => row.requested_animal_id ?? ""),
+        ),
+      ]);
+
+      return rows.map(
+        (row): CoordinatorCaseExportRow => ({
+          caseId: row.id,
+          applicantName: row.applicant_name,
+          applicantPhone: row.applicant_phone,
+          applicantEmail: row.applicant_email,
+          status: statusLabel(requireStatus(statuses, row.status_id)),
+          animalType: row.animal_type,
+          requestedAnimal: row.requested_animal_id
+            ? animalName(animals.get(row.requested_animal_id))
+            : null,
+          adopterProfileId: row.adopter_profile_id,
+          supporterId: row.supporter_id,
+          createdAt: row.created_at,
+          closedAt: row.closed_at,
+        }),
+      );
+    },
+
     async getCaseDetail(id) {
       const { data: caseData, error: caseError } = await client
         .from("adoption_case")
@@ -974,91 +1243,12 @@ export function createSupabaseAdoptionCoordinatorRepository(
     },
 
     async listAdopters(input) {
-      const from = (input.page - 1) * input.pageSize;
-      const candidateIdSet = await resolveAdopterCandidateIds(client, input);
-      if (candidateIdSet && candidateIdSet.size === 0) {
-        return { adopters: [], total: 0 };
-      }
+      return listAdopterSummaries(client, input);
+    },
 
-      let query = client
-        .from("adopter_profile")
-        .select(
-          "*,supporter:supporter_id(id,name,email,phone),living_area:living_area_id(name_zh,name_en)",
-          { count: "exact" },
-        )
-        .order("created_at", { ascending: false })
-        .range(from, from + input.pageSize - 1);
-
-      if (input.blacklisted === "yes") query = query.eq("is_blacklisted", true);
-      if (input.blacklisted === "no") query = query.eq("is_blacklisted", false);
-      if (candidateIdSet) {
-        // TODO(Q1): Move large candidate ID filters to an indexed SQL/RPC search path.
-        query = query.in("id", [...candidateIdSet]);
-      }
-
-      const { data, error, count } = await query;
-      if (error) throw error;
-
-      const rows = (data ?? []) as Record<string, unknown>[];
-      const adopterIds = rows.map((row) => row.id as string);
-      if (adopterIds.length === 0) {
-        return { adopters: [], total: count ?? 0 };
-      }
-
-      const [caseResult, successResult] = await Promise.all([
-        client
-          .from("adoption_case")
-          .select("id,adopter_profile_id,closed_at,created_at")
-          .in("adopter_profile_id", adopterIds),
-        client
-          .from("successful_adoption")
-          .select("id,adopter_profile_id")
-          .in("adopter_profile_id", adopterIds),
-      ]);
-      if (caseResult.error) throw caseResult.error;
-      if (successResult.error) throw successResult.error;
-
-      const caseRows = (caseResult.data ?? []) as AdoptionCaseRow[];
-      const taskRows = await loadFollowupsForAdopters(
-        client,
-        adopterIds,
-        caseRows,
-        "id,adoption_case_id,adopter_profile_id,completed_at",
-      );
-      const successRows = (successResult.data ?? []) as SuccessfulAdoptionRow[];
-      const caseAdopterProfiles = caseAdopterProfileMap(caseRows);
-
-      const adopters = rows.map((row) => {
-        const id = row.id as string;
-        const supporter = adopterSupporter(row);
-        const livingArea = row.living_area as {
-          name_zh?: string | null;
-          name_en?: string | null;
-        } | null;
-        const casesForAdopter = caseRows.filter((caseRow) => caseRow.adopter_profile_id === id);
-
-        return {
-          id,
-          supporterId: supporter?.id ?? (row.supporter_id as string | null) ?? null,
-          displayName: adopterDisplayName(row),
-          email: supporter?.email ?? null,
-          phone: supporter?.phone ?? null,
-          livingArea: livingArea?.name_zh ?? livingArea?.name_en ?? null,
-          isBlacklisted: Boolean(row.is_blacklisted),
-          openCaseCount: countOpenCases(caseRows, id),
-          successfulAdoptionCount: successRows.filter(
-            (success) => success.adopter_profile_id === id,
-          ).length,
-          openTaskCount: countOpenTasks(taskRows, id, caseAdopterProfiles),
-          latestCaseAt:
-            casesForAdopter
-              .map((caseRow) => caseRow.created_at)
-              .sort()
-              .at(-1) ?? null,
-        };
-      });
-
-      return { adopters, total: count ?? adopters.length };
+    async listAdopterExportRows(input) {
+      const { adopters } = await listAdopterSummaries(client, input);
+      return adopters.map(mapAdopterExportRow);
     },
 
     async getAdopterDetail(id) {
@@ -1192,62 +1382,125 @@ export function createSupabaseAdoptionCoordinatorRepository(
       return { id: (data as { id: string }).id };
     },
 
-    async listTasks(input) {
-      const from = (input.page - 1) * input.pageSize;
-      let query = client
-        .from("adoption_followup")
-        .select(taskSelectColumns, { count: "exact" })
-        .order("due_at", { ascending: true })
-        .order("created_at", { ascending: false })
-        .range(from, from + input.pageSize - 1);
-
-      if (input.statusId) query = query.eq("status_id", input.statusId);
-      if (input.priority) query = query.eq("priority", input.priority);
-      if (input.taskType) query = query.eq("task_type", input.taskType);
-      if (input.adoptionCaseId) query = query.eq("adoption_case_id", input.adoptionCaseId);
-      if (input.adopterProfileId) query = query.eq("adopter_profile_id", input.adopterProfileId);
-      if (input.animalId) query = query.eq("animal_id", input.animalId);
-      if (input.assignedTo) query = query.ilike("assigned_to", `%${escapeLike(input.assignedTo)}%`);
-      if (input.q) {
-        const like = `%${sanitizeOrLikeValue(input.q)}%`;
-        query = query.or(`title.ilike.${like},remarks.ilike.${like},outcome.ilike.${like}`);
-      }
-
-      let openOnly = input.openOnly;
-      if (input.due === "none") {
-        query = query.is("due_at", null);
-      } else if (input.due === "overdue") {
-        query = query.lt("due_at", new Date().toISOString());
-        openOnly = true;
-      } else if (input.due === "upcoming") {
-        const { end } = hongKongDayBounds(new Date());
-        query = query.gte("due_at", end);
-        openOnly = true;
-      } else if (input.due === "today") {
-        const now = new Date();
-        const { end } = hongKongDayBounds(now);
-        query = query.gte("due_at", now.toISOString()).lt("due_at", end);
-        openOnly = true;
-      }
-
-      if (openOnly) query = query.is("completed_at", null);
-
-      const { data, error, count } = await query;
+    async listSuccessfulAdoptionExportRows() {
+      const { data, error } = await client
+        .from("successful_adoption")
+        .select("*")
+        .order("approval_date", { ascending: false });
       if (error) throw error;
 
-      const rows = (data ?? []) as unknown as FollowupRow[];
-      const [statuses, taskLinks] = await Promise.all([
-        loadStatusesByIds(
-          client,
-          rows.map((row) => row.status_id),
-        ),
-        loadTaskLinks(client, rows),
-      ]);
+      const rows = (data ?? []) as SuccessfulAdoptionRow[];
+      const animals = await loadAnimalsByIds(
+        client,
+        rows.map((row) => row.animal_id),
+      );
 
-      return {
-        tasks: rows.map((row) => mapCoordinatorTask(row, statuses, taskLinks)),
-        total: count ?? 0,
-      };
+      return rows.map(
+        (row): CoordinatorSuccessfulAdoptionExportRow => ({
+          successfulAdoptionId: row.id,
+          caseId: row.adoption_case_id,
+          caseNumber: row.case_number,
+          adopterProfileId: row.adopter_profile_id,
+          supporterId: row.supporter_id,
+          animalId: row.animal_id,
+          animalName: animals.get(row.animal_id)?.name ?? null,
+          adoptionFeeCents: row.adoption_fee_cents,
+          approvalDate: row.approval_date,
+          pickupDate: row.pickup_date,
+        }),
+      );
+    },
+
+    async listAnimalExportRows() {
+      const { data: animalData, error: animalError } = await client
+        .from("animals")
+        .select("id,type,name,name_en,status")
+        .order("type", { ascending: true })
+        .order("name", { ascending: true });
+      if (animalError) throw animalError;
+
+      const animalRows = (animalData ?? []) as AnimalExportAnimalRow[];
+      if (animalRows.length === 0) return [];
+
+      const animalIds = animalRows.map((row) => row.id);
+      const { data: profileData, error: profileError } = await client
+        .from("animal_profile_internal")
+        .select(
+          [
+            "animal_id",
+            "internal_code",
+            "arrival_source_id",
+            "current_position_id",
+            "is_adoptable",
+            "is_inside_support_pool",
+            "adopted_at",
+            "deceased_at",
+          ].join(","),
+        )
+        .in("animal_id", animalIds);
+      if (profileError) throw profileError;
+
+      const profileRows = (profileData ?? []) as AnimalInternalProfileRow[];
+      const positionIds = unique(profileRows.map((row) => row.current_position_id));
+      const sourceIds = unique(profileRows.map((row) => row.arrival_source_id));
+
+      let positionRows: AnimalPositionRow[] = [];
+      if (positionIds.length > 0) {
+        const { data, error } = await client
+          .from("animal_position")
+          .select("id,name")
+          .in("id", positionIds);
+        if (error) throw error;
+        positionRows = (data ?? []) as AnimalPositionRow[];
+      }
+
+      let sourceRows: ArrivalSourceRow[] = [];
+      if (sourceIds.length > 0) {
+        const { data, error } = await client
+          .from("arrival_source")
+          .select("id,name_zh,name_en")
+          .in("id", sourceIds);
+        if (error) throw error;
+        sourceRows = (data ?? []) as ArrivalSourceRow[];
+      }
+
+      const profilesByAnimalId = new Map(profileRows.map((row) => [row.animal_id, row]));
+      const positionsById = new Map(positionRows.map((row) => [row.id, row]));
+      const sourcesById = new Map(sourceRows.map((row) => [row.id, row]));
+
+      return animalRows.map((row): CoordinatorAnimalExportRow => {
+        const profile = profilesByAnimalId.get(row.id);
+        const position = profile?.current_position_id
+          ? positionsById.get(profile.current_position_id)
+          : undefined;
+        const source = profile?.arrival_source_id
+          ? sourcesById.get(profile.arrival_source_id)
+          : undefined;
+
+        return {
+          animalId: row.id,
+          type: row.type,
+          name: row.name,
+          nameEn: row.name_en,
+          status: row.status,
+          internalCode: profile?.internal_code ?? null,
+          currentPosition: position?.name ?? profile?.current_position_id ?? null,
+          arrivalSource: source?.name_zh ?? source?.name_en ?? profile?.arrival_source_id ?? null,
+          isAdoptable: profile?.is_adoptable ?? true,
+          isInsideSupportPool: profile?.is_inside_support_pool ?? false,
+          adoptedAt: profile?.adopted_at ?? null,
+          deceasedAt: profile?.deceased_at ?? null,
+        };
+      });
+    },
+
+    async listTasks(input) {
+      return listCoordinatorTasks(client, input);
+    },
+
+    async listTaskExportRows(input) {
+      const { tasks } = await listCoordinatorTasks(client, input);
+      return tasks.map(mapTaskExportRow);
     },
 
     async getTask(id) {

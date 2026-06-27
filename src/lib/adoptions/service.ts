@@ -3,8 +3,16 @@ import type { z } from "zod";
 import { buildCaseFromPublicApplication, type PublicApplicationInput } from "./caseFactory";
 import { assertCanMutateStatus } from "./status";
 import {
+  buildCoordinatorAdopterCsv,
+  buildCoordinatorAnimalCsv,
+  buildCoordinatorCaseCsv,
+  buildCoordinatorSuccessfulAdoptionCsv,
+  buildCoordinatorTaskCsv,
+} from "./csv";
+import {
   adopterSearchSchema,
   caseSearchSchema,
+  coordinatorExportKindSchema,
   coordinatorTaskInputSchema,
   coordinatorTaskUpdateSchema,
   finalizeAdoptionSchema,
@@ -21,8 +29,14 @@ import type {
   AdoptionCaseSummary,
   AdopterDetail,
   AdopterSummary,
+  CoordinatorAdopterExportRow,
+  CoordinatorAnimalExportRow,
+  CoordinatorCaseExportRow,
+  CoordinatorExportResult,
   CoordinatorStatus,
+  CoordinatorSuccessfulAdoptionExportRow,
   CoordinatorTask,
+  CoordinatorTaskExportRow,
 } from "./types";
 
 export type StatusInput = z.infer<typeof statusInputSchema>;
@@ -55,11 +69,16 @@ export type AdoptionCoordinatorRepository = {
   updateStatus(id: string, input: StatusUpdate): Promise<CoordinatorStatus>;
   deleteStatus(id: string): Promise<void>;
   listCases(input: CaseSearch): Promise<{ cases: AdoptionCaseSummary[]; total: number }>;
+  listCaseExportRows(input: CaseSearch): Promise<CoordinatorCaseExportRow[]>;
   getCaseDetail(id: string): Promise<AdoptionCaseDetail | null>;
   listAdopters(input: AdopterSearch): Promise<{ adopters: AdopterSummary[]; total: number }>;
+  listAdopterExportRows(input: AdopterSearch): Promise<CoordinatorAdopterExportRow[]>;
   getAdopterDetail(id: string): Promise<AdopterDetail | null>;
   createCaseFromPublicApplication(input: CaseFromPublicApplicationInput): Promise<{ id: string }>;
   listTasks(input: TaskListSearch): Promise<{ tasks: CoordinatorTask[]; total: number }>;
+  listSuccessfulAdoptionExportRows(): Promise<CoordinatorSuccessfulAdoptionExportRow[]>;
+  listAnimalExportRows(): Promise<CoordinatorAnimalExportRow[]>;
+  listTaskExportRows(input: TaskListSearch): Promise<CoordinatorTaskExportRow[]>;
   getTask(id: string): Promise<CoordinatorTask | null>;
   createTask(
     input: CoordinatorTaskInput & {
@@ -213,6 +232,56 @@ export function createAdoptionCoordinatorService({
 
     listTasks(rawSearch: unknown) {
       return repo.listTasks(taskListSearchSchema.parse(rawSearch));
+    },
+
+    async exportCoordinatorCsv(args: {
+      actorUserId: string | null;
+      kind: unknown;
+      rawSearch: unknown;
+    }): Promise<CoordinatorExportResult> {
+      const kind = coordinatorExportKindSchema.parse(args.kind);
+      let csv = "";
+      let rowCount = 0;
+      let filters: Record<string, unknown> = {};
+
+      if (kind === "cases") {
+        const parsed = caseSearchSchema.parse(args.rawSearch);
+        const rows = await repo.listCaseExportRows({ ...parsed, page: 1, pageSize: 1000 });
+        csv = buildCoordinatorCaseCsv(rows);
+        rowCount = rows.length;
+        filters = parsed;
+      } else if (kind === "adopters") {
+        const parsed = adopterSearchSchema.parse(args.rawSearch);
+        const rows = await repo.listAdopterExportRows({ ...parsed, page: 1, pageSize: 1000 });
+        csv = buildCoordinatorAdopterCsv(rows);
+        rowCount = rows.length;
+        filters = parsed;
+      } else if (kind === "successful-adoptions") {
+        const rows = await repo.listSuccessfulAdoptionExportRows();
+        csv = buildCoordinatorSuccessfulAdoptionCsv(rows);
+        rowCount = rows.length;
+      } else if (kind === "animals") {
+        const rows = await repo.listAnimalExportRows();
+        csv = buildCoordinatorAnimalCsv(rows);
+        rowCount = rows.length;
+      } else {
+        const parsed = taskListSearchSchema.parse(args.rawSearch);
+        const rows = await repo.listTaskExportRows({ ...parsed, page: 1, pageSize: 1000 });
+        csv = buildCoordinatorTaskCsv(rows);
+        rowCount = rows.length;
+        filters = parsed;
+      }
+
+      await repo.insertAuditLog({
+        actor_user_id: args.actorUserId,
+        action: `coordinator_export.${kind}`,
+        entity: "coordinator_export",
+        entity_id: kind,
+        timestamp: timestamp(now),
+        detail: { filters, rowCount },
+      });
+
+      return { csv, rowCount, filename: `coordinator-${kind}.csv` };
     },
 
     getTask(taskId: string) {
