@@ -39,6 +39,7 @@ const status = {
 const matchId = "55555555-6666-4333-8444-555555555555";
 const followupId = "66666666-7777-4333-8444-555555555555";
 const adoptionId = "77777777-8888-4333-8444-555555555555";
+const taskId = "aaaaaaaa-bbbb-4333-8444-555555555555";
 
 const matchRequestBody = {
   animalId,
@@ -108,6 +109,22 @@ function createFakeService(overrides: Partial<AdoptionCoordinatorService> = {}) 
     async listCases(rawSearch) {
       calls.push({ name: "listCases", payload: rawSearch });
       return { cases: [], total: 0 };
+    },
+    async listTasks(rawSearch) {
+      calls.push({ name: "listTasks", payload: rawSearch });
+      return { tasks: [], total: 0 };
+    },
+    async getTask(id) {
+      calls.push({ name: "getTask", payload: id });
+      return { id: taskId, requestedId: id };
+    },
+    async createTask(payload) {
+      calls.push({ name: "createTask", payload });
+      return { id: taskId };
+    },
+    async updateTask(payload) {
+      calls.push({ name: "updateTask", payload });
+      return { id: payload.taskId, ...payload.input };
     },
     async getCaseDetail(caseId) {
       calls.push({ name: "getCaseDetail", payload: caseId });
@@ -578,6 +595,167 @@ describe("createAdoptionCoordinatorHandlers", () => {
     expect(response.status).toBe(400);
     expectNoStoreJson(response);
     expect(await response.json()).toEqual({ error: "Completed tasks require a completed date" });
+  });
+
+  test("task list requires coordinator auth and returns no-store JSON", async () => {
+    const { calls, service } = createFakeService({
+      async listTasks(rawSearch) {
+        calls.push({ name: "listTasks", payload: rawSearch });
+        return { tasks: [], total: 0 };
+      },
+    });
+    const handlers = createHandlers({ service });
+
+    const response = await handlers.listTasks({
+      request: new Request(
+        "https://example.test/api/admin/adoptions/tasks?due=overdue&priority=urgent",
+      ),
+    });
+
+    expect(response.status).toBe(200);
+    expectNoStoreJson(response);
+    expect(calls).toEqual([{ name: "listTasks", payload: { due: "overdue", priority: "urgent" } }]);
+  });
+
+  test("task create calls service with actor and JSON body", async () => {
+    const requestBody = { title: "Post-adoption call", statusId, adoptionCaseId: caseId };
+    const { calls, service } = createFakeService({
+      async createTask(payload) {
+        calls.push({ name: "createTask", payload });
+        return { id: taskId };
+      },
+    });
+    const handlers = createHandlers({ service });
+
+    const response = await handlers.createTask({
+      request: jsonRequest("https://example.test/api/admin/adoptions/tasks", requestBody),
+    });
+
+    expect(response.status).toBe(201);
+    expectNoStoreJson(response);
+    expect(calls).toEqual([
+      { name: "createTask", payload: { actorUserId: staff.authUserId, input: requestBody } },
+    ]);
+    expect(await response.json()).toEqual({ task: { id: taskId } });
+  });
+
+  test("task get returns 404 JSON when service returns null", async () => {
+    const { calls, service } = createFakeService({
+      async getTask(id) {
+        calls.push({ name: "getTask", payload: id });
+        return null;
+      },
+    });
+    const handlers = createHandlers({ service });
+
+    const response = await handlers.getTask({
+      request: new Request(`https://example.test/api/admin/adoptions/tasks/${taskId}`),
+      params: { id: taskId },
+    });
+
+    expect(response.status).toBe(404);
+    expectNoStoreJson(response);
+    expect(calls).toEqual([{ name: "getTask", payload: taskId }]);
+    expect(await response.json()).toEqual({ error: "Task not found" });
+  });
+
+  test("task update validates task id before auth or service work", async () => {
+    const { calls, service } = createFakeService();
+    const handlers = createHandlers({
+      service,
+      requireCoordinator: async () => {
+        throw new Error("auth should not run");
+      },
+    });
+
+    const response = await handlers.updateTask({
+      request: jsonRequest("https://example.test/api/admin/adoptions/tasks/not-a-uuid", {}),
+      params: { id: "not-a-uuid" },
+    });
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({ error: "Invalid id" });
+    expect(calls).toEqual([]);
+  });
+
+  test("task update calls service with actor, task id, and body", async () => {
+    const requestBody = { title: "Updated follow-up", priority: "urgent" };
+    const { calls, service } = createFakeService({
+      async updateTask(payload) {
+        calls.push({ name: "updateTask", payload });
+        return { id: payload.taskId };
+      },
+    });
+    const handlers = createHandlers({ service });
+
+    const response = await handlers.updateTask({
+      request: jsonRequest(`https://example.test/api/admin/adoptions/tasks/${taskId}`, requestBody),
+      params: { id: taskId },
+    });
+
+    expect(response.status).toBe(200);
+    expectNoStoreJson(response);
+    expect(calls).toEqual([
+      {
+        name: "updateTask",
+        payload: {
+          actorUserId: staff.authUserId,
+          taskId,
+          input: requestBody,
+        },
+      },
+    ]);
+    expect(await response.json()).toEqual({ task: { id: taskId } });
+  });
+
+  test("task not found domain errors return 404 JSON", async () => {
+    const { service } = createFakeService({
+      async updateTask() {
+        throw new Error("Task not found");
+      },
+    });
+    const handlers = createHandlers({ service });
+
+    const response = await handlers.updateTask({
+      request: jsonRequest(`https://example.test/api/admin/adoptions/tasks/${taskId}`, {
+        title: "Updated follow-up",
+      }),
+      params: { id: taskId },
+    });
+
+    expect(response.status).toBe(404);
+    expectNoStoreJson(response);
+    expect(await response.json()).toEqual({ error: "Task not found" });
+  });
+
+  test("case followup route injects case id into task creation path", async () => {
+    const { calls, service } = createFakeService({
+      async createFollowup(payload) {
+        calls.push({ name: "createFollowup", payload });
+        return { id: taskId };
+      },
+    });
+    const handlers = createHandlers({ service });
+
+    const response = await handlers.createFollowup({
+      request: jsonRequest(`https://example.test/api/admin/adoptions/cases/${caseId}/followups`, {
+        title: "Home visit",
+        statusId,
+      }),
+      params: { id: caseId },
+    });
+
+    expect(response.status).toBe(201);
+    expect(calls).toEqual([
+      {
+        name: "createFollowup",
+        payload: {
+          actorUserId: staff.authUserId,
+          caseId,
+          input: { title: "Home visit", statusId },
+        },
+      },
+    ]);
   });
 
   test("repository not-found domain errors return 404 JSON", async () => {
