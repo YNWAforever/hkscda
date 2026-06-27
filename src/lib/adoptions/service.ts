@@ -3,6 +3,7 @@ import type { z } from "zod";
 import { buildCaseFromPublicApplication, type PublicApplicationInput } from "./caseFactory";
 import { assertCanMutateStatus } from "./status";
 import {
+  adopterSearchSchema,
   caseSearchSchema,
   coordinatorTaskInputSchema,
   coordinatorTaskUpdateSchema,
@@ -18,6 +19,8 @@ import { buildTaskAuditAction, validateTaskCompletion } from "./tasks";
 import type {
   AdoptionCaseDetail,
   AdoptionCaseSummary,
+  AdopterDetail,
+  AdopterSummary,
   CoordinatorStatus,
   CoordinatorTask,
 } from "./types";
@@ -25,6 +28,7 @@ import type {
 export type StatusInput = z.infer<typeof statusInputSchema>;
 export type StatusUpdate = z.infer<typeof statusUpdateSchema>;
 export type CaseSearch = z.infer<typeof caseSearchSchema>;
+export type AdopterSearch = z.infer<typeof adopterSearchSchema>;
 export type MatchInput = z.infer<typeof matchInputSchema>;
 export type FollowupInput = z.infer<typeof followupInputSchema>;
 export type FinalizeAdoptionInput = z.infer<typeof finalizeAdoptionSchema>;
@@ -52,6 +56,8 @@ export type AdoptionCoordinatorRepository = {
   deleteStatus(id: string): Promise<void>;
   listCases(input: CaseSearch): Promise<{ cases: AdoptionCaseSummary[]; total: number }>;
   getCaseDetail(id: string): Promise<AdoptionCaseDetail | null>;
+  listAdopters(input: AdopterSearch): Promise<{ adopters: AdopterSummary[]; total: number }>;
+  getAdopterDetail(id: string): Promise<AdopterDetail | null>;
   createCaseFromPublicApplication(input: CaseFromPublicApplicationInput): Promise<{ id: string }>;
   listTasks(input: TaskListSearch): Promise<{ tasks: CoordinatorTask[]; total: number }>;
   getTask(id: string): Promise<CoordinatorTask | null>;
@@ -195,6 +201,14 @@ export function createAdoptionCoordinatorService({
 
     getCaseDetail(caseId: string) {
       return repo.getCaseDetail(caseId);
+    },
+
+    listAdopters(rawSearch: unknown) {
+      return repo.listAdopters(adopterSearchSchema.parse(rawSearch));
+    },
+
+    getAdopterDetail(adopterProfileId: string) {
+      return repo.getAdopterDetail(adopterProfileId);
     },
 
     listTasks(rawSearch: unknown) {

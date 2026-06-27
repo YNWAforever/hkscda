@@ -592,6 +592,25 @@ async function ensureAdopterProfile(
   );
 }
 
+function adopterDisplayName(row: Record<string, unknown>) {
+  const supporter = row.supporter as { name?: string | null } | null;
+  return (
+    (row.name_english as string | null) ||
+    (row.name_chinese as string | null) ||
+    supporter?.name ||
+    (row.id as string)
+  );
+}
+
+function countOpenCases(rows: AdoptionCaseRow[], adopterProfileId: string) {
+  return rows.filter((row) => row.adopter_profile_id === adopterProfileId && !row.closed_at).length;
+}
+
+function countOpenTasks(rows: FollowupRow[], adopterProfileId: string) {
+  return rows.filter((row) => row.adopter_profile_id === adopterProfileId && !row.completed_at)
+    .length;
+}
+
 export function createSupabaseAdoptionCoordinatorRepository(
   client: SupabaseClient,
 ): AdoptionCoordinatorRepository {
@@ -754,6 +773,204 @@ export function createSupabaseAdoptionCoordinatorRepository(
         ),
         successfulAdoption: mapSuccessfulAdoption(successRow),
       } satisfies AdoptionCaseDetail;
+    },
+
+    async listAdopters(input) {
+      const from = (input.page - 1) * input.pageSize;
+      let query = client
+        .from("adopter_profile")
+        .select(
+          "*,supporter:supporter_id(id,name,email,phone),living_area:living_area_id(name_zh,name_en)",
+          { count: "exact" },
+        )
+        .order("created_at", { ascending: false })
+        .range(from, from + input.pageSize - 1);
+
+      if (input.blacklisted === "yes") query = query.eq("is_blacklisted", true);
+      if (input.blacklisted === "no") query = query.eq("is_blacklisted", false);
+      if (input.q) {
+        const like = `%${sanitizeOrLikeValue(input.q)}%`;
+        query = query.or(
+          `name_english.ilike.${like},name_chinese.ilike.${like},address.ilike.${like},supporter.name.ilike.${like},supporter.email.ilike.${like},supporter.phone.ilike.${like}`,
+        );
+      }
+
+      const { data, error, count } = await query;
+      if (error) throw error;
+
+      const rows = (data ?? []) as Record<string, unknown>[];
+      const adopterIds = rows.map((row) => row.id as string);
+      if (adopterIds.length === 0) return { adopters: [], total: count ?? 0 };
+
+      const [caseResult, taskResult, successResult] = await Promise.all([
+        client
+          .from("adoption_case")
+          .select("id,adopter_profile_id,closed_at,created_at")
+          .in("adopter_profile_id", adopterIds),
+        client
+          .from("adoption_followup")
+          .select("id,adopter_profile_id,completed_at")
+          .in("adopter_profile_id", adopterIds),
+        client
+          .from("successful_adoption")
+          .select("id,adopter_profile_id")
+          .in("adopter_profile_id", adopterIds),
+      ]);
+      if (caseResult.error) throw caseResult.error;
+      if (taskResult.error) throw taskResult.error;
+      if (successResult.error) throw successResult.error;
+
+      const caseRows = (caseResult.data ?? []) as AdoptionCaseRow[];
+      const taskRows = (taskResult.data ?? []) as unknown as FollowupRow[];
+      const successRows = (successResult.data ?? []) as SuccessfulAdoptionRow[];
+
+      const adopters = rows
+        .map((row) => {
+          const id = row.id as string;
+          const supporter = row.supporter as {
+            id?: string;
+            email?: string | null;
+            phone?: string | null;
+          } | null;
+          const livingArea = row.living_area as {
+            name_zh?: string | null;
+            name_en?: string | null;
+          } | null;
+          const casesForAdopter = caseRows.filter((caseRow) => caseRow.adopter_profile_id === id);
+
+          return {
+            id,
+            supporterId: supporter?.id ?? (row.supporter_id as string | null) ?? null,
+            displayName: adopterDisplayName(row),
+            email: supporter?.email ?? null,
+            phone: supporter?.phone ?? null,
+            livingArea: livingArea?.name_zh ?? livingArea?.name_en ?? null,
+            isBlacklisted: Boolean(row.is_blacklisted),
+            openCaseCount: countOpenCases(caseRows, id),
+            successfulAdoptionCount: successRows.filter(
+              (success) => success.adopter_profile_id === id,
+            ).length,
+            openTaskCount: countOpenTasks(taskRows, id),
+            latestCaseAt:
+              casesForAdopter
+                .map((caseRow) => caseRow.created_at)
+                .sort()
+                .at(-1) ?? null,
+          };
+        })
+        .filter((adopter) => !input.hasOpenCases || adopter.openCaseCount > 0)
+        .filter((adopter) => !input.hasOpenTasks || adopter.openTaskCount > 0);
+
+      return { adopters, total: count ?? adopters.length };
+    },
+
+    async getAdopterDetail(id) {
+      const { data, error } = await client
+        .from("adopter_profile")
+        .select(
+          "*,supporter:supporter_id(id,name,email,phone),living_area:living_area_id(name_zh,name_en)",
+        )
+        .eq("id", id)
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) return null;
+
+      const [casesResult, tasksResult, successResult] = await Promise.all([
+        client
+          .from("adoption_case")
+          .select("*")
+          .eq("adopter_profile_id", id)
+          .order("created_at", { ascending: false }),
+        client
+          .from("adoption_followup")
+          .select(taskSelectColumns)
+          .eq("adopter_profile_id", id)
+          .order("due_at", { ascending: true }),
+        client
+          .from("successful_adoption")
+          .select("*")
+          .eq("adopter_profile_id", id)
+          .order("approval_date", { ascending: false }),
+      ]);
+      if (casesResult.error) throw casesResult.error;
+      if (tasksResult.error) throw tasksResult.error;
+      if (successResult.error) throw successResult.error;
+
+      const caseRows = (casesResult.data ?? []) as AdoptionCaseRow[];
+      const taskRows = (tasksResult.data ?? []) as unknown as FollowupRow[];
+      const successRows = (successResult.data ?? []) as SuccessfulAdoptionRow[];
+      const [statuses, animals, taskLinks] = await Promise.all([
+        loadStatusesByIds(client, [
+          ...caseRows.map((row) => row.status_id),
+          ...taskRows.map((row) => row.status_id),
+        ]),
+        loadAnimalsByIds(client, [
+          ...caseRows.map((row) => row.requested_animal_id ?? ""),
+          ...successRows.map((row) => row.animal_id),
+        ]),
+        loadTaskLinks(client, taskRows),
+      ]);
+
+      const row = data as Record<string, unknown>;
+      const supporter = row.supporter as {
+        id?: string;
+        email?: string | null;
+        phone?: string | null;
+      } | null;
+      const livingArea = row.living_area as {
+        name_zh?: string | null;
+        name_en?: string | null;
+      } | null;
+
+      return {
+        id,
+        supporterId: supporter?.id ?? (row.supporter_id as string | null) ?? null,
+        displayName: adopterDisplayName(row),
+        email: supporter?.email ?? null,
+        phone: supporter?.phone ?? null,
+        livingArea: livingArea?.name_zh ?? livingArea?.name_en ?? null,
+        isBlacklisted: Boolean(row.is_blacklisted),
+        openCaseCount: countOpenCases(caseRows, id),
+        successfulAdoptionCount: successRows.length,
+        openTaskCount: countOpenTasks(taskRows, id),
+        latestCaseAt:
+          caseRows
+            .map((caseRow) => caseRow.created_at)
+            .sort()
+            .at(-1) ?? null,
+        nameEnglish: row.name_english as string | null,
+        nameChinese: row.name_chinese as string | null,
+        gender: row.gender as string | null,
+        birthday: row.birthday as string | null,
+        occupation: row.occupation as string | null,
+        facebook: row.facebook as string | null,
+        householdSize: row.household_size as string | null,
+        monthlyHouseholdIncome: row.monthly_household_income as string | null,
+        address: row.address as string | null,
+        floorArea: row.floor_area as string | null,
+        blacklistReason: row.blacklist_reason as string | null,
+        cases: caseRows.map((caseRow) => ({
+          id: caseRow.id,
+          applicantName: caseRow.applicant_name,
+          animalType: caseRow.animal_type,
+          status: requireStatus(statuses, caseRow.status_id),
+          requestedAnimalName: caseRow.requested_animal_id
+            ? animalName(animals.get(caseRow.requested_animal_id))
+            : null,
+          createdAt: caseRow.created_at,
+          closedAt: caseRow.closed_at,
+        })),
+        successfulAdoptions: successRows.map((successRow) => ({
+          id: successRow.id,
+          caseNumber: successRow.case_number,
+          animalId: successRow.animal_id,
+          animalName: animals.get(successRow.animal_id)?.name ?? null,
+          adoptionFeeCents: successRow.adoption_fee_cents,
+          approvalDate: successRow.approval_date,
+          pickupDate: successRow.pickup_date,
+        })),
+        tasks: taskRows.map((taskRow) => mapCoordinatorTask(taskRow, statuses, taskLinks)),
+      };
     },
 
     async createCaseFromPublicApplication(input) {

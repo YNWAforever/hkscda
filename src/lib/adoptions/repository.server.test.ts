@@ -17,6 +17,8 @@ const publicApplicationId = "99999999-aaaa-4bbb-8ccc-dddddddddddd";
 const animalId = "77777777-8888-4333-8444-555555555555";
 const followupId = "aaaaaaaa-bbbb-4333-8444-555555555555";
 const linkedSupporterId = "supporter-1";
+const existingCaseId = adoptionCaseId;
+const existingTaskId = followupId;
 
 const statusRow = {
   id: statusId,
@@ -45,18 +47,20 @@ type FakeState = {
   existingProfile: { id: string } | null;
   followupRow: Record<string, unknown> | null;
   followupRows: Record<string, unknown>[];
+  caseRows: Record<string, unknown>[];
   taskCaseRows: Record<string, unknown>[];
   adopterRows: Record<string, unknown>[];
   animalRows: Record<string, unknown>[];
   caseDetailRow: Record<string, unknown> | null;
   matchRows: Record<string, unknown>[];
   successRow: Record<string, unknown> | null;
+  successRows: Record<string, unknown>[];
 };
 
 class FakeQuery {
   private action: "select" | "insert" | "upsert" | "update" | null = null;
   private mutationPayload: unknown;
-  private collectionSelect = false;
+  private selectedColumns: string | null = null;
 
   constructor(
     private readonly state: FakeState,
@@ -66,6 +70,7 @@ class FakeQuery {
   select(columns: string, options?: unknown) {
     this.state.calls.push({ table: this.table, method: "select", payload: columns, options });
     if (!this.action) this.action = "select";
+    this.selectedColumns = columns;
     return this;
   }
 
@@ -81,7 +86,6 @@ class FakeQuery {
 
   in(column: string, value: unknown) {
     this.state.calls.push({ table: this.table, method: "in", payload: { column, value } });
-    this.collectionSelect = true;
     return this;
   }
 
@@ -156,7 +160,9 @@ class FakeQuery {
   private executeMaybeSingle() {
     if (this.table === "coordinator_status") return { data: { id: statusId }, error: null };
     if (this.table === "supporter") return { data: this.state.existingSupporter, error: null };
-    if (this.table === "adopter_profile") return { data: this.state.existingProfile, error: null };
+    if (this.table === "adopter_profile") {
+      return { data: this.state.adopterRows[0] ?? this.state.existingProfile, error: null };
+    }
     if (this.table === "adoption_followup") return { data: this.state.followupRow, error: null };
     if (this.table === "adoption_case") return { data: this.state.caseDetailRow, error: null };
     if (this.table === "successful_adoption") return { data: this.state.successRow, error: null };
@@ -181,11 +187,15 @@ class FakeQuery {
     if (this.table === "coordinator_status") return this.collection([statusRow]);
     if (this.table === "adoption_followup") return this.collection(this.state.followupRows);
     if (this.table === "adoption_case") {
-      return this.collection(this.collectionSelect ? this.state.taskCaseRows : []);
+      if (this.selectedColumns === "id,applicant_name,animal_type") {
+        return this.collection(this.state.taskCaseRows);
+      }
+      return this.collection(this.state.caseRows);
     }
     if (this.table === "adopter_profile") return this.collection(this.state.adopterRows);
     if (this.table === "animals") return this.collection(this.state.animalRows);
     if (this.table === "animal_match") return this.collection(this.state.matchRows);
+    if (this.table === "successful_adoption") return this.collection(this.state.successRows);
     return this.executeMaybeSingle();
   }
 
@@ -200,12 +210,14 @@ function createFakeClient(
     existingProfile?: { id: string } | null;
     followupRow?: Record<string, unknown> | null;
     followupRows?: Record<string, unknown>[];
+    caseRows?: Record<string, unknown>[];
     taskCaseRows?: Record<string, unknown>[];
     adopterRows?: Record<string, unknown>[];
     animalRows?: Record<string, unknown>[];
     caseDetailRow?: Record<string, unknown> | null;
     matchRows?: Record<string, unknown>[];
     successRow?: Record<string, unknown> | null;
+    successRows?: Record<string, unknown>[];
   } = {},
 ) {
   const state: FakeState = {
@@ -214,12 +226,14 @@ function createFakeClient(
     existingProfile: options.existingProfile ?? null,
     followupRow: options.followupRow ?? null,
     followupRows: options.followupRows ?? [],
+    caseRows: options.caseRows ?? [],
     taskCaseRows: options.taskCaseRows ?? [],
     adopterRows: options.adopterRows ?? [],
     animalRows: options.animalRows ?? [],
     caseDetailRow: options.caseDetailRow ?? null,
     matchRows: options.matchRows ?? [],
     successRow: options.successRow ?? null,
+    successRows: options.successRows ?? [],
   };
 
   const client = {
@@ -232,6 +246,14 @@ function createFakeClient(
   return {
     client: client as unknown as SupabaseClient,
     calls: state.calls,
+  };
+}
+
+function setupRepository(options: Parameters<typeof createFakeClient>[0] = {}) {
+  const { client, calls } = createFakeClient(options);
+  return {
+    repo: createSupabaseAdoptionCoordinatorRepository(client),
+    calls,
   };
 }
 
@@ -294,8 +316,20 @@ function adopterRow(overrides: Record<string, unknown> = {}) {
   return {
     id: existingProfileId,
     supporter_id: linkedSupporterId,
+    name_english: "Ada",
+    name_chinese: null,
+    gender: null,
+    birthday: null,
+    occupation: null,
+    facebook: null,
+    household_size: null,
+    monthly_household_income: null,
+    address: null,
+    floor_area: null,
     is_blacklisted: false,
+    blacklist_reason: null,
     supporter: { name: "Ada" },
+    living_area: null,
     ...overrides,
   };
 }
@@ -331,6 +365,25 @@ function caseDetailRow(overrides: Record<string, unknown> = {}) {
     preferences: {},
     closed_at: null,
     created_at: "2026-06-27T08:00:00.000Z",
+    ...overrides,
+  };
+}
+
+function caseRow(overrides: Record<string, unknown> = {}) {
+  return caseDetailRow(overrides);
+}
+
+function successfulAdoptionRow(overrides: Record<string, unknown> = {}) {
+  return {
+    id: "successful-adoption-1",
+    adoption_case_id: adoptionCaseId,
+    animal_id: animalId,
+    supporter_id: existingSupporterId,
+    adopter_profile_id: existingProfileId,
+    case_number: "AC-2026-001",
+    adoption_fee_cents: 80000,
+    approval_date: "2026-06-28",
+    pickup_date: null,
     ...overrides,
   };
 }
@@ -378,6 +431,90 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     expect(hongKongDayBounds(new Date("2026-06-27T16:00:00.000Z"))).toEqual({
       start: "2026-06-27T16:00:00.000Z",
       end: "2026-06-28T16:00:00.000Z",
+    });
+  });
+
+  test("lists adopters with aggregate counts and supporter identity", async () => {
+    const { repo } = setupRepository({
+      adopterRows: [
+        {
+          id: existingProfileId,
+          supporter_id: existingSupporterId,
+          name_english: "Ada",
+          name_chinese: null,
+          is_blacklisted: false,
+          living_area_id: null,
+          supporter: {
+            id: existingSupporterId,
+            name: "Ada",
+            email: "ada@example.test",
+            phone: "61234567",
+          },
+        },
+      ],
+      caseRows: [
+        {
+          id: existingCaseId,
+          adopter_profile_id: existingProfileId,
+          closed_at: null,
+          created_at: "2026-06-27T08:00:00.000Z",
+        },
+      ],
+      followupRows: [
+        {
+          id: existingTaskId,
+          adopter_profile_id: existingProfileId,
+          completed_at: null,
+        },
+      ],
+      successRows: [],
+    });
+
+    const result = await repo.listAdopters({
+      q: "Ada",
+      blacklisted: "all",
+      hasOpenCases: true,
+      hasOpenTasks: true,
+      page: 1,
+      pageSize: 25,
+    });
+
+    expect(result.adopters).toEqual([
+      expect.objectContaining({
+        id: existingProfileId,
+        supporterId: existingSupporterId,
+        displayName: "Ada",
+        email: "ada@example.test",
+        phone: "61234567",
+        openCaseCount: 1,
+        successfulAdoptionCount: 0,
+        openTaskCount: 1,
+        latestCaseAt: "2026-06-27T08:00:00.000Z",
+      }),
+    ]);
+  });
+
+  test("returns adopter detail with cases, successful adoptions, and tasks", async () => {
+    const { repo } = setupRepository({
+      adopterRows: [adopterRow()],
+      caseRows: [caseRow({ adopter_profile_id: existingProfileId })],
+      followupRows: [followupRow({ adopter_profile_id: existingProfileId })],
+      successRows: [successfulAdoptionRow({ adopter_profile_id: existingProfileId })],
+      taskCaseRows: [taskCaseRow()],
+      animalRows: [animalRow()],
+    });
+
+    const detail = await repo.getAdopterDetail(existingProfileId);
+
+    expect(detail).toMatchObject({
+      id: existingProfileId,
+      cases: [expect.objectContaining({ id: existingCaseId })],
+      successfulAdoptions: [expect.objectContaining({ caseNumber: "AC-2026-001" })],
+      tasks: [
+        expect.objectContaining({
+          adopterProfile: expect.objectContaining({ id: existingProfileId }),
+        }),
+      ],
     });
   });
 

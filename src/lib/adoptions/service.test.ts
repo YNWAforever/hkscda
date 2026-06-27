@@ -97,6 +97,42 @@ function createRepo(
       calls.push({ name: "listCases", payload: input });
       return { cases: [], total: 0 };
     },
+    async listAdopters(input) {
+      calls.push({ name: "listAdopters", payload: input });
+      return { adopters: [], total: 0 };
+    },
+    async getAdopterDetail(id) {
+      calls.push({ name: "getAdopterDetail", payload: id });
+      return id === adopterProfileId
+        ? {
+            id: adopterProfileId,
+            supporterId: "supporter-1",
+            displayName: "Ada",
+            email: "ada@example.test",
+            phone: "61234567",
+            livingArea: "Kowloon",
+            isBlacklisted: false,
+            openCaseCount: 1,
+            successfulAdoptionCount: 0,
+            openTaskCount: 1,
+            latestCaseAt: "2026-06-27T08:00:00.000Z",
+            nameEnglish: "Ada",
+            nameChinese: null,
+            gender: null,
+            birthday: null,
+            occupation: null,
+            facebook: null,
+            householdSize: null,
+            monthlyHouseholdIncome: null,
+            address: null,
+            floorArea: null,
+            blacklistReason: null,
+            cases: [],
+            successfulAdoptions: [],
+            tasks: [],
+          }
+        : null;
+    },
     async getCaseDetail(id) {
       calls.push({ name: "getCaseDetail", payload: id });
       return null;
@@ -143,7 +179,50 @@ function createRepo(
   };
 }
 
+function setup(overrides: Partial<AdoptionCoordinatorRepository> = {}) {
+  const repo = createRepo(overrides);
+  return {
+    repo,
+    service: createAdoptionCoordinatorService({ repo }),
+    calls: repo.calls,
+  };
+}
+
 describe("createAdoptionCoordinatorService", () => {
+  test("lists adopters with normalized filters", async () => {
+    const { service, calls } = setup();
+
+    await service.listAdopters({
+      q: " Ada ",
+      blacklisted: "no",
+      hasOpenCases: "true",
+      hasOpenTasks: "",
+      page: "2",
+      pageSize: "50",
+    });
+
+    expect(calls).toContainEqual({
+      name: "listAdopters",
+      payload: {
+        q: "Ada",
+        blacklisted: "no",
+        hasOpenCases: true,
+        hasOpenTasks: false,
+        page: 2,
+        pageSize: 50,
+      },
+    });
+  });
+
+  test("returns adopter detail from repository", async () => {
+    const { service } = setup();
+
+    await expect(service.getAdopterDetail(adopterProfileId)).resolves.toMatchObject({
+      id: adopterProfileId,
+      displayName: "Ada",
+    });
+  });
+
   test("creates coordinator cases from normalized public applications", async () => {
     const publicApplicationId = "99999999-aaaa-4bbb-8ccc-dddddddddddd";
     const repo = createRepo();
