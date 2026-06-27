@@ -136,6 +136,17 @@ function escapeLike(value: string) {
   return value.replaceAll("\\", "\\\\").replaceAll("%", "\\%").replaceAll("_", "\\_");
 }
 
+function sanitizeOrLikeValue(value: string) {
+  // PostgREST .or() uses comma and parentheses for grammar, so keep search terms literal.
+  return escapeLike(
+    value
+      .replace(/[(),]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .replace(/\s+([%_])/g, "$1"),
+  );
+}
+
 function unique(values: Array<string | null | undefined>) {
   return [...new Set(values.filter(Boolean) as string[])];
 }
@@ -480,12 +491,16 @@ const taskSelectColumns = [
   "updated_at",
 ].join(",");
 
-function dayBounds(now: Date) {
-  const start = new Date(now);
-  start.setHours(0, 0, 0, 0);
-  const end = new Date(start);
-  end.setDate(end.getDate() + 1);
-  return { start: start.toISOString(), end: end.toISOString() };
+const hongKongOffsetMs = 8 * 60 * 60 * 1000;
+
+export function hongKongDayBounds(now: Date) {
+  const hongKongDate = new Date(now.getTime() + hongKongOffsetMs);
+  const start =
+    Date.UTC(hongKongDate.getUTCFullYear(), hongKongDate.getUTCMonth(), hongKongDate.getUTCDate()) -
+    hongKongOffsetMs;
+  const end = start + 24 * 60 * 60 * 1000;
+
+  return { start: new Date(start).toISOString(), end: new Date(end).toISOString() };
 }
 
 async function loadNewAdoptionCaseStatusId(client: SupabaseClient) {
@@ -798,7 +813,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
       if (input.animalId) query = query.eq("animal_id", input.animalId);
       if (input.assignedTo) query = query.ilike("assigned_to", `%${escapeLike(input.assignedTo)}%`);
       if (input.q) {
-        const like = `%${escapeLike(input.q)}%`;
+        const like = `%${sanitizeOrLikeValue(input.q)}%`;
         query = query.or(`title.ilike.${like},remarks.ilike.${like},outcome.ilike.${like}`);
       }
 
@@ -809,12 +824,13 @@ export function createSupabaseAdoptionCoordinatorRepository(
         query = query.lt("due_at", new Date().toISOString());
         openOnly = true;
       } else if (input.due === "upcoming") {
-        const { end } = dayBounds(new Date());
+        const { end } = hongKongDayBounds(new Date());
         query = query.gte("due_at", end);
         openOnly = true;
       } else if (input.due === "today") {
-        const { start, end } = dayBounds(new Date());
-        query = query.gte("due_at", start).lt("due_at", end);
+        const now = new Date();
+        const { end } = hongKongDayBounds(now);
+        query = query.gte("due_at", now.toISOString()).lt("due_at", end);
         openOnly = true;
       }
 
