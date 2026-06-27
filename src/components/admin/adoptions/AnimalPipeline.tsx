@@ -34,6 +34,7 @@ import {
   type AnimalPositionSummary,
   type ArrivalSourceSummary,
 } from "./animalPipelineLogic";
+import { ExportButton } from "./ExportButton";
 import { TaskPanel, TaskPanelAsyncError } from "./TaskPanel";
 
 type InternalProfileResponse = {
@@ -507,10 +508,13 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
             Internal lifecycle, placement, support pool, and medical readiness.
           </p>
         </div>
-        <Button type="button" variant="outline" onClick={refetchAll} disabled={isFetching}>
-          <RefreshCcw className="h-4 w-4" />
-          Refresh
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <ExportButton kind="animals" />
+          <Button type="button" variant="outline" onClick={refetchAll} disabled={isFetching}>
+            <RefreshCcw className="h-4 w-4" />
+            Refresh
+          </Button>
+        </div>
       </div>
 
       <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
