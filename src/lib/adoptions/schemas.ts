@@ -29,6 +29,14 @@ const booleanSearch = z.preprocess((value) => {
   return false;
 }, z.boolean());
 
+const defaultTaskType = z
+  .string()
+  .optional()
+  .transform((value) => {
+    const trimmed = value?.trim();
+    return trimmed ? trimmed : "followup";
+  });
+
 export const statusInputSchema = z.object({
   category: z.enum(statusCategories),
   key: z
@@ -91,7 +99,7 @@ export const taskContactChannelSchema = z.enum([
 const taskFieldsSchema = z.object({
   title: z.string().trim().min(1),
   statusId: z.string().uuid(),
-  taskType: optionalTrimmed.default("followup"),
+  taskType: defaultTaskType,
   priority: taskPrioritySchema.default("normal"),
   dueAt: z.string().datetime().optional(),
   scheduledAt: z.string().datetime().optional(),
@@ -146,8 +154,13 @@ export const coordinatorTaskUpdateSchema = z
     environment: optionalTrimmed.nullable().optional(),
     score: optionalTrimmed.nullable().optional(),
   })
-  .refine((value) => Object.keys(value).length > 0, "Task update cannot be empty");
+  .refine(
+    (value) => Object.values(value).some((field) => field !== undefined),
+    "Task update cannot be empty",
+  );
 
+// Compatibility wrapper for the existing case follow-up route. It accepts shared task fields
+// now; subsequent task service/repository work will persist the richer fields end to end.
 export const followupInputSchema = taskFieldsSchema.and(
   z.object({
     adopterProfileId: z.string().uuid().optional(),

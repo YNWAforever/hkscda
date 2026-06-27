@@ -59,9 +59,11 @@ describe("coordinator task helpers", () => {
     const now = new Date("2026-06-27T10:00:00.000Z");
 
     expect(getTaskDueBucket(task({ dueAt: "2026-06-26T23:59:00.000Z" }), now)).toBe("overdue");
+    expect(getTaskDueBucket(task({ dueAt: "2026-06-27T09:59:00.000Z" }), now)).toBe("overdue");
     expect(getTaskDueBucket(task({ dueAt: "2026-06-27T13:00:00.000Z" }), now)).toBe("today");
     expect(getTaskDueBucket(task({ dueAt: "2026-06-30T13:00:00.000Z" }), now)).toBe("upcoming");
     expect(getTaskDueBucket(task({ dueAt: null }), now)).toBe("none");
+    expect(getTaskDueBucket(task({ dueAt: "not-a-date" }), now)).toBe("none");
     expect(
       getTaskDueBucket(
         task({
@@ -84,6 +86,45 @@ describe("coordinator task helpers", () => {
     expect(
       sortCoordinatorTasks(rows, new Date("2026-06-27T10:00:00.000Z")).map((row) => row.id),
     ).toEqual(["urgent", "normal", "none", "done"]);
+  });
+
+  test("sorts overdue work before scheduled, undated, and completed tasks", () => {
+    const rows = [
+      task({
+        id: "done",
+        completedAt: "2026-06-27T09:00:00.000Z",
+        priority: "urgent",
+        dueAt: "2026-06-26T08:00:00.000Z",
+      }),
+      task({
+        id: "invalid",
+        priority: "urgent",
+        dueAt: "definitely-not-a-date",
+        createdAt: "2026-06-27T08:04:00.000Z",
+      }),
+      task({
+        id: "none",
+        priority: "urgent",
+        dueAt: null,
+        createdAt: "2026-06-27T08:03:00.000Z",
+      }),
+      task({ id: "upcoming-urgent", priority: "urgent", dueAt: "2026-06-28T09:00:00.000Z" }),
+      task({ id: "today-normal", priority: "normal", dueAt: "2026-06-27T13:00:00.000Z" }),
+      task({ id: "overdue-low", priority: "low", dueAt: "2026-06-26T08:00:00.000Z" }),
+      task({ id: "overdue-urgent", priority: "urgent", dueAt: "2026-06-27T09:00:00.000Z" }),
+    ];
+
+    expect(
+      sortCoordinatorTasks(rows, new Date("2026-06-27T10:00:00.000Z")).map((row) => row.id),
+    ).toEqual([
+      "overdue-low",
+      "overdue-urgent",
+      "upcoming-urgent",
+      "today-normal",
+      "invalid",
+      "none",
+      "done",
+    ]);
   });
 
   test("requires useful completion detail for completed and cancelled statuses", () => {
