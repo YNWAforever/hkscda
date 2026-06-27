@@ -238,7 +238,10 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
             { label: "Email", value: formatFallback(adopter.email) },
             { label: "Supporter ID", value: formatFallback(adopter.supporterId) },
             { label: "Living area", value: formatFallback(adopter.livingArea) },
-            { label: "Blacklist status", value: <BlacklistBadge isBlacklisted={adopter.isBlacklisted} /> },
+            {
+              label: "Blacklist status",
+              value: <BlacklistBadge isBlacklisted={adopter.isBlacklisted} />,
+            },
             { label: "Latest case", value: formatDate(adopter.latestCaseAt) },
           ]}
         />
@@ -401,7 +404,9 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
 
       {statusesError && (
         <section className={sectionClassName()}>
-          <TaskPanelAsyncError message={`Could not load follow-up statuses: ${statusesError.message}`} />
+          <TaskPanelAsyncError
+            message={`Could not load follow-up statuses: ${statusesError.message}`}
+          />
           <div className="px-4 py-3 text-sm text-[var(--color-text-muted)]">
             Existing follow-ups are shown below. Creating or editing tasks may need statuses.
           </div>
