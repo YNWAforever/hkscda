@@ -109,12 +109,12 @@ function createRepo(
       calls.push({ name: "listAdopterExportRows", payload: input });
       return [];
     },
-    async listSuccessfulAdoptionExportRows() {
-      calls.push({ name: "listSuccessfulAdoptionExportRows" });
+    async listSuccessfulAdoptionExportRows(input) {
+      calls.push({ name: "listSuccessfulAdoptionExportRows", payload: input });
       return [];
     },
-    async listAnimalExportRows() {
-      calls.push({ name: "listAnimalExportRows" });
+    async listAnimalExportRows(input) {
+      calls.push({ name: "listAnimalExportRows", payload: input });
       return [];
     },
     async listTaskExportRows(input) {
@@ -236,7 +236,7 @@ describe("createAdoptionCoordinatorService", () => {
             hasOpenCases: false,
             hasOpenTasks: false,
             page: 1,
-            pageSize: 25,
+            pageSize: 1000,
           },
           rowCount: 0,
         },
@@ -249,10 +249,39 @@ describe("createAdoptionCoordinatorService", () => {
 
     await service.exportCoordinatorCsv({
       actorUserId: adminId,
+      kind: "cases",
+      rawSearch: { q: "Milo", page: "4", pageSize: "5" },
+    });
+    await service.exportCoordinatorCsv({
+      actorUserId: adminId,
       kind: "tasks",
       rawSearch: { q: "call", page: "3", pageSize: "10" },
     });
 
+    expect(calls).toContainEqual({
+      name: "listCaseExportRows",
+      payload: {
+        q: "Milo",
+        openOnly: false,
+        page: 1,
+        pageSize: 1000,
+      },
+    });
+    expect(calls).toContainEqual({
+      name: "insertAuditLog",
+      payload: expect.objectContaining({
+        action: "coordinator_export.cases",
+        detail: {
+          filters: {
+            q: "Milo",
+            openOnly: false,
+            page: 1,
+            pageSize: 1000,
+          },
+          rowCount: 0,
+        },
+      }),
+    });
     expect(calls).toContainEqual({
       name: "listTaskExportRows",
       payload: {
@@ -262,6 +291,60 @@ describe("createAdoptionCoordinatorService", () => {
         page: 1,
         pageSize: 1000,
       },
+    });
+    expect(calls).toContainEqual({
+      name: "insertAuditLog",
+      payload: expect.objectContaining({
+        action: "coordinator_export.tasks",
+        detail: {
+          filters: {
+            q: "call",
+            due: "all",
+            openOnly: false,
+            page: 1,
+            pageSize: 1000,
+          },
+          rowCount: 0,
+        },
+      }),
+    });
+  });
+
+  test("exports global coordinator CSV kinds with capped audit filters", async () => {
+    const { service, calls } = setup();
+
+    await service.exportCoordinatorCsv({
+      actorUserId: adminId,
+      kind: "successful-adoptions",
+      rawSearch: { page: "3", pageSize: "25" },
+    });
+    await service.exportCoordinatorCsv({
+      actorUserId: adminId,
+      kind: "animals",
+      rawSearch: { page: "2", pageSize: "50" },
+    });
+
+    expect(calls).toContainEqual({
+      name: "listSuccessfulAdoptionExportRows",
+      payload: { page: 1, pageSize: 1000 },
+    });
+    expect(calls).toContainEqual({
+      name: "listAnimalExportRows",
+      payload: { page: 1, pageSize: 1000 },
+    });
+    expect(calls).toContainEqual({
+      name: "insertAuditLog",
+      payload: expect.objectContaining({
+        action: "coordinator_export.successful-adoptions",
+        detail: { filters: { page: 1, pageSize: 1000 }, rowCount: 0 },
+      }),
+    });
+    expect(calls).toContainEqual({
+      name: "insertAuditLog",
+      payload: expect.objectContaining({
+        action: "coordinator_export.animals",
+        detail: { filters: { page: 1, pageSize: 1000 }, rowCount: 0 },
+      }),
     });
   });
 

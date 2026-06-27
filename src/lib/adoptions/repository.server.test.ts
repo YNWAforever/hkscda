@@ -104,7 +104,10 @@ class FakeQuery {
 
   in(column: string, value: unknown) {
     this.state.calls.push({ table: this.table, method: "in", payload: { column, value } });
-    this.inFilters.push({ column, value: Array.isArray(value) ? value : [] });
+    if (!Array.isArray(value)) {
+      throw new Error("FakeQuery.in expected an array value");
+    }
+    this.inFilters.push({ column, value });
     return this;
   }
 
@@ -496,6 +499,17 @@ async function withFixedDate<T>(iso: string, run: () => Promise<T>) {
 }
 
 describe("createSupabaseAdoptionCoordinatorRepository", () => {
+  test("fake Supabase rejects malformed in filters", () => {
+    const { client } = createFakeClient();
+
+    expect(() =>
+      client
+        .from("animals")
+        .select("id")
+        .in("id", "not-an-array" as never),
+    ).toThrow("FakeQuery.in expected an array value");
+  });
+
   test("computes Hong Kong day bounds across local midnight", () => {
     expect(hongKongDayBounds(new Date("2026-06-27T15:59:59.000Z"))).toEqual({
       start: "2026-06-26T16:00:00.000Z",
@@ -903,7 +917,7 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
       arrivalSourceRows: [{ id: arrivalSourceId, name_zh: "街上救援", name_en: "Street rescue" }],
     });
 
-    const rows = await repo.listAnimalExportRows();
+    const rows = await repo.listAnimalExportRows({ page: 1, pageSize: 1000 });
 
     expect(rows).toEqual([
       {
@@ -921,9 +935,29 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
         deceasedAt: null,
       },
     ]);
+    expect(calls).toContainEqual({
+      table: "animals",
+      method: "range",
+      payload: { from: 0, to: 999 },
+    });
     expect(callsFor(calls, "animal_profile_internal", "select")).toHaveLength(1);
     expect(callsFor(calls, "animal_position", "select")).toHaveLength(1);
     expect(callsFor(calls, "arrival_source", "select")).toHaveLength(1);
+  });
+
+  test("successful adoption export caps rows before mapping", async () => {
+    const { repo, calls } = setupRepository({
+      successRows: [successfulAdoptionRow()],
+      animalRows: [animalRow()],
+    });
+
+    await repo.listSuccessfulAdoptionExportRows({ page: 1, pageSize: 1000 });
+
+    expect(calls).toContainEqual({
+      table: "successful_adoption",
+      method: "range",
+      payload: { from: 0, to: 999 },
+    });
   });
 
   test("includes tasks linked through adopter cases in adopter detail", async () => {

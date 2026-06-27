@@ -49,6 +49,7 @@ export type FinalizeAdoptionInput = z.infer<typeof finalizeAdoptionSchema>;
 export type TaskListSearch = z.infer<typeof taskListSearchSchema>;
 export type CoordinatorTaskInput = z.infer<typeof coordinatorTaskInputSchema>;
 export type CoordinatorTaskUpdate = z.infer<typeof coordinatorTaskUpdateSchema>;
+export type CoordinatorExportPage = { page: number; pageSize: number };
 export type CaseFromPublicApplicationInput = ReturnType<typeof buildCaseFromPublicApplication> & {
   publicApplicationId: string;
 };
@@ -76,8 +77,10 @@ export type AdoptionCoordinatorRepository = {
   getAdopterDetail(id: string): Promise<AdopterDetail | null>;
   createCaseFromPublicApplication(input: CaseFromPublicApplicationInput): Promise<{ id: string }>;
   listTasks(input: TaskListSearch): Promise<{ tasks: CoordinatorTask[]; total: number }>;
-  listSuccessfulAdoptionExportRows(): Promise<CoordinatorSuccessfulAdoptionExportRow[]>;
-  listAnimalExportRows(): Promise<CoordinatorAnimalExportRow[]>;
+  listSuccessfulAdoptionExportRows(
+    input: CoordinatorExportPage,
+  ): Promise<CoordinatorSuccessfulAdoptionExportRow[]>;
+  listAnimalExportRows(input: CoordinatorExportPage): Promise<CoordinatorAnimalExportRow[]>;
   listTaskExportRows(input: TaskListSearch): Promise<CoordinatorTaskExportRow[]>;
   getTask(id: string): Promise<CoordinatorTask | null>;
   createTask(
@@ -127,6 +130,10 @@ type CreateAdoptionCoordinatorServiceArgs = {
 
 function timestamp(now: () => Date) {
   return now().toISOString();
+}
+
+function coordinatorExportPage(): CoordinatorExportPage {
+  return { page: 1, pageSize: 1000 };
 }
 
 function hasEffectiveTaskLink(current: CoordinatorTask, input: CoordinatorTaskUpdate) {
@@ -246,30 +253,32 @@ export function createAdoptionCoordinatorService({
 
       if (kind === "cases") {
         const parsed = caseSearchSchema.parse(args.rawSearch);
-        const rows = await repo.listCaseExportRows({ ...parsed, page: 1, pageSize: 1000 });
+        filters = { ...parsed, ...coordinatorExportPage() };
+        const rows = await repo.listCaseExportRows(filters as CaseSearch);
         csv = buildCoordinatorCaseCsv(rows);
         rowCount = rows.length;
-        filters = parsed;
       } else if (kind === "adopters") {
         const parsed = adopterSearchSchema.parse(args.rawSearch);
-        const rows = await repo.listAdopterExportRows({ ...parsed, page: 1, pageSize: 1000 });
+        filters = { ...parsed, ...coordinatorExportPage() };
+        const rows = await repo.listAdopterExportRows(filters as AdopterSearch);
         csv = buildCoordinatorAdopterCsv(rows);
         rowCount = rows.length;
-        filters = parsed;
       } else if (kind === "successful-adoptions") {
-        const rows = await repo.listSuccessfulAdoptionExportRows();
+        filters = coordinatorExportPage();
+        const rows = await repo.listSuccessfulAdoptionExportRows(filters);
         csv = buildCoordinatorSuccessfulAdoptionCsv(rows);
         rowCount = rows.length;
       } else if (kind === "animals") {
-        const rows = await repo.listAnimalExportRows();
+        filters = coordinatorExportPage();
+        const rows = await repo.listAnimalExportRows(filters);
         csv = buildCoordinatorAnimalCsv(rows);
         rowCount = rows.length;
       } else {
         const parsed = taskListSearchSchema.parse(args.rawSearch);
-        const rows = await repo.listTaskExportRows({ ...parsed, page: 1, pageSize: 1000 });
+        filters = { ...parsed, ...coordinatorExportPage() };
+        const rows = await repo.listTaskExportRows(filters as TaskListSearch);
         csv = buildCoordinatorTaskCsv(rows);
         rowCount = rows.length;
-        filters = parsed;
       }
 
       await repo.insertAuditLog({

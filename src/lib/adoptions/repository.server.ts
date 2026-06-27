@@ -4,6 +4,7 @@ import type {
   AdoptionCoordinatorRepository,
   AdopterSearch,
   CaseFromPublicApplicationInput,
+  CoordinatorExportPage,
   CoordinatorTaskInput,
   CoordinatorTaskUpdate,
   StatusUpdate,
@@ -1382,11 +1383,13 @@ export function createSupabaseAdoptionCoordinatorRepository(
       return { id: (data as { id: string }).id };
     },
 
-    async listSuccessfulAdoptionExportRows() {
+    async listSuccessfulAdoptionExportRows(input: CoordinatorExportPage) {
+      const from = (input.page - 1) * input.pageSize;
       const { data, error } = await client
         .from("successful_adoption")
         .select("*")
-        .order("approval_date", { ascending: false });
+        .order("approval_date", { ascending: false })
+        .range(from, from + input.pageSize - 1);
       if (error) throw error;
 
       const rows = (data ?? []) as SuccessfulAdoptionRow[];
@@ -1411,12 +1414,14 @@ export function createSupabaseAdoptionCoordinatorRepository(
       );
     },
 
-    async listAnimalExportRows() {
+    async listAnimalExportRows(input: CoordinatorExportPage) {
+      const from = (input.page - 1) * input.pageSize;
       const { data: animalData, error: animalError } = await client
         .from("animals")
         .select("id,type,name,name_en,status")
         .order("type", { ascending: true })
-        .order("name", { ascending: true });
+        .order("name", { ascending: true })
+        .range(from, from + input.pageSize - 1);
       if (animalError) throw animalError;
 
       const animalRows = (animalData ?? []) as AnimalExportAnimalRow[];
