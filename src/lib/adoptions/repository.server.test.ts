@@ -14,6 +14,20 @@ const publicApplicationId = "99999999-aaaa-4bbb-8ccc-dddddddddddd";
 const animalId = "77777777-8888-4333-8444-555555555555";
 const followupId = "aaaaaaaa-bbbb-4333-8444-555555555555";
 
+const statusRow = {
+  id: statusId,
+  category: "followup",
+  key: "scheduled",
+  label_zh: "已安排",
+  label_en: "Scheduled",
+  sort_order: 20,
+  color: "coral",
+  is_active: true,
+  is_system: true,
+  is_closing: false,
+  is_final: false,
+};
+
 type QueryCall = {
   table: string;
   method: string;
@@ -25,11 +39,13 @@ type FakeState = {
   calls: QueryCall[];
   existingSupporter: { id: string } | null;
   existingProfile: { id: string } | null;
+  followupRow: Record<string, unknown> | null;
 };
 
 class FakeQuery {
   private action: "select" | "insert" | "upsert" | "update" | null = null;
   private mutationPayload: unknown;
+  private collectionSelect = false;
 
   constructor(
     private readonly state: FakeState,
@@ -49,6 +65,12 @@ class FakeQuery {
 
   is(column: string, value: unknown) {
     this.state.calls.push({ table: this.table, method: "is", payload: { column, value } });
+    return this;
+  }
+
+  in(column: string, value: unknown) {
+    this.state.calls.push({ table: this.table, method: "in", payload: { column, value } });
+    this.collectionSelect = true;
     return this;
   }
 
@@ -94,6 +116,7 @@ class FakeQuery {
     if (this.table === "coordinator_status") return { data: { id: statusId }, error: null };
     if (this.table === "supporter") return { data: this.state.existingSupporter, error: null };
     if (this.table === "adopter_profile") return { data: this.state.existingProfile, error: null };
+    if (this.table === "adoption_followup") return { data: this.state.followupRow, error: null };
     return { data: null, error: null };
   }
 
@@ -106,6 +129,9 @@ class FakeQuery {
   }
 
   private execute() {
+    if (this.collectionSelect && this.table === "coordinator_status") {
+      return { data: [statusRow], error: null };
+    }
     if (this.action === "select") return this.executeMaybeSingle();
     if (this.table === "supporter_role") return { error: null };
     return { data: this.mutationPayload, error: null };
@@ -116,12 +142,14 @@ function createFakeClient(
   options: {
     existingSupporter?: { id: string } | null;
     existingProfile?: { id: string } | null;
+    followupRow?: Record<string, unknown> | null;
   } = {},
 ) {
   const state: FakeState = {
     calls: [],
     existingSupporter: options.existingSupporter ?? null,
     existingProfile: options.existingProfile ?? null,
+    followupRow: options.followupRow ?? null,
   };
 
   const client = {
@@ -382,6 +410,57 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
       table: "adoption_followup",
       method: "eq",
       payload: { column: "id", value: followupId },
+    });
+  });
+
+  test("maps coordinator task link ids from followup rows", async () => {
+    const { client } = createFakeClient({
+      followupRow: {
+        id: followupId,
+        adoption_case_id: adoptionCaseId,
+        adopter_profile_id: existingProfileId,
+        animal_id: animalId,
+        status_id: statusId,
+        title: "Post-adoption call",
+        task_type: "followup",
+        priority: "normal",
+        due_at: null,
+        scheduled_at: null,
+        completed_at: null,
+        assigned_to: null,
+        volunteer: null,
+        contact_channel: null,
+        outcome: null,
+        next_step_at: null,
+        remarks: null,
+        has_window_net: null,
+        environment: null,
+        score: null,
+        created_at: "2026-06-27T08:00:00.000Z",
+        updated_at: "2026-06-27T08:00:00.000Z",
+      },
+    });
+    const repo = createSupabaseAdoptionCoordinatorRepository(client);
+
+    const task = await repo.getTask(followupId);
+
+    expect(task?.adoptionCase).toMatchObject({
+      id: adoptionCaseId,
+      applicantName: "",
+      animalType: "",
+    });
+    expect(task?.adopterProfile).toMatchObject({
+      id: existingProfileId,
+      supporterId: null,
+      displayName: null,
+      isBlacklisted: false,
+    });
+    expect(task?.animal).toMatchObject({
+      id: animalId,
+      name: "",
+      nameEn: null,
+      type: "",
+      status: "",
     });
   });
 });
