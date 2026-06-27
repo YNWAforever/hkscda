@@ -13,6 +13,17 @@ function startOfDay(value: Date) {
   return new Date(value.getFullYear(), value.getMonth(), value.getDate()).getTime();
 }
 
+function parseTaskDate(value: string | null | undefined) {
+  if (!value) return null;
+
+  const date = new Date(value);
+  return Number.isFinite(date.getTime()) ? date : null;
+}
+
+function taskDueTime(value: string | null | undefined) {
+  return parseTaskDate(value)?.getTime() ?? Number.POSITIVE_INFINITY;
+}
+
 export function isTaskFinalStatus(status: CoordinatorStatus) {
   return status.category === "followup" && (status.isFinal || status.isClosing);
 }
@@ -24,30 +35,48 @@ export function getTaskDueBucket(
   if (task.completedAt) return "done";
   if (!task.dueAt) return "none";
 
-  const due = new Date(task.dueAt);
+  const due = parseTaskDate(task.dueAt);
+  if (!due) return "none";
+
   const dueDay = startOfDay(due);
   const today = startOfDay(now);
-  if (due.getTime() < now.getTime() && dueDay < today) return "overdue";
+  if (due.getTime() < now.getTime()) return "overdue";
   if (dueDay === today) return "today";
   return "upcoming";
 }
 
 export function sortCoordinatorTasks(tasks: CoordinatorTask[], now: Date) {
   return [...tasks].sort((left, right) => {
-    const leftDone = left.completedAt ? 1 : 0;
-    const rightDone = right.completedAt ? 1 : 0;
-    if (leftDone !== rightDone) return leftDone - rightDone;
+    const leftGroup = taskSortGroup(left, now);
+    const rightGroup = taskSortGroup(right, now);
+    if (leftGroup !== rightGroup) return leftGroup - rightGroup;
 
     const leftPriority = PRIORITY_WEIGHT[left.priority];
     const rightPriority = PRIORITY_WEIGHT[right.priority];
-    if (leftPriority !== rightPriority) return leftPriority - rightPriority;
+    const leftDue = taskDueTime(left.dueAt);
+    const rightDue = taskDueTime(right.dueAt);
 
-    const leftDue = left.dueAt ? new Date(left.dueAt).getTime() : Number.POSITIVE_INFINITY;
-    const rightDue = right.dueAt ? new Date(right.dueAt).getTime() : Number.POSITIVE_INFINITY;
-    if (leftDue !== rightDue) return leftDue - rightDue;
+    if (leftGroup === 0) {
+      if (leftDue !== rightDue) return leftDue - rightDue;
+      if (leftPriority !== rightPriority) return leftPriority - rightPriority;
+    } else if (leftGroup === 1) {
+      if (leftPriority !== rightPriority) return leftPriority - rightPriority;
+      if (leftDue !== rightDue) return leftDue - rightDue;
+    } else if (leftPriority !== rightPriority) {
+      return leftPriority - rightPriority;
+    }
 
     return new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime();
   });
+}
+
+function taskSortGroup(task: CoordinatorTask, now: Date) {
+  if (task.completedAt) return 4;
+
+  const due = parseTaskDate(task.dueAt);
+  if (!due) return 3;
+  if (due.getTime() < now.getTime()) return 0;
+  return 1;
 }
 
 export function validateTaskCompletion(input: {
