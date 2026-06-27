@@ -617,6 +617,44 @@ describe("createAdoptionCoordinatorHandlers", () => {
     expect(calls).toEqual([{ name: "listTasks", payload: { due: "overdue", priority: "urgent" } }]);
   });
 
+  test("rejects missing auth before listing tasks and does not call service", async () => {
+    const { calls, service } = createFakeService();
+    const handlers = createHandlers({
+      service,
+      requireCoordinator: async () => {
+        throw new Response("Missing authorization token", { status: 401 });
+      },
+    });
+
+    const response = await handlers.listTasks({
+      request: new Request("https://example.test/api/admin/adoptions/tasks"),
+    });
+
+    expect(response.status).toBe(401);
+    expectNoStoreJson(response);
+    expect(await response.json()).toEqual({ error: "Missing authorization token" });
+    expect(calls).toEqual([]);
+  });
+
+  test("rejects forbidden auth before listing tasks and does not call service", async () => {
+    const { calls, service } = createFakeService();
+    const handlers = createHandlers({
+      service,
+      requireCoordinator: async () => {
+        throw new Response("Forbidden", { status: 403 });
+      },
+    });
+
+    const response = await handlers.listTasks({
+      request: new Request("https://example.test/api/admin/adoptions/tasks"),
+    });
+
+    expect(response.status).toBe(403);
+    expectNoStoreJson(response);
+    expect(await response.json()).toEqual({ error: "Forbidden" });
+    expect(calls).toEqual([]);
+  });
+
   test("task create calls service with actor and JSON body", async () => {
     const requestBody = { title: "Post-adoption call", statusId, adoptionCaseId: caseId };
     const { calls, service } = createFakeService({
@@ -657,6 +695,26 @@ describe("createAdoptionCoordinatorHandlers", () => {
     expectNoStoreJson(response);
     expect(calls).toEqual([{ name: "getTask", payload: taskId }]);
     expect(await response.json()).toEqual({ error: "Task not found" });
+  });
+
+  test("task get validates task id before auth or service work", async () => {
+    const { calls, service } = createFakeService();
+    const handlers = createHandlers({
+      service,
+      requireCoordinator: async () => {
+        throw new Error("auth should not run");
+      },
+    });
+
+    const response = await handlers.getTask({
+      request: new Request("https://example.test/api/admin/adoptions/tasks/not-a-uuid"),
+      params: { id: "not-a-uuid" },
+    });
+
+    expect(response.status).toBe(400);
+    expectNoStoreJson(response);
+    expect(await response.json()).toEqual({ error: "Invalid id" });
+    expect(calls).toEqual([]);
   });
 
   test("task update validates task id before auth or service work", async () => {
