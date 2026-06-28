@@ -48,11 +48,23 @@ type QueryCall = {
   options?: unknown;
 };
 
+type SummaryCounts = {
+  publicIntakeCases: number;
+  manualIntakeCases: number;
+  successfulAdoptions: number;
+  openCases: number;
+  overdueTasks: number;
+  exportsRun: number;
+};
+
 type FakeState = {
   calls: QueryCall[];
   existingSupporter: { id: string } | null;
   existingProfile: Record<string, unknown> | null;
   supporterRows: Record<string, unknown>[];
+  auditRows: Record<string, unknown>[];
+  rpcResult: Record<string, unknown> | null;
+  summaryCounts: SummaryCounts;
   followupRow: Record<string, unknown> | null;
   followupRows: Record<string, unknown>[];
   caseRows: Record<string, unknown>[];
@@ -73,6 +85,7 @@ class FakeQuery {
   private action: "select" | "insert" | "upsert" | "update" | null = null;
   private mutationPayload: unknown;
   private selectedColumns: string | null = null;
+  private selectedOptions: { count?: string; head?: boolean } | null = null;
   private eqFilters: Array<{ column: string; value: unknown }> = [];
   private inFilters: Array<{ column: string; value: unknown[] }> = [];
   private isFilters: Array<{ column: string; value: unknown }> = [];
@@ -88,6 +101,7 @@ class FakeQuery {
     this.state.calls.push({ table: this.table, method: "select", payload: columns, options });
     if (!this.action) this.action = "select";
     this.selectedColumns = columns;
+    this.selectedOptions = (options as { count?: string; head?: boolean } | undefined) ?? null;
     return this;
   }
 
@@ -197,6 +211,9 @@ class FakeQuery {
     if (this.table === "adoption_followup") return { data: this.state.followupRow, error: null };
     if (this.table === "adoption_case") return { data: this.state.caseDetailRow, error: null };
     if (this.table === "successful_adoption") return { data: this.state.successRow, error: null };
+    if (this.table === "audit_log") {
+      return { data: this.applyFilters(this.state.auditRows)[0] ?? null, error: null };
+    }
     return { data: null, error: null };
   }
 
@@ -215,6 +232,7 @@ class FakeQuery {
   }
 
   private executeSelect() {
+    if (this.selectedOptions?.head) return this.headCount();
     if (this.table === "coordinator_status") return this.collection([statusRow]);
     if (this.table === "adoption_followup") return this.collection(this.state.followupRows);
     if (this.table === "adoption_case") {
@@ -234,7 +252,32 @@ class FakeQuery {
     if (this.table === "arrival_source") return this.collection(this.state.arrivalSourceRows);
     if (this.table === "animal_match") return this.collection(this.state.matchRows);
     if (this.table === "successful_adoption") return this.collection(this.state.successRows);
+    if (this.table === "audit_log") return this.collection(this.state.auditRows);
     return this.executeMaybeSingle();
+  }
+
+  private headCount() {
+    return { data: null, error: null, count: this.summaryCount() };
+  }
+
+  private hasEq(column: string, value: unknown) {
+    return this.eqFilters.some((filter) => filter.column === column && filter.value === value);
+  }
+
+  private hasIs(column: string, value: unknown) {
+    return this.isFilters.some((filter) => filter.column === column && filter.value === value);
+  }
+
+  private summaryCount() {
+    if (this.table === "adoption_case") {
+      if (this.hasEq("source", "public_form")) return this.state.summaryCounts.publicIntakeCases;
+      if (this.hasEq("source", "manual_intake")) return this.state.summaryCounts.manualIntakeCases;
+      if (this.hasIs("closed_at", null)) return this.state.summaryCounts.openCases;
+    }
+    if (this.table === "successful_adoption") return this.state.summaryCounts.successfulAdoptions;
+    if (this.table === "adoption_followup") return this.state.summaryCounts.overdueTasks;
+    if (this.table === "audit_log") return this.state.summaryCounts.exportsRun;
+    return this.applyFilters([]).length;
   }
 
   private collection(rows: Record<string, unknown>[]) {
@@ -248,11 +291,24 @@ class FakeQuery {
 
   private applyFilters(rows: Record<string, unknown>[]) {
     return rows
-      .filter((row) => this.eqFilters.every((filter) => row[filter.column] === filter.value))
+      .filter((row) =>
+        this.eqFilters.every((filter) => fieldValue(row, filter.column) === filter.value),
+      )
       .filter((row) => this.inFilters.every((filter) => filter.value.includes(row[filter.column])))
-      .filter((row) => this.isFilters.every((filter) => row[filter.column] === filter.value))
+      .filter((row) =>
+        this.isFilters.every((filter) => fieldValue(row, filter.column) === filter.value),
+      )
       .filter((row) => this.orFilters.every((filter) => matchesOrFilter(row, filter)));
   }
+}
+
+function fieldValue(row: Record<string, unknown>, column: string) {
+  if (column.startsWith("detail->>")) {
+    const detailKey = column.slice("detail->>".length);
+    const detail = row.detail as Record<string, unknown> | null | undefined;
+    return detail?.[detailKey];
+  }
+  return row[column];
 }
 
 function matchesLike(value: unknown, pattern: string) {
@@ -279,6 +335,9 @@ function createFakeClient(
     existingSupporter?: { id: string } | null;
     existingProfile?: Record<string, unknown> | null;
     supporterRows?: Record<string, unknown>[];
+    auditRows?: Record<string, unknown>[];
+    rpcResult?: Record<string, unknown> | null;
+    summaryCounts?: Partial<SummaryCounts>;
     followupRow?: Record<string, unknown> | null;
     followupRows?: Record<string, unknown>[];
     caseRows?: Record<string, unknown>[];
@@ -300,6 +359,17 @@ function createFakeClient(
     existingSupporter: options.existingSupporter ?? null,
     existingProfile: options.existingProfile ?? null,
     supporterRows: options.supporterRows ?? [],
+    auditRows: options.auditRows ?? [],
+    rpcResult: options.rpcResult ?? null,
+    summaryCounts: {
+      publicIntakeCases: 0,
+      manualIntakeCases: 0,
+      successfulAdoptions: 0,
+      openCases: 0,
+      overdueTasks: 0,
+      exportsRun: 0,
+      ...options.summaryCounts,
+    },
     followupRow: options.followupRow ?? null,
     followupRows: options.followupRows ?? [],
     caseRows: options.caseRows ?? [],
@@ -320,6 +390,10 @@ function createFakeClient(
     from(table: string) {
       state.calls.push({ table, method: "from" });
       return new FakeQuery(state, table);
+    },
+    rpc(functionName: string, payload: unknown) {
+      state.calls.push({ table: "rpc", method: functionName, payload });
+      return Promise.resolve({ data: state.rpcResult, error: null });
     },
   };
 
@@ -522,6 +596,147 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     expect(hongKongDayBounds(new Date("2026-06-27T16:00:00.000Z"))).toEqual({
       start: "2026-06-27T16:00:00.000Z",
       end: "2026-06-28T16:00:00.000Z",
+    });
+  });
+
+  test("searches manual intake identity candidates across adopters and supporters", async () => {
+    const { repo, calls } = setupRepository({
+      adopterRows: [
+        adopterRow({
+          supporter: {
+            id: existingSupporterId,
+            name: "Ada",
+            email: "ada@example.test",
+            phone: "61234567",
+          },
+        }),
+      ],
+      supporterRows: [
+        { id: secondSupporterId, name: "Ben", email: "ben@example.test", phone: "69876543" },
+      ],
+    });
+
+    const result = await repo.searchManualCaseIdentity({
+      q: "Ada",
+      page: 1,
+      pageSize: 10,
+    });
+
+    expect(result.candidates).toEqual([
+      expect.objectContaining({
+        kind: "adopter",
+        adopterProfileId: existingProfileId,
+        displayName: "Ada",
+      }),
+    ]);
+    expect(callsFor(calls, "adopter_profile", "or")).toHaveLength(1);
+    expect(callsFor(calls, "supporter", "or")).toHaveLength(1);
+  });
+
+  test("creates manual cases through the transactional RPC", async () => {
+    const { repo, calls } = setupRepository({
+      rpcResult: {
+        caseId: adoptionCaseId,
+        supporterId: existingSupporterId,
+        adopterProfileId: existingProfileId,
+        taskId: followupId,
+      },
+    });
+
+    await expect(
+      repo.createManualCase({
+        actorUserId: createdSupporterId,
+        identity: { kind: "existing_adopter", adopterProfileId: existingProfileId },
+        case: {
+          source: "manual_intake",
+          initialStatusId: statusId,
+          animalType: "cat",
+          applicantName: "Ada",
+          applicantPhone: "9123 4567",
+          preferences: {},
+        },
+        initialTask: {
+          statusId,
+          title: "Call back",
+          taskType: "followup",
+          priority: "normal",
+        },
+      }),
+    ).resolves.toEqual({
+      caseId: adoptionCaseId,
+      supporterId: existingSupporterId,
+      adopterProfileId: existingProfileId,
+      taskId: followupId,
+    });
+
+    expect(calls).toContainEqual({
+      table: "rpc",
+      method: "create_manual_adoption_case",
+      payload: expect.objectContaining({
+        p_actor_user_id: createdSupporterId,
+      }),
+    });
+  });
+
+  test("lists coordinator export history from audit log details", async () => {
+    const { repo } = setupRepository({
+      auditRows: [
+        {
+          id: "aaaaaaaa-bbbb-4333-8444-555555555555",
+          actor_user_id: createdSupporterId,
+          action: "coordinator_export.cases",
+          entity: "coordinator_export",
+          entity_id: "cases",
+          timestamp: "2026-06-28T01:00:00.000Z",
+          detail: {
+            kind: "cases",
+            filters: { openOnly: true },
+            rowCount: 12,
+            sourceRoute: "/api/admin/adoptions/exports/cases.csv",
+          },
+        },
+      ],
+    });
+
+    await expect(
+      repo.listCoordinatorExportHistory({
+        month: "2026-06",
+        kind: "cases",
+        page: 1,
+        pageSize: 25,
+      }),
+    ).resolves.toMatchObject({
+      total: 1,
+      exports: [
+        {
+          kind: "cases",
+          rowCount: 12,
+          filters: { openOnly: true },
+        },
+      ],
+    });
+  });
+
+  test("returns monthly coordinator summary counts", async () => {
+    const { repo } = setupRepository({
+      summaryCounts: {
+        publicIntakeCases: 2,
+        manualIntakeCases: 3,
+        successfulAdoptions: 4,
+        openCases: 5,
+        overdueTasks: 6,
+        exportsRun: 7,
+      },
+    });
+
+    await expect(repo.getCoordinatorMonthlySummary({ month: "2026-06" })).resolves.toEqual({
+      month: "2026-06",
+      publicIntakeCases: 2,
+      manualIntakeCases: 3,
+      successfulAdoptions: 4,
+      openCases: 5,
+      overdueTasks: 6,
+      exportsRun: 7,
     });
   });
 
