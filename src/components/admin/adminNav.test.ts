@@ -36,6 +36,12 @@ describe("admin nav active state", () => {
     ).toEqual(["coordinator-intake"]);
   });
 
+  test("uses coordinator reports item on report routes", () => {
+    expect(
+      getActiveAdminNavItemIds(ADMIN_NAV_ITEMS, "/admin/coordinator/reports", "applications"),
+    ).toEqual(["coordinator-reports"]);
+  });
+
   test("uses only the coordinator adopters item on adopter routes", () => {
     expect(
       getActiveAdminNavItemIds(ADMIN_NAV_ITEMS, "/admin/coordinator/adopters", "applications"),

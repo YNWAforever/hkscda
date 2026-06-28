@@ -26,6 +26,13 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     activePath: "/admin/coordinator/intake",
   },
   {
+    id: "coordinator-reports",
+    section: "applications",
+    label: "報表紀錄",
+    to: "/admin/coordinator/reports",
+    activePath: "/admin/coordinator/reports",
+  },
+  {
     id: "coordinator-statuses",
     section: "applications",
     label: "狀態設定",
