@@ -46,6 +46,7 @@ type QueryCall = {
   method: string;
   payload?: unknown;
   options?: unknown;
+  schema?: string;
 };
 
 type SummaryCounts = {
@@ -89,6 +90,8 @@ class FakeQuery {
   private eqFilters: Array<{ column: string; value: unknown }> = [];
   private inFilters: Array<{ column: string; value: unknown[] }> = [];
   private isFilters: Array<{ column: string; value: unknown }> = [];
+  private gteFilters: Array<{ column: string; value: unknown }> = [];
+  private ltFilters: Array<{ column: string; value: unknown }> = [];
   private orFilters: string[] = [];
   private rangeBounds: { from: number; to: number } | null = null;
 
@@ -139,11 +142,13 @@ class FakeQuery {
 
   gte(column: string, value: unknown) {
     this.state.calls.push({ table: this.table, method: "gte", payload: { column, value } });
+    this.gteFilters.push({ column, value });
     return this;
   }
 
   lt(column: string, value: unknown) {
     this.state.calls.push({ table: this.table, method: "lt", payload: { column, value } });
+    this.ltFilters.push({ column, value });
     return this;
   }
 
@@ -269,6 +274,9 @@ class FakeQuery {
   }
 
   private summaryCount() {
+    const rows = this.rowsForCount();
+    if (rows.length > 0) return this.applyFilters(rows).length;
+
     if (this.table === "adoption_case") {
       if (this.hasEq("source", "public_form")) return this.state.summaryCounts.publicIntakeCases;
       if (this.hasEq("source", "manual_intake")) return this.state.summaryCounts.manualIntakeCases;
@@ -278,6 +286,14 @@ class FakeQuery {
     if (this.table === "adoption_followup") return this.state.summaryCounts.overdueTasks;
     if (this.table === "audit_log") return this.state.summaryCounts.exportsRun;
     return this.applyFilters([]).length;
+  }
+
+  private rowsForCount() {
+    if (this.table === "adoption_case") return this.state.caseRows;
+    if (this.table === "successful_adoption") return this.state.successRows;
+    if (this.table === "adoption_followup") return this.state.followupRows;
+    if (this.table === "audit_log") return this.state.auditRows;
+    return [];
   }
 
   private collection(rows: Record<string, unknown>[]) {
@@ -298,6 +314,12 @@ class FakeQuery {
       .filter((row) =>
         this.isFilters.every((filter) => fieldValue(row, filter.column) === filter.value),
       )
+      .filter((row) =>
+        this.gteFilters.every((filter) => compareField(row, filter.column, filter.value) >= 0),
+      )
+      .filter((row) =>
+        this.ltFilters.every((filter) => compareField(row, filter.column, filter.value) < 0),
+      )
       .filter((row) => this.orFilters.every((filter) => matchesOrFilter(row, filter)));
   }
 }
@@ -309,6 +331,13 @@ function fieldValue(row: Record<string, unknown>, column: string) {
     return detail?.[detailKey];
   }
   return row[column];
+}
+
+function compareField(row: Record<string, unknown>, column: string, value: unknown) {
+  const actual = fieldValue(row, column);
+  if (actual === null || actual === undefined) return -1;
+  if (typeof actual === "number" && typeof value === "number") return actual - value;
+  return String(actual).localeCompare(String(value));
 }
 
 function matchesLike(value: unknown, pattern: string) {
@@ -394,6 +423,14 @@ function createFakeClient(
     rpc(functionName: string, payload: unknown) {
       state.calls.push({ table: "rpc", method: functionName, payload });
       return Promise.resolve({ data: state.rpcResult, error: null });
+    },
+    schema(schemaName: string) {
+      return {
+        rpc(functionName: string, payload: unknown) {
+          state.calls.push({ table: "rpc", method: functionName, payload, schema: schemaName });
+          return Promise.resolve({ data: state.rpcResult, error: null });
+        },
+      };
     },
   };
 
@@ -672,6 +709,7 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     expect(calls).toContainEqual({
       table: "rpc",
       method: "create_manual_adoption_case",
+      schema: "private",
       payload: expect.objectContaining({
         p_actor_user_id: createdSupporterId,
       }),
@@ -717,6 +755,124 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     });
   });
 
+  test("maps and filters original export history rows without detail kind", async () => {
+    const { repo } = setupRepository({
+      auditRows: [
+        {
+          id: "aaaaaaaa-bbbb-4333-8444-555555555555",
+          actor_user_id: createdSupporterId,
+          action: "coordinator_export.cases",
+          entity: "coordinator_export",
+          entity_id: "cases",
+          timestamp: "2026-06-28T01:00:00.000Z",
+          detail: {
+            filters: { openOnly: true },
+            rowCount: 12,
+          },
+        },
+        {
+          id: "bbbbbbbb-cccc-4333-8444-555555555555",
+          actor_user_id: createdSupporterId,
+          action: "coordinator_export.adopters",
+          entity: "coordinator_export",
+          entity_id: "adopters",
+          timestamp: "2026-06-28T02:00:00.000Z",
+          detail: {
+            filters: {},
+            rowCount: 3,
+          },
+        },
+      ],
+    });
+
+    await expect(
+      repo.listCoordinatorExportHistory({
+        month: "2026-06",
+        kind: "cases",
+        page: 1,
+        pageSize: 25,
+      }),
+    ).resolves.toMatchObject({
+      total: 1,
+      exports: [
+        {
+          kind: "cases",
+          rowCount: 12,
+          filters: { openOnly: true },
+        },
+      ],
+    });
+  });
+
+  test("uses exact UUID actor filtering for export history", async () => {
+    const { repo, calls } = setupRepository({
+      auditRows: [
+        {
+          id: "aaaaaaaa-bbbb-4333-8444-555555555555",
+          actor_user_id: createdSupporterId,
+          action: "coordinator_export.cases",
+          entity: "coordinator_export",
+          entity_id: "cases",
+          timestamp: "2026-06-28T01:00:00.000Z",
+          detail: {
+            filters: {},
+            rowCount: 12,
+          },
+        },
+      ],
+    });
+
+    await expect(
+      repo.listCoordinatorExportHistory({
+        month: "2026-06",
+        actor: createdSupporterId,
+        page: 1,
+        pageSize: 25,
+      }),
+    ).resolves.toMatchObject({ total: 1 });
+
+    expect(calls).toContainEqual({
+      table: "audit_log",
+      method: "eq",
+      payload: { column: "actor_user_id", value: createdSupporterId },
+    });
+    expect(
+      callsFor(calls, "audit_log", "ilike").some(
+        (call) => (call.payload as { column?: string }).column === "actor_user_id",
+      ),
+    ).toBe(false);
+  });
+
+  test("ignores non-UUID actor export history filters without UUID ilike", async () => {
+    const { repo, calls } = setupRepository({
+      auditRows: [
+        {
+          id: "aaaaaaaa-bbbb-4333-8444-555555555555",
+          actor_user_id: createdSupporterId,
+          action: "coordinator_export.cases",
+          entity: "coordinator_export",
+          entity_id: "cases",
+          timestamp: "2026-06-28T01:00:00.000Z",
+          detail: {
+            filters: {},
+            rowCount: 12,
+          },
+        },
+      ],
+    });
+
+    await expect(
+      repo.listCoordinatorExportHistory({
+        month: "2026-06",
+        actor: "Ada",
+        page: 1,
+        pageSize: 25,
+      }),
+    ).resolves.toEqual({ exports: [], total: 0 });
+
+    expect(callsFor(calls, "audit_log", "ilike")).toHaveLength(0);
+  });
+
   test("returns monthly coordinator summary counts", async () => {
     const { repo } = setupRepository({
       summaryCounts: {
@@ -737,6 +893,42 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
       openCases: 5,
       overdueTasks: 6,
       exportsRun: 7,
+    });
+  });
+
+  test("caps overdue task summary counts at now within the selected month", async () => {
+    const { repo, calls } = setupRepository({
+      summaryCounts: {
+        overdueTasks: 99,
+      },
+      followupRows: [
+        followupRow({
+          id: "past-overdue-task",
+          due_at: "2026-06-10T00:00:00.000Z",
+          completed_at: null,
+        }),
+        followupRow({
+          id: "future-task",
+          due_at: "2026-06-20T00:00:00.000Z",
+          completed_at: null,
+        }),
+        followupRow({
+          id: "completed-task",
+          due_at: "2026-06-09T00:00:00.000Z",
+          completed_at: "2026-06-09T02:00:00.000Z",
+        }),
+      ],
+    });
+
+    const result = await withFixedDate("2026-06-15T00:00:00.000Z", () =>
+      repo.getCoordinatorMonthlySummary({ month: "2026-06" }),
+    );
+
+    expect(result.overdueTasks).toBe(1);
+    expect(calls).toContainEqual({
+      table: "adoption_followup",
+      method: "lt",
+      payload: { column: "due_at", value: "2026-06-15T00:00:00.000Z" },
     });
   });
 

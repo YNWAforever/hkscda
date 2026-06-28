@@ -48,6 +48,14 @@ const COORDINATOR_EXPORT_ACTIONS = [
   "coordinator_export.tasks",
   "coordinator_export.regenerate",
 ];
+const COORDINATOR_EXPORT_KINDS = [
+  "cases",
+  "adopters",
+  "successful-adoptions",
+  "animals",
+  "tasks",
+] as const;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 type StatusRow = {
   id: string;
@@ -226,6 +234,26 @@ function monthBounds(month: string) {
   return { start: start.toISOString(), end: end.toISOString() };
 }
 
+function isCoordinatorExportKind(value: unknown): value is CoordinatorExportKind {
+  return COORDINATOR_EXPORT_KINDS.includes(value as CoordinatorExportKind);
+}
+
+function actionExportKind(action: unknown) {
+  if (typeof action !== "string" || !action.startsWith("coordinator_export.")) return null;
+  return action.slice("coordinator_export.".length);
+}
+
+function auditExportKind(
+  row: Record<string, unknown>,
+  detail: Record<string, unknown>,
+): CoordinatorExportKind {
+  const kind = [detail.kind, row.entity_id, actionExportKind(row.action)].find(
+    isCoordinatorExportKind,
+  );
+  if (!kind) throw new Error("Missing coordinator export kind in audit row");
+  return kind;
+}
+
 function mapExportAuditRow(row: Record<string, unknown>): CoordinatorExportAuditRow {
   const detail = (row.detail ?? {}) as Record<string, unknown>;
   return {
@@ -233,12 +261,16 @@ function mapExportAuditRow(row: Record<string, unknown>): CoordinatorExportAudit
     actorUserId: (row.actor_user_id as string | null) ?? null,
     actorLabel: null,
     action: row.action as string,
-    kind: detail.kind as CoordinatorExportKind,
+    kind: auditExportKind(row, detail),
     rowCount: Number(detail.rowCount ?? 0),
     filters: (detail.filters as Record<string, unknown>) ?? {},
     sourceRoute: (detail.sourceRoute as string | null) ?? null,
     timestamp: row.timestamp as string,
   };
+}
+
+function isUuid(value: string) {
+  return UUID_PATTERN.test(value);
 }
 
 async function countRows(
@@ -1558,7 +1590,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
     },
 
     async createManualCase(input) {
-      const { data, error } = await client.rpc("create_manual_adoption_case", {
+      const { data, error } = await client.schema("private").rpc("create_manual_adoption_case", {
         p_actor_user_id: input.actorUserId,
         p_identity: input.identity,
         p_case: input.case,
@@ -1569,6 +1601,10 @@ export function createSupabaseAdoptionCoordinatorRepository(
     },
 
     async listCoordinatorExportHistory(input) {
+      if (input.actor && !isUuid(input.actor)) {
+        return { exports: [], total: 0 };
+      }
+
       const { start, end } = monthBounds(input.month);
       const from = (input.page - 1) * input.pageSize;
       let query = client
@@ -1577,17 +1613,21 @@ export function createSupabaseAdoptionCoordinatorRepository(
         .gte("timestamp", start)
         .lt("timestamp", end)
         .in("action", COORDINATOR_EXPORT_ACTIONS)
-        .order("timestamp", { ascending: false })
-        .range(from, from + input.pageSize - 1);
+        .order("timestamp", { ascending: false });
 
-      if (input.kind) query = query.eq("detail->>kind", input.kind);
-      if (input.actor) query = query.ilike("actor_user_id", `%${escapeLike(input.actor)}%`);
+      if (input.actor) query = query.eq("actor_user_id", input.actor);
+      if (!input.kind) query = query.range(from, from + input.pageSize - 1);
 
       const { data, error, count } = await query;
       if (error) throw error;
+      const exports = ((data ?? []) as Record<string, unknown>[])
+        .map(mapExportAuditRow)
+        .filter((row) => !input.kind || row.kind === input.kind);
+      const pagedExports = input.kind ? exports.slice(from, from + input.pageSize) : exports;
+
       return {
-        exports: ((data ?? []) as Record<string, unknown>[]).map(mapExportAuditRow),
-        total: count ?? 0,
+        exports: pagedExports,
+        total: input.kind ? exports.length : (count ?? exports.length),
       };
     },
 
@@ -1595,6 +1635,8 @@ export function createSupabaseAdoptionCoordinatorRepository(
       const { start, end } = monthBounds(input.month);
       const startDate = start.slice(0, 10);
       const endDate = end.slice(0, 10);
+      const now = new Date().toISOString();
+      const overdueEnd = now < end ? now : end;
       const [
         publicIntakeCases,
         manualIntakeCases,
@@ -1640,7 +1682,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
             .select("id", { count: "exact", head: true })
             .is("completed_at", null)
             .gte("due_at", start)
-            .lt("due_at", end),
+            .lt("due_at", overdueEnd),
         ),
         countRows(
           client
