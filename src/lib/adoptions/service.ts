@@ -3,7 +3,16 @@ import type { z } from "zod";
 import { buildCaseFromPublicApplication, type PublicApplicationInput } from "./caseFactory";
 import { assertCanMutateStatus } from "./status";
 import {
+  buildCoordinatorAdopterCsv,
+  buildCoordinatorAnimalCsv,
+  buildCoordinatorCaseCsv,
+  buildCoordinatorSuccessfulAdoptionCsv,
+  buildCoordinatorTaskCsv,
+} from "./csv";
+import {
+  adopterSearchSchema,
   caseSearchSchema,
+  coordinatorExportKindSchema,
   coordinatorTaskInputSchema,
   coordinatorTaskUpdateSchema,
   finalizeAdoptionSchema,
@@ -18,19 +27,29 @@ import { buildTaskAuditAction, validateTaskCompletion } from "./tasks";
 import type {
   AdoptionCaseDetail,
   AdoptionCaseSummary,
+  AdopterDetail,
+  AdopterSummary,
+  CoordinatorAdopterExportRow,
+  CoordinatorAnimalExportRow,
+  CoordinatorCaseExportRow,
+  CoordinatorExportResult,
   CoordinatorStatus,
+  CoordinatorSuccessfulAdoptionExportRow,
   CoordinatorTask,
+  CoordinatorTaskExportRow,
 } from "./types";
 
 export type StatusInput = z.infer<typeof statusInputSchema>;
 export type StatusUpdate = z.infer<typeof statusUpdateSchema>;
 export type CaseSearch = z.infer<typeof caseSearchSchema>;
+export type AdopterSearch = z.infer<typeof adopterSearchSchema>;
 export type MatchInput = z.infer<typeof matchInputSchema>;
 export type FollowupInput = z.infer<typeof followupInputSchema>;
 export type FinalizeAdoptionInput = z.infer<typeof finalizeAdoptionSchema>;
 export type TaskListSearch = z.infer<typeof taskListSearchSchema>;
 export type CoordinatorTaskInput = z.infer<typeof coordinatorTaskInputSchema>;
 export type CoordinatorTaskUpdate = z.infer<typeof coordinatorTaskUpdateSchema>;
+export type CoordinatorExportPage = { page: number; pageSize: number };
 export type CaseFromPublicApplicationInput = ReturnType<typeof buildCaseFromPublicApplication> & {
   publicApplicationId: string;
 };
@@ -51,9 +70,18 @@ export type AdoptionCoordinatorRepository = {
   updateStatus(id: string, input: StatusUpdate): Promise<CoordinatorStatus>;
   deleteStatus(id: string): Promise<void>;
   listCases(input: CaseSearch): Promise<{ cases: AdoptionCaseSummary[]; total: number }>;
+  listCaseExportRows(input: CaseSearch): Promise<CoordinatorCaseExportRow[]>;
   getCaseDetail(id: string): Promise<AdoptionCaseDetail | null>;
+  listAdopters(input: AdopterSearch): Promise<{ adopters: AdopterSummary[]; total: number }>;
+  listAdopterExportRows(input: AdopterSearch): Promise<CoordinatorAdopterExportRow[]>;
+  getAdopterDetail(id: string): Promise<AdopterDetail | null>;
   createCaseFromPublicApplication(input: CaseFromPublicApplicationInput): Promise<{ id: string }>;
   listTasks(input: TaskListSearch): Promise<{ tasks: CoordinatorTask[]; total: number }>;
+  listSuccessfulAdoptionExportRows(
+    input: CoordinatorExportPage,
+  ): Promise<CoordinatorSuccessfulAdoptionExportRow[]>;
+  listAnimalExportRows(input: CoordinatorExportPage): Promise<CoordinatorAnimalExportRow[]>;
+  listTaskExportRows(input: TaskListSearch): Promise<CoordinatorTaskExportRow[]>;
   getTask(id: string): Promise<CoordinatorTask | null>;
   createTask(
     input: CoordinatorTaskInput & {
@@ -102,6 +130,10 @@ type CreateAdoptionCoordinatorServiceArgs = {
 
 function timestamp(now: () => Date) {
   return now().toISOString();
+}
+
+function coordinatorExportPage(): CoordinatorExportPage {
+  return { page: 1, pageSize: 1000 };
 }
 
 function hasEffectiveTaskLink(current: CoordinatorTask, input: CoordinatorTaskUpdate) {
@@ -197,8 +229,68 @@ export function createAdoptionCoordinatorService({
       return repo.getCaseDetail(caseId);
     },
 
+    listAdopters(rawSearch: unknown) {
+      return repo.listAdopters(adopterSearchSchema.parse(rawSearch));
+    },
+
+    getAdopterDetail(adopterProfileId: string) {
+      return repo.getAdopterDetail(adopterProfileId);
+    },
+
     listTasks(rawSearch: unknown) {
       return repo.listTasks(taskListSearchSchema.parse(rawSearch));
+    },
+
+    async exportCoordinatorCsv(args: {
+      actorUserId: string | null;
+      kind: unknown;
+      rawSearch: unknown;
+    }): Promise<CoordinatorExportResult> {
+      const kind = coordinatorExportKindSchema.parse(args.kind);
+      let csv = "";
+      let rowCount = 0;
+      let filters: Record<string, unknown> = {};
+
+      if (kind === "cases") {
+        const parsed = caseSearchSchema.parse(args.rawSearch);
+        filters = { ...parsed, ...coordinatorExportPage() };
+        const rows = await repo.listCaseExportRows(filters as CaseSearch);
+        csv = buildCoordinatorCaseCsv(rows);
+        rowCount = rows.length;
+      } else if (kind === "adopters") {
+        const parsed = adopterSearchSchema.parse(args.rawSearch);
+        filters = { ...parsed, ...coordinatorExportPage() };
+        const rows = await repo.listAdopterExportRows(filters as AdopterSearch);
+        csv = buildCoordinatorAdopterCsv(rows);
+        rowCount = rows.length;
+      } else if (kind === "successful-adoptions") {
+        filters = coordinatorExportPage();
+        const rows = await repo.listSuccessfulAdoptionExportRows(filters);
+        csv = buildCoordinatorSuccessfulAdoptionCsv(rows);
+        rowCount = rows.length;
+      } else if (kind === "animals") {
+        filters = coordinatorExportPage();
+        const rows = await repo.listAnimalExportRows(filters);
+        csv = buildCoordinatorAnimalCsv(rows);
+        rowCount = rows.length;
+      } else {
+        const parsed = taskListSearchSchema.parse(args.rawSearch);
+        filters = { ...parsed, ...coordinatorExportPage() };
+        const rows = await repo.listTaskExportRows(filters as TaskListSearch);
+        csv = buildCoordinatorTaskCsv(rows);
+        rowCount = rows.length;
+      }
+
+      await repo.insertAuditLog({
+        actor_user_id: args.actorUserId,
+        action: `coordinator_export.${kind}`,
+        entity: "coordinator_export",
+        entity_id: kind,
+        timestamp: timestamp(now),
+        detail: { filters, rowCount },
+      });
+
+      return { csv, rowCount, filename: `coordinator-${kind}.csv` };
     },
 
     getTask(taskId: string) {

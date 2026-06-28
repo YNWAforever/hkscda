@@ -97,6 +97,62 @@ function createRepo(
       calls.push({ name: "listCases", payload: input });
       return { cases: [], total: 0 };
     },
+    async listAdopters(input) {
+      calls.push({ name: "listAdopters", payload: input });
+      return { adopters: [], total: 0 };
+    },
+    async listCaseExportRows(input) {
+      calls.push({ name: "listCaseExportRows", payload: input });
+      return [];
+    },
+    async listAdopterExportRows(input) {
+      calls.push({ name: "listAdopterExportRows", payload: input });
+      return [];
+    },
+    async listSuccessfulAdoptionExportRows(input) {
+      calls.push({ name: "listSuccessfulAdoptionExportRows", payload: input });
+      return [];
+    },
+    async listAnimalExportRows(input) {
+      calls.push({ name: "listAnimalExportRows", payload: input });
+      return [];
+    },
+    async listTaskExportRows(input) {
+      calls.push({ name: "listTaskExportRows", payload: input });
+      return [];
+    },
+    async getAdopterDetail(id) {
+      calls.push({ name: "getAdopterDetail", payload: id });
+      return id === adopterProfileId
+        ? {
+            id: adopterProfileId,
+            supporterId: "supporter-1",
+            displayName: "Ada",
+            email: "ada@example.test",
+            phone: "61234567",
+            livingArea: "Kowloon",
+            isBlacklisted: false,
+            openCaseCount: 1,
+            successfulAdoptionCount: 0,
+            openTaskCount: 1,
+            latestCaseAt: "2026-06-27T08:00:00.000Z",
+            nameEnglish: "Ada",
+            nameChinese: null,
+            gender: null,
+            birthday: null,
+            occupation: null,
+            facebook: null,
+            householdSize: null,
+            monthlyHouseholdIncome: null,
+            address: null,
+            floorArea: null,
+            blacklistReason: null,
+            cases: [],
+            successfulAdoptions: [],
+            tasks: [],
+          }
+        : null;
+    },
     async getCaseDetail(id) {
       calls.push({ name: "getCaseDetail", payload: id });
       return null;
@@ -143,7 +199,189 @@ function createRepo(
   };
 }
 
+function setup(overrides: Partial<AdoptionCoordinatorRepository> = {}) {
+  const repo = createRepo(overrides);
+  return {
+    repo,
+    service: createAdoptionCoordinatorService({ repo }),
+    calls: repo.calls,
+  };
+}
+
 describe("createAdoptionCoordinatorService", () => {
+  test("exports coordinator CSV and audits row count", async () => {
+    const { service, calls } = setup();
+
+    const result = await service.exportCoordinatorCsv({
+      actorUserId: adminId,
+      kind: "adopters",
+      rawSearch: { q: "Ada" },
+    });
+
+    expect(result).toEqual({
+      csv: "adopter_profile_id,supporter_id,display_name,email,phone,living_area,is_blacklisted,open_case_count,successful_adoption_count,open_task_count,latest_case_at",
+      filename: "coordinator-adopters.csv",
+      rowCount: 0,
+    });
+    expect(calls).toContainEqual({
+      name: "insertAuditLog",
+      payload: expect.objectContaining({
+        action: "coordinator_export.adopters",
+        entity: "coordinator_export",
+        entity_id: "adopters",
+        detail: {
+          filters: {
+            q: "Ada",
+            blacklisted: "all",
+            hasOpenCases: false,
+            hasOpenTasks: false,
+            page: 1,
+            pageSize: 1000,
+          },
+          rowCount: 0,
+        },
+      }),
+    });
+  });
+
+  test("exports paginated coordinator CSV kinds from the first capped page", async () => {
+    const { service, calls } = setup();
+
+    await service.exportCoordinatorCsv({
+      actorUserId: adminId,
+      kind: "cases",
+      rawSearch: { q: "Milo", page: "4", pageSize: "5" },
+    });
+    await service.exportCoordinatorCsv({
+      actorUserId: adminId,
+      kind: "tasks",
+      rawSearch: { q: "call", page: "3", pageSize: "10" },
+    });
+
+    expect(calls).toContainEqual({
+      name: "listCaseExportRows",
+      payload: {
+        q: "Milo",
+        openOnly: false,
+        page: 1,
+        pageSize: 1000,
+      },
+    });
+    expect(calls).toContainEqual({
+      name: "insertAuditLog",
+      payload: expect.objectContaining({
+        action: "coordinator_export.cases",
+        detail: {
+          filters: {
+            q: "Milo",
+            openOnly: false,
+            page: 1,
+            pageSize: 1000,
+          },
+          rowCount: 0,
+        },
+      }),
+    });
+    expect(calls).toContainEqual({
+      name: "listTaskExportRows",
+      payload: {
+        q: "call",
+        due: "all",
+        openOnly: false,
+        page: 1,
+        pageSize: 1000,
+      },
+    });
+    expect(calls).toContainEqual({
+      name: "insertAuditLog",
+      payload: expect.objectContaining({
+        action: "coordinator_export.tasks",
+        detail: {
+          filters: {
+            q: "call",
+            due: "all",
+            openOnly: false,
+            page: 1,
+            pageSize: 1000,
+          },
+          rowCount: 0,
+        },
+      }),
+    });
+  });
+
+  test("exports global coordinator CSV kinds with capped audit filters", async () => {
+    const { service, calls } = setup();
+
+    await service.exportCoordinatorCsv({
+      actorUserId: adminId,
+      kind: "successful-adoptions",
+      rawSearch: { page: "3", pageSize: "25" },
+    });
+    await service.exportCoordinatorCsv({
+      actorUserId: adminId,
+      kind: "animals",
+      rawSearch: { page: "2", pageSize: "50" },
+    });
+
+    expect(calls).toContainEqual({
+      name: "listSuccessfulAdoptionExportRows",
+      payload: { page: 1, pageSize: 1000 },
+    });
+    expect(calls).toContainEqual({
+      name: "listAnimalExportRows",
+      payload: { page: 1, pageSize: 1000 },
+    });
+    expect(calls).toContainEqual({
+      name: "insertAuditLog",
+      payload: expect.objectContaining({
+        action: "coordinator_export.successful-adoptions",
+        detail: { filters: { page: 1, pageSize: 1000 }, rowCount: 0 },
+      }),
+    });
+    expect(calls).toContainEqual({
+      name: "insertAuditLog",
+      payload: expect.objectContaining({
+        action: "coordinator_export.animals",
+        detail: { filters: { page: 1, pageSize: 1000 }, rowCount: 0 },
+      }),
+    });
+  });
+
+  test("lists adopters with normalized filters", async () => {
+    const { service, calls } = setup();
+
+    await service.listAdopters({
+      q: " Ada ",
+      blacklisted: "no",
+      hasOpenCases: "true",
+      hasOpenTasks: "",
+      page: "2",
+      pageSize: "50",
+    });
+
+    expect(calls).toContainEqual({
+      name: "listAdopters",
+      payload: {
+        q: "Ada",
+        blacklisted: "no",
+        hasOpenCases: true,
+        hasOpenTasks: false,
+        page: 2,
+        pageSize: 50,
+      },
+    });
+  });
+
+  test("returns adopter detail from repository", async () => {
+    const { service } = setup();
+
+    await expect(service.getAdopterDetail(adopterProfileId)).resolves.toMatchObject({
+      id: adopterProfileId,
+      displayName: "Ada",
+    });
+  });
+
   test("creates coordinator cases from normalized public applications", async () => {
     const publicApplicationId = "99999999-aaaa-4bbb-8ccc-dddddddddddd";
     const repo = createRepo();

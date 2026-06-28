@@ -42,6 +42,7 @@ import { Route as AdminSupportersIdRouteImport } from './routes/admin/supporters
 import { Route as AdminCoordinatorTasksRouteImport } from './routes/admin/coordinator/tasks'
 import { Route as AdminCoordinatorStatusesRouteImport } from './routes/admin/coordinator/statuses'
 import { Route as AdminCoordinatorAnimalsRouteImport } from './routes/admin/coordinator/animals'
+import { Route as AdminCoordinatorAdoptersRouteImport } from './routes/admin/coordinator/adopters'
 import { Route as AdminApplicationsIdRouteImport } from './routes/admin/applications/$id'
 import { Route as AdminAnimalsNewRouteImport } from './routes/admin/animals/new'
 import { Route as ApiAdminSupportersIdRouteImport } from './routes/api/admin/supporters/$id'
@@ -51,13 +52,21 @@ import { Route as ApiAdminDonationsManualRouteImport } from './routes/api/admin/
 import { Route as ApiAdminAdoptionsTasksRouteImport } from './routes/api/admin/adoptions/tasks'
 import { Route as ApiAdminAdoptionsStatusesRouteImport } from './routes/api/admin/adoptions/statuses'
 import { Route as ApiAdminAdoptionsCasesRouteImport } from './routes/api/admin/adoptions/cases'
+import { Route as ApiAdminAdoptionsAdoptersRouteImport } from './routes/api/admin/adoptions/adopters'
+import { Route as AdminCoordinatorAdoptersIdRouteImport } from './routes/admin/coordinator/adopters/$id'
 import { Route as AdminAnimalsIdEditRouteImport } from './routes/admin/animals/$id.edit'
 import { Route as ApiAdminSupportersIdConsentsRouteImport } from './routes/api/admin/supporters/$id/consents'
 import { Route as ApiAdminReceiptsIdVoidRouteImport } from './routes/api/admin/receipts/$id/void'
 import { Route as ApiAdminPaymentsIdReconcileRouteImport } from './routes/api/admin/payments/$id/reconcile'
 import { Route as ApiAdminAdoptionsTasksIdRouteImport } from './routes/api/admin/adoptions/tasks/$id'
 import { Route as ApiAdminAdoptionsStatusesIdRouteImport } from './routes/api/admin/adoptions/statuses/$id'
+import { Route as ApiAdminAdoptionsExportsTasksDotcsvRouteImport } from './routes/api/admin/adoptions/exports/tasks[.]csv'
+import { Route as ApiAdminAdoptionsExportsSuccessfulAdoptionsDotcsvRouteImport } from './routes/api/admin/adoptions/exports/successful-adoptions[.]csv'
+import { Route as ApiAdminAdoptionsExportsCasesDotcsvRouteImport } from './routes/api/admin/adoptions/exports/cases[.]csv'
+import { Route as ApiAdminAdoptionsExportsAnimalsDotcsvRouteImport } from './routes/api/admin/adoptions/exports/animals[.]csv'
+import { Route as ApiAdminAdoptionsExportsAdoptersDotcsvRouteImport } from './routes/api/admin/adoptions/exports/adopters[.]csv'
 import { Route as ApiAdminAdoptionsCasesIdRouteImport } from './routes/api/admin/adoptions/cases/$id'
+import { Route as ApiAdminAdoptionsAdoptersIdRouteImport } from './routes/api/admin/adoptions/adopters/$id'
 import { Route as ApiAdminAdoptionsCasesIdStatusRouteImport } from './routes/api/admin/adoptions/cases/$id/status'
 import { Route as ApiAdminAdoptionsCasesIdMatchesRouteImport } from './routes/api/admin/adoptions/cases/$id/matches'
 import { Route as ApiAdminAdoptionsCasesIdFollowupsRouteImport } from './routes/api/admin/adoptions/cases/$id/followups'
@@ -231,6 +240,12 @@ const AdminCoordinatorAnimalsRoute = AdminCoordinatorAnimalsRouteImport.update({
   path: '/admin/coordinator/animals',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminCoordinatorAdoptersRoute =
+  AdminCoordinatorAdoptersRouteImport.update({
+    id: '/admin/coordinator/adopters',
+    path: '/admin/coordinator/adopters',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminApplicationsIdRoute = AdminApplicationsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -279,6 +294,18 @@ const ApiAdminAdoptionsCasesRoute = ApiAdminAdoptionsCasesRouteImport.update({
   path: '/api/admin/adoptions/cases',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminAdoptionsAdoptersRoute =
+  ApiAdminAdoptionsAdoptersRouteImport.update({
+    id: '/api/admin/adoptions/adopters',
+    path: '/api/admin/adoptions/adopters',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminCoordinatorAdoptersIdRoute =
+  AdminCoordinatorAdoptersIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AdminCoordinatorAdoptersRoute,
+  } as any)
 const AdminAnimalsIdEditRoute = AdminAnimalsIdEditRouteImport.update({
   id: '/admin/animals/$id/edit',
   path: '/admin/animals/$id/edit',
@@ -313,11 +340,47 @@ const ApiAdminAdoptionsStatusesIdRoute =
     path: '/$id',
     getParentRoute: () => ApiAdminAdoptionsStatusesRoute,
   } as any)
+const ApiAdminAdoptionsExportsTasksDotcsvRoute =
+  ApiAdminAdoptionsExportsTasksDotcsvRouteImport.update({
+    id: '/api/admin/adoptions/exports/tasks.csv',
+    path: '/api/admin/adoptions/exports/tasks.csv',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminAdoptionsExportsSuccessfulAdoptionsDotcsvRoute =
+  ApiAdminAdoptionsExportsSuccessfulAdoptionsDotcsvRouteImport.update({
+    id: '/api/admin/adoptions/exports/successful-adoptions.csv',
+    path: '/api/admin/adoptions/exports/successful-adoptions.csv',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminAdoptionsExportsCasesDotcsvRoute =
+  ApiAdminAdoptionsExportsCasesDotcsvRouteImport.update({
+    id: '/api/admin/adoptions/exports/cases.csv',
+    path: '/api/admin/adoptions/exports/cases.csv',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminAdoptionsExportsAnimalsDotcsvRoute =
+  ApiAdminAdoptionsExportsAnimalsDotcsvRouteImport.update({
+    id: '/api/admin/adoptions/exports/animals.csv',
+    path: '/api/admin/adoptions/exports/animals.csv',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminAdoptionsExportsAdoptersDotcsvRoute =
+  ApiAdminAdoptionsExportsAdoptersDotcsvRouteImport.update({
+    id: '/api/admin/adoptions/exports/adopters.csv',
+    path: '/api/admin/adoptions/exports/adopters.csv',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdminAdoptionsCasesIdRoute =
   ApiAdminAdoptionsCasesIdRouteImport.update({
     id: '/$id',
     path: '/$id',
     getParentRoute: () => ApiAdminAdoptionsCasesRoute,
+  } as any)
+const ApiAdminAdoptionsAdoptersIdRoute =
+  ApiAdminAdoptionsAdoptersIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => ApiAdminAdoptionsAdoptersRoute,
   } as any)
 const ApiAdminAdoptionsCasesIdStatusRoute =
   ApiAdminAdoptionsCasesIdStatusRouteImport.update({
@@ -380,6 +443,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/admin/animals/new': typeof AdminAnimalsNewRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
+  '/admin/coordinator/adopters': typeof AdminCoordinatorAdoptersRouteWithChildren
   '/admin/coordinator/animals': typeof AdminCoordinatorAnimalsRoute
   '/admin/coordinator/statuses': typeof AdminCoordinatorStatusesRoute
   '/admin/coordinator/tasks': typeof AdminCoordinatorTasksRoute
@@ -393,6 +457,8 @@ export interface FileRoutesByFullPath {
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/admin/applications/': typeof AdminApplicationsIndexRoute
   '/admin/animals/$id/edit': typeof AdminAnimalsIdEditRoute
+  '/admin/coordinator/adopters/$id': typeof AdminCoordinatorAdoptersIdRoute
+  '/api/admin/adoptions/adopters': typeof ApiAdminAdoptionsAdoptersRouteWithChildren
   '/api/admin/adoptions/cases': typeof ApiAdminAdoptionsCasesRouteWithChildren
   '/api/admin/adoptions/statuses': typeof ApiAdminAdoptionsStatusesRouteWithChildren
   '/api/admin/adoptions/tasks': typeof ApiAdminAdoptionsTasksRouteWithChildren
@@ -400,7 +466,13 @@ export interface FileRoutesByFullPath {
   '/api/admin/exports/donations.csv': typeof ApiAdminExportsDonationsDotcsvRoute
   '/api/admin/exports/supporters.csv': typeof ApiAdminExportsSupportersDotcsvRoute
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
+  '/api/admin/adoptions/adopters/$id': typeof ApiAdminAdoptionsAdoptersIdRoute
   '/api/admin/adoptions/cases/$id': typeof ApiAdminAdoptionsCasesIdRouteWithChildren
+  '/api/admin/adoptions/exports/adopters.csv': typeof ApiAdminAdoptionsExportsAdoptersDotcsvRoute
+  '/api/admin/adoptions/exports/animals.csv': typeof ApiAdminAdoptionsExportsAnimalsDotcsvRoute
+  '/api/admin/adoptions/exports/cases.csv': typeof ApiAdminAdoptionsExportsCasesDotcsvRoute
+  '/api/admin/adoptions/exports/successful-adoptions.csv': typeof ApiAdminAdoptionsExportsSuccessfulAdoptionsDotcsvRoute
+  '/api/admin/adoptions/exports/tasks.csv': typeof ApiAdminAdoptionsExportsTasksDotcsvRoute
   '/api/admin/adoptions/statuses/$id': typeof ApiAdminAdoptionsStatusesIdRoute
   '/api/admin/adoptions/tasks/$id': typeof ApiAdminAdoptionsTasksIdRoute
   '/api/admin/payments/$id/reconcile': typeof ApiAdminPaymentsIdReconcileRoute
@@ -436,6 +508,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/admin/animals/new': typeof AdminAnimalsNewRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
+  '/admin/coordinator/adopters': typeof AdminCoordinatorAdoptersRouteWithChildren
   '/admin/coordinator/animals': typeof AdminCoordinatorAnimalsRoute
   '/admin/coordinator/statuses': typeof AdminCoordinatorStatusesRoute
   '/admin/coordinator/tasks': typeof AdminCoordinatorTasksRoute
@@ -449,6 +522,8 @@ export interface FileRoutesByTo {
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/admin/applications': typeof AdminApplicationsIndexRoute
   '/admin/animals/$id/edit': typeof AdminAnimalsIdEditRoute
+  '/admin/coordinator/adopters/$id': typeof AdminCoordinatorAdoptersIdRoute
+  '/api/admin/adoptions/adopters': typeof ApiAdminAdoptionsAdoptersRouteWithChildren
   '/api/admin/adoptions/cases': typeof ApiAdminAdoptionsCasesRouteWithChildren
   '/api/admin/adoptions/statuses': typeof ApiAdminAdoptionsStatusesRouteWithChildren
   '/api/admin/adoptions/tasks': typeof ApiAdminAdoptionsTasksRouteWithChildren
@@ -456,7 +531,13 @@ export interface FileRoutesByTo {
   '/api/admin/exports/donations.csv': typeof ApiAdminExportsDonationsDotcsvRoute
   '/api/admin/exports/supporters.csv': typeof ApiAdminExportsSupportersDotcsvRoute
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
+  '/api/admin/adoptions/adopters/$id': typeof ApiAdminAdoptionsAdoptersIdRoute
   '/api/admin/adoptions/cases/$id': typeof ApiAdminAdoptionsCasesIdRouteWithChildren
+  '/api/admin/adoptions/exports/adopters.csv': typeof ApiAdminAdoptionsExportsAdoptersDotcsvRoute
+  '/api/admin/adoptions/exports/animals.csv': typeof ApiAdminAdoptionsExportsAnimalsDotcsvRoute
+  '/api/admin/adoptions/exports/cases.csv': typeof ApiAdminAdoptionsExportsCasesDotcsvRoute
+  '/api/admin/adoptions/exports/successful-adoptions.csv': typeof ApiAdminAdoptionsExportsSuccessfulAdoptionsDotcsvRoute
+  '/api/admin/adoptions/exports/tasks.csv': typeof ApiAdminAdoptionsExportsTasksDotcsvRoute
   '/api/admin/adoptions/statuses/$id': typeof ApiAdminAdoptionsStatusesIdRoute
   '/api/admin/adoptions/tasks/$id': typeof ApiAdminAdoptionsTasksIdRoute
   '/api/admin/payments/$id/reconcile': typeof ApiAdminPaymentsIdReconcileRoute
@@ -494,6 +575,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/admin/animals/new': typeof AdminAnimalsNewRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
+  '/admin/coordinator/adopters': typeof AdminCoordinatorAdoptersRouteWithChildren
   '/admin/coordinator/animals': typeof AdminCoordinatorAnimalsRoute
   '/admin/coordinator/statuses': typeof AdminCoordinatorStatusesRoute
   '/admin/coordinator/tasks': typeof AdminCoordinatorTasksRoute
@@ -507,6 +589,8 @@ export interface FileRoutesById {
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/admin/applications/': typeof AdminApplicationsIndexRoute
   '/admin/animals/$id/edit': typeof AdminAnimalsIdEditRoute
+  '/admin/coordinator/adopters/$id': typeof AdminCoordinatorAdoptersIdRoute
+  '/api/admin/adoptions/adopters': typeof ApiAdminAdoptionsAdoptersRouteWithChildren
   '/api/admin/adoptions/cases': typeof ApiAdminAdoptionsCasesRouteWithChildren
   '/api/admin/adoptions/statuses': typeof ApiAdminAdoptionsStatusesRouteWithChildren
   '/api/admin/adoptions/tasks': typeof ApiAdminAdoptionsTasksRouteWithChildren
@@ -514,7 +598,13 @@ export interface FileRoutesById {
   '/api/admin/exports/donations.csv': typeof ApiAdminExportsDonationsDotcsvRoute
   '/api/admin/exports/supporters.csv': typeof ApiAdminExportsSupportersDotcsvRoute
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
+  '/api/admin/adoptions/adopters/$id': typeof ApiAdminAdoptionsAdoptersIdRoute
   '/api/admin/adoptions/cases/$id': typeof ApiAdminAdoptionsCasesIdRouteWithChildren
+  '/api/admin/adoptions/exports/adopters.csv': typeof ApiAdminAdoptionsExportsAdoptersDotcsvRoute
+  '/api/admin/adoptions/exports/animals.csv': typeof ApiAdminAdoptionsExportsAnimalsDotcsvRoute
+  '/api/admin/adoptions/exports/cases.csv': typeof ApiAdminAdoptionsExportsCasesDotcsvRoute
+  '/api/admin/adoptions/exports/successful-adoptions.csv': typeof ApiAdminAdoptionsExportsSuccessfulAdoptionsDotcsvRoute
+  '/api/admin/adoptions/exports/tasks.csv': typeof ApiAdminAdoptionsExportsTasksDotcsvRoute
   '/api/admin/adoptions/statuses/$id': typeof ApiAdminAdoptionsStatusesIdRoute
   '/api/admin/adoptions/tasks/$id': typeof ApiAdminAdoptionsTasksIdRoute
   '/api/admin/payments/$id/reconcile': typeof ApiAdminPaymentsIdReconcileRoute
@@ -553,6 +643,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/animals/new'
     | '/admin/applications/$id'
+    | '/admin/coordinator/adopters'
     | '/admin/coordinator/animals'
     | '/admin/coordinator/statuses'
     | '/admin/coordinator/tasks'
@@ -566,6 +657,8 @@ export interface FileRouteTypes {
     | '/api/webhooks/stripe'
     | '/admin/applications/'
     | '/admin/animals/$id/edit'
+    | '/admin/coordinator/adopters/$id'
+    | '/api/admin/adoptions/adopters'
     | '/api/admin/adoptions/cases'
     | '/api/admin/adoptions/statuses'
     | '/api/admin/adoptions/tasks'
@@ -573,7 +666,13 @@ export interface FileRouteTypes {
     | '/api/admin/exports/donations.csv'
     | '/api/admin/exports/supporters.csv'
     | '/api/admin/supporters/$id'
+    | '/api/admin/adoptions/adopters/$id'
     | '/api/admin/adoptions/cases/$id'
+    | '/api/admin/adoptions/exports/adopters.csv'
+    | '/api/admin/adoptions/exports/animals.csv'
+    | '/api/admin/adoptions/exports/cases.csv'
+    | '/api/admin/adoptions/exports/successful-adoptions.csv'
+    | '/api/admin/adoptions/exports/tasks.csv'
     | '/api/admin/adoptions/statuses/$id'
     | '/api/admin/adoptions/tasks/$id'
     | '/api/admin/payments/$id/reconcile'
@@ -609,6 +708,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/animals/new'
     | '/admin/applications/$id'
+    | '/admin/coordinator/adopters'
     | '/admin/coordinator/animals'
     | '/admin/coordinator/statuses'
     | '/admin/coordinator/tasks'
@@ -622,6 +722,8 @@ export interface FileRouteTypes {
     | '/api/webhooks/stripe'
     | '/admin/applications'
     | '/admin/animals/$id/edit'
+    | '/admin/coordinator/adopters/$id'
+    | '/api/admin/adoptions/adopters'
     | '/api/admin/adoptions/cases'
     | '/api/admin/adoptions/statuses'
     | '/api/admin/adoptions/tasks'
@@ -629,7 +731,13 @@ export interface FileRouteTypes {
     | '/api/admin/exports/donations.csv'
     | '/api/admin/exports/supporters.csv'
     | '/api/admin/supporters/$id'
+    | '/api/admin/adoptions/adopters/$id'
     | '/api/admin/adoptions/cases/$id'
+    | '/api/admin/adoptions/exports/adopters.csv'
+    | '/api/admin/adoptions/exports/animals.csv'
+    | '/api/admin/adoptions/exports/cases.csv'
+    | '/api/admin/adoptions/exports/successful-adoptions.csv'
+    | '/api/admin/adoptions/exports/tasks.csv'
     | '/api/admin/adoptions/statuses/$id'
     | '/api/admin/adoptions/tasks/$id'
     | '/api/admin/payments/$id/reconcile'
@@ -666,6 +774,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/animals/new'
     | '/admin/applications/$id'
+    | '/admin/coordinator/adopters'
     | '/admin/coordinator/animals'
     | '/admin/coordinator/statuses'
     | '/admin/coordinator/tasks'
@@ -679,6 +788,8 @@ export interface FileRouteTypes {
     | '/api/webhooks/stripe'
     | '/admin/applications/'
     | '/admin/animals/$id/edit'
+    | '/admin/coordinator/adopters/$id'
+    | '/api/admin/adoptions/adopters'
     | '/api/admin/adoptions/cases'
     | '/api/admin/adoptions/statuses'
     | '/api/admin/adoptions/tasks'
@@ -686,7 +797,13 @@ export interface FileRouteTypes {
     | '/api/admin/exports/donations.csv'
     | '/api/admin/exports/supporters.csv'
     | '/api/admin/supporters/$id'
+    | '/api/admin/adoptions/adopters/$id'
     | '/api/admin/adoptions/cases/$id'
+    | '/api/admin/adoptions/exports/adopters.csv'
+    | '/api/admin/adoptions/exports/animals.csv'
+    | '/api/admin/adoptions/exports/cases.csv'
+    | '/api/admin/adoptions/exports/successful-adoptions.csv'
+    | '/api/admin/adoptions/exports/tasks.csv'
     | '/api/admin/adoptions/statuses/$id'
     | '/api/admin/adoptions/tasks/$id'
     | '/api/admin/payments/$id/reconcile'
@@ -723,6 +840,7 @@ export interface RootRouteChildren {
   AboutIndexRoute: typeof AboutIndexRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminAnimalsNewRoute: typeof AdminAnimalsNewRoute
+  AdminCoordinatorAdoptersRoute: typeof AdminCoordinatorAdoptersRouteWithChildren
   AdminCoordinatorAnimalsRoute: typeof AdminCoordinatorAnimalsRoute
   AdminCoordinatorStatusesRoute: typeof AdminCoordinatorStatusesRoute
   AdminCoordinatorTasksRoute: typeof AdminCoordinatorTasksRoute
@@ -734,12 +852,18 @@ export interface RootRouteChildren {
   ApiWebhooksPaypalRoute: typeof ApiWebhooksPaypalRoute
   ApiWebhooksStripeRoute: typeof ApiWebhooksStripeRoute
   AdminAnimalsIdEditRoute: typeof AdminAnimalsIdEditRoute
+  ApiAdminAdoptionsAdoptersRoute: typeof ApiAdminAdoptionsAdoptersRouteWithChildren
   ApiAdminAdoptionsCasesRoute: typeof ApiAdminAdoptionsCasesRouteWithChildren
   ApiAdminAdoptionsStatusesRoute: typeof ApiAdminAdoptionsStatusesRouteWithChildren
   ApiAdminAdoptionsTasksRoute: typeof ApiAdminAdoptionsTasksRouteWithChildren
   ApiAdminDonationsManualRoute: typeof ApiAdminDonationsManualRoute
   ApiAdminExportsDonationsDotcsvRoute: typeof ApiAdminExportsDonationsDotcsvRoute
   ApiAdminExportsSupportersDotcsvRoute: typeof ApiAdminExportsSupportersDotcsvRoute
+  ApiAdminAdoptionsExportsAdoptersDotcsvRoute: typeof ApiAdminAdoptionsExportsAdoptersDotcsvRoute
+  ApiAdminAdoptionsExportsAnimalsDotcsvRoute: typeof ApiAdminAdoptionsExportsAnimalsDotcsvRoute
+  ApiAdminAdoptionsExportsCasesDotcsvRoute: typeof ApiAdminAdoptionsExportsCasesDotcsvRoute
+  ApiAdminAdoptionsExportsSuccessfulAdoptionsDotcsvRoute: typeof ApiAdminAdoptionsExportsSuccessfulAdoptionsDotcsvRoute
+  ApiAdminAdoptionsExportsTasksDotcsvRoute: typeof ApiAdminAdoptionsExportsTasksDotcsvRoute
   ApiAdminAdoptionsAnimalsIdInternalRoute: typeof ApiAdminAdoptionsAnimalsIdInternalRoute
   ApiAdminAdoptionsAnimalsIdStatusRoute: typeof ApiAdminAdoptionsAnimalsIdStatusRoute
 }
@@ -977,6 +1101,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCoordinatorAnimalsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/coordinator/adopters': {
+      id: '/admin/coordinator/adopters'
+      path: '/admin/coordinator/adopters'
+      fullPath: '/admin/coordinator/adopters'
+      preLoaderRoute: typeof AdminCoordinatorAdoptersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/applications/$id': {
       id: '/admin/applications/$id'
       path: '/$id'
@@ -1040,6 +1171,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminAdoptionsCasesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/adoptions/adopters': {
+      id: '/api/admin/adoptions/adopters'
+      path: '/api/admin/adoptions/adopters'
+      fullPath: '/api/admin/adoptions/adopters'
+      preLoaderRoute: typeof ApiAdminAdoptionsAdoptersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/coordinator/adopters/$id': {
+      id: '/admin/coordinator/adopters/$id'
+      path: '/$id'
+      fullPath: '/admin/coordinator/adopters/$id'
+      preLoaderRoute: typeof AdminCoordinatorAdoptersIdRouteImport
+      parentRoute: typeof AdminCoordinatorAdoptersRoute
+    }
     '/admin/animals/$id/edit': {
       id: '/admin/animals/$id/edit'
       path: '/admin/animals/$id/edit'
@@ -1082,12 +1227,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminAdoptionsStatusesIdRouteImport
       parentRoute: typeof ApiAdminAdoptionsStatusesRoute
     }
+    '/api/admin/adoptions/exports/tasks.csv': {
+      id: '/api/admin/adoptions/exports/tasks.csv'
+      path: '/api/admin/adoptions/exports/tasks.csv'
+      fullPath: '/api/admin/adoptions/exports/tasks.csv'
+      preLoaderRoute: typeof ApiAdminAdoptionsExportsTasksDotcsvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/adoptions/exports/successful-adoptions.csv': {
+      id: '/api/admin/adoptions/exports/successful-adoptions.csv'
+      path: '/api/admin/adoptions/exports/successful-adoptions.csv'
+      fullPath: '/api/admin/adoptions/exports/successful-adoptions.csv'
+      preLoaderRoute: typeof ApiAdminAdoptionsExportsSuccessfulAdoptionsDotcsvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/adoptions/exports/cases.csv': {
+      id: '/api/admin/adoptions/exports/cases.csv'
+      path: '/api/admin/adoptions/exports/cases.csv'
+      fullPath: '/api/admin/adoptions/exports/cases.csv'
+      preLoaderRoute: typeof ApiAdminAdoptionsExportsCasesDotcsvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/adoptions/exports/animals.csv': {
+      id: '/api/admin/adoptions/exports/animals.csv'
+      path: '/api/admin/adoptions/exports/animals.csv'
+      fullPath: '/api/admin/adoptions/exports/animals.csv'
+      preLoaderRoute: typeof ApiAdminAdoptionsExportsAnimalsDotcsvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/adoptions/exports/adopters.csv': {
+      id: '/api/admin/adoptions/exports/adopters.csv'
+      path: '/api/admin/adoptions/exports/adopters.csv'
+      fullPath: '/api/admin/adoptions/exports/adopters.csv'
+      preLoaderRoute: typeof ApiAdminAdoptionsExportsAdoptersDotcsvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/adoptions/cases/$id': {
       id: '/api/admin/adoptions/cases/$id'
       path: '/$id'
       fullPath: '/api/admin/adoptions/cases/$id'
       preLoaderRoute: typeof ApiAdminAdoptionsCasesIdRouteImport
       parentRoute: typeof ApiAdminAdoptionsCasesRoute
+    }
+    '/api/admin/adoptions/adopters/$id': {
+      id: '/api/admin/adoptions/adopters/$id'
+      path: '/$id'
+      fullPath: '/api/admin/adoptions/adopters/$id'
+      preLoaderRoute: typeof ApiAdminAdoptionsAdoptersIdRouteImport
+      parentRoute: typeof ApiAdminAdoptionsAdoptersRoute
     }
     '/api/admin/adoptions/cases/$id/status': {
       id: '/api/admin/adoptions/cases/$id/status'
@@ -1159,6 +1346,20 @@ const AdminSupportersRouteWithChildren = AdminSupportersRoute._addFileChildren(
   AdminSupportersRouteChildren,
 )
 
+interface AdminCoordinatorAdoptersRouteChildren {
+  AdminCoordinatorAdoptersIdRoute: typeof AdminCoordinatorAdoptersIdRoute
+}
+
+const AdminCoordinatorAdoptersRouteChildren: AdminCoordinatorAdoptersRouteChildren =
+  {
+    AdminCoordinatorAdoptersIdRoute: AdminCoordinatorAdoptersIdRoute,
+  }
+
+const AdminCoordinatorAdoptersRouteWithChildren =
+  AdminCoordinatorAdoptersRoute._addFileChildren(
+    AdminCoordinatorAdoptersRouteChildren,
+  )
+
 interface ApiAdminPaymentsRouteChildren {
   ApiAdminPaymentsIdReconcileRoute: typeof ApiAdminPaymentsIdReconcileRoute
 }
@@ -1202,6 +1403,20 @@ const ApiAdminSupportersRouteChildren: ApiAdminSupportersRouteChildren = {
 
 const ApiAdminSupportersRouteWithChildren =
   ApiAdminSupportersRoute._addFileChildren(ApiAdminSupportersRouteChildren)
+
+interface ApiAdminAdoptionsAdoptersRouteChildren {
+  ApiAdminAdoptionsAdoptersIdRoute: typeof ApiAdminAdoptionsAdoptersIdRoute
+}
+
+const ApiAdminAdoptionsAdoptersRouteChildren: ApiAdminAdoptionsAdoptersRouteChildren =
+  {
+    ApiAdminAdoptionsAdoptersIdRoute: ApiAdminAdoptionsAdoptersIdRoute,
+  }
+
+const ApiAdminAdoptionsAdoptersRouteWithChildren =
+  ApiAdminAdoptionsAdoptersRoute._addFileChildren(
+    ApiAdminAdoptionsAdoptersRouteChildren,
+  )
 
 interface ApiAdminAdoptionsCasesIdRouteChildren {
   ApiAdminAdoptionsCasesIdFinalizeRoute: typeof ApiAdminAdoptionsCasesIdFinalizeRoute
@@ -1290,6 +1505,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutIndexRoute: AboutIndexRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminAnimalsNewRoute: AdminAnimalsNewRoute,
+  AdminCoordinatorAdoptersRoute: AdminCoordinatorAdoptersRouteWithChildren,
   AdminCoordinatorAnimalsRoute: AdminCoordinatorAnimalsRoute,
   AdminCoordinatorStatusesRoute: AdminCoordinatorStatusesRoute,
   AdminCoordinatorTasksRoute: AdminCoordinatorTasksRoute,
@@ -1301,12 +1517,23 @@ const rootRouteChildren: RootRouteChildren = {
   ApiWebhooksPaypalRoute: ApiWebhooksPaypalRoute,
   ApiWebhooksStripeRoute: ApiWebhooksStripeRoute,
   AdminAnimalsIdEditRoute: AdminAnimalsIdEditRoute,
+  ApiAdminAdoptionsAdoptersRoute: ApiAdminAdoptionsAdoptersRouteWithChildren,
   ApiAdminAdoptionsCasesRoute: ApiAdminAdoptionsCasesRouteWithChildren,
   ApiAdminAdoptionsStatusesRoute: ApiAdminAdoptionsStatusesRouteWithChildren,
   ApiAdminAdoptionsTasksRoute: ApiAdminAdoptionsTasksRouteWithChildren,
   ApiAdminDonationsManualRoute: ApiAdminDonationsManualRoute,
   ApiAdminExportsDonationsDotcsvRoute: ApiAdminExportsDonationsDotcsvRoute,
   ApiAdminExportsSupportersDotcsvRoute: ApiAdminExportsSupportersDotcsvRoute,
+  ApiAdminAdoptionsExportsAdoptersDotcsvRoute:
+    ApiAdminAdoptionsExportsAdoptersDotcsvRoute,
+  ApiAdminAdoptionsExportsAnimalsDotcsvRoute:
+    ApiAdminAdoptionsExportsAnimalsDotcsvRoute,
+  ApiAdminAdoptionsExportsCasesDotcsvRoute:
+    ApiAdminAdoptionsExportsCasesDotcsvRoute,
+  ApiAdminAdoptionsExportsSuccessfulAdoptionsDotcsvRoute:
+    ApiAdminAdoptionsExportsSuccessfulAdoptionsDotcsvRoute,
+  ApiAdminAdoptionsExportsTasksDotcsvRoute:
+    ApiAdminAdoptionsExportsTasksDotcsvRoute,
   ApiAdminAdoptionsAnimalsIdInternalRoute:
     ApiAdminAdoptionsAnimalsIdInternalRoute,
   ApiAdminAdoptionsAnimalsIdStatusRoute: ApiAdminAdoptionsAnimalsIdStatusRoute,

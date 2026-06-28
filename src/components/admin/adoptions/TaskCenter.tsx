@@ -13,6 +13,7 @@ import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Switch } from "../../ui/switch";
 import { fetchCoordinatorJson } from "./api";
+import { ExportButton } from "./ExportButton";
 import { TaskPanel, TaskPanelAsyncError } from "./TaskPanel";
 import {
   TASK_CENTER_DUE_FILTER_OPTIONS,
@@ -123,15 +124,18 @@ export function TaskCenter() {
             View, filter, and update follow-up work across adoption cases and animals.
           </p>
         </div>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => tasksQuery.refetch()}
-          disabled={isFetching}
-        >
-          <RefreshCw className="h-4 w-4" />
-          Refresh
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <ExportButton kind="tasks" searchParams={searchParams} />
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => tasksQuery.refetch()}
+            disabled={isFetching}
+          >
+            <RefreshCw className="h-4 w-4" />
+            Refresh
+          </Button>
+        </div>
       </div>
 
       <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">

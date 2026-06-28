@@ -18,6 +18,7 @@ import {
   formatDate,
   formatFallback,
 } from "./caseWorkflowLogic";
+import { ExportButton } from "./ExportButton";
 
 type CaseListResponse = {
   cases: AdoptionCaseSummary[];
@@ -134,10 +135,13 @@ export function CaseList() {
             Coordinator queue, matching, follow-up, and finalization.
           </p>
         </div>
-        <Button type="button" variant="outline" onClick={() => refetch()} disabled={isFetching}>
-          <ListChecks className="h-4 w-4" />
-          Refresh
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <ExportButton kind="cases" searchParams={searchParams} />
+          <Button type="button" variant="outline" onClick={() => refetch()} disabled={isFetching}>
+            <ListChecks className="h-4 w-4" />
+            Refresh
+          </Button>
+        </div>
       </div>
 
       <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">

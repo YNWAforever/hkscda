@@ -17,6 +17,15 @@ const publicApplicationId = "99999999-aaaa-4bbb-8ccc-dddddddddddd";
 const animalId = "77777777-8888-4333-8444-555555555555";
 const followupId = "aaaaaaaa-bbbb-4333-8444-555555555555";
 const linkedSupporterId = "supporter-1";
+const existingCaseId = adoptionCaseId;
+const existingTaskId = followupId;
+const secondProfileId = "bbbbbbbb-cccc-4333-8444-555555555555";
+const secondSupporterId = "supporter-2";
+const secondCaseId = "cccccccc-dddd-4333-8444-555555555555";
+const caseLinkedTaskId = "dddddddd-eeee-4333-8444-555555555555";
+const unknownProfileId = "eeeeeeee-ffff-4333-8444-555555555555";
+const animalPositionId = "12345678-aaaa-4333-8444-555555555555";
+const arrivalSourceId = "87654321-bbbb-4333-8444-555555555555";
 
 const statusRow = {
   id: statusId,
@@ -42,21 +51,33 @@ type QueryCall = {
 type FakeState = {
   calls: QueryCall[];
   existingSupporter: { id: string } | null;
-  existingProfile: { id: string } | null;
+  existingProfile: Record<string, unknown> | null;
+  supporterRows: Record<string, unknown>[];
   followupRow: Record<string, unknown> | null;
   followupRows: Record<string, unknown>[];
+  caseRows: Record<string, unknown>[];
   taskCaseRows: Record<string, unknown>[];
   adopterRows: Record<string, unknown>[];
+  consentRows: Record<string, unknown>[];
   animalRows: Record<string, unknown>[];
+  internalProfileRows: Record<string, unknown>[];
+  animalPositionRows: Record<string, unknown>[];
+  arrivalSourceRows: Record<string, unknown>[];
   caseDetailRow: Record<string, unknown> | null;
   matchRows: Record<string, unknown>[];
   successRow: Record<string, unknown> | null;
+  successRows: Record<string, unknown>[];
 };
 
 class FakeQuery {
   private action: "select" | "insert" | "upsert" | "update" | null = null;
   private mutationPayload: unknown;
-  private collectionSelect = false;
+  private selectedColumns: string | null = null;
+  private eqFilters: Array<{ column: string; value: unknown }> = [];
+  private inFilters: Array<{ column: string; value: unknown[] }> = [];
+  private isFilters: Array<{ column: string; value: unknown }> = [];
+  private orFilters: string[] = [];
+  private rangeBounds: { from: number; to: number } | null = null;
 
   constructor(
     private readonly state: FakeState,
@@ -66,22 +87,28 @@ class FakeQuery {
   select(columns: string, options?: unknown) {
     this.state.calls.push({ table: this.table, method: "select", payload: columns, options });
     if (!this.action) this.action = "select";
+    this.selectedColumns = columns;
     return this;
   }
 
   eq(column: string, value: unknown) {
     this.state.calls.push({ table: this.table, method: "eq", payload: { column, value } });
+    this.eqFilters.push({ column, value });
     return this;
   }
 
   is(column: string, value: unknown) {
     this.state.calls.push({ table: this.table, method: "is", payload: { column, value } });
+    this.isFilters.push({ column, value });
     return this;
   }
 
   in(column: string, value: unknown) {
     this.state.calls.push({ table: this.table, method: "in", payload: { column, value } });
-    this.collectionSelect = true;
+    if (!Array.isArray(value)) {
+      throw new Error("FakeQuery.in expected an array value");
+    }
+    this.inFilters.push({ column, value });
     return this;
   }
 
@@ -92,6 +119,7 @@ class FakeQuery {
 
   or(filters: string, options?: unknown) {
     this.state.calls.push({ table: this.table, method: "or", payload: filters, options });
+    this.orFilters.push(filters);
     return this;
   }
 
@@ -112,6 +140,7 @@ class FakeQuery {
 
   range(from: number, to: number) {
     this.state.calls.push({ table: this.table, method: "range", payload: { from, to } });
+    this.rangeBounds = { from, to };
     return this;
   }
 
@@ -156,7 +185,15 @@ class FakeQuery {
   private executeMaybeSingle() {
     if (this.table === "coordinator_status") return { data: { id: statusId }, error: null };
     if (this.table === "supporter") return { data: this.state.existingSupporter, error: null };
-    if (this.table === "adopter_profile") return { data: this.state.existingProfile, error: null };
+    if (this.table === "adopter_profile") {
+      const rows =
+        this.state.adopterRows.length > 0
+          ? this.state.adopterRows
+          : this.state.existingProfile
+            ? [this.state.existingProfile]
+            : [];
+      return { data: this.applyFilters(rows)[0] ?? null, error: null };
+    }
     if (this.table === "adoption_followup") return { data: this.state.followupRow, error: null };
     if (this.table === "adoption_case") return { data: this.state.caseDetailRow, error: null };
     if (this.table === "successful_adoption") return { data: this.state.successRow, error: null };
@@ -181,45 +218,102 @@ class FakeQuery {
     if (this.table === "coordinator_status") return this.collection([statusRow]);
     if (this.table === "adoption_followup") return this.collection(this.state.followupRows);
     if (this.table === "adoption_case") {
-      return this.collection(this.collectionSelect ? this.state.taskCaseRows : []);
+      if (this.selectedColumns === "id,applicant_name,animal_type") {
+        return this.collection(this.state.taskCaseRows);
+      }
+      return this.collection(this.state.caseRows);
     }
+    if (this.table === "supporter") return this.collection(this.state.supporterRows);
+    if (this.table === "consent") return this.collection(this.state.consentRows);
     if (this.table === "adopter_profile") return this.collection(this.state.adopterRows);
     if (this.table === "animals") return this.collection(this.state.animalRows);
+    if (this.table === "animal_profile_internal") {
+      return this.collection(this.state.internalProfileRows);
+    }
+    if (this.table === "animal_position") return this.collection(this.state.animalPositionRows);
+    if (this.table === "arrival_source") return this.collection(this.state.arrivalSourceRows);
     if (this.table === "animal_match") return this.collection(this.state.matchRows);
+    if (this.table === "successful_adoption") return this.collection(this.state.successRows);
     return this.executeMaybeSingle();
   }
 
   private collection(rows: Record<string, unknown>[]) {
-    return { data: rows, error: null, count: rows.length };
+    const filtered = this.applyFilters(rows);
+    const count = filtered.length;
+    const ranged = this.rangeBounds
+      ? filtered.slice(this.rangeBounds.from, this.rangeBounds.to + 1)
+      : filtered;
+    return { data: ranged, error: null, count };
   }
+
+  private applyFilters(rows: Record<string, unknown>[]) {
+    return rows
+      .filter((row) => this.eqFilters.every((filter) => row[filter.column] === filter.value))
+      .filter((row) => this.inFilters.every((filter) => filter.value.includes(row[filter.column])))
+      .filter((row) => this.isFilters.every((filter) => row[filter.column] === filter.value))
+      .filter((row) => this.orFilters.every((filter) => matchesOrFilter(row, filter)));
+  }
+}
+
+function matchesLike(value: unknown, pattern: string) {
+  if (value === null || value === undefined) return false;
+  const needle = pattern
+    .replace(/^%/, "")
+    .replace(/%$/, "")
+    .replaceAll("\\%", "%")
+    .replaceAll("\\_", "_")
+    .toLowerCase();
+  return String(value).toLowerCase().includes(needle);
+}
+
+function matchesOrFilter(row: Record<string, unknown>, filter: string) {
+  return filter.split(",").some((part) => {
+    const [column, pattern] = part.split(".ilike.");
+    if (!column || !pattern || column.includes(".")) return false;
+    return matchesLike(row[column], pattern);
+  });
 }
 
 function createFakeClient(
   options: {
     existingSupporter?: { id: string } | null;
-    existingProfile?: { id: string } | null;
+    existingProfile?: Record<string, unknown> | null;
+    supporterRows?: Record<string, unknown>[];
     followupRow?: Record<string, unknown> | null;
     followupRows?: Record<string, unknown>[];
+    caseRows?: Record<string, unknown>[];
     taskCaseRows?: Record<string, unknown>[];
     adopterRows?: Record<string, unknown>[];
+    consentRows?: Record<string, unknown>[];
     animalRows?: Record<string, unknown>[];
+    internalProfileRows?: Record<string, unknown>[];
+    animalPositionRows?: Record<string, unknown>[];
+    arrivalSourceRows?: Record<string, unknown>[];
     caseDetailRow?: Record<string, unknown> | null;
     matchRows?: Record<string, unknown>[];
     successRow?: Record<string, unknown> | null;
+    successRows?: Record<string, unknown>[];
   } = {},
 ) {
   const state: FakeState = {
     calls: [],
     existingSupporter: options.existingSupporter ?? null,
     existingProfile: options.existingProfile ?? null,
+    supporterRows: options.supporterRows ?? [],
     followupRow: options.followupRow ?? null,
     followupRows: options.followupRows ?? [],
+    caseRows: options.caseRows ?? [],
     taskCaseRows: options.taskCaseRows ?? [],
     adopterRows: options.adopterRows ?? [],
+    consentRows: options.consentRows ?? [],
     animalRows: options.animalRows ?? [],
+    internalProfileRows: options.internalProfileRows ?? [],
+    animalPositionRows: options.animalPositionRows ?? [],
+    arrivalSourceRows: options.arrivalSourceRows ?? [],
     caseDetailRow: options.caseDetailRow ?? null,
     matchRows: options.matchRows ?? [],
     successRow: options.successRow ?? null,
+    successRows: options.successRows ?? [],
   };
 
   const client = {
@@ -232,6 +326,14 @@ function createFakeClient(
   return {
     client: client as unknown as SupabaseClient,
     calls: state.calls,
+  };
+}
+
+function setupRepository(options: Parameters<typeof createFakeClient>[0] = {}) {
+  const { client, calls } = createFakeClient(options);
+  return {
+    repo: createSupabaseAdoptionCoordinatorRepository(client),
+    calls,
   };
 }
 
@@ -294,8 +396,20 @@ function adopterRow(overrides: Record<string, unknown> = {}) {
   return {
     id: existingProfileId,
     supporter_id: linkedSupporterId,
+    name_english: "Ada",
+    name_chinese: null,
+    gender: null,
+    birthday: null,
+    occupation: null,
+    facebook: null,
+    household_size: null,
+    monthly_household_income: null,
+    address: null,
+    floor_area: null,
     is_blacklisted: false,
+    blacklist_reason: null,
     supporter: { name: "Ada" },
+    living_area: null,
     ...overrides,
   };
 }
@@ -335,6 +449,25 @@ function caseDetailRow(overrides: Record<string, unknown> = {}) {
   };
 }
 
+function caseRow(overrides: Record<string, unknown> = {}) {
+  return caseDetailRow(overrides);
+}
+
+function successfulAdoptionRow(overrides: Record<string, unknown> = {}) {
+  return {
+    id: "successful-adoption-1",
+    adoption_case_id: adoptionCaseId,
+    animal_id: animalId,
+    supporter_id: existingSupporterId,
+    adopter_profile_id: existingProfileId,
+    case_number: "AC-2026-001",
+    adoption_fee_cents: 80000,
+    approval_date: "2026-06-28",
+    pickup_date: null,
+    ...overrides,
+  };
+}
+
 function callsFor(calls: QueryCall[], table: string, method: string) {
   return calls.filter((call) => call.table === table && call.method === method);
 }
@@ -370,6 +503,17 @@ async function withFixedDate<T>(iso: string, run: () => Promise<T>) {
 }
 
 describe("createSupabaseAdoptionCoordinatorRepository", () => {
+  test("fake Supabase rejects malformed in filters", () => {
+    const { client } = createFakeClient();
+
+    expect(() =>
+      client
+        .from("animals")
+        .select("id")
+        .in("id", "not-an-array" as never),
+    ).toThrow("FakeQuery.in expected an array value");
+  });
+
   test("computes Hong Kong day bounds across local midnight", () => {
     expect(hongKongDayBounds(new Date("2026-06-27T15:59:59.000Z"))).toEqual({
       start: "2026-06-26T16:00:00.000Z",
@@ -379,6 +523,660 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
       start: "2026-06-27T16:00:00.000Z",
       end: "2026-06-28T16:00:00.000Z",
     });
+  });
+
+  test("lists adopters with aggregate counts and supporter identity", async () => {
+    const { repo } = setupRepository({
+      adopterRows: [
+        {
+          id: existingProfileId,
+          supporter_id: existingSupporterId,
+          name_english: "Ada",
+          name_chinese: null,
+          is_blacklisted: false,
+          living_area_id: null,
+          supporter: {
+            id: existingSupporterId,
+            name: "Ada",
+            email: "ada@example.test",
+            phone: "61234567",
+          },
+        },
+      ],
+      caseRows: [
+        caseRow({
+          id: existingCaseId,
+          adopter_profile_id: existingProfileId,
+          requested_animal_id: animalId,
+          animal_type: "cat",
+          applicant_name: "Ada",
+          closed_at: null,
+          created_at: "2026-06-27T08:00:00.000Z",
+        }),
+      ],
+      followupRows: [
+        {
+          id: existingTaskId,
+          adopter_profile_id: existingProfileId,
+          completed_at: null,
+        },
+      ],
+      successRows: [],
+      animalRows: [animalRow({ name_en: null })],
+    });
+
+    const result = await repo.listAdopters({
+      q: "Ada",
+      blacklisted: "all",
+      hasOpenCases: true,
+      hasOpenTasks: true,
+      page: 1,
+      pageSize: 25,
+    });
+
+    expect(result.adopters).toEqual([
+      expect.objectContaining({
+        id: existingProfileId,
+        supporterId: existingSupporterId,
+        displayName: "Ada",
+        email: "ada@example.test",
+        phone: "61234567",
+        openCaseCount: 1,
+        successfulAdoptionCount: 0,
+        openTaskCount: 1,
+        latestCaseAt: "2026-06-27T08:00:00.000Z",
+        latestCase: expect.objectContaining({
+          id: existingCaseId,
+          applicantName: "Ada",
+          animalType: "cat",
+          requestedAnimalName: "Mochi",
+          status: expect.objectContaining({ id: statusId }),
+          createdAt: "2026-06-27T08:00:00.000Z",
+        }),
+      }),
+    ]);
+  });
+
+  test("searches adopters by supporter identity without cross-table or filters", async () => {
+    const { repo, calls } = setupRepository({
+      supporterRows: [
+        { id: existingSupporterId, name: "Ada", email: "ada@example.test", phone: "61234567" },
+        { id: secondSupporterId, name: "Grace", email: "grace@example.test", phone: "69876543" },
+      ],
+      adopterRows: [
+        adopterRow({
+          name_english: null,
+          name_chinese: null,
+          address: null,
+          supporter_id: existingSupporterId,
+          supporter: {
+            id: existingSupporterId,
+            name: "Ada",
+            email: "ada@example.test",
+            phone: "61234567",
+          },
+        }),
+        adopterRow({
+          id: secondProfileId,
+          supporter_id: secondSupporterId,
+          name_english: "Grace",
+          name_chinese: null,
+          address: null,
+          supporter: {
+            id: secondSupporterId,
+            name: "Grace",
+            email: "grace@example.test",
+            phone: "69876543",
+          },
+        }),
+      ],
+    });
+
+    const result = await repo.listAdopters({
+      q: "ada@example.test",
+      blacklisted: "all",
+      hasOpenCases: false,
+      hasOpenTasks: false,
+      page: 1,
+      pageSize: 25,
+    });
+
+    expect(result).toMatchObject({
+      total: 1,
+      adopters: [
+        expect.objectContaining({
+          id: existingProfileId,
+          email: "ada@example.test",
+        }),
+      ],
+    });
+    expect(
+      callsFor(calls, "adopter_profile", "or").some((call) =>
+        String(call.payload).includes("supporter."),
+      ),
+    ).toBe(false);
+    expect(calls).toContainEqual({
+      table: "supporter",
+      method: "or",
+      payload:
+        "name.ilike.%ada@example.test%,email.ilike.%ada@example.test%,phone.ilike.%ada@example.test%",
+      options: undefined,
+    });
+    expect(calls).toContainEqual({
+      table: "adopter_profile",
+      method: "in",
+      payload: { column: "supporter_id", value: [existingSupporterId] },
+    });
+    expect(calls).toContainEqual({
+      table: "adopter_profile",
+      method: "in",
+      payload: { column: "id", value: [existingProfileId] },
+    });
+    expect(calls).toContainEqual({
+      table: "adopter_profile",
+      method: "range",
+      payload: { from: 0, to: 24 },
+    });
+  });
+
+  test("keeps aggregate-filtered adopter lists bounded by candidate ids and range", async () => {
+    const { repo, calls } = setupRepository({
+      adopterRows: [
+        adopterRow({ id: existingProfileId, supporter_id: existingSupporterId }),
+        adopterRow({ id: secondProfileId, supporter_id: secondSupporterId }),
+      ],
+      caseRows: [
+        caseRow({
+          id: secondCaseId,
+          adopter_profile_id: secondProfileId,
+          closed_at: null,
+        }),
+      ],
+    });
+
+    const result = await repo.listAdopters({
+      blacklisted: "all",
+      hasOpenCases: true,
+      hasOpenTasks: false,
+      page: 1,
+      pageSize: 1,
+    });
+
+    expect(result).toMatchObject({
+      total: 1,
+      adopters: [expect.objectContaining({ id: secondProfileId, openCaseCount: 1 })],
+    });
+    expect(calls).toContainEqual({
+      table: "adopter_profile",
+      method: "in",
+      payload: { column: "id", value: [secondProfileId] },
+    });
+    expect(calls).toContainEqual({
+      table: "adopter_profile",
+      method: "range",
+      payload: { from: 0, to: 0 },
+    });
+  });
+
+  test("filters open-case adopters before paginating list results", async () => {
+    const { repo } = setupRepository({
+      adopterRows: [
+        adopterRow({ id: existingProfileId, supporter_id: existingSupporterId }),
+        adopterRow({ id: secondProfileId, supporter_id: secondSupporterId }),
+      ],
+      caseRows: [
+        caseRow({
+          id: secondCaseId,
+          adopter_profile_id: secondProfileId,
+          closed_at: null,
+        }),
+      ],
+    });
+
+    const result = await repo.listAdopters({
+      blacklisted: "all",
+      hasOpenCases: true,
+      hasOpenTasks: false,
+      page: 1,
+      pageSize: 1,
+    });
+
+    expect(result).toMatchObject({
+      total: 1,
+      adopters: [expect.objectContaining({ id: secondProfileId, openCaseCount: 1 })],
+    });
+  });
+
+  test("filters open-task adopters before paginating list results", async () => {
+    const { repo } = setupRepository({
+      adopterRows: [
+        adopterRow({ id: existingProfileId, supporter_id: existingSupporterId }),
+        adopterRow({ id: secondProfileId, supporter_id: secondSupporterId }),
+      ],
+      followupRows: [
+        followupRow({
+          id: "second-open-task",
+          adopter_profile_id: secondProfileId,
+          completed_at: null,
+        }),
+      ],
+    });
+
+    const result = await repo.listAdopters({
+      blacklisted: "all",
+      hasOpenCases: false,
+      hasOpenTasks: true,
+      page: 1,
+      pageSize: 1,
+    });
+
+    expect(result).toMatchObject({
+      total: 1,
+      adopters: [expect.objectContaining({ id: secondProfileId, openTaskCount: 1 })],
+    });
+  });
+
+  test("rejects oversized adopter candidate filters before building a large in query", async () => {
+    const { repo, calls } = setupRepository({
+      caseRows: Array.from({ length: 1001 }, (_, index) =>
+        caseRow({
+          id: `case-${index}`,
+          adopter_profile_id: `profile-${index}`,
+          closed_at: null,
+        }),
+      ),
+    });
+
+    await expect(
+      repo.listAdopters({
+        blacklisted: "all",
+        hasOpenCases: true,
+        hasOpenTasks: false,
+        page: 1,
+        pageSize: 25,
+      }),
+    ).rejects.toThrow("Adopter filters match too many records");
+    expect(
+      callsFor(calls, "adopter_profile", "in").some(
+        (call) =>
+          (call.payload as { column?: string; value?: unknown[] }).column === "id" &&
+          ((call.payload as { value?: unknown[] }).value?.length ?? 0) > 1000,
+      ),
+    ).toBe(false);
+  });
+
+  test("rejects broad supporter identity searches before building a large supporter id query", async () => {
+    const { repo, calls } = setupRepository({
+      supporterRows: Array.from({ length: 1001 }, (_, index) => ({
+        id: `supporter-${index}`,
+        name: `Ada ${index}`,
+        email: `ada-${index}@example.test`,
+        phone: `6000${index}`,
+      })),
+    });
+
+    await expect(
+      repo.listAdopters({
+        q: "Ada",
+        blacklisted: "all",
+        hasOpenCases: false,
+        hasOpenTasks: false,
+        page: 1,
+        pageSize: 25,
+      }),
+    ).rejects.toThrow("Adopter filters match too many records");
+    expect(
+      callsFor(calls, "adopter_profile", "in").some(
+        (call) =>
+          (call.payload as { column?: string; value?: unknown[] }).column === "supporter_id" &&
+          ((call.payload as { value?: unknown[] }).value?.length ?? 0) > 1000,
+      ),
+    ).toBe(false);
+  });
+
+  test("rejects broad case-linked task filters before building a large case id query", async () => {
+    const { repo, calls } = setupRepository({
+      followupRows: Array.from({ length: 1001 }, (_, index) =>
+        followupRow({
+          id: `task-${index}`,
+          adoption_case_id: `case-${index}`,
+          adopter_profile_id: null,
+          completed_at: null,
+        }),
+      ),
+    });
+
+    await expect(
+      repo.listAdopters({
+        blacklisted: "all",
+        hasOpenCases: false,
+        hasOpenTasks: true,
+        page: 1,
+        pageSize: 25,
+      }),
+    ).rejects.toThrow("Adopter filters match too many records");
+    expect(
+      callsFor(calls, "adoption_case", "in").some(
+        (call) =>
+          (call.payload as { column?: string; value?: unknown[] }).column === "id" &&
+          ((call.payload as { value?: unknown[] }).value?.length ?? 0) > 1000,
+      ),
+    ).toBe(false);
+  });
+
+  test("counts open tasks linked through an adopter case", async () => {
+    const { repo } = setupRepository({
+      adopterRows: [adopterRow()],
+      caseRows: [caseRow({ id: existingCaseId, adopter_profile_id: existingProfileId })],
+      followupRows: [
+        followupRow({
+          id: caseLinkedTaskId,
+          adoption_case_id: existingCaseId,
+          adopter_profile_id: null,
+          completed_at: null,
+        }),
+      ],
+    });
+
+    const result = await repo.listAdopters({
+      blacklisted: "all",
+      hasOpenCases: false,
+      hasOpenTasks: false,
+      page: 1,
+      pageSize: 25,
+    });
+
+    expect(result.adopters).toEqual([
+      expect.objectContaining({
+        id: existingProfileId,
+        openTaskCount: 1,
+      }),
+    ]);
+  });
+
+  test("exports adopters by supporter identity without cross-table or filters", async () => {
+    const { repo, calls } = setupRepository({
+      supporterRows: [
+        { id: existingSupporterId, name: "Ada", email: "ada@example.test", phone: "61234567" },
+      ],
+      adopterRows: [
+        adopterRow({
+          supporter_id: existingSupporterId,
+          name_english: null,
+          name_chinese: null,
+          supporter: {
+            id: existingSupporterId,
+            name: "Ada",
+            email: "ada@example.test",
+            phone: "61234567",
+          },
+        }),
+      ],
+      caseRows: [
+        caseRow({
+          id: existingCaseId,
+          adopter_profile_id: existingProfileId,
+          closed_at: null,
+          created_at: "2026-06-27T08:00:00.000Z",
+        }),
+      ],
+      followupRows: [],
+      successRows: [successfulAdoptionRow({ adopter_profile_id: existingProfileId })],
+    });
+
+    const rows = await repo.listAdopterExportRows({
+      q: "ada@example.test",
+      blacklisted: "all",
+      hasOpenCases: false,
+      hasOpenTasks: false,
+      page: 1,
+      pageSize: 25,
+    });
+
+    expect(rows).toEqual([
+      {
+        adopterProfileId: existingProfileId,
+        supporterId: existingSupporterId,
+        displayName: "Ada",
+        email: "ada@example.test",
+        phone: "61234567",
+        livingArea: null,
+        isBlacklisted: false,
+        openCaseCount: 1,
+        successfulAdoptionCount: 1,
+        openTaskCount: 0,
+        latestCaseAt: "2026-06-27T08:00:00.000Z",
+      },
+    ]);
+    expect(
+      callsFor(calls, "adopter_profile", "or").some((call) =>
+        String(call.payload).includes("supporter."),
+      ),
+    ).toBe(false);
+    expect(calls).toContainEqual({
+      table: "supporter",
+      method: "or",
+      payload:
+        "name.ilike.%ada@example.test%,email.ilike.%ada@example.test%,phone.ilike.%ada@example.test%",
+      options: undefined,
+    });
+    expect(calls).toContainEqual({
+      table: "adopter_profile",
+      method: "range",
+      payload: { from: 0, to: 24 },
+    });
+  });
+
+  test("adopter export counts open tasks linked through adopter cases", async () => {
+    const { repo } = setupRepository({
+      adopterRows: [adopterRow()],
+      caseRows: [caseRow({ id: existingCaseId, adopter_profile_id: existingProfileId })],
+      followupRows: [
+        followupRow({
+          id: caseLinkedTaskId,
+          adoption_case_id: existingCaseId,
+          adopter_profile_id: null,
+          completed_at: null,
+        }),
+      ],
+    });
+
+    const rows = await repo.listAdopterExportRows({
+      blacklisted: "all",
+      hasOpenCases: false,
+      hasOpenTasks: false,
+      page: 1,
+      pageSize: 25,
+    });
+
+    expect(rows).toEqual([
+      expect.objectContaining({
+        adopterProfileId: existingProfileId,
+        openTaskCount: 1,
+      }),
+    ]);
+  });
+
+  test("exports animals with internal profile and lookup labels", async () => {
+    const { repo, calls } = setupRepository({
+      animalRows: [
+        animalRow({
+          type: "cat",
+          status: "fostered",
+        }),
+      ],
+      internalProfileRows: [
+        {
+          animal_id: animalId,
+          internal_code: "CAT-204",
+          arrival_source_id: arrivalSourceId,
+          current_position_id: animalPositionId,
+          is_adoptable: false,
+          is_inside_support_pool: true,
+          adopted_at: null,
+          deceased_at: null,
+        },
+      ],
+      animalPositionRows: [{ id: animalPositionId, name: "Foster home" }],
+      arrivalSourceRows: [{ id: arrivalSourceId, name_zh: "街上救援", name_en: "Street rescue" }],
+    });
+
+    const rows = await repo.listAnimalExportRows({ page: 1, pageSize: 1000 });
+
+    expect(rows).toEqual([
+      {
+        animalId,
+        type: "cat",
+        name: "Mochi",
+        nameEn: "Mochi",
+        status: "fostered",
+        internalCode: "CAT-204",
+        currentPosition: "Foster home",
+        arrivalSource: "街上救援",
+        isAdoptable: false,
+        isInsideSupportPool: true,
+        adoptedAt: null,
+        deceasedAt: null,
+      },
+    ]);
+    expect(calls).toContainEqual({
+      table: "animals",
+      method: "range",
+      payload: { from: 0, to: 999 },
+    });
+    expect(callsFor(calls, "animal_profile_internal", "select")).toHaveLength(1);
+    expect(callsFor(calls, "animal_position", "select")).toHaveLength(1);
+    expect(callsFor(calls, "arrival_source", "select")).toHaveLength(1);
+  });
+
+  test("successful adoption export caps rows before mapping", async () => {
+    const { repo, calls } = setupRepository({
+      successRows: [successfulAdoptionRow()],
+      animalRows: [animalRow()],
+    });
+
+    await repo.listSuccessfulAdoptionExportRows({ page: 1, pageSize: 1000 });
+
+    expect(calls).toContainEqual({
+      table: "successful_adoption",
+      method: "range",
+      payload: { from: 0, to: 999 },
+    });
+  });
+
+  test("includes tasks linked through adopter cases in adopter detail", async () => {
+    const { repo } = setupRepository({
+      adopterRows: [adopterRow()],
+      caseRows: [caseRow({ id: existingCaseId, adopter_profile_id: existingProfileId })],
+      followupRows: [
+        followupRow({
+          id: caseLinkedTaskId,
+          adoption_case_id: existingCaseId,
+          adopter_profile_id: null,
+        }),
+      ],
+      taskCaseRows: [taskCaseRow({ id: existingCaseId })],
+      animalRows: [animalRow()],
+    });
+
+    const detail = await repo.getAdopterDetail(existingProfileId);
+
+    expect(detail).toMatchObject({
+      openTaskCount: 1,
+      tasks: [
+        expect.objectContaining({
+          id: caseLinkedTaskId,
+          adoptionCase: expect.objectContaining({ id: existingCaseId }),
+        }),
+      ],
+    });
+  });
+
+  test("orders direct and case-linked adopter detail tasks by due date", async () => {
+    const { repo } = setupRepository({
+      adopterRows: [adopterRow()],
+      caseRows: [caseRow({ id: existingCaseId, adopter_profile_id: existingProfileId })],
+      followupRows: [
+        followupRow({
+          id: followupId,
+          adoption_case_id: null,
+          adopter_profile_id: existingProfileId,
+          due_at: "2026-06-30T10:00:00.000Z",
+        }),
+        followupRow({
+          id: caseLinkedTaskId,
+          adoption_case_id: existingCaseId,
+          adopter_profile_id: null,
+          due_at: "2026-06-28T10:00:00.000Z",
+        }),
+      ],
+      taskCaseRows: [taskCaseRow({ id: existingCaseId })],
+      animalRows: [animalRow()],
+    });
+
+    const detail = await repo.getAdopterDetail(existingProfileId);
+
+    expect(detail?.tasks.map((task) => task.id)).toEqual([caseLinkedTaskId, followupId]);
+  });
+
+  test("returns adopter detail with cases, successful adoptions, and tasks", async () => {
+    const { repo } = setupRepository({
+      adopterRows: [adopterRow()],
+      caseRows: [caseRow({ adopter_profile_id: existingProfileId })],
+      followupRows: [followupRow({ adopter_profile_id: existingProfileId })],
+      successRows: [successfulAdoptionRow({ adopter_profile_id: existingProfileId })],
+      consentRows: [
+        {
+          id: "consent-email-old",
+          supporter_id: linkedSupporterId,
+          channel: "email",
+          status: "opt_out",
+          source: "manual",
+          timestamp: "2026-06-20T08:00:00.000Z",
+        },
+        {
+          id: "consent-email-new",
+          supporter_id: linkedSupporterId,
+          channel: "email",
+          status: "opt_in",
+          source: "manual",
+          timestamp: "2026-06-27T08:00:00.000Z",
+        },
+        {
+          id: "consent-whatsapp",
+          supporter_id: linkedSupporterId,
+          channel: "whatsapp",
+          status: "opt_out",
+          source: "donation_form",
+          timestamp: "2026-06-26T08:00:00.000Z",
+        },
+      ],
+      taskCaseRows: [taskCaseRow()],
+      animalRows: [animalRow()],
+    });
+
+    const detail = await repo.getAdopterDetail(existingProfileId);
+
+    expect(detail).toMatchObject({
+      id: existingProfileId,
+      cases: [expect.objectContaining({ id: existingCaseId })],
+      emailConsent: "opt_in",
+      whatsappConsent: "opt_out",
+      successfulAdoptions: [expect.objectContaining({ caseNumber: "AC-2026-001" })],
+      tasks: [
+        expect.objectContaining({
+          adopterProfile: expect.objectContaining({ id: existingProfileId }),
+        }),
+      ],
+    });
+  });
+
+  test("returns null for missing adopter detail ids", async () => {
+    const { repo } = setupRepository({
+      adopterRows: [adopterRow()],
+    });
+
+    await expect(repo.getAdopterDetail(unknownProfileId)).resolves.toBeNull();
   });
 
   test("creates a public application case with new supporter and adopter profile records", async () => {
@@ -472,7 +1270,7 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
   test("links an existing supporter and adopter profile without overwriting CRM data", async () => {
     const { client, calls } = createFakeClient({
       existingSupporter: { id: existingSupporterId },
-      existingProfile: { id: existingProfileId },
+      existingProfile: { id: existingProfileId, supporter_id: existingSupporterId },
     });
     const repo = createSupabaseAdoptionCoordinatorRepository(client);
 

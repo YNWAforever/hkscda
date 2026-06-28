@@ -22,6 +22,16 @@ function jsonResponse(body: unknown, init?: ResponseInit) {
   return Response.json(body, { ...init, headers });
 }
 
+function csvResponse(csv: string, filename: string) {
+  return new Response(csv, {
+    headers: {
+      "content-type": "text/csv; charset=utf-8",
+      "content-disposition": `attachment; filename="${filename}"`,
+      "cache-control": "no-store",
+    },
+  });
+}
+
 async function jsonBody(request: Request) {
   try {
     return await request.json();
@@ -52,12 +62,14 @@ const badRequestDomainErrors = new Set([
   "Invalid adoption outcome status",
   "Inactive adoption outcome status",
   "Invalid successful adoption outcome status",
+  "Adopter filters match too many records",
 ]);
 
 const notFoundDomainErrors = new Set([
   "Status not found",
   "Task not found",
   "Adoption case not found",
+  "Adopter profile not found",
   "Match not found for adoption case",
 ]);
 
@@ -208,6 +220,38 @@ export function createAdoptionCoordinatorHandlers({
         await requireCoordinator(request);
         const search = Object.fromEntries(new URL(request.url).searchParams);
         return jsonResponse(await service.listTasks(search));
+      });
+    },
+
+    listAdopters({ request }: HandlerContext) {
+      return withErrors(async () => {
+        await requireCoordinator(request);
+        const search = Object.fromEntries(new URL(request.url).searchParams);
+        return jsonResponse(await service.listAdopters(search));
+      });
+    },
+
+    exportCoordinatorCsv({ request, params }: HandlerContext) {
+      return withErrors(async () => {
+        const admin = await requireCoordinator(request);
+        const result = await service.exportCoordinatorCsv({
+          actorUserId: admin.authUserId,
+          kind: params?.kind,
+          rawSearch: Object.fromEntries(new URL(request.url).searchParams),
+        });
+        return csvResponse(result.csv, result.filename);
+      });
+    },
+
+    getAdopter({ request, params }: HandlerContext) {
+      return withErrors(async () => {
+        const adopterProfileId = requiredUuid(params, "id");
+        await requireCoordinator(request);
+        const adopter = await service.getAdopterDetail(adopterProfileId);
+        if (!adopter) {
+          return jsonResponse({ error: "Adopter profile not found" }, { status: 404 });
+        }
+        return jsonResponse({ adopter });
       });
     },
 

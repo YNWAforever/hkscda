@@ -65,6 +65,23 @@ export const caseSearchSchema = z.object({
   pageSize: z.coerce.number().int().min(1).max(100).catch(25),
 });
 
+export const adopterSearchSchema = z.object({
+  q: optionalTrimmed,
+  blacklisted: z.enum(["all", "yes", "no"]).catch("all"),
+  hasOpenCases: booleanSearch.default(false),
+  hasOpenTasks: booleanSearch.default(false),
+  page: z.coerce.number().int().min(1).catch(1),
+  pageSize: z.coerce.number().int().min(1).max(100).catch(25),
+});
+
+export const coordinatorExportKindSchema = z.enum([
+  "cases",
+  "adopters",
+  "successful-adoptions",
+  "animals",
+  "tasks",
+]);
+
 export const statusTransitionSchema = z.object({
   statusId: z.string().uuid(),
   note: optionalTrimmed,
