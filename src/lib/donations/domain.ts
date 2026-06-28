@@ -75,9 +75,14 @@ export function buildConsentRows(input: {
 }
 
 export function centsToHkd(amountCents: number) {
+  // Render the exact charged amount. Whole-dollar gifts show no decimals
+  // (HK$100); fractional gifts show cents (HK$100.50) so the figure on a tax
+  // receipt always matches what the donor was actually charged.
+  const hasCents = amountCents % 100 !== 0;
   return new Intl.NumberFormat("zh-HK", {
     style: "currency",
     currency: "HKD",
-    maximumFractionDigits: 0,
+    minimumFractionDigits: hasCents ? 2 : 0,
+    maximumFractionDigits: 2,
   }).format(amountCents / 100);
 }

@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 
 import {
   buildConsentRows,
+  centsToHkd,
   createManualPaymentReference,
   donationRequestSchema,
   formatReceiptNumber,
@@ -58,6 +59,14 @@ describe("donation domain", () => {
     expect(isReceiptEligible({ amountCents: 10000, receiptRequested: true })).toBe(true);
     expect(isReceiptEligible({ amountCents: 9999, receiptRequested: true })).toBe(false);
     expect(isReceiptEligible({ amountCents: 20000, receiptRequested: false })).toBe(false);
+  });
+
+  test("renders the exact charged amount, including cents", () => {
+    // Whole-dollar gifts show no decimals; fractional gifts show the real cents
+    // so a tax receipt never rounds away part of what was charged.
+    expect(centsToHkd(15050)).toContain("150.50");
+    expect(centsToHkd(10000)).not.toContain(".0");
+    expect(centsToHkd(10001)).toContain("100.01");
   });
 
   test("formats sequential IRD receipt numbers", () => {
