@@ -33,6 +33,28 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("webhook_event_processing_idx");
   });
 
+  test("revokes unused anon/authenticated grants and drops the stale public insert policy", () => {
+    const sql = readMigration("20260628130000_harden_role_grants_drop_stale_policy.sql");
+
+    // The anon "public insert" hole on adoption_applications is closed.
+    expect(sql).toContain('drop policy if exists "public insert" on public.adoption_applications');
+
+    // anon loses direct access to every donation-flow table (service-role only now).
+    for (const table of ["supporter", "consent", "supporter_role", "donation", "payment"]) {
+      expect(sql).toContain(`revoke select, insert on public.${table} from anon`);
+    }
+
+    // The blanket authenticated grant is narrowed only where it is inert
+    // (RLS-on tables with no authenticated policy), never blanket-revoked.
+    expect(sql).toContain(
+      "revoke select, insert, update, delete on public.recurring_mandate from authenticated",
+    );
+    expect(sql).toContain(
+      "revoke select, insert, update, delete on public.receipt_sequence from authenticated",
+    );
+    expect(sql).not.toMatch(/revoke[\s\S]*on all tables in schema public from authenticated/i);
+  });
+
   test("extends adoption followups into coordinator tasks", () => {
     const sql = readMigration("20260627110000_coordinator_task_timeline.sql");
 
