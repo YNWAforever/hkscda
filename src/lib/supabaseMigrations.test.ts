@@ -48,4 +48,21 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("adoption_followup_animal_due_idx");
     expect(sql).toContain("adoption_followup_overdue_idx");
   });
+
+  test("adds coordinator manual intake source tracking and RPC", () => {
+    const sql = readMigration("20260628143000_coordinator_ops_workbench.sql");
+
+    expect(sql).toContain("add column if not exists source text not null default 'public_form'");
+    expect(sql).toContain("add column if not exists created_by uuid references auth.users(id)");
+    expect(sql).toContain("adoption_case_source_created_idx");
+    expect(sql).toContain("adoption_case_created_by_created_idx");
+    expect(sql).toContain("audit_log_action_timestamp_idx");
+    expect(sql).toContain("audit_log_detail_kind_timestamp_idx");
+    expect(sql).toContain("create or replace function private.create_manual_adoption_case");
+    expect(sql).toContain("p_identity jsonb");
+    expect(sql).toContain("p_case jsonb");
+    expect(sql).toContain("p_initial_task jsonb default null");
+    expect(sql).toContain("coordinator_manual_intake.create");
+    expect(sql).toContain("source = 'manual_intake'");
+  });
 });
