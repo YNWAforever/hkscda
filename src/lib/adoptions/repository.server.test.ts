@@ -873,6 +873,28 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     expect(callsFor(calls, "audit_log", "ilike")).toHaveLength(0);
   });
 
+  test("returns null for non-export audit rows before mapping export metadata", async () => {
+    const { repo } = setupRepository({
+      auditRows: [
+        {
+          id: "aaaaaaaa-bbbb-4333-8444-555555555555",
+          actor_user_id: createdSupporterId,
+          action: "coordinator_status.update",
+          entity: "coordinator_status",
+          entity_id: statusId,
+          timestamp: "2026-06-28T01:00:00.000Z",
+          detail: {
+            key: "scheduled",
+          },
+        },
+      ],
+    });
+
+    await expect(
+      repo.getCoordinatorExportAuditRow("aaaaaaaa-bbbb-4333-8444-555555555555"),
+    ).resolves.toBeNull();
+  });
+
   test("returns monthly coordinator summary counts", async () => {
     const { repo } = setupRepository({
       summaryCounts: {

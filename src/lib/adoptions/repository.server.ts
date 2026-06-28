@@ -1710,9 +1710,9 @@ export function createSupabaseAdoptionCoordinatorRepository(
       if (error) throw error;
       if (!data) return null;
 
-      const row = mapExportAuditRow(data as Record<string, unknown>);
-      if (!row.action.startsWith("coordinator_export.")) return null;
-      return row;
+      const auditRow = data as Record<string, unknown>;
+      if (!COORDINATOR_EXPORT_ACTIONS.includes(auditRow.action as string)) return null;
+      return mapExportAuditRow(auditRow);
     },
 
     async createCaseFromPublicApplication(input) {
