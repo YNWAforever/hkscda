@@ -37,7 +37,7 @@ create or replace function private.create_manual_adoption_case(
 returns jsonb
 language plpgsql
 security definer
-set search_path = public, private
+set search_path = public, pg_temp
 as $$
 declare
   v_identity_kind text := p_identity->>'kind';
@@ -46,7 +46,13 @@ declare
   v_case_id uuid;
   v_task_id uuid;
 begin
-  if not private.has_admin_role(array['staff', 'admin']) then
+  if not exists (
+    select 1
+    from public.admin_user admin
+    where admin.auth_user_id = p_actor_user_id
+      and admin.status = 'active'
+      and admin.role in ('staff', 'admin')
+  ) then
     raise exception 'Forbidden';
   end if;
 

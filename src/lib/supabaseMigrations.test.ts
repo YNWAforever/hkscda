@@ -62,6 +62,11 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("p_identity jsonb");
     expect(sql).toContain("p_case jsonb");
     expect(sql).toContain("p_initial_task jsonb default null");
+    expect(sql).toContain("set search_path = public, pg_temp");
+    expect(sql).toContain("from public.admin_user admin");
+    expect(sql).toContain("admin.auth_user_id = p_actor_user_id");
+    expect(sql).toContain("admin.role in ('staff', 'admin')");
+    expect(sql).not.toContain("private.has_admin_role(array['staff', 'admin'])");
     expect(sql).toContain("alter column email drop not null");
     expect(sql).toContain(
       "revoke all on function private.create_manual_adoption_case(uuid, jsonb, jsonb, jsonb) from public",
