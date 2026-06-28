@@ -1,4 +1,4 @@
-import type { z } from "zod";
+import { z } from "zod";
 
 import { buildCaseFromPublicApplication, type PublicApplicationInput } from "./caseFactory";
 import { assertCanMutateStatus } from "./status";
@@ -12,12 +12,15 @@ import {
 import {
   adopterSearchSchema,
   caseSearchSchema,
+  coordinatorMonthlySummarySearchSchema,
   coordinatorExportKindSchema,
+  coordinatorReportHistorySearchSchema,
   coordinatorTaskInputSchema,
   coordinatorTaskUpdateSchema,
   finalizeAdoptionSchema,
   followupInputSchema,
   matchInputSchema,
+  manualCaseIntakeSchema,
   statusInputSchema,
   statusTransitionSchema,
   statusUpdateSchema,
@@ -31,12 +34,16 @@ import type {
   AdopterSummary,
   CoordinatorAdopterExportRow,
   CoordinatorAnimalExportRow,
+  CoordinatorExportAuditRow,
   CoordinatorCaseExportRow,
   CoordinatorExportResult,
+  CoordinatorMonthlySummary,
   CoordinatorStatus,
   CoordinatorSuccessfulAdoptionExportRow,
   CoordinatorTask,
   CoordinatorTaskExportRow,
+  ManualCaseIdentityCandidate,
+  ManualCaseIntakeResult,
 } from "./types";
 
 export type StatusInput = z.infer<typeof statusInputSchema>;
@@ -49,9 +56,21 @@ export type FinalizeAdoptionInput = z.infer<typeof finalizeAdoptionSchema>;
 export type TaskListSearch = z.infer<typeof taskListSearchSchema>;
 export type CoordinatorTaskInput = z.infer<typeof coordinatorTaskInputSchema>;
 export type CoordinatorTaskUpdate = z.infer<typeof coordinatorTaskUpdateSchema>;
+export type ManualCaseIntakeInput = z.infer<typeof manualCaseIntakeSchema>;
+export type CoordinatorReportHistorySearch = z.infer<
+  typeof coordinatorReportHistorySearchSchema
+>;
+export type CoordinatorMonthlySummarySearch = z.infer<
+  typeof coordinatorMonthlySummarySearchSchema
+>;
 export type CoordinatorExportPage = { page: number; pageSize: number };
 export type CaseFromPublicApplicationInput = ReturnType<typeof buildCaseFromPublicApplication> & {
   publicApplicationId: string;
+};
+
+type ManualCaseRepositoryInput = ManualCaseIntakeInput & {
+  actorUserId: string;
+  case: ManualCaseIntakeInput["case"] & { source: "manual_intake" };
 };
 
 export type AuditLogInsert = {
@@ -73,6 +92,19 @@ export type AdoptionCoordinatorRepository = {
   listCaseExportRows(input: CaseSearch): Promise<CoordinatorCaseExportRow[]>;
   getCaseDetail(id: string): Promise<AdoptionCaseDetail | null>;
   listAdopters(input: AdopterSearch): Promise<{ adopters: AdopterSummary[]; total: number }>;
+  searchManualCaseIdentity(input: {
+    q?: string;
+    page: number;
+    pageSize: number;
+  }): Promise<{ candidates: ManualCaseIdentityCandidate[]; total: number }>;
+  createManualCase(input: ManualCaseRepositoryInput): Promise<ManualCaseIntakeResult>;
+  listCoordinatorExportHistory(
+    input: CoordinatorReportHistorySearch,
+  ): Promise<{ exports: CoordinatorExportAuditRow[]; total: number }>;
+  getCoordinatorMonthlySummary(
+    input: CoordinatorMonthlySummarySearch,
+  ): Promise<CoordinatorMonthlySummary>;
+  getCoordinatorExportAuditRow(id: string): Promise<CoordinatorExportAuditRow | null>;
   listAdopterExportRows(input: AdopterSearch): Promise<CoordinatorAdopterExportRow[]>;
   getAdopterDetail(id: string): Promise<AdopterDetail | null>;
   createCaseFromPublicApplication(input: CaseFromPublicApplicationInput): Promise<{ id: string }>;
@@ -167,6 +199,17 @@ export function createAdoptionCoordinatorService({
       return repo.getStatus(statusId);
     },
 
+    searchManualCaseIdentity(rawSearch: unknown) {
+      const input = z
+        .object({
+          q: z.string().trim().optional(),
+          page: z.coerce.number().int().min(1).catch(1),
+          pageSize: z.coerce.number().int().min(1).max(25).catch(10),
+        })
+        .parse(rawSearch);
+      return repo.searchManualCaseIdentity(input);
+    },
+
     async createStatus(args: { actorUserId: string | null; input: unknown }) {
       const input = statusInputSchema.parse(args.input);
       const status = await repo.createStatus(input);
@@ -237,6 +280,45 @@ export function createAdoptionCoordinatorService({
       return repo.getAdopterDetail(adopterProfileId);
     },
 
+    async createManualCase(args: { actorUserId: string; input: unknown }) {
+      const input = manualCaseIntakeSchema.parse(args.input);
+      const status = await repo.getStatus(input.case.initialStatusId);
+      if (!status || status.category !== "adoption_case") throw new Error("Invalid case status");
+      if (!status.isActive) throw new Error("Inactive case status");
+
+      if (input.initialTask) {
+        const taskStatus = await repo.getStatus(input.initialTask.statusId);
+        if (!taskStatus || taskStatus.category !== "followup") {
+          throw new Error("Invalid followup status");
+        }
+        if (!taskStatus.isActive) throw new Error("Inactive followup status");
+        validateTaskCompletion({
+          status: taskStatus,
+          completedAt: null,
+          outcome: null,
+          remarks: input.initialTask.remarks ?? null,
+        });
+      }
+
+      return repo.createManualCase({
+        ...input,
+        actorUserId: args.actorUserId,
+        case: { ...input.case, source: "manual_intake" },
+      });
+    },
+
+    listCoordinatorExportHistory(rawSearch: unknown) {
+      return repo.listCoordinatorExportHistory(
+        coordinatorReportHistorySearchSchema.parse(rawSearch),
+      );
+    },
+
+    getCoordinatorMonthlySummary(rawSearch: unknown) {
+      return repo.getCoordinatorMonthlySummary(
+        coordinatorMonthlySummarySearchSchema.parse(rawSearch),
+      );
+    },
+
     listTasks(rawSearch: unknown) {
       return repo.listTasks(taskListSearchSchema.parse(rawSearch));
     },
@@ -291,6 +373,37 @@ export function createAdoptionCoordinatorService({
       });
 
       return { csv, rowCount, filename: `coordinator-${kind}.csv` };
+    },
+
+    async regenerateCoordinatorExport(args: {
+      actorUserId: string | null;
+      auditLogId: string;
+    }): Promise<CoordinatorExportResult> {
+      const audit = await repo.getCoordinatorExportAuditRow(args.auditLogId);
+      if (!audit) throw new Error("Export audit not found");
+
+      const result = await service.exportCoordinatorCsv({
+        actorUserId: args.actorUserId,
+        kind: audit.kind,
+        rawSearch: audit.filters,
+      });
+
+      await repo.insertAuditLog({
+        actor_user_id: args.actorUserId,
+        action: "coordinator_export.regenerate",
+        entity: "coordinator_export",
+        entity_id: args.auditLogId,
+        timestamp: timestamp(now),
+        detail: {
+          kind: audit.kind,
+          filters: audit.filters,
+          rowCount: result.rowCount,
+          sourceAuditLogId: args.auditLogId,
+          sourceRoute: `/api/admin/adoptions/reports/exports/${args.auditLogId}/download`,
+        },
+      });
+
+      return result;
     },
 
     getTask(taskId: string) {
