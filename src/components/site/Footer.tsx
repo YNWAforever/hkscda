@@ -27,19 +27,30 @@ export function Footer() {
           </h4>
           <ul className="space-y-2 text-sm text-white/80">
             <li className="flex items-center gap-2">
-              <Mail className="h-4 w-4 opacity-70" /> info@hkscda.com
+              <a
+                href="mailto:info@hkscda.com"
+                className="flex items-center gap-2 hover:text-white transition-colors"
+              >
+                <Mail className="h-4 w-4 opacity-70" aria-hidden="true" /> info@hkscda.com
+              </a>
             </li>
             <li className="flex items-center gap-2">
-              <Smartphone className="h-4 w-4 opacity-70" /> WhatsApp / FPS: 9864 1089
+              <a
+                href="tel:+85298641089"
+                className="flex items-center gap-2 hover:text-white transition-colors"
+              >
+                <Smartphone className="h-4 w-4 opacity-70" aria-hidden="true" /> WhatsApp / FPS:
+                9864 1089
+              </a>
             </li>
             <li className="flex items-center gap-2">
-              <BadgeCheck className="h-4 w-4 opacity-70" /> 慈善牌照：91/14493
+              <BadgeCheck className="h-4 w-4 opacity-70" aria-hidden="true" /> 慈善牌照：91/14493
             </li>
             <li className="flex items-center gap-2">
-              <Building2 className="h-4 w-4 opacity-70" /> 漁農署 ORG-00041
+              <Building2 className="h-4 w-4 opacity-70" aria-hidden="true" /> 漁農署 ORG-00041
             </li>
             <li className="flex items-center gap-2">
-              <ReceiptText className="h-4 w-4 opacity-70" /> IRD §88 免稅機構
+              <ReceiptText className="h-4 w-4 opacity-70" aria-hidden="true" /> IRD §88 免稅機構
             </li>
           </ul>
         </div>

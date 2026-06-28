@@ -29,7 +29,11 @@ export function SocialWall() {
           </p>
         </div>
 
-        <div className="flex justify-center gap-2 mb-8 border-b border-[var(--color-border)]">
+        <div
+          role="tablist"
+          aria-label="社群媒體"
+          className="flex justify-center gap-2 mb-8 border-b border-[var(--color-border)]"
+        >
           {(
             [
               ["fb", "Facebook"],
@@ -38,6 +42,10 @@ export function SocialWall() {
           ).map(([k, label]) => (
             <button
               key={k}
+              role="tab"
+              id={`tab-${k}`}
+              aria-selected={tab === k}
+              aria-controls={`panel-${k}`}
               onClick={() => setTab(k)}
               className={`relative -mb-px px-6 py-3 text-sm font-bold transition-colors ${
                 tab === k
@@ -51,7 +59,12 @@ export function SocialWall() {
         </div>
 
         {tab === "fb" && (
-          <div className="grid lg:grid-cols-3 gap-6 items-start">
+          <div
+            role="tabpanel"
+            id="panel-fb"
+            aria-labelledby="tab-fb"
+            className="grid lg:grid-cols-3 gap-6 items-start"
+          >
             <div className="lg:col-span-2 bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] overflow-hidden">
               <iframe
                 title="HKSCDA Facebook Page"
@@ -61,7 +74,6 @@ export function SocialWall() {
                 width="100%"
                 height={700}
                 style={{ border: "none", overflow: "hidden" }}
-                scrolling="no"
                 allow="encrypted-media"
                 loading="lazy"
               />
@@ -95,7 +107,7 @@ export function SocialWall() {
         )}
 
         {tab === "ig" && (
-          <div>
+          <div role="tabpanel" id="panel-ig" aria-labelledby="tab-ig">
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 lg:gap-4">
               {igPosts.map((p, i) => (
                 <a

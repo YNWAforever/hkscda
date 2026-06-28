@@ -158,7 +158,8 @@ export function VolunteerCarousel() {
             <button
               key={i}
               onClick={() => scrollTo(i)}
-              aria-label={`Slide ${i + 1}`}
+              aria-label={`義工故事 ${i + 1}：${stories[i]?.name ?? ""}`}
+              aria-current={i === selected ? "true" : undefined}
               className={`h-2 rounded-full transition-all ${
                 i === selected ? "w-8 bg-[var(--color-primary)]" : "w-2 bg-[var(--color-border)]"
               }`}

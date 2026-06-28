@@ -47,19 +47,22 @@ export function AnimalGrid({
     <div className="space-y-6">
       {/* Filter tabs */}
       <div className="flex gap-2 flex-wrap">
-        {AGE_TABS.map((tab) => (
-          <button
-            key={tab.value}
-            onClick={() => setFilter(tab.value)}
-            className={`px-4 py-1.5 rounded-full text-sm transition-colors ${
-              ageFilter === tab.value
-                ? "bg-[var(--color-primary)] text-white"
-                : "bg-[var(--color-surface-offset)] text-[var(--color-text-muted)] hover:bg-[var(--color-border)]"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+        <div role="group" aria-label="按年齡篩選" className="flex gap-2 flex-wrap">
+          {AGE_TABS.map((tab) => (
+            <button
+              key={tab.value}
+              onClick={() => setFilter(tab.value)}
+              aria-pressed={ageFilter === tab.value}
+              className={`px-4 py-1.5 rounded-full text-sm transition-colors ${
+                ageFilter === tab.value
+                  ? "bg-[var(--color-primary)] text-white"
+                  : "bg-[var(--color-surface-offset)] text-[var(--color-text-muted)] hover:bg-[var(--color-border)]"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
         <span className="ml-auto text-sm text-[var(--color-text-muted)] self-center">
           共 {total} 隻{animalLabel}
         </span>

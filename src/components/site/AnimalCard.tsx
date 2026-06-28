@@ -55,7 +55,7 @@ export function AnimalCard({ animal }: AnimalCardProps) {
         </div>
 
         <Link to={detailHref} className="btn-cta mt-auto text-xs! py-1.5! px-3!">
-          {ctaLabel} →
+          {ctaLabel} <span aria-hidden="true">→</span>
         </Link>
       </div>
     </div>

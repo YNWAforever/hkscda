@@ -19,7 +19,7 @@ export function AnimalDetail({ animal, backHref, backLabel }: AnimalDetailProps)
         to={backHref}
         className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-primary)] flex items-center gap-1"
       >
-        ← {backLabel}
+        <span aria-hidden="true">←</span> {backLabel}
       </Link>
 
       <div className="grid md:grid-cols-2 gap-8 items-start">
