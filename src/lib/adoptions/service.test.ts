@@ -1,6 +1,10 @@
 import { describe, expect, test } from "bun:test";
 
-import { createAdoptionCoordinatorService, type AdoptionCoordinatorRepository } from "./service";
+import {
+  createAdoptionCoordinatorService,
+  type AdoptionCoordinatorRepository,
+  type CoordinatorOpsRepositoryMethods,
+} from "./service";
 import type { CoordinatorStatus, CoordinatorTask } from "./types";
 
 const adminId = "11111111-2222-4333-8444-555555555555";
@@ -79,8 +83,9 @@ function task(overrides: Partial<CoordinatorTask> = {}): CoordinatorTask {
 }
 
 function createRepo(
-  overrides: Partial<AdoptionCoordinatorRepository> = {},
-): AdoptionCoordinatorRepository & { calls: Array<{ name: string; payload?: unknown }> } {
+  overrides: Partial<AdoptionCoordinatorRepository & CoordinatorOpsRepositoryMethods> = {},
+): AdoptionCoordinatorRepository &
+  CoordinatorOpsRepositoryMethods & { calls: Array<{ name: string; payload?: unknown }> } {
   const calls: Array<{ name: string; payload?: unknown }> = [];
 
   return {
@@ -185,6 +190,7 @@ function createRepo(
             successfulAdoptionCount: 0,
             openTaskCount: 1,
             latestCaseAt: "2026-06-27T08:00:00.000Z",
+            latestCase: null,
             nameEnglish: "Ada",
             nameChinese: null,
             gender: null,
@@ -196,6 +202,8 @@ function createRepo(
             address: null,
             floorArea: null,
             blacklistReason: null,
+            emailConsent: null,
+            whatsappConsent: null,
             cases: [],
             successfulAdoptions: [],
             tasks: [],
@@ -248,7 +256,9 @@ function createRepo(
   };
 }
 
-function setup(overrides: Partial<AdoptionCoordinatorRepository> = {}) {
+function setup(
+  overrides: Partial<AdoptionCoordinatorRepository & CoordinatorOpsRepositoryMethods> = {},
+) {
   const repo = createRepo(overrides);
   return {
     repo,
@@ -385,6 +395,18 @@ describe("createAdoptionCoordinatorService", () => {
         }),
       }),
     );
+  });
+
+  test("reports missing coordinator ops repository methods clearly", async () => {
+    const { searchManualCaseIdentity, ...repoWithoutOps } = createRepo();
+
+    expect(() =>
+      createAdoptionCoordinatorService({ repo: repoWithoutOps }).searchManualCaseIdentity({
+        q: "Ada",
+      }),
+    ).toThrow("Coordinator ops repository method unavailable: searchManualCaseIdentity");
+
+    expect(searchManualCaseIdentity).toBeFunction();
   });
 
   test("exports coordinator CSV and audits row count", async () => {
