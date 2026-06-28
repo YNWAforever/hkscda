@@ -15,6 +15,7 @@ import {
 import { useMemo, useState } from "react";
 
 import { centsToHkd, type DonationMethod, type DonationPurpose } from "../lib/donations/domain";
+import { TurnstileWidget, turnstileEnabled } from "../components/site/TurnstileWidget";
 
 const searchSchema = z.object({
   status: z.enum(["success", "cancelled", "paypal-approved"]).optional(),
@@ -84,6 +85,7 @@ const copy = {
     donorName: "姓名",
     email: "電郵",
     phone: "電話（選填）",
+    verifyRequired: "請先完成人機驗證",
   },
   en: {
     eyebrow: "Donate",
@@ -112,6 +114,7 @@ const copy = {
     donorName: "Name",
     email: "Email",
     phone: "Phone (optional)",
+    verifyRequired: "Please complete the verification first.",
   },
 } satisfies Record<Language, Record<string, string>>;
 
@@ -147,6 +150,7 @@ function DonatePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [manualResult, setManualResult] = useState<ManualResult | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   const amountHkd = useMemo(() => {
     const parsedCustom = Number(customAmount);
@@ -157,6 +161,12 @@ function DonatePage() {
     event.preventDefault();
     setError(null);
     setManualResult(null);
+
+    if (turnstileEnabled && !turnstileToken) {
+      setError(t.verifyRequired);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -171,6 +181,7 @@ function DonatePage() {
           receiptRequested,
           donor: { name, email, phone, language },
           consents: { email: emailConsent, whatsapp: whatsappConsent },
+          turnstileToken,
         }),
       });
 
@@ -218,7 +229,12 @@ function DonatePage() {
               <BadgeCheck className="h-4 w-4" /> {t.receiptBadge}
             </div>
             {statusMessage && (
-              <div className="card-dashed bg-[var(--color-surface)] p-4 text-sm font-medium text-[var(--color-panel)]">
+              <div
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+                className="card-dashed bg-[var(--color-surface)] p-4 text-sm font-medium text-[var(--color-panel)]"
+              >
                 {statusMessage}
               </div>
             )}
@@ -226,6 +242,7 @@ function DonatePage() {
 
           <form
             onSubmit={handleSubmit}
+            lang={language === "en" ? "en" : "zh-Hant"}
             className="card-dashed bg-[var(--color-surface)] p-5 shadow-sm lg:p-6"
           >
             <div className="mb-5 flex justify-end">
@@ -234,6 +251,7 @@ function DonatePage() {
                   <button
                     key={lang}
                     type="button"
+                    aria-pressed={language === lang}
                     onClick={() => setLanguage(lang)}
                     className={`rounded-full px-3 py-1.5 transition-colors ${
                       language === lang
@@ -255,6 +273,7 @@ function DonatePage() {
                     <button
                       key={amount}
                       type="button"
+                      aria-pressed={amountHkd === amount && !customAmount}
                       onClick={() => {
                         setSelectedAmount(amount);
                         setCustomAmount("");
@@ -279,7 +298,7 @@ function DonatePage() {
                     step="1"
                     value={customAmount}
                     onChange={(event) => setCustomAmount(event.target.value)}
-                    className="w-full rounded-xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm outline-none focus:border-[var(--color-primary)]"
+                    className="w-full rounded-xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm focus:border-[var(--color-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]"
                     placeholder="HK$"
                   />
                 </label>
@@ -292,6 +311,7 @@ function DonatePage() {
                     <button
                       key={item.value}
                       type="button"
+                      aria-pressed={purpose === item.value}
                       onClick={() => setPurpose(item.value)}
                       className={`rounded-xl border px-3 py-3 text-sm font-bold transition-colors ${
                         purpose === item.value
@@ -317,7 +337,7 @@ function DonatePage() {
                     required
                     value={name}
                     onChange={(event) => setName(event.target.value)}
-                    className="w-full rounded-xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm outline-none focus:border-[var(--color-primary)]"
+                    className="w-full rounded-xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm focus:border-[var(--color-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]"
                   />
                 </label>
                 <label className="block">
@@ -329,7 +349,7 @@ function DonatePage() {
                     type="email"
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
-                    className="w-full rounded-xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm outline-none focus:border-[var(--color-primary)]"
+                    className="w-full rounded-xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm focus:border-[var(--color-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]"
                   />
                 </label>
                 <label className="block sm:col-span-2">
@@ -339,7 +359,7 @@ function DonatePage() {
                   <input
                     value={phone}
                     onChange={(event) => setPhone(event.target.value)}
-                    className="w-full rounded-xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm outline-none focus:border-[var(--color-primary)]"
+                    className="w-full rounded-xl border border-[var(--color-border)] bg-white px-4 py-3 text-sm focus:border-[var(--color-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]"
                   />
                 </label>
               </fieldset>
@@ -351,6 +371,7 @@ function DonatePage() {
                     <button
                       key={value}
                       type="button"
+                      aria-pressed={method === value}
                       onClick={() => setMethod(value)}
                       className={`flex items-center gap-3 rounded-xl border px-4 py-3 text-left text-sm font-bold transition-colors ${
                         method === value
@@ -388,11 +409,21 @@ function DonatePage() {
                 <p className="text-xs leading-6 text-[var(--color-text-muted)]">{t.pics}</p>
               </div>
 
-              {error && <p className="text-sm font-bold text-[var(--color-error)]">{error}</p>}
+              <TurnstileWidget
+                onVerify={setTurnstileToken}
+                onExpire={() => setTurnstileToken(null)}
+                language={language === "en" ? "en" : "zh-tw"}
+              />
+
+              {error && (
+                <p role="alert" className="text-sm font-bold text-[var(--color-error)]">
+                  {error}
+                </p>
+              )}
 
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || (turnstileEnabled && !turnstileToken)}
                 className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[var(--color-primary)] px-6 py-4 text-sm font-extrabold text-white transition-colors hover:bg-[var(--color-primary-hover)] disabled:opacity-60"
               >
                 {loading ? (

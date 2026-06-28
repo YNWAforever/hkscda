@@ -3,6 +3,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { capturePayPalOrder, verifyPayPalWebhook } from "../../../lib/donations/providers.server";
 import { reconcileProviderPayment } from "../../../lib/donations/reconcile.server";
 import { createSupabaseServiceClient } from "../../../lib/donations/supabase.server";
+import {
+  enforceRateLimit,
+  getClientIp,
+  retryAfterSeconds,
+} from "../../../lib/security/rate-limit.server";
 
 type PayPalWebhook = {
   id: string;
@@ -44,6 +49,18 @@ export const Route = createFileRoute("/api/webhooks/paypal")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        const limit = await enforceRateLimit(getClientIp(request), {
+          prefix: "wh-paypal",
+          max: 100,
+          window: "1 m",
+        });
+        if (!limit.ok) {
+          return new Response("Too many requests", {
+            status: 429,
+            headers: { "retry-after": String(retryAfterSeconds(limit)) },
+          });
+        }
+
         let payload: PayPalWebhook;
         try {
           payload = (await request.json()) as PayPalWebhook;
