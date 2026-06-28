@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, Download, RefreshCw, Search } from "lucide-react";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 
@@ -164,6 +164,7 @@ export function CoordinatorReports() {
       fetchCoordinatorJson<ExportHistoryResponse>(
         `/api/admin/adoptions/reports/exports?${historyParams}`,
       ),
+    placeholderData: keepPreviousData,
   });
 
   const exports = historyQuery.data?.exports ?? [];
