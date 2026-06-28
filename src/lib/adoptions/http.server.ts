@@ -63,6 +63,8 @@ const badRequestDomainErrors = new Set([
   "Inactive adoption outcome status",
   "Invalid successful adoption outcome status",
   "Adopter filters match too many records",
+  "Invalid manual intake identity",
+  "Unsupported coordinator export audit",
 ]);
 
 const notFoundDomainErrors = new Set([
@@ -70,6 +72,8 @@ const notFoundDomainErrors = new Set([
   "Task not found",
   "Adoption case not found",
   "Adopter profile not found",
+  "Supporter not found",
+  "Export audit not found",
   "Match not found for adoption case",
 ]);
 
@@ -231,6 +235,49 @@ export function createAdoptionCoordinatorHandlers({
       });
     },
 
+    searchManualCaseIdentity({ request }: HandlerContext) {
+      return withErrors(async () => {
+        await requireCoordinator(request);
+        const search = Object.fromEntries(new URL(request.url).searchParams);
+        return jsonResponse(await service.searchManualCaseIdentity(search));
+      });
+    },
+
+    createManualCase({ request }: HandlerContext) {
+      return withErrors(async () => {
+        const admin = await requireCoordinator(request);
+        const result = await service.createManualCase({
+          actorUserId: admin.authUserId,
+          input: await jsonBody(request),
+        });
+        return jsonResponse(
+          {
+            case: { id: result.caseId },
+            supporterId: result.supporterId,
+            adopterProfileId: result.adopterProfileId,
+            taskId: result.taskId,
+          },
+          { status: 201 },
+        );
+      });
+    },
+
+    listCoordinatorExportHistory({ request }: HandlerContext) {
+      return withErrors(async () => {
+        await requireCoordinator(request);
+        const search = Object.fromEntries(new URL(request.url).searchParams);
+        return jsonResponse(await service.listCoordinatorExportHistory(search));
+      });
+    },
+
+    getCoordinatorMonthlySummary({ request }: HandlerContext) {
+      return withErrors(async () => {
+        await requireCoordinator(request);
+        const search = Object.fromEntries(new URL(request.url).searchParams);
+        return jsonResponse({ summary: await service.getCoordinatorMonthlySummary(search) });
+      });
+    },
+
     exportCoordinatorCsv({ request, params }: HandlerContext) {
       return withErrors(async () => {
         const admin = await requireCoordinator(request);
@@ -238,6 +285,18 @@ export function createAdoptionCoordinatorHandlers({
           actorUserId: admin.authUserId,
           kind: params?.kind,
           rawSearch: Object.fromEntries(new URL(request.url).searchParams),
+        });
+        return csvResponse(result.csv, result.filename);
+      });
+    },
+
+    regenerateCoordinatorExport({ request, params }: HandlerContext) {
+      return withErrors(async () => {
+        const auditLogId = requiredUuid(params, "id");
+        const admin = await requireCoordinator(request);
+        const result = await service.regenerateCoordinatorExport({
+          actorUserId: admin.authUserId,
+          auditLogId,
         });
         return csvResponse(result.csv, result.filename);
       });
