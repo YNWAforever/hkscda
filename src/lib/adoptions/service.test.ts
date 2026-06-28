@@ -409,6 +409,28 @@ describe("createAdoptionCoordinatorService", () => {
     expect(searchManualCaseIdentity).toBeFunction();
   });
 
+  test("preserves coordinator ops repository method receiver", async () => {
+    const repo = createRepo({
+      async searchManualCaseIdentity(
+        this: { calls: Array<{ name: string; payload?: unknown }> },
+        input,
+      ) {
+        this.calls.push({ name: "searchManualCaseIdentityWithThis", payload: input });
+        return { candidates: [], total: this.calls.length };
+      },
+    });
+    const service = createAdoptionCoordinatorService({ repo });
+
+    await expect(service.searchManualCaseIdentity({ q: " Ada " })).resolves.toEqual({
+      candidates: [],
+      total: 1,
+    });
+    expect(repo.calls).toContainEqual({
+      name: "searchManualCaseIdentityWithThis",
+      payload: { q: "Ada", page: 1, pageSize: 10 },
+    });
+  });
+
   test("exports coordinator CSV and audits row count", async () => {
     const { service, calls } = setup();
 

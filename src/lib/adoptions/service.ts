@@ -178,7 +178,7 @@ function requireCoordinatorOpsMethod<K extends keyof CoordinatorOpsRepositoryMet
   if (typeof method !== "function") {
     throw new Error(`Coordinator ops repository method unavailable: ${methodName}`);
   }
-  return method as CoordinatorOpsRepositoryMethods[K];
+  return method.bind(repo) as CoordinatorOpsRepositoryMethods[K];
 }
 
 function hasEffectiveTaskLink(current: CoordinatorTask, input: CoordinatorTaskUpdate) {
