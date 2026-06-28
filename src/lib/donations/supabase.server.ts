@@ -74,6 +74,14 @@ export function createSupabaseDonationRepository(client: SupabaseClient): Donati
         .eq("id", paymentId);
       if (error) throw error;
     },
+    async deletePayment(paymentId) {
+      const { error } = await client.from("payment").delete().eq("id", paymentId);
+      if (error) throw error;
+    },
+    async deleteDonation(donationId) {
+      const { error } = await client.from("donation").delete().eq("id", donationId);
+      if (error) throw error;
+    },
   };
 }
 

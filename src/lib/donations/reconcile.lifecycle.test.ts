@@ -1,0 +1,562 @@
+import { describe, expect, test } from "bun:test";
+
+import {
+  failProviderPayment,
+  issueReceiptIfNeeded,
+  reconcileManualPayment,
+  reconcileProviderPayment,
+  refundProviderPayment,
+  voidReceipt,
+} from "./reconcile.server";
+
+type FakePayment = {
+  id: string;
+  provider: string;
+  provider_ref: string | null;
+  amount_cents: number;
+  status: string;
+  donation: {
+    id: string;
+    amount_cents: number;
+    receipt_requested: boolean;
+    status: string;
+    supporter_id: string;
+    supporter: { id: string; name: string; email: string; language: "zh-HK" | "en" };
+  };
+};
+
+const basePayment: FakePayment = {
+  id: "payment-1",
+  provider: "stripe",
+  provider_ref: "cs_test_123",
+  amount_cents: 20000,
+  status: "succeeded",
+  donation: {
+    id: "donation-1",
+    amount_cents: 20000,
+    receipt_requested: true,
+    status: "succeeded",
+    supporter_id: "supporter-1",
+    supporter: {
+      id: "supporter-1",
+      name: "Ada Donor",
+      email: "ada@example.test",
+      language: "en",
+    },
+  },
+};
+
+// Pending gift that does not request a receipt — exercises the success-path
+// transition without touching the issue_receipt RPC.
+const pendingPaymentNoReceipt: FakePayment = {
+  ...basePayment,
+  status: "pending",
+  donation: { ...basePayment.donation, status: "pending", receipt_requested: false },
+};
+
+// --- Receipt issuance fake (no webhook plumbing) -------------------------------
+
+function createReceiptFake(rpcRow: Record<string, unknown>) {
+  const state = {
+    rpc: null as null | { fn: string; params: Record<string, unknown> },
+    uploads: [] as Array<{ path: string; options: unknown }>,
+    patches: [] as Array<{ table: string; payload: unknown; filters: Array<[string, unknown]> }>,
+  };
+  const client = {
+    // issue_receipt lives in the public schema, so it is called via the plain
+    // client.rpc() entry point (not client.schema("private").rpc()).
+    rpc(fn: string, params: Record<string, unknown>) {
+      state.rpc = { fn, params };
+      return Promise.resolve({ data: [rpcRow], error: null });
+    },
+    storage: {
+      from() {
+        return {
+          upload(path: string, _body: unknown, options: unknown) {
+            state.uploads.push({ path, options });
+            return Promise.resolve({ error: null });
+          },
+        };
+      },
+    },
+    from(table: string) {
+      return {
+        update(payload: unknown) {
+          const filters: Array<[string, unknown]> = [];
+          const builder = {
+            eq(column: string, value: unknown) {
+              filters.push([column, value]);
+              return builder;
+            },
+            then(resolve: (value: { error: null }) => void) {
+              state.patches.push({ table, payload, filters });
+              return Promise.resolve({ error: null }).then(resolve);
+            },
+          };
+          return builder;
+        },
+      };
+    },
+  };
+  return { client, state };
+}
+
+describe("issueReceiptIfNeeded", () => {
+  test("allocates + stores a new receipt atomically and uploads the PDF once", async () => {
+    const { client, state } = createReceiptFake({
+      receipt_no: "HKSCDA-2026-000001",
+      receipt_id: "receipt-1",
+      pdf_url: null,
+      tax_year: 2026,
+      issued_at: "2026-06-24T10:00:00.000Z",
+    });
+
+    const generated: Array<{ receiptNo: string }> = [];
+    const receiptNo = await issueReceiptIfNeeded(client as never, basePayment, {
+      now: () => new Date("2026-06-24T10:00:00.000Z"),
+      async generatePdf(input) {
+        generated.push({ receiptNo: input.receiptNo });
+        return new Uint8Array([1, 2, 3]);
+      },
+    });
+
+    expect(receiptNo).toBe("HKSCDA-2026-000001");
+    expect(state.rpc?.fn).toBe("issue_receipt");
+    expect(state.rpc?.params.p_donation_id).toBe("donation-1");
+    expect(state.rpc?.params.p_amount_cents).toBe(20000);
+    expect(generated).toHaveLength(1);
+    expect(state.uploads).toHaveLength(1);
+    expect(state.uploads[0].path).toBe("2026/HKSCDA-2026-000001.pdf");
+    expect(state.uploads[0].options).toMatchObject({
+      contentType: "application/pdf",
+      upsert: true,
+    });
+    expect(state.patches).toEqual([
+      {
+        table: "receipt",
+        payload: { pdf_url: "2026/HKSCDA-2026-000001.pdf" },
+        filters: [["id", "receipt-1"]],
+      },
+    ]);
+  });
+
+  test("is idempotent: an already-issued receipt with a PDF is returned without re-allocating or re-uploading", async () => {
+    const { client, state } = createReceiptFake({
+      receipt_no: "HKSCDA-2026-000007",
+      receipt_id: "receipt-7",
+      pdf_url: "2026/HKSCDA-2026-000007.pdf",
+      tax_year: 2026,
+      issued_at: "2026-06-24T10:00:00.000Z",
+    });
+
+    let generatorCalls = 0;
+    const receiptNo = await issueReceiptIfNeeded(client as never, basePayment, {
+      now: () => new Date("2026-06-24T10:00:00.000Z"),
+      async generatePdf() {
+        generatorCalls += 1;
+        return new Uint8Array([1]);
+      },
+    });
+
+    expect(receiptNo).toBe("HKSCDA-2026-000007");
+    expect(generatorCalls).toBe(0);
+    expect(state.uploads).toHaveLength(0);
+    expect(state.patches).toHaveLength(0);
+  });
+
+  test("regenerates the PDF when a prior attempt committed the row but left no PDF", async () => {
+    const { client, state } = createReceiptFake({
+      receipt_no: "HKSCDA-2026-000009",
+      receipt_id: "receipt-9",
+      pdf_url: null,
+      tax_year: 2026,
+      issued_at: "2026-06-24T10:00:00.000Z",
+    });
+
+    let generatorCalls = 0;
+    await issueReceiptIfNeeded(client as never, basePayment, {
+      now: () => new Date("2026-06-24T10:00:00.000Z"),
+      async generatePdf() {
+        generatorCalls += 1;
+        return new Uint8Array([9]);
+      },
+    });
+
+    expect(generatorCalls).toBe(1);
+    expect(state.uploads).toHaveLength(1);
+  });
+});
+
+// --- Webhook lifecycle fake ---------------------------------------------------
+
+function createWebhookFake({
+  payment,
+  paymentByProvider = payment,
+  issuedReceipts = [],
+}: {
+  payment: typeof basePayment | null;
+  // What the provider_ref lookup returns (defaults to `payment`). Set null to
+  // simulate a provider_ref miss that must fall back to the payment-id lookup.
+  paymentByProvider?: typeof basePayment | null;
+  issuedReceipts?: Array<{ id: string; pdf_url: string | null }>;
+}) {
+  const operations: Array<{
+    table: string;
+    action: string;
+    payload?: unknown;
+    filters: Array<[string, string, unknown]>;
+  }> = [];
+  const removals: string[] = [];
+
+  function chain(table: string, mode: "read" | "update" | "delete", payload?: unknown) {
+    const filters: Array<[string, string, unknown]> = [];
+    const builder = {
+      eq(column: string, value: unknown) {
+        filters.push(["eq", column, value]);
+        return builder;
+      },
+      is(column: string, value: unknown) {
+        filters.push(["is", column, value]);
+        return builder;
+      },
+      contains(column: string, value: unknown) {
+        filters.push(["contains", column, value]);
+        return builder;
+      },
+      select() {
+        return builder;
+      },
+      single() {
+        return Promise.resolve(readSingle(table, filters));
+      },
+      maybeSingle() {
+        return Promise.resolve(readSingle(table, filters));
+      },
+      then(resolve: (value: { data?: unknown; error: null }) => void) {
+        if (mode === "read") {
+          return Promise.resolve({ data: readList(table), error: null }).then(resolve);
+        }
+        operations.push({ table, action: mode, payload, filters });
+        return Promise.resolve({ error: null }).then(resolve);
+      },
+    };
+    return builder;
+  }
+
+  function readSingle(table: string, filters: Array<[string, string, unknown]>) {
+    if (table === "payment") {
+      const byId = filters.some((f) => f[1] === "id");
+      return { data: byId ? payment : paymentByProvider, error: null };
+    }
+    return { data: null, error: null };
+  }
+
+  function readList(table: string) {
+    if (table === "receipt") return issuedReceipts;
+    return [];
+  }
+
+  const client = {
+    storage: {
+      from() {
+        return {
+          remove(paths: string[]) {
+            removals.push(...paths);
+            return Promise.resolve({ error: null });
+          },
+          upload() {
+            return Promise.resolve({ error: null });
+          },
+        };
+      },
+    },
+    from(table: string) {
+      return {
+        insert(payload: unknown) {
+          operations.push({ table, action: "insert", payload, filters: [] });
+          return Promise.resolve({ error: null });
+        },
+        select() {
+          return chain(table, "read");
+        },
+        update(payload: unknown) {
+          return chain(table, "update", payload);
+        },
+        delete() {
+          return chain(table, "delete");
+        },
+      };
+    },
+  };
+
+  return { client, operations, removals };
+}
+
+function statusUpdate(
+  operations: Array<{ table: string; action: string; payload?: unknown }>,
+  table: string,
+) {
+  return operations.find((operation) => operation.table === table && operation.action === "update")
+    ?.payload as { status?: string } | undefined;
+}
+
+describe("failProviderPayment", () => {
+  test("marks the payment and donation failed, guarded on the pending status", async () => {
+    const { client, operations } = createWebhookFake({
+      payment: {
+        ...basePayment,
+        status: "pending",
+        donation: { ...basePayment.donation, status: "pending" },
+      },
+    });
+
+    const result = await failProviderPayment({
+      client: client as never,
+      provider: "stripe",
+      providerRef: "cs_test_123",
+      providerEventId: "evt_failed",
+      eventType: "checkout.session.async_payment_failed",
+      payload: {},
+    });
+
+    expect(result).toEqual({ kind: "failed", donationId: "donation-1" });
+    expect(statusUpdate(operations, "payment")?.status).toBe("failed");
+    expect(statusUpdate(operations, "donation")?.status).toBe("failed");
+
+    const paymentUpdate = operations.find((o) => o.table === "payment" && o.action === "update");
+    expect(paymentUpdate?.filters).toContainEqual(["eq", "status", "pending"]);
+  });
+});
+
+describe("refundProviderPayment", () => {
+  test("marks refunded (guarded on succeeded), voids the receipt, and removes its PDF", async () => {
+    const { client, operations, removals } = createWebhookFake({
+      payment: basePayment,
+      issuedReceipts: [{ id: "receipt-1", pdf_url: "2026/HKSCDA-2026-000001.pdf" }],
+    });
+
+    const result = await refundProviderPayment({
+      client: client as never,
+      provider: "stripe",
+      providerRef: "cs_test_123",
+      providerEventId: "evt_refund",
+      eventType: "charge.refunded",
+      payload: {},
+    });
+
+    expect(result).toEqual({ kind: "refunded", donationId: "donation-1" });
+    expect(statusUpdate(operations, "payment")?.status).toBe("refunded");
+    expect(statusUpdate(operations, "donation")?.status).toBe("refunded");
+
+    const paymentUpdate = operations.find((o) => o.table === "payment" && o.action === "update");
+    expect(paymentUpdate?.filters).toContainEqual(["eq", "status", "succeeded"]);
+
+    const receiptUpdate = operations.find((o) => o.table === "receipt" && o.action === "update");
+    expect((receiptUpdate?.payload as { status?: string }).status).toBe("void");
+    expect(removals).toEqual(["2026/HKSCDA-2026-000001.pdf"]);
+  });
+});
+
+describe("reconcileProviderPayment unknown payments", () => {
+  test("acknowledges (not_found) without resurrecting state when no payment matches", async () => {
+    const { client, operations } = createWebhookFake({ payment: null });
+
+    const result = await reconcileProviderPayment({
+      client: client as never,
+      provider: "paypal",
+      providerRef: "missing-order",
+      providerEventId: "evt_missing",
+      eventType: "PAYMENT.CAPTURE.COMPLETED",
+      payload: {},
+    });
+
+    expect(result).toEqual({ kind: "not_found" });
+    expect(operations.some((o) => o.table === "payment" && o.action === "update")).toBe(false);
+    expect(operations.some((o) => o.table === "donation" && o.action === "update")).toBe(false);
+    // The event is still marked processed so the provider stops retrying.
+    expect(
+      operations.some(
+        (o) =>
+          o.table === "webhook_event" &&
+          o.action === "update" &&
+          Boolean((o.payload as { processed_at?: string }).processed_at),
+      ),
+    ).toBe(true);
+  });
+});
+
+describe("reconcileProviderPayment terminal-state guard", () => {
+  test("skips a refunded donation instead of flipping it back to succeeded", async () => {
+    const { client, operations } = createWebhookFake({
+      payment: {
+        ...basePayment,
+        status: "succeeded",
+        donation: { ...basePayment.donation, status: "refunded" },
+      },
+    });
+
+    const result = await reconcileProviderPayment({
+      client: client as never,
+      provider: "stripe",
+      providerRef: "cs_test_123",
+      providerEventId: "evt_late_success",
+      eventType: "checkout.session.completed",
+      payload: {},
+    });
+
+    expect(result).toEqual({
+      kind: "skipped",
+      donationId: "donation-1",
+      reason: "terminal_status",
+    });
+    expect(operations.some((o) => o.table === "donation" && o.action === "update")).toBe(false);
+  });
+});
+
+describe("reconcileProviderPayment success path", () => {
+  test("applies pending->succeeded guarded on the pending status", async () => {
+    const { client, operations } = createWebhookFake({ payment: pendingPaymentNoReceipt });
+
+    const result = await reconcileProviderPayment({
+      client: client as never,
+      provider: "stripe",
+      providerRef: "cs_test_123",
+      providerEventId: "evt_ok",
+      eventType: "checkout.session.completed",
+      payload: {},
+    });
+
+    expect(result).toEqual({ kind: "applied", donationId: "donation-1", receiptNo: undefined });
+    const paymentUpdate = operations.find((o) => o.table === "payment" && o.action === "update");
+    const donationUpdate = operations.find((o) => o.table === "donation" && o.action === "update");
+    expect((paymentUpdate?.payload as { status?: string }).status).toBe("succeeded");
+    // Optimistic-concurrency guard: reverting either .eq("status","pending")
+    // would fail these assertions.
+    expect(paymentUpdate?.filters).toContainEqual(["eq", "status", "pending"]);
+    expect(donationUpdate?.filters).toContainEqual(["eq", "status", "pending"]);
+  });
+
+  test("throws on an amount mismatch without mutating the donation", async () => {
+    const mismatched: FakePayment = { ...pendingPaymentNoReceipt, amount_cents: 19999 };
+    const { client, operations } = createWebhookFake({ payment: mismatched });
+
+    await expect(
+      reconcileProviderPayment({
+        client: client as never,
+        provider: "stripe",
+        providerRef: "cs_test_123",
+        providerEventId: "evt_mismatch",
+        eventType: "checkout.session.completed",
+        payload: {},
+      }),
+    ).rejects.toThrow("Payment amount does not match donation amount");
+
+    expect(operations.some((o) => o.table === "donation" && o.action === "update")).toBe(false);
+  });
+});
+
+describe("reconcileProviderPayment metadata fallback", () => {
+  test("reconciles via fallbackPaymentId and backfills provider_ref when the provider_ref lookup misses", async () => {
+    const orphan: FakePayment = {
+      ...pendingPaymentNoReceipt,
+      provider: "paypal",
+      provider_ref: null,
+    };
+    const { client, operations } = createWebhookFake({ payment: orphan, paymentByProvider: null });
+
+    const result = await reconcileProviderPayment({
+      client: client as never,
+      provider: "paypal",
+      providerRef: "order-xyz",
+      fallbackPaymentId: "payment-1",
+      providerEventId: "evt_fallback",
+      eventType: "PAYMENT.CAPTURE.COMPLETED",
+      payload: {},
+    });
+
+    expect(result).toEqual({ kind: "applied", donationId: "donation-1", receiptNo: undefined });
+    const backfill = operations.find(
+      (o) =>
+        o.table === "payment" &&
+        o.action === "update" &&
+        (o.payload as { provider_ref?: string }).provider_ref === "order-xyz",
+    );
+    expect(backfill).toBeTruthy();
+    expect(backfill?.filters).toContainEqual(["is", "provider_ref", null]);
+  });
+});
+
+describe("reconcileManualPayment", () => {
+  test("marks a manual payment received, records actor + bank reference, and audits", async () => {
+    const { client, operations } = createWebhookFake({ payment: pendingPaymentNoReceipt });
+
+    const result = await reconcileManualPayment({
+      client: client as never,
+      paymentId: "payment-1",
+      actorUserId: "admin-1",
+      bankReference: "FPS-123",
+    });
+
+    expect(result).toEqual({ kind: "applied", donationId: "donation-1", receiptNo: undefined });
+    const paymentUpdate = operations.find((o) => o.table === "payment" && o.action === "update");
+    expect(paymentUpdate?.payload).toMatchObject({
+      status: "succeeded",
+      reconciled_by: "admin-1",
+      bank_reference: "FPS-123",
+    });
+    expect(operations.some((o) => o.table === "audit_log" && o.action === "insert")).toBe(true);
+  });
+});
+
+describe("voidReceipt", () => {
+  test("removes the stored PDF when voiding so it is no longer downloadable", async () => {
+    const operations: Array<{ table: string; action: string; payload?: unknown }> = [];
+    const removals: string[] = [];
+    const client = {
+      storage: {
+        from() {
+          return {
+            remove(paths: string[]) {
+              removals.push(...paths);
+              return Promise.resolve({ error: null });
+            },
+          };
+        },
+      },
+      from(table: string) {
+        return {
+          insert(payload: unknown) {
+            operations.push({ table, action: "insert", payload });
+            return Promise.resolve({ error: null });
+          },
+          update(payload: unknown) {
+            const builder = {
+              eq() {
+                return builder;
+              },
+              select() {
+                return builder;
+              },
+              single() {
+                operations.push({ table, action: "update", payload });
+                return Promise.resolve({
+                  data: { id: "receipt-1", pdf_url: "2026/HKSCDA-2026-000001.pdf" },
+                  error: null,
+                });
+              },
+            };
+            return builder;
+          },
+        };
+      },
+    };
+
+    const result = await voidReceipt(client as never, "receipt-1", "admin-1", {
+      supporterId: "supporter-1",
+    });
+
+    expect(result).toEqual({ receiptId: "receipt-1", status: "void" });
+    expect(removals).toEqual(["2026/HKSCDA-2026-000001.pdf"]);
+    expect(operations.some((o) => o.table === "audit_log" && o.action === "insert")).toBe(true);
+  });
+});

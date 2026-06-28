@@ -10,11 +10,18 @@ export function getAppUrl() {
   return process.env.APP_URL ?? "http://localhost:3000";
 }
 
+// The receipt bucket name is not a secret. Keep it separate so callers that
+// only need the bucket (PDF upload/remove) don't have to load the service-role
+// key — which keeps that code path testable without production secrets.
+export function getReceiptBucket() {
+  return process.env.SUPABASE_RECEIPT_BUCKET ?? "receipts";
+}
+
 export function getSupabaseServerConfig() {
   return {
     url: process.env.SUPABASE_URL ?? required("VITE_SUPABASE_URL"),
     serviceRoleKey: required("SUPABASE_SERVICE_ROLE_KEY"),
-    receiptBucket: process.env.SUPABASE_RECEIPT_BUCKET ?? "receipts",
+    receiptBucket: getReceiptBucket(),
   };
 }
 
