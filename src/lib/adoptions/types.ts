@@ -19,6 +19,60 @@ export type CoordinatorStatus = {
   isFinal: boolean;
 };
 
+export type CoordinatorTaskPriority = "low" | "normal" | "high" | "urgent";
+export type CoordinatorTaskContactChannel =
+  | "phone"
+  | "whatsapp"
+  | "email"
+  | "in_person"
+  | "internal";
+
+export type CoordinatorTaskCaseLink = {
+  id: string;
+  applicantName: string;
+  animalType: string;
+};
+
+export type CoordinatorTaskAdopterLink = {
+  id: string;
+  supporterId: string | null;
+  displayName: string | null;
+  isBlacklisted: boolean;
+};
+
+export type CoordinatorTaskAnimalLink = {
+  id: string;
+  name: string;
+  nameEn: string | null;
+  type: string;
+  status: string;
+};
+
+export type CoordinatorTask = {
+  id: string;
+  title: string;
+  status: CoordinatorStatus;
+  taskType: string;
+  priority: CoordinatorTaskPriority;
+  dueAt: string | null;
+  scheduledAt: string | null;
+  completedAt: string | null;
+  assignedTo: string | null;
+  volunteer: string | null;
+  contactChannel: CoordinatorTaskContactChannel | null;
+  outcome: string | null;
+  nextStepAt: string | null;
+  remarks: string | null;
+  hasWindowNet: boolean | null;
+  environment: string | null;
+  score: string | null;
+  createdAt: string;
+  updatedAt: string;
+  adoptionCase: CoordinatorTaskCaseLink | null;
+  adopterProfile: CoordinatorTaskAdopterLink | null;
+  animal: CoordinatorTaskAnimalLink | null;
+};
+
 export type AdoptionCaseSummary = {
   id: string;
   applicantName: string;
@@ -55,15 +109,7 @@ export type AnimalMatchSummary = {
   notes: string | null;
 };
 
-export type AdoptionFollowup = {
-  id: string;
-  title: string;
-  status: CoordinatorStatus;
-  scheduledAt: string | null;
-  completedAt: string | null;
-  volunteer: string | null;
-  remarks: string | null;
-};
+export type AdoptionFollowup = CoordinatorTask;
 
 export type SuccessfulAdoption = {
   id: string;

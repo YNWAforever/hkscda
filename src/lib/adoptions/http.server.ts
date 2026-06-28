@@ -45,6 +45,10 @@ const badRequestDomainErrors = new Set([
   "Inactive match status",
   "Invalid followup status",
   "Inactive followup status",
+  "Invalid coordinator task links",
+  "Completed tasks require a completed date",
+  "Completed tasks require an outcome or remarks",
+  "Cancelled tasks require an outcome or remarks",
   "Invalid adoption outcome status",
   "Inactive adoption outcome status",
   "Invalid successful adoption outcome status",
@@ -52,6 +56,7 @@ const badRequestDomainErrors = new Set([
 
 const notFoundDomainErrors = new Set([
   "Status not found",
+  "Task not found",
   "Adoption case not found",
   "Match not found for adoption case",
 ]);
@@ -195,6 +200,50 @@ export function createAdoptionCoordinatorHandlers({
         await requireCoordinator(request);
         const search = Object.fromEntries(new URL(request.url).searchParams);
         return jsonResponse(await service.listCases(search));
+      });
+    },
+
+    listTasks({ request }: HandlerContext) {
+      return withErrors(async () => {
+        await requireCoordinator(request);
+        const search = Object.fromEntries(new URL(request.url).searchParams);
+        return jsonResponse(await service.listTasks(search));
+      });
+    },
+
+    createTask({ request }: HandlerContext) {
+      return withErrors(async () => {
+        const admin = await requireCoordinator(request);
+        const task = await service.createTask({
+          actorUserId: admin.authUserId,
+          input: await jsonBody(request),
+        });
+        return jsonResponse({ task }, { status: 201 });
+      });
+    },
+
+    getTask({ request, params }: HandlerContext) {
+      return withErrors(async () => {
+        const taskId = requiredUuid(params, "id");
+        await requireCoordinator(request);
+        const task = await service.getTask(taskId);
+        if (!task) {
+          return jsonResponse({ error: "Task not found" }, { status: 404 });
+        }
+        return jsonResponse({ task });
+      });
+    },
+
+    updateTask({ request, params }: HandlerContext) {
+      return withErrors(async () => {
+        const taskId = requiredUuid(params, "id");
+        const admin = await requireCoordinator(request);
+        const task = await service.updateTask({
+          actorUserId: admin.authUserId,
+          taskId,
+          input: await jsonBody(request),
+        });
+        return jsonResponse({ task });
       });
     },
 

@@ -3,16 +3,22 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type {
   AdoptionCoordinatorRepository,
   CaseFromPublicApplicationInput,
+  CoordinatorTaskInput,
+  CoordinatorTaskUpdate,
   StatusUpdate,
+  TaskListSearch,
 } from "./service";
+import { hongKongDayBounds } from "./tasks";
 import type {
   AdoptionCaseDetail,
   AdoptionCaseSummary,
-  AdoptionFollowup,
   AnimalMatchSummary,
   CoordinatorStatus,
+  CoordinatorTask,
   SuccessfulAdoption,
 } from "./types";
+
+export { hongKongDayBounds } from "./tasks";
 
 type StatusRow = {
   id: string;
@@ -66,13 +72,55 @@ type AnimalMatchRow = {
 
 type FollowupRow = {
   id: string;
-  adoption_case_id: string;
+  adoption_case_id: string | null;
+  adopter_profile_id: string | null;
+  animal_id: string | null;
   status_id: string;
   title: string;
+  task_type: string;
+  priority: string;
+  due_at: string | null;
   scheduled_at: string | null;
   completed_at: string | null;
+  assigned_to: string | null;
   volunteer: string | null;
+  contact_channel: string | null;
+  outcome: string | null;
+  next_step_at: string | null;
   remarks: string | null;
+  has_window_net: boolean | null;
+  environment: string | null;
+  score: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+type TaskCaseRow = {
+  id: string;
+  applicant_name: string;
+  animal_type: string;
+};
+
+type TaskAdopterRow = {
+  id: string;
+  supporter_id: string | null;
+  is_blacklisted: boolean | null;
+  supporter:
+    | {
+        name: string | null;
+      }
+    | Array<{
+        name: string | null;
+      }>
+    | null;
+};
+
+type TaskAnimalRow = {
+  id: string;
+  name: string;
+  name_en: string | null;
+  type: string;
+  status: string;
 };
 
 type SuccessfulAdoptionRow = {
@@ -89,6 +137,17 @@ type SuccessfulAdoptionRow = {
 
 function escapeLike(value: string) {
   return value.replaceAll("\\", "\\\\").replaceAll("%", "\\%").replaceAll("_", "\\_");
+}
+
+function sanitizeOrLikeValue(value: string) {
+  // PostgREST .or() uses comma and parentheses for grammar, so keep search terms literal.
+  return escapeLike(
+    value
+      .replace(/[(),]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .replace(/\s+([%_])/g, "$1"),
+  );
 }
 
 function unique(values: Array<string | null | undefined>) {
@@ -137,6 +196,67 @@ async function loadAnimalsByIds(client: SupabaseClient, ids: string[]) {
   if (error) throw error;
 
   return new Map(((data ?? []) as AnimalRow[]).map((row) => [row.id, row]));
+}
+
+async function loadTaskCasesByIds(client: SupabaseClient, ids: Array<string | null | undefined>) {
+  const uniqueIds = unique(ids);
+  if (uniqueIds.length === 0) return new Map<string, TaskCaseRow>();
+
+  const { data, error } = await client
+    .from("adoption_case")
+    .select("id,applicant_name,animal_type")
+    .in("id", uniqueIds);
+  if (error) throw error;
+
+  return new Map(((data ?? []) as TaskCaseRow[]).map((row) => [row.id, row]));
+}
+
+async function loadTaskAdoptersByIds(
+  client: SupabaseClient,
+  ids: Array<string | null | undefined>,
+) {
+  const uniqueIds = unique(ids);
+  if (uniqueIds.length === 0) return new Map<string, TaskAdopterRow>();
+
+  const { data, error } = await client
+    .from("adopter_profile")
+    .select("id,supporter_id,is_blacklisted,supporter:supporter_id(name)")
+    .in("id", uniqueIds);
+  if (error) throw error;
+
+  return new Map(((data ?? []) as TaskAdopterRow[]).map((row) => [row.id, row]));
+}
+
+async function loadTaskAnimalsByIds(client: SupabaseClient, ids: Array<string | null | undefined>) {
+  const uniqueIds = unique(ids);
+  if (uniqueIds.length === 0) return new Map<string, TaskAnimalRow>();
+
+  const { data, error } = await client
+    .from("animals")
+    .select("id,name,name_en,type,status")
+    .in("id", uniqueIds);
+  if (error) throw error;
+
+  return new Map(((data ?? []) as TaskAnimalRow[]).map((row) => [row.id, row]));
+}
+
+async function loadTaskLinks(client: SupabaseClient, rows: FollowupRow[]) {
+  const [cases, adopters, animals] = await Promise.all([
+    loadTaskCasesByIds(
+      client,
+      rows.map((row) => row.adoption_case_id),
+    ),
+    loadTaskAdoptersByIds(
+      client,
+      rows.map((row) => row.adopter_profile_id),
+    ),
+    loadTaskAnimalsByIds(
+      client,
+      rows.map((row) => row.animal_id),
+    ),
+  ]);
+
+  return { cases, adopters, animals };
 }
 
 async function searchCaseIds(client: SupabaseClient, q: string) {
@@ -196,15 +316,69 @@ function mapMatchSummary(
   };
 }
 
-function mapFollowup(row: FollowupRow, statuses: Map<string, CoordinatorStatus>): AdoptionFollowup {
+type TaskLinks = Awaited<ReturnType<typeof loadTaskLinks>>;
+
+function supporterName(row: TaskAdopterRow | undefined) {
+  if (!row) return null;
+  const supporter = Array.isArray(row.supporter) ? row.supporter[0] : row.supporter;
+  return supporter?.name ?? null;
+}
+
+function mapCoordinatorTask(
+  row: FollowupRow,
+  statuses: Map<string, CoordinatorStatus>,
+  links?: TaskLinks,
+): CoordinatorTask {
+  const adoptionCase = row.adoption_case_id ? links?.cases.get(row.adoption_case_id) : undefined;
+  const adopterProfile = row.adopter_profile_id
+    ? links?.adopters.get(row.adopter_profile_id)
+    : undefined;
+  const animal = row.animal_id ? links?.animals.get(row.animal_id) : undefined;
+
   return {
     id: row.id,
     title: row.title,
     status: requireStatus(statuses, row.status_id),
+    taskType: row.task_type,
+    priority: row.priority as CoordinatorTask["priority"],
+    dueAt: row.due_at,
     scheduledAt: row.scheduled_at,
     completedAt: row.completed_at,
+    assignedTo: row.assigned_to,
     volunteer: row.volunteer,
+    contactChannel: row.contact_channel as CoordinatorTask["contactChannel"],
+    outcome: row.outcome,
+    nextStepAt: row.next_step_at,
     remarks: row.remarks,
+    hasWindowNet: row.has_window_net,
+    environment: row.environment,
+    score: row.score,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    adoptionCase: row.adoption_case_id
+      ? {
+          id: row.adoption_case_id,
+          applicantName: adoptionCase?.applicant_name ?? row.adoption_case_id,
+          animalType: adoptionCase?.animal_type ?? "",
+        }
+      : null,
+    adopterProfile: row.adopter_profile_id
+      ? {
+          id: row.adopter_profile_id,
+          supporterId: adopterProfile?.supporter_id ?? null,
+          displayName: supporterName(adopterProfile) ?? row.adopter_profile_id,
+          isBlacklisted: adopterProfile?.is_blacklisted ?? false,
+        }
+      : null,
+    animal: row.animal_id
+      ? {
+          id: row.animal_id,
+          name: animal?.name ?? row.animal_id,
+          nameEn: animal?.name_en ?? null,
+          type: animal?.type ?? "",
+          status: animal?.status ?? "",
+        }
+      : null,
   };
 }
 
@@ -235,6 +409,90 @@ function toStatusUpdatePayload(input: StatusUpdate) {
   if (input.isFinal !== undefined) payload.is_final = input.isFinal;
   return payload;
 }
+
+function toTaskInsertPayload(input: CoordinatorTaskInput & { createdBy: string }) {
+  return {
+    adoption_case_id: input.adoptionCaseId ?? null,
+    adopter_profile_id: input.adopterProfileId ?? null,
+    animal_id: input.animalId ?? null,
+    status_id: input.statusId,
+    title: input.title,
+    task_type: input.taskType,
+    priority: input.priority,
+    due_at: input.dueAt ?? null,
+    scheduled_at: input.scheduledAt ?? null,
+    completed_at: input.completedAt ?? null,
+    assigned_to: input.assignedTo ?? null,
+    volunteer: input.volunteer ?? null,
+    contact_channel: input.contactChannel ?? null,
+    outcome: input.outcome ?? null,
+    next_step_at: input.nextStepAt ?? null,
+    remarks: input.remarks ?? null,
+    has_window_net: input.hasWindowNet ?? null,
+    environment: input.environment ?? null,
+    score: input.score ?? null,
+    created_by: input.createdBy,
+    updated_by: input.createdBy,
+  };
+}
+
+function assignTaskUpdate(
+  payload: Record<string, unknown>,
+  column: string,
+  value: string | boolean | null | undefined,
+) {
+  if (value !== undefined) payload[column] = value;
+}
+
+function toTaskUpdatePayload(input: CoordinatorTaskUpdate & { updatedBy: string }) {
+  const payload: Record<string, unknown> = {};
+  assignTaskUpdate(payload, "title", input.title);
+  assignTaskUpdate(payload, "status_id", input.statusId);
+  assignTaskUpdate(payload, "adoption_case_id", input.adoptionCaseId);
+  assignTaskUpdate(payload, "adopter_profile_id", input.adopterProfileId);
+  assignTaskUpdate(payload, "animal_id", input.animalId);
+  assignTaskUpdate(payload, "task_type", input.taskType);
+  assignTaskUpdate(payload, "priority", input.priority);
+  assignTaskUpdate(payload, "due_at", input.dueAt);
+  assignTaskUpdate(payload, "scheduled_at", input.scheduledAt);
+  assignTaskUpdate(payload, "completed_at", input.completedAt);
+  assignTaskUpdate(payload, "assigned_to", input.assignedTo);
+  assignTaskUpdate(payload, "volunteer", input.volunteer);
+  assignTaskUpdate(payload, "contact_channel", input.contactChannel);
+  assignTaskUpdate(payload, "outcome", input.outcome);
+  assignTaskUpdate(payload, "next_step_at", input.nextStepAt);
+  assignTaskUpdate(payload, "remarks", input.remarks);
+  assignTaskUpdate(payload, "has_window_net", input.hasWindowNet);
+  assignTaskUpdate(payload, "environment", input.environment);
+  assignTaskUpdate(payload, "score", input.score);
+  payload.updated_by = input.updatedBy;
+  return payload;
+}
+
+const taskSelectColumns = [
+  "id",
+  "adoption_case_id",
+  "adopter_profile_id",
+  "animal_id",
+  "status_id",
+  "title",
+  "task_type",
+  "priority",
+  "due_at",
+  "scheduled_at",
+  "completed_at",
+  "assigned_to",
+  "volunteer",
+  "contact_channel",
+  "outcome",
+  "next_step_at",
+  "remarks",
+  "has_window_net",
+  "environment",
+  "score",
+  "created_at",
+  "updated_at",
+].join(",");
 
 async function loadNewAdoptionCaseStatusId(client: SupabaseClient) {
   const { data, error } = await client
@@ -453,7 +711,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
           .order("created_at", { ascending: false }),
         client
           .from("adoption_followup")
-          .select("id,adoption_case_id,status_id,title,scheduled_at,completed_at,volunteer,remarks")
+          .select(taskSelectColumns)
           .eq("adoption_case_id", id)
           .order("scheduled_at", { ascending: false }),
         client.from("successful_adoption").select("*").eq("adoption_case_id", id).maybeSingle(),
@@ -463,10 +721,10 @@ export function createSupabaseAdoptionCoordinatorRepository(
       if (successResult.error) throw successResult.error;
 
       const matchRows = (matchesResult.data ?? []) as AnimalMatchRow[];
-      const followupRows = (followupsResult.data ?? []) as FollowupRow[];
+      const followupRows = (followupsResult.data ?? []) as unknown as FollowupRow[];
       const successRow = (successResult.data ?? null) as SuccessfulAdoptionRow | null;
 
-      const [statuses, animals] = await Promise.all([
+      const [statuses, animals, taskLinks] = await Promise.all([
         loadStatusesByIds(client, [
           row.status_id,
           ...matchRows.map((match) => match.status_id),
@@ -476,6 +734,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
           row.requested_animal_id ?? "",
           ...matchRows.map((match) => match.animal_id),
         ]),
+        loadTaskLinks(client, followupRows),
       ]);
 
       return {
@@ -490,7 +749,9 @@ export function createSupabaseAdoptionCoordinatorRepository(
         assessment: row.assessment,
         preferences: row.preferences,
         matches: matchRows.map((match) => mapMatchSummary(match, statuses, animals)),
-        followups: followupRows.map((followup) => mapFollowup(followup, statuses)),
+        followups: followupRows.map((followup) =>
+          mapCoordinatorTask(followup, statuses, taskLinks),
+        ),
         successfulAdoption: mapSuccessfulAdoption(successRow),
       } satisfies AdoptionCaseDetail;
     },
@@ -524,6 +785,102 @@ export function createSupabaseAdoptionCoordinatorRepository(
         .single();
       if (error) throw error;
       return { id: (data as { id: string }).id };
+    },
+
+    async listTasks(input) {
+      const from = (input.page - 1) * input.pageSize;
+      let query = client
+        .from("adoption_followup")
+        .select(taskSelectColumns, { count: "exact" })
+        .order("due_at", { ascending: true })
+        .order("created_at", { ascending: false })
+        .range(from, from + input.pageSize - 1);
+
+      if (input.statusId) query = query.eq("status_id", input.statusId);
+      if (input.priority) query = query.eq("priority", input.priority);
+      if (input.taskType) query = query.eq("task_type", input.taskType);
+      if (input.adoptionCaseId) query = query.eq("adoption_case_id", input.adoptionCaseId);
+      if (input.adopterProfileId) query = query.eq("adopter_profile_id", input.adopterProfileId);
+      if (input.animalId) query = query.eq("animal_id", input.animalId);
+      if (input.assignedTo) query = query.ilike("assigned_to", `%${escapeLike(input.assignedTo)}%`);
+      if (input.q) {
+        const like = `%${sanitizeOrLikeValue(input.q)}%`;
+        query = query.or(`title.ilike.${like},remarks.ilike.${like},outcome.ilike.${like}`);
+      }
+
+      let openOnly = input.openOnly;
+      if (input.due === "none") {
+        query = query.is("due_at", null);
+      } else if (input.due === "overdue") {
+        query = query.lt("due_at", new Date().toISOString());
+        openOnly = true;
+      } else if (input.due === "upcoming") {
+        const { end } = hongKongDayBounds(new Date());
+        query = query.gte("due_at", end);
+        openOnly = true;
+      } else if (input.due === "today") {
+        const now = new Date();
+        const { end } = hongKongDayBounds(now);
+        query = query.gte("due_at", now.toISOString()).lt("due_at", end);
+        openOnly = true;
+      }
+
+      if (openOnly) query = query.is("completed_at", null);
+
+      const { data, error, count } = await query;
+      if (error) throw error;
+
+      const rows = (data ?? []) as unknown as FollowupRow[];
+      const [statuses, taskLinks] = await Promise.all([
+        loadStatusesByIds(
+          client,
+          rows.map((row) => row.status_id),
+        ),
+        loadTaskLinks(client, rows),
+      ]);
+
+      return {
+        tasks: rows.map((row) => mapCoordinatorTask(row, statuses, taskLinks)),
+        total: count ?? 0,
+      };
+    },
+
+    async getTask(id) {
+      const { data, error } = await client
+        .from("adoption_followup")
+        .select(taskSelectColumns)
+        .eq("id", id)
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) return null;
+
+      const row = data as unknown as FollowupRow;
+      const [statuses, taskLinks] = await Promise.all([
+        loadStatusesByIds(client, [row.status_id]),
+        loadTaskLinks(client, [row]),
+      ]);
+      return mapCoordinatorTask(row, statuses, taskLinks);
+    },
+
+    async createTask(input) {
+      const { data, error } = await client
+        .from("adoption_followup")
+        .insert(toTaskInsertPayload(input))
+        .select("id")
+        .single();
+      if (error) throw error;
+      return { id: data.id as string };
+    },
+
+    async updateTask(input) {
+      const { data, error } = await client
+        .from("adoption_followup")
+        .update(toTaskUpdatePayload(input))
+        .eq("id", input.taskId)
+        .select("id")
+        .single();
+      if (error) throw error;
+      return { id: data.id as string };
     },
 
     async changeCaseStatus(input) {

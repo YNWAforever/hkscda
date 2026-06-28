@@ -3,6 +3,7 @@ import { Edit3, RefreshCcw, Save, Search } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 
+import type { CoordinatorStatus, CoordinatorTask } from "../../../lib/adoptions/types";
 import { supabase } from "../../../lib/supabase";
 import type { Animal, AnimalStatus, AnimalType } from "../../../types/animal";
 import { Badge } from "../../ui/badge";
@@ -24,6 +25,7 @@ import { Tabs, TabsList, TabsTrigger } from "../../ui/tabs";
 import { Textarea } from "../../ui/textarea";
 import { fetchCoordinatorJson } from "./api";
 import {
+  buildAnimalTaskSearchParams,
   filterAnimalPipelineRows,
   groupAnimalPipelineRows,
   type AnimalInternalProfile,
@@ -32,6 +34,7 @@ import {
   type AnimalPositionSummary,
   type ArrivalSourceSummary,
 } from "./animalPipelineLogic";
+import { TaskPanel, TaskPanelAsyncError } from "./TaskPanel";
 
 type InternalProfileResponse = {
   profile: AnimalInternalProfile;
@@ -39,6 +42,15 @@ type InternalProfileResponse = {
 
 type AnimalStatusResponse = {
   animal: Animal;
+};
+
+type StatusesResponse = {
+  statuses: CoordinatorStatus[];
+};
+
+type TasksResponse = {
+  tasks: CoordinatorTask[];
+  total: number;
 };
 
 type AnimalPosition = AnimalPositionSummary & {
@@ -59,11 +71,15 @@ const ANIMALS_QUERY_KEY = ["coordinator-animals"] as const;
 const INTERNAL_PROFILES_QUERY_KEY = ["animal-internal-profiles"] as const;
 const POSITIONS_QUERY_KEY = ["animal-positions"] as const;
 const ARRIVAL_SOURCES_QUERY_KEY = ["arrival-sources"] as const;
+const STATUSES_QUERY_KEY = ["coordinator-statuses"] as const;
+const animalTasksQueryKey = (animalId: string | null) => ["coordinator-animal-tasks", animalId];
 
 const EMPTY_ANIMALS: Animal[] = [];
 const EMPTY_INTERNAL_PROFILES: AnimalInternalProfile[] = [];
 const EMPTY_POSITIONS: AnimalPosition[] = [];
 const EMPTY_ARRIVAL_SOURCES: ArrivalSource[] = [];
+const EMPTY_STATUSES: CoordinatorStatus[] = [];
+const EMPTY_TASKS: CoordinatorTask[] = [];
 
 const STATUS_OPTIONS: Array<{ value: AnimalStatus | "all"; label: string }> = [
   { value: "all", label: "All statuses" },
@@ -213,6 +229,19 @@ async function readArrivalSources() {
   return (data ?? []) as ArrivalSource[];
 }
 
+async function readCoordinatorStatuses() {
+  const response = await fetchCoordinatorJson<StatusesResponse>("/api/admin/adoptions/statuses");
+  return response.statuses;
+}
+
+async function readAnimalTasks(animalId: string) {
+  const searchParams = buildAnimalTaskSearchParams({ animalId });
+  const response = await fetchCoordinatorJson<TasksResponse>(
+    `/api/admin/adoptions/tasks?${searchParams.toString()}`,
+  );
+  return response.tasks;
+}
+
 function statusLabel(status: AnimalStatus) {
   return STATUS_ACTIONS.find((option) => option.value === status)?.label ?? status;
 }
@@ -257,11 +286,22 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
     queryKey: ARRIVAL_SOURCES_QUERY_KEY,
     queryFn: readArrivalSources,
   });
+  const statusesQuery = useQuery<CoordinatorStatus[], Error>({
+    queryKey: STATUSES_QUERY_KEY,
+    queryFn: readCoordinatorStatuses,
+  });
+  const selectedAnimalTasksQuery = useQuery<CoordinatorTask[], Error>({
+    queryKey: animalTasksQueryKey(selectedAnimalId),
+    queryFn: () => readAnimalTasks(selectedAnimalId ?? ""),
+    enabled: Boolean(selectedAnimalId),
+  });
 
   const animals = animalsQuery.data ?? EMPTY_ANIMALS;
   const profiles = profilesQuery.data ?? EMPTY_INTERNAL_PROFILES;
   const positions = positionsQuery.data ?? EMPTY_POSITIONS;
   const arrivalSources = sourcesQuery.data ?? EMPTY_ARRIVAL_SOURCES;
+  const statuses = statusesQuery.data ?? EMPTY_STATUSES;
+  const selectedAnimalTasks = selectedAnimalTasksQuery.data ?? EMPTY_TASKS;
 
   const rows = useMemo<AnimalPipelineRow[]>(() => {
     const profilesByAnimalId = new Map(profiles.map((profile) => [profile.animal_id, profile]));
@@ -315,12 +355,14 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
     animalsQuery.isFetching ||
     profilesQuery.isFetching ||
     positionsQuery.isFetching ||
-    sourcesQuery.isFetching;
+    sourcesQuery.isFetching ||
+    statusesQuery.isFetching;
 
   const readErrors = [
     profilesQuery.error?.message,
     positionsQuery.error?.message,
     sourcesQuery.error?.message,
+    statusesQuery.error?.message,
   ].filter(Boolean);
 
   const lifecycleMutation = useMutation<void, Error, { animalId: string; status: AnimalStatus }>({
@@ -373,6 +415,13 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
     profilesQuery.refetch();
     positionsQuery.refetch();
     sourcesQuery.refetch();
+    statusesQuery.refetch();
+    if (selectedAnimalId) selectedAnimalTasksQuery.refetch();
+  }
+
+  async function invalidateSelectedAnimalTasks() {
+    if (!selectedAnimalId) return;
+    await queryClient.invalidateQueries({ queryKey: animalTasksQueryKey(selectedAnimalId) });
   }
 
   function updateFilter<K extends keyof AnimalPipelineFilters>(
@@ -830,151 +879,119 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
           </DialogHeader>
 
           {profileForm && (
-            <form className="space-y-5" onSubmit={handleProfileSubmit}>
-              <section className="grid gap-4 md:grid-cols-3">
-                <div className="grid gap-2">
-                  <Label htmlFor="internal-code">Internal code</Label>
-                  <Input
-                    id="internal-code"
-                    value={profileForm.internal_code ?? ""}
-                    onChange={(event) => updateProfileField("internal_code", event.target.value)}
-                    placeholder="CAT-001"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="arrival-date">Arrival date</Label>
-                  <Input
-                    id="arrival-date"
-                    type="date"
-                    value={profileForm.arrival_date ?? ""}
-                    onChange={(event) => updateProfileField("arrival_date", event.target.value)}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="arrival-source">Arrival source</Label>
-                  <Select
-                    value={profileForm.arrival_source_id ?? "none"}
-                    disabled={profileSourceOptions.length === 0}
-                    onValueChange={(value) =>
-                      updateProfileField("arrival_source_id", value === "none" ? null : value)
-                    }
-                  >
-                    <SelectTrigger id="arrival-source" aria-label="Arrival source">
-                      <SelectValue
-                        placeholder={
-                          profileSourceOptions.length === 0
-                            ? "No sources configured"
-                            : "Arrival source"
-                        }
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">No source</SelectItem>
-                      {profileSourceOptions.map((source) => (
-                        <SelectItem key={source.id} value={source.id}>
-                          {source.name_zh}
-                          {source.name_en ? ` / ${source.name_en}` : ""}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {profileSourceOptions.length === 0 && (
-                    <p className="text-xs text-[var(--color-text-muted)]">
-                      No arrival sources are configured.
-                    </p>
-                  )}
-                </div>
-              </section>
-
-              <section className="grid gap-4 md:grid-cols-[minmax(0,1fr)_160px]">
-                <div className="grid gap-2">
-                  <Label htmlFor="current-position">Current position</Label>
-                  <Select
-                    value={profileForm.current_position_id ?? "none"}
-                    disabled={profilePositionOptions.length === 0}
-                    onValueChange={(value) =>
-                      updateProfileField("current_position_id", value === "none" ? null : value)
-                    }
-                  >
-                    <SelectTrigger id="current-position" aria-label="Current position">
-                      <SelectValue
-                        placeholder={
-                          profilePositionOptions.length === 0
-                            ? "No positions configured"
-                            : "Current position"
-                        }
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">No position</SelectItem>
-                      {profilePositionOptions.map((position) => (
-                        <SelectItem key={position.id} value={position.id}>
-                          {position.name} ({position.type})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {profilePositionOptions.length === 0 && (
-                    <p className="text-xs text-[var(--color-text-muted)]">
-                      No animal positions are configured.
-                    </p>
-                  )}
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="cage">Cage</Label>
-                  <Input
-                    id="cage"
-                    value={profileForm.cage ?? ""}
-                    onChange={(event) => updateProfileField("cage", event.target.value)}
-                    placeholder="A-12"
-                  />
-                </div>
-              </section>
-
-              <section className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-3 rounded-md border border-[var(--color-border)] p-3">
+            <>
+              <form className="space-y-5" onSubmit={handleProfileSubmit}>
+                <section className="grid gap-4 md:grid-cols-3">
                   <div className="grid gap-2">
-                    <Label htmlFor="has-chip">Microchip</Label>
+                    <Label htmlFor="internal-code">Internal code</Label>
+                    <Input
+                      id="internal-code"
+                      value={profileForm.internal_code ?? ""}
+                      onChange={(event) => updateProfileField("internal_code", event.target.value)}
+                      placeholder="CAT-001"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="arrival-date">Arrival date</Label>
+                    <Input
+                      id="arrival-date"
+                      type="date"
+                      value={profileForm.arrival_date ?? ""}
+                      onChange={(event) => updateProfileField("arrival_date", event.target.value)}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="arrival-source">Arrival source</Label>
                     <Select
-                      value={nullableBooleanToSelect(profileForm.has_chip)}
+                      value={profileForm.arrival_source_id ?? "none"}
+                      disabled={profileSourceOptions.length === 0}
                       onValueChange={(value) =>
-                        updateProfileField("has_chip", selectToNullableBoolean(value))
+                        updateProfileField("arrival_source_id", value === "none" ? null : value)
                       }
                     >
-                      <SelectTrigger id="has-chip" aria-label="Microchip status">
-                        <SelectValue />
+                      <SelectTrigger id="arrival-source" aria-label="Arrival source">
+                        <SelectValue
+                          placeholder={
+                            profileSourceOptions.length === 0
+                              ? "No sources configured"
+                              : "Arrival source"
+                          }
+                        />
                       </SelectTrigger>
                       <SelectContent>
-                        {BOOLEAN_SELECT_OPTIONS.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
+                        <SelectItem value="none">No source</SelectItem>
+                        {profileSourceOptions.map((source) => (
+                          <SelectItem key={source.id} value={source.id}>
+                            {source.name_zh}
+                            {source.name_en ? ` / ${source.name_en}` : ""}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
+                    {profileSourceOptions.length === 0 && (
+                      <p className="text-xs text-[var(--color-text-muted)]">
+                        No arrival sources are configured.
+                      </p>
+                    )}
+                  </div>
+                </section>
+
+                <section className="grid gap-4 md:grid-cols-[minmax(0,1fr)_160px]">
+                  <div className="grid gap-2">
+                    <Label htmlFor="current-position">Current position</Label>
+                    <Select
+                      value={profileForm.current_position_id ?? "none"}
+                      disabled={profilePositionOptions.length === 0}
+                      onValueChange={(value) =>
+                        updateProfileField("current_position_id", value === "none" ? null : value)
+                      }
+                    >
+                      <SelectTrigger id="current-position" aria-label="Current position">
+                        <SelectValue
+                          placeholder={
+                            profilePositionOptions.length === 0
+                              ? "No positions configured"
+                              : "Current position"
+                          }
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No position</SelectItem>
+                        {profilePositionOptions.map((position) => (
+                          <SelectItem key={position.id} value={position.id}>
+                            {position.name} ({position.type})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {profilePositionOptions.length === 0 && (
+                      <p className="text-xs text-[var(--color-text-muted)]">
+                        No animal positions are configured.
+                      </p>
+                    )}
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="chip-remarks">Chip remarks</Label>
-                    <Textarea
-                      id="chip-remarks"
-                      value={profileForm.chip_remarks ?? ""}
-                      onChange={(event) => updateProfileField("chip_remarks", event.target.value)}
-                      rows={3}
+                    <Label htmlFor="cage">Cage</Label>
+                    <Input
+                      id="cage"
+                      value={profileForm.cage ?? ""}
+                      onChange={(event) => updateProfileField("cage", event.target.value)}
+                      placeholder="A-12"
                     />
                   </div>
-                </div>
+                </section>
 
-                <div className="space-y-3 rounded-md border border-[var(--color-border)] p-3">
-                  <div className="grid gap-2 sm:grid-cols-2">
+                <section className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-3 rounded-md border border-[var(--color-border)] p-3">
                     <div className="grid gap-2">
-                      <Label htmlFor="is-desexed">Desexed</Label>
+                      <Label htmlFor="has-chip">Microchip</Label>
                       <Select
-                        value={nullableBooleanToSelect(profileForm.is_desexed)}
+                        value={nullableBooleanToSelect(profileForm.has_chip)}
                         onValueChange={(value) =>
-                          updateProfileField("is_desexed", selectToNullableBoolean(value))
+                          updateProfileField("has_chip", selectToNullableBoolean(value))
                         }
                       >
-                        <SelectTrigger id="is-desexed" aria-label="Desexed status">
+                        <SelectTrigger id="has-chip" aria-label="Microchip status">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -987,112 +1004,160 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
                       </Select>
                     </div>
                     <div className="grid gap-2">
-                      <Label htmlFor="desexed-at">Desexed date</Label>
-                      <Input
-                        id="desexed-at"
-                        type="date"
-                        value={profileForm.desexed_at ?? ""}
-                        onChange={(event) => updateProfileField("desexed_at", event.target.value)}
+                      <Label htmlFor="chip-remarks">Chip remarks</Label>
+                      <Textarea
+                        id="chip-remarks"
+                        value={profileForm.chip_remarks ?? ""}
+                        onChange={(event) => updateProfileField("chip_remarks", event.target.value)}
+                        rows={3}
                       />
                     </div>
                   </div>
+
+                  <div className="space-y-3 rounded-md border border-[var(--color-border)] p-3">
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      <div className="grid gap-2">
+                        <Label htmlFor="is-desexed">Desexed</Label>
+                        <Select
+                          value={nullableBooleanToSelect(profileForm.is_desexed)}
+                          onValueChange={(value) =>
+                            updateProfileField("is_desexed", selectToNullableBoolean(value))
+                          }
+                        >
+                          <SelectTrigger id="is-desexed" aria-label="Desexed status">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {BOOLEAN_SELECT_OPTIONS.map((option) => (
+                              <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="desexed-at">Desexed date</Label>
+                        <Input
+                          id="desexed-at"
+                          type="date"
+                          value={profileForm.desexed_at ?? ""}
+                          onChange={(event) => updateProfileField("desexed_at", event.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="desex-remarks">Desex remarks</Label>
+                      <Textarea
+                        id="desex-remarks"
+                        value={profileForm.desex_remarks ?? ""}
+                        onChange={(event) =>
+                          updateProfileField("desex_remarks", event.target.value)
+                        }
+                        rows={3}
+                      />
+                    </div>
+                  </div>
+                </section>
+
+                <section className="grid gap-3 md:grid-cols-2">
+                  <label className="flex min-h-11 items-center justify-between gap-4 rounded-md border border-[var(--color-border)] px-3">
+                    <span>
+                      <span className="block text-sm font-medium text-[var(--color-panel)]">
+                        Adoptable
+                      </span>
+                      <span className="text-xs text-[var(--color-text-muted)]">
+                        Controls internal readiness filters.
+                      </span>
+                    </span>
+                    <Switch
+                      checked={profileForm.is_adoptable}
+                      onCheckedChange={(checked) => updateProfileField("is_adoptable", checked)}
+                      aria-label="Adoptable"
+                    />
+                  </label>
+                  <label className="flex min-h-11 items-center justify-between gap-4 rounded-md border border-[var(--color-border)] px-3">
+                    <span>
+                      <span className="block text-sm font-medium text-[var(--color-panel)]">
+                        Support pool
+                      </span>
+                      <span className="text-xs text-[var(--color-text-muted)]">
+                        Marks animals needing internal support.
+                      </span>
+                    </span>
+                    <Switch
+                      checked={profileForm.is_inside_support_pool}
+                      onCheckedChange={(checked) =>
+                        updateProfileField("is_inside_support_pool", checked)
+                      }
+                      aria-label="Inside support pool"
+                    />
+                  </label>
+                </section>
+
+                <section className="grid gap-4 md:grid-cols-2">
                   <div className="grid gap-2">
-                    <Label htmlFor="desex-remarks">Desex remarks</Label>
-                    <Textarea
-                      id="desex-remarks"
-                      value={profileForm.desex_remarks ?? ""}
-                      onChange={(event) => updateProfileField("desex_remarks", event.target.value)}
-                      rows={3}
+                    <Label htmlFor="adopted-at">Adopted date</Label>
+                    <Input
+                      id="adopted-at"
+                      type="date"
+                      value={profileForm.adopted_at ?? ""}
+                      onChange={(event) => updateProfileField("adopted_at", event.target.value)}
                     />
                   </div>
-                </div>
-              </section>
+                  <div className="grid gap-2">
+                    <Label htmlFor="deceased-at">Deceased date</Label>
+                    <Input
+                      id="deceased-at"
+                      type="date"
+                      value={profileForm.deceased_at ?? ""}
+                      onChange={(event) => updateProfileField("deceased_at", event.target.value)}
+                    />
+                  </div>
+                </section>
 
-              <section className="grid gap-3 md:grid-cols-2">
-                <label className="flex min-h-11 items-center justify-between gap-4 rounded-md border border-[var(--color-border)] px-3">
-                  <span>
-                    <span className="block text-sm font-medium text-[var(--color-panel)]">
-                      Adoptable
-                    </span>
-                    <span className="text-xs text-[var(--color-text-muted)]">
-                      Controls internal readiness filters.
-                    </span>
-                  </span>
-                  <Switch
-                    checked={profileForm.is_adoptable}
-                    onCheckedChange={(checked) => updateProfileField("is_adoptable", checked)}
-                    aria-label="Adoptable"
+                <section className="grid gap-2">
+                  <Label htmlFor="internal-remarks">Internal remarks</Label>
+                  <Textarea
+                    id="internal-remarks"
+                    value={profileForm.internal_remarks ?? ""}
+                    onChange={(event) => updateProfileField("internal_remarks", event.target.value)}
+                    rows={4}
                   />
-                </label>
-                <label className="flex min-h-11 items-center justify-between gap-4 rounded-md border border-[var(--color-border)] px-3">
-                  <span>
-                    <span className="block text-sm font-medium text-[var(--color-panel)]">
-                      Support pool
-                    </span>
-                    <span className="text-xs text-[var(--color-text-muted)]">
-                      Marks animals needing internal support.
-                    </span>
-                  </span>
-                  <Switch
-                    checked={profileForm.is_inside_support_pool}
-                    onCheckedChange={(checked) =>
-                      updateProfileField("is_inside_support_pool", checked)
-                    }
-                    aria-label="Inside support pool"
-                  />
-                </label>
-              </section>
+                </section>
 
-              <section className="grid gap-4 md:grid-cols-2">
-                <div className="grid gap-2">
-                  <Label htmlFor="adopted-at">Adopted date</Label>
-                  <Input
-                    id="adopted-at"
-                    type="date"
-                    value={profileForm.adopted_at ?? ""}
-                    onChange={(event) => updateProfileField("adopted_at", event.target.value)}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="deceased-at">Deceased date</Label>
-                  <Input
-                    id="deceased-at"
-                    type="date"
-                    value={profileForm.deceased_at ?? ""}
-                    onChange={(event) => updateProfileField("deceased_at", event.target.value)}
-                  />
-                </div>
-              </section>
+                {saveProfileMutation.error && (
+                  <ProfileFieldError message={saveProfileMutation.error.message} />
+                )}
 
-              <section className="grid gap-2">
-                <Label htmlFor="internal-remarks">Internal remarks</Label>
-                <Textarea
-                  id="internal-remarks"
-                  value={profileForm.internal_remarks ?? ""}
-                  onChange={(event) => updateProfileField("internal_remarks", event.target.value)}
-                  rows={4}
-                />
-              </section>
+                <DialogFooter>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={closeProfileDialog}
+                    disabled={saveProfileMutation.isPending}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={saveProfileMutation.isPending}>
+                    <Save className="h-4 w-4" />
+                    {saveProfileMutation.isPending ? "Saving" : "Save profile"}
+                  </Button>
+                </DialogFooter>
+              </form>
 
-              {saveProfileMutation.error && (
-                <ProfileFieldError message={saveProfileMutation.error.message} />
+              <TaskPanel
+                title="Animal tasks"
+                subtitle="Open coordinator work for this animal"
+                tasks={selectedAnimalTasks}
+                statuses={statuses}
+                defaultLinks={{ animalId: selectedAnimalId ?? undefined }}
+                onChanged={invalidateSelectedAnimalTasks}
+              />
+              {selectedAnimalTasksQuery.error && (
+                <TaskPanelAsyncError message={selectedAnimalTasksQuery.error.message} />
               )}
-
-              <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={closeProfileDialog}
-                  disabled={saveProfileMutation.isPending}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={saveProfileMutation.isPending}>
-                  <Save className="h-4 w-4" />
-                  {saveProfileMutation.isPending ? "Saving" : "Save profile"}
-                </Button>
-              </DialogFooter>
-            </form>
+            </>
           )}
         </DialogContent>
       </Dialog>
