@@ -265,3 +265,43 @@ export type CoordinatorTaskExportRow = {
   outcome: string | null;
   remarks: string | null;
 };
+
+export type ManualCaseIdentityCandidate = {
+  kind: "adopter" | "supporter";
+  supporterId: string | null;
+  adopterProfileId: string | null;
+  displayName: string;
+  email: string | null;
+  phone: string | null;
+  isBlacklisted: boolean;
+  latestCaseAt: string | null;
+};
+
+export type ManualCaseIntakeResult = {
+  caseId: string;
+  supporterId: string;
+  adopterProfileId: string;
+  taskId: string | null;
+};
+
+export type CoordinatorExportAuditRow = {
+  id: string;
+  actorUserId: string | null;
+  actorLabel: string | null;
+  action: string;
+  kind: CoordinatorExportKind;
+  rowCount: number;
+  filters: Record<string, unknown>;
+  sourceRoute: string | null;
+  timestamp: string;
+};
+
+export type CoordinatorMonthlySummary = {
+  month: string;
+  publicIntakeCases: number;
+  manualIntakeCases: number;
+  successfulAdoptions: number;
+  openCases: number;
+  overdueTasks: number;
+  exportsRun: number;
+};
