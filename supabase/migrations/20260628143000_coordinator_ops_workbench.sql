@@ -13,6 +13,9 @@ update public.adoption_case
 set source = 'public_form'
 where source is null;
 
+alter table public.supporter
+  alter column email drop not null;
+
 create index if not exists adoption_case_source_created_idx
   on public.adoption_case (source, created_at desc);
 
@@ -49,9 +52,11 @@ begin
 
   if v_identity_kind = 'existing_adopter' then
     v_adopter_profile_id := (p_identity->>'adopterProfileId')::uuid;
-    select supporter_id into v_supporter_id
-    from public.adopter_profile
-    where id = v_adopter_profile_id;
+    select adopter.supporter_id into v_supporter_id
+    from public.adopter_profile adopter
+    join public.supporter supporter on supporter.id = adopter.supporter_id
+    where adopter.id = v_adopter_profile_id
+      and supporter.deleted_at is null;
     if v_adopter_profile_id is null or v_supporter_id is null then
       raise exception 'Adopter profile not found';
     end if;
@@ -78,6 +83,8 @@ begin
         nullif(p_identity#>>'{adopterProfile,address}', ''),
         nullif(p_identity#>>'{adopterProfile,householdSize}', '')
       )
+      on conflict (supporter_id) do update
+      set supporter_id = excluded.supporter_id
       returning id into v_adopter_profile_id;
     end if;
   elsif v_identity_kind = 'new_supporter' then
@@ -236,3 +243,6 @@ begin
   );
 end;
 $$;
+
+revoke all on function private.create_manual_adoption_case(uuid, jsonb, jsonb, jsonb) from public;
+grant execute on function private.create_manual_adoption_case(uuid, jsonb, jsonb, jsonb) to service_role;

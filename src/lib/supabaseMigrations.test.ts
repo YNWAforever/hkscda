@@ -62,6 +62,17 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("p_identity jsonb");
     expect(sql).toContain("p_case jsonb");
     expect(sql).toContain("p_initial_task jsonb default null");
+    expect(sql).toContain("alter column email drop not null");
+    expect(sql).toContain(
+      "revoke all on function private.create_manual_adoption_case(uuid, jsonb, jsonb, jsonb) from public",
+    );
+    expect(sql).toContain(
+      "grant execute on function private.create_manual_adoption_case(uuid, jsonb, jsonb, jsonb) to service_role",
+    );
+    expect(sql).toContain("join public.supporter supporter on supporter.id = adopter.supporter_id");
+    expect(sql).toContain("and supporter.deleted_at is null");
+    expect(sql).toContain("on conflict (supporter_id) do update");
+    expect(sql).toContain("set supporter_id = excluded.supporter_id");
     expect(sql).toContain("coordinator_manual_intake.create");
     expect(sql).toContain("source = 'manual_intake'");
   });
