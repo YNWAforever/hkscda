@@ -91,6 +91,38 @@ describe("createDonation", () => {
     expect(repository.supporterConsents).toHaveLength(2);
   });
 
+  test("compensates by deleting the donation and payment when checkout fails", async () => {
+    const repository = createFakeRepository();
+    const deleted = { payments: [] as string[], donations: [] as string[] };
+    repository.deletePayment = async (id) => {
+      deleted.payments.push(id);
+    };
+    repository.deleteDonation = async (id) => {
+      deleted.donations.push(id);
+    };
+
+    const failingProviders: PaymentProviders = {
+      async createStripeCheckout() {
+        throw new Error("stripe unavailable");
+      },
+      async createPayPalOrder() {
+        throw new Error("paypal unavailable");
+      },
+    };
+
+    await expect(
+      createDonation({
+        input: { ...baseInput, method: "stripe" as const },
+        repository,
+        providers: failingProviders,
+        now: () => new Date("2026-06-24T10:00:00.000Z"),
+      }),
+    ).rejects.toThrow("stripe unavailable");
+
+    expect(deleted.payments).toEqual(["payment-1"]);
+    expect(deleted.donations).toEqual(["f8dce8fa-83f4-4d5f-b0b0-fbc3348efb7a"]);
+  });
+
   test("creates Stripe checkout donations and stores the checkout session id", async () => {
     const repository = createFakeRepository();
 

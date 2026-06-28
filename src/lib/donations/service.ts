@@ -44,6 +44,11 @@ export type DonationRepository = {
   }): Promise<DonationRow>;
   createPayment(input: PaymentInsert): Promise<PaymentRow>;
   updatePaymentProviderRef(paymentId: string, providerRef: string): Promise<void>;
+  // Compensation hooks used when an external checkout call fails after the
+  // donation/payment rows were already written. Optional so existing fakes stay
+  // valid; the Supabase repository implements both.
+  deletePayment?(paymentId: string): Promise<void>;
+  deleteDonation?(donationId: string): Promise<void>;
 };
 
 export type PaymentProviders = {
@@ -90,6 +95,21 @@ export type CreateDonationResult =
         amountCents: number;
       };
     };
+
+async function compensateFailedCheckout(
+  repository: DonationRepository,
+  donationId: string,
+  paymentId: string,
+) {
+  try {
+    await repository.deletePayment?.(paymentId);
+    await repository.deleteDonation?.(donationId);
+  } catch (cleanupError) {
+    // Don't mask the original checkout error with a cleanup failure; log and
+    // let the original error propagate.
+    console.error("Failed to clean up donation after checkout failure", cleanupError);
+  }
+}
 
 export async function createDonation({
   input,
@@ -163,10 +183,21 @@ export async function createDonation({
     donorEmail: donationInput.donor.email,
     purpose: donationInput.purpose,
   };
-  const checkout =
-    donationInput.method === "stripe"
-      ? await providers.createStripeCheckout(checkoutInput)
-      : await providers.createPayPalOrder(checkoutInput);
+  let checkout: CheckoutProviderResult;
+  try {
+    checkout =
+      donationInput.method === "stripe"
+        ? await providers.createStripeCheckout(checkoutInput)
+        : await providers.createPayPalOrder(checkoutInput);
+  } catch (error) {
+    // The checkout provider failed after we wrote the donation + pending
+    // payment. Without compensation these orphan rows accumulate and a retry
+    // creates a second donation for the same intent. Remove them, then rethrow
+    // so the caller surfaces the failure. (payment FK cascades on donation
+    // delete, but we remove both explicitly to be robust to fakes/config.)
+    await compensateFailedCheckout(repository, donation.id, pendingPayment.id);
+    throw error;
+  }
 
   await repository.updatePaymentProviderRef(pendingPayment.id, checkout.providerRef);
 
