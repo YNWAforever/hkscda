@@ -6,7 +6,6 @@ import {
   coordinatorExportKindSchema,
   coordinatorTaskInputSchema,
   coordinatorTaskUpdateSchema,
-  followupInputSchema,
   statusInputSchema,
 } from "./schemas";
 
@@ -91,13 +90,6 @@ describe("adoption coordinator schemas", () => {
     expect(
       coordinatorTaskInputSchema.parse({
         adoptionCaseId,
-        title: "Home visit",
-        statusId,
-        taskType: "   ",
-      }).taskType,
-    ).toBe("followup");
-    expect(
-      followupInputSchema.parse({
         title: "Home visit",
         statusId,
         taskType: "   ",

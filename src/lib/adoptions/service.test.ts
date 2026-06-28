@@ -183,10 +183,6 @@ function createRepo(
       calls.push({ name: "createMatch", payload: input });
       return { id: "match-1" };
     },
-    async createFollowup(input) {
-      calls.push({ name: "createFollowup", payload: input });
-      return { id: "followup-1" };
-    },
     async createCaseFromPublicApplication(input) {
       calls.push({ name: "createCaseFromPublicApplication", payload: input });
       return { id: caseId };
@@ -529,6 +525,63 @@ describe("createAdoptionCoordinatorService", () => {
     ).rejects.toThrow("Inactive match status");
 
     expect(repo.calls.map((call) => call.name)).toEqual(["getStatus"]);
+  });
+
+  test("createMatch writes an audit log entry after persisting", async () => {
+    const { service, calls } = setup();
+
+    const result = await service.createMatch({
+      actorUserId: adminId,
+      caseId,
+      input: { animalId, statusId: matchStatusId },
+    });
+
+    expect(result).toEqual({ id: "match-1" });
+    expect(calls.map((call) => call.name)).toEqual(["getStatus", "createMatch", "insertAuditLog"]);
+    expect(calls).toContainEqual({
+      name: "insertAuditLog",
+      payload: expect.objectContaining({
+        actor_user_id: adminId,
+        action: "animal_match.create",
+        entity: "animal_match",
+        entity_id: "match-1",
+        detail: expect.objectContaining({
+          adoptionCaseId: caseId,
+          animalId,
+          statusId: matchStatusId,
+          isApproved: true,
+        }),
+      }),
+    });
+  });
+
+  test("createFollowup coerces non-object request bodies before delegating", async () => {
+    const { service } = setup();
+
+    // The public route forwards the raw JSON body, which can be null, an array,
+    // a string, or a number. None of these may be spread blindly into the task
+    // input; they must be treated as empty and rejected by the task schema.
+    for (const body of [null, ["title"], "oops", 7] as unknown[]) {
+      await expect(
+        service.createFollowup({ actorUserId: adminId, caseId, input: body }),
+      ).rejects.toThrow();
+    }
+  });
+
+  test("createFollowup delegates a valid body to createTask with the case id injected", async () => {
+    const { service, calls } = setup();
+
+    const result = await service.createFollowup({
+      actorUserId: adminId,
+      caseId,
+      input: { title: "Home visit", statusId: followupStatusId },
+    });
+
+    expect(result).toEqual({ id: "followup-1" });
+    const createTaskCall = calls.find((call) => call.name === "createTask");
+    expect(createTaskCall?.payload).toEqual(
+      expect.objectContaining({ adoptionCaseId: caseId, title: "Home visit" }),
+    );
   });
 
   test("rejects inactive followup statuses before repository mutation", async () => {

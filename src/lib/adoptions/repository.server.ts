@@ -1687,29 +1687,6 @@ export function createSupabaseAdoptionCoordinatorRepository(
       return { id: data.id as string };
     },
 
-    async createFollowup(input) {
-      const { data, error } = await client
-        .from("adoption_followup")
-        .insert({
-          adoption_case_id: input.adoptionCaseId,
-          status_id: input.statusId,
-          title: input.title,
-          scheduled_at: input.scheduledAt ?? null,
-          completed_at: input.completedAt ?? null,
-          has_window_net: input.hasWindowNet ?? null,
-          environment: input.environment ?? null,
-          score: input.score ?? null,
-          volunteer: input.volunteer ?? null,
-          remarks: input.remarks ?? null,
-          created_by: input.createdBy,
-          updated_by: input.createdBy,
-        })
-        .select("id")
-        .single();
-      if (error) throw error;
-      return { id: data.id as string };
-    },
-
     async finalizeAdoption(input) {
       const { data, error } = await client.rpc("finalize_successful_adoption", {
         p_adoption_case_id: input.adoptionCaseId,
