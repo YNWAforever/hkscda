@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import { verifyTurnstile } from "./turnstile.server";
+import { assertTurnstileConfig, isProductionRuntime, verifyTurnstile } from "./turnstile.server";
 
 function stubFetch(
   response: { ok?: boolean; body: unknown },
@@ -71,5 +71,52 @@ describe("verifyTurnstile", () => {
     await verifyTurnstile("the-token", "unknown", { secret: "sk", fetch });
     const params = captured?.body as URLSearchParams;
     expect(params.get("remoteip")).toBeNull();
+  });
+});
+
+describe("isProductionRuntime", () => {
+  test("uses VERCEL_ENV when present", () => {
+    expect(isProductionRuntime({ VERCEL_ENV: "production" } as NodeJS.ProcessEnv)).toBe(true);
+    expect(isProductionRuntime({ VERCEL_ENV: "preview" } as NodeJS.ProcessEnv)).toBe(false);
+    expect(
+      isProductionRuntime({ VERCEL_ENV: "preview", NODE_ENV: "production" } as NodeJS.ProcessEnv),
+    ).toBe(false);
+  });
+
+  test("falls back to NODE_ENV off Vercel", () => {
+    expect(isProductionRuntime({ NODE_ENV: "production" } as NodeJS.ProcessEnv)).toBe(true);
+    expect(isProductionRuntime({ NODE_ENV: "development" } as NodeJS.ProcessEnv)).toBe(false);
+  });
+});
+
+describe("assertTurnstileConfig", () => {
+  test("does nothing outside production, even when inconsistent", () => {
+    expect(() =>
+      assertTurnstileConfig({ siteKey: "sk", secret: undefined, isProduction: false }),
+    ).not.toThrow();
+  });
+
+  test("passes in production when both keys are set", () => {
+    expect(() =>
+      assertTurnstileConfig({ siteKey: "site", secret: "secret", isProduction: true }),
+    ).not.toThrow();
+  });
+
+  test("passes in production when neither key is set (Turnstile intentionally off)", () => {
+    expect(() =>
+      assertTurnstileConfig({ siteKey: undefined, secret: undefined, isProduction: true }),
+    ).not.toThrow();
+  });
+
+  test("throws in production when only the secret is set (would 403 every submission)", () => {
+    expect(() =>
+      assertTurnstileConfig({ siteKey: undefined, secret: "secret", isProduction: true }),
+    ).toThrow(/Turnstile misconfiguration/);
+  });
+
+  test("throws in production when only the site key is set (would silently disable CAPTCHA)", () => {
+    expect(() =>
+      assertTurnstileConfig({ siteKey: "site", secret: "", isProduction: true }),
+    ).toThrow(/Turnstile misconfiguration/);
   });
 });

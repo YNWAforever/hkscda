@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
 import {
+  clientIpFromHeaders,
   enforceRateLimit,
   getClientIp,
   retryAfterSeconds,
@@ -12,24 +13,51 @@ function request(headers: Record<string, string>): Request {
 }
 
 describe("getClientIp", () => {
-  test("returns the first x-forwarded-for entry", () => {
-    expect(getClientIp(request({ "x-forwarded-for": "203.0.113.7, 70.41.3.18" }))).toBe(
-      "203.0.113.7",
+  test("prefers x-vercel-forwarded-for (platform-set, not client-spoofable)", () => {
+    expect(
+      getClientIp(
+        request({
+          // Attacker-supplied chain — must be ignored.
+          "x-forwarded-for": "1.2.3.4, 5.6.7.8",
+          "x-vercel-forwarded-for": "203.0.113.7",
+        }),
+      ),
+    ).toBe("203.0.113.7");
+  });
+
+  test("does NOT trust the leftmost (client-supplied) x-forwarded-for entry", () => {
+    // Vercel APPENDS the real client IP, so the real IP is the rightmost entry.
+    expect(getClientIp(request({ "x-forwarded-for": "1.2.3.4, 70.41.3.18" }))).toBe("70.41.3.18");
+  });
+
+  test("falls back to x-real-ip over x-forwarded-for", () => {
+    expect(getClientIp(request({ "x-real-ip": "192.0.2.44", "x-forwarded-for": "1.2.3.4" }))).toBe(
+      "192.0.2.44",
     );
   });
 
-  test("trims whitespace around the first entry", () => {
-    expect(getClientIp(request({ "x-forwarded-for": "  198.51.100.2 ,10.0.0.1" }))).toBe(
+  test("uses the rightmost x-forwarded-for entry, trimmed, when it is the only header", () => {
+    expect(getClientIp(request({ "x-forwarded-for": "  1.2.3.4 , 198.51.100.2 " }))).toBe(
       "198.51.100.2",
     );
   });
 
-  test("falls back to x-real-ip", () => {
-    expect(getClientIp(request({ "x-real-ip": "192.0.2.44" }))).toBe("192.0.2.44");
-  });
-
   test("returns 'unknown' when no IP headers are present", () => {
     expect(getClientIp(request({}))).toBe("unknown");
+  });
+});
+
+describe("clientIpFromHeaders", () => {
+  test("works with a header getter (for server-fn contexts) and ignores spoofed XFF", () => {
+    const headers: Record<string, string> = {
+      "x-forwarded-for": "1.2.3.4",
+      "x-vercel-forwarded-for": "203.0.113.9",
+    };
+    expect(clientIpFromHeaders((name) => headers[name.toLowerCase()] ?? null)).toBe("203.0.113.9");
+  });
+
+  test("returns 'unknown' when the getter has nothing", () => {
+    expect(clientIpFromHeaders(() => null)).toBe("unknown");
   });
 });
 

@@ -3,6 +3,11 @@ import "./lib/error-capture";
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 import { applySecurityHeaders } from "./lib/security-headers";
+import { assertTurnstileConfigFromEnv } from "./lib/security/turnstile.server";
+
+// Fail the cold start loudly if the client/server Turnstile config is
+// inconsistent (secret-only -> 403 outage; site-key-only -> silent bypass).
+assertTurnstileConfigFromEnv();
 
 type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;

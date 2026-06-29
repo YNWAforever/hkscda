@@ -33,18 +33,56 @@ export type RateLimiter = {
 };
 
 /**
- * Resolve the originating client IP. On Vercel the platform sets
- * `x-forwarded-for` with the real client IP as the FIRST entry, so taking
- * index 0 is trustworthy there. Falls back to `x-real-ip`, then "unknown".
+ * Resolve the originating client IP from platform-trusted headers.
+ *
+ * SECURITY: `x-forwarded-for` is partly client-controlled. A client can send
+ * its own `x-forwarded-for`, and Vercel APPENDS the real client IP to the end —
+ * so the LEFTMOST entry is attacker-supplied and must never be trusted for
+ * rate-limiting (trusting index 0 lets an attacker rotate the header to mint a
+ * fresh bucket per request and bypass every per-IP limit).
+ *
+ * We therefore prefer the headers Vercel sets itself (not client-spoofable):
+ *   1. `x-vercel-forwarded-for` — Vercel's real client IP.
+ *   2. `x-real-ip` — Vercel's real client IP.
+ * Only if neither is present (non-Vercel/local dev, where rate-limiting is a
+ * no-op because Upstash is unconfigured) do we fall back to the RIGHTMOST
+ * `x-forwarded-for` entry (the hop appended closest to our edge) — never the
+ * leftmost, attacker-controlled one.
  */
 export function getClientIp(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
+  return clientIpFromHeaders((name) => request.headers.get(name));
+}
+
+/**
+ * Same resolution as {@link getClientIp} but driven by a header getter, for
+ * server-function contexts that expose headers rather than a `Request`
+ * (e.g. `getRequestHeader` from `@tanstack/react-start/server`). Keeping one
+ * implementation guarantees the donation and adoption paths resolve the IP
+ * identically and stay spoof-resistant.
+ */
+export function clientIpFromHeaders(get: (name: string) => string | null | undefined): string {
+  const vercel = firstHeaderEntry(get("x-vercel-forwarded-for"));
+  if (vercel) return vercel;
+
+  const realIp = get("x-real-ip")?.trim();
+  if (realIp && realIp.length > 0) return realIp;
+
+  const forwarded = get("x-forwarded-for");
   if (forwarded) {
-    const first = forwarded.split(",")[0]?.trim();
-    if (first) return first;
+    const parts = forwarded
+      .split(",")
+      .map((part) => part.trim())
+      .filter((part) => part.length > 0);
+    if (parts.length > 0) return parts[parts.length - 1]!;
   }
-  const realIp = request.headers.get("x-real-ip")?.trim();
-  return realIp && realIp.length > 0 ? realIp : "unknown";
+
+  return "unknown";
+}
+
+function firstHeaderEntry(value: string | null | undefined): string | undefined {
+  if (!value) return undefined;
+  const first = value.split(",")[0]?.trim();
+  return first && first.length > 0 ? first : undefined;
 }
 
 let cachedRedis: Redis | null | undefined;

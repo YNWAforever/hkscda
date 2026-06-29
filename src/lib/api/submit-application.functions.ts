@@ -225,11 +225,15 @@ export const submitApplication = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     // Server-only modules are imported lazily so this file (re-exported into the
     // client route bundle) never pulls server code to the browser.
-    const { getRequestIP } = await import("@tanstack/react-start/server");
-    const { enforceRateLimit } = await import("../security/rate-limit.server");
+    const { getRequestHeader } = await import("@tanstack/react-start/server");
+    const { clientIpFromHeaders, enforceRateLimit } = await import("../security/rate-limit.server");
     const { verifyTurnstile } = await import("../security/turnstile.server");
 
-    const ip = getRequestIP({ xForwardedFor: true }) ?? "unknown";
+    // Resolve the client IP from platform-trusted headers, identically to the
+    // donation path. `getRequestIP({ xForwardedFor: true })` returns the
+    // leftmost x-forwarded-for entry, which is client-spoofable and would let
+    // an attacker mint a fresh rate-limit bucket per request.
+    const ip = clientIpFromHeaders((name) => getRequestHeader(name) ?? null);
     const limit = await enforceRateLimit(ip, { prefix: "adoption", max: 5, window: "1 m" });
     if (!limit.ok) {
       throw new Error("Too many requests. Please try again shortly.");
