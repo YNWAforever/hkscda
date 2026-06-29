@@ -115,4 +115,38 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("create or replace function public.change_adoption_case_status(");
     expect(sql).toContain("create or replace function public.finalize_successful_adoption(");
   });
+
+  test("adds coordinator manual intake source tracking and RPC", () => {
+    const sql = readMigration("20260628143000_coordinator_ops_workbench.sql");
+
+    expect(sql).toContain("add column if not exists source text not null default 'public_form'");
+    expect(sql).toContain("add column if not exists created_by uuid references auth.users(id)");
+    expect(sql).toContain("adoption_case_source_created_idx");
+    expect(sql).toContain("adoption_case_created_by_created_idx");
+    expect(sql).toContain("audit_log_action_timestamp_idx");
+    expect(sql).toContain("audit_log_detail_kind_timestamp_idx");
+    expect(sql).toContain("create or replace function private.create_manual_adoption_case");
+    expect(sql).toContain("p_identity jsonb");
+    expect(sql).toContain("p_case jsonb");
+    expect(sql).toContain("p_initial_task jsonb default null");
+    expect(sql).toContain("set search_path = public, pg_temp");
+    expect(sql).toContain("from public.admin_user admin");
+    expect(sql).toContain("admin.auth_user_id = p_actor_user_id");
+    expect(sql).toContain("admin.status = 'active'");
+    expect(sql).toContain("admin.role in ('staff', 'admin')");
+    expect(sql).not.toContain("private.has_admin_role(array['staff', 'admin'])");
+    expect(sql).toContain("alter column email drop not null");
+    expect(sql).toContain(
+      "revoke all on function private.create_manual_adoption_case(uuid, jsonb, jsonb, jsonb) from public",
+    );
+    expect(sql).toContain(
+      "grant execute on function private.create_manual_adoption_case(uuid, jsonb, jsonb, jsonb) to service_role",
+    );
+    expect(sql).toContain("join public.supporter supporter on supporter.id = adopter.supporter_id");
+    expect(sql).toContain("and supporter.deleted_at is null");
+    expect(sql).toContain("on conflict (supporter_id) do update");
+    expect(sql).toContain("set supporter_id = excluded.supporter_id");
+    expect(sql).toContain("coordinator_manual_intake.create");
+    expect(sql).toContain("source = 'manual_intake'");
+  });
 });

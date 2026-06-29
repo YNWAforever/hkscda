@@ -8,6 +8,7 @@ import type {
   AdopterSearch,
   CaseFromPublicApplicationInput,
   CoordinatorExportPage,
+  CoordinatorOpsRepositoryMethods,
   CoordinatorTaskInput,
   CoordinatorTaskUpdate,
   StatusUpdate,
@@ -22,11 +23,16 @@ import type {
   AnimalMatchSummary,
   CoordinatorAdopterExportRow,
   CoordinatorAnimalExportRow,
+  CoordinatorExportAuditRow,
+  CoordinatorExportKind,
   CoordinatorCaseExportRow,
+  CoordinatorMonthlySummary,
   CoordinatorStatus,
   CoordinatorTask,
   CoordinatorSuccessfulAdoptionExportRow,
   CoordinatorTaskExportRow,
+  ManualCaseIdentityCandidate,
+  ManualCaseIntakeResult,
   SuccessfulAdoption,
 } from "./types";
 
@@ -34,6 +40,22 @@ export { hongKongDayBounds } from "./tasks";
 
 const ADOPTER_CANDIDATE_ID_LIMIT = 1000;
 const ADOPTER_FILTER_TOO_BROAD_ERROR = "Adopter filters match too many records";
+const COORDINATOR_EXPORT_ACTIONS = [
+  "coordinator_export.cases",
+  "coordinator_export.adopters",
+  "coordinator_export.successful-adoptions",
+  "coordinator_export.animals",
+  "coordinator_export.tasks",
+  "coordinator_export.regenerate",
+];
+const COORDINATOR_EXPORT_KINDS = [
+  "cases",
+  "adopters",
+  "successful-adoptions",
+  "animals",
+  "tasks",
+] as const;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 type StatusRow = {
   id: string;
@@ -203,6 +225,60 @@ function sanitizeOrLikeValue(value: string) {
 
 function unique(values: Array<string | null | undefined>) {
   return [...new Set(values.filter(Boolean) as string[])];
+}
+
+function monthBounds(month: string) {
+  const [year, monthNumber] = month.split("-").map(Number);
+  const start = new Date(Date.UTC(year, monthNumber - 1, 1));
+  const end = new Date(Date.UTC(year, monthNumber, 1));
+  return { start: start.toISOString(), end: end.toISOString() };
+}
+
+function isCoordinatorExportKind(value: unknown): value is CoordinatorExportKind {
+  return COORDINATOR_EXPORT_KINDS.includes(value as CoordinatorExportKind);
+}
+
+function actionExportKind(action: unknown) {
+  if (typeof action !== "string" || !action.startsWith("coordinator_export.")) return null;
+  return action.slice("coordinator_export.".length);
+}
+
+function auditExportKind(
+  row: Record<string, unknown>,
+  detail: Record<string, unknown>,
+): CoordinatorExportKind {
+  const kind = [detail.kind, row.entity_id, actionExportKind(row.action)].find(
+    isCoordinatorExportKind,
+  );
+  if (!kind) throw new Error("Missing coordinator export kind in audit row");
+  return kind;
+}
+
+function mapExportAuditRow(row: Record<string, unknown>): CoordinatorExportAuditRow {
+  const detail = (row.detail ?? {}) as Record<string, unknown>;
+  return {
+    id: row.id as string,
+    actorUserId: (row.actor_user_id as string | null) ?? null,
+    actorLabel: null,
+    action: row.action as string,
+    kind: auditExportKind(row, detail),
+    rowCount: Number(detail.rowCount ?? 0),
+    filters: (detail.filters as Record<string, unknown>) ?? {},
+    sourceRoute: (detail.sourceRoute as string | null) ?? null,
+    timestamp: row.timestamp as string,
+  };
+}
+
+function isUuid(value: string) {
+  return UUID_PATTERN.test(value);
+}
+
+async function countRows(
+  query: PromiseLike<{ count: number | null; error: unknown }>,
+): Promise<number> {
+  const { count, error } = await query;
+  if (error) throw error;
+  return count ?? 0;
 }
 
 export function mapStatus(row: StatusRow): CoordinatorStatus {
@@ -1134,7 +1210,7 @@ function mapTaskExportRow(task: CoordinatorTask): CoordinatorTaskExportRow {
 
 export function createSupabaseAdoptionCoordinatorRepository(
   client: SupabaseClient,
-): AdoptionCoordinatorRepository {
+): AdoptionCoordinatorRepository & CoordinatorOpsRepositoryMethods {
   return {
     async listStatuses(category) {
       let query = client
@@ -1450,6 +1526,193 @@ export function createSupabaseAdoptionCoordinatorRepository(
         })),
         tasks: taskRows.map((taskRow) => mapCoordinatorTask(taskRow, statuses, taskLinks)),
       };
+    },
+
+    async searchManualCaseIdentity(input) {
+      const like = input.q ? `%${sanitizeOrLikeValue(input.q)}%` : "%";
+      const from = (input.page - 1) * input.pageSize;
+      const [adopterResult, supporterResult] = await Promise.all([
+        client
+          .from("adopter_profile")
+          .select("id,supporter_id,is_blacklisted,supporter:supporter_id(id,name,email,phone)")
+          .or(`name_english.ilike.${like},name_chinese.ilike.${like},address.ilike.${like}`)
+          .range(from, from + input.pageSize - 1),
+        client
+          .from("supporter")
+          .select("id,name,email,phone")
+          .or(`name.ilike.${like},email.ilike.${like},phone.ilike.${like}`)
+          .is("deleted_at", null)
+          .range(from, from + input.pageSize - 1),
+      ]);
+      if (adopterResult.error) throw adopterResult.error;
+      if (supporterResult.error) throw supporterResult.error;
+
+      const adopterCandidates = ((adopterResult.data ?? []) as Record<string, unknown>[]).map(
+        (row): ManualCaseIdentityCandidate => {
+          const supporter = adopterSupporter(row);
+          return {
+            kind: "adopter",
+            supporterId: supporter?.id ?? (row.supporter_id as string | null) ?? null,
+            adopterProfileId: row.id as string,
+            displayName: adopterDisplayName(row),
+            email: supporter?.email ?? null,
+            phone: supporter?.phone ?? null,
+            isBlacklisted: Boolean(row.is_blacklisted),
+            latestCaseAt: null,
+          };
+        },
+      );
+
+      const usedSupporterIds = new Set(
+        adopterCandidates
+          .map((candidate) => candidate.supporterId)
+          .filter((id): id is string => Boolean(id)),
+      );
+      const supporterCandidates = ((supporterResult.data ?? []) as Record<string, unknown>[])
+        .filter((row) => !usedSupporterIds.has(row.id as string))
+        .map(
+          (row): ManualCaseIdentityCandidate => ({
+            kind: "supporter",
+            supporterId: row.id as string,
+            adopterProfileId: null,
+            displayName: (row.name as string | null) ?? (row.id as string),
+            email: (row.email as string | null) ?? null,
+            phone: (row.phone as string | null) ?? null,
+            isBlacklisted: false,
+            latestCaseAt: null,
+          }),
+        );
+
+      return {
+        candidates: [...adopterCandidates, ...supporterCandidates],
+        total: adopterCandidates.length + supporterCandidates.length,
+      };
+    },
+
+    async createManualCase(input) {
+      const { data, error } = await client.schema("private").rpc("create_manual_adoption_case", {
+        p_actor_user_id: input.actorUserId,
+        p_identity: input.identity,
+        p_case: input.case,
+        p_initial_task: input.initialTask ?? null,
+      });
+      if (error) throw error;
+      return data as ManualCaseIntakeResult;
+    },
+
+    async listCoordinatorExportHistory(input) {
+      if (input.actor && !isUuid(input.actor)) {
+        return { exports: [], total: 0 };
+      }
+
+      const { start, end } = monthBounds(input.month);
+      const from = (input.page - 1) * input.pageSize;
+      let query = client
+        .from("audit_log")
+        .select("*", { count: "exact" })
+        .gte("timestamp", start)
+        .lt("timestamp", end)
+        .in("action", COORDINATOR_EXPORT_ACTIONS)
+        .order("timestamp", { ascending: false });
+
+      if (input.actor) query = query.eq("actor_user_id", input.actor);
+      if (!input.kind) query = query.range(from, from + input.pageSize - 1);
+
+      const { data, error, count } = await query;
+      if (error) throw error;
+      const exports = ((data ?? []) as Record<string, unknown>[])
+        .map(mapExportAuditRow)
+        .filter((row) => !input.kind || row.kind === input.kind);
+      const pagedExports = input.kind ? exports.slice(from, from + input.pageSize) : exports;
+
+      return {
+        exports: pagedExports,
+        total: input.kind ? exports.length : (count ?? exports.length),
+      };
+    },
+
+    async getCoordinatorMonthlySummary(input): Promise<CoordinatorMonthlySummary> {
+      const { start, end } = monthBounds(input.month);
+      const startDate = start.slice(0, 10);
+      const endDate = end.slice(0, 10);
+      const now = new Date().toISOString();
+      const overdueEnd = now < end ? now : end;
+      const [
+        publicIntakeCases,
+        manualIntakeCases,
+        successfulAdoptions,
+        openCases,
+        overdueTasks,
+        exportsRun,
+      ] = await Promise.all([
+        countRows(
+          client
+            .from("adoption_case")
+            .select("id", { count: "exact", head: true })
+            .eq("source", "public_form")
+            .gte("created_at", start)
+            .lt("created_at", end),
+        ),
+        countRows(
+          client
+            .from("adoption_case")
+            .select("id", { count: "exact", head: true })
+            .eq("source", "manual_intake")
+            .gte("created_at", start)
+            .lt("created_at", end),
+        ),
+        countRows(
+          client
+            .from("successful_adoption")
+            .select("id", { count: "exact", head: true })
+            .gte("approval_date", startDate)
+            .lt("approval_date", endDate),
+        ),
+        countRows(
+          client
+            .from("adoption_case")
+            .select("id", { count: "exact", head: true })
+            .is("closed_at", null)
+            .gte("created_at", start)
+            .lt("created_at", end),
+        ),
+        countRows(
+          client
+            .from("adoption_followup")
+            .select("id", { count: "exact", head: true })
+            .is("completed_at", null)
+            .gte("due_at", start)
+            .lt("due_at", overdueEnd),
+        ),
+        countRows(
+          client
+            .from("audit_log")
+            .select("id", { count: "exact", head: true })
+            .gte("timestamp", start)
+            .lt("timestamp", end)
+            .in("action", COORDINATOR_EXPORT_ACTIONS),
+        ),
+      ]);
+
+      return {
+        month: input.month,
+        publicIntakeCases,
+        manualIntakeCases,
+        successfulAdoptions,
+        openCases,
+        overdueTasks,
+        exportsRun,
+      };
+    },
+
+    async getCoordinatorExportAuditRow(id) {
+      const { data, error } = await client.from("audit_log").select("*").eq("id", id).maybeSingle();
+      if (error) throw error;
+      if (!data) return null;
+
+      const auditRow = data as Record<string, unknown>;
+      if (!COORDINATOR_EXPORT_ACTIONS.includes(auditRow.action as string)) return null;
+      return mapExportAuditRow(auditRow);
     },
 
     async createCaseFromPublicApplication(input) {

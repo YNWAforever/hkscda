@@ -127,6 +127,38 @@ function createFakeService(overrides: Partial<AdoptionCoordinatorService> = {}) 
         rowCount: 1,
       };
     },
+    async searchManualCaseIdentity(rawSearch) {
+      calls.push({ name: "searchManualCaseIdentity", payload: rawSearch });
+      return { candidates: [], total: 0 };
+    },
+    async createManualCase(payload) {
+      calls.push({ name: "createManualCase", payload });
+      return { caseId, supporterId: "supporter-1", adopterProfileId, taskId: null };
+    },
+    async listCoordinatorExportHistory(rawSearch) {
+      calls.push({ name: "listCoordinatorExportHistory", payload: rawSearch });
+      return { exports: [], total: 0 };
+    },
+    async getCoordinatorMonthlySummary(rawSearch) {
+      calls.push({ name: "getCoordinatorMonthlySummary", payload: rawSearch });
+      return {
+        month: "2026-06",
+        publicIntakeCases: 0,
+        manualIntakeCases: 0,
+        successfulAdoptions: 0,
+        openCases: 0,
+        overdueTasks: 0,
+        exportsRun: 0,
+      };
+    },
+    async regenerateCoordinatorExport(payload) {
+      calls.push({ name: "regenerateCoordinatorExport", payload });
+      return {
+        csv: "adopter_profile_id\nprofile-1",
+        filename: "coordinator-adopters.csv",
+        rowCount: 1,
+      };
+    },
     async getAdopterDetail(id) {
       calls.push({ name: "getAdopterDetail", payload: id });
       return { id: adopterProfileId, requestedId: id };
@@ -293,6 +325,107 @@ describe("createAdoptionCoordinatorHandlers", () => {
     expect(response.headers.get("content-type")).toContain("text/csv");
     expect(response.headers.get("content-disposition")).toContain("coordinator-adopters.csv");
     expect(await response.text()).toBe("adopter_profile_id\nprofile-1");
+  });
+
+  test("manual identity search requires coordinator auth and returns no-store JSON", async () => {
+    const { calls, service } = createFakeService({
+      async searchManualCaseIdentity(rawSearch) {
+        calls.push({ name: "searchManualCaseIdentity", payload: rawSearch });
+        return { candidates: [], total: 0 };
+      },
+    });
+    const handlers = createHandlers({ service });
+
+    const response = await handlers.searchManualCaseIdentity({
+      request: new Request("https://example.test/api/admin/adoptions/intake/identity-search?q=Ada"),
+    });
+
+    expectNoStoreJson(response);
+    expect(await response.json()).toEqual({ candidates: [], total: 0 });
+    expect(calls).toEqual([{ name: "searchManualCaseIdentity", payload: { q: "Ada" } }]);
+  });
+
+  test("manual case create calls service with actor and body", async () => {
+    const { calls, service } = createFakeService({
+      async createManualCase(payload) {
+        calls.push({ name: "createManualCase", payload });
+        return { caseId, supporterId: "supporter-1", adopterProfileId, taskId: null };
+      },
+    });
+    const handlers = createHandlers({ service });
+
+    const response = await handlers.createManualCase({
+      request: jsonRequest("https://example.test/api/admin/adoptions/intake/cases", { ok: true }),
+    });
+
+    expect(response.status).toBe(201);
+    expect(await response.json()).toEqual({
+      case: { id: caseId },
+      supporterId: "supporter-1",
+      adopterProfileId,
+      taskId: null,
+    });
+    expect(calls.at(-1)).toMatchObject({
+      name: "createManualCase",
+      payload: { actorUserId: staff.authUserId, input: { ok: true } },
+    });
+  });
+
+  test("reports export history and summary return no-store JSON", async () => {
+    const summary = {
+      month: "2026-06",
+      publicIntakeCases: 0,
+      manualIntakeCases: 0,
+      successfulAdoptions: 0,
+      openCases: 0,
+      overdueTasks: 0,
+      exportsRun: 0,
+    };
+    const { service } = createFakeService({
+      async listCoordinatorExportHistory() {
+        return { exports: [], total: 0 };
+      },
+      async getCoordinatorMonthlySummary() {
+        return summary;
+      },
+    });
+    const handlers = createHandlers({ service });
+
+    const historyResponse = await handlers.listCoordinatorExportHistory({
+      request: new Request(
+        "https://example.test/api/admin/adoptions/reports/exports?month=2026-06",
+      ),
+    });
+    const summaryResponse = await handlers.getCoordinatorMonthlySummary({
+      request: new Request(
+        "https://example.test/api/admin/adoptions/reports/summary?month=2026-06",
+      ),
+    });
+
+    expectNoStoreJson(historyResponse);
+    expect(await historyResponse.json()).toEqual({ exports: [], total: 0 });
+    expectNoStoreJson(summaryResponse);
+    expect(await summaryResponse.json()).toEqual({ summary });
+  });
+
+  test("regenerated export validates id before auth or service work", async () => {
+    const { calls, service } = createFakeService();
+    const handlers = createHandlers({
+      service,
+      requireCoordinator: async () => {
+        throw new Error("auth should not run");
+      },
+    });
+
+    const response = await handlers.regenerateCoordinatorExport({
+      request: new Request(
+        "https://example.test/api/admin/adoptions/reports/exports/not-uuid/download",
+      ),
+      params: { id: "not-uuid" },
+    });
+
+    expect(response.status).toBe(400);
+    expect(calls).toEqual([]);
   });
 
   test("status GET uses coordinator auth callback and returns no-store { status }", async () => {

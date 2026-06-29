@@ -16,6 +16,13 @@ const optionalTrimmed = z
     return trimmed ? trimmed : undefined;
   });
 
+const nullableOptionalTrimmed = optionalTrimmed.nullable().optional();
+
+const monthSchema = z
+  .string()
+  .trim()
+  .regex(/^\d{4}-\d{2}$/);
+
 const booleanSearch = z.preprocess((value) => {
   if (value === true || value === 1) return true;
   if (value === false || value === 0 || value === undefined || value === "") return false;
@@ -82,6 +89,22 @@ export const coordinatorExportKindSchema = z.enum([
   "tasks",
 ]);
 
+export const coordinatorReportHistorySearchSchema = z.object({
+  month: monthSchema,
+  kind: coordinatorExportKindSchema.optional(),
+  actor: optionalTrimmed,
+  page: z.coerce.number().int().min(1).catch(1),
+  pageSize: z.coerce.number().int().min(1).max(100).catch(25),
+});
+
+export const coordinatorMonthlySummarySearchSchema = z.object({
+  month: monthSchema,
+});
+
+export const coordinatorExportRegenerateSchema = z.object({
+  auditLogId: z.string().uuid(),
+});
+
 export const statusTransitionSchema = z.object({
   statusId: z.string().uuid(),
   note: optionalTrimmed,
@@ -112,6 +135,74 @@ export const taskContactChannelSchema = z.enum([
   "in_person",
   "internal",
 ]);
+
+const manualAdopterProfileSchema = z.object({
+  nameEnglish: nullableOptionalTrimmed,
+  nameChinese: nullableOptionalTrimmed,
+  address: nullableOptionalTrimmed,
+  householdSize: nullableOptionalTrimmed,
+});
+
+export const manualCaseIdentitySchema = z.discriminatedUnion("kind", [
+  z
+    .object({
+      kind: z.literal("existing_adopter"),
+      adopterProfileId: z.string().uuid(),
+    })
+    .strict(),
+  z
+    .object({
+      kind: z.literal("existing_supporter"),
+      supporterId: z.string().uuid(),
+      adopterProfile: manualAdopterProfileSchema.default({}),
+    })
+    .strict(),
+  z
+    .object({
+      kind: z.literal("new_supporter"),
+      supporter: z
+        .object({
+          name: z.string().trim().min(1),
+          phone: z.string().trim().min(1),
+          email: optionalTrimmed,
+          language: z.enum(["zh-HK", "en"]).default("zh-HK"),
+        })
+        .strict(),
+      adopterProfile: manualAdopterProfileSchema.default({}),
+    })
+    .strict(),
+]);
+
+export const manualCaseInitialTaskSchema = z.object({
+  statusId: z.string().uuid(),
+  title: z.string().trim().min(1),
+  taskType: defaultTaskType,
+  priority: taskPrioritySchema.default("normal"),
+  dueAt: z.string().datetime().optional(),
+  assignedTo: optionalTrimmed,
+  volunteer: optionalTrimmed,
+  contactChannel: taskContactChannelSchema.optional(),
+  remarks: optionalTrimmed,
+});
+
+export const manualCaseIntakeSchema = z.object({
+  identity: manualCaseIdentitySchema,
+  case: z.object({
+    initialStatusId: z.string().uuid(),
+    requestedAnimalId: z.string().uuid().optional(),
+    animalType: optionalTrimmed.pipe(z.string().min(1)),
+    applicantName: z.string().trim().min(1),
+    applicantPhone: z.string().trim().min(1),
+    applicantEmail: optionalTrimmed,
+    applicantAddress: optionalTrimmed,
+    housingType: optionalTrimmed,
+    familySize: z.coerce.number().int().min(1).nullable().optional(),
+    existingPets: optionalTrimmed,
+    reason: optionalTrimmed,
+    preferences: z.record(z.string(), z.unknown()).default({}),
+  }),
+  initialTask: manualCaseInitialTaskSchema.optional(),
+});
 
 const taskFieldsSchema = z.object({
   title: z.string().trim().min(1),

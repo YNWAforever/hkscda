@@ -1,6 +1,10 @@
 import { describe, expect, test } from "bun:test";
 
-import { createAdoptionCoordinatorService, type AdoptionCoordinatorRepository } from "./service";
+import {
+  createAdoptionCoordinatorService,
+  type AdoptionCoordinatorRepository,
+  type CoordinatorOpsRepositoryMethods,
+} from "./service";
 import type { CoordinatorStatus, CoordinatorTask } from "./types";
 
 const adminId = "11111111-2222-4333-8444-555555555555";
@@ -12,6 +16,22 @@ const finalOutcomeStatusId = "66666666-7777-4333-8444-555555555555";
 const animalId = "77777777-8888-4333-8444-555555555555";
 const matchId = "88888888-9999-4333-8444-555555555555";
 const adopterProfileId = "99999999-aaaa-4333-8444-555555555555";
+
+function manualCaseInput() {
+  return {
+    identity: {
+      kind: "existing_adopter",
+      adopterProfileId,
+    },
+    case: {
+      initialStatusId: statusId,
+      animalType: "cat",
+      applicantName: "Ada",
+      applicantPhone: "9123 4567",
+      preferences: {},
+    },
+  };
+}
 
 function status(overrides: Partial<CoordinatorStatus> = {}): CoordinatorStatus {
   return {
@@ -63,8 +83,9 @@ function task(overrides: Partial<CoordinatorTask> = {}): CoordinatorTask {
 }
 
 function createRepo(
-  overrides: Partial<AdoptionCoordinatorRepository> = {},
-): AdoptionCoordinatorRepository & { calls: Array<{ name: string; payload?: unknown }> } {
+  overrides: Partial<AdoptionCoordinatorRepository & CoordinatorOpsRepositoryMethods> = {},
+): AdoptionCoordinatorRepository &
+  CoordinatorOpsRepositoryMethods & { calls: Array<{ name: string; payload?: unknown }> } {
   const calls: Array<{ name: string; payload?: unknown }> = [];
 
   return {
@@ -101,6 +122,39 @@ function createRepo(
       calls.push({ name: "listAdopters", payload: input });
       return { adopters: [], total: 0 };
     },
+    async searchManualCaseIdentity(input) {
+      calls.push({ name: "searchManualCaseIdentity", payload: input });
+      return { candidates: [], total: 0 };
+    },
+    async createManualCase(input) {
+      calls.push({ name: "createManualCase", payload: input });
+      return {
+        caseId,
+        supporterId: "supporter-1",
+        adopterProfileId,
+        taskId: null,
+      };
+    },
+    async listCoordinatorExportHistory(input) {
+      calls.push({ name: "listCoordinatorExportHistory", payload: input });
+      return { exports: [], total: 0 };
+    },
+    async getCoordinatorMonthlySummary(input) {
+      calls.push({ name: "getCoordinatorMonthlySummary", payload: input });
+      return {
+        month: input.month,
+        publicIntakeCases: 0,
+        manualIntakeCases: 0,
+        successfulAdoptions: 0,
+        openCases: 0,
+        overdueTasks: 0,
+        exportsRun: 0,
+      };
+    },
+    async getCoordinatorExportAuditRow(id) {
+      calls.push({ name: "getCoordinatorExportAuditRow", payload: id });
+      return null;
+    },
     async listCaseExportRows(input) {
       calls.push({ name: "listCaseExportRows", payload: input });
       return [];
@@ -136,6 +190,7 @@ function createRepo(
             successfulAdoptionCount: 0,
             openTaskCount: 1,
             latestCaseAt: "2026-06-27T08:00:00.000Z",
+            latestCase: null,
             nameEnglish: "Ada",
             nameChinese: null,
             gender: null,
@@ -147,6 +202,8 @@ function createRepo(
             address: null,
             floorArea: null,
             blacklistReason: null,
+            emailConsent: null,
+            whatsappConsent: null,
             cases: [],
             successfulAdoptions: [],
             tasks: [],
@@ -195,7 +252,9 @@ function createRepo(
   };
 }
 
-function setup(overrides: Partial<AdoptionCoordinatorRepository> = {}) {
+function setup(
+  overrides: Partial<AdoptionCoordinatorRepository & CoordinatorOpsRepositoryMethods> = {},
+) {
   const repo = createRepo(overrides);
   return {
     repo,
@@ -205,6 +264,169 @@ function setup(overrides: Partial<AdoptionCoordinatorRepository> = {}) {
 }
 
 describe("createAdoptionCoordinatorService", () => {
+  test("creates manual case after validating active case status", async () => {
+    const repo = createRepo({
+      async getStatus(id) {
+        repo.calls.push({ name: "getStatus", payload: id });
+        return status({ id, category: "adoption_case", isActive: true });
+      },
+      async createManualCase(input) {
+        repo.calls.push({ name: "createManualCase", payload: input });
+        return {
+          caseId: "66666666-7777-4333-8444-555555555555",
+          supporterId: "22222222-3333-4333-8444-555555555555",
+          adopterProfileId: "55555555-6666-4333-8444-555555555555",
+          taskId: null,
+        };
+      },
+    });
+    const service = createAdoptionCoordinatorService({ repo });
+
+    const result = await service.createManualCase({
+      actorUserId: adminId,
+      input: manualCaseInput(),
+    });
+
+    expect(result.caseId).toBe("66666666-7777-4333-8444-555555555555");
+    expect(repo.calls.find((call) => call.name === "createManualCase")?.payload).toMatchObject({
+      actorUserId: adminId,
+      case: { source: "manual_intake" },
+    });
+  });
+
+  test("rejects manual case creation with inactive or non-case status", async () => {
+    const nonCaseRepo = createRepo({
+      async getStatus(id) {
+        nonCaseRepo.calls.push({ name: "getStatus", payload: id });
+        return status({ id, category: "followup", isActive: true });
+      },
+    });
+    const inactiveRepo = createRepo({
+      async getStatus(id) {
+        inactiveRepo.calls.push({ name: "getStatus", payload: id });
+        return status({ id, category: "adoption_case", isActive: false });
+      },
+    });
+
+    await expect(
+      createAdoptionCoordinatorService({ repo: nonCaseRepo }).createManualCase({
+        actorUserId: adminId,
+        input: manualCaseInput(),
+      }),
+    ).rejects.toThrow("Invalid case status");
+    await expect(
+      createAdoptionCoordinatorService({ repo: inactiveRepo }).createManualCase({
+        actorUserId: adminId,
+        input: manualCaseInput(),
+      }),
+    ).rejects.toThrow("Inactive case status");
+
+    expect(nonCaseRepo.calls.map((call) => call.name)).toEqual(["getStatus"]);
+    expect(inactiveRepo.calls.map((call) => call.name)).toEqual(["getStatus"]);
+  });
+
+  test("lists coordinator export history with normalized filters", async () => {
+    const { service, calls } = setup();
+
+    await expect(
+      service.listCoordinatorExportHistory({
+        month: "2026-06",
+        kind: "cases",
+        actor: " Ada ",
+        page: "2",
+      }),
+    ).resolves.toEqual({ exports: [], total: 0 });
+
+    expect(calls.at(-1)?.payload).toMatchObject({
+      month: "2026-06",
+      kind: "cases",
+      actor: "Ada",
+      page: 2,
+    });
+  });
+
+  test("regenerates coordinator exports from audit metadata and audits regeneration", async () => {
+    const auditLogId = "aaaaaaaa-bbbb-4333-8444-555555555555";
+    const { service, calls } = setup({
+      async getCoordinatorExportAuditRow(id) {
+        calls.push({ name: "getCoordinatorExportAuditRow", payload: id });
+        return {
+          id,
+          actorUserId: adminId,
+          actorLabel: null,
+          action: "coordinator_export.cases",
+          kind: "cases",
+          rowCount: 1,
+          filters: { openOnly: true },
+          sourceRoute: "/api/admin/adoptions/exports/cases.csv",
+          timestamp: "2026-06-28T00:00:00.000Z",
+        };
+      },
+      async listCaseExportRows(input) {
+        calls.push({ name: "listCaseExportRows", payload: input });
+        return [];
+      },
+    });
+
+    const result = await service.regenerateCoordinatorExport({
+      actorUserId: "99999999-aaaa-4333-8444-555555555555",
+      auditLogId,
+    });
+
+    expect(result.filename).toBe("coordinator-cases.csv");
+    expect(calls).toContainEqual(
+      expect.objectContaining({
+        name: "insertAuditLog",
+        payload: expect.objectContaining({
+          action: "coordinator_export.regenerate",
+          entity: "coordinator_export",
+          entity_id: auditLogId,
+          detail: {
+            kind: "cases",
+            filters: { openOnly: true },
+            rowCount: 0,
+            sourceAuditLogId: auditLogId,
+            sourceRoute: `/api/admin/adoptions/reports/exports/${auditLogId}/download`,
+          },
+        }),
+      }),
+    );
+  });
+
+  test("reports missing coordinator ops repository methods clearly", async () => {
+    const { searchManualCaseIdentity, ...repoWithoutOps } = createRepo();
+
+    expect(() =>
+      createAdoptionCoordinatorService({ repo: repoWithoutOps }).searchManualCaseIdentity({
+        q: "Ada",
+      }),
+    ).toThrow("Coordinator ops repository method unavailable: searchManualCaseIdentity");
+
+    expect(searchManualCaseIdentity).toBeFunction();
+  });
+
+  test("preserves coordinator ops repository method receiver", async () => {
+    const repo = createRepo({
+      async searchManualCaseIdentity(
+        this: { calls: Array<{ name: string; payload?: unknown }> },
+        input,
+      ) {
+        this.calls.push({ name: "searchManualCaseIdentityWithThis", payload: input });
+        return { candidates: [], total: this.calls.length };
+      },
+    });
+    const service = createAdoptionCoordinatorService({ repo });
+
+    await expect(service.searchManualCaseIdentity({ q: " Ada " })).resolves.toEqual({
+      candidates: [],
+      total: 1,
+    });
+    expect(repo.calls).toContainEqual({
+      name: "searchManualCaseIdentityWithThis",
+      payload: { q: "Ada", page: 1, pageSize: 10 },
+    });
+  });
+
   test("exports coordinator CSV and audits row count", async () => {
     const { service, calls } = setup();
 
