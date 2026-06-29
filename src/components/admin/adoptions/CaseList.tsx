@@ -4,13 +4,13 @@ import { ChevronLeft, ChevronRight, ListChecks, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import type { AdoptionCaseSummary, CoordinatorStatus } from "../../../lib/adoptions/types";
-import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
 import { Checkbox } from "../../ui/checkbox";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../ui/table";
+import { StatusBadge } from "../StatusBadge";
 import { fetchCoordinatorJson } from "./api";
 import {
   buildCaseListSearchParams,
@@ -39,34 +39,6 @@ const ANIMAL_TYPE_OPTIONS = [
   { value: "sponsor", label: "Sponsor animals" },
   { value: "unknown", label: "Unknown" },
 ] as const;
-
-const STATUS_DOT_CLASSES: Record<string, string> = {
-  amber: "bg-[var(--color-warning)]",
-  blue: "bg-[var(--color-panel)]",
-  coral: "bg-[var(--color-primary)]",
-  cyan: "bg-[var(--color-lavender-deep)]",
-  green: "bg-[var(--color-success)]",
-  indigo: "bg-[var(--color-panel-2)]",
-  purple: "bg-[var(--color-secondary)]",
-  red: "bg-[var(--color-error)]",
-  slate: "bg-[var(--color-text-muted)]",
-};
-
-function StatusChip({ status }: { status: CoordinatorStatus }) {
-  return (
-    <Badge
-      variant="outline"
-      className="gap-1.5 border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
-    >
-      <span
-        className={`h-2 w-2 rounded-full ${STATUS_DOT_CLASSES[status.color] ?? "bg-[var(--color-border)]"}`}
-        aria-hidden="true"
-      />
-      <span>{status.labelZh}</span>
-      <span className="font-normal text-[var(--color-text-muted)]">{status.labelEn}</span>
-    </Badge>
-  );
-}
 
 export function CaseListStatusFilterError({ message }: { message: string }) {
   return (
@@ -324,7 +296,7 @@ export function CaseList() {
                   {formatDate(adoptionCase.createdAt)}
                 </TableCell>
                 <TableCell>
-                  <StatusChip status={adoptionCase.status} />
+                  <StatusBadge status={adoptionCase.status} />
                 </TableCell>
               </TableRow>
             ))}
