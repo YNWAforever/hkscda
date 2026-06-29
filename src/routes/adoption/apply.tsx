@@ -5,6 +5,7 @@ import { z } from "zod";
 import { useState } from "react";
 import { PartyPopper } from "lucide-react";
 import { submitApplication } from "../../lib/api/submit-application.functions";
+import { TurnstileWidget, turnstileEnabled } from "../../components/site/TurnstileWidget";
 
 const formSchema = z.object({
   applicant_name: z.string().min(1, "請填寫姓名"),
@@ -38,6 +39,7 @@ function ApplyPage() {
   const { animalId, animalName, type } = Route.useSearch();
   const [success, setSuccess] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   const {
     register,
@@ -49,12 +51,25 @@ function ApplyPage() {
 
   async function onSubmit(values: FormValues) {
     setServerError(null);
+
+    // Guard against fabricated placeholder data: the form must be reached from a
+    // specific animal (which always supplies name + type). Bare navigation must
+    // not persist "unknown" cases that the coordinator can't filter or export.
+    if (!animalName || !type) {
+      setServerError("請從動物頁面開始申請，以便我們對應正確的動物資料。");
+      return;
+    }
+    if (turnstileEnabled && !turnstileToken) {
+      setServerError("請先完成人機驗證。");
+      return;
+    }
+
     try {
       await submitApplication({
         data: {
           animal_id: animalId,
-          animal_name: animalName ?? "未指定",
-          animal_type: type ?? "unknown",
+          animal_name: animalName,
+          animal_type: type,
           applicant_name: values.applicant_name,
           phone: values.phone,
           email: values.email,
@@ -63,6 +78,7 @@ function ApplyPage() {
           family_size: values.family_size,
           existing_pets: values.existing_pets,
           reason: values.reason,
+          turnstile_token: turnstileToken ?? undefined,
         },
       });
       setSuccess(true);
@@ -90,7 +106,7 @@ function ApplyPage() {
   }
 
   const inputClass =
-    "w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm bg-[var(--color-surface)] focus:outline-none focus:border-[var(--color-primary)]";
+    "w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm bg-[var(--color-surface)] focus:border-[var(--color-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]";
 
   return (
     <main className="max-w-lg mx-auto px-4 py-8">
@@ -107,7 +123,7 @@ function ApplyPage() {
           <input
             {...register("applicant_name")}
             id="applicant_name"
-            aria-required
+            aria-required={true}
             aria-invalid={!!errors.applicant_name}
             aria-describedby={errors.applicant_name ? "applicant_name-error" : undefined}
             className={inputClass}
@@ -131,7 +147,7 @@ function ApplyPage() {
             {...register("phone")}
             id="phone"
             type="tel"
-            aria-required
+            aria-required={true}
             aria-invalid={!!errors.phone}
             aria-describedby={errors.phone ? "phone-error" : undefined}
             className={inputClass}
@@ -151,7 +167,7 @@ function ApplyPage() {
             {...register("email")}
             id="email"
             type="email"
-            aria-required
+            aria-required={true}
             aria-invalid={!!errors.email}
             aria-describedby={errors.email ? "email-error" : undefined}
             className={inputClass}
@@ -170,7 +186,7 @@ function ApplyPage() {
           <input
             {...register("address")}
             id="address"
-            aria-required
+            aria-required={true}
             aria-invalid={!!errors.address}
             aria-describedby={errors.address ? "address-error" : undefined}
             className={inputClass}
@@ -189,7 +205,7 @@ function ApplyPage() {
           <select
             {...register("housing_type")}
             id="housing_type"
-            aria-required
+            aria-required={true}
             aria-invalid={!!errors.housing_type}
             aria-describedby={errors.housing_type ? "housing_type-error" : undefined}
             className={inputClass}
@@ -245,7 +261,7 @@ function ApplyPage() {
             {...register("reason")}
             id="reason"
             rows={4}
-            aria-required
+            aria-required={true}
             aria-invalid={!!errors.reason}
             aria-describedby={errors.reason ? "reason-error" : undefined}
             className={inputClass}
@@ -262,6 +278,8 @@ function ApplyPage() {
             {...register("agree_terms")}
             type="checkbox"
             id="agree_terms"
+            aria-invalid={!!errors.agree_terms}
+            aria-describedby={errors.agree_terms ? "agree_terms-error" : undefined}
             className="mt-1 cursor-pointer"
           />
           <label
@@ -279,10 +297,16 @@ function ApplyPage() {
           </label>
         </div>
         {errors.agree_terms && (
-          <p className="text-[var(--color-error)] text-xs" role="alert">
+          <p id="agree_terms-error" className="text-[var(--color-error)] text-xs" role="alert">
             {errors.agree_terms.message}
           </p>
         )}
+
+        <TurnstileWidget
+          onVerify={setTurnstileToken}
+          onExpire={() => setTurnstileToken(null)}
+          language="zh-tw"
+        />
 
         {serverError && (
           <p className="text-[var(--color-error)] text-sm" role="alert">
@@ -292,7 +316,7 @@ function ApplyPage() {
 
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || (turnstileEnabled && !turnstileToken)}
           className="w-full py-3 bg-[var(--color-primary)] text-white rounded-full font-semibold hover:bg-[var(--color-primary-hover)] transition-colors disabled:opacity-60"
         >
           {isSubmitting ? "提交中…" : "提交申請"}

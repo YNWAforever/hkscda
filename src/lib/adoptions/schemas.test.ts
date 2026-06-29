@@ -195,13 +195,6 @@ describe("adoption coordinator schemas", () => {
         taskType: "   ",
       }).taskType,
     ).toBe("followup");
-    expect(
-      followupInputSchema.parse({
-        title: "Home visit",
-        statusId,
-        taskType: "   ",
-      }).taskType,
-    ).toBe("followup");
   });
 
   test("rejects task updates without a meaningful parsed value", () => {

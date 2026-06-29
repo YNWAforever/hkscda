@@ -8,6 +8,11 @@ import {
   refundProviderPayment,
 } from "../../../lib/donations/reconcile.server";
 import { createSupabaseServiceClient } from "../../../lib/donations/supabase.server";
+import {
+  enforceRateLimit,
+  getClientIp,
+  retryAfterSeconds,
+} from "../../../lib/security/rate-limit.server";
 
 export type StripeWebhookAction = "reconcile" | "fail" | "refund" | "ignore";
 
@@ -58,6 +63,18 @@ export const Route = createFileRoute("/api/webhooks/stripe")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        const limit = await enforceRateLimit(getClientIp(request), {
+          prefix: "wh-stripe",
+          max: 100,
+          window: "1 m",
+        });
+        if (!limit.ok) {
+          return new Response("Too many requests", {
+            status: 429,
+            headers: { "retry-after": String(retryAfterSeconds(limit)) },
+          });
+        }
+
         const signature = request.headers.get("stripe-signature");
         if (!signature) return new Response("Missing Stripe signature", { status: 400 });
 

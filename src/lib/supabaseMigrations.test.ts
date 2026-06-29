@@ -71,6 +71,51 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("adoption_followup_overdue_idx");
   });
 
+  test("issues receipts atomically via a public RPC backed by a unique index", () => {
+    const sql = readMigration("20260628120000_harden_receipt_and_payment_lifecycle.sql");
+
+    // RPC must be in public (reachable via service-role client.rpc), not private.
+    expect(sql).toContain("create or replace function public.issue_receipt(");
+    expect(sql).not.toContain("create or replace function private.issue_receipt(");
+    expect(sql).toContain("grant execute on function public.issue_receipt");
+    // One issued receipt per donation, allowing void-then-reissue.
+    expect(sql).toMatch(
+      /create unique index if not exists receipt_one_issued_per_donation[\s\S]*where status = 'issued'/,
+    );
+    // It still allocates the IRD number via the private helper.
+    expect(sql).toContain("private.allocate_receipt_number(p_tax_year)");
+  });
+
+  test("revokes all residual anon grants on donor-PII tables", () => {
+    const sql = readMigration("20260628140000_revoke_residual_anon_grants.sql");
+
+    for (const table of ["supporter", "consent", "supporter_role", "donation", "payment"]) {
+      expect(sql).toContain(`revoke all on public.${table} from anon`);
+    }
+  });
+
+  test("revokes anon writes on animals (keeping read) and all on adoption_applications", () => {
+    const sql = readMigration("20260628150000_revoke_residual_anon_write_grants.sql");
+
+    // SELECT is intentionally omitted from the animals revoke (public site reads it).
+    expect(sql).toContain(
+      "revoke insert, update, delete, truncate, references, trigger on public.animals from anon",
+    );
+    expect(sql).toContain("revoke all on public.adoption_applications from anon");
+  });
+
+  test("validates the actor inside the coordinator workflow RPCs", () => {
+    const sql = readMigration("20260628160000_validate_rpc_actor.sql");
+
+    // Both RPCs gain an active staff/admin check keyed on auth_user_id.
+    const guards = sql.match(
+      /from public\.admin_user\s*\n\s*where auth_user_id = p_(actor_user_id|approved_by)\s*\n\s*and status = 'active'\s*\n\s*and role in \('staff', 'admin'\)/g,
+    );
+    expect(guards).toHaveLength(2);
+    expect(sql).toContain("create or replace function public.change_adoption_case_status(");
+    expect(sql).toContain("create or replace function public.finalize_successful_adoption(");
+  });
+
   test("adds coordinator manual intake source tracking and RPC", () => {
     const sql = readMigration("20260628143000_coordinator_ops_workbench.sql");
 

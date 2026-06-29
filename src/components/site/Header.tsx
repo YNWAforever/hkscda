@@ -141,7 +141,7 @@ export function Header() {
                 <span className="font-display text-[13px] font-bold text-[var(--color-primary)] tracking-tight">
                   香港拯救貓狗協會
                 </span>
-                <span className="text-[10px] text-[var(--color-text-faint)] font-medium tracking-wide uppercase">
+                <span className="text-[10px] text-[var(--color-text-muted)] font-medium tracking-wide uppercase">
                   HKSCDA · since 2007
                 </span>
               </div>
@@ -192,6 +192,8 @@ export function Header() {
             {/* Mobile hamburger */}
             <button
               aria-label={mobileOpen ? "關閉選單" : "開啟選單"}
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-nav"
               onClick={() => setMobileOpen(!mobileOpen)}
               className="ml-auto lg:hidden relative h-11 w-11 flex items-center justify-center rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-offset)] hover:border-[var(--color-primary)]/30 transition-all duration-200"
             >
@@ -211,7 +213,11 @@ export function Header() {
 
         {/* Mobile menu */}
         {mobileOpen && (
-          <div className="lg:hidden mobile-enter pointer-events-auto container-wide mt-2 rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-panel">
+          <nav
+            id="mobile-nav"
+            aria-label="主選單"
+            className="lg:hidden mobile-enter pointer-events-auto container-wide mt-2 rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-panel"
+          >
             <div className="px-5 py-5 space-y-1 max-h-[calc(100vh-80px)] overflow-y-auto">
               <MobileSheetLink to="/" setOpen={setMobileOpen}>
                 主頁
@@ -240,7 +246,7 @@ export function Header() {
                 </Link>
               </div>
             </div>
-          </div>
+          </nav>
         )}
       </header>
     </>
@@ -308,7 +314,7 @@ function MobileSheetSection({
 }) {
   return (
     <>
-      <div className="px-4 pt-5 pb-2 text-[10px] font-bold text-[var(--color-text-faint)] uppercase tracking-[0.12em]">
+      <div className="px-4 pt-5 pb-2 text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-[0.12em]">
         {title}
       </div>
       {links.map((link) => (

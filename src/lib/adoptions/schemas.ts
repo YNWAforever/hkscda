@@ -267,15 +267,6 @@ export const coordinatorTaskUpdateSchema = z
     "Task update cannot be empty",
   );
 
-// Compatibility wrapper for the existing case follow-up route. It accepts shared task fields
-// now; subsequent task service/repository work will persist the richer fields end to end.
-export const followupInputSchema = taskFieldsSchema.and(
-  z.object({
-    adopterProfileId: z.string().uuid().optional(),
-    animalId: z.string().uuid().optional(),
-  }),
-);
-
 export const finalizeAdoptionSchema = z.object({
   matchId: z.string().uuid(),
   outcomeStatusId: z.string().uuid(),

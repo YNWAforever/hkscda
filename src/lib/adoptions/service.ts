@@ -18,7 +18,6 @@ import {
   coordinatorTaskInputSchema,
   coordinatorTaskUpdateSchema,
   finalizeAdoptionSchema,
-  followupInputSchema,
   matchInputSchema,
   manualCaseIntakeSchema,
   statusInputSchema,
@@ -51,7 +50,6 @@ export type StatusUpdate = z.infer<typeof statusUpdateSchema>;
 export type CaseSearch = z.infer<typeof caseSearchSchema>;
 export type AdopterSearch = z.infer<typeof adopterSearchSchema>;
 export type MatchInput = z.infer<typeof matchInputSchema>;
-export type FollowupInput = z.infer<typeof followupInputSchema>;
 export type FinalizeAdoptionInput = z.infer<typeof finalizeAdoptionSchema>;
 export type TaskListSearch = z.infer<typeof taskListSearchSchema>;
 export type CoordinatorTaskInput = z.infer<typeof coordinatorTaskInputSchema>;
@@ -122,12 +120,6 @@ export type AdoptionCoordinatorRepository = {
       adoptionCaseId: string;
       createdBy: string;
       isApproved: boolean;
-    },
-  ): Promise<{ id: string }>;
-  createFollowup(
-    input: FollowupInput & {
-      adoptionCaseId: string;
-      createdBy: string;
     },
   ): Promise<{ id: string }>;
   finalizeAdoption(
@@ -554,19 +546,41 @@ export function createAdoptionCoordinatorService({
       if (!status || status.category !== "match") throw new Error("Invalid match status");
       if (!status.isActive) throw new Error("Inactive match status");
 
-      return repo.createMatch({
+      const match = await repo.createMatch({
         ...input,
         adoptionCaseId: args.caseId,
         createdBy: args.actorUserId,
         isApproved: status.key === "approved",
       });
+      await repo.insertAuditLog({
+        actor_user_id: args.actorUserId,
+        action: "animal_match.create",
+        entity: "animal_match",
+        entity_id: match.id,
+        timestamp: timestamp(now),
+        detail: {
+          adoptionCaseId: args.caseId,
+          animalId: input.animalId,
+          statusId: input.statusId,
+          isApproved: status.key === "approved",
+        },
+      });
+      return match;
     },
 
     async createFollowup(args: { actorUserId: string; caseId: string; input: unknown }) {
+      // The route hands us the raw JSON body, which can legally be null, an
+      // array, or a primitive. Spreading those would throw or corrupt the
+      // input, so coerce to a plain object before delegating; createTask's
+      // schema parse rejects anything actually invalid.
+      const body =
+        typeof args.input === "object" && args.input !== null && !Array.isArray(args.input)
+          ? (args.input as Record<string, unknown>)
+          : {};
       return service.createTask({
         actorUserId: args.actorUserId,
         input: {
-          ...(args.input as Record<string, unknown>),
+          ...body,
           adoptionCaseId: args.caseId,
         },
       });

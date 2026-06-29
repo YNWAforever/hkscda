@@ -13,6 +13,9 @@ const applicationSchema = z.object({
   family_size: z.number().int().positive().optional(),
   existing_pets: z.string().optional(),
   reason: z.string().min(10),
+  // Cloudflare Turnstile token from the public form; verified server-side and
+  // never persisted (toApplicationInsert maps only known columns).
+  turnstile_token: z.string().optional(),
 });
 
 type ApplicationInput = z.infer<typeof applicationSchema>;
@@ -220,6 +223,25 @@ export async function persistSubmittedApplication<
 export const submitApplication = createServerFn({ method: "POST" })
   .inputValidator(applicationSchema)
   .handler(async ({ data }) => {
+    // Server-only modules are imported lazily so this file (re-exported into the
+    // client route bundle) never pulls server code to the browser.
+    const { getRequestHeader } = await import("@tanstack/react-start/server");
+    const { clientIpFromHeaders, enforceRateLimit } = await import("../security/rate-limit.server");
+    const { verifyTurnstile } = await import("../security/turnstile.server");
+
+    // Resolve the client IP from platform-trusted headers, identically to the
+    // donation path. `getRequestIP({ xForwardedFor: true })` returns the
+    // leftmost x-forwarded-for entry, which is client-spoofable and would let
+    // an attacker mint a fresh rate-limit bucket per request.
+    const ip = clientIpFromHeaders((name) => getRequestHeader(name) ?? null);
+    const limit = await enforceRateLimit(ip, { prefix: "adoption", max: 5, window: "1 m" });
+    if (!limit.ok) {
+      throw new Error("Too many requests. Please try again shortly.");
+    }
+    if (!(await verifyTurnstile(data.turnstile_token, ip))) {
+      throw new Error("Verification failed");
+    }
+
     const { createSupabaseServiceClient } = await import("../donations/supabase.server");
     const { createSupabaseAdoptionCoordinatorRepository } =
       await import("../adoptions/repository.server");

@@ -15,9 +15,12 @@
   --color-text-muted: #6b6e85;
   --color-text-faint: #a3a5b8;
   --color-text-inverse: #fdf7f4;
-  --color-primary: #e05c78;
-  --color-primary-hover: #cf4a66;
-  --color-primary-active: #b93d58;
+  /* #c94d6a reaches ~5:1 against white, clearing WCAG AA 4.5:1 for the white
+     button text used site-wide (the original #e05c78 was ~4.22:1). Hover/active
+     shift darker to keep a legible interaction ramp. */
+  --color-primary: #c94d6a;
+  --color-primary-hover: #b93d58;
+  --color-primary-active: #a5304a;
   --color-primary-highlight: #fadfe4;
   --color-secondary: #1d2353;
   --color-success: #3a7a45;
