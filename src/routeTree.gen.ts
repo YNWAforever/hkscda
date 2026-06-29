@@ -48,7 +48,9 @@ import { Route as AdminCoordinatorAdoptersRouteImport } from './routes/admin/coo
 import { Route as AdminApplicationsIdRouteImport } from './routes/admin/applications/$id'
 import { Route as AdminAnimalsNewRouteImport } from './routes/admin/animals/new'
 import { Route as ApiAdminSupportersIdRouteImport } from './routes/api/admin/supporters/$id'
+import { Route as ApiAdminFinanceActivityRouteImport } from './routes/api/admin/finance/activity'
 import { Route as ApiAdminExportsSupportersDotcsvRouteImport } from './routes/api/admin/exports/supporters[.]csv'
+import { Route as ApiAdminExportsPaymentsDotcsvRouteImport } from './routes/api/admin/exports/payments[.]csv'
 import { Route as ApiAdminExportsDonationsDotcsvRouteImport } from './routes/api/admin/exports/donations[.]csv'
 import { Route as ApiAdminDonationsManualRouteImport } from './routes/api/admin/donations/manual'
 import { Route as ApiAdminAdoptionsTasksRouteImport } from './routes/api/admin/adoptions/tasks'
@@ -278,10 +280,21 @@ const ApiAdminSupportersIdRoute = ApiAdminSupportersIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => ApiAdminSupportersRoute,
 } as any)
+const ApiAdminFinanceActivityRoute = ApiAdminFinanceActivityRouteImport.update({
+  id: '/api/admin/finance/activity',
+  path: '/api/admin/finance/activity',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminExportsSupportersDotcsvRoute =
   ApiAdminExportsSupportersDotcsvRouteImport.update({
     id: '/api/admin/exports/supporters.csv',
     path: '/api/admin/exports/supporters.csv',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminExportsPaymentsDotcsvRoute =
+  ApiAdminExportsPaymentsDotcsvRouteImport.update({
+    id: '/api/admin/exports/payments.csv',
+    path: '/api/admin/exports/payments.csv',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiAdminExportsDonationsDotcsvRoute =
@@ -513,7 +526,9 @@ export interface FileRoutesByFullPath {
   '/api/admin/adoptions/tasks': typeof ApiAdminAdoptionsTasksRouteWithChildren
   '/api/admin/donations/manual': typeof ApiAdminDonationsManualRoute
   '/api/admin/exports/donations.csv': typeof ApiAdminExportsDonationsDotcsvRoute
+  '/api/admin/exports/payments.csv': typeof ApiAdminExportsPaymentsDotcsvRoute
   '/api/admin/exports/supporters.csv': typeof ApiAdminExportsSupportersDotcsvRoute
+  '/api/admin/finance/activity': typeof ApiAdminFinanceActivityRoute
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
   '/api/admin/adoptions/adopters/$id': typeof ApiAdminAdoptionsAdoptersIdRoute
   '/api/admin/adoptions/cases/$id': typeof ApiAdminAdoptionsCasesIdRouteWithChildren
@@ -585,7 +600,9 @@ export interface FileRoutesByTo {
   '/api/admin/adoptions/tasks': typeof ApiAdminAdoptionsTasksRouteWithChildren
   '/api/admin/donations/manual': typeof ApiAdminDonationsManualRoute
   '/api/admin/exports/donations.csv': typeof ApiAdminExportsDonationsDotcsvRoute
+  '/api/admin/exports/payments.csv': typeof ApiAdminExportsPaymentsDotcsvRoute
   '/api/admin/exports/supporters.csv': typeof ApiAdminExportsSupportersDotcsvRoute
+  '/api/admin/finance/activity': typeof ApiAdminFinanceActivityRoute
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
   '/api/admin/adoptions/adopters/$id': typeof ApiAdminAdoptionsAdoptersIdRoute
   '/api/admin/adoptions/cases/$id': typeof ApiAdminAdoptionsCasesIdRouteWithChildren
@@ -659,7 +676,9 @@ export interface FileRoutesById {
   '/api/admin/adoptions/tasks': typeof ApiAdminAdoptionsTasksRouteWithChildren
   '/api/admin/donations/manual': typeof ApiAdminDonationsManualRoute
   '/api/admin/exports/donations.csv': typeof ApiAdminExportsDonationsDotcsvRoute
+  '/api/admin/exports/payments.csv': typeof ApiAdminExportsPaymentsDotcsvRoute
   '/api/admin/exports/supporters.csv': typeof ApiAdminExportsSupportersDotcsvRoute
+  '/api/admin/finance/activity': typeof ApiAdminFinanceActivityRoute
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
   '/api/admin/adoptions/adopters/$id': typeof ApiAdminAdoptionsAdoptersIdRoute
   '/api/admin/adoptions/cases/$id': typeof ApiAdminAdoptionsCasesIdRouteWithChildren
@@ -734,7 +753,9 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/tasks'
     | '/api/admin/donations/manual'
     | '/api/admin/exports/donations.csv'
+    | '/api/admin/exports/payments.csv'
     | '/api/admin/exports/supporters.csv'
+    | '/api/admin/finance/activity'
     | '/api/admin/supporters/$id'
     | '/api/admin/adoptions/adopters/$id'
     | '/api/admin/adoptions/cases/$id'
@@ -806,7 +827,9 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/tasks'
     | '/api/admin/donations/manual'
     | '/api/admin/exports/donations.csv'
+    | '/api/admin/exports/payments.csv'
     | '/api/admin/exports/supporters.csv'
+    | '/api/admin/finance/activity'
     | '/api/admin/supporters/$id'
     | '/api/admin/adoptions/adopters/$id'
     | '/api/admin/adoptions/cases/$id'
@@ -879,7 +902,9 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/tasks'
     | '/api/admin/donations/manual'
     | '/api/admin/exports/donations.csv'
+    | '/api/admin/exports/payments.csv'
     | '/api/admin/exports/supporters.csv'
+    | '/api/admin/finance/activity'
     | '/api/admin/supporters/$id'
     | '/api/admin/adoptions/adopters/$id'
     | '/api/admin/adoptions/cases/$id'
@@ -949,7 +974,9 @@ export interface RootRouteChildren {
   ApiAdminAdoptionsTasksRoute: typeof ApiAdminAdoptionsTasksRouteWithChildren
   ApiAdminDonationsManualRoute: typeof ApiAdminDonationsManualRoute
   ApiAdminExportsDonationsDotcsvRoute: typeof ApiAdminExportsDonationsDotcsvRoute
+  ApiAdminExportsPaymentsDotcsvRoute: typeof ApiAdminExportsPaymentsDotcsvRoute
   ApiAdminExportsSupportersDotcsvRoute: typeof ApiAdminExportsSupportersDotcsvRoute
+  ApiAdminFinanceActivityRoute: typeof ApiAdminFinanceActivityRoute
   ApiAdminAdoptionsExportsAdoptersDotcsvRoute: typeof ApiAdminAdoptionsExportsAdoptersDotcsvRoute
   ApiAdminAdoptionsExportsAnimalsDotcsvRoute: typeof ApiAdminAdoptionsExportsAnimalsDotcsvRoute
   ApiAdminAdoptionsExportsCasesDotcsvRoute: typeof ApiAdminAdoptionsExportsCasesDotcsvRoute
@@ -1238,11 +1265,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminSupportersIdRouteImport
       parentRoute: typeof ApiAdminSupportersRoute
     }
+    '/api/admin/finance/activity': {
+      id: '/api/admin/finance/activity'
+      path: '/api/admin/finance/activity'
+      fullPath: '/api/admin/finance/activity'
+      preLoaderRoute: typeof ApiAdminFinanceActivityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/exports/supporters.csv': {
       id: '/api/admin/exports/supporters.csv'
       path: '/api/admin/exports/supporters.csv'
       fullPath: '/api/admin/exports/supporters.csv'
       preLoaderRoute: typeof ApiAdminExportsSupportersDotcsvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/exports/payments.csv': {
+      id: '/api/admin/exports/payments.csv'
+      path: '/api/admin/exports/payments.csv'
+      fullPath: '/api/admin/exports/payments.csv'
+      preLoaderRoute: typeof ApiAdminExportsPaymentsDotcsvRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/exports/donations.csv': {
@@ -1684,7 +1725,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminAdoptionsTasksRoute: ApiAdminAdoptionsTasksRouteWithChildren,
   ApiAdminDonationsManualRoute: ApiAdminDonationsManualRoute,
   ApiAdminExportsDonationsDotcsvRoute: ApiAdminExportsDonationsDotcsvRoute,
+  ApiAdminExportsPaymentsDotcsvRoute: ApiAdminExportsPaymentsDotcsvRoute,
   ApiAdminExportsSupportersDotcsvRoute: ApiAdminExportsSupportersDotcsvRoute,
+  ApiAdminFinanceActivityRoute: ApiAdminFinanceActivityRoute,
   ApiAdminAdoptionsExportsAdoptersDotcsvRoute:
     ApiAdminAdoptionsExportsAdoptersDotcsvRoute,
   ApiAdminAdoptionsExportsAnimalsDotcsvRoute:

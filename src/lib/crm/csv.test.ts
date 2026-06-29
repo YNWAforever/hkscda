@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import { buildDonationCsv, buildSupporterCsv, escapeCsvValue } from "./csv";
+import { buildDonationCsv, buildPaymentCsv, buildSupporterCsv, escapeCsvValue } from "./csv";
 
 describe("crm csv", () => {
   test("escapes commas, quotes, and newlines", () => {
@@ -61,5 +61,28 @@ describe("crm csv", () => {
 
     expect(csv).toContain("receipt_no");
     expect(csv).toContain("HKSCDA-2026-000001");
+  });
+
+  test("buildPaymentCsv writes a header and a row with HKD amount", () => {
+    const csv = buildPaymentCsv([
+      {
+        paymentId: "pay-1",
+        supporterName: "陳大文",
+        supporterEmail: "tai.man@example.com",
+        provider: "fps",
+        amountCents: 50000,
+        purpose: "general",
+        status: "succeeded",
+        providerRef: "HKSCDA-ABC123",
+        bankReference: "FPS-9988",
+        receivedAt: "2026-06-30T10:00:00.000Z",
+        createdAt: "2026-06-30T00:00:00.000Z",
+      },
+    ]);
+    expect(csv.split("\n")[0]).toBe(
+      "payment_id,supporter_name,supporter_email,provider,amount_hkd,purpose,status,provider_ref,bank_reference,received_at,created_at",
+    );
+    expect(csv).toContain("500.00");
+    expect(csv).toContain("FPS-9988");
   });
 });

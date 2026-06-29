@@ -98,3 +98,48 @@ export function buildDonationCsv(rows: DonationExportRow[]) {
     ]),
   );
 }
+
+export type PaymentExportRow = {
+  paymentId: string;
+  supporterName: string;
+  supporterEmail: string;
+  provider: string;
+  amountCents: number;
+  purpose: string;
+  status: string;
+  providerRef: string | null;
+  bankReference: string | null;
+  receivedAt: string | null;
+  createdAt: string;
+};
+
+export function buildPaymentCsv(rows: PaymentExportRow[]) {
+  return buildCsv(
+    [
+      "payment_id",
+      "supporter_name",
+      "supporter_email",
+      "provider",
+      "amount_hkd",
+      "purpose",
+      "status",
+      "provider_ref",
+      "bank_reference",
+      "received_at",
+      "created_at",
+    ],
+    rows.map((row) => [
+      row.paymentId,
+      row.supporterName,
+      row.supporterEmail,
+      row.provider,
+      centsToDecimal(row.amountCents),
+      row.purpose,
+      row.status,
+      row.providerRef,
+      row.bankReference,
+      row.receivedAt,
+      row.createdAt,
+    ]),
+  );
+}
