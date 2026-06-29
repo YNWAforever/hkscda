@@ -1,7 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { capturePayPalOrder, verifyPayPalWebhook } from "../../../lib/donations/providers.server";
-import { reconcileProviderPayment } from "../../../lib/donations/reconcile.server";
+import {
+  processCaptureWebhook,
+  reconcileProviderPayment,
+} from "../../../lib/donations/reconcile.server";
 import { createSupabaseServiceClient } from "../../../lib/donations/supabase.server";
 
 type PayPalWebhook = {
@@ -58,7 +61,22 @@ export const Route = createFileRoute("/api/webhooks/paypal")({
           if (shouldCapturePayPalEvent(payload.event_type)) {
             const orderId = getPayPalOrderId(payload);
             if (!orderId) return Response.json({ received: true, skipped: "missing_order_id" });
-            await capturePayPalOrder(orderId);
+            // Reserve the event before capturing so a redelivered approval is a
+            // local duplicate rather than a second capture call.
+            const captureResult = await processCaptureWebhook(
+              {
+                client: createSupabaseServiceClient(),
+                provider: "paypal",
+                providerRef: orderId,
+                providerEventId: payload.id,
+                eventType: payload.event_type,
+                payload,
+              },
+              () => capturePayPalOrder(orderId),
+            );
+            if (captureResult.kind === "duplicate") {
+              return Response.json({ received: true, skipped: "duplicate" });
+            }
           }
 
           if (shouldReconcilePayPalEvent(payload.event_type)) {

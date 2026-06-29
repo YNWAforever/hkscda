@@ -106,7 +106,19 @@ export const consentUpdateSchema = z
   })
   .refine((value) => value.email !== undefined || value.whatsapp !== undefined, {
     message: "At least one channel consent must be provided",
-  });
+  })
+  // A future-dated consent would permanently win the latest-consent comparison
+  // that decides marketing permission, letting a stale opt-in override a later
+  // genuine opt-out. Reject future timestamps (allowing a little clock skew).
+  .refine(
+    (value) =>
+      value.timestamp === undefined ||
+      new Date(value.timestamp).getTime() <= Date.now() + 5 * 60 * 1000,
+    {
+      message: "consent timestamp cannot be in the future",
+      path: ["timestamp"],
+    },
+  );
 
 export const manualDonationSchema = z
   .object({

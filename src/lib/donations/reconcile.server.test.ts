@@ -110,10 +110,28 @@ function createReconcileClient({
         return {
           insert(payload: unknown) {
             operations.push({ table, action: "insert", payload });
-            if (table === "webhook_event" && duplicateWebhookProcessedAt !== undefined) {
-              return Promise.resolve({ error: { code: "23505" } });
-            }
-            return Promise.resolve({ error: null });
+            const webhookConflict =
+              table === "webhook_event" && duplicateWebhookProcessedAt !== undefined;
+            // The acknowledgement claim does .insert().select("id").single().
+            const insertBuilder = {
+              select() {
+                return {
+                  single() {
+                    if (webhookConflict) {
+                      return Promise.resolve({ data: null, error: { code: "23505" } });
+                    }
+                    return Promise.resolve({ data: { id: "message-1" }, error: null });
+                  },
+                };
+              },
+              // webhook_event / audit_log inserts are awaited directly.
+              then(resolve: (value: { error: unknown }) => void) {
+                return Promise.resolve({
+                  error: webhookConflict ? { code: "23505" } : null,
+                }).then(resolve);
+              },
+            };
+            return insertBuilder;
           },
           select(columns: string) {
             return query(table, "select", columns);

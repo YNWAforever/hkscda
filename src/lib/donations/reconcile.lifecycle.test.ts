@@ -274,7 +274,20 @@ function createWebhookFake({
       return {
         insert(payload: unknown) {
           operations.push({ table, action: "insert", payload, filters: [] });
-          return Promise.resolve({ error: null });
+          // The acknowledgement claim does .insert().select("id").single();
+          // other inserts (webhook_event, audit_log) are awaited directly.
+          return {
+            select() {
+              return {
+                single() {
+                  return Promise.resolve({ data: { id: "message-1" }, error: null });
+                },
+              };
+            },
+            then(resolve: (value: { error: null }) => void) {
+              return Promise.resolve({ error: null }).then(resolve);
+            },
+          };
         },
         select() {
           return chain(table, "read");
@@ -436,22 +449,49 @@ describe("reconcileProviderPayment success path", () => {
     expect(donationUpdate?.filters).toContainEqual(["eq", "status", "pending"]);
   });
 
-  test("throws on an amount mismatch without mutating the donation", async () => {
+  test("quarantines an amount mismatch terminally: audits, acknowledges, does not credit", async () => {
     const mismatched: FakePayment = { ...pendingPaymentNoReceipt, amount_cents: 19999 };
     const { client, operations } = createWebhookFake({ payment: mismatched });
 
-    await expect(
-      reconcileProviderPayment({
-        client: client as never,
-        provider: "stripe",
-        providerRef: "cs_test_123",
-        providerEventId: "evt_mismatch",
-        eventType: "checkout.session.completed",
-        payload: {},
-      }),
-    ).rejects.toThrow("Payment amount does not match donation amount");
+    const result = await reconcileProviderPayment({
+      client: client as never,
+      provider: "stripe",
+      providerRef: "cs_test_123",
+      providerEventId: "evt_mismatch",
+      eventType: "checkout.session.completed",
+      payload: {},
+    });
 
+    // Terminal result (not a throw) so the event is marked processed and the
+    // provider stops retrying; the donation/payment are NOT credited.
+    expect(result).toEqual({
+      kind: "amount_mismatch",
+      donationId: "donation-1",
+      paymentId: "payment-1",
+      expectedCents: 20000,
+      actualCents: 19999,
+    });
     expect(operations.some((o) => o.table === "donation" && o.action === "update")).toBe(false);
+    expect(operations.some((o) => o.table === "payment" && o.action === "update")).toBe(false);
+
+    // The mismatch is flagged for manual review.
+    const mismatchAudit = operations.find(
+      (o) =>
+        o.table === "audit_log" &&
+        o.action === "insert" &&
+        (o.payload as { action?: string }).action === "payment.amount_mismatch",
+    );
+    expect(mismatchAudit).toBeTruthy();
+
+    // The event is still acknowledged (marked processed).
+    expect(
+      operations.some(
+        (o) =>
+          o.table === "webhook_event" &&
+          o.action === "update" &&
+          Boolean((o.payload as { processed_at?: string }).processed_at),
+      ),
+    ).toBe(true);
   });
 });
 
@@ -505,6 +545,22 @@ describe("reconcileManualPayment", () => {
       bank_reference: "FPS-123",
     });
     expect(operations.some((o) => o.table === "audit_log" && o.action === "insert")).toBe(true);
+  });
+
+  test("rejects (409) reconciling a payment that is not pending, without auditing", async () => {
+    // basePayment is already 'succeeded' — a replay/double-click.
+    const { client, operations } = createWebhookFake({ payment: basePayment });
+
+    const rejection = reconcileManualPayment({
+      client: client as never,
+      paymentId: "payment-1",
+      actorUserId: "admin-1",
+      bankReference: "FPS-DUP",
+    });
+
+    await expect(rejection).rejects.toBeInstanceOf(Response);
+    // No duplicate mark_received audit row for a payment that changed nothing.
+    expect(operations.some((o) => o.table === "audit_log" && o.action === "insert")).toBe(false);
   });
 });
 

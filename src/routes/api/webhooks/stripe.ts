@@ -117,7 +117,39 @@ export const Route = createFileRoute("/api/webhooks/stripe")({
             return Response.json({ received: true, skipped: "partial_refund" });
           }
           const sessionId = await resolveChargeSessionId(stripe, charge);
-          if (!sessionId) return Response.json({ received: true, skipped: "session_not_found" });
+          if (!sessionId) {
+            // A full refund we can't map to a Checkout Session: the donation and
+            // its tax receipt can't be auto-reversed. Do NOT silently 200-ack
+            // (the refunded donor would keep a valid IRD receipt). Flag it for
+            // manual review and alert; retrying won't resolve it, so still
+            // acknowledge to stop the provider retry storm.
+            const paymentIntent =
+              typeof charge.payment_intent === "string"
+                ? charge.payment_intent
+                : (charge.payment_intent?.id ?? null);
+            console.error(
+              "Stripe full refund could not be mapped to a payment; manual review required",
+              {
+                chargeId: charge.id,
+                paymentIntent,
+                eventId: event.id,
+              },
+            );
+            await base.client.from("audit_log").insert({
+              actor_user_id: null,
+              action: "payment.refund_unreconciled",
+              entity: "payment",
+              entity_id: charge.id ?? "unknown",
+              detail: {
+                provider: "stripe",
+                reason: "session_not_found",
+                chargeId: charge.id ?? null,
+                paymentIntent,
+                eventId: event.id,
+              },
+            });
+            return Response.json({ received: true, skipped: "session_not_found_flagged" });
+          }
           await refundProviderPayment({ ...base, providerRef: sessionId });
           return Response.json({ received: true });
         } catch (error) {

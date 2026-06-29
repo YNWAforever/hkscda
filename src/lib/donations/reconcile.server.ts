@@ -260,23 +260,11 @@ export async function issueReceiptIfNeeded(
   return receipt.receipt_no;
 }
 
-async function hasDonationAcknowledgement(client: SupabaseClient, payment: PaymentWithDonation) {
-  const { data, error } = await client
-    .from("message")
-    .select("id")
-    .eq("supporter_id", payment.donation.supporter_id)
-    .eq("channel", "email")
-    .contains("payload", {
-      kind: "donation_acknowledgement",
-      donationId: payment.donation.id,
-    })
-    .maybeSingle();
-
-  if (error) throw error;
-  return Boolean(data?.id);
-}
-
-async function completeDonationSideEffects(
+// Both side effects are idempotent: issue_receipt is idempotent per donation
+// (private RPC), and sendDonationAcknowledgement atomically claims a unique
+// message row before sending. So this is safe to run on the duplicate-replay
+// branch as a recovery for a first attempt that failed mid-way.
+export async function completeDonationSideEffects(
   client: SupabaseClient,
   payment: PaymentWithDonation,
   deps: ReconcileDeps = {},
@@ -289,17 +277,15 @@ async function completeDonationSideEffects(
     ? await issueReceiptIfNeeded(client, payment, deps)
     : undefined;
 
-  if (!(await hasDonationAcknowledgement(client, payment))) {
-    await sendDonationAcknowledgement(client, {
-      supporterId: donation.supporter_id,
-      donationId: donation.id,
-      to: donation.supporter.email,
-      donorName: donation.supporter.name,
-      amountCents: donation.amount_cents,
-      language: donation.supporter.language,
-      receiptNo,
-    });
-  }
+  await sendDonationAcknowledgement(client, {
+    supporterId: donation.supporter_id,
+    donationId: donation.id,
+    to: donation.supporter.email,
+    donorName: donation.supporter.name,
+    amountCents: donation.amount_cents,
+    language: donation.supporter.language,
+    receiptNo,
+  });
 
   return receiptNo;
 }
@@ -311,8 +297,32 @@ async function applySucceededPayment(
 ) {
   const deps = options.deps ?? {};
 
+  // An amount mismatch is a permanent (poison) condition: retrying will never
+  // reconcile it. Throwing here would propagate before the webhook event is
+  // marked processed, so the provider would retry forever and the genuinely
+  // paid donation would stay stuck pending. Instead, flag it for manual review
+  // and return a terminal result so the event is acknowledged (200) and the
+  // payment is NOT credited.
   if (payment.amount_cents !== payment.donation.amount_cents) {
-    throw new Error("Payment amount does not match donation amount");
+    const { error: auditError } = await client.from("audit_log").insert({
+      actor_user_id: options.actorUserId ?? null,
+      action: "payment.amount_mismatch",
+      entity: "payment",
+      entity_id: payment.id,
+      detail: {
+        donationId: payment.donation.id,
+        expectedCents: payment.donation.amount_cents,
+        actualCents: payment.amount_cents,
+      },
+    });
+    if (auditError) throw auditError;
+    return {
+      kind: "amount_mismatch" as const,
+      donationId: payment.donation.id,
+      paymentId: payment.id,
+      expectedCents: payment.donation.amount_cents,
+      actualCents: payment.amount_cents,
+    };
   }
 
   const plan = buildReconciliationPlan({
@@ -396,7 +406,18 @@ async function processProviderWebhook<T>(
   }
 
   const result = await apply(payment);
-  await markWebhookEventProcessed(args, reservation.processingOwner);
+  // The mutations + side effects are already committed. If marking the event
+  // processed fails now, do NOT 500 (which would make the provider retry and
+  // re-run everything). The work is idempotent, so log and acknowledge; a
+  // future redelivery re-claims the still-unprocessed event and no-ops.
+  try {
+    await markWebhookEventProcessed(args, reservation.processingOwner);
+  } catch (markError) {
+    console.error(
+      "Failed to mark webhook event processed after applying; side effects already committed",
+      markError,
+    );
+  }
   return result;
 }
 
@@ -407,6 +428,40 @@ export async function reconcileProviderPayment(
   return processProviderWebhook(args, (payment) =>
     applySucceededPayment(args.client, payment, { deps }),
   );
+}
+
+// Run a side-effectful capture (PayPal CHECKOUT.ORDER.APPROVED) behind the same
+// webhook-event reservation as reconcile, so a redelivered approval event is
+// detected as a duplicate BEFORE the external capture call instead of relying
+// on the provider swallowing an "already captured" error.
+export async function processCaptureWebhook(
+  args: ReconcileProviderArgs,
+  capture: () => Promise<void>,
+): Promise<{ kind: "captured" } | { kind: "duplicate" }> {
+  const reservation = await reserveWebhookEvent(args);
+  if (reservation.kind === "duplicate") return { kind: "duplicate" as const };
+
+  await capture();
+
+  try {
+    await markWebhookEventProcessed(args, reservation.processingOwner);
+  } catch (markError) {
+    console.error("Failed to mark capture webhook processed; capture already completed", markError);
+  }
+  return { kind: "captured" as const };
+}
+
+// Run the post-success side effects (tax receipt + acknowledgement) for a
+// payment that was created already-succeeded — e.g. a manually recorded offline
+// gift — so it gets the same receipt + acknowledgement as a reconciled online
+// gift instead of silently getting neither.
+export async function issueManualDonationSideEffects(
+  client: SupabaseClient,
+  paymentId: string,
+  deps: ReconcileDeps = {},
+) {
+  const payment = await findPaymentById(client, paymentId);
+  return completeDonationSideEffects(client, payment, deps);
 }
 
 export async function failProviderPayment(args: ReconcileProviderArgs) {
@@ -453,18 +508,45 @@ export async function refundProviderPayment(args: ReconcileProviderArgs) {
 
 export async function reconcileManualPayment(args: ReconcileManualArgs) {
   const payment = await findPaymentById(args.client, args.paymentId);
+
+  // Only a pending payment can be manually reconciled. A replay/double-click on
+  // an already-reconciled payment must not append a duplicate audit row or
+  // appear to record a fresh bank reference that was never written.
+  if (payment.status !== "pending") {
+    throw Response.json(
+      { error: "Payment is not pending and cannot be reconciled", status: payment.status },
+      { status: 409 },
+    );
+  }
+
   const result = await applySucceededPayment(args.client, payment, {
     actorUserId: args.actorUserId,
     bankReference: args.bankReference,
   });
 
-  await args.client.from("audit_log").insert({
-    actor_user_id: args.actorUserId,
-    action: "payment.mark_received",
-    entity: "payment",
-    entity_id: args.paymentId,
-    detail: { bankReference: args.bankReference, result },
-  });
+  if (result.kind === "amount_mismatch") {
+    throw Response.json(
+      {
+        error: "Payment amount does not match the donation amount",
+        expectedCents: result.expectedCents,
+        actualCents: result.actualCents,
+      },
+      { status: 422 },
+    );
+  }
+
+  // Only write the mark_received audit row for a genuine state change; a
+  // duplicate/skip changed nothing and must not pollute the financial trail.
+  if (result.kind === "applied") {
+    const { error: auditError } = await args.client.from("audit_log").insert({
+      actor_user_id: args.actorUserId,
+      action: "payment.mark_received",
+      entity: "payment",
+      entity_id: args.paymentId,
+      detail: { bankReference: args.bankReference, result },
+    });
+    if (auditError) throw auditError;
+  }
 
   return result;
 }
@@ -481,8 +563,15 @@ export async function issueReceiptForDonation(
     .select(PAYMENT_WITH_DONATION_SELECT)
     .eq("donation_id", donationId)
     .eq("status", "succeeded")
-    .single();
+    .order("received_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
   if (error) throw error;
+  if (!data) {
+    // No (yet) succeeded payment for this donation — an expected operator state
+    // (e.g. issuing before reconcile completes), not a server fault.
+    throw Response.json({ error: "No succeeded payment for this donation" }, { status: 409 });
+  }
 
   const receiptNo = await issueReceiptIfNeeded(
     client,

@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { issueManualDonationSideEffects } from "../donations/reconcile.server";
 import type { DonationExportRow } from "./csv";
 import { latestConsentByChannel } from "./consent";
 import { assembleSupporterTimeline } from "./timeline";
@@ -612,8 +613,17 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
 
     async insertConsentRows(rows) {
       if (rows.length === 0) return;
-      const { error } = await client.from("consent").insert(rows);
+      // Replays/double-clicks must not append duplicate rows to the legal
+      // consent ledger. consent_dedup_unique backs this; ignore exact dupes.
+      const { error } = await client.from("consent").upsert(rows, {
+        onConflict: "supporter_id,channel,status,source,timestamp",
+        ignoreDuplicates: true,
+      });
       if (error) throw error;
+    },
+
+    async completeManualDonationSideEffects(paymentId) {
+      await issueManualDonationSideEffects(client, paymentId);
     },
 
     async insertManualDonation(records) {
@@ -639,6 +649,19 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
 
     async listSupportersForExport(input) {
       const result = await fetchSupporterSummaries(client, input, { from: 0, to: exportLimit - 1 });
+      // Never return a silently-truncated donor-PII export that looks complete.
+      // fetchSupporterSummaries counts the full match set, so reject when it
+      // exceeds the page and tell the operator to narrow the filters.
+      if (result.total > exportLimit) {
+        throw Response.json(
+          {
+            error: `Export matches ${result.total} supporters, exceeding the ${exportLimit}-row limit. Narrow your filters and try again.`,
+            total: result.total,
+            limit: exportLimit,
+          },
+          { status: 413 },
+        );
+      }
       return result.supporters;
     },
 
