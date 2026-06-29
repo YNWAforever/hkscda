@@ -57,6 +57,9 @@ function createFakeRepository(): CrmRepository & {
       calls.push({ name: "insertManualDonation", payload: records });
       return { donationId: records.donation.id, paymentId: "payment-1" };
     },
+    async completeManualDonationSideEffects(paymentId) {
+      calls.push({ name: "completeManualDonationSideEffects", payload: paymentId });
+    },
     async listSupportersForExport(input) {
       calls.push({ name: "listSupportersForExport", payload: input });
       return [supporter()];
@@ -216,6 +219,8 @@ describe("createCrmService", () => {
       "ensureSupporterRole",
       "insertConsentRows",
       "insertManualDonation",
+      // succeeded manual gift triggers receipt + acknowledgement side effects
+      "completeManualDonationSideEffects",
     ]);
     expect(repo.calls[2].payload).toMatchObject([
       {

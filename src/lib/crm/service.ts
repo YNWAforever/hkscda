@@ -46,6 +46,9 @@ export type CrmRepository = {
   insertManualDonation(
     records: ManualDonationRecords,
   ): Promise<{ donationId: string; paymentId: string }>;
+  // Issue the tax receipt + acknowledgement for a manual gift recorded as
+  // already-succeeded, so it isn't silently skipped like an online reconcile.
+  completeManualDonationSideEffects(paymentId: string): Promise<void>;
   listSupportersForExport(input: ExportSearch): Promise<SupporterSummary[]>;
   listDonationsForExport(input: ExportSearch): Promise<DonationExportRow[]>;
   insertAuditLog(row: AuditLogInsert): Promise<void>;
@@ -165,7 +168,16 @@ export function createCrmService({ repo, now = () => new Date() }: CreateCrmServ
         );
       }
 
-      return repo.insertManualDonation(records);
+      const ids = await repo.insertManualDonation(records);
+
+      // A manual gift recorded as already-succeeded must get the same receipt +
+      // acknowledgement as a reconciled online gift; otherwise a receipt-eligible
+      // donor silently never gets their IRD tax receipt.
+      if (input.paymentStatus === "succeeded") {
+        await repo.completeManualDonationSideEffects(ids.paymentId);
+      }
+
+      return ids;
     },
 
     async exportSupporters(args: { actorUserId: string | null; rawSearch: unknown }) {
