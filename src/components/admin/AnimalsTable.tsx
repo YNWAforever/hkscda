@@ -1,18 +1,37 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
+
 import { supabase } from "../../lib/supabase";
 import type { Animal } from "../../types/animal";
+import { DataTable, type DataTableColumn } from "./DataTable";
+import { StatusPill, type StatusTone } from "./StatusBadge";
 
 interface AnimalsTableProps {
   animals: Animal[];
   onDeleted: () => void;
 }
 
-const statusLabels: Record<string, { label: string; className: string }> = {
-  available: { label: "可領養", className: "bg-green-100 text-green-700" },
-  adopted: { label: "已領養", className: "bg-orange-100 text-orange-700" },
-  fostered: { label: "暫托中", className: "bg-blue-100 text-blue-700" },
+const statusLabels: Record<string, { label: string; tone: StatusTone }> = {
+  available: { label: "可領養", tone: "success" },
+  adopted: { label: "已領養", tone: "warning" },
+  fostered: { label: "暫托中", tone: "info" },
 };
+
+function AnimalStatus({ status }: { status: string }) {
+  const meta = statusLabels[status];
+  return <StatusPill tone={meta?.tone ?? "neutral"}>{meta?.label ?? status}</StatusPill>;
+}
+
+function AnimalAvatar({ animal }: { animal: Animal }) {
+  if (animal.image_url) {
+    return <img src={animal.image_url} alt="" className="h-10 w-10 rounded object-cover" />;
+  }
+  return (
+    <div className="flex h-10 w-10 items-center justify-center rounded bg-[var(--color-surface-2)] text-lg">
+      {animal.type === "dog" ? "🐶" : "🐱"}
+    </div>
+  );
+}
 
 export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
   const [search, setSearch] = useState("");
@@ -30,114 +49,129 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
     onDeleted();
   }
 
+  function AnimalActions({ animal }: { animal: Animal }) {
+    return (
+      <div className="flex gap-3">
+        <Link
+          to="/admin/coordinator/animals"
+          search={{ animalId: animal.id }}
+          className="text-xs text-[var(--color-primary)] hover:underline"
+        >
+          流程
+        </Link>
+        <Link
+          to="/admin/animals/$id/edit"
+          params={{ id: animal.id }}
+          className="text-xs text-[var(--color-panel)] hover:underline"
+        >
+          編輯
+        </Link>
+        {confirmDelete === animal.id ? (
+          <span className="flex gap-2 text-xs">
+            <button
+              onClick={() => handleDelete(animal.id)}
+              className="text-[var(--color-error)] hover:underline"
+            >
+              確認
+            </button>
+            <button
+              onClick={() => setConfirmDelete(null)}
+              className="text-[var(--color-text-muted)] hover:underline"
+            >
+              取消
+            </button>
+          </span>
+        ) : (
+          <button
+            onClick={() => setConfirmDelete(animal.id)}
+            className="text-xs text-[var(--color-error)] hover:underline"
+          >
+            刪除
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  const columns: DataTableColumn<Animal>[] = [
+    {
+      id: "photo",
+      header: "照片",
+      cell: (animal) => <AnimalAvatar animal={animal} />,
+    },
+    {
+      id: "name",
+      header: "名字",
+      cell: (animal) => (
+        <span className="font-medium">
+          {animal.name}
+          {animal.name_en && (
+            <span className="ml-1 font-normal text-[var(--color-text-muted)]">
+              {animal.name_en}
+            </span>
+          )}
+        </span>
+      ),
+    },
+    {
+      id: "gender",
+      header: "性別",
+      cell: (animal) => (animal.gender === "male" ? "公" : "母"),
+    },
+    {
+      id: "age",
+      header: "年齡",
+      cell: (animal) => animal.age,
+    },
+    {
+      id: "status",
+      header: "狀態",
+      cell: (animal) => <AnimalStatus status={animal.status} />,
+    },
+    {
+      id: "actions",
+      header: "操作",
+      cell: (animal) => <AnimalActions animal={animal} />,
+    },
+  ];
+
   return (
     <div className="space-y-4">
       <input
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="搜尋名字…"
-        className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full max-w-xs"
+        className="w-full max-w-xs rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
       />
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-gray-100 text-gray-600 text-xs uppercase">
-              <th className="text-left p-3">照片</th>
-              <th className="text-left p-3">名字</th>
-              <th className="text-left p-3">性別</th>
-              <th className="text-left p-3">年齡</th>
-              <th className="text-left p-3">狀態</th>
-              <th className="text-left p-3">操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((animal) => {
-              const status = statusLabels[animal.status];
-              return (
-                <tr key={animal.id} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="p-3">
-                    {animal.image_url ? (
-                      <img
-                        src={animal.image_url}
-                        alt=""
-                        className="w-10 h-10 rounded object-cover"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 rounded bg-gray-100 flex items-center justify-center text-lg">
-                        {animal.type === "dog" ? "🐶" : "🐱"}
-                      </div>
-                    )}
-                  </td>
-                  <td className="p-3 font-medium">
-                    {animal.name}
-                    {animal.name_en && (
-                      <span className="text-gray-400 ml-1 font-normal">{animal.name_en}</span>
-                    )}
-                  </td>
-                  <td className="p-3">{animal.gender === "male" ? "公" : "母"}</td>
-                  <td className="p-3">{animal.age}</td>
-                  <td className="p-3">
-                    <span
-                      className={`px-2 py-0.5 rounded-full text-xs font-medium ${status.className}`}
-                    >
-                      {status.label}
+      <DataTable
+        columns={columns}
+        rows={filtered}
+        getRowKey={(animal) => animal.id}
+        empty="沒有結果"
+        renderMobileCard={(animal) => (
+          <div className="flex items-start gap-3">
+            <AnimalAvatar animal={animal} />
+            <div className="min-w-0 flex-1 space-y-1.5">
+              <div className="flex items-center justify-between gap-2">
+                <span className="truncate font-medium">
+                  {animal.name}
+                  {animal.name_en && (
+                    <span className="ml-1 font-normal text-[var(--color-text-muted)]">
+                      {animal.name_en}
                     </span>
-                  </td>
-                  <td className="p-3">
-                    <div className="flex gap-3">
-                      <Link
-                        to="/admin/coordinator/animals"
-                        search={{ animalId: animal.id }}
-                        className="text-[var(--color-primary)] hover:underline text-xs"
-                      >
-                        流程
-                      </Link>
-                      <Link
-                        to="/admin/animals/$id/edit"
-                        params={{ id: animal.id }}
-                        className="text-blue-600 hover:underline text-xs"
-                      >
-                        編輯
-                      </Link>
-                      {confirmDelete === animal.id ? (
-                        <span className="flex gap-2 text-xs">
-                          <button
-                            onClick={() => handleDelete(animal.id)}
-                            className="text-red-600 hover:underline"
-                          >
-                            確認
-                          </button>
-                          <button
-                            onClick={() => setConfirmDelete(null)}
-                            className="text-gray-500 hover:underline"
-                          >
-                            取消
-                          </button>
-                        </span>
-                      ) : (
-                        <button
-                          onClick={() => setConfirmDelete(animal.id)}
-                          className="text-red-500 hover:underline text-xs"
-                        >
-                          刪除
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-            {filtered.length === 0 && (
-              <tr>
-                <td colSpan={6} className="p-6 text-center text-gray-400">
-                  沒有結果
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+                  )}
+                </span>
+                <AnimalStatus status={animal.status} />
+              </div>
+              <p className="text-xs text-[var(--color-text-muted)]">
+                {animal.gender === "male" ? "公" : "母"} · {animal.age}
+              </p>
+              <AnimalActions animal={animal} />
+            </div>
+          </div>
+        )}
+      />
     </div>
   );
 }
