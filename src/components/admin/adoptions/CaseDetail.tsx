@@ -301,7 +301,7 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
       <div className="space-y-5 p-6">
         <Link
           to="/admin/applications"
-          className="inline-flex items-center gap-2 text-sm font-medium text-[var(--color-primary)] hover:underline"
+          className="inline-flex items-center gap-2 py-2 text-sm font-medium text-[var(--color-primary)] hover:underline"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to cases
@@ -321,7 +321,7 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
         <div className="space-y-2">
           <Link
             to="/admin/applications"
-            className="inline-flex items-center gap-2 text-sm font-medium text-[var(--color-primary)] hover:underline"
+            className="inline-flex items-center gap-2 py-2 text-sm font-medium text-[var(--color-primary)] hover:underline"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to cases
