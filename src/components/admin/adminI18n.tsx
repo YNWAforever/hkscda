@@ -4,7 +4,7 @@ export type AdminLanguage = "zh" | "en";
 
 const STORAGE_KEY = "hkscda-admin-language";
 
-type AdminSection = "cat" | "dog" | "sponsor" | "applications";
+type AdminSection = "cat" | "dog" | "sponsor" | "applications" | "payments" | "supporters";
 type AnimalType = "cat" | "dog" | "sponsor";
 type Gender = "female" | "male";
 type AnimalStatus = "available" | "adopted" | "fostered";
@@ -25,8 +25,16 @@ interface AdminCopy {
     confirm: string;
     noResults: string;
     add: string;
+    workflow: string;
   };
   nav: Record<AdminSection, string>;
+  navGroups: Record<string, string>;
+  navItems: Record<string, string>;
+  layout: {
+    collapseSidebar: string;
+    expandSidebar: string;
+    openMenu: string;
+  };
   login: {
     subtitle: string;
     email: string;
@@ -43,6 +51,10 @@ interface AdminCopy {
     phone: string;
     date: string;
     status: string;
+    supporters: string;
+    applicationsMovedTitle: string;
+    applicationsMovedDescription: string;
+    openAdoptionCases: string;
   };
   table: {
     search: string;
@@ -110,12 +122,38 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       confirm: "確認",
       noResults: "沒有結果",
       add: "新增",
+      workflow: "流程",
     },
     nav: {
       cat: "貓貓",
       dog: "狗狗",
       sponsor: "助養",
       applications: "申請",
+      payments: "收款",
+      supporters: "捐款人",
+    },
+    navGroups: {
+      animals: "動物",
+      adoptions: "領養",
+      donations: "捐款",
+    },
+    navItems: {
+      cat: "貓貓",
+      dog: "狗狗",
+      sponsor: "助養",
+      applications: "申請",
+      "coordinator-intake": "手動建案",
+      "coordinator-tasks": "工作跟進",
+      "coordinator-adopters": "領養人",
+      "coordinator-reports": "報表紀錄",
+      "coordinator-statuses": "狀態設定",
+      payments: "收款",
+      supporters: "捐款人",
+    },
+    layout: {
+      collapseSidebar: "收合側欄",
+      expandSidebar: "展開側欄",
+      openMenu: "開啟選單",
     },
     login: {
       subtitle: "管理後台登入",
@@ -131,6 +169,8 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
         dog: "狗狗",
         sponsor: "助養動物",
         applications: "領養申請",
+        payments: "收款紀錄",
+        supporters: "捐款人",
       },
       addNew: "新增",
       applicant: "申請人",
@@ -138,6 +178,11 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       phone: "電話",
       date: "日期",
       status: "狀態",
+      supporters: "捐款人紀錄",
+      applicationsMovedTitle: "領養申請已移至協調員工作流程",
+      applicationsMovedDescription:
+        "請使用協調員個案列表處理申請審核、狀態變更、動物配對、跟進及完成領養。",
+      openAdoptionCases: "開啟領養個案",
     },
     table: {
       search: "搜尋名字...",
@@ -218,12 +263,38 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       confirm: "Confirm",
       noResults: "No results",
       add: "Add",
+      workflow: "Workflow",
     },
     nav: {
       cat: "Cats",
       dog: "Dogs",
       sponsor: "Sponsors",
       applications: "Applications",
+      payments: "Payments",
+      supporters: "Supporters",
+    },
+    navGroups: {
+      animals: "Animals",
+      adoptions: "Adoptions",
+      donations: "Donations",
+    },
+    navItems: {
+      cat: "Cats",
+      dog: "Dogs",
+      sponsor: "Sponsors",
+      applications: "Applications",
+      "coordinator-intake": "Manual intake",
+      "coordinator-tasks": "Tasks",
+      "coordinator-adopters": "Adopters",
+      "coordinator-reports": "Reports",
+      "coordinator-statuses": "Status settings",
+      payments: "Payments",
+      supporters: "Supporters",
+    },
+    layout: {
+      collapseSidebar: "Collapse sidebar",
+      expandSidebar: "Expand sidebar",
+      openMenu: "Open menu",
     },
     login: {
       subtitle: "Admin sign in",
@@ -239,6 +310,8 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
         dog: "Dogs",
         sponsor: "Sponsor animals",
         applications: "Adoption applications",
+        payments: "Payment records",
+        supporters: "Supporters",
       },
       addNew: "Add new",
       applicant: "Applicant",
@@ -246,6 +319,11 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       phone: "Phone",
       date: "Date",
       status: "Status",
+      supporters: "Supporter records",
+      applicationsMovedTitle: "Adoption applications moved to coordinator workflow",
+      applicationsMovedDescription:
+        "Use the coordinator case list for application review, status changes, animal matches, follow-ups, and finalization.",
+      openAdoptionCases: "Open adoption cases",
     },
     table: {
       search: "Search by name...",

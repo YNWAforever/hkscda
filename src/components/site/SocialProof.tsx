@@ -67,7 +67,7 @@ export function SocialProof() {
             {press.map((p) => (
               <span
                 key={p}
-                className="font-display text-lg lg:text-xl font-bold text-[var(--color-text-faint)] hover:text-[var(--color-text-muted)] transition-colors"
+                className="font-display text-lg lg:text-xl font-bold text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
               >
                 {p}
               </span>

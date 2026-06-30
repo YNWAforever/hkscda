@@ -14,6 +14,7 @@
  *   ADMIN_EMAIL=admin@example.com
  *   ADMIN_PASSWORD=your-password
  *   ADMIN_NAME=Admin               (optional, defaults to "Admin")
+ *   ADMIN_ROLE=admin                (optional: staff, treasurer, admin)
  *
  * Run:
  *   ADMIN_EMAIL=admin@example.com ADMIN_PASSWORD=change-this npm run seed:admin
@@ -44,6 +45,7 @@ const SERVICE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
 const ADMIN_EMAIL = env.ADMIN_EMAIL;
 const ADMIN_PASSWORD = env.ADMIN_PASSWORD;
 const ADMIN_NAME = env.ADMIN_NAME || "Admin";
+const ADMIN_ROLE = env.ADMIN_ROLE || "admin";
 
 // ── Validation ───────────────────────────────────────────────────────────────
 
@@ -70,6 +72,10 @@ if (ADMIN_PASSWORD.length < 8) {
   console.error("✗ ADMIN_PASSWORD must be at least 8 characters.");
   process.exit(1);
 }
+if (!["staff", "treasurer", "admin"].includes(ADMIN_ROLE)) {
+  console.error("✗ ADMIN_ROLE must be one of: staff, treasurer, admin.");
+  process.exit(1);
+}
 
 const supabase = createClient(SUPABASE_URL, SERVICE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
@@ -91,39 +97,65 @@ async function main() {
   }
 
   const existing = users.find((u) => u.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase());
+  let authUser = existing;
 
   if (existing) {
-    const { error } = await supabase.auth.admin.updateUserById(existing.id, {
+    const { data, error } = await supabase.auth.admin.updateUserById(existing.id, {
       password: ADMIN_PASSWORD,
       email_confirm: true,
-      user_metadata: { name: ADMIN_NAME, role: "admin" },
-      app_metadata: { role: "admin" },
+      user_metadata: { name: ADMIN_NAME, role: ADMIN_ROLE },
+      app_metadata: { role: ADMIN_ROLE },
     });
     if (error) {
       console.error("✗ Update failed:", error.message);
       process.exit(1);
     }
+    authUser = data.user;
     console.log("✓ Admin updated (existing account)");
   } else {
-    const { error } = await supabase.auth.admin.createUser({
+    const { data, error } = await supabase.auth.admin.createUser({
       email: ADMIN_EMAIL,
       password: ADMIN_PASSWORD,
       email_confirm: true,
-      user_metadata: { name: ADMIN_NAME, role: "admin" },
-      app_metadata: { role: "admin" },
+      user_metadata: { name: ADMIN_NAME, role: ADMIN_ROLE },
+      app_metadata: { role: ADMIN_ROLE },
     });
     if (error) {
       console.error("✗ Create failed:", error.message);
       process.exit(1);
     }
+    authUser = data.user;
     console.log("✓ Admin created");
   }
+
+  if (!authUser?.id) {
+    console.error("✗ Auth user was not returned by Supabase.");
+    process.exit(1);
+  }
+
+  const { error: adminUserError } = await supabase.from("admin_user").upsert(
+    {
+      auth_user_id: authUser.id,
+      email: ADMIN_EMAIL.toLowerCase(),
+      role: ADMIN_ROLE,
+      status: "active",
+    },
+    { onConflict: "auth_user_id" },
+  );
+
+  if (adminUserError) {
+    console.error("✗ Admin role sync failed:", adminUserError.message);
+    console.error("  Make sure Supabase migrations have been applied before seeding admin users.");
+    process.exit(1);
+  }
+  console.log(`✓ Admin role synced (${ADMIN_ROLE})`);
 
   console.log("");
   console.log(`  Login URL : http://localhost:8080/admin/login`);
   console.log(`  Email     : ${ADMIN_EMAIL}`);
   console.log(`  Password  : [hidden]`);
   console.log(`  Name      : ${ADMIN_NAME}`);
+  console.log(`  Role      : ${ADMIN_ROLE}`);
 }
 
 main().catch((e) => {

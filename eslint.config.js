@@ -12,6 +12,8 @@ export default tseslint.config(
       ".output/**",
       ".vinxi/**",
       ".vercel/**",
+      ".nitro/**",
+      "node_modules/**",
       "node_modules/.nitro/**",
       ".codex/**",
       ".superpowers/**",

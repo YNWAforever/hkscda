@@ -1,8 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Cat, Dog } from "lucide-react";
+
 import { supabase } from "../../lib/supabase";
 import type { Animal } from "../../types/animal";
+import { DataTable, type DataTableColumn } from "./DataTable";
+import { StatusPill, type StatusTone } from "./StatusBadge";
 import { useAdminLanguage } from "./adminI18n";
 
 interface AnimalsTableProps {
@@ -10,11 +12,31 @@ interface AnimalsTableProps {
   onDeleted: () => void;
 }
 
-const statusClasses: Record<string, string> = {
-  available: "bg-green-100 text-green-700",
-  adopted: "bg-orange-100 text-orange-700",
-  fostered: "bg-blue-100 text-blue-700",
+const statusTones: Record<string, StatusTone> = {
+  available: "success",
+  adopted: "warning",
+  fostered: "info",
 };
+
+function AnimalStatus({ status }: { status: string }) {
+  const { copy } = useAdminLanguage();
+  const label =
+    status in copy.animalStatus
+      ? copy.animalStatus[status as keyof typeof copy.animalStatus]
+      : status;
+  return <StatusPill tone={statusTones[status] ?? "neutral"}>{label}</StatusPill>;
+}
+
+function AnimalAvatar({ animal }: { animal: Animal }) {
+  if (animal.image_url) {
+    return <img src={animal.image_url} alt="" className="h-10 w-10 rounded object-cover" />;
+  }
+  return (
+    <div className="flex h-10 w-10 items-center justify-center rounded bg-[var(--color-surface-2)] text-lg">
+      {animal.type === "dog" ? "🐶" : "🐱"}
+    </div>
+  );
+}
 
 export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
   const { copy } = useAdminLanguage();
@@ -22,9 +44,9 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   const filtered = animals.filter(
-    (a) =>
-      a.name.toLowerCase().includes(search.toLowerCase()) ||
-      (a.name_en ?? "").toLowerCase().includes(search.toLowerCase()),
+    (animal) =>
+      animal.name.toLowerCase().includes(search.toLowerCase()) ||
+      (animal.name_en ?? "").toLowerCase().includes(search.toLowerCase()),
   );
 
   async function handleDelete(id: string) {
@@ -33,110 +55,132 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
     onDeleted();
   }
 
+  function AnimalActions({ animal }: { animal: Animal }) {
+    return (
+      <div className="flex gap-3">
+        <Link
+          to="/admin/coordinator/animals"
+          search={{ animalId: animal.id }}
+          className="text-xs text-[var(--color-primary)] hover:underline"
+        >
+          {copy.common.workflow}
+        </Link>
+        <Link
+          to="/admin/animals/$id/edit"
+          params={{ id: animal.id }}
+          className="text-xs text-[var(--color-panel)] hover:underline"
+        >
+          {copy.common.edit}
+        </Link>
+        {confirmDelete === animal.id ? (
+          <span className="flex gap-2 text-xs">
+            <button
+              type="button"
+              onClick={() => handleDelete(animal.id)}
+              className="text-[var(--color-error)] hover:underline"
+            >
+              {copy.common.confirm}
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfirmDelete(null)}
+              className="text-[var(--color-text-muted)] hover:underline"
+            >
+              {copy.common.cancel}
+            </button>
+          </span>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setConfirmDelete(animal.id)}
+            className="text-xs text-[var(--color-error)] hover:underline"
+          >
+            {copy.common.delete}
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  const columns: DataTableColumn<Animal>[] = [
+    {
+      id: "photo",
+      header: copy.table.photo,
+      cell: (animal) => <AnimalAvatar animal={animal} />,
+    },
+    {
+      id: "name",
+      header: copy.table.name,
+      cell: (animal) => (
+        <span className="font-medium">
+          {animal.name}
+          {animal.name_en && (
+            <span className="ml-1 font-normal text-[var(--color-text-muted)]">
+              {animal.name_en}
+            </span>
+          )}
+        </span>
+      ),
+    },
+    {
+      id: "gender",
+      header: copy.table.gender,
+      cell: (animal) => copy.gender[animal.gender],
+    },
+    {
+      id: "age",
+      header: copy.table.age,
+      cell: (animal) => animal.age,
+    },
+    {
+      id: "status",
+      header: copy.table.status,
+      cell: (animal) => <AnimalStatus status={animal.status} />,
+    },
+    {
+      id: "actions",
+      header: copy.table.actions,
+      cell: (animal) => <AnimalActions animal={animal} />,
+    },
+  ];
+
   return (
     <div className="space-y-4">
       <input
         value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        onChange={(event) => setSearch(event.target.value)}
         placeholder={copy.table.search}
-        className="border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] rounded-lg px-3 py-2 text-sm w-full max-w-xs focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary-highlight)]"
+        className="w-full max-w-xs rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] shadow-sm focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-highlight)]"
       />
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-gray-100 text-gray-600 text-xs uppercase">
-              <th className="text-left p-3">{copy.table.photo}</th>
-              <th className="text-left p-3">{copy.table.name}</th>
-              <th className="text-left p-3">{copy.table.gender}</th>
-              <th className="text-left p-3">{copy.table.age}</th>
-              <th className="text-left p-3">{copy.table.status}</th>
-              <th className="text-left p-3">{copy.table.actions}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((animal) => {
-              return (
-                <tr key={animal.id} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="p-3">
-                    {animal.image_url ? (
-                      <img
-                        src={animal.image_url}
-                        alt=""
-                        className="w-10 h-10 rounded object-cover"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 rounded bg-gray-100 flex items-center justify-center text-gray-400">
-                        {animal.type === "dog" ? (
-                          <Dog className="h-5 w-5" aria-hidden="true" />
-                        ) : (
-                          <Cat className="h-5 w-5" aria-hidden="true" />
-                        )}
-                      </div>
-                    )}
-                  </td>
-                  <td className="p-3 font-medium">
-                    {animal.name}
-                    {animal.name_en && (
-                      <span className="text-gray-400 ml-1 font-normal">{animal.name_en}</span>
-                    )}
-                  </td>
-                  <td className="p-3">{copy.gender[animal.gender]}</td>
-                  <td className="p-3">{animal.age}</td>
-                  <td className="p-3">
-                    <span
-                      className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusClasses[animal.status]}`}
-                    >
-                      {copy.animalStatus[animal.status]}
+      <DataTable
+        columns={columns}
+        rows={filtered}
+        getRowKey={(animal) => animal.id}
+        empty={copy.common.noResults}
+        renderMobileCard={(animal) => (
+          <div className="flex items-start gap-3">
+            <AnimalAvatar animal={animal} />
+            <div className="min-w-0 flex-1 space-y-1.5">
+              <div className="flex items-center justify-between gap-2">
+                <span className="truncate font-medium">
+                  {animal.name}
+                  {animal.name_en && (
+                    <span className="ml-1 font-normal text-[var(--color-text-muted)]">
+                      {animal.name_en}
                     </span>
-                  </td>
-                  <td className="p-3">
-                    <div className="flex gap-3">
-                      <Link
-                        to="/admin/animals/$id/edit"
-                        params={{ id: animal.id }}
-                        className="text-blue-600 hover:underline text-xs"
-                      >
-                        {copy.common.edit}
-                      </Link>
-                      {confirmDelete === animal.id ? (
-                        <span className="flex gap-2 text-xs">
-                          <button
-                            onClick={() => handleDelete(animal.id)}
-                            className="text-red-600 hover:underline"
-                          >
-                            {copy.common.confirm}
-                          </button>
-                          <button
-                            onClick={() => setConfirmDelete(null)}
-                            className="text-gray-500 hover:underline"
-                          >
-                            {copy.common.cancel}
-                          </button>
-                        </span>
-                      ) : (
-                        <button
-                          onClick={() => setConfirmDelete(animal.id)}
-                          className="text-red-500 hover:underline text-xs"
-                        >
-                          {copy.common.delete}
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-            {filtered.length === 0 && (
-              <tr>
-                <td colSpan={6} className="p-6 text-center text-gray-400">
-                  {copy.common.noResults}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+                  )}
+                </span>
+                <AnimalStatus status={animal.status} />
+              </div>
+              <p className="text-xs text-[var(--color-text-muted)]">
+                {copy.gender[animal.gender]} · {animal.age}
+              </p>
+              <AnimalActions animal={animal} />
+            </div>
+          </div>
+        )}
+      />
     </div>
   );
 }
