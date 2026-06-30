@@ -10,10 +10,13 @@ import type {
 } from "../../../lib/adoptions/types";
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../ui/table";
+import { DataTable, type DataTableColumn } from "../DataTable";
 import { fetchCoordinatorJson } from "./api";
 import { formatDate, formatFallback, formatHkdCents } from "./caseWorkflowLogic";
 import { TaskPanel, TaskPanelAsyncError } from "./TaskPanel";
+
+type AdopterCaseHistoryRow = AdopterDetailData["cases"][number];
+type AdopterSuccessfulAdoptionRow = AdopterDetailData["successfulAdoptions"][number];
 
 type AdopterDetailProps = {
   adopterId: string;
@@ -204,6 +207,160 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
     await queryClient.invalidateQueries({ queryKey: adopterQueryKey });
   }
 
+  const caseHistoryColumns: DataTableColumn<AdopterCaseHistoryRow>[] = [
+    {
+      id: "applicant",
+      header: "Applicant",
+      className: "min-w-56 px-4",
+      cell: (c) => (
+        <div>
+          <Link
+            to="/admin/applications/$id"
+            params={{ id: c.id }}
+            className="font-semibold text-[var(--color-primary)] hover:underline"
+          >
+            {c.applicantName}
+          </Link>
+          <div className="text-xs text-[var(--color-text-muted)]">
+            {formatFallback(c.animalType)}
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "animal",
+      header: "Requested animal",
+      className: "min-w-48",
+      cell: (c) => (
+        <div className="font-medium text-[var(--color-panel)]">
+          {formatFallback(c.requestedAnimalName)}
+        </div>
+      ),
+    },
+    {
+      id: "dates",
+      header: "Dates",
+      className: "min-w-40",
+      cell: (c) => (
+        <div className="text-xs text-[var(--color-text-muted)]">
+          <div>Created: {formatDate(c.createdAt)}</div>
+          <div>Closed: {formatDate(c.closedAt)}</div>
+        </div>
+      ),
+    },
+    {
+      id: "status",
+      header: "Status",
+      className: "min-w-48",
+      cell: (c) => <StatusChip status={c.status} />,
+    },
+    {
+      id: "action",
+      header: "Action",
+      className: "w-32",
+      cell: (c) => (
+        <Link
+          to="/admin/applications/$id"
+          params={{ id: c.id }}
+          className="inline-flex h-8 items-center justify-center rounded-md border border-[var(--color-border)] px-3 text-xs font-medium text-[var(--color-panel)] hover:bg-[var(--color-surface-2)]"
+        >
+          Open case
+        </Link>
+      ),
+    },
+  ];
+
+  function renderCaseHistoryCard(c: AdopterCaseHistoryRow) {
+    return (
+      <div className="space-y-2">
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <Link
+              to="/admin/applications/$id"
+              params={{ id: c.id }}
+              className="font-semibold text-[var(--color-primary)] hover:underline"
+            >
+              {c.applicantName}
+            </Link>
+            <div className="text-xs text-[var(--color-text-muted)]">
+              {formatFallback(c.animalType)}
+            </div>
+          </div>
+          <StatusChip status={c.status} />
+        </div>
+        <div className="text-xs text-[var(--color-text-muted)]">
+          {formatFallback(c.requestedAnimalName)}
+        </div>
+        <div className="text-xs text-[var(--color-text-muted)]">
+          Created: {formatDate(c.createdAt)} · Closed: {formatDate(c.closedAt)}
+        </div>
+      </div>
+    );
+  }
+
+  const successfulAdoptionColumns: DataTableColumn<AdopterSuccessfulAdoptionRow>[] = [
+    {
+      id: "caseNumber",
+      header: "Case number",
+      className: "min-w-44 px-4",
+      cell: (a) => <span className="font-semibold text-[var(--color-panel)]">{a.caseNumber}</span>,
+    },
+    {
+      id: "animal",
+      header: "Animal",
+      className: "min-w-48",
+      cell: (a) => (
+        <div>
+          <div className="font-medium text-[var(--color-panel)]">
+            {formatFallback(a.animalName)}
+          </div>
+          <div className="break-words text-xs text-[var(--color-text-muted)]">{a.animalId}</div>
+        </div>
+      ),
+    },
+    {
+      id: "fee",
+      header: "Fee",
+      className: "min-w-32",
+      cell: (a) => (
+        <span className="text-[var(--color-panel)]">{formatHkdCents(a.adoptionFeeCents)}</span>
+      ),
+    },
+    {
+      id: "approval",
+      header: "Approval",
+      className: "min-w-40",
+      cell: (a) => (
+        <span className="text-[var(--color-text-muted)]">{formatDate(a.approvalDate)}</span>
+      ),
+    },
+    {
+      id: "pickup",
+      header: "Pickup",
+      className: "min-w-40",
+      cell: (a) => (
+        <span className="text-[var(--color-text-muted)]">{formatDate(a.pickupDate)}</span>
+      ),
+    },
+  ];
+
+  function renderSuccessfulAdoptionCard(a: AdopterSuccessfulAdoptionRow) {
+    return (
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between gap-2">
+          <span className="font-semibold text-[var(--color-panel)]">{a.caseNumber}</span>
+          <span className="text-sm text-[var(--color-panel)]">
+            {formatHkdCents(a.adoptionFeeCents)}
+          </span>
+        </div>
+        <div className="font-medium text-[var(--color-panel)]">{formatFallback(a.animalName)}</div>
+        <div className="text-xs text-[var(--color-text-muted)]">
+          Approval: {formatDate(a.approvalDate)} · Pickup: {formatDate(a.pickupDate)}
+        </div>
+      </div>
+    );
+  }
+
   if (adopterLoading) return <LoadingState />;
 
   if (adopterError || !adopter) {
@@ -211,7 +368,7 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
       <div className="space-y-5 p-6">
         <Link
           to="/admin/coordinator/adopters"
-          className="inline-flex items-center gap-2 text-sm font-medium text-[var(--color-primary)] hover:underline"
+          className="inline-flex items-center gap-2 py-2 text-sm font-medium text-[var(--color-primary)] hover:underline"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to adopters
@@ -231,7 +388,7 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
         <div className="space-y-2">
           <Link
             to="/admin/coordinator/adopters"
-            className="inline-flex items-center gap-2 text-sm font-medium text-[var(--color-primary)] hover:underline"
+            className="inline-flex items-center gap-2 py-2 text-sm font-medium text-[var(--color-primary)] hover:underline"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to adopters
@@ -323,119 +480,26 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
       </Section>
 
       <Section title="Case history" subtitle={`${adopter.cases.length} linked cases`}>
-        <Table>
-          <TableHeader>
-            <TableRow className="h-11 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-2)]">
-              <TableHead className="min-w-56 px-4 text-[var(--color-text-muted)]">
-                Applicant
-              </TableHead>
-              <TableHead className="min-w-48 text-[var(--color-text-muted)]">
-                Requested animal
-              </TableHead>
-              <TableHead className="min-w-40 text-[var(--color-text-muted)]">Dates</TableHead>
-              <TableHead className="min-w-48 text-[var(--color-text-muted)]">Status</TableHead>
-              <TableHead className="w-32 text-[var(--color-text-muted)]">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {adopter.cases.length === 0 && (
-              <TableRow className="h-16">
-                <TableCell colSpan={5} className="px-4 text-[var(--color-text-muted)]">
-                  No case history
-                </TableCell>
-              </TableRow>
-            )}
-            {adopter.cases.map((adoptionCase) => (
-              <TableRow key={adoptionCase.id} className="h-16">
-                <TableCell className="px-4">
-                  <Link
-                    to="/admin/applications/$id"
-                    params={{ id: adoptionCase.id }}
-                    className="font-semibold text-[var(--color-primary)] hover:underline"
-                  >
-                    {adoptionCase.applicantName}
-                  </Link>
-                  <div className="text-xs text-[var(--color-text-muted)]">
-                    {formatFallback(adoptionCase.animalType)}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="font-medium text-[var(--color-panel)]">
-                    {formatFallback(adoptionCase.requestedAnimalName)}
-                  </div>
-                </TableCell>
-                <TableCell className="text-xs text-[var(--color-text-muted)]">
-                  <div>Created: {formatDate(adoptionCase.createdAt)}</div>
-                  <div>Closed: {formatDate(adoptionCase.closedAt)}</div>
-                </TableCell>
-                <TableCell>
-                  <StatusChip status={adoptionCase.status} />
-                </TableCell>
-                <TableCell>
-                  <Link
-                    to="/admin/applications/$id"
-                    params={{ id: adoptionCase.id }}
-                    className="inline-flex h-8 items-center justify-center rounded-md border border-[var(--color-border)] px-3 text-xs font-medium text-[var(--color-panel)] hover:bg-[var(--color-surface-2)]"
-                  >
-                    Open case
-                  </Link>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <DataTable<AdopterCaseHistoryRow>
+          columns={caseHistoryColumns}
+          rows={adopter.cases}
+          getRowKey={(c) => c.id}
+          empty="No case history"
+          renderMobileCard={renderCaseHistoryCard}
+        />
       </Section>
 
       <Section
         title="Successful adoptions"
         subtitle={`${adopter.successfulAdoptions.length} finalized adoptions`}
       >
-        <Table>
-          <TableHeader>
-            <TableRow className="h-11 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-2)]">
-              <TableHead className="min-w-44 px-4 text-[var(--color-text-muted)]">
-                Case number
-              </TableHead>
-              <TableHead className="min-w-48 text-[var(--color-text-muted)]">Animal</TableHead>
-              <TableHead className="min-w-32 text-[var(--color-text-muted)]">Fee</TableHead>
-              <TableHead className="min-w-40 text-[var(--color-text-muted)]">Approval</TableHead>
-              <TableHead className="min-w-40 text-[var(--color-text-muted)]">Pickup</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {adopter.successfulAdoptions.length === 0 && (
-              <TableRow className="h-16">
-                <TableCell colSpan={5} className="px-4 text-[var(--color-text-muted)]">
-                  No successful adoptions recorded
-                </TableCell>
-              </TableRow>
-            )}
-            {adopter.successfulAdoptions.map((adoption) => (
-              <TableRow key={adoption.id} className="h-16">
-                <TableCell className="px-4 font-semibold text-[var(--color-panel)]">
-                  {adoption.caseNumber}
-                </TableCell>
-                <TableCell>
-                  <div className="font-medium text-[var(--color-panel)]">
-                    {formatFallback(adoption.animalName)}
-                  </div>
-                  <div className="break-words text-xs text-[var(--color-text-muted)]">
-                    {adoption.animalId}
-                  </div>
-                </TableCell>
-                <TableCell className="text-[var(--color-panel)]">
-                  {formatHkdCents(adoption.adoptionFeeCents)}
-                </TableCell>
-                <TableCell className="text-[var(--color-text-muted)]">
-                  {formatDate(adoption.approvalDate)}
-                </TableCell>
-                <TableCell className="text-[var(--color-text-muted)]">
-                  {formatDate(adoption.pickupDate)}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <DataTable<AdopterSuccessfulAdoptionRow>
+          columns={successfulAdoptionColumns}
+          rows={adopter.successfulAdoptions}
+          getRowKey={(a) => a.id}
+          empty="No successful adoptions recorded"
+          renderMobileCard={renderSuccessfulAdoptionCard}
+        />
       </Section>
 
       {statusesError && (

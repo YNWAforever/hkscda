@@ -10,7 +10,7 @@ import { Checkbox } from "../../ui/checkbox";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../ui/table";
+import { DataTable, type DataTableColumn } from "../DataTable";
 import { fetchCoordinatorJson } from "./api";
 import { formatDate, formatFallback } from "./caseWorkflowLogic";
 import { buildAdopterListSearchParams } from "./adopterWorkflowLogic";
@@ -121,6 +121,138 @@ export function AdopterList() {
     setPage(1);
   }
 
+  const adopterColumns: DataTableColumn<AdopterSummary>[] = [
+    {
+      id: "nameArea",
+      header: "Name and area",
+      className: "min-w-64 px-4",
+      cell: (a) => (
+        <div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              to="/admin/coordinator/adopters/$id"
+              params={{ id: a.id }}
+              className="font-semibold text-[var(--color-primary)] hover:underline"
+            >
+              {a.displayName}
+            </Link>
+            <BlacklistBadge isBlacklisted={a.isBlacklisted} />
+          </div>
+          <div className="mt-1 text-xs text-[var(--color-text-muted)]">
+            {formatFallback(a.livingArea)}
+            {a.supporterId ? ` · ${a.supporterId}` : ""}
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "contact",
+      header: "Contact",
+      className: "min-w-52",
+      cell: (a) => (
+        <div>
+          <div className="break-words text-[var(--color-panel)]">{formatFallback(a.phone)}</div>
+          <div className="break-words text-xs text-[var(--color-text-muted)]">
+            {formatFallback(a.email)}
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "history",
+      header: "History",
+      className: "min-w-56",
+      cell: (a) => (
+        <div className="flex flex-wrap gap-1.5">
+          <Badge
+            variant="outline"
+            className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
+          >
+            {formatCount(a.openCaseCount)} open cases
+          </Badge>
+          <Badge
+            variant="outline"
+            className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
+          >
+            {formatCount(a.successfulAdoptionCount)} adoptions
+          </Badge>
+          <Badge
+            variant="outline"
+            className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
+          >
+            {formatCount(a.openTaskCount)} open tasks
+          </Badge>
+        </div>
+      ),
+    },
+    {
+      id: "latestCase",
+      header: "Latest case",
+      className: "min-w-32",
+      cell: (a) => <LatestCaseCell latestCase={a.latestCase} />,
+    },
+    {
+      id: "action",
+      header: "Action",
+      className: "w-32",
+      cell: (a) => (
+        <Link
+          to="/admin/coordinator/adopters/$id"
+          params={{ id: a.id }}
+          className="inline-flex h-8 items-center justify-center rounded-md border border-[var(--color-border)] px-3 text-xs font-medium text-[var(--color-panel)] hover:bg-[var(--color-surface-2)]"
+        >
+          Open
+        </Link>
+      ),
+    },
+  ];
+
+  function renderAdopterCard(a: AdopterSummary) {
+    return (
+      <div className="space-y-2">
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <Link
+              to="/admin/coordinator/adopters/$id"
+              params={{ id: a.id }}
+              className="font-semibold text-[var(--color-primary)] hover:underline"
+            >
+              {a.displayName}
+            </Link>
+            <div className="mt-0.5 text-xs text-[var(--color-text-muted)]">
+              {formatFallback(a.livingArea)}
+            </div>
+          </div>
+          <BlacklistBadge isBlacklisted={a.isBlacklisted} />
+        </div>
+        <div className="text-xs text-[var(--color-text-muted)]">
+          {formatFallback(a.phone)} · {formatFallback(a.email)}
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          <Badge
+            variant="outline"
+            className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
+          >
+            {formatCount(a.openCaseCount)} open
+          </Badge>
+          <Badge
+            variant="outline"
+            className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
+          >
+            {formatCount(a.successfulAdoptionCount)} adopted
+          </Badge>
+          <Badge
+            variant="outline"
+            className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
+          >
+            {formatCount(a.openTaskCount)} tasks
+          </Badge>
+        </div>
+        <LatestCaseCell latestCase={a.latestCase} />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-5 p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -200,7 +332,10 @@ export function AdopterList() {
         </div>
       </section>
 
-      <section className="overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
+      <section
+        aria-busy={isLoading || isFetching}
+        className="overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]"
+      >
         <div className="flex min-h-14 flex-wrap items-center justify-between gap-3 border-b border-[var(--color-border)] px-4">
           <div>
             <h2 className="text-base font-semibold text-[var(--color-panel)]">Adopter profiles</h2>
@@ -233,120 +368,24 @@ export function AdopterList() {
           </div>
         </div>
 
-        <Table aria-busy={isLoading || isFetching}>
-          <TableHeader>
-            <TableRow className="h-11 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-2)]">
-              <TableHead className="min-w-64 px-4 text-[var(--color-text-muted)]">
-                Name and area
-              </TableHead>
-              <TableHead className="min-w-52 text-[var(--color-text-muted)]">Contact</TableHead>
-              <TableHead className="min-w-56 text-[var(--color-text-muted)]">History</TableHead>
-              <TableHead className="min-w-32 text-[var(--color-text-muted)]">Latest case</TableHead>
-              <TableHead className="w-32 text-[var(--color-text-muted)]">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading &&
-              Array.from({ length: 5 }, (_, index) => (
-                <TableRow key={index} className="h-16">
-                  <TableCell className="px-4">
-                    <div className="h-3 w-40 rounded bg-[var(--color-lavender)]" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="h-3 w-36 rounded bg-[var(--color-lavender)]" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="h-3 w-44 rounded bg-[var(--color-lavender)]" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="h-3 w-20 rounded bg-[var(--color-lavender)]" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="h-8 w-24 rounded bg-[var(--color-lavender)]" />
-                  </TableCell>
-                </TableRow>
-              ))}
+        {error && !isLoading && (
+          <div
+            role="alert"
+            className="border-t border-[var(--color-border)] px-4 py-3 text-sm text-[var(--color-error)]"
+          >
+            {error.message}
+          </div>
+        )}
 
-            {error && !isLoading && (
-              <TableRow className="h-16">
-                <TableCell colSpan={5} className="px-4 text-[var(--color-error)]">
-                  <span role="alert">{error.message}</span>
-                </TableCell>
-              </TableRow>
-            )}
-
-            {!isLoading && !error && adopters.length === 0 && (
-              <TableRow className="h-16">
-                <TableCell colSpan={5} className="px-4 text-[var(--color-text-muted)]">
-                  No adopters found
-                </TableCell>
-              </TableRow>
-            )}
-
-            {adopters.map((adopter) => (
-              <TableRow key={adopter.id} className="h-16">
-                <TableCell className="px-4">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Link
-                      to="/admin/coordinator/adopters/$id"
-                      params={{ id: adopter.id }}
-                      className="font-semibold text-[var(--color-primary)] hover:underline"
-                    >
-                      {adopter.displayName}
-                    </Link>
-                    <BlacklistBadge isBlacklisted={adopter.isBlacklisted} />
-                  </div>
-                  <div className="mt-1 text-xs text-[var(--color-text-muted)]">
-                    {formatFallback(adopter.livingArea)}
-                    {adopter.supporterId ? ` · ${adopter.supporterId}` : ""}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="break-words text-[var(--color-panel)]">
-                    {formatFallback(adopter.phone)}
-                  </div>
-                  <div className="break-words text-xs text-[var(--color-text-muted)]">
-                    {formatFallback(adopter.email)}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex flex-wrap gap-1.5">
-                    <Badge
-                      variant="outline"
-                      className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
-                    >
-                      {formatCount(adopter.openCaseCount)} open cases
-                    </Badge>
-                    <Badge
-                      variant="outline"
-                      className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
-                    >
-                      {formatCount(adopter.successfulAdoptionCount)} adoptions
-                    </Badge>
-                    <Badge
-                      variant="outline"
-                      className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
-                    >
-                      {formatCount(adopter.openTaskCount)} open tasks
-                    </Badge>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <LatestCaseCell latestCase={adopter.latestCase} />
-                </TableCell>
-                <TableCell>
-                  <Link
-                    to="/admin/coordinator/adopters/$id"
-                    params={{ id: adopter.id }}
-                    className="inline-flex h-8 items-center justify-center rounded-md border border-[var(--color-border)] px-3 text-xs font-medium text-[var(--color-panel)] hover:bg-[var(--color-surface-2)]"
-                  >
-                    Open
-                  </Link>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <DataTable<AdopterSummary>
+          columns={adopterColumns}
+          rows={adopters}
+          getRowKey={(a) => a.id}
+          loading={isLoading}
+          skeletonRows={5}
+          empty="No adopters found"
+          renderMobileCard={renderAdopterCard}
+        />
 
         <div className="flex min-h-12 flex-wrap items-center justify-between gap-3 border-t border-[var(--color-border)] px-4 py-2 text-xs text-[var(--color-text-muted)]">
           <span>

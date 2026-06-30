@@ -335,6 +335,7 @@ function TaskItem({
               id={`task-due-${task.id}`}
               type="datetime-local"
               value={form.dueAt}
+              className="h-11"
               onChange={(event) =>
                 setForm((current) => ({ ...current, dueAt: event.target.value }))
               }
@@ -346,6 +347,7 @@ function TaskItem({
               id={`task-scheduled-${task.id}`}
               type="datetime-local"
               value={form.scheduledAt}
+              className="h-11"
               onChange={(event) =>
                 setForm((current) => ({ ...current, scheduledAt: event.target.value }))
               }
@@ -357,6 +359,7 @@ function TaskItem({
               id={`task-completed-${task.id}`}
               type="datetime-local"
               value={form.completedAt}
+              className="h-11"
               onChange={(event) =>
                 setForm((current) => ({ ...current, completedAt: event.target.value }))
               }
@@ -368,6 +371,7 @@ function TaskItem({
               id={`task-next-${task.id}`}
               type="datetime-local"
               value={form.nextStepAt}
+              className="h-11"
               onChange={(event) =>
                 setForm((current) => ({ ...current, nextStepAt: event.target.value }))
               }
@@ -554,6 +558,7 @@ export function TaskPanel({
               id="task-due"
               type="datetime-local"
               value={form.dueAt}
+              className="h-11"
               onChange={(event) =>
                 setForm((current) => ({ ...current, dueAt: event.target.value }))
               }
@@ -565,6 +570,7 @@ export function TaskPanel({
               id="task-scheduled"
               type="datetime-local"
               value={form.scheduledAt}
+              className="h-11"
               onChange={(event) =>
                 setForm((current) => ({ ...current, scheduledAt: event.target.value }))
               }

@@ -9,7 +9,7 @@ import { Checkbox } from "../../ui/checkbox";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../ui/table";
+import { DataTable, type DataTableColumn } from "../DataTable";
 import { StatusBadge } from "../StatusBadge";
 import { fetchCoordinatorJson } from "./api";
 import {
@@ -96,6 +96,89 @@ export function CaseList() {
 
   function resetToFirstPage() {
     setPage(1);
+  }
+
+  const caseColumns: DataTableColumn<AdoptionCaseSummary>[] = [
+    {
+      id: "applicant",
+      header: "Applicant",
+      className: "px-4",
+      cell: (c) => (
+        <div>
+          <Link
+            to="/admin/applications/$id"
+            params={{ id: c.id }}
+            className="font-semibold text-[var(--color-primary)] hover:underline"
+          >
+            {c.applicantName}
+          </Link>
+          <div className="text-xs text-[var(--color-text-muted)]">
+            {formatFallback(c.applicantEmail)}
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "animal",
+      header: "Requested animal",
+      cell: (c) => (
+        <div>
+          <div className="font-medium text-[var(--color-panel)]">
+            {formatFallback(c.requestedAnimalName)}
+          </div>
+          <div className="text-xs text-[var(--color-text-muted)]">
+            {formatFallback(c.animalType)}
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "phone",
+      header: "Phone",
+      cell: (c) => (
+        <span className="text-[var(--color-panel)]">{formatFallback(c.applicantPhone)}</span>
+      ),
+    },
+    {
+      id: "created",
+      header: "Created",
+      cell: (c) => (
+        <span className="text-[var(--color-text-muted)]">{formatDate(c.createdAt)}</span>
+      ),
+    },
+    {
+      id: "status",
+      header: "Status",
+      cell: (c) => <StatusBadge status={c.status} />,
+    },
+  ];
+
+  function renderCaseCard(c: AdoptionCaseSummary) {
+    return (
+      <div className="space-y-2">
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <Link
+              to="/admin/applications/$id"
+              params={{ id: c.id }}
+              className="font-semibold text-[var(--color-primary)] hover:underline"
+            >
+              {c.applicantName}
+            </Link>
+            <div className="text-xs text-[var(--color-text-muted)]">
+              {formatFallback(c.applicantEmail)}
+            </div>
+          </div>
+          <StatusBadge status={c.status} />
+        </div>
+        <div className="text-xs text-[var(--color-text-muted)]">
+          {formatFallback(c.requestedAnimalName)} · {formatFallback(c.animalType)}
+        </div>
+        <div className="text-xs text-[var(--color-text-muted)]">
+          {formatFallback(c.applicantPhone)} · {formatDate(c.createdAt)}
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -186,7 +269,10 @@ export function CaseList() {
         {statusesError && <CaseListStatusFilterError message={statusesError.message} />}
       </section>
 
-      <section className="overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
+      <section
+        aria-busy={isLoading || isFetching}
+        className="overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]"
+      >
         <div className="flex min-h-14 flex-wrap items-center justify-between gap-3 border-b border-[var(--color-border)] px-4">
           <div>
             <h2 className="text-base font-semibold text-[var(--color-panel)]">Cases</h2>
@@ -219,89 +305,24 @@ export function CaseList() {
           </div>
         </div>
 
-        <Table aria-busy={isLoading || isFetching}>
-          <TableHeader>
-            <TableRow className="h-11 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-2)]">
-              <TableHead className="px-4 text-[var(--color-text-muted)]">Applicant</TableHead>
-              <TableHead className="text-[var(--color-text-muted)]">Requested animal</TableHead>
-              <TableHead className="text-[var(--color-text-muted)]">Phone</TableHead>
-              <TableHead className="text-[var(--color-text-muted)]">Created</TableHead>
-              <TableHead className="text-[var(--color-text-muted)]">Status</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading &&
-              Array.from({ length: 5 }, (_, index) => (
-                <TableRow key={index} className="h-16">
-                  <TableCell className="px-4">
-                    <div className="h-3 w-36 rounded bg-[var(--color-lavender)]" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="h-3 w-32 rounded bg-[var(--color-lavender)]" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="h-3 w-24 rounded bg-[var(--color-lavender)]" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="h-3 w-20 rounded bg-[var(--color-lavender)]" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="h-7 w-28 rounded bg-[var(--color-lavender)]" />
-                  </TableCell>
-                </TableRow>
-              ))}
+        {error && !isLoading && (
+          <div
+            role="alert"
+            className="border-t border-[var(--color-border)] px-4 py-3 text-sm text-[var(--color-error)]"
+          >
+            {error.message}
+          </div>
+        )}
 
-            {error && !isLoading && (
-              <TableRow className="h-16">
-                <TableCell colSpan={5} className="px-4 text-[var(--color-error)]">
-                  <span role="alert">{error.message}</span>
-                </TableCell>
-              </TableRow>
-            )}
-
-            {!isLoading && !error && cases.length === 0 && (
-              <TableRow className="h-16">
-                <TableCell colSpan={5} className="px-4 text-[var(--color-text-muted)]">
-                  No cases found
-                </TableCell>
-              </TableRow>
-            )}
-
-            {cases.map((adoptionCase) => (
-              <TableRow key={adoptionCase.id} className="h-16">
-                <TableCell className="px-4">
-                  <Link
-                    to="/admin/applications/$id"
-                    params={{ id: adoptionCase.id }}
-                    className="font-semibold text-[var(--color-primary)] hover:underline"
-                  >
-                    {adoptionCase.applicantName}
-                  </Link>
-                  <div className="text-xs text-[var(--color-text-muted)]">
-                    {formatFallback(adoptionCase.applicantEmail)}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="font-medium text-[var(--color-panel)]">
-                    {formatFallback(adoptionCase.requestedAnimalName)}
-                  </div>
-                  <div className="text-xs text-[var(--color-text-muted)]">
-                    {formatFallback(adoptionCase.animalType)}
-                  </div>
-                </TableCell>
-                <TableCell className="text-[var(--color-panel)]">
-                  {formatFallback(adoptionCase.applicantPhone)}
-                </TableCell>
-                <TableCell className="text-[var(--color-text-muted)]">
-                  {formatDate(adoptionCase.createdAt)}
-                </TableCell>
-                <TableCell>
-                  <StatusBadge status={adoptionCase.status} />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <DataTable<AdoptionCaseSummary>
+          columns={caseColumns}
+          rows={cases}
+          getRowKey={(c) => c.id}
+          loading={isLoading}
+          skeletonRows={5}
+          empty="No cases found"
+          renderMobileCard={renderCaseCard}
+        />
 
         <div className="flex min-h-12 flex-wrap items-center justify-between gap-3 border-t border-[var(--color-border)] px-4 py-2 text-xs text-[var(--color-text-muted)]">
           <span>

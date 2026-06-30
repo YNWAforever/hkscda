@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 
 import type { SupporterSummary } from "../../../lib/crm/types";
 import { Input } from "../../ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../ui/table";
+import { DataTable, type DataTableColumn } from "../DataTable";
 import { fetchAdminJson } from "./api";
 import { ExportBar } from "./ExportBar";
 import { SupporterFormDialog } from "./SupporterFormDialog";
@@ -38,6 +38,78 @@ export function SupporterList() {
     queryFn: () => fetchAdminJson<SupporterListResponse>(`/api/admin/supporters?${search}`),
   });
 
+  const supporterColumns: DataTableColumn<SupporterSummary>[] = [
+    {
+      id: "supporter",
+      header: "Supporter",
+      cell: (s) => (
+        <div>
+          <Link
+            to="/admin/supporters/$id"
+            params={{ id: s.id }}
+            className="font-semibold text-[var(--color-primary)] hover:underline"
+          >
+            {s.name}
+          </Link>
+          <div className="text-xs text-[var(--color-text-muted)]">{s.email}</div>
+        </div>
+      ),
+    },
+    {
+      id: "consent",
+      header: "Consent",
+      cell: (s) => (
+        <span className="text-xs">
+          Email {s.emailConsent ?? "-"} / WhatsApp {s.whatsappConsent ?? "-"}
+        </span>
+      ),
+    },
+    {
+      id: "lifetime",
+      header: "Lifetime",
+      cell: (s) => formatHkd(s.lifetimeAmountCents),
+    },
+    {
+      id: "lastGift",
+      header: "Last gift",
+      cell: (s) => formatHkd(s.lastGiftAmountCents),
+    },
+    {
+      id: "receipts",
+      header: "Receipts",
+      cell: (s) => (s.receiptNeeded ? "Needs review" : "Clear"),
+    },
+  ];
+
+  function renderSupporterCard(s: SupporterSummary) {
+    return (
+      <div className="space-y-2">
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <Link
+              to="/admin/supporters/$id"
+              params={{ id: s.id }}
+              className="font-semibold text-[var(--color-primary)] hover:underline"
+            >
+              {s.name}
+            </Link>
+            <div className="text-xs text-[var(--color-text-muted)]">{s.email}</div>
+          </div>
+          <div className="text-right text-sm font-medium text-[var(--color-panel)]">
+            {formatHkd(s.lifetimeAmountCents)}
+          </div>
+        </div>
+        <div className="text-xs text-[var(--color-text-muted)]">
+          Last gift: {formatHkd(s.lastGiftAmountCents)} · Email {s.emailConsent ?? "-"} / WhatsApp{" "}
+          {s.whatsappConsent ?? "-"}
+        </div>
+        <div className="text-xs text-[var(--color-text-muted)]">
+          Receipts: {s.receiptNeeded ? "Needs review" : "Clear"}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-5 p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -64,65 +136,25 @@ export function SupporterList() {
         />
       </label>
 
+      {error && (
+        <div
+          role="alert"
+          className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-error)]"
+        >
+          Could not load supporters
+        </div>
+      )}
+
       <div className="overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Supporter</TableHead>
-              <TableHead>Consent</TableHead>
-              <TableHead>Lifetime</TableHead>
-              <TableHead>Last gift</TableHead>
-              <TableHead>Receipts</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading && (
-              <TableRow>
-                <TableCell colSpan={5} className="py-10 text-center text-[var(--color-text-muted)]">
-                  Loading...
-                </TableCell>
-              </TableRow>
-            )}
-            {error && (
-              <TableRow>
-                <TableCell
-                  colSpan={5}
-                  className="py-10 text-center text-[var(--color-destructive)]"
-                >
-                  Could not load supporters
-                </TableCell>
-              </TableRow>
-            )}
-            {data?.supporters.length === 0 && !isLoading && !error && (
-              <TableRow>
-                <TableCell colSpan={5} className="py-10 text-center text-[var(--color-text-muted)]">
-                  No supporters found
-                </TableCell>
-              </TableRow>
-            )}
-            {data?.supporters.map((supporter) => (
-              <TableRow key={supporter.id}>
-                <TableCell>
-                  <Link
-                    to="/admin/supporters/$id"
-                    params={{ id: supporter.id }}
-                    className="font-semibold text-[var(--color-primary)] hover:underline"
-                  >
-                    {supporter.name}
-                  </Link>
-                  <div className="text-xs text-[var(--color-text-muted)]">{supporter.email}</div>
-                </TableCell>
-                <TableCell className="text-xs">
-                  Email {supporter.emailConsent ?? "-"} / WhatsApp{" "}
-                  {supporter.whatsappConsent ?? "-"}
-                </TableCell>
-                <TableCell>{formatHkd(supporter.lifetimeAmountCents)}</TableCell>
-                <TableCell>{formatHkd(supporter.lastGiftAmountCents)}</TableCell>
-                <TableCell>{supporter.receiptNeeded ? "Needs review" : "Clear"}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <DataTable<SupporterSummary>
+          columns={supporterColumns}
+          rows={data?.supporters ?? []}
+          getRowKey={(s) => s.id}
+          loading={isLoading}
+          skeletonRows={5}
+          empty="No supporters found"
+          renderMobileCard={renderSupporterCard}
+        />
       </div>
       {data && (
         <p className="text-xs text-[var(--color-text-muted)]">{data.total} total supporters</p>
