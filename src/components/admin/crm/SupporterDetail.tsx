@@ -103,7 +103,7 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
   return (
     <div className="space-y-6 p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Button asChild variant="ghost" size="sm">
+        <Button asChild variant="ghost" size="sm" className="min-h-[44px] sm:min-h-0">
           <Link to="/admin/supporters">
             <ArrowLeft className="h-4 w-4" />
             Supporters
@@ -204,6 +204,7 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
                   type="button"
                   variant="outline"
                   size="sm"
+                  className="min-h-[44px] sm:min-h-0"
                   onClick={() => issueReceiptMutation.mutate(donation.id)}
                   disabled={issueReceiptMutation.isPending}
                 >
@@ -249,6 +250,7 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
                   type="button"
                   variant="outline"
                   size="sm"
+                  className="min-h-[44px] sm:min-h-0"
                   onClick={() => voidReceiptMutation.mutate(receipt.id)}
                   disabled={voidReceiptMutation.isPending}
                 >
