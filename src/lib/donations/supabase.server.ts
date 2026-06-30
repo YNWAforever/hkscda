@@ -135,3 +135,73 @@ export async function listAdminPayments(client: SupabaseClient) {
   if (error) throw error;
   return data ?? [];
 }
+
+export async function listAdminReceipts(client: SupabaseClient) {
+  const { data, error } = await client
+    .from("receipt")
+    .select("id,receipt_no,donation_ids,status")
+    .order("issued_at", { ascending: false })
+    .limit(200);
+
+  if (error) throw error;
+  return data ?? [];
+}
+
+const FINANCE_ACTIVITY_ACTIONS = [
+  "payment.mark_received",
+  "receipt.issue",
+  "receipt.void",
+] as const;
+
+export type FinanceActivityRow = {
+  id: string;
+  action: string;
+  actorEmail: string | null;
+  entityId: string;
+  detail: unknown;
+  createdAt: string;
+};
+
+export async function listFinanceActivity(client: SupabaseClient): Promise<FinanceActivityRow[]> {
+  const { data, error } = await client
+    .from("audit_log")
+    .select("id,action,actor_user_id,entity_id,detail,timestamp")
+    .in("action", FINANCE_ACTIVITY_ACTIONS as unknown as string[])
+    .order("timestamp", { ascending: false })
+    .limit(50);
+
+  if (error) throw error;
+  const rows = (data ?? []) as Array<{
+    id: string;
+    action: string;
+    actor_user_id: string | null;
+    entity_id: string;
+    detail: unknown;
+    timestamp: string;
+  }>;
+
+  const actorIds = [...new Set(rows.map((row) => row.actor_user_id).filter(Boolean))] as string[];
+  let emailByAuthId = new Map<string, string>();
+  if (actorIds.length > 0) {
+    const { data: admins, error: adminError } = await client
+      .from("admin_user")
+      .select("auth_user_id,email")
+      .in("auth_user_id", actorIds);
+    if (adminError) throw adminError;
+    emailByAuthId = new Map(
+      ((admins ?? []) as Array<{ auth_user_id: string; email: string }>).map((a) => [
+        a.auth_user_id,
+        a.email,
+      ]),
+    );
+  }
+
+  return rows.map((row) => ({
+    id: row.id,
+    action: row.action,
+    actorEmail: row.actor_user_id ? (emailByAuthId.get(row.actor_user_id) ?? null) : null,
+    entityId: row.entity_id,
+    detail: row.detail,
+    createdAt: row.timestamp,
+  }));
+}
