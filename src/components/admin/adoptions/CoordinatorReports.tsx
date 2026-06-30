@@ -13,7 +13,7 @@ import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../ui/table";
+import { DataTable, type DataTableColumn } from "../DataTable";
 import { fetchCoordinatorJson } from "./api";
 import { getCoordinatorExportFilename } from "./adopterWorkflowLogic";
 import {
@@ -227,6 +227,120 @@ export function CoordinatorReports() {
 
   const summary = summaryQuery.data?.summary;
 
+  const exportColumns: DataTableColumn<CoordinatorExportAuditRow>[] = [
+    {
+      id: "timestamp",
+      header: "Timestamp",
+      className: "min-w-44 px-4 font-medium text-[var(--color-panel)]",
+      cell: (row) => formatTimestamp(row.timestamp),
+    },
+    {
+      id: "actor",
+      header: "Actor",
+      className: "min-w-48 text-sm text-[var(--color-panel)]",
+      cell: (row) => <span className="block max-w-48 truncate">{actorLabel(row)}</span>,
+    },
+    {
+      id: "kind",
+      header: "Kind",
+      className: "min-w-40",
+      cell: (row) => (
+        <Badge
+          variant="outline"
+          className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
+        >
+          {KIND_LABELS[row.kind]}
+        </Badge>
+      ),
+    },
+    {
+      id: "rows",
+      header: "Rows",
+      className: "w-28 text-right font-semibold text-[var(--color-panel)]",
+      cell: (row) => formatCount(row.rowCount),
+    },
+    {
+      id: "filters",
+      header: "Filters",
+      className: "min-w-72 text-xs text-[var(--color-text-muted)]",
+      cell: (row) => (
+        <span className="block max-w-72 truncate">{formatReportFiltersPreview(row.filters)}</span>
+      ),
+    },
+    {
+      id: "sourceRoute",
+      header: "Source route",
+      className: "min-w-72",
+      cell: (row) => <SourceRouteCell value={row.sourceRoute} />,
+    },
+    {
+      id: "action",
+      header: "Action",
+      className: "w-40",
+      cell: (row) => (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => void downloadAgain(row)}
+          disabled={downloadingId === row.id}
+        >
+          <Download className="h-4 w-4" />
+          {downloadingId === row.id ? "Downloading..." : "Download again"}
+        </Button>
+      ),
+    },
+  ];
+
+  function renderExportCard(row: CoordinatorExportAuditRow) {
+    return (
+      <div className="space-y-2">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <div className="font-medium text-[var(--color-panel)]">
+              {formatTimestamp(row.timestamp)}
+            </div>
+            <div className="truncate text-xs text-[var(--color-text-muted)]">{actorLabel(row)}</div>
+          </div>
+          <Badge
+            variant="outline"
+            className="shrink-0 border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
+          >
+            {KIND_LABELS[row.kind]}
+          </Badge>
+        </div>
+
+        <div className="text-xs text-[var(--color-text-muted)]">
+          Rows:{" "}
+          <span className="font-semibold text-[var(--color-panel)]">
+            {formatCount(row.rowCount)}
+          </span>
+        </div>
+
+        <div className="text-xs text-[var(--color-text-muted)]">
+          <div className="mb-1">Filters</div>
+          <div className="text-[var(--color-panel)]">{formatReportFiltersPreview(row.filters)}</div>
+        </div>
+
+        <div className="text-xs text-[var(--color-text-muted)]">
+          <div className="mb-1">Source route</div>
+          <SourceRouteCell value={row.sourceRoute} />
+        </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => void downloadAgain(row)}
+          disabled={downloadingId === row.id}
+          className="min-h-[44px] w-full"
+        >
+          <Download className="h-4 w-4" />
+          {downloadingId === row.id ? "Downloading..." : "Download again"}
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-5 p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -378,101 +492,15 @@ export function CoordinatorReports() {
           </div>
         </div>
 
-        <Table aria-busy={historyQuery.isLoading || historyQuery.isFetching}>
-          <TableHeader>
-            <TableRow className="h-11 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-2)]">
-              <TableHead className="min-w-44 px-4 text-[var(--color-text-muted)]">
-                Timestamp
-              </TableHead>
-              <TableHead className="min-w-48 text-[var(--color-text-muted)]">Actor</TableHead>
-              <TableHead className="min-w-40 text-[var(--color-text-muted)]">Kind</TableHead>
-              <TableHead className="w-28 text-right text-[var(--color-text-muted)]">Rows</TableHead>
-              <TableHead className="min-w-72 text-[var(--color-text-muted)]">Filters</TableHead>
-              <TableHead className="min-w-72 text-[var(--color-text-muted)]">
-                Source route
-              </TableHead>
-              <TableHead className="w-40 text-[var(--color-text-muted)]">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {historyQuery.isLoading &&
-              Array.from({ length: 5 }, (_, index) => (
-                <TableRow key={index} className="h-16">
-                  <TableCell className="px-4">
-                    <div className="h-3 w-32 rounded bg-[var(--color-lavender)]" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="h-3 w-40 rounded bg-[var(--color-lavender)]" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="h-6 w-24 rounded bg-[var(--color-lavender)]" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="ml-auto h-3 w-12 rounded bg-[var(--color-lavender)]" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="h-3 w-56 rounded bg-[var(--color-lavender)]" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="h-6 w-64 rounded bg-[var(--color-lavender)]" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="h-8 w-32 rounded bg-[var(--color-lavender)]" />
-                  </TableCell>
-                </TableRow>
-              ))}
-
-            {!historyQuery.isLoading && !historyQuery.error && exports.length === 0 && (
-              <TableRow className="h-16">
-                <TableCell colSpan={7} className="px-4 text-[var(--color-text-muted)]">
-                  No exports match these filters.
-                </TableCell>
-              </TableRow>
-            )}
-
-            {exports.map((row) => (
-              <TableRow key={row.id} className="h-16">
-                <TableCell className="px-4 font-medium text-[var(--color-panel)]">
-                  {formatTimestamp(row.timestamp)}
-                </TableCell>
-                <TableCell className="text-sm text-[var(--color-panel)]">
-                  <span className="block max-w-48 truncate">{actorLabel(row)}</span>
-                </TableCell>
-                <TableCell>
-                  <Badge
-                    variant="outline"
-                    className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
-                  >
-                    {KIND_LABELS[row.kind]}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right font-semibold text-[var(--color-panel)]">
-                  {formatCount(row.rowCount)}
-                </TableCell>
-                <TableCell className="text-xs text-[var(--color-text-muted)]">
-                  <span className="block max-w-72 truncate">
-                    {formatReportFiltersPreview(row.filters)}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <SourceRouteCell value={row.sourceRoute} />
-                </TableCell>
-                <TableCell>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => void downloadAgain(row)}
-                    disabled={downloadingId === row.id}
-                  >
-                    <Download className="h-4 w-4" />
-                    {downloadingId === row.id ? "Downloading..." : "Download again"}
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <DataTable<CoordinatorExportAuditRow>
+          columns={exportColumns}
+          rows={exports}
+          getRowKey={(row) => row.id}
+          loading={historyQuery.isLoading}
+          skeletonRows={5}
+          empty={historyQuery.error ? null : "No exports match these filters."}
+          renderMobileCard={renderExportCard}
+        />
       </section>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
