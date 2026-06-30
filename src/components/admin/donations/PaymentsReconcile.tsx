@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Download, FileCheck, FileX } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { fetchAdminJson, getAdminAccessToken } from "../../../lib/admin/http.client";
+import { fetchAdminJson, getAdminAccessToken } from "../../../lib/admin/http";
 import { centsToHkd } from "../../../lib/donations/domain";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";

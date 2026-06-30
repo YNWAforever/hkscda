@@ -3,7 +3,7 @@ import { CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 import type { FormEvent } from "react";
 
-import { fetchAdminJson } from "../../../lib/admin/http.client";
+import { fetchAdminJson } from "../../../lib/admin/http";
 import { Button } from "../../ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../../ui/dialog";
 import { Input } from "../../ui/input";

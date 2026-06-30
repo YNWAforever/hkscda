@@ -1,1 +1,1 @@
-export { fetchAdminJson, getAdminAccessToken } from "../../../lib/admin/http.client";
+export { fetchAdminJson, getAdminAccessToken } from "../../../lib/admin/http";
