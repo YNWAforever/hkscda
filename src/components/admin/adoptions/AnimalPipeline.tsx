@@ -20,9 +20,9 @@ import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Switch } from "../../ui/switch";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../ui/table";
 import { Tabs, TabsList, TabsTrigger } from "../../ui/tabs";
 import { Textarea } from "../../ui/textarea";
+import { DataTable, type DataTableColumn } from "../DataTable";
 import { fetchCoordinatorJson } from "./api";
 import {
   buildAnimalTaskSearchParams,
@@ -499,6 +499,252 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
     supportPool: rows.filter((row) => row.profile.is_inside_support_pool).length,
   };
 
+  const animalColumns: DataTableColumn<AnimalPipelineRow>[] = [
+    {
+      id: "animal",
+      header: "Animal",
+      className: "w-[28%] px-4",
+      cell: (row) => (
+        <div className="flex min-w-0 items-center gap-3">
+          {row.image_url ? (
+            <img
+              src={row.image_url}
+              alt=""
+              className="h-10 w-10 shrink-0 rounded-md object-cover"
+            />
+          ) : (
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-[var(--color-border)] bg-[var(--color-surface-2)] text-xs font-semibold uppercase text-[var(--color-text-muted)]">
+              {row.type.slice(0, 3)}
+            </div>
+          )}
+          <div className="min-w-0">
+            <div className="truncate font-semibold text-[var(--color-panel)]">{row.name}</div>
+            <div className="truncate text-xs text-[var(--color-text-muted)]">
+              {formatFallback(row.name_en)} / {row.type} / {row.age}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "lifecycle",
+      header: "Lifecycle",
+      className: "w-44",
+      cell: (row) => {
+        const isUpdatingStatus =
+          lifecycleMutation.isPending && lifecycleMutation.variables?.animalId === row.id;
+        return (
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className={STATUS_BADGE_CLASSES[row.status]}>
+              {statusLabel(row.status)}
+            </Badge>
+            <Select
+              value={row.status}
+              disabled={isUpdatingStatus}
+              onValueChange={(value) =>
+                lifecycleMutation.mutate({ animalId: row.id, status: value as AnimalStatus })
+              }
+            >
+              <SelectTrigger aria-label={`Update ${row.name} lifecycle`} className="h-8 w-28">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {STATUS_ACTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        );
+      },
+    },
+    {
+      id: "flags",
+      header: "Flags",
+      cell: (row) => (
+        <div className="flex min-h-8 flex-wrap items-center gap-1.5">
+          <Badge
+            variant="outline"
+            className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
+          >
+            {row.profile.is_adoptable ? "Adoptable" : "Not adoptable"}
+          </Badge>
+          {row.profile.is_inside_support_pool && (
+            <Badge
+              variant="outline"
+              className="border-[var(--color-accent-warm)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
+            >
+              Support pool
+            </Badge>
+          )}
+          <Badge
+            variant="outline"
+            className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-text-muted)]"
+          >
+            Chip {row.profile.has_chip === null ? "-" : row.profile.has_chip ? "Y" : "N"}
+          </Badge>
+          <Badge
+            variant="outline"
+            className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-text-muted)]"
+          >
+            Desex {row.profile.is_desexed === null ? "-" : row.profile.is_desexed ? "Y" : "N"}
+          </Badge>
+        </div>
+      ),
+    },
+    {
+      id: "position",
+      header: "Position",
+      cell: (row) => (
+        <div className="text-sm text-[var(--color-panel)]">
+          <div>{formatFallback(row.currentPosition?.name)}</div>
+          <div className="text-xs text-[var(--color-text-muted)]">
+            Cage {formatFallback(row.profile.cage)}
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "arrival",
+      header: "Arrival",
+      cell: (row) => (
+        <div className="text-sm text-[var(--color-panel)]">
+          <div>{formatDate(row.profile.arrival_date)}</div>
+          <div className="text-xs text-[var(--color-text-muted)]">
+            {formatFallback(row.arrivalSource?.name_zh)}
+            {row.profile.internal_code ? ` / ${row.profile.internal_code}` : ""}
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "profile",
+      header: "Profile",
+      className: "w-32 text-right",
+      cell: (row) => (
+        <div className="flex justify-end">
+          <Button type="button" size="sm" variant="outline" onClick={() => openProfileDialog(row)}>
+            <Edit3 className="h-4 w-4" />
+            Edit
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
+  function renderAnimalCard(row: AnimalPipelineRow) {
+    const isUpdatingStatus =
+      lifecycleMutation.isPending && lifecycleMutation.variables?.animalId === row.id;
+    return (
+      <div className="space-y-3">
+        <div className="flex items-start gap-3">
+          {row.image_url ? (
+            <img
+              src={row.image_url}
+              alt=""
+              className="h-12 w-12 shrink-0 rounded-md object-cover"
+            />
+          ) : (
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-[var(--color-border)] bg-[var(--color-surface-2)] text-xs font-semibold uppercase text-[var(--color-text-muted)]">
+              {row.type.slice(0, 3)}
+            </div>
+          )}
+          <div className="min-w-0">
+            <div className="font-semibold text-[var(--color-panel)]">{row.name}</div>
+            <div className="text-xs text-[var(--color-text-muted)]">
+              {formatFallback(row.name_en)} / {row.type} / {row.age}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge variant="outline" className={STATUS_BADGE_CLASSES[row.status]}>
+            {statusLabel(row.status)}
+          </Badge>
+          <Select
+            value={row.status}
+            disabled={isUpdatingStatus}
+            onValueChange={(value) =>
+              lifecycleMutation.mutate({ animalId: row.id, status: value as AnimalStatus })
+            }
+          >
+            <SelectTrigger aria-label={`Update ${row.name} lifecycle`} className="h-10 w-40">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {STATUS_ACTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-1.5">
+          <Badge
+            variant="outline"
+            className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
+          >
+            {row.profile.is_adoptable ? "Adoptable" : "Not adoptable"}
+          </Badge>
+          {row.profile.is_inside_support_pool && (
+            <Badge
+              variant="outline"
+              className="border-[var(--color-accent-warm)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
+            >
+              Support pool
+            </Badge>
+          )}
+          <Badge
+            variant="outline"
+            className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-text-muted)]"
+          >
+            Chip {row.profile.has_chip === null ? "-" : row.profile.has_chip ? "Y" : "N"}
+          </Badge>
+          <Badge
+            variant="outline"
+            className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-text-muted)]"
+          >
+            Desex {row.profile.is_desexed === null ? "-" : row.profile.is_desexed ? "Y" : "N"}
+          </Badge>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 text-sm">
+          <div>
+            <div className="text-xs text-[var(--color-text-muted)]">Position</div>
+            <div className="text-[var(--color-panel)]">
+              {formatFallback(row.currentPosition?.name)}
+            </div>
+            <div className="text-xs text-[var(--color-text-muted)]">
+              Cage {formatFallback(row.profile.cage)}
+            </div>
+          </div>
+          <div>
+            <div className="text-xs text-[var(--color-text-muted)]">Arrival</div>
+            <div className="text-[var(--color-panel)]">{formatDate(row.profile.arrival_date)}</div>
+            <div className="text-xs text-[var(--color-text-muted)]">
+              {formatFallback(row.arrivalSource?.name_zh)}
+              {row.profile.internal_code ? ` / ${row.profile.internal_code}` : ""}
+            </div>
+          </div>
+        </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => openProfileDialog(row)}
+          className="min-h-[44px] w-full"
+        >
+          <Edit3 className="h-4 w-4" />
+          Edit profile
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-5 p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -702,6 +948,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
           {groups.map((group) => (
             <section
               key={group.key}
+              aria-busy={isFetching}
               className="overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]"
             >
               <div className="flex min-h-12 flex-wrap items-center justify-between gap-3 border-b border-[var(--color-border)] px-4">
@@ -715,154 +962,12 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
                 </div>
               </div>
 
-              <Table aria-busy={isFetching}>
-                <TableHeader>
-                  <TableRow className="h-11 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-2)]">
-                    <TableHead className="w-[28%] px-4 text-[var(--color-text-muted)]">
-                      Animal
-                    </TableHead>
-                    <TableHead className="w-44 text-[var(--color-text-muted)]">Lifecycle</TableHead>
-                    <TableHead className="text-[var(--color-text-muted)]">Flags</TableHead>
-                    <TableHead className="text-[var(--color-text-muted)]">Position</TableHead>
-                    <TableHead className="text-[var(--color-text-muted)]">Arrival</TableHead>
-                    <TableHead className="w-32 text-right text-[var(--color-text-muted)]">
-                      Profile
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {group.rows.map((row) => {
-                    const isUpdatingStatus =
-                      lifecycleMutation.isPending &&
-                      lifecycleMutation.variables?.animalId === row.id;
-
-                    return (
-                      <TableRow key={row.id} className="h-16">
-                        <TableCell className="px-4">
-                          <div className="flex min-w-0 items-center gap-3">
-                            {row.image_url ? (
-                              <img
-                                src={row.image_url}
-                                alt=""
-                                className="h-10 w-10 shrink-0 rounded-md object-cover"
-                              />
-                            ) : (
-                              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-[var(--color-border)] bg-[var(--color-surface-2)] text-xs font-semibold uppercase text-[var(--color-text-muted)]">
-                                {row.type.slice(0, 3)}
-                              </div>
-                            )}
-                            <div className="min-w-0">
-                              <div className="truncate font-semibold text-[var(--color-panel)]">
-                                {row.name}
-                              </div>
-                              <div className="truncate text-xs text-[var(--color-text-muted)]">
-                                {formatFallback(row.name_en)} / {row.type} / {row.age}
-                              </div>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline" className={STATUS_BADGE_CLASSES[row.status]}>
-                              {statusLabel(row.status)}
-                            </Badge>
-                            <Select
-                              value={row.status}
-                              disabled={isUpdatingStatus}
-                              onValueChange={(value) =>
-                                lifecycleMutation.mutate({
-                                  animalId: row.id,
-                                  status: value as AnimalStatus,
-                                })
-                              }
-                            >
-                              <SelectTrigger
-                                aria-label={`Update ${row.name} lifecycle`}
-                                className="h-8 w-28"
-                              >
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {STATUS_ACTIONS.map((option) => (
-                                  <SelectItem key={option.value} value={option.value}>
-                                    {option.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex min-h-8 flex-wrap items-center gap-1.5">
-                            <Badge
-                              variant="outline"
-                              className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
-                            >
-                              {row.profile.is_adoptable ? "Adoptable" : "Not adoptable"}
-                            </Badge>
-                            {row.profile.is_inside_support_pool && (
-                              <Badge
-                                variant="outline"
-                                className="border-[var(--color-accent-warm)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
-                              >
-                                Support pool
-                              </Badge>
-                            )}
-                            <Badge
-                              variant="outline"
-                              className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-text-muted)]"
-                            >
-                              Chip{" "}
-                              {row.profile.has_chip === null
-                                ? "-"
-                                : row.profile.has_chip
-                                  ? "Y"
-                                  : "N"}
-                            </Badge>
-                            <Badge
-                              variant="outline"
-                              className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-text-muted)]"
-                            >
-                              Desex{" "}
-                              {row.profile.is_desexed === null
-                                ? "-"
-                                : row.profile.is_desexed
-                                  ? "Y"
-                                  : "N"}
-                            </Badge>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-sm text-[var(--color-panel)]">
-                          <div>{formatFallback(row.currentPosition?.name)}</div>
-                          <div className="text-xs text-[var(--color-text-muted)]">
-                            Cage {formatFallback(row.profile.cage)}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-sm text-[var(--color-panel)]">
-                          <div>{formatDate(row.profile.arrival_date)}</div>
-                          <div className="text-xs text-[var(--color-text-muted)]">
-                            {formatFallback(row.arrivalSource?.name_zh)}
-                            {row.profile.internal_code ? ` / ${row.profile.internal_code}` : ""}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex justify-end">
-                            <Button
-                              type="button"
-                              size="sm"
-                              variant="outline"
-                              onClick={() => openProfileDialog(row)}
-                            >
-                              <Edit3 className="h-4 w-4" />
-                              Edit
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+              <DataTable<AnimalPipelineRow>
+                columns={animalColumns}
+                rows={group.rows}
+                getRowKey={(row) => row.id}
+                renderMobileCard={renderAnimalCard}
+              />
             </section>
           ))}
         </div>
