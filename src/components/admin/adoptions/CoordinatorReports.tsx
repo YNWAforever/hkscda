@@ -13,6 +13,7 @@ import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
+import { formatAdminDateTime, formatAdminNumber, useAdminPageCopy } from "../adminPageCopy";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { fetchCoordinatorJson } from "./api";
 import { getCoordinatorExportFilename } from "./adopterWorkflowLogic";
@@ -37,49 +38,31 @@ type KindFilter = CoordinatorExportKind | "all";
 
 type SummaryMetricKey = Exclude<keyof CoordinatorMonthlySummary, "month">;
 
-const EXPORT_KIND_OPTIONS: Array<{ value: KindFilter; label: string }> = [
-  { value: "all", label: "All exports" },
-  { value: "cases", label: "Cases" },
-  { value: "adopters", label: "Adopters" },
-  { value: "successful-adoptions", label: "Successful adoptions" },
-  { value: "animals", label: "Animals" },
-  { value: "tasks", label: "Tasks" },
+const EXPORT_KIND_OPTIONS: KindFilter[] = [
+  "all",
+  "cases",
+  "adopters",
+  "successful-adoptions",
+  "animals",
+  "tasks",
 ];
 
-const KIND_LABELS: Record<CoordinatorExportKind, string> = {
-  cases: "Cases",
-  adopters: "Adopters",
-  "successful-adoptions": "Successful adoptions",
-  animals: "Animals",
-  tasks: "Tasks",
-};
-
-const SUMMARY_TILES: Array<{ key: SummaryMetricKey; label: string }> = [
-  { key: "publicIntakeCases", label: "Public intake" },
-  { key: "manualIntakeCases", label: "Manual intake" },
-  { key: "successfulAdoptions", label: "Successful" },
-  { key: "openCases", label: "Open cases" },
-  { key: "overdueTasks", label: "Overdue tasks" },
-  { key: "exportsRun", label: "Exports run" },
+const SUMMARY_TILES: SummaryMetricKey[] = [
+  "publicIntakeCases",
+  "manualIntakeCases",
+  "successfulAdoptions",
+  "openCases",
+  "overdueTasks",
+  "exportsRun",
 ];
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50] as const;
 
-function formatCount(value: number | null | undefined) {
-  return (value ?? 0).toLocaleString("en-US");
-}
-
-function formatTimestamp(value: string | null | undefined) {
-  if (!value) return "-";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-
-  return new Intl.DateTimeFormat("en-HK", {
-    dateStyle: "medium",
-    timeStyle: "short",
-    hour12: false,
-    timeZone: "Asia/Hong_Kong",
-  }).format(date);
+function formatCount(
+  value: number | null | undefined,
+  language: ReturnType<typeof useAdminPageCopy>["language"],
+) {
+  return formatAdminNumber(value, language);
 }
 
 function actorLabel(row: CoordinatorExportAuditRow) {
@@ -101,16 +84,18 @@ function MetricTile({
   label,
   value,
   isLoading,
+  language,
 }: {
   label: string;
   value: number;
   isLoading: boolean;
+  language: ReturnType<typeof useAdminPageCopy>["language"];
 }) {
   return (
     <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3">
       <div className="text-xs font-medium text-[var(--color-text-muted)]">{label}</div>
       <div className="mt-1 text-2xl font-bold text-[var(--color-panel)]">
-        {isLoading ? "-" : formatCount(value)}
+        {isLoading ? "-" : formatCount(value, language)}
       </div>
     </div>
   );
@@ -126,6 +111,8 @@ function SourceRouteCell({ value }: { value: string | null }) {
 }
 
 export function CoordinatorReports() {
+  const { language, pageCopy } = useAdminPageCopy();
+  const copy = pageCopy.reports;
   const [month, setMonth] = useState(() => currentHongKongMonth());
   const [kind, setKind] = useState<KindFilter>("all");
   const [actor, setActor] = useState("");
@@ -195,7 +182,7 @@ export function CoordinatorReports() {
       const {
         data: { session },
       } = await supabase.auth.getSession();
-      if (!session?.access_token) throw new Error("未登入");
+      if (!session?.access_token) throw new Error(pageCopy.common.notSignedIn);
 
       const response = await fetch(buildRegeneratedExportUrl(row.id), {
         headers: { authorization: `Bearer ${session.access_token}` },
@@ -203,7 +190,9 @@ export function CoordinatorReports() {
 
       if (!response.ok) {
         const body = await response.json().catch(() => ({}));
-        throw new Error(typeof body.error === "string" ? body.error : "Download failed");
+        throw new Error(
+          typeof body.error === "string" ? body.error : pageCopy.common.downloadFailed,
+        );
       }
 
       const blob = await response.blob();
@@ -219,7 +208,9 @@ export function CoordinatorReports() {
       anchor.remove();
       window.setTimeout(() => URL.revokeObjectURL(url), 0);
     } catch (nextError) {
-      setDownloadError(nextError instanceof Error ? nextError.message : "Download failed");
+      setDownloadError(
+        nextError instanceof Error ? nextError.message : pageCopy.common.downloadFailed,
+      );
     } finally {
       setDownloadingId(null);
     }
@@ -230,38 +221,38 @@ export function CoordinatorReports() {
   const exportColumns: DataTableColumn<CoordinatorExportAuditRow>[] = [
     {
       id: "timestamp",
-      header: "Timestamp",
+      header: copy.columns.timestamp,
       className: "min-w-44 px-4 font-medium text-[var(--color-panel)]",
-      cell: (row) => formatTimestamp(row.timestamp),
+      cell: (row) => formatAdminDateTime(row.timestamp, language),
     },
     {
       id: "actor",
-      header: "Actor",
+      header: copy.columns.actor,
       className: "min-w-48 text-sm text-[var(--color-panel)]",
       cell: (row) => <span className="block max-w-48 truncate">{actorLabel(row)}</span>,
     },
     {
       id: "kind",
-      header: "Kind",
+      header: copy.columns.kind,
       className: "min-w-40",
       cell: (row) => (
         <Badge
           variant="outline"
           className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
         >
-          {KIND_LABELS[row.kind]}
+          {copy.kindOptions[row.kind]}
         </Badge>
       ),
     },
     {
       id: "rows",
-      header: "Rows",
+      header: copy.columns.rows,
       className: "w-28 text-right font-semibold text-[var(--color-panel)]",
-      cell: (row) => formatCount(row.rowCount),
+      cell: (row) => formatCount(row.rowCount, language),
     },
     {
       id: "filters",
-      header: "Filters",
+      header: copy.columns.filters,
       className: "min-w-72 text-xs text-[var(--color-text-muted)]",
       cell: (row) => (
         <span className="block max-w-72 truncate">{formatReportFiltersPreview(row.filters)}</span>
@@ -269,13 +260,13 @@ export function CoordinatorReports() {
     },
     {
       id: "sourceRoute",
-      header: "Source route",
+      header: copy.columns.sourceRoute,
       className: "min-w-72",
       cell: (row) => <SourceRouteCell value={row.sourceRoute} />,
     },
     {
       id: "action",
-      header: "Action",
+      header: copy.columns.action,
       className: "w-40",
       cell: (row) => (
         <Button
@@ -286,7 +277,7 @@ export function CoordinatorReports() {
           disabled={downloadingId === row.id}
         >
           <Download className="h-4 w-4" />
-          {downloadingId === row.id ? "Downloading..." : "Download again"}
+          {downloadingId === row.id ? pageCopy.common.downloading : pageCopy.common.downloadAgain}
         </Button>
       ),
     },
@@ -298,7 +289,7 @@ export function CoordinatorReports() {
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <div className="font-medium text-[var(--color-panel)]">
-              {formatTimestamp(row.timestamp)}
+              {formatAdminDateTime(row.timestamp, language)}
             </div>
             <div className="truncate text-xs text-[var(--color-text-muted)]">{actorLabel(row)}</div>
           </div>
@@ -306,24 +297,24 @@ export function CoordinatorReports() {
             variant="outline"
             className="shrink-0 border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
           >
-            {KIND_LABELS[row.kind]}
+            {copy.kindOptions[row.kind]}
           </Badge>
         </div>
 
         <div className="text-xs text-[var(--color-text-muted)]">
-          Rows:{" "}
+          {copy.columns.rows}:{" "}
           <span className="font-semibold text-[var(--color-panel)]">
-            {formatCount(row.rowCount)}
+            {formatCount(row.rowCount, language)}
           </span>
         </div>
 
         <div className="text-xs text-[var(--color-text-muted)]">
-          <div className="mb-1">Filters</div>
+          <div className="mb-1">{copy.columns.filters}</div>
           <div className="text-[var(--color-panel)]">{formatReportFiltersPreview(row.filters)}</div>
         </div>
 
         <div className="text-xs text-[var(--color-text-muted)]">
-          <div className="mb-1">Source route</div>
+          <div className="mb-1">{copy.columns.sourceRoute}</div>
           <SourceRouteCell value={row.sourceRoute} />
         </div>
 
@@ -335,7 +326,7 @@ export function CoordinatorReports() {
           className="min-h-[44px] w-full"
         >
           <Download className="h-4 w-4" />
-          {downloadingId === row.id ? "Downloading..." : "Download again"}
+          {downloadingId === row.id ? pageCopy.common.downloading : pageCopy.common.downloadAgain}
         </Button>
       </div>
     );
@@ -345,10 +336,8 @@ export function CoordinatorReports() {
     <div className="space-y-5 p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--color-panel)]">Coordinator reports</h1>
-          <p className="text-sm text-[var(--color-text-muted)]">
-            Monthly intake summary and regenerated CSV export history.
-          </p>
+          <h1 className="text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
+          <p className="text-sm text-[var(--color-text-muted)]">{copy.subtitle}</p>
         </div>
         <Button
           type="button"
@@ -360,17 +349,21 @@ export function CoordinatorReports() {
           disabled={isFetching}
         >
           <RefreshCw className="h-4 w-4" />
-          Refresh
+          {pageCopy.common.refresh}
         </Button>
       </div>
 
       {(summaryQuery.error || historyQuery.error || downloadError) && (
         <div className="space-y-2">
           {summaryQuery.error && (
-            <InlineAlert>Could not load monthly summary: {summaryQuery.error.message}</InlineAlert>
+            <InlineAlert>
+              {copy.loadSummaryError}: {summaryQuery.error.message}
+            </InlineAlert>
           )}
           {historyQuery.error && (
-            <InlineAlert>Could not load export history: {historyQuery.error.message}</InlineAlert>
+            <InlineAlert>
+              {copy.loadHistoryError}: {historyQuery.error.message}
+            </InlineAlert>
           )}
           {downloadError && <InlineAlert>{downloadError}</InlineAlert>}
         </div>
@@ -380,7 +373,7 @@ export function CoordinatorReports() {
         <div className="grid gap-3 p-4 lg:grid-cols-[160px_220px_minmax(260px,1fr)_auto]">
           <div className="space-y-1.5">
             <Label htmlFor="reports-month" className="text-xs text-[var(--color-text-muted)]">
-              Month
+              {copy.month}
             </Label>
             <Input
               id="reports-month"
@@ -396,7 +389,7 @@ export function CoordinatorReports() {
 
           <div className="space-y-1.5">
             <Label htmlFor="reports-kind" className="text-xs text-[var(--color-text-muted)]">
-              Kind
+              {copy.kind}
             </Label>
             <Select
               value={kind}
@@ -410,8 +403,8 @@ export function CoordinatorReports() {
               </SelectTrigger>
               <SelectContent>
                 {EXPORT_KIND_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
+                  <SelectItem key={option} value={option}>
+                    {copy.kindOptions[option]}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -420,7 +413,7 @@ export function CoordinatorReports() {
 
           <div className="space-y-1.5">
             <Label htmlFor="reports-actor" className="text-xs text-[var(--color-text-muted)]">
-              Actor
+              {copy.actor}
             </Label>
             <label className="relative block">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
@@ -432,29 +425,27 @@ export function CoordinatorReports() {
                   resetToFirstPage();
                 }}
                 className="h-9 pl-9"
-                placeholder="Filter by actor user ID"
+                placeholder={copy.actorPlaceholder}
               />
             </label>
           </div>
 
           <div className="flex items-end">
             <Button type="button" variant="outline" onClick={clearFilters} disabled={isFetching}>
-              Clear
+              {pageCopy.common.clear}
             </Button>
           </div>
         </div>
       </section>
 
-      <section
-        className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6"
-        aria-label="Monthly coordinator summary"
-      >
+      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6" aria-label={copy.summaryLabel}>
         {SUMMARY_TILES.map((tile) => (
           <MetricTile
-            key={tile.key}
-            label={tile.label}
-            value={summary?.[tile.key] ?? 0}
+            key={tile}
+            label={copy.metrics[tile]}
+            value={summary?.[tile] ?? 0}
             isLoading={summaryQuery.isLoading}
+            language={language}
           />
         ))}
       </section>
@@ -462,14 +453,18 @@ export function CoordinatorReports() {
       <section className="overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
         <div className="flex min-h-14 flex-wrap items-center justify-between gap-3 border-b border-[var(--color-border)] px-4">
           <div>
-            <h2 className="text-base font-semibold text-[var(--color-panel)]">Export history</h2>
+            <h2 className="text-base font-semibold text-[var(--color-panel)]">
+              {copy.exportHistory}
+            </h2>
             <p className="text-xs text-[var(--color-text-muted)]">
-              {historyQuery.isLoading ? "Loading..." : `${formatCount(total)} records`}
+              {historyQuery.isLoading
+                ? pageCopy.common.loading
+                : pageCopy.common.totalRecords(total)}
             </p>
           </div>
           <div className="flex items-center gap-2">
             <Label htmlFor="reports-page-size" className="text-xs text-[var(--color-text-muted)]">
-              Rows
+              {pageCopy.common.rows}
             </Label>
             <Select
               value={String(pageSize)}
@@ -498,14 +493,14 @@ export function CoordinatorReports() {
           getRowKey={(row) => row.id}
           loading={historyQuery.isLoading}
           skeletonRows={5}
-          empty={historyQuery.error ? null : "No exports match these filters."}
+          empty={historyQuery.error ? null : copy.empty}
           renderMobileCard={renderExportCard}
         />
       </section>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-[var(--color-text-muted)]">
-          Page {page} of {totalPages}
+          {pageCopy.common.pageOf(page, totalPages)}
         </p>
         <div className="flex items-center gap-2">
           <Button
@@ -515,7 +510,7 @@ export function CoordinatorReports() {
             disabled={page <= 1 || isFetching}
           >
             <ChevronLeft className="h-4 w-4" />
-            Previous
+            {pageCopy.common.previous}
           </Button>
           <Button
             type="button"
@@ -523,7 +518,7 @@ export function CoordinatorReports() {
             onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
             disabled={page >= totalPages || isFetching}
           >
-            Next
+            {pageCopy.common.next}
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>

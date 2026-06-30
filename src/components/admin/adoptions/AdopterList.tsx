@@ -10,6 +10,7 @@ import { Checkbox } from "../../ui/checkbox";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
+import { formatAdminNumber, statusDisplayName, useAdminPageCopy } from "../adminPageCopy";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { fetchCoordinatorJson } from "./api";
 import { formatDate, formatFallback } from "./caseWorkflowLogic";
@@ -25,20 +26,19 @@ type BlacklistFilter = "all" | "yes" | "no";
 
 const ADOPTER_PAGE_SIZE_OPTIONS = [10, 25, 50] as const;
 
-const BLACKLIST_FILTER_OPTIONS: Array<{ value: BlacklistFilter; label: string }> = [
-  { value: "all", label: "All blacklist states" },
-  { value: "yes", label: "Blacklisted" },
-  { value: "no", label: "Not blacklisted" },
-];
+const BLACKLIST_FILTER_OPTIONS: BlacklistFilter[] = ["all", "yes", "no"];
 
 function BlacklistBadge({ isBlacklisted }: { isBlacklisted: boolean }) {
+  const { pageCopy } = useAdminPageCopy();
+  const copy = pageCopy.adopters;
+
   if (isBlacklisted) {
     return (
       <Badge
         variant="outline"
         className="border-[var(--color-error)] bg-[var(--color-surface-2)] text-[var(--color-error)]"
       >
-        Blacklisted
+        {copy.blacklisted}
       </Badge>
     );
   }
@@ -48,21 +48,26 @@ function BlacklistBadge({ isBlacklisted }: { isBlacklisted: boolean }) {
       variant="outline"
       className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
     >
-      Clear
+      {copy.clear}
     </Badge>
   );
 }
 
-function formatCount(value: number) {
-  return value.toLocaleString("en-US");
+function formatCount(value: number, language: ReturnType<typeof useAdminPageCopy>["language"]) {
+  return formatAdminNumber(value, language);
 }
 
-function latestCaseStatusText(latestCase: AdopterSummary["latestCase"]) {
+function latestCaseStatusText(
+  latestCase: AdopterSummary["latestCase"],
+  language: ReturnType<typeof useAdminPageCopy>["language"],
+) {
   if (!latestCase) return null;
-  return latestCase.status.labelZh || latestCase.status.labelEn || latestCase.status.key;
+  return statusDisplayName(latestCase.status, language);
 }
 
 function LatestCaseCell({ latestCase }: { latestCase: AdopterSummary["latestCase"] }) {
+  const { language, pageCopy } = useAdminPageCopy();
+
   if (!latestCase) {
     return <span className="text-[var(--color-text-muted)]">{formatFallback(null)}</span>;
   }
@@ -77,7 +82,10 @@ function LatestCaseCell({ latestCase }: { latestCase: AdopterSummary["latestCase
         {formatDate(latestCase.createdAt)}
       </Link>
       <div className="text-xs text-[var(--color-text-muted)]">
-        {latestCaseStatusText(latestCase)} · {latestCase.animalType}
+        {latestCaseStatusText(latestCase, language)} ·{" "}
+        {latestCase.animalType in pageCopy.animalTypes
+          ? pageCopy.animalTypes[latestCase.animalType as keyof typeof pageCopy.animalTypes]
+          : latestCase.animalType}
         {latestCase.requestedAnimalName ? ` · ${latestCase.requestedAnimalName}` : ""}
       </div>
     </div>
@@ -85,6 +93,8 @@ function LatestCaseCell({ latestCase }: { latestCase: AdopterSummary["latestCase
 }
 
 export function AdopterList() {
+  const { language, pageCopy } = useAdminPageCopy();
+  const copy = pageCopy.adopters;
   const [query, setQuery] = useState("");
   const [blacklisted, setBlacklisted] = useState<BlacklistFilter>("all");
   const [hasOpenCases, setHasOpenCases] = useState(false);
@@ -124,7 +134,7 @@ export function AdopterList() {
   const adopterColumns: DataTableColumn<AdopterSummary>[] = [
     {
       id: "nameArea",
-      header: "Name and area",
+      header: copy.columns.nameArea,
       className: "min-w-64 px-4",
       cell: (a) => (
         <div>
@@ -147,7 +157,7 @@ export function AdopterList() {
     },
     {
       id: "contact",
-      header: "Contact",
+      header: copy.columns.contact,
       className: "min-w-52",
       cell: (a) => (
         <div>
@@ -160,7 +170,7 @@ export function AdopterList() {
     },
     {
       id: "history",
-      header: "History",
+      header: copy.columns.history,
       className: "min-w-56",
       cell: (a) => (
         <div className="flex flex-wrap gap-1.5">
@@ -168,32 +178,32 @@ export function AdopterList() {
             variant="outline"
             className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
           >
-            {formatCount(a.openCaseCount)} open cases
+            {formatCount(a.openCaseCount, language)} {copy.badges.openCases}
           </Badge>
           <Badge
             variant="outline"
             className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
           >
-            {formatCount(a.successfulAdoptionCount)} adoptions
+            {formatCount(a.successfulAdoptionCount, language)} {copy.badges.adoptions}
           </Badge>
           <Badge
             variant="outline"
             className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
           >
-            {formatCount(a.openTaskCount)} open tasks
+            {formatCount(a.openTaskCount, language)} {copy.badges.openTasks}
           </Badge>
         </div>
       ),
     },
     {
       id: "latestCase",
-      header: "Latest case",
+      header: copy.columns.latestCase,
       className: "min-w-32",
       cell: (a) => <LatestCaseCell latestCase={a.latestCase} />,
     },
     {
       id: "action",
-      header: "Action",
+      header: copy.columns.action,
       className: "w-32",
       cell: (a) => (
         <Link
@@ -201,7 +211,7 @@ export function AdopterList() {
           params={{ id: a.id }}
           className="inline-flex h-8 items-center justify-center rounded-md border border-[var(--color-border)] px-3 text-xs font-medium text-[var(--color-panel)] hover:bg-[var(--color-surface-2)]"
         >
-          Open
+          {pageCopy.common.open}
         </Link>
       ),
     },
@@ -233,19 +243,19 @@ export function AdopterList() {
             variant="outline"
             className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
           >
-            {formatCount(a.openCaseCount)} open
+            {formatCount(a.openCaseCount, language)} {copy.badges.open}
           </Badge>
           <Badge
             variant="outline"
             className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
           >
-            {formatCount(a.successfulAdoptionCount)} adopted
+            {formatCount(a.successfulAdoptionCount, language)} {copy.badges.adopted}
           </Badge>
           <Badge
             variant="outline"
             className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
           >
-            {formatCount(a.openTaskCount)} tasks
+            {formatCount(a.openTaskCount, language)} {copy.badges.tasks}
           </Badge>
         </div>
         <LatestCaseCell latestCase={a.latestCase} />
@@ -257,16 +267,14 @@ export function AdopterList() {
     <div className="space-y-5 p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--color-panel)]">Adopters</h1>
-          <p className="text-sm text-[var(--color-text-muted)]">
-            Profiles, adoption history, blacklist status, and follow-up workload.
-          </p>
+          <h1 className="text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
+          <p className="text-sm text-[var(--color-text-muted)]">{copy.subtitle}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <ExportButton kind="adopters" searchParams={searchParams} label="Export CSV" />
+          <ExportButton kind="adopters" searchParams={searchParams} label={copy.exportCsv} />
           <Button type="button" variant="outline" onClick={() => refetch()} disabled={isFetching}>
             <RefreshCw className="h-4 w-4" />
-            Refresh
+            {pageCopy.common.refresh}
           </Button>
         </div>
       </div>
@@ -281,9 +289,9 @@ export function AdopterList() {
                 setQuery(event.target.value);
                 resetToFirstPage();
               }}
-              aria-label="Search adopters"
+              aria-label={copy.searchLabel}
               className="h-9 pl-9"
-              placeholder="Search name, phone, or email"
+              placeholder={copy.searchPlaceholder}
             />
           </label>
 
@@ -294,13 +302,17 @@ export function AdopterList() {
               resetToFirstPage();
             }}
           >
-            <SelectTrigger aria-label="Filter by blacklist status" className="h-9">
-              <SelectValue placeholder="Blacklist status" />
+            <SelectTrigger aria-label={copy.blacklistLabel} className="h-9">
+              <SelectValue placeholder={copy.blacklistPlaceholder} />
             </SelectTrigger>
             <SelectContent>
               {BLACKLIST_FILTER_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
+                <SelectItem key={option} value={option}>
+                  {option === "all"
+                    ? copy.allBlacklistStates
+                    : option === "yes"
+                      ? copy.blacklisted
+                      : copy.notBlacklisted}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -313,9 +325,9 @@ export function AdopterList() {
                 setHasOpenCases(checked === true);
                 resetToFirstPage();
               }}
-              aria-label="Show adopters with open cases"
+              aria-label={copy.openCasesLabel}
             />
-            Open cases
+            {copy.openCases}
           </label>
 
           <label className="flex h-9 items-center gap-2 rounded-md border border-[var(--color-border)] px-3 text-sm text-[var(--color-panel)]">
@@ -325,9 +337,9 @@ export function AdopterList() {
                 setHasOpenTasks(checked === true);
                 resetToFirstPage();
               }}
-              aria-label="Show adopters with open tasks"
+              aria-label={copy.openTasksLabel}
             />
-            Open tasks
+            {copy.openTasks}
           </label>
         </div>
       </section>
@@ -338,14 +350,14 @@ export function AdopterList() {
       >
         <div className="flex min-h-14 flex-wrap items-center justify-between gap-3 border-b border-[var(--color-border)] px-4">
           <div>
-            <h2 className="text-base font-semibold text-[var(--color-panel)]">Adopter profiles</h2>
+            <h2 className="text-base font-semibold text-[var(--color-panel)]">{copy.tableTitle}</h2>
             <p className="text-xs text-[var(--color-text-muted)]">
-              {isLoading ? "Loading..." : `${total} total`}
+              {isLoading ? pageCopy.common.loading : pageCopy.common.totalCount(total)}
             </p>
           </div>
           <div className="flex items-center gap-2">
             <Label htmlFor="adopter-page-size" className="text-xs text-[var(--color-text-muted)]">
-              Rows
+              {pageCopy.common.rows}
             </Label>
             <Select
               value={String(pageSize)}
@@ -383,14 +395,12 @@ export function AdopterList() {
           getRowKey={(a) => a.id}
           loading={isLoading}
           skeletonRows={5}
-          empty="No adopters found"
+          empty={copy.empty}
           renderMobileCard={renderAdopterCard}
         />
 
         <div className="flex min-h-12 flex-wrap items-center justify-between gap-3 border-t border-[var(--color-border)] px-4 py-2 text-xs text-[var(--color-text-muted)]">
-          <span>
-            Page {page} of {totalPages}
-          </span>
+          <span>{pageCopy.common.pageOf(page, totalPages)}</span>
           <div className="flex gap-2">
             <Button
               type="button"
@@ -400,7 +410,7 @@ export function AdopterList() {
               disabled={isPreviousDisabled}
             >
               <ChevronLeft className="h-4 w-4" />
-              Previous
+              {pageCopy.common.previous}
             </Button>
             <Button
               type="button"
@@ -409,7 +419,7 @@ export function AdopterList() {
               onClick={() => setPage((currentPage) => currentPage + 1)}
               disabled={isNextDisabled}
             >
-              Next
+              {pageCopy.common.next}
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>

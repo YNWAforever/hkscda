@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Switch } from "../../ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../ui/table";
 import { Tabs, TabsList, TabsTrigger } from "../../ui/tabs";
+import { useAdminPageCopy } from "../adminPageCopy";
 import { fetchCoordinatorJson } from "./api";
 import {
   buildStatusMutationPayload,
@@ -35,32 +36,31 @@ type DeleteResponse = {
 
 const STATUSES_QUERY_KEY = ["coordinator-statuses"] as const;
 
-const CATEGORY_OPTIONS: Array<{
-  value: CoordinatorStatusCategory;
-  label: string;
-  shortLabel: string;
-}> = [
-  { value: "adoption_case", label: "領養個案 Case", shortLabel: "個案" },
-  { value: "animal_lifecycle", label: "動物流程 Animal", shortLabel: "動物" },
-  { value: "match", label: "配對 Match", shortLabel: "配對" },
-  { value: "followup", label: "跟進 Follow-up", shortLabel: "跟進" },
-  { value: "final_outcome", label: "結果 Outcome", shortLabel: "結果" },
+const CATEGORY_OPTIONS: CoordinatorStatusCategory[] = [
+  "adoption_case",
+  "animal_lifecycle",
+  "match",
+  "followup",
+  "final_outcome",
 ];
 
 const COLOR_OPTIONS = [
-  { value: "blue", label: "Blue", swatchClassName: "bg-[var(--color-panel)]" },
-  { value: "amber", label: "Amber", swatchClassName: "bg-[var(--color-warning)]" },
-  { value: "cyan", label: "Cyan", swatchClassName: "bg-[var(--color-lavender-deep)]" },
-  { value: "purple", label: "Purple", swatchClassName: "bg-[var(--color-secondary)]" },
-  { value: "indigo", label: "Indigo", swatchClassName: "bg-[var(--color-panel-2)]" },
-  { value: "green", label: "Green", swatchClassName: "bg-[var(--color-success)]" },
-  { value: "red", label: "Red", swatchClassName: "bg-[var(--color-error)]" },
-  { value: "slate", label: "Slate", swatchClassName: "bg-[var(--color-text-muted)]" },
-  { value: "coral", label: "Coral", swatchClassName: "bg-[var(--color-primary)]" },
+  { value: "blue", swatchClassName: "bg-[var(--color-panel)]" },
+  { value: "amber", swatchClassName: "bg-[var(--color-warning)]" },
+  { value: "cyan", swatchClassName: "bg-[var(--color-lavender-deep)]" },
+  { value: "purple", swatchClassName: "bg-[var(--color-secondary)]" },
+  { value: "indigo", swatchClassName: "bg-[var(--color-panel-2)]" },
+  { value: "green", swatchClassName: "bg-[var(--color-success)]" },
+  { value: "red", swatchClassName: "bg-[var(--color-error)]" },
+  { value: "slate", swatchClassName: "bg-[var(--color-text-muted)]" },
+  { value: "coral", swatchClassName: "bg-[var(--color-primary)]" },
 ] as const;
 
-function getCategoryLabel(category: CoordinatorStatusCategory) {
-  return CATEGORY_OPTIONS.find((option) => option.value === category)?.label ?? category;
+function getCategoryLabel(
+  category: CoordinatorStatusCategory,
+  copy: ReturnType<typeof useAdminPageCopy>["pageCopy"],
+) {
+  return copy.statuses.categories[category]?.label ?? category;
 }
 
 function getColorOption(color: string) {
@@ -69,10 +69,7 @@ function getColorOption(color: string) {
 
 function getColorOptionsForValue(color: string) {
   if (!color || getColorOption(color)) return COLOR_OPTIONS;
-  return [
-    ...COLOR_OPTIONS,
-    { value: color, label: color, swatchClassName: "bg-[var(--color-border)]" },
-  ];
+  return [...COLOR_OPTIONS, { value: color, swatchClassName: "bg-[var(--color-border)]" }];
 }
 
 function FlagBadge({ children }: { children: React.ReactNode }) {
@@ -107,6 +104,8 @@ export function StatusFieldError({ id, message }: { id: string; message?: string
 }
 
 export function StatusAdmin() {
+  const { pageCopy } = useAdminPageCopy();
+  const copy = pageCopy.statuses;
   const queryClient = useQueryClient();
   const [selectedCategory, setSelectedCategory] =
     useState<CoordinatorStatusCategory>("adoption_case");
@@ -134,7 +133,7 @@ export function StatusAdmin() {
     mutationFn: () => {
       const payload = buildStatusMutationPayload(form, originalForm);
       if (!payload) {
-        throw new Error("No changes to save.");
+        throw new Error(copy.noChanges);
       }
 
       if (form.id) {
@@ -178,7 +177,7 @@ export function StatusAdmin() {
   const hasFormErrors = Object.keys(formErrors).length > 0;
   const mutationPayload = hasFormErrors ? null : buildStatusMutationPayload(form, originalForm);
   const canSave = mutationPayload !== null && !saveMutation.isPending;
-  const selectedCategoryLabel = getCategoryLabel(selectedCategory);
+  const selectedCategoryLabel = getCategoryLabel(selectedCategory, pageCopy);
   const colorOptions = getColorOptionsForValue(form.color);
   const visibleKeyError = formErrors.key;
   const visibleLabelZhError = formErrors.labelZh;
@@ -213,7 +212,7 @@ export function StatusAdmin() {
 
   function handleDelete(status: CoordinatorStatus) {
     if (status.isSystem || deleteMutation.isPending) return;
-    if (!window.confirm(`Delete ${status.labelZh} / ${status.labelEn}?`)) return;
+    if (!window.confirm(copy.deleteConfirm(status.labelZh, status.labelEn))) return;
     deleteMutation.mutate(status);
   }
 
@@ -221,14 +220,14 @@ export function StatusAdmin() {
     <div className="space-y-5 p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--color-panel)]">Coordinator statuses</h1>
+          <h1 className="text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
           <p className="text-sm text-[var(--color-text-muted)]">
-            {statuses.length} statuses across {CATEGORY_OPTIONS.length} categories
+            {copy.subtitle(statuses.length, CATEGORY_OPTIONS.length)}
           </p>
         </div>
         <Button type="button" variant="outline" onClick={() => resetForm()}>
           <Plus className="h-4 w-4" />
-          New status
+          {copy.newStatus}
         </Button>
       </div>
 
@@ -236,11 +235,11 @@ export function StatusAdmin() {
         <TabsList className="h-auto flex-wrap justify-start gap-1 rounded-lg bg-[var(--color-lavender)] p-1">
           {CATEGORY_OPTIONS.map((category) => (
             <TabsTrigger
-              key={category.value}
-              value={category.value}
+              key={category}
+              value={category}
               className="data-[state=active]:bg-[var(--color-surface)] data-[state=active]:text-[var(--color-panel)]"
             >
-              {category.label}
+              {copy.categories[category].label}
             </TabsTrigger>
           ))}
         </TabsList>
@@ -254,7 +253,7 @@ export function StatusAdmin() {
                 {selectedCategoryLabel}
               </h2>
               <p className="text-xs text-[var(--color-text-muted)]">
-                {visibleStatuses.length} rows
+                {pageCopy.common.rowsCount(visibleStatuses.length)}
               </p>
             </div>
           </div>
@@ -262,12 +261,20 @@ export function StatusAdmin() {
           <Table aria-busy={isLoading}>
             <TableHeader>
               <TableRow className="h-11 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-2)]">
-                <TableHead className="w-[34%] px-4 text-[var(--color-text-muted)]">Label</TableHead>
-                <TableHead className="text-[var(--color-text-muted)]">Order</TableHead>
-                <TableHead className="text-[var(--color-text-muted)]">Flags</TableHead>
-                <TableHead className="text-[var(--color-text-muted)]">Category</TableHead>
+                <TableHead className="w-[34%] px-4 text-[var(--color-text-muted)]">
+                  {copy.columns.label}
+                </TableHead>
+                <TableHead className="text-[var(--color-text-muted)]">
+                  {copy.columns.order}
+                </TableHead>
+                <TableHead className="text-[var(--color-text-muted)]">
+                  {copy.columns.flags}
+                </TableHead>
+                <TableHead className="text-[var(--color-text-muted)]">
+                  {copy.columns.category}
+                </TableHead>
                 <TableHead className="w-40 text-right text-[var(--color-text-muted)]">
-                  Actions
+                  {copy.columns.actions}
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -293,12 +300,14 @@ export function StatusAdmin() {
                   </TableRow>
                 ))}
 
-              {error && !isLoading && <StatusLoadErrorRow message={error.message} />}
+              {error && !isLoading && (
+                <StatusLoadErrorRow message={`${copy.loadError}: ${error.message}`} />
+              )}
 
               {!isLoading && !error && visibleStatuses.length === 0 && (
                 <TableRow className="h-16">
                   <TableCell colSpan={5} className="px-4 text-[var(--color-text-muted)]">
-                    No statuses
+                    {copy.tableEmpty}
                   </TableCell>
                 </TableRow>
               )}
@@ -337,20 +346,21 @@ export function StatusAdmin() {
                     </TableCell>
                     <TableCell>
                       <div className="flex min-h-7 flex-wrap items-center gap-1.5">
-                        <FlagBadge>{status.isActive ? "Active" : "Inactive"}</FlagBadge>
-                        {status.isClosing && <FlagBadge>Closing</FlagBadge>}
-                        {status.isFinal && <FlagBadge>Final</FlagBadge>}
+                        <FlagBadge>
+                          {status.isActive ? copy.flags.active : copy.flags.inactive}
+                        </FlagBadge>
+                        {status.isClosing && <FlagBadge>{copy.flags.closing}</FlagBadge>}
+                        {status.isFinal && <FlagBadge>{copy.flags.final}</FlagBadge>}
                         {status.isSystem && (
                           <FlagBadge>
                             <Lock className="mr-1 h-3 w-3" />
-                            System
+                            {copy.flags.system}
                           </FlagBadge>
                         )}
                       </div>
                     </TableCell>
                     <TableCell className="text-xs text-[var(--color-text-muted)]">
-                      {CATEGORY_OPTIONS.find((category) => category.value === status.category)
-                        ?.shortLabel ?? status.category}
+                      {copy.categories[status.category]?.shortLabel ?? status.category}
                     </TableCell>
                     <TableCell>
                       <div className="flex justify-end gap-2">
@@ -362,7 +372,7 @@ export function StatusAdmin() {
                           onClick={() => handleEdit(status)}
                         >
                           <Pencil className="h-4 w-4" />
-                          Edit
+                          {pageCopy.common.edit}
                         </Button>
                         <Button
                           type="button"
@@ -377,7 +387,7 @@ export function StatusAdmin() {
                           ) : (
                             <Trash2 className="h-4 w-4" />
                           )}
-                          {isDeletingCurrent ? "Deleting" : "Delete"}
+                          {isDeletingCurrent ? pageCopy.common.deleting : pageCopy.common.delete}
                         </Button>
                       </div>
                     </TableCell>
@@ -395,22 +405,22 @@ export function StatusAdmin() {
           <div className="flex min-h-9 items-center justify-between gap-3">
             <div>
               <h2 className="text-base font-semibold text-[var(--color-panel)]">
-                {isEditing ? "Edit status" : "New status"}
+                {isEditing ? copy.editStatus : copy.newStatus}
               </h2>
               {form.isSystem && (
-                <p className="text-xs text-[var(--color-text-muted)]">System key locked</p>
+                <p className="text-xs text-[var(--color-text-muted)]">{copy.systemKeyLocked}</p>
               )}
             </div>
             {isEditing && (
               <Button type="button" size="sm" variant="ghost" onClick={() => resetForm()}>
                 <X className="h-4 w-4" />
-                Clear
+                {pageCopy.common.clear}
               </Button>
             )}
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="status-category">Category</Label>
+            <Label htmlFor="status-category">{copy.fields.category}</Label>
             <Select
               value={form.category}
               disabled={form.isSystem}
@@ -421,13 +431,13 @@ export function StatusAdmin() {
                 }))
               }
             >
-              <SelectTrigger id="status-category" aria-label="Status category">
+              <SelectTrigger id="status-category" aria-label={copy.fields.category}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {CATEGORY_OPTIONS.map((category) => (
-                  <SelectItem key={category.value} value={category.value}>
-                    {category.label}
+                  <SelectItem key={category} value={category}>
+                    {copy.categories[category].label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -435,7 +445,7 @@ export function StatusAdmin() {
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="status-key">Key</Label>
+            <Label htmlFor="status-key">{copy.fields.key}</Label>
             <Input
               id="status-key"
               value={form.key}
@@ -450,7 +460,7 @@ export function StatusAdmin() {
 
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
             <div className="grid gap-2">
-              <Label htmlFor="status-label-zh">Chinese label</Label>
+              <Label htmlFor="status-label-zh">{copy.fields.chineseLabel}</Label>
               <Input
                 id="status-label-zh"
                 value={form.labelZh}
@@ -463,7 +473,7 @@ export function StatusAdmin() {
               <StatusFieldError id="status-label-zh-error" message={visibleLabelZhError} />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="status-label-en">English label</Label>
+              <Label htmlFor="status-label-en">{copy.fields.englishLabel}</Label>
               <Input
                 id="status-label-en"
                 value={form.labelEn}
@@ -479,7 +489,7 @@ export function StatusAdmin() {
 
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
             <div className="grid gap-2">
-              <Label htmlFor="status-order">Sort order</Label>
+              <Label htmlFor="status-order">{copy.fields.sortOrder}</Label>
               <Input
                 id="status-order"
                 type="number"
@@ -495,12 +505,12 @@ export function StatusAdmin() {
               <StatusFieldError id="status-order-error" message={visibleSortOrderError} />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="status-color">Color</Label>
+              <Label htmlFor="status-color">{copy.fields.color}</Label>
               <Select
                 value={form.color}
                 onValueChange={(value) => setForm((current) => ({ ...current, color: value }))}
               >
-                <SelectTrigger id="status-color" aria-label="Status color">
+                <SelectTrigger id="status-color" aria-label={copy.fields.color}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -511,7 +521,9 @@ export function StatusAdmin() {
                           className={`h-2.5 w-2.5 rounded-full ${color.swatchClassName}`}
                           aria-hidden="true"
                         />
-                        {color.label}
+                        {color.value in copy.colors
+                          ? copy.colors[color.value as keyof typeof copy.colors]
+                          : color.value}
                       </span>
                     </SelectItem>
                   ))}
@@ -522,33 +534,39 @@ export function StatusAdmin() {
 
           <div className="grid gap-2">
             <label className="flex min-h-11 items-center justify-between gap-4 rounded-md border border-[var(--color-border)] px-3">
-              <span className="text-sm font-medium text-[var(--color-panel)]">Active</span>
+              <span className="text-sm font-medium text-[var(--color-panel)]">
+                {copy.fields.active}
+              </span>
               <Switch
                 checked={form.isActive}
                 onCheckedChange={(checked) =>
                   setForm((current) => ({ ...current, isActive: checked }))
                 }
-                aria-label="Active status"
+                aria-label={copy.fields.active}
               />
             </label>
             <label className="flex min-h-11 items-center justify-between gap-4 rounded-md border border-[var(--color-border)] px-3">
-              <span className="text-sm font-medium text-[var(--color-panel)]">Closing</span>
+              <span className="text-sm font-medium text-[var(--color-panel)]">
+                {copy.fields.closing}
+              </span>
               <Switch
                 checked={form.isClosing}
                 onCheckedChange={(checked) =>
                   setForm((current) => ({ ...current, isClosing: checked }))
                 }
-                aria-label="Closing status"
+                aria-label={copy.fields.closing}
               />
             </label>
             <label className="flex min-h-11 items-center justify-between gap-4 rounded-md border border-[var(--color-border)] px-3">
-              <span className="text-sm font-medium text-[var(--color-panel)]">Final</span>
+              <span className="text-sm font-medium text-[var(--color-panel)]">
+                {copy.fields.final}
+              </span>
               <Switch
                 checked={form.isFinal}
                 onCheckedChange={(checked) =>
                   setForm((current) => ({ ...current, isFinal: checked }))
                 }
-                aria-label="Final status"
+                aria-label={copy.fields.final}
               />
             </label>
           </div>
@@ -566,7 +584,7 @@ export function StatusAdmin() {
 
           <Button type="submit" className="w-full" disabled={!canSave}>
             <Save className="h-4 w-4" />
-            {saveMutation.isPending ? "Saving" : "Save status"}
+            {saveMutation.isPending ? pageCopy.common.saving : copy.fields.saveStatus}
           </Button>
         </form>
       </div>

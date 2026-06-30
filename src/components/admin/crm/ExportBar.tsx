@@ -1,6 +1,7 @@
 import { Download } from "lucide-react";
 
 import { Button } from "../../ui/button";
+import { useAdminPageCopy } from "../adminPageCopy";
 import { getAdminAccessToken } from "./api";
 
 type ExportBarProps = {
@@ -26,6 +27,7 @@ async function downloadCsv(path: string, filename: string) {
 }
 
 export function ExportBar({ search }: ExportBarProps) {
+  const { pageCopy } = useAdminPageCopy();
   const query = search.toString();
   const suffix = query ? `?${query}` : "";
 
@@ -38,7 +40,7 @@ export function ExportBar({ search }: ExportBarProps) {
         onClick={() => downloadCsv(`/api/admin/exports/supporters.csv${suffix}`, "supporters.csv")}
       >
         <Download className="h-4 w-4" />
-        Supporters CSV
+        {pageCopy.common.supportersCsv}
       </Button>
       <Button
         type="button"
@@ -47,7 +49,7 @@ export function ExportBar({ search }: ExportBarProps) {
         onClick={() => downloadCsv(`/api/admin/exports/donations.csv${suffix}`, "donations.csv")}
       >
         <Download className="h-4 w-4" />
-        Donations CSV
+        {pageCopy.common.donationsCsv}
       </Button>
     </div>
   );

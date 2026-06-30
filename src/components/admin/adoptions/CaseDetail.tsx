@@ -14,6 +14,12 @@ import { Button } from "../../ui/button";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Textarea } from "../../ui/textarea";
+import {
+  bilingualStatusName,
+  formatAdminNumber,
+  statusDisplayName,
+  useAdminPageCopy,
+} from "../adminPageCopy";
 import { fetchCoordinatorJson } from "./api";
 import {
   filterStatusesByCategory,
@@ -44,6 +50,105 @@ type StatusUpdateResponse = {
 
 const STATUSES_QUERY_KEY = ["coordinator-statuses"] as const;
 
+const CASE_DETAIL_COPY = {
+  zh: {
+    backToCases: "返回個案",
+    notFound: "找不到個案",
+    refresh: "重新整理",
+    statusesError: "無法載入狀態",
+    noDataCaptured: "沒有紀錄資料",
+    yes: "是",
+    no: "否",
+    notFinalized: "未完成",
+    auditSummary: "審核摘要",
+    auditSubtitle: "根據目前個案資料整理",
+    sections: {
+      applicant: "申請人",
+      publicSubmission: "公開申請",
+      assessmentPreferences: "評估及偏好",
+      statusControls: "狀態控制",
+    },
+    labels: {
+      currentStatus: "目前狀態",
+      created: "建立日期",
+      closed: "結束日期",
+      matches: "配對",
+      approvedMatches: "已批核配對",
+      followups: "跟進工作",
+      finalized: "完成狀態",
+      adoptionFee: "領養費",
+      name: "姓名",
+      phone: "電話",
+      email: "電郵",
+      address: "地址",
+      supporterId: "捐款人 ID",
+      adopterProfileId: "領養人檔案 ID",
+      requestedAnimal: "申請動物",
+      animalType: "動物類別",
+      housingType: "住所類別",
+      familySize: "家庭人數",
+      existingPets: "現有寵物",
+      submitted: "提交日期",
+      reason: "申請原因",
+      assessment: "評估",
+      preferences: "偏好",
+      caseStatus: "個案狀態",
+      note: "備註",
+    },
+    chooseStatus: "選擇狀態",
+    optionalStatusNote: "選填狀態備註",
+    saveStatus: "儲存狀態",
+  },
+  en: {
+    backToCases: "Back to cases",
+    notFound: "Case not found",
+    refresh: "Refresh",
+    statusesError: "Could not load statuses",
+    noDataCaptured: "No data captured",
+    yes: "Yes",
+    no: "No",
+    notFinalized: "Not finalized",
+    auditSummary: "Audit summary",
+    auditSubtitle: "Summary from current case data",
+    sections: {
+      applicant: "Applicant",
+      publicSubmission: "Public submission",
+      assessmentPreferences: "Assessment and preferences",
+      statusControls: "Status controls",
+    },
+    labels: {
+      currentStatus: "Current status",
+      created: "Created",
+      closed: "Closed",
+      matches: "Matches",
+      approvedMatches: "Approved matches",
+      followups: "Follow-ups",
+      finalized: "Finalized",
+      adoptionFee: "Adoption fee",
+      name: "Name",
+      phone: "Phone",
+      email: "Email",
+      address: "Address",
+      supporterId: "Supporter ID",
+      adopterProfileId: "Adopter profile ID",
+      requestedAnimal: "Requested animal",
+      animalType: "Animal type",
+      housingType: "Housing type",
+      familySize: "Family size",
+      existingPets: "Existing pets",
+      submitted: "Submitted",
+      reason: "Reason",
+      assessment: "Assessment",
+      preferences: "Preferences",
+      caseStatus: "Case status",
+      note: "Note",
+    },
+    chooseStatus: "Choose status",
+    optionalStatusNote: "Optional status note",
+    saveStatus: "Save status",
+  },
+} as const;
+
 const STATUS_DOT_CLASSES: Record<string, string> = {
   amber: "bg-[var(--color-warning)]",
   blue: "bg-[var(--color-panel)]",
@@ -61,6 +166,8 @@ function sectionClassName() {
 }
 
 function StatusChip({ status }: { status: CoordinatorStatus }) {
+  const { language } = useAdminPageCopy();
+
   return (
     <Badge
       variant="outline"
@@ -70,8 +177,7 @@ function StatusChip({ status }: { status: CoordinatorStatus }) {
         className={`h-2 w-2 rounded-full ${STATUS_DOT_CLASSES[status.color] ?? "bg-[var(--color-border)]"}`}
         aria-hidden="true"
       />
-      <span>{status.labelZh}</span>
-      <span className="font-normal text-[var(--color-text-muted)]">{status.labelEn}</span>
+      <span>{statusDisplayName(status, language)}</span>
     </Badge>
   );
 }
@@ -99,12 +205,15 @@ function Section({
 }
 
 export function CaseDetailStatusesError({ message }: { message: string }) {
+  const { language } = useAdminPageCopy();
+  const copy = CASE_DETAIL_COPY[language];
+
   return (
     <div
       className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-sm text-[var(--color-error)]"
       role="alert"
     >
-      Could not load statuses: {message}
+      {copy.statusesError}: {message}
     </div>
   );
 }
@@ -131,20 +240,32 @@ function formatNumberish(value: number | null | undefined) {
   return value === null || value === undefined ? "-" : String(value);
 }
 
-function formatUnknownValue(value: unknown): string {
+function formatUnknownValue(value: unknown, language: keyof typeof CASE_DETAIL_COPY): string {
+  const copy = CASE_DETAIL_COPY[language];
   if (value === null || value === undefined) return "-";
   if (typeof value === "string") return formatFallback(value);
   if (typeof value === "number") return String(value);
-  if (typeof value === "boolean") return value ? "Yes" : "No";
+  if (typeof value === "boolean") return value ? copy.yes : copy.no;
   if (Array.isArray(value)) {
-    return value.length === 0 ? "-" : value.map(formatUnknownValue).join(", ");
+    return value.length === 0
+      ? "-"
+      : value.map((item) => formatUnknownValue(item, language)).join(", ");
   }
   if (typeof value === "object") return JSON.stringify(value);
   return String(value);
 }
 
-function RecordSummary({ title, record }: { title: string; record: Record<string, unknown> }) {
+function RecordSummary({
+  title,
+  record,
+  language,
+}: {
+  title: string;
+  record: Record<string, unknown>;
+  language: keyof typeof CASE_DETAIL_COPY;
+}) {
   const entries = Object.entries(record ?? {});
+  const copy = CASE_DETAIL_COPY[language];
 
   return (
     <div className="border-t border-[var(--color-border)] first:border-t-0">
@@ -152,7 +273,9 @@ function RecordSummary({ title, record }: { title: string; record: Record<string
         {title}
       </div>
       {entries.length === 0 ? (
-        <div className="px-4 py-4 text-sm text-[var(--color-text-muted)]">No data captured</div>
+        <div className="px-4 py-4 text-sm text-[var(--color-text-muted)]">
+          {copy.noDataCaptured}
+        </div>
       ) : (
         <div className="grid md:grid-cols-2">
           {entries.map(([key, value]) => (
@@ -162,7 +285,7 @@ function RecordSummary({ title, record }: { title: string; record: Record<string
             >
               <div className="text-xs text-[var(--color-text-muted)]">{key}</div>
               <div className="mt-1 break-words text-sm text-[var(--color-panel)]">
-                {formatUnknownValue(value)}
+                {formatUnknownValue(value, language)}
               </div>
             </div>
           ))}
@@ -184,27 +307,43 @@ function statusesForControl(
   );
 }
 
-function AuditSummary({ adoptionCase }: { adoptionCase: AdoptionCaseDetail }) {
+function AuditSummary({
+  adoptionCase,
+  language,
+}: {
+  adoptionCase: AdoptionCaseDetail;
+  language: keyof typeof CASE_DETAIL_COPY;
+}) {
   const approvedMatches = findApprovedMatches(adoptionCase.matches);
+  const copy = CASE_DETAIL_COPY[language];
 
   return (
-    <Section title="Audit summary" subtitle="Summary from current case data">
+    <Section title={copy.auditSummary} subtitle={copy.auditSubtitle}>
       <DetailGrid
         items={[
-          { label: "Current status", value: <StatusChip status={adoptionCase.status} /> },
-          { label: "Created", value: formatDate(adoptionCase.createdAt) },
-          { label: "Closed", value: formatDate(adoptionCase.closedAt) },
-          { label: "Matches", value: String(adoptionCase.matches.length) },
-          { label: "Approved matches", value: String(approvedMatches.length) },
-          { label: "Follow-ups", value: String(adoptionCase.followups.length) },
+          { label: copy.labels.currentStatus, value: <StatusChip status={adoptionCase.status} /> },
+          { label: copy.labels.created, value: formatDate(adoptionCase.createdAt) },
+          { label: copy.labels.closed, value: formatDate(adoptionCase.closedAt) },
           {
-            label: "Finalized",
-            value: adoptionCase.successfulAdoption
-              ? adoptionCase.successfulAdoption.caseNumber
-              : "Not finalized",
+            label: copy.labels.matches,
+            value: formatAdminNumber(adoptionCase.matches.length, language),
           },
           {
-            label: "Adoption fee",
+            label: copy.labels.approvedMatches,
+            value: formatAdminNumber(approvedMatches.length, language),
+          },
+          {
+            label: copy.labels.followups,
+            value: formatAdminNumber(adoptionCase.followups.length, language),
+          },
+          {
+            label: copy.labels.finalized,
+            value: adoptionCase.successfulAdoption
+              ? adoptionCase.successfulAdoption.caseNumber
+              : copy.notFinalized,
+          },
+          {
+            label: copy.labels.adoptionFee,
             value: formatHkdCents(adoptionCase.successfulAdoption?.adoptionFeeCents),
           },
         ]}
@@ -214,6 +353,8 @@ function AuditSummary({ adoptionCase }: { adoptionCase: AdoptionCaseDetail }) {
 }
 
 export function CaseDetail({ caseId }: CaseDetailProps) {
+  const { language, pageCopy } = useAdminPageCopy();
+  const copy = CASE_DETAIL_COPY[language];
   const queryClient = useQueryClient();
   const [selectedStatusId, setSelectedStatusId] = useState("");
   const [statusNote, setStatusNote] = useState("");
@@ -304,11 +445,11 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
           className="inline-flex items-center gap-2 py-2 text-sm font-medium text-[var(--color-primary)] hover:underline"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to cases
+          {copy.backToCases}
         </Link>
         <section className={sectionClassName()}>
           <div className="p-4 text-[var(--color-error)]" role="alert">
-            {caseError?.message ?? "Case not found"}
+            {caseError?.message ?? copy.notFound}
           </div>
         </section>
       </div>
@@ -324,7 +465,7 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
             className="inline-flex items-center gap-2 py-2 text-sm font-medium text-[var(--color-primary)] hover:underline"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to cases
+            {copy.backToCases}
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-[var(--color-panel)]">
@@ -338,85 +479,108 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
         </div>
         <Button type="button" variant="outline" onClick={() => refetch()} disabled={caseFetching}>
           <RefreshCw className="h-4 w-4" />
-          Refresh
+          {copy.refresh}
         </Button>
       </div>
 
       {statusesError && <CaseDetailStatusesError message={statusesError.message} />}
 
-      <Section title="Applicant">
+      <Section title={copy.sections.applicant}>
         <DetailGrid
           items={[
-            { label: "Name", value: adoptionCase.applicantName },
-            { label: "Phone", value: formatFallback(adoptionCase.applicantPhone) },
-            { label: "Email", value: formatFallback(adoptionCase.applicantEmail) },
-            { label: "Address", value: formatFallback(adoptionCase.applicantAddress) },
-            { label: "Supporter ID", value: formatFallback(adoptionCase.supporterId) },
-            { label: "Adopter profile ID", value: formatFallback(adoptionCase.adopterProfileId) },
+            { label: copy.labels.name, value: adoptionCase.applicantName },
+            { label: copy.labels.phone, value: formatFallback(adoptionCase.applicantPhone) },
+            { label: copy.labels.email, value: formatFallback(adoptionCase.applicantEmail) },
+            { label: copy.labels.address, value: formatFallback(adoptionCase.applicantAddress) },
+            { label: copy.labels.supporterId, value: formatFallback(adoptionCase.supporterId) },
+            {
+              label: copy.labels.adopterProfileId,
+              value: formatFallback(adoptionCase.adopterProfileId),
+            },
           ]}
         />
       </Section>
 
-      <Section title="Public submission">
+      <Section title={copy.sections.publicSubmission}>
         <DetailGrid
           items={[
-            { label: "Requested animal", value: formatFallback(adoptionCase.requestedAnimalName) },
-            { label: "Animal type", value: formatFallback(adoptionCase.animalType) },
-            { label: "Housing type", value: formatFallback(adoptionCase.housingType) },
-            { label: "Family size", value: formatNumberish(adoptionCase.familySize) },
-            { label: "Existing pets", value: formatFallback(adoptionCase.existingPets) },
-            { label: "Submitted", value: formatDate(adoptionCase.createdAt) },
-            { label: "Closed", value: formatDate(adoptionCase.closedAt) },
-            { label: "Current status", value: <StatusChip status={adoptionCase.status} /> },
+            {
+              label: copy.labels.requestedAnimal,
+              value: formatFallback(adoptionCase.requestedAnimalName),
+            },
+            {
+              label: copy.labels.animalType,
+              value:
+                pageCopy.animalTypes[
+                  adoptionCase.animalType as keyof typeof pageCopy.animalTypes
+                ] ?? formatFallback(adoptionCase.animalType),
+            },
+            { label: copy.labels.housingType, value: formatFallback(adoptionCase.housingType) },
+            { label: copy.labels.familySize, value: formatNumberish(adoptionCase.familySize) },
+            { label: copy.labels.existingPets, value: formatFallback(adoptionCase.existingPets) },
+            { label: copy.labels.submitted, value: formatDate(adoptionCase.createdAt) },
+            { label: copy.labels.closed, value: formatDate(adoptionCase.closedAt) },
+            {
+              label: copy.labels.currentStatus,
+              value: <StatusChip status={adoptionCase.status} />,
+            },
           ]}
         />
         <div className="border-t border-[var(--color-border)] px-4 py-3">
-          <div className="text-xs text-[var(--color-text-muted)]">Reason</div>
+          <div className="text-xs text-[var(--color-text-muted)]">{copy.labels.reason}</div>
           <p className="mt-1 whitespace-pre-wrap text-sm text-[var(--color-panel)]">
             {formatFallback(adoptionCase.reason)}
           </p>
         </div>
       </Section>
 
-      <Section title="Assessment and preferences">
-        <RecordSummary title="Assessment" record={adoptionCase.assessment} />
-        <RecordSummary title="Preferences" record={adoptionCase.preferences} />
+      <Section title={copy.sections.assessmentPreferences}>
+        <RecordSummary
+          title={copy.labels.assessment}
+          record={adoptionCase.assessment}
+          language={language}
+        />
+        <RecordSummary
+          title={copy.labels.preferences}
+          record={adoptionCase.preferences}
+          language={language}
+        />
       </Section>
 
-      <Section title="Status controls">
+      <Section title={copy.sections.statusControls}>
         <form
           onSubmit={handleStatusSubmit}
           className="grid gap-4 p-4 lg:grid-cols-[260px_1fr_auto]"
         >
           <div className="space-y-1.5">
-            <Label htmlFor="case-status">Case status</Label>
+            <Label htmlFor="case-status">{copy.labels.caseStatus}</Label>
             <Select value={selectedStatusId} onValueChange={setSelectedStatusId}>
               <SelectTrigger id="case-status" className="h-9">
-                <SelectValue placeholder="Choose status" />
+                <SelectValue placeholder={copy.chooseStatus} />
               </SelectTrigger>
               <SelectContent>
                 {caseStatuses.map((status) => (
                   <SelectItem key={status.id} value={status.id}>
-                    {status.labelZh} / {status.labelEn}
+                    {bilingualStatusName(status, language)}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="case-status-note">Note</Label>
+            <Label htmlFor="case-status-note">{copy.labels.note}</Label>
             <Textarea
               id="case-status-note"
               value={statusNote}
               onChange={(event) => setStatusNote(event.target.value)}
               className="min-h-9"
-              placeholder="Optional status note"
+              placeholder={copy.optionalStatusNote}
             />
           </div>
           <div className="flex items-end">
             <Button type="submit" disabled={!selectedStatusId || statusMutation.isPending}>
               <Save className="h-4 w-4" />
-              Save status
+              {copy.saveStatus}
             </Button>
           </div>
           {statusMutation.error && (
@@ -449,7 +613,7 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
         onChanged={invalidateCase}
       />
 
-      <AuditSummary adoptionCase={adoptionCase} />
+      <AuditSummary adoptionCase={adoptionCase} language={language} />
     </div>
   );
 }

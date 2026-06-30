@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 
 import { cn } from "../../lib/utils";
+import { statusDisplayName } from "./adminPageCopy";
+import { useAdminLanguage } from "./adminI18n";
 import { Badge } from "../ui/badge";
 
 // Canonical status-colour → CSS-variable dot mapping. Single source of truth for
@@ -39,16 +41,15 @@ type StatusLike = {
  * replacement for the hand-copied `StatusChip` in the adoption views.
  */
 export function StatusBadge({ status, className }: { status: StatusLike; className?: string }) {
+  const { language } = useAdminLanguage();
+
   return (
     <Badge variant="outline" className={cn(PILL_BASE, className)}>
       <span
         className={cn("h-2 w-2 rounded-full", statusDotClass(status.color))}
         aria-hidden="true"
       />
-      <span>{status.labelZh}</span>
-      {status.labelEn ? (
-        <span className="font-normal text-[var(--color-text-muted)]">{status.labelEn}</span>
-      ) : null}
+      <span>{statusDisplayName(status, language)}</span>
     </Badge>
   );
 }

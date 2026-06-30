@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 
 import type { SupporterSummary } from "../../../lib/crm/types";
 import { Input } from "../../ui/input";
+import { useAdminPageCopy } from "../adminPageCopy";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { fetchAdminJson } from "./api";
 import { ExportBar } from "./ExportBar";
@@ -15,9 +16,12 @@ type SupporterListResponse = {
   total: number;
 };
 
-function formatHkd(amountCents: number | null) {
+function formatHkd(
+  amountCents: number | null,
+  language: ReturnType<typeof useAdminPageCopy>["language"],
+) {
   if (amountCents === null) return "-";
-  return new Intl.NumberFormat("zh-HK", {
+  return new Intl.NumberFormat(language === "zh" ? "zh-HK" : "en-HK", {
     style: "currency",
     currency: "HKD",
     maximumFractionDigits: 0,
@@ -25,6 +29,8 @@ function formatHkd(amountCents: number | null) {
 }
 
 export function SupporterList() {
+  const { language, pageCopy } = useAdminPageCopy();
+  const copy = pageCopy.supporters;
   const [query, setQuery] = useState("");
   const search = useMemo(() => {
     const params = new URLSearchParams();
@@ -41,7 +47,7 @@ export function SupporterList() {
   const supporterColumns: DataTableColumn<SupporterSummary>[] = [
     {
       id: "supporter",
-      header: "Supporter",
+      header: copy.columns.supporter,
       cell: (s) => (
         <div>
           <Link
@@ -57,27 +63,27 @@ export function SupporterList() {
     },
     {
       id: "consent",
-      header: "Consent",
+      header: copy.columns.consent,
       cell: (s) => (
         <span className="text-xs">
-          Email {s.emailConsent ?? "-"} / WhatsApp {s.whatsappConsent ?? "-"}
+          {copy.email} {s.emailConsent ?? "-"} / {copy.whatsapp} {s.whatsappConsent ?? "-"}
         </span>
       ),
     },
     {
       id: "lifetime",
-      header: "Lifetime",
-      cell: (s) => formatHkd(s.lifetimeAmountCents),
+      header: copy.columns.lifetime,
+      cell: (s) => formatHkd(s.lifetimeAmountCents, language),
     },
     {
       id: "lastGift",
-      header: "Last gift",
-      cell: (s) => formatHkd(s.lastGiftAmountCents),
+      header: copy.columns.lastGift,
+      cell: (s) => formatHkd(s.lastGiftAmountCents, language),
     },
     {
       id: "receipts",
-      header: "Receipts",
-      cell: (s) => (s.receiptNeeded ? "Needs review" : "Clear"),
+      header: copy.columns.receipts,
+      cell: (s) => (s.receiptNeeded ? copy.needsReview : copy.clear),
     },
   ];
 
@@ -96,15 +102,15 @@ export function SupporterList() {
             <div className="text-xs text-[var(--color-text-muted)]">{s.email}</div>
           </div>
           <div className="text-right text-sm font-medium text-[var(--color-panel)]">
-            {formatHkd(s.lifetimeAmountCents)}
+            {formatHkd(s.lifetimeAmountCents, language)}
           </div>
         </div>
         <div className="text-xs text-[var(--color-text-muted)]">
-          Last gift: {formatHkd(s.lastGiftAmountCents)} · Email {s.emailConsent ?? "-"} / WhatsApp{" "}
-          {s.whatsappConsent ?? "-"}
+          {copy.lastGift}: {formatHkd(s.lastGiftAmountCents, language)} · {copy.email}{" "}
+          {s.emailConsent ?? "-"} / {copy.whatsapp} {s.whatsappConsent ?? "-"}
         </div>
         <div className="text-xs text-[var(--color-text-muted)]">
-          Receipts: {s.receiptNeeded ? "Needs review" : "Clear"}
+          {copy.receipts}: {s.receiptNeeded ? copy.needsReview : copy.clear}
         </div>
       </div>
     );
@@ -114,10 +120,8 @@ export function SupporterList() {
     <div className="space-y-5 p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--color-panel)]">Supporters</h1>
-          <p className="text-sm text-[var(--color-text-muted)]">
-            Donor records, receipts, consent, and manual gifts.
-          </p>
+          <h1 className="text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
+          <p className="text-sm text-[var(--color-text-muted)]">{copy.subtitle}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <ExportBar search={search} />
@@ -130,9 +134,9 @@ export function SupporterList() {
         <Input
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          aria-label="Search supporters"
+          aria-label={copy.searchLabel}
           className="pl-9"
-          placeholder="Search name, email, phone, reference, or receipt"
+          placeholder={copy.searchPlaceholder}
         />
       </label>
 
@@ -141,7 +145,7 @@ export function SupporterList() {
           role="alert"
           className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-error)]"
         >
-          Could not load supporters
+          {copy.loadError}
         </div>
       )}
 
@@ -152,12 +156,14 @@ export function SupporterList() {
           getRowKey={(s) => s.id}
           loading={isLoading}
           skeletonRows={5}
-          empty="No supporters found"
+          empty={copy.empty}
           renderMobileCard={renderSupporterCard}
         />
       </div>
       {data && (
-        <p className="text-xs text-[var(--color-text-muted)]">{data.total} total supporters</p>
+        <p className="text-xs text-[var(--color-text-muted)]">
+          {pageCopy.common.totalSupporters(data.total)}
+        </p>
       )}
     </div>
   );

@@ -12,6 +12,7 @@ import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Switch } from "../../ui/switch";
+import { useAdminPageCopy } from "../adminPageCopy";
 import { fetchCoordinatorJson } from "./api";
 import { ExportButton } from "./ExportButton";
 import { TaskPanel, TaskPanelAsyncError } from "./TaskPanel";
@@ -34,30 +35,19 @@ type StatusesResponse = {
   statuses: CoordinatorStatus[];
 };
 
-const PRIORITY_OPTIONS: Array<{ value: TaskCenterPriorityFilter; label: string }> = [
-  { value: "all", label: "All priorities" },
-  { value: "urgent", label: "Urgent" },
-  { value: "high", label: "High" },
-  { value: "normal", label: "Normal" },
-  { value: "low", label: "Low" },
-];
+const PRIORITY_OPTIONS: TaskCenterPriorityFilter[] = ["all", "urgent", "high", "normal", "low"];
 
 const EMPTY_TASKS: CoordinatorTask[] = [];
 
-const SUMMARY_ITEMS = [
-  { label: "Overdue", value: "overdue" },
-  { label: "Today", value: "today" },
-  { label: "Upcoming", value: "upcoming" },
-  { label: "No due date", value: "none" },
-  { label: "Done", value: "done" },
-  { label: "Urgent", value: "urgent" },
-] as const;
+const SUMMARY_ITEMS = ["overdue", "today", "upcoming", "none", "done", "urgent"] as const;
 
-function TaskCenterLoadError({ message }: { message: string }) {
-  return <TaskPanelAsyncError message={`Could not load coordinator tasks: ${message}`} />;
+function TaskCenterLoadError({ label, message }: { label: string; message: string }) {
+  return <TaskPanelAsyncError message={`${label}: ${message}`} />;
 }
 
 export function TaskCenter() {
+  const { pageCopy } = useAdminPageCopy();
+  const copy = pageCopy.taskCenter;
   const [q, setQ] = useState("");
   const [due, setDue] = useState<TaskCenterDueFilter>("all");
   const [priority, setPriority] = useState<TaskCenterPriorityFilter>("all");
@@ -119,13 +109,11 @@ export function TaskCenter() {
     <div className="space-y-5 p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--color-panel)]">Coordinator task center</h1>
-          <p className="text-sm text-[var(--color-text-muted)]">
-            View, filter, and update follow-up work across adoption cases and animals.
-          </p>
+          <h1 className="text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
+          <p className="text-sm text-[var(--color-text-muted)]">{copy.subtitle}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <ExportButton kind="tasks" searchParams={searchParams} />
+          <ExportButton kind="tasks" searchParams={searchParams} label={pageCopy.common.export} />
           <Button
             type="button"
             variant="outline"
@@ -133,7 +121,7 @@ export function TaskCenter() {
             disabled={isFetching}
           >
             <RefreshCw className="h-4 w-4" />
-            Refresh
+            {pageCopy.common.refresh}
           </Button>
         </div>
       </div>
@@ -148,33 +136,33 @@ export function TaskCenter() {
                 setQ(event.target.value);
                 resetToFirstPage();
               }}
-              aria-label="Search tasks"
+              aria-label={copy.searchLabel}
               className="h-9 pl-9"
-              placeholder="Search title, outcome, or remarks"
+              placeholder={copy.searchPlaceholder}
             />
           </label>
 
           <Select value={due} onValueChange={handleDueChange}>
-            <SelectTrigger aria-label="Filter by due date" className="h-9">
+            <SelectTrigger aria-label={copy.dueLabel} className="h-9">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {TASK_CENTER_DUE_FILTER_OPTIONS.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
-                  {option.label}
+                  {copy.dueOptions[option.value]}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
 
           <Select value={priority} onValueChange={handlePriorityChange}>
-            <SelectTrigger aria-label="Filter by priority" className="h-9">
+            <SelectTrigger aria-label={copy.priorityLabel} className="h-9">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {PRIORITY_OPTIONS.map((option) => (
-                <SelectItem key={option.value || "empty"} value={option.value || "all"}>
-                  {option.label}
+                <SelectItem key={option || "empty"} value={option || "all"}>
+                  {pageCopy.priority[option || "all"]}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -186,20 +174,20 @@ export function TaskCenter() {
               setAssignedTo(event.target.value);
               resetToFirstPage();
             }}
-            aria-label="Filter by assignee"
+            aria-label={copy.assignedToLabel}
             className="h-9"
-            placeholder="Assigned to"
+            placeholder={copy.assignedToPlaceholder}
           />
 
           <label className="flex h-9 items-center justify-between gap-3 rounded-md border border-[var(--color-border)] px-3 text-sm text-[var(--color-panel)]">
-            <span>Open only</span>
+            <span>{copy.openOnly}</span>
             <Switch
               checked={openOnly}
               onCheckedChange={(checked) => {
                 setOpenOnly(checked);
                 resetToFirstPage();
               }}
-              aria-label="Show open tasks only"
+              aria-label={copy.openOnlyLabel}
             />
           </label>
 
@@ -216,26 +204,25 @@ export function TaskCenter() {
             }}
             disabled={isFetching}
           >
-            Clear
+            {pageCopy.common.clear}
           </Button>
         </div>
         {statusesQuery.error && (
           <TaskPanelAsyncError
-            message={`Could not load task statuses: ${statusesQuery.error.message}`}
+            message={`${copy.loadStatusesError}: ${statusesQuery.error.message}`}
           />
         )}
       </section>
 
-      <section
-        className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6"
-        aria-label="Current page task summary"
-      >
+      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6" aria-label={copy.summaryLabel}>
         {SUMMARY_ITEMS.map((item) => (
           <div
             key={item.value}
             className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3"
           >
-            <div className="text-xs font-medium text-[var(--color-text-muted)]">{item.label}</div>
+            <div className="text-xs font-medium text-[var(--color-text-muted)]">
+              {copy.summary[item]}
+            </div>
             <div className="text-2xl font-bold text-[var(--color-panel)]">
               {summary[item.value]}
             </div>
@@ -244,14 +231,18 @@ export function TaskCenter() {
       </section>
 
       <section>
-        {tasksQuery.error && <TaskCenterLoadError message={tasksQuery.error.message} />}
+        {tasksQuery.error && (
+          <TaskCenterLoadError label={copy.loadTasksError} message={tasksQuery.error.message} />
+        )}
         <TaskPanel
-          title="Tasks"
-          subtitle={tasksQuery.isLoading ? "Loading..." : `${total} total`}
+          title={copy.tasks}
+          subtitle={
+            tasksQuery.isLoading ? pageCopy.common.loading : pageCopy.common.totalCount(total)
+          }
           tasks={tasks}
           statuses={statuses}
           showCreateForm={false}
-          emptyMessage="No coordinator tasks match these filters"
+          emptyMessage={copy.empty}
           onChanged={async () => {
             await tasksQuery.refetch();
           }}
@@ -260,7 +251,7 @@ export function TaskCenter() {
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-[var(--color-text-muted)]">
-          Page {page} of {totalPages}
+          {pageCopy.common.pageOf(page, totalPages)}
         </p>
         <div className="flex items-center gap-2">
           <Button
@@ -270,7 +261,7 @@ export function TaskCenter() {
             disabled={page <= 1 || isFetching}
           >
             <ChevronLeft className="h-4 w-4" />
-            Previous
+            {pageCopy.common.previous}
           </Button>
           <Button
             type="button"
@@ -278,7 +269,7 @@ export function TaskCenter() {
             onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
             disabled={page >= totalPages || isFetching}
           >
-            Next
+            {pageCopy.common.next}
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>

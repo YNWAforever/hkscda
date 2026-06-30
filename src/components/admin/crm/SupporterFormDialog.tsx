@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
+import { useAdminPageCopy } from "../adminPageCopy";
 import { fetchAdminJson } from "./api";
 
 type SupporterFormDialogProps =
@@ -22,6 +23,8 @@ function splitTags(value: string) {
 }
 
 export function SupporterFormDialog(props: SupporterFormDialogProps) {
+  const { pageCopy } = useAdminPageCopy();
+  const copy = pageCopy.supporters;
   const queryClient = useQueryClient();
   const existing = props.mode === "edit" ? props.supporter : null;
   const [open, setOpen] = useState(false);
@@ -88,16 +91,18 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
       <DialogTrigger asChild>
         <Button type="button" variant={props.mode === "edit" ? "outline" : "default"}>
           {props.mode === "edit" ? <Edit className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
-          {props.mode === "edit" ? "Edit supporter" : "New supporter"}
+          {props.mode === "edit" ? copy.editSupporter : copy.newSupporter}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{props.mode === "edit" ? "Edit supporter" : "New supporter"}</DialogTitle>
+          <DialogTitle>
+            {props.mode === "edit" ? copy.editSupporter : copy.newSupporter}
+          </DialogTitle>
         </DialogHeader>
         <div className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="supporter-name">Name</Label>
+            <Label htmlFor="supporter-name">{copy.form.name}</Label>
             <Input
               id="supporter-name"
               value={name}
@@ -105,7 +110,7 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="supporter-email">Email</Label>
+            <Label htmlFor="supporter-email">{copy.form.email}</Label>
             <Input
               id="supporter-email"
               value={email}
@@ -114,7 +119,7 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="supporter-phone">Phone</Label>
+            <Label htmlFor="supporter-phone">{copy.form.phone}</Label>
             <Input
               id="supporter-phone"
               value={phone}
@@ -122,12 +127,12 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="supporter-language">Language</Label>
+            <Label htmlFor="supporter-language">{copy.form.language}</Label>
             <Select
               value={language}
               onValueChange={(value) => setLanguage(value as "zh-HK" | "en")}
             >
-              <SelectTrigger id="supporter-language" aria-label="Language">
+              <SelectTrigger id="supporter-language" aria-label={copy.form.language}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -137,7 +142,7 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
             </Select>
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="supporter-tags">Tags</Label>
+            <Label htmlFor="supporter-tags">{copy.form.tags}</Label>
             <Input
               id="supporter-tags"
               value={tags}
@@ -154,7 +159,7 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
               mutation.isPending || !name.trim() || (props.mode === "create" && !email.trim())
             }
           >
-            Save supporter
+            {copy.saveSupporter}
           </Button>
         </div>
       </DialogContent>
