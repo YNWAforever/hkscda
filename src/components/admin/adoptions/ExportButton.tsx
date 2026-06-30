@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { CoordinatorExportKind } from "../../../lib/adoptions/types";
 import { supabase } from "../../../lib/supabase";
 import { Button } from "../../ui/button";
+import { useAdminPageCopy } from "../adminPageCopy";
 import { buildCoordinatorExportUrl, getCoordinatorExportFilename } from "./adopterWorkflowLogic";
 
 type ExportButtonProps = {
@@ -15,8 +16,9 @@ type ExportButtonProps = {
 export function ExportButton({
   kind,
   searchParams = new URLSearchParams(),
-  label = "Export",
+  label,
 }: ExportButtonProps) {
+  const { pageCopy } = useAdminPageCopy();
   const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState("");
 
@@ -28,7 +30,7 @@ export function ExportButton({
       const {
         data: { session },
       } = await supabase.auth.getSession();
-      if (!session?.access_token) throw new Error("未登入");
+      if (!session?.access_token) throw new Error(pageCopy.common.notSignedIn);
 
       const response = await fetch(buildCoordinatorExportUrl(kind, searchParams), {
         headers: { authorization: `Bearer ${session.access_token}` },
@@ -36,7 +38,7 @@ export function ExportButton({
 
       if (!response.ok) {
         const body = await response.json().catch(() => ({}));
-        throw new Error(typeof body.error === "string" ? body.error : "Export failed");
+        throw new Error(typeof body.error === "string" ? body.error : pageCopy.common.exportFailed);
       }
 
       const blob = await response.blob();
@@ -52,7 +54,7 @@ export function ExportButton({
       anchor.remove();
       window.setTimeout(() => URL.revokeObjectURL(url), 0);
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : "Export failed");
+      setError(nextError instanceof Error ? nextError.message : pageCopy.common.exportFailed);
     } finally {
       setIsExporting(false);
     }
@@ -67,7 +69,7 @@ export function ExportButton({
         disabled={isExporting}
       >
         <Download className="h-4 w-4" />
-        {isExporting ? "Exporting..." : label}
+        {isExporting ? pageCopy.common.exporting : (label ?? pageCopy.common.export)}
       </Button>
       {error && (
         <p role="alert" className="text-xs text-[var(--color-error)]">

@@ -15,6 +15,7 @@ import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Textarea } from "../../ui/textarea";
+import { bilingualStatusName, statusDisplayName, useAdminPageCopy } from "../adminPageCopy";
 import { fetchCoordinatorJson } from "./api";
 import {
   buildIdentitySearchParams,
@@ -46,24 +47,16 @@ type ManualCaseCreateResponse = {
 
 type IdentityMode = ManualCaseIdentityForm["kind"];
 
-const ANIMAL_TYPE_OPTIONS = [
-  { value: "cat", label: "Cat" },
-  { value: "dog", label: "Dog" },
-] as const;
+const ANIMAL_TYPE_OPTIONS = ["cat", "dog"] as const;
 
-const PRIORITY_OPTIONS: Array<{ value: CoordinatorTaskPriority; label: string }> = [
-  { value: "low", label: "Low" },
-  { value: "normal", label: "Normal" },
-  { value: "high", label: "High" },
-  { value: "urgent", label: "Urgent" },
-];
+const PRIORITY_OPTIONS: CoordinatorTaskPriority[] = ["low", "normal", "high", "urgent"];
 
-const CONTACT_CHANNEL_OPTIONS: Array<{ value: CoordinatorTaskContactChannel; label: string }> = [
-  { value: "phone", label: "Phone" },
-  { value: "whatsapp", label: "WhatsApp" },
-  { value: "email", label: "Email" },
-  { value: "in_person", label: "In person" },
-  { value: "internal", label: "Internal" },
+const CONTACT_CHANNEL_OPTIONS: CoordinatorTaskContactChannel[] = [
+  "phone",
+  "whatsapp",
+  "email",
+  "in_person",
+  "internal",
 ];
 
 const CASE_STATUS_ENDPOINT = "/api/admin/adoptions/statuses?category=adoption_case";
@@ -162,9 +155,13 @@ function InlineAlert({ children }: { children: ReactNode }) {
   );
 }
 
-function statusLabel(status: CoordinatorStatus | undefined) {
-  if (!status) return "Not selected";
-  return status.labelZh || status.labelEn || status.key;
+function statusLabel(
+  status: CoordinatorStatus | undefined,
+  language: ReturnType<typeof useAdminPageCopy>["language"],
+  notSelected: string,
+) {
+  if (!status) return notSelected;
+  return statusDisplayName(status, language);
 }
 
 function activeStatuses(statuses: CoordinatorStatus[] | undefined) {
@@ -172,20 +169,23 @@ function activeStatuses(statuses: CoordinatorStatus[] | undefined) {
 }
 
 function CandidateBadge({ candidate }: { candidate: ManualCaseIdentityCandidate }) {
+  const { pageCopy } = useAdminPageCopy();
+  const copy = pageCopy.manualIntake;
+
   return (
     <div className="flex flex-wrap items-center gap-2">
       <Badge
         variant="outline"
         className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
       >
-        {candidate.kind === "adopter" ? "Adopter profile" : "Supporter"}
+        {candidate.kind === "adopter" ? copy.adopterProfile : copy.supporter}
       </Badge>
       {candidate.isBlacklisted && (
         <Badge
           variant="outline"
           className="border-[var(--color-error)] bg-[var(--color-surface-2)] text-[var(--color-error)]"
         >
-          Blacklisted
+          {copy.blacklisted}
         </Badge>
       )}
     </div>
@@ -207,6 +207,8 @@ function StatusSelect({
   placeholder: string;
   disabled?: boolean;
 }) {
+  const { language } = useAdminPageCopy();
+
   return (
     <Select value={value} onValueChange={onChange} disabled={disabled || statuses.length === 0}>
       <SelectTrigger id={id} className="h-9">
@@ -215,7 +217,7 @@ function StatusSelect({
       <SelectContent>
         {statuses.map((status) => (
           <SelectItem key={status.id} value={status.id}>
-            {status.labelZh} / {status.labelEn}
+            {bilingualStatusName(status, language)}
           </SelectItem>
         ))}
       </SelectContent>
@@ -232,12 +234,14 @@ function ReviewItem({ label, value }: { label: string; value: ReactNode }) {
   );
 }
 
-function displayCandidateContact(candidate: ManualCaseIdentityCandidate) {
+function displayCandidateContact(candidate: ManualCaseIdentityCandidate, noContact: string) {
   const parts = [candidate.phone, candidate.email].filter(Boolean);
-  return parts.length ? parts.join(" · ") : "No contact on file";
+  return parts.length ? parts.join(" · ") : noContact;
 }
 
 export function ManualCaseIntake() {
+  const { language, pageCopy } = useAdminPageCopy();
+  const copy = pageCopy.manualIntake;
   const navigate = useNavigate();
   const [identitySearch, setIdentitySearch] = useState("");
   const [identityMode, setIdentityMode] = useState<IdentityMode>("new_supporter");
@@ -404,10 +408,10 @@ export function ManualCaseIntake() {
   }
 
   function validateIdentity(identity: ManualCaseIdentityForm | null) {
-    if (!identity) return "Search and select an existing identity, or create a new supporter.";
+    if (!identity) return copy.validations.identity;
     if (identity.kind === "new_supporter") {
-      if (!supporterForm.name.trim()) return "Enter the new supporter's name.";
-      if (!supporterForm.phone.trim()) return "Enter the new supporter's phone number.";
+      if (!supporterForm.name.trim()) return copy.validations.supporterName;
+      if (!supporterForm.phone.trim()) return copy.validations.supporterPhone;
     }
     return null;
   }
@@ -415,12 +419,12 @@ export function ManualCaseIntake() {
   function validateForm(identity: ManualCaseIdentityForm | null) {
     const identityError = validateIdentity(identity);
     if (identityError) return identityError;
-    if (!caseForm.initialStatusId) return "Choose an initial case status.";
-    if (!caseForm.animalType.trim()) return "Choose an animal type.";
-    if (!caseForm.applicantName.trim()) return "Enter the applicant name.";
-    if (!caseForm.applicantPhone.trim()) return "Enter the applicant phone number.";
-    if (initialTask.enabled && !initialTask.statusId) return "Choose a follow-up task status.";
-    if (initialTask.enabled && !initialTask.title.trim()) return "Enter the follow-up task title.";
+    if (!caseForm.initialStatusId) return copy.validations.initialStatus;
+    if (!caseForm.animalType.trim()) return copy.validations.animalType;
+    if (!caseForm.applicantName.trim()) return copy.validations.applicantName;
+    if (!caseForm.applicantPhone.trim()) return copy.validations.applicantPhone;
+    if (initialTask.enabled && !initialTask.statusId) return copy.validations.taskStatus;
+    if (initialTask.enabled && !initialTask.title.trim()) return copy.validations.taskTitle;
     return null;
   }
 
@@ -436,8 +440,8 @@ export function ManualCaseIntake() {
 
   const identityReview =
     identityMode === "new_supporter"
-      ? supporterForm.name.trim() || "New supporter"
-      : selectedCandidate?.displayName || "Existing identity";
+      ? supporterForm.name.trim() || copy.newSupporter
+      : selectedCandidate?.displayName || copy.existingIdentity;
   const submitFailure = submitError ?? createCaseMutation.error?.message;
   const isSubmitting = createCaseMutation.isPending;
 
@@ -445,69 +449,66 @@ export function ManualCaseIntake() {
     <form className="space-y-5 p-6" onSubmit={handleSubmit}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--color-panel)]">Manual case intake</h1>
-          <p className="text-sm text-[var(--color-text-muted)]">
-            Create adoption cases from phone, WhatsApp, or walk-in requests.
-          </p>
+          <h1 className="text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
+          <p className="text-sm text-[var(--color-text-muted)]">{copy.subtitle}</p>
         </div>
         <Button type="submit" disabled={isSubmitting || caseStatuses.length === 0}>
-          {isSubmitting ? "Creating..." : "Create case"}
+          {isSubmitting ? copy.creating : copy.createCase}
         </Button>
       </div>
 
       {caseStatusesQuery.error && (
         <InlineAlert>
-          Could not load adoption case statuses: {caseStatusesQuery.error.message}
+          {copy.loadCaseStatusesError}: {caseStatusesQuery.error.message}
         </InlineAlert>
       )}
       {followupStatusesQuery.error && initialTask.enabled && (
         <InlineAlert>
-          Could not load follow-up task statuses: {followupStatusesQuery.error.message}
+          {copy.loadFollowupStatusesError}: {followupStatusesQuery.error.message}
         </InlineAlert>
       )}
       {submitFailure && <InlineAlert>{submitFailure}</InlineAlert>}
 
-      <FormSection
-        title="Identity"
-        subtitle="Search existing adopters or supporters before creating a new supporter record."
-      >
+      <FormSection title={copy.identity} subtitle={copy.identitySubtitle}>
         <div className="grid gap-3 lg:grid-cols-[minmax(260px,1fr)_auto]">
-          <Field id="manual-intake-identity-search" label="Search name, phone, email, or address">
+          <Field id="manual-intake-identity-search" label={copy.identitySearch}>
             <Input
               id="manual-intake-identity-search"
               value={identitySearch}
               onChange={(event) => setIdentitySearch(event.target.value)}
               className="h-9"
-              placeholder="Type to search existing records"
+              placeholder={copy.identityPlaceholder}
             />
           </Field>
           <div className="flex items-end">
             <Button type="button" variant="outline" onClick={useNewSupporter}>
-              Create new supporter
+              {copy.createNewSupporter}
             </Button>
           </div>
         </div>
 
         {identitySearchQuery.error && searchText && (
           <InlineAlert>
-            Could not search identities: {identitySearchQuery.error.message}
+            {copy.searchIdentitiesError}: {identitySearchQuery.error.message}
           </InlineAlert>
         )}
 
         {searchText && (
           <div className="rounded-md border border-[var(--color-border)]">
             <div className="flex min-h-11 items-center justify-between border-b border-[var(--color-border)] px-3">
-              <div className="text-sm font-medium text-[var(--color-panel)]">Search results</div>
+              <div className="text-sm font-medium text-[var(--color-panel)]">
+                {copy.searchResults}
+              </div>
               <div className="text-xs text-[var(--color-text-muted)]">
                 {identitySearchQuery.isFetching
-                  ? "Searching..."
-                  : `${identitySearchQuery.data?.total ?? 0} matches`}
+                  ? copy.searching
+                  : pageCopy.common.searchMatches(identitySearchQuery.data?.total ?? 0)}
               </div>
             </div>
             <div className="divide-y divide-[var(--color-border)]">
               {!identitySearchQuery.isFetching && identityCandidates.length === 0 && (
                 <div className="px-3 py-3 text-sm text-[var(--color-text-muted)]">
-                  No existing identity matched this search.
+                  {copy.noIdentityMatched}
                 </div>
               )}
               {identityCandidates.map((candidate) => (
@@ -523,7 +524,7 @@ export function ManualCaseIntake() {
                       {candidate.displayName}
                     </span>
                     <span className="block text-xs font-normal text-[var(--color-text-muted)]">
-                      {displayCandidateContact(candidate)}
+                      {displayCandidateContact(candidate, pageCopy.common.noContact)}
                     </span>
                   </span>
                   <CandidateBadge candidate={candidate} />
@@ -536,7 +537,7 @@ export function ManualCaseIntake() {
         <div className="grid gap-3 lg:grid-cols-3">
           <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-2 lg:col-span-1">
             <div className="text-xs font-medium text-[var(--color-text-muted)]">
-              Current identity
+              {copy.currentIdentity}
             </div>
             <div className="mt-1 text-sm font-semibold text-[var(--color-panel)]">
               {identityReview}
@@ -546,14 +547,14 @@ export function ManualCaseIntake() {
                 variant="outline"
                 className="border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-panel)]"
               >
-                {identityMode.replace("_", " ")}
+                {pageCopy.identityModes[identityMode]}
               </Badge>
             </div>
           </div>
 
           {identityMode === "new_supporter" && (
             <div className="grid gap-3 lg:col-span-2 md:grid-cols-2">
-              <Field id="manual-supporter-name" label="Supporter name">
+              <Field id="manual-supporter-name" label={copy.fields.supporterName}>
                 <Input
                   id="manual-supporter-name"
                   value={supporterForm.name}
@@ -561,7 +562,7 @@ export function ManualCaseIntake() {
                   className="h-9"
                 />
               </Field>
-              <Field id="manual-supporter-phone" label="Supporter phone">
+              <Field id="manual-supporter-phone" label={copy.fields.supporterPhone}>
                 <Input
                   id="manual-supporter-phone"
                   value={supporterForm.phone}
@@ -569,7 +570,7 @@ export function ManualCaseIntake() {
                   className="h-9"
                 />
               </Field>
-              <Field id="manual-supporter-email" label="Supporter email">
+              <Field id="manual-supporter-email" label={copy.fields.supporterEmail}>
                 <Input
                   id="manual-supporter-email"
                   value={supporterForm.email ?? ""}
@@ -578,7 +579,7 @@ export function ManualCaseIntake() {
                   type="email"
                 />
               </Field>
-              <Field id="manual-supporter-language" label="Language">
+              <Field id="manual-supporter-language" label={copy.fields.language}>
                 <Select
                   value={supporterForm.language ?? "zh-HK"}
                   onValueChange={(value) =>
@@ -589,8 +590,8 @@ export function ManualCaseIntake() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="zh-HK">Chinese</SelectItem>
-                    <SelectItem value="en">English</SelectItem>
+                    <SelectItem value="zh-HK">{copy.fields.chinese}</SelectItem>
+                    <SelectItem value="en">{copy.fields.english}</SelectItem>
                   </SelectContent>
                 </Select>
               </Field>
@@ -600,7 +601,7 @@ export function ManualCaseIntake() {
 
         {identityMode !== "existing_adopter" && (
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-            <Field id="manual-adopter-name-en" label="Adopter English name">
+            <Field id="manual-adopter-name-en" label={copy.fields.adopterEnglishName}>
               <Input
                 id="manual-adopter-name-en"
                 value={adopterProfileForm.nameEnglish ?? ""}
@@ -608,7 +609,7 @@ export function ManualCaseIntake() {
                 className="h-9"
               />
             </Field>
-            <Field id="manual-adopter-name-zh" label="Adopter Chinese name">
+            <Field id="manual-adopter-name-zh" label={copy.fields.adopterChineseName}>
               <Input
                 id="manual-adopter-name-zh"
                 value={adopterProfileForm.nameChinese ?? ""}
@@ -616,7 +617,7 @@ export function ManualCaseIntake() {
                 className="h-9"
               />
             </Field>
-            <Field id="manual-adopter-address" label="Adopter address">
+            <Field id="manual-adopter-address" label={copy.fields.adopterAddress}>
               <Input
                 id="manual-adopter-address"
                 value={adopterProfileForm.address ?? ""}
@@ -624,7 +625,7 @@ export function ManualCaseIntake() {
                 className="h-9"
               />
             </Field>
-            <Field id="manual-adopter-household-size" label="Household size">
+            <Field id="manual-adopter-household-size" label={copy.fields.householdSize}>
               <Input
                 id="manual-adopter-household-size"
                 value={adopterProfileForm.householdSize ?? ""}
@@ -636,21 +637,20 @@ export function ManualCaseIntake() {
         )}
       </FormSection>
 
-      <FormSection
-        title="Case details"
-        subtitle="Required fields mirror the public application record."
-      >
+      <FormSection title={copy.fields.caseDetails} subtitle={copy.fields.caseDetailsSubtitle}>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          <Field id="manual-case-status" label="Initial status">
+          <Field id="manual-case-status" label={copy.fields.initialStatus}>
             <StatusSelect
               id="manual-case-status"
               statuses={caseStatuses}
               value={caseForm.initialStatusId}
               onChange={(value) => updateCaseField("initialStatusId", value)}
-              placeholder={caseStatusesQuery.isLoading ? "Loading..." : "Choose status"}
+              placeholder={
+                caseStatusesQuery.isLoading ? pageCopy.common.loading : copy.chooseStatus
+              }
             />
           </Field>
-          <Field id="manual-animal-type" label="Animal type">
+          <Field id="manual-animal-type" label={copy.fields.animalType}>
             <Select
               value={caseForm.animalType}
               onValueChange={(value) => updateCaseField("animalType", value)}
@@ -660,14 +660,14 @@ export function ManualCaseIntake() {
               </SelectTrigger>
               <SelectContent>
                 {ANIMAL_TYPE_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
+                  <SelectItem key={option} value={option}>
+                    {pageCopy.animalTypes[option]}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </Field>
-          <Field id="manual-applicant-name" label="Applicant name">
+          <Field id="manual-applicant-name" label={copy.fields.applicantName}>
             <Input
               id="manual-applicant-name"
               value={caseForm.applicantName}
@@ -675,7 +675,7 @@ export function ManualCaseIntake() {
               className="h-9"
             />
           </Field>
-          <Field id="manual-applicant-phone" label="Applicant phone">
+          <Field id="manual-applicant-phone" label={copy.fields.applicantPhone}>
             <Input
               id="manual-applicant-phone"
               value={caseForm.applicantPhone}
@@ -683,7 +683,7 @@ export function ManualCaseIntake() {
               className="h-9"
             />
           </Field>
-          <Field id="manual-applicant-email" label="Applicant email">
+          <Field id="manual-applicant-email" label={copy.fields.applicantEmail}>
             <Input
               id="manual-applicant-email"
               value={caseForm.applicantEmail ?? ""}
@@ -692,16 +692,16 @@ export function ManualCaseIntake() {
               type="email"
             />
           </Field>
-          <Field id="manual-requested-animal-id" label="Requested animal ID">
+          <Field id="manual-requested-animal-id" label={copy.fields.requestedAnimalId}>
             <Input
               id="manual-requested-animal-id"
               value={caseForm.requestedAnimalId ?? ""}
               onChange={(event) => updateCaseField("requestedAnimalId", event.target.value)}
               className="h-9"
-              placeholder="Optional UUID"
+              placeholder={copy.fields.optionalUuid}
             />
           </Field>
-          <Field id="manual-housing-type" label="Housing type">
+          <Field id="manual-housing-type" label={copy.fields.housingType}>
             <Input
               id="manual-housing-type"
               value={caseForm.housingType ?? ""}
@@ -709,7 +709,7 @@ export function ManualCaseIntake() {
               className="h-9"
             />
           </Field>
-          <Field id="manual-family-size" label="Family size">
+          <Field id="manual-family-size" label={copy.fields.familySize}>
             <Input
               id="manual-family-size"
               value={caseForm.familySize ?? ""}
@@ -721,7 +721,7 @@ export function ManualCaseIntake() {
           </Field>
         </div>
         <div className="grid gap-3 lg:grid-cols-2">
-          <Field id="manual-applicant-address" label="Applicant address">
+          <Field id="manual-applicant-address" label={copy.fields.applicantAddress}>
             <Textarea
               id="manual-applicant-address"
               value={caseForm.applicantAddress ?? ""}
@@ -729,7 +729,7 @@ export function ManualCaseIntake() {
               className="min-h-20"
             />
           </Field>
-          <Field id="manual-existing-pets" label="Existing pets">
+          <Field id="manual-existing-pets" label={copy.fields.existingPets}>
             <Textarea
               id="manual-existing-pets"
               value={caseForm.existingPets ?? ""}
@@ -737,7 +737,7 @@ export function ManualCaseIntake() {
               className="min-h-20"
             />
           </Field>
-          <Field id="manual-reason" label="Reason">
+          <Field id="manual-reason" label={copy.fields.reason}>
             <Textarea
               id="manual-reason"
               value={caseForm.reason ?? ""}
@@ -745,7 +745,7 @@ export function ManualCaseIntake() {
               className="min-h-20"
             />
           </Field>
-          <Field id="manual-preference-notes" label="Preference notes">
+          <Field id="manual-preference-notes" label={copy.fields.preferenceNotes}>
             <Textarea
               id="manual-preference-notes"
               value={caseForm.preferenceNotes ?? ""}
@@ -756,32 +756,31 @@ export function ManualCaseIntake() {
         </div>
       </FormSection>
 
-      <FormSection
-        title="Optional task"
-        subtitle="Create the first coordinator follow-up together with the case."
-      >
+      <FormSection title={copy.optionalTask} subtitle={copy.optionalTaskSubtitle}>
         <label className="flex h-9 items-center gap-2 rounded-md border border-[var(--color-border)] px-3 text-sm text-[var(--color-panel)]">
           <Checkbox
             checked={initialTask.enabled}
             onCheckedChange={(checked) => updateTaskField("enabled", checked === true)}
-            aria-label="Create an initial follow-up task"
+            aria-label={copy.createInitialTask}
           />
-          Create initial follow-up task
+          {copy.createInitialTask}
         </label>
 
         {initialTask.enabled && (
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-            <Field id="manual-task-status" label="Task status">
+            <Field id="manual-task-status" label={copy.taskStatus}>
               <StatusSelect
                 id="manual-task-status"
                 statuses={followupStatuses}
                 value={initialTask.statusId}
                 onChange={(value) => updateTaskField("statusId", value)}
-                placeholder={followupStatusesQuery.isLoading ? "Loading..." : "Choose status"}
+                placeholder={
+                  followupStatusesQuery.isLoading ? pageCopy.common.loading : copy.chooseStatus
+                }
                 disabled={followupStatusesQuery.isLoading}
               />
             </Field>
-            <Field id="manual-task-title" label="Task title">
+            <Field id="manual-task-title" label={copy.taskTitle}>
               <Input
                 id="manual-task-title"
                 value={initialTask.title}
@@ -789,7 +788,7 @@ export function ManualCaseIntake() {
                 className="h-9"
               />
             </Field>
-            <Field id="manual-task-priority" label="Priority">
+            <Field id="manual-task-priority" label={copy.priority}>
               <Select
                 value={initialTask.priority}
                 onValueChange={(value) =>
@@ -801,14 +800,14 @@ export function ManualCaseIntake() {
                 </SelectTrigger>
                 <SelectContent>
                   {PRIORITY_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
+                    <SelectItem key={option} value={option}>
+                      {pageCopy.priority[option]}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </Field>
-            <Field id="manual-task-due-at" label="Due at">
+            <Field id="manual-task-due-at" label={copy.dueAt}>
               <Input
                 id="manual-task-due-at"
                 value={initialTask.dueAt ?? ""}
@@ -817,7 +816,7 @@ export function ManualCaseIntake() {
                 type="datetime-local"
               />
             </Field>
-            <Field id="manual-task-assigned-to" label="Assigned to">
+            <Field id="manual-task-assigned-to" label={copy.assignedTo}>
               <Input
                 id="manual-task-assigned-to"
                 value={initialTask.assignedTo ?? ""}
@@ -825,7 +824,7 @@ export function ManualCaseIntake() {
                 className="h-9"
               />
             </Field>
-            <Field id="manual-task-volunteer" label="Volunteer">
+            <Field id="manual-task-volunteer" label={copy.volunteer}>
               <Input
                 id="manual-task-volunteer"
                 value={initialTask.volunteer ?? ""}
@@ -833,7 +832,7 @@ export function ManualCaseIntake() {
                 className="h-9"
               />
             </Field>
-            <Field id="manual-task-channel" label="Contact channel">
+            <Field id="manual-task-channel" label={copy.contactChannel}>
               <Select
                 value={initialTask.contactChannel || "none"}
                 onValueChange={(value) =>
@@ -847,16 +846,16 @@ export function ManualCaseIntake() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">No channel</SelectItem>
+                  <SelectItem value="none">{pageCopy.common.noChannel}</SelectItem>
                   {CONTACT_CHANNEL_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
+                    <SelectItem key={option} value={option}>
+                      {pageCopy.contactChannel[option]}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </Field>
-            <Field id="manual-task-type" label="Task type">
+            <Field id="manual-task-type" label={copy.taskType}>
               <Input
                 id="manual-task-type"
                 value={initialTask.taskType ?? ""}
@@ -865,7 +864,7 @@ export function ManualCaseIntake() {
               />
             </Field>
             <div className="md:col-span-2 xl:col-span-4">
-              <Field id="manual-task-remarks" label="Remarks">
+              <Field id="manual-task-remarks" label={copy.remarks}>
                 <Textarea
                   id="manual-task-remarks"
                   value={initialTask.remarks ?? ""}
@@ -878,17 +877,24 @@ export function ManualCaseIntake() {
         )}
       </FormSection>
 
-      <FormSection title="Review">
+      <FormSection title={copy.review}>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          <ReviewItem label="Identity" value={identityReview} />
-          <ReviewItem label="Case status" value={statusLabel(selectedCaseStatus)} />
+          <ReviewItem label={copy.identity} value={identityReview} />
           <ReviewItem
-            label="Applicant"
-            value={caseForm.applicantName.trim() || "Applicant name missing"}
+            label={copy.caseStatus}
+            value={statusLabel(selectedCaseStatus, language, copy.notSelected)}
           />
           <ReviewItem
-            label="Initial task"
-            value={initialTask.enabled ? statusLabel(selectedTaskStatus) : "No task"}
+            label={copy.applicant}
+            value={caseForm.applicantName.trim() || copy.applicantMissing}
+          />
+          <ReviewItem
+            label={copy.initialTask}
+            value={
+              initialTask.enabled
+                ? statusLabel(selectedTaskStatus, language, copy.notSelected)
+                : copy.noTask
+            }
           />
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
@@ -900,10 +906,10 @@ export function ManualCaseIntake() {
               createCaseMutation.reset();
             }}
           >
-            Clear alert
+            {copy.clearAlert}
           </Button>
           <Button type="submit" disabled={isSubmitting || caseStatuses.length === 0}>
-            {isSubmitting ? "Creating..." : "Create case"}
+            {isSubmitting ? copy.creating : copy.createCase}
           </Button>
         </div>
       </FormSection>

@@ -9,6 +9,7 @@ import { Checkbox } from "../../ui/checkbox";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
+import { bilingualStatusName, useAdminPageCopy } from "../adminPageCopy";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { StatusBadge } from "../StatusBadge";
 import { fetchCoordinatorJson } from "./api";
@@ -32,26 +33,22 @@ type StatusesResponse = {
 const STATUSES_QUERY_KEY = ["coordinator-statuses"] as const;
 const CASE_PAGE_SIZE_OPTIONS = [10, 25, 50] as const;
 
-const ANIMAL_TYPE_OPTIONS = [
-  { value: "all", label: "All animals" },
-  { value: "cat", label: "Cats" },
-  { value: "dog", label: "Dogs" },
-  { value: "sponsor", label: "Sponsor animals" },
-  { value: "unknown", label: "Unknown" },
-] as const;
+const ANIMAL_TYPE_OPTIONS = ["all", "cat", "dog", "sponsor", "unknown"] as const;
 
-export function CaseListStatusFilterError({ message }: { message: string }) {
+export function CaseListStatusFilterError({ label, message }: { label: string; message: string }) {
   return (
     <div
       className="border-t border-[var(--color-border)] px-4 py-2 text-sm text-[var(--color-error)]"
       role="alert"
     >
-      Could not load status filters: {message}
+      {label}: {message}
     </div>
   );
 }
 
 export function CaseList() {
+  const { language, pageCopy } = useAdminPageCopy();
+  const copy = pageCopy.caseList;
   const [query, setQuery] = useState("");
   const [statusId, setStatusId] = useState("all");
   const [animalType, setAnimalType] = useState("all");
@@ -98,10 +95,18 @@ export function CaseList() {
     setPage(1);
   }
 
+  function animalTypeLabel(value: string | null | undefined) {
+    const key =
+      value && value in pageCopy.animalTypes
+        ? (value as keyof typeof pageCopy.animalTypes)
+        : "unknown";
+    return pageCopy.animalTypes[key];
+  }
+
   const caseColumns: DataTableColumn<AdoptionCaseSummary>[] = [
     {
       id: "applicant",
-      header: "Applicant",
+      header: copy.columns.applicant,
       className: "px-4",
       cell: (c) => (
         <div>
@@ -120,35 +125,35 @@ export function CaseList() {
     },
     {
       id: "animal",
-      header: "Requested animal",
+      header: copy.columns.animal,
       cell: (c) => (
         <div>
           <div className="font-medium text-[var(--color-panel)]">
             {formatFallback(c.requestedAnimalName)}
           </div>
           <div className="text-xs text-[var(--color-text-muted)]">
-            {formatFallback(c.animalType)}
+            {animalTypeLabel(c.animalType)}
           </div>
         </div>
       ),
     },
     {
       id: "phone",
-      header: "Phone",
+      header: copy.columns.phone,
       cell: (c) => (
         <span className="text-[var(--color-panel)]">{formatFallback(c.applicantPhone)}</span>
       ),
     },
     {
       id: "created",
-      header: "Created",
+      header: copy.columns.created,
       cell: (c) => (
         <span className="text-[var(--color-text-muted)]">{formatDate(c.createdAt)}</span>
       ),
     },
     {
       id: "status",
-      header: "Status",
+      header: copy.columns.status,
       cell: (c) => <StatusBadge status={c.status} />,
     },
   ];
@@ -172,7 +177,7 @@ export function CaseList() {
           <StatusBadge status={c.status} />
         </div>
         <div className="text-xs text-[var(--color-text-muted)]">
-          {formatFallback(c.requestedAnimalName)} · {formatFallback(c.animalType)}
+          {formatFallback(c.requestedAnimalName)} · {animalTypeLabel(c.animalType)}
         </div>
         <div className="text-xs text-[var(--color-text-muted)]">
           {formatFallback(c.applicantPhone)} · {formatDate(c.createdAt)}
@@ -185,16 +190,14 @@ export function CaseList() {
     <div className="space-y-5 p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--color-panel)]">Adoption cases</h1>
-          <p className="text-sm text-[var(--color-text-muted)]">
-            Coordinator queue, matching, follow-up, and finalization.
-          </p>
+          <h1 className="text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
+          <p className="text-sm text-[var(--color-text-muted)]">{copy.subtitle}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <ExportButton kind="cases" searchParams={searchParams} />
+          <ExportButton kind="cases" searchParams={searchParams} label={pageCopy.common.export} />
           <Button type="button" variant="outline" onClick={() => refetch()} disabled={isFetching}>
             <ListChecks className="h-4 w-4" />
-            Refresh
+            {pageCopy.common.refresh}
           </Button>
         </div>
       </div>
@@ -209,9 +212,9 @@ export function CaseList() {
                 setQuery(event.target.value);
                 resetToFirstPage();
               }}
-              aria-label="Search cases"
+              aria-label={copy.searchLabel}
               className="h-9 pl-9"
-              placeholder="Search applicant, phone, or email"
+              placeholder={copy.searchPlaceholder}
             />
           </label>
 
@@ -222,14 +225,14 @@ export function CaseList() {
               resetToFirstPage();
             }}
           >
-            <SelectTrigger aria-label="Filter by case status" className="h-9">
-              <SelectValue placeholder="Case status" />
+            <SelectTrigger aria-label={copy.statusLabel} className="h-9">
+              <SelectValue placeholder={copy.statusPlaceholder} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All statuses</SelectItem>
+              <SelectItem value="all">{copy.allStatuses}</SelectItem>
               {caseStatuses.map((status) => (
                 <SelectItem key={status.id} value={status.id}>
-                  {status.labelZh} / {status.labelEn}
+                  {bilingualStatusName(status, language)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -242,13 +245,13 @@ export function CaseList() {
               resetToFirstPage();
             }}
           >
-            <SelectTrigger aria-label="Filter by animal type" className="h-9">
-              <SelectValue placeholder="Animal type" />
+            <SelectTrigger aria-label={copy.animalTypeLabel} className="h-9">
+              <SelectValue placeholder={copy.animalTypePlaceholder} />
             </SelectTrigger>
             <SelectContent>
               {ANIMAL_TYPE_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
+                <SelectItem key={option} value={option}>
+                  {pageCopy.animalTypes[option]}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -261,12 +264,14 @@ export function CaseList() {
                 setOpenOnly(checked === true);
                 resetToFirstPage();
               }}
-              aria-label="Show open cases only"
+              aria-label={copy.openOnlyLabel}
             />
-            Open only
+            {copy.openOnly}
           </label>
         </div>
-        {statusesError && <CaseListStatusFilterError message={statusesError.message} />}
+        {statusesError && (
+          <CaseListStatusFilterError label={copy.filterError} message={statusesError.message} />
+        )}
       </section>
 
       <section
@@ -275,14 +280,14 @@ export function CaseList() {
       >
         <div className="flex min-h-14 flex-wrap items-center justify-between gap-3 border-b border-[var(--color-border)] px-4">
           <div>
-            <h2 className="text-base font-semibold text-[var(--color-panel)]">Cases</h2>
+            <h2 className="text-base font-semibold text-[var(--color-panel)]">{copy.tableTitle}</h2>
             <p className="text-xs text-[var(--color-text-muted)]">
-              {isLoading ? "Loading..." : `${total} total`}
+              {isLoading ? pageCopy.common.loading : pageCopy.common.totalCount(total)}
             </p>
           </div>
           <div className="flex items-center gap-2">
             <Label htmlFor="case-page-size" className="text-xs text-[var(--color-text-muted)]">
-              Rows
+              {pageCopy.common.rows}
             </Label>
             <Select
               value={String(pageSize)}
@@ -320,14 +325,12 @@ export function CaseList() {
           getRowKey={(c) => c.id}
           loading={isLoading}
           skeletonRows={5}
-          empty="No cases found"
+          empty={copy.empty}
           renderMobileCard={renderCaseCard}
         />
 
         <div className="flex min-h-12 flex-wrap items-center justify-between gap-3 border-t border-[var(--color-border)] px-4 py-2 text-xs text-[var(--color-text-muted)]">
-          <span>
-            Page {page} of {totalPages}
-          </span>
+          <span>{pageCopy.common.pageOf(page, totalPages)}</span>
           <div className="flex gap-2">
             <Button
               type="button"
@@ -337,7 +340,7 @@ export function CaseList() {
               disabled={isPreviousDisabled}
             >
               <ChevronLeft className="h-4 w-4" />
-              Previous
+              {pageCopy.common.previous}
             </Button>
             <Button
               type="button"
@@ -346,7 +349,7 @@ export function CaseList() {
               onClick={() => setPage((currentPage) => currentPage + 1)}
               disabled={isNextDisabled}
             >
-              Next
+              {pageCopy.common.next}
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>

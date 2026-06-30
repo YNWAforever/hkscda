@@ -14,6 +14,7 @@ import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Textarea } from "../../ui/textarea";
+import { bilingualStatusName, statusDisplayName, useAdminPageCopy } from "../adminPageCopy";
 import { fetchCoordinatorJson } from "./api";
 import { formatFallback } from "./caseWorkflowLogic";
 import {
@@ -47,19 +48,14 @@ type MutateTaskResponse = {
   };
 };
 
-const PRIORITIES: Array<{ value: CoordinatorTaskPriority; label: string }> = [
-  { value: "low", label: "Low" },
-  { value: "normal", label: "Normal" },
-  { value: "high", label: "High" },
-  { value: "urgent", label: "Urgent" },
-];
+const PRIORITIES: CoordinatorTaskPriority[] = ["low", "normal", "high", "urgent"];
 
-const CONTACT_CHANNELS: Array<{ value: CoordinatorTaskContactChannel; label: string }> = [
-  { value: "phone", label: "Phone" },
-  { value: "whatsapp", label: "WhatsApp" },
-  { value: "email", label: "Email" },
-  { value: "in_person", label: "In person" },
-  { value: "internal", label: "Internal" },
+const CONTACT_CHANNELS: CoordinatorTaskContactChannel[] = [
+  "phone",
+  "whatsapp",
+  "email",
+  "in_person",
+  "internal",
 ];
 
 const EMPTY_DEFAULT_LINKS: TaskPanelDefaultLinks = {};
@@ -109,6 +105,8 @@ function updateFormFromTask(task: CoordinatorTask): UpdateTaskFormState {
 }
 
 function StatusChip({ status }: { status: CoordinatorStatus }) {
+  const { language } = useAdminPageCopy();
+
   return (
     <Badge
       variant="outline"
@@ -118,19 +116,24 @@ function StatusChip({ status }: { status: CoordinatorStatus }) {
         className={`h-2 w-2 rounded-full ${STATUS_DOT_CLASSES[status.color] ?? "bg-[var(--color-border)]"}`}
         aria-hidden="true"
       />
-      <span>{status.labelZh}</span>
-      <span className="font-normal text-[var(--color-text-muted)]">{status.labelEn}</span>
+      <span>{statusDisplayName(status, language)}</span>
     </Badge>
   );
 }
 
-function priorityLabel(priority: CoordinatorTaskPriority) {
-  return PRIORITIES.find((item) => item.value === priority)?.label ?? priority;
+function priorityLabel(
+  priority: CoordinatorTaskPriority,
+  copy: ReturnType<typeof useAdminPageCopy>["pageCopy"],
+) {
+  return copy.priority[priority] ?? priority;
 }
 
-function contactChannelLabel(channel: CoordinatorTaskContactChannel | null) {
+function contactChannelLabel(
+  channel: CoordinatorTaskContactChannel | null,
+  copy: ReturnType<typeof useAdminPageCopy>["pageCopy"],
+) {
   if (!channel) return "-";
-  return CONTACT_CHANNELS.find((item) => item.value === channel)?.label ?? channel;
+  return copy.contactChannel[channel] ?? channel;
 }
 
 export function TaskPanelAsyncError({ message }: { message: string }) {
@@ -149,7 +152,7 @@ function StatusSelect({
   value,
   statuses,
   onChange,
-  placeholder = "Choose status",
+  placeholder,
 }: {
   id: string;
   value: string;
@@ -157,16 +160,18 @@ function StatusSelect({
   onChange: (value: string) => void;
   placeholder?: string;
 }) {
+  const { language, pageCopy } = useAdminPageCopy();
+
   return (
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger id={id} className="h-9">
-        <SelectValue placeholder={placeholder} />
+        <SelectValue placeholder={placeholder ?? pageCopy.taskPanel.chooseStatus} />
       </SelectTrigger>
       <SelectContent>
         {statuses.map((status) => (
           <SelectItem key={status.id} value={status.id}>
-            {status.labelZh} / {status.labelEn}
-            {!status.isActive ? " (inactive)" : ""}
+            {bilingualStatusName(status, language)}
+            {!status.isActive ? ` (${pageCopy.common.inactive})` : ""}
           </SelectItem>
         ))}
       </SelectContent>
@@ -183,6 +188,8 @@ function PrioritySelect({
   value: CoordinatorTaskPriority;
   onChange: (value: CoordinatorTaskPriority) => void;
 }) {
+  const { pageCopy } = useAdminPageCopy();
+
   return (
     <Select
       value={value}
@@ -193,8 +200,8 @@ function PrioritySelect({
       </SelectTrigger>
       <SelectContent>
         {PRIORITIES.map((priority) => (
-          <SelectItem key={priority.value} value={priority.value}>
-            {priority.label}
+          <SelectItem key={priority} value={priority}>
+            {pageCopy.priority[priority]}
           </SelectItem>
         ))}
       </SelectContent>
@@ -211,6 +218,8 @@ function ContactChannelSelect({
   value: CoordinatorTaskContactChannel | "";
   onChange: (value: CoordinatorTaskContactChannel | "") => void;
 }) {
+  const { pageCopy } = useAdminPageCopy();
+
   return (
     <Select
       value={value || "none"}
@@ -222,10 +231,10 @@ function ContactChannelSelect({
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="none">No channel</SelectItem>
+        <SelectItem value="none">{pageCopy.common.noChannel}</SelectItem>
         {CONTACT_CHANNELS.map((channel) => (
-          <SelectItem key={channel.value} value={channel.value}>
-            {channel.label}
+          <SelectItem key={channel} value={channel}>
+            {pageCopy.contactChannel[channel]}
           </SelectItem>
         ))}
       </SelectContent>
@@ -242,6 +251,8 @@ function TaskItem({
   statuses: CoordinatorStatus[];
   onChanged?: () => Promise<void> | void;
 }) {
+  const { pageCopy } = useAdminPageCopy();
+  const copy = pageCopy.taskPanel;
   const [form, setForm] = useState<UpdateTaskFormState>(() => updateFormFromTask(task));
 
   useEffect(() => {
@@ -279,25 +290,37 @@ function TaskItem({
                 variant="outline"
                 className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
               >
-                {priorityLabel(task.priority)}
+                {priorityLabel(task.priority, pageCopy)}
               </Badge>
             </div>
             <div className="grid gap-2 text-xs text-[var(--color-text-muted)] sm:grid-cols-2">
-              <span>Due: {formatTaskDateTime(task.dueAt)}</span>
-              <span>Scheduled: {formatTaskDateTime(task.scheduledAt)}</span>
-              <span>Completed: {formatTaskDateTime(task.completedAt)}</span>
-              <span>Next step: {formatTaskDateTime(task.nextStepAt)}</span>
-              <span>Volunteer: {formatFallback(task.volunteer ?? task.assignedTo)}</span>
-              <span>Channel: {contactChannelLabel(task.contactChannel)}</span>
+              <span>
+                {copy.display.due}: {formatTaskDateTime(task.dueAt)}
+              </span>
+              <span>
+                {copy.display.scheduled}: {formatTaskDateTime(task.scheduledAt)}
+              </span>
+              <span>
+                {copy.display.completed}: {formatTaskDateTime(task.completedAt)}
+              </span>
+              <span>
+                {copy.display.nextStep}: {formatTaskDateTime(task.nextStepAt)}
+              </span>
+              <span>
+                {copy.display.volunteer}: {formatFallback(task.volunteer ?? task.assignedTo)}
+              </span>
+              <span>
+                {copy.display.channel}: {contactChannelLabel(task.contactChannel, pageCopy)}
+              </span>
             </div>
           </div>
           {(task.outcome || task.remarks) && (
             <div className="space-y-1 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-2)] p-3 text-xs">
               <div className="text-[var(--color-panel)]">
-                Outcome: {formatFallback(task.outcome)}
+                {copy.display.outcome}: {formatFallback(task.outcome)}
               </div>
               <div className="whitespace-pre-wrap text-[var(--color-text-muted)]">
-                Remarks: {formatFallback(task.remarks)}
+                {copy.display.remarks}: {formatFallback(task.remarks)}
               </div>
             </div>
           )}
@@ -305,7 +328,7 @@ function TaskItem({
 
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           <div className="space-y-1.5">
-            <Label htmlFor={`task-status-${task.id}`}>Status</Label>
+            <Label htmlFor={`task-status-${task.id}`}>{copy.labels.status}</Label>
             <StatusSelect
               id={`task-status-${task.id}`}
               value={form.statusId}
@@ -314,7 +337,7 @@ function TaskItem({
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor={`task-priority-${task.id}`}>Priority</Label>
+            <Label htmlFor={`task-priority-${task.id}`}>{copy.labels.priority}</Label>
             <PrioritySelect
               id={`task-priority-${task.id}`}
               value={form.priority}
@@ -322,7 +345,7 @@ function TaskItem({
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor={`task-channel-${task.id}`}>Channel</Label>
+            <Label htmlFor={`task-channel-${task.id}`}>{copy.labels.channel}</Label>
             <ContactChannelSelect
               id={`task-channel-${task.id}`}
               value={form.contactChannel}
@@ -330,7 +353,7 @@ function TaskItem({
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor={`task-due-${task.id}`}>Due</Label>
+            <Label htmlFor={`task-due-${task.id}`}>{copy.labels.due}</Label>
             <Input
               id={`task-due-${task.id}`}
               type="datetime-local"
@@ -342,7 +365,7 @@ function TaskItem({
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor={`task-scheduled-${task.id}`}>Scheduled</Label>
+            <Label htmlFor={`task-scheduled-${task.id}`}>{copy.labels.scheduled}</Label>
             <Input
               id={`task-scheduled-${task.id}`}
               type="datetime-local"
@@ -354,7 +377,7 @@ function TaskItem({
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor={`task-completed-${task.id}`}>Completed</Label>
+            <Label htmlFor={`task-completed-${task.id}`}>{copy.labels.completed}</Label>
             <Input
               id={`task-completed-${task.id}`}
               type="datetime-local"
@@ -366,7 +389,7 @@ function TaskItem({
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor={`task-next-${task.id}`}>Next step</Label>
+            <Label htmlFor={`task-next-${task.id}`}>{copy.labels.nextStep}</Label>
             <Input
               id={`task-next-${task.id}`}
               type="datetime-local"
@@ -378,29 +401,29 @@ function TaskItem({
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor={`task-volunteer-${task.id}`}>Volunteer</Label>
+            <Label htmlFor={`task-volunteer-${task.id}`}>{copy.labels.volunteer}</Label>
             <Input
               id={`task-volunteer-${task.id}`}
               value={form.volunteer}
               onChange={(event) =>
                 setForm((current) => ({ ...current, volunteer: event.target.value }))
               }
-              placeholder="Optional"
+              placeholder={copy.placeholders.optional}
             />
           </div>
           <div className="space-y-1.5 md:col-span-2 xl:col-span-1">
-            <Label htmlFor={`task-outcome-${task.id}`}>Outcome</Label>
+            <Label htmlFor={`task-outcome-${task.id}`}>{copy.labels.outcome}</Label>
             <Input
               id={`task-outcome-${task.id}`}
               value={form.outcome}
               onChange={(event) =>
                 setForm((current) => ({ ...current, outcome: event.target.value }))
               }
-              placeholder="Optional"
+              placeholder={copy.placeholders.optional}
             />
           </div>
           <div className="space-y-1.5 md:col-span-2">
-            <Label htmlFor={`task-remarks-${task.id}`}>Remarks</Label>
+            <Label htmlFor={`task-remarks-${task.id}`}>{copy.labels.remarks}</Label>
             <Textarea
               id={`task-remarks-${task.id}`}
               value={form.remarks}
@@ -408,7 +431,7 @@ function TaskItem({
                 setForm((current) => ({ ...current, remarks: event.target.value }))
               }
               className="min-h-9"
-              placeholder="Optional coordinator note"
+              placeholder={copy.placeholders.remarks}
             />
           </div>
           <div className="flex items-end">
@@ -418,7 +441,7 @@ function TaskItem({
               disabled={!form.statusId || updateMutation.isPending}
             >
               <Save className="h-4 w-4" />
-              Save task
+              {copy.saveTask}
             </Button>
           </div>
           {updateMutation.error && (
@@ -436,15 +459,17 @@ function TaskItem({
 }
 
 export function TaskPanel({
-  title = "Follow-ups",
+  title,
   subtitle,
   tasks,
   statuses,
   defaultLinks = EMPTY_DEFAULT_LINKS,
   showCreateForm = true,
-  emptyMessage = "No follow-ups recorded",
+  emptyMessage,
   onChanged,
 }: TaskPanelProps) {
+  const { pageCopy } = useAdminPageCopy();
+  const copy = pageCopy.taskPanel;
   const defaultStatusId = useMemo(() => getDefaultFollowupStatusId(statuses), [statuses]);
   const followupStatuses = useMemo(() => statusesForTaskControl(statuses), [statuses]);
   const defaultLinksForForm = useMemo(
@@ -471,7 +496,7 @@ export function TaskPanel({
   const createMutation = useMutation<MutateTaskResponse, Error, void>({
     mutationFn: () => {
       const payload = buildCreateTaskPayload(form);
-      if (!payload) throw new Error("Add a title and follow-up status before creating a task.");
+      if (!payload) throw new Error(copy.createValidation);
 
       return fetchCoordinatorJson<MutateTaskResponse>("/api/admin/adoptions/tasks", {
         method: "POST",
@@ -490,9 +515,11 @@ export function TaskPanel({
     <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
       <div className="flex min-h-14 items-center justify-between gap-3 border-b border-[var(--color-border)] px-4">
         <div>
-          <h2 className="text-base font-semibold text-[var(--color-panel)]">{title}</h2>
+          <h2 className="text-base font-semibold text-[var(--color-panel)]">
+            {title ?? copy.defaultTitle}
+          </h2>
           <p className="text-xs text-[var(--color-text-muted)]">
-            {subtitle ?? `${tasks.length} scheduled or completed`}
+            {subtitle ?? pageCopy.common.scheduledOrCompleted(tasks.length)}
           </p>
         </div>
       </div>
@@ -500,18 +527,18 @@ export function TaskPanel({
       {showCreateForm && (
         <div className="grid gap-4 border-b border-[var(--color-border)] p-4 lg:grid-cols-[minmax(220px,1fr)_200px_180px_180px_minmax(220px,1fr)_auto]">
           <div className="space-y-1.5">
-            <Label htmlFor="task-title">Title</Label>
+            <Label htmlFor="task-title">{copy.labels.title}</Label>
             <Input
               id="task-title"
               value={form.title}
               onChange={(event) =>
                 setForm((current) => ({ ...current, title: event.target.value }))
               }
-              placeholder="Post-adoption call"
+              placeholder={copy.placeholders.title}
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="task-status">Status</Label>
+            <Label htmlFor="task-status">{copy.labels.status}</Label>
             <StatusSelect
               id="task-status"
               value={form.statusId}
@@ -520,7 +547,7 @@ export function TaskPanel({
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="task-priority">Priority</Label>
+            <Label htmlFor="task-priority">{copy.labels.priority}</Label>
             <PrioritySelect
               id="task-priority"
               value={form.priority}
@@ -528,7 +555,7 @@ export function TaskPanel({
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="task-create-channel">Channel</Label>
+            <Label htmlFor="task-create-channel">{copy.labels.channel}</Label>
             <ContactChannelSelect
               id="task-create-channel"
               value={form.contactChannel}
@@ -536,24 +563,24 @@ export function TaskPanel({
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="task-volunteer">Volunteer</Label>
+            <Label htmlFor="task-volunteer">{copy.labels.volunteer}</Label>
             <Input
               id="task-volunteer"
               value={form.volunteer}
               onChange={(event) =>
                 setForm((current) => ({ ...current, volunteer: event.target.value }))
               }
-              placeholder="Optional"
+              placeholder={copy.placeholders.optional}
             />
           </div>
           <div className="flex items-end">
             <Button type="button" onClick={() => createMutation.mutate()} disabled={!canCreate}>
               <Plus className="h-4 w-4" />
-              Add task
+              {copy.addTask}
             </Button>
           </div>
           <div className="space-y-1.5 lg:col-span-2">
-            <Label htmlFor="task-due">Due</Label>
+            <Label htmlFor="task-due">{copy.labels.due}</Label>
             <Input
               id="task-due"
               type="datetime-local"
@@ -565,7 +592,7 @@ export function TaskPanel({
             />
           </div>
           <div className="space-y-1.5 lg:col-span-2">
-            <Label htmlFor="task-scheduled">Scheduled</Label>
+            <Label htmlFor="task-scheduled">{copy.labels.scheduled}</Label>
             <Input
               id="task-scheduled"
               type="datetime-local"
@@ -577,7 +604,7 @@ export function TaskPanel({
             />
           </div>
           <div className="space-y-1.5 lg:col-span-2">
-            <Label htmlFor="task-remarks">Remarks</Label>
+            <Label htmlFor="task-remarks">{copy.labels.remarks}</Label>
             <Textarea
               id="task-remarks"
               value={form.remarks}
@@ -585,7 +612,7 @@ export function TaskPanel({
                 setForm((current) => ({ ...current, remarks: event.target.value }))
               }
               className="min-h-9"
-              placeholder="Optional coordinator note"
+              placeholder={copy.placeholders.remarks}
             />
           </div>
         </div>
@@ -595,11 +622,13 @@ export function TaskPanel({
         <TaskPanelAsyncError message={createMutation.error.message} />
       )}
       {showCreateForm && followupStatuses.length === 0 && (
-        <TaskPanelAsyncError message="Create an active follow-up status before adding tasks." />
+        <TaskPanelAsyncError message={copy.addStatusFirst} />
       )}
 
       {tasks.length === 0 ? (
-        <div className="px-4 py-6 text-sm text-[var(--color-text-muted)]">{emptyMessage}</div>
+        <div className="px-4 py-6 text-sm text-[var(--color-text-muted)]">
+          {emptyMessage ?? copy.noFollowups}
+        </div>
       ) : (
         <div>
           {tasks.map((task) => (

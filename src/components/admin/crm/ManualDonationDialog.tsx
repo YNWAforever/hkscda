@@ -14,6 +14,7 @@ import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Switch } from "../../ui/switch";
+import { useAdminPageCopy } from "../adminPageCopy";
 import { fetchAdminJson } from "./api";
 
 type ManualDonationDialogProps = {
@@ -24,7 +25,72 @@ function amountToCents(amountHkd: string) {
   return Math.round(Number(amountHkd) * 100);
 }
 
+const MANUAL_DONATION_COPY = {
+  zh: {
+    title: "手動捐款",
+    amount: "金額 HKD",
+    purpose: "用途",
+    purposeAria: "捐款用途",
+    method: "方式",
+    methodAria: "付款方式",
+    paymentStatus: "付款狀態",
+    paymentStatusAria: "付款狀態",
+    bankReference: "銀行參考編號",
+    required: "必填",
+    optional: "選填",
+    receiptRequested: "需要收據",
+    receiptAria: "需要收據",
+    save: "儲存手動捐款",
+    purposes: {
+      general: "一般捐款",
+      medical: "醫療",
+      sponsor: "助養",
+    },
+    methods: {
+      manual: "手動",
+      fps: "轉數快",
+      payme: "PayMe",
+    },
+    statuses: {
+      pending: "待處理",
+      succeeded: "成功",
+    },
+  },
+  en: {
+    title: "Manual gift",
+    amount: "Amount HKD",
+    purpose: "Purpose",
+    purposeAria: "Donation purpose",
+    method: "Method",
+    methodAria: "Payment method",
+    paymentStatus: "Payment status",
+    paymentStatusAria: "Payment status",
+    bankReference: "Bank reference",
+    required: "Required",
+    optional: "Optional",
+    receiptRequested: "Receipt requested",
+    receiptAria: "Receipt requested",
+    save: "Save manual gift",
+    purposes: {
+      general: "General",
+      medical: "Medical",
+      sponsor: "Sponsor",
+    },
+    methods: {
+      manual: "Manual",
+      fps: "FPS",
+      payme: "PayMe",
+    },
+    statuses: {
+      pending: "Pending",
+      succeeded: "Succeeded",
+    },
+  },
+} as const;
+
 export function ManualDonationDialog({ supporterId }: ManualDonationDialogProps) {
+  const { language } = useAdminPageCopy();
+  const copy = MANUAL_DONATION_COPY[language];
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [amountHkd, setAmountHkd] = useState("");
@@ -87,16 +153,16 @@ export function ManualDonationDialog({ supporterId }: ManualDonationDialogProps)
       <DialogTrigger asChild>
         <Button type="button">
           <HandCoins className="h-4 w-4" />
-          Manual gift
+          {copy.title}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Manual gift</DialogTitle>
+          <DialogTitle>{copy.title}</DialogTitle>
         </DialogHeader>
         <form className="grid gap-4" onSubmit={handleSubmit}>
           <div className="grid gap-2">
-            <Label htmlFor="manual-donation-amount">Amount HKD</Label>
+            <Label htmlFor="manual-donation-amount">{copy.amount}</Label>
             <Input
               id="manual-donation-amount"
               value={amountHkd}
@@ -107,33 +173,33 @@ export function ManualDonationDialog({ supporterId }: ManualDonationDialogProps)
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="grid gap-2">
-              <Label htmlFor="manual-donation-purpose">Purpose</Label>
+              <Label htmlFor="manual-donation-purpose">{copy.purpose}</Label>
               <Select
                 value={purpose}
                 onValueChange={(value) => setPurpose(value as DonationPurpose)}
               >
-                <SelectTrigger id="manual-donation-purpose" aria-label="Donation purpose">
+                <SelectTrigger id="manual-donation-purpose" aria-label={copy.purposeAria}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="general">General</SelectItem>
-                  <SelectItem value="medical">Medical</SelectItem>
-                  <SelectItem value="sponsor">Sponsor</SelectItem>
+                  <SelectItem value="general">{copy.purposes.general}</SelectItem>
+                  <SelectItem value="medical">{copy.purposes.medical}</SelectItem>
+                  <SelectItem value="sponsor">{copy.purposes.sponsor}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="manual-donation-method">Method</Label>
+              <Label htmlFor="manual-donation-method">{copy.method}</Label>
               <Select
                 value={method}
                 onValueChange={(value) => setMethod(value as ManualDonationMethod)}
               >
-                <SelectTrigger id="manual-donation-method" aria-label="Payment method">
+                <SelectTrigger id="manual-donation-method" aria-label={copy.methodAria}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="manual">Manual</SelectItem>
-                  <SelectItem value="fps">FPS</SelectItem>
+                  <SelectItem value="manual">{copy.methods.manual}</SelectItem>
+                  <SelectItem value="fps">{copy.methods.fps}</SelectItem>
                   <SelectItem value="payme">PayMe</SelectItem>
                 </SelectContent>
               </Select>
@@ -141,43 +207,45 @@ export function ManualDonationDialog({ supporterId }: ManualDonationDialogProps)
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="grid gap-2">
-              <Label htmlFor="manual-donation-status">Payment status</Label>
+              <Label htmlFor="manual-donation-status">{copy.paymentStatus}</Label>
               <Select
                 value={paymentStatus}
                 onValueChange={(value) => setPaymentStatus(value as ManualPaymentStatus)}
               >
-                <SelectTrigger id="manual-donation-status" aria-label="Payment status">
+                <SelectTrigger id="manual-donation-status" aria-label={copy.paymentStatusAria}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="succeeded">Succeeded</SelectItem>
+                  <SelectItem value="pending">{copy.statuses.pending}</SelectItem>
+                  <SelectItem value="succeeded">{copy.statuses.succeeded}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="manual-donation-reference">Bank reference</Label>
+              <Label htmlFor="manual-donation-reference">{copy.bankReference}</Label>
               <Input
                 id="manual-donation-reference"
                 value={bankReference}
                 onChange={(event) => setBankReference(event.target.value)}
-                placeholder={needsReference ? "Required" : "Optional"}
+                placeholder={needsReference ? copy.required : copy.optional}
               />
             </div>
           </div>
           <label className="flex items-center justify-between gap-4 rounded-md border border-[var(--color-border)] p-3">
-            <span className="text-sm font-medium text-[var(--color-panel)]">Receipt requested</span>
+            <span className="text-sm font-medium text-[var(--color-panel)]">
+              {copy.receiptRequested}
+            </span>
             <Switch
               checked={receiptRequested}
               onCheckedChange={setReceiptRequested}
-              aria-label="Receipt requested"
+              aria-label={copy.receiptAria}
             />
           </label>
           {mutation.error && (
             <p className="text-sm text-[var(--color-destructive)]">{mutation.error.message}</p>
           )}
           <Button type="submit" disabled={!canSubmit || mutation.isPending}>
-            Save manual gift
+            {copy.save}
           </Button>
         </form>
       </DialogContent>
