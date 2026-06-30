@@ -13,6 +13,7 @@ import { ReconcileDialog } from "./ReconcileDialog";
 import {
   applyPaymentFilters,
   canIssueReceipt,
+  canReconcile,
   canVoidReceipt,
   financeActionLabel,
   findIssuedReceipt,
@@ -135,7 +136,7 @@ export function PaymentsReconcile() {
     const issued = findIssuedReceipt(payment.donation.id, receipts);
     return (
       <div className="flex flex-wrap gap-2">
-        {payment.status === "pending" && (
+        {canReconcile(payment) && (
           <ReconcileDialog
             paymentId={payment.id}
             supporterName={payment.donation.supporter.name}
