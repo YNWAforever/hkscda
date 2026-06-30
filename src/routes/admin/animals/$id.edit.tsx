@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "../../../lib/supabase";
 import { AdminLayout } from "../../../components/admin/AdminLayout";
 import { AnimalForm } from "../../../components/admin/AnimalForm";
+import { useAdminLanguage } from "../../../components/admin/adminI18n";
+import type { Animal } from "../../../types/animal";
 
 export const Route = createFileRoute("/admin/animals/$id/edit")({
   beforeLoad: async () => {
@@ -26,15 +28,28 @@ function EditAnimalPage() {
     },
   });
 
-  if (isLoading) return <div className="p-6 text-gray-400">載入中…</div>;
-  if (!animal) return <div className="p-6 text-gray-400">找不到此動物</div>;
+  return (
+    <AdminLayout
+      activeSection={(animal?.type ?? "cat") as "cat" | "dog" | "sponsor" | "applications"}
+    >
+      <EditAnimalContent animal={animal} isLoading={isLoading} />
+    </AdminLayout>
+  );
+}
+
+function EditAnimalContent({ animal, isLoading }: { animal?: Animal | null; isLoading: boolean }) {
+  const { copy } = useAdminLanguage();
+
+  if (isLoading) return <div className="p-6 text-gray-400">{copy.common.loading}</div>;
+  if (!animal) return <div className="p-6 text-gray-400">{copy.form.notFound}</div>;
 
   return (
-    <AdminLayout activeSection={animal.type as "cat" | "dog" | "sponsor" | "applications"}>
-      <div className="p-6 space-y-4">
-        <h1 className="text-xl font-bold">編輯：{animal.name}</h1>
-        <AnimalForm existing={animal} />
-      </div>
-    </AdminLayout>
+    <div className="p-6 space-y-4">
+      <h1 className="text-xl font-bold">
+        {copy.form.editTitle}
+        {animal.name}
+      </h1>
+      <AnimalForm existing={animal} />
+    </div>
   );
 }

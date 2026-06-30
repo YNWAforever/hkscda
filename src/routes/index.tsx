@@ -13,6 +13,7 @@ import {
   Stethoscope,
   Handshake,
   ReceiptText,
+  type LucideIcon,
 } from "lucide-react";
 import { Hero } from "@/components/site/Hero";
 import { FeatureTrio } from "@/components/site/FeatureTrio";
@@ -84,6 +85,21 @@ const donateMethods = [
   { Icon: Zap, title: "轉數快 FPS", desc: "電話 9864 1089 · FPS ID 8727588" },
   { Icon: Building, title: "銀行入帳", desc: "匯豐 124-511320-838 · 中銀 012-351-1-025023-2" },
   { Icon: Globe, title: "PayPal / GIVE.asia", desc: "支持每月定額捐款，持續支援救助行動" },
+];
+
+const rescueCommitments: { Icon: LucideIcon; title: string; desc: string }[] = [
+  {
+    Icon: Stethoscope,
+    title: "醫療救援",
+    desc: "為拯救的貓狗提供全面醫療護理，包括絕育、疫苗及日常保健。",
+  },
+  { Icon: House, title: "領養媒合", desc: "透過嚴格家訪審核，為每隻動物配對最適合的永久家庭。" },
+  { Icon: Globe, title: "社區教育", desc: "推廣領養代替購買、愛護動物及生育控制理念。" },
+  {
+    Icon: Handshake,
+    title: "跨機構合作",
+    desc: "與其他動物組織保持開放合作，共同改善流浪動物福祉。",
+  },
 ];
 
 function Index() {
@@ -185,26 +201,17 @@ function Index() {
               </div>
             </div>
             <div className="grid gap-4">
-              {[
-                [
-                  Stethoscope,
-                  "醫療救援",
-                  "為拯救的貓狗提供全面醫療護理，包括絕育、疫苗及日常保健。",
-                ],
-                [House, "領養媒合", "透過嚴格家訪審核，為每隻動物配對最適合的永久家庭。"],
-                [Globe, "社區教育", "推廣領養代替購買、愛護動物及生育控制理念。"],
-                [Handshake, "跨機構合作", "與其他動物組織保持開放合作，共同改善流浪動物福祉。"],
-              ].map(([Icon, t, d]) => (
+              {rescueCommitments.map(({ Icon, title, desc }) => (
                 <div
-                  key={t}
+                  key={title}
                   className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5 flex gap-4 hover:shadow-md transition-shadow"
                 >
                   <div className="h-11 w-11 rounded-lg bg-[var(--color-primary-highlight)] flex items-center justify-center shrink-0">
                     <Icon className="h-5 w-5 text-[var(--color-primary)]" />
                   </div>
                   <div>
-                    <h3 className="font-display font-bold mb-1">{t}</h3>
-                    <p className="text-sm text-[var(--color-text-muted)]">{d}</p>
+                    <h3 className="font-display font-bold mb-1">{title}</h3>
+                    <p className="text-sm text-[var(--color-text-muted)]">{desc}</p>
                   </div>
                 </div>
               ))}

@@ -40,6 +40,23 @@
   --color-hero-gradient-mid: #1d2353;
   --color-hero-gradient-end: #283066;
 
+  /* shadcn/Radix token aliases for opaque overlays and form controls */
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-text);
+  --color-card: var(--color-surface);
+  --color-card-foreground: var(--color-text);
+  --color-popover: var(--color-surface);
+  --color-popover-foreground: var(--color-text);
+  --color-muted: var(--color-surface-offset);
+  --color-muted-foreground: var(--color-text-muted);
+  --color-accent: var(--color-primary-highlight);
+  --color-accent-foreground: var(--color-text);
+  --color-input: var(--color-border);
+  --color-ring: var(--color-primary);
+  --color-destructive: var(--color-error);
+  --color-primary-foreground: #ffffff;
+  --color-secondary-foreground: #ffffff;
+
   --color-cta: #f27d92;
   --color-cta-hover: #ee6781;
 

@@ -10,8 +10,11 @@ export interface Animal {
   name_en: string | null;
   gender: "male" | "female";
   age: string;
+  age_en: string | null;
   description: string | null;
+  description_en: string | null;
   notes: string | null;
+  notes_en: string | null;
   status: AnimalStatus;
   image_url: string | null;
   created_at: string;
