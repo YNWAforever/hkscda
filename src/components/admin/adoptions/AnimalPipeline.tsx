@@ -1005,6 +1005,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
                     <Input
                       id="arrival-date"
                       type="date"
+                      className="h-11"
                       value={profileForm.arrival_date ?? ""}
                       onChange={(event) => updateProfileField("arrival_date", event.target.value)}
                     />
@@ -1150,6 +1151,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
                         <Input
                           id="desexed-at"
                           type="date"
+                          className="h-11"
                           value={profileForm.desexed_at ?? ""}
                           onChange={(event) => updateProfileField("desexed_at", event.target.value)}
                         />
@@ -1210,6 +1212,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
                     <Input
                       id="adopted-at"
                       type="date"
+                      className="h-11"
                       value={profileForm.adopted_at ?? ""}
                       onChange={(event) => updateProfileField("adopted_at", event.target.value)}
                     />
@@ -1219,6 +1222,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
                     <Input
                       id="deceased-at"
                       type="date"
+                      className="h-11"
                       value={profileForm.deceased_at ?? ""}
                       onChange={(event) => updateProfileField("deceased_at", event.target.value)}
                     />
