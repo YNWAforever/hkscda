@@ -9,7 +9,7 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "test": "bun test",
-    "lint": "eslint .",
+    "lint": "eslint src eslint.config.js vite.config.ts",
     "format": "prettier --write .",
     "scrape:hkscda": "node scripts/scrape-hkscda-animals.js",
     "import:hkscda": "node scripts/import-hkscda-animals.js",

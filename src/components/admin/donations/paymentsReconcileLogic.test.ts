@@ -59,7 +59,10 @@ describe("paymentStatusPill", () => {
 
 describe("receiptPill", () => {
   test("issued receipt shows its number", () => {
-    const pill = receiptPill(payment({ status: "succeeded", donation: { ...payment().donation, status: "succeeded" } }), [issuedReceipt]);
+    const pill = receiptPill(
+      payment({ status: "succeeded", donation: { ...payment().donation, status: "succeeded" } }),
+      [issuedReceipt],
+    );
     expect(pill).toEqual({ tone: "success", label: "已發 HKSCDA-2026-000001" });
   });
 
@@ -112,7 +115,10 @@ describe("action predicates", () => {
     expect(canIssueReceipt(succeeded, [issuedReceipt])).toBe(false);
     expect(
       canIssueReceipt(
-        payment({ status: "succeeded", donation: { ...payment().donation, status: "succeeded", receipt_requested: false } }),
+        payment({
+          status: "succeeded",
+          donation: { ...payment().donation, status: "succeeded", receipt_requested: false },
+        }),
         [],
       ),
     ).toBe(false);
@@ -134,22 +140,41 @@ describe("applyPaymentFilters", () => {
       id: "c",
       status: "refunded",
       provider: "paypal",
-      donation: { ...payment().donation, supporter: { ...payment().donation.supporter, name: "Mary", email: "mary@x.io" } },
+      donation: {
+        ...payment().donation,
+        supporter: { ...payment().donation.supporter, name: "Mary", email: "mary@x.io" },
+      },
     }),
   ];
 
   test("filters by status", () => {
-    expect(applyPaymentFilters(rows, { status: "pending", provider: "all", search: "" }).map((r) => r.id)).toEqual(["a"]);
+    expect(
+      applyPaymentFilters(rows, { status: "pending", provider: "all", search: "" }).map(
+        (r) => r.id,
+      ),
+    ).toEqual(["a"]);
   });
 
   test("filters by provider", () => {
-    expect(applyPaymentFilters(rows, { status: "all", provider: "paypal", search: "" }).map((r) => r.id)).toEqual(["c"]);
+    expect(
+      applyPaymentFilters(rows, { status: "all", provider: "paypal", search: "" }).map((r) => r.id),
+    ).toEqual(["c"]);
   });
 
   test("search matches name, email, provider_ref and bank_reference, case-insensitive", () => {
-    expect(applyPaymentFilters(rows, { status: "all", provider: "all", search: "mary" }).map((r) => r.id)).toEqual(["c"]);
-    expect(applyPaymentFilters(rows, { status: "all", provider: "all", search: "ref-9" }).map((r) => r.id)).toEqual(["b"]);
-    expect(applyPaymentFilters(rows, { status: "all", provider: "all", search: "陳" }).map((r) => r.id)).toEqual(["a", "b"]);
+    expect(
+      applyPaymentFilters(rows, { status: "all", provider: "all", search: "mary" }).map(
+        (r) => r.id,
+      ),
+    ).toEqual(["c"]);
+    expect(
+      applyPaymentFilters(rows, { status: "all", provider: "all", search: "ref-9" }).map(
+        (r) => r.id,
+      ),
+    ).toEqual(["b"]);
+    expect(
+      applyPaymentFilters(rows, { status: "all", provider: "all", search: "陳" }).map((r) => r.id),
+    ).toEqual(["a", "b"]);
   });
 });
 

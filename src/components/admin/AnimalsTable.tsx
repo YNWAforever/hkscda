@@ -5,21 +5,26 @@ import { supabase } from "../../lib/supabase";
 import type { Animal } from "../../types/animal";
 import { DataTable, type DataTableColumn } from "./DataTable";
 import { StatusPill, type StatusTone } from "./StatusBadge";
+import { useAdminLanguage } from "./adminI18n";
 
 interface AnimalsTableProps {
   animals: Animal[];
   onDeleted: () => void;
 }
 
-const statusLabels: Record<string, { label: string; tone: StatusTone }> = {
-  available: { label: "可領養", tone: "success" },
-  adopted: { label: "已領養", tone: "warning" },
-  fostered: { label: "暫托中", tone: "info" },
+const statusTones: Record<string, StatusTone> = {
+  available: "success",
+  adopted: "warning",
+  fostered: "info",
 };
 
 function AnimalStatus({ status }: { status: string }) {
-  const meta = statusLabels[status];
-  return <StatusPill tone={meta?.tone ?? "neutral"}>{meta?.label ?? status}</StatusPill>;
+  const { copy } = useAdminLanguage();
+  const label =
+    status in copy.animalStatus
+      ? copy.animalStatus[status as keyof typeof copy.animalStatus]
+      : status;
+  return <StatusPill tone={statusTones[status] ?? "neutral"}>{label}</StatusPill>;
 }
 
 function AnimalAvatar({ animal }: { animal: Animal }) {
@@ -34,13 +39,14 @@ function AnimalAvatar({ animal }: { animal: Animal }) {
 }
 
 export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
+  const { copy } = useAdminLanguage();
   const [search, setSearch] = useState("");
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   const filtered = animals.filter(
-    (a) =>
-      a.name.toLowerCase().includes(search.toLowerCase()) ||
-      (a.name_en ?? "").toLowerCase().includes(search.toLowerCase()),
+    (animal) =>
+      animal.name.toLowerCase().includes(search.toLowerCase()) ||
+      (animal.name_en ?? "").toLowerCase().includes(search.toLowerCase()),
   );
 
   async function handleDelete(id: string) {
@@ -57,36 +63,39 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
           search={{ animalId: animal.id }}
           className="text-xs text-[var(--color-primary)] hover:underline"
         >
-          流程
+          {copy.common.workflow}
         </Link>
         <Link
           to="/admin/animals/$id/edit"
           params={{ id: animal.id }}
           className="text-xs text-[var(--color-panel)] hover:underline"
         >
-          編輯
+          {copy.common.edit}
         </Link>
         {confirmDelete === animal.id ? (
           <span className="flex gap-2 text-xs">
             <button
+              type="button"
               onClick={() => handleDelete(animal.id)}
               className="text-[var(--color-error)] hover:underline"
             >
-              確認
+              {copy.common.confirm}
             </button>
             <button
+              type="button"
               onClick={() => setConfirmDelete(null)}
               className="text-[var(--color-text-muted)] hover:underline"
             >
-              取消
+              {copy.common.cancel}
             </button>
           </span>
         ) : (
           <button
+            type="button"
             onClick={() => setConfirmDelete(animal.id)}
             className="text-xs text-[var(--color-error)] hover:underline"
           >
-            刪除
+            {copy.common.delete}
           </button>
         )}
       </div>
@@ -96,12 +105,12 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
   const columns: DataTableColumn<Animal>[] = [
     {
       id: "photo",
-      header: "照片",
+      header: copy.table.photo,
       cell: (animal) => <AnimalAvatar animal={animal} />,
     },
     {
       id: "name",
-      header: "名字",
+      header: copy.table.name,
       cell: (animal) => (
         <span className="font-medium">
           {animal.name}
@@ -115,22 +124,22 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
     },
     {
       id: "gender",
-      header: "性別",
-      cell: (animal) => (animal.gender === "male" ? "公" : "母"),
+      header: copy.table.gender,
+      cell: (animal) => copy.gender[animal.gender],
     },
     {
       id: "age",
-      header: "年齡",
+      header: copy.table.age,
       cell: (animal) => animal.age,
     },
     {
       id: "status",
-      header: "狀態",
+      header: copy.table.status,
       cell: (animal) => <AnimalStatus status={animal.status} />,
     },
     {
       id: "actions",
-      header: "操作",
+      header: copy.table.actions,
       cell: (animal) => <AnimalActions animal={animal} />,
     },
   ];
@@ -139,16 +148,16 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
     <div className="space-y-4">
       <input
         value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="搜尋名字…"
-        className="w-full max-w-xs rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm"
+        onChange={(event) => setSearch(event.target.value)}
+        placeholder={copy.table.search}
+        className="w-full max-w-xs rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] shadow-sm focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-highlight)]"
       />
 
       <DataTable
         columns={columns}
         rows={filtered}
         getRowKey={(animal) => animal.id}
-        empty="沒有結果"
+        empty={copy.common.noResults}
         renderMobileCard={(animal) => (
           <div className="flex items-start gap-3">
             <AnimalAvatar animal={animal} />
@@ -165,7 +174,7 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
                 <AnimalStatus status={animal.status} />
               </div>
               <p className="text-xs text-[var(--color-text-muted)]">
-                {animal.gender === "male" ? "公" : "母"} · {animal.age}
+                {copy.gender[animal.gender]} · {animal.age}
               </p>
               <AnimalActions animal={animal} />
             </div>

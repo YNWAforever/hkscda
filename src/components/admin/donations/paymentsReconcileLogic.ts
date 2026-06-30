@@ -69,7 +69,10 @@ function findVoidReceipt(donationId: string, receipts: AdminReceiptRow[]) {
   return receipts.find((r) => r.status === "void" && r.donation_ids.includes(donationId));
 }
 
-export function receiptPill(payment: AdminPaymentRow, receipts: AdminReceiptRow[]): PillSpec | null {
+export function receiptPill(
+  payment: AdminPaymentRow,
+  receipts: AdminReceiptRow[],
+): PillSpec | null {
   const issued = findIssuedReceipt(payment.donation.id, receipts);
   if (issued) return { tone: "success", label: `已發 ${issued.receipt_no}` };
   if (canIssueReceipt(payment, receipts)) return { tone: "warning", label: "待發收條" };
