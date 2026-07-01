@@ -4,6 +4,7 @@ import {
   SHORTLIST_STORAGE_KEY,
   addShortlistItem,
   parseShortlist,
+  removeIntentItems,
   removeShortlistItem,
   reorderAdoptionItems,
   serializeShortlist,
@@ -57,6 +58,9 @@ export function ShortlistProvider({ children }: { children: ReactNode }) {
       },
       clear() {
         setItems([]);
+      },
+      clearIntent(intent) {
+        setItems((current) => removeIntentItems(current, intent));
       },
       reorderAdoptions(animalIds) {
         setItems((current) => reorderAdoptionItems(current, animalIds));

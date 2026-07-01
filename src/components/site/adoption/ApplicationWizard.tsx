@@ -222,7 +222,7 @@ function hasExpectedSubmissionResult(result: SubmissionResult) {
 }
 
 export function ApplicationWizard() {
-  const { items, clear, reorderAdoptions } = useShortlist();
+  const { items, clearIntent, reorderAdoptions } = useShortlist();
   const defaultValues = useMemo(() => createDefaultValues(), []);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [photos, setPhotos] = useState<SelectedPhoto[]>([]);
@@ -420,7 +420,7 @@ export function ApplicationWizard() {
     } catch {
       setDraftStatus("unavailable");
     }
-    clear();
+    clearIntent("adoption");
     setSubmission(result);
   }
 

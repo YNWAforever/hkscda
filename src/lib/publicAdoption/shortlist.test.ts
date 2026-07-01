@@ -2,7 +2,9 @@ import { describe, expect, test } from "bun:test";
 
 import {
   addShortlistItem,
+  intentForAnimalType,
   parseShortlist,
+  removeIntentItems,
   removeShortlistItem,
   reorderAdoptionItems,
 } from "./shortlist";
@@ -22,6 +24,17 @@ function item(id: string, rank: number): ShortlistItem {
     animalType: "cat",
     imageUrl: null,
     intent: "adoption",
+    rank,
+  };
+}
+
+function sponsor(id: string, rank: number): ShortlistItem {
+  return {
+    id,
+    name: `Sponsor ${rank}`,
+    animalType: "sponsor",
+    imageUrl: null,
+    intent: "sponsorship",
     rank,
   };
 }
@@ -111,5 +124,36 @@ describe("shortlist reducer helpers", () => {
     ]);
     expect(result.filter((parsedItem) => parsedItem.intent === "sponsorship")).toHaveLength(10);
     expect(result.at(-1)).toMatchObject({ id: "sponsorship-9", rank: 10 });
+  });
+});
+
+describe("intentForAnimalType", () => {
+  test("maps sponsor to sponsorship", () => {
+    expect(intentForAnimalType("sponsor")).toBe("sponsorship");
+  });
+
+  test("maps cat and dog to adoption", () => {
+    expect(intentForAnimalType("cat")).toBe("adoption");
+    expect(intentForAnimalType("dog")).toBe("adoption");
+  });
+});
+
+describe("removeIntentItems", () => {
+  test("removes only the target intent, keeping the other intent", () => {
+    const items = [item("a", 1), item("b", 2), sponsor("s1", 1), sponsor("s2", 2)];
+    expect(removeIntentItems(items, "adoption")).toEqual([sponsor("s1", 1), sponsor("s2", 2)]);
+  });
+
+  test("recompacts remaining adoption ranks after removing sponsorship", () => {
+    const items = [item("a", 2), item("b", 3), sponsor("s1", 1)];
+    expect(removeIntentItems(items, "sponsorship")).toEqual([
+      { ...item("a", 2), rank: 1 },
+      { ...item("b", 3), rank: 2 },
+    ]);
+  });
+
+  test("is a no-op when the intent is absent", () => {
+    const items = [item("a", 1), item("b", 2)];
+    expect(removeIntentItems(items, "sponsorship")).toEqual([item("a", 1), item("b", 2)]);
   });
 });
