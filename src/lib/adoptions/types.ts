@@ -87,6 +87,71 @@ export type AdoptionCaseSummary = {
   closedAt: string | null;
 };
 
+export type PublicAdoptionAnimalPreference = {
+  id: string;
+  rank: number;
+  animalId: string | null;
+  animalNameSnapshot: string;
+  animalTypeSnapshot: "cat" | "dog";
+};
+
+export type PublicAdoptionVisitPreference = {
+  dateRangeStart: string;
+  dateRangeEnd: string;
+  preferredTimeWindows: string[];
+  notes: string | null;
+};
+
+export type PublicAdoptionPhoto = {
+  id: string;
+  publicApplicationId: string;
+  fileName: string;
+  mimeType: string;
+  sizeBytes: number;
+  photoCategory: "home" | "window" | "living";
+  uploadedAt: string;
+};
+
+export type PublicAdoptionDetail = {
+  language: "zh-HK" | "en";
+  preferredContactMethod: "phone" | "whatsapp" | "email";
+  termsVersion: string;
+  questionnaire: Record<string, unknown>;
+  animalPreferences: PublicAdoptionAnimalPreference[];
+  visitPreference: PublicAdoptionVisitPreference | null;
+  photos: PublicAdoptionPhoto[];
+  statusToken: {
+    expiresAt: string;
+    revokedAt: string | null;
+    lastViewedAt: string | null;
+  } | null;
+};
+
+export type AdoptionIntakeLane =
+  | "new_adoption_application"
+  | "visit_followup"
+  | "photos_to_review"
+  | "needs_followup";
+
+export type AdoptionIntakeUrgency = "normal" | "high" | "overdue";
+
+export type AdoptionIntakeItem = {
+  id: string;
+  publicApplicationId: string;
+  adoptionCaseId: string | null;
+  lane: AdoptionIntakeLane;
+  urgency: AdoptionIntakeUrgency;
+  dueAt: string;
+  createdAt: string;
+  resolvedAt: string | null;
+  summary: {
+    applicantName?: string;
+    rankedAnimals?: Array<{ rank: number; animalName: string; animalType: string }>;
+    visit?: Record<string, unknown>;
+    photoCount?: number;
+  };
+};
+
 export type AdoptionCaseDetail = AdoptionCaseSummary & {
   applicantAddress: string | null;
   housingType: string | null;
@@ -100,6 +165,7 @@ export type AdoptionCaseDetail = AdoptionCaseSummary & {
   matches: AnimalMatchSummary[];
   followups: AdoptionFollowup[];
   successfulAdoption: SuccessfulAdoption | null;
+  publicAdoption: PublicAdoptionDetail | null;
 };
 
 export type AnimalMatchSummary = {

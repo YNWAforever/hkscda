@@ -29,6 +29,8 @@ import { buildTaskAuditAction, validateTaskCompletion } from "./tasks";
 import type {
   AdoptionCaseDetail,
   AdoptionCaseSummary,
+  AdoptionIntakeItem,
+  AdoptionIntakeLane,
   AdopterDetail,
   AdopterSummary,
   CoordinatorAdopterExportRow,
@@ -83,6 +85,10 @@ export type AdoptionCoordinatorRepository = {
   updateStatus(id: string, input: StatusUpdate): Promise<CoordinatorStatus>;
   deleteStatus(id: string): Promise<void>;
   listCases(input: CaseSearch): Promise<{ cases: AdoptionCaseSummary[]; total: number }>;
+  listIntakeItems(input: {
+    lane?: AdoptionIntakeLane;
+    openOnly: boolean;
+  }): Promise<{ items: AdoptionIntakeItem[] }>;
   listCaseExportRows(input: CaseSearch): Promise<CoordinatorCaseExportRow[]>;
   getCaseDetail(id: string): Promise<AdoptionCaseDetail | null>;
   listAdopters(input: AdopterSearch): Promise<{ adopters: AdopterSummary[]; total: number }>;
@@ -275,6 +281,28 @@ export function createAdoptionCoordinatorService({
 
     listCases(rawSearch: unknown) {
       return repo.listCases(caseSearchSchema.parse(rawSearch));
+    },
+
+    listIntakeItems(rawSearch: unknown) {
+      const input = z
+        .object({
+          lane: z
+            .enum([
+              "new_adoption_application",
+              "visit_followup",
+              "photos_to_review",
+              "needs_followup",
+            ])
+            .optional(),
+          openOnly: z
+            .union([z.literal("true"), z.literal("false"), z.boolean()])
+            .optional()
+            .transform((value) =>
+              value === undefined ? true : value === true || value === "true",
+            ),
+        })
+        .parse(rawSearch);
+      return repo.listIntakeItems(input);
     },
 
     getCaseDetail(caseId: string) {

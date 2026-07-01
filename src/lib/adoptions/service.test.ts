@@ -118,6 +118,10 @@ function createRepo(
       calls.push({ name: "listCases", payload: input });
       return { cases: [], total: 0 };
     },
+    async listIntakeItems(input) {
+      calls.push({ name: "listIntakeItems", payload: input });
+      return { items: [] };
+    },
     async listAdopters(input) {
       calls.push({ name: "listAdopters", payload: input });
       return { adopters: [], total: 0 };
@@ -588,6 +592,27 @@ describe("createAdoptionCoordinatorService", () => {
         page: 2,
         pageSize: 50,
       },
+    });
+  });
+
+  test("lists intake items with normalized filters and open-only default", async () => {
+    const { service, calls } = setup();
+
+    await service.listIntakeItems({
+      lane: "photos_to_review",
+    });
+    await service.listIntakeItems({
+      lane: "needs_followup",
+      openOnly: "false",
+    });
+
+    expect(calls).toContainEqual({
+      name: "listIntakeItems",
+      payload: { lane: "photos_to_review", openOnly: true },
+    });
+    expect(calls).toContainEqual({
+      name: "listIntakeItems",
+      payload: { lane: "needs_followup", openOnly: false },
     });
   });
 

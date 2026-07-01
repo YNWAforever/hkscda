@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, RefreshCw, Save } from "lucide-react";
+import { ArrowLeft, ExternalLink, Image, RefreshCw, Save } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import type { FormEvent, ReactNode } from "react";
 
@@ -8,6 +8,7 @@ import type {
   AdoptionCaseDetail,
   CoordinatorStatus,
   CoordinatorStatusCategory,
+  PublicAdoptionPhoto,
 } from "../../../lib/adoptions/types";
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
@@ -65,6 +66,11 @@ const CASE_DETAIL_COPY = {
     sections: {
       applicant: "申請人",
       publicSubmission: "公開申請",
+      rankedAnimalPreferences: "動物偏好排序",
+      visitPreferences: "探訪偏好",
+      questionnaire: "問卷資料",
+      photos: "申請相片",
+      statusLink: "狀態連結",
       assessmentPreferences: "評估及偏好",
       statusControls: "狀態控制",
     },
@@ -94,7 +100,46 @@ const CASE_DETAIL_COPY = {
       preferences: "偏好",
       caseStatus: "個案狀態",
       note: "備註",
+      rank: "排序",
+      animal: "動物",
+      type: "類別",
+      dateRange: "日期範圍",
+      timeWindows: "可選時段",
+      language: "語言",
+      preferredContactMethod: "偏好聯絡方式",
+      termsVersion: "條款版本",
+      fileName: "檔案",
+      mimeType: "格式",
+      size: "大小",
+      uploaded: "上載時間",
+      expiresAt: "到期",
+      revokedAt: "撤銷",
+      lastViewedAt: "最後查看",
     },
+    questionnaireGroups: {
+      contact: "聯絡",
+      home: "家居",
+      readiness: "準備",
+    },
+    photoCategories: {
+      home: "家居",
+      window: "窗戶",
+      living: "生活空間",
+    },
+    contactMethods: {
+      phone: "電話",
+      whatsapp: "WhatsApp",
+      email: "電郵",
+    },
+    noPublicDetail: "未有公開申請詳細資料",
+    noVisitPreference: "未有探訪偏好",
+    noPhotos: "未有相片",
+    noStatusToken: "未有狀態連結紀錄",
+    activeStatusLink: "有效",
+    revokedStatusLink: "已撤銷",
+    openPhoto: "開啟相片",
+    openingPhoto: "開啟中...",
+    photoOpenFailed: "無法開啟相片",
     chooseStatus: "選擇狀態",
     optionalStatusNote: "選填狀態備註",
     saveStatus: "儲存狀態",
@@ -113,6 +158,11 @@ const CASE_DETAIL_COPY = {
     sections: {
       applicant: "Applicant",
       publicSubmission: "Public submission",
+      rankedAnimalPreferences: "Ranked animal preferences",
+      visitPreferences: "Visit preferences",
+      questionnaire: "Questionnaire",
+      photos: "Application photos",
+      statusLink: "Status link",
       assessmentPreferences: "Assessment and preferences",
       statusControls: "Status controls",
     },
@@ -142,7 +192,46 @@ const CASE_DETAIL_COPY = {
       preferences: "Preferences",
       caseStatus: "Case status",
       note: "Note",
+      rank: "Rank",
+      animal: "Animal",
+      type: "Type",
+      dateRange: "Date range",
+      timeWindows: "Time windows",
+      language: "Language",
+      preferredContactMethod: "Preferred contact",
+      termsVersion: "Terms version",
+      fileName: "File",
+      mimeType: "Format",
+      size: "Size",
+      uploaded: "Uploaded",
+      expiresAt: "Expires",
+      revokedAt: "Revoked",
+      lastViewedAt: "Last viewed",
     },
+    questionnaireGroups: {
+      contact: "Contact",
+      home: "Home",
+      readiness: "Readiness",
+    },
+    photoCategories: {
+      home: "Home",
+      window: "Window",
+      living: "Living space",
+    },
+    contactMethods: {
+      phone: "Phone",
+      whatsapp: "WhatsApp",
+      email: "Email",
+    },
+    noPublicDetail: "No public application detail captured",
+    noVisitPreference: "No visit preference captured",
+    noPhotos: "No photos uploaded",
+    noStatusToken: "No status-link record",
+    activeStatusLink: "Active",
+    revokedStatusLink: "Revoked",
+    openPhoto: "Open photo",
+    openingPhoto: "Opening...",
+    photoOpenFailed: "Could not open photo",
     chooseStatus: "Choose status",
     optionalStatusNote: "Optional status note",
     saveStatus: "Save status",
@@ -292,6 +381,235 @@ function RecordSummary({
         </div>
       )}
     </div>
+  );
+}
+
+function objectRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
+function formatBytes(value: number) {
+  if (value < 1024) return `${value} B`;
+  if (value < 1024 * 1024) return `${Math.round(value / 1024)} KB`;
+  return `${(value / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function PublicPhotoButton({ photo }: { photo: PublicAdoptionPhoto }) {
+  const { language } = useAdminPageCopy();
+  const copy = CASE_DETAIL_COPY[language];
+
+  const mutation = useMutation<{ url: string }, Error, void>({
+    mutationFn: () =>
+      fetchCoordinatorJson<{ url: string }>(
+        `/api/admin/adoptions/applications/${encodeURIComponent(
+          photo.publicApplicationId,
+        )}/photos/${encodeURIComponent(photo.id)}`,
+      ),
+  });
+
+  function openPhoto() {
+    const opened = window.open("", "_blank", "noopener,noreferrer");
+    if (opened) opened.opener = null;
+
+    mutation.mutate(undefined, {
+      onSuccess: ({ url }) => {
+        if (opened) {
+          opened.location.href = url;
+          return;
+        }
+        const fallback = window.open(url, "_blank", "noopener,noreferrer");
+        if (fallback) fallback.opener = null;
+      },
+      onError: () => {
+        opened?.close();
+      },
+    });
+  }
+
+  return (
+    <div className="space-y-1">
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={openPhoto}
+        disabled={mutation.isPending}
+      >
+        <ExternalLink className="h-4 w-4" />
+        {mutation.isPending ? copy.openingPhoto : copy.openPhoto}
+      </Button>
+      {mutation.error && (
+        <p className="text-xs text-[var(--color-error)]" role="alert">
+          {copy.photoOpenFailed}: {mutation.error.message}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function PublicAdoptionSections({ adoptionCase }: { adoptionCase: AdoptionCaseDetail }) {
+  const { language, pageCopy } = useAdminPageCopy();
+  const copy = CASE_DETAIL_COPY[language];
+  const publicAdoption = adoptionCase.publicAdoption;
+
+  if (!publicAdoption) return null;
+
+  const questionnaire = publicAdoption.questionnaire ?? {};
+
+  return (
+    <>
+      <Section title={copy.sections.rankedAnimalPreferences}>
+        {publicAdoption.animalPreferences.length === 0 ? (
+          <div className="px-4 py-4 text-sm text-[var(--color-text-muted)]">
+            {copy.noPublicDetail}
+          </div>
+        ) : (
+          <div className="divide-y divide-[var(--color-border)]">
+            {publicAdoption.animalPreferences.map((preference) => (
+              <div
+                key={preference.id}
+                className="grid gap-3 px-4 py-3 text-sm md:grid-cols-[80px_1fr_120px]"
+              >
+                <div>
+                  <div className="text-xs text-[var(--color-text-muted)]">{copy.labels.rank}</div>
+                  <div className="font-semibold text-[var(--color-panel)]">#{preference.rank}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-[var(--color-text-muted)]">{copy.labels.animal}</div>
+                  <div className="font-medium text-[var(--color-panel)]">
+                    {preference.animalNameSnapshot}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-xs text-[var(--color-text-muted)]">{copy.labels.type}</div>
+                  <div className="font-medium text-[var(--color-panel)]">
+                    {pageCopy.animalTypes[preference.animalTypeSnapshot]}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </Section>
+
+      <Section title={copy.sections.visitPreferences}>
+        {publicAdoption.visitPreference ? (
+          <DetailGrid
+            items={[
+              {
+                label: copy.labels.dateRange,
+                value: `${publicAdoption.visitPreference.dateRangeStart} - ${publicAdoption.visitPreference.dateRangeEnd}`,
+              },
+              {
+                label: copy.labels.timeWindows,
+                value: publicAdoption.visitPreference.preferredTimeWindows.join(", "),
+              },
+              {
+                label: copy.labels.note,
+                value: formatFallback(publicAdoption.visitPreference.notes),
+              },
+            ]}
+          />
+        ) : (
+          <div className="px-4 py-4 text-sm text-[var(--color-text-muted)]">
+            {copy.noVisitPreference}
+          </div>
+        )}
+      </Section>
+
+      <Section title={copy.sections.questionnaire}>
+        <DetailGrid
+          items={[
+            { label: copy.labels.language, value: publicAdoption.language },
+            {
+              label: copy.labels.preferredContactMethod,
+              value: copy.contactMethods[publicAdoption.preferredContactMethod],
+            },
+            { label: copy.labels.termsVersion, value: publicAdoption.termsVersion },
+          ]}
+        />
+        <RecordSummary
+          title={copy.questionnaireGroups.contact}
+          record={objectRecord(questionnaire.contact)}
+          language={language}
+        />
+        <RecordSummary
+          title={copy.questionnaireGroups.home}
+          record={objectRecord(questionnaire.home)}
+          language={language}
+        />
+        <RecordSummary
+          title={copy.questionnaireGroups.readiness}
+          record={objectRecord(questionnaire.readiness)}
+          language={language}
+        />
+      </Section>
+
+      <Section title={copy.sections.photos}>
+        {publicAdoption.photos.length === 0 ? (
+          <div className="px-4 py-4 text-sm text-[var(--color-text-muted)]">{copy.noPhotos}</div>
+        ) : (
+          <div className="divide-y divide-[var(--color-border)]">
+            {publicAdoption.photos.map((photo) => (
+              <div
+                key={photo.id}
+                className="grid gap-3 px-4 py-3 md:grid-cols-[1fr_180px_auto] md:items-center"
+              >
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <Image className="h-4 w-4 text-[var(--color-text-muted)]" />
+                    <div className="truncate text-sm font-semibold text-[var(--color-panel)]">
+                      {photo.fileName}
+                    </div>
+                  </div>
+                  <div className="mt-1 text-xs text-[var(--color-text-muted)]">
+                    {copy.photoCategories[photo.photoCategory]} · {photo.mimeType} ·{" "}
+                    {formatBytes(photo.sizeBytes)}
+                  </div>
+                </div>
+                <div className="text-xs text-[var(--color-text-muted)]">
+                  {copy.labels.uploaded}: {formatDate(photo.uploadedAt)}
+                </div>
+                <PublicPhotoButton photo={photo} />
+              </div>
+            ))}
+          </div>
+        )}
+      </Section>
+
+      <Section title={copy.sections.statusLink}>
+        {publicAdoption.statusToken ? (
+          <DetailGrid
+            items={[
+              {
+                label: copy.labels.currentStatus,
+                value: publicAdoption.statusToken.revokedAt
+                  ? copy.revokedStatusLink
+                  : copy.activeStatusLink,
+              },
+              {
+                label: copy.labels.expiresAt,
+                value: formatDate(publicAdoption.statusToken.expiresAt),
+              },
+              {
+                label: copy.labels.revokedAt,
+                value: formatDate(publicAdoption.statusToken.revokedAt),
+              },
+              {
+                label: copy.labels.lastViewedAt,
+                value: formatDate(publicAdoption.statusToken.lastViewedAt),
+              },
+            ]}
+          />
+        ) : (
+          <div className="px-4 py-4 text-sm text-[var(--color-text-muted)]">
+            {copy.noStatusToken}
+          </div>
+        )}
+      </Section>
+    </>
   );
 }
 
@@ -533,6 +851,8 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
           </p>
         </div>
       </Section>
+
+      <PublicAdoptionSections adoptionCase={adoptionCase} />
 
       <Section title={copy.sections.assessmentPreferences}>
         <RecordSummary

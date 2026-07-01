@@ -111,6 +111,10 @@ function createFakeService(overrides: Partial<AdoptionCoordinatorService> = {}) 
       calls.push({ name: "listCases", payload: rawSearch });
       return { cases: [], total: 0 };
     },
+    async listIntakeItems(rawSearch) {
+      calls.push({ name: "listIntakeItems", payload: rawSearch });
+      return { items: [] };
+    },
     async listTasks(rawSearch) {
       calls.push({ name: "listTasks", payload: rawSearch });
       return { tasks: [], total: 0 };
@@ -343,6 +347,29 @@ describe("createAdoptionCoordinatorHandlers", () => {
     expectNoStoreJson(response);
     expect(await response.json()).toEqual({ candidates: [], total: 0 });
     expect(calls).toEqual([{ name: "searchManualCaseIdentity", payload: { q: "Ada" } }]);
+  });
+
+  test("intake inbox requires coordinator auth and returns no-store JSON", async () => {
+    const { calls, service } = createFakeService({
+      async listIntakeItems(rawSearch) {
+        calls.push({ name: "listIntakeItems", payload: rawSearch });
+        return { items: [] };
+      },
+    });
+    const handlers = createHandlers({ service });
+
+    const response = await handlers.listIntakeItems({
+      request: new Request(
+        "https://example.test/api/admin/adoptions/intake/items?lane=photos_to_review&openOnly=true",
+      ),
+    });
+
+    expect(response.status).toBe(200);
+    expectNoStoreJson(response);
+    expect(await response.json()).toEqual({ items: [] });
+    expect(calls).toEqual([
+      { name: "listIntakeItems", payload: { lane: "photos_to_review", openOnly: "true" } },
+    ]);
   });
 
   test("manual case create calls service with actor and body", async () => {
