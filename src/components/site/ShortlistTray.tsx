@@ -48,6 +48,20 @@ export function ShortlistTray() {
               <X className="h-3 w-3 shrink-0" />
             </button>
           ))}
+          {sponsorshipItems.slice(0, 4).map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => removeItem(item.id)}
+              className="inline-flex max-w-32 items-center gap-1 rounded-full bg-[var(--color-cta)] px-3 py-1 text-xs font-medium text-white"
+              aria-label={`移除 ${item.name}`}
+              title={`移除 ${item.name}`}
+            >
+              <Heart className="h-3 w-3 shrink-0" aria-hidden="true" />
+              <span className="truncate">{item.name}</span>
+              <X className="h-3 w-3 shrink-0" />
+            </button>
+          ))}
           {message && (
             <button
               type="button"
@@ -68,6 +82,11 @@ export function ShortlistTray() {
               className="btn-cta py-2! px-4! text-xs!"
             >
               申請領養
+            </Link>
+          )}
+          {sponsorshipItems.length > 0 && (
+            <Link to="/sponsors" className="btn-cta py-2! px-4! text-xs!">
+              開始助養
             </Link>
           )}
         </div>
