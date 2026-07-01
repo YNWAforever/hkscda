@@ -53,7 +53,7 @@ export function ShortlistTray() {
               key={item.id}
               type="button"
               onClick={() => removeItem(item.id)}
-              className="inline-flex max-w-32 items-center gap-1 rounded-full bg-[var(--color-cta)] px-3 py-1 text-xs font-medium text-white"
+              className="inline-flex max-w-32 items-center gap-1 rounded-full bg-[var(--color-cta)] px-3 py-1 text-xs font-medium text-[var(--color-panel)]"
               aria-label={`移除 ${item.name}`}
               title={`移除 ${item.name}`}
             >
