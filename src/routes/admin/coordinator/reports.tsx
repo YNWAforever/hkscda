@@ -1,15 +1,12 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 import { AdminLayout } from "../../../components/admin/AdminLayout";
 import { CoordinatorReports } from "../../../components/admin/adoptions/CoordinatorReports";
-import { supabase } from "../../../lib/supabase";
+import { requireAdminPageAccess } from "../../../lib/admin/pageAccess";
 
 export const Route = createFileRoute("/admin/coordinator/reports")({
   beforeLoad: async () => {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    if (!session) throw redirect({ to: "/admin/login" });
+    await requireAdminPageAccess("coordinatorReports");
   },
   component: CoordinatorReportsPage,
 });

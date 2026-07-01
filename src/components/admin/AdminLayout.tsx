@@ -3,6 +3,9 @@ import { LogOut, Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { supabase } from "../../lib/supabase";
+import type { AdminRole } from "../../lib/admin/access";
+import { canRoleAccessAdminNavItem } from "../../lib/admin/access";
+import { fetchAdminIdentity } from "../../lib/admin/pageAccess";
 import { cn } from "../../lib/utils";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "../ui/sheet";
 import { AdminLanguageProvider, AdminLanguageToggle, useAdminLanguage } from "./adminI18n";
@@ -17,10 +20,12 @@ interface AdminLayoutProps {
 }
 
 function NavList({
+  items,
   activeIds,
   collapsed,
   onNavigate,
 }: {
+  items: AdminNavItem[];
   activeIds: Set<string>;
   collapsed: boolean;
   onNavigate?: () => void;
@@ -31,8 +36,8 @@ function NavList({
   return (
     <nav className="flex-1 space-y-4 overflow-y-auto p-2">
       {ADMIN_NAV_GROUPS.map((group) => {
-        const items = ADMIN_NAV_ITEMS.filter((item) => item.group === group.id);
-        if (items.length === 0) return null;
+        const groupItems = items.filter((item) => item.group === group.id);
+        if (groupItems.length === 0) return null;
         return (
           <div key={group.id} className="space-y-1">
             {!collapsed && (
@@ -40,7 +45,7 @@ function NavList({
                 {copy.navGroups[group.id] ?? group.label}
               </p>
             )}
-            {items.map((item) => {
+            {groupItems.map((item) => {
               const Icon = item.icon;
               const active = activeIds.has(item.id);
               const label = itemLabel(item);
@@ -121,10 +126,20 @@ function AdminLayoutShell({ children, activeSection }: AdminLayoutProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [email, setEmail] = useState<string | null>(null);
+  const [adminRole, setAdminRole] = useState<AdminRole | null>(null);
 
   useEffect(() => {
     setCollapsed(localStorage.getItem(COLLAPSE_KEY) === "1");
-    void supabase.auth.getSession().then(({ data }) => setEmail(data.session?.user.email ?? null));
+    void supabase.auth.getSession().then(({ data }) => {
+      setEmail(data.session?.user.email ?? null);
+      if (!data.session) return;
+      void fetchAdminIdentity()
+        .then(({ admin }) => {
+          setEmail(admin.email);
+          setAdminRole(admin.role);
+        })
+        .catch(() => setAdminRole(null));
+    });
   }, []);
 
   function toggleCollapsed() {
@@ -140,7 +155,10 @@ function AdminLayoutShell({ children, activeSection }: AdminLayoutProps) {
     navigate({ to: "/admin/login" });
   }
 
-  const activeIds = new Set(getActiveAdminNavItemIds(ADMIN_NAV_ITEMS, pathname, activeSection));
+  const navItems = adminRole
+    ? ADMIN_NAV_ITEMS.filter((item) => canRoleAccessAdminNavItem(item.id, adminRole))
+    : [];
+  const activeIds = new Set(getActiveAdminNavItemIds(navItems, pathname, activeSection));
 
   return (
     <div className="flex min-h-dvh">
@@ -176,7 +194,7 @@ function AdminLayoutShell({ children, activeSection }: AdminLayoutProps) {
             </div>
           )}
         </div>
-        <NavList activeIds={activeIds} collapsed={collapsed} />
+        <NavList items={navItems} activeIds={activeIds} collapsed={collapsed} />
         <AccountFooter email={email} collapsed={collapsed} onLogout={handleLogout} />
       </aside>
 
@@ -202,6 +220,7 @@ function AdminLayoutShell({ children, activeSection }: AdminLayoutProps) {
                 </div>
               </div>
               <NavList
+                items={navItems}
                 activeIds={activeIds}
                 collapsed={false}
                 onNavigate={() => setMobileOpen(false)}

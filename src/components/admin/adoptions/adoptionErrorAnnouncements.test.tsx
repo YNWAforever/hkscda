@@ -1,6 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 
+import { AdminLanguageProvider } from "../adminI18n";
+
 process.env.VITE_SUPABASE_URL ??= "https://example.supabase.co";
 process.env.VITE_SUPABASE_ANON_KEY ??= "test-anon-key";
 
@@ -33,11 +35,13 @@ describe("adoption async error announcements", () => {
     expect(typeof CaseDetailStatusesError).toBe("function");
 
     const markup = renderToStaticMarkup(
-      CaseDetailStatusesError ? (
-        <CaseDetailStatusesError message="Status options unavailable" />
-      ) : (
-        <div />
-      ),
+      <AdminLanguageProvider>
+        {CaseDetailStatusesError ? (
+          <CaseDetailStatusesError message="Status options unavailable" />
+        ) : (
+          <div />
+        )}
+      </AdminLanguageProvider>,
     );
 
     expect(markup).toContain('role="alert"');

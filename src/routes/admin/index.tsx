@@ -1,4 +1,4 @@
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 
@@ -7,21 +7,22 @@ import { AnimalsTable } from "../../components/admin/AnimalsTable";
 import { useAdminLanguage } from "../../components/admin/adminI18n";
 import { PaymentsReconcile } from "../../components/admin/donations/PaymentsReconcile";
 import type { AdminSection } from "../../components/admin/adminNav";
+import { getAdminAreaForLocation } from "../../lib/admin/access";
+import { requireAdminPageAccess } from "../../lib/admin/pageAccess";
 import { supabase } from "../../lib/supabase";
 
 const searchSchema = z.object({
   section: z.enum(["cat", "dog", "sponsor", "applications", "payments"]).catch("cat"),
 });
 
-type DashboardSection = Exclude<AdminSection, "supporters">;
+type DashboardSection = Exclude<AdminSection, "supporters" | "access">;
 
 export const Route = createFileRoute("/admin/")({
   validateSearch: searchSchema,
-  beforeLoad: async () => {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    if (!session) throw redirect({ to: "/admin/login" });
+  beforeLoad: async ({ search }) => {
+    await requireAdminPageAccess(
+      getAdminAreaForLocation({ pathname: "/admin", section: search.section }),
+    );
   },
   component: AdminDashboard,
 });
