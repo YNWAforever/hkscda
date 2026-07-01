@@ -1,7 +1,13 @@
 import { Check, Plus } from "lucide-react";
 
 import type { Animal } from "../../types/animal";
+import { intentForAnimalType } from "../../lib/publicAdoption/shortlist";
 import { useShortlist } from "./ShortlistContext";
+
+const ADD_LABEL: Record<"adoption" | "sponsorship", string> = {
+  adoption: "加入領養清單",
+  sponsorship: "加入助養清單",
+};
 
 export function ShortlistActionButton({
   animal,
@@ -14,9 +20,11 @@ export function ShortlistActionButton({
   const selected = findItem(animal.id);
   const animalType = animal.type;
 
-  if (animalType !== "cat" && animalType !== "dog") {
+  if (animalType !== "cat" && animalType !== "dog" && animalType !== "sponsor") {
     return null;
   }
+
+  const intent = intentForAnimalType(animalType);
 
   if (selected) {
     return (
@@ -40,13 +48,13 @@ export function ShortlistActionButton({
           name: animal.name,
           animalType,
           imageUrl: animal.image_url,
-          intent: "adoption",
+          intent,
         })
       }
       className={compact ? "btn-cta mt-auto text-xs! py-1.5! px-3!" : "btn-cta py-3!"}
     >
       <Plus className="h-4 w-4" />
-      加入領養清單
+      {ADD_LABEL[intent]}
     </button>
   );
 }
