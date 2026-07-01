@@ -8,6 +8,7 @@ import {
   parseAdoptionMultipart,
   persistPublicAdoptionJourney,
   sendAdoptionConfirmationEmail,
+  validateAdoptionSubmissionRequestHeaders,
 } from "../../../lib/publicAdoption/submission.server";
 import {
   enforceRateLimit,
@@ -36,6 +37,14 @@ export const Route = createFileRoute("/api/adoption/applications")({
           return jsonNoStore(
             { error: "Too many requests. Please try again shortly." },
             { status: 429, headers: { "retry-after": String(retryAfterSeconds(limit)) } },
+          );
+        }
+
+        const headerValidation = validateAdoptionSubmissionRequestHeaders(request);
+        if (!headerValidation.ok) {
+          return jsonNoStore(
+            { error: headerValidation.error },
+            { status: headerValidation.status },
           );
         }
 

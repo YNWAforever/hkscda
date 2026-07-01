@@ -1,9 +1,11 @@
 import { describe, expect, test } from "bun:test";
 
 import {
+  ADOPTION_MULTIPART_MAX_BYTES,
   parseAdoptionMultipart,
   persistPublicAdoptionJourney,
   sendAdoptionConfirmationEmail,
+  validateAdoptionSubmissionRequestHeaders,
   type ParsedAdoptionMultipart,
   type PublicAdoptionSupabaseClient,
 } from "./submission.server";
@@ -30,6 +32,7 @@ type StorageCall = {
 
 type FakeClientOptions = {
   failInsertTable?: string;
+  failUpdateTable?: string;
   supporterId?: string | null;
 };
 
@@ -43,6 +46,7 @@ class FakeQuery {
     private readonly state: {
       calls: QueryCall[];
       failInsertTable?: string;
+      failUpdateTable?: string;
       supporterId: string | null;
     },
     private readonly table: string,
@@ -106,7 +110,9 @@ class FakeQuery {
     const result =
       this.action === "insert" && this.state.failInsertTable === this.table
         ? { data: null, error: new Error(`insert failed: ${this.table}`) }
-        : { data: this.mutationPayload, error: null };
+        : this.action === "update" && this.state.failUpdateTable === this.table
+          ? { data: null, error: new Error(`update failed: ${this.table}`) }
+          : { data: this.mutationPayload, error: null };
     return Promise.resolve(result).then(onfulfilled, onrejected);
   }
 }
@@ -116,6 +122,7 @@ function createFakeClient(options: FakeClientOptions = {}) {
     calls: [] as QueryCall[],
     storageCalls: [] as StorageCall[],
     failInsertTable: options.failInsertTable,
+    failUpdateTable: options.failUpdateTable,
     supporterId: options.supporterId === undefined ? "supporter-1" : options.supporterId,
   };
 
@@ -225,17 +232,30 @@ async function parsedMultipart(): Promise<ParsedAdoptionMultipart> {
   return parseAdoptionMultipart(multipartRequest());
 }
 
-function coordinatorService() {
+function coordinatorService(queryCalls?: QueryCall[]) {
   const calls: unknown[] = [];
   return {
     calls,
     service: {
       async createCaseFromPublicApplication(input: unknown) {
         calls.push(input);
+        queryCalls?.push({
+          table: "coordinator",
+          method: "createCaseFromPublicApplication",
+          payload: input,
+        });
         return { id: caseId };
       },
     },
   };
+}
+
+function callsFor(calls: QueryCall[], table: string, method: string) {
+  return calls.filter((call) => call.table === table && call.method === method);
+}
+
+function callIndex(calls: QueryCall[], table: string, method: string) {
+  return calls.findIndex((call) => call.table === table && call.method === method);
 }
 
 describe("parseAdoptionMultipart", () => {
@@ -278,10 +298,43 @@ describe("parseAdoptionMultipart", () => {
   });
 });
 
+describe("validateAdoptionSubmissionRequestHeaders", () => {
+  test("rejects non-multipart requests before body parsing", () => {
+    expect(
+      validateAdoptionSubmissionRequestHeaders(
+        new Request("https://example.test/api/adoption/applications", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+        }),
+      ),
+    ).toEqual({ ok: false, status: 415, error: "Expected multipart/form-data" });
+
+    expect(
+      validateAdoptionSubmissionRequestHeaders(
+        new Request("https://example.test/api/adoption/applications", { method: "POST" }),
+      ),
+    ).toEqual({ ok: false, status: 400, error: "Missing content-type" });
+  });
+
+  test("rejects obviously oversized multipart requests before body parsing", () => {
+    expect(
+      validateAdoptionSubmissionRequestHeaders(
+        new Request("https://example.test/api/adoption/applications", {
+          method: "POST",
+          headers: {
+            "content-type": "multipart/form-data; boundary=abc",
+            "content-length": String(ADOPTION_MULTIPART_MAX_BYTES + 1),
+          },
+        }),
+      ),
+    ).toEqual({ ok: false, status: 413, error: "Adoption application upload is too large" });
+  });
+});
+
 describe("persistPublicAdoptionJourney", () => {
   test("persists the expanded journey, private photos, status token, and coordinator case", async () => {
     const { client, state } = createFakeClient();
-    const coordinator = coordinatorService();
+    const coordinator = coordinatorService(state.calls);
 
     const result = await persistPublicAdoptionJourney({
       client,
@@ -339,12 +392,23 @@ describe("persistPublicAdoptionJourney", () => {
       method: "insert",
       payload: expect.objectContaining({
         public_application_id: applicationId,
-        adoption_case_id: caseId,
+        adoption_case_id: null,
         lane: "new_adoption_application",
         urgency: "normal",
       }),
       options: undefined,
     });
+    expect(state.calls).toContainEqual({
+      table: "adoption_intake_item",
+      method: "update",
+      payload: { adoption_case_id: caseId },
+    });
+    expect(callIndex(state.calls, "public_status_token", "insert")).toBeLessThan(
+      callIndex(state.calls, "coordinator", "createCaseFromPublicApplication"),
+    );
+    expect(callIndex(state.calls, "adoption_intake_item", "insert")).toBeLessThan(
+      callIndex(state.calls, "coordinator", "createCaseFromPublicApplication"),
+    );
     expect(coordinator.calls[0]).toMatchObject({
       publicApplicationId: applicationId,
       input: {
@@ -401,6 +465,71 @@ describe("persistPublicAdoptionJourney", () => {
       payload: { column: "id", value: applicationId },
     });
   });
+
+  test("does not create a coordinator case if status token persistence fails", async () => {
+    const { client, state } = createFakeClient({
+      failInsertTable: "public_status_token",
+    });
+    const coordinator = coordinatorService();
+
+    await expect(
+      persistPublicAdoptionJourney({
+        client,
+        parsed: await parsedMultipart(),
+        coordinatorService: coordinator.service,
+        now: () => new Date("2026-07-02T00:00:00.000Z"),
+        createStatusTokenPair: () => ({
+          rawToken: "raw-status-token",
+          tokenHash: "hashed-status-token",
+        }),
+        appUrl: "https://example.test",
+        logger: { error() {} },
+      }),
+    ).rejects.toThrow("Failed to save adoption application");
+
+    expect(coordinator.calls).toHaveLength(0);
+    expect(callsFor(state.calls, "public_status_token", "delete")).toHaveLength(1);
+    expect(state.calls).toContainEqual({
+      table: "public_status_token",
+      method: "eq",
+      payload: { column: "entity_id", value: applicationId },
+    });
+  });
+
+  test("does not fail after creating the coordinator case when intake link update fails", async () => {
+    const { client, state } = createFakeClient({
+      failUpdateTable: "adoption_intake_item",
+    });
+    const coordinator = coordinatorService();
+
+    await expect(
+      persistPublicAdoptionJourney({
+        client,
+        parsed: await parsedMultipart(),
+        coordinatorService: coordinator.service,
+        now: () => new Date("2026-07-02T00:00:00.000Z"),
+        createStatusTokenPair: () => ({
+          rawToken: "raw-status-token",
+          tokenHash: "hashed-status-token",
+        }),
+        appUrl: "https://example.test",
+        logger: { error() {} },
+      }),
+    ).resolves.toMatchObject({
+      applicationId,
+      caseId,
+      statusUrl: "https://example.test/adoption/status/raw-status-token",
+    });
+
+    expect(coordinator.calls).toHaveLength(1);
+    expect(state.calls).toContainEqual({
+      table: "adoption_intake_item",
+      method: "update",
+      payload: { adoption_case_id: caseId },
+    });
+    expect(callsFor(state.calls, "adoption_applications", "delete")).toHaveLength(0);
+    expect(state.storageCalls.filter((call) => call.method === "remove")).toHaveLength(0);
+  });
 });
 
 describe("sendAdoptionConfirmationEmail", () => {
@@ -446,5 +575,10 @@ describe("sendAdoptionConfirmationEmail", () => {
       }),
       options: undefined,
     });
+    const messageInsert = callsFor(state.calls, "message", "insert")[0]!;
+    const persistedMessagePayload = (messageInsert.payload as { payload: Record<string, unknown> })
+      .payload;
+    expect(persistedMessagePayload).not.toHaveProperty("statusUrl");
+    expect(JSON.stringify(persistedMessagePayload)).not.toContain("raw-status-token");
   });
 });

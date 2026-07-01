@@ -6,6 +6,7 @@ import { renderAdoptionConfirmationEmail } from "./emailTemplates.server";
 import {
   type AdoptionPhotoDescriptor,
   type ExpandedAdoptionApplication,
+  MAX_PHOTO_BYTES,
   expandedAdoptionApplicationSchema,
   toAdoptionApplicationSummaryInsert,
   toDetailInsert,
@@ -17,6 +18,7 @@ import { getAppUrl, getEmailConfig } from "../donations/config.server";
 
 export const ADOPTION_PHOTO_BUCKET = "adoption-application-photos";
 export const MAX_ADOPTION_PHOTOS = 6;
+export const ADOPTION_MULTIPART_MAX_BYTES = MAX_ADOPTION_PHOTOS * MAX_PHOTO_BYTES + 8 * 1024 * 1024;
 
 export class SubmissionValidationError extends Error {
   constructor(message: string) {
@@ -93,6 +95,10 @@ type SendAdoptionConfirmationEmailDeps = {
 
 export type AdoptionConfirmationEmailResult = "queued" | "sent" | "failed";
 
+export type AdoptionSubmissionHeaderValidation =
+  | { ok: true }
+  | { ok: false; status: 400 | 413 | 415; error: string };
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -131,6 +137,28 @@ function coordinatorPreferences(input: ExpandedAdoptionApplication) {
   };
 }
 
+export function validateAdoptionSubmissionRequestHeaders(
+  request: Request,
+): AdoptionSubmissionHeaderValidation {
+  const contentType = request.headers.get("content-type");
+  if (!contentType) {
+    return { ok: false, status: 400, error: "Missing content-type" };
+  }
+  if (!/^multipart\/form-data\b/i.test(contentType)) {
+    return { ok: false, status: 415, error: "Expected multipart/form-data" };
+  }
+
+  const contentLength = request.headers.get("content-length");
+  if (contentLength) {
+    const bytes = Number(contentLength);
+    if (Number.isFinite(bytes) && bytes > ADOPTION_MULTIPART_MAX_BYTES) {
+      return { ok: false, status: 413, error: "Adoption application upload is too large" };
+    }
+  }
+
+  return { ok: true };
+}
+
 async function cleanupFailedPersistence(input: {
   client: PublicAdoptionSupabaseClient;
   applicationId: string | null;
@@ -149,6 +177,17 @@ async function cleanupFailedPersistence(input: {
   }
 
   if (input.applicationId) {
+    try {
+      const { error } = await input.client
+        .from("public_status_token")
+        .delete()
+        .eq("entity_id", input.applicationId)
+        .eq("entity_type", "adoption_application");
+      if (error) input.logger.error("Failed to clean up public status token", error);
+    } catch (error) {
+      input.logger.error("Failed to clean up public status token", error);
+    }
+
     try {
       const { error } = await input.client
         .from("adoption_applications")
@@ -274,33 +313,7 @@ export async function persistPublicAdoptionJourney({
       "Failed to save adoption visit preferences",
     );
 
-    const caseResult = await coordinatorService.createCaseFromPublicApplication({
-      publicApplicationId: applicationId,
-      input: {
-        ...summaryInsert,
-        preferences: coordinatorPreferences(parsed.payload),
-      },
-    });
-
     const reference = referenceForApplication(applicationId);
-    requireNoError(
-      await client.from("adoption_intake_item").insert({
-        public_application_id: applicationId,
-        adoption_case_id: caseResult.id,
-        lane: "new_adoption_application",
-        urgency: "normal",
-        summary: {
-          reference,
-          applicantName: parsed.payload.contact.applicantName,
-          animalName: parsed.payload.animalPreferences[0]?.animalName ?? null,
-          photoCount: parsed.photos.length,
-          preferredContactMethod: parsed.payload.contact.preferredContactMethod,
-        },
-        due_at: intakeDueAt(parsed.payload),
-      }),
-      "Failed to save adoption intake item",
-    );
-
     const token = makeStatusToken();
     const expiresAt = statusTokenExpiry(now);
     requireNoError(
@@ -312,6 +325,50 @@ export async function persistPublicAdoptionJourney({
       }),
       "Failed to save public status token",
     );
+
+    const intakeItem = requireNoError(
+      await client
+        .from("adoption_intake_item")
+        .insert({
+          public_application_id: applicationId,
+          adoption_case_id: null,
+          lane: "new_adoption_application",
+          urgency: "normal",
+          summary: {
+            reference,
+            applicantName: parsed.payload.contact.applicantName,
+            animalName: parsed.payload.animalPreferences[0]?.animalName ?? null,
+            photoCount: parsed.photos.length,
+            preferredContactMethod: parsed.payload.contact.preferredContactMethod,
+          },
+          due_at: intakeDueAt(parsed.payload),
+        })
+        .select("id")
+        .single(),
+      "Failed to save adoption intake item",
+    ) as { id?: string } | null;
+
+    const caseResult = await coordinatorService.createCaseFromPublicApplication({
+      publicApplicationId: applicationId,
+      input: {
+        ...summaryInsert,
+        preferences: coordinatorPreferences(parsed.payload),
+      },
+    });
+
+    try {
+      const linkQuery = client
+        .from("adoption_intake_item")
+        .update({ adoption_case_id: caseResult.id });
+      const { error } = intakeItem?.id
+        ? await linkQuery.eq("id", intakeItem.id)
+        : await linkQuery.eq("public_application_id", applicationId);
+      if (error) {
+        logger.error("Failed to link adoption intake item to coordinator case", error);
+      }
+    } catch (error) {
+      logger.error("Failed to link adoption intake item to coordinator case", error);
+    }
 
     return {
       applicationId,
@@ -371,8 +428,8 @@ export async function sendAdoptionConfirmationEmail(
     caseId: result.caseId,
     reference: result.reference,
     subject: email.subject,
-    statusUrl: result.statusUrl,
     expiresAt: result.expiresAt,
+    entityType: "adoption_application",
   };
 
   const { data: message, error: messageError } = await client
