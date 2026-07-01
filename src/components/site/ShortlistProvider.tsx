@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 
 import {
   SHORTLIST_STORAGE_KEY,
@@ -7,23 +7,9 @@ import {
   removeShortlistItem,
   reorderAdoptionItems,
   serializeShortlist,
-  type AddShortlistInput,
   type ShortlistItem,
 } from "../../lib/publicAdoption/shortlist";
-
-type ShortlistContextValue = {
-  items: ShortlistItem[];
-  persistenceWarning: string | null;
-  message: string | null;
-  addItem: (item: AddShortlistInput) => void;
-  removeItem: (animalId: string) => void;
-  clearMessage: () => void;
-  clear: () => void;
-  reorderAdoptions: (animalIds: string[]) => void;
-  findItem: (animalId: string) => ShortlistItem | undefined;
-};
-
-const ShortlistContext = createContext<ShortlistContextValue | null>(null);
+import { ShortlistContext, type ShortlistContextValue } from "./ShortlistContext";
 
 export function ShortlistProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<ShortlistItem[]>([]);
@@ -83,10 +69,4 @@ export function ShortlistProvider({ children }: { children: ReactNode }) {
   );
 
   return <ShortlistContext.Provider value={value}>{children}</ShortlistContext.Provider>;
-}
-
-export function useShortlist() {
-  const value = useContext(ShortlistContext);
-  if (!value) throw new Error("useShortlist must be used inside ShortlistProvider");
-  return value;
 }

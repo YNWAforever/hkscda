@@ -1,7 +1,7 @@
 import { Check, Plus } from "lucide-react";
 
 import type { Animal } from "../../types/animal";
-import { useShortlist } from "./ShortlistProvider";
+import { useShortlist } from "./ShortlistContext";
 
 export function ShortlistActionButton({
   animal,

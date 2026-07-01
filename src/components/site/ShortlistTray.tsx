@@ -1,12 +1,15 @@
 import { Link } from "@tanstack/react-router";
 import { Heart, X } from "lucide-react";
 
-import { useShortlist } from "./ShortlistProvider";
+import { useShortlist } from "./ShortlistContext";
 
 export function ShortlistTray() {
   const { items, message, persistenceWarning, clearMessage, removeItem } = useShortlist();
   const adoptionItems = items.filter((item) => item.intent === "adoption");
   const sponsorshipItems = items.filter((item) => item.intent === "sponsorship");
+  const firstRankedAdoptionItem = [...adoptionItems].sort(
+    (left, right) => left.rank - right.rank,
+  )[0];
 
   if (items.length === 0) return null;
 
@@ -36,6 +39,7 @@ export function ShortlistTray() {
               type="button"
               onClick={() => removeItem(item.id)}
               className="inline-flex max-w-32 items-center gap-1 rounded-full bg-[var(--color-surface-offset)] px-3 py-1 text-xs font-medium text-[var(--color-panel)]"
+              aria-label={`移除 ${item.name}`}
               title={`移除 ${item.name}`}
             >
               <span className="truncate">
@@ -53,8 +57,16 @@ export function ShortlistTray() {
               關閉提示
             </button>
           )}
-          {adoptionItems.length > 0 && (
-            <Link to="/adoption/apply" className="btn-cta py-2! px-4! text-xs!">
+          {firstRankedAdoptionItem && (
+            <Link
+              to="/adoption/apply"
+              search={{
+                animalId: firstRankedAdoptionItem.id,
+                animalName: firstRankedAdoptionItem.name,
+                type: firstRankedAdoptionItem.animalType,
+              }}
+              className="btn-cta py-2! px-4! text-xs!"
+            >
               申請領養
             </Link>
           )}

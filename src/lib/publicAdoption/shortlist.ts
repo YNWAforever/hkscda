@@ -29,6 +29,42 @@ function compactRanks(items: ShortlistItem[]) {
   return [...adoptionItems, ...sponsorshipItems];
 }
 
+function isShortlistItem(item: unknown): item is ShortlistItem {
+  return (
+    Boolean(item) &&
+    typeof item === "object" &&
+    typeof (item as ShortlistItem).id === "string" &&
+    typeof (item as ShortlistItem).name === "string" &&
+    ["cat", "dog", "sponsor"].includes((item as ShortlistItem).animalType) &&
+    ["adoption", "sponsorship"].includes((item as ShortlistItem).intent) &&
+    typeof (item as ShortlistItem).rank === "number"
+  );
+}
+
+function sanitizeRestoredItems(items: ShortlistItem[]) {
+  const seenAnimalIds = new Set<string>();
+  const restoredItems: ShortlistItem[] = [];
+  let adoptionCount = 0;
+  let sponsorshipCount = 0;
+
+  for (const item of items) {
+    if (seenAnimalIds.has(item.id)) continue;
+
+    if (item.intent === "adoption") {
+      if (adoptionCount >= ADOPTION_LIMIT) continue;
+      adoptionCount += 1;
+    } else {
+      if (sponsorshipCount >= SPONSORSHIP_LIMIT) continue;
+      sponsorshipCount += 1;
+    }
+
+    seenAnimalIds.add(item.id);
+    restoredItems.push(item);
+  }
+
+  return compactRanks(restoredItems);
+}
+
 export function addShortlistItem(
   items: ShortlistItem[],
   input: AddShortlistInput,
@@ -88,17 +124,7 @@ export function parseShortlist(value: string | null): ShortlistItem[] {
   try {
     const parsed = JSON.parse(value);
     if (!Array.isArray(parsed)) return [];
-    return compactRanks(
-      parsed.filter(
-        (item): item is ShortlistItem =>
-          item &&
-          typeof item.id === "string" &&
-          typeof item.name === "string" &&
-          ["cat", "dog", "sponsor"].includes(item.animalType) &&
-          ["adoption", "sponsorship"].includes(item.intent) &&
-          typeof item.rank === "number",
-      ),
-    );
+    return sanitizeRestoredItems(parsed.filter(isShortlistItem));
   } catch {
     return [];
   }

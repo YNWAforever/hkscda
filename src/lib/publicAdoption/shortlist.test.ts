@@ -1,6 +1,11 @@
 import { describe, expect, test } from "bun:test";
 
-import { addShortlistItem, removeShortlistItem, reorderAdoptionItems } from "./shortlist";
+import {
+  addShortlistItem,
+  parseShortlist,
+  removeShortlistItem,
+  reorderAdoptionItems,
+} from "./shortlist";
 import type { ShortlistItem } from "./shortlist";
 
 const baseAnimal = {
@@ -62,5 +67,49 @@ describe("shortlist reducer helpers", () => {
       { ...item("a", 1), rank: 2 },
       { ...item("b", 2), rank: 3 },
     ]);
+  });
+
+  test("parses corrupted storage by deduping animal ids and compacting ranks", () => {
+    const result = parseShortlist(
+      JSON.stringify([
+        item("a", 4),
+        { ...item("a", 1), name: "Duplicate adoption" },
+        { ...baseAnimal, id: "a", intent: "sponsorship", rank: 1 },
+        item("b", 8),
+      ]),
+    );
+
+    expect(result).toEqual([
+      { ...item("a", 4), rank: 1 },
+      { ...item("b", 8), rank: 2 },
+    ]);
+  });
+
+  test("parses corrupted storage by capping adoption and sponsorship limits", () => {
+    const adoptionItems = Array.from({ length: 5 }, (_, index) =>
+      item(`adoption-${index}`, index + 1),
+    );
+    const sponsorshipItems = Array.from(
+      { length: 12 },
+      (_, index): ShortlistItem => ({
+        id: `sponsorship-${index}`,
+        name: `Sponsor ${index}`,
+        animalType: "sponsor",
+        imageUrl: null,
+        intent: "sponsorship",
+        rank: index + 1,
+      }),
+    );
+
+    const result = parseShortlist(JSON.stringify([...adoptionItems, ...sponsorshipItems]));
+
+    expect(result).toHaveLength(13);
+    expect(result.filter((parsedItem) => parsedItem.intent === "adoption")).toEqual([
+      item("adoption-0", 1),
+      item("adoption-1", 2),
+      item("adoption-2", 3),
+    ]);
+    expect(result.filter((parsedItem) => parsedItem.intent === "sponsorship")).toHaveLength(10);
+    expect(result.at(-1)).toMatchObject({ id: "sponsorship-9", rank: 10 });
   });
 });
