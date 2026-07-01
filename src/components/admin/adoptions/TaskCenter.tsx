@@ -217,15 +217,13 @@ export function TaskCenter() {
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6" aria-label={copy.summaryLabel}>
         {SUMMARY_ITEMS.map((item) => (
           <div
-            key={item.value}
+            key={item}
             className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3"
           >
             <div className="text-xs font-medium text-[var(--color-text-muted)]">
               {copy.summary[item]}
             </div>
-            <div className="text-2xl font-bold text-[var(--color-panel)]">
-              {summary[item.value]}
-            </div>
+            <div className="text-2xl font-bold text-[var(--color-panel)]">{summary[item]}</div>
           </div>
         ))}
       </section>

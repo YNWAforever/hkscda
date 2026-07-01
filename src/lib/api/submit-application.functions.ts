@@ -38,11 +38,11 @@ type ApplicationPersistenceClient = {
   from(table: "adoption_applications"): {
     insert(payload: AdoptionApplicationInsert): {
       select(columns: "id"): {
-        single(): Promise<{ data: { id: string } | null; error: unknown }>;
+        single(): PromiseLike<{ data: { id: string } | null; error: unknown }>;
       };
     };
     delete(): {
-      eq(column: "id", value: string): Promise<{ error: unknown }>;
+      eq(column: "id", value: string): PromiseLike<{ error: unknown }>;
     };
   };
 };

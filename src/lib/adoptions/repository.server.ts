@@ -2008,7 +2008,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
         .in("animal_id", animalIds);
       if (profileError) throw profileError;
 
-      const profileRows = (profileData ?? []) as AnimalInternalProfileRow[];
+      const profileRows = (profileData ?? []) as unknown as AnimalInternalProfileRow[];
       const positionIds = unique(profileRows.map((row) => row.current_position_id));
       const sourceIds = unique(profileRows.map((row) => row.arrival_source_id));
 

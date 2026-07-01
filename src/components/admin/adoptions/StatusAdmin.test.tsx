@@ -5,6 +5,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 process.env.VITE_SUPABASE_URL ??= "https://example.supabase.co";
 process.env.VITE_SUPABASE_ANON_KEY ??= "test-anon-key";
 
+const { AdminLanguageProvider } = await import("../adminI18n");
 const { StatusAdmin, StatusLoadErrorRow } = await import("./StatusAdmin");
 
 describe("StatusLoadErrorRow", () => {
@@ -26,9 +27,11 @@ describe("StatusAdmin", () => {
   test("renders required validation errors for blank status fields", () => {
     const client = new QueryClient();
     const markup = renderToStaticMarkup(
-      <QueryClientProvider client={client}>
-        <StatusAdmin />
-      </QueryClientProvider>,
+      <AdminLanguageProvider>
+        <QueryClientProvider client={client}>
+          <StatusAdmin />
+        </QueryClientProvider>
+      </AdminLanguageProvider>,
     );
 
     expect(markup).toContain("Key is required.");

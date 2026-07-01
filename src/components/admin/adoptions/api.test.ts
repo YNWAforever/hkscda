@@ -1,8 +1,10 @@
 import { afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
 
-const getSession = mock(async () => ({
-  data: { session: { access_token: "session-token" } },
-}));
+const getSession = mock(
+  async (): Promise<{ data: { session: { access_token: string } | null } }> => ({
+    data: { session: { access_token: "session-token" } },
+  }),
+);
 
 mock.module("../../../lib/supabase", () => ({
   supabase: {
@@ -30,7 +32,7 @@ describe("fetchCoordinatorJson", () => {
 
   test("throws 未登入 before fetch when there is no access token", async () => {
     const fetchSpy = mock(async () => new Response("{}"));
-    globalThis.fetch = fetchSpy as typeof fetch;
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
     getSession.mockResolvedValue({ data: { session: null } });
 
     await expect(fetchCoordinatorJson("/api/admin/adoptions/statuses")).rejects.toThrow("未登入");
@@ -39,7 +41,7 @@ describe("fetchCoordinatorJson", () => {
 
   test("sends JSON content type and bearer authorization", async () => {
     const fetchSpy = mock(async () => Response.json({ statuses: [] }));
-    globalThis.fetch = fetchSpy as typeof fetch;
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
 
     await fetchCoordinatorJson("/api/admin/adoptions/statuses", { method: "POST", body: "{}" });
 
@@ -59,7 +61,7 @@ describe("fetchCoordinatorJson", () => {
   test("throws API error JSON message", async () => {
     globalThis.fetch = mock(async () =>
       Response.json({ error: "Invalid status" }, { status: 400 }),
-    );
+    ) as unknown as typeof fetch;
 
     await expect(fetchCoordinatorJson("/api/admin/adoptions/statuses")).rejects.toThrow(
       "Invalid status",

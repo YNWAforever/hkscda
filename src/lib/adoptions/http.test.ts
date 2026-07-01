@@ -3,6 +3,7 @@ import { describe, expect, test } from "bun:test";
 import type { AdminUser } from "../donations/supabase.server";
 import { createAdoptionCoordinatorHandlers } from "./http.server";
 import { createAdoptionCoordinatorService } from "./service";
+import type { CoordinatorStatus } from "./types";
 
 type AdoptionCoordinatorService = ReturnType<typeof createAdoptionCoordinatorService>;
 
@@ -22,7 +23,7 @@ const caseId = "33333333-4444-4333-8444-555555555555";
 const statusId = "44444444-5555-4333-8444-555555555555";
 const animalId = "88888888-9999-4333-8444-555555555555";
 const outcomeStatusId = "99999999-aaaa-4333-8444-555555555555";
-const status = {
+const status: CoordinatorStatus = {
   id: statusId,
   category: "adoption_case",
   key: "new",
@@ -98,11 +99,11 @@ function createFakeService(overrides: Partial<AdoptionCoordinatorService> = {}) 
     },
     async createStatus(payload) {
       calls.push({ name: "createStatus", payload });
-      return { id: statusId, ...payload.input };
+      return { ...status, ...(payload.input as Partial<CoordinatorStatus>), id: statusId };
     },
     async updateStatus(payload) {
       calls.push({ name: "updateStatus", payload });
-      return { id: payload.statusId, ...payload.input };
+      return { ...status, ...(payload.input as Partial<CoordinatorStatus>), id: payload.statusId };
     },
     async deleteStatus(payload) {
       calls.push({ name: "deleteStatus", payload });
@@ -139,6 +140,10 @@ function createFakeService(overrides: Partial<AdoptionCoordinatorService> = {}) 
       calls.push({ name: "createManualCase", payload });
       return { caseId, supporterId: "supporter-1", adopterProfileId, taskId: null };
     },
+    async createCaseFromPublicApplication(payload) {
+      calls.push({ name: "createCaseFromPublicApplication", payload });
+      return { id: caseId };
+    },
     async listCoordinatorExportHistory(rawSearch) {
       calls.push({ name: "listCoordinatorExportHistory", payload: rawSearch });
       return { exports: [], total: 0 };
@@ -165,11 +170,11 @@ function createFakeService(overrides: Partial<AdoptionCoordinatorService> = {}) 
     },
     async getAdopterDetail(id) {
       calls.push({ name: "getAdopterDetail", payload: id });
-      return { id: adopterProfileId, requestedId: id };
+      return null;
     },
     async getTask(id) {
       calls.push({ name: "getTask", payload: id });
-      return { id: taskId, requestedId: id };
+      return null;
     },
     async createTask(payload) {
       calls.push({ name: "createTask", payload });
@@ -177,7 +182,7 @@ function createFakeService(overrides: Partial<AdoptionCoordinatorService> = {}) 
     },
     async updateTask(payload) {
       calls.push({ name: "updateTask", payload });
-      return { id: payload.taskId, ...payload.input };
+      return { id: payload.taskId, ...(payload.input as Record<string, unknown>) };
     },
     async getCaseDetail(caseId) {
       calls.push({ name: "getCaseDetail", payload: caseId });
@@ -537,6 +542,12 @@ describe("createAdoptionCoordinatorHandlers", () => {
         key: "screening",
         labelZh: "審核中",
         labelEn: "Screening",
+        sortOrder: 10,
+        color: "coral",
+        isActive: true,
+        isSystem: false,
+        isClosing: false,
+        isFinal: false,
       },
     });
   });

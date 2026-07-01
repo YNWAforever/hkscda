@@ -8,7 +8,6 @@ import {
   coordinatorReportHistorySearchSchema,
   coordinatorTaskInputSchema,
   coordinatorTaskUpdateSchema,
-  followupInputSchema,
   manualCaseIntakeSchema,
   statusInputSchema,
 } from "./schemas";
