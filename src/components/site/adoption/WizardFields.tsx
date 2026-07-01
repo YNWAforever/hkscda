@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowDown, ArrowUp, Cat, Dog, GripVertical } from "lucide-react";
-import type { ReactNode } from "react";
+import { cloneElement, isValidElement, type ReactElement, type ReactNode } from "react";
 import type { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
 import { z } from "zod";
 
@@ -81,6 +81,16 @@ function FormField({
   error?: string;
   children: ReactNode;
 }) {
+  const hintId = hint ? `${id}-hint` : undefined;
+  const errorId = error ? `${id}-error` : undefined;
+  const describedBy = [hintId, errorId].filter(Boolean).join(" ") || undefined;
+  const field = isValidElement(children)
+    ? cloneElement(children as ReactElement<Record<string, unknown>>, {
+        "aria-describedby": describedBy,
+        "aria-invalid": Boolean(error),
+      })
+    : children;
+
   return (
     <div className="space-y-1.5">
       <label htmlFor={id} className="block text-sm font-semibold text-[var(--color-panel)]">
@@ -91,10 +101,14 @@ function FormField({
           </span>
         ) : null}
       </label>
-      {children}
-      {hint ? <p className="text-xs text-[var(--color-text-muted)]">{hint}</p> : null}
+      {field}
+      {hint ? (
+        <p id={hintId} className="text-xs text-[var(--color-text-muted)]">
+          {hint}
+        </p>
+      ) : null}
       {error ? (
-        <p className="text-xs text-[var(--color-error)]" role="alert">
+        <p id={errorId} className="text-xs text-[var(--color-error)]" role="alert">
           {error}
         </p>
       ) : null}
@@ -480,6 +494,8 @@ export function ReadinessFields({ register, errors }: BaseFieldsProps) {
 
 export function VisitFields({ register, errors, setValue, watch }: ControlledFieldsProps) {
   const selectedWindows = watch("visit.preferredTimeWindows") ?? [];
+  const visitWindowsError = errors.visit?.preferredTimeWindows?.message;
+  const visitWindowsErrorId = "visit-preferredTimeWindows-error";
 
   function toggleWindow(value: (typeof VISIT_WINDOWS)[number]["value"]) {
     setValue(
@@ -520,7 +536,10 @@ export function VisitFields({ register, errors, setValue, watch }: ControlledFie
         />
       </FormField>
       <div className="sm:col-span-2">
-        <fieldset className="space-y-2">
+        <fieldset
+          className="space-y-2"
+          aria-describedby={visitWindowsError ? visitWindowsErrorId : undefined}
+        >
           <legend className="text-sm font-semibold text-[var(--color-panel)]">
             合適探望時段
             <span className="ml-2 font-body text-xs font-medium text-[var(--color-text-muted)]">
@@ -538,6 +557,8 @@ export function VisitFields({ register, errors, setValue, watch }: ControlledFie
                   checked={selectedWindows.includes(windowOption.value)}
                   onChange={() => toggleWindow(windowOption.value)}
                   className={checkboxClass}
+                  aria-invalid={Boolean(visitWindowsError)}
+                  aria-describedby={visitWindowsError ? visitWindowsErrorId : undefined}
                 />
                 <span>
                   {windowOption.zh}
@@ -548,9 +569,9 @@ export function VisitFields({ register, errors, setValue, watch }: ControlledFie
               </label>
             ))}
           </div>
-          {errors.visit?.preferredTimeWindows?.message ? (
-            <p className="text-xs text-[var(--color-error)]" role="alert">
-              {errors.visit.preferredTimeWindows.message}
+          {visitWindowsError ? (
+            <p id={visitWindowsErrorId} className="text-xs text-[var(--color-error)]" role="alert">
+              {visitWindowsError}
             </p>
           ) : null}
         </fieldset>
@@ -589,6 +610,8 @@ export function ReviewFields({
   turnstileSlot: ReactNode;
 }) {
   const photoCategories = photos.map((photo) => PHOTO_CATEGORY_LABELS[photo.category].zh);
+  const termsError = errors.terms?.agreed?.message;
+  const termsErrorId = "terms-agreed-error";
 
   return (
     <section className="space-y-4">
@@ -633,6 +656,8 @@ export function ReviewFields({
             id="terms-agreed"
             type="checkbox"
             className={checkboxClass}
+            aria-invalid={Boolean(termsError)}
+            aria-describedby={termsError ? termsErrorId : undefined}
           />
           <span className="text-sm text-[var(--color-panel)]">
             我已閱讀並同意{" "}
@@ -646,9 +671,9 @@ export function ReviewFields({
             ，並確認以上資料屬實。
           </span>
         </label>
-        {errors.terms?.agreed?.message ? (
-          <p className="mt-2 text-xs text-[var(--color-error)]" role="alert">
-            {errors.terms.agreed.message}
+        {termsError ? (
+          <p id={termsErrorId} className="mt-2 text-xs text-[var(--color-error)]" role="alert">
+            {termsError}
           </p>
         ) : null}
       </div>

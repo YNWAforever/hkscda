@@ -402,19 +402,26 @@ export function ApplicationWizard() {
       return;
     }
 
+    let result: SubmissionResult;
     try {
       const payload: ExpandedAdoptionApplication = expandedAdoptionApplicationSchema.parse(values);
-      const result = await submitAdoptionApplication(payload, photos, turnstileToken);
+      result = await submitAdoptionApplication(payload, photos, turnstileToken);
       if (!hasExpectedSubmissionResult(result)) {
         throw new Error("提交回覆不完整，請稍後再試。");
       }
-      window.localStorage.removeItem(ADOPTION_DRAFT_STORAGE_KEY);
-      clear();
-      setSubmission(result);
-      setDraftStatus("idle");
     } catch (error) {
       setServerError(error instanceof Error ? error.message : "提交失敗，請稍後再試。");
+      return;
     }
+
+    try {
+      window.localStorage.removeItem(ADOPTION_DRAFT_STORAGE_KEY);
+      setDraftStatus("idle");
+    } catch {
+      setDraftStatus("unavailable");
+    }
+    clear();
+    setSubmission(result);
   }
 
   function renderStep() {
