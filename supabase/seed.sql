@@ -391,4 +391,149 @@ set supporter_id = excluded.supporter_id,
     created_at = excluded.created_at,
     updated_at = excluded.updated_at;
 
+-- ---------------------------------------------------------------------------
+-- Adoption applications and coordinator cases
+-- ---------------------------------------------------------------------------
+
+insert into public.adoption_applications
+  (id, animal_id, animal_name, animal_type, applicant_name, phone, email, address, housing_type, family_size, existing_pets, reason, status, created_at)
+values
+  ('50000000-0000-4000-8000-000000000001', '10000000-0000-4000-8000-000000000003', '米米', 'cat', '陳凱琳', '9123 1001', 'demo.chan.hoi.lam@example.test', '荃灣海濱花園 Demo座', '私人住宅', 3, '沒有', '希望領養一隻性格安靜的幼貓。', 'pending', '2026-06-22 10:00:00+08'),
+  ('50000000-0000-4000-8000-000000000002', '10000000-0000-4000-8000-000000000004', 'Lucky', 'dog', '黃美儀', '9123 1003', 'demo.wong.mei.yee@example.test', '將軍澳中心 Demo座', '私人住宅', 4, '一隻年長貓', '家庭有照顧動物經驗，希望領養狗狗。', 'pending', '2026-06-23 10:00:00+08'),
+  ('50000000-0000-4000-8000-000000000003', '10000000-0000-4000-8000-000000000001', '小花', 'cat', 'Sarah Ng', '9123 1004', 'demo.sarah.ng@example.test', '西營盤 Demo Court', '租住房屋', 1, '沒有', '希望與貓貓互相陪伴。', 'pending', '2026-06-24 10:00:00+08'),
+  ('50000000-0000-4000-8000-000000000004', '10000000-0000-4000-8000-000000000005', '豆豆', 'dog', '李家豪', '9123 1002', 'demo.lee.ka.ho@example.test', '沙田第一城 Demo室', '私人住宅', 2, '沒有', '有固定時間散步，適合照顧穩定狗狗。', 'approved', '2026-06-15 10:00:00+08'),
+  ('50000000-0000-4000-8000-000000000005', null, '未決定', 'cat', '劉柏宇', '9123 1005', 'demo.peter.lau@example.test', '太古城 Demo座', '私人住宅', 2, '兩隻幼貓', '希望再領養一隻貓。', 'rejected', '2026-06-18 10:00:00+08')
+on conflict (id) do update
+set animal_id = excluded.animal_id,
+    animal_name = excluded.animal_name,
+    animal_type = excluded.animal_type,
+    applicant_name = excluded.applicant_name,
+    phone = excluded.phone,
+    email = excluded.email,
+    address = excluded.address,
+    housing_type = excluded.housing_type,
+    family_size = excluded.family_size,
+    existing_pets = excluded.existing_pets,
+    reason = excluded.reason,
+    status = excluded.status,
+    created_at = excluded.created_at;
+
+insert into public.adoption_case
+  (id, public_application_id, status_id, adopter_profile_id, supporter_id, requested_animal_id, approved_animal_id, animal_type, applicant_name, applicant_phone, applicant_email, applicant_address, housing_type, family_size, existing_pets, reason, assessment, preferences, processed, assigned_to, closed_at, source, created_by, created_at, updated_at)
+values
+  ('51000000-0000-4000-8000-000000000001', '50000000-0000-4000-8000-000000000001', (select id from public.coordinator_status where category = 'adoption_case' and key = 'new'), '31000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000001', '10000000-0000-4000-8000-000000000003', null, 'cat', '陳凱琳', '9123 1001', 'demo.chan.hoi.lam@example.test', '荃灣海濱花園 Demo座', '私人住宅', 3, '沒有', '希望領養一隻性格安靜的幼貓。', '{"home":"stable","experience":"first_cat"}'::jsonb, '{"animalTemperament":"calm","preferredAnimal":"米米"}'::jsonb, false, null, null, 'public_form', null, '2026-06-22 10:05:00+08', '2026-06-29 10:05:00+08'),
+  ('51000000-0000-4000-8000-000000000002', '50000000-0000-4000-8000-000000000002', (select id from public.coordinator_status where category = 'adoption_case' and key = 'screening'), '31000000-0000-4000-8000-000000000003', '30000000-0000-4000-8000-000000000003', '10000000-0000-4000-8000-000000000004', null, 'dog', '黃美儀', '9123 1003', 'demo.wong.mei.yee@example.test', '將軍澳中心 Demo座', '私人住宅', 4, '一隻年長貓', '家庭有照顧動物經驗，希望領養狗狗。', '{"home":"stable","experience":"dog_and_cat"}'::jsonb, '{"preferredAnimal":"Lucky","walkSchedule":"twice_daily"}'::jsonb, false, null, null, 'public_form', null, '2026-06-23 10:05:00+08', '2026-06-29 10:05:00+08'),
+  ('51000000-0000-4000-8000-000000000003', '50000000-0000-4000-8000-000000000003', (select id from public.coordinator_status where category = 'adoption_case' and key = 'matching'), '31000000-0000-4000-8000-000000000004', '30000000-0000-4000-8000-000000000004', '10000000-0000-4000-8000-000000000001', null, 'cat', 'Sarah Ng', '9123 1004', 'demo.sarah.ng@example.test', '西營盤 Demo Court', '租住房屋', 1, '沒有', '希望與貓貓互相陪伴。', '{"home":"needs_landlord_confirmation","experience":"new_adopter"}'::jsonb, '{"preferredAnimal":"小花","notes":"needs quiet cat"}'::jsonb, true, null, null, 'public_form', null, '2026-06-24 10:05:00+08', '2026-06-29 10:05:00+08'),
+  ('51000000-0000-4000-8000-000000000004', '50000000-0000-4000-8000-000000000004', (select id from public.coordinator_status where category = 'adoption_case' and key = 'approved'), '31000000-0000-4000-8000-000000000002', '30000000-0000-4000-8000-000000000002', '10000000-0000-4000-8000-000000000005', '10000000-0000-4000-8000-000000000005', 'dog', '李家豪', '9123 1002', 'demo.lee.ka.ho@example.test', '沙田第一城 Demo室', '私人住宅', 2, '沒有', '有固定時間散步，適合照顧穩定狗狗。', '{"home":"approved","experience":"experienced_dog_home"}'::jsonb, '{"preferredAnimal":"豆豆"}'::jsonb, true, null, '2026-06-25 18:00:00+08', 'public_form', null, '2026-06-15 10:05:00+08', '2026-06-25 18:00:00+08'),
+  ('51000000-0000-4000-8000-000000000005', '50000000-0000-4000-8000-000000000005', (select id from public.coordinator_status where category = 'adoption_case' and key = 'rejected'), null, '30000000-0000-4000-8000-000000000005', null, null, 'cat', '劉柏宇', '9123 1005', 'demo.peter.lau@example.test', '太古城 Demo座', '私人住宅', 2, '兩隻幼貓', '希望再領養一隻貓。', '{"home":"not_suitable","reason":"too_many_young_pets"}'::jsonb, '{"preferredAnimal":"open"}'::jsonb, true, null, '2026-06-26 11:00:00+08', 'public_form', null, '2026-06-18 10:05:00+08', '2026-06-26 11:00:00+08')
+on conflict (id) do update
+set public_application_id = excluded.public_application_id,
+    status_id = excluded.status_id,
+    adopter_profile_id = excluded.adopter_profile_id,
+    supporter_id = excluded.supporter_id,
+    requested_animal_id = excluded.requested_animal_id,
+    approved_animal_id = excluded.approved_animal_id,
+    animal_type = excluded.animal_type,
+    applicant_name = excluded.applicant_name,
+    applicant_phone = excluded.applicant_phone,
+    applicant_email = excluded.applicant_email,
+    applicant_address = excluded.applicant_address,
+    housing_type = excluded.housing_type,
+    family_size = excluded.family_size,
+    existing_pets = excluded.existing_pets,
+    reason = excluded.reason,
+    assessment = excluded.assessment,
+    preferences = excluded.preferences,
+    processed = excluded.processed,
+    assigned_to = excluded.assigned_to,
+    closed_at = excluded.closed_at,
+    source = excluded.source,
+    created_by = excluded.created_by,
+    created_at = excluded.created_at,
+    updated_at = excluded.updated_at;
+
+insert into public.animal_match
+  (id, adoption_case_id, animal_id, status_id, is_approved, notes, created_by, updated_by, created_at, updated_at)
+values
+  ('52000000-0000-4000-8000-000000000001', '51000000-0000-4000-8000-000000000001', '10000000-0000-4000-8000-000000000003', (select id from public.coordinator_status where category = 'match' and key = 'proposed'), false, 'Demo proposed match for 米米.', null, null, '2026-06-22 12:00:00+08', '2026-06-29 12:00:00+08'),
+  ('52000000-0000-4000-8000-000000000002', '51000000-0000-4000-8000-000000000003', '10000000-0000-4000-8000-000000000001', (select id from public.coordinator_status where category = 'match' and key = 'shortlisted'), false, 'Demo shortlisted match for 小花; landlord confirmation pending.', null, null, '2026-06-24 12:00:00+08', '2026-06-29 12:00:00+08'),
+  ('52000000-0000-4000-8000-000000000003', '51000000-0000-4000-8000-000000000004', '10000000-0000-4000-8000-000000000005', (select id from public.coordinator_status where category = 'match' and key = 'approved'), true, 'Demo approved match; adoption completed.', null, null, '2026-06-20 12:00:00+08', '2026-06-25 18:00:00+08')
+on conflict (id) do update
+set adoption_case_id = excluded.adoption_case_id,
+    animal_id = excluded.animal_id,
+    status_id = excluded.status_id,
+    is_approved = excluded.is_approved,
+    notes = excluded.notes,
+    created_by = excluded.created_by,
+    updated_by = excluded.updated_by,
+    created_at = excluded.created_at,
+    updated_at = excluded.updated_at;
+
+insert into public.adoption_followup
+  (id, adoption_case_id, adopter_profile_id, animal_id, status_id, title, scheduled_at, completed_at, has_window_net, environment, score, volunteer, remarks, task_type, priority, due_at, assigned_to, contact_channel, outcome, next_step_at, created_by, updated_by, created_at, updated_at)
+values
+  ('53000000-0000-4000-8000-000000000001', '51000000-0000-4000-8000-000000000001', '31000000-0000-4000-8000-000000000001', '10000000-0000-4000-8000-000000000003', (select id from public.coordinator_status where category = 'followup' and key = 'open'), '致電確認米米申請資料', null, null, null, null, null, 'Demo Volunteer A', '確認家中窗網及適應空間。', 'phone_call', 'high', '2026-07-02 15:00:00+08', 'coordinator-a@example.test', 'phone', null, '2026-07-03 10:00:00+08', null, null, '2026-06-22 13:00:00+08', '2026-06-29 13:00:00+08'),
+  ('53000000-0000-4000-8000-000000000002', '51000000-0000-4000-8000-000000000002', '31000000-0000-4000-8000-000000000003', '10000000-0000-4000-8000-000000000004', (select id from public.coordinator_status where category = 'followup' and key = 'scheduled'), '安排 Lucky 家訪', '2026-07-04 11:00:00+08', null, true, '有足夠活動空間', 'pending', 'Demo Volunteer B', '家訪前提醒準備住址證明。', 'home_visit', 'normal', '2026-07-04 11:00:00+08', 'coordinator-b@example.test', 'whatsapp', null, '2026-07-05 12:00:00+08', null, null, '2026-06-23 13:00:00+08', '2026-06-29 13:00:00+08'),
+  ('53000000-0000-4000-8000-000000000003', '51000000-0000-4000-8000-000000000003', '31000000-0000-4000-8000-000000000004', '10000000-0000-4000-8000-000000000001', (select id from public.coordinator_status where category = 'followup' and key = 'scheduled'), '跟進業主同意文件', '2026-07-01 16:00:00+08', null, null, '租住房屋，需文件確認', 'pending', 'Demo Volunteer C', '候選配對仍在等待文件。', 'document_check', 'urgent', '2026-07-01 16:00:00+08', 'coordinator-c@example.test', 'email', null, '2026-07-02 12:00:00+08', null, null, '2026-06-24 13:00:00+08', '2026-06-29 13:00:00+08'),
+  ('53000000-0000-4000-8000-000000000004', '51000000-0000-4000-8000-000000000004', '31000000-0000-4000-8000-000000000002', '10000000-0000-4000-8000-000000000005', (select id from public.coordinator_status where category = 'followup' and key = 'completed'), '豆豆接領後回訪', '2026-06-28 14:00:00+08', '2026-06-28 14:45:00+08', true, '適應良好', 'passed', 'Demo Volunteer D', '領養人回報豆豆食慾正常。', 'post_adoption_check', 'normal', '2026-06-28 14:00:00+08', 'coordinator-d@example.test', 'whatsapp', '完成，無需即時跟進', null, null, null, '2026-06-25 13:00:00+08', '2026-06-28 14:45:00+08'),
+  ('53000000-0000-4000-8000-000000000005', null, '31000000-0000-4000-8000-000000000003', '10000000-0000-4000-8000-000000000007', (select id from public.coordinator_status where category = 'followup' and key = 'open'), '白雪助養更新相片', null, null, null, null, null, 'Demo Volunteer E', '為助養人準備醫療近況。', 'sponsor_update', 'low', '2026-07-06 12:00:00+08', 'sponsor-team@example.test', 'internal', null, '2026-07-08 12:00:00+08', null, null, '2026-06-26 13:00:00+08', '2026-06-29 13:00:00+08')
+on conflict (id) do update
+set adoption_case_id = excluded.adoption_case_id,
+    adopter_profile_id = excluded.adopter_profile_id,
+    animal_id = excluded.animal_id,
+    status_id = excluded.status_id,
+    title = excluded.title,
+    scheduled_at = excluded.scheduled_at,
+    completed_at = excluded.completed_at,
+    has_window_net = excluded.has_window_net,
+    environment = excluded.environment,
+    score = excluded.score,
+    volunteer = excluded.volunteer,
+    remarks = excluded.remarks,
+    task_type = excluded.task_type,
+    priority = excluded.priority,
+    due_at = excluded.due_at,
+    assigned_to = excluded.assigned_to,
+    contact_channel = excluded.contact_channel,
+    outcome = excluded.outcome,
+    next_step_at = excluded.next_step_at,
+    created_by = excluded.created_by,
+    updated_by = excluded.updated_by,
+    created_at = excluded.created_at,
+    updated_at = excluded.updated_at;
+
+insert into public.successful_adoption
+  (id, adoption_case_id, animal_id, adopter_profile_id, supporter_id, outcome_status_id, case_number, adoption_fee_cents, approval_date, pickup_date, approved_by, created_at, updated_at)
+values
+  ('54000000-0000-4000-8000-000000000001', '51000000-0000-4000-8000-000000000004', '10000000-0000-4000-8000-000000000005', '31000000-0000-4000-8000-000000000002', '30000000-0000-4000-8000-000000000002', (select id from public.coordinator_status where category = 'final_outcome' and key = 'adopted'), 'DEMO-ADOPT-2026-001', 120000, '2026-06-25', '2026-06-28', null, '2026-06-25 18:00:00+08', '2026-06-28 14:45:00+08')
+on conflict (id) do update
+set adoption_case_id = excluded.adoption_case_id,
+    animal_id = excluded.animal_id,
+    adopter_profile_id = excluded.adopter_profile_id,
+    supporter_id = excluded.supporter_id,
+    outcome_status_id = excluded.outcome_status_id,
+    case_number = excluded.case_number,
+    adoption_fee_cents = excluded.adoption_fee_cents,
+    approval_date = excluded.approval_date,
+    pickup_date = excluded.pickup_date,
+    approved_by = excluded.approved_by,
+    created_at = excluded.created_at,
+    updated_at = excluded.updated_at;
+
+insert into public.audit_log
+  (id, actor_user_id, action, entity, entity_id, timestamp, detail, created_at, updated_at)
+values
+  ('90000000-0000-4000-8000-000000000001', null, 'coordinator_export.cases', 'coordinator_export', 'demo-export-cases', '2026-06-29 17:00:00+08', '{"kind":"cases","rowCount":5,"sourceRoute":"/api/admin/adoptions/exports/cases.csv","filters":{"demo":true}}'::jsonb, '2026-06-29 17:00:00+08', '2026-06-29 17:00:00+08'),
+  ('90000000-0000-4000-8000-000000000002', null, 'coordinator_export.adopters', 'coordinator_export', 'demo-export-adopters', '2026-06-29 17:05:00+08', '{"kind":"adopters","rowCount":4,"sourceRoute":"/api/admin/adoptions/exports/adopters.csv","filters":{"demo":true}}'::jsonb, '2026-06-29 17:05:00+08', '2026-06-29 17:05:00+08'),
+  ('90000000-0000-4000-8000-000000000003', null, 'coordinator_export.tasks', 'coordinator_export', 'demo-export-tasks', '2026-06-29 17:10:00+08', '{"kind":"tasks","rowCount":5,"sourceRoute":"/api/admin/adoptions/exports/tasks.csv","filters":{"demo":true}}'::jsonb, '2026-06-29 17:10:00+08', '2026-06-29 17:10:00+08')
+on conflict (id) do update
+set actor_user_id = excluded.actor_user_id,
+    action = excluded.action,
+    entity = excluded.entity,
+    entity_id = excluded.entity_id,
+    timestamp = excluded.timestamp,
+    detail = excluded.detail,
+    created_at = excluded.created_at,
+    updated_at = excluded.updated_at;
+
 commit;
