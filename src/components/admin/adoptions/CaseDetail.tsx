@@ -22,6 +22,7 @@ import {
   useAdminPageCopy,
 } from "../adminPageCopy";
 import { fetchCoordinatorJson } from "./api";
+import { openPendingPhotoWindow, openSignedPhotoUrl } from "./caseDetailPhotoWindow";
 import {
   filterStatusesByCategory,
   findApprovedMatches,
@@ -410,17 +411,11 @@ function PublicPhotoButton({ photo }: { photo: PublicAdoptionPhoto }) {
   });
 
   function openPhoto() {
-    const opened = window.open("", "_blank", "noopener,noreferrer");
-    if (opened) opened.opener = null;
+    const opened = openPendingPhotoWindow();
 
     mutation.mutate(undefined, {
       onSuccess: ({ url }) => {
-        if (opened) {
-          opened.location.href = url;
-          return;
-        }
-        const fallback = window.open(url, "_blank", "noopener,noreferrer");
-        if (fallback) fallback.opener = null;
+        openSignedPhotoUrl(url, opened);
       },
       onError: () => {
         opened?.close();
