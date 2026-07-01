@@ -11,6 +11,8 @@ import {
 import { useEffect, type ReactNode } from "react";
 import { Header } from "../components/site/Header";
 import { Footer } from "../components/site/Footer";
+import { ShortlistProvider } from "../components/site/ShortlistProvider";
+import { ShortlistTray } from "../components/site/ShortlistTray";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -155,13 +157,26 @@ function RootComponent() {
     initGA4(import.meta.env.VITE_GA_MEASUREMENT_ID ?? "G-XXXXXXXXXX");
   }, []);
 
-  return (
-    <QueryClientProvider client={queryClient}>
-      {!isAdmin && <Header />}
+  const publicContent = (
+    <>
+      <Header />
       <div id="main-content" tabIndex={-1}>
         <Outlet />
       </div>
-      {!isAdmin && <Footer />}
+      <Footer />
+      <ShortlistTray />
+    </>
+  );
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      {isAdmin ? (
+        <div id="main-content" tabIndex={-1}>
+          <Outlet />
+        </div>
+      ) : (
+        <ShortlistProvider>{publicContent}</ShortlistProvider>
+      )}
     </QueryClientProvider>
   );
 }

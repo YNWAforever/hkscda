@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Cat, Dog } from "lucide-react";
 import type { Animal } from "../../types/animal";
+import { ShortlistActionButton } from "./ShortlistActionButton";
 
 interface AnimalCardProps {
   animal: Animal;
@@ -9,8 +10,6 @@ interface AnimalCardProps {
 export function AnimalCard({ animal }: AnimalCardProps) {
   const detailHref =
     animal.type === "sponsor" ? `/sponsors/${animal.id}` : `/animals/${animal.type}/${animal.id}`;
-
-  const ctaLabel = animal.type === "sponsor" ? "立即助養" : "申請領養";
 
   const placeholderBg = animal.type === "dog" ? "var(--color-dog-bg)" : "var(--color-cat-bg)";
 
@@ -54,9 +53,13 @@ export function AnimalCard({ animal }: AnimalCardProps) {
           )}
         </div>
 
-        <Link to={detailHref} className="btn-cta mt-auto text-xs! py-1.5! px-3!">
-          {ctaLabel} <span aria-hidden="true">→</span>
-        </Link>
+        {animal.type === "sponsor" ? (
+          <Link to={detailHref} className="btn-cta mt-auto text-xs! py-1.5! px-3!">
+            立即助養 <span aria-hidden="true">→</span>
+          </Link>
+        ) : (
+          <ShortlistActionButton animal={animal} compact />
+        )}
       </div>
     </div>
   );

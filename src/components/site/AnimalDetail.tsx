@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Cat, Dog } from "lucide-react";
 import type { Animal } from "../../types/animal";
+import { ShortlistActionButton } from "./ShortlistActionButton";
 
 interface AnimalDetailProps {
   animal: Animal;
@@ -9,8 +10,6 @@ interface AnimalDetailProps {
 }
 
 export function AnimalDetail({ animal, backHref, backLabel }: AnimalDetailProps) {
-  const ctaLabel = animal.type === "sponsor" ? "立即助養" : "申請領養";
-  const applyHref = `/adoption/apply?animalId=${animal.id}&animalName=${encodeURIComponent(animal.name)}&type=${animal.type}`;
   const placeholderBg = animal.type === "dog" ? "var(--color-dog-bg)" : "var(--color-cat-bg)";
 
   return (
@@ -69,9 +68,13 @@ export function AnimalDetail({ animal, backHref, backLabel }: AnimalDetailProps)
           )}
 
           <div className="flex flex-col gap-2 pt-2">
-            <Link to={applyHref} className="btn-cta py-3!">
-              {ctaLabel}
-            </Link>
+            {animal.type === "sponsor" ? (
+              <Link to="/sponsors" className="btn-cta py-3!">
+                查看助養付款方式
+              </Link>
+            ) : (
+              <ShortlistActionButton animal={animal} />
+            )}
           </div>
         </div>
       </div>
