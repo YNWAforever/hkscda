@@ -325,4 +325,70 @@ set supporter_id = excluded.supporter_id,
     created_at = excluded.created_at,
     updated_at = excluded.updated_at;
 
+-- ---------------------------------------------------------------------------
+-- Donations, payments, and receipts
+-- ---------------------------------------------------------------------------
+
+insert into public.donation
+  (id, supporter_id, amount_cents, currency, purpose, type, recurring_id, status, method, receipt_requested, created_at, updated_at)
+values
+  ('40000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000001', 50000, 'HKD', 'general', 'one_time', null, 'succeeded', 'fps', true, '2026-06-16 09:00:00+08', '2026-06-16 09:05:00+08'),
+  ('40000000-0000-4000-8000-000000000002', '30000000-0000-4000-8000-000000000003', 120000, 'HKD', 'medical', 'one_time', null, 'succeeded', 'payme', true, '2026-06-17 09:00:00+08', '2026-06-17 09:05:00+08'),
+  ('40000000-0000-4000-8000-000000000003', '30000000-0000-4000-8000-000000000005', 30000, 'HKD', 'sponsor', 'one_time', null, 'pending', 'manual', true, '2026-06-18 09:00:00+08', '2026-06-18 09:05:00+08'),
+  ('40000000-0000-4000-8000-000000000004', '30000000-0000-4000-8000-000000000006', 250000, 'HKD', 'general', 'one_time', null, 'succeeded', 'stripe', false, '2026-06-19 09:00:00+08', '2026-06-19 09:05:00+08'),
+  ('40000000-0000-4000-8000-000000000005', '30000000-0000-4000-8000-000000000002', 80000, 'HKD', 'sponsor', 'one_time', null, 'succeeded', 'fps', false, '2026-06-20 09:00:00+08', '2026-06-20 09:05:00+08'),
+  ('40000000-0000-4000-8000-000000000006', '30000000-0000-4000-8000-000000000004', 20000, 'HKD', 'medical', 'one_time', null, 'pending', 'payme', false, '2026-06-21 09:00:00+08', '2026-06-21 09:05:00+08')
+on conflict (id) do update
+set supporter_id = excluded.supporter_id,
+    amount_cents = excluded.amount_cents,
+    currency = excluded.currency,
+    purpose = excluded.purpose,
+    type = excluded.type,
+    recurring_id = excluded.recurring_id,
+    status = excluded.status,
+    method = excluded.method,
+    receipt_requested = excluded.receipt_requested,
+    created_at = excluded.created_at,
+    updated_at = excluded.updated_at;
+
+insert into public.payment
+  (id, donation_id, provider, provider_ref, amount_cents, status, received_at, reconciled_by, bank_reference, created_at, updated_at)
+values
+  ('41000000-0000-4000-8000-000000000001', '40000000-0000-4000-8000-000000000001', 'fps', 'DEMO-FPS-001', 50000, 'succeeded', '2026-06-16 09:03:00+08', null, 'FPS-DEMO-001', '2026-06-16 09:00:00+08', '2026-06-16 09:05:00+08'),
+  ('41000000-0000-4000-8000-000000000002', '40000000-0000-4000-8000-000000000002', 'payme', 'DEMO-PAYME-002', 120000, 'succeeded', '2026-06-17 09:03:00+08', null, 'PAYME-DEMO-002', '2026-06-17 09:00:00+08', '2026-06-17 09:05:00+08'),
+  ('41000000-0000-4000-8000-000000000003', '40000000-0000-4000-8000-000000000003', 'manual', 'DEMO-MANUAL-003', 30000, 'pending', null, null, 'MANUAL-DEMO-003', '2026-06-18 09:00:00+08', '2026-06-18 09:05:00+08'),
+  ('41000000-0000-4000-8000-000000000004', '40000000-0000-4000-8000-000000000004', 'stripe', 'pi_demo_004', 250000, 'succeeded', '2026-06-19 09:03:00+08', null, null, '2026-06-19 09:00:00+08', '2026-06-19 09:05:00+08'),
+  ('41000000-0000-4000-8000-000000000005', '40000000-0000-4000-8000-000000000005', 'fps', 'DEMO-FPS-005', 80000, 'succeeded', '2026-06-20 09:03:00+08', null, 'FPS-DEMO-005', '2026-06-20 09:00:00+08', '2026-06-20 09:05:00+08'),
+  ('41000000-0000-4000-8000-000000000006', '40000000-0000-4000-8000-000000000006', 'payme', 'DEMO-PAYME-006', 20000, 'pending', null, null, 'PAYME-DEMO-006', '2026-06-21 09:00:00+08', '2026-06-21 09:05:00+08')
+on conflict (id) do update
+set donation_id = excluded.donation_id,
+    provider = excluded.provider,
+    provider_ref = excluded.provider_ref,
+    amount_cents = excluded.amount_cents,
+    status = excluded.status,
+    received_at = excluded.received_at,
+    reconciled_by = excluded.reconciled_by,
+    bank_reference = excluded.bank_reference,
+    created_at = excluded.created_at,
+    updated_at = excluded.updated_at;
+
+insert into public.receipt
+  (id, supporter_id, receipt_no, donation_ids, total_amount_cents, tax_year, issued_at, pdf_url, status, voided_at, voided_by, created_at, updated_at)
+values
+  ('42000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000001', 'HKSCDA-2026-DEMO001', array['40000000-0000-4000-8000-000000000001'::uuid], 50000, 2026, '2026-06-16 10:00:00+08', null, 'issued', null, null, '2026-06-16 10:00:00+08', '2026-06-16 10:00:00+08'),
+  ('42000000-0000-4000-8000-000000000002', '30000000-0000-4000-8000-000000000003', 'HKSCDA-2026-DEMO002', array['40000000-0000-4000-8000-000000000002'::uuid], 120000, 2026, '2026-06-17 10:00:00+08', null, 'issued', null, null, '2026-06-17 10:00:00+08', '2026-06-17 10:00:00+08')
+on conflict (id) do update
+set supporter_id = excluded.supporter_id,
+    receipt_no = excluded.receipt_no,
+    donation_ids = excluded.donation_ids,
+    total_amount_cents = excluded.total_amount_cents,
+    tax_year = excluded.tax_year,
+    issued_at = excluded.issued_at,
+    pdf_url = excluded.pdf_url,
+    status = excluded.status,
+    voided_at = excluded.voided_at,
+    voided_by = excluded.voided_by,
+    created_at = excluded.created_at,
+    updated_at = excluded.updated_at;
+
 commit;
