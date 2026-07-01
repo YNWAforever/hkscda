@@ -2,10 +2,11 @@ import { describe, expect, test } from "bun:test";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderToStaticMarkup } from "react-dom/server";
 
+import { AdminLanguageProvider } from "../adminI18n";
+
 process.env.VITE_SUPABASE_URL ??= "https://example.supabase.co";
 process.env.VITE_SUPABASE_ANON_KEY ??= "test-anon-key";
 
-const { AdminLanguageProvider } = await import("../adminI18n");
 const { StatusAdmin, StatusLoadErrorRow } = await import("./StatusAdmin");
 
 describe("StatusLoadErrorRow", () => {

@@ -2,10 +2,11 @@ import { describe, expect, test } from "bun:test";
 import type { JSX } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
+import { AdminLanguageProvider } from "../adminI18n";
+
 process.env.VITE_SUPABASE_URL ??= "https://example.supabase.co";
 process.env.VITE_SUPABASE_ANON_KEY ??= "test-anon-key";
 
-const { AdminLanguageProvider } = await import("../adminI18n");
 const caseListModule = await import("./CaseList");
 const caseDetailModule = await import("./CaseDetail");
 const { CaseListStatusFilterError } = caseListModule as typeof caseListModule & {
@@ -35,13 +36,13 @@ describe("adoption async error announcements", () => {
     expect(typeof CaseDetailStatusesError).toBe("function");
 
     const markup = renderToStaticMarkup(
-      CaseDetailStatusesError ? (
-        <AdminLanguageProvider>
+      <AdminLanguageProvider>
+        {CaseDetailStatusesError ? (
           <CaseDetailStatusesError message="Status options unavailable" />
-        </AdminLanguageProvider>
-      ) : (
-        <div />
-      ),
+        ) : (
+          <div />
+        )}
+      </AdminLanguageProvider>,
     );
 
     expect(markup).toContain('role="alert"');

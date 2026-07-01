@@ -4,7 +4,14 @@ export type AdminLanguage = "zh" | "en";
 
 const STORAGE_KEY = "hkscda-admin-language";
 
-type AdminSection = "cat" | "dog" | "sponsor" | "applications" | "payments" | "supporters";
+type AdminSection =
+  | "cat"
+  | "dog"
+  | "sponsor"
+  | "applications"
+  | "payments"
+  | "supporters"
+  | "access";
 type AnimalType = "cat" | "dog" | "sponsor";
 type Gender = "female" | "male";
 type AnimalStatus = "available" | "adopted" | "fostered";
@@ -131,11 +138,13 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       applications: "申請",
       payments: "收款",
       supporters: "捐款人",
+      access: "權限管理",
     },
     navGroups: {
       animals: "動物",
       adoptions: "領養",
       donations: "捐款",
+      system: "系統",
     },
     navItems: {
       cat: "貓貓",
@@ -150,6 +159,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       "coordinator-statuses": "狀態設定",
       payments: "收款",
       supporters: "捐款人",
+      "access-management": "權限管理",
     },
     layout: {
       collapseSidebar: "收合側欄",
@@ -172,6 +182,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
         applications: "領養申請",
         payments: "收款紀錄",
         supporters: "捐款人",
+        access: "權限管理",
       },
       addNew: "新增",
       applicant: "申請人",
@@ -273,11 +284,13 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       applications: "Applications",
       payments: "Payments",
       supporters: "Supporters",
+      access: "Access Management",
     },
     navGroups: {
       animals: "Animals",
       adoptions: "Adoptions",
       donations: "Donations",
+      system: "System",
     },
     navItems: {
       cat: "Cats",
@@ -292,6 +305,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       "coordinator-statuses": "Status settings",
       payments: "Payments",
       supporters: "Supporters",
+      "access-management": "Access Management",
     },
     layout: {
       collapseSidebar: "Collapse sidebar",
@@ -314,6 +328,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
         applications: "Adoption applications",
         payments: "Payment records",
         supporters: "Supporters",
+        access: "Access Management",
       },
       addNew: "Add new",
       applicant: "Applicant",

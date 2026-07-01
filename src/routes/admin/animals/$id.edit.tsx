@@ -1,17 +1,15 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "../../../lib/supabase";
 import { AdminLayout } from "../../../components/admin/AdminLayout";
 import { AnimalForm } from "../../../components/admin/AnimalForm";
 import { useAdminLanguage } from "../../../components/admin/adminI18n";
+import { requireAdminPageAccess } from "../../../lib/admin/pageAccess";
 import type { Animal } from "../../../types/animal";
 
 export const Route = createFileRoute("/admin/animals/$id/edit")({
   beforeLoad: async () => {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    if (!session) throw redirect({ to: "/admin/login" });
+    await requireAdminPageAccess("animals");
   },
   component: EditAnimalPage,
 });

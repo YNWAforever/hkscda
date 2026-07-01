@@ -9,16 +9,24 @@ import {
   Heart,
   Inbox,
   ListTodo,
+  ShieldCheck,
   Settings2,
   Users,
   type LucideIcon,
 } from "lucide-react";
 
-export type AdminSection = "cat" | "dog" | "sponsor" | "applications" | "payments" | "supporters";
+export type AdminSection =
+  | "cat"
+  | "dog"
+  | "sponsor"
+  | "applications"
+  | "payments"
+  | "supporters"
+  | "access";
 
 // Visual grouping for the sidebar. Purely presentational — the active-state
 // logic below still keys off `section`/`activePath`, so routing is unchanged.
-export type AdminNavGroup = "animals" | "adoptions" | "donations";
+export type AdminNavGroup = "animals" | "adoptions" | "donations" | "system";
 
 export type AdminNavItem = {
   id: string;
@@ -34,6 +42,7 @@ export const ADMIN_NAV_GROUPS: { id: AdminNavGroup; label: string }[] = [
   { id: "animals", label: "動物" },
   { id: "adoptions", label: "領養" },
   { id: "donations", label: "捐款" },
+  { id: "system", label: "系統" },
 ];
 
 export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
@@ -138,6 +147,15 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     label: "捐款人",
     icon: HandCoins,
     to: "/admin/supporters",
+  },
+  {
+    id: "access-management",
+    section: "access",
+    group: "system",
+    label: "權限管理",
+    icon: ShieldCheck,
+    to: "/admin/access",
+    activePath: "/admin/access",
   },
 ];
 

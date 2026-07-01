@@ -183,4 +183,21 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("private.has_admin_role(array['staff', 'admin'])");
     expect(sql).toContain("adoption_intake_item_lane_due_idx");
   });
+
+  test("adds admin access pending invites and metadata", () => {
+    const sql = readMigration("20260701105726_admin_access_management.sql");
+
+    expect(sql).toContain("drop constraint if exists admin_user_status_check");
+    expect(sql).toContain("status in ('pending', 'active', 'disabled')");
+    for (const column of [
+      "invited_at timestamptz",
+      "invite_sent_at timestamptz",
+      "invite_accepted_at timestamptz",
+      "last_invited_by uuid",
+    ]) {
+      expect(sql).toContain(`add column if not exists ${column}`);
+    }
+    expect(sql).toContain("admin_user_status_updated_idx");
+    expect(sql).toContain("admin_user_invite_sent_idx");
+  });
 });

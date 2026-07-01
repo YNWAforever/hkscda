@@ -8,15 +8,19 @@ import type { CoordinatorStatus } from "./types";
 type AdoptionCoordinatorService = ReturnType<typeof createAdoptionCoordinatorService>;
 
 const admin: AdminUser = {
+  id: "admin-row",
   authUserId: "11111111-2222-4333-8444-555555555555",
   email: "admin@example.com",
   role: "admin",
+  status: "active",
 };
 
 const staff: AdminUser = {
+  id: "staff-row",
   authUserId: "22222222-3333-4333-8444-555555555555",
   email: "staff@example.com",
   role: "staff",
+  status: "active",
 };
 
 const caseId = "33333333-4444-4333-8444-555555555555";
