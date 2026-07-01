@@ -1,9 +1,9 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
 import { AdminLayout } from "../../../../components/admin/AdminLayout";
 import { AdopterDetail } from "../../../../components/admin/adoptions/AdopterDetail";
-import { supabase } from "../../../../lib/supabase";
+import { requireAdminPageAccess } from "../../../../lib/admin/pageAccess";
 
 const paramsSchema = z.object({
   id: z.string().uuid(),
@@ -12,10 +12,7 @@ const paramsSchema = z.object({
 export const Route = createFileRoute("/admin/coordinator/adopters/$id")({
   parseParams: paramsSchema.parse,
   beforeLoad: async () => {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    if (!session) throw redirect({ to: "/admin/login" });
+    await requireAdminPageAccess("adopters");
   },
   component: CoordinatorAdopterDetailPage,
 });

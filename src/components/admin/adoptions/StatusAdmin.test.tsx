@@ -2,6 +2,8 @@ import { describe, expect, test } from "bun:test";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderToStaticMarkup } from "react-dom/server";
 
+import { AdminLanguageProvider } from "../adminI18n";
+
 process.env.VITE_SUPABASE_URL ??= "https://example.supabase.co";
 process.env.VITE_SUPABASE_ANON_KEY ??= "test-anon-key";
 
@@ -26,9 +28,11 @@ describe("StatusAdmin", () => {
   test("renders required validation errors for blank status fields", () => {
     const client = new QueryClient();
     const markup = renderToStaticMarkup(
-      <QueryClientProvider client={client}>
-        <StatusAdmin />
-      </QueryClientProvider>,
+      <AdminLanguageProvider>
+        <QueryClientProvider client={client}>
+          <StatusAdmin />
+        </QueryClientProvider>
+      </AdminLanguageProvider>,
     );
 
     expect(markup).toContain("Key is required.");
