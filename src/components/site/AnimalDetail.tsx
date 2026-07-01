@@ -68,13 +68,7 @@ export function AnimalDetail({ animal, backHref, backLabel }: AnimalDetailProps)
           )}
 
           <div className="flex flex-col gap-2 pt-2">
-            {animal.type === "sponsor" ? (
-              <Link to="/sponsors" className="btn-cta py-3!">
-                查看助養付款方式
-              </Link>
-            ) : (
-              <ShortlistActionButton animal={animal} />
-            )}
+            <ShortlistActionButton animal={animal} />
           </div>
         </div>
       </div>

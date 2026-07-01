@@ -53,13 +53,7 @@ export function AnimalCard({ animal }: AnimalCardProps) {
           )}
         </div>
 
-        {animal.type === "sponsor" ? (
-          <Link to={detailHref} className="btn-cta mt-auto text-xs! py-1.5! px-3!">
-            立即助養 <span aria-hidden="true">→</span>
-          </Link>
-        ) : (
-          <ShortlistActionButton animal={animal} compact />
-        )}
+        <ShortlistActionButton animal={animal} compact />
       </div>
     </div>
   );
