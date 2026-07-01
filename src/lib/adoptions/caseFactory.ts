@@ -11,9 +11,15 @@ export type PublicApplicationInput = {
   family_size?: number | null;
   existing_pets?: string | null;
   reason: string;
+  preferences?: Record<string, unknown>;
 };
 
 export function buildCaseFromPublicApplication(input: PublicApplicationInput) {
+  const preferences: Record<string, unknown> = {
+    animalName: input.animal_name,
+    ...input.preferences,
+  };
+
   return {
     publicApplicationId: input.id ?? null,
     requestedAnimalId: input.animal_id ?? null,
@@ -26,8 +32,6 @@ export function buildCaseFromPublicApplication(input: PublicApplicationInput) {
     familySize: input.family_size ?? null,
     existingPets: input.existing_pets?.trim() || null,
     reason: input.reason.trim(),
-    preferences: {
-      animalName: input.animal_name,
-    },
+    preferences,
   };
 }

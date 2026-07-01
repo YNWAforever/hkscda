@@ -33,6 +33,7 @@ import { Route as AboutCccpRouteImport } from './routes/about/cccp'
 import { Route as AdminApplicationsIndexRouteImport } from './routes/admin/applications/index'
 import { Route as ApiWebhooksStripeRouteImport } from './routes/api/webhooks/stripe'
 import { Route as ApiWebhooksPaypalRouteImport } from './routes/api/webhooks/paypal'
+import { Route as ApiAdoptionApplicationsRouteImport } from './routes/api/adoption/applications'
 import { Route as ApiAdminSupportersRouteImport } from './routes/api/admin/supporters'
 import { Route as ApiAdminReceiptsRouteImport } from './routes/api/admin/receipts'
 import { Route as ApiAdminPaymentsRouteImport } from './routes/api/admin/payments'
@@ -201,6 +202,11 @@ const ApiWebhooksStripeRoute = ApiWebhooksStripeRouteImport.update({
 const ApiWebhooksPaypalRoute = ApiWebhooksPaypalRouteImport.update({
   id: '/api/webhooks/paypal',
   path: '/api/webhooks/paypal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdoptionApplicationsRoute = ApiAdoptionApplicationsRouteImport.update({
+  id: '/api/adoption/applications',
+  path: '/api/adoption/applications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAdminSupportersRoute = ApiAdminSupportersRouteImport.update({
@@ -515,6 +521,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/payments': typeof ApiAdminPaymentsRouteWithChildren
   '/api/admin/receipts': typeof ApiAdminReceiptsRouteWithChildren
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
+  '/api/adoption/applications': typeof ApiAdoptionApplicationsRoute
   '/api/webhooks/paypal': typeof ApiWebhooksPaypalRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/admin/applications/': typeof AdminApplicationsIndexRoute
@@ -589,6 +596,7 @@ export interface FileRoutesByTo {
   '/api/admin/payments': typeof ApiAdminPaymentsRouteWithChildren
   '/api/admin/receipts': typeof ApiAdminReceiptsRouteWithChildren
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
+  '/api/adoption/applications': typeof ApiAdoptionApplicationsRoute
   '/api/webhooks/paypal': typeof ApiWebhooksPaypalRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/admin/applications': typeof AdminApplicationsIndexRoute
@@ -665,6 +673,7 @@ export interface FileRoutesById {
   '/api/admin/payments': typeof ApiAdminPaymentsRouteWithChildren
   '/api/admin/receipts': typeof ApiAdminReceiptsRouteWithChildren
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
+  '/api/adoption/applications': typeof ApiAdoptionApplicationsRoute
   '/api/webhooks/paypal': typeof ApiWebhooksPaypalRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/admin/applications/': typeof AdminApplicationsIndexRoute
@@ -742,6 +751,7 @@ export interface FileRouteTypes {
     | '/api/admin/payments'
     | '/api/admin/receipts'
     | '/api/admin/supporters'
+    | '/api/adoption/applications'
     | '/api/webhooks/paypal'
     | '/api/webhooks/stripe'
     | '/admin/applications/'
@@ -816,6 +826,7 @@ export interface FileRouteTypes {
     | '/api/admin/payments'
     | '/api/admin/receipts'
     | '/api/admin/supporters'
+    | '/api/adoption/applications'
     | '/api/webhooks/paypal'
     | '/api/webhooks/stripe'
     | '/admin/applications'
@@ -891,6 +902,7 @@ export interface FileRouteTypes {
     | '/api/admin/payments'
     | '/api/admin/receipts'
     | '/api/admin/supporters'
+    | '/api/adoption/applications'
     | '/api/webhooks/paypal'
     | '/api/webhooks/stripe'
     | '/admin/applications/'
@@ -965,6 +977,7 @@ export interface RootRouteChildren {
   ApiAdminPaymentsRoute: typeof ApiAdminPaymentsRouteWithChildren
   ApiAdminReceiptsRoute: typeof ApiAdminReceiptsRouteWithChildren
   ApiAdminSupportersRoute: typeof ApiAdminSupportersRouteWithChildren
+  ApiAdoptionApplicationsRoute: typeof ApiAdoptionApplicationsRoute
   ApiWebhooksPaypalRoute: typeof ApiWebhooksPaypalRoute
   ApiWebhooksStripeRoute: typeof ApiWebhooksStripeRoute
   AdminAnimalsIdEditRoute: typeof AdminAnimalsIdEditRoute
@@ -1158,6 +1171,13 @@ declare module '@tanstack/react-router' {
       path: '/api/webhooks/paypal'
       fullPath: '/api/webhooks/paypal'
       preLoaderRoute: typeof ApiWebhooksPaypalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/adoption/applications': {
+      id: '/api/adoption/applications'
+      path: '/api/adoption/applications'
+      fullPath: '/api/adoption/applications'
+      preLoaderRoute: typeof ApiAdoptionApplicationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/supporters': {
@@ -1716,6 +1736,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminPaymentsRoute: ApiAdminPaymentsRouteWithChildren,
   ApiAdminReceiptsRoute: ApiAdminReceiptsRouteWithChildren,
   ApiAdminSupportersRoute: ApiAdminSupportersRouteWithChildren,
+  ApiAdoptionApplicationsRoute: ApiAdoptionApplicationsRoute,
   ApiWebhooksPaypalRoute: ApiWebhooksPaypalRoute,
   ApiWebhooksStripeRoute: ApiWebhooksStripeRoute,
   AdminAnimalsIdEditRoute: AdminAnimalsIdEditRoute,

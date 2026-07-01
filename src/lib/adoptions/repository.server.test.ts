@@ -461,7 +461,11 @@ function publicCaseInput(overrides: Partial<CaseFromPublicApplicationInput> = {}
     familySize: 3,
     existingPets: null,
     reason: "I can provide a safe home.",
-    preferences: { animalName: "Mochi" },
+    preferences: {
+      animalName: "Mochi",
+      language: "en",
+      rankedAnimals: [{ animalName: "Mochi", rank: 1 }],
+    },
     ...overrides,
   } satisfies CaseFromPublicApplicationInput;
 }
@@ -1692,7 +1696,11 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
       family_size: 3,
       existing_pets: null,
       reason: "I can provide a safe home.",
-      preferences: { animalName: "Mochi" },
+      preferences: {
+        animalName: "Mochi",
+        language: "en",
+        rankedAnimals: [{ animalName: "Mochi", rank: 1 }],
+      },
     });
   });
 

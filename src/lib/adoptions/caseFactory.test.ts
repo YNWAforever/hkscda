@@ -18,13 +18,21 @@ describe("buildCaseFromPublicApplication", () => {
         family_size: null,
         existing_pets: "",
         reason: "I can provide a safe home.",
+        preferences: {
+          language: "en",
+          rankedAnimals: [{ animalName: "Mochi", rank: 1 }],
+        },
       }),
     ).toMatchObject({
       applicantName: "Ada",
       applicantPhone: "9123 4567",
       applicantEmail: "ada@example.com",
       existingPets: null,
-      preferences: { animalName: "Mochi" },
+      preferences: {
+        animalName: "Mochi",
+        language: "en",
+        rankedAnimals: [{ animalName: "Mochi", rank: 1 }],
+      },
     });
   });
 

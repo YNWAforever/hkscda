@@ -620,6 +620,10 @@ describe("createAdoptionCoordinatorService", () => {
           family_size: 3,
           existing_pets: "   ",
           reason: " I can provide a safe home. ",
+          preferences: {
+            language: "en",
+            rankedAnimals: [{ animalName: "Mochi", rank: 1 }],
+          },
         },
       }),
     ).resolves.toEqual({ id: caseId });
@@ -639,7 +643,11 @@ describe("createAdoptionCoordinatorService", () => {
           familySize: 3,
           existingPets: null,
           reason: "I can provide a safe home.",
-          preferences: { animalName: "Mochi" },
+          preferences: {
+            animalName: "Mochi",
+            language: "en",
+            rankedAnimals: [{ animalName: "Mochi", rank: 1 }],
+          },
         },
       },
     ]);
