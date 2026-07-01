@@ -100,6 +100,17 @@ export function removeShortlistItem(items: ShortlistItem[], animalId: string) {
   return compactRanks(items.filter((item) => item.id !== animalId));
 }
 
+export function intentForAnimalType(animalType: ShortlistAnimalType): ShortlistIntent {
+  return animalType === "sponsor" ? "sponsorship" : "adoption";
+}
+
+export function removeIntentItems(
+  items: ShortlistItem[],
+  intent: ShortlistIntent,
+): ShortlistItem[] {
+  return compactRanks(items.filter((item) => item.intent !== intent));
+}
+
 export function reorderAdoptionItems(items: ShortlistItem[], orderedIds: string[]) {
   const adoptionById = new Map(
     items.filter((item) => item.intent === "adoption").map((item) => [item.id, item]),
