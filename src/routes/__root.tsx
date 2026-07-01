@@ -152,10 +152,15 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const { location } = useRouterState();
   const isAdmin = location.pathname.startsWith("/admin");
+  const analyticsPagePath = location.pathname.startsWith("/adoption/status/")
+    ? "/adoption/status/[token]"
+    : undefined;
 
   useEffect(() => {
-    initGA4(import.meta.env.VITE_GA_MEASUREMENT_ID ?? "G-XXXXXXXXXX");
-  }, []);
+    initGA4(import.meta.env.VITE_GA_MEASUREMENT_ID ?? "G-XXXXXXXXXX", {
+      pagePath: analyticsPagePath,
+    });
+  }, [analyticsPagePath]);
 
   const publicContent = (
     <>

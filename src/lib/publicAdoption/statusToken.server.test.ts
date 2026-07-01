@@ -57,4 +57,29 @@ describe("status tokens", () => {
       expiresAt: "2026-08-01T00:00:00.000Z",
     });
   });
+
+  test("omits missing contact parts and defaults missing visit windows", () => {
+    const summary = buildPublicStatusSummary({
+      application: {
+        id: "app-1",
+        created_at: "2026-07-02T01:00:00.000Z",
+        applicant_name: "Ada",
+        email: null,
+        phone: "9123 4567",
+      },
+      preferences: [],
+      visit: {
+        date_range_start: "2026-07-10",
+        date_range_end: "2026-07-24",
+        preferred_time_windows: null,
+        notes: null,
+      },
+      token: {
+        expires_at: "2026-08-01T00:00:00.000Z",
+      },
+    });
+
+    expect(summary.contactSummary).toBe("9123 4567");
+    expect(summary.visitPreference?.preferredTimeWindows).toEqual([]);
+  });
 });

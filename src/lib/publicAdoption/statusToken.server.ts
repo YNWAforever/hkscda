@@ -29,8 +29,8 @@ type PublicStatusSummaryInput = {
     id: string;
     created_at: string;
     applicant_name: string;
-    email: string;
-    phone: string;
+    email: string | null;
+    phone: string | null;
   };
   preferences: Array<{
     rank: number;
@@ -40,7 +40,7 @@ type PublicStatusSummaryInput = {
   visit: {
     date_range_start: string;
     date_range_end: string;
-    preferred_time_windows: string[];
+    preferred_time_windows: string[] | null;
     notes: string | null;
   } | null;
   token: { expires_at: string };
@@ -55,7 +55,7 @@ export function buildPublicStatusSummary(input: PublicStatusSummaryInput) {
     reference: applicationReference(input.application.id),
     submittedAt: input.application.created_at,
     applicantName: input.application.applicant_name,
-    contactSummary: `${input.application.email} · ${input.application.phone}`,
+    contactSummary: [input.application.email, input.application.phone].filter(Boolean).join(" · "),
     rankedAnimals: [...input.preferences]
       .sort((left, right) => left.rank - right.rank)
       .map((preference) => ({
@@ -67,7 +67,7 @@ export function buildPublicStatusSummary(input: PublicStatusSummaryInput) {
       ? {
           dateRangeStart: input.visit.date_range_start,
           dateRangeEnd: input.visit.date_range_end,
-          preferredTimeWindows: input.visit.preferred_time_windows,
+          preferredTimeWindows: input.visit.preferred_time_windows ?? [],
           notes: input.visit.notes,
         }
       : null,
