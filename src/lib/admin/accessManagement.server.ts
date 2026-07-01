@@ -16,6 +16,11 @@ export type AdminAccessUser = {
   updatedAt: string;
 };
 
+export type AdminAccessActor = Pick<
+  AdminAccessUser,
+  "id" | "authUserId" | "email" | "role" | "status"
+>;
+
 export type AdminAccessAuditRow = {
   id: string;
   actorUserId: string | null;
@@ -181,7 +186,7 @@ export function createAdminAccessService({
       return { users, summary: summary(users) };
     },
 
-    async inviteUser(args: { actor: AdminAccessUser; input: unknown }) {
+    async inviteUser(args: { actor: AdminAccessActor; input: unknown }) {
       const input: InviteInput = inviteSchema.parse(args.input);
       const existing = await repo.findUserByEmail(input.email);
       if (existing && (existing.status === "active" || existing.status === "pending")) {
@@ -214,7 +219,7 @@ export function createAdminAccessService({
       return user;
     },
 
-    async resendInvite(args: { actor: AdminAccessUser; userId: string }) {
+    async resendInvite(args: { actor: AdminAccessActor; userId: string }) {
       const user = await repo.findUserById(args.userId);
       if (!user) throw notFound();
       if (user.status !== "pending") {
@@ -240,7 +245,7 @@ export function createAdminAccessService({
       return updated;
     },
 
-    async updateUser(args: { actor: AdminAccessUser; userId: string; input: unknown }) {
+    async updateUser(args: { actor: AdminAccessActor; userId: string; input: unknown }) {
       const input = updateSchema.parse(args.input);
       const user = await repo.findUserById(args.userId);
       if (!user) throw notFound();

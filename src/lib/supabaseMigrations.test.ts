@@ -1,10 +1,18 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { describe, expect, test } from "bun:test";
 
 function readMigration(fileName: string) {
   return readFileSync(join(process.cwd(), "supabase", "migrations", fileName), "utf8");
+}
+
+function readMigrationBySuffix(suffix: string) {
+  const fileName = readdirSync(join(process.cwd(), "supabase", "migrations")).find((entry) =>
+    entry.endsWith(suffix),
+  );
+  if (!fileName) throw new Error(`Migration not found: ${suffix}`);
+  return readMigration(fileName);
 }
 
 describe("supabase migration safety", () => {
@@ -148,6 +156,32 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("set supporter_id = excluded.supporter_id");
     expect(sql).toContain("coordinator_manual_intake.create");
     expect(sql).toContain("source = 'manual_intake'");
+  });
+
+  test("adds public adoption journey detail tables with private storage and explicit grants", () => {
+    const sql = readMigrationBySuffix("_public_adoption_journey_phase_1.sql");
+
+    for (const table of [
+      "adoption_application_detail",
+      "adoption_application_animal_preference",
+      "adoption_application_visit_preference",
+      "adoption_application_photo",
+      "public_status_token",
+      "adoption_intake_item",
+    ]) {
+      expect(sql).toContain(`create table if not exists public.${table}`);
+      expect(sql).toContain(`alter table public.${table} enable row level security`);
+      expect(sql).toContain(
+        `grant select, insert, update, delete on public.${table} to service_role`,
+      );
+    }
+
+    expect(sql).toContain("revoke all on public.public_status_token from anon, authenticated");
+    expect(sql).toContain("token_hash text not null unique");
+    expect(sql).toContain("adoption-application-photos");
+    expect(sql).toContain("public = excluded.public");
+    expect(sql).toContain("private.has_admin_role(array['staff', 'admin'])");
+    expect(sql).toContain("adoption_intake_item_lane_due_idx");
   });
 
   test("adds admin access pending invites and metadata", () => {

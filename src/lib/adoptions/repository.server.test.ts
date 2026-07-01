@@ -80,6 +80,12 @@ type FakeState = {
   matchRows: Record<string, unknown>[];
   successRow: Record<string, unknown> | null;
   successRows: Record<string, unknown>[];
+  publicDetailRow: Record<string, unknown> | null;
+  preferenceRows: Record<string, unknown>[];
+  visitPreferenceRow: Record<string, unknown> | null;
+  photoRows: Record<string, unknown>[];
+  statusTokenRows: Record<string, unknown>[];
+  intakeRows: Record<string, unknown>[];
 };
 
 class FakeQuery {
@@ -163,6 +169,12 @@ class FakeQuery {
     return this;
   }
 
+  limit(count: number) {
+    this.state.calls.push({ table: this.table, method: "limit", payload: count });
+    this.rangeBounds = { from: 0, to: count - 1 };
+    return this;
+  }
+
   insert(payload: unknown) {
     this.state.calls.push({ table: this.table, method: "insert", payload });
     this.action = "insert";
@@ -216,6 +228,15 @@ class FakeQuery {
     if (this.table === "adoption_followup") return { data: this.state.followupRow, error: null };
     if (this.table === "adoption_case") return { data: this.state.caseDetailRow, error: null };
     if (this.table === "successful_adoption") return { data: this.state.successRow, error: null };
+    if (this.table === "adoption_application_detail") {
+      return { data: this.state.publicDetailRow, error: null };
+    }
+    if (this.table === "adoption_application_visit_preference") {
+      return { data: this.state.visitPreferenceRow, error: null };
+    }
+    if (this.table === "public_status_token") {
+      return { data: this.applyFilters(this.state.statusTokenRows)[0] ?? null, error: null };
+    }
     if (this.table === "audit_log") {
       return { data: this.applyFilters(this.state.auditRows)[0] ?? null, error: null };
     }
@@ -258,6 +279,12 @@ class FakeQuery {
     if (this.table === "animal_match") return this.collection(this.state.matchRows);
     if (this.table === "successful_adoption") return this.collection(this.state.successRows);
     if (this.table === "audit_log") return this.collection(this.state.auditRows);
+    if (this.table === "adoption_application_animal_preference") {
+      return this.collection(this.state.preferenceRows);
+    }
+    if (this.table === "adoption_application_photo") return this.collection(this.state.photoRows);
+    if (this.table === "public_status_token") return this.collection(this.state.statusTokenRows);
+    if (this.table === "adoption_intake_item") return this.collection(this.state.intakeRows);
     return this.executeMaybeSingle();
   }
 
@@ -293,6 +320,7 @@ class FakeQuery {
     if (this.table === "successful_adoption") return this.state.successRows;
     if (this.table === "adoption_followup") return this.state.followupRows;
     if (this.table === "audit_log") return this.state.auditRows;
+    if (this.table === "adoption_intake_item") return this.state.intakeRows;
     return [];
   }
 
@@ -381,6 +409,12 @@ function createFakeClient(
     matchRows?: Record<string, unknown>[];
     successRow?: Record<string, unknown> | null;
     successRows?: Record<string, unknown>[];
+    publicDetailRow?: Record<string, unknown> | null;
+    preferenceRows?: Record<string, unknown>[];
+    visitPreferenceRow?: Record<string, unknown> | null;
+    photoRows?: Record<string, unknown>[];
+    statusTokenRows?: Record<string, unknown>[];
+    intakeRows?: Record<string, unknown>[];
   } = {},
 ) {
   const state: FakeState = {
@@ -413,6 +447,12 @@ function createFakeClient(
     matchRows: options.matchRows ?? [],
     successRow: options.successRow ?? null,
     successRows: options.successRows ?? [],
+    publicDetailRow: options.publicDetailRow ?? null,
+    preferenceRows: options.preferenceRows ?? [],
+    visitPreferenceRow: options.visitPreferenceRow ?? null,
+    photoRows: options.photoRows ?? [],
+    statusTokenRows: options.statusTokenRows ?? [],
+    intakeRows: options.intakeRows ?? [],
   };
 
   const client = {
@@ -461,7 +501,11 @@ function publicCaseInput(overrides: Partial<CaseFromPublicApplicationInput> = {}
     familySize: 3,
     existingPets: null,
     reason: "I can provide a safe home.",
-    preferences: { animalName: "Mochi" },
+    preferences: {
+      animalName: "Mochi",
+      language: "en",
+      rankedAnimals: [{ animalName: "Mochi", rank: 1 }],
+    },
     ...overrides,
   } satisfies CaseFromPublicApplicationInput;
 }
@@ -550,6 +594,7 @@ function caseDetailRow(overrides: Record<string, unknown> = {}) {
     family_size: 3,
     existing_pets: null,
     reason: "I can provide a safe home.",
+    public_application_id: publicApplicationId,
     supporter_id: linkedSupporterId,
     adopter_profile_id: existingProfileId,
     assessment: {},
@@ -575,6 +620,93 @@ function successfulAdoptionRow(overrides: Record<string, unknown> = {}) {
     adoption_fee_cents: 80000,
     approval_date: "2026-06-28",
     pickup_date: null,
+    ...overrides,
+  };
+}
+
+function publicDetailRow(overrides: Record<string, unknown> = {}) {
+  return {
+    id: "public-detail-1",
+    public_application_id: publicApplicationId,
+    language: "zh-HK",
+    preferred_contact_method: "whatsapp",
+    terms_version: "2026-06",
+    questionnaire: {
+      contact: { applicantName: "Ada" },
+      home: { windowDoorSafety: "Installed" },
+      readiness: { monthlyBudgetHkd: 1000 },
+    },
+    ...overrides,
+  };
+}
+
+function animalPreferenceRow(overrides: Record<string, unknown> = {}) {
+  return {
+    id: "preference-1",
+    public_application_id: publicApplicationId,
+    rank: 1,
+    animal_id: animalId,
+    animal_name_snapshot: "Mochi",
+    animal_type_snapshot: "cat",
+    ...overrides,
+  };
+}
+
+function visitPreferenceRow(overrides: Record<string, unknown> = {}) {
+  return {
+    id: "visit-1",
+    public_application_id: publicApplicationId,
+    date_range_start: "2026-07-05",
+    date_range_end: "2026-07-07",
+    preferred_time_windows: ["weekday_evening"],
+    notes: "After work",
+    ...overrides,
+  };
+}
+
+function photoRow(overrides: Record<string, unknown> = {}) {
+  return {
+    id: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+    public_application_id: publicApplicationId,
+    storage_bucket: "adoption-application-photos",
+    storage_path: `${publicApplicationId}/home/home.jpg`,
+    file_name: "home.jpg",
+    mime_type: "image/jpeg",
+    size_bytes: 123456,
+    photo_category: "home",
+    uploaded_at: "2026-06-27T08:05:00.000Z",
+    ...overrides,
+  };
+}
+
+function statusTokenRow(overrides: Record<string, unknown> = {}) {
+  return {
+    id: "status-token-1",
+    entity_type: "adoption_application",
+    entity_id: publicApplicationId,
+    expires_at: "2026-07-04T08:00:00.000Z",
+    revoked_at: null,
+    last_viewed_at: "2026-06-28T08:00:00.000Z",
+    created_at: "2026-06-27T08:00:00.000Z",
+    ...overrides,
+  };
+}
+
+function intakeRow(overrides: Record<string, unknown> = {}) {
+  return {
+    id: "intake-1",
+    public_application_id: publicApplicationId,
+    adoption_case_id: adoptionCaseId,
+    lane: "photos_to_review",
+    urgency: "high",
+    summary: {
+      applicantName: "Ada",
+      rankedAnimals: [{ rank: 1, animalName: "Mochi", animalType: "cat" }],
+      photoCount: 2,
+    },
+    due_at: "2026-06-28T08:00:00.000Z",
+    resolved_at: null,
+    created_at: "2026-06-27T08:00:00.000Z",
     ...overrides,
   };
 }
@@ -713,6 +845,62 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
       payload: expect.objectContaining({
         p_actor_user_id: createdSupporterId,
       }),
+    });
+  });
+
+  test("lists open intake items by lane", async () => {
+    const { repo, calls } = setupRepository({
+      intakeRows: [
+        intakeRow(),
+        intakeRow({
+          id: "intake-2",
+          lane: "new_adoption_application",
+          resolved_at: null,
+        }),
+        intakeRow({
+          id: "intake-3",
+          lane: "photos_to_review",
+          resolved_at: "2026-06-29T08:00:00.000Z",
+        }),
+      ],
+    });
+
+    await expect(
+      repo.listIntakeItems({ lane: "photos_to_review", openOnly: true }),
+    ).resolves.toEqual({
+      items: [
+        {
+          id: "intake-1",
+          publicApplicationId,
+          adoptionCaseId,
+          lane: "photos_to_review",
+          urgency: "high",
+          dueAt: "2026-06-28T08:00:00.000Z",
+          createdAt: "2026-06-27T08:00:00.000Z",
+          resolvedAt: null,
+          summary: {
+            applicantName: "Ada",
+            rankedAnimals: [{ rank: 1, animalName: "Mochi", animalType: "cat" }],
+            photoCount: 2,
+          },
+        },
+      ],
+    });
+
+    expect(calls).toContainEqual({
+      table: "adoption_intake_item",
+      method: "eq",
+      payload: { column: "lane", value: "photos_to_review" },
+    });
+    expect(calls).toContainEqual({
+      table: "adoption_intake_item",
+      method: "is",
+      payload: { column: "resolved_at", value: null },
+    });
+    expect(calls).toContainEqual({
+      table: "adoption_intake_item",
+      method: "range",
+      payload: { from: 0, to: 99 },
     });
   });
 
@@ -1692,7 +1880,11 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
       family_size: 3,
       existing_pets: null,
       reason: "I can provide a safe home.",
-      preferences: { animalName: "Mochi" },
+      preferences: {
+        animalName: "Mochi",
+        language: "en",
+        rankedAnimals: [{ animalName: "Mochi", rank: 1 }],
+      },
     });
   });
 
@@ -2056,6 +2248,62 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
         isBlacklisted: false,
       },
       animal: { id: animalId, name: "Mochi", nameEn: "Mochi", type: "cat", status: "available" },
+    });
+  });
+
+  test("loads public adoption detail for linked public applications", async () => {
+    const { repo } = setupRepository({
+      caseDetailRow: caseDetailRow(),
+      animalRows: [animalRow()],
+      publicDetailRow: publicDetailRow(),
+      preferenceRows: [animalPreferenceRow()],
+      visitPreferenceRow: visitPreferenceRow(),
+      photoRows: [photoRow()],
+      statusTokenRows: [statusTokenRow()],
+    });
+
+    const detail = await repo.getCaseDetail(adoptionCaseId);
+
+    expect(detail?.publicAdoption).toEqual({
+      language: "zh-HK",
+      preferredContactMethod: "whatsapp",
+      termsVersion: "2026-06",
+      questionnaire: {
+        contact: { applicantName: "Ada" },
+        home: { windowDoorSafety: "Installed" },
+        readiness: { monthlyBudgetHkd: 1000 },
+      },
+      animalPreferences: [
+        {
+          id: "preference-1",
+          rank: 1,
+          animalId,
+          animalNameSnapshot: "Mochi",
+          animalTypeSnapshot: "cat",
+        },
+      ],
+      visitPreference: {
+        dateRangeStart: "2026-07-05",
+        dateRangeEnd: "2026-07-07",
+        preferredTimeWindows: ["weekday_evening"],
+        notes: "After work",
+      },
+      photos: [
+        {
+          id: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+          publicApplicationId,
+          fileName: "home.jpg",
+          mimeType: "image/jpeg",
+          sizeBytes: 123456,
+          photoCategory: "home",
+          uploadedAt: "2026-06-27T08:05:00.000Z",
+        },
+      ],
+      statusToken: {
+        expiresAt: "2026-07-04T08:00:00.000Z",
+        revokedAt: null,
+        lastViewedAt: "2026-06-28T08:00:00.000Z",
+      },
     });
   });
 });

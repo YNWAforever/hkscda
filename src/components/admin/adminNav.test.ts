@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
+import { adminCopy } from "./adminI18n";
 import { ADMIN_NAV_ITEMS, getActiveAdminNavItemIds } from "./adminNav";
 
 describe("admin nav active state", () => {
@@ -56,5 +57,12 @@ describe("admin nav active state", () => {
         "applications",
       ),
     ).toEqual(["coordinator-adopters"]);
+  });
+
+  test("has bilingual labels for every nav item", () => {
+    for (const item of ADMIN_NAV_ITEMS) {
+      expect(adminCopy.zh.navItems[item.id], `zh nav label for ${item.id}`).toBeString();
+      expect(adminCopy.en.navItems[item.id], `en nav label for ${item.id}`).toBeString();
+    }
   });
 });

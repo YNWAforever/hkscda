@@ -5,9 +5,11 @@ import type { AdminUser } from "../donations/supabase.server";
 import { createCrmHandlers } from "./http.server";
 
 const admin: AdminUser = {
+  id: "treasurer-row",
   authUserId: "11111111-2222-4333-8444-555555555555",
   email: "treasurer@example.com",
   role: "treasurer",
+  status: "active",
 };
 
 function createService(overrides: Record<string, unknown> = {}) {

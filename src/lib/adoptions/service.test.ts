@@ -118,6 +118,10 @@ function createRepo(
       calls.push({ name: "listCases", payload: input });
       return { cases: [], total: 0 };
     },
+    async listIntakeItems(input) {
+      calls.push({ name: "listIntakeItems", payload: input });
+      return { items: [] };
+    },
     async listAdopters(input) {
       calls.push({ name: "listAdopters", payload: input });
       return { adopters: [], total: 0 };
@@ -591,6 +595,27 @@ describe("createAdoptionCoordinatorService", () => {
     });
   });
 
+  test("lists intake items with normalized filters and open-only default", async () => {
+    const { service, calls } = setup();
+
+    await service.listIntakeItems({
+      lane: "photos_to_review",
+    });
+    await service.listIntakeItems({
+      lane: "needs_followup",
+      openOnly: "false",
+    });
+
+    expect(calls).toContainEqual({
+      name: "listIntakeItems",
+      payload: { lane: "photos_to_review", openOnly: true },
+    });
+    expect(calls).toContainEqual({
+      name: "listIntakeItems",
+      payload: { lane: "needs_followup", openOnly: false },
+    });
+  });
+
   test("returns adopter detail from repository", async () => {
     const { service } = setup();
 
@@ -620,6 +645,10 @@ describe("createAdoptionCoordinatorService", () => {
           family_size: 3,
           existing_pets: "   ",
           reason: " I can provide a safe home. ",
+          preferences: {
+            language: "en",
+            rankedAnimals: [{ animalName: "Mochi", rank: 1 }],
+          },
         },
       }),
     ).resolves.toEqual({ id: caseId });
@@ -639,7 +668,11 @@ describe("createAdoptionCoordinatorService", () => {
           familySize: 3,
           existingPets: null,
           reason: "I can provide a safe home.",
-          preferences: { animalName: "Mochi" },
+          preferences: {
+            animalName: "Mochi",
+            language: "en",
+            rankedAnimals: [{ animalName: "Mochi", rank: 1 }],
+          },
         },
       },
     ]);

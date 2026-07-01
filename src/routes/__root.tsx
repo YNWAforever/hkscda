@@ -11,6 +11,8 @@ import {
 import { useEffect, type ReactNode } from "react";
 import { Header } from "../components/site/Header";
 import { Footer } from "../components/site/Footer";
+import { ShortlistProvider } from "../components/site/ShortlistProvider";
+import { ShortlistTray } from "../components/site/ShortlistTray";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -150,18 +152,36 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const { location } = useRouterState();
   const isAdmin = location.pathname.startsWith("/admin");
+  const analyticsPagePath = location.pathname.startsWith("/adoption/status/")
+    ? "/adoption/status/[token]"
+    : undefined;
 
   useEffect(() => {
-    initGA4(import.meta.env.VITE_GA_MEASUREMENT_ID ?? "G-XXXXXXXXXX");
-  }, []);
+    initGA4(import.meta.env.VITE_GA_MEASUREMENT_ID ?? "G-XXXXXXXXXX", {
+      pagePath: analyticsPagePath,
+    });
+  }, [analyticsPagePath]);
 
-  return (
-    <QueryClientProvider client={queryClient}>
-      {!isAdmin && <Header />}
+  const publicContent = (
+    <>
+      <Header />
       <div id="main-content" tabIndex={-1}>
         <Outlet />
       </div>
-      {!isAdmin && <Footer />}
+      <Footer />
+      <ShortlistTray />
+    </>
+  );
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      {isAdmin ? (
+        <div id="main-content" tabIndex={-1}>
+          <Outlet />
+        </div>
+      ) : (
+        <ShortlistProvider>{publicContent}</ShortlistProvider>
+      )}
     </QueryClientProvider>
   );
 }

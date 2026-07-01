@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import type { JSX } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
 import { AdminLanguageProvider } from "../adminI18n";

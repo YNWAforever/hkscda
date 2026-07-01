@@ -18,6 +18,9 @@ import { hongKongDayBounds } from "./tasks";
 import type {
   AdoptionCaseDetail,
   AdoptionCaseSummary,
+  AdoptionIntakeItem,
+  AdoptionIntakeLane,
+  AdoptionIntakeUrgency,
   AdopterCaseHistoryRow,
   AdopterSummary,
   AnimalMatchSummary,
@@ -32,6 +35,10 @@ import type {
   CoordinatorSuccessfulAdoptionExportRow,
   CoordinatorTaskExportRow,
   ManualCaseIdentityCandidate,
+  PublicAdoptionAnimalPreference,
+  PublicAdoptionDetail,
+  PublicAdoptionPhoto,
+  PublicAdoptionVisitPreference,
   ManualCaseIntakeResult,
   SuccessfulAdoption,
 } from "./types";
@@ -40,6 +47,7 @@ export { hongKongDayBounds } from "./tasks";
 
 const ADOPTER_CANDIDATE_ID_LIMIT = 1000;
 const ADOPTER_FILTER_TOO_BROAD_ERROR = "Adopter filters match too many records";
+const INTAKE_ITEM_LIMIT = 100;
 const COORDINATOR_EXPORT_ACTIONS = [
   "coordinator_export.cases",
   "coordinator_export.adopters",
@@ -73,6 +81,7 @@ type StatusRow = {
 
 type AdoptionCaseRow = {
   id: string;
+  public_application_id: string | null;
   status_id: string;
   requested_animal_id: string | null;
   animal_type: string;
@@ -206,6 +215,56 @@ type ConsentRow = {
   status: ConsentStatus;
   source: string;
   timestamp: string;
+};
+
+type PublicAdoptionDetailRow = {
+  language: PublicAdoptionDetail["language"];
+  preferred_contact_method: PublicAdoptionDetail["preferredContactMethod"];
+  terms_version: string;
+  questionnaire: Record<string, unknown> | null;
+};
+
+type PublicAdoptionAnimalPreferenceRow = {
+  id: string;
+  rank: number;
+  animal_id: string | null;
+  animal_name_snapshot: string;
+  animal_type_snapshot: PublicAdoptionAnimalPreference["animalTypeSnapshot"];
+};
+
+type PublicAdoptionVisitPreferenceRow = {
+  date_range_start: string;
+  date_range_end: string;
+  preferred_time_windows: string[] | null;
+  notes: string | null;
+};
+
+type PublicAdoptionPhotoRow = {
+  id: string;
+  public_application_id: string;
+  file_name: string;
+  mime_type: string;
+  size_bytes: number;
+  photo_category: PublicAdoptionPhoto["photoCategory"];
+  uploaded_at: string;
+};
+
+type PublicStatusTokenRow = {
+  expires_at: string;
+  revoked_at: string | null;
+  last_viewed_at: string | null;
+};
+
+type AdoptionIntakeItemRow = {
+  id: string;
+  public_application_id: string;
+  adoption_case_id: string | null;
+  lane: AdoptionIntakeLane;
+  urgency: AdoptionIntakeUrgency;
+  due_at: string;
+  created_at: string;
+  resolved_at: string | null;
+  summary: AdoptionIntakeItem["summary"] | null;
 };
 
 function escapeLike(value: string) {
@@ -524,6 +583,126 @@ function mapSuccessfulAdoption(row: SuccessfulAdoptionRow | null): SuccessfulAdo
     adoptionFeeCents: row.adoption_fee_cents,
     approvalDate: row.approval_date,
     pickupDate: row.pickup_date,
+  };
+}
+
+function mapPublicAnimalPreference(
+  row: PublicAdoptionAnimalPreferenceRow,
+): PublicAdoptionAnimalPreference {
+  return {
+    id: row.id,
+    rank: row.rank,
+    animalId: row.animal_id,
+    animalNameSnapshot: row.animal_name_snapshot,
+    animalTypeSnapshot: row.animal_type_snapshot,
+  };
+}
+
+function mapPublicVisitPreference(
+  row: PublicAdoptionVisitPreferenceRow | null,
+): PublicAdoptionVisitPreference | null {
+  if (!row) return null;
+  return {
+    dateRangeStart: row.date_range_start,
+    dateRangeEnd: row.date_range_end,
+    preferredTimeWindows: row.preferred_time_windows ?? [],
+    notes: row.notes,
+  };
+}
+
+function mapPublicPhoto(row: PublicAdoptionPhotoRow): PublicAdoptionPhoto {
+  return {
+    id: row.id,
+    publicApplicationId: row.public_application_id,
+    fileName: row.file_name,
+    mimeType: row.mime_type,
+    sizeBytes: row.size_bytes,
+    photoCategory: row.photo_category,
+    uploadedAt: row.uploaded_at,
+  };
+}
+
+function mapIntakeItem(row: AdoptionIntakeItemRow): AdoptionIntakeItem {
+  return {
+    id: row.id,
+    publicApplicationId: row.public_application_id,
+    adoptionCaseId: row.adoption_case_id,
+    lane: row.lane,
+    urgency: row.urgency,
+    dueAt: row.due_at,
+    createdAt: row.created_at,
+    resolvedAt: row.resolved_at,
+    summary: row.summary ?? {},
+  };
+}
+
+async function loadPublicAdoptionDetail(
+  client: SupabaseClient,
+  publicApplicationId: string | null,
+): Promise<PublicAdoptionDetail | null> {
+  if (!publicApplicationId) return null;
+
+  const [detailResult, preferencesResult, visitResult, photosResult, tokenResult] =
+    await Promise.all([
+      client
+        .from("adoption_application_detail")
+        .select("*")
+        .eq("public_application_id", publicApplicationId)
+        .maybeSingle(),
+      client
+        .from("adoption_application_animal_preference")
+        .select("*")
+        .eq("public_application_id", publicApplicationId)
+        .order("rank", { ascending: true }),
+      client
+        .from("adoption_application_visit_preference")
+        .select("*")
+        .eq("public_application_id", publicApplicationId)
+        .maybeSingle(),
+      client
+        .from("adoption_application_photo")
+        .select("*")
+        .eq("public_application_id", publicApplicationId)
+        .order("uploaded_at", { ascending: false }),
+      client
+        .from("public_status_token")
+        .select("expires_at,revoked_at,last_viewed_at")
+        .eq("entity_type", "adoption_application")
+        .eq("entity_id", publicApplicationId)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+    ]);
+
+  if (detailResult.error) throw detailResult.error;
+  if (preferencesResult.error) throw preferencesResult.error;
+  if (visitResult.error) throw visitResult.error;
+  if (photosResult.error) throw photosResult.error;
+  if (tokenResult.error) throw tokenResult.error;
+  if (!detailResult.data) return null;
+
+  const detail = detailResult.data as PublicAdoptionDetailRow;
+  const token = (tokenResult.data ?? null) as PublicStatusTokenRow | null;
+
+  return {
+    language: detail.language,
+    preferredContactMethod: detail.preferred_contact_method,
+    termsVersion: detail.terms_version,
+    questionnaire: detail.questionnaire ?? {},
+    animalPreferences: ((preferencesResult.data ?? []) as PublicAdoptionAnimalPreferenceRow[]).map(
+      mapPublicAnimalPreference,
+    ),
+    visitPreference: mapPublicVisitPreference(
+      (visitResult.data ?? null) as PublicAdoptionVisitPreferenceRow | null,
+    ),
+    photos: ((photosResult.data ?? []) as PublicAdoptionPhotoRow[]).map(mapPublicPhoto),
+    statusToken: token
+      ? {
+          expiresAt: token.expires_at,
+          revokedAt: token.revoked_at,
+          lastViewedAt: token.last_viewed_at,
+        }
+      : null,
   };
 }
 
@@ -1370,7 +1549,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
       if (!caseData) return null;
 
       const row = caseData as AdoptionCaseRow;
-      const [matchesResult, followupsResult, successResult] = await Promise.all([
+      const [matchesResult, followupsResult, successResult, publicAdoption] = await Promise.all([
         client
           .from("animal_match")
           .select("id,adoption_case_id,animal_id,status_id,is_approved,notes")
@@ -1382,6 +1561,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
           .eq("adoption_case_id", id)
           .order("scheduled_at", { ascending: false }),
         client.from("successful_adoption").select("*").eq("adoption_case_id", id).maybeSingle(),
+        loadPublicAdoptionDetail(client, row.public_application_id),
       ]);
       if (matchesResult.error) throw matchesResult.error;
       if (followupsResult.error) throw followupsResult.error;
@@ -1420,7 +1600,27 @@ export function createSupabaseAdoptionCoordinatorRepository(
           mapCoordinatorTask(followup, statuses, taskLinks),
         ),
         successfulAdoption: mapSuccessfulAdoption(successRow),
+        publicAdoption,
       } satisfies AdoptionCaseDetail;
+    },
+
+    async listIntakeItems(input) {
+      let query = client
+        .from("adoption_intake_item")
+        .select("*")
+        .order("due_at", { ascending: true })
+        .order("created_at", { ascending: true })
+        .range(0, INTAKE_ITEM_LIMIT - 1);
+
+      if (input.lane) query = query.eq("lane", input.lane);
+      if (input.openOnly) query = query.is("resolved_at", null);
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      return {
+        items: ((data ?? []) as AdoptionIntakeItemRow[]).map(mapIntakeItem),
+      };
     },
 
     async listAdopters(input) {
@@ -1808,7 +2008,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
         .in("animal_id", animalIds);
       if (profileError) throw profileError;
 
-      const profileRows = (profileData ?? []) as AnimalInternalProfileRow[];
+      const profileRows = (profileData ?? []) as unknown as AnimalInternalProfileRow[];
       const positionIds = unique(profileRows.map((row) => row.current_position_id));
       const sourceIds = unique(profileRows.map((row) => row.arrival_source_id));
 

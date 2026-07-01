@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import type { AdminAccessUser } from "./accessManagement.server";
+import type { AdminAccessActor } from "./accessManagement.server";
 import { AdminAccessError } from "./accessManagement.server";
 
 type HandlerContext = {
@@ -10,14 +10,14 @@ type HandlerContext = {
 
 type AccessService = {
   listUsers(): Promise<unknown>;
-  inviteUser(args: { actor: AdminAccessUser; input: unknown }): Promise<unknown>;
-  resendInvite(args: { actor: AdminAccessUser; userId: string }): Promise<unknown>;
-  updateUser(args: { actor: AdminAccessUser; userId: string; input: unknown }): Promise<unknown>;
+  inviteUser(args: { actor: AdminAccessActor; input: unknown }): Promise<unknown>;
+  resendInvite(args: { actor: AdminAccessActor; userId: string }): Promise<unknown>;
+  updateUser(args: { actor: AdminAccessActor; userId: string; input: unknown }): Promise<unknown>;
   listAudit(): Promise<unknown>;
 };
 
 type CreateAdminAccessHandlersArgs = {
-  requireAccessAdmin: (request: Request) => Promise<AdminAccessUser>;
+  requireAccessAdmin: (request: Request) => Promise<AdminAccessActor>;
   service: AccessService;
 };
 

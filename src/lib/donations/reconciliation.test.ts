@@ -21,6 +21,9 @@ describe("payment reconciliation planning", () => {
     });
 
     expect(plan.kind).toBe("apply");
+    if (plan.kind !== "apply") {
+      throw new Error("expected apply reconciliation plan");
+    }
     expect(plan.donationStatus).toBe("succeeded");
     expect(plan.paymentStatus).toBe("succeeded");
     expect(plan.shouldIssueReceipt).toBe(true);

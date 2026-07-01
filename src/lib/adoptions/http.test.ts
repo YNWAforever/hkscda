@@ -3,26 +3,31 @@ import { describe, expect, test } from "bun:test";
 import type { AdminUser } from "../donations/supabase.server";
 import { createAdoptionCoordinatorHandlers } from "./http.server";
 import { createAdoptionCoordinatorService } from "./service";
+import type { CoordinatorStatus } from "./types";
 
 type AdoptionCoordinatorService = ReturnType<typeof createAdoptionCoordinatorService>;
 
 const admin: AdminUser = {
+  id: "admin-row",
   authUserId: "11111111-2222-4333-8444-555555555555",
   email: "admin@example.com",
   role: "admin",
+  status: "active",
 };
 
 const staff: AdminUser = {
+  id: "staff-row",
   authUserId: "22222222-3333-4333-8444-555555555555",
   email: "staff@example.com",
   role: "staff",
+  status: "active",
 };
 
 const caseId = "33333333-4444-4333-8444-555555555555";
 const statusId = "44444444-5555-4333-8444-555555555555";
 const animalId = "88888888-9999-4333-8444-555555555555";
 const outcomeStatusId = "99999999-aaaa-4333-8444-555555555555";
-const status = {
+const status: CoordinatorStatus = {
   id: statusId,
   category: "adoption_case",
   key: "new",
@@ -98,11 +103,11 @@ function createFakeService(overrides: Partial<AdoptionCoordinatorService> = {}) 
     },
     async createStatus(payload) {
       calls.push({ name: "createStatus", payload });
-      return { id: statusId, ...payload.input };
+      return { ...status, ...(payload.input as Partial<CoordinatorStatus>), id: statusId };
     },
     async updateStatus(payload) {
       calls.push({ name: "updateStatus", payload });
-      return { id: payload.statusId, ...payload.input };
+      return { ...status, ...(payload.input as Partial<CoordinatorStatus>), id: payload.statusId };
     },
     async deleteStatus(payload) {
       calls.push({ name: "deleteStatus", payload });
@@ -110,6 +115,10 @@ function createFakeService(overrides: Partial<AdoptionCoordinatorService> = {}) 
     async listCases(rawSearch) {
       calls.push({ name: "listCases", payload: rawSearch });
       return { cases: [], total: 0 };
+    },
+    async listIntakeItems(rawSearch) {
+      calls.push({ name: "listIntakeItems", payload: rawSearch });
+      return { items: [] };
     },
     async listTasks(rawSearch) {
       calls.push({ name: "listTasks", payload: rawSearch });
@@ -134,6 +143,10 @@ function createFakeService(overrides: Partial<AdoptionCoordinatorService> = {}) 
     async createManualCase(payload) {
       calls.push({ name: "createManualCase", payload });
       return { caseId, supporterId: "supporter-1", adopterProfileId, taskId: null };
+    },
+    async createCaseFromPublicApplication(payload) {
+      calls.push({ name: "createCaseFromPublicApplication", payload });
+      return { id: caseId };
     },
     async listCoordinatorExportHistory(rawSearch) {
       calls.push({ name: "listCoordinatorExportHistory", payload: rawSearch });
@@ -161,11 +174,11 @@ function createFakeService(overrides: Partial<AdoptionCoordinatorService> = {}) 
     },
     async getAdopterDetail(id) {
       calls.push({ name: "getAdopterDetail", payload: id });
-      return { id: adopterProfileId, requestedId: id };
+      return null;
     },
     async getTask(id) {
       calls.push({ name: "getTask", payload: id });
-      return { id: taskId, requestedId: id };
+      return null;
     },
     async createTask(payload) {
       calls.push({ name: "createTask", payload });
@@ -173,7 +186,7 @@ function createFakeService(overrides: Partial<AdoptionCoordinatorService> = {}) 
     },
     async updateTask(payload) {
       calls.push({ name: "updateTask", payload });
-      return { id: payload.taskId, ...payload.input };
+      return { id: payload.taskId, ...(payload.input as Record<string, unknown>) };
     },
     async getCaseDetail(caseId) {
       calls.push({ name: "getCaseDetail", payload: caseId });
@@ -345,6 +358,29 @@ describe("createAdoptionCoordinatorHandlers", () => {
     expect(calls).toEqual([{ name: "searchManualCaseIdentity", payload: { q: "Ada" } }]);
   });
 
+  test("intake inbox requires coordinator auth and returns no-store JSON", async () => {
+    const { calls, service } = createFakeService({
+      async listIntakeItems(rawSearch) {
+        calls.push({ name: "listIntakeItems", payload: rawSearch });
+        return { items: [] };
+      },
+    });
+    const handlers = createHandlers({ service });
+
+    const response = await handlers.listIntakeItems({
+      request: new Request(
+        "https://example.test/api/admin/adoptions/intake/items?lane=photos_to_review&openOnly=true",
+      ),
+    });
+
+    expect(response.status).toBe(200);
+    expectNoStoreJson(response);
+    expect(await response.json()).toEqual({ items: [] });
+    expect(calls).toEqual([
+      { name: "listIntakeItems", payload: { lane: "photos_to_review", openOnly: "true" } },
+    ]);
+  });
+
   test("manual case create calls service with actor and body", async () => {
     const { calls, service } = createFakeService({
       async createManualCase(payload) {
@@ -510,6 +546,12 @@ describe("createAdoptionCoordinatorHandlers", () => {
         key: "screening",
         labelZh: "審核中",
         labelEn: "Screening",
+        sortOrder: 10,
+        color: "coral",
+        isActive: true,
+        isSystem: false,
+        isClosing: false,
+        isFinal: false,
       },
     });
   });

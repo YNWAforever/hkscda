@@ -45,9 +45,9 @@ describe("verifyTurnstile", () => {
   });
 
   test("fails closed when the verification request throws", async () => {
-    const fetch = (async () => {
+    const fetch: typeof globalThis.fetch = (async () => {
       throw new Error("network");
-    }) as typeof fetch;
+    }) as unknown as typeof globalThis.fetch;
     expect(await verifyTurnstile("token", undefined, { secret: "sk", fetch })).toBe(false);
   });
 

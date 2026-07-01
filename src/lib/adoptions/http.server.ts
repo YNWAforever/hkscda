@@ -219,6 +219,14 @@ export function createAdoptionCoordinatorHandlers({
       });
     },
 
+    listIntakeItems({ request }: HandlerContext) {
+      return withErrors(async () => {
+        await requireCoordinator(request);
+        const search = Object.fromEntries(new URL(request.url).searchParams);
+        return jsonResponse(await service.listIntakeItems(search));
+      });
+    },
+
     listTasks({ request }: HandlerContext) {
       return withErrors(async () => {
         await requireCoordinator(request);

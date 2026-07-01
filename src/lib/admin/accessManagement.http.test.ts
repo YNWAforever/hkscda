@@ -127,19 +127,22 @@ describe("createAdminAccessHandlers", () => {
       requireAccessAdmin: async () => actor,
       service: {
         listUsers: async () => ({ users: [], summary: { active: 0, pending: 0, disabled: 0 } }),
-        inviteUser: async ({ input }) => ({
-          id: "new-row",
-          authUserId: "new-auth",
-          email: input.email,
-          role: input.role,
-          status: "pending",
-          invitedAt: "2026-07-01T10:00:00.000Z",
-          inviteSentAt: "2026-07-01T10:00:00.000Z",
-          inviteAcceptedAt: null,
-          lastInvitedBy: "actor-auth",
-          createdAt: "2026-07-01T10:00:00.000Z",
-          updatedAt: "2026-07-01T10:00:00.000Z",
-        }),
+        inviteUser: async ({ input }) => {
+          const invite = input as { email: string; role: "staff" | "treasurer" | "admin" };
+          return {
+            id: "new-row",
+            authUserId: "new-auth",
+            email: invite.email,
+            role: invite.role,
+            status: "pending",
+            invitedAt: "2026-07-01T10:00:00.000Z",
+            inviteSentAt: "2026-07-01T10:00:00.000Z",
+            inviteAcceptedAt: null,
+            lastInvitedBy: "actor-auth",
+            createdAt: "2026-07-01T10:00:00.000Z",
+            updatedAt: "2026-07-01T10:00:00.000Z",
+          };
+        },
         resendInvite: async () => {
           throw new Error("unused");
         },

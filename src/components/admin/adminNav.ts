@@ -7,6 +7,7 @@ import {
   FilePlus2,
   HandCoins,
   Heart,
+  Inbox,
   ListTodo,
   ShieldCheck,
   Settings2,
@@ -76,6 +77,15 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     label: "申請",
     icon: ClipboardList,
     to: "/admin/applications",
+  },
+  {
+    id: "coordinator-inbox",
+    section: "applications",
+    group: "adoptions",
+    label: "收件箱",
+    icon: Inbox,
+    to: "/admin/coordinator/inbox",
+    activePath: "/admin/coordinator/inbox",
   },
   {
     id: "coordinator-intake",
