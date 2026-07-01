@@ -1,6 +1,10 @@
 import { createContext, useContext } from "react";
 
-import type { AddShortlistInput, ShortlistItem } from "../../lib/publicAdoption/shortlist";
+import type {
+  AddShortlistInput,
+  ShortlistIntent,
+  ShortlistItem,
+} from "../../lib/publicAdoption/shortlist";
 
 export type ShortlistContextValue = {
   items: ShortlistItem[];
@@ -10,6 +14,7 @@ export type ShortlistContextValue = {
   removeItem: (animalId: string) => void;
   clearMessage: () => void;
   clear: () => void;
+  clearIntent: (intent: ShortlistIntent) => void;
   reorderAdoptions: (animalIds: string[]) => void;
   findItem: (animalId: string) => ShortlistItem | undefined;
 };
