@@ -245,4 +245,84 @@ set internal_code = excluded.internal_code,
     adopted_at = excluded.adopted_at,
     internal_remarks = excluded.internal_remarks;
 
+-- ---------------------------------------------------------------------------
+-- Supporters, supporter roles, consent ledger, and adopters
+-- ---------------------------------------------------------------------------
+
+insert into public.supporter
+  (id, name, email, phone, language, tags, source, deleted_at, created_at, updated_at)
+values
+  ('30000000-0000-4000-8000-000000000001', '陳凱琳', 'demo.chan.hoi.lam@example.test', '9123 1001', 'zh-HK', array['demo', 'adopter', 'monthly-donor'], 'demo_seed', null, '2026-06-10 10:00:00+08', '2026-06-29 10:00:00+08'),
+  ('30000000-0000-4000-8000-000000000002', '李家豪', 'demo.lee.ka.ho@example.test', '9123 1002', 'zh-HK', array['demo', 'adopter'], 'demo_seed', null, '2026-06-11 10:00:00+08', '2026-06-29 10:00:00+08'),
+  ('30000000-0000-4000-8000-000000000003', '黃美儀', 'demo.wong.mei.yee@example.test', '9123 1003', 'zh-HK', array['demo', 'foster', 'donor'], 'demo_seed', null, '2026-06-12 10:00:00+08', '2026-06-29 10:00:00+08'),
+  ('30000000-0000-4000-8000-000000000004', 'Sarah Ng', 'demo.sarah.ng@example.test', '9123 1004', 'en', array['demo', 'volunteer'], 'demo_seed', null, '2026-06-13 10:00:00+08', '2026-06-29 10:00:00+08'),
+  ('30000000-0000-4000-8000-000000000005', '劉柏宇', 'demo.peter.lau@example.test', '9123 1005', 'zh-HK', array['demo', 'donor'], 'demo_seed', null, '2026-06-14 10:00:00+08', '2026-06-29 10:00:00+08'),
+  ('30000000-0000-4000-8000-000000000006', '友心公司', 'demo.corporate.friend@example.test', '9123 1006', 'zh-HK', array['demo', 'corporate-donor'], 'demo_seed', null, '2026-06-15 10:00:00+08', '2026-06-29 10:00:00+08')
+on conflict (id) do update
+set name = excluded.name,
+    email = excluded.email,
+    phone = excluded.phone,
+    language = excluded.language,
+    tags = excluded.tags,
+    source = excluded.source,
+    deleted_at = excluded.deleted_at,
+    created_at = excluded.created_at,
+    updated_at = excluded.updated_at;
+
+insert into public.supporter_role (supporter_id, role)
+values
+  ('30000000-0000-4000-8000-000000000001', 'donor'),
+  ('30000000-0000-4000-8000-000000000001', 'adopter'),
+  ('30000000-0000-4000-8000-000000000002', 'adopter'),
+  ('30000000-0000-4000-8000-000000000003', 'donor'),
+  ('30000000-0000-4000-8000-000000000003', 'foster'),
+  ('30000000-0000-4000-8000-000000000004', 'volunteer'),
+  ('30000000-0000-4000-8000-000000000005', 'donor'),
+  ('30000000-0000-4000-8000-000000000006', 'donor')
+on conflict (supporter_id, role) do nothing;
+
+insert into public.consent
+  (id, supporter_id, channel, status, source, "timestamp", created_at, updated_at)
+values
+  ('32000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000001', 'email', 'opt_in', 'demo_seed', '2026-06-10 10:05:00+08', '2026-06-10 10:05:00+08', '2026-06-10 10:05:00+08'),
+  ('32000000-0000-4000-8000-000000000002', '30000000-0000-4000-8000-000000000001', 'whatsapp', 'opt_in', 'demo_seed', '2026-06-10 10:05:00+08', '2026-06-10 10:05:00+08', '2026-06-10 10:05:00+08'),
+  ('32000000-0000-4000-8000-000000000003', '30000000-0000-4000-8000-000000000002', 'email', 'opt_in', 'demo_seed', '2026-06-11 10:05:00+08', '2026-06-11 10:05:00+08', '2026-06-11 10:05:00+08'),
+  ('32000000-0000-4000-8000-000000000004', '30000000-0000-4000-8000-000000000003', 'whatsapp', 'opt_in', 'demo_seed', '2026-06-12 10:05:00+08', '2026-06-12 10:05:00+08', '2026-06-12 10:05:00+08'),
+  ('32000000-0000-4000-8000-000000000005', '30000000-0000-4000-8000-000000000004', 'email', 'opt_out', 'demo_seed', '2026-06-13 10:05:00+08', '2026-06-13 10:05:00+08', '2026-06-13 10:05:00+08'),
+  ('32000000-0000-4000-8000-000000000006', '30000000-0000-4000-8000-000000000005', 'email', 'opt_in', 'demo_seed', '2026-06-14 10:05:00+08', '2026-06-14 10:05:00+08', '2026-06-14 10:05:00+08')
+on conflict (id) do update
+set supporter_id = excluded.supporter_id,
+    channel = excluded.channel,
+    status = excluded.status,
+    source = excluded.source,
+    "timestamp" = excluded."timestamp",
+    created_at = excluded.created_at,
+    updated_at = excluded.updated_at;
+
+insert into public.adopter_profile
+  (id, supporter_id, name_english, name_chinese, gender, hkid, birthday, occupation, facebook, household_size, monthly_household_income, living_area_id, address, floor_area, is_blacklisted, blacklist_reason, created_at, updated_at)
+values
+  ('31000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000001', 'Helen Chan', '陳凱琳', 'female', null, '1991-03-12', 'Teacher', 'helen.demo.chan', '3', 'HKD 40,000 - 60,000', '20000000-0000-4000-8000-000000000001', '荃灣海濱花園 Demo座', '520 呎', false, null, '2026-06-10 10:10:00+08', '2026-06-29 10:10:00+08'),
+  ('31000000-0000-4000-8000-000000000002', '30000000-0000-4000-8000-000000000002', 'Karl Lee', '李家豪', 'male', null, '1987-09-18', 'Designer', 'karl.demo.lee', '2', 'HKD 60,000+', '20000000-0000-4000-8000-000000000002', '沙田第一城 Demo室', '610 呎', false, null, '2026-06-11 10:10:00+08', '2026-06-29 10:10:00+08'),
+  ('31000000-0000-4000-8000-000000000003', '30000000-0000-4000-8000-000000000003', 'Maggie Wong', '黃美儀', 'female', null, '1983-11-02', 'Nurse', 'maggie.demo.wong', '4', 'HKD 40,000 - 60,000', '20000000-0000-4000-8000-000000000003', '將軍澳中心 Demo座', '700 呎', false, null, '2026-06-12 10:10:00+08', '2026-06-29 10:10:00+08'),
+  ('31000000-0000-4000-8000-000000000004', '30000000-0000-4000-8000-000000000004', 'Sarah Ng', '吳詩雅', 'female', null, '1994-05-20', 'Marketing Manager', 'sarah.demo.ng', '1', 'HKD 30,000 - 40,000', '20000000-0000-4000-8000-000000000004', '西營盤 Demo Court', '430 呎', true, 'Demo caution: previous application had incomplete landlord approval.', '2026-06-13 10:10:00+08', '2026-06-29 10:10:00+08')
+on conflict (id) do update
+set supporter_id = excluded.supporter_id,
+    name_english = excluded.name_english,
+    name_chinese = excluded.name_chinese,
+    gender = excluded.gender,
+    hkid = excluded.hkid,
+    birthday = excluded.birthday,
+    occupation = excluded.occupation,
+    facebook = excluded.facebook,
+    household_size = excluded.household_size,
+    monthly_household_income = excluded.monthly_household_income,
+    living_area_id = excluded.living_area_id,
+    address = excluded.address,
+    floor_area = excluded.floor_area,
+    is_blacklisted = excluded.is_blacklisted,
+    blacklist_reason = excluded.blacklist_reason,
+    created_at = excluded.created_at,
+    updated_at = excluded.updated_at;
+
 commit;
