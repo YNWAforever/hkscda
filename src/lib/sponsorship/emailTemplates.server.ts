@@ -90,3 +90,87 @@ export function renderPledgeConfirmationEmail(input: PledgeConfirmationEmailInpu
     ].join(""),
   };
 }
+
+export type PledgeStatusUpdateEvent = "proof_recorded" | "active" | "needs_followup" | "cancelled";
+
+type PledgeStatusUpdateEmailInput = {
+  event: PledgeStatusUpdateEvent;
+  language: "zh-HK" | "en";
+  supporterName: string;
+  reference: string;
+  amountCents: number;
+};
+
+const SUPPORT_EMAIL = "info@hkscda.com";
+
+function pledgeStatusUpdateBodyZh(event: PledgeStatusUpdateEvent, reference: string, amount: string) {
+  switch (event) {
+    case "proof_recorded":
+      return `<p>我們已為您的助養承諾（參考編號 <strong>${reference}</strong>）記錄付款資料，將盡快為您審核。</p>`;
+    case "active":
+      return `<p>多謝您！您每月 <strong>${amount}</strong> 的助養承諾（參考編號 <strong>${reference}</strong>）已確認生效。</p>`;
+    case "needs_followup":
+      return [
+        `<p>您的助養承諾（參考編號 <strong>${reference}</strong>）的付款資料需要跟進，未能確認。</p>`,
+        `<p>請重新提交付款證明，或電郵至 <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a> 查詢，並註明參考編號。</p>`,
+      ].join("");
+    case "cancelled":
+      return `<p>您的助養承諾（參考編號 <strong>${reference}</strong>）已取消。如有疑問歡迎聯絡我們。</p>`;
+  }
+}
+
+function pledgeStatusUpdateBodyEn(event: PledgeStatusUpdateEvent, reference: string, amount: string) {
+  switch (event) {
+    case "proof_recorded":
+      return `<p>We have recorded a payment for your sponsorship pledge <strong>${reference}</strong> and will review it shortly.</p>`;
+    case "active":
+      return `<p>Thank you! Your <strong>${amount}</strong>/month sponsorship pledge <strong>${reference}</strong> is now confirmed and active.</p>`;
+    case "needs_followup":
+      return [
+        `<p>We were unable to confirm the payment for your sponsorship pledge <strong>${reference}</strong>.</p>`,
+        `<p>Please resubmit your payment proof, or email <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a> quoting your reference.</p>`,
+      ].join("");
+    case "cancelled":
+      return `<p>Your sponsorship pledge <strong>${reference}</strong> has been cancelled. Please contact us if you have any questions.</p>`;
+  }
+}
+
+const PLEDGE_STATUS_SUBJECT_ZH: Record<PledgeStatusUpdateEvent, string> = {
+  proof_recorded: "HKSCDA 已收到您的付款記錄",
+  active: "HKSCDA 助養已確認生效",
+  needs_followup: "HKSCDA 助養付款需要跟進",
+  cancelled: "HKSCDA 助養承諾已取消",
+};
+
+const PLEDGE_STATUS_SUBJECT_EN: Record<PledgeStatusUpdateEvent, string> = {
+  proof_recorded: "HKSCDA recorded your sponsorship payment",
+  active: "HKSCDA sponsorship confirmed",
+  needs_followup: "HKSCDA sponsorship payment needs follow-up",
+  cancelled: "HKSCDA sponsorship pledge cancelled",
+};
+
+export function renderPledgeStatusUpdateEmail(input: PledgeStatusUpdateEmailInput) {
+  const supporterName = escapeHtml(input.supporterName);
+  const reference = escapeHtml(input.reference);
+  const amount = centsToHkd(input.amountCents);
+
+  if (input.language === "en") {
+    return {
+      subject: `${PLEDGE_STATUS_SUBJECT_EN[input.event]} ${input.reference}`,
+      html: [
+        `<p>Dear ${supporterName},</p>`,
+        pledgeStatusUpdateBodyEn(input.event, reference, amount),
+        "<p>HKSCDA Sponsorship Team</p>",
+      ].join(""),
+    };
+  }
+
+  return {
+    subject: `${PLEDGE_STATUS_SUBJECT_ZH[input.event]} ${input.reference}`,
+    html: [
+      `<p>${supporterName} 您好：</p>`,
+      pledgeStatusUpdateBodyZh(input.event, reference, amount),
+      "<p>HKSCDA 助養團隊</p>",
+    ].join(""),
+  };
+}
