@@ -200,4 +200,32 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("admin_user_status_updated_idx");
     expect(sql).toContain("admin_user_invite_sent_idx");
   });
+
+  test("adds sponsorship pledge tables with private proof storage and widens status token entity types", () => {
+    const sql = readMigrationBySuffix("_sponsorship_pledge_phase_2.sql");
+
+    for (const table of [
+      "sponsorship_pledge",
+      "sponsorship_preference",
+      "sponsorship_payment_proof",
+    ]) {
+      expect(sql).toContain(`create table if not exists public.${table}`);
+      expect(sql).toContain(`alter table public.${table} enable row level security`);
+      expect(sql).toContain(
+        `grant select, insert, update, delete on public.${table} to service_role`,
+      );
+      expect(sql).toContain(`revoke all on public.${table} from anon`);
+    }
+
+    expect(sql).not.toContain("reference text not null unique");
+    expect(sql).toContain(
+      "status text not null default 'pending_payment' check (status in ('pending_payment', 'provisional', 'active', 'needs_followup', 'cancelled'))",
+    );
+    expect(sql).toContain("drop constraint if exists public_status_token_entity_type_check");
+    expect(sql).toContain(
+      "add constraint public_status_token_entity_type_check check (entity_type in ('adoption_application', 'sponsorship_pledge'))",
+    );
+    expect(sql).toContain("sponsorship-payment-proof");
+    expect(sql).toContain("private.has_admin_role(array['staff', 'admin'])");
+  });
 });
