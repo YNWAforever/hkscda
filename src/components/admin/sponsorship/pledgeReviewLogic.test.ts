@@ -7,6 +7,7 @@ import {
   canReviewProof,
   formatFallback,
   formatDate,
+  isImageFileType,
   pledgeStatusTone,
 } from "./pledgeReviewLogic";
 import type { PledgeStatus } from "../../../lib/sponsorshipAdmin/types";
@@ -107,5 +108,23 @@ describe("canCancelPledge", () => {
 
   test("is false for cancelled", () => {
     expect(canCancelPledge("cancelled")).toBe(false);
+  });
+});
+
+describe("isImageFileType", () => {
+  test("is true for image MIME types", () => {
+    expect(isImageFileType("image/png")).toBe(true);
+    expect(isImageFileType("image/jpeg")).toBe(true);
+    expect(isImageFileType("image/webp")).toBe(true);
+  });
+
+  test("is false for application/pdf", () => {
+    expect(isImageFileType("application/pdf")).toBe(false);
+  });
+
+  test("is false for nullish or empty values", () => {
+    expect(isImageFileType(null)).toBe(false);
+    expect(isImageFileType(undefined)).toBe(false);
+    expect(isImageFileType("")).toBe(false);
   });
 });

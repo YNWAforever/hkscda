@@ -65,3 +65,8 @@ export function canReviewProof(status: PledgeStatus): boolean {
 export function canCancelPledge(status: PledgeStatus): boolean {
   return status !== "cancelled";
 }
+
+/** Whether a proof file's MIME type should be rendered as an inline `<img>` vs. a download/open link. */
+export function isImageFileType(fileType: string | null | undefined): boolean {
+  return typeof fileType === "string" && fileType.startsWith("image/");
+}

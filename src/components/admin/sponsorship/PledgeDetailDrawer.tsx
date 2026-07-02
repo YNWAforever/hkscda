@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { fetchCoordinatorJson } from "../adoptions/api";
@@ -8,13 +8,14 @@ import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Sheet, SheetContent, SheetTitle } from "../../ui/sheet";
 import { StatusPill } from "../StatusBadge";
-import type { PledgeDetail } from "../../../lib/sponsorshipAdmin/types";
+import type { PaymentProofRecord, PledgeDetail } from "../../../lib/sponsorshipAdmin/types";
 import {
   canCancelPledge,
   canRecordPayment,
   canReviewProof,
   formatDate,
   formatFallback,
+  isImageFileType,
   pledgeStatusTone,
 } from "./pledgeReviewLogic";
 
@@ -39,6 +40,62 @@ const PAYMENT_METHOD_OPTIONS = [
 function amountLabel(amountCents: number) {
   const dollars = Math.round(amountCents / 100).toLocaleString("en-US");
   return `HK$${dollars}/月`;
+}
+
+type ProofUrlResponse = { url: string; fileName: string };
+
+function ProofPreview({ pledgeId, proof }: { pledgeId: string; proof: PaymentProofRecord }) {
+  const {
+    data,
+    error,
+    isPending,
+    mutate: fetchProofUrl,
+  } = useMutation<ProofUrlResponse, Error, void>({
+    mutationFn: () =>
+      fetchCoordinatorJson<ProofUrlResponse>(
+        `/api/admin/sponsorships/pledges/${encodeURIComponent(pledgeId)}/proof-url`,
+      ),
+  });
+
+  return (
+    <div className="space-y-2">
+      {!data && (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => fetchProofUrl()}
+          disabled={isPending}
+        >
+          {isPending ? "載入付款證明中..." : "載入付款證明"}
+        </Button>
+      )}
+      {error && (
+        <p role="alert" className="text-xs text-[var(--color-error)]">
+          無法載入付款證明：{error.message}
+        </p>
+      )}
+      {data &&
+        (isImageFileType(proof.fileType) ? (
+          <a href={data.url} target="_blank" rel="noopener noreferrer">
+            <img
+              src={data.url}
+              alt={data.fileName}
+              className="max-h-64 w-full rounded-md border border-[var(--color-border)] object-contain"
+            />
+          </a>
+        ) : (
+          <a
+            href={data.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-[var(--color-primary)] hover:underline"
+          >
+            開啟付款證明（{data.fileName}）
+          </a>
+        ))}
+    </div>
+  );
 }
 
 export function PledgeDetailDrawer({
@@ -266,11 +323,14 @@ export function PledgeDetailDrawer({
               <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
                 <h3 className="text-sm font-semibold text-[var(--color-panel)]">審核付款證明</h3>
                 {pledge.currentProof && (
-                  <p className="text-sm text-[var(--color-text-muted)]">
-                    {pledge.currentProof.paymentMethod} ·{" "}
-                    {formatFallback(pledge.currentProof.reference)} ·{" "}
-                    {amountLabel(pledge.currentProof.amountCents)}
-                  </p>
+                  <>
+                    <p className="text-sm text-[var(--color-text-muted)]">
+                      {pledge.currentProof.paymentMethod} ·{" "}
+                      {formatFallback(pledge.currentProof.reference)} ·{" "}
+                      {amountLabel(pledge.currentProof.amountCents)}
+                    </p>
+                    <ProofPreview pledgeId={pledgeId} proof={pledge.currentProof} />
+                  </>
                 )}
                 <Label htmlFor="pledge-review-note">備註</Label>
                 <Input
