@@ -1,0 +1,305 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+import type {
+  CancelPledgeInput,
+  PaymentProofRecord,
+  PledgeAnimalPreference,
+  PledgeAuditEntry,
+  PledgeDetail,
+  PledgeListSearch,
+  PledgeSummary,
+  RecordPledgePaymentInput,
+  ReviewPledgeProofInput,
+} from "./types";
+
+type PledgeRow = {
+  id: string;
+  supporter_id: string;
+  monthly_tier: PledgeSummary["monthlyTier"];
+  amount_cents: number;
+  currency: string;
+  language: PledgeSummary["language"];
+  notes: string | null;
+  status: PledgeSummary["status"];
+  created_at: string;
+  updated_at: string;
+};
+
+type SupporterRow = {
+  id: string;
+  name: string;
+  email: string | null;
+  phone: string | null;
+};
+
+type PreferenceRow = {
+  id: string;
+  pledge_id: string;
+  rank: number;
+  sponsor_animal_id: string | null;
+  animal_name_snapshot: string;
+};
+
+type ProofRow = {
+  id: string;
+  pledge_id: string;
+  storage_path: string;
+  file_name: string;
+  file_type: string;
+  file_size: number;
+  payment_method: string;
+  reference: string | null;
+  amount_cents: number;
+  payment_date: string;
+  review_status: PaymentProofRecord["reviewStatus"];
+  source: PaymentProofRecord["source"];
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  review_note: string | null;
+  created_at: string;
+};
+
+type AuditRow = {
+  id: string;
+  actor_user_id: string | null;
+  action: string;
+  entity_id: string;
+  detail: Record<string, unknown> | null;
+  timestamp: string;
+};
+
+function unique(values: Array<string | null | undefined>) {
+  return [...new Set(values.filter(Boolean) as string[])];
+}
+
+function mapProof(row: ProofRow): PaymentProofRecord {
+  return {
+    id: row.id,
+    pledgeId: row.pledge_id,
+    storagePath: row.storage_path,
+    fileName: row.file_name,
+    fileType: row.file_type,
+    fileSize: row.file_size,
+    paymentMethod: row.payment_method,
+    reference: row.reference,
+    amountCents: row.amount_cents,
+    paymentDate: row.payment_date,
+    reviewStatus: row.review_status,
+    source: row.source,
+    reviewedBy: row.reviewed_by,
+    reviewedAt: row.reviewed_at,
+    reviewNote: row.review_note,
+    createdAt: row.created_at,
+  };
+}
+
+function mapPreference(row: PreferenceRow): PledgeAnimalPreference {
+  return {
+    id: row.id,
+    rank: row.rank,
+    animalId: row.sponsor_animal_id,
+    animalNameSnapshot: row.animal_name_snapshot,
+  };
+}
+
+function mapAudit(row: AuditRow): PledgeAuditEntry {
+  return {
+    id: row.id,
+    actorUserId: row.actor_user_id,
+    action: row.action,
+    detail: row.detail ?? {},
+    timestamp: row.timestamp,
+  };
+}
+
+function mapSummary(row: PledgeRow, supporters: Map<string, SupporterRow>): PledgeSummary {
+  const supporter = supporters.get(row.supporter_id);
+  return {
+    id: row.id,
+    supporterId: row.supporter_id,
+    supporterName: supporter?.name ?? row.supporter_id,
+    supporterEmail: supporter?.email ?? null,
+    monthlyTier: row.monthly_tier,
+    amountCents: row.amount_cents,
+    currency: row.currency,
+    language: row.language,
+    status: row.status,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+async function loadSupportersByIds(client: SupabaseClient, ids: string[]) {
+  const uniqueIds = unique(ids);
+  if (uniqueIds.length === 0) return new Map<string, SupporterRow>();
+
+  const { data, error } = await client
+    .from("supporter")
+    .select("id,name,email,phone")
+    .in("id", uniqueIds);
+  if (error) throw error;
+
+  return new Map(((data ?? []) as SupporterRow[]).map((row) => [row.id, row]));
+}
+
+export type SponsorshipAdminRepository = {
+  listPledges(input: PledgeListSearch): Promise<{ pledges: PledgeSummary[]; total: number }>;
+  getPledgeDetail(id: string): Promise<PledgeDetail | null>;
+  getProofSigningInfo(pledgeId: string): Promise<{ storagePath: string; fileName: string } | null>;
+  recordPayment(
+    input: RecordPledgePaymentInput & {
+      pledgeId: string;
+      actorUserId: string;
+      storagePath: string;
+      fileName: string;
+      fileType: string;
+      fileSize: number;
+    },
+  ): Promise<{ id: string }>;
+  reviewProof(
+    input: ReviewPledgeProofInput & { pledgeId: string; actorUserId: string },
+  ): Promise<void>;
+  cancelPledge(input: CancelPledgeInput & { pledgeId: string; actorUserId: string }): Promise<void>;
+};
+
+export function createSupabaseSponsorshipAdminRepository(
+  client: SupabaseClient,
+): SponsorshipAdminRepository {
+  return {
+    async listPledges(input) {
+      const from = (input.page - 1) * input.pageSize;
+      let query = client
+        .from("sponsorship_pledge")
+        .select("*", { count: "exact" })
+        .order("created_at", { ascending: false })
+        .range(from, from + input.pageSize - 1);
+
+      if (input.status) query = query.eq("status", input.status);
+
+      const { data, error, count } = await query;
+      if (error) throw error;
+
+      const rows = (data ?? []) as PledgeRow[];
+      const supporters = await loadSupportersByIds(
+        client,
+        rows.map((row) => row.supporter_id),
+      );
+
+      let summaries = rows.map((row) => mapSummary(row, supporters));
+
+      if (input.q) {
+        const q = input.q.trim().toLowerCase();
+        summaries = summaries.filter(
+          (summary) =>
+            summary.supporterName.toLowerCase().includes(q) ||
+            (summary.supporterEmail ?? "").toLowerCase().includes(q) ||
+            summary.id.toLowerCase().includes(q),
+        );
+      }
+
+      return { pledges: summaries, total: count ?? summaries.length };
+    },
+
+    async getPledgeDetail(id) {
+      const { data: pledgeData, error: pledgeError } = await client
+        .from("sponsorship_pledge")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
+      if (pledgeError) throw pledgeError;
+      if (!pledgeData) return null;
+
+      const row = pledgeData as PledgeRow;
+
+      const [supporters, preferencesResult, proofResult, auditResult] = await Promise.all([
+        loadSupportersByIds(client, [row.supporter_id]),
+        client
+          .from("sponsorship_preference")
+          .select("*")
+          .eq("pledge_id", id)
+          .order("rank", { ascending: true }),
+        client
+          .from("sponsorship_payment_proof")
+          .select("*")
+          .eq("pledge_id", id)
+          .order("created_at", { ascending: false }),
+        client
+          .from("audit_log")
+          .select("id,actor_user_id,action,entity_id,detail,timestamp")
+          .eq("entity_id", id)
+          .order("timestamp", { ascending: false })
+          .limit(20),
+      ]);
+      if (preferencesResult.error) throw preferencesResult.error;
+      if (proofResult.error) throw proofResult.error;
+      if (auditResult.error) throw auditResult.error;
+
+      const preferences = ((preferencesResult.data ?? []) as PreferenceRow[]).map(mapPreference);
+      const proofRows = (proofResult.data ?? []) as ProofRow[];
+      const proofHistory = proofRows.map(mapProof);
+      const auditLog = ((auditResult.data ?? []) as AuditRow[]).map(mapAudit);
+
+      return {
+        ...mapSummary(row, supporters),
+        notes: row.notes,
+        supporterPhone: supporters.get(row.supporter_id)?.phone ?? null,
+        preferences,
+        proofHistory,
+        currentProof: proofHistory[0] ?? null,
+        recentAuditLog: auditLog,
+      } satisfies PledgeDetail;
+    },
+
+    async getProofSigningInfo(pledgeId) {
+      const { data, error } = await client
+        .from("sponsorship_payment_proof")
+        .select("storage_path,file_name")
+        .eq("pledge_id", pledgeId)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) return null;
+
+      const row = data as Pick<ProofRow, "storage_path" | "file_name">;
+      return { storagePath: row.storage_path, fileName: row.file_name };
+    },
+
+    async recordPayment(input) {
+      const { data, error } = await client.rpc("record_sponsorship_payment_proof", {
+        p_pledge_id: input.pledgeId,
+        p_actor_user_id: input.actorUserId,
+        p_storage_path: input.storagePath,
+        p_file_name: input.fileName,
+        p_file_type: input.fileType,
+        p_file_size: input.fileSize,
+        p_payment_method: input.paymentMethod,
+        p_reference: input.reference ?? null,
+        p_amount_cents: input.amountCents,
+        p_payment_date: input.paymentDate,
+        p_note: input.note ?? null,
+      });
+      if (error) throw error;
+      return { id: data as string };
+    },
+
+    async reviewProof(input) {
+      const { error } = await client.rpc("review_sponsorship_payment_proof", {
+        p_pledge_id: input.pledgeId,
+        p_decision: input.decision,
+        p_actor_user_id: input.actorUserId,
+        p_note: input.note ?? null,
+      });
+      if (error) throw error;
+    },
+
+    async cancelPledge(input) {
+      const { error } = await client.rpc("cancel_sponsorship_pledge", {
+        p_pledge_id: input.pledgeId,
+        p_actor_user_id: input.actorUserId,
+        p_note: input.note ?? null,
+      });
+      if (error) throw error;
+    },
+  };
+}
