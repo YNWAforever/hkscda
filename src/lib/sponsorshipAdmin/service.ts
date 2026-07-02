@@ -70,14 +70,17 @@ export function createSponsorshipAdminService({
       if (!["pending_payment", "needs_followup"].includes(detail.status)) {
         throw new Error("Sponsorship pledge is not eligible for a recorded payment");
       }
+      if (!input.file) {
+        throw new Error("A proof file is required to record a payment");
+      }
 
       const result = await repo.recordPayment({
         pledgeId: args.pledgeId,
         actorUserId: args.actorUserId,
-        storagePath: input.file?.storagePath ?? "",
-        fileName: input.file?.fileName ?? "",
-        fileType: input.file?.fileType ?? "",
-        fileSize: input.file?.fileSize ?? 0,
+        storagePath: input.file.storagePath,
+        fileName: input.file.fileName,
+        fileType: input.file.fileType,
+        fileSize: input.file.fileSize,
         paymentMethod: input.paymentMethod,
         reference: input.reference ?? null,
         amountCents: input.amountCents,
@@ -94,6 +97,9 @@ export function createSponsorshipAdminService({
       const detail = requirePledge(await repo.getPledgeDetail(args.pledgeId));
       if (detail.status !== "provisional") {
         throw new Error("Sponsorship pledge is not awaiting review");
+      }
+      if (!detail.currentProof || detail.currentProof.reviewStatus !== "pending") {
+        throw new Error("Sponsorship pledge has no proof pending review");
       }
 
       await repo.reviewProof({

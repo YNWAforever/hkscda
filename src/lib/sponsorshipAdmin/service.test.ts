@@ -1,11 +1,33 @@
 import { describe, expect, mock, test } from "bun:test";
 
 import { createSponsorshipAdminService } from "./service";
-import type { PledgeDetail } from "./types";
+import type { PaymentProofRecord, PledgeDetail } from "./types";
 import type { SponsorshipAdminRepository as Repo } from "./repository.server";
 
 const pledgeId = "11111111-2222-4333-8444-555555555555";
 const actorUserId = "22222222-3333-4333-8444-555555555555";
+
+function pendingProof(overrides: Partial<PaymentProofRecord> = {}): PaymentProofRecord {
+  return {
+    id: "proof-1",
+    pledgeId,
+    storagePath: "sponsorship-payment-proof/pledge-1/proof.jpg",
+    fileName: "proof.jpg",
+    fileType: "image/jpeg",
+    fileSize: 1024,
+    paymentMethod: "fps",
+    reference: null,
+    amountCents: 30000,
+    paymentDate: "2026-07-01",
+    reviewStatus: "pending",
+    source: "staff",
+    reviewedBy: null,
+    reviewedAt: null,
+    reviewNote: null,
+    createdAt: "2026-07-01T00:00:00.000Z",
+    ...overrides,
+  };
+}
 
 function baseDetail(overrides: Partial<PledgeDetail> = {}): PledgeDetail {
   return {
@@ -104,6 +126,29 @@ describe("createSponsorshipAdminService", () => {
     expect(repo.recordPayment).not.toHaveBeenCalled();
   });
 
+  test("recordPayment rejects when no file is provided", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () => baseDetail({ status: "pending_payment" })),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await expect(
+      service.recordPayment({
+        actorUserId,
+        pledgeId,
+        input: {
+          paymentMethod: "fps",
+          amountCents: 30000,
+          paymentDate: "2026-07-01",
+        },
+      }),
+    ).rejects.toThrow("A proof file is required to record a payment");
+    expect(repo.recordPayment).not.toHaveBeenCalled();
+  });
+
   test("recordPayment calls the repository and sends the proof_recorded email", async () => {
     const repo = createFakeRepo({
       getPledgeDetail: mock(async () => baseDetail({ status: "pending_payment" })),
@@ -123,6 +168,12 @@ describe("createSponsorshipAdminService", () => {
         amountCents: 30000,
         paymentDate: "2026-07-01",
         note: "Recorded manually",
+        file: {
+          storagePath: "sponsorship-payment-proof/pledge-1/proof.jpg",
+          fileName: "proof.jpg",
+          fileType: "image/jpeg",
+          fileSize: 1024,
+        },
       },
     });
 
@@ -145,9 +196,46 @@ describe("createSponsorshipAdminService", () => {
     expect(repo.reviewProof).not.toHaveBeenCalled();
   });
 
+  test("reviewProof rejects when there is no current proof", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () => baseDetail({ status: "provisional", currentProof: null })),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await expect(
+      service.reviewProof({ actorUserId, pledgeId, input: { decision: "approve" } }),
+    ).rejects.toThrow("Sponsorship pledge has no proof pending review");
+    expect(repo.reviewProof).not.toHaveBeenCalled();
+  });
+
+  test("reviewProof rejects when the current proof is not pending", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({
+          status: "provisional",
+          currentProof: pendingProof({ reviewStatus: "approved" }),
+        }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await expect(
+      service.reviewProof({ actorUserId, pledgeId, input: { decision: "approve" } }),
+    ).rejects.toThrow("Sponsorship pledge has no proof pending review");
+    expect(repo.reviewProof).not.toHaveBeenCalled();
+  });
+
   test("reviewProof approve calls the repository and sends the active email", async () => {
     const repo = createFakeRepo({
-      getPledgeDetail: mock(async () => baseDetail({ status: "provisional" })),
+      getPledgeDetail: mock(async () =>
+        baseDetail({ status: "provisional", currentProof: pendingProof() }),
+      ),
     });
     const sender = createFakeSender();
     const service = createSponsorshipAdminService({
@@ -169,7 +257,9 @@ describe("createSponsorshipAdminService", () => {
 
   test("reviewProof reject sends the needs_followup email", async () => {
     const repo = createFakeRepo({
-      getPledgeDetail: mock(async () => baseDetail({ status: "provisional" })),
+      getPledgeDetail: mock(async () =>
+        baseDetail({ status: "provisional", currentProof: pendingProof() }),
+      ),
     });
     const sender = createFakeSender();
     const service = createSponsorshipAdminService({
