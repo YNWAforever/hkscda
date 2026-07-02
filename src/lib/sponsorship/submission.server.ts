@@ -369,6 +369,7 @@ export async function sendPledgeConfirmationEmail(
     reference: result.reference,
     amountCents: result.amountCents,
     status: result.status === "provisional" ? "provisional" : "pending_payment",
+    statusUrl: result.statusUrl,
   });
 
   const messagePayload = {
