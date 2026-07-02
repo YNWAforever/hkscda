@@ -6,6 +6,7 @@ type PledgeConfirmationEmailInput = {
   reference: string;
   amountCents: number;
   status: "pending_payment" | "provisional";
+  statusUrl: string;
 };
 
 function escapeHtml(value: string) {
@@ -37,6 +38,9 @@ export function renderPledgeConfirmationEmail(input: PledgeConfirmationEmailInpu
   const supporterName = escapeHtml(input.supporterName);
   const reference = escapeHtml(input.reference);
   const amount = centsToHkd(input.amountCents);
+  const statusLink = `<p><a href="${escapeHtml(input.statusUrl)}">${
+    input.language === "en" ? "View sponsorship status" : "查看助養狀態"
+  }</a></p>`;
 
   if (input.language === "en") {
     const paymentBlock =
@@ -57,6 +61,7 @@ export function renderPledgeConfirmationEmail(input: PledgeConfirmationEmailInpu
         `<p>Dear ${supporterName},</p>`,
         `<p>Thank you for pledging <strong>${amount}/month</strong>. Your reference is <strong>${reference}</strong>.</p>`,
         paymentBlock,
+        statusLink,
         "<p>HKSCDA Sponsorship Team</p>",
       ].join(""),
     };
@@ -80,6 +85,7 @@ export function renderPledgeConfirmationEmail(input: PledgeConfirmationEmailInpu
       `<p>${supporterName} 您好：</p>`,
       `<p>多謝您承諾每月助養 <strong>${amount}</strong>，參考編號為 <strong>${reference}</strong>。</p>`,
       paymentBlockZh,
+      statusLink,
       "<p>HKSCDA 助養團隊</p>",
     ].join(""),
   };
