@@ -69,6 +69,8 @@ async function loadPublicSponsorshipStatus({ params }: HandlerContext) {
         .from("sponsorship_payment_proof")
         .select("id")
         .eq("pledge_id", tokenRow.entity_id)
+        .order("created_at", { ascending: false })
+        .limit(1)
         .maybeSingle(),
     ]);
 

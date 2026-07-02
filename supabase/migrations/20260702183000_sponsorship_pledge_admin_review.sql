@@ -258,6 +258,18 @@ begin
   set status = 'cancelled'
   where id = p_pledge_id;
 
+  -- Clean up any in-flight proof left pending review (e.g. cancelling a
+  -- 'provisional' pledge) so it doesn't linger forever: review_sponsorship_payment_proof
+  -- requires the pledge to still be 'provisional', which is no longer true once cancelled.
+  update public.sponsorship_payment_proof
+  set
+    review_status = 'rejected',
+    reviewed_by = (select id from public.admin_user where auth_user_id = p_actor_user_id),
+    reviewed_at = now(),
+    review_note = coalesce(review_note, 'Sponsorship pledge cancelled before review')
+  where pledge_id = p_pledge_id
+    and review_status = 'pending';
+
   insert into public.audit_log (
     actor_user_id,
     action,
