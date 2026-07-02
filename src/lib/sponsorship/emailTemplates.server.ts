@@ -181,6 +181,17 @@ const PLEDGE_STATUS_SUBJECT_EN: Record<PledgeStatusUpdateEvent, string> = {
   cancelled: "HKSCDA sponsorship pledge cancelled",
 };
 
+/**
+ * Renders the bilingual lifecycle-status notification sent to a sponsor
+ * whenever staff record/review a payment proof or cancel a pledge.
+ *
+ * Not yet called from a production code path: the caller
+ * (`sendPledgeStatusUpdateEmail` in `sponsorshipAdmin/notifications.server.ts`,
+ * wired into `sponsorshipAdmin/service.ts`'s recordPayment/reviewProof/
+ * cancelPledge orchestration) is a later task in the same admin-review plan
+ * (see `docs/superpowers/plans/2026-07-03-sponsorship-pledge-admin-review.md`,
+ * Task 6), not dead code left behind.
+ */
 export function renderPledgeStatusUpdateEmail(input: PledgeStatusUpdateEmailInput) {
   const supporterName = escapeHtml(input.supporterName);
   const reference = escapeHtml(input.reference);
