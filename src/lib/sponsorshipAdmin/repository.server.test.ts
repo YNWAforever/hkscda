@@ -401,6 +401,20 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     expect(page2.pledges.map((p) => p.id)).toEqual(["pledge-match-5"]);
   });
 
+  test("listPledges throws when q matches more supporters than the candidate limit", async () => {
+    // PLEDGE_SEARCH_CANDIDATE_LIMIT is 1000; 1001 matching supporters must trip
+    // the "too broad" guard rather than proceeding to an unbounded `.in()` filter.
+    const supporterRows = Array.from({ length: 1001 }, (_, i) =>
+      supporterRow({ id: `supporter-${i}`, name: "陳小姐", email: `chan${i}@example.com` }),
+    );
+    const { client } = createFakeClient({ pledgeRows: [], supporterRows });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    await expect(repo.listPledges({ q: "陳", page: 1, pageSize: 25 })).rejects.toThrow(
+      "Pledge search matches too many records",
+    );
+  });
+
   test("listPledges returns empty results when q matches no supporter or pledge", async () => {
     const { client } = createFakeClient({
       pledgeRows: [pledgeRow()],

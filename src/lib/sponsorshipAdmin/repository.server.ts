@@ -8,7 +8,7 @@ import type {
   PledgeDetail,
   PledgeListSearch,
   PledgeSummary,
-  RecordPledgePaymentInput,
+  RecordPledgePaymentRepoInput,
   ReviewPledgeProofInput,
 } from "./types";
 
@@ -204,16 +204,7 @@ export type SponsorshipAdminRepository = {
   listPledges(input: PledgeListSearch): Promise<{ pledges: PledgeSummary[]; total: number }>;
   getPledgeDetail(id: string): Promise<PledgeDetail | null>;
   getProofSigningInfo(pledgeId: string): Promise<{ storagePath: string; fileName: string } | null>;
-  recordPayment(
-    input: RecordPledgePaymentInput & {
-      pledgeId: string;
-      actorUserId: string;
-      storagePath: string;
-      fileName: string;
-      fileType: string;
-      fileSize: number;
-    },
-  ): Promise<{ id: string }>;
+  recordPayment(input: RecordPledgePaymentRepoInput): Promise<{ id: string }>;
   reviewProof(
     input: ReviewPledgeProofInput & { pledgeId: string; actorUserId: string },
   ): Promise<void>;

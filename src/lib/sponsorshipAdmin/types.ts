@@ -86,6 +86,24 @@ export type RecordPledgePaymentInput = {
   } | null;
 };
 
+/**
+ * Flattened shape the repository's `recordPayment` actually consumes: the
+ * proof file fields are required top-level siblings here (the caller must
+ * have already resolved/uploaded the file and unwrapped it), unlike
+ * `RecordPledgePaymentInput.file`, which is a nullable/optional nested
+ * object coming straight off the request schema. Callers should map from
+ * `RecordPledgePaymentInput` to this type explicitly rather than relying on
+ * structural overlap.
+ */
+export type RecordPledgePaymentRepoInput = Omit<RecordPledgePaymentInput, "file"> & {
+  pledgeId: string;
+  actorUserId: string;
+  storagePath: string;
+  fileName: string;
+  fileType: string;
+  fileSize: number;
+};
+
 export type ReviewPledgeProofInput = {
   decision: "approve" | "reject";
   note?: string | null;
