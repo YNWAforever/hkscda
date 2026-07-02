@@ -64,7 +64,7 @@ export async function sendDonationAcknowledgement(
 
   try {
     const resend = new Resend(config.resendApiKey);
-    await resend.emails.send({
+    const { error: sendResultError } = await resend.emails.send({
       from: config.from,
       to: input.to,
       replyTo: config.replyTo,
@@ -74,6 +74,14 @@ export async function sendDonationAcknowledgement(
           ? `<p>Dear ${input.donorName},</p><p>Thank you for your donation of ${centsToHkd(input.amountCents)}.</p>${receiptLine}<p>Every gift helps rescued cats and dogs receive food, medical care, and a safe path to adoption.</p>`
           : `<p>${input.donorName} 您好：</p><p>多謝您捐出 ${centsToHkd(input.amountCents)} 支持本會。</p>${receiptLine}<p>每一份善意都會用於流浪貓狗的糧食、醫療及領養工作。</p>`,
     });
+    if (sendResultError) {
+      // Resend's SDK resolves with { error } for API-level failures (bad key,
+      // rate limit, invalid recipient) instead of throwing — treat that the
+      // same as a thrown exception so it doesn't get marked 'sent'.
+      console.error("Failed to send donation acknowledgement email", sendResultError);
+      await client.from("message").update({ status: "failed" }).eq("id", messageId);
+      return "failed";
+    }
   } catch (sendError) {
     // Best-effort: an email-provider outage must never roll back an
     // already-committed payment + receipt. Leave the claim row as 'failed' for

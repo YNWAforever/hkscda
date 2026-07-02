@@ -127,6 +127,28 @@ describe("sendPledgeStatusUpdateEmail", () => {
     expect(result).toBe("failed");
   });
 
+  test("returns 'failed' when the email sender resolves with an API-level error instead of throwing", async () => {
+    const { client, state } = createFakeClient();
+    const result = await sendPledgeStatusUpdateEmail(client, baseArgs(), {
+      getEmailConfig: () => ({
+        resendApiKey: "key",
+        from: "HKSCDA <noreply@hkscda.com>",
+        replyTo: "info@hkscda.com",
+        notificationEmail: "info@hkscda.com",
+      }),
+      createEmailSender: () => ({
+        send: async () => ({
+          data: null,
+          error: { message: "Invalid API key", name: "invalid_api_key" },
+        }),
+      }),
+      logger: { error: () => {} },
+    });
+    expect(result).toBe("failed");
+    const updateCall = state.calls.find((c) => c.table === "message" && c.method === "update");
+    expect((updateCall?.payload as { status?: string })?.status).toBe("failed");
+  });
+
   test("sets the message payload supporter_id so it surfaces in the CRM timeline", async () => {
     const { client, state } = createFakeClient();
     await sendPledgeStatusUpdateEmail(client, baseArgs({ supporterId: "supporter-42" }), {

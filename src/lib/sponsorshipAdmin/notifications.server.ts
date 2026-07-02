@@ -8,6 +8,11 @@ import { getEmailConfig } from "../donations/config.server";
 
 type EmailConfig = ReturnType<typeof getEmailConfig>;
 
+type EmailSendResult = {
+  data?: unknown;
+  error?: { message?: string; name?: string } | null;
+};
+
 type EmailSender = {
   send(payload: {
     from: string;
@@ -15,7 +20,7 @@ type EmailSender = {
     replyTo?: string;
     subject: string;
     html: string;
-  }): Promise<unknown>;
+  }): Promise<EmailSendResult>;
 };
 
 async function defaultCreateEmailSender(apiKey: string): Promise<EmailSender> {
@@ -100,13 +105,21 @@ export async function sendPledgeStatusUpdateEmail(
 
   try {
     const emails = await createEmailSender(config.resendApiKey);
-    await emails.send({
+    const result = await emails.send({
       from: config.from,
       to: args.supporterEmail,
       replyTo: config.replyTo,
       subject: email.subject,
       html: email.html,
     });
+    if (result.error) {
+      // Resend's SDK resolves with { error } for API-level failures (bad key,
+      // rate limit, invalid recipient) instead of throwing — treat that the
+      // same as a thrown exception so it doesn't get marked 'sent'.
+      logger.error("Failed to send sponsorship pledge status update email", result.error);
+      await client.from("message").update({ status: "failed" }).eq("id", messageId);
+      return "failed";
+    }
   } catch (error) {
     logger.error("Failed to send sponsorship pledge status update email", error);
     await client.from("message").update({ status: "failed" }).eq("id", messageId);
