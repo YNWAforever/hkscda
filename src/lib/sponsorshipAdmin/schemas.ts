@@ -1,20 +1,6 @@
 import { z } from "zod";
 
-import { paymentMethodSchema } from "../sponsorship/schemas";
-
-const trimmed = z.string().trim();
-const optionalTrimmedNullable = z
-  .string()
-  .trim()
-  .optional()
-  .transform((value) => value || null);
-
-function isIsoDate(value: string) {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-  const date = new Date(`${value}T00:00:00.000Z`);
-  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
-}
-const isoDate = trimmed.refine(isIsoDate, "Invalid date");
+import { isoDate, optionalTrimmed, paymentMethodSchema, trimmed } from "../sponsorship/schemas";
 
 export const pledgeStatusSchema = z.enum([
   "pending_payment",
@@ -37,10 +23,10 @@ export const pledgeListSearchSchema = z.object({
 
 export const recordPledgePaymentSchema = z.object({
   paymentMethod: paymentMethodSchema,
-  reference: optionalTrimmedNullable,
+  reference: optionalTrimmed,
   amountCents: z.number().int().positive(),
   paymentDate: isoDate,
-  note: optionalTrimmedNullable,
+  note: optionalTrimmed,
   file: z
     .object({
       storagePath: trimmed.min(1),
@@ -52,14 +38,15 @@ export const recordPledgePaymentSchema = z.object({
         .positive()
         .max(8 * 1024 * 1024),
     })
+    .nullable()
     .optional(),
 });
 
 export const reviewPledgeProofSchema = z.object({
   decision: z.enum(["approve", "reject"]),
-  note: optionalTrimmedNullable,
+  note: optionalTrimmed,
 });
 
 export const cancelPledgeSchema = z.object({
-  note: optionalTrimmedNullable,
+  note: optionalTrimmed,
 });
