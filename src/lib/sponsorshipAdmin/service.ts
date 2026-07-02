@@ -18,7 +18,7 @@ type SendPledgeStatusUpdateEmail = (
 export type CreateSponsorshipAdminServiceArgs = {
   repo: SponsorshipAdminRepository;
   sendPledgeStatusUpdateEmail: SendPledgeStatusUpdateEmail;
-  client?: SupabaseClient;
+  client: SupabaseClient;
   logger?: Pick<Console, "error">;
 };
 
@@ -36,7 +36,7 @@ export function createSponsorshipAdminService({
   async function notify(detail: PledgeDetail, event: SendPledgeStatusUpdateEmailArgs["event"]) {
     if (!detail.supporterEmail) return;
     try {
-      await sendPledgeStatusUpdateEmail(client as SupabaseClient, {
+      await sendPledgeStatusUpdateEmail(client, {
         event,
         language: detail.language,
         supporterId: detail.supporterId,

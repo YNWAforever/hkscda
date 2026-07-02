@@ -3,6 +3,9 @@ import { describe, expect, mock, test } from "bun:test";
 import { createSponsorshipAdminService } from "./service";
 import type { PaymentProofRecord, PledgeDetail } from "./types";
 import type { SponsorshipAdminRepository as Repo } from "./repository.server";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+const fakeClient = {} as SupabaseClient;
 
 const pledgeId = "11111111-2222-4333-8444-555555555555";
 const actorUserId = "22222222-3333-4333-8444-555555555555";
@@ -80,6 +83,7 @@ describe("createSponsorshipAdminService", () => {
     const repo = createFakeRepo();
     const service = createSponsorshipAdminService({
       repo,
+      client: fakeClient,
       sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
     });
 
@@ -97,6 +101,7 @@ describe("createSponsorshipAdminService", () => {
     const repo = createFakeRepo({ getPledgeDetail: mock(async () => null) });
     const service = createSponsorshipAdminService({
       repo,
+      client: fakeClient,
       sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
     });
 
@@ -109,6 +114,7 @@ describe("createSponsorshipAdminService", () => {
     });
     const service = createSponsorshipAdminService({
       repo,
+      client: fakeClient,
       sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
     });
 
@@ -132,6 +138,7 @@ describe("createSponsorshipAdminService", () => {
     });
     const service = createSponsorshipAdminService({
       repo,
+      client: fakeClient,
       sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
     });
 
@@ -156,6 +163,7 @@ describe("createSponsorshipAdminService", () => {
     const sender = createFakeSender();
     const service = createSponsorshipAdminService({
       repo,
+      client: fakeClient,
       sendPledgeStatusUpdateEmail: sender.sendPledgeStatusUpdateEmail,
     });
 
@@ -187,6 +195,7 @@ describe("createSponsorshipAdminService", () => {
     });
     const service = createSponsorshipAdminService({
       repo,
+      client: fakeClient,
       sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
     });
 
@@ -202,6 +211,7 @@ describe("createSponsorshipAdminService", () => {
     });
     const service = createSponsorshipAdminService({
       repo,
+      client: fakeClient,
       sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
     });
 
@@ -222,6 +232,7 @@ describe("createSponsorshipAdminService", () => {
     });
     const service = createSponsorshipAdminService({
       repo,
+      client: fakeClient,
       sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
     });
 
@@ -240,6 +251,7 @@ describe("createSponsorshipAdminService", () => {
     const sender = createFakeSender();
     const service = createSponsorshipAdminService({
       repo,
+      client: fakeClient,
       sendPledgeStatusUpdateEmail: sender.sendPledgeStatusUpdateEmail,
     });
 
@@ -264,6 +276,7 @@ describe("createSponsorshipAdminService", () => {
     const sender = createFakeSender();
     const service = createSponsorshipAdminService({
       repo,
+      client: fakeClient,
       sendPledgeStatusUpdateEmail: sender.sendPledgeStatusUpdateEmail,
     });
 
@@ -283,6 +296,7 @@ describe("createSponsorshipAdminService", () => {
     });
     const service = createSponsorshipAdminService({
       repo,
+      client: fakeClient,
       sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
     });
 
@@ -299,6 +313,7 @@ describe("createSponsorshipAdminService", () => {
     const sender = createFakeSender();
     const service = createSponsorshipAdminService({
       repo,
+      client: fakeClient,
       sendPledgeStatusUpdateEmail: sender.sendPledgeStatusUpdateEmail,
     });
 
@@ -319,6 +334,7 @@ describe("createSponsorshipAdminService", () => {
     });
     const service = createSponsorshipAdminService({
       repo,
+      client: fakeClient,
       sendPledgeStatusUpdateEmail: mock(async () => {
         throw new Error("email provider down");
       }),
