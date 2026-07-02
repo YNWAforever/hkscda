@@ -63,5 +63,5 @@ export function canReviewProof(status: PledgeStatus): boolean {
 
 /** Statuses for which the "cancel sponsorship" action should be shown in the detail drawer. */
 export function canCancelPledge(status: PledgeStatus): boolean {
-  return status === "active";
+  return status !== "cancelled";
 }

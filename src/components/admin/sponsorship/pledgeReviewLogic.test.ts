@@ -100,8 +100,12 @@ describe("canReviewProof", () => {
 });
 
 describe("canCancelPledge", () => {
-  test("is true only for active", () => {
+  test("is true for any status except cancelled", () => {
     const allowed = ALL_STATUSES.filter(canCancelPledge);
-    expect(allowed).toEqual(["active"]);
+    expect(allowed).toEqual(["pending_payment", "provisional", "active", "needs_followup"]);
+  });
+
+  test("is false for cancelled", () => {
+    expect(canCancelPledge("cancelled")).toBe(false);
   });
 });
