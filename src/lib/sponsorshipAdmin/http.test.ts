@@ -78,6 +78,164 @@ describe("createSponsorshipAdminHandlers", () => {
     expect(response.status).toBe(400);
   });
 
+  test("getProofUrl returns 200 with the signing info when present", async () => {
+    const service = createService({
+      getProofSigningInfo: mock(async () => ({
+        storagePath: "proofs/1.png",
+        fileName: "receipt.png",
+      })),
+    });
+    const handlers = createSponsorshipAdminHandlers({
+      requireCoordinator: requireCoordinator(),
+      service: service as never,
+    });
+
+    const response = await handlers.getProofUrl({
+      request: request("http://localhost/api/admin/sponsorships/pledges/" + pledgeId + "/proof"),
+      params: { id: pledgeId },
+    });
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.fileName).toBe("receipt.png");
+    expect(response.headers.get("cache-control")).toBe("no-store");
+  });
+
+  test("getProofUrl returns 404 when the service returns null", async () => {
+    const service = createService();
+    const handlers = createSponsorshipAdminHandlers({
+      requireCoordinator: requireCoordinator(),
+      service: service as never,
+    });
+
+    const response = await handlers.getProofUrl({
+      request: request("http://localhost/api/admin/sponsorships/pledges/" + pledgeId + "/proof"),
+      params: { id: pledgeId },
+    });
+    expect(response.status).toBe(404);
+    const body = await response.json();
+    expect(body.error).toBe("Payment proof not found");
+  });
+
+  test("getProofUrl returns 400 for a non-uuid id", async () => {
+    const service = createService();
+    const handlers = createSponsorshipAdminHandlers({
+      requireCoordinator: requireCoordinator(),
+      service: service as never,
+    });
+
+    const response = await handlers.getProofUrl({
+      request: request("http://localhost/api/admin/sponsorships/pledges/not-a-uuid/proof"),
+      params: { id: "not-a-uuid" },
+    });
+    expect(response.status).toBe(400);
+  });
+
+  test("recordPayment returns 400 for an invalid JSON body", async () => {
+    const service = createService();
+    const handlers = createSponsorshipAdminHandlers({
+      requireCoordinator: requireCoordinator(),
+      service: service as never,
+    });
+
+    const response = await handlers.recordPayment({
+      request: request("http://localhost/x", {
+        method: "POST",
+        body: "{not-json",
+      }),
+      params: { id: pledgeId },
+    });
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body.error).toBe("Invalid JSON body");
+  });
+
+  test("recordPayment maps a missing-proof-file domain error to 400", async () => {
+    const service = createService({
+      recordPayment: mock(async () => {
+        throw new Error("A proof file is required to record a payment");
+      }),
+    });
+    const handlers = createSponsorshipAdminHandlers({
+      requireCoordinator: requireCoordinator(),
+      service: service as never,
+    });
+
+    const response = await handlers.recordPayment({
+      request: request("http://localhost/x", {
+        method: "POST",
+        body: JSON.stringify({ paymentMethod: "fps", amountCents: 1, paymentDate: "2026-07-01" }),
+      }),
+      params: { id: pledgeId },
+    });
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body.error).toBe("A proof file is required to record a payment");
+  });
+
+  test("recordPayment returns 201 with the proof payload on success", async () => {
+    const service = createService({
+      recordPayment: mock(async () => ({ id: "proof-1" })),
+    });
+    const handlers = createSponsorshipAdminHandlers({
+      requireCoordinator: requireCoordinator(),
+      service: service as never,
+    });
+
+    const response = await handlers.recordPayment({
+      request: request("http://localhost/x", {
+        method: "POST",
+        body: JSON.stringify({
+          paymentMethod: "fps",
+          amountCents: 1,
+          paymentDate: "2026-07-01",
+          file: {
+            storagePath: "proofs/1.png",
+            fileName: "receipt.png",
+            fileType: "image/png",
+            fileSize: 100,
+          },
+        }),
+      }),
+      params: { id: pledgeId },
+    });
+    expect(response.status).toBe(201);
+    const body = await response.json();
+    expect(body.proof.id).toBe("proof-1");
+  });
+
+  test("an unmapped domain error falls through to a generic 500", async () => {
+    const originalConsoleError = console.error;
+    console.error = () => {};
+    try {
+      const service = createService({
+        recordPayment: mock(async () => {
+          throw new Error("Some unmapped domain failure");
+        }),
+      });
+      const handlers = createSponsorshipAdminHandlers({
+        requireCoordinator: requireCoordinator(),
+        service: service as never,
+      });
+
+      const response = await handlers.recordPayment({
+        request: request("http://localhost/x", {
+          method: "POST",
+          body: JSON.stringify({
+            paymentMethod: "fps",
+            amountCents: 1,
+            paymentDate: "2026-07-01",
+          }),
+        }),
+        params: { id: pledgeId },
+      });
+      expect(response.status).toBe(500);
+      const body = await response.json();
+      expect(body.error).toBe("Could not process sponsorship review request");
+    } finally {
+      console.error = originalConsoleError;
+    }
+  });
+
   test("reviewProof maps a conflict domain error to 409", async () => {
     const service = createService({
       reviewProof: mock(async () => {
@@ -134,6 +292,24 @@ describe("createSponsorshipAdminHandlers", () => {
     expect(response.status).toBe(200);
     const body = await response.json();
     expect(body.ok).toBe(true);
+  });
+
+  test("cancelPledge maps an already-cancelled domain error to 409", async () => {
+    const service = createService({
+      cancelPledge: mock(async () => {
+        throw new Error("Sponsorship pledge is already cancelled");
+      }),
+    });
+    const handlers = createSponsorshipAdminHandlers({
+      requireCoordinator: requireCoordinator(),
+      service: service as never,
+    });
+
+    const response = await handlers.cancelPledge({
+      request: request("http://localhost/x", { method: "POST", body: JSON.stringify({}) }),
+      params: { id: pledgeId },
+    });
+    expect(response.status).toBe(409);
   });
 
   test("requireCoordinator failure propagates its Response status", async () => {
