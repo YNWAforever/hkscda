@@ -10,6 +10,7 @@ class FakeQuery {
   constructor(
     private readonly state: { calls: QueryCall[] },
     private readonly table: string,
+    private readonly messageInsertError: { code?: string; message?: string } | null,
   ) {}
 
   insert(payload: unknown) {
@@ -35,7 +36,10 @@ class FakeQuery {
   }
 
   async single() {
-    if (this.table === "message") return { data: { id: "message-1" }, error: null };
+    if (this.table === "message") {
+      if (this.messageInsertError) return { data: null, error: this.messageInsertError };
+      return { data: { id: "message-1" }, error: null };
+    }
     return { data: this.mutationPayload, error: null };
   }
 
@@ -43,15 +47,20 @@ class FakeQuery {
     onfulfilled?: ((value: unknown) => T1 | PromiseLike<T1>) | null,
     onrejected?: ((reason: unknown) => T2 | PromiseLike<T2>) | null,
   ) {
-    return Promise.resolve({ data: this.mutationPayload, error: null }).then(onfulfilled, onrejected);
+    return Promise.resolve({ data: this.mutationPayload, error: null }).then(
+      onfulfilled,
+      onrejected,
+    );
   }
 }
 
-function createFakeClient() {
+function createFakeClient({
+  messageInsertError = null,
+}: { messageInsertError?: { code?: string; message?: string } | null } = {}) {
   const state = { calls: [] as QueryCall[] };
   const client = {
     from(table: string) {
-      return new FakeQuery(state, table);
+      return new FakeQuery(state, table, messageInsertError);
     },
   };
   return { client: client as never, state };
@@ -130,5 +139,41 @@ describe("sendPledgeStatusUpdateEmail", () => {
     });
     const insertCall = state.calls.find((c) => c.table === "message" && c.method === "insert");
     expect((insertCall?.payload as { supporter_id: string }).supporter_id).toBe("supporter-42");
+  });
+
+  test("returns 'skipped' without sending when the claim insert hits the dedup unique index (23505)", async () => {
+    const { client, state } = createFakeClient({ messageInsertError: { code: "23505" } });
+    const result = await sendPledgeStatusUpdateEmail(client, baseArgs(), {
+      getEmailConfig: () => ({
+        resendApiKey: "key",
+        from: "HKSCDA <noreply@hkscda.com>",
+        replyTo: "info@hkscda.com",
+        notificationEmail: "info@hkscda.com",
+      }),
+      createEmailSender: () => ({ send: async () => ({}) }),
+      logger: { error: () => {} },
+    });
+    expect(result).toBe("skipped");
+    // The unique-index conflict short-circuits: no email send, no status flip.
+    expect(state.calls.filter((c) => c.table === "message" && c.method === "update")).toHaveLength(
+      0,
+    );
+  });
+
+  test("re-throws when the claim insert fails for a reason other than a dedup conflict", async () => {
+    const { client } = createFakeClient({
+      messageInsertError: { code: "42501", message: "permission denied" },
+    });
+    await expect(
+      sendPledgeStatusUpdateEmail(client, baseArgs(), {
+        getEmailConfig: () => ({
+          resendApiKey: undefined,
+          from: "HKSCDA <noreply@hkscda.com>",
+          replyTo: "info@hkscda.com",
+          notificationEmail: "info@hkscda.com",
+        }),
+        logger: { error: () => {} },
+      }),
+    ).rejects.toBeTruthy();
   });
 });

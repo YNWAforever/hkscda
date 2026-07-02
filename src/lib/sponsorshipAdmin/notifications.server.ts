@@ -39,7 +39,7 @@ type SendPledgeStatusUpdateEmailDeps = {
   logger?: Pick<Console, "error">;
 };
 
-export type PledgeStatusUpdateEmailResult = "queued" | "sent" | "failed";
+export type PledgeStatusUpdateEmailResult = "queued" | "sent" | "skipped" | "failed";
 
 export async function sendPledgeStatusUpdateEmail(
   client: SupabaseClient,
@@ -67,6 +67,13 @@ export async function sendPledgeStatusUpdateEmail(
     entityType: "sponsorship_pledge",
   };
 
+  // Claim the send BEFORE any external work. The
+  // message_pledge_status_update_unique index enforces one message per
+  // (supporter, reference, event), so a redelivered/concurrent call (retry,
+  // double-click) for the same pledge status transition loses the race with
+  // a 23505 here and skips — no duplicate "pledge is now active/cancelled"
+  // email goes out. Mirrors sendDonationAcknowledgement in
+  // src/lib/donations/notifications.server.ts.
   const { data: message, error: messageError } = await client
     .from("message")
     .insert({
@@ -77,9 +84,15 @@ export async function sendPledgeStatusUpdateEmail(
     })
     .select("id")
     .single();
-  if (messageError || !message) {
+  if (messageError) {
+    if ((messageError as { code?: string }).code === "23505") return "skipped";
     logger.error("Failed to queue sponsorship pledge status update email", messageError);
-    return "failed";
+    throw messageError;
+  }
+  if (!message) {
+    const error = new Error("Insert of sponsorship pledge status update message returned no row");
+    logger.error("Failed to queue sponsorship pledge status update email", error);
+    throw error;
   }
 
   const messageId = (message as { id: string }).id;
