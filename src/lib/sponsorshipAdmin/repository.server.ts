@@ -68,8 +68,66 @@ type AuditRow = {
   timestamp: string;
 };
 
+const PLEDGE_SEARCH_CANDIDATE_LIMIT = 1000;
+const PLEDGE_SEARCH_TOO_BROAD_ERROR = "Pledge search matches too many records";
+
 function unique(values: Array<string | null | undefined>) {
   return [...new Set(values.filter(Boolean) as string[])];
+}
+
+function escapeLike(value: string) {
+  return value.replaceAll("\\", "\\\\").replaceAll("%", "\\%").replaceAll("_", "\\_");
+}
+
+function sanitizeOrLikeValue(value: string) {
+  // PostgREST .or() uses comma and parentheses for grammar, so keep search terms literal.
+  return escapeLike(
+    value
+      .replace(/[(),]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .replace(/\s+([%_])/g, "$1"),
+  );
+}
+
+/**
+ * Resolves the set of pledge ids that match a free-text search (`q`) against
+ * the pledge id itself and the linked supporter's name/email. Resolving ids
+ * up front lets the caller apply the filter in the SQL query (via `.in()`)
+ * so that `count: "exact"` and pagination stay correct for matches that fall
+ * outside the current page window.
+ */
+async function searchPledgeIds(client: SupabaseClient, q: string): Promise<string[]> {
+  const like = `%${sanitizeOrLikeValue(q)}%`;
+
+  const [directResult, supporterResult] = await Promise.all([
+    client.from("sponsorship_pledge").select("id").ilike("id", like),
+    client.from("supporter").select("id").or(`name.ilike.${like},email.ilike.${like}`),
+  ]);
+  if (directResult.error) throw directResult.error;
+  if (supporterResult.error) throw supporterResult.error;
+
+  const directIds = ((directResult.data ?? []) as Array<{ id: string }>).map((row) => row.id);
+  const supporterIds = unique(
+    ((supporterResult.data ?? []) as Array<{ id: string }>).map((row) => row.id),
+  );
+
+  if (supporterIds.length === 0) return unique(directIds);
+  if (supporterIds.length > PLEDGE_SEARCH_CANDIDATE_LIMIT) {
+    throw new Error(PLEDGE_SEARCH_TOO_BROAD_ERROR);
+  }
+
+  const pledgesBySupporterResult = await client
+    .from("sponsorship_pledge")
+    .select("id")
+    .in("supporter_id", supporterIds);
+  if (pledgesBySupporterResult.error) throw pledgesBySupporterResult.error;
+
+  const pledgeIdsBySupporter = ((pledgesBySupporterResult.data ?? []) as Array<{ id: string }>).map(
+    (row) => row.id,
+  );
+
+  return unique([...directIds, ...pledgeIdsBySupporter]);
 }
 
 function mapProof(row: ProofRow): PaymentProofRecord {
@@ -176,6 +234,12 @@ export function createSupabaseSponsorshipAdminRepository(
 
       if (input.status) query = query.eq("status", input.status);
 
+      if (input.q) {
+        const candidateIds = await searchPledgeIds(client, input.q);
+        if (candidateIds.length === 0) return { pledges: [], total: 0 };
+        query = query.in("id", candidateIds);
+      }
+
       const { data, error, count } = await query;
       if (error) throw error;
 
@@ -185,17 +249,7 @@ export function createSupabaseSponsorshipAdminRepository(
         rows.map((row) => row.supporter_id),
       );
 
-      let summaries = rows.map((row) => mapSummary(row, supporters));
-
-      if (input.q) {
-        const q = input.q.trim().toLowerCase();
-        summaries = summaries.filter(
-          (summary) =>
-            summary.supporterName.toLowerCase().includes(q) ||
-            (summary.supporterEmail ?? "").toLowerCase().includes(q) ||
-            summary.id.toLowerCase().includes(q),
-        );
-      }
+      const summaries = rows.map((row) => mapSummary(row, supporters));
 
       return { pledges: summaries, total: count ?? summaries.length };
     },

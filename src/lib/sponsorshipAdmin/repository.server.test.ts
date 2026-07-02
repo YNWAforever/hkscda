@@ -57,8 +57,29 @@ function proofRow(overrides: Record<string, unknown> = {}) {
   };
 }
 
+function matchesLike(value: unknown, pattern: string) {
+  if (value === null || value === undefined) return false;
+  const needle = pattern
+    .replace(/^%/, "")
+    .replace(/%$/, "")
+    .replaceAll("\\%", "%")
+    .replaceAll("\\_", "_")
+    .toLowerCase();
+  return String(value).toLowerCase().includes(needle);
+}
+
+function matchesOrFilter(row: Record<string, unknown>, filter: string) {
+  return filter.split(",").some((part) => {
+    const [column, pattern] = part.split(".ilike.");
+    if (!column || !pattern || column.includes(".")) return false;
+    return matchesLike(row[column], pattern);
+  });
+}
+
 class FakeQuery {
   private filters: Array<{ column: string; value: unknown }> = [];
+  private likeFilters: Array<{ column: string; value: string }> = [];
+  private orFilters: string[] = [];
   private orderCol: string | null = null;
   private orderAsc = true;
   private rangeBounds: [number, number] | null = null;
@@ -88,11 +109,14 @@ class FakeQuery {
   }
 
   ilike(column: string, value: unknown) {
-    this.filters.push({ column, value });
+    this.likeFilters.push({ column, value: String(value) });
+    this.state.calls.push({ table: this.table, method: "ilike", payload: { column, value } });
     return this;
   }
 
-  or() {
+  or(filters: string) {
+    this.orFilters.push(filters);
+    this.state.calls.push({ table: this.table, method: "or", payload: filters });
     return this;
   }
 
@@ -127,6 +151,12 @@ class FakeQuery {
         if (Array.isArray(filter.value)) return filter.value.includes(row[filter.column]);
         return row[filter.column] === filter.value;
       });
+    }
+    for (const like of this.likeFilters) {
+      rows = rows.filter((row) => matchesLike(row[like.column], like.value));
+    }
+    for (const orFilter of this.orFilters) {
+      rows = rows.filter((row) => matchesOrFilter(row, orFilter));
     }
     if (this.orderCol) {
       rows = [...rows].sort((left, right) => {
@@ -303,6 +333,84 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     const result = await repo.listPledges({ status: "active", page: 1, pageSize: 25 });
     expect(result.pledges).toHaveLength(1);
     expect(result.pledges[0].status).toBe("active");
+  });
+
+  test("listPledges filters by q against supporter name, email, and pledge id", async () => {
+    const { client } = createFakeClient({
+      pledgeRows: [
+        pledgeRow({ id: "pledge-1", supporter_id: "supporter-1" }),
+        pledgeRow({ id: "pledge-2", supporter_id: "supporter-2" }),
+      ],
+      supporterRows: [
+        supporterRow({ id: "supporter-1", name: "陳小姐", email: "chan@example.com" }),
+        supporterRow({ id: "supporter-2", name: "李先生", email: "lee@example.com" }),
+      ],
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const result = await repo.listPledges({ q: "陳", page: 1, pageSize: 25 });
+    expect(result.pledges).toHaveLength(1);
+    expect(result.pledges[0].id).toBe("pledge-1");
+    expect(result.total).toBe(1);
+  });
+
+  test("listPledges q search returns correct total and later matches when combined with pagination", async () => {
+    // Six pledges from supporter-1 (matching `q`) interleaved with noise pledges
+    // from supporter-2 (non-matching), with pageSize 5. Ordered by created_at
+    // desc, the 6th match falls on page 2. This reproduces the scenario where
+    // an in-memory filter applied after `.range()` would report a `total` that
+    // only reflects the unfiltered/status-filtered row count (12 here, not 6),
+    // and would drop matches that fall outside the already-paginated DB window.
+    const matching = Array.from({ length: 6 }, (_, i) =>
+      pledgeRow({
+        id: `pledge-match-${i}`,
+        supporter_id: "supporter-1",
+        created_at: `2026-07-${String(10 - i).padStart(2, "0")}T00:00:00.000Z`,
+      }),
+    );
+    const nonMatching = Array.from({ length: 6 }, (_, i) =>
+      pledgeRow({
+        id: `pledge-noise-${i}`,
+        supporter_id: "supporter-2",
+        created_at: `2026-06-${String(20 - i).padStart(2, "0")}T00:00:00.000Z`,
+      }),
+    );
+    const pledgeRows = [...matching, ...nonMatching];
+
+    const { client } = createFakeClient({
+      pledgeRows,
+      supporterRows: [
+        supporterRow({ id: "supporter-1", name: "陳小姐", email: "chan@example.com" }),
+        supporterRow({ id: "supporter-2", name: "李先生", email: "lee@example.com" }),
+      ],
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const page1 = await repo.listPledges({ q: "陳", page: 1, pageSize: 5 });
+    expect(page1.total).toBe(6);
+    expect(page1.pledges.map((p) => p.id)).toEqual([
+      "pledge-match-0",
+      "pledge-match-1",
+      "pledge-match-2",
+      "pledge-match-3",
+      "pledge-match-4",
+    ]);
+
+    const page2 = await repo.listPledges({ q: "陳", page: 2, pageSize: 5 });
+    expect(page2.total).toBe(6);
+    expect(page2.pledges.map((p) => p.id)).toEqual(["pledge-match-5"]);
+  });
+
+  test("listPledges returns empty results when q matches no supporter or pledge", async () => {
+    const { client } = createFakeClient({
+      pledgeRows: [pledgeRow()],
+      supporterRows: [supporterRow()],
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const result = await repo.listPledges({ q: "no-such-match", page: 1, pageSize: 25 });
+    expect(result.pledges).toHaveLength(0);
+    expect(result.total).toBe(0);
   });
 
   test("getPledgeDetail returns null when not found", async () => {
