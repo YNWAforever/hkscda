@@ -15,6 +15,7 @@ import {
   toPreferenceInserts,
   validateProofDescriptor,
 } from "./schemas";
+import { pledgeReference } from "./statusSummary";
 import { buildConsentRows } from "../donations/domain";
 import { getAppUrl, getEmailConfig } from "../donations/config.server";
 
@@ -80,11 +81,6 @@ function isFile(value: FormDataEntryValue | null): value is File {
 function safeFileName(fileName: string) {
   const baseName = fileName.split(/[\\/]/).pop()?.trim() || "proof";
   return baseName.replace(/[^A-Za-z0-9._-]/g, "_");
-}
-
-function referenceForPledge(pledgeId: string) {
-  const compact = pledgeId.replaceAll("-", "").toUpperCase().padEnd(8, "0");
-  return `SP-${compact.slice(0, 8)}`;
 }
 
 function buildStatusUrl(appUrl: string, rawToken: string) {
@@ -301,7 +297,7 @@ export async function persistSponsorshipPledge({
       );
     }
 
-    const reference = referenceForPledge(pledgeId);
+    const reference = pledgeReference(pledgeId);
     const token = makeStatusToken();
     const expiresAt = statusTokenExpiry(now);
     requireNoError(
