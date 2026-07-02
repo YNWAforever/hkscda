@@ -3,7 +3,10 @@ import { describe, expect, test } from "bun:test";
 import {
   SPONSORSHIP_MULTIPART_MAX_BYTES,
   parseSponsorshipMultipart,
+  persistSponsorshipPledge,
   validateSponsorshipSubmissionRequestHeaders,
+  type ParsedSponsorshipMultipart,
+  type PublicSponsorshipSupabaseClient,
 } from "./submission.server";
 
 const animalId = "11111111-2222-4333-8444-555555555555";
@@ -127,5 +130,203 @@ describe("parseSponsorshipMultipart", () => {
   test("rejects a missing payload field", async () => {
     const request = multipartRequest({});
     await expect(parseSponsorshipMultipart(request)).rejects.toThrow();
+  });
+});
+
+type QueryCall = { table: string; method: string; payload?: unknown };
+type StorageCall = { bucket: string; method: string; path?: string; paths?: string[] };
+type FakeClientOptions = { failInsertTable?: string; supporterId?: string };
+
+class FakeQuery {
+  private action: "insert" | "select" | "delete" | null = null;
+  private mutationPayload: unknown;
+
+  constructor(
+    private readonly state: {
+      calls: QueryCall[];
+      failInsertTable?: string;
+      supporterId: string;
+    },
+    private readonly table: string,
+  ) {}
+
+  insert(payload: unknown) {
+    this.state.calls.push({ table: this.table, method: "insert", payload });
+    this.action = "insert";
+    this.mutationPayload = payload;
+    return this;
+  }
+
+  select(columns: string) {
+    this.state.calls.push({ table: this.table, method: "select", payload: columns });
+    if (!this.action) this.action = "select";
+    return this;
+  }
+
+  delete() {
+    this.state.calls.push({ table: this.table, method: "delete" });
+    this.action = "delete";
+    return this;
+  }
+
+  eq(column: string, value: unknown) {
+    this.state.calls.push({ table: this.table, method: "eq", payload: { column, value } });
+    return this;
+  }
+
+  upsert(payload: unknown) {
+    this.state.calls.push({ table: this.table, method: "upsert", payload });
+    this.action = "insert";
+    this.mutationPayload = { id: this.state.supporterId };
+    return this;
+  }
+
+  async single() {
+    if (this.action === "insert" && this.state.failInsertTable === this.table) {
+      return { data: null, error: new Error(`insert failed: ${this.table}`) };
+    }
+    if (this.table === "supporter") return { data: { id: this.state.supporterId }, error: null };
+    if (this.table === "sponsorship_pledge") return { data: { id: "pledge-1" }, error: null };
+    return { data: this.mutationPayload ?? { id: `${this.table}-id` }, error: null };
+  }
+
+  then<T1 = unknown, T2 = never>(
+    onfulfilled?: ((value: unknown) => T1 | PromiseLike<T1>) | null,
+    onrejected?: ((reason: unknown) => T2 | PromiseLike<T2>) | null,
+  ) {
+    const result =
+      this.action === "insert" && this.state.failInsertTable === this.table
+        ? { data: null, error: new Error(`insert failed: ${this.table}`) }
+        : { data: this.mutationPayload, error: null };
+    return Promise.resolve(result).then(onfulfilled, onrejected);
+  }
+}
+
+function createFakeClient(options: FakeClientOptions = {}) {
+  const state = {
+    calls: [] as QueryCall[],
+    storageCalls: [] as StorageCall[],
+    failInsertTable: options.failInsertTable,
+    supporterId: options.supporterId ?? "supporter-1",
+  };
+
+  const client = {
+    from(table: string) {
+      return new FakeQuery(state, table);
+    },
+    storage: {
+      from(bucket: string) {
+        return {
+          async upload(path: string) {
+            state.storageCalls.push({ bucket, method: "upload", path });
+            return { data: { path }, error: null };
+          },
+          async remove(paths: string[]) {
+            state.storageCalls.push({ bucket, method: "remove", paths });
+            return { data: null, error: null };
+          },
+        };
+      },
+    },
+  };
+
+  return { client: client as unknown as PublicSponsorshipSupabaseClient, state };
+}
+
+function parsedPayload(overrides: Record<string, unknown> = {}): ParsedSponsorshipMultipart {
+  return {
+    payload: {
+      language: "zh-HK",
+      monthlyTier: "300",
+      customAmountCents: undefined,
+      animalPreferences: [
+        {
+          rank: 1,
+          animalId: "11111111-2222-4333-8444-555555555555",
+          animalName: "白雪",
+          animalType: "sponsor",
+        },
+      ],
+      contact: { supporterName: "陳小姐", email: "chan@example.com", phone: "91234567" },
+      consents: { email: true, whatsapp: false },
+      notes: null,
+      terms: { agreed: true, version: "sponsorship-terms-2026-07" },
+      ...overrides,
+    } as ParsedSponsorshipMultipart["payload"],
+    proof: undefined,
+  };
+}
+
+describe("persistSponsorshipPledge", () => {
+  test("creates a pending_payment pledge when no proof is attached", async () => {
+    const { client, state } = createFakeClient();
+    const result = await persistSponsorshipPledge({
+      client,
+      parsed: parsedPayload(),
+      now: () => new Date("2026-07-02T00:00:00.000Z"),
+    });
+
+    expect(result.status).toBe("pending_payment");
+    expect(result.pledgeId).toBe("pledge-1");
+    expect(result.reference).toMatch(/^SP-[A-Z0-9]{8}$/);
+    expect(result.amountCents).toBe(30000);
+    expect(state.calls.some((c) => c.table === "sponsorship_preference" && c.method === "insert")).toBe(true);
+    expect(state.calls.some((c) => c.table === "sponsorship_payment_proof")).toBe(false);
+    expect(
+      state.calls.some(
+        (c) => c.table === "public_status_token" && c.method === "insert",
+      ),
+    ).toBe(true);
+  });
+
+  test("creates a provisional pledge and uploads proof when proof is attached", async () => {
+    const { client, state } = createFakeClient();
+    const proof = {
+      fileName: "proof.jpg",
+      mimeType: "image/jpeg" as const,
+      sizeBytes: 2048,
+      file: new File(["bytes"], "proof.jpg", { type: "image/jpeg" }),
+      metadata: {
+        paymentMethod: "fps" as const,
+        reference: "REF1",
+        amountCents: 30000,
+        paymentDate: "2026-07-01",
+      },
+    };
+
+    const result = await persistSponsorshipPledge({
+      client,
+      parsed: { ...parsedPayload(), proof },
+      now: () => new Date("2026-07-02T00:00:00.000Z"),
+    });
+
+    expect(result.status).toBe("provisional");
+    expect(state.storageCalls.some((c) => c.method === "upload")).toBe(true);
+    expect(state.calls.some((c) => c.table === "sponsorship_payment_proof" && c.method === "insert")).toBe(true);
+  });
+
+  test("cleans up the pledge and uploaded proof when persistence fails mid-way", async () => {
+    const { client, state } = createFakeClient({ failInsertTable: "public_status_token" });
+    const proof = {
+      fileName: "proof.jpg",
+      mimeType: "image/jpeg" as const,
+      sizeBytes: 2048,
+      file: new File(["bytes"], "proof.jpg", { type: "image/jpeg" }),
+      metadata: {
+        paymentMethod: "fps" as const,
+        reference: "REF1",
+        amountCents: 30000,
+        paymentDate: "2026-07-01",
+      },
+    };
+
+    await expect(
+      persistSponsorshipPledge({ client, parsed: { ...parsedPayload(), proof } }),
+    ).rejects.toThrow("Failed to save sponsorship pledge");
+
+    expect(state.storageCalls.some((c) => c.method === "remove")).toBe(true);
+    expect(
+      state.calls.some((c) => c.table === "sponsorship_pledge" && c.method === "delete"),
+    ).toBe(true);
   });
 });
