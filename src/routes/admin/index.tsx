@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { z } from "zod";
 
 import { AdminLayout } from "../../components/admin/AdminLayout";
 import { AnimalsTable } from "../../components/admin/AnimalsTable";
 import { useAdminLanguage } from "../../components/admin/adminI18n";
 import { PaymentsReconcile } from "../../components/admin/donations/PaymentsReconcile";
+import { PledgeReviewLane } from "../../components/admin/sponsorship/PledgeReviewLane";
 import type { AdminSection } from "../../components/admin/adminNav";
 import { getAdminAreaForLocation } from "../../lib/admin/access";
 import { requireAdminPageAccess } from "../../lib/admin/pageAccess";
@@ -40,6 +42,12 @@ function AdminDashboard() {
 function AdminDashboardContent({ section }: { section: DashboardSection }) {
   const queryClient = useQueryClient();
   const { copy } = useAdminLanguage();
+  const [sponsorView, setSponsorView] = useState<"animals" | "pledges">("animals");
+
+  const showAnimalsTable =
+    section !== "applications" &&
+    section !== "payments" &&
+    (section !== "sponsor" || sponsorView === "animals");
 
   const { data: animals = [], isLoading } = useQuery({
     queryKey: ["admin-animals", section],
@@ -53,7 +61,7 @@ function AdminDashboardContent({ section }: { section: DashboardSection }) {
       if (error) throw error;
       return data;
     },
-    enabled: section !== "applications" && section !== "payments",
+    enabled: showAnimalsTable,
   });
 
   return (
@@ -67,6 +75,31 @@ function AdminDashboardContent({ section }: { section: DashboardSection }) {
           >
             {copy.dashboard.supporters}
           </Link>
+        ) : section === "sponsor" ? (
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setSponsorView("animals")}
+              className={
+                sponsorView === "animals"
+                  ? "rounded border border-[var(--color-panel)] bg-[var(--color-panel)] px-3 py-2 text-sm font-medium text-white"
+                  : "rounded border border-[var(--color-border)] px-3 py-2 text-sm font-medium text-[var(--color-panel)] hover:bg-[var(--color-primary-highlight)]"
+              }
+            >
+              動物列表
+            </button>
+            <button
+              type="button"
+              onClick={() => setSponsorView("pledges")}
+              className={
+                sponsorView === "pledges"
+                  ? "rounded border border-[var(--color-panel)] bg-[var(--color-panel)] px-3 py-2 text-sm font-medium text-white"
+                  : "rounded border border-[var(--color-border)] px-3 py-2 text-sm font-medium text-[var(--color-panel)] hover:bg-[var(--color-primary-highlight)]"
+              }
+            >
+              承諾審核
+            </button>
+          </div>
         ) : section !== "applications" ? (
           <Link
             to="/admin/animals/new"
@@ -94,6 +127,8 @@ function AdminDashboardContent({ section }: { section: DashboardSection }) {
             {copy.dashboard.openAdoptionCases}
           </Link>
         </section>
+      ) : section === "sponsor" && sponsorView === "pledges" ? (
+        <PledgeReviewLane />
       ) : isLoading ? (
         <div className="py-12 text-center text-gray-400">{copy.common.loading}</div>
       ) : (
