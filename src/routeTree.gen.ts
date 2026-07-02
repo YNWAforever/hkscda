@@ -34,6 +34,7 @@ import { Route as AboutTeamRouteImport } from './routes/about/team'
 import { Route as AboutPrivacyRouteImport } from './routes/about/privacy'
 import { Route as AboutCccpRouteImport } from './routes/about/cccp'
 import { Route as AdminApplicationsIndexRouteImport } from './routes/admin/applications/index'
+import { Route as SponsorsStatusTokenRouteImport } from './routes/sponsors_.status.$token'
 import { Route as ApiWebhooksStripeRouteImport } from './routes/api/webhooks/stripe'
 import { Route as ApiWebhooksPaypalRouteImport } from './routes/api/webhooks/paypal'
 import { Route as ApiSponsorshipsPledgesRouteImport } from './routes/api/sponsorships/pledges'
@@ -55,6 +56,7 @@ import { Route as AdminCoordinatorAnimalsRouteImport } from './routes/admin/coor
 import { Route as AdminCoordinatorAdoptersRouteImport } from './routes/admin/coordinator/adopters'
 import { Route as AdminApplicationsIdRouteImport } from './routes/admin/applications/$id'
 import { Route as AdminAnimalsNewRouteImport } from './routes/admin/animals/new'
+import { Route as ApiSponsorshipsStatusTokenRouteImport } from './routes/api/sponsorships/status/$token'
 import { Route as ApiAdoptionStatusTokenRouteImport } from './routes/api/adoption/status/$token'
 import { Route as ApiAdminSupportersIdRouteImport } from './routes/api/admin/supporters/$id'
 import { Route as ApiAdminFinanceActivityRouteImport } from './routes/api/admin/finance/activity'
@@ -224,6 +226,11 @@ const AdminApplicationsIndexRoute = AdminApplicationsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminApplicationsRoute,
 } as any)
+const SponsorsStatusTokenRoute = SponsorsStatusTokenRouteImport.update({
+  id: '/sponsors_/status/$token',
+  path: '/sponsors/status/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiWebhooksStripeRoute = ApiWebhooksStripeRouteImport.update({
   id: '/api/webhooks/stripe',
   path: '/api/webhooks/stripe',
@@ -331,6 +338,12 @@ const AdminAnimalsNewRoute = AdminAnimalsNewRouteImport.update({
   path: '/admin/animals/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSponsorshipsStatusTokenRoute =
+  ApiSponsorshipsStatusTokenRouteImport.update({
+    id: '/api/sponsorships/status/$token',
+    path: '/api/sponsorships/status/$token',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdoptionStatusTokenRoute = ApiAdoptionStatusTokenRouteImport.update({
   id: '/api/adoption/status/$token',
   path: '/api/adoption/status/$token',
@@ -624,6 +637,7 @@ export interface FileRoutesByFullPath {
   '/api/sponsorships/pledges': typeof ApiSponsorshipsPledgesRoute
   '/api/webhooks/paypal': typeof ApiWebhooksPaypalRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
+  '/sponsors/status/$token': typeof SponsorsStatusTokenRoute
   '/admin/applications/': typeof AdminApplicationsIndexRoute
   '/admin/animals/$id/edit': typeof AdminAnimalsIdEditRoute
   '/admin/coordinator/adopters/$id': typeof AdminCoordinatorAdoptersIdRoute
@@ -641,6 +655,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/finance/activity': typeof ApiAdminFinanceActivityRoute
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
   '/api/adoption/status/$token': typeof ApiAdoptionStatusTokenRoute
+  '/api/sponsorships/status/$token': typeof ApiSponsorshipsStatusTokenRoute
   '/api/admin/access/users/$id': typeof ApiAdminAccessUsersIdRoute
   '/api/admin/adoptions/adopters/$id': typeof ApiAdminAdoptionsAdoptersIdRoute
   '/api/admin/adoptions/cases/$id': typeof ApiAdminAdoptionsCasesIdRouteWithChildren
@@ -714,6 +729,7 @@ export interface FileRoutesByTo {
   '/api/sponsorships/pledges': typeof ApiSponsorshipsPledgesRoute
   '/api/webhooks/paypal': typeof ApiWebhooksPaypalRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
+  '/sponsors/status/$token': typeof SponsorsStatusTokenRoute
   '/admin/applications': typeof AdminApplicationsIndexRoute
   '/admin/animals/$id/edit': typeof AdminAnimalsIdEditRoute
   '/admin/coordinator/adopters/$id': typeof AdminCoordinatorAdoptersIdRoute
@@ -731,6 +747,7 @@ export interface FileRoutesByTo {
   '/api/admin/finance/activity': typeof ApiAdminFinanceActivityRoute
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
   '/api/adoption/status/$token': typeof ApiAdoptionStatusTokenRoute
+  '/api/sponsorships/status/$token': typeof ApiSponsorshipsStatusTokenRoute
   '/api/admin/access/users/$id': typeof ApiAdminAccessUsersIdRoute
   '/api/admin/adoptions/adopters/$id': typeof ApiAdminAdoptionsAdoptersIdRoute
   '/api/admin/adoptions/cases/$id': typeof ApiAdminAdoptionsCasesIdRouteWithChildren
@@ -806,6 +823,7 @@ export interface FileRoutesById {
   '/api/sponsorships/pledges': typeof ApiSponsorshipsPledgesRoute
   '/api/webhooks/paypal': typeof ApiWebhooksPaypalRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
+  '/sponsors_/status/$token': typeof SponsorsStatusTokenRoute
   '/admin/applications/': typeof AdminApplicationsIndexRoute
   '/admin/animals/$id/edit': typeof AdminAnimalsIdEditRoute
   '/admin/coordinator/adopters/$id': typeof AdminCoordinatorAdoptersIdRoute
@@ -823,6 +841,7 @@ export interface FileRoutesById {
   '/api/admin/finance/activity': typeof ApiAdminFinanceActivityRoute
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
   '/api/adoption/status/$token': typeof ApiAdoptionStatusTokenRoute
+  '/api/sponsorships/status/$token': typeof ApiSponsorshipsStatusTokenRoute
   '/api/admin/access/users/$id': typeof ApiAdminAccessUsersIdRoute
   '/api/admin/adoptions/adopters/$id': typeof ApiAdminAdoptionsAdoptersIdRoute
   '/api/admin/adoptions/cases/$id': typeof ApiAdminAdoptionsCasesIdRouteWithChildren
@@ -899,6 +918,7 @@ export interface FileRouteTypes {
     | '/api/sponsorships/pledges'
     | '/api/webhooks/paypal'
     | '/api/webhooks/stripe'
+    | '/sponsors/status/$token'
     | '/admin/applications/'
     | '/admin/animals/$id/edit'
     | '/admin/coordinator/adopters/$id'
@@ -916,6 +936,7 @@ export interface FileRouteTypes {
     | '/api/admin/finance/activity'
     | '/api/admin/supporters/$id'
     | '/api/adoption/status/$token'
+    | '/api/sponsorships/status/$token'
     | '/api/admin/access/users/$id'
     | '/api/admin/adoptions/adopters/$id'
     | '/api/admin/adoptions/cases/$id'
@@ -989,6 +1010,7 @@ export interface FileRouteTypes {
     | '/api/sponsorships/pledges'
     | '/api/webhooks/paypal'
     | '/api/webhooks/stripe'
+    | '/sponsors/status/$token'
     | '/admin/applications'
     | '/admin/animals/$id/edit'
     | '/admin/coordinator/adopters/$id'
@@ -1006,6 +1028,7 @@ export interface FileRouteTypes {
     | '/api/admin/finance/activity'
     | '/api/admin/supporters/$id'
     | '/api/adoption/status/$token'
+    | '/api/sponsorships/status/$token'
     | '/api/admin/access/users/$id'
     | '/api/admin/adoptions/adopters/$id'
     | '/api/admin/adoptions/cases/$id'
@@ -1080,6 +1103,7 @@ export interface FileRouteTypes {
     | '/api/sponsorships/pledges'
     | '/api/webhooks/paypal'
     | '/api/webhooks/stripe'
+    | '/sponsors_/status/$token'
     | '/admin/applications/'
     | '/admin/animals/$id/edit'
     | '/admin/coordinator/adopters/$id'
@@ -1097,6 +1121,7 @@ export interface FileRouteTypes {
     | '/api/admin/finance/activity'
     | '/api/admin/supporters/$id'
     | '/api/adoption/status/$token'
+    | '/api/sponsorships/status/$token'
     | '/api/admin/access/users/$id'
     | '/api/admin/adoptions/adopters/$id'
     | '/api/admin/adoptions/cases/$id'
@@ -1170,6 +1195,7 @@ export interface RootRouteChildren {
   ApiSponsorshipsPledgesRoute: typeof ApiSponsorshipsPledgesRoute
   ApiWebhooksPaypalRoute: typeof ApiWebhooksPaypalRoute
   ApiWebhooksStripeRoute: typeof ApiWebhooksStripeRoute
+  SponsorsStatusTokenRoute: typeof SponsorsStatusTokenRoute
   AdminAnimalsIdEditRoute: typeof AdminAnimalsIdEditRoute
   ApiAdminAccessAuditRoute: typeof ApiAdminAccessAuditRoute
   ApiAdminAccessInvitesRoute: typeof ApiAdminAccessInvitesRouteWithChildren
@@ -1184,6 +1210,7 @@ export interface RootRouteChildren {
   ApiAdminExportsSupportersDotcsvRoute: typeof ApiAdminExportsSupportersDotcsvRoute
   ApiAdminFinanceActivityRoute: typeof ApiAdminFinanceActivityRoute
   ApiAdoptionStatusTokenRoute: typeof ApiAdoptionStatusTokenRoute
+  ApiSponsorshipsStatusTokenRoute: typeof ApiSponsorshipsStatusTokenRoute
   ApiAdminAdoptionsExportsAdoptersDotcsvRoute: typeof ApiAdminAdoptionsExportsAdoptersDotcsvRoute
   ApiAdminAdoptionsExportsAnimalsDotcsvRoute: typeof ApiAdminAdoptionsExportsAnimalsDotcsvRoute
   ApiAdminAdoptionsExportsCasesDotcsvRoute: typeof ApiAdminAdoptionsExportsCasesDotcsvRoute
@@ -1376,6 +1403,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminApplicationsIndexRouteImport
       parentRoute: typeof AdminApplicationsRoute
     }
+    '/sponsors_/status/$token': {
+      id: '/sponsors_/status/$token'
+      path: '/sponsors/status/$token'
+      fullPath: '/sponsors/status/$token'
+      preLoaderRoute: typeof SponsorsStatusTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/webhooks/stripe': {
       id: '/api/webhooks/stripe'
       path: '/api/webhooks/stripe'
@@ -1521,6 +1555,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/animals/new'
       fullPath: '/admin/animals/new'
       preLoaderRoute: typeof AdminAnimalsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/sponsorships/status/$token': {
+      id: '/api/sponsorships/status/$token'
+      path: '/api/sponsorships/status/$token'
+      fullPath: '/api/sponsorships/status/$token'
+      preLoaderRoute: typeof ApiSponsorshipsStatusTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/adoption/status/$token': {
@@ -2071,6 +2112,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiSponsorshipsPledgesRoute: ApiSponsorshipsPledgesRoute,
   ApiWebhooksPaypalRoute: ApiWebhooksPaypalRoute,
   ApiWebhooksStripeRoute: ApiWebhooksStripeRoute,
+  SponsorsStatusTokenRoute: SponsorsStatusTokenRoute,
   AdminAnimalsIdEditRoute: AdminAnimalsIdEditRoute,
   ApiAdminAccessAuditRoute: ApiAdminAccessAuditRoute,
   ApiAdminAccessInvitesRoute: ApiAdminAccessInvitesRouteWithChildren,
@@ -2085,6 +2127,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminExportsSupportersDotcsvRoute: ApiAdminExportsSupportersDotcsvRoute,
   ApiAdminFinanceActivityRoute: ApiAdminFinanceActivityRoute,
   ApiAdoptionStatusTokenRoute: ApiAdoptionStatusTokenRoute,
+  ApiSponsorshipsStatusTokenRoute: ApiSponsorshipsStatusTokenRoute,
   ApiAdminAdoptionsExportsAdoptersDotcsvRoute:
     ApiAdminAdoptionsExportsAdoptersDotcsvRoute,
   ApiAdminAdoptionsExportsAnimalsDotcsvRoute:
