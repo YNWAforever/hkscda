@@ -1,6 +1,9 @@
 import { describe, expect, test } from "bun:test";
 
-import { renderPledgeConfirmationEmail, renderPledgeStatusUpdateEmail } from "./emailTemplates.server";
+import {
+  renderPledgeConfirmationEmail,
+  renderPledgeStatusUpdateEmail,
+} from "./emailTemplates.server";
 
 describe("renderPledgeConfirmationEmail", () => {
   test("renders zh-HK pending_payment email with payment instructions and status link", () => {
@@ -97,7 +100,7 @@ describe("renderPledgeStatusUpdateEmail", () => {
 
   test("escapes HTML in supporter name and reference", () => {
     const email = renderPledgeStatusUpdateEmail(
-      baseInput({ supporterName: '<script>alert(1)</script>', reference: "SP-<b>X</b>" }),
+      baseInput({ supporterName: "<script>alert(1)</script>", reference: "SP-<b>X</b>" }),
     );
     expect(email.html).not.toContain("<script>");
     expect(email.html).toContain("&lt;script&gt;");

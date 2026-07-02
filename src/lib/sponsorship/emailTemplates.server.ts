@@ -18,6 +18,30 @@ function escapeHtml(value: string) {
     .replaceAll("'", "&#39;");
 }
 
+/**
+ * Wraps a pre-escaped HTML body in the shared HKSCDA email envelope
+ * (greeting + body + signature), matching the letterhead used across all
+ * sponsorship notification emails.
+ */
+function wrapEmailEnvelope(
+  language: "zh-HK" | "en",
+  supporterName: string,
+  bodyHtml: string,
+  subject: string,
+) {
+  if (language === "en") {
+    return {
+      subject,
+      html: [`<p>Dear ${supporterName},</p>`, bodyHtml, "<p>HKSCDA Sponsorship Team</p>"].join(""),
+    };
+  }
+
+  return {
+    subject,
+    html: [`<p>${supporterName} 您好：</p>`, bodyHtml, "<p>HKSCDA 助養團隊</p>"].join(""),
+  };
+}
+
 const PAYMENT_METHODS_ZH = [
   ["轉數快 FPS", "9864 1089"],
   ["銀行轉帳", "匯豐銀行 012-345-678901"],
@@ -55,16 +79,16 @@ export function renderPledgeConfirmationEmail(input: PledgeConfirmationEmailInpu
           ].join("")
         : "<p>We have received your payment proof and will confirm your sponsorship shortly.</p>";
 
-    return {
-      subject: `HKSCDA received your sponsorship pledge ${input.reference}`,
-      html: [
-        `<p>Dear ${supporterName},</p>`,
+    return wrapEmailEnvelope(
+      "en",
+      supporterName,
+      [
         `<p>Thank you for pledging <strong>${amount}/month</strong>. Your reference is <strong>${reference}</strong>.</p>`,
         paymentBlock,
         statusLink,
-        "<p>HKSCDA Sponsorship Team</p>",
       ].join(""),
-    };
+      `HKSCDA received your sponsorship pledge ${input.reference}`,
+    );
   }
 
   const paymentBlockZh =
@@ -79,16 +103,16 @@ export function renderPledgeConfirmationEmail(input: PledgeConfirmationEmailInpu
         ].join("")
       : "<p>我們已收到您的付款證明，將盡快為您確認助養資格。</p>";
 
-  return {
-    subject: `HKSCDA 已收到您的助養承諾 ${input.reference}`,
-    html: [
-      `<p>${supporterName} 您好：</p>`,
+  return wrapEmailEnvelope(
+    "zh-HK",
+    supporterName,
+    [
       `<p>多謝您承諾每月助養 <strong>${amount}</strong>，參考編號為 <strong>${reference}</strong>。</p>`,
       paymentBlockZh,
       statusLink,
-      "<p>HKSCDA 助養團隊</p>",
     ].join(""),
-  };
+    `HKSCDA 已收到您的助養承諾 ${input.reference}`,
+  );
 }
 
 export type PledgeStatusUpdateEvent = "proof_recorded" | "active" | "needs_followup" | "cancelled";
@@ -103,7 +127,11 @@ type PledgeStatusUpdateEmailInput = {
 
 const SUPPORT_EMAIL = "info@hkscda.com";
 
-function pledgeStatusUpdateBodyZh(event: PledgeStatusUpdateEvent, reference: string, amount: string) {
+function pledgeStatusUpdateBodyZh(
+  event: PledgeStatusUpdateEvent,
+  reference: string,
+  amount: string,
+) {
   switch (event) {
     case "proof_recorded":
       return `<p>我們已為您的助養承諾（參考編號 <strong>${reference}</strong>）記錄付款資料，將盡快為您審核。</p>`;
@@ -119,7 +147,11 @@ function pledgeStatusUpdateBodyZh(event: PledgeStatusUpdateEvent, reference: str
   }
 }
 
-function pledgeStatusUpdateBodyEn(event: PledgeStatusUpdateEvent, reference: string, amount: string) {
+function pledgeStatusUpdateBodyEn(
+  event: PledgeStatusUpdateEvent,
+  reference: string,
+  amount: string,
+) {
   switch (event) {
     case "proof_recorded":
       return `<p>We have recorded a payment for your sponsorship pledge <strong>${reference}</strong> and will review it shortly.</p>`;
@@ -155,22 +187,18 @@ export function renderPledgeStatusUpdateEmail(input: PledgeStatusUpdateEmailInpu
   const amount = centsToHkd(input.amountCents);
 
   if (input.language === "en") {
-    return {
-      subject: `${PLEDGE_STATUS_SUBJECT_EN[input.event]} ${input.reference}`,
-      html: [
-        `<p>Dear ${supporterName},</p>`,
-        pledgeStatusUpdateBodyEn(input.event, reference, amount),
-        "<p>HKSCDA Sponsorship Team</p>",
-      ].join(""),
-    };
+    return wrapEmailEnvelope(
+      "en",
+      supporterName,
+      pledgeStatusUpdateBodyEn(input.event, reference, amount),
+      `${PLEDGE_STATUS_SUBJECT_EN[input.event]} ${input.reference}`,
+    );
   }
 
-  return {
-    subject: `${PLEDGE_STATUS_SUBJECT_ZH[input.event]} ${input.reference}`,
-    html: [
-      `<p>${supporterName} 您好：</p>`,
-      pledgeStatusUpdateBodyZh(input.event, reference, amount),
-      "<p>HKSCDA 助養團隊</p>",
-    ].join(""),
-  };
+  return wrapEmailEnvelope(
+    "zh-HK",
+    supporterName,
+    pledgeStatusUpdateBodyZh(input.event, reference, amount),
+    `${PLEDGE_STATUS_SUBJECT_ZH[input.event]} ${input.reference}`,
+  );
 }
