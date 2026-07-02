@@ -4,6 +4,7 @@ import {
   SPONSORSHIP_MULTIPART_MAX_BYTES,
   parseSponsorshipMultipart,
   persistSponsorshipPledge,
+  sendPledgeConfirmationEmail,
   validateSponsorshipSubmissionRequestHeaders,
   type ParsedSponsorshipMultipart,
   type PublicSponsorshipSupabaseClient,
@@ -15,9 +16,7 @@ function basePayloadJson(overrides: Record<string, unknown> = {}) {
   return JSON.stringify({
     language: "zh-HK",
     monthlyTier: "300",
-    animalPreferences: [
-      { rank: 1, animalId, animalName: "白雪", animalType: "sponsor" },
-    ],
+    animalPreferences: [{ rank: 1, animalId, animalName: "白雪", animalType: "sponsor" }],
     contact: { supporterName: "陳小姐", email: "chan@example.com", phone: "91234567" },
     consents: { email: true, whatsapp: false },
     terms: { agreed: true },
@@ -26,7 +25,10 @@ function basePayloadJson(overrides: Record<string, unknown> = {}) {
   });
 }
 
-function multipartRequest(fields: Record<string, string>, file?: { name: string; content: string }) {
+function multipartRequest(
+  fields: Record<string, string>,
+  file?: { name: string; content: string },
+) {
   const formData = new FormData();
   for (const [key, value] of Object.entries(fields)) formData.set(key, value);
   if (file) formData.set("proof", new File([file.content], file.name, { type: "image/jpeg" }));
@@ -169,6 +171,13 @@ class FakeQuery {
     return this;
   }
 
+  update(payload: unknown) {
+    this.state.calls.push({ table: this.table, method: "update", payload });
+    this.action = "insert";
+    this.mutationPayload = payload;
+    return this;
+  }
+
   eq(column: string, value: unknown) {
     this.state.calls.push({ table: this.table, method: "eq", payload: { column, value } });
     return this;
@@ -187,6 +196,7 @@ class FakeQuery {
     }
     if (this.table === "supporter") return { data: { id: this.state.supporterId }, error: null };
     if (this.table === "sponsorship_pledge") return { data: { id: "pledge-1" }, error: null };
+    if (this.table === "message") return { data: { id: "message-1" }, error: null };
     return { data: this.mutationPayload ?? { id: `${this.table}-id` }, error: null };
   }
 
@@ -270,12 +280,12 @@ describe("persistSponsorshipPledge", () => {
     expect(result.pledgeId).toBe("pledge-1");
     expect(result.reference).toMatch(/^SP-[A-Z0-9]{8}$/);
     expect(result.amountCents).toBe(30000);
-    expect(state.calls.some((c) => c.table === "sponsorship_preference" && c.method === "insert")).toBe(true);
+    expect(
+      state.calls.some((c) => c.table === "sponsorship_preference" && c.method === "insert"),
+    ).toBe(true);
     expect(state.calls.some((c) => c.table === "sponsorship_payment_proof")).toBe(false);
     expect(
-      state.calls.some(
-        (c) => c.table === "public_status_token" && c.method === "insert",
-      ),
+      state.calls.some((c) => c.table === "public_status_token" && c.method === "insert"),
     ).toBe(true);
   });
 
@@ -302,7 +312,9 @@ describe("persistSponsorshipPledge", () => {
 
     expect(result.status).toBe("provisional");
     expect(state.storageCalls.some((c) => c.method === "upload")).toBe(true);
-    expect(state.calls.some((c) => c.table === "sponsorship_payment_proof" && c.method === "insert")).toBe(true);
+    expect(
+      state.calls.some((c) => c.table === "sponsorship_payment_proof" && c.method === "insert"),
+    ).toBe(true);
   });
 
   test("cleans up the pledge and uploaded proof when persistence fails mid-way", async () => {
@@ -325,8 +337,85 @@ describe("persistSponsorshipPledge", () => {
     ).rejects.toThrow("Failed to save sponsorship pledge");
 
     expect(state.storageCalls.some((c) => c.method === "remove")).toBe(true);
-    expect(
-      state.calls.some((c) => c.table === "sponsorship_pledge" && c.method === "delete"),
-    ).toBe(true);
+    expect(state.calls.some((c) => c.table === "sponsorship_pledge" && c.method === "delete")).toBe(
+      true,
+    );
+  });
+});
+
+describe("sendPledgeConfirmationEmail", () => {
+  function fakeResult(overrides: Record<string, unknown> = {}) {
+    return {
+      pledgeId: "pledge-1",
+      supporterId: "supporter-1",
+      reference: "SP-ABCDEF12",
+      status: "pending_payment" as const,
+      amountCents: 30000,
+      statusToken: "token",
+      statusUrl: "http://localhost:3000/sponsors/status/token",
+      expiresAt: "2026-08-01T00:00:00.000Z",
+      ...overrides,
+    };
+  }
+
+  test("queues the email and returns 'queued' with no Resend key configured", async () => {
+    const { client } = createFakeClient();
+    const result = await sendPledgeConfirmationEmail(
+      client,
+      parsedPayload().payload,
+      fakeResult(),
+      {
+        getEmailConfig: () => ({
+          resendApiKey: undefined,
+          from: "HKSCDA <noreply@hkscda.com>",
+          replyTo: "info@hkscda.com",
+          notificationEmail: "info@hkscda.com",
+        }),
+      },
+    );
+    expect(result).toBe("queued");
+  });
+
+  test("returns 'sent' when the email sender succeeds", async () => {
+    const { client } = createFakeClient();
+    const result = await sendPledgeConfirmationEmail(
+      client,
+      parsedPayload().payload,
+      fakeResult(),
+      {
+        getEmailConfig: () => ({
+          resendApiKey: "key",
+          from: "HKSCDA <noreply@hkscda.com>",
+          replyTo: "info@hkscda.com",
+          notificationEmail: "info@hkscda.com",
+        }),
+        createEmailSender: () => ({ send: async () => ({}) }),
+      },
+    );
+    expect(result).toBe("sent");
+  });
+
+  test("returns 'failed' when the email sender throws", async () => {
+    const { client } = createFakeClient();
+    const result = await sendPledgeConfirmationEmail(
+      client,
+      parsedPayload().payload,
+      fakeResult(),
+      {
+        getEmailConfig: () => ({
+          resendApiKey: "key",
+          from: "HKSCDA <noreply@hkscda.com>",
+          replyTo: "info@hkscda.com",
+          notificationEmail: "info@hkscda.com",
+        }),
+        createEmailSender: () => ({
+          send: async () => {
+            throw new Error("network down");
+          },
+        }),
+        logger: { error: () => {} },
+      },
+    );
+    expect(result).toBe("failed");
   });
 });

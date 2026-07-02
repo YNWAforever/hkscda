@@ -256,7 +256,9 @@ export async function persistSponsorshipPledge({
     pledgeId = pledge.id;
 
     requireNoError(
-      await client.from("sponsorship_preference").insert(toPreferenceInserts(pledgeId, parsed.payload)),
+      await client
+        .from("sponsorship_preference")
+        .insert(toPreferenceInserts(pledgeId, parsed.payload)),
       "Failed to save sponsorship animal preferences",
     );
 
@@ -314,6 +316,98 @@ export async function persistSponsorshipPledge({
     logger.error("Failed to save sponsorship pledge", error);
     throw new Error("Failed to save sponsorship pledge");
   }
+}
+
+type EmailConfig = ReturnType<typeof getEmailConfig>;
+
+type EmailSender = {
+  send(payload: {
+    from: string;
+    to: string;
+    replyTo?: string;
+    subject: string;
+    html: string;
+  }): Promise<unknown>;
+};
+
+type SendPledgeConfirmationEmailDeps = {
+  getEmailConfig?: () => EmailConfig;
+  createEmailSender?: (apiKey: string) => Promise<EmailSender> | EmailSender;
+  logger?: Pick<Console, "error">;
+};
+
+export type SponsorshipConfirmationEmailResult = "queued" | "sent" | "failed";
+
+async function defaultCreateEmailSender(apiKey: string): Promise<EmailSender> {
+  const { Resend } = await import("resend");
+  return new Resend(apiKey).emails;
+}
+
+export async function sendPledgeConfirmationEmail(
+  client: PublicSponsorshipSupabaseClient,
+  payload: ParsedSponsorshipPayload,
+  result: SponsorshipPledgePersistResult,
+  {
+    getEmailConfig: loadEmailConfig = getEmailConfig,
+    createEmailSender = defaultCreateEmailSender,
+    logger = console,
+  }: SendPledgeConfirmationEmailDeps = {},
+): Promise<SponsorshipConfirmationEmailResult> {
+  const config = loadEmailConfig();
+  const email = renderPledgeConfirmationEmail({
+    language: payload.language,
+    supporterName: payload.contact.supporterName,
+    reference: result.reference,
+    amountCents: result.amountCents,
+    status: result.status === "provisional" ? "provisional" : "pending_payment",
+  });
+
+  const messagePayload = {
+    kind: "sponsorship_pledge_confirmation",
+    pledgeId: result.pledgeId,
+    reference: result.reference,
+    subject: email.subject,
+    entityType: "sponsorship_pledge",
+  };
+
+  const { data: message, error: messageError } = await client
+    .from("message")
+    .insert({
+      supporter_id: result.supporterId,
+      channel: "email",
+      status: "queued",
+      payload: messagePayload,
+    })
+    .select("id")
+    .single();
+  if (messageError || !message) {
+    logger.error("Failed to queue sponsorship pledge confirmation email", messageError);
+    return "failed";
+  }
+
+  const messageId = (message as { id: string }).id;
+  if (!config.resendApiKey) return "queued";
+
+  try {
+    const emails = await createEmailSender(config.resendApiKey);
+    await emails.send({
+      from: config.from,
+      to: payload.contact.email,
+      replyTo: config.replyTo,
+      subject: email.subject,
+      html: email.html,
+    });
+  } catch (error) {
+    logger.error("Failed to send sponsorship pledge confirmation email", error);
+    await client.from("message").update({ status: "failed" }).eq("id", messageId);
+    return "failed";
+  }
+
+  await client
+    .from("message")
+    .update({ status: "sent", sent_at: new Date().toISOString() })
+    .eq("id", messageId);
+  return "sent";
 }
 
 export function isSubmissionValidationError(error: unknown) {
