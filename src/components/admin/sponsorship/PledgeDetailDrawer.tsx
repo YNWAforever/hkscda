@@ -17,6 +17,8 @@ import {
   formatFallback,
   isImageFileType,
   pledgeStatusTone,
+  proofHasNoFile,
+  validateManualProofFile,
 } from "./pledgeReviewLogic";
 
 type PledgeDetailResponse = { pledge: PledgeDetail };
@@ -56,6 +58,10 @@ function ProofPreview({ pledgeId, proof }: { pledgeId: string; proof: PaymentPro
         `/api/admin/sponsorships/pledges/${encodeURIComponent(pledgeId)}/proof-url`,
       ),
   });
+
+  if (proofHasNoFile(proof.storagePath)) {
+    return <p className="text-sm text-[var(--color-text-muted)]">未附上檔案</p>;
+  }
 
   return (
     <div className="space-y-2">
@@ -118,6 +124,8 @@ export function PledgeDetailDrawer({
   const [amountHkd, setAmountHkd] = useState("");
   const [paymentDate, setPaymentDate] = useState("");
   const [paymentNote, setPaymentNote] = useState("");
+  const [proofFile, setProofFile] = useState<File | null>(null);
+  const [proofFileError, setProofFileError] = useState<string | null>(null);
 
   const { data, isLoading, error, refetch } = useQuery<PledgeDetailResponse, Error>({
     queryKey: ["sponsorship-pledge", pledgeId],
@@ -167,6 +175,17 @@ export function PledgeDetailDrawer({
     }
   }
 
+  function handleProofFileChange(file: File | null) {
+    if (!file) {
+      setProofFile(null);
+      setProofFileError(null);
+      return;
+    }
+    const validationError = validateManualProofFile(file);
+    setProofFileError(validationError);
+    setProofFile(validationError ? null : file);
+  }
+
   async function submitPayment() {
     setSubmitting(true);
     setActionError(null);
@@ -183,6 +202,7 @@ export function PledgeDetailDrawer({
           note: paymentNote || undefined,
         }),
       );
+      if (proofFile) formData.set("file", proofFile);
 
       await fetchCoordinatorJson(`/api/admin/sponsorships/pledges/${pledgeId}/proof`, {
         method: "POST",
@@ -192,6 +212,8 @@ export function PledgeDetailDrawer({
       setAmountHkd("");
       setPaymentDate("");
       setPaymentNote("");
+      setProofFile(null);
+      setProofFileError(null);
       await refreshAll();
     } catch (submitError) {
       setActionError(submitError instanceof Error ? submitError.message : "記錄付款失敗");
@@ -309,10 +331,22 @@ export function PledgeDetailDrawer({
                   value={paymentNote}
                   onChange={(event) => setPaymentNote(event.target.value)}
                 />
+                <Label htmlFor="pledge-payment-proof">付款證明（選填）</Label>
+                <Input
+                  id="pledge-payment-proof"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,application/pdf"
+                  onChange={(event) => handleProofFileChange(event.target.files?.[0] ?? null)}
+                />
+                {proofFileError && (
+                  <p role="alert" className="text-xs text-[var(--color-error)]">
+                    {proofFileError}
+                  </p>
+                )}
                 <Button
                   type="button"
                   onClick={submitPayment}
-                  disabled={submitting || !amountHkd || !paymentDate}
+                  disabled={submitting || !amountHkd || !paymentDate || !!proofFileError}
                 >
                   儲存付款記錄
                 </Button>

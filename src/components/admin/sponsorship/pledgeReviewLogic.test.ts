@@ -9,7 +9,10 @@ import {
   formatDate,
   isImageFileType,
   pledgeStatusTone,
+  proofHasNoFile,
+  validateManualProofFile,
 } from "./pledgeReviewLogic";
+import { MAX_PROOF_BYTES } from "../../../lib/sponsorship/schemas";
 import type { PledgeStatus } from "../../../lib/sponsorshipAdmin/types";
 
 describe("buildPledgeListSearchParams", () => {
@@ -126,5 +129,46 @@ describe("isImageFileType", () => {
     expect(isImageFileType(null)).toBe(false);
     expect(isImageFileType(undefined)).toBe(false);
     expect(isImageFileType("")).toBe(false);
+  });
+});
+
+function fakeFile(overrides: Partial<{ type: string; size: number }> = {}): File {
+  const type = overrides.type ?? "image/png";
+  const size = overrides.size ?? 1024;
+  return new File([new Uint8Array(size)], "proof.png", { type });
+}
+
+describe("validateManualProofFile", () => {
+  test("accepts each supported MIME type within the size limit", () => {
+    for (const type of ["image/jpeg", "image/png", "image/webp", "application/pdf"]) {
+      expect(validateManualProofFile(fakeFile({ type }))).toBeNull();
+    }
+  });
+
+  test("rejects an unsupported MIME type", () => {
+    expect(validateManualProofFile(fakeFile({ type: "text/plain" }))).not.toBeNull();
+  });
+
+  test("rejects a file over MAX_PROOF_BYTES", () => {
+    expect(validateManualProofFile(fakeFile({ size: MAX_PROOF_BYTES + 1 }))).not.toBeNull();
+  });
+
+  test("accepts a file exactly at MAX_PROOF_BYTES", () => {
+    expect(validateManualProofFile(fakeFile({ size: MAX_PROOF_BYTES }))).toBeNull();
+  });
+
+  test("rejects an empty (zero-byte) file", () => {
+    expect(validateManualProofFile(fakeFile({ size: 0 }))).not.toBeNull();
+  });
+});
+
+describe("proofHasNoFile", () => {
+  test("is true when storagePath is null or undefined", () => {
+    expect(proofHasNoFile(null)).toBe(true);
+    expect(proofHasNoFile(undefined)).toBe(true);
+  });
+
+  test("is false when storagePath is a non-empty string", () => {
+    expect(proofHasNoFile("pledge-1/staff-123-proof.png")).toBe(false);
   });
 });
