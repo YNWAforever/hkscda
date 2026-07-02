@@ -85,7 +85,7 @@ export function ShortlistTray() {
             </Link>
           )}
           {sponsorshipItems.length > 0 && (
-            <Link to="/sponsors" className="btn-cta py-2! px-4! text-xs!">
+            <Link to="/sponsors/pledge" className="btn-cta py-2! px-4! text-xs!">
               開始助養
             </Link>
           )}
