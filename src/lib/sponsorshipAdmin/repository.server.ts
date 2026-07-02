@@ -90,18 +90,45 @@ function sanitizeOrLikeValue(value: string) {
   );
 }
 
+// Matches the human-facing reference format from `pledgeReference()`
+// (src/lib/sponsorship/statusSummary.ts): "SP-" followed by the first 8 hex
+// characters of the pledge id with dashes removed, which is always exactly
+// the id's first dash-delimited segment. Only queries shaped like a
+// reference (optionally partial) are treated as an id search; anything else
+// (e.g. a supporter name) yields null and only the supporter-name/email
+// branch runs.
+const REFERENCE_QUERY_PATTERN = /^sp-?([0-9a-f]*)$/i;
+
+function referenceSearchHexPrefix(q: string): string | null {
+  const match = REFERENCE_QUERY_PATTERN.exec(q.trim());
+  if (!match || match[1].length === 0) return null;
+  return match[1].toLowerCase();
+}
+
 /**
  * Resolves the set of pledge ids that match a free-text search (`q`) against
- * the pledge id itself and the linked supporter's name/email. Resolving ids
- * up front lets the caller apply the filter in the SQL query (via `.in()`)
- * so that `count: "exact"` and pagination stay correct for matches that fall
- * outside the current page window.
+ * the pledge's human-facing reference and the linked supporter's name/email.
+ * Resolving ids up front lets the caller apply the filter in the SQL query
+ * (via `.in()`) so that `count: "exact"` and pagination stay correct for
+ * matches that fall outside the current page window.
+ *
+ * `sponsorship_pledge.id` is a `uuid` column, which Postgres has no
+ * ilike/~~* operator for — a bare `.ilike("id", ...)` throws at the database
+ * level. Reference search instead casts to text (`id::text`) via `.filter()`
+ * and anchors the pattern to a prefix, since the reference only ever encodes
+ * the id's first segment.
  */
 async function searchPledgeIds(client: SupabaseClient, q: string): Promise<string[]> {
   const like = `%${sanitizeOrLikeValue(q)}%`;
+  const hexPrefix = referenceSearchHexPrefix(q);
 
   const [directResult, supporterResult] = await Promise.all([
-    client.from("sponsorship_pledge").select("id").ilike("id", like),
+    hexPrefix
+      ? client
+          .from("sponsorship_pledge")
+          .select("id")
+          .filter("id::text", "ilike", `${hexPrefix}%`)
+      : Promise.resolve({ data: [] as Array<{ id: string }>, error: null }),
     client.from("supporter").select("id").or(`name.ilike.${like},email.ilike.${like}`),
   ]);
   if (directResult.error) throw directResult.error;
@@ -127,7 +154,11 @@ async function searchPledgeIds(client: SupabaseClient, q: string): Promise<strin
     (row) => row.id,
   );
 
-  return unique([...directIds, ...pledgeIdsBySupporter]);
+  const merged = unique([...directIds, ...pledgeIdsBySupporter]);
+  if (merged.length > PLEDGE_SEARCH_CANDIDATE_LIMIT) {
+    throw new Error(PLEDGE_SEARCH_TOO_BROAD_ERROR);
+  }
+  return merged;
 }
 
 function mapProof(row: ProofRow): PaymentProofRecord {

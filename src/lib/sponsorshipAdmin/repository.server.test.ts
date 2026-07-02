@@ -114,6 +114,18 @@ class FakeQuery {
     return this;
   }
 
+  filter(column: string, operator: string, value: unknown) {
+    // PostgREST supports a `column::type` cast prefix (used here for
+    // `id::text` since uuid columns have no ilike operator); the fake only
+    // needs to match against the underlying column, so strip the cast.
+    const baseColumn = column.split("::")[0];
+    if (operator === "ilike") {
+      this.likeFilters.push({ column: baseColumn, value: String(value) });
+    }
+    this.state.calls.push({ table: this.table, method: "filter", payload: { column, operator, value } });
+    return this;
+  }
+
   or(filters: string) {
     this.orFilters.push(filters);
     this.state.calls.push({ table: this.table, method: "or", payload: filters });
@@ -335,7 +347,7 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     expect(result.pledges[0].status).toBe("active");
   });
 
-  test("listPledges filters by q against supporter name, email, and pledge id", async () => {
+  test("listPledges filters by q against supporter name and email", async () => {
     const { client } = createFakeClient({
       pledgeRows: [
         pledgeRow({ id: "pledge-1", supporter_id: "supporter-1" }),
@@ -352,6 +364,45 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     expect(result.pledges).toHaveLength(1);
     expect(result.pledges[0].id).toBe("pledge-1");
     expect(result.total).toBe(1);
+  });
+
+  test("listPledges filters by q against the pledge's human-facing reference", async () => {
+    // pledgeReference() (src/lib/sponsorship/statusSummary.ts) formats a
+    // pledge's reference as "SP-" + the id's first segment, e.g. `pledgeId`
+    // here ("11111111-...") displays as "SP-11111111". `sponsorship_pledge.id`
+    // is a uuid column with no ilike operator, so this exercises the
+    // `id::text` cast path via `.filter()` rather than `.ilike()`.
+    const otherPledgeId = "99999999-2222-4333-8444-555555555555";
+    const { client } = createFakeClient({
+      pledgeRows: [
+        pledgeRow({ id: pledgeId, supporter_id: "supporter-1" }),
+        pledgeRow({ id: otherPledgeId, supporter_id: "supporter-2" }),
+      ],
+      supporterRows: [
+        supporterRow({ id: "supporter-1", name: "陳小姐", email: "chan@example.com" }),
+        supporterRow({ id: "supporter-2", name: "李先生", email: "lee@example.com" }),
+      ],
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const result = await repo.listPledges({ q: "SP-1111", page: 1, pageSize: 25 });
+    expect(result.pledges).toHaveLength(1);
+    expect(result.pledges[0].id).toBe(pledgeId);
+    expect(result.total).toBe(1);
+  });
+
+  test("listPledges treats a non-reference-shaped q as a supporter-only search", async () => {
+    // "spare" starts with "sp" but isn't a valid reference query (has non-hex
+    // trailing characters), so it must not be treated as an id search.
+    const { client } = createFakeClient({
+      pledgeRows: [pledgeRow({ id: pledgeId, supporter_id: "supporter-1" })],
+      supporterRows: [supporterRow({ id: "supporter-1", name: "spare parts", email: null })],
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const result = await repo.listPledges({ q: "spare", page: 1, pageSize: 25 });
+    expect(result.pledges).toHaveLength(1);
+    expect(result.pledges[0].id).toBe(pledgeId);
   });
 
   test("listPledges q search returns correct total and later matches when combined with pagination", async () => {
@@ -408,6 +459,24 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
       supporterRow({ id: `supporter-${i}`, name: "陳小姐", email: `chan${i}@example.com` }),
     );
     const { client } = createFakeClient({ pledgeRows: [], supporterRows });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    await expect(repo.listPledges({ q: "陳", page: 1, pageSize: 25 })).rejects.toThrow(
+      "Pledge search matches too many records",
+    );
+  });
+
+  test("listPledges throws when matched supporters' pledges exceed the candidate limit", async () => {
+    // A single supporter can have many pledges (supporter_id is not unique on
+    // sponsorship_pledge), so the "too broad" guard must also bound the
+    // merged pledge-id candidate list, not just the matched-supporter count.
+    const pledgeRows = Array.from({ length: 1001 }, (_, i) =>
+      pledgeRow({ id: `pledge-${i}`, supporter_id: "supporter-1" }),
+    );
+    const { client } = createFakeClient({
+      pledgeRows,
+      supporterRows: [supporterRow({ id: "supporter-1", name: "陳小姐", email: "chan@example.com" })],
+    });
     const repo = createSupabaseSponsorshipAdminRepository(client);
 
     await expect(repo.listPledges({ q: "陳", page: 1, pageSize: 25 })).rejects.toThrow(
