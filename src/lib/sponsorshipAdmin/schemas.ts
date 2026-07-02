@@ -1,6 +1,13 @@
 import { z } from "zod";
 
-import { isoDate, optionalTrimmed, paymentMethodSchema, trimmed } from "../sponsorship/schemas";
+import {
+  isoDate,
+  MAX_PROOF_BYTES,
+  optionalTrimmed,
+  paymentMethodSchema,
+  PROOF_MIME_TYPES,
+  trimmed,
+} from "../sponsorship/schemas";
 
 export const pledgeStatusSchema = z.enum([
   "pending_payment",
@@ -31,12 +38,8 @@ export const recordPledgePaymentSchema = z.object({
     .object({
       storagePath: trimmed.min(1),
       fileName: trimmed.min(1).max(180),
-      fileType: z.enum(["image/jpeg", "image/png", "image/webp", "application/pdf"]),
-      fileSize: z
-        .number()
-        .int()
-        .positive()
-        .max(8 * 1024 * 1024),
+      fileType: z.enum(PROOF_MIME_TYPES),
+      fileSize: z.number().int().positive().max(MAX_PROOF_BYTES),
     })
     .nullable()
     .optional(),
