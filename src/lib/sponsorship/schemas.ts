@@ -54,7 +54,7 @@ export const sponsorshipPledgeSubmissionSchema = z
   .object({
     language: sponsorshipLanguageSchema,
     monthlyTier: monthlyTierSchema,
-    customAmountCents: z.number().int().positive().optional(),
+    customAmountCents: z.number().int().min(1000).optional(),
     animalPreferences: z
       .array(sponsorshipAnimalPreferenceSchema)
       .min(1)

@@ -15,6 +15,7 @@ import {
   toPreferenceInserts,
   validateProofDescriptor,
 } from "./schemas";
+import { buildConsentRows } from "../donations/domain";
 import { getAppUrl, getEmailConfig } from "../donations/config.server";
 
 export const SPONSORSHIP_PROOF_BUCKET = "sponsorship-payment-proof";
@@ -241,6 +242,18 @@ export async function persistSponsorshipPledge({
     ) as { id: string } | null;
     if (!supporter?.id) throw new Error("Missing supporter id");
     const supporterId = supporter.id;
+
+    requireNoError(
+      await client.from("consent").insert(
+        buildConsentRows({
+          supporterId,
+          source: "sponsorship_pledge_form",
+          timestamp: now().toISOString(),
+          consents: parsed.payload.consents,
+        }),
+      ),
+      "Failed to save sponsorship consent",
+    );
 
     const status: SponsorshipPledgeStatus = parsed.proof ? "provisional" : "pending_payment";
 

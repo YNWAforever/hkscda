@@ -289,6 +289,34 @@ describe("persistSponsorshipPledge", () => {
     ).toBe(true);
   });
 
+  test("persists supporter consent choices", async () => {
+    const { client, state } = createFakeClient();
+    await persistSponsorshipPledge({
+      client,
+      parsed: parsedPayload({ consents: { email: true, whatsapp: false } }),
+      now: () => new Date("2026-07-02T00:00:00.000Z"),
+    });
+
+    const consentCall = state.calls.find((c) => c.table === "consent" && c.method === "insert");
+    expect(consentCall).toBeDefined();
+    expect(consentCall?.payload).toEqual([
+      {
+        supporter_id: "supporter-1",
+        channel: "email",
+        status: "opt_in",
+        source: "sponsorship_pledge_form",
+        timestamp: "2026-07-02T00:00:00.000Z",
+      },
+      {
+        supporter_id: "supporter-1",
+        channel: "whatsapp",
+        status: "opt_out",
+        source: "sponsorship_pledge_form",
+        timestamp: "2026-07-02T00:00:00.000Z",
+      },
+    ]);
+  });
+
   test("creates a provisional pledge and uploads proof when proof is attached", async () => {
     const { client, state } = createFakeClient();
     const proof = {
