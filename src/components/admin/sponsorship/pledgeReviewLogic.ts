@@ -50,3 +50,18 @@ const PLEDGE_STATUS_TONE: Record<PledgeStatus, StatusTone> = {
 export function pledgeStatusTone(status: PledgeStatus): StatusTone {
   return PLEDGE_STATUS_TONE[status];
 }
+
+/** Statuses for which the "record payment" form should be shown in the detail drawer. */
+export function canRecordPayment(status: PledgeStatus): boolean {
+  return status === "pending_payment" || status === "needs_followup";
+}
+
+/** Statuses for which the "review payment proof" form should be shown in the detail drawer. */
+export function canReviewProof(status: PledgeStatus): boolean {
+  return status === "provisional";
+}
+
+/** Statuses for which the "cancel sponsorship" action should be shown in the detail drawer. */
+export function canCancelPledge(status: PledgeStatus): boolean {
+  return status === "active";
+}

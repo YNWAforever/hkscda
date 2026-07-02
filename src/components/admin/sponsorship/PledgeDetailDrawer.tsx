@@ -6,9 +6,17 @@ import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
+import { Sheet, SheetContent, SheetTitle } from "../../ui/sheet";
 import { StatusPill } from "../StatusBadge";
 import type { PledgeDetail } from "../../../lib/sponsorshipAdmin/types";
-import { formatDate, formatFallback, pledgeStatusTone } from "./pledgeReviewLogic";
+import {
+  canCancelPledge,
+  canRecordPayment,
+  canReviewProof,
+  formatDate,
+  formatFallback,
+  pledgeStatusTone,
+} from "./pledgeReviewLogic";
 
 type PledgeDetailResponse = { pledge: PledgeDetail };
 
@@ -122,7 +130,6 @@ export function PledgeDetailDrawer({
       await fetchCoordinatorJson(`/api/admin/sponsorships/pledges/${pledgeId}/proof`, {
         method: "POST",
         body: formData,
-        headers: {},
       });
       setReference("");
       setAmountHkd("");
@@ -137,14 +144,20 @@ export function PledgeDetailDrawer({
   }
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex justify-end bg-black/30"
-      role="dialog"
-      aria-modal="true"
+    <Sheet
+      open
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
     >
-      <div className="flex h-full w-full max-w-md flex-col overflow-y-auto bg-[var(--color-surface)] p-6 shadow-xl">
+      <SheetContent
+        side="right"
+        className="flex h-full w-full max-w-md flex-col overflow-y-auto bg-[var(--color-surface)] p-6 shadow-xl sm:max-w-md"
+      >
         <div className="flex items-start justify-between gap-3">
-          <h2 className="text-lg font-semibold text-[var(--color-panel)]">承諾詳情</h2>
+          <SheetTitle className="text-lg font-semibold text-[var(--color-panel)]">
+            承諾詳情
+          </SheetTitle>
           <Button type="button" variant="outline" size="sm" onClick={onClose}>
             關閉
           </Button>
@@ -193,7 +206,7 @@ export function PledgeDetailDrawer({
               </p>
             )}
 
-            {(pledge.status === "pending_payment" || pledge.status === "needs_followup") && (
+            {canRecordPayment(pledge.status) && (
               <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
                 <h3 className="text-sm font-semibold text-[var(--color-panel)]">記錄付款</h3>
                 <Select
@@ -249,7 +262,7 @@ export function PledgeDetailDrawer({
               </section>
             )}
 
-            {pledge.status === "provisional" && (
+            {canReviewProof(pledge.status) && (
               <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
                 <h3 className="text-sm font-semibold text-[var(--color-panel)]">審核付款證明</h3>
                 {pledge.currentProof && (
@@ -285,7 +298,7 @@ export function PledgeDetailDrawer({
               </section>
             )}
 
-            {pledge.status === "active" && (
+            {canCancelPledge(pledge.status) && (
               <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
                 <Label htmlFor="pledge-cancel-note">取消備註</Label>
                 <Input
@@ -322,7 +335,7 @@ export function PledgeDetailDrawer({
             </section>
           </div>
         )}
-      </div>
-    </div>
+      </SheetContent>
+    </Sheet>
   );
 }

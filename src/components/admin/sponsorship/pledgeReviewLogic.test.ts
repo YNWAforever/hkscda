@@ -2,10 +2,14 @@ import { describe, expect, test } from "bun:test";
 
 import {
   buildPledgeListSearchParams,
+  canCancelPledge,
+  canRecordPayment,
+  canReviewProof,
   formatFallback,
   formatDate,
   pledgeStatusTone,
 } from "./pledgeReviewLogic";
+import type { PledgeStatus } from "../../../lib/sponsorshipAdmin/types";
 
 describe("buildPledgeListSearchParams", () => {
   test("omits empty filters and applies page/pageSize defaults", () => {
@@ -70,5 +74,34 @@ describe("pledgeStatusTone", () => {
     expect(pledgeStatusTone("active")).toBe("success");
     expect(pledgeStatusTone("needs_followup")).toBe("danger");
     expect(pledgeStatusTone("cancelled")).toBe("neutral");
+  });
+});
+
+const ALL_STATUSES: PledgeStatus[] = [
+  "pending_payment",
+  "provisional",
+  "active",
+  "needs_followup",
+  "cancelled",
+];
+
+describe("canRecordPayment", () => {
+  test("is true only for pending_payment and needs_followup", () => {
+    const allowed = ALL_STATUSES.filter(canRecordPayment);
+    expect(allowed).toEqual(["pending_payment", "needs_followup"]);
+  });
+});
+
+describe("canReviewProof", () => {
+  test("is true only for provisional", () => {
+    const allowed = ALL_STATUSES.filter(canReviewProof);
+    expect(allowed).toEqual(["provisional"]);
+  });
+});
+
+describe("canCancelPledge", () => {
+  test("is true only for active", () => {
+    const allowed = ALL_STATUSES.filter(canCancelPledge);
+    expect(allowed).toEqual(["active"]);
   });
 });
