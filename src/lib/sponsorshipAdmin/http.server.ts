@@ -15,7 +15,7 @@ type CreateSponsorshipAdminHandlersArgs = {
   service: SponsorshipAdminService;
 };
 
-function jsonResponse(body: unknown, init?: ResponseInit) {
+export function jsonResponse(body: unknown, init?: ResponseInit) {
   const headers = new Headers(init?.headers);
   headers.set("cache-control", "no-store");
   return Response.json(body, { ...init, headers });
@@ -29,7 +29,7 @@ async function jsonBody(request: Request) {
   }
 }
 
-function requiredUuid(params: HandlerContext["params"], key: string) {
+export function requiredUuid(params: HandlerContext["params"], key: string) {
   const value = params?.[key];
   if (!value || !z.string().uuid().safeParse(value).success) {
     throw jsonResponse({ error: `Invalid ${key}` }, { status: 400 });
@@ -48,7 +48,7 @@ const conflictDomainErrors = new Set([
 
 const badRequestDomainErrors = new Set(["A proof file is required to record a payment"]);
 
-async function responseError(error: Response) {
+export async function responseError(error: Response) {
   const status = error.status;
   const contentType = error.headers.get("content-type") ?? "";
 
@@ -71,7 +71,7 @@ async function responseError(error: Response) {
   return jsonResponse({ error: message || error.statusText || "Request failed" }, { status });
 }
 
-function domainError(error: Error) {
+export function domainError(error: Error) {
   if (notFoundDomainErrors.has(error.message)) {
     return jsonResponse({ error: error.message }, { status: 404 });
   }
@@ -84,7 +84,10 @@ function domainError(error: Error) {
   return null;
 }
 
-async function withErrors(operation: () => Promise<Response>) {
+export async function withErrors(
+  operation: () => Promise<Response>,
+  fallbackMessage = "Could not process sponsorship review request",
+) {
   try {
     return await operation();
   } catch (error) {
@@ -98,7 +101,7 @@ async function withErrors(operation: () => Promise<Response>) {
     }
 
     console.error(error);
-    return jsonResponse({ error: "Could not process sponsorship review request" }, { status: 500 });
+    return jsonResponse({ error: fallbackMessage }, { status: 500 });
   }
 }
 
