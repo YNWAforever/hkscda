@@ -1,9 +1,12 @@
-export type PledgeStatus =
-  | "pending_payment"
-  | "provisional"
-  | "active"
-  | "needs_followup"
-  | "cancelled";
+import type { z } from "zod";
+import type {
+  monthlyTierSchema,
+  paymentMethodSchema,
+  sponsorshipLanguageSchema,
+  SponsorshipPledgeStatus,
+} from "../sponsorship/schemas";
+
+export type PledgeStatus = SponsorshipPledgeStatus;
 
 export type PledgeAnimalPreference = {
   id: string;
@@ -44,10 +47,10 @@ export type PledgeSummary = {
   supporterId: string;
   supporterName: string;
   supporterEmail: string | null;
-  monthlyTier: "100" | "300" | "500" | "custom";
+  monthlyTier: z.infer<typeof monthlyTierSchema>;
   amountCents: number;
   currency: string;
-  language: "zh-HK" | "en";
+  language: z.infer<typeof sponsorshipLanguageSchema>;
   status: PledgeStatus;
   createdAt: string;
   updatedAt: string;
@@ -70,7 +73,7 @@ export type PledgeListSearch = {
 };
 
 export type RecordPledgePaymentInput = {
-  paymentMethod: "fps" | "bank_transfer" | "payme" | "paypal" | "give_asia";
+  paymentMethod: z.infer<typeof paymentMethodSchema>;
   reference?: string | null;
   amountCents: number;
   paymentDate: string;
