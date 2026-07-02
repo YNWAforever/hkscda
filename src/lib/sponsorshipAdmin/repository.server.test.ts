@@ -122,7 +122,11 @@ class FakeQuery {
     if (operator === "ilike") {
       this.likeFilters.push({ column: baseColumn, value: String(value) });
     }
-    this.state.calls.push({ table: this.table, method: "filter", payload: { column, operator, value } });
+    this.state.calls.push({
+      table: this.table,
+      method: "filter",
+      payload: { column, operator, value },
+    });
     return this;
   }
 
@@ -267,6 +271,40 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
       p_amount_cents: 30000,
       p_payment_date: "2026-07-01",
       p_note: "Recorded manually",
+    });
+  });
+
+  test("recordPayment passes null file fields through to the RPC when no file is given", async () => {
+    const { client, state } = createFakeClient();
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    await repo.recordPayment({
+      pledgeId,
+      actorUserId,
+      storagePath: null,
+      fileName: null,
+      fileType: null,
+      fileSize: null,
+      paymentMethod: "fps",
+      reference: "REF1",
+      amountCents: 30000,
+      paymentDate: "2026-07-01",
+      note: "Verified directly in the bank system",
+    });
+
+    const call = state.calls.find((c) => c.fn === "record_sponsorship_payment_proof");
+    expect(call?.payload).toEqual({
+      p_pledge_id: pledgeId,
+      p_actor_user_id: actorUserId,
+      p_storage_path: null,
+      p_file_name: null,
+      p_file_type: null,
+      p_file_size: null,
+      p_payment_method: "fps",
+      p_reference: "REF1",
+      p_amount_cents: 30000,
+      p_payment_date: "2026-07-01",
+      p_note: "Verified directly in the bank system",
     });
   });
 
@@ -475,7 +513,9 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     );
     const { client } = createFakeClient({
       pledgeRows,
-      supporterRows: [supporterRow({ id: "supporter-1", name: "陳小姐", email: "chan@example.com" })],
+      supporterRows: [
+        supporterRow({ id: "supporter-1", name: "陳小姐", email: "chan@example.com" }),
+      ],
     });
     const repo = createSupabaseSponsorshipAdminRepository(client);
 
@@ -548,6 +588,17 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
 
   test("getProofSigningInfo returns null when there is no proof", async () => {
     const { client } = createFakeClient({ proofRows: [] });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    expect(await repo.getProofSigningInfo(pledgeId)).toBeNull();
+  });
+
+  test("getProofSigningInfo returns null when the current proof has no attached file", async () => {
+    const { client } = createFakeClient({
+      proofRows: [
+        proofRow({ storage_path: null, file_name: null, file_type: null, file_size: null }),
+      ],
+    });
     const repo = createSupabaseSponsorshipAdminRepository(client);
 
     expect(await repo.getProofSigningInfo(pledgeId)).toBeNull();

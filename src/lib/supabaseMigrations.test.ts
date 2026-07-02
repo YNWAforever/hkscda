@@ -282,4 +282,33 @@ describe("supabase migration safety", () => {
       /revoke all on function public\.cancel_sponsorship_pledge\([\s\S]*?\) from public;\ngrant execute on function public\.cancel_sponsorship_pledge\([\s\S]*?\) to service_role;/,
     );
   });
+
+  test("makes the manual payment proof file optional", () => {
+    const sql = readMigrationBySuffix("_sponsorship_payment_proof_optional_file.sql");
+
+    expect(sql).toContain("alter column storage_path drop not null");
+    expect(sql).toContain("alter column file_name drop not null");
+
+    expect(sql).toContain("drop constraint if exists sponsorship_payment_proof_file_type_check");
+    expect(sql).toContain(
+      "check (file_type is null or file_type in ('image/jpeg', 'image/png', 'image/webp', 'application/pdf'))",
+    );
+
+    expect(sql).toContain("drop constraint if exists sponsorship_payment_proof_file_size_check");
+    expect(sql).toContain("check (file_size is null or (file_size > 0 and file_size <= 8388608))");
+
+    // payment_method/reference/amount_cents/payment_date/review_status/source
+    // are untouched — a recorded payment must always have real payment
+    // details even without a file.
+    for (const column of [
+      "payment_method",
+      "reference",
+      "amount_cents",
+      "payment_date",
+      "review_status",
+      "source",
+    ]) {
+      expect(sql).not.toContain(`alter column ${column} drop not null`);
+    }
+  });
 });

@@ -76,7 +76,7 @@ export function createSponsorshipAdminService({
       const { data, error } = await client.storage
         .from(SPONSORSHIP_PROOF_BUCKET)
         .createSignedUrl(info.storagePath, PROOF_SIGNED_URL_TTL_SECONDS, {
-          download: info.fileName,
+          download: info.fileName ?? true,
         });
       if (error) throw error;
 
@@ -104,17 +104,18 @@ export function createSponsorshipAdminService({
       if (!RECORD_PAYMENT_ELIGIBLE_STATUSES.includes(detail.status)) {
         throw new Error("Sponsorship pledge is not eligible for a recorded payment");
       }
-      if (!input.file) {
-        throw new Error("A proof file is required to record a payment");
-      }
 
+      // The proof file is optional per the design spec: staff can record a
+      // payment they verified some other way (e.g. checked the bank system
+      // directly) without attaching a file. When absent, persist null file
+      // fields rather than rejecting the request.
       const result = await repo.recordPayment({
         pledgeId: args.pledgeId,
         actorUserId: args.actorUserId,
-        storagePath: input.file.storagePath,
-        fileName: input.file.fileName,
-        fileType: input.file.fileType,
-        fileSize: input.file.fileSize,
+        storagePath: input.file?.storagePath ?? null,
+        fileName: input.file?.fileName ?? null,
+        fileType: input.file?.fileType ?? null,
+        fileSize: input.file?.fileSize ?? null,
         paymentMethod: input.paymentMethod,
         reference: input.reference ?? null,
         amountCents: input.amountCents,

@@ -149,11 +149,9 @@ describe("createSponsorshipAdminHandlers", () => {
     expect(body.error).toBe("Invalid JSON body");
   });
 
-  test("recordPayment maps a missing-proof-file domain error to 400", async () => {
+  test("recordPayment returns 201 without a file (manual proof entry is optional)", async () => {
     const service = createService({
-      recordPayment: mock(async () => {
-        throw new Error("A proof file is required to record a payment");
-      }),
+      recordPayment: mock(async () => ({ id: "proof-1" })),
     });
     const handlers = createSponsorshipAdminHandlers({
       requireCoordinator: requireCoordinator(),
@@ -167,9 +165,9 @@ describe("createSponsorshipAdminHandlers", () => {
       }),
       params: { id: pledgeId },
     });
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(201);
     const body = await response.json();
-    expect(body.error).toBe("A proof file is required to record a payment");
+    expect(body.proof.id).toBe("proof-1");
   });
 
   test("recordPayment returns 201 with the proof payload on success", async () => {

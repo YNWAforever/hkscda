@@ -106,13 +106,9 @@ describe("handleRecordPaymentUpload", () => {
     expect(body.error).toBe("Invalid payment payload");
   });
 
-  test("maps the missing-file domain error from service.recordPayment to 400", async () => {
-    const service = createService({
-      recordPayment: mock(async () => {
-        throw new Error("A proof file is required to record a payment");
-      }),
-    });
-    const { client } = createClient();
+  test("records a payment with no file part and passes file: undefined through", async () => {
+    const service = createService();
+    const { client, upload } = createClient();
 
     const response = await handleRecordPaymentUpload({
       request: multipartRequest({
@@ -124,9 +120,13 @@ describe("handleRecordPaymentUpload", () => {
       requireCoordinator: requireCoordinator(),
     });
 
-    expect(response.status).toBe(400);
-    const body = await response.json();
-    expect(body.error).toBe("A proof file is required to record a payment");
+    expect(response.status).toBe(201);
+    expect(upload).not.toHaveBeenCalled();
+    expect(service.recordPayment).toHaveBeenCalled();
+    const call = (service.recordPayment as ReturnType<typeof mock>).mock.calls[0][0] as {
+      input: { file?: unknown };
+    };
+    expect(call.input.file).toBeUndefined();
   });
 
   test("checks eligibility before uploading and never touches storage when ineligible", async () => {

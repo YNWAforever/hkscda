@@ -43,10 +43,10 @@ type PreferenceRow = {
 type ProofRow = {
   id: string;
   pledge_id: string;
-  storage_path: string;
-  file_name: string;
-  file_type: string;
-  file_size: number;
+  storage_path: string | null;
+  file_name: string | null;
+  file_type: string | null;
+  file_size: number | null;
   payment_method: string;
   reference: string | null;
   amount_cents: number;
@@ -124,10 +124,7 @@ async function searchPledgeIds(client: SupabaseClient, q: string): Promise<strin
 
   const [directResult, supporterResult] = await Promise.all([
     hexPrefix
-      ? client
-          .from("sponsorship_pledge")
-          .select("id")
-          .filter("id::text", "ilike", `${hexPrefix}%`)
+      ? client.from("sponsorship_pledge").select("id").filter("id::text", "ilike", `${hexPrefix}%`)
       : Promise.resolve({ data: [] as Array<{ id: string }>, error: null }),
     client.from("supporter").select("id").or(`name.ilike.${like},email.ilike.${like}`),
   ]);
@@ -234,7 +231,9 @@ async function loadSupportersByIds(client: SupabaseClient, ids: string[]) {
 export type SponsorshipAdminRepository = {
   listPledges(input: PledgeListSearch): Promise<{ pledges: PledgeSummary[]; total: number }>;
   getPledgeDetail(id: string): Promise<PledgeDetail | null>;
-  getProofSigningInfo(pledgeId: string): Promise<{ storagePath: string; fileName: string } | null>;
+  getProofSigningInfo(
+    pledgeId: string,
+  ): Promise<{ storagePath: string; fileName: string | null } | null>;
   recordPayment(input: RecordPledgePaymentRepoInput): Promise<{ id: string }>;
   reviewProof(
     input: ReviewPledgeProofInput & { pledgeId: string; actorUserId: string },
@@ -338,6 +337,10 @@ export function createSupabaseSponsorshipAdminRepository(
       if (!data) return null;
 
       const row = data as Pick<ProofRow, "storage_path" | "file_name">;
+      // A staff-recorded payment may have no attached file: there is no
+      // storage object to sign a URL for, so treat it the same as "no proof".
+      if (!row.storage_path) return null;
+
       return { storagePath: row.storage_path, fileName: row.file_name };
     },
 

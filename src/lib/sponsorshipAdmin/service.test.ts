@@ -247,28 +247,39 @@ describe("createSponsorshipAdminService", () => {
     expect(repo.recordPayment).not.toHaveBeenCalled();
   });
 
-  test("recordPayment rejects when no file is provided", async () => {
+  test("recordPayment succeeds without a file and persists null file fields", async () => {
     const repo = createFakeRepo({
       getPledgeDetail: mock(async () => baseDetail({ status: "pending_payment" })),
     });
+    const sender = createFakeSender();
     const service = createSponsorshipAdminService({
       repo,
       client: fakeClient,
-      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+      sendPledgeStatusUpdateEmail: sender.sendPledgeStatusUpdateEmail,
     });
 
-    await expect(
-      service.recordPayment({
-        actorUserId,
-        pledgeId,
-        input: {
-          paymentMethod: "fps",
-          amountCents: 30000,
-          paymentDate: "2026-07-01",
-        },
-      }),
-    ).rejects.toThrow("A proof file is required to record a payment");
-    expect(repo.recordPayment).not.toHaveBeenCalled();
+    await service.recordPayment({
+      actorUserId,
+      pledgeId,
+      input: {
+        paymentMethod: "fps",
+        amountCents: 30000,
+        paymentDate: "2026-07-01",
+      },
+    });
+
+    expect(repo.recordPayment).toHaveBeenCalled();
+    const call = (repo.recordPayment as ReturnType<typeof mock>).mock.calls[0][0] as {
+      storagePath: string | null;
+      fileName: string | null;
+      fileType: string | null;
+      fileSize: number | null;
+    };
+    expect(call.storagePath).toBeNull();
+    expect(call.fileName).toBeNull();
+    expect(call.fileType).toBeNull();
+    expect(call.fileSize).toBeNull();
+    expect(sender.sendPledgeStatusUpdateEmail).toHaveBeenCalled();
   });
 
   test("recordPayment calls the repository and sends the proof_recorded email", async () => {

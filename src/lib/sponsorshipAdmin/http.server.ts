@@ -46,8 +46,6 @@ const conflictDomainErrors = new Set([
   "Sponsorship pledge is already cancelled",
 ]);
 
-const badRequestDomainErrors = new Set(["A proof file is required to record a payment"]);
-
 export async function responseError(error: Response) {
   const status = error.status;
   const contentType = error.headers.get("content-type") ?? "";
@@ -77,9 +75,6 @@ export function domainError(error: Error) {
   }
   if (conflictDomainErrors.has(error.message)) {
     return jsonResponse({ error: error.message }, { status: 409 });
-  }
-  if (badRequestDomainErrors.has(error.message)) {
-    return jsonResponse({ error: error.message }, { status: 400 });
   }
   return null;
 }
