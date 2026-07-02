@@ -7,16 +7,38 @@ import {
   requireAdmin,
 } from "../../../../../lib/donations/supabase.server";
 
-export function createHandlers() {
+function createContext() {
   const client = createSupabaseServiceClient();
   const service = createSponsorshipAdminService({
     repo: createSupabaseSponsorshipAdminRepository(client),
     sendPledgeStatusUpdateEmail,
     client,
   });
+  const requireCoordinator = (request: Request) =>
+    requireAdmin(request, ["staff", "admin"], client);
 
-  return createSponsorshipAdminHandlers({
-    requireCoordinator: (request) => requireAdmin(request, ["staff", "admin"], client),
-    service,
-  });
+  return { client, service, requireCoordinator };
+}
+
+export function createHandlers() {
+  const { service, requireCoordinator } = createContext();
+  return createSponsorshipAdminHandlers({ requireCoordinator, service });
+}
+
+/**
+ * Exposes the raw service/client alongside the HTTP handlers for routes that
+ * need to do request-specific pre-processing (e.g. the multipart proof
+ * upload route, which must check payment eligibility and upload a file to
+ * storage before delegating to `recordPayment`) without re-wiring the
+ * repository/service/notifications dependencies from scratch.
+ */
+export function createHandlersWithContext() {
+  const context = createContext();
+  return {
+    ...context,
+    handlers: createSponsorshipAdminHandlers({
+      requireCoordinator: context.requireCoordinator,
+      service: context.service,
+    }),
+  };
 }

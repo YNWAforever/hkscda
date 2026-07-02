@@ -3,13 +3,7 @@ import { z } from "zod";
 
 import { validateProofDescriptor } from "../../../../../../lib/sponsorship/schemas";
 import { SPONSORSHIP_PROOF_BUCKET } from "../../../../../../lib/sponsorship/submission.server";
-import {
-  createSupabaseServiceClient,
-  requireAdmin,
-} from "../../../../../../lib/donations/supabase.server";
-import { createSupabaseSponsorshipAdminRepository } from "../../../../../../lib/sponsorshipAdmin/repository.server";
-import { createSponsorshipAdminService } from "../../../../../../lib/sponsorshipAdmin/service";
-import { sendPledgeStatusUpdateEmail } from "../../../../../../lib/sponsorshipAdmin/notifications.server";
+import { createHandlersWithContext } from "../-handlers";
 
 const paramsSchema = z.object({ id: z.string().uuid() });
 
@@ -51,11 +45,26 @@ const conflictDomainErrors = new Set(["Sponsorship pledge is not eligible for a 
 
 const notFoundDomainErrors = new Set(["Sponsorship pledge not found"]);
 
+/**
+ * Parses the multipart body, uploads the proof file (if provided) to
+ * storage, and delegates persistence/notification to the already-tested
+ * `service.recordPayment`. Eligibility is checked *before* the upload (via
+ * `assertRecordPaymentEligible`) so a pledge that is not eligible for a
+ * recorded payment never leaves an orphaned file in the bucket. If the
+ * upload succeeds but the subsequent `recordPayment` call still fails, the
+ * uploaded file is removed so nothing is left behind.
+ */
 async function recordPayment({ request, params }: { request: Request; params: { id: string } }) {
+  let uploadedStoragePath: string | undefined;
+  let client: ReturnType<typeof createHandlersWithContext>["client"] | undefined;
+
   try {
+    const context = createHandlersWithContext();
+    client = context.client;
+    const { service, requireCoordinator } = context;
+
     const { id } = paramsSchema.parse(params);
-    const client = createSupabaseServiceClient();
-    const admin = await requireAdmin(request, ["staff", "admin"], client);
+    const admin = await requireCoordinator(request);
 
     const formData = await request.formData();
     const payloadValue = formData.get("payload");
@@ -63,13 +72,12 @@ async function recordPayment({ request, params }: { request: Request; params: { 
       return jsonResponse({ error: "Missing payment payload" }, { status: 400 });
     }
 
-    const payload = JSON.parse(payloadValue) as {
-      paymentMethod: string;
-      reference?: string | null;
-      amountCents: number;
-      paymentDate: string;
-      note?: string | null;
-    };
+    let payload: Record<string, unknown>;
+    try {
+      payload = JSON.parse(payloadValue);
+    } catch {
+      return jsonResponse({ error: "Invalid payment payload" }, { status: 400 });
+    }
 
     const fileValue = formData.get("file");
     let file:
@@ -77,6 +85,10 @@ async function recordPayment({ request, params }: { request: Request; params: { 
       | undefined;
 
     if (fileValue instanceof File) {
+      // Validate eligibility before touching storage so a rejected
+      // (ineligible-status) request never leaves an orphaned file behind.
+      await service.assertRecordPaymentEligible(id);
+
       const descriptor = validateProofDescriptor({
         fileName: fileValue.name,
         mimeType: fileValue.type,
@@ -87,20 +99,15 @@ async function recordPayment({ request, params }: { request: Request; params: { 
         .from(SPONSORSHIP_PROOF_BUCKET)
         .upload(storagePath, fileValue, { contentType: descriptor.mimeType, upsert: false });
       if (upload.error) throw upload.error;
+
+      uploadedStoragePath = upload.data?.path ?? storagePath;
       file = {
-        storagePath: upload.data?.path ?? storagePath,
+        storagePath: uploadedStoragePath,
         fileName: descriptor.fileName,
         fileType: descriptor.mimeType,
         fileSize: descriptor.sizeBytes,
       };
     }
-
-    const repo = createSupabaseSponsorshipAdminRepository(client);
-    const service = createSponsorshipAdminService({
-      repo,
-      sendPledgeStatusUpdateEmail,
-      client,
-    });
 
     const result = await service.recordPayment({
       actorUserId: admin.authUserId,
@@ -110,6 +117,10 @@ async function recordPayment({ request, params }: { request: Request; params: { 
 
     return jsonResponse({ proof: result }, { status: 201 });
   } catch (error) {
+    if (uploadedStoragePath && client) {
+      await client.storage.from(SPONSORSHIP_PROOF_BUCKET).remove([uploadedStoragePath]);
+    }
+
     if (error instanceof Response) return responseError(error);
     if (error instanceof z.ZodError) {
       return jsonResponse({ error: "Invalid payment proof request" }, { status: 400 });

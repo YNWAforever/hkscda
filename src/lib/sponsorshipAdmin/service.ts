@@ -10,6 +10,9 @@ import {
 import type { PledgeDetail } from "./types";
 import type { SendPledgeStatusUpdateEmailArgs } from "./notifications.server";
 
+const SPONSORSHIP_PROOF_BUCKET = "sponsorship-payment-proof";
+const PROOF_SIGNED_URL_TTL_SECONDS = 60;
+
 type SendPledgeStatusUpdateEmail = (
   client: SupabaseClient,
   args: SendPledgeStatusUpdateEmailArgs,
@@ -26,6 +29,11 @@ function requirePledge(detail: PledgeDetail | null): PledgeDetail {
   if (!detail) throw new Error("Sponsorship pledge not found");
   return detail;
 }
+
+const RECORD_PAYMENT_ELIGIBLE_STATUSES: PledgeDetail["status"][] = [
+  "pending_payment",
+  "needs_followup",
+];
 
 export function createSponsorshipAdminService({
   repo,
@@ -61,13 +69,38 @@ export function createSponsorshipAdminService({
     },
 
     async getProofSigningInfo(id: string) {
-      return repo.getProofSigningInfo(id);
+      const info = await repo.getProofSigningInfo(id);
+      if (!info) return null;
+
+      const { data, error } = await client.storage
+        .from(SPONSORSHIP_PROOF_BUCKET)
+        .createSignedUrl(info.storagePath, PROOF_SIGNED_URL_TTL_SECONDS, {
+          download: info.fileName,
+        });
+      if (error) throw error;
+
+      return { url: data.signedUrl, fileName: info.fileName };
+    },
+
+    /**
+     * Validates that a pledge is currently eligible to receive a recorded
+     * payment, without mutating anything. Callers that must upload a proof
+     * file to storage before invoking `recordPayment` (e.g. the multipart
+     * proof-record route) should call this first so an ineligible pledge is
+     * rejected before any file lands in the bucket.
+     */
+    async assertRecordPaymentEligible(pledgeId: string) {
+      const detail = requirePledge(await repo.getPledgeDetail(pledgeId));
+      if (!RECORD_PAYMENT_ELIGIBLE_STATUSES.includes(detail.status)) {
+        throw new Error("Sponsorship pledge is not eligible for a recorded payment");
+      }
+      return detail;
     },
 
     async recordPayment(args: { actorUserId: string; pledgeId: string; input: unknown }) {
       const input = recordPledgePaymentSchema.parse(args.input);
       const detail = requirePledge(await repo.getPledgeDetail(args.pledgeId));
-      if (!["pending_payment", "needs_followup"].includes(detail.status)) {
+      if (!RECORD_PAYMENT_ELIGIBLE_STATUSES.includes(detail.status)) {
         throw new Error("Sponsorship pledge is not eligible for a recorded payment");
       }
       if (!input.file) {

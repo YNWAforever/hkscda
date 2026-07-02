@@ -7,6 +7,24 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 const fakeClient = {} as SupabaseClient;
 
+function createFakeStorageClient(
+  overrides: {
+    createSignedUrl?: () => Promise<{ data: { signedUrl: string } | null; error: Error | null }>;
+  } = {},
+) {
+  const createSignedUrl =
+    overrides.createSignedUrl ??
+    mock(async () => ({ data: { signedUrl: "https://example.com/signed" }, error: null }));
+
+  const client = {
+    storage: {
+      from: mock(() => ({ createSignedUrl })),
+    },
+  } as unknown as SupabaseClient;
+
+  return { client, createSignedUrl };
+}
+
 const pledgeId = "11111111-2222-4333-8444-555555555555";
 const actorUserId = "22222222-3333-4333-8444-555555555555";
 
@@ -106,6 +124,102 @@ describe("createSponsorshipAdminService", () => {
     });
 
     expect(await service.getPledgeDetail(pledgeId)).toBeNull();
+  });
+
+  test("getProofSigningInfo returns a signed url and file name when a proof exists", async () => {
+    const repo = createFakeRepo({
+      getProofSigningInfo: mock(async () => ({
+        storagePath: `${pledgeId}/proof.jpg`,
+        fileName: "proof.jpg",
+      })),
+    });
+    const { client, createSignedUrl } = createFakeStorageClient();
+    const service = createSponsorshipAdminService({
+      repo,
+      client,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    const result = await service.getProofSigningInfo(pledgeId);
+
+    expect(result).toEqual({ url: "https://example.com/signed", fileName: "proof.jpg" });
+    expect(createSignedUrl).toHaveBeenCalledWith(
+      `${pledgeId}/proof.jpg`,
+      60,
+      expect.objectContaining({ download: "proof.jpg" }),
+    );
+  });
+
+  test("getProofSigningInfo returns null when there is no proof", async () => {
+    const repo = createFakeRepo({ getProofSigningInfo: mock(async () => null) });
+    const { client } = createFakeStorageClient();
+    const service = createSponsorshipAdminService({
+      repo,
+      client,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    expect(await service.getProofSigningInfo(pledgeId)).toBeNull();
+  });
+
+  test("getProofSigningInfo throws when signing fails", async () => {
+    const repo = createFakeRepo({
+      getProofSigningInfo: mock(async () => ({
+        storagePath: `${pledgeId}/proof.jpg`,
+        fileName: "proof.jpg",
+      })),
+    });
+    const signingError = new Error("storage unavailable");
+    const { client } = createFakeStorageClient({
+      createSignedUrl: mock(async () => ({ data: null, error: signingError })),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await expect(service.getProofSigningInfo(pledgeId)).rejects.toThrow("storage unavailable");
+  });
+
+  test("assertRecordPaymentEligible returns the pledge detail when eligible", async () => {
+    const detail = baseDetail({ status: "pending_payment" });
+    const repo = createFakeRepo({ getPledgeDetail: mock(async () => detail) });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    expect(await service.assertRecordPaymentEligible(pledgeId)).toEqual(detail);
+  });
+
+  test("assertRecordPaymentEligible rejects when the pledge is not eligible", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () => baseDetail({ status: "active" })),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await expect(service.assertRecordPaymentEligible(pledgeId)).rejects.toThrow(
+      "Sponsorship pledge is not eligible for a recorded payment",
+    );
+  });
+
+  test("assertRecordPaymentEligible rejects when the pledge does not exist", async () => {
+    const repo = createFakeRepo({ getPledgeDetail: mock(async () => null) });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await expect(service.assertRecordPaymentEligible(pledgeId)).rejects.toThrow(
+      "Sponsorship pledge not found",
+    );
   });
 
   test("recordPayment rejects when the pledge is not pending_payment or needs_followup", async () => {
