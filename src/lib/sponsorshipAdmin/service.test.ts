@@ -4,6 +4,7 @@ import { createSponsorshipAdminService } from "./service";
 import type { PaymentProofRecord, PledgeDetail } from "./types";
 import type { SponsorshipAdminRepository as Repo } from "./repository.server";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { pledgeReference } from "../sponsorship/statusSummary";
 
 const fakeClient = {} as SupabaseClient;
 
@@ -301,6 +302,10 @@ describe("createSponsorshipAdminService", () => {
 
     expect(repo.recordPayment).toHaveBeenCalled();
     expect(sender.sendPledgeStatusUpdateEmail).toHaveBeenCalled();
+    const call = sender.calls[0] as [unknown, { reference: string }];
+    expect(call[1].reference).toBe(pledgeReference(pledgeId));
+    expect(call[1].reference).not.toBe(pledgeId);
+    expect(call[1].reference).toMatch(/^SP-[0-9A-F]{8}$/);
   });
 
   test("reviewProof rejects when the pledge is not provisional", async () => {
@@ -377,8 +382,10 @@ describe("createSponsorshipAdminService", () => {
       decision: "approve",
       note: null,
     });
-    const call = sender.calls[0] as [unknown, { event: string }];
+    const call = sender.calls[0] as [unknown, { event: string; reference: string }];
     expect(call[1].event).toBe("active");
+    expect(call[1].reference).toBe(pledgeReference(pledgeId));
+    expect(call[1].reference).not.toBe(pledgeId);
   });
 
   test("reviewProof reject sends the needs_followup email", async () => {
@@ -400,8 +407,10 @@ describe("createSponsorshipAdminService", () => {
       input: { decision: "reject", note: "Blurry" },
     });
 
-    const call = sender.calls[0] as [unknown, { event: string }];
+    const call = sender.calls[0] as [unknown, { event: string; reference: string }];
     expect(call[1].event).toBe("needs_followup");
+    expect(call[1].reference).toBe(pledgeReference(pledgeId));
+    expect(call[1].reference).not.toBe(pledgeId);
   });
 
   test("cancelPledge rejects an already-cancelled pledge", async () => {
@@ -438,8 +447,10 @@ describe("createSponsorshipAdminService", () => {
       actorUserId,
       note: "Sponsor left",
     });
-    const call = sender.calls[0] as [unknown, { event: string }];
+    const call = sender.calls[0] as [unknown, { event: string; reference: string }];
     expect(call[1].event).toBe("cancelled");
+    expect(call[1].reference).toBe(pledgeReference(pledgeId));
+    expect(call[1].reference).not.toBe(pledgeId);
   });
 
   test("email failure does not throw or roll back the already-committed transition", async () => {

@@ -9,6 +9,7 @@ import {
 } from "./schemas";
 import type { PledgeDetail } from "./types";
 import type { SendPledgeStatusUpdateEmailArgs } from "./notifications.server";
+import { pledgeReference } from "../sponsorship/statusSummary";
 
 const SPONSORSHIP_PROOF_BUCKET = "sponsorship-payment-proof";
 const PROOF_SIGNED_URL_TTL_SECONDS = 60;
@@ -50,7 +51,7 @@ export function createSponsorshipAdminService({
         supporterId: detail.supporterId,
         supporterEmail: detail.supporterEmail,
         supporterName: detail.supporterName,
-        reference: detail.id,
+        reference: pledgeReference(detail.id),
         amountCents: detail.amountCents,
       });
     } catch (error) {
