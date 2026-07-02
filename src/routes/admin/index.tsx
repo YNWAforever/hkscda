@@ -86,7 +86,7 @@ function AdminDashboardContent({ section }: { section: DashboardSection }) {
                   : "rounded border border-[var(--color-border)] px-3 py-2 text-sm font-medium text-[var(--color-panel)] hover:bg-[var(--color-primary-highlight)]"
               }
             >
-              動物列表
+              {copy.dashboard.sponsorViewAnimals}
             </button>
             <button
               type="button"
@@ -97,7 +97,7 @@ function AdminDashboardContent({ section }: { section: DashboardSection }) {
                   : "rounded border border-[var(--color-border)] px-3 py-2 text-sm font-medium text-[var(--color-panel)] hover:bg-[var(--color-primary-highlight)]"
               }
             >
-              承諾審核
+              {copy.dashboard.sponsorViewPledges}
             </button>
           </div>
         ) : section !== "applications" ? (
