@@ -50,6 +50,9 @@ function createFakeRepository(): CrmRepository & {
     async ensureSupporterRole(input) {
       calls.push({ name: "ensureSupporterRole", payload: input });
     },
+    async setSupporterRoles(input) {
+      calls.push({ name: "setSupporterRoles", payload: input });
+    },
     async insertConsentRows(rows) {
       calls.push({ name: "insertConsentRows", payload: rows });
     },
@@ -89,7 +92,7 @@ function createFakeRepository(): CrmRepository & {
 }
 
 describe("createCrmService", () => {
-  test("normalizes email when creating a supporter, ensures donor role, and audits", async () => {
+  test("normalizes email when creating a supporter, stores selected roles, and audits", async () => {
     const repo = createFakeRepository();
     const service = createCrmService({
       repo,
@@ -104,13 +107,14 @@ describe("createCrmService", () => {
         phone: " 9123 4567 ",
         language: "zh-HK",
         tags: [" donor ", "donor"],
+        roles: [" volunteer ", "donor", "volunteer"],
       },
     });
 
     expect(created.email).toBe("ada@example.com");
     expect(repo.calls.map((call) => call.name)).toEqual([
       "upsertSupporter",
-      "ensureSupporterRole",
+      "setSupporterRoles",
       "insertAuditLog",
     ]);
     expect(repo.calls[0].payload).toMatchObject({
@@ -121,7 +125,7 @@ describe("createCrmService", () => {
     });
     expect(repo.calls[1].payload).toEqual({
       supporterId: "8bda8e40-cf39-4659-8be8-f2d74f9d2046",
-      role: "donor",
+      roles: ["volunteer", "donor"],
     });
     expect(repo.calls[2].payload).toMatchObject({
       actor_user_id: "11111111-2222-4333-8444-555555555555",
@@ -129,6 +133,49 @@ describe("createCrmService", () => {
       entity: "supporter",
       entity_id: "8bda8e40-cf39-4659-8be8-f2d74f9d2046",
       timestamp: "2026-06-24T09:00:00.000Z",
+    });
+  });
+
+  test("updates supporter profile fields and roles together", async () => {
+    const repo = createFakeRepository();
+    const service = createCrmService({
+      repo,
+      now: () => new Date("2026-06-24T09:00:00.000Z"),
+    });
+
+    await service.updateSupporter({
+      actorUserId: "11111111-2222-4333-8444-555555555555",
+      supporterId: "8bda8e40-cf39-4659-8be8-f2d74f9d2046",
+      input: {
+        name: "Ada Wong",
+        roles: ["volunteer", "foster"],
+        deleted: false,
+      },
+    });
+
+    expect(repo.calls.map((call) => call.name)).toEqual([
+      "updateSupporter",
+      "setSupporterRoles",
+      "insertAuditLog",
+    ]);
+    expect(repo.calls[0].payload).toEqual({
+      id: "8bda8e40-cf39-4659-8be8-f2d74f9d2046",
+      input: {
+        name: "Ada Wong",
+        deletedAt: null,
+      },
+    });
+    expect(repo.calls[1].payload).toEqual({
+      supporterId: "8bda8e40-cf39-4659-8be8-f2d74f9d2046",
+      roles: ["volunteer", "foster"],
+    });
+    expect(repo.calls[2].payload).toMatchObject({
+      action: "supporter.update",
+      detail: {
+        name: "Ada Wong",
+        roles: ["volunteer", "foster"],
+        deleted: false,
+      },
     });
   });
 

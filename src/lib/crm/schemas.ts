@@ -39,6 +39,38 @@ const normalizedTags = z
   .default([])
   .transform((tags) => [...new Set(tags.map((tag) => tag.trim()).filter((tag) => tag.length > 0))]);
 
+function normalizeRoles(roles: string[], ctx: z.RefinementCtx) {
+  const roleSet = new Set<string>(supporterRoles);
+  const normalized = [...new Set(roles.map((role) => role.trim()).filter(Boolean))];
+  if (normalized.length === 0) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "At least one supporter role must be provided",
+    });
+    return z.NEVER;
+  }
+  const invalidRole = normalized.find((role) => !roleSet.has(role));
+  if (invalidRole) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `Unsupported supporter role: ${invalidRole}`,
+    });
+    return z.NEVER;
+  }
+  return normalized as Array<(typeof supporterRoles)[number]>;
+}
+
+const normalizedRoles = z
+  .array(z.string())
+  .optional()
+  .default(["donor"])
+  .transform((roles, ctx) => normalizeRoles(roles, ctx));
+
+const optionalNormalizedRoles = z
+  .array(z.string())
+  .optional()
+  .transform((roles, ctx) => (roles === undefined ? undefined : normalizeRoles(roles, ctx)));
+
 const nullableTrimmed = z
   .string()
   .nullable()
@@ -86,6 +118,7 @@ export const supporterInputSchema = z.object({
   phone: optionalTrimmed,
   language: z.enum(crmLanguages),
   tags: normalizedTags,
+  roles: normalizedRoles,
   source: z.string().trim().min(1).max(80).default("admin_manual"),
 });
 
@@ -94,6 +127,7 @@ export const supporterUpdateSchema = z.object({
   phone: nullableTrimmed,
   language: z.enum(crmLanguages).optional(),
   tags: normalizedTags.optional(),
+  roles: optionalNormalizedRoles,
   deleted: z.boolean().optional(),
 });
 

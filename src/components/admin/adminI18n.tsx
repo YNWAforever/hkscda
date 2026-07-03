@@ -137,7 +137,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       sponsor: "助養",
       applications: "申請",
       payments: "收款",
-      supporters: "捐款人",
+      supporters: "支持者",
       access: "權限管理",
     },
     navGroups: {
@@ -158,7 +158,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       "coordinator-reports": "報表紀錄",
       "coordinator-statuses": "狀態設定",
       payments: "收款",
-      supporters: "捐款人",
+      supporters: "支持者",
       "access-management": "權限管理",
     },
     layout: {
@@ -181,7 +181,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
         sponsor: "助養動物",
         applications: "領養申請",
         payments: "收款紀錄",
-        supporters: "捐款人",
+        supporters: "支持者",
         access: "權限管理",
       },
       addNew: "新增",
@@ -190,7 +190,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       phone: "電話",
       date: "日期",
       status: "狀態",
-      supporters: "捐款人紀錄",
+      supporters: "支持者紀錄",
       applicationsMovedTitle: "領養申請已移至協調員工作流程",
       applicationsMovedDescription:
         "請使用協調員個案列表處理申請審核、狀態變更、動物配對、跟進及完成領養。",

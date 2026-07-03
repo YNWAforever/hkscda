@@ -12,7 +12,7 @@ import {
   type SupporterInput,
   type SupporterSearch,
 } from "./schemas";
-import type { SupporterDetail, SupporterSummary } from "./types";
+import type { SupporterDetail, SupporterRole, SupporterSummary } from "./types";
 
 type ConsentInsertRows = ReturnType<typeof buildConsentRowsForUpdate>;
 type ManualDonationRecords = ReturnType<typeof buildManualDonationRecords>;
@@ -42,6 +42,7 @@ export type CrmRepository = {
   upsertSupporter(input: SupporterInput): Promise<{ id: string; email: string }>;
   updateSupporter(id: string, input: SupporterUpdatePayload): Promise<void>;
   ensureSupporterRole(input: { supporterId: string; role: "donor" }): Promise<void>;
+  setSupporterRoles(input: { supporterId: string; roles: SupporterRole[] }): Promise<void>;
   insertConsentRows(rows: ConsentInsertRows): Promise<void>;
   insertManualDonation(
     records: ManualDonationRecords,
@@ -80,7 +81,7 @@ export function createCrmService({ repo, now = () => new Date() }: CreateCrmServ
     async createSupporter(args: { actorUserId: string | null; input: unknown }) {
       const input = supporterInputSchema.parse(args.input);
       const supporter = await repo.upsertSupporter(input);
-      await repo.ensureSupporterRole({ supporterId: supporter.id, role: "donor" });
+      await repo.setSupporterRoles({ supporterId: supporter.id, roles: input.roles });
       await repo.insertAuditLog({
         actor_user_id: args.actorUserId,
         action: "supporter.create_or_update",
@@ -98,13 +99,16 @@ export function createCrmService({ repo, now = () => new Date() }: CreateCrmServ
       input: unknown;
     }) {
       const input = supporterUpdateSchema.parse(args.input);
-      const { deleted, ...rest } = input;
+      const { deleted, roles, ...rest } = input;
       const update: SupporterUpdatePayload = { ...rest };
       if (deleted !== undefined) {
         update.deletedAt = deleted ? timestamp(now) : null;
       }
 
       await repo.updateSupporter(args.supporterId, update);
+      if (roles !== undefined) {
+        await repo.setSupporterRoles({ supporterId: args.supporterId, roles });
+      }
       await repo.insertAuditLog({
         actor_user_id: args.actorUserId,
         action: "supporter.update",

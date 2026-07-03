@@ -107,6 +107,7 @@ describe("crm schemas", () => {
       phone: "  9123 4567 ",
       language: "en",
       tags: [" major donor ", "", "medical"],
+      roles: [" donor ", "volunteer", "donor"],
       deleted: false,
     });
 
@@ -115,6 +116,7 @@ describe("crm schemas", () => {
       phone: "9123 4567",
       language: "en",
       tags: ["major donor", "medical"],
+      roles: ["donor", "volunteer"],
       deleted: false,
     });
   });
@@ -130,10 +132,22 @@ describe("crm schemas", () => {
       email: "ADA@example.com",
       language: "zh-HK",
       tags: [" medical ", "medical", "", " donor "],
+      roles: [" volunteer ", "donor", "volunteer"],
     });
 
     expect(parsed.email).toBe("ada@example.com");
     expect(parsed.tags).toEqual(["medical", "donor"]);
+    expect(parsed.roles).toEqual(["volunteer", "donor"]);
+  });
+
+  test("defaults manually created supporters to donor when no role is provided", () => {
+    const parsed = supporterInputSchema.parse({
+      name: "Ada",
+      email: "ada@example.com",
+      language: "zh-HK",
+    });
+
+    expect(parsed.roles).toEqual(["donor"]);
   });
 
   test("accepts partial channel consent updates", () => {

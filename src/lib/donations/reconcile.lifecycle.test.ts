@@ -3,6 +3,7 @@ import { describe, expect, test } from "bun:test";
 import {
   failProviderPayment,
   issueReceiptIfNeeded,
+  issueReceiptForDonation,
   reconcileManualPayment,
   reconcileProviderPayment,
   refundProviderPayment,
@@ -184,6 +185,75 @@ describe("issueReceiptIfNeeded", () => {
 
     expect(generatorCalls).toBe(1);
     expect(state.uploads).toHaveLength(1);
+  });
+});
+
+describe("issueReceiptForDonation", () => {
+  test("rejects ineligible donations before calling the receipt RPC", async () => {
+    const rpcCalls: string[] = [];
+    const ineligiblePayment = {
+      ...basePayment,
+      donation: {
+        ...basePayment.donation,
+        amount_cents: 20000,
+        receipt_requested: false,
+      },
+    };
+    const client = {
+      rpc(fn: string) {
+        rpcCalls.push(fn);
+        return Promise.resolve({
+          data: [
+            {
+              receipt_no: "HKSCDA-2026-000001",
+              receipt_id: "receipt-1",
+              pdf_url: "2026/HKSCDA-2026-000001.pdf",
+              tax_year: 2026,
+              issued_at: "2026-06-24T10:00:00.000Z",
+            },
+          ],
+          error: null,
+        });
+      },
+      from(table: string) {
+        return {
+          select() {
+            const builder = {
+              eq() {
+                return builder;
+              },
+              order() {
+                return builder;
+              },
+              limit() {
+                return builder;
+              },
+              maybeSingle() {
+                return Promise.resolve({
+                  data: table === "payment" ? ineligiblePayment : null,
+                  error: null,
+                });
+              },
+            };
+            return builder;
+          },
+          insert() {
+            return Promise.resolve({ error: null });
+          },
+        };
+      },
+    };
+
+    let response: Response | null = null;
+    try {
+      await issueReceiptForDonation(client as never, "donation-1", "admin-1");
+    } catch (error) {
+      response = error as Response;
+    }
+
+    expect(response).toBeInstanceOf(Response);
+    expect(response?.status).toBe(422);
+    expect(rpcCalls).toEqual([]);
   });
 });
 
