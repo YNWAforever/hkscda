@@ -6,10 +6,12 @@ export async function fetchCoordinatorJson<T>(path: string, init?: RequestInit):
   } = await supabase.auth.getSession();
   if (!session?.access_token) throw new Error("未登入");
 
+  const isFormData = init?.body instanceof FormData;
+
   const response = await fetch(path, {
     ...init,
     headers: {
-      "content-type": "application/json",
+      ...(isFormData ? {} : { "content-type": "application/json" }),
       authorization: `Bearer ${session.access_token}`,
       ...init?.headers,
     },

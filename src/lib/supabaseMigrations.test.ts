@@ -228,4 +228,87 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("sponsorship-payment-proof");
     expect(sql).toContain("private.has_admin_role(array['staff', 'admin'])");
   });
+
+  test("relaxes proof uniqueness, adds review columns, and adds the 3 admin review RPCs", () => {
+    const sql = readMigrationBySuffix("_sponsorship_pledge_admin_review.sql");
+
+    expect(sql).toContain(
+      "alter table public.sponsorship_payment_proof drop constraint if exists sponsorship_payment_proof_pledge_id_key",
+    );
+    expect(sql).toContain(
+      "create index if not exists sponsorship_payment_proof_pledge_idx on public.sponsorship_payment_proof (pledge_id)",
+    );
+    expect(sql).toContain(
+      "add column if not exists reviewed_by uuid references public.admin_user(id)",
+    );
+    expect(sql).toContain("add column if not exists reviewed_at timestamptz");
+    expect(sql).toContain("add column if not exists review_note text");
+    expect(sql).toContain(
+      "add column if not exists source text not null default 'public' check (source in ('public', 'staff'))",
+    );
+
+    for (const fn of [
+      "record_sponsorship_payment_proof",
+      "review_sponsorship_payment_proof",
+      "cancel_sponsorship_pledge",
+    ]) {
+      expect(sql).toContain(`create or replace function public.${fn}(`);
+    }
+
+    const guards = sql.match(
+      /from public\.admin_user\s*\n\s*where auth_user_id = p_actor_user_id\s*\n\s*and status = 'active'\s*\n\s*and role in \('staff', 'admin'\)/g,
+    );
+    expect(guards).toHaveLength(3);
+
+    expect(sql).toContain("v_pledge.status not in ('pending_payment', 'needs_followup')");
+    expect(sql).toContain("'pending',\n    'staff'");
+    expect(sql).toContain("v_pledge.status <> 'provisional'");
+    expect(sql).toContain("v_proof.review_status <> 'pending'");
+    expect(sql).toContain("v_new_review_status := 'approved';");
+    expect(sql).toContain("v_new_pledge_status := 'active';");
+    expect(sql).toContain("v_new_review_status := 'rejected';");
+    expect(sql).toContain("v_new_pledge_status := 'needs_followup';");
+    expect(sql).toMatch(
+      /create or replace function public\.cancel_sponsorship_pledge\(\s*\n\s*p_pledge_id uuid,\s*\n\s*p_actor_user_id uuid,\s*\n\s*p_note text\s*\n\)/,
+    );
+
+    expect(sql).toMatch(
+      /revoke all on function public\.record_sponsorship_payment_proof\([\s\S]*?\) from public;\ngrant execute on function public\.record_sponsorship_payment_proof\([\s\S]*?\) to service_role;/,
+    );
+    expect(sql).toMatch(
+      /revoke all on function public\.review_sponsorship_payment_proof\([\s\S]*?\) from public;\ngrant execute on function public\.review_sponsorship_payment_proof\([\s\S]*?\) to service_role;/,
+    );
+    expect(sql).toMatch(
+      /revoke all on function public\.cancel_sponsorship_pledge\([\s\S]*?\) from public;\ngrant execute on function public\.cancel_sponsorship_pledge\([\s\S]*?\) to service_role;/,
+    );
+  });
+
+  test("makes the manual payment proof file optional", () => {
+    const sql = readMigrationBySuffix("_sponsorship_payment_proof_optional_file.sql");
+
+    expect(sql).toContain("alter column storage_path drop not null");
+    expect(sql).toContain("alter column file_name drop not null");
+
+    expect(sql).toContain("drop constraint if exists sponsorship_payment_proof_file_type_check");
+    expect(sql).toContain(
+      "check (file_type is null or file_type in ('image/jpeg', 'image/png', 'image/webp', 'application/pdf'))",
+    );
+
+    expect(sql).toContain("drop constraint if exists sponsorship_payment_proof_file_size_check");
+    expect(sql).toContain("check (file_size is null or (file_size > 0 and file_size <= 8388608))");
+
+    // payment_method/reference/amount_cents/payment_date/review_status/source
+    // are untouched — a recorded payment must always have real payment
+    // details even without a file.
+    for (const column of [
+      "payment_method",
+      "reference",
+      "amount_cents",
+      "payment_date",
+      "review_status",
+      "source",
+    ]) {
+      expect(sql).not.toContain(`alter column ${column} drop not null`);
+    }
+  });
 });

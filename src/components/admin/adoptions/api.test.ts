@@ -58,6 +58,39 @@ describe("fetchCoordinatorJson", () => {
     );
   });
 
+  test("does not force a JSON content-type when the body is FormData", async () => {
+    const fetchSpy = mock(async () => Response.json({ ok: true }));
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+
+    const formData = new FormData();
+    formData.set("payload", "{}");
+
+    await fetchCoordinatorJson("/api/admin/sponsorships/pledges/pledge-1/proof", {
+      method: "POST",
+      body: formData,
+    });
+
+    const [, requestInit] = fetchSpy.mock.calls[0] as unknown as [string, RequestInit];
+    const headers = requestInit.headers as Record<string, string>;
+    expect(requestInit.body).toBe(formData);
+    expect(headers["content-type"]).toBeUndefined();
+    expect(headers.authorization).toBe("Bearer session-token");
+  });
+
+  test("still defaults to JSON content type for non-FormData bodies", async () => {
+    const fetchSpy = mock(async () => Response.json({ ok: true }));
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+
+    await fetchCoordinatorJson("/api/admin/adoptions/statuses", {
+      method: "POST",
+      body: JSON.stringify({ foo: "bar" }),
+    });
+
+    const [, requestInit] = fetchSpy.mock.calls[0] as unknown as [string, RequestInit];
+    const headers = requestInit.headers as Record<string, string>;
+    expect(headers["content-type"]).toBe("application/json");
+  });
+
   test("throws API error JSON message", async () => {
     globalThis.fetch = mock(async () =>
       Response.json({ error: "Invalid status" }, { status: 400 }),

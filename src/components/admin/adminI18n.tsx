@@ -62,6 +62,8 @@ interface AdminCopy {
     applicationsMovedTitle: string;
     applicationsMovedDescription: string;
     openAdoptionCases: string;
+    sponsorViewAnimals: string;
+    sponsorViewPledges: string;
   };
   table: {
     search: string;
@@ -195,6 +197,8 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       applicationsMovedDescription:
         "請使用協調員個案列表處理申請審核、狀態變更、動物配對、跟進及完成領養。",
       openAdoptionCases: "開啟領養個案",
+      sponsorViewAnimals: "動物列表",
+      sponsorViewPledges: "承諾審核",
     },
     table: {
       search: "搜尋名字...",
@@ -341,6 +345,8 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       applicationsMovedDescription:
         "Use the coordinator case list for application review, status changes, animal matches, follow-ups, and finalization.",
       openAdoptionCases: "Open adoption cases",
+      sponsorViewAnimals: "Animal list",
+      sponsorViewPledges: "Pledge review",
     },
     table: {
       search: "Search by name...",
