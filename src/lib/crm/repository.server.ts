@@ -12,6 +12,7 @@ import type {
   MessageHistoryRow,
   PaymentHistoryRow,
   ReceiptHistoryRow,
+  SupporterAdoptionContext,
   SupporterDetail,
   SupporterRole,
   SupporterSummary,
@@ -105,6 +106,12 @@ type ExportFilters = Parameters<CrmRepository["listSupportersForExport"]>[0];
 const exportLimit = 5000;
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const donationPurposes = new Set(["general", "medical", "sponsor"]);
+const emptySupporterAdoptionContext: SupporterAdoptionContext = {
+  profiles: [],
+  cases: [],
+  followups: [],
+  successfulAdoptions: [],
+};
 
 function escapeLike(value: string) {
   return value.replaceAll("\\", "\\\\").replaceAll("%", "\\%").replaceAll("_", "\\_");
@@ -548,6 +555,7 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
       const consents = ((consentsResult.data ?? []) as ConsentRow[]).map(mapConsent);
       const messages = ((messagesResult.data ?? []) as MessageRow[]).map(mapMessage);
       const auditLogs = ((auditResult.data ?? []) as AuditRow[]).map(mapAudit);
+      const adoption = emptySupporterAdoptionContext;
 
       return {
         ...summary,
@@ -560,6 +568,7 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
         consents,
         messages,
         auditLogs,
+        adoption,
         timeline: assembleSupporterTimeline({
           donations,
           payments,
@@ -567,6 +576,7 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
           consents,
           messages,
           auditLogs,
+          adoption,
         }),
       } satisfies SupporterDetail;
     },
