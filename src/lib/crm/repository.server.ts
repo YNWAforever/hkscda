@@ -611,6 +611,22 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
       if (error) throw error;
     },
 
+    async setSupporterRoles(input) {
+      const { error: deleteError } = await client
+        .from("supporter_role")
+        .delete()
+        .eq("supporter_id", input.supporterId);
+      if (deleteError) throw deleteError;
+
+      const { error } = await client.from("supporter_role").insert(
+        input.roles.map((role) => ({
+          supporter_id: input.supporterId,
+          role,
+        })),
+      );
+      if (error) throw error;
+    },
+
     async insertConsentRows(rows) {
       if (rows.length === 0) return;
       // Replays/double-clicks must not append duplicate rows to the legal

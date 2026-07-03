@@ -573,11 +573,17 @@ export async function issueReceiptForDonation(
     throw Response.json({ error: "No succeeded payment for this donation" }, { status: 409 });
   }
 
-  const receiptNo = await issueReceiptIfNeeded(
-    client,
-    data as unknown as PaymentWithDonation,
-    deps,
-  );
+  const payment = data as unknown as PaymentWithDonation;
+  if (
+    !isReceiptEligible({
+      amountCents: payment.donation.amount_cents,
+      receiptRequested: payment.donation.receipt_requested,
+    })
+  ) {
+    throw Response.json({ error: "Donation is not eligible for an IRD receipt" }, { status: 422 });
+  }
+
+  const receiptNo = await issueReceiptIfNeeded(client, payment, deps);
   const { error: auditError } = await client.from("audit_log").insert({
     actor_user_id: actorUserId,
     action: "receipt.issue",

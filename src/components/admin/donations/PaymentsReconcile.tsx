@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Download, FileCheck, FileX } from "lucide-react";
 import { useMemo, useState } from "react";
 
+import type { AdminRole } from "../../../lib/admin/access";
 import { fetchAdminJson, getAdminAccessToken } from "../../../lib/admin/http";
 import { centsToHkd } from "../../../lib/donations/domain";
 import { Button } from "../../ui/button";
@@ -32,6 +33,12 @@ type FinanceActivityItem = {
   entityId: string;
   detail: unknown;
   createdAt: string;
+};
+
+type AdminIdentityResponse = {
+  admin: {
+    role: AdminRole;
+  };
 };
 
 const STATUS_OPTIONS: { value: PaymentFilters["status"]; label: string }[] = [
@@ -74,6 +81,11 @@ export function PaymentsReconcile() {
       ),
   });
 
+  const { data: identityData } = useQuery({
+    queryKey: ["admin-me"],
+    queryFn: () => fetchAdminJson<AdminIdentityResponse>("/api/admin/me"),
+  });
+
   const { data: activityData } = useQuery({
     queryKey: ["admin-finance-activity"],
     queryFn: () =>
@@ -82,6 +94,7 @@ export function PaymentsReconcile() {
 
   const payments = useMemo(() => data?.payments ?? [], [data]);
   const receipts = useMemo(() => data?.receipts ?? [], [data]);
+  const adminRole = identityData?.admin.role ?? null;
   const visible = useMemo(() => applyPaymentFilters(payments, filters), [payments, filters]);
   const summary = useMemo(() => summarizePayments(payments, receipts), [payments, receipts]);
 
@@ -136,7 +149,7 @@ export function PaymentsReconcile() {
     const issued = findIssuedReceipt(payment.donation.id, receipts);
     return (
       <div className="flex flex-wrap gap-2">
-        {canReconcile(payment) && (
+        {canReconcile(payment, adminRole) && (
           <ReconcileDialog
             paymentId={payment.id}
             supporterName={payment.donation.supporter.name}
@@ -144,7 +157,7 @@ export function PaymentsReconcile() {
             onReconciled={refresh}
           />
         )}
-        {canIssueReceipt(payment, receipts) && (
+        {canIssueReceipt(payment, receipts, adminRole) && (
           <Button
             type="button"
             variant="outline"
@@ -156,7 +169,7 @@ export function PaymentsReconcile() {
             發收條
           </Button>
         )}
-        {canVoidReceipt(payment, receipts) && issued && (
+        {canVoidReceipt(payment, receipts, adminRole) && issued && (
           <Button
             type="button"
             variant="outline"

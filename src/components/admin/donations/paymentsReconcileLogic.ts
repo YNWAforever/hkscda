@@ -1,4 +1,5 @@
 import type { StatusTone } from "../StatusBadge";
+import type { AdminRole } from "../../../lib/admin/access";
 
 export type PaymentStatus = "pending" | "succeeded" | "failed" | "refunded";
 export type PaymentProvider = "stripe" | "paypal" | "fps" | "payme" | "manual";
@@ -80,20 +81,39 @@ export function receiptPill(
   return null;
 }
 
-export function canReconcile(payment: AdminPaymentRow): boolean {
-  return payment.status === "pending" && MANUAL_PROVIDERS.includes(payment.provider);
+function canManageTreasurerActions(role?: AdminRole | null) {
+  return role === undefined || role === "treasurer" || role === "admin";
 }
 
-export function canIssueReceipt(payment: AdminPaymentRow, receipts: AdminReceiptRow[]): boolean {
+export function canReconcile(payment: AdminPaymentRow, role?: AdminRole | null): boolean {
   return (
+    canManageTreasurerActions(role) &&
+    payment.status === "pending" &&
+    MANUAL_PROVIDERS.includes(payment.provider)
+  );
+}
+
+export function canIssueReceipt(
+  payment: AdminPaymentRow,
+  receipts: AdminReceiptRow[],
+  role?: AdminRole | null,
+): boolean {
+  return (
+    canManageTreasurerActions(role) &&
     payment.donation.status === "succeeded" &&
     payment.donation.receipt_requested &&
     !findIssuedReceipt(payment.donation.id, receipts)
   );
 }
 
-export function canVoidReceipt(payment: AdminPaymentRow, receipts: AdminReceiptRow[]): boolean {
-  return Boolean(findIssuedReceipt(payment.donation.id, receipts));
+export function canVoidReceipt(
+  payment: AdminPaymentRow,
+  receipts: AdminReceiptRow[],
+  role?: AdminRole | null,
+): boolean {
+  return (
+    canManageTreasurerActions(role) && Boolean(findIssuedReceipt(payment.donation.id, receipts))
+  );
 }
 
 export function applyPaymentFilters(

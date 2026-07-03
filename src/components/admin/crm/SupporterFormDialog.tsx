@@ -2,8 +2,14 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Edit, UserPlus } from "lucide-react";
 import { useState } from "react";
 
-import type { SupporterDetail, SupporterSummary } from "../../../lib/crm/types";
+import {
+  supporterRoles,
+  type SupporterDetail,
+  type SupporterRole,
+  type SupporterSummary,
+} from "../../../lib/crm/types";
 import { Button } from "../../ui/button";
+import { Checkbox } from "../../ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../../ui/dialog";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
@@ -33,6 +39,8 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
   const [phone, setPhone] = useState(existing?.phone ?? "");
   const [language, setLanguage] = useState<"zh-HK" | "en">(existing?.language ?? "zh-HK");
   const [tags, setTags] = useState(existing?.tags.join(", ") ?? "");
+  const [roles, setRoles] = useState<SupporterRole[]>(existing?.roles ?? ["donor"]);
+  const roleLabels = copy.roleLabels as Record<SupporterRole, string>;
 
   function resetCreateForm() {
     if (props.mode === "edit") return;
@@ -41,6 +49,15 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
     setPhone("");
     setLanguage("zh-HK");
     setTags("");
+    setRoles(["donor"]);
+  }
+
+  function toggleRole(role: SupporterRole, checked: boolean) {
+    setRoles((current) => {
+      if (checked) return current.includes(role) ? current : [...current, role];
+      const next = current.filter((currentRole) => currentRole !== role);
+      return next.length > 0 ? next : current;
+    });
   }
 
   const mutation = useMutation({
@@ -54,6 +71,7 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
             phone,
             language,
             tags: splitTags(tags),
+            roles,
             source: "admin_manual",
           }),
         });
@@ -66,6 +84,7 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
           phone,
           language,
           tags: splitTags(tags),
+          roles,
           deleted: false,
         }),
       });
@@ -149,6 +168,30 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
               onChange={(event) => setTags(event.target.value)}
             />
           </div>
+          <fieldset className="grid gap-2">
+            <legend className="text-sm font-medium text-[var(--color-panel)]">
+              {copy.form.roles}
+            </legend>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {supporterRoles.map((role) => {
+                const id = `supporter-role-${props.mode}-${role}`;
+                return (
+                  <label
+                    key={role}
+                    htmlFor={id}
+                    className="flex min-h-11 items-center gap-2 rounded-md border border-[var(--color-border)] px-3 py-2 text-sm"
+                  >
+                    <Checkbox
+                      id={id}
+                      checked={roles.includes(role)}
+                      onCheckedChange={(checked) => toggleRole(role, checked === true)}
+                    />
+                    {roleLabels[role]}
+                  </label>
+                );
+              })}
+            </div>
+          </fieldset>
           {mutation.error && (
             <p className="text-sm text-[var(--color-destructive)]">{mutation.error.message}</p>
           )}
@@ -156,7 +199,10 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
             type="button"
             onClick={() => mutation.mutate()}
             disabled={
-              mutation.isPending || !name.trim() || (props.mode === "create" && !email.trim())
+              mutation.isPending ||
+              !name.trim() ||
+              roles.length === 0 ||
+              (props.mode === "create" && !email.trim())
             }
           >
             {copy.saveSupporter}

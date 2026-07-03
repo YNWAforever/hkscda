@@ -144,7 +144,7 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "supporters",
     section: "supporters",
     group: "donations",
-    label: "捐款人",
+    label: "支持者",
     icon: HandCoins,
     to: "/admin/supporters",
   },

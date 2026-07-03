@@ -106,6 +106,21 @@ describe("action predicates", () => {
     expect(canReconcile(payment({ provider: "fps", status: "succeeded" }))).toBe(false);
   });
 
+  test("treasurer actions are hidden for staff users", () => {
+    const pendingManual = payment({ provider: "fps", status: "pending" });
+    const succeeded = payment({
+      status: "succeeded",
+      donation: { ...payment().donation, status: "succeeded", receipt_requested: true },
+    });
+
+    expect(canReconcile(pendingManual, "staff")).toBe(false);
+    expect(canReconcile(pendingManual, "treasurer")).toBe(true);
+    expect(canIssueReceipt(succeeded, [], "staff")).toBe(false);
+    expect(canIssueReceipt(succeeded, [], "admin")).toBe(true);
+    expect(canVoidReceipt(succeeded, [issuedReceipt], "staff")).toBe(false);
+    expect(canVoidReceipt(succeeded, [issuedReceipt], "treasurer")).toBe(true);
+  });
+
   test("canIssueReceipt requires succeeded + requested + no issued receipt", () => {
     const succeeded = payment({
       status: "succeeded",
