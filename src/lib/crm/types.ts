@@ -42,6 +42,7 @@ export type SupporterDetail = SupporterSummary & {
   consents: ConsentHistoryRow[];
   messages: MessageHistoryRow[];
   auditLogs: AuditHistoryRow[];
+  adoption: SupporterAdoptionContext;
   timeline: SupporterTimelineItem[];
 };
 
@@ -106,12 +107,98 @@ export type AuditHistoryRow = {
   detail: Record<string, unknown>;
 };
 
+export type SupporterAdoptionStatusSummary = {
+  key: string;
+  labelZh: string;
+  labelEn: string;
+  color: string;
+};
+
+export type SupporterAdopterProfileSummary = {
+  id: string;
+  displayName: string;
+  email: string | null;
+  phone: string | null;
+  livingArea: string | null;
+  isBlacklisted: boolean;
+  birthday: string | null;
+  address: string | null;
+  householdSize: string | null;
+  blacklistReason: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type SupporterAdoptionCaseSummary = {
+  id: string;
+  adopterProfileId: string | null;
+  applicantName: string;
+  animalType: string;
+  status: SupporterAdoptionStatusSummary;
+  requestedAnimalName: string | null;
+  createdAt: string;
+  closedAt: string | null;
+};
+
+export type SupporterAdoptionFollowupSummary = {
+  id: string;
+  adoptionCaseId: string | null;
+  adopterProfileId: string | null;
+  title: string;
+  taskType: string;
+  status: SupporterAdoptionStatusSummary;
+  priority: "low" | "normal" | "high" | "urgent";
+  dueAt: string | null;
+  scheduledAt: string | null;
+  completedAt: string | null;
+  volunteer: string | null;
+  contactChannel: "phone" | "whatsapp" | "email" | "in_person" | "internal" | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type SupporterSuccessfulAdoptionSummary = {
+  id: string;
+  adoptionCaseId: string;
+  adopterProfileId: string;
+  supporterId: string;
+  caseNumber: string;
+  animalId: string;
+  animalName: string | null;
+  adoptionFeeCents: number | null;
+  approvalDate: string;
+  pickupDate: string | null;
+};
+
+export type SupporterAdoptionContext = {
+  profiles: SupporterAdopterProfileSummary[];
+  cases: SupporterAdoptionCaseSummary[];
+  followups: SupporterAdoptionFollowupSummary[];
+  successfulAdoptions: SupporterSuccessfulAdoptionSummary[];
+};
+
+export type SupporterTimelineKind =
+  | "donation"
+  | "payment"
+  | "receipt"
+  | "consent"
+  | "message"
+  | "audit"
+  | "adoption_case"
+  | "adoption_followup"
+  | "successful_adoption";
+
+export type SupporterTimelineLink =
+  | { to: "/admin/applications/$id"; params: { id: string } }
+  | { to: "/admin/coordinator/adopters/$id"; params: { id: string } };
+
 export type SupporterTimelineItem = {
   id: string;
   at: string;
-  kind: "donation" | "payment" | "receipt" | "consent" | "message" | "audit";
+  kind: SupporterTimelineKind;
   title: string;
   description: string;
   amountCents?: number;
   status?: string;
+  link?: SupporterTimelineLink;
 };

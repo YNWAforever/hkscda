@@ -94,4 +94,143 @@ describe("crm timeline", () => {
     expect(timeline.find((item) => item.id === "message:m2")?.description).toBe("Receipt ready");
     expect(timeline.find((item) => item.id === "payment:p1")?.description).toContain("manual");
   });
+
+  test("combines adoption events with CRM activity newest first", () => {
+    const timeline = assembleSupporterTimeline({
+      donations: [
+        {
+          id: "d1",
+          amountCents: 20000,
+          currency: "HKD",
+          purpose: "medical",
+          status: "succeeded",
+          method: "fps",
+          receiptRequested: true,
+          createdAt: "2026-06-01T10:00:00.000Z",
+        },
+      ],
+      payments: [],
+      receipts: [],
+      consents: [],
+      messages: [],
+      auditLogs: [],
+      adoption: {
+        profiles: [],
+        cases: [
+          {
+            id: "case-1",
+            adopterProfileId: "profile-1",
+            applicantName: "Ada",
+            animalType: "cat",
+            status: { key: "contacted", labelZh: "已聯絡", labelEn: "Contacted", color: "cyan" },
+            requestedAnimalName: "Mochi",
+            createdAt: "2026-06-02T10:00:00.000Z",
+            closedAt: "2026-06-05T10:00:00.000Z",
+          },
+        ],
+        followups: [
+          {
+            id: "task-1",
+            adoptionCaseId: "case-1",
+            adopterProfileId: "profile-1",
+            title: "Home visit",
+            taskType: "home_visit",
+            status: { key: "scheduled", labelZh: "已安排", labelEn: "Scheduled", color: "coral" },
+            priority: "normal",
+            dueAt: "2026-06-03T10:00:00.000Z",
+            scheduledAt: "2026-06-04T10:00:00.000Z",
+            completedAt: "2026-06-04T11:00:00.000Z",
+            volunteer: "May",
+            contactChannel: "phone",
+            createdAt: "2026-06-03T09:00:00.000Z",
+            updatedAt: "2026-06-04T11:15:00.000Z",
+          },
+        ],
+        successfulAdoptions: [
+          {
+            id: "success-1",
+            adoptionCaseId: "case-1",
+            adopterProfileId: "profile-1",
+            supporterId: "supporter-1",
+            caseNumber: "AD-2026-0001",
+            animalId: "animal-1",
+            animalName: "Mochi",
+            adoptionFeeCents: 80000,
+            approvalDate: "2026-06-06T10:00:00.000Z",
+            pickupDate: "2026-06-07T10:00:00.000Z",
+          },
+        ],
+      },
+    });
+
+    expect(timeline.map((item) => item.id)).toEqual([
+      "successful_adoption:success-1:pickup",
+      "successful_adoption:success-1:approval",
+      "adoption_case:case-1:closed",
+      "adoption_followup:task-1:completed",
+      "adoption_followup:task-1:scheduled",
+      "adoption_case:case-1:created",
+      "donation:d1",
+    ]);
+    expect(timeline[0]).toMatchObject({
+      kind: "successful_adoption",
+      title: "Adoption pickup AD-2026-0001",
+      amountCents: 80000,
+      link: { to: "/admin/applications/$id", params: { id: "case-1" } },
+    });
+  });
+
+  test("omits adoption timeline events when optional dates are missing", () => {
+    const timeline = assembleSupporterTimeline({
+      donations: [],
+      payments: [],
+      receipts: [],
+      consents: [],
+      messages: [],
+      auditLogs: [],
+      adoption: {
+        profiles: [],
+        cases: [
+          {
+            id: "case-1",
+            adopterProfileId: null,
+            applicantName: "Ada",
+            animalType: "dog",
+            status: { key: "screening", labelZh: "篩選中", labelEn: "Screening", color: "blue" },
+            requestedAnimalName: null,
+            createdAt: "2026-06-02T10:00:00.000Z",
+            closedAt: null,
+          },
+        ],
+        followups: [
+          {
+            id: "task-1",
+            adoptionCaseId: null,
+            adopterProfileId: "profile-1",
+            title: "Profile follow-up",
+            taskType: "followup",
+            status: { key: "open", labelZh: "未完成", labelEn: "Open", color: "amber" },
+            priority: "high",
+            dueAt: null,
+            scheduledAt: null,
+            completedAt: null,
+            volunteer: null,
+            contactChannel: null,
+            createdAt: "2026-06-03T09:00:00.000Z",
+            updatedAt: "2026-06-03T09:00:00.000Z",
+          },
+        ],
+        successfulAdoptions: [],
+      },
+    });
+
+    expect(timeline.map((item) => item.id)).toEqual([
+      "adoption_followup:task-1:created",
+      "adoption_case:case-1:created",
+    ]);
+    expect(timeline[0].link).toEqual({
+      to: "/admin/coordinator/adopters/$id",
+      params: { id: "profile-1" },
+    });
+  });
 });
