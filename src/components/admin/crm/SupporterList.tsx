@@ -110,6 +110,19 @@ export function SupporterList() {
       header: copy.columns.receipts,
       cell: (s) => (s.receiptNeeded ? copy.needsReview : copy.clear),
     },
+    {
+      id: "action",
+      header: pageCopy.common.action,
+      cell: (s) => (
+        <Link
+          to="/admin/supporters/$id"
+          params={{ id: s.id }}
+          className="inline-flex h-8 items-center justify-center rounded-md border border-[var(--color-border)] px-3 text-xs font-medium text-[var(--color-panel)] hover:bg-[var(--color-surface-2)]"
+        >
+          {pageCopy.common.open}
+        </Link>
+      ),
+    },
   ];
 
   function renderSupporterCard(s: SupporterSummary) {
@@ -137,7 +150,16 @@ export function SupporterList() {
         <div className="text-xs text-[var(--color-text-muted)]">
           {copy.receipts}: {s.receiptNeeded ? copy.needsReview : copy.clear}
         </div>
-        {renderRoles(s.roles)}
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          {renderRoles(s.roles)}
+          <Link
+            to="/admin/supporters/$id"
+            params={{ id: s.id }}
+            className="inline-flex h-8 items-center justify-center rounded-md border border-[var(--color-border)] px-3 text-xs font-medium text-[var(--color-panel)] hover:bg-[var(--color-surface-2)]"
+          >
+            {pageCopy.common.open}
+          </Link>
+        </div>
       </div>
     );
   }
