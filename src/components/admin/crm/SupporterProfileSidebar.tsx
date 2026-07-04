@@ -72,10 +72,7 @@ function formatFallback(value: string | null | undefined, fallback = "-") {
   return value && value.trim().length > 0 ? value : fallback;
 }
 
-function consentLabel(
-  value: SupporterDetail["emailConsent"],
-  language: keyof typeof PROFILE_COPY,
-) {
+function consentLabel(value: SupporterDetail["emailConsent"], language: keyof typeof PROFILE_COPY) {
   const copy = PROFILE_COPY[language].consentStatuses;
   return value ? copy[value] : copy.none;
 }

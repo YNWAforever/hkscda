@@ -1,7 +1,11 @@
 import { describe, expect, test } from "bun:test";
 
 import type { SupporterTimelineKind } from "../../../lib/crm/types";
-import { filterTimelineItems, timelineFilterOptions, type TimelineFilter } from "./supporterTimelineFilters";
+import {
+  filterTimelineItems,
+  timelineFilterOptions,
+  type TimelineFilter,
+} from "./supporterTimelineFilters";
 
 function item(kind: SupporterTimelineKind) {
   return {
@@ -28,9 +32,17 @@ describe("supporter timeline filters", () => {
     ];
 
     const idsByFilter = Object.fromEntries(
-      (["all", "donations", "receipts", "communication", "adoption", "followups", "system"] satisfies TimelineFilter[]).map(
-        (filter) => [filter, filterTimelineItems(items, filter).map((row) => row.kind)],
-      ),
+      (
+        [
+          "all",
+          "donations",
+          "receipts",
+          "communication",
+          "adoption",
+          "followups",
+          "system",
+        ] satisfies TimelineFilter[]
+      ).map((filter) => [filter, filterTimelineItems(items, filter).map((row) => row.kind)]),
     );
 
     expect(idsByFilter.all).toHaveLength(9);

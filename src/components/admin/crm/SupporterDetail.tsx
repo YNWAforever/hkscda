@@ -227,11 +227,7 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[22rem_1fr]">
-        <SupporterProfileSidebar
-          supporter={data}
-          language={language}
-          roleLabels={roleLabels}
-        />
+        <SupporterProfileSidebar supporter={data} language={language} roleLabels={roleLabels} />
 
         <main className="min-w-0 space-y-6">
           <SupporterActivitySummary
@@ -254,12 +250,8 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
           <section>
             <div className="mb-4 flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between">
               <div>
-                <h2 className="text-lg font-semibold text-[var(--color-panel)]">
-                  {copy.timeline}
-                </h2>
-                <p className="text-sm text-[var(--color-text-muted)]">
-                  {copy.timelineSubtitle}
-                </p>
+                <h2 className="text-lg font-semibold text-[var(--color-panel)]">{copy.timeline}</h2>
+                <p className="text-sm text-[var(--color-text-muted)]">{copy.timelineSubtitle}</p>
               </div>
               <SupporterTimelineFilters
                 language={language}
@@ -272,16 +264,12 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
 
           <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
             <div className="mb-4">
-              <h2 className="text-lg font-semibold text-[var(--color-panel)]">
-                {copy.donations}
-              </h2>
+              <h2 className="text-lg font-semibold text-[var(--color-panel)]">{copy.donations}</h2>
               <p className="text-sm text-[var(--color-text-muted)]">{copy.donationsSubtitle}</p>
             </div>
             <div className="divide-y divide-[var(--color-border)]">
               {data.donations.length === 0 && (
-                <p className="py-5 text-sm text-[var(--color-text-muted)]">
-                  {copy.noDonations}
-                </p>
+                <p className="py-5 text-sm text-[var(--color-text-muted)]">{copy.noDonations}</p>
               )}
               {data.donations.map((donation) => (
                 <div
@@ -325,16 +313,12 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
 
           <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
             <div className="mb-4">
-              <h2 className="text-lg font-semibold text-[var(--color-panel)]">
-                {copy.receipts}
-              </h2>
+              <h2 className="text-lg font-semibold text-[var(--color-panel)]">{copy.receipts}</h2>
               <p className="text-sm text-[var(--color-text-muted)]">{copy.receiptsSubtitle}</p>
             </div>
             <div className="divide-y divide-[var(--color-border)]">
               {data.receipts.length === 0 && (
-                <p className="py-5 text-sm text-[var(--color-text-muted)]">
-                  {copy.noReceipts}
-                </p>
+                <p className="py-5 text-sm text-[var(--color-text-muted)]">{copy.noReceipts}</p>
               )}
               {data.receipts.map((receipt) => (
                 <div
@@ -342,9 +326,7 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
                   className="flex flex-wrap items-center justify-between gap-3 py-3"
                 >
                   <div>
-                    <div className="font-medium text-[var(--color-panel)]">
-                      {receipt.receiptNo}
-                    </div>
+                    <div className="font-medium text-[var(--color-panel)]">{receipt.receiptNo}</div>
                     <div className="text-xs text-[var(--color-text-muted)]">
                       {labelFromMap(receipt.status, statusLabels)} ·{" "}
                       {formatHkd(receipt.totalAmountCents, language)} ·{" "}

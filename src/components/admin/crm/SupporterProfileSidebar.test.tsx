@@ -77,9 +77,16 @@ describe("SupporterProfileSidebar", () => {
   test("renders quiet empty adoption text when no profile is linked", () => {
     const markup = renderToStaticMarkup(
       <SupporterProfileSidebar
-        supporter={supporter({ adoption: { profiles: [], cases: [], followups: [], successfulAdoptions: [] } })}
+        supporter={supporter({
+          adoption: { profiles: [], cases: [], followups: [], successfulAdoptions: [] },
+        })}
         language="en"
-        roleLabels={{ donor: "Donor", adopter: "Adopter", volunteer: "Volunteer", foster: "Foster" }}
+        roleLabels={{
+          donor: "Donor",
+          adopter: "Adopter",
+          volunteer: "Volunteer",
+          foster: "Foster",
+        }}
       />,
     );
 
