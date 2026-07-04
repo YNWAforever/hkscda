@@ -233,4 +233,45 @@ describe("crm timeline", () => {
       params: { id: "profile-1" },
     });
   });
+
+  test("includes volunteer registration and completion timeline events", () => {
+    const timeline = assembleSupporterTimeline({
+      donations: [],
+      payments: [],
+      receipts: [],
+      consents: [],
+      messages: [],
+      auditLogs: [],
+      volunteer: {
+        registrations: [
+          {
+            id: "reg-1",
+            activityId: "activity-1",
+            activityTitle: "七月清潔日",
+            activityType: "cleaning_day",
+            startsAt: "2026-07-20T02:00:00.000Z",
+            status: "approved",
+            statusReason: "auto_approved",
+            attendanceStatus: "completed",
+            participantCount: 3,
+            volunteerHours: 9,
+            createdAt: "2026-07-01T02:00:00.000Z",
+            updatedAt: "2026-07-20T06:00:00.000Z",
+          },
+        ],
+      },
+    });
+
+    expect(timeline.map((item) => item.id)).toEqual([
+      "volunteer_registration:reg-1:completed",
+      "volunteer_registration:reg-1:approved",
+      "volunteer_registration:reg-1:submitted",
+    ]);
+    expect(timeline[0]).toMatchObject({
+      kind: "volunteer_registration",
+      title: "Volunteer completed: 七月清潔日",
+      description: "3 people · 9 hours",
+      link: { to: "/admin/volunteers/registrations/$id", params: { id: "reg-1" } },
+    });
+  });
 });

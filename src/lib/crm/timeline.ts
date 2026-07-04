@@ -7,6 +7,7 @@ import type {
   PaymentHistoryRow,
   ReceiptHistoryRow,
   SupporterAdoptionContext,
+  SupporterVolunteerContext,
   SupporterTimelineItem,
 } from "./types";
 
@@ -15,6 +16,10 @@ const emptyAdoptionContext: SupporterAdoptionContext = {
   cases: [],
   followups: [],
   successfulAdoptions: [],
+};
+
+const emptyVolunteerContext: SupporterVolunteerContext = {
+  registrations: [],
 };
 
 function caseLink(caseId: string): SupporterTimelineItem["link"] {
@@ -142,6 +147,57 @@ function successfulAdoptionEvents(adoption: SupporterAdoptionContext): Supporter
   });
 }
 
+function volunteerRegistrationLink(registrationId: string): SupporterTimelineItem["link"] {
+  return { to: "/admin/volunteers/registrations/$id", params: { id: registrationId } };
+}
+
+function volunteerEvents(volunteer: SupporterVolunteerContext): SupporterTimelineItem[] {
+  return volunteer.registrations.flatMap((registration) => {
+    const people = `${registration.participantCount} ${
+      registration.participantCount === 1 ? "person" : "people"
+    }`;
+    const link = volunteerRegistrationLink(registration.id);
+    const items: SupporterTimelineItem[] = [
+      {
+        id: `volunteer_registration:${registration.id}:submitted`,
+        at: registration.createdAt,
+        kind: "volunteer_registration",
+        title: `Volunteer registration submitted: ${registration.activityTitle}`,
+        description: `${people} · ${registration.status}`,
+        status: registration.status,
+        link,
+      },
+    ];
+
+    if (registration.attendanceStatus === "completed") {
+      const hours = registration.volunteerHours;
+      items.push({
+        id: `volunteer_registration:${registration.id}:completed`,
+        at: registration.updatedAt,
+        kind: "volunteer_registration",
+        title: `Volunteer completed: ${registration.activityTitle}`,
+        description: `${people}${hours === null ? "" : ` · ${hours} hours`}`,
+        status: registration.attendanceStatus,
+        link,
+      });
+    }
+
+    if (registration.status !== "pending") {
+      items.push({
+        id: `volunteer_registration:${registration.id}:${registration.status}`,
+        at: registration.updatedAt,
+        kind: "volunteer_registration",
+        title: `Volunteer registration ${registration.status}: ${registration.activityTitle}`,
+        description: people,
+        status: registration.status,
+        link,
+      });
+    }
+
+    return items;
+  });
+}
+
 export function assembleSupporterTimeline(input: {
   donations: DonationHistoryRow[];
   payments: PaymentHistoryRow[];
@@ -150,8 +206,10 @@ export function assembleSupporterTimeline(input: {
   messages: MessageHistoryRow[];
   auditLogs: AuditHistoryRow[];
   adoption?: SupporterAdoptionContext;
+  volunteer?: SupporterVolunteerContext;
 }): SupporterTimelineItem[] {
   const adoption = input.adoption ?? emptyAdoptionContext;
+  const volunteer = input.volunteer ?? emptyVolunteerContext;
   const items: SupporterTimelineItem[] = [
     ...input.donations.map((donation) => ({
       id: `donation:${donation.id}`,
@@ -206,6 +264,7 @@ export function assembleSupporterTimeline(input: {
     ...adoptionCaseEvents(adoption),
     ...adoptionFollowupEvents(adoption),
     ...successfulAdoptionEvents(adoption),
+    ...volunteerEvents(volunteer),
   ];
 
   return items.sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime());

@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { issueManualDonationSideEffects } from "../donations/reconcile.server";
 import { loadSupporterAdoptionContext } from "./adoptionContext.server";
+import { loadSupporterVolunteerContext } from "../volunteers/repository.server";
 import type { DonationExportRow } from "./csv";
 import { latestConsentByChannel } from "./consent";
 import { assembleSupporterTimeline } from "./timeline";
@@ -550,6 +551,7 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
       const messages = ((messagesResult.data ?? []) as MessageRow[]).map(mapMessage);
       const auditLogs = ((auditResult.data ?? []) as AuditRow[]).map(mapAudit);
       const adoption = await loadSupporterAdoptionContext(client, id);
+      const volunteer = await loadSupporterVolunteerContext(client, id);
 
       return {
         ...summary,
@@ -563,6 +565,7 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
         messages,
         auditLogs,
         adoption,
+        volunteer,
         timeline: assembleSupporterTimeline({
           donations,
           payments,
@@ -571,6 +574,7 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
           messages,
           auditLogs,
           adoption,
+          volunteer,
         }),
       } satisfies SupporterDetail;
     },

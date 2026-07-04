@@ -1,6 +1,7 @@
 import {
   BarChart3,
   Banknote,
+  CalendarDays,
   Cat,
   ClipboardList,
   Dog,
@@ -22,6 +23,7 @@ export type AdminSection =
   | "applications"
   | "payments"
   | "supporters"
+  | "volunteers"
   | "access";
 
 // Visual grouping for the sidebar. Purely presentational — the active-state
@@ -131,6 +133,15 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     icon: Settings2,
     to: "/admin/coordinator/statuses",
     activePath: "/admin/coordinator/statuses",
+  },
+  {
+    id: "volunteers",
+    section: "volunteers",
+    group: "adoptions",
+    label: "義工",
+    icon: CalendarDays,
+    to: "/admin/volunteers",
+    activePath: "/admin/volunteers",
   },
   {
     id: "payments",
