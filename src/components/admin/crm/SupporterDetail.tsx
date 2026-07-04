@@ -1,17 +1,25 @@
+import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, FileCheck, FileX, Mail, Phone } from "lucide-react";
+import { ArrowLeft, FileCheck, FileX } from "lucide-react";
 
 import type {
   DonationHistoryRow,
   SupporterDetail as SupporterDetailData,
 } from "../../../lib/crm/types";
 import { Button } from "../../ui/button";
-import { formatAdminNumber, useAdminPageCopy } from "../adminPageCopy";
+import { useAdminPageCopy } from "../adminPageCopy";
 import { ConsentEditor } from "./ConsentEditor";
 import { fetchAdminJson } from "./api";
 import { ManualDonationDialog } from "./ManualDonationDialog";
+import { SupporterActivitySummary } from "./SupporterActivitySummary";
 import { SupporterFormDialog } from "./SupporterFormDialog";
+import { SupporterProfileSidebar } from "./SupporterProfileSidebar";
+import {
+  filterTimelineItems,
+  SupporterTimelineFilters,
+  type TimelineFilter,
+} from "./supporterTimelineFilters";
 import { SupporterTimeline } from "./SupporterTimeline";
 
 type SupporterDetailProps = {
@@ -61,6 +69,7 @@ const SUPPORTER_DETAIL_COPY = {
       supporter: "支持者",
       adopter: "領養人",
       volunteer: "義工",
+      foster: "暫托",
     },
   },
   en: {
@@ -105,6 +114,7 @@ const SUPPORTER_DETAIL_COPY = {
       supporter: "Supporter",
       adopter: "Adopter",
       volunteer: "Volunteer",
+      foster: "Foster",
     },
   },
 } as const;
@@ -145,6 +155,7 @@ function canIssueReceipt(data: SupporterDetailData, donation: DonationHistoryRow
 export function SupporterDetail({ supporterId }: SupporterDetailProps) {
   const { language } = useAdminPageCopy();
   const copy = SUPPORTER_DETAIL_COPY[language];
+  const [timelineFilter, setTimelineFilter] = useState<TimelineFilter>("all");
   const queryClient = useQueryClient();
   const { data, error, isLoading } = useQuery({
     queryKey: ["crm-supporter", supporterId],
@@ -193,12 +204,8 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
   }
 
   const pendingPayments = data.payments.filter((payment) => payment.status === "pending").length;
-  const summary = [
-    [copy.lifetime, formatHkd(data.lifetimeAmountCents, language)],
-    [copy.donationsCount, formatAdminNumber(data.donationCount, language)],
-    [copy.receiptsCount, formatAdminNumber(data.receipts.length, language)],
-    [copy.pendingPayments, formatAdminNumber(pendingPayments, language)],
-  ];
+  const openFollowups = data.adoption.followups.filter((followup) => !followup.completedAt).length;
+  const filteredTimeline = filterTimelineItems(data.timeline, timelineFilter);
   const purposeLabels = copy.purposes as Record<string, string>;
   const methodLabels = copy.methods as Record<string, string>;
   const statusLabels = copy.statuses as Record<string, string>;
@@ -219,166 +226,137 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
         </div>
       </div>
 
-      <header className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-[var(--color-panel)]">{data.name}</h1>
-            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-sm text-[var(--color-text-muted)]">
-              <span className="inline-flex items-center gap-1">
-                <Mail className="h-4 w-4" />
-                {data.email}
-              </span>
-              {data.phone && (
-                <span className="inline-flex items-center gap-1">
-                  <Phone className="h-4 w-4" />
-                  {data.phone}
-                </span>
-              )}
-              <span>{data.language}</span>
-            </div>
-          </div>
-          <div className="flex flex-wrap justify-start gap-2 sm:justify-end">
-            {data.roles.map((role) => (
-              <span
-                key={role}
-                className="rounded-full bg-[var(--color-accent-soft)] px-3 py-1 text-xs font-medium text-[var(--color-panel)]"
-              >
-                {labelFromMap(role, roleLabels)}
-              </span>
-            ))}
-            {data.tags.map((tag) => (
-              <span
-                key={tag}
-                className="rounded-full border border-[var(--color-border)] px-3 py-1 text-xs text-[var(--color-text-muted)]"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        </div>
-      </header>
+      <div className="grid gap-6 xl:grid-cols-[22rem_1fr]">
+        <SupporterProfileSidebar supporter={data} language={language} roleLabels={roleLabels} />
 
-      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        {summary.map(([label, value]) => (
-          <div
-            key={label}
-            className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4"
-          >
-            <p className="text-xs font-medium uppercase tracking-wide text-[var(--color-text-muted)]">
-              {label}
-            </p>
-            <p className="mt-2 text-xl font-bold text-[var(--color-panel)]">{value}</p>
-          </div>
-        ))}
-      </section>
+        <main className="min-w-0 space-y-6">
+          <SupporterActivitySummary
+            language={language}
+            lifetimeAmountCents={data.lifetimeAmountCents}
+            donationCount={data.donationCount}
+            receiptCount={data.receipts.length}
+            pendingPaymentCount={pendingPayments}
+            adoptionCaseCount={data.adoption.cases.length}
+            openFollowupCount={openFollowups}
+            successfulAdoptionCount={data.adoption.successfulAdoptions.length}
+          />
 
-      <ConsentEditor
-        supporterId={supporterId}
-        emailConsent={data.emailConsent}
-        whatsappConsent={data.whatsappConsent}
-      />
+          <ConsentEditor
+            supporterId={supporterId}
+            emailConsent={data.emailConsent}
+            whatsappConsent={data.whatsappConsent}
+          />
 
-      <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold text-[var(--color-panel)]">{copy.donations}</h2>
-          <p className="text-sm text-[var(--color-text-muted)]">{copy.donationsSubtitle}</p>
-        </div>
-        <div className="divide-y divide-[var(--color-border)]">
-          {data.donations.length === 0 && (
-            <p className="py-5 text-sm text-[var(--color-text-muted)]">{copy.noDonations}</p>
-          )}
-          {data.donations.map((donation) => (
-            <div
-              key={donation.id}
-              className="flex flex-wrap items-center justify-between gap-3 py-3"
-            >
+          <section>
+            <div className="mb-4 flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between">
               <div>
-                <div className="font-medium text-[var(--color-panel)]">
-                  {formatHkd(donation.amountCents, language)} ·{" "}
-                  {labelFromMap(donation.purpose, purposeLabels)}
-                </div>
-                <div className="text-xs text-[var(--color-text-muted)]">
-                  {labelFromMap(donation.method, methodLabels)} ·{" "}
-                  {labelFromMap(donation.status, statusLabels)} ·{" "}
-                  {formatDate(donation.createdAt, language)}
-                  {donation.receiptRequested ? ` · ${copy.receiptRequested}` : ""}
-                </div>
+                <h2 className="text-lg font-semibold text-[var(--color-panel)]">{copy.timeline}</h2>
+                <p className="text-sm text-[var(--color-text-muted)]">{copy.timelineSubtitle}</p>
               </div>
-              {canIssueReceipt(data, donation) && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="min-h-[44px] sm:min-h-0"
-                  onClick={() => issueReceiptMutation.mutate(donation.id)}
-                  disabled={issueReceiptMutation.isPending}
-                >
-                  <FileCheck className="h-4 w-4" />
-                  {copy.issueReceipt}
-                </Button>
-              )}
+              <SupporterTimelineFilters
+                language={language}
+                value={timelineFilter}
+                onChange={setTimelineFilter}
+              />
             </div>
-          ))}
-        </div>
-        {issueReceiptMutation.error && (
-          <p className="mt-3 text-sm text-[var(--color-destructive)]">
-            {issueReceiptMutation.error.message}
-          </p>
-        )}
-      </section>
+            <SupporterTimeline items={filteredTimeline} />
+          </section>
 
-      <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold text-[var(--color-panel)]">{copy.receipts}</h2>
-          <p className="text-sm text-[var(--color-text-muted)]">{copy.receiptsSubtitle}</p>
-        </div>
-        <div className="divide-y divide-[var(--color-border)]">
-          {data.receipts.length === 0 && (
-            <p className="py-5 text-sm text-[var(--color-text-muted)]">{copy.noReceipts}</p>
-          )}
-          {data.receipts.map((receipt) => (
-            <div
-              key={receipt.id}
-              className="flex flex-wrap items-center justify-between gap-3 py-3"
-            >
-              <div>
-                <div className="font-medium text-[var(--color-panel)]">{receipt.receiptNo}</div>
-                <div className="text-xs text-[var(--color-text-muted)]">
-                  {labelFromMap(receipt.status, statusLabels)} ·{" "}
-                  {formatHkd(receipt.totalAmountCents, language)} ·{" "}
-                  {formatDate(receipt.issuedAt, language)}
+          <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
+            <div className="mb-4">
+              <h2 className="text-lg font-semibold text-[var(--color-panel)]">{copy.donations}</h2>
+              <p className="text-sm text-[var(--color-text-muted)]">{copy.donationsSubtitle}</p>
+            </div>
+            <div className="divide-y divide-[var(--color-border)]">
+              {data.donations.length === 0 && (
+                <p className="py-5 text-sm text-[var(--color-text-muted)]">{copy.noDonations}</p>
+              )}
+              {data.donations.map((donation) => (
+                <div
+                  key={donation.id}
+                  className="flex flex-wrap items-center justify-between gap-3 py-3"
+                >
+                  <div>
+                    <div className="font-medium text-[var(--color-panel)]">
+                      {formatHkd(donation.amountCents, language)} ·{" "}
+                      {labelFromMap(donation.purpose, purposeLabels)}
+                    </div>
+                    <div className="text-xs text-[var(--color-text-muted)]">
+                      {labelFromMap(donation.method, methodLabels)} ·{" "}
+                      {labelFromMap(donation.status, statusLabels)} ·{" "}
+                      {formatDate(donation.createdAt, language)}
+                      {donation.receiptRequested ? ` · ${copy.receiptRequested}` : ""}
+                    </div>
+                  </div>
+                  {canIssueReceipt(data, donation) && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="min-h-[44px] sm:min-h-0"
+                      onClick={() => issueReceiptMutation.mutate(donation.id)}
+                      disabled={issueReceiptMutation.isPending}
+                    >
+                      <FileCheck className="h-4 w-4" />
+                      {copy.issueReceipt}
+                    </Button>
+                  )}
                 </div>
-              </div>
-              {receipt.status === "issued" && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="min-h-[44px] sm:min-h-0"
-                  onClick={() => voidReceiptMutation.mutate(receipt.id)}
-                  disabled={voidReceiptMutation.isPending}
-                >
-                  <FileX className="h-4 w-4" />
-                  {copy.voidReceipt}
-                </Button>
-              )}
+              ))}
             </div>
-          ))}
-        </div>
-        {voidReceiptMutation.error && (
-          <p className="mt-3 text-sm text-[var(--color-destructive)]">
-            {voidReceiptMutation.error.message}
-          </p>
-        )}
-      </section>
+            {issueReceiptMutation.error && (
+              <p className="mt-3 text-sm text-[var(--color-destructive)]">
+                {issueReceiptMutation.error.message}
+              </p>
+            )}
+          </section>
 
-      <section>
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold text-[var(--color-panel)]">{copy.timeline}</h2>
-          <p className="text-sm text-[var(--color-text-muted)]">{copy.timelineSubtitle}</p>
-        </div>
-        <SupporterTimeline items={data.timeline} />
-      </section>
+          <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
+            <div className="mb-4">
+              <h2 className="text-lg font-semibold text-[var(--color-panel)]">{copy.receipts}</h2>
+              <p className="text-sm text-[var(--color-text-muted)]">{copy.receiptsSubtitle}</p>
+            </div>
+            <div className="divide-y divide-[var(--color-border)]">
+              {data.receipts.length === 0 && (
+                <p className="py-5 text-sm text-[var(--color-text-muted)]">{copy.noReceipts}</p>
+              )}
+              {data.receipts.map((receipt) => (
+                <div
+                  key={receipt.id}
+                  className="flex flex-wrap items-center justify-between gap-3 py-3"
+                >
+                  <div>
+                    <div className="font-medium text-[var(--color-panel)]">{receipt.receiptNo}</div>
+                    <div className="text-xs text-[var(--color-text-muted)]">
+                      {labelFromMap(receipt.status, statusLabels)} ·{" "}
+                      {formatHkd(receipt.totalAmountCents, language)} ·{" "}
+                      {formatDate(receipt.issuedAt, language)}
+                    </div>
+                  </div>
+                  {receipt.status === "issued" && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="min-h-[44px] sm:min-h-0"
+                      onClick={() => voidReceiptMutation.mutate(receipt.id)}
+                      disabled={voidReceiptMutation.isPending}
+                    >
+                      <FileX className="h-4 w-4" />
+                      {copy.voidReceipt}
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
+            {voidReceiptMutation.error && (
+              <p className="mt-3 text-sm text-[var(--color-destructive)]">
+                {voidReceiptMutation.error.message}
+              </p>
+            )}
+          </section>
+        </main>
+      </div>
     </div>
   );
 }

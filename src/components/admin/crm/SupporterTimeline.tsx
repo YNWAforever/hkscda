@@ -1,3 +1,5 @@
+import { Link } from "@tanstack/react-router";
+
 import type { SupporterTimelineItem } from "../../../lib/crm/types";
 import { formatAdminDateTime, useAdminPageCopy } from "../adminPageCopy";
 
@@ -14,6 +16,11 @@ const TIMELINE_COPY = {
       receipt: "收據",
       consent: "通訊同意",
       supporter: "捐款人",
+      adoption_case: "領養個案",
+      adoption_followup: "跟進",
+      successful_adoption: "成功領養",
+      message: "訊息",
+      audit: "系統紀錄",
     },
     statuses: {
       pending: "待處理",
@@ -31,6 +38,11 @@ const TIMELINE_COPY = {
       receipt: "Receipt",
       consent: "Consent",
       supporter: "Supporter",
+      adoption_case: "Adoption case",
+      adoption_followup: "Follow-up",
+      successful_adoption: "Successful adoption",
+      message: "Message",
+      audit: "System record",
     },
     statuses: {
       pending: "Pending",
@@ -81,7 +93,17 @@ export function SupporterTimeline({ items }: SupporterTimelineProps) {
           </time>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <p className="font-semibold text-[var(--color-panel)]">{item.title}</p>
+              {item.link ? (
+                <Link
+                  to={item.link.to}
+                  params={item.link.params}
+                  className="font-semibold text-[var(--color-primary)] hover:underline"
+                >
+                  {item.title}
+                </Link>
+              ) : (
+                <p className="font-semibold text-[var(--color-panel)]">{item.title}</p>
+              )}
               <span className="rounded-full bg-[var(--color-accent-soft)] px-2 py-0.5 text-xs text-[var(--color-panel)]">
                 {timelineKind(item.kind, language)}
               </span>
