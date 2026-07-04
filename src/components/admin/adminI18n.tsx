@@ -11,6 +11,7 @@ type AdminSection =
   | "applications"
   | "payments"
   | "supporters"
+  | "volunteers"
   | "access";
 type AnimalType = "cat" | "dog" | "sponsor";
 type Gender = "female" | "male";
@@ -138,6 +139,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       applications: "申請",
       payments: "收款",
       supporters: "支持者",
+      volunteers: "義工",
       access: "權限管理",
     },
     navGroups: {
@@ -157,6 +159,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       "coordinator-adopters": "領養人",
       "coordinator-reports": "報表紀錄",
       "coordinator-statuses": "狀態設定",
+      volunteers: "義工活動",
       payments: "收款",
       supporters: "支持者",
       "access-management": "權限管理",
@@ -182,6 +185,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
         applications: "領養申請",
         payments: "收款紀錄",
         supporters: "支持者",
+        volunteers: "義工活動",
         access: "權限管理",
       },
       addNew: "新增",
@@ -284,6 +288,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       applications: "Applications",
       payments: "Payments",
       supporters: "Supporters",
+      volunteers: "Volunteers",
       access: "Access Management",
     },
     navGroups: {
@@ -303,6 +308,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       "coordinator-adopters": "Adopters",
       "coordinator-reports": "Reports",
       "coordinator-statuses": "Status settings",
+      volunteers: "Volunteers",
       payments: "Payments",
       supporters: "Supporters",
       "access-management": "Access Management",
@@ -328,6 +334,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
         applications: "Adoption applications",
         payments: "Payment records",
         supporters: "Supporters",
+        volunteers: "Volunteer activities",
         access: "Access Management",
       },
       addNew: "Add new",

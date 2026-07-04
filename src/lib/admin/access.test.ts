@@ -12,6 +12,7 @@ describe("admin role access mapping", () => {
     expect(canRoleAccessAdminArea("staff", "animals")).toBe(true);
     expect(canRoleAccessAdminArea("staff", "adoptionCases")).toBe(true);
     expect(canRoleAccessAdminArea("staff", "payments")).toBe(true);
+    expect(canRoleAccessAdminArea("staff", "volunteerManagement")).toBe(true);
     expect(canRoleAccessAdminArea("staff", "supporters")).toBe(false);
     expect(canRoleAccessAdminArea("staff", "coordinatorStatuses")).toBe(false);
     expect(canRoleAccessAdminArea("staff", "accessManagement")).toBe(false);
@@ -19,10 +20,12 @@ describe("admin role access mapping", () => {
     expect(canRoleAccessAdminArea("treasurer", "animals")).toBe(false);
     expect(canRoleAccessAdminArea("treasurer", "payments")).toBe(true);
     expect(canRoleAccessAdminArea("treasurer", "supporters")).toBe(true);
+    expect(canRoleAccessAdminArea("treasurer", "volunteerManagement")).toBe(false);
     expect(canRoleAccessAdminArea("treasurer", "accessManagement")).toBe(false);
 
     expect(canRoleAccessAdminArea("admin", "animals")).toBe(true);
     expect(canRoleAccessAdminArea("admin", "coordinatorStatuses")).toBe(true);
+    expect(canRoleAccessAdminArea("admin", "volunteerManagement")).toBe(true);
     expect(canRoleAccessAdminArea("admin", "accessManagement")).toBe(true);
   });
 
@@ -40,6 +43,10 @@ describe("admin role access mapping", () => {
     expect(getAdminAreaForLocation({ pathname: "/admin/coordinator/statuses" })).toBe(
       "coordinatorStatuses",
     );
+    expect(getAdminAreaForLocation({ pathname: "/admin/volunteers" })).toBe("volunteerManagement");
+    expect(getAdminAreaForLocation({ pathname: "/admin/volunteers/registrations/abc" })).toBe(
+      "volunteerManagement",
+    );
     expect(getAdminAreaForLocation({ pathname: "/admin/access" })).toBe("accessManagement");
   });
 
@@ -51,6 +58,7 @@ describe("admin role access mapping", () => {
       "applications",
       "coordinator-intake",
       "coordinator-statuses",
+      "volunteers",
       "payments",
       "supporters",
       "access-management",
@@ -62,6 +70,7 @@ describe("admin role access mapping", () => {
       "sponsor",
       "applications",
       "coordinator-intake",
+      "volunteers",
       "payments",
     ]);
     expect(filterAdminNavItemIdsByRole(itemIds, "treasurer")).toEqual(["payments", "supporters"]);

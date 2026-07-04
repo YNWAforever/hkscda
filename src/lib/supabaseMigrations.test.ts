@@ -228,4 +228,40 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("sponsorship-payment-proof");
     expect(sql).toContain("private.has_admin_role(array['staff', 'admin'])");
   });
+
+  test("adds volunteer activity tables with explicit grants, RLS, and status tokens", () => {
+    const sql = readMigrationBySuffix("_volunteer_activity_management_v1.sql");
+
+    for (const table of ["volunteer_activity", "volunteer_registration"]) {
+      expect(sql).toContain(`create table if not exists public.${table}`);
+      expect(sql).toContain(`alter table public.${table} enable row level security`);
+      expect(sql).toContain(
+        `grant select, insert, update, delete on public.${table} to service_role`,
+      );
+      expect(sql).toContain(`revoke all on public.${table} from authenticated`);
+    }
+
+    expect(sql).toContain("grant select on public.volunteer_activity to anon");
+    expect(sql).toContain("revoke all on public.volunteer_registration from anon, authenticated");
+    expect(sql).toContain("volunteer_activity_status_starts_idx");
+    expect(sql).toContain("volunteer_registration_activity_status_idx");
+    expect(sql).toContain("create or replace function public.create_volunteer_registration(");
+    expect(sql).toContain(
+      "perform pg_advisory_xact_lock(hashtextextended(p_activity_id::text, 0))",
+    );
+    expect(sql).toContain("for update");
+    expect(sql).toContain("and status = 'approved'");
+    expect(sql).toContain("grant execute on function public.create_volunteer_registration");
+    expect(sql).toContain("revoke all on function public.create_volunteer_registration");
+    expect(sql).toContain(
+      "status text not null default 'pending' check (status in ('pending', 'approved', 'waitlisted', 'rejected', 'cancelled'))",
+    );
+    expect(sql).toContain(
+      "attendance_status text not null default 'not_marked' check (attendance_status in ('not_marked', 'attended', 'completed', 'no_show'))",
+    );
+    expect(sql).toContain(
+      "add constraint public_status_token_entity_type_check check (entity_type in ('adoption_application', 'sponsorship_pledge', 'volunteer_registration'))",
+    );
+    expect(sql).toContain("private.has_admin_role(array['staff', 'admin'])");
+  });
 });

@@ -1,5 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Users, UserPlus, House, Cat, Dog, Scissors, Heart } from "lucide-react";
+import { CalendarDays, Cat, Dog, Heart, House, Scissors, UserPlus, Users } from "lucide-react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
+
+import { TurnstileWidget, turnstileEnabled } from "../components/site/TurnstileWidget";
+import {
+  activityAvailabilityLabel,
+  buildVolunteerRegistrationPayload,
+  canRegisterForActivity,
+} from "../components/site/volunteer/volunteerSignupLogic";
+import type { VolunteerActivitySummary, VolunteerRegistrationType } from "../lib/volunteers/types";
 
 const volunteerRoles = [
   {
@@ -56,6 +65,92 @@ export const Route = createFileRoute("/volunteer")({
 });
 
 function VolunteerPage() {
+  const [activities, setActivities] = useState<VolunteerActivitySummary[]>([]);
+  const [selectedActivityId, setSelectedActivityId] = useState<string>("");
+  const [registrationType, setRegistrationType] = useState<VolunteerRegistrationType>("individual");
+  const [contactName, setContactName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [organizationName, setOrganizationName] = useState("");
+  const [participantCount, setParticipantCount] = useState(2);
+  const [declaredAge, setDeclaredAge] = useState("");
+  const [youngestAge, setYoungestAge] = useState("");
+  const [guardianName, setGuardianName] = useState("");
+  const [guardianPhone, setGuardianPhone] = useState("");
+  const [notes, setNotes] = useState("");
+  const [emailConsent, setEmailConsent] = useState(true);
+  const [whatsappConsent, setWhatsappConsent] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [successUrl, setSuccessUrl] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    void fetch("/api/volunteer/activities")
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Could not load activities");
+        return (await response.json()) as { activities: VolunteerActivitySummary[] };
+      })
+      .then((body) => {
+        setActivities(body.activities);
+        setSelectedActivityId((current) => current || body.activities[0]?.id || "");
+      })
+      .catch(() => setLoadError("暫時未能載入義工活動，請稍後再試。"));
+  }, []);
+
+  const selectedActivity = useMemo(
+    () => activities.find((activity) => activity.id === selectedActivityId) ?? null,
+    [activities, selectedActivityId],
+  );
+  const canSubmit =
+    selectedActivity &&
+    canRegisterForActivity(selectedActivity) &&
+    (!turnstileEnabled || Boolean(turnstileToken));
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!selectedActivity) return;
+    setSubmitting(true);
+    setSubmitError(null);
+    setSuccessUrl(null);
+    try {
+      const response = await fetch("/api/volunteer/registrations", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(
+          buildVolunteerRegistrationPayload({
+            activityId: selectedActivity.id,
+            registrationType,
+            contactName,
+            email,
+            phone,
+            organizationName,
+            participantCount,
+            declaredAge: declaredAge ? Number(declaredAge) : null,
+            youngestAge: youngestAge ? Number(youngestAge) : null,
+            guardianName,
+            guardianPhone,
+            notes,
+            emailConsent,
+            whatsappConsent,
+            turnstileToken,
+          }),
+        ),
+      });
+      const body = (await response.json().catch(() => ({}))) as {
+        error?: string;
+        statusUrl?: string;
+      };
+      if (!response.ok) throw new Error(body.error ?? "登記未能送出");
+      setSuccessUrl(body.statusUrl ?? null);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "登記未能送出");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return (
     <main className="max-w-4xl mx-auto px-4 py-8 space-y-10">
       <div>
@@ -69,6 +164,226 @@ function VolunteerPage() {
           協會依靠義工的力量運作。無論你是學生、在職人士或退休人士，都能找到適合自己的義工崗位。
         </p>
       </div>
+
+      <section className="grid gap-4 lg:grid-cols-[1fr_1.1fr]">
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 text-sm font-bold text-[var(--color-primary)]">
+            <CalendarDays className="h-4 w-4" /> 可報名活動
+          </div>
+          {loadError ? (
+            <p className="rounded-lg bg-[var(--color-surface-offset)] p-4 text-sm text-[var(--color-text-muted)]">
+              {loadError}
+            </p>
+          ) : activities.length === 0 ? (
+            <p className="rounded-lg bg-[var(--color-surface-offset)] p-4 text-sm text-[var(--color-text-muted)]">
+              目前未有開放報名的義工活動。你仍可透過電郵 info@hkscda.com 或 WhatsApp 9864 1089
+              聯絡我們。
+            </p>
+          ) : (
+            activities.map((activity) => (
+              <button
+                key={activity.id}
+                type="button"
+                onClick={() => {
+                  setSelectedActivityId(activity.id);
+                  if (!activity.registrationModes.includes(registrationType)) {
+                    setRegistrationType(activity.registrationModes[0] ?? "individual");
+                  }
+                }}
+                className={`card-dashed w-full bg-[var(--color-surface)] p-4 text-left transition ${
+                  activity.id === selectedActivityId ? "shadow-md" : "hover:shadow-sm"
+                }`}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h2 className="font-display text-lg font-bold">{activity.title}</h2>
+                    <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+                      {new Date(activity.startsAt).toLocaleString("zh-HK", {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      })}
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-[var(--color-primary-highlight)] px-3 py-1 text-xs font-bold text-[var(--color-primary)]">
+                    {activityAvailabilityLabel(activity)}
+                  </span>
+                </div>
+                <p className="mt-3 text-sm text-[var(--color-text-muted)]">
+                  {activity.location} · 最低年齡 {activity.minAge ?? 0}+
+                </p>
+              </button>
+            ))
+          )}
+        </div>
+
+        <form
+          onSubmit={handleSubmit}
+          className="card-dashed space-y-4 bg-[var(--color-surface-offset)] p-5"
+        >
+          <div>
+            <h2 className="font-display text-xl font-bold">義工報名</h2>
+            <p className="text-sm text-[var(--color-text-muted)]">
+              選擇活動後填寫聯絡資料，系統會根據名額與年齡規則處理審批。
+            </p>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="text-sm font-semibold">
+              姓名
+              <input
+                required
+                value={contactName}
+                onChange={(event) => setContactName(event.target.value)}
+                className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
+              />
+            </label>
+            <label className="text-sm font-semibold">
+              電郵
+              <input
+                required
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
+              />
+            </label>
+            <label className="text-sm font-semibold">
+              電話 / WhatsApp
+              <input
+                required
+                value={phone}
+                onChange={(event) => setPhone(event.target.value)}
+                className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
+              />
+            </label>
+            <label className="text-sm font-semibold">
+              報名類型
+              <select
+                value={registrationType}
+                onChange={(event) =>
+                  setRegistrationType(event.target.value as VolunteerRegistrationType)
+                }
+                className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
+              >
+                {(selectedActivity?.registrationModes ?? ["individual", "group"]).map((mode) => (
+                  <option key={mode} value={mode}>
+                    {mode === "individual" ? "個人義工" : "團體報名"}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          {registrationType === "group" ? (
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="text-sm font-semibold">
+                團體 / 學校名稱
+                <input
+                  required
+                  value={organizationName}
+                  onChange={(event) => setOrganizationName(event.target.value)}
+                  className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
+                />
+              </label>
+              <label className="text-sm font-semibold">
+                參加人數
+                <input
+                  required
+                  type="number"
+                  min={2}
+                  value={participantCount}
+                  onChange={(event) => setParticipantCount(Number(event.target.value))}
+                  className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
+                />
+              </label>
+              <label className="text-sm font-semibold">
+                最年輕參加者年齡
+                <input
+                  type="number"
+                  min={0}
+                  value={youngestAge}
+                  onChange={(event) => setYoungestAge(event.target.value)}
+                  className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
+                />
+              </label>
+              <label className="text-sm font-semibold">
+                負責成人 / 老師姓名
+                <input
+                  required
+                  value={guardianName}
+                  onChange={(event) => setGuardianName(event.target.value)}
+                  className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
+                />
+              </label>
+            </div>
+          ) : (
+            <label className="block text-sm font-semibold">
+              年齡
+              <input
+                type="number"
+                min={0}
+                value={declaredAge}
+                onChange={(event) => setDeclaredAge(event.target.value)}
+                className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
+              />
+            </label>
+          )}
+
+          <label className="block text-sm font-semibold">
+            備註
+            <textarea
+              value={notes}
+              onChange={(event) => setNotes(event.target.value)}
+              className="mt-1 min-h-24 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
+            />
+          </label>
+
+          <div className="space-y-2 text-sm">
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={emailConsent}
+                onChange={(event) => setEmailConsent(event.target.checked)}
+              />
+              接收電郵通知
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={whatsappConsent}
+                onChange={(event) => setWhatsappConsent(event.target.checked)}
+              />
+              接收 WhatsApp 通知
+            </label>
+          </div>
+
+          <TurnstileWidget
+            language="zh-HK"
+            onVerify={setTurnstileToken}
+            onExpire={() => setTurnstileToken(null)}
+          />
+
+          {submitError && (
+            <p className="text-sm font-semibold text-[var(--color-primary)]">{submitError}</p>
+          )}
+          {successUrl && (
+            <a
+              href={successUrl}
+              className="block rounded-md bg-[var(--color-primary-highlight)] px-3 py-2 text-sm font-bold text-[var(--color-primary)]"
+            >
+              登記已送出，查看狀態
+            </a>
+          )}
+
+          <button
+            type="submit"
+            disabled={!canSubmit || submitting}
+            className="w-full rounded-md bg-[var(--color-primary)] px-4 py-3 font-bold text-[var(--color-primary-foreground)] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {submitting ? "送出中..." : "送出義工報名"}
+          </button>
+        </form>
+      </section>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {volunteerRoles.map(({ Icon, title, desc }) => (
@@ -94,7 +409,7 @@ function VolunteerPage() {
             "完成基本培訓後，即可開始義工服務。協會會為所有義工提供持續支援及指導。",
           ].map((text, i) => (
             <div key={i} className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--color-primary)] text-white text-xs flex items-center justify-center font-bold">
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--color-primary)] text-[var(--color-primary-foreground)] text-xs flex items-center justify-center font-bold">
                 {i + 1}
               </span>
               <span>{text}</span>

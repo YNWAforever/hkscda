@@ -43,6 +43,7 @@ export type SupporterDetail = SupporterSummary & {
   messages: MessageHistoryRow[];
   auditLogs: AuditHistoryRow[];
   adoption: SupporterAdoptionContext;
+  volunteer: SupporterVolunteerContext;
   timeline: SupporterTimelineItem[];
 };
 
@@ -177,6 +178,25 @@ export type SupporterAdoptionContext = {
   successfulAdoptions: SupporterSuccessfulAdoptionSummary[];
 };
 
+export type SupporterVolunteerRegistrationSummary = {
+  id: string;
+  activityId: string;
+  activityTitle: string;
+  activityType: "volunteer_shift" | "group_activity" | "cleaning_day";
+  startsAt: string;
+  status: "pending" | "approved" | "waitlisted" | "rejected" | "cancelled";
+  statusReason: string | null;
+  attendanceStatus: "not_marked" | "attended" | "completed" | "no_show";
+  participantCount: number;
+  volunteerHours: number | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type SupporterVolunteerContext = {
+  registrations: SupporterVolunteerRegistrationSummary[];
+};
+
 export type SupporterTimelineKind =
   | "donation"
   | "payment"
@@ -186,11 +206,13 @@ export type SupporterTimelineKind =
   | "audit"
   | "adoption_case"
   | "adoption_followup"
-  | "successful_adoption";
+  | "successful_adoption"
+  | "volunteer_registration";
 
 export type SupporterTimelineLink =
   | { to: "/admin/applications/$id"; params: { id: string } }
-  | { to: "/admin/coordinator/adopters/$id"; params: { id: string } };
+  | { to: "/admin/coordinator/adopters/$id"; params: { id: string } }
+  | { to: "/admin/volunteers/registrations/$id"; params: { id: string } };
 
 export type SupporterTimelineItem = {
   id: string;

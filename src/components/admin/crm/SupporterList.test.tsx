@@ -3,6 +3,10 @@ import { renderToStaticMarkup } from "react-dom/server";
 
 import type { SupporterSummary } from "../../../lib/crm/types";
 
+const realReactQuery = await import("@tanstack/react-query");
+const realReactRouter = await import("@tanstack/react-router");
+const realAdminPageCopy = await import("../adminPageCopy");
+
 const supporter: SupporterSummary = {
   id: "supporter-1",
   name: "Ada Wong",
@@ -22,6 +26,7 @@ const supporter: SupporterSummary = {
 };
 
 mock.module("@tanstack/react-query", () => ({
+  ...realReactQuery,
   useQuery: () => ({
     data: { supporters: [supporter], total: 1 },
     error: null,
@@ -30,6 +35,7 @@ mock.module("@tanstack/react-query", () => ({
 }));
 
 mock.module("@tanstack/react-router", () => ({
+  ...realReactRouter,
   Link: ({
     children,
     className,
@@ -48,48 +54,10 @@ mock.module("@tanstack/react-router", () => ({
 }));
 
 mock.module("../adminPageCopy", () => ({
-  formatAdminDateTime: (value: string | null | undefined) => value ?? "-",
-  formatAdminNumber: (value: number | null | undefined) => String(value ?? 0),
+  ...realAdminPageCopy,
   useAdminPageCopy: () => ({
     language: "en",
-    pageCopy: {
-      common: {
-        open: "Open",
-        supportersCsv: "Supporters CSV",
-        totalSupporters: (count: number) => `${count} supporters`,
-      },
-      supporters: {
-        title: "Supporters",
-        subtitle: "Donor records.",
-        searchLabel: "Search supporters",
-        searchPlaceholder: "Search",
-        roleFilterLabel: "Filter by role",
-        allRoles: "All roles",
-        loadError: "Could not load supporters",
-        empty: "No supporters found",
-        newSupporter: "New supporter",
-        needsReview: "Needs review",
-        clear: "Clear",
-        lastGift: "Last gift",
-        receipts: "Receipts",
-        email: "Email",
-        whatsapp: "WhatsApp",
-        roleLabels: {
-          donor: "Donor",
-          adopter: "Adopter",
-          volunteer: "Volunteer",
-          foster: "Foster",
-        },
-        columns: {
-          supporter: "Supporter",
-          roles: "Roles",
-          consent: "Consent",
-          lifetime: "Lifetime",
-          lastGift: "Last gift",
-          receipts: "Receipts",
-        },
-      },
-    },
+    pageCopy: realAdminPageCopy.adminPageCopy.en,
   }),
 }));
 
