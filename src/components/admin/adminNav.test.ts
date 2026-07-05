@@ -72,6 +72,19 @@ describe("admin nav active state", () => {
     ).toEqual(["volunteers"]);
   });
 
+  test("uses the content item on content routes", () => {
+    expect(getActiveAdminNavItemIds(ADMIN_NAV_ITEMS, "/admin/content", "content")).toEqual([
+      "content",
+    ]);
+    expect(
+      getActiveAdminNavItemIds(
+        ADMIN_NAV_ITEMS,
+        "/admin/content/99999999-aaaa-4333-8444-555555555555",
+        "content",
+      ),
+    ).toEqual(["content"]);
+  });
+
   test("has bilingual labels for every nav item", () => {
     for (const item of ADMIN_NAV_ITEMS) {
       expect(adminCopy.zh.navItems[item.id], `zh nav label for ${item.id}`).toBeString();

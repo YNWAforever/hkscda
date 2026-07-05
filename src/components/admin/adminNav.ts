@@ -10,6 +10,7 @@ import {
   Heart,
   Inbox,
   ListTodo,
+  Megaphone,
   ShieldCheck,
   Settings2,
   Users,
@@ -24,11 +25,12 @@ export type AdminSection =
   | "payments"
   | "supporters"
   | "volunteers"
+  | "content"
   | "access";
 
 // Visual grouping for the sidebar. Purely presentational — the active-state
 // logic below still keys off `section`/`activePath`, so routing is unchanged.
-export type AdminNavGroup = "animals" | "adoptions" | "donations" | "system";
+export type AdminNavGroup = "animals" | "adoptions" | "donations" | "promotion" | "system";
 
 export type AdminNavItem = {
   id: string;
@@ -44,6 +46,7 @@ export const ADMIN_NAV_GROUPS: { id: AdminNavGroup; label: string }[] = [
   { id: "animals", label: "動物" },
   { id: "adoptions", label: "領養" },
   { id: "donations", label: "捐款" },
+  { id: "promotion", label: "宣傳" },
   { id: "system", label: "系統" },
 ];
 
@@ -158,6 +161,15 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     label: "支持者",
     icon: HandCoins,
     to: "/admin/supporters",
+  },
+  {
+    id: "content",
+    section: "content",
+    group: "promotion",
+    label: "宣傳內容",
+    icon: Megaphone,
+    to: "/admin/content",
+    activePath: "/admin/content",
   },
   {
     id: "access-management",
