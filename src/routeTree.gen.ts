@@ -10,11 +10,13 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VolunteerRouteImport } from './routes/volunteer'
+import { Route as StoriesRouteImport } from './routes/stories'
 import { Route as SponsorsRouteImport } from './routes/sponsors'
 import { Route as DonateRouteImport } from './routes/donate'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
+import { Route as StoriesSlugRouteImport } from './routes/stories/$slug'
 import { Route as SponsorsPledgeRouteImport } from './routes/sponsors_.pledge'
 import { Route as SponsorsIdRouteImport } from './routes/sponsors_.$id'
 import { Route as ReportAuditRouteImport } from './routes/report/audit'
@@ -132,6 +134,11 @@ const VolunteerRoute = VolunteerRouteImport.update({
   path: '/volunteer',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StoriesRoute = StoriesRouteImport.update({
+  id: '/stories',
+  path: '/stories',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SponsorsRoute = SponsorsRouteImport.update({
   id: '/sponsors',
   path: '/sponsors',
@@ -156,6 +163,11 @@ const AboutIndexRoute = AboutIndexRouteImport.update({
   id: '/about/',
   path: '/about/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const StoriesSlugRoute = StoriesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => StoriesRoute,
 } as any)
 const SponsorsPledgeRoute = SponsorsPledgeRouteImport.update({
   id: '/sponsors_/pledge',
@@ -766,6 +778,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/donate': typeof DonateRoute
   '/sponsors': typeof SponsorsRoute
+  '/stories': typeof StoriesRouteWithChildren
   '/volunteer': typeof VolunteerRouteWithChildren
   '/about/cccp': typeof AboutCccpRoute
   '/about/privacy': typeof AboutPrivacyRoute
@@ -788,6 +801,7 @@ export interface FileRoutesByFullPath {
   '/report/audit': typeof ReportAuditRoute
   '/sponsors/$id': typeof SponsorsIdRoute
   '/sponsors/pledge': typeof SponsorsPledgeRoute
+  '/stories/$slug': typeof StoriesSlugRoute
   '/about/': typeof AboutIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/animals/new': typeof AdminAnimalsNewRoute
@@ -885,6 +899,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/donate': typeof DonateRoute
   '/sponsors': typeof SponsorsRoute
+  '/stories': typeof StoriesRouteWithChildren
   '/volunteer': typeof VolunteerRouteWithChildren
   '/about/cccp': typeof AboutCccpRoute
   '/about/privacy': typeof AboutPrivacyRoute
@@ -906,6 +921,7 @@ export interface FileRoutesByTo {
   '/report/audit': typeof ReportAuditRoute
   '/sponsors/$id': typeof SponsorsIdRoute
   '/sponsors/pledge': typeof SponsorsPledgeRoute
+  '/stories/$slug': typeof StoriesSlugRoute
   '/about': typeof AboutIndexRoute
   '/admin': typeof AdminIndexRoute
   '/admin/animals/new': typeof AdminAnimalsNewRoute
@@ -1004,6 +1020,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/donate': typeof DonateRoute
   '/sponsors': typeof SponsorsRoute
+  '/stories': typeof StoriesRouteWithChildren
   '/volunteer': typeof VolunteerRouteWithChildren
   '/about/cccp': typeof AboutCccpRoute
   '/about/privacy': typeof AboutPrivacyRoute
@@ -1026,6 +1043,7 @@ export interface FileRoutesById {
   '/report/audit': typeof ReportAuditRoute
   '/sponsors_/$id': typeof SponsorsIdRoute
   '/sponsors_/pledge': typeof SponsorsPledgeRoute
+  '/stories/$slug': typeof StoriesSlugRoute
   '/about/': typeof AboutIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/animals/new': typeof AdminAnimalsNewRoute
@@ -1125,6 +1143,7 @@ export interface FileRouteTypes {
     | '/'
     | '/donate'
     | '/sponsors'
+    | '/stories'
     | '/volunteer'
     | '/about/cccp'
     | '/about/privacy'
@@ -1147,6 +1166,7 @@ export interface FileRouteTypes {
     | '/report/audit'
     | '/sponsors/$id'
     | '/sponsors/pledge'
+    | '/stories/$slug'
     | '/about/'
     | '/admin/'
     | '/admin/animals/new'
@@ -1244,6 +1264,7 @@ export interface FileRouteTypes {
     | '/'
     | '/donate'
     | '/sponsors'
+    | '/stories'
     | '/volunteer'
     | '/about/cccp'
     | '/about/privacy'
@@ -1265,6 +1286,7 @@ export interface FileRouteTypes {
     | '/report/audit'
     | '/sponsors/$id'
     | '/sponsors/pledge'
+    | '/stories/$slug'
     | '/about'
     | '/admin'
     | '/admin/animals/new'
@@ -1362,6 +1384,7 @@ export interface FileRouteTypes {
     | '/'
     | '/donate'
     | '/sponsors'
+    | '/stories'
     | '/volunteer'
     | '/about/cccp'
     | '/about/privacy'
@@ -1384,6 +1407,7 @@ export interface FileRouteTypes {
     | '/report/audit'
     | '/sponsors_/$id'
     | '/sponsors_/pledge'
+    | '/stories/$slug'
     | '/about/'
     | '/admin/'
     | '/admin/animals/new'
@@ -1482,6 +1506,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DonateRoute: typeof DonateRoute
   SponsorsRoute: typeof SponsorsRoute
+  StoriesRoute: typeof StoriesRouteWithChildren
   VolunteerRoute: typeof VolunteerRouteWithChildren
   AboutCccpRoute: typeof AboutCccpRoute
   AboutPrivacyRoute: typeof AboutPrivacyRoute
@@ -1571,6 +1596,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VolunteerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/stories': {
+      id: '/stories'
+      path: '/stories'
+      fullPath: '/stories'
+      preLoaderRoute: typeof StoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sponsors': {
       id: '/sponsors'
       path: '/sponsors'
@@ -1605,6 +1637,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/about/'
       preLoaderRoute: typeof AboutIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/stories/$slug': {
+      id: '/stories/$slug'
+      path: '/$slug'
+      fullPath: '/stories/$slug'
+      preLoaderRoute: typeof StoriesSlugRouteImport
+      parentRoute: typeof StoriesRoute
     }
     '/sponsors_/pledge': {
       id: '/sponsors_/pledge'
@@ -2386,6 +2425,17 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface StoriesRouteChildren {
+  StoriesSlugRoute: typeof StoriesSlugRoute
+}
+
+const StoriesRouteChildren: StoriesRouteChildren = {
+  StoriesSlugRoute: StoriesSlugRoute,
+}
+
+const StoriesRouteWithChildren =
+  StoriesRoute._addFileChildren(StoriesRouteChildren)
+
 interface VolunteerRouteChildren {
   VolunteerStatusTokenRoute: typeof VolunteerStatusTokenRoute
 }
@@ -2738,6 +2788,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DonateRoute: DonateRoute,
   SponsorsRoute: SponsorsRoute,
+  StoriesRoute: StoriesRouteWithChildren,
   VolunteerRoute: VolunteerRouteWithChildren,
   AboutCccpRoute: AboutCccpRoute,
   AboutPrivacyRoute: AboutPrivacyRoute,
