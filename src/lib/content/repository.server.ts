@@ -489,7 +489,7 @@ async function hydrateContentDetails(client: SupabaseClient, rows: ContentRow[])
   return details;
 }
 
-function toPublicContentDetail(detail: ContentDetail): ContentDetail {
+export function toPublicContentDetail(detail: ContentDetail): ContentDetail {
   const updates = detail.updates.filter((update) => update.visibility === "public");
   const publicUpdateIds = new Set(updates.map((update) => update.id));
   const media = detail.media.filter(
@@ -508,6 +508,7 @@ function toPublicContentDetail(detail: ContentDetail): ContentDetail {
           internalLocationNotes: null,
         }
       : null,
+    links: [],
     media,
     updates,
     latestPublicUpdate: latestPublicUpdate(updates),
@@ -913,12 +914,19 @@ export function createSupabaseContentRepository(client: SupabaseClient): Content
       const { error } = await client
         .from("recipient_notification_draft")
         .update({ status })
-        .eq("id", id);
+        .eq("id", id)
+        .select("id")
+        .single();
       if (error) throw error;
     },
 
     async updateSocialCopyStatus(id, status) {
-      const { error } = await client.from("social_copy_variant").update({ status }).eq("id", id);
+      const { error } = await client
+        .from("social_copy_variant")
+        .update({ status })
+        .eq("id", id)
+        .select("id")
+        .single();
       if (error) throw error;
     },
 
