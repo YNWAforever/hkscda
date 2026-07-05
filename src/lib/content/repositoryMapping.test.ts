@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { toContentSummary, toStoryUpdate } from "./repository.server";
+import type { ContentMedia } from "./types";
 
 describe("content repository mapping", () => {
   test("maps content rows into camelCase summaries", () => {
@@ -36,6 +37,23 @@ describe("content repository mapping", () => {
   });
 
   test("maps story updates with attached media", () => {
+    const media: ContentMedia[] = [
+      {
+        id: "media-1",
+        contentItemId: "content-1",
+        storyUpdateId: "update-1",
+        url: "https://example.test/media.jpg",
+        storageBucket: "content-media",
+        storagePath: "stories/media.jpg",
+        altText: "小白近照",
+        caption: null,
+        sortOrder: 1,
+        isCover: false,
+        createdAt: "2026-07-05T10:00:00.000Z",
+        updatedAt: "2026-07-05T10:00:00.000Z",
+      },
+    ];
+
     expect(
       toStoryUpdate(
         {
@@ -50,14 +68,14 @@ describe("content repository mapping", () => {
           created_at: "2026-07-05T10:00:00.000Z",
           updated_at: "2026-07-05T10:00:00.000Z",
         },
-        [],
+        media,
       ),
     ).toMatchObject({
       id: "update-1",
       contentItemId: "content-1",
       kind: "medical",
       shouldGenerateAdopterDrafts: true,
-      media: [],
+      media,
     });
   });
 });

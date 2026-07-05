@@ -374,6 +374,14 @@ function toSummary(detail: ContentDetail): ContentSummary {
   };
 }
 
+function findCoverMedia(media: ContentMedia[], coverMediaId: string | null) {
+  return (
+    (coverMediaId ? media.find((item) => item.id === coverMediaId) : null) ??
+    media.find((item) => item.isCover) ??
+    null
+  );
+}
+
 function buildContentDetail(
   row: ContentRow,
   storyProfile: RescueStoryProfile | null,
@@ -384,10 +392,7 @@ function buildContentDetail(
   notificationDrafts: RecipientNotificationDraft[],
 ): ContentDetail {
   const summary = toContentSummary(row);
-  const coverMedia =
-    (row.cover_media_id ? media.find((item) => item.id === row.cover_media_id) : null) ??
-    media.find((item) => item.isCover) ??
-    null;
+  const coverMedia = findCoverMedia(media, row.cover_media_id);
 
   return {
     ...summary,
@@ -490,9 +495,12 @@ function toPublicContentDetail(detail: ContentDetail): ContentDetail {
   const media = detail.media.filter(
     (item) => item.storyUpdateId === null || publicUpdateIds.has(item.storyUpdateId),
   );
+  const coverMedia = findCoverMedia(media, detail.coverMediaId);
 
   return {
     ...detail,
+    coverMediaId: coverMedia?.id ?? null,
+    coverImageUrl: coverMedia?.url ?? null,
     storyProfile: detail.storyProfile
       ? {
           ...detail.storyProfile,
