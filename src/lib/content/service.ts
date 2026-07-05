@@ -25,7 +25,6 @@ import type {
 type ContentSearch = z.infer<typeof contentSearchSchema>;
 type PublicContentSearch = z.infer<typeof publicContentSearchSchema>;
 type ContentInput = z.infer<typeof contentInputSchema>;
-type SocialCopyGenerateInput = z.infer<typeof socialCopyGenerateSchema>;
 type SocialCopyStatusInput = z.infer<typeof socialCopyStatusSchema>;
 type NotificationDraftStatusInput = z.infer<typeof notificationDraftStatusSchema>;
 
@@ -124,17 +123,6 @@ function timestamp(now: () => Date) {
   return now().toISOString();
 }
 
-function parseSocialCopyGenerateInput(raw: unknown): SocialCopyGenerateInput {
-  const result = socialCopyGenerateSchema.safeParse(raw);
-  if (result.success) return result.data;
-
-  const input = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
-  const parsed = socialCopyGenerateSchema.parse({ ...input, storyUpdateId: null });
-  const storyUpdateId = typeof input.storyUpdateId === "string" ? input.storyUpdateId : null;
-
-  return { ...parsed, storyUpdateId };
-}
-
 export function createContentService({
   repo,
   now = () => new Date(),
@@ -227,7 +215,7 @@ export function createContentService({
 
     async generateSocialCopy({ actorUserId, contentId, input }: GenerateSocialCopyArgs) {
       void actorUserId;
-      const parsed = parseSocialCopyGenerateInput(input);
+      const parsed = socialCopyGenerateSchema.parse(input);
       const content = await repo.getAdminContent(contentId);
       if (!content) throw new Error("Content item not found");
 
