@@ -106,6 +106,10 @@ export const socialCopyGenerateSchema = z.object({
 });
 
 export type ContentSearch = z.infer<typeof contentSearchSchema>;
+export type PublicContentSearch = z.infer<typeof publicContentSearchSchema>;
 export type ContentInput = z.infer<typeof contentInputSchema>;
 export type StoryProfileInput = z.infer<typeof storyProfileInputSchema>;
 export type StoryUpdateInput = z.infer<typeof storyUpdateInputSchema>;
+export type SocialCopyStatusInput = z.infer<typeof socialCopyStatusSchema>;
+export type NotificationDraftStatusInput = z.infer<typeof notificationDraftStatusSchema>;
+export type SocialCopyGenerateInput = z.infer<typeof socialCopyGenerateSchema>;
