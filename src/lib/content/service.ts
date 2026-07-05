@@ -222,6 +222,11 @@ export function createContentService({
       const storyUpdate = parsed.storyUpdateId
         ? await repo.getStoryUpdate(parsed.storyUpdateId)
         : null;
+      if (parsed.storyUpdateId && !storyUpdate) throw new Error("Story update not found");
+      if (storyUpdate && storyUpdate.contentItemId !== content.id) {
+        throw new Error("Story update does not belong to this content item");
+      }
+
       const publicUrl = publicStoryUrl(publicBaseUrl, content.slug);
       const variants = generateSocialCopyVariants({ content, storyUpdate, publicUrl }).filter(
         (variant) => !parsed.platform || variant.platform === parsed.platform,

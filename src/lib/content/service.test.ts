@@ -3,6 +3,7 @@ import { createContentService, type ContentRepository } from "./service";
 import type { ContentDetail } from "./types";
 
 const storyUpdateId = "22222222-2222-4333-8444-555555555555";
+const missingStoryUpdateId = "33333333-3333-4333-8444-555555555555";
 
 const detail: ContentDetail = {
   id: "content-1",
@@ -172,5 +173,45 @@ describe("createContentService", () => {
         input: { storyUpdateId: "update-1" },
       }),
     ).rejects.toThrow();
+  });
+
+  test("rejects social copy generation when story update is not found", async () => {
+    const { repo } = createRepo();
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await expect(
+      service.generateSocialCopy({
+        actorUserId: "admin-user",
+        contentId: "content-1",
+        input: { storyUpdateId: missingStoryUpdateId },
+      }),
+    ).rejects.toThrow("Story update not found");
+  });
+
+  test("rejects social copy generation for another content item's update", async () => {
+    const { repo } = createRepo({
+      getStoryUpdate: async () => ({
+        id: storyUpdateId,
+        contentItemId: "content-2",
+        kind: "medical",
+        title: "已完成疫苗接種",
+        body: "小白現於暫養家庭康復中。",
+        occurredAt: "2026-07-05T10:00:00.000Z",
+        visibility: "public",
+        shouldGenerateAdopterDrafts: true,
+        media: [],
+        createdAt: "2026-07-05T10:00:00.000Z",
+        updatedAt: "2026-07-05T10:00:00.000Z",
+      }),
+    });
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await expect(
+      service.generateSocialCopy({
+        actorUserId: "admin-user",
+        contentId: "content-1",
+        input: { storyUpdateId },
+      }),
+    ).rejects.toThrow("Story update does not belong to this content item");
   });
 });
