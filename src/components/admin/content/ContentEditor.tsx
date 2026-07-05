@@ -1,14 +1,21 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { Archive, ArrowLeft, RefreshCw, Save, Send } from "lucide-react";
+import { Archive, ArrowLeft, Plus, RefreshCw, Save, Send } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import type {
+  AnimalStoryType,
+  ContentLinkRelationship,
+  ContentLinkType,
   ContentDetail,
+  ContentMedia,
   ContentStatus,
   ContentType,
   NotificationDraftStatus,
   PublishValidationIssue,
+  RescuePublicStatus,
   SocialCopyStatus,
+  StoryUpdateKind,
+  StoryUpdateVisibility,
 } from "../../../lib/content/types";
 import { fetchAdminJson, getAdminAccessToken } from "../../../lib/admin/http";
 import { StatusPill, type StatusTone } from "../StatusBadge";
@@ -24,6 +31,7 @@ import { SocialCopyPanel } from "./SocialCopyPanel";
 
 type ContentEditorProps = {
   contentId: string;
+  initialContent?: ContentDetail;
 };
 
 type ContentDetailResponse = {
@@ -36,13 +44,60 @@ const statusLabels: Record<ContentStatus, string> = {
   archived: "已封存",
 };
 
+const animalTypeLabels: Record<AnimalStoryType, string> = {
+  cat: "貓",
+  dog: "狗",
+  mixed: "貓狗",
+  unknown: "未分類",
+};
+
+const publicStatusLabels: Record<RescuePublicStatus, string> = {
+  rescued: "已救援",
+  medical_care: "醫療照護",
+  foster_recovery: "暫養康復",
+  ready_for_adoption: "準備領養",
+  adopted: "已領養",
+  sponsor_needed: "需要助養",
+  closed: "已完結",
+};
+
+const storyUpdateKindLabels: Record<StoryUpdateKind, string> = {
+  medical: "醫療",
+  care: "照顧",
+  photo: "相片",
+  foster: "寄養",
+  adoption: "領養",
+  general: "一般",
+};
+
+const storyUpdateVisibilityLabels: Record<StoryUpdateVisibility, string> = {
+  public: "公開",
+  internal: "內部",
+};
+
+const linkTypeLabels: Record<ContentLinkType, string> = {
+  animal: "動物",
+  adoption_case: "領養申請",
+  successful_adoption: "成功領養",
+  supporter: "支持者",
+  volunteer_activity: "義工活動",
+};
+
+const linkRelationshipLabels: Record<ContentLinkRelationship, string> = {
+  primary_subject: "主要主角",
+  related_case: "相關個案",
+  adopter: "領養人",
+  volunteer_context: "義工背景",
+  other: "其他",
+};
+
 const toneMap: Record<ReturnType<typeof contentStatusTone>, StatusTone> = {
   success: "success",
   warning: "warning",
   muted: "neutral",
 };
 
-export function ContentEditor({ contentId }: ContentEditorProps) {
+export function ContentEditor({ contentId, initialContent }: ContentEditorProps) {
   const queryClient = useQueryClient();
   const [validationIssues, setValidationIssues] = useState<PublishValidationIssue[]>([]);
   const [pendingCopyId, setPendingCopyId] = useState<string | null>(null);
@@ -52,6 +107,7 @@ export function ContentEditor({ contentId }: ContentEditorProps) {
   const contentQuery = useQuery({
     queryKey: ["admin-content-detail", contentId],
     queryFn: () => fetchAdminJson<ContentDetailResponse>(`/api/admin/content/${contentId}`),
+    initialData: initialContent ? { content: initialContent } : undefined,
   });
 
   const content = contentQuery.data?.content;
@@ -92,6 +148,51 @@ export function ContentEditor({ contentId }: ContentEditorProps) {
       void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] });
       void queryClient.invalidateQueries({ queryKey: ["admin-content"] });
     },
+  });
+
+  const upsertStoryProfile = useMutation({
+    mutationFn: (body: StoryProfileFormState) =>
+      fetchAdminJson<ContentDetailResponse>(`/api/admin/content/${contentId}/story-profile`, {
+        method: "PUT",
+        body: JSON.stringify(normalizeStoryProfileForm(body)),
+      }),
+    onSuccess: (data) => {
+      queryClient.setQueryData(["admin-content-detail", contentId], data);
+      void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] });
+      void queryClient.invalidateQueries({ queryKey: ["admin-content"] });
+    },
+  });
+
+  const createStoryUpdate = useMutation({
+    mutationFn: (body: StoryUpdateFormState) =>
+      fetchAdminJson<{ id: string }>(`/api/admin/content/${contentId}/updates`, {
+        method: "POST",
+        body: JSON.stringify(normalizeStoryUpdateForm(body)),
+      }),
+    onSuccess: () =>
+      void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] }),
+  });
+
+  const createContentMedia = useMutation({
+    mutationFn: (body: ContentMediaFormState) =>
+      fetchAdminJson<{ id: string }>(`/api/admin/content/${contentId}/media`, {
+        method: "POST",
+        body: JSON.stringify(normalizeContentMediaForm(body)),
+      }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] });
+      void queryClient.invalidateQueries({ queryKey: ["admin-content"] });
+    },
+  });
+
+  const createContentLink = useMutation({
+    mutationFn: (body: ContentLinkFormState) =>
+      fetchAdminJson<{ id: string }>(`/api/admin/content/${contentId}/links`, {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
+    onSuccess: () =>
+      void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] }),
   });
 
   const generateSocialCopy = useMutation({
@@ -147,6 +248,10 @@ export function ContentEditor({ contentId }: ContentEditorProps) {
     updateContent.isPending ||
     publishContent.isPending ||
     archiveContent.isPending ||
+    upsertStoryProfile.isPending ||
+    createStoryUpdate.isPending ||
+    createContentMedia.isPending ||
+    createContentLink.isPending ||
     generateSocialCopy.isPending ||
     updateCopyStatus.isPending ||
     generateNotificationDrafts.isPending ||
@@ -231,6 +336,10 @@ export function ContentEditor({ contentId }: ContentEditorProps) {
           updateContent.error,
           publishContent.error,
           archiveContent.error,
+          upsertStoryProfile.error,
+          createStoryUpdate.error,
+          createContentMedia.error,
+          createContentLink.error,
           generateSocialCopy.error,
           updateCopyStatus.error,
           generateNotificationDrafts.error,
@@ -244,20 +353,16 @@ export function ContentEditor({ contentId }: ContentEditorProps) {
         onSave={(form) => updateContent.mutateAsync(form).then(() => undefined)}
       />
 
-      <section className="grid gap-4 lg:grid-cols-2">
-        <LinkedRecords content={content} />
-        <StoryWallSettings content={content} />
-      </section>
-
-      <section className="space-y-3">
-        <h2 className="text-lg font-bold text-[var(--color-panel)]">故事更新</h2>
-        <ContentTimeline
-          updates={content.updates}
-          onGenerateDrafts={(updateId) => generateNotificationDrafts.mutate(updateId)}
-          generatingUpdateId={generatingUpdateId}
-          disabled={editorActionPending}
-        />
-      </section>
+      <ContentAuthoringPanels
+        content={content}
+        pending={editorActionPending}
+        generatingUpdateId={generatingUpdateId}
+        onCreateLink={(form) => createContentLink.mutateAsync(form).then(() => undefined)}
+        onSaveStoryProfile={(form) => upsertStoryProfile.mutateAsync(form).then(() => undefined)}
+        onCreateStoryUpdate={(form) => createStoryUpdate.mutateAsync(form).then(() => undefined)}
+        onGenerateDrafts={(updateId) => generateNotificationDrafts.mutate(updateId)}
+        onCreateMedia={(form) => createContentMedia.mutateAsync(form).then(() => undefined)}
+      />
 
       <SocialCopyPanel
         copies={content.socialCopies}
@@ -294,6 +399,89 @@ type ContentFormState = {
   ogTitle: string;
   ogDescription: string;
 };
+
+type StoryProfileFormState = {
+  animalType: AnimalStoryType;
+  publicStatus: RescuePublicStatus;
+  rescueRegion: string;
+  rescueDate: string;
+  showOnMap: boolean;
+  publicMapLabel: string;
+  publicLat: string;
+  publicLng: string;
+  internalAddress: string;
+  internalLocationNotes: string;
+  isFeatured: boolean;
+};
+
+type StoryUpdateFormState = {
+  kind: StoryUpdateKind;
+  title: string;
+  body: string;
+  occurredAt: string;
+  visibility: StoryUpdateVisibility;
+  shouldGenerateAdopterDrafts: boolean;
+};
+
+type ContentMediaFormState = {
+  storyUpdateId: string;
+  storageBucket: string;
+  storagePath: string;
+  altText: string;
+  caption: string;
+  sortOrder: string;
+  isCover: boolean;
+};
+
+type ContentLinkFormState = {
+  linkedType: ContentLinkType;
+  linkedId: string;
+  relationship: ContentLinkRelationship;
+};
+
+type ContentAuthoringPanelsProps = {
+  content: ContentDetail;
+  pending: boolean;
+  generatingUpdateId?: string | null;
+  onCreateLink: (form: ContentLinkFormState) => Promise<void>;
+  onSaveStoryProfile: (form: StoryProfileFormState) => Promise<void>;
+  onCreateStoryUpdate: (form: StoryUpdateFormState) => Promise<void>;
+  onGenerateDrafts?: (updateId: string) => void;
+  onCreateMedia: (form: ContentMediaFormState) => Promise<void>;
+};
+
+export function ContentAuthoringPanels({
+  content,
+  pending,
+  generatingUpdateId,
+  onCreateLink,
+  onSaveStoryProfile,
+  onCreateStoryUpdate,
+  onGenerateDrafts,
+  onCreateMedia,
+}: ContentAuthoringPanelsProps) {
+  return (
+    <>
+      <section className="grid gap-4 lg:grid-cols-2">
+        <LinkedRecords content={content} pending={pending} onCreate={onCreateLink} />
+        <StoryWallSettings content={content} pending={pending} onSave={onSaveStoryProfile} />
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-lg font-bold text-[var(--color-panel)]">故事更新</h2>
+        <StoryUpdateCreateForm pending={pending} onCreate={onCreateStoryUpdate} />
+        <ContentTimeline
+          updates={content.updates}
+          onGenerateDrafts={onGenerateDrafts}
+          generatingUpdateId={generatingUpdateId}
+          disabled={pending}
+        />
+      </section>
+
+      <ContentMediaPanel content={content} pending={pending} onCreate={onCreateMedia} />
+    </>
+  );
+}
 
 function ContentEditorForm({
   content,
@@ -484,10 +672,103 @@ function ContentEditorForm({
   );
 }
 
-function LinkedRecords({ content }: { content: ContentDetail }) {
+function LinkedRecords({
+  content,
+  pending,
+  onCreate,
+}: {
+  content: ContentDetail;
+  pending: boolean;
+  onCreate: (form: ContentLinkFormState) => Promise<void>;
+}) {
+  const [form, setForm] = useState<ContentLinkFormState>({
+    linkedType: "adoption_case",
+    linkedId: "",
+    relationship: "adopter",
+  });
+
   return (
     <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
       <h2 className="text-lg font-bold text-[var(--color-panel)]">關聯紀錄</h2>
+      <form
+        className="mt-3 grid gap-3 md:grid-cols-[1fr_1.2fr_1fr_auto]"
+        onSubmit={async (event) => {
+          event.preventDefault();
+          await onCreate(form);
+          setForm({ linkedType: "adoption_case", linkedId: "", relationship: "adopter" });
+        }}
+      >
+        <Field label="類型">
+          <select
+            value={form.linkedType}
+            onChange={(event) =>
+              setForm((current) => ({
+                ...current,
+                linkedType: event.target.value as ContentLinkType,
+              }))
+            }
+            className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+          >
+            {(
+              [
+                "animal",
+                "adoption_case",
+                "successful_adoption",
+                "supporter",
+                "volunteer_activity",
+              ] as ContentLinkType[]
+            ).map((linkedType) => (
+              <option key={linkedType} value={linkedType}>
+                {linkTypeLabels[linkedType]}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label="紀錄 ID">
+          <input
+            required
+            value={form.linkedId}
+            onChange={(event) =>
+              setForm((current) => ({ ...current, linkedId: event.target.value }))
+            }
+            className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+          />
+        </Field>
+        <Field label="關係">
+          <select
+            value={form.relationship}
+            onChange={(event) =>
+              setForm((current) => ({
+                ...current,
+                relationship: event.target.value as ContentLinkRelationship,
+              }))
+            }
+            className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+          >
+            {(
+              [
+                "primary_subject",
+                "related_case",
+                "adopter",
+                "volunteer_context",
+                "other",
+              ] as ContentLinkRelationship[]
+            ).map((relationship) => (
+              <option key={relationship} value={relationship}>
+                {linkRelationshipLabels[relationship]}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <button
+          type="submit"
+          disabled={pending}
+          className="mt-6 inline-flex items-center justify-center gap-2 rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-bold text-[var(--color-primary-foreground)] disabled:opacity-60"
+        >
+          <Plus className="h-4 w-4" />
+          新增關聯紀錄
+        </button>
+      </form>
       <div className="mt-3 space-y-2">
         {content.links.length === 0 ? (
           <p className="text-sm text-[var(--color-text-muted)]">未連結任何紀錄。</p>
@@ -501,7 +782,7 @@ function LinkedRecords({ content }: { content: ContentDetail }) {
                 {link.label ?? link.linkedId}
               </p>
               <p className="text-xs text-[var(--color-text-muted)]">
-                {link.linkedType} · {link.relationship}
+                {linkTypeLabels[link.linkedType]} · {linkRelationshipLabels[link.relationship]}
               </p>
             </div>
           ))
@@ -511,25 +792,469 @@ function LinkedRecords({ content }: { content: ContentDetail }) {
   );
 }
 
-function StoryWallSettings({ content }: { content: ContentDetail }) {
-  const profile = content.storyProfile;
+function StoryWallSettings({
+  content,
+  pending,
+  onSave,
+}: {
+  content: ContentDetail;
+  pending: boolean;
+  onSave: (form: StoryProfileFormState) => Promise<void>;
+}) {
+  const initialForm = useMemo(() => storyProfileFormFromContent(content), [content]);
+  const [form, setForm] = useState(initialForm);
+
+  useEffect(() => {
+    setForm(initialForm);
+  }, [initialForm]);
+
+  if (content.type !== "rescue_story") {
+    return (
+      <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+        <h2 className="text-lg font-bold text-[var(--color-panel)]">故事牆設定</h2>
+        <p className="mt-3 text-sm text-[var(--color-text-muted)]">只有救援故事需要故事牆設定。</p>
+      </section>
+    );
+  }
 
   return (
     <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
       <h2 className="text-lg font-bold text-[var(--color-panel)]">故事牆設定</h2>
-      {profile ? (
-        <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-2">
-          <Info label="動物" value={profile.animalType} />
-          <Info label="公開狀態" value={profile.publicStatus} />
-          <Info label="救援地區" value={profile.rescueRegion} />
-          <Info label="地圖顯示" value={profile.showOnMap ? "顯示" : "不顯示"} />
-          <Info label="精選" value={profile.isFeatured ? "是" : "否"} />
-          <Info label="地圖標籤" value={profile.publicMapLabel ?? "未設定"} />
-        </dl>
-      ) : (
-        <p className="mt-3 text-sm text-[var(--color-text-muted)]">此內容未設定救援故事資料。</p>
-      )}
+      <form
+        className="mt-3 space-y-3"
+        onSubmit={async (event) => {
+          event.preventDefault();
+          await onSave(form);
+        }}
+      >
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="動物">
+            <select
+              value={form.animalType}
+              onChange={(event) =>
+                setForm((current) => ({
+                  ...current,
+                  animalType: event.target.value as AnimalStoryType,
+                }))
+              }
+              className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+            >
+              {(["cat", "dog", "mixed", "unknown"] as AnimalStoryType[]).map((animalType) => (
+                <option key={animalType} value={animalType}>
+                  {animalTypeLabels[animalType]}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="公開狀態">
+            <select
+              value={form.publicStatus}
+              onChange={(event) =>
+                setForm((current) => ({
+                  ...current,
+                  publicStatus: event.target.value as RescuePublicStatus,
+                }))
+              }
+              className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+            >
+              {(
+                [
+                  "rescued",
+                  "medical_care",
+                  "foster_recovery",
+                  "ready_for_adoption",
+                  "adopted",
+                  "sponsor_needed",
+                  "closed",
+                ] as RescuePublicStatus[]
+              ).map((publicStatus) => (
+                <option key={publicStatus} value={publicStatus}>
+                  {publicStatusLabels[publicStatus]}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="救援地區">
+            <input
+              required
+              value={form.rescueRegion}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, rescueRegion: event.target.value }))
+              }
+              className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+            />
+          </Field>
+          <Field label="救援日期">
+            <input
+              type="date"
+              value={form.rescueDate}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, rescueDate: event.target.value }))
+              }
+              className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+            />
+          </Field>
+          <Field label="地圖標籤">
+            <input
+              value={form.publicMapLabel}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, publicMapLabel: event.target.value }))
+              }
+              className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+            />
+          </Field>
+          <Field label="公開緯度">
+            <input
+              inputMode="decimal"
+              value={form.publicLat}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, publicLat: event.target.value }))
+              }
+              className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+            />
+          </Field>
+          <Field label="公開經度">
+            <input
+              inputMode="decimal"
+              value={form.publicLng}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, publicLng: event.target.value }))
+              }
+              className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+            />
+          </Field>
+          <Field label="內部地址">
+            <input
+              value={form.internalAddress}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, internalAddress: event.target.value }))
+              }
+              className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+            />
+          </Field>
+        </div>
+        <Field label="內部位置備註">
+          <textarea
+            rows={2}
+            value={form.internalLocationNotes}
+            onChange={(event) =>
+              setForm((current) => ({ ...current, internalLocationNotes: event.target.value }))
+            }
+            className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+          />
+        </Field>
+        <div className="flex flex-wrap items-center gap-4 text-sm font-semibold text-[var(--color-panel)]">
+          <label className="inline-flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={form.showOnMap}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, showOnMap: event.target.checked }))
+              }
+            />
+            顯示於公開地圖
+          </label>
+          <label className="inline-flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={form.isFeatured}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, isFeatured: event.target.checked }))
+              }
+            />
+            精選故事
+          </label>
+        </div>
+        <button
+          type="submit"
+          disabled={pending}
+          className="inline-flex items-center gap-2 rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-bold text-[var(--color-primary-foreground)] disabled:opacity-60"
+        >
+          <Save className="h-4 w-4" />
+          儲存故事設定
+        </button>
+      </form>
     </section>
+  );
+}
+
+function StoryUpdateCreateForm({
+  pending,
+  onCreate,
+}: {
+  pending: boolean;
+  onCreate: (form: StoryUpdateFormState) => Promise<void>;
+}) {
+  const [form, setForm] = useState<StoryUpdateFormState>({
+    kind: "general",
+    title: "",
+    body: "",
+    occurredAt: "",
+    visibility: "public",
+    shouldGenerateAdopterDrafts: false,
+  });
+
+  return (
+    <form
+      className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4"
+      onSubmit={async (event) => {
+        event.preventDefault();
+        await onCreate(form);
+        setForm({
+          kind: "general",
+          title: "",
+          body: "",
+          occurredAt: "",
+          visibility: "public",
+          shouldGenerateAdopterDrafts: false,
+        });
+      }}
+    >
+      <div className="grid gap-3 md:grid-cols-[1fr_1.4fr_1fr_1fr]">
+        <Field label="類型">
+          <select
+            value={form.kind}
+            onChange={(event) =>
+              setForm((current) => ({ ...current, kind: event.target.value as StoryUpdateKind }))
+            }
+            className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+          >
+            {(
+              ["medical", "care", "photo", "foster", "adoption", "general"] as StoryUpdateKind[]
+            ).map((kind) => (
+              <option key={kind} value={kind}>
+                {storyUpdateKindLabels[kind]}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label="標題">
+          <input
+            required
+            value={form.title}
+            onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
+            className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+          />
+        </Field>
+        <Field label="發生時間">
+          <input
+            required
+            type="datetime-local"
+            value={form.occurredAt}
+            onChange={(event) =>
+              setForm((current) => ({ ...current, occurredAt: event.target.value }))
+            }
+            className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+          />
+        </Field>
+        <Field label="可見度">
+          <select
+            value={form.visibility}
+            onChange={(event) =>
+              setForm((current) => ({
+                ...current,
+                visibility: event.target.value as StoryUpdateVisibility,
+              }))
+            }
+            className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+          >
+            {(["public", "internal"] as StoryUpdateVisibility[]).map((visibility) => (
+              <option key={visibility} value={visibility}>
+                {storyUpdateVisibilityLabels[visibility]}
+              </option>
+            ))}
+          </select>
+        </Field>
+      </div>
+      <Field label="內容">
+        <textarea
+          rows={3}
+          value={form.body}
+          onChange={(event) => setForm((current) => ({ ...current, body: event.target.value }))}
+          className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+        />
+      </Field>
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+        <label className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-panel)]">
+          <input
+            type="checkbox"
+            checked={form.shouldGenerateAdopterDrafts}
+            onChange={(event) =>
+              setForm((current) => ({
+                ...current,
+                shouldGenerateAdopterDrafts: event.target.checked,
+              }))
+            }
+          />
+          發佈後可產生領養人通知草稿
+        </label>
+        <button
+          type="submit"
+          disabled={pending}
+          className="inline-flex items-center gap-2 rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-bold text-[var(--color-primary-foreground)] disabled:opacity-60"
+        >
+          <Plus className="h-4 w-4" />
+          新增故事更新
+        </button>
+      </div>
+    </form>
+  );
+}
+
+function ContentMediaPanel({
+  content,
+  pending,
+  onCreate,
+}: {
+  content: ContentDetail;
+  pending: boolean;
+  onCreate: (form: ContentMediaFormState) => Promise<void>;
+}) {
+  const [form, setForm] = useState<ContentMediaFormState>({
+    storyUpdateId: "",
+    storageBucket: "content-media",
+    storagePath: "",
+    altText: "",
+    caption: "",
+    sortOrder: "0",
+    isCover: false,
+  });
+
+  return (
+    <section className="space-y-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+      <div>
+        <h2 className="text-lg font-bold text-[var(--color-panel)]">媒體與相片</h2>
+        <p className="text-sm text-[var(--color-text-muted)]">
+          使用 Supabase Storage 路徑新增封面或故事更新相片。
+        </p>
+      </div>
+      <form
+        className="grid gap-3 md:grid-cols-3"
+        onSubmit={async (event) => {
+          event.preventDefault();
+          await onCreate(form);
+          setForm({
+            storyUpdateId: "",
+            storageBucket: "content-media",
+            storagePath: "",
+            altText: "",
+            caption: "",
+            sortOrder: "0",
+            isCover: false,
+          });
+        }}
+      >
+        <Field label="Storage bucket">
+          <input
+            required
+            value={form.storageBucket}
+            onChange={(event) =>
+              setForm((current) => ({ ...current, storageBucket: event.target.value }))
+            }
+            className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+          />
+        </Field>
+        <Field label="Storage path">
+          <input
+            required
+            value={form.storagePath}
+            onChange={(event) =>
+              setForm((current) => ({ ...current, storagePath: event.target.value }))
+            }
+            className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+          />
+        </Field>
+        <Field label="關聯更新">
+          <select
+            value={form.storyUpdateId}
+            onChange={(event) =>
+              setForm((current) => ({ ...current, storyUpdateId: event.target.value }))
+            }
+            className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+          >
+            <option value="">整篇內容</option>
+            {content.updates.map((update) => (
+              <option key={update.id} value={update.id}>
+                {update.title}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Alt text">
+          <input
+            required
+            value={form.altText}
+            onChange={(event) =>
+              setForm((current) => ({ ...current, altText: event.target.value }))
+            }
+            className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+          />
+        </Field>
+        <Field label="說明">
+          <input
+            value={form.caption}
+            onChange={(event) =>
+              setForm((current) => ({ ...current, caption: event.target.value }))
+            }
+            className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+          />
+        </Field>
+        <Field label="排序">
+          <input
+            inputMode="numeric"
+            value={form.sortOrder}
+            onChange={(event) =>
+              setForm((current) => ({ ...current, sortOrder: event.target.value }))
+            }
+            className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+          />
+        </Field>
+        <label className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-panel)] md:col-span-2">
+          <input
+            type="checkbox"
+            checked={form.isCover}
+            onChange={(event) =>
+              setForm((current) => ({ ...current, isCover: event.target.checked }))
+            }
+          />
+          設為封面
+        </label>
+        <button
+          type="submit"
+          disabled={pending}
+          className="inline-flex items-center justify-center gap-2 rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-bold text-[var(--color-primary-foreground)] disabled:opacity-60"
+        >
+          <Plus className="h-4 w-4" />
+          新增媒體
+        </button>
+      </form>
+      <div className="grid gap-3 md:grid-cols-3">
+        {content.media.length === 0 ? (
+          <p className="text-sm text-[var(--color-text-muted)]">尚未有媒體。</p>
+        ) : (
+          content.media.map((item) => <MediaCard key={item.id} item={item} />)
+        )}
+      </div>
+    </section>
+  );
+}
+
+function MediaCard({ item }: { item: ContentMedia }) {
+  return (
+    <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-background)] p-3 text-sm">
+      {item.url ? (
+        <img
+          src={item.url}
+          alt={item.altText}
+          className="mb-2 aspect-[16/9] w-full rounded-md object-cover"
+        />
+      ) : null}
+      <p className="font-semibold text-[var(--color-panel)]">{item.altText}</p>
+      <p className="break-all text-xs text-[var(--color-text-muted)]">{item.storagePath}</p>
+      {item.isCover ? (
+        <p className="mt-1 text-xs font-semibold text-[var(--color-primary)]">封面</p>
+      ) : null}
+    </div>
   );
 }
 
@@ -573,15 +1298,6 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
-function Info({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <dt className="text-xs font-semibold text-[var(--color-text-muted)]">{label}</dt>
-      <dd className="mt-1 font-semibold text-[var(--color-panel)]">{value}</dd>
-    </div>
-  );
-}
-
 function formFromContent(content: ContentDetail): ContentFormState {
   return {
     type: content.type,
@@ -616,9 +1332,66 @@ function normalizeForm(form: ContentFormState) {
   };
 }
 
+function storyProfileFormFromContent(content: ContentDetail): StoryProfileFormState {
+  const profile = content.storyProfile;
+  return {
+    animalType: profile?.animalType ?? "unknown",
+    publicStatus: profile?.publicStatus ?? "rescued",
+    rescueRegion: profile?.rescueRegion ?? "",
+    rescueDate: profile?.rescueDate ?? "",
+    showOnMap: profile?.showOnMap ?? false,
+    publicMapLabel: profile?.publicMapLabel ?? "",
+    publicLat:
+      profile?.publicLat === null || profile?.publicLat === undefined
+        ? ""
+        : String(profile.publicLat),
+    publicLng:
+      profile?.publicLng === null || profile?.publicLng === undefined
+        ? ""
+        : String(profile.publicLng),
+    internalAddress: profile?.internalAddress ?? "",
+    internalLocationNotes: profile?.internalLocationNotes ?? "",
+    isFeatured: profile?.isFeatured ?? false,
+  };
+}
+
+function normalizeStoryProfileForm(form: StoryProfileFormState) {
+  return {
+    ...form,
+    rescueDate: emptyToNull(form.rescueDate),
+    publicMapLabel: emptyToNull(form.publicMapLabel),
+    publicLat: nullableNumber(form.publicLat),
+    publicLng: nullableNumber(form.publicLng),
+    internalAddress: emptyToNull(form.internalAddress),
+    internalLocationNotes: emptyToNull(form.internalLocationNotes),
+  };
+}
+
+function normalizeStoryUpdateForm(form: StoryUpdateFormState) {
+  return {
+    ...form,
+    body: emptyToNull(form.body),
+    occurredAt: parseDatetimeLocalToIso(form.occurredAt),
+  };
+}
+
+function normalizeContentMediaForm(form: ContentMediaFormState) {
+  return {
+    ...form,
+    storyUpdateId: emptyToNull(form.storyUpdateId),
+    caption: emptyToNull(form.caption),
+    sortOrder: Number(form.sortOrder || 0),
+  };
+}
+
 function emptyToNull(value: string) {
   const trimmed = value.trim();
   return trimmed ? trimmed : null;
+}
+
+function nullableNumber(value: string) {
+  const trimmed = value.trim();
+  return trimmed ? Number(trimmed) : null;
 }
 
 class PublishValidationError extends Error {

@@ -100,6 +100,9 @@ async function withContentErrors(operation: () => Promise<Response>, publicReque
       if (message === "Story update does not belong to this content item") {
         return jsonResponse({ error: message }, { status: 400 });
       }
+      if (message === "Internal story updates cannot generate outbound content") {
+        return jsonResponse({ error: message }, { status: 400 });
+      }
       if (isSingleRowMissingError(error)) {
         return jsonResponse({ error: "Content resource not found" }, { status: 404 });
       }
@@ -183,6 +186,61 @@ export function createContentHandlers({ requireContentAdmin, service }: CreateCo
             input: await jsonBody(request),
           }),
         });
+      });
+    },
+
+    upsertStoryProfile({ request, params }: HandlerContext) {
+      return withContentErrors(async () => {
+        const admin = await requireContentAdmin(request);
+        return jsonResponse({
+          content: await service.upsertStoryProfile({
+            actorUserId: admin.authUserId,
+            contentId: requiredId(params),
+            input: await jsonBody(request),
+          }),
+        });
+      });
+    },
+
+    createStoryUpdate({ request, params }: HandlerContext) {
+      return withContentErrors(async () => {
+        const admin = await requireContentAdmin(request);
+        return jsonResponse(
+          await service.createStoryUpdate({
+            actorUserId: admin.authUserId,
+            contentId: requiredId(params),
+            input: await jsonBody(request),
+          }),
+          { status: 201 },
+        );
+      });
+    },
+
+    createContentMedia({ request, params }: HandlerContext) {
+      return withContentErrors(async () => {
+        const admin = await requireContentAdmin(request);
+        return jsonResponse(
+          await service.createContentMedia({
+            actorUserId: admin.authUserId,
+            contentId: requiredId(params),
+            input: await jsonBody(request),
+          }),
+          { status: 201 },
+        );
+      });
+    },
+
+    createContentLink({ request, params }: HandlerContext) {
+      return withContentErrors(async () => {
+        const admin = await requireContentAdmin(request);
+        return jsonResponse(
+          await service.createContentLink({
+            actorUserId: admin.authUserId,
+            contentId: requiredId(params),
+            input: await jsonBody(request),
+          }),
+          { status: 201 },
+        );
       });
     },
 

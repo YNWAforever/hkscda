@@ -1,6 +1,8 @@
 import { z } from "zod";
 import {
   animalStoryTypes,
+  contentLinkRelationships,
+  contentLinkTypes,
   contentStatuses,
   contentTypes,
   notificationDraftStatuses,
@@ -20,6 +22,24 @@ const optionalTrimmed = z
     const next = value?.trim();
     return next ? next : null;
   });
+
+export function isSafePublicHref(value: string | null | undefined) {
+  const next = value?.trim();
+  if (!next) return false;
+  if (next.startsWith("/") && !next.startsWith("//")) return true;
+
+  try {
+    const url = new URL(next);
+    return url.protocol === "https:" || url.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
+const optionalSafePublicHref = optionalTrimmed.refine(
+  (value) => value === null || isSafePublicHref(value),
+  "CTA URL must be an http(s) URL or a root-relative path",
+);
 
 function numberFromInput(schema: z.ZodNumber) {
   return z.preprocess((value) => {
@@ -62,7 +82,7 @@ export const contentInputSchema = z.object({
   status: z.enum(contentStatuses).default("draft"),
   publishedAt: z.string().datetime().nullable().optional().default(null),
   ctaLabel: optionalTrimmed,
-  ctaUrl: optionalTrimmed,
+  ctaUrl: optionalSafePublicHref,
   seoTitle: optionalTrimmed,
   seoDescription: optionalTrimmed,
   ogTitle: optionalTrimmed,
@@ -92,6 +112,22 @@ export const storyUpdateInputSchema = z.object({
   shouldGenerateAdopterDrafts: z.boolean().default(false),
 });
 
+export const contentMediaInputSchema = z.object({
+  storyUpdateId: z.string().uuid().nullable().optional().default(null),
+  storageBucket: trimmed.min(1).max(120).default("content-media"),
+  storagePath: trimmed.min(1).max(400),
+  altText: trimmed.min(1).max(180),
+  caption: optionalTrimmed,
+  sortOrder: numberFromInput(z.number().int().min(0)).optional().default(0),
+  isCover: z.boolean().default(false),
+});
+
+export const contentLinkInputSchema = z.object({
+  linkedType: z.enum(contentLinkTypes),
+  linkedId: z.string().uuid(),
+  relationship: z.enum(contentLinkRelationships).default("other"),
+});
+
 export const socialCopyStatusSchema = z.object({
   status: z.enum(socialCopyStatuses),
 });
@@ -110,6 +146,8 @@ export type PublicContentSearch = z.infer<typeof publicContentSearchSchema>;
 export type ContentInput = z.infer<typeof contentInputSchema>;
 export type StoryProfileInput = z.infer<typeof storyProfileInputSchema>;
 export type StoryUpdateInput = z.infer<typeof storyUpdateInputSchema>;
+export type ContentMediaInput = z.infer<typeof contentMediaInputSchema>;
+export type ContentLinkInput = z.infer<typeof contentLinkInputSchema>;
 export type SocialCopyStatusInput = z.infer<typeof socialCopyStatusSchema>;
 export type NotificationDraftStatusInput = z.infer<typeof notificationDraftStatusSchema>;
 export type SocialCopyGenerateInput = z.infer<typeof socialCopyGenerateSchema>;

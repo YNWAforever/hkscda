@@ -19,6 +19,20 @@ export const storyUpdateKinds = [
   "general",
 ] as const;
 export const storyUpdateVisibilities = ["public", "internal"] as const;
+export const contentLinkTypes = [
+  "animal",
+  "adoption_case",
+  "successful_adoption",
+  "supporter",
+  "volunteer_activity",
+] as const;
+export const contentLinkRelationships = [
+  "primary_subject",
+  "related_case",
+  "adopter",
+  "volunteer_context",
+  "other",
+] as const;
 export const socialPlatforms = ["facebook", "instagram", "whatsapp"] as const;
 export const socialCopyStatuses = ["draft", "copied", "archived"] as const;
 export const notificationDraftStatuses = ["draft", "copied", "sent_manually", "dismissed"] as const;
@@ -29,6 +43,8 @@ export type AnimalStoryType = (typeof animalStoryTypes)[number];
 export type RescuePublicStatus = (typeof rescuePublicStatuses)[number];
 export type StoryUpdateKind = (typeof storyUpdateKinds)[number];
 export type StoryUpdateVisibility = (typeof storyUpdateVisibilities)[number];
+export type ContentLinkType = (typeof contentLinkTypes)[number];
+export type ContentLinkRelationship = (typeof contentLinkRelationships)[number];
 export type SocialPlatform = (typeof socialPlatforms)[number];
 export type SocialCopyStatus = (typeof socialCopyStatuses)[number];
 export type NotificationDraftStatus = (typeof notificationDraftStatuses)[number];
@@ -36,14 +52,9 @@ export type NotificationDraftStatus = (typeof notificationDraftStatuses)[number]
 export type ContentLink = {
   id: string;
   contentItemId: string;
-  linkedType:
-    | "animal"
-    | "adoption_case"
-    | "successful_adoption"
-    | "supporter"
-    | "volunteer_activity";
+  linkedType: ContentLinkType;
   linkedId: string;
-  relationship: "primary_subject" | "related_case" | "adopter" | "volunteer_context" | "other";
+  relationship: ContentLinkRelationship;
   label?: string | null;
   createdAt: string;
   updatedAt: string;

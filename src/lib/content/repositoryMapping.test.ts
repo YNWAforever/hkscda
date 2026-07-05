@@ -2,8 +2,12 @@ import { describe, expect, test } from "bun:test";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   createSupabaseContentRepository,
+  toContentLinkInsert,
+  toContentMediaInsert,
   toContentSummary,
   toPublicContentDetail,
+  toStoryProfileUpsert,
+  toStoryUpdateInsert,
   toStoryUpdate,
 } from "./repository.server";
 import type { ContentDetail, ContentMedia, StoryUpdate } from "./types";
@@ -125,6 +129,74 @@ describe("content repository mapping", () => {
       kind: "medical",
       shouldGenerateAdopterDrafts: true,
       media,
+    });
+  });
+
+  test("maps admin authoring inputs to Supabase insert payloads", () => {
+    expect(
+      toStoryProfileUpsert("content-1", {
+        animalType: "cat",
+        publicStatus: "medical_care",
+        rescueRegion: "灣仔",
+        rescueDate: "2026-07-01",
+        showOnMap: true,
+        publicMapLabel: "灣仔區",
+        publicLat: 22.277,
+        publicLng: 114.173,
+        internalAddress: "internal address",
+        internalLocationNotes: "internal notes",
+        isFeatured: true,
+      }),
+    ).toMatchObject({
+      content_item_id: "content-1",
+      animal_type: "cat",
+      public_status: "medical_care",
+      rescue_region: "灣仔",
+      public_map_label: "灣仔區",
+      internal_address: "internal address",
+    });
+    expect(
+      toStoryUpdateInsert("content-1", {
+        kind: "medical",
+        title: "覆診完成",
+        body: "小白情況穩定。",
+        occurredAt: "2026-07-05T10:00:00.000Z",
+        visibility: "public",
+        shouldGenerateAdopterDrafts: true,
+      }),
+    ).toMatchObject({
+      content_item_id: "content-1",
+      occurred_at: "2026-07-05T10:00:00.000Z",
+      should_generate_adopter_drafts: true,
+    });
+    expect(
+      toContentMediaInsert("content-1", {
+        storyUpdateId: "22222222-2222-4333-8444-555555555555",
+        storageBucket: "content-media",
+        storagePath: "stories/siu-bak/checkup.jpg",
+        altText: "小白覆診照片",
+        caption: "覆診完成",
+        sortOrder: 1,
+        isCover: true,
+      }),
+    ).toMatchObject({
+      content_item_id: "content-1",
+      story_update_id: "22222222-2222-4333-8444-555555555555",
+      storage_path: "stories/siu-bak/checkup.jpg",
+      alt_text: "小白覆診照片",
+      is_cover: true,
+    });
+    expect(
+      toContentLinkInsert("content-1", {
+        linkedType: "adoption_case",
+        linkedId: "44444444-4444-4333-8444-555555555555",
+        relationship: "adopter",
+      }),
+    ).toEqual({
+      content_item_id: "content-1",
+      linked_type: "adoption_case",
+      linked_id: "44444444-4444-4333-8444-555555555555",
+      relationship: "adopter",
     });
   });
 
@@ -253,6 +325,39 @@ describe("content repository mapping", () => {
     expect(publicDetail.coverImageUrl).toBe("https://example.test/public-cover.jpg");
     expect(JSON.stringify(publicDetail)).not.toContain("internal-cover.jpg");
     expect(JSON.stringify(publicDetail)).not.toContain("case-1");
+  });
+
+  test("strips unsafe CTA URLs from public details", () => {
+    const detail: ContentDetail = {
+      id: "content-1",
+      slug: "adoption-day",
+      type: "event",
+      title: "領養日",
+      subtitle: null,
+      summary: "歡迎參加領養日。",
+      body: null,
+      coverMediaId: null,
+      coverImageUrl: null,
+      status: "published",
+      publishedAt: "2026-07-05T10:00:00.000Z",
+      ctaLabel: "報名",
+      ctaUrl: "javascript:alert(1)",
+      seoTitle: null,
+      seoDescription: null,
+      ogTitle: null,
+      ogDescription: null,
+      storyProfile: null,
+      latestPublicUpdate: null,
+      links: [],
+      media: [],
+      updates: [],
+      socialCopies: [],
+      notificationDrafts: [],
+      createdAt: "2026-07-05T09:00:00.000Z",
+      updatedAt: "2026-07-05T09:00:00.000Z",
+    };
+
+    expect(toPublicContentDetail(detail).ctaUrl).toBeNull();
   });
 
   test("fails status updates when Supabase returns missing-row errors", async () => {

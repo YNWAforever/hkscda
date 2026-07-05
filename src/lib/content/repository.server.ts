@@ -2,7 +2,16 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { AdopterNotificationRecipient } from "./notificationDrafts";
 import { buildPublicStoryMapPoint } from "./rules";
-import type { ContentInput, ContentSearch, PublicContentSearch } from "./schemas";
+import {
+  isSafePublicHref,
+  type ContentInput,
+  type ContentLinkInput,
+  type ContentMediaInput,
+  type ContentSearch,
+  type PublicContentSearch,
+  type StoryProfileInput,
+  type StoryUpdateInput,
+} from "./schemas";
 import type { ContentAuditLogInsert, ContentRepository } from "./service";
 import type {
   AnimalStoryType,
@@ -353,6 +362,57 @@ function toContentUpdate(input: Partial<ContentInput>) {
   return payload;
 }
 
+export function toStoryProfileUpsert(contentId: string, input: StoryProfileInput) {
+  return {
+    content_item_id: contentId,
+    animal_type: input.animalType,
+    public_status: input.publicStatus,
+    rescue_region: input.rescueRegion,
+    rescue_date: input.rescueDate,
+    show_on_map: input.showOnMap,
+    public_map_label: input.publicMapLabel,
+    public_lat: input.publicLat,
+    public_lng: input.publicLng,
+    internal_address: input.internalAddress,
+    internal_location_notes: input.internalLocationNotes,
+    is_featured: input.isFeatured,
+  };
+}
+
+export function toStoryUpdateInsert(contentId: string, input: StoryUpdateInput) {
+  return {
+    content_item_id: contentId,
+    kind: input.kind,
+    title: input.title,
+    body: input.body,
+    occurred_at: input.occurredAt,
+    visibility: input.visibility,
+    should_generate_adopter_drafts: input.shouldGenerateAdopterDrafts,
+  };
+}
+
+export function toContentMediaInsert(contentId: string, input: ContentMediaInput) {
+  return {
+    content_item_id: contentId,
+    story_update_id: input.storyUpdateId,
+    storage_bucket: input.storageBucket,
+    storage_path: input.storagePath,
+    alt_text: input.altText,
+    caption: input.caption,
+    sort_order: input.sortOrder,
+    is_cover: input.isCover,
+  };
+}
+
+export function toContentLinkInsert(contentId: string, input: ContentLinkInput) {
+  return {
+    content_item_id: contentId,
+    linked_type: input.linkedType,
+    linked_id: input.linkedId,
+    relationship: input.relationship,
+  };
+}
+
 function toSummary(detail: ContentDetail): ContentSummary {
   return {
     id: detail.id,
@@ -496,11 +556,13 @@ export function toPublicContentDetail(detail: ContentDetail): ContentDetail {
     (item) => item.storyUpdateId === null || publicUpdateIds.has(item.storyUpdateId),
   );
   const coverMedia = findCoverMedia(media, detail.coverMediaId);
+  const ctaUrl = isSafePublicHref(detail.ctaUrl) ? detail.ctaUrl : null;
 
   return {
     ...detail,
     coverMediaId: coverMedia?.id ?? null,
     coverImageUrl: coverMedia?.url ?? null,
+    ctaUrl,
     storyProfile: detail.storyProfile
       ? {
           ...detail.storyProfile,
@@ -752,6 +814,59 @@ export function createSupabaseContentRepository(client: SupabaseClient): Content
         .single();
       if (error) throw error;
       return hydrateContentDetail(client, data as ContentRow);
+    },
+
+    async upsertStoryProfile(contentId, input) {
+      const { error } = await client
+        .from("rescue_story_profile")
+        .upsert(toStoryProfileUpsert(contentId, input), { onConflict: "content_item_id" })
+        .select("content_item_id")
+        .single();
+      if (error) throw error;
+
+      return getContentDetailByIdOrThrow(client, contentId);
+    },
+
+    async createStoryUpdate(contentId, input) {
+      const { data, error } = await client
+        .from("story_update")
+        .insert(toStoryUpdateInsert(contentId, input))
+        .select("id")
+        .single();
+      if (error) throw error;
+      return data.id as string;
+    },
+
+    async createContentMedia(contentId, input) {
+      const { data, error } = await client
+        .from("content_media")
+        .insert(toContentMediaInsert(contentId, input))
+        .select("id")
+        .single();
+      if (error) throw error;
+
+      const mediaId = data.id as string;
+      if (input.isCover) {
+        const { error: coverError } = await client
+          .from("content_item")
+          .update({ cover_media_id: mediaId })
+          .eq("id", contentId)
+          .select("id")
+          .single();
+        if (coverError) throw coverError;
+      }
+
+      return mediaId;
+    },
+
+    async createContentLink(contentId, input) {
+      const { data, error } = await client
+        .from("content_link")
+        .insert(toContentLinkInsert(contentId, input))
+        .select("id")
+        .single();
+      if (error) throw error;
+      return data.id as string;
     },
 
     async publishContent(id) {

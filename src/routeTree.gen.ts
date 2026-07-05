@@ -97,8 +97,12 @@ import { Route as ApiAdminReceiptsIdVoidRouteImport } from './routes/api/admin/r
 import { Route as ApiAdminPaymentsIdReconcileRouteImport } from './routes/api/admin/payments/$id/reconcile'
 import { Route as ApiAdminContentSocialCopyIdRouteImport } from './routes/api/admin/content/social-copy/$id'
 import { Route as ApiAdminContentNotificationDraftsIdRouteImport } from './routes/api/admin/content/notification-drafts/$id'
+import { Route as ApiAdminContentIdUpdatesRouteImport } from './routes/api/admin/content/$id/updates'
+import { Route as ApiAdminContentIdStoryProfileRouteImport } from './routes/api/admin/content/$id/story-profile'
 import { Route as ApiAdminContentIdSocialCopyRouteImport } from './routes/api/admin/content/$id/social-copy'
 import { Route as ApiAdminContentIdPublishRouteImport } from './routes/api/admin/content/$id/publish'
+import { Route as ApiAdminContentIdMediaRouteImport } from './routes/api/admin/content/$id/media'
+import { Route as ApiAdminContentIdLinksRouteImport } from './routes/api/admin/content/$id/links'
 import { Route as ApiAdminContentIdArchiveRouteImport } from './routes/api/admin/content/$id/archive'
 import { Route as ApiAdminAdoptionsTasksIdRouteImport } from './routes/api/admin/adoptions/tasks/$id'
 import { Route as ApiAdminAdoptionsStatusesIdRouteImport } from './routes/api/admin/adoptions/statuses/$id'
@@ -588,6 +592,18 @@ const ApiAdminContentNotificationDraftsIdRoute =
     path: '/notification-drafts/$id',
     getParentRoute: () => ApiAdminContentRoute,
   } as any)
+const ApiAdminContentIdUpdatesRoute =
+  ApiAdminContentIdUpdatesRouteImport.update({
+    id: '/updates',
+    path: '/updates',
+    getParentRoute: () => ApiAdminContentIdRoute,
+  } as any)
+const ApiAdminContentIdStoryProfileRoute =
+  ApiAdminContentIdStoryProfileRouteImport.update({
+    id: '/story-profile',
+    path: '/story-profile',
+    getParentRoute: () => ApiAdminContentIdRoute,
+  } as any)
 const ApiAdminContentIdSocialCopyRoute =
   ApiAdminContentIdSocialCopyRouteImport.update({
     id: '/social-copy',
@@ -600,6 +616,16 @@ const ApiAdminContentIdPublishRoute =
     path: '/publish',
     getParentRoute: () => ApiAdminContentIdRoute,
   } as any)
+const ApiAdminContentIdMediaRoute = ApiAdminContentIdMediaRouteImport.update({
+  id: '/media',
+  path: '/media',
+  getParentRoute: () => ApiAdminContentIdRoute,
+} as any)
+const ApiAdminContentIdLinksRoute = ApiAdminContentIdLinksRouteImport.update({
+  id: '/links',
+  path: '/links',
+  getParentRoute: () => ApiAdminContentIdRoute,
+} as any)
 const ApiAdminContentIdArchiveRoute =
   ApiAdminContentIdArchiveRouteImport.update({
     id: '/archive',
@@ -872,8 +898,12 @@ export interface FileRoutesByFullPath {
   '/api/admin/adoptions/statuses/$id': typeof ApiAdminAdoptionsStatusesIdRoute
   '/api/admin/adoptions/tasks/$id': typeof ApiAdminAdoptionsTasksIdRoute
   '/api/admin/content/$id/archive': typeof ApiAdminContentIdArchiveRoute
+  '/api/admin/content/$id/links': typeof ApiAdminContentIdLinksRoute
+  '/api/admin/content/$id/media': typeof ApiAdminContentIdMediaRoute
   '/api/admin/content/$id/publish': typeof ApiAdminContentIdPublishRoute
   '/api/admin/content/$id/social-copy': typeof ApiAdminContentIdSocialCopyRoute
+  '/api/admin/content/$id/story-profile': typeof ApiAdminContentIdStoryProfileRoute
+  '/api/admin/content/$id/updates': typeof ApiAdminContentIdUpdatesRoute
   '/api/admin/content/notification-drafts/$id': typeof ApiAdminContentNotificationDraftsIdRoute
   '/api/admin/content/social-copy/$id': typeof ApiAdminContentSocialCopyIdRoute
   '/api/admin/payments/$id/reconcile': typeof ApiAdminPaymentsIdReconcileRoute
@@ -992,8 +1022,12 @@ export interface FileRoutesByTo {
   '/api/admin/adoptions/statuses/$id': typeof ApiAdminAdoptionsStatusesIdRoute
   '/api/admin/adoptions/tasks/$id': typeof ApiAdminAdoptionsTasksIdRoute
   '/api/admin/content/$id/archive': typeof ApiAdminContentIdArchiveRoute
+  '/api/admin/content/$id/links': typeof ApiAdminContentIdLinksRoute
+  '/api/admin/content/$id/media': typeof ApiAdminContentIdMediaRoute
   '/api/admin/content/$id/publish': typeof ApiAdminContentIdPublishRoute
   '/api/admin/content/$id/social-copy': typeof ApiAdminContentIdSocialCopyRoute
+  '/api/admin/content/$id/story-profile': typeof ApiAdminContentIdStoryProfileRoute
+  '/api/admin/content/$id/updates': typeof ApiAdminContentIdUpdatesRoute
   '/api/admin/content/notification-drafts/$id': typeof ApiAdminContentNotificationDraftsIdRoute
   '/api/admin/content/social-copy/$id': typeof ApiAdminContentSocialCopyIdRoute
   '/api/admin/payments/$id/reconcile': typeof ApiAdminPaymentsIdReconcileRoute
@@ -1114,8 +1148,12 @@ export interface FileRoutesById {
   '/api/admin/adoptions/statuses/$id': typeof ApiAdminAdoptionsStatusesIdRoute
   '/api/admin/adoptions/tasks/$id': typeof ApiAdminAdoptionsTasksIdRoute
   '/api/admin/content/$id/archive': typeof ApiAdminContentIdArchiveRoute
+  '/api/admin/content/$id/links': typeof ApiAdminContentIdLinksRoute
+  '/api/admin/content/$id/media': typeof ApiAdminContentIdMediaRoute
   '/api/admin/content/$id/publish': typeof ApiAdminContentIdPublishRoute
   '/api/admin/content/$id/social-copy': typeof ApiAdminContentIdSocialCopyRoute
+  '/api/admin/content/$id/story-profile': typeof ApiAdminContentIdStoryProfileRoute
+  '/api/admin/content/$id/updates': typeof ApiAdminContentIdUpdatesRoute
   '/api/admin/content/notification-drafts/$id': typeof ApiAdminContentNotificationDraftsIdRoute
   '/api/admin/content/social-copy/$id': typeof ApiAdminContentSocialCopyIdRoute
   '/api/admin/payments/$id/reconcile': typeof ApiAdminPaymentsIdReconcileRoute
@@ -1237,8 +1275,12 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/statuses/$id'
     | '/api/admin/adoptions/tasks/$id'
     | '/api/admin/content/$id/archive'
+    | '/api/admin/content/$id/links'
+    | '/api/admin/content/$id/media'
     | '/api/admin/content/$id/publish'
     | '/api/admin/content/$id/social-copy'
+    | '/api/admin/content/$id/story-profile'
+    | '/api/admin/content/$id/updates'
     | '/api/admin/content/notification-drafts/$id'
     | '/api/admin/content/social-copy/$id'
     | '/api/admin/payments/$id/reconcile'
@@ -1357,8 +1399,12 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/statuses/$id'
     | '/api/admin/adoptions/tasks/$id'
     | '/api/admin/content/$id/archive'
+    | '/api/admin/content/$id/links'
+    | '/api/admin/content/$id/media'
     | '/api/admin/content/$id/publish'
     | '/api/admin/content/$id/social-copy'
+    | '/api/admin/content/$id/story-profile'
+    | '/api/admin/content/$id/updates'
     | '/api/admin/content/notification-drafts/$id'
     | '/api/admin/content/social-copy/$id'
     | '/api/admin/payments/$id/reconcile'
@@ -1478,8 +1524,12 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/statuses/$id'
     | '/api/admin/adoptions/tasks/$id'
     | '/api/admin/content/$id/archive'
+    | '/api/admin/content/$id/links'
+    | '/api/admin/content/$id/media'
     | '/api/admin/content/$id/publish'
     | '/api/admin/content/$id/social-copy'
+    | '/api/admin/content/$id/story-profile'
+    | '/api/admin/content/$id/updates'
     | '/api/admin/content/notification-drafts/$id'
     | '/api/admin/content/social-copy/$id'
     | '/api/admin/payments/$id/reconcile'
@@ -2205,6 +2255,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminContentNotificationDraftsIdRouteImport
       parentRoute: typeof ApiAdminContentRoute
     }
+    '/api/admin/content/$id/updates': {
+      id: '/api/admin/content/$id/updates'
+      path: '/updates'
+      fullPath: '/api/admin/content/$id/updates'
+      preLoaderRoute: typeof ApiAdminContentIdUpdatesRouteImport
+      parentRoute: typeof ApiAdminContentIdRoute
+    }
+    '/api/admin/content/$id/story-profile': {
+      id: '/api/admin/content/$id/story-profile'
+      path: '/story-profile'
+      fullPath: '/api/admin/content/$id/story-profile'
+      preLoaderRoute: typeof ApiAdminContentIdStoryProfileRouteImport
+      parentRoute: typeof ApiAdminContentIdRoute
+    }
     '/api/admin/content/$id/social-copy': {
       id: '/api/admin/content/$id/social-copy'
       path: '/social-copy'
@@ -2217,6 +2281,20 @@ declare module '@tanstack/react-router' {
       path: '/publish'
       fullPath: '/api/admin/content/$id/publish'
       preLoaderRoute: typeof ApiAdminContentIdPublishRouteImport
+      parentRoute: typeof ApiAdminContentIdRoute
+    }
+    '/api/admin/content/$id/media': {
+      id: '/api/admin/content/$id/media'
+      path: '/media'
+      fullPath: '/api/admin/content/$id/media'
+      preLoaderRoute: typeof ApiAdminContentIdMediaRouteImport
+      parentRoute: typeof ApiAdminContentIdRoute
+    }
+    '/api/admin/content/$id/links': {
+      id: '/api/admin/content/$id/links'
+      path: '/links'
+      fullPath: '/api/admin/content/$id/links'
+      preLoaderRoute: typeof ApiAdminContentIdLinksRouteImport
       parentRoute: typeof ApiAdminContentIdRoute
     }
     '/api/admin/content/$id/archive': {
@@ -2527,14 +2605,22 @@ const AdminCoordinatorAdoptersRouteWithChildren =
 
 interface ApiAdminContentIdRouteChildren {
   ApiAdminContentIdArchiveRoute: typeof ApiAdminContentIdArchiveRoute
+  ApiAdminContentIdLinksRoute: typeof ApiAdminContentIdLinksRoute
+  ApiAdminContentIdMediaRoute: typeof ApiAdminContentIdMediaRoute
   ApiAdminContentIdPublishRoute: typeof ApiAdminContentIdPublishRoute
   ApiAdminContentIdSocialCopyRoute: typeof ApiAdminContentIdSocialCopyRoute
+  ApiAdminContentIdStoryProfileRoute: typeof ApiAdminContentIdStoryProfileRoute
+  ApiAdminContentIdUpdatesRoute: typeof ApiAdminContentIdUpdatesRoute
 }
 
 const ApiAdminContentIdRouteChildren: ApiAdminContentIdRouteChildren = {
   ApiAdminContentIdArchiveRoute: ApiAdminContentIdArchiveRoute,
+  ApiAdminContentIdLinksRoute: ApiAdminContentIdLinksRoute,
+  ApiAdminContentIdMediaRoute: ApiAdminContentIdMediaRoute,
   ApiAdminContentIdPublishRoute: ApiAdminContentIdPublishRoute,
   ApiAdminContentIdSocialCopyRoute: ApiAdminContentIdSocialCopyRoute,
+  ApiAdminContentIdStoryProfileRoute: ApiAdminContentIdStoryProfileRoute,
+  ApiAdminContentIdUpdatesRoute: ApiAdminContentIdUpdatesRoute,
 }
 
 const ApiAdminContentIdRouteWithChildren =

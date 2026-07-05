@@ -5,12 +5,16 @@ import {
 } from "./notificationDrafts";
 import { validatePublishableContent } from "./rules";
 import {
+  contentLinkInputSchema,
+  contentMediaInputSchema,
   contentInputSchema,
   contentSearchSchema,
   notificationDraftStatusSchema,
   publicContentSearchSchema,
   socialCopyGenerateSchema,
   socialCopyStatusSchema,
+  storyProfileInputSchema,
+  storyUpdateInputSchema,
 } from "./schemas";
 import { generateSocialCopyVariants } from "./socialCopy";
 import type {
@@ -25,6 +29,10 @@ import type {
 type ContentSearch = z.infer<typeof contentSearchSchema>;
 type PublicContentSearch = z.infer<typeof publicContentSearchSchema>;
 type ContentInput = z.infer<typeof contentInputSchema>;
+type StoryProfileInput = z.infer<typeof storyProfileInputSchema>;
+type StoryUpdateInput = z.infer<typeof storyUpdateInputSchema>;
+type ContentMediaInput = z.infer<typeof contentMediaInputSchema>;
+type ContentLinkInput = z.infer<typeof contentLinkInputSchema>;
 type SocialCopyStatusInput = z.infer<typeof socialCopyStatusSchema>;
 type NotificationDraftStatusInput = z.infer<typeof notificationDraftStatusSchema>;
 
@@ -39,7 +47,14 @@ export class ContentValidationError extends Error {
 export type ContentAuditLogInsert = {
   actor_user_id: string | null;
   action: string;
-  entity: "content_item" | "story_update" | "social_copy_variant" | "recipient_notification_draft";
+  entity:
+    | "content_item"
+    | "content_link"
+    | "rescue_story_profile"
+    | "story_update"
+    | "content_media"
+    | "social_copy_variant"
+    | "recipient_notification_draft";
   entity_id: string;
   detail: Record<string, unknown>;
   timestamp?: string;
@@ -55,6 +70,10 @@ export type ContentRepository = {
   getAdminContent(id: string): Promise<ContentDetail | null>;
   createContent(input: ContentInput): Promise<string>;
   updateContent(id: string, input: Partial<ContentInput>): Promise<ContentDetail>;
+  upsertStoryProfile(contentId: string, input: StoryProfileInput): Promise<ContentDetail>;
+  createStoryUpdate(contentId: string, input: StoryUpdateInput): Promise<string>;
+  createContentMedia(contentId: string, input: ContentMediaInput): Promise<string>;
+  createContentLink(contentId: string, input: ContentLinkInput): Promise<string>;
   publishContent(id: string): Promise<ContentDetail>;
   archiveContent(id: string): Promise<ContentDetail>;
   insertSocialCopies(
@@ -96,6 +115,26 @@ type ContentActionArgs = ActorInput & {
   contentId: string;
 };
 
+type UpsertStoryProfileArgs = ActorInput & {
+  contentId: string;
+  input: unknown;
+};
+
+type CreateStoryUpdateArgs = ActorInput & {
+  contentId: string;
+  input: unknown;
+};
+
+type CreateContentMediaArgs = ActorInput & {
+  contentId: string;
+  input: unknown;
+};
+
+type CreateContentLinkArgs = ActorInput & {
+  contentId: string;
+  input: unknown;
+};
+
 type GenerateSocialCopyArgs = ActorInput & {
   contentId: string;
   input: unknown;
@@ -121,6 +160,12 @@ function publicStoryUrl(publicBaseUrl: string, slug: string) {
 
 function timestamp(now: () => Date) {
   return now().toISOString();
+}
+
+function assertPublicOutboundStoryUpdate(storyUpdate: StoryUpdate) {
+  if (storyUpdate.visibility !== "public") {
+    throw new Error("Internal story updates cannot generate outbound content");
+  }
 }
 
 export function createContentService({
@@ -169,6 +214,15 @@ export function createContentService({
 
     async updateContent({ actorUserId, contentId, input }: UpdateContentArgs) {
       const parsed = contentInputSchema.partial().parse(input);
+      const current = await repo.getAdminContent(contentId);
+      if (!current) throw new Error("Content item not found");
+
+      const candidate: ContentDetail = { ...current, ...parsed };
+      if (candidate.status === "published") {
+        const issues = validatePublishableContent(candidate);
+        if (issues.length > 0) throw new ContentValidationError(issues);
+      }
+
       const content = await repo.updateContent(contentId, parsed);
       await audit({
         actor_user_id: actorUserId,
@@ -177,8 +231,89 @@ export function createContentService({
         entity_id: contentId,
         detail: parsed,
       });
+      if (current.status !== "published" && content.status === "published") {
+        await audit({
+          actor_user_id: actorUserId,
+          action: "content.publish",
+          entity: "content_item",
+          entity_id: contentId,
+          detail: { slug: content.slug },
+        });
+      }
 
       return content;
+    },
+
+    async upsertStoryProfile({ actorUserId, contentId, input }: UpsertStoryProfileArgs) {
+      const parsed = storyProfileInputSchema.parse(input);
+      const content = await repo.upsertStoryProfile(contentId, parsed);
+      await audit({
+        actor_user_id: actorUserId,
+        action: "content.story_profile.upsert",
+        entity: "rescue_story_profile",
+        entity_id: contentId,
+        detail: {
+          animalType: parsed.animalType,
+          publicStatus: parsed.publicStatus,
+          rescueRegion: parsed.rescueRegion,
+          showOnMap: parsed.showOnMap,
+        },
+      });
+
+      return content;
+    },
+
+    async createStoryUpdate({ actorUserId, contentId, input }: CreateStoryUpdateArgs) {
+      const parsed = storyUpdateInputSchema.parse(input);
+      const id = await repo.createStoryUpdate(contentId, parsed);
+      await audit({
+        actor_user_id: actorUserId,
+        action: "content.story_update.create",
+        entity: "story_update",
+        entity_id: id,
+        detail: {
+          contentId,
+          kind: parsed.kind,
+          visibility: parsed.visibility,
+          shouldGenerateAdopterDrafts: parsed.shouldGenerateAdopterDrafts,
+        },
+      });
+
+      return { id };
+    },
+
+    async createContentMedia({ actorUserId, contentId, input }: CreateContentMediaArgs) {
+      const parsed = contentMediaInputSchema.parse(input);
+      const id = await repo.createContentMedia(contentId, parsed);
+      await audit({
+        actor_user_id: actorUserId,
+        action: "content.media.create",
+        entity: "content_media",
+        entity_id: id,
+        detail: {
+          contentId,
+          storyUpdateId: parsed.storyUpdateId,
+          storageBucket: parsed.storageBucket,
+          storagePath: parsed.storagePath,
+          isCover: parsed.isCover,
+        },
+      });
+
+      return { id };
+    },
+
+    async createContentLink({ actorUserId, contentId, input }: CreateContentLinkArgs) {
+      const parsed = contentLinkInputSchema.parse(input);
+      const id = await repo.createContentLink(contentId, parsed);
+      await audit({
+        actor_user_id: actorUserId,
+        action: "content.link.create",
+        entity: "content_link",
+        entity_id: id,
+        detail: { contentId, ...parsed },
+      });
+
+      return { id };
     },
 
     async publishContent({ actorUserId, contentId }: ContentActionArgs) {
@@ -226,6 +361,7 @@ export function createContentService({
       if (storyUpdate && storyUpdate.contentItemId !== content.id) {
         throw new Error("Story update does not belong to this content item");
       }
+      if (storyUpdate) assertPublicOutboundStoryUpdate(storyUpdate);
 
       const publicUrl = publicStoryUrl(publicBaseUrl, content.slug);
       const variants = generateSocialCopyVariants({ content, storyUpdate, publicUrl }).filter(
@@ -262,6 +398,7 @@ export function createContentService({
       void actorUserId;
       const update = await repo.getStoryUpdate(storyUpdateId);
       if (!update) throw new Error("Story update not found");
+      assertPublicOutboundStoryUpdate(update);
 
       const content = await repo.getAdminContent(update.contentItemId);
       if (!content) throw new Error("Content item not found");

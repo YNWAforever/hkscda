@@ -53,6 +53,22 @@ function createService(overrides: Record<string, unknown> = {}) {
       calls.push("archiveContent");
       return { id: "content-1", status: "archived" };
     },
+    async upsertStoryProfile() {
+      calls.push("upsertStoryProfile");
+      return { id: "content-1", storyProfile: { rescueRegion: "灣仔" } };
+    },
+    async createStoryUpdate() {
+      calls.push("createStoryUpdate");
+      return { id: "update-1" };
+    },
+    async createContentMedia() {
+      calls.push("createContentMedia");
+      return { id: "media-1" };
+    },
+    async createContentLink() {
+      calls.push("createContentLink");
+      return { id: "link-1" };
+    },
     async generateSocialCopy() {
       calls.push("generateSocialCopy");
       return { count: 3 };
@@ -239,5 +255,81 @@ describe("createContentHandlers", () => {
 
     expect(response.status).toBe(404);
     expect(await response.json()).toEqual({ error: "Content resource not found" });
+  });
+
+  test("routes authoring mutations to content service methods", async () => {
+    const service = createService();
+    const handlers = createContentHandlers({
+      requireContentAdmin: async () => admin,
+      service,
+    });
+    const contentParams = { id: "99999999-aaaa-4333-8444-555555555555" };
+
+    const profileResponse = await handlers.upsertStoryProfile({
+      request: new Request(
+        "https://example.test/api/admin/content/99999999-aaaa-4333-8444-555555555555/story-profile",
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            animalType: "cat",
+            publicStatus: "medical_care",
+            rescueRegion: "灣仔",
+          }),
+        },
+      ),
+      params: contentParams,
+    });
+    const updateResponse = await handlers.createStoryUpdate({
+      request: new Request(
+        "https://example.test/api/admin/content/99999999-aaaa-4333-8444-555555555555/updates",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            kind: "medical",
+            title: "覆診完成",
+            occurredAt: "2026-07-05T10:00:00.000Z",
+          }),
+        },
+      ),
+      params: contentParams,
+    });
+    const mediaResponse = await handlers.createContentMedia({
+      request: new Request(
+        "https://example.test/api/admin/content/99999999-aaaa-4333-8444-555555555555/media",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            storagePath: "stories/siu-bak/checkup.jpg",
+            altText: "小白覆診照片",
+          }),
+        },
+      ),
+      params: contentParams,
+    });
+    const linkResponse = await handlers.createContentLink({
+      request: new Request(
+        "https://example.test/api/admin/content/99999999-aaaa-4333-8444-555555555555/links",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            linkedType: "adoption_case",
+            linkedId: "44444444-4444-4333-8444-555555555555",
+            relationship: "adopter",
+          }),
+        },
+      ),
+      params: contentParams,
+    });
+
+    expect(profileResponse.status).toBe(200);
+    expect(updateResponse.status).toBe(201);
+    expect(mediaResponse.status).toBe(201);
+    expect(linkResponse.status).toBe(201);
+    expect(service.calls).toEqual([
+      "upsertStoryProfile",
+      "createStoryUpdate",
+      "createContentMedia",
+      "createContentLink",
+    ]);
   });
 });
