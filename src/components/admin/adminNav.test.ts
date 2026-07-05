@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, test } from "bun:test";
 
 import { adminCopy } from "./adminI18n";
@@ -83,6 +85,13 @@ describe("admin nav active state", () => {
         "content",
       ),
     ).toEqual(["content"]);
+  });
+
+  test("keeps the content nav target backed by a route file", () => {
+    const contentItem = ADMIN_NAV_ITEMS.find((item) => item.id === "content");
+
+    expect(contentItem?.to).toBe("/admin/content");
+    expect(existsSync(join(process.cwd(), "src/routes/admin/content.tsx"))).toBe(true);
   });
 
   test("has bilingual labels for every nav item", () => {

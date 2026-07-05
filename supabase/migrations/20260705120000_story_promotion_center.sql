@@ -29,6 +29,7 @@ create table if not exists public.content_link (
   linked_id uuid not null,
   relationship text not null default 'other' check (relationship in ('primary_subject', 'related_case', 'adopter', 'volunteer_context', 'other')),
   created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
   unique (content_item_id, linked_type, linked_id, relationship)
 );
 
@@ -51,6 +52,8 @@ create table if not exists public.rescue_story_profile (
   is_featured boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
+  check (public_lat is null or public_lat between -90 and 90),
+  check (public_lng is null or public_lng between -180 and 180),
   check (
     show_on_map = false or
     (public_map_label is not null and public_lat is not null and public_lng is not null)
@@ -69,13 +72,14 @@ create table if not exists public.story_update (
   created_by uuid,
   updated_by uuid,
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+  updated_at timestamptz not null default now(),
+  unique (id, content_item_id)
 );
 
 create table if not exists public.content_media (
   id uuid primary key default gen_random_uuid(),
   content_item_id uuid not null references public.content_item(id) on delete cascade,
-  story_update_id uuid references public.story_update(id) on delete cascade,
+  story_update_id uuid,
   storage_bucket text not null default 'content-media',
   storage_path text not null,
   alt_text text not null,
@@ -83,7 +87,12 @@ create table if not exists public.content_media (
   sort_order integer not null default 0,
   is_cover boolean not null default false,
   created_at timestamptz not null default now(),
-  unique (storage_bucket, storage_path)
+  updated_at timestamptz not null default now(),
+  unique (id, content_item_id),
+  unique (storage_bucket, storage_path),
+  foreign key (story_update_id, content_item_id)
+    references public.story_update(id, content_item_id)
+    on delete cascade
 );
 
 alter table public.content_item
@@ -91,12 +100,14 @@ alter table public.content_item
 
 alter table public.content_item
   add constraint content_item_cover_media_fk
-  foreign key (cover_media_id) references public.content_media(id) on delete set null;
+  foreign key (cover_media_id, id)
+  references public.content_media(id, content_item_id)
+  on delete set null (cover_media_id);
 
 create table if not exists public.social_copy_variant (
   id uuid primary key default gen_random_uuid(),
   content_item_id uuid not null references public.content_item(id) on delete cascade,
-  story_update_id uuid references public.story_update(id) on delete cascade,
+  story_update_id uuid,
   platform text not null check (platform in ('facebook', 'instagram', 'whatsapp')),
   language text not null default 'zh-HK' check (language = 'zh-HK'),
   copy_text text not null,
@@ -105,12 +116,15 @@ create table if not exists public.social_copy_variant (
   created_by uuid,
   updated_by uuid,
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+  updated_at timestamptz not null default now(),
+  foreign key (story_update_id, content_item_id)
+    references public.story_update(id, content_item_id)
+    on delete cascade
 );
 
 create table if not exists public.recipient_notification_draft (
   id uuid primary key default gen_random_uuid(),
-  story_update_id uuid not null references public.story_update(id) on delete cascade,
+  story_update_id uuid not null,
   content_item_id uuid not null references public.content_item(id) on delete cascade,
   adoption_case_id uuid references public.adoption_case(id) on delete set null,
   supporter_id uuid references public.supporter(id) on delete set null,
@@ -123,7 +137,10 @@ create table if not exists public.recipient_notification_draft (
   created_by uuid,
   updated_by uuid,
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+  updated_at timestamptz not null default now(),
+  foreign key (story_update_id, content_item_id)
+    references public.story_update(id, content_item_id)
+    on delete cascade
 );
 
 do $$
@@ -132,8 +149,10 @@ declare
 begin
   foreach table_name in array array[
     'content_item',
+    'content_link',
     'rescue_story_profile',
     'story_update',
+    'content_media',
     'social_copy_variant',
     'recipient_notification_draft'
   ]
