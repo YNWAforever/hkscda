@@ -52,6 +52,24 @@ function requiredId(params: HandlerContext["params"], key = "id") {
   return id;
 }
 
+function getErrorMessage(error: unknown) {
+  if (error instanceof Error) return error.message;
+  if (error && typeof error === "object" && "message" in error) {
+    const message = (error as { message?: unknown }).message;
+    return typeof message === "string" ? message : null;
+  }
+  return null;
+}
+
+function isSingleRowMissingError(error: unknown) {
+  return (
+    error !== null &&
+    typeof error === "object" &&
+    "code" in error &&
+    (error as { code?: unknown }).code === "PGRST116"
+  );
+}
+
 async function withContentErrors(operation: () => Promise<Response>, publicRequest = false) {
   try {
     return await operation();
@@ -72,6 +90,19 @@ async function withContentErrors(operation: () => Promise<Response>, publicReque
         { error: "Content item cannot be published", issues: error.issues },
         { status: 400 },
       );
+    }
+
+    if (!publicRequest) {
+      const message = getErrorMessage(error);
+      if (message === "Content item not found" || message === "Story update not found") {
+        return jsonResponse({ error: message }, { status: 404 });
+      }
+      if (message === "Story update does not belong to this content item") {
+        return jsonResponse({ error: message }, { status: 400 });
+      }
+      if (isSingleRowMissingError(error)) {
+        return jsonResponse({ error: "Content resource not found" }, { status: 404 });
+      }
     }
 
     console.error(error);

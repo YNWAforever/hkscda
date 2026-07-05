@@ -186,4 +186,58 @@ describe("createContentHandlers", () => {
     expect(await response.json()).toEqual({ error: "Invalid JSON body" });
     expect(service.calls).toEqual([]);
   });
+
+  test("maps service not-found errors to admin 404 responses", async () => {
+    const service = createService({
+      async publishContent() {
+        throw new Error("Content item not found");
+      },
+    });
+    const handlers = createContentHandlers({
+      requireContentAdmin: async () => admin,
+      service,
+    });
+
+    const response = await handlers.publishContent({
+      request: new Request(
+        "https://example.test/api/admin/content/99999999-aaaa-4333-8444-555555555555/publish",
+        {
+          method: "POST",
+        },
+      ),
+      params: { id: "99999999-aaaa-4333-8444-555555555555" },
+    });
+
+    expect(response.status).toBe(404);
+    expect(await response.json()).toEqual({ error: "Content item not found" });
+  });
+
+  test("maps Supabase single-row misses to admin 404 responses", async () => {
+    const service = createService({
+      async updateSocialCopyStatus() {
+        throw {
+          code: "PGRST116",
+          message: "JSON object requested, multiple (or no) rows returned",
+        };
+      },
+    });
+    const handlers = createContentHandlers({
+      requireContentAdmin: async () => admin,
+      service,
+    });
+
+    const response = await handlers.updateSocialCopyStatus({
+      request: new Request(
+        "https://example.test/api/admin/content/social-copy/99999999-aaaa-4333-8444-555555555555",
+        {
+          method: "PATCH",
+          body: JSON.stringify({ status: "approved" }),
+        },
+      ),
+      params: { id: "99999999-aaaa-4333-8444-555555555555" },
+    });
+
+    expect(response.status).toBe(404);
+    expect(await response.json()).toEqual({ error: "Content resource not found" });
+  });
 });
