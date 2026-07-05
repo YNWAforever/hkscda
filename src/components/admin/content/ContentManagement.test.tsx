@@ -49,4 +49,35 @@ describe("ContentManagement", () => {
     expect(markup).toContain("小白康復中");
     expect(markup).toContain("救援故事");
   });
+
+  test("uses pagination total for the total summary card", () => {
+    const initialData: ContentListResponse = {
+      content: [
+        {
+          id: "content-1",
+          slug: "siu-bak-recovering",
+          type: "rescue_story",
+          title: "小白康復中",
+          subtitle: null,
+          summary: "小白正在寄養家庭休養。",
+          coverMediaId: null,
+          coverImageUrl: null,
+          status: "published",
+          publishedAt: null,
+          ctaLabel: null,
+          ctaUrl: null,
+          storyProfile: null,
+          latestPublicUpdate: null,
+          createdAt: "2026-06-01T08:00:00.000Z",
+          updatedAt: "2026-06-20T08:00:00.000Z",
+        },
+      ],
+      pagination: { page: 2, pageSize: 25, total: 42, pageCount: 2 },
+    };
+
+    const markup = renderToStaticMarkup(<ContentManagement initialData={initialData} />);
+
+    expect(markup).toContain("全部內容");
+    expect(markup).toContain(">42</p>");
+  });
 });

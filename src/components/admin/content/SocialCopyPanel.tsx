@@ -15,6 +15,7 @@ type SocialCopyPanelProps = {
   onUpdateStatus?: (copyId: string, status: SocialCopyStatus) => void;
   pendingCopyId?: string | null;
   generating?: boolean;
+  disabled?: boolean;
 };
 
 export function SocialCopyPanel({
@@ -23,6 +24,7 @@ export function SocialCopyPanel({
   onUpdateStatus,
   pendingCopyId,
   generating = false,
+  disabled = false,
 }: SocialCopyPanelProps) {
   return (
     <section className="space-y-3">
@@ -34,7 +36,7 @@ export function SocialCopyPanel({
         {onGenerate ? (
           <button
             type="button"
-            disabled={generating}
+            disabled={disabled || generating}
             onClick={onGenerate}
             className="inline-flex items-center gap-2 rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-bold text-[var(--color-primary-foreground)] disabled:opacity-60"
           >
@@ -75,8 +77,10 @@ export function SocialCopyPanel({
                 <div className="mt-4 flex flex-wrap gap-2">
                   <button
                     type="button"
-                    disabled={pendingCopyId === copy.id}
-                    onClick={() => onUpdateStatus(copy.id, "copied")}
+                    disabled={disabled || pendingCopyId === copy.id}
+                    onClick={() => {
+                      void copySocialText(copy).finally(() => onUpdateStatus(copy.id, "copied"));
+                    }}
                     className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-2 py-1 text-xs font-semibold text-[var(--color-panel)] disabled:opacity-60"
                   >
                     <Copy className="h-3 w-3" />
@@ -84,7 +88,7 @@ export function SocialCopyPanel({
                   </button>
                   <button
                     type="button"
-                    disabled={pendingCopyId === copy.id}
+                    disabled={disabled || pendingCopyId === copy.id}
                     onClick={() => onUpdateStatus(copy.id, "archived")}
                     className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-2 py-1 text-xs font-semibold text-[var(--color-panel)] disabled:opacity-60"
                   >
@@ -99,4 +103,21 @@ export function SocialCopyPanel({
       )}
     </section>
   );
+}
+
+function socialClipboardText(copy: SocialCopyVariant) {
+  const hashtags = copy.hashtags.map((tag) => `#${tag.replace(/^#/, "")}`).join(" ");
+  return hashtags ? `${copy.copyText}\n\n${hashtags}` : copy.copyText;
+}
+
+function copySocialText(copy: SocialCopyVariant) {
+  return copyTextToClipboard(socialClipboardText(copy));
+}
+
+function copyTextToClipboard(text: string) {
+  if (typeof navigator === "undefined" || !navigator.clipboard?.writeText) {
+    return Promise.resolve();
+  }
+
+  return navigator.clipboard.writeText(text);
 }

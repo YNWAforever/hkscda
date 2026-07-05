@@ -4,6 +4,8 @@ import {
   buildContentSearchParams,
   contentStatusTone,
   formatContentTypeLabel,
+  formatIsoForDatetimeLocal,
+  parseDatetimeLocalToIso,
   summarizeContentRows,
 } from "./contentAdminLogic";
 
@@ -38,5 +40,12 @@ describe("contentAdminLogic", () => {
         { type: "event", status: "published" },
       ]),
     ).toEqual({ total: 3, published: 2, drafts: 1, rescueStories: 2 });
+  });
+
+  test("converts ISO timestamps to datetime-local values without UTC display drift", () => {
+    const iso = "2026-06-20T08:30:00.000Z";
+    const local = formatIsoForDatetimeLocal(iso);
+
+    expect(parseDatetimeLocalToIso(local)).toBe(iso);
   });
 });

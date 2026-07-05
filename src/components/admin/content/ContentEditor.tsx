@@ -12,7 +12,12 @@ import type {
 } from "../../../lib/content/types";
 import { fetchAdminJson, getAdminAccessToken } from "../../../lib/admin/http";
 import { StatusPill, type StatusTone } from "../StatusBadge";
-import { contentStatusTone, formatContentTypeLabel } from "./contentAdminLogic";
+import {
+  contentStatusTone,
+  formatContentTypeLabel,
+  formatIsoForDatetimeLocal,
+  parseDatetimeLocalToIso,
+} from "./contentAdminLogic";
 import { ContentTimeline } from "./ContentTimeline";
 import { NotificationDraftPanel } from "./NotificationDraftPanel";
 import { SocialCopyPanel } from "./SocialCopyPanel";
@@ -57,8 +62,9 @@ export function ContentEditor({ contentId }: ContentEditorProps) {
         method: "PATCH",
         body: JSON.stringify(normalizeForm(body)),
       }),
-    onSuccess: () => {
+    onSuccess: (data) => {
       setValidationIssues([]);
+      queryClient.setQueryData(["admin-content-detail", contentId], data);
       void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] });
       void queryClient.invalidateQueries({ queryKey: ["admin-content"] });
     },
@@ -137,6 +143,15 @@ export function ContentEditor({ contentId }: ContentEditorProps) {
       void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] }),
   });
 
+  const editorActionPending =
+    updateContent.isPending ||
+    publishContent.isPending ||
+    archiveContent.isPending ||
+    generateSocialCopy.isPending ||
+    updateCopyStatus.isPending ||
+    generateNotificationDrafts.isPending ||
+    updateDraftStatus.isPending;
+
   if (contentQuery.isLoading) {
     return <div className="p-6 text-sm text-[var(--color-text-muted)]">載入宣傳內容...</div>;
   }
@@ -182,15 +197,16 @@ export function ContentEditor({ contentId }: ContentEditorProps) {
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
+            disabled={editorActionPending || contentQuery.isFetching}
             onClick={() => void contentQuery.refetch()}
-            className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)]"
+            className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)] disabled:opacity-60"
           >
             <RefreshCw className="h-4 w-4" />
             重新整理
           </button>
           <button
             type="button"
-            disabled={publishContent.isPending}
+            disabled={editorActionPending}
             onClick={() => publishContent.mutate()}
             className="inline-flex items-center gap-2 rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-bold text-[var(--color-primary-foreground)] disabled:opacity-60"
           >
@@ -199,7 +215,7 @@ export function ContentEditor({ contentId }: ContentEditorProps) {
           </button>
           <button
             type="button"
-            disabled={archiveContent.isPending}
+            disabled={editorActionPending}
             onClick={() => archiveContent.mutate()}
             className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)] disabled:opacity-60"
           >
@@ -210,12 +226,22 @@ export function ContentEditor({ contentId }: ContentEditorProps) {
       </div>
 
       {validationIssues.length > 0 ? <PublishValidationPanel issues={validationIssues} /> : null}
-      <MutationError error={updateContent.error ?? publishContent.error ?? archiveContent.error} />
+      <ActionErrors
+        errors={[
+          updateContent.error,
+          publishContent.error,
+          archiveContent.error,
+          generateSocialCopy.error,
+          updateCopyStatus.error,
+          generateNotificationDrafts.error,
+          updateDraftStatus.error,
+        ]}
+      />
 
       <ContentEditorForm
         content={content}
-        pending={updateContent.isPending}
-        onSave={(form) => updateContent.mutate(form)}
+        pending={editorActionPending}
+        onSave={(form) => updateContent.mutateAsync(form).then(() => undefined)}
       />
 
       <section className="grid gap-4 lg:grid-cols-2">
@@ -229,6 +255,7 @@ export function ContentEditor({ contentId }: ContentEditorProps) {
           updates={content.updates}
           onGenerateDrafts={(updateId) => generateNotificationDrafts.mutate(updateId)}
           generatingUpdateId={generatingUpdateId}
+          disabled={editorActionPending}
         />
       </section>
 
@@ -238,12 +265,14 @@ export function ContentEditor({ contentId }: ContentEditorProps) {
         onUpdateStatus={(copyId, status) => updateCopyStatus.mutate({ copyId, status })}
         pendingCopyId={pendingCopyId}
         generating={generateSocialCopy.isPending}
+        disabled={editorActionPending}
       />
 
       <NotificationDraftPanel
         drafts={content.notificationDrafts}
         onUpdateStatus={(draftId, status) => updateDraftStatus.mutate({ draftId, status })}
         pendingDraftId={pendingDraftId}
+        disabled={editorActionPending}
       />
     </div>
   );
@@ -273,18 +302,42 @@ function ContentEditorForm({
 }: {
   content: ContentDetail;
   pending: boolean;
-  onSave: (form: ContentFormState) => void;
+  onSave: (form: ContentFormState) => Promise<void>;
 }) {
   const initialForm = useMemo(() => formFromContent(content), [content]);
   const [form, setForm] = useState(initialForm);
+  const [dirty, setDirty] = useState(false);
+  const [lastContentId, setLastContentId] = useState(content.id);
 
-  useEffect(() => setForm(initialForm), [initialForm]);
+  useEffect(() => {
+    if (content.id !== lastContentId) {
+      setForm(initialForm);
+      setDirty(false);
+      setLastContentId(content.id);
+      return;
+    }
+
+    if (!dirty) setForm(initialForm);
+  }, [content.id, dirty, initialForm, lastContentId]);
+
+  const updateField = <Key extends keyof ContentFormState>(
+    key: Key,
+    value: ContentFormState[Key],
+  ) => {
+    setDirty(true);
+    setForm((current) => ({ ...current, [key]: value }));
+  };
 
   return (
     <form
-      onSubmit={(event) => {
+      onSubmit={async (event) => {
         event.preventDefault();
-        onSave(form);
+        try {
+          await onSave(form);
+          setDirty(false);
+        } catch {
+          // Mutation errors are rendered by the parent; keep the dirty form intact.
+        }
       }}
       className="space-y-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4"
     >
@@ -308,7 +361,7 @@ function ContentEditorForm({
           <input
             required
             value={form.title}
-            onChange={(event) => setForm({ ...form, title: event.target.value })}
+            onChange={(event) => updateField("title", event.target.value)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           />
         </Field>
@@ -316,14 +369,14 @@ function ContentEditorForm({
           <input
             required
             value={form.slug}
-            onChange={(event) => setForm({ ...form, slug: event.target.value })}
+            onChange={(event) => updateField("slug", event.target.value)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           />
         </Field>
         <Field label="類型">
           <select
             value={form.type}
-            onChange={(event) => setForm({ ...form, type: event.target.value as ContentType })}
+            onChange={(event) => updateField("type", event.target.value as ContentType)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           >
             {(["rescue_story", "event", "charity_market", "report"] as ContentType[]).map(
@@ -338,14 +391,14 @@ function ContentEditorForm({
         <Field label="副標題">
           <input
             value={form.subtitle}
-            onChange={(event) => setForm({ ...form, subtitle: event.target.value })}
+            onChange={(event) => updateField("subtitle", event.target.value)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           />
         </Field>
         <Field label="狀態">
           <select
             value={form.status}
-            onChange={(event) => setForm({ ...form, status: event.target.value as ContentStatus })}
+            onChange={(event) => updateField("status", event.target.value as ContentStatus)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           >
             {(["draft", "published", "archived"] as ContentStatus[]).map((status) => (
@@ -359,7 +412,7 @@ function ContentEditorForm({
           <input
             type="datetime-local"
             value={form.publishedAt}
-            onChange={(event) => setForm({ ...form, publishedAt: event.target.value })}
+            onChange={(event) => updateField("publishedAt", event.target.value)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           />
         </Field>
@@ -370,7 +423,7 @@ function ContentEditorForm({
           required
           rows={3}
           value={form.summary}
-          onChange={(event) => setForm({ ...form, summary: event.target.value })}
+          onChange={(event) => updateField("summary", event.target.value)}
           className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
         />
       </Field>
@@ -378,7 +431,7 @@ function ContentEditorForm({
         <textarea
           rows={7}
           value={form.body}
-          onChange={(event) => setForm({ ...form, body: event.target.value })}
+          onChange={(event) => updateField("body", event.target.value)}
           className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
         />
       </Field>
@@ -387,42 +440,42 @@ function ContentEditorForm({
         <Field label="CTA 文字">
           <input
             value={form.ctaLabel}
-            onChange={(event) => setForm({ ...form, ctaLabel: event.target.value })}
+            onChange={(event) => updateField("ctaLabel", event.target.value)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           />
         </Field>
         <Field label="CTA 連結">
           <input
             value={form.ctaUrl}
-            onChange={(event) => setForm({ ...form, ctaUrl: event.target.value })}
+            onChange={(event) => updateField("ctaUrl", event.target.value)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           />
         </Field>
         <Field label="SEO 標題">
           <input
             value={form.seoTitle}
-            onChange={(event) => setForm({ ...form, seoTitle: event.target.value })}
+            onChange={(event) => updateField("seoTitle", event.target.value)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           />
         </Field>
         <Field label="SEO 描述">
           <input
             value={form.seoDescription}
-            onChange={(event) => setForm({ ...form, seoDescription: event.target.value })}
+            onChange={(event) => updateField("seoDescription", event.target.value)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           />
         </Field>
         <Field label="OG 標題">
           <input
             value={form.ogTitle}
-            onChange={(event) => setForm({ ...form, ogTitle: event.target.value })}
+            onChange={(event) => updateField("ogTitle", event.target.value)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           />
         </Field>
         <Field label="OG 描述">
           <input
             value={form.ogDescription}
-            onChange={(event) => setForm({ ...form, ogDescription: event.target.value })}
+            onChange={(event) => updateField("ogDescription", event.target.value)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           />
         </Field>
@@ -496,13 +549,18 @@ function PublishValidationPanel({ issues }: { issues: PublishValidationIssue[] }
   );
 }
 
-function MutationError({ error }: { error: unknown }) {
-  if (!(error instanceof Error) || error instanceof PublishValidationError) return null;
+function ActionErrors({ errors }: { errors: unknown[] }) {
+  const visibleErrors = errors.filter(
+    (error): error is Error => error instanceof Error && !(error instanceof PublishValidationError),
+  );
+  if (visibleErrors.length === 0) return null;
 
   return (
-    <p className="rounded-lg border border-[var(--color-error)] bg-[var(--color-surface)] p-3 text-sm font-semibold text-[var(--color-error)]">
-      {error.message}
-    </p>
+    <div className="rounded-lg border border-[var(--color-error)] bg-[var(--color-surface)] p-3 text-sm font-semibold text-[var(--color-error)]">
+      {visibleErrors.map((error) => (
+        <p key={error.message}>{error.message}</p>
+      ))}
+    </div>
   );
 }
 
@@ -533,7 +591,7 @@ function formFromContent(content: ContentDetail): ContentFormState {
     summary: content.summary,
     body: content.body ?? "",
     status: content.status,
-    publishedAt: content.publishedAt ? toDatetimeLocal(content.publishedAt) : "",
+    publishedAt: content.publishedAt ? formatIsoForDatetimeLocal(content.publishedAt) : "",
     ctaLabel: content.ctaLabel ?? "",
     ctaUrl: content.ctaUrl ?? "",
     seoTitle: content.seoTitle ?? "",
@@ -548,7 +606,7 @@ function normalizeForm(form: ContentFormState) {
     ...form,
     subtitle: emptyToNull(form.subtitle),
     body: emptyToNull(form.body),
-    publishedAt: form.publishedAt ? new Date(form.publishedAt).toISOString() : null,
+    publishedAt: parseDatetimeLocalToIso(form.publishedAt),
     ctaLabel: emptyToNull(form.ctaLabel),
     ctaUrl: emptyToNull(form.ctaUrl),
     seoTitle: emptyToNull(form.seoTitle),
@@ -561,10 +619,6 @@ function normalizeForm(form: ContentFormState) {
 function emptyToNull(value: string) {
   const trimmed = value.trim();
   return trimmed ? trimmed : null;
-}
-
-function toDatetimeLocal(value: string) {
-  return new Date(value).toISOString().slice(0, 16);
 }
 
 class PublishValidationError extends Error {

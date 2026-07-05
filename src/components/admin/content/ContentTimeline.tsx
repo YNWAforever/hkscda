@@ -16,12 +16,14 @@ type ContentTimelineProps = {
   updates: StoryUpdate[];
   onGenerateDrafts?: (updateId: string) => void;
   generatingUpdateId?: string | null;
+  disabled?: boolean;
 };
 
 export function ContentTimeline({
   updates,
   onGenerateDrafts,
   generatingUpdateId,
+  disabled = false,
 }: ContentTimelineProps) {
   if (updates.length === 0) {
     return (
@@ -68,7 +70,7 @@ export function ContentTimeline({
               {onGenerateDrafts && update.shouldGenerateAdopterDrafts ? (
                 <button
                   type="button"
-                  disabled={generatingUpdateId === update.id}
+                  disabled={disabled || generatingUpdateId === update.id}
                   onClick={() => onGenerateDrafts(update.id)}
                   className="rounded-md border border-[var(--color-border)] px-2 py-1 font-semibold text-[var(--color-panel)] disabled:opacity-60"
                 >

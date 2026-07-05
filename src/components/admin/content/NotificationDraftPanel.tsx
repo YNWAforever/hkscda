@@ -10,12 +10,14 @@ type NotificationDraftPanelProps = {
   drafts: RecipientNotificationDraft[];
   onUpdateStatus?: (draftId: string, status: NotificationDraftStatus) => void;
   pendingDraftId?: string | null;
+  disabled?: boolean;
 };
 
 export function NotificationDraftPanel({
   drafts,
   onUpdateStatus,
   pendingDraftId,
+  disabled = false,
 }: NotificationDraftPanelProps) {
   return (
     <section className="space-y-3">
@@ -59,8 +61,12 @@ export function NotificationDraftPanel({
                   <div className="flex flex-wrap justify-end gap-2">
                     <button
                       type="button"
-                      disabled={pendingDraftId === draft.id}
-                      onClick={() => onUpdateStatus(draft.id, "copied")}
+                      disabled={disabled || pendingDraftId === draft.id}
+                      onClick={() => {
+                        void copyTextToClipboard(draft.body).finally(() =>
+                          onUpdateStatus(draft.id, "copied"),
+                        );
+                      }}
                       className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-2 py-1 text-xs font-semibold text-[var(--color-panel)] disabled:opacity-60"
                     >
                       <Copy className="h-3 w-3" />
@@ -68,7 +74,7 @@ export function NotificationDraftPanel({
                     </button>
                     <button
                       type="button"
-                      disabled={pendingDraftId === draft.id}
+                      disabled={disabled || pendingDraftId === draft.id}
                       onClick={() => onUpdateStatus(draft.id, "sent_manually")}
                       className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-2 py-1 text-xs font-semibold text-[var(--color-panel)] disabled:opacity-60"
                     >
@@ -77,7 +83,7 @@ export function NotificationDraftPanel({
                     </button>
                     <button
                       type="button"
-                      disabled={pendingDraftId === draft.id}
+                      disabled={disabled || pendingDraftId === draft.id}
                       onClick={() => onUpdateStatus(draft.id, "dismissed")}
                       className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-2 py-1 text-xs font-semibold text-[var(--color-panel)] disabled:opacity-60"
                     >
@@ -101,4 +107,12 @@ export function NotificationDraftPanel({
       )}
     </section>
   );
+}
+
+function copyTextToClipboard(text: string) {
+  if (typeof navigator === "undefined" || !navigator.clipboard?.writeText) {
+    return Promise.resolve();
+  }
+
+  return navigator.clipboard.writeText(text);
 }

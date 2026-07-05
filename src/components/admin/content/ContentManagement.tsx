@@ -218,10 +218,10 @@ function ContentManagementView({
       </div>
 
       <div className="grid gap-3 md:grid-cols-4">
-        <SummaryCard label="全部內容" value={summary.total} />
-        <SummaryCard label="已發布" value={summary.published} />
-        <SummaryCard label="草稿" value={summary.drafts} />
-        <SummaryCard label="救援故事" value={summary.rescueStories} />
+        <SummaryCard label="全部內容" value={data?.pagination.total ?? summary.total} />
+        <SummaryCard label="本頁已發布" value={summary.published} />
+        <SummaryCard label="本頁草稿" value={summary.drafts} />
+        <SummaryCard label="本頁救援故事" value={summary.rescueStories} />
       </div>
 
       <section className="space-y-3">
