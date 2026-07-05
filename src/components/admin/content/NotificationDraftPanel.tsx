@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { CheckCircle2, Copy, Mail, MessageCircle, XCircle } from "lucide-react";
 
 import type {
@@ -5,6 +6,7 @@ import type {
   RecipientNotificationDraft,
 } from "../../../lib/content/types";
 import { StatusPill } from "../StatusBadge";
+import { copyTextToClipboard } from "./contentAdminLogic";
 
 type NotificationDraftPanelProps = {
   drafts: RecipientNotificationDraft[];
@@ -19,12 +21,20 @@ export function NotificationDraftPanel({
   pendingDraftId,
   disabled = false,
 }: NotificationDraftPanelProps) {
+  const [clipboardError, setClipboardError] = useState<string | null>(null);
+
   return (
     <section className="space-y-3">
       <div>
         <h2 className="text-lg font-bold text-[var(--color-panel)]">通知草稿</h2>
         <p className="text-sm text-[var(--color-text-muted)]">給領養人或支持者的手動通知草稿。</p>
       </div>
+
+      {clipboardError ? (
+        <p className="rounded-lg border border-[var(--color-error)] bg-[var(--color-surface)] p-3 text-sm font-semibold text-[var(--color-error)]">
+          {clipboardError}
+        </p>
+      ) : null}
 
       {drafts.length === 0 ? (
         <p className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-sm text-[var(--color-text-muted)]">
@@ -63,9 +73,12 @@ export function NotificationDraftPanel({
                       type="button"
                       disabled={disabled || pendingDraftId === draft.id}
                       onClick={() => {
-                        void copyTextToClipboard(draft.body).finally(() =>
-                          onUpdateStatus(draft.id, "copied"),
-                        );
+                        setClipboardError(null);
+                        void copyTextToClipboard(draft.body)
+                          .then(() => onUpdateStatus(draft.id, "copied"))
+                          .catch((error) => {
+                            setClipboardError(clipboardErrorMessage(error));
+                          });
                       }}
                       className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-2 py-1 text-xs font-semibold text-[var(--color-panel)] disabled:opacity-60"
                     >
@@ -109,10 +122,7 @@ export function NotificationDraftPanel({
   );
 }
 
-function copyTextToClipboard(text: string) {
-  if (typeof navigator === "undefined" || !navigator.clipboard?.writeText) {
-    return Promise.resolve();
-  }
-
-  return navigator.clipboard.writeText(text);
+function clipboardErrorMessage(error: unknown) {
+  if (error instanceof Error) return `複製失敗：${error.message}`;
+  return "複製失敗，請手動選取文字。";
 }

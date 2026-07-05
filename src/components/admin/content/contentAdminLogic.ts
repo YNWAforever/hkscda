@@ -16,6 +16,10 @@ export type ContentSummaryRow = {
   status: ContentStatus;
 };
 
+export type ClipboardWriter = {
+  writeText: (text: string) => Promise<void>;
+};
+
 export function buildContentSearchParams(input: ContentSearchInput = {}) {
   const params = new URLSearchParams();
   const query = input.q?.trim();
@@ -79,7 +83,21 @@ export function parseDatetimeLocalToIso(value: string) {
   return date.toISOString();
 }
 
+export function copyTextToClipboard(text: string, clipboard?: ClipboardWriter) {
+  const writer = clipboard ?? currentClipboard();
+  if (!writer) {
+    return Promise.reject(new Error("Clipboard is not available in this browser."));
+  }
+
+  return writer.writeText(text);
+}
+
 function boundInteger(value: number, min: number, max: number) {
   if (!Number.isFinite(value)) return min;
   return Math.min(max, Math.max(min, Math.trunc(value)));
+}
+
+function currentClipboard() {
+  if (typeof navigator === "undefined" || !navigator.clipboard?.writeText) return null;
+  return navigator.clipboard;
 }

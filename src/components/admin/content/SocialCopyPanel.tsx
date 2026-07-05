@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Check, Copy, Wand2 } from "lucide-react";
 
 import type { SocialCopyStatus, SocialCopyVariant } from "../../../lib/content/types";
 import { StatusPill } from "../StatusBadge";
+import { copyTextToClipboard } from "./contentAdminLogic";
 
 const platformLabels: Record<SocialCopyVariant["platform"], string> = {
   facebook: "Facebook",
@@ -26,6 +28,8 @@ export function SocialCopyPanel({
   generating = false,
   disabled = false,
 }: SocialCopyPanelProps) {
+  const [clipboardError, setClipboardError] = useState<string | null>(null);
+
   return (
     <section className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -45,6 +49,12 @@ export function SocialCopyPanel({
           </button>
         ) : null}
       </div>
+
+      {clipboardError ? (
+        <p className="rounded-lg border border-[var(--color-error)] bg-[var(--color-surface)] p-3 text-sm font-semibold text-[var(--color-error)]">
+          {clipboardError}
+        </p>
+      ) : null}
 
       {copies.length === 0 ? (
         <p className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-sm text-[var(--color-text-muted)]">
@@ -79,7 +89,12 @@ export function SocialCopyPanel({
                     type="button"
                     disabled={disabled || pendingCopyId === copy.id}
                     onClick={() => {
-                      void copySocialText(copy).finally(() => onUpdateStatus(copy.id, "copied"));
+                      setClipboardError(null);
+                      void copySocialText(copy)
+                        .then(() => onUpdateStatus(copy.id, "copied"))
+                        .catch((error) => {
+                          setClipboardError(clipboardErrorMessage(error));
+                        });
                     }}
                     className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-2 py-1 text-xs font-semibold text-[var(--color-panel)] disabled:opacity-60"
                   >
@@ -114,10 +129,7 @@ function copySocialText(copy: SocialCopyVariant) {
   return copyTextToClipboard(socialClipboardText(copy));
 }
 
-function copyTextToClipboard(text: string) {
-  if (typeof navigator === "undefined" || !navigator.clipboard?.writeText) {
-    return Promise.resolve();
-  }
-
-  return navigator.clipboard.writeText(text);
+function clipboardErrorMessage(error: unknown) {
+  if (error instanceof Error) return `複製失敗：${error.message}`;
+  return "複製失敗，請手動選取文字。";
 }

@@ -3,6 +3,7 @@ import { describe, expect, test } from "bun:test";
 import {
   buildContentSearchParams,
   contentStatusTone,
+  copyTextToClipboard,
   formatContentTypeLabel,
   formatIsoForDatetimeLocal,
   parseDatetimeLocalToIso,
@@ -47,5 +48,25 @@ describe("contentAdminLogic", () => {
     const local = formatIsoForDatetimeLocal(iso);
 
     expect(parseDatetimeLocalToIso(local)).toBe(iso);
+  });
+
+  test("copies text through an injected clipboard and rejects failures", async () => {
+    const writes: string[] = [];
+    const clipboard = {
+      writeText: async (text: string) => {
+        writes.push(text);
+      },
+    };
+
+    await expect(copyTextToClipboard("小白更新", clipboard)).resolves.toBeUndefined();
+    expect(writes).toEqual(["小白更新"]);
+
+    await expect(
+      copyTextToClipboard("失敗", {
+        writeText: async () => {
+          throw new Error("clipboard blocked");
+        },
+      }),
+    ).rejects.toThrow("clipboard blocked");
   });
 });
