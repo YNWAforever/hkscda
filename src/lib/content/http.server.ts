@@ -27,6 +27,17 @@ async function jsonBody(request: Request) {
   }
 }
 
+async function optionalJsonBody(request: Request) {
+  const body = await request.text();
+  if (!body.trim()) return {};
+
+  try {
+    return JSON.parse(body);
+  } catch {
+    throw jsonResponse({ error: "Invalid JSON body" }, { status: 400 });
+  }
+}
+
 function jsonResponse(body: unknown, init?: ResponseInit) {
   const headers = new Headers(init?.headers);
   headers.set("cache-control", "no-store");
@@ -175,7 +186,7 @@ export function createContentHandlers({ requireContentAdmin, service }: CreateCo
           await service.generateSocialCopy({
             actorUserId: admin.authUserId,
             contentId: requiredId(params),
-            input: await jsonBody(request).catch(() => ({})),
+            input: await optionalJsonBody(request),
           }),
           { status: 201 },
         );

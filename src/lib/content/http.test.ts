@@ -163,4 +163,27 @@ describe("createContentHandlers", () => {
     expect(response.status).toBe(400);
     expect(await response.json()).toEqual({ error: "Invalid content management request" });
   });
+
+  test("rejects malformed optional admin JSON bodies before service work", async () => {
+    const service = createService();
+    const handlers = createContentHandlers({
+      requireContentAdmin: async () => admin,
+      service,
+    });
+
+    const response = await handlers.generateSocialCopy({
+      request: new Request(
+        "https://example.test/api/admin/content/99999999-aaaa-4333-8444-555555555555/social-copy",
+        {
+          method: "POST",
+          body: "{not-json",
+        },
+      ),
+      params: { id: "99999999-aaaa-4333-8444-555555555555" },
+    });
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({ error: "Invalid JSON body" });
+    expect(service.calls).toEqual([]);
+  });
 });
