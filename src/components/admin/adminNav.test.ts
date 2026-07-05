@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, test } from "bun:test";
 
@@ -92,6 +92,23 @@ describe("admin nav active state", () => {
 
     expect(contentItem?.to).toBe("/admin/content");
     expect(existsSync(join(process.cwd(), "src/routes/admin/content.tsx"))).toBe(true);
+  });
+
+  test("keeps the content nav target registered in the route tree", () => {
+    const routeTree = readFileSync(join(process.cwd(), "src/routeTree.gen.ts"), "utf8");
+
+    expect(routeTree).toContain("/admin/content");
+  });
+
+  test("keeps content placeholder language copy under the admin language provider", () => {
+    const routeSource = readFileSync(join(process.cwd(), "src/routes/admin/content.tsx"), "utf8");
+    const pageStart = routeSource.indexOf("function AdminContentPage()");
+    const childStart = routeSource.indexOf("function AdminContentPlaceholder()");
+
+    expect(pageStart).toBeGreaterThanOrEqual(0);
+    expect(childStart).toBeGreaterThan(pageStart);
+    expect(routeSource.slice(pageStart, childStart)).not.toContain("useAdminLanguage");
+    expect(routeSource.slice(pageStart, childStart)).toContain("<AdminContentPlaceholder />");
   });
 
   test("has bilingual labels for every nav item", () => {
