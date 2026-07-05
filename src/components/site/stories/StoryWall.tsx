@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { Cat, Dog, Filter, Heart, MapPin } from "lucide-react";
 import { useMemo, useState } from "react";
 
@@ -131,7 +132,7 @@ function StoryCard({ story }: { story: ContentSummary }) {
 
   return (
     <article className="card-dashed flex h-full flex-col overflow-hidden bg-[var(--color-surface)] transition hover:shadow-md">
-      <a href={`/stories/${story.slug}`} className="block">
+      <Link to="/stories/$slug" params={{ slug: story.slug }} className="block">
         {story.coverImageUrl ? (
           <img
             src={story.coverImageUrl}
@@ -147,7 +148,7 @@ function StoryCard({ story }: { story: ContentSummary }) {
             />
           </div>
         )}
-      </a>
+      </Link>
       <div className="flex flex-1 flex-col gap-3 p-5">
         <div className="flex flex-wrap gap-2">
           <span className="rounded-full bg-[var(--color-accent-warm)] px-3 py-1 text-xs font-bold text-white">
@@ -160,7 +161,9 @@ function StoryCard({ story }: { story: ContentSummary }) {
         </div>
         <div>
           <h2 className="font-display text-xl font-bold leading-snug text-[var(--color-panel)]">
-            <a href={`/stories/${story.slug}`}>{story.title}</a>
+            <Link to="/stories/$slug" params={{ slug: story.slug }}>
+              {story.title}
+            </Link>
           </h2>
           {story.subtitle ? (
             <p className="mt-1 text-sm font-medium text-[var(--color-primary)]">{story.subtitle}</p>

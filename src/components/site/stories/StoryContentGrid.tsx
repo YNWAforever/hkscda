@@ -75,7 +75,8 @@ export function StoryContentGrid({ items }: StoryContentGridProps) {
                       </a>
                     ) : (
                       <Link
-                        to={`/stories/${item.slug}`}
+                        to="/stories/$slug"
+                        params={{ slug: item.slug }}
                         className="mt-auto pt-4 text-sm font-bold text-[var(--color-primary)]"
                       >
                         閱讀詳情

@@ -1,8 +1,24 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, mock, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 
 import type { ContentSummary } from "../../../lib/content/types";
-import { StoryWall } from "./StoryWall";
+
+mock.module("@tanstack/react-router", () => ({
+  Link: ({
+    children,
+    params,
+    to,
+    ...props
+  }: {
+    children: React.ReactNode;
+    params?: { slug?: string };
+    to: string;
+  }) => (
+    <a href={params?.slug ? to.replace("$slug", params.slug) : to} {...props}>
+      {children}
+    </a>
+  ),
+}));
 
 const story: ContentSummary = {
   id: "story-1",
@@ -37,7 +53,8 @@ const story: ContentSummary = {
 };
 
 describe("StoryWall", () => {
-  test("renders public rescue stories with status and region", () => {
+  test("renders public rescue stories with status and region", async () => {
+    const { StoryWall } = await import("./StoryWall");
     const markup = renderToStaticMarkup(<StoryWall stories={[story]} />);
 
     expect(markup).toContain("救援故事牆");

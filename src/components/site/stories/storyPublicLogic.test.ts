@@ -3,15 +3,16 @@ import { describe, expect, test } from "bun:test";
 import type { ContentSummary } from "../../../lib/content/types";
 import { filterStoryCards, publicStatusLabel } from "./storyPublicLogic";
 
-function makeStory(
-  overrides: Partial<ContentSummary> & {
-    id: string;
-    type?: ContentSummary["type"];
-    storyProfile?: NonNullable<ContentSummary["storyProfile"]> | null;
-  },
-): ContentSummary {
+function makeStory({
+  id,
+  ...overrides
+}: Partial<Omit<ContentSummary, "id">> & {
+  id: string;
+  type?: ContentSummary["type"];
+  storyProfile?: NonNullable<ContentSummary["storyProfile"]> | null;
+}): ContentSummary {
   const storyProfile = overrides.storyProfile ?? {
-    contentItemId: overrides.id,
+    contentItemId: id,
     animalType: "cat",
     publicStatus: "medical_care",
     rescueRegion: "灣仔",
@@ -26,10 +27,10 @@ function makeStory(
   };
 
   return {
-    id: overrides.id,
-    slug: `${overrides.id}-story`,
+    id,
+    slug: `${id}-story`,
     type: overrides.type ?? "rescue_story",
-    title: overrides.title ?? `Story ${overrides.id}`,
+    title: overrides.title ?? `Story ${id}`,
     subtitle: null,
     summary: "Public rescue summary",
     coverMediaId: null,

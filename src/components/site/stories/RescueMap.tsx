@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { Cat, Dog, MapPinned } from "lucide-react";
 
 import type { PublicStoryMapPoint } from "../../../lib/content/types";
@@ -6,6 +7,27 @@ import { publicStatusLabel } from "./storyPublicLogic";
 type RescueMapProps = {
   points: PublicStoryMapPoint[];
 };
+
+const hkBounds = {
+  minLat: 22.13,
+  maxLat: 22.57,
+  minLng: 113.82,
+  maxLng: 114.43,
+};
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function projectPoint(lat: number, lng: number) {
+  const xRatio = (lng - hkBounds.minLng) / (hkBounds.maxLng - hkBounds.minLng);
+  const yRatio = (hkBounds.maxLat - lat) / (hkBounds.maxLat - hkBounds.minLat);
+
+  return {
+    x: 52 + clamp(xRatio, 0, 1) * 216,
+    y: 74 + clamp(yRatio, 0, 1) * 104,
+  };
+}
 
 export function RescueMap({ points }: RescueMapProps) {
   return (
@@ -50,11 +72,11 @@ export function RescueMap({ points }: RescueMapProps) {
                 stroke="var(--color-border)"
                 strokeWidth="2"
               />
-              {points.slice(0, 8).map((point, index) => {
-                const x = 74 + ((index * 37) % 172);
-                const y = 91 + ((index * 29) % 82);
+              {points.map((point, index) => {
+                const { x, y } = projectPoint(point.lat, point.lng);
                 return (
-                  <g key={point.id}>
+                  <g key={point.id} data-map-marker={point.id}>
+                    <title>{`${point.publicMapLabel} · ${point.rescueRegion} · ${publicStatusLabel(point.publicStatus)}`}</title>
                     <circle cx={x} cy={y} r="9" fill="var(--color-cta)" />
                     <text
                       x={x}
@@ -81,9 +103,10 @@ export function RescueMap({ points }: RescueMapProps) {
               points.map((point, index) => {
                 const Icon = point.animalType === "dog" ? Dog : Cat;
                 return (
-                  <a
+                  <Link
                     key={point.id}
-                    href={`/stories/${point.slug}`}
+                    to="/stories/$slug"
+                    params={{ slug: point.slug }}
                     className="card-dashed flex gap-3 bg-[var(--color-surface)] p-4 transition hover:shadow-sm"
                   >
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary-highlight)] text-[var(--color-primary)]">
@@ -101,7 +124,7 @@ export function RescueMap({ points }: RescueMapProps) {
                         {point.rescueRegion} · {publicStatusLabel(point.publicStatus)}
                       </p>
                     </div>
-                  </a>
+                  </Link>
                 );
               })
             )}
