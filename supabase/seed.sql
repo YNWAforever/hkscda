@@ -520,6 +520,278 @@ set adoption_case_id = excluded.adoption_case_id,
     created_at = excluded.created_at,
     updated_at = excluded.updated_at;
 
+-- ---------------------------------------------------------------------------
+-- Story and promotion center content
+-- ---------------------------------------------------------------------------
+
+insert into public.content_item
+  (id, slug, type, title, subtitle, summary, body, cover_media_id, status, published_at, cta_label, cta_url, seo_title, seo_description, og_title, og_description, created_at, updated_at)
+values
+  (
+    '70000000-0000-4000-8000-000000000001',
+    'demo-siu-bak-recovery',
+    'rescue_story',
+    '【示範】小白康復中',
+    '完成疫苗後於暫養家庭休養',
+    '小白由深水埗救援後已完成初步檢查及疫苗，現正於暫養家庭慢慢恢復信任。',
+    '小白初到時十分怕人，義工以少量多餐和安靜空間協助牠穩定。獸醫檢查後確認牠需要完成疫苗及營養補充。最新狀況良好，暫養家庭每天記錄食慾和精神狀態。',
+    null,
+    'published',
+    '2026-07-05 09:00:00+08',
+    '支持醫療基金',
+    '/donate',
+    '小白康復中 · HKSCDA 救援故事',
+    '小白由深水埗救援後完成疫苗，正在暫養家庭康復。',
+    '小白康復中',
+    '追蹤小白的醫療與暫養更新。',
+    '2026-07-05 09:00:00+08',
+    '2026-07-06 20:00:00+08'
+  ),
+  (
+    '70000000-0000-4000-8000-000000000002',
+    'demo-lucky-ready-for-adoption',
+    'rescue_story',
+    '【示範】Lucky 準備尋家',
+    '由戶外救援到重新學習散步',
+    'Lucky 在元朗被救援後完成基本檢查，性格親人，正準備進入領養配對。',
+    'Lucky 起初對拖帶和車聲較敏感，義工每日以短距離散步重新建立安全感。牠現在能穩定跟隨指令，亦願意主動接近熟悉的人。',
+    null,
+    'published',
+    '2026-07-04 10:00:00+08',
+    '查看領養須知',
+    '/adoption/instructions',
+    'Lucky 準備尋家 · HKSCDA 救援故事',
+    'Lucky 完成基本檢查，正在等待合適家庭。',
+    'Lucky 準備尋家',
+    '由救援到準備領養的最新進展。',
+    '2026-07-04 10:00:00+08',
+    '2026-07-04 18:00:00+08'
+  ),
+  (
+    '70000000-0000-4000-8000-000000000003',
+    'demo-orange-sponsor-needed',
+    'rescue_story',
+    '【示範】阿橘需要助養',
+    '長期照護個案需要穩定支援',
+    '阿橘在觀塘區救援，現需定期覆診及慢性病照護，等待助養人支援。',
+    '阿橘年紀較大，血液報告顯示需要長期監察。牠現由義工照顧，食慾穩定但仍需定期覆診及藥物。每份助養都能分擔牠的醫療和日常照護。',
+    null,
+    'published',
+    '2026-07-03 14:00:00+08',
+    '成為助養人',
+    '/sponsors',
+    '阿橘需要助養 · HKSCDA 救援故事',
+    '阿橘需要長期醫療和日常照護支援。',
+    '阿橘需要助養',
+    '了解阿橘的長期照護需要。',
+    '2026-07-03 14:00:00+08',
+    '2026-07-03 16:00:00+08'
+  ),
+  (
+    '70000000-0000-4000-8000-000000000004',
+    'demo-summer-adoption-day',
+    'event',
+    '【示範】夏日領養日',
+    '與等待家庭的毛孩見面',
+    '週末領養日將展示多隻已完成基本檢查的貓狗，歡迎預約探訪。',
+    '活動設有義工導賞、領養流程簡介和照顧準備問答。為保障動物狀態，請先完成網上領養申請或以 WhatsApp 預約。',
+    null,
+    'published',
+    '2026-07-02 12:00:00+08',
+    '填寫領養申請',
+    '/adoption/apply',
+    '夏日領養日 · HKSCDA',
+    '預約參與夏日領養日，認識等待家庭的貓狗。',
+    '夏日領養日',
+    '與等待家庭的毛孩見面。',
+    '2026-07-02 12:00:00+08',
+    '2026-07-02 12:00:00+08'
+  ),
+  (
+    '70000000-0000-4000-8000-000000000005',
+    'demo-charity-market-july',
+    'charity_market',
+    '【示範】七月慈善市集',
+    '義賣收益支持醫療個案',
+    '本月慈善市集設有寵物用品、手作小物及義工分享，收益撥作救援醫療基金。',
+    '市集由義工團隊籌備，現場會分享近期救援個案和物資需要。歡迎捐贈全新或狀態良好的寵物用品作義賣。',
+    null,
+    'published',
+    '2026-07-01 11:00:00+08',
+    '支持捐款',
+    '/donate',
+    '七月慈善市集 · HKSCDA',
+    '慈善市集收益支持救援醫療基金。',
+    '七月慈善市集',
+    '義賣支持醫療個案。',
+    '2026-07-01 11:00:00+08',
+    '2026-07-01 11:00:00+08'
+  ),
+  (
+    '70000000-0000-4000-8000-000000000006',
+    'demo-rescue-report-june',
+    'report',
+    '【示範】六月救援報告',
+    '透明公開近期救援與領養數據',
+    '六月完成多宗救援、醫療跟進及領養配對，報告摘要公開供支持者查閱。',
+    '本月報告整理救援地區、醫療支出類別、領養進度和義工參與情況。完整財務及個案資料會按私隱規則分級公開。',
+    null,
+    'published',
+    '2026-06-30 18:00:00+08',
+    '查看領養報告',
+    '/report/adoption',
+    '六月救援報告 · HKSCDA',
+    '六月救援與領養摘要。',
+    '六月救援報告',
+    '透明公開近期救援與領養數據。',
+    '2026-06-30 18:00:00+08',
+    '2026-06-30 18:00:00+08'
+  ),
+  (
+    '70000000-0000-4000-8000-000000000007',
+    'demo-dodo-adopter-update',
+    'rescue_story',
+    '【示範】豆豆新生活更新',
+    '領養後第一週回報',
+    '豆豆已完成領養程序，領養人回報牠食慾正常，正逐步適應新家。',
+    '豆豆到新家後第一週表現穩定，願意在固定位置休息，也開始跟隨領養人散步。職員已整理更新草稿，供領養人確認後作後續通知示範。',
+    null,
+    'published',
+    '2026-07-06 12:00:00+08',
+    '了解成功領養',
+    '/report/adoption',
+    '豆豆新生活更新 · HKSCDA 救援故事',
+    '豆豆完成領養後第一週狀態穩定。',
+    '豆豆新生活更新',
+    '領養後第一週回報。',
+    '2026-07-06 12:00:00+08',
+    '2026-07-06 12:00:00+08'
+  )
+on conflict (id) do update
+set slug = excluded.slug,
+    type = excluded.type,
+    title = excluded.title,
+    subtitle = excluded.subtitle,
+    summary = excluded.summary,
+    body = excluded.body,
+    cover_media_id = excluded.cover_media_id,
+    status = excluded.status,
+    published_at = excluded.published_at,
+    cta_label = excluded.cta_label,
+    cta_url = excluded.cta_url,
+    seo_title = excluded.seo_title,
+    seo_description = excluded.seo_description,
+    og_title = excluded.og_title,
+    og_description = excluded.og_description,
+    created_at = excluded.created_at,
+    updated_at = excluded.updated_at;
+
+insert into public.rescue_story_profile
+  (content_item_id, animal_type, public_status, rescue_region, rescue_date, show_on_map, public_map_label, public_lat, public_lng, internal_address, internal_location_notes, is_featured, created_at, updated_at)
+values
+  ('70000000-0000-4000-8000-000000000001', 'cat', 'medical_care', '深水埗', '2026-06-28', true, '深水埗公開救援區域', 22.330200, 114.162200, null, null, true, '2026-07-05 09:00:00+08', '2026-07-06 20:00:00+08'),
+  ('70000000-0000-4000-8000-000000000002', 'dog', 'ready_for_adoption', '元朗', '2026-06-20', true, '元朗公開救援區域', 22.445600, 114.022900, null, null, true, '2026-07-04 10:00:00+08', '2026-07-04 18:00:00+08'),
+  ('70000000-0000-4000-8000-000000000003', 'cat', 'sponsor_needed', '觀塘', '2026-06-12', true, '觀塘公開救援區域', 22.313300, 114.225200, null, null, false, '2026-07-03 14:00:00+08', '2026-07-03 16:00:00+08'),
+  ('70000000-0000-4000-8000-000000000007', 'dog', 'adopted', '沙田', '2026-06-01', true, '沙田公開領養更新', 22.382300, 114.191900, null, null, true, '2026-07-06 12:00:00+08', '2026-07-06 12:00:00+08')
+on conflict (content_item_id) do update
+set animal_type = excluded.animal_type,
+    public_status = excluded.public_status,
+    rescue_region = excluded.rescue_region,
+    rescue_date = excluded.rescue_date,
+    show_on_map = excluded.show_on_map,
+    public_map_label = excluded.public_map_label,
+    public_lat = excluded.public_lat,
+    public_lng = excluded.public_lng,
+    internal_address = excluded.internal_address,
+    internal_location_notes = excluded.internal_location_notes,
+    is_featured = excluded.is_featured,
+    created_at = excluded.created_at,
+    updated_at = excluded.updated_at;
+
+insert into public.content_link
+  (id, content_item_id, linked_type, linked_id, relationship, created_at, updated_at)
+values
+  ('74000000-0000-4000-8000-000000000001', '70000000-0000-4000-8000-000000000001', 'animal', '10000000-0000-4000-8000-000000000001', 'primary_subject', '2026-07-05 09:00:00+08', '2026-07-05 09:00:00+08'),
+  ('74000000-0000-4000-8000-000000000002', '70000000-0000-4000-8000-000000000002', 'animal', '10000000-0000-4000-8000-000000000004', 'primary_subject', '2026-07-04 10:00:00+08', '2026-07-04 10:00:00+08'),
+  ('74000000-0000-4000-8000-000000000003', '70000000-0000-4000-8000-000000000003', 'animal', '10000000-0000-4000-8000-000000000006', 'primary_subject', '2026-07-03 14:00:00+08', '2026-07-03 14:00:00+08'),
+  ('74000000-0000-4000-8000-000000000004', '70000000-0000-4000-8000-000000000007', 'animal', '10000000-0000-4000-8000-000000000005', 'primary_subject', '2026-07-06 12:00:00+08', '2026-07-06 12:00:00+08'),
+  ('74000000-0000-4000-8000-000000000005', '70000000-0000-4000-8000-000000000007', 'successful_adoption', '54000000-0000-4000-8000-000000000001', 'related_case', '2026-07-06 12:00:00+08', '2026-07-06 12:00:00+08'),
+  ('74000000-0000-4000-8000-000000000006', '70000000-0000-4000-8000-000000000007', 'supporter', '30000000-0000-4000-8000-000000000002', 'adopter', '2026-07-06 12:00:00+08', '2026-07-06 12:00:00+08')
+on conflict (content_item_id, linked_type, linked_id, relationship) do update
+set created_at = excluded.created_at,
+    updated_at = excluded.updated_at;
+
+insert into public.story_update
+  (id, content_item_id, kind, title, body, occurred_at, visibility, should_generate_adopter_drafts, created_at, updated_at)
+values
+  ('71000000-0000-4000-8000-000000000001', '70000000-0000-4000-8000-000000000001', 'medical', '已完成疫苗接種', '小白已完成第一針疫苗，現於暫養家庭康復中，食慾和精神均有改善。', '2026-07-05 10:00:00+08', 'public', true, '2026-07-05 10:00:00+08', '2026-07-05 10:00:00+08'),
+  ('71000000-0000-4000-8000-000000000002', '70000000-0000-4000-8000-000000000001', 'foster', '暫養家庭回報穩定', '暫養家庭表示小白開始主動探索房間，亦願意接受輕柔撫摸。', '2026-07-06 20:00:00+08', 'public', false, '2026-07-06 20:00:00+08', '2026-07-06 20:00:00+08'),
+  ('71000000-0000-4000-8000-000000000003', '70000000-0000-4000-8000-000000000002', 'care', '散步訓練有進展', 'Lucky 能完成短距離散步，對路面聲音的反應明顯放鬆。', '2026-07-04 18:00:00+08', 'public', false, '2026-07-04 18:00:00+08', '2026-07-04 18:00:00+08'),
+  ('71000000-0000-4000-8000-000000000004', '70000000-0000-4000-8000-000000000003', 'medical', '覆診及藥物跟進', '阿橘需要定期覆診和慢性病藥物，義工正記錄每日食慾及體重。', '2026-07-03 16:00:00+08', 'public', true, '2026-07-03 16:00:00+08', '2026-07-03 16:00:00+08'),
+  ('71000000-0000-4000-8000-000000000005', '70000000-0000-4000-8000-000000000007', 'adoption', '領養人回報適應良好', '豆豆到新家後第一週表現穩定，已建立散步和進食時間表。', '2026-07-06 12:30:00+08', 'public', true, '2026-07-06 12:30:00+08', '2026-07-06 12:30:00+08'),
+  ('71000000-0000-4000-8000-000000000006', '70000000-0000-4000-8000-000000000007', 'general', '內部備註：下一次回訪', '此為內部示範更新，不會在公開故事頁顯示。', '2026-07-06 13:00:00+08', 'internal', false, '2026-07-06 13:00:00+08', '2026-07-06 13:00:00+08')
+on conflict (id) do update
+set content_item_id = excluded.content_item_id,
+    kind = excluded.kind,
+    title = excluded.title,
+    body = excluded.body,
+    occurred_at = excluded.occurred_at,
+    visibility = excluded.visibility,
+    should_generate_adopter_drafts = excluded.should_generate_adopter_drafts,
+    created_at = excluded.created_at,
+    updated_at = excluded.updated_at;
+
+insert into public.social_copy_variant
+  (id, content_item_id, story_update_id, platform, language, copy_text, hashtags, status, created_at, updated_at)
+values
+  ('72000000-0000-4000-8000-000000000001', '70000000-0000-4000-8000-000000000001', '71000000-0000-4000-8000-000000000001', 'facebook', 'zh-HK', '【示範草稿】小白已完成疫苗接種，現於暫養家庭康復中。謝謝每位支持醫療基金的朋友。', array['HKSCDA','救援故事','支持領養'], 'draft', '2026-07-05 10:05:00+08', '2026-07-05 10:05:00+08'),
+  ('72000000-0000-4000-8000-000000000002', '70000000-0000-4000-8000-000000000001', '71000000-0000-4000-8000-000000000001', 'instagram', 'zh-HK', '【示範草稿】小白向大家報平安。完成疫苗後，牠正慢慢恢復精神。', array['HKSCDA','RescueStory','AdoptDontShop'], 'draft', '2026-07-05 10:05:00+08', '2026-07-05 10:05:00+08'),
+  ('72000000-0000-4000-8000-000000000003', '70000000-0000-4000-8000-000000000001', '71000000-0000-4000-8000-000000000001', 'whatsapp', 'zh-HK', '【示範草稿】小白已完成疫苗接種，現於暫養家庭康復中。', array[]::text[], 'draft', '2026-07-05 10:05:00+08', '2026-07-05 10:05:00+08'),
+  ('72000000-0000-4000-8000-000000000004', '70000000-0000-4000-8000-000000000007', '71000000-0000-4000-8000-000000000005', 'facebook', 'zh-HK', '【示範草稿】豆豆完成領養後第一週適應良好，領養人回報牠已建立穩定作息。', array['HKSCDA','成功領養','領養更新'], 'draft', '2026-07-06 12:35:00+08', '2026-07-06 12:35:00+08'),
+  ('72000000-0000-4000-8000-000000000005', '70000000-0000-4000-8000-000000000007', '71000000-0000-4000-8000-000000000005', 'whatsapp', 'zh-HK', '【示範草稿】豆豆新生活第一週適應良好，謝謝領養人持續回報。', array[]::text[], 'draft', '2026-07-06 12:35:00+08', '2026-07-06 12:35:00+08')
+on conflict (id) do update
+set content_item_id = excluded.content_item_id,
+    story_update_id = excluded.story_update_id,
+    platform = excluded.platform,
+    language = excluded.language,
+    copy_text = excluded.copy_text,
+    hashtags = excluded.hashtags,
+    status = excluded.status,
+    created_at = excluded.created_at,
+    updated_at = excluded.updated_at;
+
+insert into public.recipient_notification_draft
+  (id, story_update_id, content_item_id, adoption_case_id, supporter_id, channel, recipient_name, recipient_contact, subject, body, status, created_at, updated_at)
+values
+  (
+    '73000000-0000-4000-8000-000000000001',
+    '71000000-0000-4000-8000-000000000005',
+    '70000000-0000-4000-8000-000000000007',
+    '51000000-0000-4000-8000-000000000004',
+    '30000000-0000-4000-8000-000000000002',
+    'whatsapp',
+    '李家豪',
+    '9123 1002',
+    null,
+    '【示範領養人更新草稿】豆豆完成領養後第一週適應良好。職員確認內容後，可手動傳送給領養人作後續紀錄。',
+    'draft',
+    '2026-07-06 12:40:00+08',
+    '2026-07-06 12:40:00+08'
+  )
+on conflict (id) do update
+set story_update_id = excluded.story_update_id,
+    content_item_id = excluded.content_item_id,
+    adoption_case_id = excluded.adoption_case_id,
+    supporter_id = excluded.supporter_id,
+    channel = excluded.channel,
+    recipient_name = excluded.recipient_name,
+    recipient_contact = excluded.recipient_contact,
+    subject = excluded.subject,
+    body = excluded.body,
+    status = excluded.status,
+    created_at = excluded.created_at,
+    updated_at = excluded.updated_at;
+
 insert into public.audit_log
   (id, actor_user_id, action, entity, entity_id, timestamp, detail, created_at, updated_at)
 values
