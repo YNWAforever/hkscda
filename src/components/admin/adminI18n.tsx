@@ -12,6 +12,7 @@ type AdminSection =
   | "payments"
   | "supporters"
   | "volunteers"
+  | "content"
   | "access";
 type AnimalType = "cat" | "dog" | "sponsor";
 type Gender = "female" | "male";
@@ -140,12 +141,14 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       payments: "收款",
       supporters: "支持者",
       volunteers: "義工",
+      content: "宣傳內容",
       access: "權限管理",
     },
     navGroups: {
       animals: "動物",
       adoptions: "領養",
       donations: "捐款",
+      promotion: "宣傳",
       system: "系統",
     },
     navItems: {
@@ -162,6 +165,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       volunteers: "義工活動",
       payments: "收款",
       supporters: "支持者",
+      content: "宣傳內容",
       "access-management": "權限管理",
     },
     layout: {
@@ -186,6 +190,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
         payments: "收款紀錄",
         supporters: "支持者",
         volunteers: "義工活動",
+        content: "宣傳內容",
         access: "權限管理",
       },
       addNew: "新增",
@@ -289,12 +294,14 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       payments: "Payments",
       supporters: "Supporters",
       volunteers: "Volunteers",
+      content: "Content",
       access: "Access Management",
     },
     navGroups: {
       animals: "Animals",
       adoptions: "Adoptions",
       donations: "Donations",
+      promotion: "Promotion",
       system: "System",
     },
     navItems: {
@@ -311,6 +318,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       volunteers: "Volunteers",
       payments: "Payments",
       supporters: "Supporters",
+      content: "Content",
       "access-management": "Access Management",
     },
     layout: {
@@ -335,6 +343,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
         payments: "Payment records",
         supporters: "Supporters",
         volunteers: "Volunteer activities",
+        content: "Content",
         access: "Access Management",
       },
       addNew: "Add new",

@@ -9,6 +9,7 @@ export type AdminDashboardSection =
   | "payments"
   | "supporters"
   | "volunteers"
+  | "content"
   | "access";
 
 export type AdminAccessArea =
@@ -22,6 +23,7 @@ export type AdminAccessArea =
   | "payments"
   | "supporters"
   | "volunteerManagement"
+  | "contentManagement"
   | "accessManagement";
 
 export type AdminIdentity = {
@@ -42,6 +44,7 @@ const ROLE_ACCESS: Record<AdminRole, ReadonlySet<AdminAccessArea>> = {
     "coordinatorReports",
     "volunteerManagement",
     "payments",
+    "contentManagement",
   ]),
   treasurer: new Set(["payments", "supporters"]),
   admin: new Set([
@@ -55,6 +58,7 @@ const ROLE_ACCESS: Record<AdminRole, ReadonlySet<AdminAccessArea>> = {
     "volunteerManagement",
     "payments",
     "supporters",
+    "contentManagement",
     "accessManagement",
   ]),
 };
@@ -71,6 +75,7 @@ const NAV_ITEM_AREAS: Record<string, AdminAccessArea> = {
   "coordinator-statuses": "coordinatorStatuses",
   volunteers: "volunteerManagement",
   payments: "payments",
+  content: "contentManagement",
   supporters: "supporters",
   "access-management": "accessManagement",
 };
@@ -105,6 +110,7 @@ export function getAdminAreaForLocation(input: {
   if (input.pathname.startsWith("/admin/coordinator/statuses")) return "coordinatorStatuses";
   if (input.pathname.startsWith("/admin/volunteers")) return "volunteerManagement";
   if (input.pathname.startsWith("/admin/supporters")) return "supporters";
+  if (input.pathname.startsWith("/admin/content")) return "contentManagement";
   if (input.pathname.startsWith("/admin/access")) return "accessManagement";
   return "animals";
 }

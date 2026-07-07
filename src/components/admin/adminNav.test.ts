@@ -1,3 +1,5 @@
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, test } from "bun:test";
 
 import { adminCopy } from "./adminI18n";
@@ -70,6 +72,43 @@ describe("admin nav active state", () => {
         "volunteers",
       ),
     ).toEqual(["volunteers"]);
+  });
+
+  test("uses the content item on content routes", () => {
+    expect(getActiveAdminNavItemIds(ADMIN_NAV_ITEMS, "/admin/content", "content")).toEqual([
+      "content",
+    ]);
+    expect(
+      getActiveAdminNavItemIds(
+        ADMIN_NAV_ITEMS,
+        "/admin/content/99999999-aaaa-4333-8444-555555555555",
+        "content",
+      ),
+    ).toEqual(["content"]);
+  });
+
+  test("keeps the content nav target backed by a route file", () => {
+    const contentItem = ADMIN_NAV_ITEMS.find((item) => item.id === "content");
+
+    expect(contentItem?.to).toBe("/admin/content");
+    expect(existsSync(join(process.cwd(), "src/routes/admin/content.tsx"))).toBe(true);
+  });
+
+  test("keeps the content nav target registered in the route tree", () => {
+    const routeTree = readFileSync(join(process.cwd(), "src/routeTree.gen.ts"), "utf8");
+
+    expect(routeTree).toContain("/admin/content");
+  });
+
+  test("keeps content placeholder language copy under the admin language provider", () => {
+    const routeSource = readFileSync(join(process.cwd(), "src/routes/admin/content.tsx"), "utf8");
+    const pageStart = routeSource.indexOf("function AdminContentPage()");
+    const childStart = routeSource.indexOf("function AdminContentPlaceholder()");
+
+    expect(pageStart).toBeGreaterThanOrEqual(0);
+    expect(childStart).toBeGreaterThan(pageStart);
+    expect(routeSource.slice(pageStart, childStart)).not.toContain("useAdminLanguage");
+    expect(routeSource.slice(pageStart, childStart)).toContain("<AdminContentPlaceholder />");
   });
 
   test("has bilingual labels for every nav item", () => {

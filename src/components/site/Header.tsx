@@ -156,6 +156,7 @@ export function Header() {
                 <NavDropdown trigger="領養" links={adoptLinks} />
 
                 <NavLink to="/sponsors">助養區</NavLink>
+                <NavLink to="/stories">故事</NavLink>
 
                 <NavDropdown trigger="透明度" links={reportLinks} />
 
@@ -228,6 +229,9 @@ export function Header() {
 
               <MobileSheetLink to="/sponsors" setOpen={setMobileOpen}>
                 助養區
+              </MobileSheetLink>
+              <MobileSheetLink to="/stories" setOpen={setMobileOpen}>
+                故事
               </MobileSheetLink>
 
               <MobileSheetSection title="透明度" links={reportLinks} setOpen={setMobileOpen} />
