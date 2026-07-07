@@ -13,6 +13,7 @@ import { Route as VolunteerRouteImport } from './routes/volunteer'
 import { Route as StoriesRouteImport } from './routes/stories'
 import { Route as SponsorsRouteImport } from './routes/sponsors'
 import { Route as DonateRouteImport } from './routes/donate'
+import { Route as HelpRouteImport } from './routes/help'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
@@ -151,6 +152,11 @@ const SponsorsRoute = SponsorsRouteImport.update({
 const DonateRoute = DonateRouteImport.update({
   id: '/donate',
   path: '/donate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -803,6 +809,7 @@ const ApiAdminAdoptionsApplicationsApplicationIdPhotosPhotoIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/donate': typeof DonateRoute
+  '/help': typeof HelpRoute
   '/sponsors': typeof SponsorsRoute
   '/stories': typeof StoriesRouteWithChildren
   '/volunteer': typeof VolunteerRouteWithChildren
@@ -928,6 +935,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/donate': typeof DonateRoute
+  '/help': typeof HelpRoute
   '/sponsors': typeof SponsorsRoute
   '/stories': typeof StoriesRouteWithChildren
   '/volunteer': typeof VolunteerRouteWithChildren
@@ -1053,6 +1061,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/donate': typeof DonateRoute
+  '/help': typeof HelpRoute
   '/sponsors': typeof SponsorsRoute
   '/stories': typeof StoriesRouteWithChildren
   '/volunteer': typeof VolunteerRouteWithChildren
@@ -1180,6 +1189,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/donate'
+    | '/help'
     | '/sponsors'
     | '/stories'
     | '/volunteer'
@@ -1305,6 +1315,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/donate'
+    | '/help'
     | '/sponsors'
     | '/stories'
     | '/volunteer'
@@ -1429,6 +1440,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/donate'
+    | '/help'
     | '/sponsors'
     | '/stories'
     | '/volunteer'
@@ -1555,6 +1567,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DonateRoute: typeof DonateRoute
+  HelpRoute: typeof HelpRoute
   SponsorsRoute: typeof SponsorsRoute
   StoriesRoute: typeof StoriesRouteWithChildren
   VolunteerRoute: typeof VolunteerRouteWithChildren
@@ -1665,6 +1678,13 @@ declare module '@tanstack/react-router' {
       path: '/donate'
       fullPath: '/donate'
       preLoaderRoute: typeof DonateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -2873,6 +2893,7 @@ const ApiAdminAdoptionsReportsExportsRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DonateRoute: DonateRoute,
+  HelpRoute: HelpRoute,
   SponsorsRoute: SponsorsRoute,
   StoriesRoute: StoriesRouteWithChildren,
   VolunteerRoute: VolunteerRouteWithChildren,

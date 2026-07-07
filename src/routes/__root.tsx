@@ -11,6 +11,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 import { Header } from "../components/site/Header";
 import { Footer } from "../components/site/Footer";
+import { HelpWidget } from "../components/site/help/HelpWidget";
 import { ShortlistProvider } from "../components/site/ShortlistProvider";
 import { ShortlistTray } from "../components/site/ShortlistTray";
 
@@ -170,6 +171,7 @@ function RootComponent() {
       </div>
       <Footer />
       <ShortlistTray />
+      <HelpWidget />
     </>
   );
 
