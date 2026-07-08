@@ -23,6 +23,10 @@ import type {
   AdoptionIntakeUrgency,
   AdopterCaseHistoryRow,
   AdopterSummary,
+  AnimalInternalProfile,
+  AnimalPipelineListResult,
+  AnimalPipelineRow,
+  AnimalPipelineSearch,
   AnimalMatchSummary,
   CoordinatorAdopterExportRow,
   CoordinatorAnimalExportRow,
@@ -111,6 +115,28 @@ type AnimalExportAnimalRow = AnimalRow & {
   type: string;
   status: string;
 };
+
+const animalPipelineAnimalColumns =
+  "id,type,name,name_en,gender,age,status,image_url,created_at,updated_at";
+
+const animalPipelineProfileColumns = [
+  "animal_id",
+  "internal_code",
+  "arrival_date",
+  "arrival_source_id",
+  "current_position_id",
+  "cage",
+  "has_chip",
+  "chip_remarks",
+  "is_desexed",
+  "desexed_at",
+  "desex_remarks",
+  "is_adoptable",
+  "is_inside_support_pool",
+  "adopted_at",
+  "deceased_at",
+  "internal_remarks",
+].join(",");
 
 type AnimalInternalProfileRow = {
   animal_id: string;
@@ -633,6 +659,72 @@ function mapIntakeItem(row: AdoptionIntakeItemRow): AdoptionIntakeItem {
     createdAt: row.created_at,
     resolvedAt: row.resolved_at,
     summary: row.summary ?? {},
+  };
+}
+
+function defaultInternalProfile(animalId: string): AnimalInternalProfile {
+  return {
+    animal_id: animalId,
+    internal_code: null,
+    arrival_date: null,
+    arrival_source_id: null,
+    current_position_id: null,
+    cage: null,
+    has_chip: null,
+    chip_remarks: null,
+    is_desexed: null,
+    desexed_at: null,
+    desex_remarks: null,
+    is_adoptable: true,
+    is_inside_support_pool: false,
+    adopted_at: null,
+    deceased_at: null,
+    internal_remarks: null,
+  };
+}
+
+function combineCandidateSet(current: Set<string> | null, ids: string[]) {
+  const next = new Set(ids);
+  if (!current) return next;
+  return new Set([...current].filter((id) => next.has(id)));
+}
+
+function postgrestInList(ids: string[]) {
+  return `(${ids.join(",")})`;
+}
+
+function mapAnimalPipelineRow(
+  row: Record<string, unknown>,
+  profile: AnimalInternalProfile | undefined,
+  positionsById: Map<string, AnimalPositionRow>,
+  sourcesById: Map<string, ArrivalSourceRow>,
+): AnimalPipelineRow {
+  const profileRow = profile ?? defaultInternalProfile(row.id as string);
+  const position = profileRow.current_position_id
+    ? positionsById.get(profileRow.current_position_id)
+    : undefined;
+  const source = profileRow.arrival_source_id
+    ? sourcesById.get(profileRow.arrival_source_id)
+    : undefined;
+
+  return {
+    id: row.id as string,
+    type: row.type as AnimalPipelineRow["type"],
+    name: row.name as string,
+    name_en: (row.name_en as string | null) ?? null,
+    gender: row.gender as AnimalPipelineRow["gender"],
+    age: row.age as string,
+    status: row.status as AnimalPipelineRow["status"],
+    image_url: (row.image_url as string | null) ?? null,
+    created_at: (row.created_at as string | null) ?? null,
+    updated_at: (row.updated_at as string | null) ?? null,
+    profile: profileRow,
+    currentPosition: position
+      ? { id: position.id, name: position.name, type: (position as { type?: string }).type ?? "unknown" }
+      : null,
+    arrivalSource: source
+      ? { id: source.id, name_zh: source.name_zh ?? source.name_en ?? source.id, name_en: source.name_en }
+      : null,
   };
 }
 
@@ -1448,6 +1540,155 @@ export function createSupabaseAdoptionCoordinatorRepository(
     async deleteStatus(id) {
       const { error } = await client.from("coordinator_status").delete().eq("id", id);
       if (error) throw error;
+    },
+
+    async listAnimalPipeline(input: AnimalPipelineSearch): Promise<AnimalPipelineListResult> {
+      const from = (input.page - 1) * input.pageSize;
+      let includeIds: Set<string> | null = null;
+      const excludeIds = new Set<string>();
+
+      if (input.animalId) {
+        includeIds = combineCandidateSet(includeIds, [input.animalId]);
+      }
+
+      if (input.q) {
+        const pattern = `%${sanitizeOrLikeValue(input.q)}%`;
+        const [animalMatches, profileMatches] = await Promise.all([
+          client.from("animals").select("id").or(`name.ilike.${pattern},name_en.ilike.${pattern}`),
+          client
+            .from("animal_profile_internal")
+            .select("animal_id")
+            .or(`internal_code.ilike.${pattern},cage.ilike.${pattern}`),
+        ]);
+        if (animalMatches.error) throw animalMatches.error;
+        if (profileMatches.error) throw profileMatches.error;
+        includeIds = combineCandidateSet(includeIds, [
+          ...((animalMatches.data ?? []) as Array<{ id: string }>).map((row) => row.id),
+          ...((profileMatches.data ?? []) as Array<{ animal_id: string }>).map(
+            (row) => row.animal_id,
+          ),
+        ]);
+      }
+
+      if (
+        input.adoptable === "not_adoptable" ||
+        input.supportPool === "inside" ||
+        (input.positionId !== "all" && input.positionId !== "none")
+      ) {
+        let profileQuery = client.from("animal_profile_internal").select("animal_id");
+        if (input.adoptable === "not_adoptable") profileQuery = profileQuery.eq("is_adoptable", false);
+        if (input.supportPool === "inside") {
+          profileQuery = profileQuery.eq("is_inside_support_pool", true);
+        }
+        if (input.positionId !== "all" && input.positionId !== "none") {
+          profileQuery = profileQuery.eq("current_position_id", input.positionId);
+        }
+        const { data, error } = await profileQuery;
+        if (error) throw error;
+        includeIds = combineCandidateSet(
+          includeIds,
+          ((data ?? []) as Array<{ animal_id: string }>).map((row) => row.animal_id),
+        );
+      }
+
+      if (input.adoptable === "adoptable") {
+        const { data, error } = await client
+          .from("animal_profile_internal")
+          .select("animal_id")
+          .eq("is_adoptable", false);
+        if (error) throw error;
+        for (const row of (data ?? []) as Array<{ animal_id: string }>) excludeIds.add(row.animal_id);
+      }
+
+      if (input.supportPool === "outside") {
+        const { data, error } = await client
+          .from("animal_profile_internal")
+          .select("animal_id")
+          .eq("is_inside_support_pool", true);
+        if (error) throw error;
+        for (const row of (data ?? []) as Array<{ animal_id: string }>) excludeIds.add(row.animal_id);
+      }
+
+      if (input.positionId === "none") {
+        const { data, error } = await client
+          .from("animal_profile_internal")
+          .select("animal_id")
+          .not("current_position_id", "is", null);
+        if (error) throw error;
+        for (const row of (data ?? []) as Array<{ animal_id: string }>) excludeIds.add(row.animal_id);
+      }
+
+      if (includeIds && includeIds.size === 0) {
+        return { animals: [], total: 0, page: input.page, pageSize: input.pageSize };
+      }
+
+      let animalQuery = client
+        .from("animals")
+        .select(animalPipelineAnimalColumns, { count: "exact" })
+        .order("updated_at", { ascending: false })
+        .range(from, from + input.pageSize - 1);
+
+      if (input.status !== "all") animalQuery = animalQuery.eq("status", input.status);
+      if (input.type !== "all") animalQuery = animalQuery.eq("type", input.type);
+      if (includeIds) animalQuery = animalQuery.in("id", [...includeIds]);
+      if (excludeIds.size > 0) animalQuery = animalQuery.not("id", "in", postgrestInList([...excludeIds]));
+
+      const { data: animalData, error: animalError, count } = await animalQuery;
+      if (animalError) throw animalError;
+
+      const animalRows = (animalData ?? []) as Record<string, unknown>[];
+      const animalIds = animalRows.map((row) => row.id as string);
+      if (animalIds.length === 0) {
+        return { animals: [], total: count ?? 0, page: input.page, pageSize: input.pageSize };
+      }
+
+      const { data: profileData, error: profileError } = await client
+        .from("animal_profile_internal")
+        .select(animalPipelineProfileColumns)
+        .in("animal_id", animalIds);
+      if (profileError) throw profileError;
+
+      const profileRows = (profileData ?? []) as AnimalInternalProfile[];
+      const positionIds = unique(profileRows.map((profile) => profile.current_position_id));
+      const sourceIds = unique(profileRows.map((profile) => profile.arrival_source_id));
+
+      let positionRows: AnimalPositionRow[] = [];
+      if (positionIds.length > 0) {
+        const { data, error } = await client
+          .from("animal_position")
+          .select("id,name,type")
+          .in("id", positionIds);
+        if (error) throw error;
+        positionRows = (data ?? []) as AnimalPositionRow[];
+      }
+
+      let sourceRows: ArrivalSourceRow[] = [];
+      if (sourceIds.length > 0) {
+        const { data, error } = await client
+          .from("arrival_source")
+          .select("id,name_zh,name_en")
+          .in("id", sourceIds);
+        if (error) throw error;
+        sourceRows = (data ?? []) as ArrivalSourceRow[];
+      }
+
+      const profilesByAnimalId = new Map(profileRows.map((profile) => [profile.animal_id, profile]));
+      const positionsById = new Map(positionRows.map((position) => [position.id, position]));
+      const sourcesById = new Map(sourceRows.map((source) => [source.id, source]));
+
+      return {
+        animals: animalRows.map((row) =>
+          mapAnimalPipelineRow(
+            row,
+            profilesByAnimalId.get(row.id as string),
+            positionsById,
+            sourcesById,
+          ),
+        ),
+        total: count ?? 0,
+        page: input.page,
+        pageSize: input.pageSize,
+      };
     },
 
     async listCases(input) {
