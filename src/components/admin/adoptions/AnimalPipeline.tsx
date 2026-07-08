@@ -301,7 +301,9 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
 
   const rows = pipelineQuery.data?.animals ?? [];
   const total = pipelineQuery.data?.total ?? 0;
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const resolvedPage = pipelineQuery.data?.page ?? page;
+  const resolvedPageSize = pipelineQuery.data?.pageSize ?? pageSize;
+  const totalPages = Math.max(1, Math.ceil(total / resolvedPageSize));
   const visibleRows = rows;
   const initialAnimalRows = initialAnimalQuery.data?.animals ?? [];
 
@@ -372,6 +374,18 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
       setProfileForm(cloneProfile(row.profile));
     }
   }, [initialAnimalId, initialAnimalQuery.data?.animals, rows]);
+
+  useEffect(() => {
+    if (!pipelineQuery.data || pipelineQuery.isPlaceholderData) return;
+
+    if (pipelineQuery.data.page !== page) {
+      setPage(pipelineQuery.data.page);
+    }
+
+    if (pipelineQuery.data.pageSize !== pageSize) {
+      setPageSize(pipelineQuery.data.pageSize as (typeof PIPELINE_PAGE_SIZE_OPTIONS)[number]);
+    }
+  }, [pipelineQuery.data?.page, pipelineQuery.data?.pageSize, pipelineQuery.isPlaceholderData, page, pageSize]);
 
   function refetchAll() {
     pipelineQuery.refetch();
@@ -939,11 +953,11 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
           {!pipelineQuery.isLoading && (
             <div className="flex min-h-12 flex-wrap items-center justify-between gap-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-xs text-[var(--color-text-muted)]">
               <span>
-                Page {page} of {totalPages}
+                Page {resolvedPage} of {totalPages}
               </span>
               <div className="flex items-center gap-2">
                 <Select
-                  value={String(pageSize)}
+                  value={String(resolvedPageSize)}
                   onValueChange={(value) => {
                     setPageSize(Number(value) as (typeof PIPELINE_PAGE_SIZE_OPTIONS)[number]);
                     setPage(1);
@@ -965,7 +979,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
                   size="sm"
                   variant="outline"
                   onClick={() => setPage((currentPage) => Math.max(1, currentPage - 1))}
-                  disabled={page <= 1 || isFetching}
+                  disabled={resolvedPage <= 1 || isFetching}
                 >
                   Previous
                 </Button>
@@ -974,7 +988,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
                   size="sm"
                   variant="outline"
                   onClick={() => setPage((currentPage) => Math.min(totalPages, currentPage + 1))}
-                  disabled={page >= totalPages || isFetching}
+                  disabled={resolvedPage >= totalPages || isFetching}
                 >
                   Next
                 </Button>
