@@ -314,6 +314,25 @@ describe("createAdoptionCoordinatorHandlers", () => {
     ]);
   });
 
+  test("oversized animal pipeline filters return 400 JSON", async () => {
+    const { service } = createFakeService({
+      async listAnimalPipeline() {
+        throw new Error("Too many animal pipeline candidates; narrow the search or filters");
+      },
+    });
+    const handlers = createHandlers({ service });
+
+    const response = await handlers.listAnimalPipeline({
+      request: new Request("https://example.test/api/admin/adoptions/animals/pipeline?q=cat"),
+    });
+
+    expect(response.status).toBe(400);
+    expectNoStoreJson(response);
+    expect(await response.json()).toEqual({
+      error: "Too many animal pipeline candidates; narrow the search or filters",
+    });
+  });
+
   test("returns no-store JSON for statuses", async () => {
     const { service } = createFakeService();
     const handlers = createHandlers({ service });
