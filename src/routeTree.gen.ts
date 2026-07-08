@@ -12,8 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as VolunteerRouteImport } from './routes/volunteer'
 import { Route as StoriesRouteImport } from './routes/stories'
 import { Route as SponsorsRouteImport } from './routes/sponsors'
-import { Route as DonateRouteImport } from './routes/donate'
 import { Route as HelpRouteImport } from './routes/help'
+import { Route as DonateRouteImport } from './routes/donate'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
@@ -118,6 +118,7 @@ import { Route as ApiAdminAdoptionsExportsCasesDotcsvRouteImport } from './route
 import { Route as ApiAdminAdoptionsExportsAnimalsDotcsvRouteImport } from './routes/api/admin/adoptions/exports/animals[.]csv'
 import { Route as ApiAdminAdoptionsExportsAdoptersDotcsvRouteImport } from './routes/api/admin/adoptions/exports/adopters[.]csv'
 import { Route as ApiAdminAdoptionsCasesIdRouteImport } from './routes/api/admin/adoptions/cases/$id'
+import { Route as ApiAdminAdoptionsAnimalsPipelineRouteImport } from './routes/api/admin/adoptions/animals/pipeline'
 import { Route as ApiAdminAdoptionsAdoptersIdRouteImport } from './routes/api/admin/adoptions/adopters/$id'
 import { Route as ApiAdminAccessUsersIdRouteImport } from './routes/api/admin/access/users/$id'
 import { Route as ApiAdminVolunteersRegistrationsIdStatusRouteImport } from './routes/api/admin/volunteers/registrations/$id/status'
@@ -149,14 +150,14 @@ const SponsorsRoute = SponsorsRouteImport.update({
   path: '/sponsors',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DonateRoute = DonateRouteImport.update({
-  id: '/donate',
-  path: '/donate',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const HelpRoute = HelpRouteImport.update({
   id: '/help',
   path: '/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DonateRoute = DonateRouteImport.update({
+  id: '/donate',
+  path: '/donate',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -716,6 +717,12 @@ const ApiAdminAdoptionsCasesIdRoute =
     path: '/$id',
     getParentRoute: () => ApiAdminAdoptionsCasesRoute,
   } as any)
+const ApiAdminAdoptionsAnimalsPipelineRoute =
+  ApiAdminAdoptionsAnimalsPipelineRouteImport.update({
+    id: '/api/admin/adoptions/animals/pipeline',
+    path: '/api/admin/adoptions/animals/pipeline',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdminAdoptionsAdoptersIdRoute =
   ApiAdminAdoptionsAdoptersIdRouteImport.update({
     id: '/$id',
@@ -891,6 +898,7 @@ export interface FileRoutesByFullPath {
   '/api/volunteer/status/$token': typeof ApiVolunteerStatusTokenRoute
   '/api/admin/access/users/$id': typeof ApiAdminAccessUsersIdRoute
   '/api/admin/adoptions/adopters/$id': typeof ApiAdminAdoptionsAdoptersIdRoute
+  '/api/admin/adoptions/animals/pipeline': typeof ApiAdminAdoptionsAnimalsPipelineRoute
   '/api/admin/adoptions/cases/$id': typeof ApiAdminAdoptionsCasesIdRouteWithChildren
   '/api/admin/adoptions/exports/adopters.csv': typeof ApiAdminAdoptionsExportsAdoptersDotcsvRoute
   '/api/admin/adoptions/exports/animals.csv': typeof ApiAdminAdoptionsExportsAnimalsDotcsvRoute
@@ -1016,6 +1024,7 @@ export interface FileRoutesByTo {
   '/api/volunteer/status/$token': typeof ApiVolunteerStatusTokenRoute
   '/api/admin/access/users/$id': typeof ApiAdminAccessUsersIdRoute
   '/api/admin/adoptions/adopters/$id': typeof ApiAdminAdoptionsAdoptersIdRoute
+  '/api/admin/adoptions/animals/pipeline': typeof ApiAdminAdoptionsAnimalsPipelineRoute
   '/api/admin/adoptions/cases/$id': typeof ApiAdminAdoptionsCasesIdRouteWithChildren
   '/api/admin/adoptions/exports/adopters.csv': typeof ApiAdminAdoptionsExportsAdoptersDotcsvRoute
   '/api/admin/adoptions/exports/animals.csv': typeof ApiAdminAdoptionsExportsAnimalsDotcsvRoute
@@ -1143,6 +1152,7 @@ export interface FileRoutesById {
   '/api/volunteer/status/$token': typeof ApiVolunteerStatusTokenRoute
   '/api/admin/access/users/$id': typeof ApiAdminAccessUsersIdRoute
   '/api/admin/adoptions/adopters/$id': typeof ApiAdminAdoptionsAdoptersIdRoute
+  '/api/admin/adoptions/animals/pipeline': typeof ApiAdminAdoptionsAnimalsPipelineRoute
   '/api/admin/adoptions/cases/$id': typeof ApiAdminAdoptionsCasesIdRouteWithChildren
   '/api/admin/adoptions/exports/adopters.csv': typeof ApiAdminAdoptionsExportsAdoptersDotcsvRoute
   '/api/admin/adoptions/exports/animals.csv': typeof ApiAdminAdoptionsExportsAnimalsDotcsvRoute
@@ -1271,6 +1281,7 @@ export interface FileRouteTypes {
     | '/api/volunteer/status/$token'
     | '/api/admin/access/users/$id'
     | '/api/admin/adoptions/adopters/$id'
+    | '/api/admin/adoptions/animals/pipeline'
     | '/api/admin/adoptions/cases/$id'
     | '/api/admin/adoptions/exports/adopters.csv'
     | '/api/admin/adoptions/exports/animals.csv'
@@ -1396,6 +1407,7 @@ export interface FileRouteTypes {
     | '/api/volunteer/status/$token'
     | '/api/admin/access/users/$id'
     | '/api/admin/adoptions/adopters/$id'
+    | '/api/admin/adoptions/animals/pipeline'
     | '/api/admin/adoptions/cases/$id'
     | '/api/admin/adoptions/exports/adopters.csv'
     | '/api/admin/adoptions/exports/animals.csv'
@@ -1522,6 +1534,7 @@ export interface FileRouteTypes {
     | '/api/volunteer/status/$token'
     | '/api/admin/access/users/$id'
     | '/api/admin/adoptions/adopters/$id'
+    | '/api/admin/adoptions/animals/pipeline'
     | '/api/admin/adoptions/cases/$id'
     | '/api/admin/adoptions/exports/adopters.csv'
     | '/api/admin/adoptions/exports/animals.csv'
@@ -1635,6 +1648,7 @@ export interface RootRouteChildren {
   ApiAdoptionStatusTokenRoute: typeof ApiAdoptionStatusTokenRoute
   ApiSponsorshipsStatusTokenRoute: typeof ApiSponsorshipsStatusTokenRoute
   ApiVolunteerStatusTokenRoute: typeof ApiVolunteerStatusTokenRoute
+  ApiAdminAdoptionsAnimalsPipelineRoute: typeof ApiAdminAdoptionsAnimalsPipelineRoute
   ApiAdminAdoptionsExportsAdoptersDotcsvRoute: typeof ApiAdminAdoptionsExportsAdoptersDotcsvRoute
   ApiAdminAdoptionsExportsAnimalsDotcsvRoute: typeof ApiAdminAdoptionsExportsAnimalsDotcsvRoute
   ApiAdminAdoptionsExportsCasesDotcsvRoute: typeof ApiAdminAdoptionsExportsCasesDotcsvRoute
@@ -1673,18 +1687,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SponsorsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/donate': {
-      id: '/donate'
-      path: '/donate'
-      fullPath: '/donate'
-      preLoaderRoute: typeof DonateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/help': {
       id: '/help'
       path: '/help'
       fullPath: '/help'
       preLoaderRoute: typeof HelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/donate': {
+      id: '/donate'
+      path: '/donate'
+      fullPath: '/donate'
+      preLoaderRoute: typeof DonateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -2415,6 +2429,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminAdoptionsCasesIdRouteImport
       parentRoute: typeof ApiAdminAdoptionsCasesRoute
     }
+    '/api/admin/adoptions/animals/pipeline': {
+      id: '/api/admin/adoptions/animals/pipeline'
+      path: '/api/admin/adoptions/animals/pipeline'
+      fullPath: '/api/admin/adoptions/animals/pipeline'
+      preLoaderRoute: typeof ApiAdminAdoptionsAnimalsPipelineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/adoptions/adopters/$id': {
       id: '/api/admin/adoptions/adopters/$id'
       path: '/$id'
@@ -2963,6 +2984,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdoptionStatusTokenRoute: ApiAdoptionStatusTokenRoute,
   ApiSponsorshipsStatusTokenRoute: ApiSponsorshipsStatusTokenRoute,
   ApiVolunteerStatusTokenRoute: ApiVolunteerStatusTokenRoute,
+  ApiAdminAdoptionsAnimalsPipelineRoute: ApiAdminAdoptionsAnimalsPipelineRoute,
   ApiAdminAdoptionsExportsAdoptersDotcsvRoute:
     ApiAdminAdoptionsExportsAdoptersDotcsvRoute,
   ApiAdminAdoptionsExportsAnimalsDotcsvRoute:

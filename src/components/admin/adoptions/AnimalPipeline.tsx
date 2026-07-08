@@ -85,6 +85,7 @@ const EMPTY_POSITIONS: AnimalPosition[] = [];
 const EMPTY_ARRIVAL_SOURCES: ArrivalSource[] = [];
 const EMPTY_STATUSES: CoordinatorStatus[] = [];
 const EMPTY_TASKS: CoordinatorTask[] = [];
+const EMPTY_PIPELINE_ROWS: AnimalPipelineRow[] = [];
 
 const STATUS_OPTIONS: Array<{ value: AnimalStatus | "all"; label: string }> = [
   { value: "all", label: "All statuses" },
@@ -299,18 +300,16 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
   const statuses = statusesQuery.data ?? EMPTY_STATUSES;
   const selectedAnimalTasks = selectedAnimalTasksQuery.data ?? EMPTY_TASKS;
 
-  const rows = pipelineQuery.data?.animals ?? [];
+  const rows = pipelineQuery.data?.animals ?? EMPTY_PIPELINE_ROWS;
   const total = pipelineQuery.data?.total ?? 0;
-  const resolvedPage = pipelineQuery.data?.page ?? page;
-  const resolvedPageSize = pipelineQuery.data?.pageSize ?? pageSize;
+  const pipelinePage = pipelineQuery.data?.page;
+  const pipelinePageSize = pipelineQuery.data?.pageSize;
+  const resolvedPage = pipelinePage ?? page;
+  const resolvedPageSize = pipelinePageSize ?? pageSize;
   const totalPages = Math.max(1, Math.ceil(total / resolvedPageSize));
-  const visibleRows = rows;
-  const initialAnimalRows = initialAnimalQuery.data?.animals ?? [];
+  const initialAnimalRows = initialAnimalQuery.data?.animals ?? EMPTY_PIPELINE_ROWS;
 
-  const groups = useMemo(
-    () => groupAnimalPipelineRows(visibleRows, groupBy),
-    [groupBy, visibleRows],
-  );
+  const groups = useMemo(() => groupAnimalPipelineRows(rows, groupBy), [groupBy, rows]);
 
   const selectedRow = useMemo(
     () =>
@@ -376,16 +375,22 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
   }, [initialAnimalId, initialAnimalQuery.data?.animals, rows]);
 
   useEffect(() => {
-    if (!pipelineQuery.data || pipelineQuery.isPlaceholderData) return;
-
-    if (pipelineQuery.data.page !== page) {
-      setPage(pipelineQuery.data.page);
+    if (
+      pipelineQuery.isPlaceholderData ||
+      pipelinePage === undefined ||
+      pipelinePageSize === undefined
+    ) {
+      return;
     }
 
-    if (pipelineQuery.data.pageSize !== pageSize) {
-      setPageSize(pipelineQuery.data.pageSize as (typeof PIPELINE_PAGE_SIZE_OPTIONS)[number]);
+    if (pipelinePage !== page) {
+      setPage(pipelinePage);
     }
-  }, [pipelineQuery.data?.page, pipelineQuery.data?.pageSize, pipelineQuery.isPlaceholderData, page, pageSize]);
+
+    if (pipelinePageSize !== pageSize) {
+      setPageSize(pipelinePageSize as (typeof PIPELINE_PAGE_SIZE_OPTIONS)[number]);
+    }
+  }, [pipelinePage, pipelinePageSize, pipelineQuery.isPlaceholderData, page, pageSize]);
 
   function refetchAll() {
     pipelineQuery.refetch();

@@ -128,7 +128,11 @@ class FakeQuery {
   }
 
   not(column: string, operator: string, value: unknown) {
-    this.state.calls.push({ table: this.table, method: "not", payload: { column, operator, value } });
+    this.state.calls.push({
+      table: this.table,
+      method: "not",
+      payload: { column, operator, value },
+    });
     this.notFilters.push({ column, operator, value });
     return this;
   }

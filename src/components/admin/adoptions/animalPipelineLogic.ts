@@ -47,9 +47,7 @@ type AnimalPipelineSearchParamsInput = Partial<AnimalPipelineFilters> & {
   pageSize?: number | null;
 };
 
-export function buildAnimalPipelineSearchParams(
-  filters: AnimalPipelineSearchParamsInput = {},
-) {
+export function buildAnimalPipelineSearchParams(filters: AnimalPipelineSearchParamsInput = {}) {
   const params = new URLSearchParams();
   const query = trimmed(filters.q);
   const animalId = trimmed(filters.animalId);

@@ -720,10 +720,18 @@ function mapAnimalPipelineRow(
     updated_at: (row.updated_at as string | null) ?? null,
     profile: profileRow,
     currentPosition: position
-      ? { id: position.id, name: position.name, type: (position as { type?: string }).type ?? "unknown" }
+      ? {
+          id: position.id,
+          name: position.name,
+          type: (position as { type?: string }).type ?? "unknown",
+        }
       : null,
     arrivalSource: source
-      ? { id: source.id, name_zh: source.name_zh ?? source.name_en ?? source.id, name_en: source.name_en }
+      ? {
+          id: source.id,
+          name_zh: source.name_zh ?? source.name_en ?? source.id,
+          name_en: source.name_en,
+        }
       : null,
   };
 }
@@ -1576,7 +1584,8 @@ export function createSupabaseAdoptionCoordinatorRepository(
         (input.positionId !== "all" && input.positionId !== "none")
       ) {
         let profileQuery = client.from("animal_profile_internal").select("animal_id");
-        if (input.adoptable === "not_adoptable") profileQuery = profileQuery.eq("is_adoptable", false);
+        if (input.adoptable === "not_adoptable")
+          profileQuery = profileQuery.eq("is_adoptable", false);
         if (input.supportPool === "inside") {
           profileQuery = profileQuery.eq("is_inside_support_pool", true);
         }
@@ -1597,7 +1606,8 @@ export function createSupabaseAdoptionCoordinatorRepository(
           .select("animal_id")
           .eq("is_adoptable", false);
         if (error) throw error;
-        for (const row of (data ?? []) as Array<{ animal_id: string }>) excludeIds.add(row.animal_id);
+        for (const row of (data ?? []) as Array<{ animal_id: string }>)
+          excludeIds.add(row.animal_id);
       }
 
       if (input.supportPool === "outside") {
@@ -1606,7 +1616,8 @@ export function createSupabaseAdoptionCoordinatorRepository(
           .select("animal_id")
           .eq("is_inside_support_pool", true);
         if (error) throw error;
-        for (const row of (data ?? []) as Array<{ animal_id: string }>) excludeIds.add(row.animal_id);
+        for (const row of (data ?? []) as Array<{ animal_id: string }>)
+          excludeIds.add(row.animal_id);
       }
 
       if (input.positionId === "none") {
@@ -1615,7 +1626,8 @@ export function createSupabaseAdoptionCoordinatorRepository(
           .select("animal_id")
           .not("current_position_id", "is", null);
         if (error) throw error;
-        for (const row of (data ?? []) as Array<{ animal_id: string }>) excludeIds.add(row.animal_id);
+        for (const row of (data ?? []) as Array<{ animal_id: string }>)
+          excludeIds.add(row.animal_id);
       }
 
       if (includeIds && includeIds.size === 0) {
@@ -1631,7 +1643,8 @@ export function createSupabaseAdoptionCoordinatorRepository(
       if (input.status !== "all") animalQuery = animalQuery.eq("status", input.status);
       if (input.type !== "all") animalQuery = animalQuery.eq("type", input.type);
       if (includeIds) animalQuery = animalQuery.in("id", [...includeIds]);
-      if (excludeIds.size > 0) animalQuery = animalQuery.not("id", "in", postgrestInList([...excludeIds]));
+      if (excludeIds.size > 0)
+        animalQuery = animalQuery.not("id", "in", postgrestInList([...excludeIds]));
 
       const { data: animalData, error: animalError, count } = await animalQuery;
       if (animalError) throw animalError;
@@ -1672,7 +1685,9 @@ export function createSupabaseAdoptionCoordinatorRepository(
         sourceRows = (data ?? []) as ArrivalSourceRow[];
       }
 
-      const profilesByAnimalId = new Map(profileRows.map((profile) => [profile.animal_id, profile]));
+      const profilesByAnimalId = new Map(
+        profileRows.map((profile) => [profile.animal_id, profile]),
+      );
       const positionsById = new Map(positionRows.map((position) => [position.id, position]));
       const sourcesById = new Map(sourceRows.map((source) => [source.id, source]));
 
