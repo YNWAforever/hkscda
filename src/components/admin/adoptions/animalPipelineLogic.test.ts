@@ -6,6 +6,7 @@ import {
   buildAnimalPipelineSearchParams,
   filterAnimalPipelineRows,
   groupAnimalPipelineRows,
+  resolveAnimalPipelinePagination,
 } from "./animalPipelineLogic";
 
 function row(overrides: Partial<AnimalPipelineRow> = {}): AnimalPipelineRow {
@@ -171,5 +172,17 @@ describe("animal pipeline logic", () => {
     expect(buildAnimalTaskSearchParams({ animalId: "" }).toString()).toBe(
       "openOnly=true&page=1&pageSize=10",
     );
+  });
+
+  test("clamps animal pipeline pagination when the returned total shrinks", () => {
+    expect(
+      resolveAnimalPipelinePagination({
+        page: 2,
+        pageSize: 25,
+        responsePage: 2,
+        responsePageSize: 25,
+        total: 0,
+      }),
+    ).toEqual({ page: 1, pageSize: 25, totalPages: 1 });
   });
 });

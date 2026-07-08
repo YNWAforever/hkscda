@@ -51,6 +51,9 @@ export { hongKongDayBounds } from "./tasks";
 
 const ADOPTER_CANDIDATE_ID_LIMIT = 1000;
 const ADOPTER_FILTER_TOO_BROAD_ERROR = "Adopter filters match too many records";
+const ANIMAL_PIPELINE_CANDIDATE_ID_LIMIT = 1000;
+const ANIMAL_PIPELINE_FILTER_TOO_BROAD_ERROR =
+  "Too many animal pipeline candidates; narrow the search or filters";
 const INTAKE_ITEM_LIMIT = 100;
 const COORDINATOR_EXPORT_ACTIONS = [
   "coordinator_export.cases",
@@ -687,6 +690,37 @@ function combineCandidateSet(current: Set<string> | null, ids: string[]) {
   const next = new Set(ids);
   if (!current) return next;
   return new Set([...current].filter((id) => next.has(id)));
+}
+
+type AnimalPipelineCandidateQuery<Row extends Record<string, unknown>> = {
+  range: (
+    from: number,
+    to: number,
+  ) => PromiseLike<{ data: Row[] | null; error: unknown; count?: number | null }>;
+};
+
+async function loadBoundedAnimalPipelineCandidates<Row extends Record<string, unknown>>(
+  query: AnimalPipelineCandidateQuery<Row>,
+) {
+  const { data, error, count } = await query.range(0, ANIMAL_PIPELINE_CANDIDATE_ID_LIMIT);
+  if (error) throw error;
+  const rows = data ?? [];
+  if ((count ?? rows.length) > ANIMAL_PIPELINE_CANDIDATE_ID_LIMIT) {
+    throw new Error(ANIMAL_PIPELINE_FILTER_TOO_BROAD_ERROR);
+  }
+  return rows;
+}
+
+function assertAnimalPipelineCandidateIdLimit(candidateIds: Set<string> | null) {
+  if (candidateIds && candidateIds.size > ANIMAL_PIPELINE_CANDIDATE_ID_LIMIT) {
+    throw new Error(ANIMAL_PIPELINE_FILTER_TOO_BROAD_ERROR);
+  }
+}
+
+function addAnimalPipelineCandidateIds(current: Set<string> | null, ids: string[]) {
+  const next = combineCandidateSet(current, ids);
+  assertAnimalPipelineCandidateIdLimit(next);
+  return next;
 }
 
 function postgrestInList(ids: string[]) {
@@ -1561,29 +1595,80 @@ export function createSupabaseAdoptionCoordinatorRepository(
 
       if (input.q) {
         const pattern = `%${sanitizeOrLikeValue(input.q)}%`;
-        const [animalMatches, profileMatches] = await Promise.all([
-          client.from("animals").select("id").or(`name.ilike.${pattern},name_en.ilike.${pattern}`),
-          client
-            .from("animal_profile_internal")
-            .select("animal_id")
-            .or(`internal_code.ilike.${pattern},cage.ilike.${pattern}`),
-        ]);
-        if (animalMatches.error) throw animalMatches.error;
-        if (profileMatches.error) throw profileMatches.error;
-        includeIds = combineCandidateSet(includeIds, [
-          ...((animalMatches.data ?? []) as Array<{ id: string }>).map((row) => row.id),
-          ...((profileMatches.data ?? []) as Array<{ animal_id: string }>).map(
-            (row) => row.animal_id,
+        const [animalMatches, profileMatches, positionMatches, sourceMatches] = await Promise.all([
+          loadBoundedAnimalPipelineCandidates<{ id: string }>(
+            client
+              .from("animals")
+              .select("id", { count: "exact" })
+              .or(`name.ilike.${pattern},name_en.ilike.${pattern}`),
+          ),
+          loadBoundedAnimalPipelineCandidates<{ animal_id: string }>(
+            client
+              .from("animal_profile_internal")
+              .select("animal_id", { count: "exact" })
+              .or(`internal_code.ilike.${pattern},cage.ilike.${pattern}`),
+          ),
+          loadBoundedAnimalPipelineCandidates<{ id: string }>(
+            client
+              .from("animal_position")
+              .select("id", { count: "exact" })
+              .or(`name.ilike.${pattern}`),
+          ),
+          loadBoundedAnimalPipelineCandidates<{ id: string }>(
+            client
+              .from("arrival_source")
+              .select("id", { count: "exact" })
+              .or(`name_zh.ilike.${pattern},name_en.ilike.${pattern}`),
           ),
         ]);
+
+        const positionIds = positionMatches.map((row) => row.id);
+        const sourceIds = sourceMatches.map((row) => row.id);
+        const [positionProfileMatches, sourceProfileMatches] = await Promise.all([
+          positionIds.length > 0
+            ? loadBoundedAnimalPipelineCandidates<{ animal_id: string }>(
+                client
+                  .from("animal_profile_internal")
+                  .select("animal_id", { count: "exact" })
+                  .in("current_position_id", positionIds),
+              )
+            : Promise.resolve([]),
+          sourceIds.length > 0
+            ? loadBoundedAnimalPipelineCandidates<{ animal_id: string }>(
+                client
+                  .from("animal_profile_internal")
+                  .select("animal_id", { count: "exact" })
+                  .in("arrival_source_id", sourceIds),
+              )
+            : Promise.resolve([]),
+        ]);
+
+        includeIds = addAnimalPipelineCandidateIds(includeIds, [
+          ...animalMatches.map((row) => row.id),
+          ...profileMatches.map((row) => row.animal_id),
+          ...positionProfileMatches.map((row) => row.animal_id),
+          ...sourceProfileMatches.map((row) => row.animal_id),
+        ]);
+
+        if (includeIds.size === 0) {
+          return { animals: [], total: 0, page: input.page, pageSize: input.pageSize };
+        }
       }
+
+      if (includeIds?.size === 0) {
+        return { animals: [], total: 0, page: input.page, pageSize: input.pageSize };
+      }
+
+      const includeIdList = includeIds ? [...includeIds] : null;
 
       if (
         input.adoptable === "not_adoptable" ||
         input.supportPool === "inside" ||
         (input.positionId !== "all" && input.positionId !== "none")
       ) {
-        let profileQuery = client.from("animal_profile_internal").select("animal_id");
+        let profileQuery = client
+          .from("animal_profile_internal")
+          .select("animal_id", { count: "exact" });
         if (input.adoptable === "not_adoptable")
           profileQuery = profileQuery.eq("is_adoptable", false);
         if (input.supportPool === "inside") {
@@ -1592,42 +1677,59 @@ export function createSupabaseAdoptionCoordinatorRepository(
         if (input.positionId !== "all" && input.positionId !== "none") {
           profileQuery = profileQuery.eq("current_position_id", input.positionId);
         }
-        const { data, error } = await profileQuery;
-        if (error) throw error;
-        includeIds = combineCandidateSet(
+        if (includeIdList) {
+          profileQuery = profileQuery.in("animal_id", includeIdList);
+        }
+        const data = await loadBoundedAnimalPipelineCandidates<{ animal_id: string }>(profileQuery);
+        includeIds = addAnimalPipelineCandidateIds(
           includeIds,
-          ((data ?? []) as Array<{ animal_id: string }>).map((row) => row.animal_id),
+          data.map((row) => row.animal_id),
         );
       }
 
+      if (includeIds?.size === 0) {
+        return { animals: [], total: 0, page: input.page, pageSize: input.pageSize };
+      }
+
+      const scopedIncludeIds = includeIds ? [...includeIds] : null;
+
       if (input.adoptable === "adoptable") {
-        const { data, error } = await client
+        let profileQuery = client
           .from("animal_profile_internal")
-          .select("animal_id")
+          .select("animal_id", { count: "exact" })
           .eq("is_adoptable", false);
-        if (error) throw error;
-        for (const row of (data ?? []) as Array<{ animal_id: string }>)
-          excludeIds.add(row.animal_id);
+        if (scopedIncludeIds) {
+          profileQuery = profileQuery.in("animal_id", scopedIncludeIds);
+        }
+        const data = await loadBoundedAnimalPipelineCandidates<{ animal_id: string }>(profileQuery);
+        for (const row of data) excludeIds.add(row.animal_id);
+        assertAnimalPipelineCandidateIdLimit(excludeIds);
       }
 
       if (input.supportPool === "outside") {
-        const { data, error } = await client
+        let profileQuery = client
           .from("animal_profile_internal")
-          .select("animal_id")
+          .select("animal_id", { count: "exact" })
           .eq("is_inside_support_pool", true);
-        if (error) throw error;
-        for (const row of (data ?? []) as Array<{ animal_id: string }>)
-          excludeIds.add(row.animal_id);
+        if (scopedIncludeIds) {
+          profileQuery = profileQuery.in("animal_id", scopedIncludeIds);
+        }
+        const data = await loadBoundedAnimalPipelineCandidates<{ animal_id: string }>(profileQuery);
+        for (const row of data) excludeIds.add(row.animal_id);
+        assertAnimalPipelineCandidateIdLimit(excludeIds);
       }
 
       if (input.positionId === "none") {
-        const { data, error } = await client
+        let profileQuery = client
           .from("animal_profile_internal")
-          .select("animal_id")
+          .select("animal_id", { count: "exact" })
           .not("current_position_id", "is", null);
-        if (error) throw error;
-        for (const row of (data ?? []) as Array<{ animal_id: string }>)
-          excludeIds.add(row.animal_id);
+        if (scopedIncludeIds) {
+          profileQuery = profileQuery.in("animal_id", scopedIncludeIds);
+        }
+        const data = await loadBoundedAnimalPipelineCandidates<{ animal_id: string }>(profileQuery);
+        for (const row of data) excludeIds.add(row.animal_id);
+        assertAnimalPipelineCandidateIdLimit(excludeIds);
       }
 
       if (includeIds && includeIds.size === 0) {

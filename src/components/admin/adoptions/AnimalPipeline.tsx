@@ -32,6 +32,7 @@ import {
   buildAnimalPipelineSearchParams,
   buildAnimalTaskSearchParams,
   groupAnimalPipelineRows,
+  resolveAnimalPipelinePagination,
   type AnimalInternalProfile,
   type AnimalPipelineFilters,
   type AnimalPipelineRow,
@@ -304,9 +305,17 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
   const total = pipelineQuery.data?.total ?? 0;
   const pipelinePage = pipelineQuery.data?.page;
   const pipelinePageSize = pipelineQuery.data?.pageSize;
-  const resolvedPage = pipelinePage ?? page;
-  const resolvedPageSize = pipelinePageSize ?? pageSize;
-  const totalPages = Math.max(1, Math.ceil(total / resolvedPageSize));
+  const {
+    page: resolvedPage,
+    pageSize: resolvedPageSize,
+    totalPages,
+  } = resolveAnimalPipelinePagination({
+    page,
+    pageSize,
+    responsePage: pipelinePage,
+    responsePageSize: pipelinePageSize,
+    total,
+  });
   const initialAnimalRows = initialAnimalQuery.data?.animals ?? EMPTY_PIPELINE_ROWS;
 
   const groups = useMemo(() => groupAnimalPipelineRows(rows, groupBy), [groupBy, rows]);
@@ -383,14 +392,22 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
       return;
     }
 
-    if (pipelinePage !== page) {
-      setPage(pipelinePage);
+    if (resolvedPage !== page) {
+      setPage(resolvedPage);
     }
 
-    if (pipelinePageSize !== pageSize) {
-      setPageSize(pipelinePageSize as (typeof PIPELINE_PAGE_SIZE_OPTIONS)[number]);
+    if (resolvedPageSize !== pageSize) {
+      setPageSize(resolvedPageSize as (typeof PIPELINE_PAGE_SIZE_OPTIONS)[number]);
     }
-  }, [pipelinePage, pipelinePageSize, pipelineQuery.isPlaceholderData, page, pageSize]);
+  }, [
+    pipelinePage,
+    pipelinePageSize,
+    pipelineQuery.isPlaceholderData,
+    page,
+    pageSize,
+    resolvedPage,
+    resolvedPageSize,
+  ]);
 
   function refetchAll() {
     pipelineQuery.refetch();

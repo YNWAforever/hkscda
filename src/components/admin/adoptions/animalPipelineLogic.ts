@@ -81,6 +81,19 @@ export function buildAnimalTaskSearchParams(filters: { animalId?: string | null 
   return params;
 }
 
+export function resolveAnimalPipelinePagination(input: {
+  page: number;
+  pageSize: number;
+  responsePage?: number;
+  responsePageSize?: number;
+  total: number;
+}) {
+  const pageSize = input.responsePageSize ?? input.pageSize;
+  const totalPages = Math.max(1, Math.ceil(input.total / pageSize));
+  const page = Math.min(input.responsePage ?? input.page, totalPages);
+  return { page, pageSize, totalPages };
+}
+
 export function filterAnimalPipelineRows(
   rows: AnimalPipelineRow[],
   filters: AnimalPipelineFilters,

@@ -1830,6 +1830,117 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     });
   });
 
+  test("searches animal pipeline rows by current position and arrival source names", async () => {
+    function setupSearchRepository() {
+      return setupRepository({
+        animalRows: [
+          animalRow({ id: "position-animal", name: "Nori", name_en: "Nori" }),
+          animalRow({ id: "source-animal", name: "Bean", name_en: "Bean" }),
+        ],
+        internalProfileRows: [
+          {
+            animal_id: "position-animal",
+            internal_code: "CAT-301",
+            arrival_date: null,
+            arrival_source_id: null,
+            current_position_id: animalPositionId,
+            cage: null,
+            has_chip: null,
+            chip_remarks: null,
+            is_desexed: null,
+            desexed_at: null,
+            desex_remarks: null,
+            is_adoptable: true,
+            is_inside_support_pool: false,
+            adopted_at: null,
+            deceased_at: null,
+            internal_remarks: null,
+          },
+          {
+            animal_id: "source-animal",
+            internal_code: "CAT-302",
+            arrival_date: null,
+            arrival_source_id: arrivalSourceId,
+            current_position_id: null,
+            cage: null,
+            has_chip: null,
+            chip_remarks: null,
+            is_desexed: null,
+            desexed_at: null,
+            desex_remarks: null,
+            is_adoptable: true,
+            is_inside_support_pool: false,
+            adopted_at: null,
+            deceased_at: null,
+            internal_remarks: null,
+          },
+        ],
+        animalPositionRows: [{ id: animalPositionId, name: "Foster home", type: "foster" }],
+        arrivalSourceRows: [{ id: arrivalSourceId, name_zh: "Street rescue", name_en: "Street" }],
+      });
+    }
+
+    const positionResult = await setupSearchRepository().repo.listAnimalPipeline({
+      q: "Foster",
+      status: "all",
+      type: "all",
+      adoptable: "all",
+      supportPool: "all",
+      positionId: "all",
+      page: 1,
+      pageSize: 25,
+    });
+    expect(positionResult.animals.map((animal) => animal.id)).toEqual(["position-animal"]);
+
+    const sourceResult = await setupSearchRepository().repo.listAnimalPipeline({
+      q: "Street",
+      status: "all",
+      type: "all",
+      adoptable: "all",
+      supportPool: "all",
+      positionId: "all",
+      page: 1,
+      pageSize: 25,
+    });
+    expect(sourceResult.animals.map((animal) => animal.id)).toEqual(["source-animal"]);
+  });
+
+  test("rejects animal pipeline candidate scans that exceed the safety cap", async () => {
+    const { repo } = setupRepository({
+      internalProfileRows: Array.from({ length: 1001 }, (_, index) => ({
+        animal_id: `candidate-${index}`,
+        internal_code: `CAT-${index}`,
+        arrival_date: null,
+        arrival_source_id: null,
+        current_position_id: null,
+        cage: null,
+        has_chip: null,
+        chip_remarks: null,
+        is_desexed: null,
+        desexed_at: null,
+        desex_remarks: null,
+        is_adoptable: true,
+        is_inside_support_pool: false,
+        adopted_at: null,
+        deceased_at: null,
+        internal_remarks: null,
+      })),
+    });
+
+    await expect(
+      repo.listAnimalPipeline({
+        q: "CAT",
+        status: "all",
+        type: "all",
+        adoptable: "all",
+        supportPool: "all",
+        positionId: "all",
+        page: 1,
+        pageSize: 25,
+      }),
+    ).rejects.toThrow(/too many animal pipeline candidates/i);
+  });
+
   test("successful adoption export caps rows before mapping", async () => {
     const { repo, calls } = setupRepository({
       successRows: [successfulAdoptionRow()],
