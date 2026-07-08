@@ -11,6 +11,7 @@ import {
 } from "./csv";
 import {
   adopterSearchSchema,
+  animalPipelineSearchSchema,
   caseSearchSchema,
   coordinatorMonthlySummarySearchSchema,
   coordinatorExportKindSchema,
@@ -33,6 +34,8 @@ import type {
   AdoptionIntakeLane,
   AdopterDetail,
   AdopterSummary,
+  AnimalPipelineListResult,
+  AnimalPipelineSearch,
   CoordinatorAdopterExportRow,
   CoordinatorAnimalExportRow,
   CoordinatorExportAuditRow,
@@ -84,6 +87,7 @@ export type AdoptionCoordinatorRepository = {
   createStatus(input: StatusInput): Promise<CoordinatorStatus>;
   updateStatus(id: string, input: StatusUpdate): Promise<CoordinatorStatus>;
   deleteStatus(id: string): Promise<void>;
+  listAnimalPipeline(input: AnimalPipelineSearch): Promise<AnimalPipelineListResult>;
   listCases(input: CaseSearch): Promise<{ cases: AdoptionCaseSummary[]; total: number }>;
   listIntakeItems(input: {
     lane?: AdoptionIntakeLane;
@@ -277,6 +281,10 @@ export function createAdoptionCoordinatorService({
         timestamp: timestamp(now),
         detail: { category: current.category, key: current.key },
       });
+    },
+
+    listAnimalPipeline(rawSearch: unknown) {
+      return repo.listAnimalPipeline(animalPipelineSearchSchema.parse(rawSearch));
     },
 
     listCases(rawSearch: unknown) {

@@ -211,6 +211,14 @@ export function createAdoptionCoordinatorHandlers({
       });
     },
 
+    listAnimalPipeline({ request }: HandlerContext) {
+      return withErrors(async () => {
+        await requireCoordinator(request);
+        const search = Object.fromEntries(new URL(request.url).searchParams);
+        return jsonResponse(await service.listAnimalPipeline(search));
+      });
+    },
+
     listCases({ request }: HandlerContext) {
       return withErrors(async () => {
         await requireCoordinator(request);
