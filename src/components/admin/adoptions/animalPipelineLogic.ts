@@ -1,53 +1,17 @@
-import type { Animal, AnimalStatus, AnimalType } from "../../../types/animal";
+import type { AnimalStatus, AnimalType } from "../../../types/animal";
+import type {
+  AnimalInternalProfile,
+  AnimalPipelineRow,
+  AnimalPositionSummary,
+  ArrivalSourceSummary,
+} from "../../../lib/adoptions/types";
 
-export type AnimalInternalProfile = {
-  animal_id: string;
-  internal_code: string | null;
-  arrival_date: string | null;
-  arrival_source_id: string | null;
-  current_position_id: string | null;
-  cage: string | null;
-  has_chip: boolean | null;
-  chip_remarks: string | null;
-  is_desexed: boolean | null;
-  desexed_at: string | null;
-  desex_remarks: string | null;
-  is_adoptable: boolean;
-  is_inside_support_pool: boolean;
-  adopted_at: string | null;
-  deceased_at: string | null;
-  internal_remarks: string | null;
-};
-
-export type AnimalPositionSummary = {
-  id: string;
-  name: string;
-  type: string;
-};
-
-export type ArrivalSourceSummary = {
-  id: string;
-  name_zh: string;
-  name_en: string | null;
-};
-
-export type AnimalPipelineRow = Pick<
-  Animal,
-  | "id"
-  | "type"
-  | "name"
-  | "name_en"
-  | "gender"
-  | "age"
-  | "status"
-  | "image_url"
-  | "created_at"
-  | "updated_at"
-> & {
-  profile: AnimalInternalProfile;
-  currentPosition: AnimalPositionSummary | null;
-  arrivalSource: ArrivalSourceSummary | null;
-};
+export type {
+  AnimalInternalProfile,
+  AnimalPipelineRow,
+  AnimalPositionSummary,
+  ArrivalSourceSummary,
+} from "../../../lib/adoptions/types";
 
 export type AnimalPipelineFilters = {
   status: AnimalStatus | "all";
@@ -76,10 +40,36 @@ function trimmed(value: string | null | undefined) {
   return nextValue ? nextValue : "";
 }
 
-export function buildAnimalPipelineSearchParams(filters: { animalId?: string | null }) {
+type AnimalPipelineSearchParamsInput = Partial<AnimalPipelineFilters> & {
+  q?: string | null;
+  animalId?: string | null;
+  page?: number | null;
+  pageSize?: number | null;
+};
+
+export function buildAnimalPipelineSearchParams(
+  filters: AnimalPipelineSearchParamsInput = {},
+) {
   const params = new URLSearchParams();
+  const query = trimmed(filters.q);
   const animalId = trimmed(filters.animalId);
+  const status = filters.status ?? "all";
+  const type = filters.type ?? "all";
+  const adoptable = filters.adoptable ?? "all";
+  const supportPool = filters.supportPool ?? "all";
+  const positionId = trimmed(filters.positionId) || "all";
+  const page = filters.page && filters.page > 0 ? filters.page : 1;
+  const pageSize = filters.pageSize && filters.pageSize > 0 ? filters.pageSize : 25;
+
+  if (query) params.set("q", query);
   if (animalId) params.set("animalId", animalId);
+  if (status !== "all") params.set("status", status);
+  if (type !== "all") params.set("type", type);
+  if (adoptable !== "all") params.set("adoptable", adoptable);
+  if (supportPool !== "all") params.set("supportPool", supportPool);
+  if (positionId !== "all") params.set("positionId", positionId);
+  params.set("page", String(page));
+  params.set("pageSize", String(pageSize));
   return params;
 }
 
