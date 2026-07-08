@@ -112,6 +112,10 @@ function createFakeService(overrides: Partial<AdoptionCoordinatorService> = {}) 
     async deleteStatus(payload) {
       calls.push({ name: "deleteStatus", payload });
     },
+    async listAnimalPipeline(rawSearch) {
+      calls.push({ name: "listAnimalPipeline", payload: rawSearch });
+      return { animals: [], total: 0, page: 2, pageSize: 10 };
+    },
     async listCases(rawSearch) {
       calls.push({ name: "listCases", payload: rawSearch });
       return { cases: [], total: 0 };
@@ -290,6 +294,43 @@ describe("createAdoptionCoordinatorHandlers", () => {
         },
       },
     ]);
+  });
+
+  test("animal pipeline list requires coordinator auth and returns no-store JSON", async () => {
+    const { calls, service } = createFakeService();
+    const handlers = createHandlers({ service });
+
+    const response = await handlers.listAnimalPipeline({
+      request: new Request(
+        "https://example.test/api/admin/adoptions/animals/pipeline?page=2&pageSize=10&q=Mochi",
+      ),
+    });
+
+    expect(response.status).toBe(200);
+    expectNoStoreJson(response);
+    expect(await response.json()).toEqual({ animals: [], total: 0, page: 2, pageSize: 10 });
+    expect(calls).toEqual([
+      { name: "listAnimalPipeline", payload: { page: "2", pageSize: "10", q: "Mochi" } },
+    ]);
+  });
+
+  test("oversized animal pipeline filters return 400 JSON", async () => {
+    const { service } = createFakeService({
+      async listAnimalPipeline() {
+        throw new Error("Too many animal pipeline candidates; narrow the search or filters");
+      },
+    });
+    const handlers = createHandlers({ service });
+
+    const response = await handlers.listAnimalPipeline({
+      request: new Request("https://example.test/api/admin/adoptions/animals/pipeline?q=cat"),
+    });
+
+    expect(response.status).toBe(400);
+    expectNoStoreJson(response);
+    expect(await response.json()).toEqual({
+      error: "Too many animal pipeline candidates; narrow the search or filters",
+    });
   });
 
   test("returns no-store JSON for statuses", async () => {

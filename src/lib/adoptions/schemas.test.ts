@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 
 import {
   adopterSearchSchema,
+  animalPipelineSearchSchema,
   caseSearchSchema,
   coordinatorExportKindSchema,
   coordinatorMonthlySummarySearchSchema,
@@ -73,6 +74,44 @@ describe("adoption coordinator schemas", () => {
       blacklisted: "all",
       hasOpenCases: false,
       hasOpenTasks: false,
+      page: 1,
+      pageSize: 25,
+    });
+  });
+
+  test("normalizes animal pipeline search filters", () => {
+    expect(
+      animalPipelineSearchSchema.parse({
+        q: " Mochi ",
+        animalId: "77777777-8888-4333-8444-555555555555",
+        status: "available",
+        type: "cat",
+        adoptable: "not_adoptable",
+        supportPool: "inside",
+        positionId: "none",
+        page: "2",
+        pageSize: "50",
+      }),
+    ).toEqual({
+      q: "Mochi",
+      animalId: "77777777-8888-4333-8444-555555555555",
+      status: "available",
+      type: "cat",
+      adoptable: "not_adoptable",
+      supportPool: "inside",
+      positionId: "none",
+      page: 2,
+      pageSize: 50,
+    });
+
+    expect(animalPipelineSearchSchema.parse({ page: "0", pageSize: "500" })).toEqual({
+      q: undefined,
+      animalId: undefined,
+      status: "all",
+      type: "all",
+      adoptable: "all",
+      supportPool: "all",
+      positionId: "all",
       page: 1,
       pageSize: 25,
     });

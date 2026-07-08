@@ -81,6 +81,18 @@ export const adopterSearchSchema = z.object({
   pageSize: z.coerce.number().int().min(1).max(100).catch(25),
 });
 
+export const animalPipelineSearchSchema = z.object({
+  q: optionalTrimmed,
+  animalId: optionalTrimmed,
+  status: z.enum(["all", "available", "fostered", "adopted"]).catch("all"),
+  type: z.enum(["all", "cat", "dog", "sponsor"]).catch("all"),
+  adoptable: z.enum(["all", "adoptable", "not_adoptable"]).catch("all"),
+  supportPool: z.enum(["all", "inside", "outside"]).catch("all"),
+  positionId: optionalTrimmed.transform((value) => value ?? "all"),
+  page: z.coerce.number().int().min(1).catch(1),
+  pageSize: z.coerce.number().int().min(1).max(100).catch(25),
+});
+
 export const coordinatorExportKindSchema = z.enum([
   "cases",
   "adopters",

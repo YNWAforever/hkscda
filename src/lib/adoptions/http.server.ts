@@ -63,6 +63,7 @@ const badRequestDomainErrors = new Set([
   "Inactive adoption outcome status",
   "Invalid successful adoption outcome status",
   "Adopter filters match too many records",
+  "Too many animal pipeline candidates; narrow the search or filters",
   "Invalid manual intake identity",
   "Unsupported coordinator export audit",
 ]);
@@ -208,6 +209,14 @@ export function createAdoptionCoordinatorHandlers({
         const admin = await requireStatusAdmin(request);
         await service.deleteStatus({ actorUserId: admin.authUserId, statusId });
         return jsonResponse({ ok: true });
+      });
+    },
+
+    listAnimalPipeline({ request }: HandlerContext) {
+      return withErrors(async () => {
+        await requireCoordinator(request);
+        const search = Object.fromEntries(new URL(request.url).searchParams);
+        return jsonResponse(await service.listAnimalPipeline(search));
       });
     },
 
