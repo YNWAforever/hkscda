@@ -9,7 +9,7 @@ import type {
   CoordinatorTask,
 } from "../../../lib/adoptions/types";
 import { supabase } from "../../../lib/supabase";
-import type { AnimalStatus, AnimalType } from "../../../types/animal";
+import type { Animal, AnimalStatus, AnimalType } from "../../../types/animal";
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
 import {
@@ -303,6 +303,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
   const total = pipelineQuery.data?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const visibleRows = rows;
+  const initialAnimalRows = initialAnimalQuery.data?.animals ?? [];
 
   const groups = useMemo(
     () => groupAnimalPipelineRows(visibleRows, groupBy),
@@ -310,8 +311,11 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
   );
 
   const selectedRow = useMemo(
-    () => rows.find((row) => row.id === selectedAnimalId) ?? null,
-    [rows, selectedAnimalId],
+    () =>
+      rows.find((row) => row.id === selectedAnimalId) ??
+      initialAnimalRows.find((row) => row.id === selectedAnimalId) ??
+      null,
+    [initialAnimalRows, rows, selectedAnimalId],
   );
 
   const isFetching =
