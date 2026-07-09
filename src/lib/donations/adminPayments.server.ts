@@ -13,6 +13,21 @@ import {
 const PAYMENT_SELECT =
   "id,provider,provider_ref,amount_cents,status,received_at,bank_reference,created_at,donation_id,donation:donation_id(id,purpose,receipt_requested,status,supporter:supporter_id(id,name,email,phone,language))";
 
+function escapeLike(value: string) {
+  return value.replaceAll("\\", "\\\\").replaceAll("%", "\\%").replaceAll("_", "\\_");
+}
+
+function sanitizeOrLikeValue(value: string) {
+  // PostgREST .or() uses comma and parentheses for grammar, so keep search terms literal.
+  return escapeLike(
+    value
+      .replace(/[(),]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .replace(/\s+([%_])/g, "$1"),
+  );
+}
+
 function applyPaymentFilters<
   T extends {
     eq: (column: string, value: unknown) => T;
@@ -71,8 +86,7 @@ async function resolveSearchPaymentIds(client: SupabaseClient, q?: string) {
   const trimmed = q?.trim();
   if (!trimmed) return undefined;
 
-  const escaped = trimmed.replaceAll("\\", "\\\\").replaceAll("%", "\\%").replaceAll("_", "\\_");
-  const pattern = `%${escaped}%`;
+  const pattern = `%${sanitizeOrLikeValue(trimmed)}%`;
 
   const [{ data: paymentRows, error: paymentError }, { data: supporterRows, error: supporterError }] =
     await Promise.all([

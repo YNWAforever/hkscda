@@ -168,6 +168,22 @@ describe("listAdminPaymentPage", () => {
     });
     expect(calls).toContainEqual({ table: "payment", method: "range", payload: { from: 1, to: 1 } });
   });
+
+  test("sanitizes grammar-sensitive q input before building .or filters", async () => {
+    const { client, calls } = createClient([]);
+
+    await listAdminPaymentPage(client, {
+      q: "a,b(vip)",
+      provider: "all",
+      page: "1",
+      pageSize: "10",
+    });
+
+    expect(calls.filter((call) => call.method === "or").map((call) => call.payload)).toEqual([
+      "provider_ref.ilike.%a b vip%,bank_reference.ilike.%a b vip%",
+      "name.ilike.%a b vip%,email.ilike.%a b vip%",
+    ]);
+  });
 });
 
 describe("listAdminPaymentExportRows", () => {
