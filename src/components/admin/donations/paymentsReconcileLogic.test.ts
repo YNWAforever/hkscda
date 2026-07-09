@@ -1,7 +1,10 @@
 import { describe, expect, test } from "bun:test";
 
 import {
+  adminPaymentSearchSchema,
   applyPaymentFilters,
+  buildPaymentExportSearchParams,
+  buildPaymentSearchParams,
   canIssueReceipt,
   canReconcile,
   canVoidReceipt,
@@ -224,5 +227,45 @@ describe("financeActionLabel", () => {
     expect(financeActionLabel("receipt.issue")).toBe("發收條");
     expect(financeActionLabel("receipt.void")).toBe("作廢收條");
     expect(financeActionLabel("something.else")).toBe("something.else");
+  });
+});
+
+describe("payment search params", () => {
+  test("builds stable list params with q mapped from search", () => {
+    expect(
+      buildPaymentSearchParams({
+        search: "  Ada Wong  ",
+        status: "succeeded",
+        provider: "fps",
+        page: 3,
+        pageSize: 50,
+      }).toString(),
+    ).toBe("q=Ada+Wong&status=succeeded&provider=fps&page=3&pageSize=50");
+  });
+
+  test("always includes safe page defaults for the list request", () => {
+    expect(buildPaymentSearchParams({ search: "", status: "all", provider: "all" }).toString()).toBe(
+      "page=1&pageSize=25",
+    );
+  });
+
+  test("builds export params without pagination", () => {
+    expect(
+      buildPaymentExportSearchParams({
+        search: "REF-9",
+        status: "pending",
+        provider: "all",
+      }).toString(),
+    ).toBe("q=REF-9&status=pending");
+  });
+
+  test("server schema trims q and clamps unsafe pagination", () => {
+    expect(adminPaymentSearchSchema.parse({ q: " Ada ", page: "0", pageSize: "500" })).toEqual({
+      q: "Ada",
+      status: "all",
+      provider: "all",
+      page: 1,
+      pageSize: 25,
+    });
   });
 });
