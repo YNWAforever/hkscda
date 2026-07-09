@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 
 import type { AnimalPipelineRow } from "./animalPipelineLogic";
 import {
+  buildAnimalPipelineExportSearchParams,
   buildAnimalTaskSearchParams,
   buildAnimalPipelineSearchParams,
   filterAnimalPipelineRows,
@@ -141,11 +142,40 @@ describe("animal pipeline logic", () => {
     ]);
   });
 
-  test("builds deep-link search params for an animal id", () => {
-    expect(buildAnimalPipelineSearchParams({ animalId: "  animal-1  " }).toString()).toBe(
-      "animalId=animal-1",
+  test("builds animal pipeline list search params with normalized ordering", () => {
+    expect(
+      buildAnimalPipelineSearchParams({
+        q: " Mochi ",
+        status: "available",
+        type: "cat",
+        adoptable: "adoptable",
+        supportPool: "outside",
+        positionId: "none",
+        page: 2,
+        pageSize: 50,
+      }).toString(),
+    ).toBe(
+      "q=Mochi&status=available&type=cat&adoptable=adoptable&supportPool=outside&positionId=none&page=2&pageSize=50",
     );
-    expect(buildAnimalPipelineSearchParams({ animalId: " " }).toString()).toBe("");
+
+    expect(buildAnimalPipelineSearchParams({ animalId: "  animal-1  " }).toString()).toBe(
+      "animalId=animal-1&page=1&pageSize=25",
+    );
+  });
+
+  test("builds animal pipeline export search params without page values", () => {
+    expect(
+      buildAnimalPipelineExportSearchParams({
+        q: " Foster ",
+        status: "fostered",
+        type: "cat",
+        adoptable: "not_adoptable",
+        supportPool: "inside",
+        positionId: "none",
+      }).toString(),
+    ).toBe(
+      "q=Foster&status=fostered&type=cat&adoptable=not_adoptable&supportPool=inside&positionId=none",
+    );
   });
 
   test("builds open task search params for an animal id", () => {

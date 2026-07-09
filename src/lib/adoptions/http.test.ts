@@ -120,6 +120,10 @@ function createFakeService(overrides: Partial<AdoptionCoordinatorService> = {}) 
       calls.push({ name: "listIntakeItems", payload: rawSearch });
       return { items: [] };
     },
+    async listAnimalPipeline(rawSearch) {
+      calls.push({ name: "listAnimalPipeline", payload: rawSearch });
+      return { animals: [], total: 0, page: 1, pageSize: 25 };
+    },
     async listTasks(rawSearch) {
       calls.push({ name: "listTasks", payload: rawSearch });
       return { tasks: [], total: 0 };
@@ -288,6 +292,32 @@ describe("createAdoptionCoordinatorHandlers", () => {
           openOnly: "true",
           q: "ginger cat",
         },
+      },
+    ]);
+  });
+
+  test("animal pipeline list requires coordinator auth and returns no-store JSON", async () => {
+    const { calls, service } = createFakeService({
+      async listAnimalPipeline(rawSearch) {
+        calls.push({ name: "listAnimalPipeline", payload: rawSearch });
+        return { animals: [], total: 0, page: 2, pageSize: 50 };
+      },
+    });
+    const handlers = createHandlers({ service });
+
+    const response = await handlers.listAnimalPipeline({
+      request: new Request(
+        "https://example.test/api/admin/adoptions/animals/pipeline?q=Mochi&status=available&page=2&pageSize=50",
+      ),
+    });
+
+    expect(response.status).toBe(200);
+    expectNoStoreJson(response);
+    expect(await response.json()).toEqual({ animals: [], total: 0, page: 2, pageSize: 50 });
+    expect(calls).toEqual([
+      {
+        name: "listAnimalPipeline",
+        payload: { q: "Mochi", status: "available", page: "2", pageSize: "50" },
       },
     ]);
   });

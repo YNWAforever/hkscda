@@ -59,6 +59,13 @@ export type PaymentsSummary = {
   confirmedAmountCents: number;
 };
 
+export type SummarizablePaymentRow = Pick<
+  AdminPaymentRow,
+  "amount_cents" | "provider" | "status"
+> & {
+  donation: Pick<AdminPaymentRow["donation"], "id" | "receipt_requested" | "status">;
+};
+
 export type AdminPaymentListResult = {
   payments: AdminPaymentRow[];
   receipts: AdminReceiptRow[];
@@ -161,13 +168,24 @@ export function canVoidReceipt(
   return canManageTreasurerActions(role) && Boolean(findIssuedReceipt(payment.donation.id, receipts));
 }
 
-export function summarizePayments(payments: AdminPaymentRow[], receipts: AdminReceiptRow[]): PaymentsSummary {
+export function summarizePayments(
+  payments: SummarizablePaymentRow[],
+  receipts: AdminReceiptRow[],
+): PaymentsSummary {
   let awaitingReconcile = 0;
   let awaitingReceipt = 0;
   let confirmedAmountCents = 0;
   for (const payment of payments) {
-    if (canReconcile(payment)) awaitingReconcile += 1;
-    if (canIssueReceipt(payment, receipts)) awaitingReceipt += 1;
+    if (payment.status === "pending" && MANUAL_PROVIDERS.includes(payment.provider)) {
+      awaitingReconcile += 1;
+    }
+    if (
+      payment.donation.status === "succeeded" &&
+      payment.donation.receipt_requested &&
+      !findIssuedReceipt(payment.donation.id, receipts)
+    ) {
+      awaitingReceipt += 1;
+    }
     if (payment.status === "succeeded") confirmedAmountCents += payment.amount_cents;
   }
   return { awaitingReconcile, awaitingReceipt, confirmedAmountCents };

@@ -122,6 +122,10 @@ function createRepo(
       calls.push({ name: "listIntakeItems", payload: input });
       return { items: [] };
     },
+    async listAnimalPipeline(input) {
+      calls.push({ name: "listAnimalPipeline", payload: input });
+      return { animals: [], total: 0, page: input.page, pageSize: input.pageSize };
+    },
     async listAdopters(input) {
       calls.push({ name: "listAdopters", payload: input });
       return { adopters: [], total: 0 };
@@ -540,18 +544,9 @@ describe("createAdoptionCoordinatorService", () => {
       kind: "successful-adoptions",
       rawSearch: { page: "3", pageSize: "25" },
     });
-    await service.exportCoordinatorCsv({
-      actorUserId: adminId,
-      kind: "animals",
-      rawSearch: { page: "2", pageSize: "50" },
-    });
 
     expect(calls).toContainEqual({
       name: "listSuccessfulAdoptionExportRows",
-      payload: { page: 1, pageSize: 1000 },
-    });
-    expect(calls).toContainEqual({
-      name: "listAnimalExportRows",
       payload: { page: 1, pageSize: 1000 },
     });
     expect(calls).toContainEqual({
@@ -561,12 +556,90 @@ describe("createAdoptionCoordinatorService", () => {
         detail: { filters: { page: 1, pageSize: 1000 }, rowCount: 0 },
       }),
     });
+  });
+
+  test("exports animal CSV with active pipeline filters and capped page", async () => {
+    const { service, calls } = setup();
+
+    await service.exportCoordinatorCsv({
+      actorUserId: adminId,
+      kind: "animals",
+      rawSearch: {
+        q: " Foster ",
+        status: "fostered",
+        type: "cat",
+        adoptable: "not_adoptable",
+        supportPool: "inside",
+        positionId: "none",
+        page: "2",
+        pageSize: "50",
+      },
+    });
+
+    expect(calls).toContainEqual({
+      name: "listAnimalExportRows",
+      payload: {
+        q: "Foster",
+        animalId: undefined,
+        status: "fostered",
+        type: "cat",
+        adoptable: "not_adoptable",
+        supportPool: "inside",
+        positionId: "none",
+        page: 1,
+        pageSize: 1000,
+      },
+    });
     expect(calls).toContainEqual({
       name: "insertAuditLog",
       payload: expect.objectContaining({
         action: "coordinator_export.animals",
-        detail: { filters: { page: 1, pageSize: 1000 }, rowCount: 0 },
+        detail: {
+          filters: {
+            q: "Foster",
+            animalId: undefined,
+            status: "fostered",
+            type: "cat",
+            adoptable: "not_adoptable",
+            supportPool: "inside",
+            positionId: "none",
+            page: 1,
+            pageSize: 1000,
+          },
+          rowCount: 0,
+        },
       }),
+    });
+  });
+
+  test("lists animal pipeline rows with normalized filters", async () => {
+    const { service, calls } = setup();
+
+    await service.listAnimalPipeline({
+      q: " Mochi ",
+      animalId,
+      status: "available",
+      type: "cat",
+      adoptable: "adoptable",
+      supportPool: "outside",
+      positionId: "none",
+      page: "2",
+      pageSize: "50",
+    });
+
+    expect(calls).toContainEqual({
+      name: "listAnimalPipeline",
+      payload: {
+        q: "Mochi",
+        animalId,
+        status: "available",
+        type: "cat",
+        adoptable: "adoptable",
+        supportPool: "outside",
+        positionId: "none",
+        page: 2,
+        pageSize: 50,
+      },
     });
   });
 

@@ -1,9 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Edit3, RefreshCcw, Save, Search } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, Edit3, RefreshCcw, Save, Search } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 
-import type { CoordinatorStatus, CoordinatorTask } from "../../../lib/adoptions/types";
+import type {
+  AnimalPipelineListResult,
+  CoordinatorStatus,
+  CoordinatorTask,
+} from "../../../lib/adoptions/types";
 import { supabase } from "../../../lib/supabase";
 import type { Animal, AnimalStatus, AnimalType } from "../../../types/animal";
 import { Badge } from "../../ui/badge";
@@ -25,8 +29,9 @@ import { Textarea } from "../../ui/textarea";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { fetchCoordinatorJson } from "./api";
 import {
+  buildAnimalPipelineExportSearchParams,
+  buildAnimalPipelineSearchParams,
   buildAnimalTaskSearchParams,
-  filterAnimalPipelineRows,
   groupAnimalPipelineRows,
   type AnimalInternalProfile,
   type AnimalPipelineFilters,
@@ -54,6 +59,13 @@ type TasksResponse = {
   total: number;
 };
 
+type AnimalPipelineRequest = Partial<AnimalPipelineFilters> & {
+  q?: string | null;
+  animalId?: string | null;
+  page?: number | null;
+  pageSize?: number | null;
+};
+
 type AnimalPosition = AnimalPositionSummary & {
   for_cat: boolean;
   for_dog: boolean;
@@ -68,15 +80,14 @@ type ArrivalSource = ArrivalSourceSummary & {
   is_active: boolean;
 };
 
-const ANIMALS_QUERY_KEY = ["coordinator-animals"] as const;
-const INTERNAL_PROFILES_QUERY_KEY = ["animal-internal-profiles"] as const;
+const ANIMAL_PIPELINE_QUERY_KEY = ["coordinator-animal-pipeline"] as const;
 const POSITIONS_QUERY_KEY = ["animal-positions"] as const;
 const ARRIVAL_SOURCES_QUERY_KEY = ["arrival-sources"] as const;
 const STATUSES_QUERY_KEY = ["coordinator-statuses"] as const;
 const animalTasksQueryKey = (animalId: string | null) => ["coordinator-animal-tasks", animalId];
 
-const EMPTY_ANIMALS: Animal[] = [];
-const EMPTY_INTERNAL_PROFILES: AnimalInternalProfile[] = [];
+const ANIMAL_PIPELINE_PAGE_SIZE = 25;
+const EMPTY_PIPELINE_ROWS: AnimalPipelineRow[] = [];
 const EMPTY_POSITIONS: AnimalPosition[] = [];
 const EMPTY_ARRIVAL_SOURCES: ArrivalSource[] = [];
 const EMPTY_STATUSES: CoordinatorStatus[] = [];
@@ -131,27 +142,6 @@ const STATUS_BADGE_CLASSES: Record<AnimalStatus, string> = {
     "border-[var(--color-accent-warm)] bg-[var(--color-surface-2)] text-[var(--color-panel)]",
 };
 
-function createDefaultProfile(animalId: string): AnimalInternalProfile {
-  return {
-    animal_id: animalId,
-    internal_code: null,
-    arrival_date: null,
-    arrival_source_id: null,
-    current_position_id: null,
-    cage: null,
-    has_chip: null,
-    chip_remarks: null,
-    is_desexed: null,
-    desexed_at: null,
-    desex_remarks: null,
-    is_adoptable: true,
-    is_inside_support_pool: false,
-    adopted_at: null,
-    deceased_at: null,
-    internal_remarks: null,
-  };
-}
-
 function cloneProfile(profile: AnimalInternalProfile): AnimalInternalProfile {
   return { ...profile };
 }
@@ -176,38 +166,6 @@ function formatFallback(value: string | null | undefined) {
 function formatDate(value: string | null | undefined) {
   const trimmed = value?.trim();
   return trimmed ? trimmed.slice(0, 10) : "-";
-}
-
-function lowerSearchValue(row: AnimalPipelineRow) {
-  return [
-    row.name,
-    row.name_en,
-    row.type,
-    row.status,
-    row.profile.internal_code,
-    row.profile.cage,
-    row.currentPosition?.name,
-    row.arrivalSource?.name_zh,
-    row.arrivalSource?.name_en,
-  ]
-    .filter(Boolean)
-    .join(" ")
-    .toLowerCase();
-}
-
-async function readAnimals() {
-  const { data, error } = await supabase
-    .from("animals")
-    .select("*")
-    .order("updated_at", { ascending: false });
-  if (error) throw new Error(`Animals could not load: ${error.message}`);
-  return (data ?? []) as Animal[];
-}
-
-async function readInternalProfiles() {
-  const { data, error } = await supabase.from("animal_profile_internal").select("*");
-  if (error) throw new Error(`Internal profiles could not load: ${error.message}`);
-  return (data ?? []) as AnimalInternalProfile[];
 }
 
 async function readPositions() {
@@ -235,6 +193,13 @@ async function readCoordinatorStatuses() {
   return response.statuses;
 }
 
+async function readAnimalPipeline(search: AnimalPipelineRequest) {
+  const searchParams = buildAnimalPipelineSearchParams(search);
+  return fetchCoordinatorJson<AnimalPipelineListResult>(
+    `/api/admin/adoptions/animals/pipeline?${searchParams.toString()}`,
+  );
+}
+
 async function readAnimalTasks(animalId: string) {
   const searchParams = buildAnimalTaskSearchParams({ animalId });
   const response = await fetchCoordinatorJson<TasksResponse>(
@@ -258,8 +223,10 @@ function ProfileFieldError({ message }: { message?: string }) {
 
 export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }) {
   const queryClient = useQueryClient();
-  const appliedInitialAnimalId = useRef<string | null>(null);
   const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const [initialAnimalQueryId, setInitialAnimalQueryId] = useState(initialAnimalId ?? null);
   const [groupBy, setGroupBy] = useState<"status" | "position">("status");
   const [filters, setFilters] = useState<AnimalPipelineFilters>({
     status: "all",
@@ -271,13 +238,29 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
   const [selectedAnimalId, setSelectedAnimalId] = useState<string | null>(null);
   const [profileForm, setProfileForm] = useState<AnimalInternalProfile | null>(null);
 
-  const animalsQuery = useQuery<Animal[], Error>({
-    queryKey: ANIMALS_QUERY_KEY,
-    queryFn: readAnimals,
-  });
-  const profilesQuery = useQuery<AnimalInternalProfile[], Error>({
-    queryKey: INTERNAL_PROFILES_QUERY_KEY,
-    queryFn: readInternalProfiles,
+  const pipelineSearch = useMemo<AnimalPipelineRequest>(
+    () => ({
+      q: debouncedQuery,
+      animalId: initialAnimalQueryId,
+      ...filters,
+      page,
+      pageSize: ANIMAL_PIPELINE_PAGE_SIZE,
+    }),
+    [debouncedQuery, filters, initialAnimalQueryId, page],
+  );
+  const exportSearchParams = useMemo(
+    () =>
+      buildAnimalPipelineExportSearchParams({
+        q: debouncedQuery,
+        animalId: initialAnimalQueryId,
+        ...filters,
+      }),
+    [debouncedQuery, filters, initialAnimalQueryId],
+  );
+
+  const pipelineQuery = useQuery<AnimalPipelineListResult, Error>({
+    queryKey: [...ANIMAL_PIPELINE_QUERY_KEY, pipelineSearch],
+    queryFn: () => readAnimalPipeline(pipelineSearch),
   });
   const positionsQuery = useQuery<AnimalPosition[], Error>({
     queryKey: POSITIONS_QUERY_KEY,
@@ -297,55 +280,15 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
     enabled: Boolean(selectedAnimalId),
   });
 
-  const animals = animalsQuery.data ?? EMPTY_ANIMALS;
-  const profiles = profilesQuery.data ?? EMPTY_INTERNAL_PROFILES;
+  const rows = pipelineQuery.data?.animals ?? EMPTY_PIPELINE_ROWS;
+  const totalRows = pipelineQuery.data?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalRows / ANIMAL_PIPELINE_PAGE_SIZE));
   const positions = positionsQuery.data ?? EMPTY_POSITIONS;
   const arrivalSources = sourcesQuery.data ?? EMPTY_ARRIVAL_SOURCES;
   const statuses = statusesQuery.data ?? EMPTY_STATUSES;
   const selectedAnimalTasks = selectedAnimalTasksQuery.data ?? EMPTY_TASKS;
 
-  const rows = useMemo<AnimalPipelineRow[]>(() => {
-    const profilesByAnimalId = new Map(profiles.map((profile) => [profile.animal_id, profile]));
-    const positionsById = new Map(positions.map((position) => [position.id, position]));
-    const sourcesById = new Map(arrivalSources.map((source) => [source.id, source]));
-
-    return animals.map((animal) => {
-      const profile = profilesByAnimalId.get(animal.id) ?? createDefaultProfile(animal.id);
-      const currentPosition = profile.current_position_id
-        ? (positionsById.get(profile.current_position_id) ?? {
-            id: profile.current_position_id,
-            name: "Unknown position",
-            type: "unknown",
-          })
-        : null;
-      const arrivalSource = profile.arrival_source_id
-        ? (sourcesById.get(profile.arrival_source_id) ?? {
-            id: profile.arrival_source_id,
-            name_zh: "Unknown source",
-            name_en: null,
-          })
-        : null;
-
-      return {
-        ...animal,
-        profile,
-        currentPosition,
-        arrivalSource,
-      };
-    });
-  }, [animals, arrivalSources, positions, profiles]);
-
-  const visibleRows = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
-    const filtered = filterAnimalPipelineRows(rows, filters);
-    if (!normalizedQuery) return filtered;
-    return filtered.filter((row) => lowerSearchValue(row).includes(normalizedQuery));
-  }, [filters, query, rows]);
-
-  const groups = useMemo(
-    () => groupAnimalPipelineRows(visibleRows, groupBy),
-    [groupBy, visibleRows],
-  );
+  const groups = useMemo(() => groupAnimalPipelineRows(rows, groupBy), [groupBy, rows]);
 
   const selectedRow = useMemo(
     () => rows.find((row) => row.id === selectedAnimalId) ?? null,
@@ -353,14 +296,12 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
   );
 
   const isFetching =
-    animalsQuery.isFetching ||
-    profilesQuery.isFetching ||
+    pipelineQuery.isFetching ||
     positionsQuery.isFetching ||
     sourcesQuery.isFetching ||
     statusesQuery.isFetching;
 
   const readErrors = [
-    profilesQuery.error?.message,
     positionsQuery.error?.message,
     sourcesQuery.error?.message,
     statusesQuery.error?.message,
@@ -376,7 +317,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
         },
       ).then(() => undefined),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ANIMALS_QUERY_KEY });
+      await queryClient.invalidateQueries({ queryKey: ANIMAL_PIPELINE_QUERY_KEY });
     },
   });
 
@@ -388,32 +329,37 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
           method: "PUT",
           body: JSON.stringify(profile),
         },
-      ),
+    ),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: INTERNAL_PROFILES_QUERY_KEY });
+      await queryClient.invalidateQueries({ queryKey: ANIMAL_PIPELINE_QUERY_KEY });
       closeProfileDialog();
     },
   });
 
   useEffect(() => {
-    if (
-      !initialAnimalId ||
-      appliedInitialAnimalId.current === initialAnimalId ||
-      rows.length === 0
-    ) {
-      return;
-    }
-    const row = rows.find((animal) => animal.id === initialAnimalId);
+    const timeoutId = window.setTimeout(() => {
+      setDebouncedQuery(query);
+      setPage(1);
+    }, 250);
+    return () => window.clearTimeout(timeoutId);
+  }, [query]);
+
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
+
+  useEffect(() => {
+    if (!initialAnimalQueryId || pipelineQuery.isLoading) return;
+    const row = rows.find((animal) => animal.id === initialAnimalQueryId);
+    setInitialAnimalQueryId(null);
     if (row) {
-      appliedInitialAnimalId.current = initialAnimalId;
       setSelectedAnimalId(row.id);
       setProfileForm(cloneProfile(row.profile));
     }
-  }, [initialAnimalId, rows]);
+  }, [initialAnimalQueryId, pipelineQuery.isLoading, rows]);
 
   function refetchAll() {
-    animalsQuery.refetch();
-    profilesQuery.refetch();
+    pipelineQuery.refetch();
     positionsQuery.refetch();
     sourcesQuery.refetch();
     statusesQuery.refetch();
@@ -429,6 +375,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
     key: K,
     value: AnimalPipelineFilters[K],
   ) {
+    setPage(1);
     setFilters((current) => ({ ...current, [key]: value }));
   }
 
@@ -493,8 +440,8 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
       : sourceOptions;
 
   const counts = {
-    total: rows.length,
-    visible: visibleRows.length,
+    total: totalRows,
+    visible: rows.length,
     adoptable: rows.filter((row) => row.profile.is_adoptable).length,
     supportPool: rows.filter((row) => row.profile.is_inside_support_pool).length,
   };
@@ -755,7 +702,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <ExportButton kind="animals" />
+          <ExportButton kind="animals" searchParams={exportSearchParams} />
           <Button type="button" variant="outline" onClick={refetchAll} disabled={isFetching}>
             <RefreshCcw className="h-4 w-4" />
             Refresh
@@ -869,28 +816,57 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
               variant="outline"
               className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
             >
-              {counts.visible} visible
+              {counts.visible} on page
             </Badge>
             <span>{counts.total} total</span>
-            <span>{counts.adoptable} adoptable</span>
-            <span>{counts.supportPool} in support pool</span>
+            <span>{counts.adoptable} adoptable on page</span>
+            <span>{counts.supportPool} in support pool on page</span>
           </div>
-          <Tabs value={groupBy} onValueChange={(value) => setGroupBy(value as typeof groupBy)}>
-            <TabsList className="h-8 rounded-lg bg-[var(--color-lavender)] p-1">
-              <TabsTrigger
-                value="status"
-                className="h-6 data-[state=active]:bg-[var(--color-surface)] data-[state=active]:text-[var(--color-panel)]"
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-1 text-xs text-[var(--color-text-muted)]">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setPage((current) => Math.max(1, current - 1))}
+                disabled={page <= 1 || isFetching}
+                aria-label="Previous animal page"
               >
-                Status
-              </TabsTrigger>
-              <TabsTrigger
-                value="position"
-                className="h-6 data-[state=active]:bg-[var(--color-surface)] data-[state=active]:text-[var(--color-panel)]"
+                <ChevronLeft className="h-4 w-4" />
+                Previous
+              </Button>
+              <span className="px-1">
+                Page {page} of {totalPages}
+              </span>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+                disabled={page >= totalPages || isFetching}
+                aria-label="Next animal page"
               >
-                Position
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+                Next
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+            <Tabs value={groupBy} onValueChange={(value) => setGroupBy(value as typeof groupBy)}>
+              <TabsList className="h-8 rounded-lg bg-[var(--color-lavender)] p-1">
+                <TabsTrigger
+                  value="status"
+                  className="h-6 data-[state=active]:bg-[var(--color-surface)] data-[state=active]:text-[var(--color-panel)]"
+                >
+                  Status
+                </TabsTrigger>
+                <TabsTrigger
+                  value="position"
+                  className="h-6 data-[state=active]:bg-[var(--color-surface)] data-[state=active]:text-[var(--color-panel)]"
+                >
+                  Position
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
         </div>
 
         {readErrors.length > 0 && (
@@ -913,16 +889,16 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
         )}
       </section>
 
-      {animalsQuery.error ? (
+      {pipelineQuery.error ? (
         <section
           className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-sm text-[var(--color-error)]"
           role="alert"
         >
-          {animalsQuery.error.message}
+          {pipelineQuery.error.message}
         </section>
       ) : (
         <div className="space-y-4">
-          {animalsQuery.isLoading &&
+          {pipelineQuery.isLoading &&
             Array.from({ length: 2 }, (_, groupIndex) => (
               <section
                 key={groupIndex}
@@ -939,7 +915,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
               </section>
             ))}
 
-          {!animalsQuery.isLoading && groups.length === 0 && (
+          {!pipelineQuery.isLoading && groups.length === 0 && (
             <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-6 text-sm text-[var(--color-text-muted)]">
               No animals match these filters.
             </section>

@@ -11,6 +11,7 @@ import {
 } from "./csv";
 import {
   adopterSearchSchema,
+  animalPipelineSearchSchema,
   caseSearchSchema,
   coordinatorMonthlySummarySearchSchema,
   coordinatorExportKindSchema,
@@ -33,6 +34,7 @@ import type {
   AdoptionIntakeLane,
   AdopterDetail,
   AdopterSummary,
+  AnimalPipelineListResult,
   CoordinatorAdopterExportRow,
   CoordinatorAnimalExportRow,
   CoordinatorExportAuditRow,
@@ -51,6 +53,7 @@ export type StatusInput = z.infer<typeof statusInputSchema>;
 export type StatusUpdate = z.infer<typeof statusUpdateSchema>;
 export type CaseSearch = z.infer<typeof caseSearchSchema>;
 export type AdopterSearch = z.infer<typeof adopterSearchSchema>;
+export type AnimalPipelineSearch = z.infer<typeof animalPipelineSearchSchema>;
 export type MatchInput = z.infer<typeof matchInputSchema>;
 export type FinalizeAdoptionInput = z.infer<typeof finalizeAdoptionSchema>;
 export type TaskListSearch = z.infer<typeof taskListSearchSchema>;
@@ -60,6 +63,7 @@ export type ManualCaseIntakeInput = z.infer<typeof manualCaseIntakeSchema>;
 export type CoordinatorReportHistorySearch = z.infer<typeof coordinatorReportHistorySearchSchema>;
 export type CoordinatorMonthlySummarySearch = z.infer<typeof coordinatorMonthlySummarySearchSchema>;
 export type CoordinatorExportPage = { page: number; pageSize: number };
+export type AnimalExportSearch = AnimalPipelineSearch;
 export type CaseFromPublicApplicationInput = ReturnType<typeof buildCaseFromPublicApplication> & {
   publicApplicationId: string;
 };
@@ -89,6 +93,7 @@ export type AdoptionCoordinatorRepository = {
     lane?: AdoptionIntakeLane;
     openOnly: boolean;
   }): Promise<{ items: AdoptionIntakeItem[] }>;
+  listAnimalPipeline(input: AnimalPipelineSearch): Promise<AnimalPipelineListResult>;
   listCaseExportRows(input: CaseSearch): Promise<CoordinatorCaseExportRow[]>;
   getCaseDetail(id: string): Promise<AdoptionCaseDetail | null>;
   listAdopters(input: AdopterSearch): Promise<{ adopters: AdopterSummary[]; total: number }>;
@@ -99,7 +104,7 @@ export type AdoptionCoordinatorRepository = {
   listSuccessfulAdoptionExportRows(
     input: CoordinatorExportPage,
   ): Promise<CoordinatorSuccessfulAdoptionExportRow[]>;
-  listAnimalExportRows(input: CoordinatorExportPage): Promise<CoordinatorAnimalExportRow[]>;
+  listAnimalExportRows(input: AnimalExportSearch): Promise<CoordinatorAnimalExportRow[]>;
   listTaskExportRows(input: TaskListSearch): Promise<CoordinatorTaskExportRow[]>;
   getTask(id: string): Promise<CoordinatorTask | null>;
   createTask(
@@ -305,6 +310,10 @@ export function createAdoptionCoordinatorService({
       return repo.listIntakeItems(input);
     },
 
+    listAnimalPipeline(rawSearch: unknown) {
+      return repo.listAnimalPipeline(animalPipelineSearchSchema.parse(rawSearch));
+    },
+
     getCaseDetail(caseId: string) {
       return repo.getCaseDetail(caseId);
     },
@@ -394,7 +403,8 @@ export function createAdoptionCoordinatorService({
         csv = buildCoordinatorSuccessfulAdoptionCsv(rows);
         rowCount = rows.length;
       } else if (kind === "animals") {
-        const page = coordinatorExportPage();
+        const parsed = animalPipelineSearchSchema.parse(args.rawSearch);
+        const page = { ...parsed, ...coordinatorExportPage() };
         filters = page;
         const rows = await repo.listAnimalExportRows(page);
         csv = buildCoordinatorAnimalCsv(rows);

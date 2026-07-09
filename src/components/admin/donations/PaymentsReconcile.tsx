@@ -157,9 +157,11 @@ export function PaymentsReconcile() {
     setExportError("");
     try {
       const token = await getAdminAccessToken();
+      const exportSearch = filters.search.trim();
+      setDebouncedSearch(exportSearch);
       const exportParams = buildPaymentExportSearchParams({
         ...filters,
-        search: filters.search.trim(),
+        search: exportSearch,
       }).toString();
       const exportUrl = exportParams
         ? `/api/admin/exports/payments.csv?${exportParams}`

@@ -1,61 +1,19 @@
-import type { Animal, AnimalStatus, AnimalType } from "../../../types/animal";
+import type { AnimalStatus } from "../../../types/animal";
+import type {
+  AnimalInternalProfile,
+  AnimalPipelineFilters,
+  AnimalPipelineRow,
+  AnimalPositionSummary,
+  ArrivalSourceSummary,
+} from "../../../lib/adoptions/types";
 
-export type AnimalInternalProfile = {
-  animal_id: string;
-  internal_code: string | null;
-  arrival_date: string | null;
-  arrival_source_id: string | null;
-  current_position_id: string | null;
-  cage: string | null;
-  has_chip: boolean | null;
-  chip_remarks: string | null;
-  is_desexed: boolean | null;
-  desexed_at: string | null;
-  desex_remarks: string | null;
-  is_adoptable: boolean;
-  is_inside_support_pool: boolean;
-  adopted_at: string | null;
-  deceased_at: string | null;
-  internal_remarks: string | null;
-};
-
-export type AnimalPositionSummary = {
-  id: string;
-  name: string;
-  type: string;
-};
-
-export type ArrivalSourceSummary = {
-  id: string;
-  name_zh: string;
-  name_en: string | null;
-};
-
-export type AnimalPipelineRow = Pick<
-  Animal,
-  | "id"
-  | "type"
-  | "name"
-  | "name_en"
-  | "gender"
-  | "age"
-  | "status"
-  | "image_url"
-  | "created_at"
-  | "updated_at"
-> & {
-  profile: AnimalInternalProfile;
-  currentPosition: AnimalPositionSummary | null;
-  arrivalSource: ArrivalSourceSummary | null;
-};
-
-export type AnimalPipelineFilters = {
-  status: AnimalStatus | "all";
-  type: AnimalType | "all";
-  adoptable: "all" | "adoptable" | "not_adoptable";
-  supportPool: "all" | "inside" | "outside";
-  positionId: string;
-};
+export type {
+  AnimalInternalProfile,
+  AnimalPipelineFilters,
+  AnimalPipelineRow,
+  AnimalPositionSummary,
+  ArrivalSourceSummary,
+} from "../../../lib/adoptions/types";
 
 export type AnimalPipelineGroup = {
   key: string;
@@ -76,10 +34,57 @@ function trimmed(value: string | null | undefined) {
   return nextValue ? nextValue : "";
 }
 
-export function buildAnimalPipelineSearchParams(filters: { animalId?: string | null }) {
-  const params = new URLSearchParams();
+function positiveInteger(value: number | null | undefined, fallback: number) {
+  return typeof value === "number" && Number.isFinite(value) && value >= 1
+    ? Math.floor(value)
+    : fallback;
+}
+
+function appendAnimalPipelineFilterParams(
+  params: URLSearchParams,
+  filters: Partial<AnimalPipelineFilters> & {
+    q?: string | null;
+    animalId?: string | null;
+  },
+) {
+  const q = trimmed(filters.q);
   const animalId = trimmed(filters.animalId);
+  if (q) params.set("q", q);
   if (animalId) params.set("animalId", animalId);
+  if (filters.status && filters.status !== "all") params.set("status", filters.status);
+  if (filters.type && filters.type !== "all") params.set("type", filters.type);
+  if (filters.adoptable && filters.adoptable !== "all") params.set("adoptable", filters.adoptable);
+  if (filters.supportPool && filters.supportPool !== "all") {
+    params.set("supportPool", filters.supportPool);
+  }
+  if (filters.positionId && filters.positionId !== "all") {
+    params.set("positionId", filters.positionId);
+  }
+}
+
+export function buildAnimalPipelineSearchParams(
+  filters: Partial<AnimalPipelineFilters> & {
+    q?: string | null;
+    animalId?: string | null;
+    page?: number | null;
+    pageSize?: number | null;
+  },
+) {
+  const params = new URLSearchParams();
+  appendAnimalPipelineFilterParams(params, filters);
+  params.set("page", String(positiveInteger(filters.page, 1)));
+  params.set("pageSize", String(positiveInteger(filters.pageSize, 25)));
+  return params;
+}
+
+export function buildAnimalPipelineExportSearchParams(
+  filters: Partial<AnimalPipelineFilters> & {
+    q?: string | null;
+    animalId?: string | null;
+  },
+) {
+  const params = new URLSearchParams();
+  appendAnimalPipelineFilterParams(params, filters);
   return params;
 }
 

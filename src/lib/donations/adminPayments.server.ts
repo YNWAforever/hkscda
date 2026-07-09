@@ -7,11 +7,14 @@ import {
   type AdminPaymentListResult,
   type AdminPaymentRow,
   type AdminReceiptRow,
+  type SummarizablePaymentRow,
   summarizePayments,
 } from "./adminPayments";
 
 const PAYMENT_SELECT =
   "id,provider,provider_ref,amount_cents,status,received_at,bank_reference,created_at,donation_id,donation:donation_id(id,purpose,receipt_requested,status,supporter:supporter_id(id,name,email,phone,language))";
+const PAYMENT_SUMMARY_SELECT =
+  "id,provider,amount_cents,status,donation:donation_id(id,receipt_requested,status)";
 
 function escapeLike(value: string) {
   return value.replaceAll("\\", "\\\\").replaceAll("%", "\\%").replaceAll("_", "\\_");
@@ -26,8 +29,9 @@ function normalizeSearchValue(value: string) {
     .replace(/\s+([%_])/g, "$1");
 }
 
-function sanitizeOrLikeValue(value: string) {
-  return escapeLike(normalizeSearchValue(value));
+function searchPatternFor(value: string) {
+  const tokens = normalizeSearchValue(value).split(" ").filter(Boolean).map(escapeLike);
+  return tokens.length > 0 ? `%${tokens.join("%")}%` : "%";
 }
 
 function applyPaymentFilters<
@@ -64,6 +68,21 @@ async function selectPaymentRows(
   return { rows: (data ?? []) as unknown as AdminPaymentRow[], count: count ?? 0 };
 }
 
+async function selectPaymentSummaryRows(
+  client: SupabaseClient,
+  filters: { status: string; provider: string },
+  paymentIds?: string[],
+) {
+  if (paymentIds && paymentIds.length === 0) return [] as SummarizablePaymentRow[];
+
+  let query = client.from("payment").select(PAYMENT_SUMMARY_SELECT);
+  query = applyPaymentFilters(query, filters, paymentIds);
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return (data ?? []) as unknown as SummarizablePaymentRow[];
+}
+
 async function listReceiptsForDonationIds(client: SupabaseClient, donationIds: string[]) {
   if (donationIds.length === 0) return [] as AdminReceiptRow[];
 
@@ -76,12 +95,12 @@ async function listReceiptsForDonationIds(client: SupabaseClient, donationIds: s
   return (data ?? []) as unknown as AdminReceiptRow[];
 }
 
-function donationIdsFor(payments: AdminPaymentRow[]) {
+function donationIdsFor(payments: Array<{ donation: { id: string } }>) {
   return [...new Set(payments.map((payment) => payment.donation.id))];
 }
 
 function matchesSearch(text: string | null | undefined, search: string) {
-  return (text ?? "").toLowerCase().includes(search.toLowerCase());
+  return normalizeSearchValue(text ?? "").toLowerCase().includes(search.toLowerCase());
 }
 
 async function resolveSearchPaymentIds(client: SupabaseClient, q?: string) {
@@ -89,7 +108,7 @@ async function resolveSearchPaymentIds(client: SupabaseClient, q?: string) {
   if (!trimmed) return undefined;
 
   const normalizedSearch = normalizeSearchValue(trimmed);
-  const pattern = `%${escapeLike(normalizedSearch)}%`;
+  const pattern = searchPatternFor(trimmed);
 
   const [{ data: paymentRows, error: paymentError }, { data: supporterRows, error: supporterError }] =
     await Promise.all([
@@ -153,8 +172,8 @@ export async function listAdminPaymentPage(
     to: from + filters.pageSize - 1,
     paymentIds,
   });
-  const summaryResult = await selectPaymentRows(client, filters, { paymentIds });
-  const summaryReceipts = await listReceiptsForDonationIds(client, donationIdsFor(summaryResult.rows));
+  const summaryRows = await selectPaymentSummaryRows(client, filters, paymentIds);
+  const summaryReceipts = await listReceiptsForDonationIds(client, donationIdsFor(summaryRows));
   const pageDonationIds = new Set(donationIdsFor(pageResult.rows));
   const pageReceipts = summaryReceipts.filter((receipt) =>
     receipt.donation_ids.some((donationId) => pageDonationIds.has(donationId)),
@@ -166,7 +185,7 @@ export async function listAdminPaymentPage(
     total: pageResult.count,
     page: filters.page,
     pageSize: filters.pageSize,
-    summary: summarizePayments(summaryResult.rows, summaryReceipts),
+    summary: summarizePayments(summaryRows, summaryReceipts),
   };
 }
 

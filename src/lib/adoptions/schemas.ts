@@ -81,6 +81,27 @@ export const adopterSearchSchema = z.object({
   pageSize: z.coerce.number().int().min(1).max(100).catch(25),
 });
 
+const optionalTrimmedUuid = optionalTrimmed.pipe(z.string().uuid().optional());
+
+const defaultedTrimmed = z
+  .preprocess(
+    (value) => (typeof value === "string" ? value.trim() : value),
+    z.string().min(1).catch("all"),
+  )
+  .default("all");
+
+export const animalPipelineSearchSchema = z.object({
+  q: optionalTrimmed,
+  animalId: optionalTrimmedUuid,
+  status: z.enum(["all", "available", "fostered", "adopted"]).catch("all"),
+  type: z.enum(["all", "cat", "dog", "sponsor"]).catch("all"),
+  adoptable: z.enum(["all", "adoptable", "not_adoptable"]).catch("all"),
+  supportPool: z.enum(["all", "inside", "outside"]).catch("all"),
+  positionId: defaultedTrimmed,
+  page: z.coerce.number().int().min(1).catch(1),
+  pageSize: z.coerce.number().int().min(1).max(100).catch(25),
+});
+
 export const coordinatorExportKindSchema = z.enum([
   "cases",
   "adopters",

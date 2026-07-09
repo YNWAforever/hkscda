@@ -181,7 +181,12 @@ describe("listAdminPaymentPage", () => {
       awaitingReceipt: 1,
       confirmedAmountCents: 50000,
     });
-    expect(calls).toContainEqual({ table: "payment", method: "range", payload: { from: 1, to: 1 } });
+    expect(calls.filter((call) => call.table === "payment" && call.method === "range")).toEqual([
+      { table: "payment", method: "range", payload: { from: 1, to: 1 } },
+    ]);
+    expect(calls.filter((call) => call.table === "payment" && call.method === "select").map((call) => call.payload)).toContain(
+      "id,provider,amount_cents,status,donation:donation_id(id,receipt_requested,status)",
+    );
   });
 
   test("sanitizes grammar-sensitive q input before building .or filters", async () => {
@@ -195,15 +200,15 @@ describe("listAdminPaymentPage", () => {
     });
 
     expect(calls.filter((call) => call.method === "or").map((call) => call.payload)).toEqual([
-      "provider_ref.ilike.%a b vip%,bank_reference.ilike.%a b vip%",
-      "name.ilike.%a b vip%,email.ilike.%a b vip%",
+      "provider_ref.ilike.%a%b%vip%,bank_reference.ilike.%a%b%vip%",
+      "name.ilike.%a%b%vip%,email.ilike.%a%b%vip%",
     ]);
   });
 
   test("keeps punctuation-heavy matches after fallback filtering", async () => {
     const { client } = createClient([
       paymentRow("vip", {
-        provider_ref: "a b vip",
+        provider_ref: "a,b(vip)",
         bank_reference: null,
       }),
     ]);
