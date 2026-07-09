@@ -1,9 +1,13 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Download, FileCheck, FileX } from "lucide-react";
-import { useMemo, useState } from "react";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ChevronLeft, ChevronRight, Download, FileCheck, FileX } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
 import type { AdminRole } from "../../../lib/admin/access";
 import { fetchAdminJson, getAdminAccessToken } from "../../../lib/admin/http";
+import {
+  PAYMENT_RECONCILE_PAGE_SIZE,
+  type AdminPaymentListResult,
+} from "../../../lib/donations/adminPayments";
 import { centsToHkd } from "../../../lib/donations/domain";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
@@ -12,7 +16,8 @@ import { DataTable, type DataTableColumn } from "../DataTable";
 import { StatusPill } from "../StatusBadge";
 import { ReconcileDialog } from "./ReconcileDialog";
 import {
-  applyPaymentFilters,
+  buildPaymentExportSearchParams,
+  buildPaymentSearchParams,
   canIssueReceipt,
   canReconcile,
   canVoidReceipt,
@@ -20,9 +25,7 @@ import {
   findIssuedReceipt,
   paymentStatusPill,
   receiptPill,
-  summarizePayments,
   type AdminPaymentRow,
-  type AdminReceiptRow,
   type PaymentFilters,
 } from "./paymentsReconcileLogic";
 
@@ -71,14 +74,30 @@ export function PaymentsReconcile() {
     provider: "all",
     search: "",
   });
+  const [page, setPage] = useState(1);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [exportError, setExportError] = useState("");
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["admin-payments"],
-    queryFn: () =>
-      fetchAdminJson<{ payments: AdminPaymentRow[]; receipts: AdminReceiptRow[] }>(
-        "/api/admin/payments",
-      ),
+  useEffect(() => {
+    const handle = window.setTimeout(() => setDebouncedSearch(filters.search.trim()), 250);
+    return () => window.clearTimeout(handle);
+  }, [filters.search]);
+
+  const paymentSearch = useMemo(
+    () =>
+      buildPaymentSearchParams({
+        ...filters,
+        search: debouncedSearch,
+        page,
+        pageSize: PAYMENT_RECONCILE_PAGE_SIZE,
+      }).toString(),
+    [debouncedSearch, filters, page],
+  );
+
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ["admin-payments", paymentSearch],
+    queryFn: () => fetchAdminJson<AdminPaymentListResult>(`/api/admin/payments?${paymentSearch}`),
+    placeholderData: keepPreviousData,
   });
 
   const { data: identityData } = useQuery({
@@ -92,15 +111,31 @@ export function PaymentsReconcile() {
       fetchAdminJson<{ activity: FinanceActivityItem[] }>("/api/admin/finance/activity"),
   });
 
-  const payments = useMemo(() => data?.payments ?? [], [data]);
-  const receipts = useMemo(() => data?.receipts ?? [], [data]);
+  const payments = data?.payments ?? [];
+  const receipts = data?.receipts ?? [];
   const adminRole = identityData?.admin.role ?? null;
-  const visible = useMemo(() => applyPaymentFilters(payments, filters), [payments, filters]);
-  const summary = useMemo(() => summarizePayments(payments, receipts), [payments, receipts]);
+  const summary = data?.summary ?? {
+    awaitingReconcile: 0,
+    awaitingReceipt: 0,
+    confirmedAmountCents: 0,
+  };
+  const total = data?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / PAYMENT_RECONCILE_PAGE_SIZE));
+  const pageStart = total === 0 ? 0 : (page - 1) * PAYMENT_RECONCILE_PAGE_SIZE + 1;
+  const pageEnd = Math.min(total, page * PAYMENT_RECONCILE_PAGE_SIZE);
+
+  useEffect(() => {
+    setPage((current) => Math.min(current, totalPages));
+  }, [totalPages]);
 
   function refresh() {
     queryClient.invalidateQueries({ queryKey: ["admin-payments"] });
     queryClient.invalidateQueries({ queryKey: ["admin-finance-activity"] });
+  }
+
+  function updateFilters(patch: Partial<PaymentFilters>) {
+    setPage(1);
+    setFilters((prev) => ({ ...prev, ...patch }));
   }
 
   const issueReceipt = useMutation({
@@ -122,7 +157,16 @@ export function PaymentsReconcile() {
     setExportError("");
     try {
       const token = await getAdminAccessToken();
-      const response = await fetch("/api/admin/exports/payments.csv", {
+      const exportSearch = filters.search.trim();
+      setDebouncedSearch(exportSearch);
+      const exportParams = buildPaymentExportSearchParams({
+        ...filters,
+        search: exportSearch,
+      }).toString();
+      const exportUrl = exportParams
+        ? `/api/admin/exports/payments.csv?${exportParams}`
+        : "/api/admin/exports/payments.csv";
+      const response = await fetch(exportUrl, {
         headers: { authorization: `Bearer ${token}` },
       });
       if (!response.ok) {
@@ -293,15 +337,13 @@ export function PaymentsReconcile() {
       <section className="flex flex-wrap items-center gap-2">
         <Input
           value={filters.search}
-          onChange={(event) => setFilters((prev) => ({ ...prev, search: event.target.value }))}
+          onChange={(event) => updateFilters({ search: event.target.value })}
           placeholder="搜尋姓名 / 電郵 / 參考"
           className="max-w-xs"
         />
         <Select
           value={filters.status}
-          onValueChange={(value) =>
-            setFilters((prev) => ({ ...prev, status: value as PaymentFilters["status"] }))
-          }
+          onValueChange={(value) => updateFilters({ status: value as PaymentFilters["status"] })}
         >
           <SelectTrigger className="w-36" aria-label="收款狀態篩選">
             <SelectValue />
@@ -317,7 +359,7 @@ export function PaymentsReconcile() {
         <Select
           value={filters.provider}
           onValueChange={(value) =>
-            setFilters((prev) => ({ ...prev, provider: value as PaymentFilters["provider"] }))
+            updateFilters({ provider: value as PaymentFilters["provider"] })
           }
         >
           <SelectTrigger className="w-36" aria-label="收款方式篩選">
@@ -344,12 +386,43 @@ export function PaymentsReconcile() {
 
       <DataTable
         columns={columns}
-        rows={visible}
+        rows={payments}
         getRowKey={(payment) => payment.id}
-        loading={isLoading}
+        loading={isLoading || isFetching}
         empty="沒有收款紀錄"
         renderMobileCard={renderMobileCard}
       />
+
+      <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-[var(--color-text-muted)]">
+        <span>
+          {pageStart}-{pageEnd} / {total}
+        </span>
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((current) => Math.max(1, current - 1))}
+            disabled={page <= 1 || isFetching}
+            aria-label="Previous payments page"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <span>
+            {page} / {totalPages}
+          </span>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+            disabled={page >= totalPages || isFetching}
+            aria-label="Next payments page"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
 
       <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
         <h2 className="text-lg font-semibold text-[var(--color-panel)]">最近收款活動</h2>

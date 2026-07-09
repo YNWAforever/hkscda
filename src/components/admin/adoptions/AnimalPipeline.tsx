@@ -29,6 +29,7 @@ import { Textarea } from "../../ui/textarea";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { fetchCoordinatorJson } from "./api";
 import {
+  buildAnimalPipelineExportSearchParams,
   buildAnimalPipelineSearchParams,
   buildAnimalTaskSearchParams,
   groupAnimalPipelineRows,
@@ -253,6 +254,15 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
         pageSize,
       }),
     [debouncedQuery, filters, page, pageSize],
+  );
+
+  const exportSearchParams = useMemo(
+    () =>
+      buildAnimalPipelineExportSearchParams({
+        q: debouncedQuery,
+        ...filters,
+      }),
+    [debouncedQuery, filters],
   );
 
   const pipelineQuery = useQuery<AnimalPipelineListResult, Error>({
@@ -753,7 +763,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <ExportButton kind="animals" />
+          <ExportButton kind="animals" searchParams={exportSearchParams} />
           <Button type="button" variant="outline" onClick={refetchAll} disabled={isFetching}>
             <RefreshCcw className="h-4 w-4" />
             Refresh

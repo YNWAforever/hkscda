@@ -1,55 +1,52 @@
 import type { StatusTone } from "../StatusBadge";
-import type { AdminRole } from "../../../lib/admin/access";
 
-export type PaymentStatus = "pending" | "succeeded" | "failed" | "refunded";
-export type PaymentProvider = "stripe" | "paypal" | "fps" | "payme" | "manual";
+import type {
+  AdminPaymentListResult,
+  AdminPaymentRow,
+  AdminReceiptRow,
+  PaymentFilters,
+  PaymentProvider,
+  PaymentStatus,
+  PaymentsSummary,
+} from "../../../lib/donations/adminPayments";
 
-export type AdminPaymentRow = {
-  id: string;
-  provider: PaymentProvider;
-  provider_ref: string | null;
-  amount_cents: number;
-  status: PaymentStatus;
-  received_at: string | null;
-  bank_reference: string | null;
-  created_at: string;
-  donation: {
-    id: string;
-    purpose: string;
-    receipt_requested: boolean;
-    status: PaymentStatus;
-    supporter: {
-      id: string;
-      name: string;
-      email: string;
-      phone: string | null;
-      language: "zh-HK" | "en";
-    };
-  };
+import {
+  adminPaymentExportSearchSchema,
+  adminPaymentSearchSchema,
+  buildPaymentExportSearchParams,
+  buildPaymentSearchParams,
+  canIssueReceipt,
+  canReconcile,
+  canVoidReceipt,
+  findIssuedReceipt,
+  findVoidReceipt,
+  summarizePayments,
+} from "../../../lib/donations/adminPayments";
+
+export {
+  adminPaymentExportSearchSchema,
+  adminPaymentSearchSchema,
+  buildPaymentExportSearchParams,
+  buildPaymentSearchParams,
+  canIssueReceipt,
+  canReconcile,
+  canVoidReceipt,
+  findIssuedReceipt,
+  findVoidReceipt,
+  summarizePayments,
 };
 
-export type AdminReceiptRow = {
-  id: string;
-  receipt_no: string;
-  donation_ids: string[];
-  status: "issued" | "void";
+export type {
+  AdminPaymentListResult,
+  AdminPaymentRow,
+  AdminReceiptRow,
+  PaymentFilters,
+  PaymentProvider,
+  PaymentStatus,
+  PaymentsSummary,
 };
 
 export type PillSpec = { tone: StatusTone; label: string };
-
-export type PaymentFilters = {
-  status: PaymentStatus | "all";
-  provider: PaymentProvider | "all";
-  search: string;
-};
-
-export type PaymentsSummary = {
-  awaitingReconcile: number;
-  awaitingReceipt: number;
-  confirmedAmountCents: number;
-};
-
-export const MANUAL_PROVIDERS: PaymentProvider[] = ["fps", "payme", "manual"];
 
 const PAYMENT_PILLS: Record<PaymentStatus, PillSpec> = {
   pending: { tone: "warning", label: "待確認" },
@@ -62,14 +59,6 @@ export function paymentStatusPill(status: PaymentStatus): PillSpec {
   return PAYMENT_PILLS[status];
 }
 
-export function findIssuedReceipt(donationId: string, receipts: AdminReceiptRow[]) {
-  return receipts.find((r) => r.status === "issued" && r.donation_ids.includes(donationId));
-}
-
-function findVoidReceipt(donationId: string, receipts: AdminReceiptRow[]) {
-  return receipts.find((r) => r.status === "void" && r.donation_ids.includes(donationId));
-}
-
 export function receiptPill(
   payment: AdminPaymentRow,
   receipts: AdminReceiptRow[],
@@ -79,41 +68,6 @@ export function receiptPill(
   if (canIssueReceipt(payment, receipts)) return { tone: "warning", label: "待發收條" };
   if (findVoidReceipt(payment.donation.id, receipts)) return { tone: "neutral", label: "已作廢" };
   return null;
-}
-
-function canManageTreasurerActions(role?: AdminRole | null) {
-  return role === undefined || role === "treasurer" || role === "admin";
-}
-
-export function canReconcile(payment: AdminPaymentRow, role?: AdminRole | null): boolean {
-  return (
-    canManageTreasurerActions(role) &&
-    payment.status === "pending" &&
-    MANUAL_PROVIDERS.includes(payment.provider)
-  );
-}
-
-export function canIssueReceipt(
-  payment: AdminPaymentRow,
-  receipts: AdminReceiptRow[],
-  role?: AdminRole | null,
-): boolean {
-  return (
-    canManageTreasurerActions(role) &&
-    payment.donation.status === "succeeded" &&
-    payment.donation.receipt_requested &&
-    !findIssuedReceipt(payment.donation.id, receipts)
-  );
-}
-
-export function canVoidReceipt(
-  payment: AdminPaymentRow,
-  receipts: AdminReceiptRow[],
-  role?: AdminRole | null,
-): boolean {
-  return (
-    canManageTreasurerActions(role) && Boolean(findIssuedReceipt(payment.donation.id, receipts))
-  );
 }
 
 export function applyPaymentFilters(
@@ -135,21 +89,6 @@ export function applyPaymentFilters(
       .toLowerCase();
     return haystack.includes(search);
   });
-}
-
-export function summarizePayments(
-  payments: AdminPaymentRow[],
-  receipts: AdminReceiptRow[],
-): PaymentsSummary {
-  let awaitingReconcile = 0;
-  let awaitingReceipt = 0;
-  let confirmedAmountCents = 0;
-  for (const payment of payments) {
-    if (canReconcile(payment)) awaitingReconcile += 1;
-    if (canIssueReceipt(payment, receipts)) awaitingReceipt += 1;
-    if (payment.status === "succeeded") confirmedAmountCents += payment.amount_cents;
-  }
-  return { awaitingReconcile, awaitingReceipt, confirmedAmountCents };
 }
 
 const FINANCE_ACTION_LABELS: Record<string, string> = {

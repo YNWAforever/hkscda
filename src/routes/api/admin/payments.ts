@@ -1,11 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { listAdminPaymentPage } from "../../../lib/donations/adminPayments.server";
 import {
   createSupabaseServiceClient,
-  listAdminPayments,
-  listAdminReceipts,
   requireAdmin,
 } from "../../../lib/donations/supabase.server";
+
+function searchRecord(request: Request) {
+  return Object.fromEntries(new URL(request.url).searchParams.entries());
+}
 
 export const Route = createFileRoute("/api/admin/payments")({
   server: {
@@ -14,14 +17,8 @@ export const Route = createFileRoute("/api/admin/payments")({
         try {
           const client = createSupabaseServiceClient();
           await requireAdmin(request, ["staff", "treasurer", "admin"], client);
-          const [payments, receipts] = await Promise.all([
-            listAdminPayments(client),
-            listAdminReceipts(client),
-          ]);
-          return Response.json(
-            { payments, receipts },
-            { headers: { "cache-control": "no-store" } },
-          );
+          const result = await listAdminPaymentPage(client, searchRecord(request));
+          return Response.json(result, { headers: { "cache-control": "no-store" } });
         } catch (error) {
           if (error instanceof Response) return error;
           console.error(error);

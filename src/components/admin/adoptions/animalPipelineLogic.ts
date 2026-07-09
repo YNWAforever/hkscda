@@ -71,6 +71,26 @@ export function buildAnimalPipelineSearchParams(filters: AnimalPipelineSearchPar
   return params;
 }
 
+export function buildAnimalPipelineExportSearchParams(filters: AnimalPipelineSearchParamsInput = {}) {
+  const params = new URLSearchParams();
+  const query = trimmed(filters.q);
+  const animalId = trimmed(filters.animalId);
+  const status = filters.status ?? "all";
+  const type = filters.type ?? "all";
+  const adoptable = filters.adoptable ?? "all";
+  const supportPool = filters.supportPool ?? "all";
+  const positionId = trimmed(filters.positionId) || "all";
+
+  if (query) params.set("q", query);
+  if (animalId) params.set("animalId", animalId);
+  if (status !== "all") params.set("status", status);
+  if (type !== "all") params.set("type", type);
+  if (adoptable !== "all") params.set("adoptable", adoptable);
+  if (supportPool !== "all") params.set("supportPool", supportPool);
+  if (positionId !== "all") params.set("positionId", positionId);
+  return params;
+}
+
 export function buildAnimalTaskSearchParams(filters: { animalId?: string | null }) {
   const params = new URLSearchParams();
   const animalId = trimmed(filters.animalId);

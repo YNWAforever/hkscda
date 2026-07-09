@@ -103,7 +103,7 @@ export type AdoptionCoordinatorRepository = {
   listSuccessfulAdoptionExportRows(
     input: CoordinatorExportPage,
   ): Promise<CoordinatorSuccessfulAdoptionExportRow[]>;
-  listAnimalExportRows(input: CoordinatorExportPage): Promise<CoordinatorAnimalExportRow[]>;
+  listAnimalExportRows(input: AnimalPipelineSearch): Promise<CoordinatorAnimalExportRow[]>;
   listTaskExportRows(input: TaskListSearch): Promise<CoordinatorTaskExportRow[]>;
   getTask(id: string): Promise<CoordinatorTask | null>;
   createTask(
@@ -402,7 +402,8 @@ export function createAdoptionCoordinatorService({
         csv = buildCoordinatorSuccessfulAdoptionCsv(rows);
         rowCount = rows.length;
       } else if (kind === "animals") {
-        const page = coordinatorExportPage();
+        const parsed = animalPipelineSearchSchema.parse(args.rawSearch);
+        const page = { ...parsed, ...coordinatorExportPage() };
         filters = page;
         const rows = await repo.listAnimalExportRows(page);
         csv = buildCoordinatorAnimalCsv(rows);

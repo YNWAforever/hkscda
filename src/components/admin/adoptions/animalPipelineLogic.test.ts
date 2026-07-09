@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 
 import type { AnimalPipelineRow } from "./animalPipelineLogic";
 import {
+  buildAnimalPipelineExportSearchParams,
   buildAnimalTaskSearchParams,
   buildAnimalPipelineSearchParams,
   filterAnimalPipelineRows,
@@ -163,6 +164,23 @@ describe("animal pipeline logic", () => {
         animalId: "  animal-1  ",
       }).toString(),
     ).toBe("animalId=animal-1&page=1&pageSize=25");
+  });
+
+  test("builds animal pipeline export params without list pagination", () => {
+    expect(
+      buildAnimalPipelineExportSearchParams({
+        q: " Foster ",
+        status: "fostered",
+        type: "cat",
+        adoptable: "not_adoptable",
+        supportPool: "inside",
+        positionId: "none",
+        page: 3,
+        pageSize: 10,
+      }).toString(),
+    ).toBe(
+      "q=Foster&status=fostered&type=cat&adoptable=not_adoptable&supportPool=inside&positionId=none",
+    );
   });
 
   test("builds open task search params for an animal id", () => {

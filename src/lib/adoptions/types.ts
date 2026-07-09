@@ -221,6 +221,70 @@ export type AdoptionIntakeItem = {
   };
 };
 
+export type AnimalInternalProfile = {
+  animal_id: string;
+  internal_code: string | null;
+  arrival_date: string | null;
+  arrival_source_id: string | null;
+  current_position_id: string | null;
+  cage: string | null;
+  has_chip: boolean | null;
+  chip_remarks: string | null;
+  is_desexed: boolean | null;
+  desexed_at: string | null;
+  desex_remarks: string | null;
+  is_adoptable: boolean;
+  is_inside_support_pool: boolean;
+  adopted_at: string | null;
+  deceased_at: string | null;
+  internal_remarks: string | null;
+};
+
+export type AnimalPositionSummary = {
+  id: string;
+  name: string;
+  type: string;
+};
+
+export type ArrivalSourceSummary = {
+  id: string;
+  name_zh: string;
+  name_en: string | null;
+};
+
+export type AnimalPipelineRow = Pick<
+  Animal,
+  | "id"
+  | "type"
+  | "name"
+  | "name_en"
+  | "gender"
+  | "age"
+  | "status"
+  | "image_url"
+  | "created_at"
+  | "updated_at"
+> & {
+  profile: AnimalInternalProfile;
+  currentPosition: AnimalPositionSummary | null;
+  arrivalSource: ArrivalSourceSummary | null;
+};
+
+export type AnimalPipelineFilters = {
+  status: AnimalStatus | "all";
+  type: AnimalType | "all";
+  adoptable: "all" | "adoptable" | "not_adoptable";
+  supportPool: "all" | "inside" | "outside";
+  positionId: string;
+};
+
+export type AnimalPipelineListResult = {
+  animals: AnimalPipelineRow[];
+  total: number;
+  page: number;
+  pageSize: number;
+};
+
 export type AdoptionCaseDetail = AdoptionCaseSummary & {
   applicantAddress: string | null;
   housingType: string | null;

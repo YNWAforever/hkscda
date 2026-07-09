@@ -1664,7 +1664,15 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
       arrivalSourceRows: [{ id: arrivalSourceId, name_zh: "街上救援", name_en: "Street rescue" }],
     });
 
-    const rows = await repo.listAnimalExportRows({ page: 1, pageSize: 1000 });
+    const rows = await repo.listAnimalExportRows({
+      status: "all",
+      type: "all",
+      adoptable: "all",
+      supportPool: "all",
+      positionId: "all",
+      page: 1,
+      pageSize: 1000,
+    });
 
     expect(rows).toEqual([
       {
@@ -1690,6 +1698,78 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     expect(callsFor(calls, "animal_profile_internal", "select")).toHaveLength(1);
     expect(callsFor(calls, "animal_position", "select")).toHaveLength(1);
     expect(callsFor(calls, "arrival_source", "select")).toHaveLength(1);
+  });
+
+  test("exports animals with active pipeline filters", async () => {
+    const otherAnimalId = "99999999-aaaa-4bbb-8ccc-dddddddddddd";
+    const { repo, calls } = setupRepository({
+      animalRows: [
+        animalRow({
+          type: "cat",
+          status: "fostered",
+        }),
+        animalRow({
+          id: otherAnimalId,
+          type: "dog",
+          status: "available",
+        }),
+      ],
+      internalProfileRows: [
+        {
+          animal_id: animalId,
+          internal_code: "CAT-204",
+          arrival_source_id: arrivalSourceId,
+          current_position_id: animalPositionId,
+          is_adoptable: false,
+          is_inside_support_pool: true,
+          adopted_at: null,
+          deceased_at: null,
+        },
+        {
+          animal_id: otherAnimalId,
+          internal_code: "DOG-101",
+          arrival_source_id: null,
+          current_position_id: null,
+          is_adoptable: true,
+          is_inside_support_pool: false,
+          adopted_at: null,
+          deceased_at: null,
+        },
+      ],
+      animalPositionRows: [{ id: animalPositionId, name: "Foster home" }],
+      arrivalSourceRows: [{ id: arrivalSourceId, name_zh: "街上救援", name_en: "Street rescue" }],
+    });
+
+    const rows = await repo.listAnimalExportRows({
+      q: "CAT-204",
+      status: "fostered",
+      type: "cat",
+      adoptable: "not_adoptable",
+      supportPool: "inside",
+      positionId: animalPositionId,
+      page: 1,
+      pageSize: 1000,
+    });
+
+    expect(rows.map((row) => row.animalId)).toEqual([animalId]);
+    expect(callPayloads(calls, "animals", "eq")).toEqual(
+      expect.arrayContaining([
+        { column: "status", value: "fostered" },
+        { column: "type", value: "cat" },
+      ]),
+    );
+    expect(callPayloads(calls, "animal_profile_internal", "eq")).toEqual(
+      expect.arrayContaining([
+        { column: "is_adoptable", value: false },
+        { column: "is_inside_support_pool", value: true },
+        { column: "current_position_id", value: animalPositionId },
+      ]),
+    );
+    expect(calls).toContainEqual({
+      table: "animals",
+      method: "range",
+      payload: { from: 0, to: 999 },
+    });
   });
 
   test("lists paginated animal pipeline rows with selected columns and page profiles", async () => {
