@@ -1,15 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { buildPaymentCsv } from "../../../../lib/crm/csv";
+import { listAdminPaymentExportRows } from "../../../../lib/donations/adminPayments.server";
 import {
   createSupabaseServiceClient,
-  listAdminPayments,
   requireAdmin,
 } from "../../../../lib/donations/supabase.server";
 
-type PaymentWithDonation = Awaited<ReturnType<typeof listAdminPayments>>[number] & {
-  donation: { purpose: string; supporter: { name: string; email: string } };
-};
+function searchRecord(request: Request) {
+  return Object.fromEntries(new URL(request.url).searchParams.entries());
+}
 
 export const Route = createFileRoute("/api/admin/exports/payments.csv")({
   server: {
@@ -18,22 +18,8 @@ export const Route = createFileRoute("/api/admin/exports/payments.csv")({
         try {
           const client = createSupabaseServiceClient();
           await requireAdmin(request, ["treasurer", "admin"], client);
-          const payments = (await listAdminPayments(client)) as unknown as PaymentWithDonation[];
-          const csv = buildPaymentCsv(
-            payments.map((payment) => ({
-              paymentId: payment.id,
-              supporterName: payment.donation.supporter.name,
-              supporterEmail: payment.donation.supporter.email,
-              provider: payment.provider,
-              amountCents: payment.amount_cents,
-              purpose: payment.donation.purpose,
-              status: payment.status,
-              providerRef: payment.provider_ref,
-              bankReference: payment.bank_reference,
-              receivedAt: payment.received_at,
-              createdAt: payment.created_at,
-            })),
-          );
+          const rows = await listAdminPaymentExportRows(client, searchRecord(request));
+          const csv = buildPaymentCsv(rows);
           return new Response(csv, {
             headers: {
               "content-type": "text/csv; charset=utf-8",

@@ -131,6 +131,21 @@ function createClient(rows: Record<string, unknown>[], receipts: Record<string, 
 }
 
 describe("listAdminPaymentPage", () => {
+  test("list response shape is stable for the payments route", async () => {
+    const { client } = createClient([paymentRow("a")]);
+
+    const result = await listAdminPaymentPage(client, {});
+
+    expect(Object.keys(result).sort()).toEqual([
+      "page",
+      "pageSize",
+      "payments",
+      "receipts",
+      "summary",
+      "total",
+    ]);
+  });
+
   test("returns a requested page, total count, and all-filter summary", async () => {
     const { client, calls } = createClient([
       paymentRow("a", { status: "pending", provider: "fps" }),
