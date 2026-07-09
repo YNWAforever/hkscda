@@ -1,6 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, Edit3, RefreshCcw, Save, Search } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Edit3, RefreshCcw, Save, Search } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 
 import type {
@@ -33,6 +33,7 @@ import {
   buildAnimalPipelineSearchParams,
   buildAnimalTaskSearchParams,
   groupAnimalPipelineRows,
+  resolveAnimalPipelinePagination,
   type AnimalInternalProfile,
   type AnimalPipelineFilters,
   type AnimalPipelineRow,
@@ -59,13 +60,6 @@ type TasksResponse = {
   total: number;
 };
 
-type AnimalPipelineRequest = Partial<AnimalPipelineFilters> & {
-  q?: string | null;
-  animalId?: string | null;
-  page?: number | null;
-  pageSize?: number | null;
-};
-
 type AnimalPosition = AnimalPositionSummary & {
   for_cat: boolean;
   for_dog: boolean;
@@ -80,18 +74,20 @@ type ArrivalSource = ArrivalSourceSummary & {
   is_active: boolean;
 };
 
-const ANIMAL_PIPELINE_QUERY_KEY = ["coordinator-animal-pipeline"] as const;
+const PIPELINE_QUERY_KEY = ["coordinator-animal-pipeline"] as const;
+const PIPELINE_PAGE_SIZE_OPTIONS = [10, 25, 50] as const;
+const PIPELINE_REFERENCE_STALE_TIME_MS = 5 * 60 * 1000;
+const PIPELINE_SEARCH_DEBOUNCE_MS = 300;
 const POSITIONS_QUERY_KEY = ["animal-positions"] as const;
 const ARRIVAL_SOURCES_QUERY_KEY = ["arrival-sources"] as const;
 const STATUSES_QUERY_KEY = ["coordinator-statuses"] as const;
 const animalTasksQueryKey = (animalId: string | null) => ["coordinator-animal-tasks", animalId];
 
-const ANIMAL_PIPELINE_PAGE_SIZE = 25;
-const EMPTY_PIPELINE_ROWS: AnimalPipelineRow[] = [];
 const EMPTY_POSITIONS: AnimalPosition[] = [];
 const EMPTY_ARRIVAL_SOURCES: ArrivalSource[] = [];
 const EMPTY_STATUSES: CoordinatorStatus[] = [];
 const EMPTY_TASKS: CoordinatorTask[] = [];
+const EMPTY_PIPELINE_ROWS: AnimalPipelineRow[] = [];
 
 const STATUS_OPTIONS: Array<{ value: AnimalStatus | "all"; label: string }> = [
   { value: "all", label: "All statuses" },
@@ -168,6 +164,12 @@ function formatDate(value: string | null | undefined) {
   return trimmed ? trimmed.slice(0, 10) : "-";
 }
 
+async function readAnimalPipeline(searchParams: URLSearchParams) {
+  return fetchCoordinatorJson<AnimalPipelineListResult>(
+    `/api/admin/adoptions/animals/pipeline?${searchParams.toString()}`,
+  );
+}
+
 async function readPositions() {
   const { data, error } = await supabase
     .from("animal_position")
@@ -193,13 +195,6 @@ async function readCoordinatorStatuses() {
   return response.statuses;
 }
 
-async function readAnimalPipeline(search: AnimalPipelineRequest) {
-  const searchParams = buildAnimalPipelineSearchParams(search);
-  return fetchCoordinatorJson<AnimalPipelineListResult>(
-    `/api/admin/adoptions/animals/pipeline?${searchParams.toString()}`,
-  );
-}
-
 async function readAnimalTasks(animalId: string) {
   const searchParams = buildAnimalTaskSearchParams({ animalId });
   const response = await fetchCoordinatorJson<TasksResponse>(
@@ -221,12 +216,21 @@ function ProfileFieldError({ message }: { message?: string }) {
   );
 }
 
+function useDebouncedValue<T>(value: T, delayMs: number) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => setDebouncedValue(value), delayMs);
+    return () => window.clearTimeout(timeoutId);
+  }, [delayMs, value]);
+
+  return debouncedValue;
+}
+
 export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }) {
   const queryClient = useQueryClient();
+  const appliedInitialAnimalId = useRef<string | null>(null);
   const [query, setQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  const [page, setPage] = useState(1);
-  const [initialAnimalQueryId, setInitialAnimalQueryId] = useState(initialAnimalId ?? null);
   const [groupBy, setGroupBy] = useState<"status" | "position">("status");
   const [filters, setFilters] = useState<AnimalPipelineFilters>({
     status: "all",
@@ -237,42 +241,64 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
   });
   const [selectedAnimalId, setSelectedAnimalId] = useState<string | null>(null);
   const [profileForm, setProfileForm] = useState<AnimalInternalProfile | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState<(typeof PIPELINE_PAGE_SIZE_OPTIONS)[number]>(25);
+  const debouncedQuery = useDebouncedValue(query, PIPELINE_SEARCH_DEBOUNCE_MS);
 
-  const pipelineSearch = useMemo<AnimalPipelineRequest>(
-    () => ({
-      q: debouncedQuery,
-      animalId: initialAnimalQueryId,
-      ...filters,
-      page,
-      pageSize: ANIMAL_PIPELINE_PAGE_SIZE,
-    }),
-    [debouncedQuery, filters, initialAnimalQueryId, page],
+  const searchParams = useMemo(
+    () =>
+      buildAnimalPipelineSearchParams({
+        q: debouncedQuery,
+        ...filters,
+        page,
+        pageSize,
+      }),
+    [debouncedQuery, filters, page, pageSize],
   );
+
   const exportSearchParams = useMemo(
     () =>
       buildAnimalPipelineExportSearchParams({
         q: debouncedQuery,
-        animalId: initialAnimalQueryId,
         ...filters,
       }),
-    [debouncedQuery, filters, initialAnimalQueryId],
+    [debouncedQuery, filters],
   );
 
   const pipelineQuery = useQuery<AnimalPipelineListResult, Error>({
-    queryKey: [...ANIMAL_PIPELINE_QUERY_KEY, pipelineSearch],
-    queryFn: () => readAnimalPipeline(pipelineSearch),
+    queryKey: [...PIPELINE_QUERY_KEY, searchParams.toString()],
+    queryFn: () => readAnimalPipeline(searchParams),
+    placeholderData: keepPreviousData,
+  });
+
+  const initialAnimalParams = useMemo(
+    () =>
+      initialAnimalId
+        ? buildAnimalPipelineSearchParams({ animalId: initialAnimalId, page: 1, pageSize: 1 })
+        : null,
+    [initialAnimalId],
+  );
+
+  const initialAnimalQuery = useQuery<AnimalPipelineListResult, Error>({
+    queryKey: [...PIPELINE_QUERY_KEY, "initial", initialAnimalParams?.toString() ?? ""],
+    queryFn: () => readAnimalPipeline(initialAnimalParams ?? new URLSearchParams()),
+    enabled: Boolean(initialAnimalParams),
+    staleTime: PIPELINE_REFERENCE_STALE_TIME_MS,
   });
   const positionsQuery = useQuery<AnimalPosition[], Error>({
     queryKey: POSITIONS_QUERY_KEY,
     queryFn: readPositions,
+    staleTime: PIPELINE_REFERENCE_STALE_TIME_MS,
   });
   const sourcesQuery = useQuery<ArrivalSource[], Error>({
     queryKey: ARRIVAL_SOURCES_QUERY_KEY,
     queryFn: readArrivalSources,
+    staleTime: PIPELINE_REFERENCE_STALE_TIME_MS,
   });
   const statusesQuery = useQuery<CoordinatorStatus[], Error>({
     queryKey: STATUSES_QUERY_KEY,
     queryFn: readCoordinatorStatuses,
+    staleTime: PIPELINE_REFERENCE_STALE_TIME_MS,
   });
   const selectedAnimalTasksQuery = useQuery<CoordinatorTask[], Error>({
     queryKey: animalTasksQueryKey(selectedAnimalId),
@@ -280,19 +306,36 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
     enabled: Boolean(selectedAnimalId),
   });
 
-  const rows = pipelineQuery.data?.animals ?? EMPTY_PIPELINE_ROWS;
-  const totalRows = pipelineQuery.data?.total ?? 0;
-  const totalPages = Math.max(1, Math.ceil(totalRows / ANIMAL_PIPELINE_PAGE_SIZE));
   const positions = positionsQuery.data ?? EMPTY_POSITIONS;
   const arrivalSources = sourcesQuery.data ?? EMPTY_ARRIVAL_SOURCES;
   const statuses = statusesQuery.data ?? EMPTY_STATUSES;
   const selectedAnimalTasks = selectedAnimalTasksQuery.data ?? EMPTY_TASKS;
 
+  const rows = pipelineQuery.data?.animals ?? EMPTY_PIPELINE_ROWS;
+  const total = pipelineQuery.data?.total ?? 0;
+  const pipelinePage = pipelineQuery.data?.page;
+  const pipelinePageSize = pipelineQuery.data?.pageSize;
+  const {
+    page: resolvedPage,
+    pageSize: resolvedPageSize,
+    totalPages,
+  } = resolveAnimalPipelinePagination({
+    page,
+    pageSize,
+    responsePage: pipelinePage,
+    responsePageSize: pipelinePageSize,
+    total,
+  });
+  const initialAnimalRows = initialAnimalQuery.data?.animals ?? EMPTY_PIPELINE_ROWS;
+
   const groups = useMemo(() => groupAnimalPipelineRows(rows, groupBy), [groupBy, rows]);
 
   const selectedRow = useMemo(
-    () => rows.find((row) => row.id === selectedAnimalId) ?? null,
-    [rows, selectedAnimalId],
+    () =>
+      rows.find((row) => row.id === selectedAnimalId) ??
+      initialAnimalRows.find((row) => row.id === selectedAnimalId) ??
+      null,
+    [initialAnimalRows, rows, selectedAnimalId],
   );
 
   const isFetching =
@@ -317,7 +360,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
         },
       ).then(() => undefined),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ANIMAL_PIPELINE_QUERY_KEY });
+      await queryClient.invalidateQueries({ queryKey: PIPELINE_QUERY_KEY });
     },
   });
 
@@ -329,34 +372,52 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
           method: "PUT",
           body: JSON.stringify(profile),
         },
-    ),
+      ),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ANIMAL_PIPELINE_QUERY_KEY });
+      await queryClient.invalidateQueries({ queryKey: PIPELINE_QUERY_KEY });
       closeProfileDialog();
     },
   });
 
   useEffect(() => {
-    const timeoutId = window.setTimeout(() => {
-      setDebouncedQuery(query);
-      setPage(1);
-    }, 250);
-    return () => window.clearTimeout(timeoutId);
-  }, [query]);
-
-  useEffect(() => {
-    if (page > totalPages) setPage(totalPages);
-  }, [page, totalPages]);
-
-  useEffect(() => {
-    if (!initialAnimalQueryId || pipelineQuery.isLoading) return;
-    const row = rows.find((animal) => animal.id === initialAnimalQueryId);
-    setInitialAnimalQueryId(null);
+    if (!initialAnimalId || appliedInitialAnimalId.current === initialAnimalId) {
+      return;
+    }
+    const row =
+      rows.find((animal) => animal.id === initialAnimalId) ??
+      initialAnimalQuery.data?.animals.find((animal) => animal.id === initialAnimalId);
     if (row) {
+      appliedInitialAnimalId.current = initialAnimalId;
       setSelectedAnimalId(row.id);
       setProfileForm(cloneProfile(row.profile));
     }
-  }, [initialAnimalQueryId, pipelineQuery.isLoading, rows]);
+  }, [initialAnimalId, initialAnimalQuery.data?.animals, rows]);
+
+  useEffect(() => {
+    if (
+      pipelineQuery.isPlaceholderData ||
+      pipelinePage === undefined ||
+      pipelinePageSize === undefined
+    ) {
+      return;
+    }
+
+    if (resolvedPage !== page) {
+      setPage(resolvedPage);
+    }
+
+    if (resolvedPageSize !== pageSize) {
+      setPageSize(resolvedPageSize as (typeof PIPELINE_PAGE_SIZE_OPTIONS)[number]);
+    }
+  }, [
+    pipelinePage,
+    pipelinePageSize,
+    pipelineQuery.isPlaceholderData,
+    page,
+    pageSize,
+    resolvedPage,
+    resolvedPageSize,
+  ]);
 
   function refetchAll() {
     pipelineQuery.refetch();
@@ -375,8 +436,8 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
     key: K,
     value: AnimalPipelineFilters[K],
   ) {
-    setPage(1);
     setFilters((current) => ({ ...current, [key]: value }));
+    setPage(1);
   }
 
   function openProfileDialog(row: AnimalPipelineRow) {
@@ -440,10 +501,10 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
       : sourceOptions;
 
   const counts = {
-    total: totalRows,
-    visible: rows.length,
-    adoptable: rows.filter((row) => row.profile.is_adoptable).length,
-    supportPool: rows.filter((row) => row.profile.is_inside_support_pool).length,
+    shown: rows.length,
+    total,
+    adoptableOnPage: rows.filter((row) => row.profile.is_adoptable).length,
+    supportPoolOnPage: rows.filter((row) => row.profile.is_inside_support_pool).length,
   };
 
   const animalColumns: DataTableColumn<AnimalPipelineRow>[] = [
@@ -716,7 +777,10 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
             <Input
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) => {
+                setQuery(event.target.value);
+                setPage(1);
+              }}
               aria-label="Search animal pipeline"
               className="h-9 pl-9"
               placeholder="Search name, code, cage, position"
@@ -816,57 +880,28 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
               variant="outline"
               className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
             >
-              {counts.visible} on page
+              {counts.shown} shown
             </Badge>
-            <span>{counts.total} total</span>
-            <span>{counts.adoptable} adoptable on page</span>
-            <span>{counts.supportPool} in support pool on page</span>
+            <span>{counts.total} matching total</span>
+            <span>{counts.adoptableOnPage} adoptable on page</span>
+            <span>{counts.supportPoolOnPage} in support pool on page</span>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center gap-1 text-xs text-[var(--color-text-muted)]">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((current) => Math.max(1, current - 1))}
-                disabled={page <= 1 || isFetching}
-                aria-label="Previous animal page"
+          <Tabs value={groupBy} onValueChange={(value) => setGroupBy(value as typeof groupBy)}>
+            <TabsList className="h-8 rounded-lg bg-[var(--color-lavender)] p-1">
+              <TabsTrigger
+                value="status"
+                className="h-6 data-[state=active]:bg-[var(--color-surface)] data-[state=active]:text-[var(--color-panel)]"
               >
-                <ChevronLeft className="h-4 w-4" />
-                Previous
-              </Button>
-              <span className="px-1">
-                Page {page} of {totalPages}
-              </span>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
-                disabled={page >= totalPages || isFetching}
-                aria-label="Next animal page"
+                Status
+              </TabsTrigger>
+              <TabsTrigger
+                value="position"
+                className="h-6 data-[state=active]:bg-[var(--color-surface)] data-[state=active]:text-[var(--color-panel)]"
               >
-                Next
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-            <Tabs value={groupBy} onValueChange={(value) => setGroupBy(value as typeof groupBy)}>
-              <TabsList className="h-8 rounded-lg bg-[var(--color-lavender)] p-1">
-                <TabsTrigger
-                  value="status"
-                  className="h-6 data-[state=active]:bg-[var(--color-surface)] data-[state=active]:text-[var(--color-panel)]"
-                >
-                  Status
-                </TabsTrigger>
-                <TabsTrigger
-                  value="position"
-                  className="h-6 data-[state=active]:bg-[var(--color-surface)] data-[state=active]:text-[var(--color-panel)]"
-                >
-                  Position
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
+                Position
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
 
         {readErrors.length > 0 && (
@@ -946,6 +981,52 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
               />
             </section>
           ))}
+
+          {!pipelineQuery.isLoading && (
+            <div className="flex min-h-12 flex-wrap items-center justify-between gap-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-xs text-[var(--color-text-muted)]">
+              <span>
+                Page {resolvedPage} of {totalPages}
+              </span>
+              <div className="flex items-center gap-2">
+                <Select
+                  value={String(resolvedPageSize)}
+                  onValueChange={(value) => {
+                    setPageSize(Number(value) as (typeof PIPELINE_PAGE_SIZE_OPTIONS)[number]);
+                    setPage(1);
+                  }}
+                >
+                  <SelectTrigger aria-label="Rows per page" className="h-8 w-20">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PIPELINE_PAGE_SIZE_OPTIONS.map((option) => (
+                      <SelectItem key={option} value={String(option)}>
+                        {option}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setPage((currentPage) => Math.max(1, currentPage - 1))}
+                  disabled={resolvedPage <= 1 || isFetching}
+                >
+                  Previous
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setPage((currentPage) => Math.min(totalPages, currentPage + 1))}
+                  disabled={resolvedPage >= totalPages || isFetching}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

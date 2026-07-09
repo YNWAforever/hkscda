@@ -63,6 +63,7 @@ const badRequestDomainErrors = new Set([
   "Inactive adoption outcome status",
   "Invalid successful adoption outcome status",
   "Adopter filters match too many records",
+  "Too many animal pipeline candidates; narrow the search or filters",
   "Invalid manual intake identity",
   "Unsupported coordinator export audit",
 ]);

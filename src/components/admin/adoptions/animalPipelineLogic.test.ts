@@ -7,6 +7,7 @@ import {
   buildAnimalPipelineSearchParams,
   filterAnimalPipelineRows,
   groupAnimalPipelineRows,
+  resolveAnimalPipelinePagination,
 } from "./animalPipelineLogic";
 
 function row(overrides: Partial<AnimalPipelineRow> = {}): AnimalPipelineRow {
@@ -158,12 +159,14 @@ describe("animal pipeline logic", () => {
       "q=Mochi&status=available&type=cat&adoptable=adoptable&supportPool=outside&positionId=none&page=2&pageSize=50",
     );
 
-    expect(buildAnimalPipelineSearchParams({ animalId: "  animal-1  " }).toString()).toBe(
-      "animalId=animal-1&page=1&pageSize=25",
-    );
+    expect(
+      buildAnimalPipelineSearchParams({
+        animalId: "  animal-1  ",
+      }).toString(),
+    ).toBe("animalId=animal-1&page=1&pageSize=25");
   });
 
-  test("builds animal pipeline export search params without page values", () => {
+  test("builds animal pipeline export params without list pagination", () => {
     expect(
       buildAnimalPipelineExportSearchParams({
         q: " Foster ",
@@ -172,6 +175,8 @@ describe("animal pipeline logic", () => {
         adoptable: "not_adoptable",
         supportPool: "inside",
         positionId: "none",
+        page: 3,
+        pageSize: 10,
       }).toString(),
     ).toBe(
       "q=Foster&status=fostered&type=cat&adoptable=not_adoptable&supportPool=inside&positionId=none",
@@ -185,5 +190,17 @@ describe("animal pipeline logic", () => {
     expect(buildAnimalTaskSearchParams({ animalId: "" }).toString()).toBe(
       "openOnly=true&page=1&pageSize=10",
     );
+  });
+
+  test("clamps animal pipeline pagination when the returned total shrinks", () => {
+    expect(
+      resolveAnimalPipelinePagination({
+        page: 2,
+        pageSize: 25,
+        responsePage: 2,
+        responsePageSize: 25,
+        total: 0,
+      }),
+    ).toEqual({ page: 1, pageSize: 25, totalPages: 1 });
   });
 });

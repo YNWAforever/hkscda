@@ -1,7 +1,6 @@
-import type { AnimalStatus } from "../../../types/animal";
+import type { AnimalStatus, AnimalType } from "../../../types/animal";
 import type {
   AnimalInternalProfile,
-  AnimalPipelineFilters,
   AnimalPipelineRow,
   AnimalPositionSummary,
   ArrivalSourceSummary,
@@ -9,11 +8,18 @@ import type {
 
 export type {
   AnimalInternalProfile,
-  AnimalPipelineFilters,
   AnimalPipelineRow,
   AnimalPositionSummary,
   ArrivalSourceSummary,
 } from "../../../lib/adoptions/types";
+
+export type AnimalPipelineFilters = {
+  status: AnimalStatus | "all";
+  type: AnimalType | "all";
+  adoptable: "all" | "adoptable" | "not_adoptable";
+  supportPool: "all" | "inside" | "outside";
+  positionId: string;
+};
 
 export type AnimalPipelineGroup = {
   key: string;
@@ -34,57 +40,54 @@ function trimmed(value: string | null | undefined) {
   return nextValue ? nextValue : "";
 }
 
-function positiveInteger(value: number | null | undefined, fallback: number) {
-  return typeof value === "number" && Number.isFinite(value) && value >= 1
-    ? Math.floor(value)
-    : fallback;
-}
+type AnimalPipelineSearchParamsInput = Partial<AnimalPipelineFilters> & {
+  q?: string | null;
+  animalId?: string | null;
+  page?: number | null;
+  pageSize?: number | null;
+};
 
-function appendAnimalPipelineFilterParams(
-  params: URLSearchParams,
-  filters: Partial<AnimalPipelineFilters> & {
-    q?: string | null;
-    animalId?: string | null;
-  },
-) {
-  const q = trimmed(filters.q);
-  const animalId = trimmed(filters.animalId);
-  if (q) params.set("q", q);
-  if (animalId) params.set("animalId", animalId);
-  if (filters.status && filters.status !== "all") params.set("status", filters.status);
-  if (filters.type && filters.type !== "all") params.set("type", filters.type);
-  if (filters.adoptable && filters.adoptable !== "all") params.set("adoptable", filters.adoptable);
-  if (filters.supportPool && filters.supportPool !== "all") {
-    params.set("supportPool", filters.supportPool);
-  }
-  if (filters.positionId && filters.positionId !== "all") {
-    params.set("positionId", filters.positionId);
-  }
-}
-
-export function buildAnimalPipelineSearchParams(
-  filters: Partial<AnimalPipelineFilters> & {
-    q?: string | null;
-    animalId?: string | null;
-    page?: number | null;
-    pageSize?: number | null;
-  },
-) {
+export function buildAnimalPipelineSearchParams(filters: AnimalPipelineSearchParamsInput = {}) {
   const params = new URLSearchParams();
-  appendAnimalPipelineFilterParams(params, filters);
-  params.set("page", String(positiveInteger(filters.page, 1)));
-  params.set("pageSize", String(positiveInteger(filters.pageSize, 25)));
+  const query = trimmed(filters.q);
+  const animalId = trimmed(filters.animalId);
+  const status = filters.status ?? "all";
+  const type = filters.type ?? "all";
+  const adoptable = filters.adoptable ?? "all";
+  const supportPool = filters.supportPool ?? "all";
+  const positionId = trimmed(filters.positionId) || "all";
+  const page = filters.page && filters.page > 0 ? filters.page : 1;
+  const pageSize = filters.pageSize && filters.pageSize > 0 ? filters.pageSize : 25;
+
+  if (query) params.set("q", query);
+  if (animalId) params.set("animalId", animalId);
+  if (status !== "all") params.set("status", status);
+  if (type !== "all") params.set("type", type);
+  if (adoptable !== "all") params.set("adoptable", adoptable);
+  if (supportPool !== "all") params.set("supportPool", supportPool);
+  if (positionId !== "all") params.set("positionId", positionId);
+  params.set("page", String(page));
+  params.set("pageSize", String(pageSize));
   return params;
 }
 
-export function buildAnimalPipelineExportSearchParams(
-  filters: Partial<AnimalPipelineFilters> & {
-    q?: string | null;
-    animalId?: string | null;
-  },
-) {
+export function buildAnimalPipelineExportSearchParams(filters: AnimalPipelineSearchParamsInput = {}) {
   const params = new URLSearchParams();
-  appendAnimalPipelineFilterParams(params, filters);
+  const query = trimmed(filters.q);
+  const animalId = trimmed(filters.animalId);
+  const status = filters.status ?? "all";
+  const type = filters.type ?? "all";
+  const adoptable = filters.adoptable ?? "all";
+  const supportPool = filters.supportPool ?? "all";
+  const positionId = trimmed(filters.positionId) || "all";
+
+  if (query) params.set("q", query);
+  if (animalId) params.set("animalId", animalId);
+  if (status !== "all") params.set("status", status);
+  if (type !== "all") params.set("type", type);
+  if (adoptable !== "all") params.set("adoptable", adoptable);
+  if (supportPool !== "all") params.set("supportPool", supportPool);
+  if (positionId !== "all") params.set("positionId", positionId);
   return params;
 }
 
@@ -96,6 +99,19 @@ export function buildAnimalTaskSearchParams(filters: { animalId?: string | null 
   params.set("page", "1");
   params.set("pageSize", "10");
   return params;
+}
+
+export function resolveAnimalPipelinePagination(input: {
+  page: number;
+  pageSize: number;
+  responsePage?: number;
+  responsePageSize?: number;
+  total: number;
+}) {
+  const pageSize = input.responsePageSize ?? input.pageSize;
+  const totalPages = Math.max(1, Math.ceil(input.total / pageSize));
+  const page = Math.min(input.responsePage ?? input.page, totalPages);
+  return { page, pageSize, totalPages };
 }
 
 export function filterAnimalPipelineRows(

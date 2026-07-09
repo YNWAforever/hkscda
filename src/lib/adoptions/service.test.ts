@@ -114,6 +114,10 @@ function createRepo(
     async deleteStatus(id) {
       calls.push({ name: "deleteStatus", payload: id });
     },
+    async listAnimalPipeline(input) {
+      calls.push({ name: "listAnimalPipeline", payload: input });
+      return { animals: [], total: 0, page: input.page, pageSize: input.pageSize };
+    },
     async listCases(input) {
       calls.push({ name: "listCases", payload: input });
       return { cases: [], total: 0 };
@@ -121,10 +125,6 @@ function createRepo(
     async listIntakeItems(input) {
       calls.push({ name: "listIntakeItems", payload: input });
       return { items: [] };
-    },
-    async listAnimalPipeline(input) {
-      calls.push({ name: "listAnimalPipeline", payload: input });
-      return { animals: [], total: 0, page: input.page, pageSize: input.pageSize };
     },
     async listAdopters(input) {
       calls.push({ name: "listAdopters", payload: input });
@@ -612,7 +612,7 @@ describe("createAdoptionCoordinatorService", () => {
     });
   });
 
-  test("lists animal pipeline rows with normalized filters", async () => {
+  test("returns animal pipeline rows after normalized filters", async () => {
     const { service, calls } = setup();
 
     await service.listAnimalPipeline({
@@ -662,6 +662,38 @@ describe("createAdoptionCoordinatorService", () => {
         blacklisted: "no",
         hasOpenCases: true,
         hasOpenTasks: false,
+        page: 2,
+        pageSize: 50,
+      },
+    });
+  });
+
+  test("lists animal pipeline rows with normalized filters", async () => {
+    const { service, calls } = setup();
+
+    await expect(
+      service.listAnimalPipeline({
+        q: " Mochi ",
+        status: "available",
+        type: "cat",
+        adoptable: "not_adoptable",
+        supportPool: "inside",
+        positionId: "none",
+        page: "2",
+        pageSize: "50",
+      }),
+    ).resolves.toEqual({ animals: [], total: 0, page: 2, pageSize: 50 });
+
+    expect(calls.at(-1)).toEqual({
+      name: "listAnimalPipeline",
+      payload: {
+        q: "Mochi",
+        animalId: undefined,
+        status: "available",
+        type: "cat",
+        adoptable: "not_adoptable",
+        supportPool: "inside",
+        positionId: "none",
         page: 2,
         pageSize: 50,
       },
