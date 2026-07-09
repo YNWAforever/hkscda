@@ -184,6 +184,24 @@ describe("listAdminPaymentPage", () => {
       "name.ilike.%a b vip%,email.ilike.%a b vip%",
     ]);
   });
+
+  test("keeps punctuation-heavy matches after fallback filtering", async () => {
+    const { client } = createClient([
+      paymentRow("vip", {
+        provider_ref: "a b vip",
+        bank_reference: null,
+      }),
+    ]);
+
+    const result = await listAdminPaymentPage(client, {
+      q: "a,b(vip)",
+      provider: "all",
+      page: "1",
+      pageSize: "10",
+    });
+
+    expect(result.payments.map((row) => row.id)).toEqual(["vip"]);
+  });
 });
 
 describe("listAdminPaymentExportRows", () => {

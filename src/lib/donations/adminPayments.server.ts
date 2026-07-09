@@ -17,15 +17,17 @@ function escapeLike(value: string) {
   return value.replaceAll("\\", "\\\\").replaceAll("%", "\\%").replaceAll("_", "\\_");
 }
 
-function sanitizeOrLikeValue(value: string) {
+function normalizeSearchValue(value: string) {
   // PostgREST .or() uses comma and parentheses for grammar, so keep search terms literal.
-  return escapeLike(
-    value
-      .replace(/[(),]/g, " ")
-      .replace(/\s+/g, " ")
-      .trim()
-      .replace(/\s+([%_])/g, "$1"),
-  );
+  return value
+    .replace(/[(),]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/\s+([%_])/g, "$1");
+}
+
+function sanitizeOrLikeValue(value: string) {
+  return escapeLike(normalizeSearchValue(value));
 }
 
 function applyPaymentFilters<
@@ -86,7 +88,8 @@ async function resolveSearchPaymentIds(client: SupabaseClient, q?: string) {
   const trimmed = q?.trim();
   if (!trimmed) return undefined;
 
-  const pattern = `%${sanitizeOrLikeValue(trimmed)}%`;
+  const normalizedSearch = normalizeSearchValue(trimmed);
+  const pattern = `%${escapeLike(normalizedSearch)}%`;
 
   const [{ data: paymentRows, error: paymentError }, { data: supporterRows, error: supporterError }] =
     await Promise.all([
@@ -99,17 +102,21 @@ async function resolveSearchPaymentIds(client: SupabaseClient, q?: string) {
 
   const ids = new Set<string>();
   for (const row of paymentRows ?? []) {
-    if (matchesSearch((row as { provider_ref?: string | null }).provider_ref, trimmed)) {
+    if (matchesSearch((row as { provider_ref?: string | null }).provider_ref, normalizedSearch)) {
       ids.add(String((row as { id?: string }).id));
       continue;
     }
-    if (matchesSearch((row as { bank_reference?: string | null }).bank_reference, trimmed)) {
+    if (matchesSearch((row as { bank_reference?: string | null }).bank_reference, normalizedSearch)) {
       ids.add(String((row as { id?: string }).id));
     }
   }
 
   const supporterIds = (supporterRows ?? [])
-    .filter((row) => matchesSearch((row as { name?: string | null }).name, trimmed) || matchesSearch((row as { email?: string | null }).email, trimmed))
+    .filter(
+      (row) =>
+        matchesSearch((row as { name?: string | null }).name, normalizedSearch) ||
+        matchesSearch((row as { email?: string | null }).email, normalizedSearch),
+    )
     .map((row) => String((row as { id?: string }).id));
 
   if (supporterIds.length === 0) return [...ids];
