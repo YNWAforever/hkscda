@@ -259,6 +259,24 @@ describe("payment search params", () => {
     ).toBe("q=REF-9&status=pending");
   });
 
+  test("export params use the same active filters as the list without page values", () => {
+    const listParams = buildPaymentSearchParams({
+      search: "Ada",
+      status: "succeeded",
+      provider: "stripe",
+      page: 4,
+      pageSize: 25,
+    });
+    const exportParams = buildPaymentExportSearchParams({
+      search: "Ada",
+      status: "succeeded",
+      provider: "stripe",
+    });
+
+    expect(listParams.toString()).toBe("q=Ada&status=succeeded&provider=stripe&page=4&pageSize=25");
+    expect(exportParams.toString()).toBe("q=Ada&status=succeeded&provider=stripe");
+  });
+
   test("server schema trims q and clamps unsafe pagination", () => {
     expect(adminPaymentSearchSchema.parse({ q: " Ada ", page: "0", pageSize: "500" })).toEqual({
       q: "Ada",
