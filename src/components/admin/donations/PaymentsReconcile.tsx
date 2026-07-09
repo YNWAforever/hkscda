@@ -124,6 +124,10 @@ export function PaymentsReconcile() {
   const pageStart = total === 0 ? 0 : (page - 1) * PAYMENT_RECONCILE_PAGE_SIZE + 1;
   const pageEnd = Math.min(total, page * PAYMENT_RECONCILE_PAGE_SIZE);
 
+  useEffect(() => {
+    setPage((current) => Math.min(current, totalPages));
+  }, [totalPages]);
+
   function refresh() {
     queryClient.invalidateQueries({ queryKey: ["admin-payments"] });
     queryClient.invalidateQueries({ queryKey: ["admin-finance-activity"] });
@@ -155,7 +159,7 @@ export function PaymentsReconcile() {
       const token = await getAdminAccessToken();
       const exportParams = buildPaymentExportSearchParams({
         ...filters,
-        search: debouncedSearch,
+        search: filters.search.trim(),
       }).toString();
       const exportUrl = exportParams
         ? `/api/admin/exports/payments.csv?${exportParams}`
