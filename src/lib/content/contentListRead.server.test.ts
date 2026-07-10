@@ -331,7 +331,11 @@ describe("createSupabaseContentListRead", () => {
       "update-media-1",
     ]);
     expect(calls).toHaveLength(4);
-    expect(calls[0]?.filters).toContainEqual({ method: "eq", column: "status", value: "published" });
+    expect(calls[0]?.filters).toContainEqual({
+      method: "eq",
+      column: "status",
+      value: "published",
+    });
     expect(calls[3]?.filters).toContainEqual({
       method: "eq",
       column: "visibility",
@@ -397,6 +401,51 @@ describe("createSupabaseContentListRead", () => {
     expect(calls).toHaveLength(4);
   });
 
+  test("excludes public map stories with blank map labels", async () => {
+    const { client } = createFakeClient([contentRow("1")], {
+      rescue_story_profile: [
+        { data: [{ ...profileRow("1"), public_map_label: " \t " }], error: null },
+      ],
+    });
+    const reader = createSupabaseContentListRead(client);
+
+    await expect(reader.listPublicMapStories({ page: 1, pageSize: 25 })).resolves.toEqual([]);
+  });
+
+  test("excludes public map stories with null latitude or longitude", async () => {
+    const { client } = createFakeClient([contentRow("1"), contentRow("2")], {
+      rescue_story_profile: [
+        {
+          data: [
+            { ...profileRow("1"), public_lat: null },
+            { ...profileRow("2"), public_lng: null },
+          ],
+          error: null,
+        },
+      ],
+    });
+    const reader = createSupabaseContentListRead(client);
+
+    await expect(reader.listPublicMapStories({ page: 1, pageSize: 25 })).resolves.toEqual([]);
+  });
+
+  test("excludes public map stories with non-numeric latitude or longitude", async () => {
+    const { client } = createFakeClient([contentRow("1"), contentRow("2")], {
+      rescue_story_profile: [
+        {
+          data: [
+            { ...profileRow("1"), public_lat: "north" },
+            { ...profileRow("2"), public_lng: "east" },
+          ],
+          error: null,
+        },
+      ],
+    });
+    const reader = createSupabaseContentListRead(client);
+
+    await expect(reader.listPublicMapStories({ page: 1, pageSize: 25 })).resolves.toEqual([]);
+  });
+
   test("keeps content page ordering regardless of relation row order", async () => {
     const rows = [contentRow("2"), contentRow("1")];
     const { client } = createFakeClient(rows, {
@@ -458,10 +507,7 @@ describe("createSupabaseContentListRead", () => {
     await expect(
       reader.listAdminContent({ animalType: "cat", page: 1, pageSize: 25 }),
     ).resolves.toEqual({ items: [], total: 0 });
-    expect(calls.map((call) => call.table)).toEqual([
-      "rescue_story_profile",
-      "content_item",
-    ]);
+    expect(calls.map((call) => call.table)).toEqual(["rescue_story_profile", "content_item"]);
   });
 
   test("uses one read when a story filter matches no content IDs", async () => {
