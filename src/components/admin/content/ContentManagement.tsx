@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Edit3, Filter, RefreshCw, Search } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import type { ContentStatus, ContentSummary, ContentType } from "../../../lib/content/types";
@@ -184,13 +185,14 @@ function ContentManagementView({
         id: "actions",
         header: "操作",
         cell: (item) => (
-          <a
-            href={`/admin/content/${item.id}`}
+          <Link
+            to="/admin/content/$id"
+            params={{ id: item.id }}
             className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-2 py-1 text-xs font-semibold text-[var(--color-primary)] hover:underline"
           >
             <Edit3 className="h-3 w-3" />
             編輯
-          </a>
+          </Link>
         ),
       },
     ],

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Archive, ArrowLeft, Plus, RefreshCw, Save, Send } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import type {
@@ -264,13 +265,13 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
   if (!content) {
     return (
       <div className="space-y-3 p-6">
-        <a
-          href="/admin/content"
+        <Link
+          to="/admin/content"
           className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-primary)]"
         >
           <ArrowLeft className="h-4 w-4" />
           返回宣傳內容
-        </a>
+        </Link>
         <p className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-sm text-[var(--color-text-muted)]">
           找不到宣傳內容。
         </p>
@@ -282,13 +283,13 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
     <div className="space-y-6 p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <a
-            href="/admin/content"
+          <Link
+            to="/admin/content"
             className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-primary)]"
           >
             <ArrowLeft className="h-4 w-4" />
             返回宣傳內容
-          </a>
+          </Link>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <h1 className="text-2xl font-bold text-[var(--color-panel)]">{content.title}</h1>
             <StatusPill tone={toneMap[contentStatusTone(content.status)]}>

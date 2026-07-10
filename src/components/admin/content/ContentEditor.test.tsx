@@ -1,8 +1,26 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, mock, test } from "bun:test";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderToStaticMarkup } from "react-dom/server";
+import type { ReactNode } from "react";
 
 import type { ContentDetail } from "../../../lib/content/types";
-import { ContentAuthoringPanels } from "./ContentEditor";
+
+const realReactRouter = await import("@tanstack/react-router");
+
+type MockLinkProps = {
+  children: ReactNode;
+  className?: string;
+  to: string;
+};
+
+mock.module("@tanstack/react-router", () => ({
+  ...realReactRouter,
+  Link: ({ children, className, to }: MockLinkProps) => (
+    <a data-router-link="true" href={to} className={className}>
+      {children}
+    </a>
+  ),
+}));
 
 const content: ContentDetail = {
   id: "content-1",
@@ -34,7 +52,8 @@ const content: ContentDetail = {
 };
 
 describe("ContentEditor", () => {
-  test("renders authoring controls for story profile, updates, media, and links", () => {
+  test("renders authoring controls for story profile, updates, media, and links", async () => {
+    const { ContentAuthoringPanels } = await import("./ContentEditor");
     const markup = renderToStaticMarkup(
       <ContentAuthoringPanels
         content={content}
@@ -50,5 +69,20 @@ describe("ContentEditor", () => {
     expect(markup).toContain("新增故事更新");
     expect(markup).toContain("新增媒體");
     expect(markup).toContain("新增關聯紀錄");
+  });
+
+  test("uses a router link for returning to the content list", async () => {
+    const { ContentEditor } = await import("./ContentEditor");
+    const queryClient = new QueryClient();
+
+    const markup = renderToStaticMarkup(
+      <QueryClientProvider client={queryClient}>
+        <ContentEditor contentId={content.id} initialContent={content} />
+      </QueryClientProvider>,
+    );
+
+    expect(markup).toContain('data-router-link="true"');
+    expect(markup).toContain('href="/admin/content"');
+    expect(markup).toContain("返回宣傳內容");
   });
 });
