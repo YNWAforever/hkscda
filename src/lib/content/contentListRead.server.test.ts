@@ -177,6 +177,16 @@ function createFakeClient(
   return { client, calls };
 }
 
+function expectRelationContentIds(calls: QueryTrace[], contentIds: string[]) {
+  for (const call of calls) {
+    expect(call.filters).toContainEqual({
+      method: "in",
+      column: "content_item_id",
+      value: contentIds,
+    });
+  }
+}
+
 describe("createSupabaseContentListRead", () => {
   test("lists one or fifty admin summaries with exactly four reads", async () => {
     for (const size of [1, 50]) {
@@ -197,7 +207,57 @@ describe("createSupabaseContentListRead", () => {
         "content_media",
         "story_update",
       ]);
+      expectRelationContentIds(
+        calls.slice(1),
+        rows.map((row) => row.id),
+      );
     }
+  });
+
+  test("applies admin filters, ordering, and offset pagination before bulk relation reads", async () => {
+    const rows = [contentRow("11"), contentRow("12")];
+    const { client, calls } = createFakeClient(rows);
+    const reader = createSupabaseContentListRead(client);
+
+    await reader.listAdminContent({
+      page: 3,
+      pageSize: 2,
+      status: "published",
+      type: "rescue_story",
+      q: "Mimi",
+    });
+
+    expect(calls[0]).toMatchObject({
+      table: "content_item",
+      filters: [
+        { method: "eq", column: "status", value: "published" },
+        { method: "eq", column: "type", value: "rescue_story" },
+        {
+          method: "or",
+          column: "or",
+          value: "title.ilike.%Mimi%,summary.ilike.%Mimi%",
+        },
+      ],
+      orders: [
+        { column: "updated_at", options: { ascending: false } },
+        { column: "published_at", options: { ascending: false, nullsFirst: false } },
+      ],
+      range: [4, 5],
+    });
+    expectRelationContentIds(calls.slice(1), ["11", "12"]);
+    expect(calls[2]).toMatchObject({
+      orders: [
+        { column: "sort_order", options: { ascending: true } },
+        { column: "created_at", options: { ascending: true } },
+      ],
+    });
+    expect(calls[3]).toMatchObject({
+      filters: [
+        { method: "in", column: "content_item_id", value: ["11", "12"] },
+        { method: "eq", column: "visibility", value: "public" },
+      ],
+      orders: [{ column: "occurred_at", options: { ascending: false } }],
+    });
   });
 
   test("uses exactly five reads for a non-empty story-filtered page", async () => {
@@ -223,5 +283,13 @@ describe("createSupabaseContentListRead", () => {
       "content_media",
       "story_update",
     ]);
+    expect(calls[0]).toMatchObject({
+      filters: [{ method: "eq", column: "animal_type", value: "cat" }],
+    });
+    expect(calls[1]).toMatchObject({
+      filters: [{ method: "in", column: "id", value: ["1"] }],
+      range: [0, 24],
+    });
+    expectRelationContentIds(calls.slice(2), ["1"]);
   });
 });
