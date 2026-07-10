@@ -292,4 +292,89 @@ describe("createSupabaseContentListRead", () => {
     });
     expectRelationContentIds(calls.slice(2), ["1"]);
   });
+
+  test("preserves public summary redaction, cover, and latest update media", async () => {
+    const row = { ...contentRow("1"), cta_url: "javascript:alert(1)" };
+    const { client, calls } = createFakeClient([row], {
+      content_media: [
+        {
+          data: [
+            mediaRow("1"),
+            {
+              ...mediaRow("1"),
+              id: "update-media-1",
+              story_update_id: "update-1",
+              storage_path: "stories/update-1.jpg",
+              is_cover: false,
+            },
+            {
+              ...mediaRow("1"),
+              id: "internal-media-1",
+              story_update_id: "internal-update-1",
+              storage_path: "stories/internal-1.jpg",
+              is_cover: false,
+            },
+          ],
+          error: null,
+        },
+      ],
+    });
+    const reader = createSupabaseContentListRead(client);
+
+    const result = await reader.listPublicContent({ page: 1, pageSize: 25 });
+
+    expect(result.items[0]?.ctaUrl).toBeNull();
+    expect(result.items[0]?.storyProfile?.internalAddress).toBeNull();
+    expect(result.items[0]?.storyProfile?.internalLocationNotes).toBeNull();
+    expect(result.items[0]?.coverImageUrl).toBe("https://cdn.test/content/stories/1.jpg");
+    expect(result.items[0]?.latestPublicUpdate?.media.map((item) => item.id)).toEqual([
+      "update-media-1",
+    ]);
+    expect(calls).toHaveLength(4);
+    expect(calls[0]?.filters).toContainEqual({ method: "eq", column: "status", value: "published" });
+    expect(calls[3]?.filters).toContainEqual({
+      method: "eq",
+      column: "visibility",
+      value: "public",
+    });
+  });
+
+  test("returns null public relationships when profile, media, and updates are absent", async () => {
+    const { client } = createFakeClient([contentRow("1")], {
+      rescue_story_profile: [{ data: [], error: null }],
+      content_media: [{ data: [], error: null }],
+      story_update: [{ data: [], error: null }],
+    });
+    const reader = createSupabaseContentListRead(client);
+
+    const result = await reader.listPublicContent({ page: 1, pageSize: 25 });
+
+    expect(result.items[0]?.storyProfile).toBeNull();
+    expect(result.items[0]?.coverImageUrl).toBeNull();
+    expect(result.items[0]?.latestPublicUpdate).toBeNull();
+  });
+
+  test("does not expose cover media attached to an internal update", async () => {
+    const row = { ...contentRow("1"), cover_media_id: "internal-media-1" };
+    const { client } = createFakeClient([row], {
+      content_media: [
+        {
+          data: [
+            {
+              ...mediaRow("1"),
+              id: "internal-media-1",
+              story_update_id: "internal-update-1",
+            },
+          ],
+          error: null,
+        },
+      ],
+    });
+    const reader = createSupabaseContentListRead(client);
+
+    const result = await reader.listPublicContent({ page: 1, pageSize: 25 });
+
+    expect(result.items[0]?.coverMediaId).toBeNull();
+    expect(result.items[0]?.coverImageUrl).toBeNull();
+  });
 });

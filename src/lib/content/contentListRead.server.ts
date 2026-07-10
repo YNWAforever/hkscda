@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import type { ContentSearch } from "./schemas";
+import { isSafePublicHref, type ContentSearch, type PublicContentSearch } from "./schemas";
 import type { ContentRepository } from "./service";
 import type {
   ContentMedia,
@@ -70,7 +70,7 @@ type PublicUpdateRow = {
   updated_at: string;
 };
 
-type AdminListReader = Pick<ContentRepository, "listAdminContent">;
+type ContentListReader = Pick<ContentRepository, "listAdminContent" | "listPublicContent">;
 
 const contentColumns = [
   "id",
@@ -230,7 +230,12 @@ async function loadRelations(client: SupabaseClient, contentIds: string[]) {
   }
 
   const latestUpdateByContentId = new Map<string, StoryUpdate>();
+  const publicUpdateIdsByContentId = new Map<string, Set<string>>();
   for (const row of updateRows) {
+    const ids = publicUpdateIdsByContentId.get(row.content_item_id) ?? new Set<string>();
+    ids.add(row.id);
+    publicUpdateIdsByContentId.set(row.content_item_id, ids);
+
     const update = mapUpdate(row, mediaByUpdateId.get(row.id) ?? []);
     const current = latestUpdateByContentId.get(row.content_item_id);
     if (!current || update.occurredAt > current.occurredAt) {
@@ -238,7 +243,12 @@ async function loadRelations(client: SupabaseClient, contentIds: string[]) {
     }
   }
 
-  return { profilesByContentId, mediaByContentId, latestUpdateByContentId };
+  return {
+    profilesByContentId,
+    mediaByContentId,
+    latestUpdateByContentId,
+    publicUpdateIdsByContentId,
+  };
 }
 
 function assembleAdminSummary(
@@ -262,6 +272,40 @@ function assembleAdminSummary(
     ctaUrl: row.cta_url,
     storyProfile: relations.profilesByContentId.get(row.id) ?? null,
     latestPublicUpdate: relations.latestUpdateByContentId.get(row.id) ?? null,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+function assemblePublicSummary(
+  row: ContentListRow,
+  relations: Awaited<ReturnType<typeof loadRelations>>,
+): ContentSummary {
+  const profile = relations.profilesByContentId.get(row.id) ?? null;
+  const latestUpdate = relations.latestUpdateByContentId.get(row.id) ?? null;
+  const publicUpdateIds = relations.publicUpdateIdsByContentId.get(row.id) ?? new Set();
+  const visibleMedia = (relations.mediaByContentId.get(row.id) ?? []).filter(
+    (item) => item.storyUpdateId === null || publicUpdateIds.has(item.storyUpdateId),
+  );
+  const cover = visibleMedia.find((item) => item.id === row.cover_media_id) ?? null;
+
+  return {
+    id: row.id,
+    slug: row.slug,
+    type: row.type,
+    title: row.title,
+    subtitle: row.subtitle,
+    summary: row.summary,
+    coverMediaId: cover?.id ?? null,
+    coverImageUrl: cover?.url ?? null,
+    status: row.status,
+    publishedAt: row.published_at,
+    ctaLabel: row.cta_label,
+    ctaUrl: isSafePublicHref(row.cta_url) ? row.cta_url : null,
+    storyProfile: profile
+      ? { ...profile, internalAddress: null, internalLocationNotes: null }
+      : null,
+    latestPublicUpdate: latestUpdate,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -296,8 +340,42 @@ async function storyFilterContentIds(client: SupabaseClient, input: StoryFilters
   );
 }
 
-export function createSupabaseContentListRead(client: SupabaseClient): AdminListReader {
+export function createSupabaseContentListRead(client: SupabaseClient): ContentListReader {
   return {
+    async listPublicContent(input: PublicContentSearch) {
+      const storyIds = await storyFilterContentIds(client, input);
+      if (storyIds && storyIds.length === 0) return { items: [], total: 0 };
+
+      const from = (input.page - 1) * input.pageSize;
+      let query = client
+        .from("content_item")
+        .select(contentColumns, { count: "exact" })
+        .eq("status", "published")
+        .order("published_at", { ascending: false })
+        .range(from, from + input.pageSize - 1);
+
+      if (input.type) query = query.eq("type", input.type);
+      if (input.q) {
+        const like = `%${escapeLike(input.q)}%`;
+        query = query.or(`title.ilike.${like},summary.ilike.${like}`);
+      }
+      if (storyIds) query = query.in("id", storyIds);
+
+      const { data, error, count } = await query;
+      if (error) throw error;
+      const rows = (data ?? []) as unknown as ContentListRow[];
+      if (rows.length === 0) return { items: [], total: count ?? 0 };
+
+      const relations = await loadRelations(
+        client,
+        rows.map((row) => row.id),
+      );
+      return {
+        items: rows.map((row) => assemblePublicSummary(row, relations)),
+        total: count ?? 0,
+      };
+    },
+
     async listAdminContent(input: ContentSearch) {
       const storyIds = await storyFilterContentIds(client, input);
       if (storyIds && storyIds.length === 0) return { items: [], total: 0 };
