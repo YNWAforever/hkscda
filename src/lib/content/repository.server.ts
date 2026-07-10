@@ -1,14 +1,12 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { createSupabaseContentListRead } from "./contentListRead.server";
 import type { AdopterNotificationRecipient } from "./notificationDrafts";
-import { buildPublicStoryMapPoint } from "./rules";
 import {
   isSafePublicHref,
   type ContentInput,
   type ContentLinkInput,
   type ContentMediaInput,
-  type ContentSearch,
-  type PublicContentSearch,
   type StoryProfileInput,
   type StoryUpdateInput,
 } from "./schemas";
@@ -22,7 +20,6 @@ import type {
   ContentSummary,
   ContentType,
   NotificationDraftStatus,
-  PublicStoryMapPoint,
   RecipientNotificationDraft,
   RescuePublicStatus,
   RescueStoryProfile,
@@ -166,15 +163,6 @@ type SupporterRow = {
   email: string | null;
   phone: string | null;
 };
-
-type StoryFilters = Pick<
-  ContentSearch | PublicContentSearch,
-  "animalType" | "publicStatus" | "rescueRegion"
->;
-
-function escapeLike(value: string) {
-  return value.replaceAll("\\", "\\\\").replaceAll("%", "\\%").replaceAll("_", "\\_");
-}
 
 function nonNullable<T>(value: T | null | undefined): value is T {
   return value !== null && value !== undefined;
@@ -541,14 +529,6 @@ async function hydrateContentDetail(
   );
 }
 
-async function hydrateContentDetails(client: SupabaseClient, rows: ContentRow[]) {
-  const details: ContentDetail[] = [];
-  for (const row of rows) {
-    details.push(await hydrateContentDetail(client, row));
-  }
-  return details;
-}
-
 export function toPublicContentDetail(detail: ContentDetail): ContentDetail {
   const updates = detail.updates.filter((update) => update.visibility === "public");
   const publicUpdateIds = new Set(updates.map((update) => update.id));
@@ -577,26 +557,6 @@ export function toPublicContentDetail(detail: ContentDetail): ContentDetail {
     socialCopies: [],
     notificationDrafts: [],
   };
-}
-
-function hasStoryFilters(input: StoryFilters) {
-  return Boolean(input.animalType || input.publicStatus || input.rescueRegion);
-}
-
-async function storyFilterContentIds(client: SupabaseClient, input: StoryFilters) {
-  if (!hasStoryFilters(input)) return null;
-
-  let query = client.from("rescue_story_profile").select("content_item_id");
-  if (input.animalType) query = query.eq("animal_type", input.animalType);
-  if (input.publicStatus) query = query.eq("public_status", input.publicStatus);
-  if (input.rescueRegion) query = query.eq("rescue_region", input.rescueRegion);
-
-  const { data, error } = await query;
-  if (error) throw error;
-
-  return unique(
-    ((data ?? []) as Array<{ content_item_id: string }>).map((row) => row.content_item_id),
-  );
 }
 
 async function getContentDetailById(client: SupabaseClient, id: string) {
@@ -685,34 +645,11 @@ async function loadSupporters(client: SupabaseClient, ids: string[]) {
 }
 
 export function createSupabaseContentRepository(client: SupabaseClient): ContentRepository {
+  const contentListRead = createSupabaseContentListRead(client);
+
   return {
-    async listPublicContent(input) {
-      const storyIds = await storyFilterContentIds(client, input);
-      if (storyIds && storyIds.length === 0) return { items: [], total: 0 };
-
-      const from = (input.page - 1) * input.pageSize;
-      let query = client
-        .from("content_item")
-        .select("*", { count: "exact" })
-        .eq("status", "published")
-        .order("published_at", { ascending: false })
-        .range(from, from + input.pageSize - 1);
-
-      if (input.type) query = query.eq("type", input.type);
-      if (input.q) {
-        const like = `%${escapeLike(input.q)}%`;
-        query = query.or(`title.ilike.${like},summary.ilike.${like}`);
-      }
-      if (storyIds) query = query.in("id", storyIds);
-
-      const { data, error, count } = await query;
-      if (error) throw error;
-
-      const details = await hydrateContentDetails(client, (data ?? []) as ContentRow[]);
-      return {
-        items: details.map((detail) => toSummary(toPublicContentDetail(detail))),
-        total: count ?? 0,
-      };
+    listPublicContent(input) {
+      return contentListRead.listPublicContent(input);
     },
 
     async getPublicContentBySlug(slug) {
@@ -728,64 +665,12 @@ export function createSupabaseContentRepository(client: SupabaseClient): Content
       return toPublicContentDetail(await hydrateContentDetail(client, data as ContentRow));
     },
 
-    async listPublicMapStories(input) {
-      if (input.type && input.type !== "rescue_story") return [];
-
-      const storyIds = await storyFilterContentIds(client, input);
-      if (storyIds && storyIds.length === 0) return [];
-
-      const from = (input.page - 1) * input.pageSize;
-      let query = client
-        .from("content_item")
-        .select("*")
-        .eq("status", "published")
-        .eq("type", "rescue_story")
-        .order("published_at", { ascending: false })
-        .range(from, from + input.pageSize - 1);
-
-      if (input.q) {
-        const like = `%${escapeLike(input.q)}%`;
-        query = query.or(`title.ilike.${like},summary.ilike.${like}`);
-      }
-      if (storyIds) query = query.in("id", storyIds);
-
-      const { data, error } = await query;
-      if (error) throw error;
-
-      return (await hydrateContentDetails(client, (data ?? []) as ContentRow[]))
-        .map(toPublicContentDetail)
-        .map(buildPublicStoryMapPoint)
-        .filter(nonNullable);
+    listPublicMapStories(input) {
+      return contentListRead.listPublicMapStories(input);
     },
 
-    async listAdminContent(input) {
-      const storyIds = await storyFilterContentIds(client, input);
-      if (storyIds && storyIds.length === 0) return { items: [], total: 0 };
-
-      const from = (input.page - 1) * input.pageSize;
-      let query = client
-        .from("content_item")
-        .select("*", { count: "exact" })
-        .order("updated_at", { ascending: false })
-        .order("published_at", { ascending: false, nullsFirst: false })
-        .range(from, from + input.pageSize - 1);
-
-      if (input.status) query = query.eq("status", input.status);
-      if (input.type) query = query.eq("type", input.type);
-      if (input.q) {
-        const like = `%${escapeLike(input.q)}%`;
-        query = query.or(`title.ilike.${like},summary.ilike.${like}`);
-      }
-      if (storyIds) query = query.in("id", storyIds);
-
-      const { data, error, count } = await query;
-      if (error) throw error;
-
-      const details = await hydrateContentDetails(client, (data ?? []) as ContentRow[]);
-      return {
-        items: details.map(toSummary),
-        total: count ?? 0,
-      };
+    listAdminContent(input) {
+      return contentListRead.listAdminContent(input);
     },
 
     getAdminContent(id) {

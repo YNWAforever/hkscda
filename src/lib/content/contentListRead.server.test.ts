@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createSupabaseContentListRead } from "./contentListRead.server";
+import { createSupabaseContentRepository } from "./repository.server";
 
 type FakeResponse = {
   data: unknown[] | null;
@@ -65,6 +66,18 @@ class FakeQueryBuilder {
   range(from: number, to: number) {
     this.trace.range = [from, to];
     return this;
+  }
+
+  maybeSingle() {
+    return {
+      then: (resolve: (value: Omit<FakeResponse, "data"> & { data: unknown | null }) => unknown, reject: (reason: unknown) => unknown) => {
+        this.calls.push(structuredClone(this.trace));
+        const queue = this.responses.get(this.trace.table) ?? [];
+        const response = queue.shift() ?? { data: [], error: null, count: null };
+        const data = Array.isArray(response.data) ? (response.data[0] ?? null) : response.data;
+        return Promise.resolve({ ...response, data }).then(resolve, reject);
+      },
+    };
   }
 
   then(resolve: (value: FakeResponse) => unknown, reject: (reason: unknown) => unknown) {
@@ -188,6 +201,21 @@ function expectRelationContentIds(calls: QueryTrace[], contentIds: string[]) {
 }
 
 describe("createSupabaseContentListRead", () => {
+  test("content repository delegates admin lists to the fixed-count reader", async () => {
+    const { client, calls } = createFakeClient([contentRow("1")]);
+    const repository = createSupabaseContentRepository(client);
+
+    const result = await repository.listAdminContent({ page: 1, pageSize: 25 });
+
+    expect(result.items).toHaveLength(1);
+    expect(calls.map((call) => call.table)).toEqual([
+      "content_item",
+      "rescue_story_profile",
+      "content_media",
+      "story_update",
+    ]);
+  });
+
   test("lists one or fifty admin summaries with exactly four reads", async () => {
     for (const size of [1, 50]) {
       const rows = Array.from({ length: size }, (_, index) => contentRow(String(index + 1)));
