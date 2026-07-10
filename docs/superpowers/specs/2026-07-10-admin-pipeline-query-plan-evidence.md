@@ -9,16 +9,18 @@ Date: 2026-07-10
 The repository query has four phases:
 
 1. Text search candidate IDs, only when `q` is present:
-   - `animals.select("id").or("name.ilike...,name_en.ilike...,type.ilike...,status.ilike...")`
+   - `animals.select("id").or("name.ilike...,name_en.ilike...")`
    - `animal_profile_internal.select("animal_id").or("internal_code.ilike...,cage.ilike...")`
+   - `animal_position.select("id").or("name.ilike...")`, followed by profiles whose `current_position_id` matches
+   - `arrival_source.select("id").or("name_zh.ilike...,name_en.ilike...")`, followed by profiles whose `arrival_source_id` matches
 2. Profile-filter candidate IDs, only when profile filters are active:
    - `animal_profile_internal.select("animal_id")`
    - optional equality filters on `is_adoptable`, `is_inside_support_pool`, and `current_position_id`
 3. Counted page query:
    - `animals.select("id,type,name,name_en,gender,age,status,image_url,created_at,updated_at", { count: "exact" })`
-   - optional equality filters on `id`, `status`, `type`
+   - direct equality filters on lifecycle `status` and animal `type`
    - optional `id in (...)` candidate ID restriction
-   - `order updated_at desc, name asc`
+   - `order updated_at desc`
    - `range(pageStart, pageEnd)`
 4. Page-only hydration:
    - `animal_profile_internal.in("animal_id", pageAnimalIds)`
@@ -39,7 +41,7 @@ Existing migrations already include:
 
 Missing or unproven for this endpoint:
 
-- No existing `animals` index for `status/type + updated_at desc + name`.
+- No existing `animals` index for `status/type + updated_at desc`.
 - No existing `animal_profile_internal` index for `is_inside_support_pool`.
 - No existing trigram indexes for animal names or internal animal profile code/cage search.
 
@@ -55,7 +57,7 @@ select id, type, name, name_en, gender, age, status, image_url, created_at, upda
 from public.animals
 where status = 'available'
   and type = 'cat'
-order by updated_at desc, name asc
+order by updated_at desc
 limit 25 offset 0;
 
 explain (analyze, buffers)
@@ -69,22 +71,31 @@ explain (analyze, buffers)
 select id
 from public.animals
 where name ilike '%mochi%'
-   or name_en ilike '%mochi%'
-   or type ilike '%mochi%'
-   or status ilike '%mochi%';
+   or name_en ilike '%mochi%';
 
 explain (analyze, buffers)
 select animal_id
 from public.animal_profile_internal
 where internal_code ilike '%cat-204%'
    or cage ilike '%cat-204%';
+
+explain (analyze, buffers)
+select id
+from public.animal_position
+where name ilike '%new territories%';
+
+explain (analyze, buffers)
+select id
+from public.arrival_source
+where name_zh ilike '%rescue%'
+   or name_en ilike '%rescue%';
 ```
 
 If these plans show sequential scans at production row counts, consider a narrow migration with:
 
 ```sql
-create index if not exists animals_status_type_updated_name_idx
-  on public.animals (status, type, updated_at desc, name);
+create index if not exists animals_status_type_updated_idx
+  on public.animals (status, type, updated_at desc);
 
 create index if not exists animal_profile_internal_support_position_idx
   on public.animal_profile_internal (is_inside_support_pool, current_position_id, animal_id);
