@@ -7,6 +7,7 @@ import type {
   ContentStatus,
   ContentSummary,
   ContentType,
+  PublicStoryMapPoint,
   RescueStoryProfile,
   StoryUpdate,
   StoryUpdateKind,
@@ -70,7 +71,10 @@ type PublicUpdateRow = {
   updated_at: string;
 };
 
-type ContentListReader = Pick<ContentRepository, "listAdminContent" | "listPublicContent">;
+export type ContentListReadModule = Pick<
+  ContentRepository,
+  "listAdminContent" | "listPublicContent" | "listPublicMapStories"
+>;
 
 const contentColumns = [
   "id",
@@ -311,6 +315,38 @@ function assemblePublicSummary(
   };
 }
 
+function nonNullable<T>(value: T | null | undefined): value is T {
+  return value !== null && value !== undefined;
+}
+
+function mapStoryPoint(content: ContentSummary): PublicStoryMapPoint | null {
+  const profile = content.storyProfile;
+  if (!profile?.showOnMap) return null;
+  if (!profile.publicMapLabel?.trim()) return null;
+  if (profile.publicLat === null || profile.publicLng === null) return null;
+  return {
+    id: content.id,
+    slug: content.slug,
+    title: content.title,
+    animalType: profile.animalType,
+    publicStatus: profile.publicStatus,
+    rescueRegion: profile.rescueRegion,
+    publicMapLabel: profile.publicMapLabel,
+    lat: profile.publicLat,
+    lng: profile.publicLng,
+    latestUpdateTitle: content.latestPublicUpdate?.title ?? null,
+  };
+}
+
+function mapStoryPoints(
+  rows: ContentListRow[],
+  relations: Awaited<ReturnType<typeof loadRelations>>,
+): PublicStoryMapPoint[] {
+  return rows
+    .map((row) => mapStoryPoint(assemblePublicSummary(row, relations)))
+    .filter(nonNullable);
+}
+
 function escapeLike(value: string) {
   return value.replace(/[,%()]/g, " ");
 }
@@ -340,8 +376,41 @@ async function storyFilterContentIds(client: SupabaseClient, input: StoryFilters
   );
 }
 
-export function createSupabaseContentListRead(client: SupabaseClient): ContentListReader {
+export function createSupabaseContentListRead(client: SupabaseClient): ContentListReadModule {
   return {
+    async listPublicMapStories(input: PublicContentSearch) {
+      if (input.type && input.type !== "rescue_story") return [];
+
+      const storyIds = await storyFilterContentIds(client, input);
+      if (storyIds && storyIds.length === 0) return [];
+
+      const from = (input.page - 1) * input.pageSize;
+      let query = client
+        .from("content_item")
+        .select(contentColumns)
+        .eq("status", "published")
+        .eq("type", "rescue_story")
+        .order("published_at", { ascending: false })
+        .range(from, from + input.pageSize - 1);
+
+      if (input.q) {
+        const like = `%${escapeLike(input.q)}%`;
+        query = query.or(`title.ilike.${like},summary.ilike.${like}`);
+      }
+      if (storyIds) query = query.in("id", storyIds);
+
+      const { data, error } = await query;
+      if (error) throw error;
+      const rows = (data ?? []) as unknown as ContentListRow[];
+      if (rows.length === 0) return [];
+
+      const relations = await loadRelations(
+        client,
+        rows.map((row) => row.id),
+      );
+      return mapStoryPoints(rows, relations);
+    },
+
     async listPublicContent(input: PublicContentSearch) {
       const storyIds = await storyFilterContentIds(client, input);
       if (storyIds && storyIds.length === 0) return { items: [], total: 0 };

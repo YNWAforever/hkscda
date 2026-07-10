@@ -377,4 +377,102 @@ describe("createSupabaseContentListRead", () => {
     expect(result.items[0]?.coverMediaId).toBeNull();
     expect(result.items[0]?.coverImageUrl).toBeNull();
   });
+
+  test("projects public story map points and filters invalid locations", async () => {
+    const rows = [contentRow("1"), contentRow("2")];
+    const { client, calls } = createFakeClient(rows, {
+      rescue_story_profile: [
+        {
+          data: [profileRow("1"), { ...profileRow("2"), show_on_map: false }],
+          error: null,
+        },
+      ],
+    });
+    const reader = createSupabaseContentListRead(client);
+
+    const points = await reader.listPublicMapStories({ page: 1, pageSize: 25 });
+
+    expect(points).toHaveLength(1);
+    expect(points[0]?.slug).toBe("story-1");
+    expect(calls).toHaveLength(4);
+  });
+
+  test("keeps content page ordering regardless of relation row order", async () => {
+    const rows = [contentRow("2"), contentRow("1")];
+    const { client } = createFakeClient(rows, {
+      rescue_story_profile: [{ data: [profileRow("1"), profileRow("2")], error: null }],
+    });
+    const reader = createSupabaseContentListRead(client);
+
+    const result = await reader.listAdminContent({ page: 1, pageSize: 25 });
+
+    expect(result.items.map((item) => item.id)).toEqual(["2", "1"]);
+  });
+
+  test("skips relation reads for empty pages", async () => {
+    const { client, calls } = createFakeClient([]);
+    const reader = createSupabaseContentListRead(client);
+
+    await expect(reader.listAdminContent({ page: 1, pageSize: 25 })).resolves.toEqual({
+      items: [],
+      total: 0,
+    });
+    expect(calls).toHaveLength(1);
+  });
+
+  for (const table of [
+    "content_item",
+    "rescue_story_profile",
+    "content_media",
+    "story_update",
+  ] as const) {
+    test(`rejects the whole list when ${table} fails`, async () => {
+      const failure = new Error(`${table} unavailable`);
+      const { client } = createFakeClient([contentRow("1")], {
+        [table]: [{ data: null, error: failure }],
+      });
+      const reader = createSupabaseContentListRead(client);
+
+      await expect(reader.listAdminContent({ page: 1, pageSize: 25 })).rejects.toBe(failure);
+    });
+  }
+
+  test("rejects the whole list when the story prefilter fails", async () => {
+    const failure = new Error("story filter unavailable");
+    const { client } = createFakeClient([contentRow("1")], {
+      rescue_story_profile: [{ data: null, error: failure }],
+    });
+    const reader = createSupabaseContentListRead(client);
+
+    await expect(
+      reader.listAdminContent({ animalType: "cat", page: 1, pageSize: 25 }),
+    ).rejects.toBe(failure);
+  });
+
+  test("uses two reads when a story filter matches IDs but the content page is empty", async () => {
+    const { client, calls } = createFakeClient([], {
+      rescue_story_profile: [{ data: [{ content_item_id: "missing" }], error: null }],
+    });
+    const reader = createSupabaseContentListRead(client);
+
+    await expect(
+      reader.listAdminContent({ animalType: "cat", page: 1, pageSize: 25 }),
+    ).resolves.toEqual({ items: [], total: 0 });
+    expect(calls.map((call) => call.table)).toEqual([
+      "rescue_story_profile",
+      "content_item",
+    ]);
+  });
+
+  test("uses one read when a story filter matches no content IDs", async () => {
+    const { client, calls } = createFakeClient([], {
+      rescue_story_profile: [{ data: [], error: null }],
+    });
+    const reader = createSupabaseContentListRead(client);
+
+    await expect(
+      reader.listAdminContent({ animalType: "cat", page: 1, pageSize: 25 }),
+    ).resolves.toEqual({ items: [], total: 0 });
+    expect(calls.map((call) => call.table)).toEqual(["rescue_story_profile"]);
+  });
 });
