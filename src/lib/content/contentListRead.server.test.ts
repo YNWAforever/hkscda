@@ -306,7 +306,7 @@ describe("createSupabaseContentListRead", () => {
       });
       const reader = createSupabaseContentListRead(client);
 
-      const result = await reader.listPublicContent({ page: 1, pageSize: 25 });
+      const result = await reader.listPublicContent({ status: "published", page: 1, pageSize: 25 });
 
       expect(result.items[0]?.coverMediaId).toBe("root-cover");
       expect(result.items[0]?.coverImageUrl).toBe("https://cdn.test/content/stories/root.jpg");
@@ -437,7 +437,7 @@ describe("createSupabaseContentListRead", () => {
     });
     const reader = createSupabaseContentListRead(client);
 
-    const result = await reader.listPublicContent({ page: 1, pageSize: 25 });
+    const result = await reader.listPublicContent({ status: "published", page: 1, pageSize: 25 });
 
     expect(result.items[0]?.ctaUrl).toBeNull();
     expect(result.items[0]?.storyProfile?.internalAddress).toBeNull();
@@ -467,7 +467,7 @@ describe("createSupabaseContentListRead", () => {
     });
     const reader = createSupabaseContentListRead(client);
 
-    const result = await reader.listPublicContent({ page: 1, pageSize: 25 });
+    const result = await reader.listPublicContent({ status: "published", page: 1, pageSize: 25 });
 
     expect(result.items[0]?.storyProfile).toBeNull();
     expect(result.items[0]?.coverImageUrl).toBeNull();
@@ -492,7 +492,7 @@ describe("createSupabaseContentListRead", () => {
     });
     const reader = createSupabaseContentListRead(client);
 
-    const result = await reader.listPublicContent({ page: 1, pageSize: 25 });
+    const result = await reader.listPublicContent({ status: "published", page: 1, pageSize: 25 });
 
     expect(result.items[0]?.coverMediaId).toBeNull();
     expect(result.items[0]?.coverImageUrl).toBeNull();
@@ -510,7 +510,11 @@ describe("createSupabaseContentListRead", () => {
     });
     const reader = createSupabaseContentListRead(client);
 
-    const points = await reader.listPublicMapStories({ page: 1, pageSize: 25 });
+    const points = await reader.listPublicMapStories({
+      status: "published",
+      page: 1,
+      pageSize: 25,
+    });
 
     expect(points).toHaveLength(1);
     expect(points[0]?.slug).toBe("story-1");
@@ -525,7 +529,9 @@ describe("createSupabaseContentListRead", () => {
     });
     const reader = createSupabaseContentListRead(client);
 
-    await expect(reader.listPublicMapStories({ page: 1, pageSize: 25 })).resolves.toEqual([]);
+    await expect(
+      reader.listPublicMapStories({ status: "published", page: 1, pageSize: 25 }),
+    ).resolves.toEqual([]);
   });
 
   test("excludes public map stories with null latitude or longitude", async () => {
@@ -542,7 +548,9 @@ describe("createSupabaseContentListRead", () => {
     });
     const reader = createSupabaseContentListRead(client);
 
-    await expect(reader.listPublicMapStories({ page: 1, pageSize: 25 })).resolves.toEqual([]);
+    await expect(
+      reader.listPublicMapStories({ status: "published", page: 1, pageSize: 25 }),
+    ).resolves.toEqual([]);
   });
 
   test("excludes public map stories with non-numeric latitude or longitude", async () => {
@@ -559,7 +567,9 @@ describe("createSupabaseContentListRead", () => {
     });
     const reader = createSupabaseContentListRead(client);
 
-    await expect(reader.listPublicMapStories({ page: 1, pageSize: 25 })).resolves.toEqual([]);
+    await expect(
+      reader.listPublicMapStories({ status: "published", page: 1, pageSize: 25 }),
+    ).resolves.toEqual([]);
   });
 
   test("keeps content page ordering regardless of relation row order", async () => {
