@@ -70,7 +70,10 @@ class FakeQueryBuilder {
 
   maybeSingle() {
     return {
-      then: (resolve: (value: Omit<FakeResponse, "data"> & { data: unknown | null }) => unknown, reject: (reason: unknown) => unknown) => {
+      then: (
+        resolve: (value: Omit<FakeResponse, "data"> & { data: unknown | null }) => unknown,
+        reject: (reason: unknown) => unknown,
+      ) => {
         this.calls.push(structuredClone(this.trace));
         const queue = this.responses.get(this.trace.table) ?? [];
         const response = queue.shift() ?? { data: [], error: null, count: null };

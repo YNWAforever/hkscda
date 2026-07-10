@@ -128,11 +128,15 @@ export function buildPaymentExportSearchParams(input: Partial<PaymentFilters>) {
 }
 
 export function findIssuedReceipt(donationId: string, receipts: AdminReceiptRow[]) {
-  return receipts.find((receipt) => receipt.status === "issued" && receipt.donation_ids.includes(donationId));
+  return receipts.find(
+    (receipt) => receipt.status === "issued" && receipt.donation_ids.includes(donationId),
+  );
 }
 
 export function findVoidReceipt(donationId: string, receipts: AdminReceiptRow[]) {
-  return receipts.find((receipt) => receipt.status === "void" && receipt.donation_ids.includes(donationId));
+  return receipts.find(
+    (receipt) => receipt.status === "void" && receipt.donation_ids.includes(donationId),
+  );
 }
 
 function canManageTreasurerActions(role?: AdminRole | null) {
@@ -165,7 +169,9 @@ export function canVoidReceipt(
   receipts: AdminReceiptRow[],
   role?: AdminRole | null,
 ): boolean {
-  return canManageTreasurerActions(role) && Boolean(findIssuedReceipt(payment.donation.id, receipts));
+  return (
+    canManageTreasurerActions(role) && Boolean(findIssuedReceipt(payment.donation.id, receipts))
+  );
 }
 
 export function summarizePayments(
