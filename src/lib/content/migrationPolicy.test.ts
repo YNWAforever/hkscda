@@ -5,7 +5,7 @@ import { describe, expect, test } from "bun:test";
 const migration = readFileSync(
   join(process.cwd(), "supabase/migrations/20260705120000_story_promotion_center.sql"),
   "utf8",
-);
+).replace(/\r\n?/g, "\n");
 
 const publishingTables = [
   { name: "content_item", policy: "staff can manage content items" },
