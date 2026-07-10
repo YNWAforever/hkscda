@@ -242,6 +242,94 @@ describe("createSupabaseContentListRead", () => {
     }
   });
 
+  test("falls back to the first ordered cover media for null and stale admin cover ids", async () => {
+    for (const coverMediaId of [null, "stale-media-id"]) {
+      const row = { ...contentRow("1"), cover_media_id: coverMediaId } as ReturnType<
+        typeof contentRow
+      >;
+      const { client } = createFakeClient([row], {
+        content_media: [
+          {
+            data: [
+              { ...mediaRow("1"), id: "first-cover", storage_path: "stories/first.jpg" },
+              {
+                ...mediaRow("1"),
+                id: "second-cover",
+                storage_path: "stories/second.jpg",
+                sort_order: 1,
+              },
+            ],
+            error: null,
+          },
+        ],
+      });
+      const reader = createSupabaseContentListRead(client);
+
+      const result = await reader.listAdminContent({ page: 1, pageSize: 25 });
+
+      expect(result.items[0]?.coverImageUrl).toBe("https://cdn.test/content/stories/first.jpg");
+    }
+  });
+
+  test("falls back to public-eligible cover media for null and stale public cover ids", async () => {
+    for (const coverMediaId of [null, "stale-media-id"]) {
+      const row = { ...contentRow("1"), cover_media_id: coverMediaId } as ReturnType<
+        typeof contentRow
+      >;
+      const { client } = createFakeClient([row], {
+        content_media: [
+          {
+            data: [
+              {
+                ...mediaRow("1"),
+                id: "internal-cover",
+                story_update_id: "internal-update",
+                storage_path: "stories/internal.jpg",
+              },
+              {
+                ...mediaRow("1"),
+                id: "root-cover",
+                storage_path: "stories/root.jpg",
+                sort_order: 1,
+              },
+              {
+                ...mediaRow("1"),
+                id: "public-update-cover",
+                story_update_id: "update-1",
+                storage_path: "stories/public-update.jpg",
+                sort_order: 2,
+              },
+            ],
+            error: null,
+          },
+        ],
+      });
+      const reader = createSupabaseContentListRead(client);
+
+      const result = await reader.listPublicContent({ page: 1, pageSize: 25 });
+
+      expect(result.items[0]?.coverMediaId).toBe("root-cover");
+      expect(result.items[0]?.coverImageUrl).toBe("https://cdn.test/content/stories/root.jpg");
+    }
+  });
+
+  for (const [input, filter] of [
+    ["%", "title.ilike.%\\%%,summary.ilike.%\\%%"],
+    ["_", "title.ilike.%\\_%,summary.ilike.%\\_%"],
+    ["\\", "title.ilike.%\\\\%,summary.ilike.%\\\\%"],
+    [",", "title.ilike.%,%,summary.ilike.%,%"],
+    ["()", "title.ilike.%()%,summary.ilike.%()%"],
+  ]) {
+    test(`preserves legacy search escaping for ${JSON.stringify(input)}`, async () => {
+      const { client, calls } = createFakeClient([]);
+      const reader = createSupabaseContentListRead(client);
+
+      await reader.listAdminContent({ page: 1, pageSize: 25, q: input });
+
+      expect(calls[0]?.filters).toContainEqual({ method: "or", column: "or", value: filter });
+    });
+  }
+
   test("applies admin filters, ordering, and offset pagination before bulk relation reads", async () => {
     const rows = [contentRow("11"), contentRow("12")];
     const { client, calls } = createFakeClient(rows);

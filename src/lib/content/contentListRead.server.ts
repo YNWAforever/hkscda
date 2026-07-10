@@ -260,7 +260,7 @@ function assembleAdminSummary(
   relations: Awaited<ReturnType<typeof loadRelations>>,
 ): ContentSummary {
   const media = relations.mediaByContentId.get(row.id) ?? [];
-  const cover = media.find((item) => item.id === row.cover_media_id) ?? null;
+  const cover = findCoverMedia(media, row.cover_media_id);
   return {
     id: row.id,
     slug: row.slug,
@@ -291,7 +291,7 @@ function assemblePublicSummary(
   const visibleMedia = (relations.mediaByContentId.get(row.id) ?? []).filter(
     (item) => item.storyUpdateId === null || publicUpdateIds.has(item.storyUpdateId),
   );
-  const cover = visibleMedia.find((item) => item.id === row.cover_media_id) ?? null;
+  const cover = findCoverMedia(visibleMedia, row.cover_media_id);
 
   return {
     id: row.id,
@@ -313,6 +313,14 @@ function assemblePublicSummary(
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
+}
+
+function findCoverMedia(media: ContentMedia[], coverMediaId: string | null) {
+  return (
+    (coverMediaId ? media.find((item) => item.id === coverMediaId) : null) ??
+    media.find((item) => item.isCover) ??
+    null
+  );
 }
 
 function nonNullable<T>(value: T | null | undefined): value is T {
@@ -348,7 +356,7 @@ function mapStoryPoints(
 }
 
 function escapeLike(value: string) {
-  return value.replace(/[,%()]/g, " ");
+  return value.replaceAll("\\", "\\\\").replaceAll("%", "\\%").replaceAll("_", "\\_");
 }
 
 type StoryFilters = Pick<ContentSearch, "animalType" | "publicStatus" | "rescueRegion">;

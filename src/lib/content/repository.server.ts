@@ -401,27 +401,6 @@ export function toContentLinkInsert(contentId: string, input: ContentLinkInput) 
   };
 }
 
-function toSummary(detail: ContentDetail): ContentSummary {
-  return {
-    id: detail.id,
-    slug: detail.slug,
-    type: detail.type,
-    title: detail.title,
-    subtitle: detail.subtitle,
-    summary: detail.summary,
-    coverMediaId: detail.coverMediaId,
-    coverImageUrl: detail.coverImageUrl,
-    status: detail.status,
-    publishedAt: detail.publishedAt,
-    ctaLabel: detail.ctaLabel,
-    ctaUrl: detail.ctaUrl,
-    storyProfile: detail.storyProfile,
-    latestPublicUpdate: detail.latestPublicUpdate,
-    createdAt: detail.createdAt,
-    updatedAt: detail.updatedAt,
-  };
-}
-
 function findCoverMedia(media: ContentMedia[], coverMediaId: string | null) {
   return (
     (coverMediaId ? media.find((item) => item.id === coverMediaId) : null) ??
