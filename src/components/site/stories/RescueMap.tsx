@@ -2,34 +2,14 @@ import { Link } from "@tanstack/react-router";
 import { Cat, Dog, MapPinned } from "lucide-react";
 
 import type { PublicStoryMapPoint } from "../../../lib/content/types";
+import { GoogleRescueMap } from "./GoogleRescueMap";
 import { publicStatusLabel } from "./storyPublicLogic";
 
-type RescueMapProps = {
-  points: PublicStoryMapPoint[];
-};
+type RescueMapProps = { points: PublicStoryMapPoint[]; apiKey?: string };
 
-const hkBounds = {
-  minLat: 22.13,
-  maxLat: 22.57,
-  minLng: 113.82,
-  maxLng: 114.43,
-};
+export function RescueMap({ points, apiKey }: RescueMapProps) {
+  const resolvedApiKey = apiKey ?? import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
-function clamp(value: number, min: number, max: number) {
-  return Math.min(Math.max(value, min), max);
-}
-
-function projectPoint(lat: number, lng: number) {
-  const xRatio = (lng - hkBounds.minLng) / (hkBounds.maxLng - hkBounds.minLng);
-  const yRatio = (hkBounds.maxLat - lat) / (hkBounds.maxLat - hkBounds.minLat);
-
-  return {
-    x: 52 + clamp(xRatio, 0, 1) * 216,
-    y: 74 + clamp(yRatio, 0, 1) * 104,
-  };
-}
-
-export function RescueMap({ points }: RescueMapProps) {
   return (
     <section className="bg-[var(--color-lavender)] px-4 py-10 sm:py-12">
       <div className="container-wide grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
@@ -47,57 +27,18 @@ export function RescueMap({ points }: RescueMapProps) {
         </div>
 
         <div className="grid gap-4 md:grid-cols-[0.9fr_1.1fr]">
-          <div className="card-dashed relative min-h-[260px] overflow-hidden bg-[var(--color-surface)] p-5">
-            <svg
-              viewBox="0 0 320 240"
-              role="img"
-              aria-label="香港救援區域示意圖"
-              className="h-full w-full"
-            >
-              <path
-                d="M52 130 C74 86 119 73 158 98 C187 70 240 81 267 124 C244 158 198 176 154 154 C116 181 75 171 52 130Z"
-                fill="var(--color-primary-highlight)"
-                stroke="var(--color-primary)"
-                strokeWidth="3"
-              />
-              <path
-                d="M91 125 C113 109 139 112 155 132 C132 145 112 146 91 125Z"
-                fill="var(--color-surface-offset)"
-                stroke="var(--color-border)"
-                strokeWidth="2"
-              />
-              <path
-                d="M172 125 C197 108 226 113 241 137 C217 151 190 149 172 125Z"
-                fill="var(--color-surface-offset)"
-                stroke="var(--color-border)"
-                strokeWidth="2"
-              />
-              {points.map((point, index) => {
-                const { x, y } = projectPoint(point.lat, point.lng);
-                return (
-                  <g key={point.id} data-map-marker={point.id}>
-                    <title>{`${point.publicMapLabel} · ${point.rescueRegion} · ${publicStatusLabel(point.publicStatus)}`}</title>
-                    <circle cx={x} cy={y} r="9" fill="var(--color-cta)" />
-                    <text
-                      x={x}
-                      y={y + 4}
-                      textAnchor="middle"
-                      fontSize="10"
-                      fontWeight="700"
-                      fill="white"
-                    >
-                      {index + 1}
-                    </text>
-                  </g>
-                );
-              })}
-            </svg>
-          </div>
+          {resolvedApiKey && points.length > 0 ? (
+            <GoogleRescueMap apiKey={resolvedApiKey} points={points} />
+          ) : (
+            <div className="card-dashed flex min-h-[300px] items-center justify-center bg-[var(--color-surface)] p-5 text-center text-sm text-[var(--color-text-muted)]">
+              地圖暫時未能載入，請使用救援地點清單。
+            </div>
+          )}
 
           <div className="space-y-3">
             {points.length === 0 ? (
               <div className="card-dashed bg-[var(--color-surface)] p-5 text-sm text-[var(--color-text-muted)]">
-                暫時未有可公開顯示的地圖故事。
+                暫時沒有公開地圖故事。
               </div>
             ) : (
               points.map((point, index) => {
