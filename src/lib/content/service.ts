@@ -64,6 +64,11 @@ export type ContentRepository = {
   listPublicContent(
     input: PublicContentSearch | z.infer<typeof publicContentSearchSchema>,
   ): Promise<{ items: ContentSummary[]; total: number }>;
+  listPublicStoriesPage(input: PublicContentSearch): Promise<{
+    items: ContentSummary[];
+    total: number;
+    points: PublicStoryMapPoint[];
+  }>;
   getPublicContentBySlug(slug: string): Promise<ContentDetail | null>;
   listPublicMapStories(input: PublicContentSearch): Promise<PublicStoryMapPoint[]>;
   listAdminContent(input: ContentSearch): Promise<{ items: ContentSummary[]; total: number }>;
@@ -182,6 +187,9 @@ export function createContentService({
       return repo.listPublicContent(publicContentSearchSchema.parse(raw));
     },
 
+    async listPublicStoriesPage(raw: unknown) {
+      return repo.listPublicStoriesPage(publicContentSearchSchema.parse(raw));
+    },
     async getPublicContentBySlug(slug: string) {
       return repo.getPublicContentBySlug(slug);
     },
