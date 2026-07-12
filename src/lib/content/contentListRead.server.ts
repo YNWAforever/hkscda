@@ -73,7 +73,10 @@ type PublicUpdateRow = {
 
 export type ContentListReadModule = Pick<
   ContentRepository,
-  "listAdminContent" | "listPublicContent" | "listPublicMapStories"
+  | "listAdminContent"
+  | "listPublicContent"
+  | "listPublicMapStories"
+  | "listPublicStoriesPage"
 >;
 
 const contentColumns = [
@@ -453,6 +456,38 @@ export function createSupabaseContentListRead(client: SupabaseClient): ContentLi
       };
     },
 
+    async listPublicStoriesPage(input: PublicContentSearch) {
+      const storyIds = await storyFilterContentIds(client, input);
+      if (storyIds && storyIds.length === 0) return { items: [], total: 0, points: [] };
+
+      const from = (input.page - 1) * input.pageSize;
+      let query = client
+        .from("content_item")
+        .select(contentColumns, { count: "exact" })
+        .eq("status", "published")
+        .order("published_at", { ascending: false })
+        .range(from, from + input.pageSize - 1);
+
+      if (input.type) query = query.eq("type", input.type);
+      if (input.q) {
+        const like = `%${escapeLike(input.q)}%`;
+        query = query.or(`title.ilike.${like},summary.ilike.${like}`);
+      }
+      if (storyIds) query = query.in("id", storyIds);
+
+      const { data, error, count } = await query;
+      if (error) throw error;
+      const rows = (data ?? []) as unknown as ContentListRow[];
+      if (rows.length === 0) return { items: [], total: count ?? 0, points: [] };
+
+      const relations = await loadRelations(client, rows.map((row) => row.id));
+      const items = rows.map((row) => assemblePublicSummary(row, relations));
+      return {
+        items,
+        total: count ?? 0,
+        points: items.map(mapStoryPoint).filter(nonNullable),
+      };
+    },
     async listAdminContent(input: ContentSearch) {
       const storyIds = await storyFilterContentIds(client, input);
       if (storyIds && storyIds.length === 0) return { items: [], total: 0 };

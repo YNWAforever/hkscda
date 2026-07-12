@@ -501,6 +501,48 @@ describe("createSupabaseContentListRead", () => {
     expect(result.items[0]?.coverImageUrl).toBeNull();
   });
 
+  test("combines public story cards and map points in one relation load", async () => {
+    const rows = [
+      { ...contentRow("story-1"), cover_media_id: "internal-cover" },
+      contentRow("story-2"),
+    ];
+    const { client, calls } = createFakeClient(rows, {
+      rescue_story_profile: [
+        {
+          data: [profileRow("story-1"), { ...profileRow("story-2"), show_on_map: false }],
+          error: null,
+        },
+      ],
+      content_media: [
+        {
+          data: [
+            {
+              ...mediaRow("story-1"),
+              id: "internal-cover",
+              story_update_id: "internal-update-story-1",
+            },
+            mediaRow("story-2"),
+          ],
+          error: null,
+        },
+      ],
+    });
+    const reader = createSupabaseContentListRead(client);
+
+    const result = await reader.listPublicStoriesPage({
+      page: 1,
+      pageSize: 25,
+      status: "published",
+    });
+
+    expect(result.items).toHaveLength(2);
+    expect(result.points.map((point) => point.id)).toEqual(["story-1"]);
+    expect(result.items[0]?.coverImageUrl).toBeNull();
+    expect(calls.filter((call) => call.table === "content_item")).toHaveLength(1);
+    expect(calls.filter((call) => call.table === "rescue_story_profile")).toHaveLength(1);
+    expect(calls.filter((call) => call.table === "content_media")).toHaveLength(1);
+    expect(calls.filter((call) => call.table === "story_update")).toHaveLength(1);
+  });
   test("projects public story map points and filters invalid locations", async () => {
     const rows = [contentRow("1"), contentRow("2")];
     const { client, calls } = createFakeClient(rows, {

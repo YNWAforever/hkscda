@@ -21,6 +21,10 @@ function createService(overrides: Record<string, unknown> = {}) {
       calls.push("listPublicContent");
       return { items: [{ id: "content-1", title: "小白" }], total: 1 };
     },
+    async listPublicStoriesPage() {
+      calls.push("listPublicStoriesPage");
+      return { items: [], total: 0, points: [] };
+    },
     async getPublicContentBySlug() {
       calls.push("getPublicContentBySlug");
       return { id: "content-1", slug: "siu-bak", title: "小白" };
@@ -110,6 +114,38 @@ describe("createContentHandlers", () => {
     });
   });
 
+  test("returns the combined stories page with short public caching", async () => {
+    const service = createService();
+    const handlers = createContentHandlers({
+      requireContentAdmin: async () => admin,
+      service,
+    });
+
+    const response = await handlers.listPublicStoriesPage({
+      request: new Request("https://example.test/api/stories"),
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("cache-control")).toBe(
+      "public, s-maxage=60, stale-while-revalidate=300",
+    );
+    expect(await response.json()).toEqual({ items: [], total: 0, points: [] });
+    expect(service.calls).toEqual(["listPublicStoriesPage"]);
+  });
+
+  test("keeps authenticated content responses on no-store", async () => {
+    const service = createService();
+    const handlers = createContentHandlers({
+      requireContentAdmin: async () => admin,
+      service,
+    });
+
+    const response = await handlers.listAdminContent({
+      request: new Request("https://example.test/api/admin/content"),
+    });
+
+    expect(response.headers.get("cache-control")).toBe("no-store");
+  });
   test("rejects admin requests before service work when auth is missing", async () => {
     const service = createService();
     const handlers = createContentHandlers({

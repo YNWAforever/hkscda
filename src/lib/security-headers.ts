@@ -15,8 +15,8 @@ export const CONTENT_SECURITY_POLICY_REPORT_ONLY = [
   "img-src 'self' data: https:",
   "font-src 'self' data: https://fonts.gstatic.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
-  "connect-src 'self' https://*.supabase.co https://api.stripe.com https://www.google-analytics.com https://*.google-analytics.com",
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://maps.googleapis.com",
+  "connect-src 'self' https://*.supabase.co https://api.stripe.com https://www.google-analytics.com https://*.google-analytics.com https://maps.googleapis.com https://maps.gstatic.com",
   "form-action 'self'",
 ].join("; ");
 
