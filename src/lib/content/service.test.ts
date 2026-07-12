@@ -68,6 +68,7 @@ function createRepo(overrides: Partial<ContentRepository> = {}) {
 
   const repo: ContentRepository = {
     listPublicContent: async () => ({ items: [detail], total: 1 }),
+    listPublicStoriesPage: async () => ({ items: [detail], total: 1, points: [] }),
     getPublicContentBySlug: async () => detail,
     listPublicMapStories: async () => [],
     listAdminContent: async () => ({ items: [detail], total: 1 }),

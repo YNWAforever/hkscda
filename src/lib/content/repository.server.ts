@@ -631,6 +631,10 @@ export function createSupabaseContentRepository(client: SupabaseClient): Content
       return contentListRead.listPublicContent(input);
     },
 
+    listPublicStoriesPage(input) {
+      return contentListRead.listPublicStoriesPage(input);
+    },
+
     async getPublicContentBySlug(slug) {
       const { data, error } = await client
         .from("content_item")
