@@ -36,18 +36,17 @@ function StoriesPage() {
 
     async function loadStories() {
       try {
-        const [storiesResponse, mapResponse] = await Promise.all([
-          fetch("/api/stories"),
-          fetch("/api/stories/map"),
-        ]);
-        if (!storiesResponse.ok || !mapResponse.ok) throw new Error("Failed to load stories");
+        const response = await fetch("/api/stories");
+        if (!response.ok) throw new Error("Failed to load stories");
 
-        const storiesBody = (await storiesResponse.json()) as { items: ContentSummary[] };
-        const mapBody = (await mapResponse.json()) as { points: PublicStoryMapPoint[] };
+        const body = (await response.json()) as {
+          items: ContentSummary[];
+          points: PublicStoryMapPoint[];
+        };
 
         if (!mounted) return;
-        setStories(storiesBody.items);
-        setPoints(mapBody.points);
+        setStories(body.items);
+        setPoints(body.points);
       } catch {
         if (mounted) setLoadError("暫時未能載入故事，請稍後再試。");
       }

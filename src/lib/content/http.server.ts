@@ -44,6 +44,11 @@ function jsonResponse(body: unknown, init?: ResponseInit) {
   return Response.json(body, { ...init, headers });
 }
 
+function publicJsonResponse(body: unknown, init?: ResponseInit) {
+  const headers = new Headers(init?.headers);
+  headers.set("cache-control", "public, s-maxage=60, stale-while-revalidate=300");
+  return Response.json(body, { ...init, headers });
+}
 function requiredId(params: HandlerContext["params"], key = "id") {
   const id = params?.[key];
   if (!id || !z.string().uuid().safeParse(id).success) {
@@ -128,6 +133,11 @@ export function createContentHandlers({ requireContentAdmin, service }: CreateCo
       }, true);
     },
 
+    listPublicStoriesPage({ request }: HandlerContext) {
+      return withContentErrors(async () => {
+        return publicJsonResponse(await service.listPublicStoriesPage(searchParams(request)));
+      }, true);
+    },
     getPublicContent({ params }: HandlerContext) {
       return withContentErrors(async () => {
         const slug = params?.slug;

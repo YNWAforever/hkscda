@@ -19,7 +19,7 @@ function createHandlers() {
 export const Route = createFileRoute("/api/stories")({
   server: {
     handlers: {
-      GET: ({ request }) => createHandlers().listPublicContent({ request }),
+      GET: ({ request }) => createHandlers().listPublicStoriesPage({ request }),
     },
   },
 });
