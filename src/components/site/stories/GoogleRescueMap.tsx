@@ -10,6 +10,7 @@ export function GoogleRescueMap({ apiKey, points }: GoogleRescueMapProps) {
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
+    setFailed(false);
     let cancelled = false;
     let listeners: GoogleMapsListener[] = [];
     let markers: Array<{ setMap(map: null): void }> = [];
@@ -27,7 +28,7 @@ export function GoogleRescueMap({ apiKey, points }: GoogleRescueMapProps) {
         });
         const bounds = new maps.LatLngBounds();
         const infoWindow = new maps.InfoWindow();
-        removeListener = maps.event.removeListener;
+        removeListener = (listener) => maps.event.removeListener(listener);
 
         markers = points.map((point) => {
           const position = { lat: point.lat, lng: point.lng };
@@ -65,7 +66,13 @@ export function GoogleRescueMap({ apiKey, points }: GoogleRescueMapProps) {
 
   return (
     <div className="relative min-h-[300px] overflow-hidden rounded-md bg-[var(--color-surface-offset)]">
-      <div ref={containerRef} data-google-rescue-map="ready" className="absolute inset-0" />
+      <div
+        ref={containerRef}
+        role="region"
+        aria-label="Hong Kong rescue locations"
+        data-google-rescue-map="canvas"
+        className="absolute inset-0"
+      />
       {failed ? (
         <p
           role="status"

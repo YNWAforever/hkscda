@@ -24,7 +24,8 @@ function createService(overrides: Record<string, unknown> = {}) {
     async listPublicStoriesPage() {
       calls.push("listPublicStoriesPage");
       return { items: [], total: 0, points: [] };
-    },    async getPublicContentBySlug() {
+    },
+    async getPublicContentBySlug() {
       calls.push("getPublicContentBySlug");
       return { id: "content-1", slug: "siu-bak", title: "小白" };
     },

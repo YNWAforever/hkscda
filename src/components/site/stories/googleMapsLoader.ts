@@ -51,5 +51,11 @@ export function loadGoogleMaps(apiKey: string): Promise<GoogleMapsNamespace> {
     document.head.append(script);
   });
 
+  loaderPromise = loaderPromise.catch((error: unknown) => {
+    loaderPromise = null;
+    document.getElementById(SCRIPT_ID)?.remove();
+    throw error;
+  });
+
   return loaderPromise;
 }

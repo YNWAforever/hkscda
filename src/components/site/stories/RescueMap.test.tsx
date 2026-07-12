@@ -48,7 +48,8 @@ describe("RescueMap", () => {
     const { RescueMap } = await import("./RescueMap");
     const markup = renderToStaticMarkup(<RescueMap points={[makePoint(1)]} apiKey="test-key" />);
 
-    expect(markup).toContain('data-google-rescue-map="ready"');
+    expect(markup).toContain('data-google-rescue-map="canvas"');
+    expect(markup).toContain('aria-label="Hong Kong rescue locations"');
     expect(markup).not.toContain("test-key");
     expect(markup).not.toContain("internalAddress");
     expect(markup).not.toContain("internalLocationNotes");
