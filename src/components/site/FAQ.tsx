@@ -34,14 +34,14 @@ export function FAQ() {
           </p>
           <div className="relative hidden lg:block">
             <div
-              className="absolute inset-3 arch-mask -rotate-3 bg-[var(--color-accent-soft)]"
+              className="absolute inset-3 rounded-md -rotate-3 bg-[var(--color-accent-soft)]"
               aria-hidden="true"
             />
             <img
               src={dog1}
               alt="等待領養的狗狗"
               loading="lazy"
-              className="relative arch-mask w-full aspect-[4/3] object-cover shadow-soft"
+              className="relative rounded-md w-full aspect-[4/3] object-cover shadow-soft"
             />
           </div>
         </Reveal>

@@ -1,4 +1,4 @@
-import { Search, FileText, House, PawPrint } from "lucide-react";
+import { Search, FileText, House, CheckCircle2 } from "lucide-react";
 import { Reveal } from "@/lib/reveal";
 
 const steps = [
@@ -22,7 +22,7 @@ const steps = [
   },
   {
     n: "04",
-    Icon: PawPrint,
+    Icon: CheckCircle2,
     title: "簽約接毛孩回家",
     desc: "簽署領養協議後正式迎接新家庭成員，協會持續跟進支援。",
   },

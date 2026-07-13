@@ -19,7 +19,7 @@ function TeamPage() {
             { role: "主席", name: "謝曉梅女士", desc: "帶領協會多年，致力推動香港動物福利發展。" },
             { role: "名譽主席", name: "鄧殷女士", desc: "支持協會工作，積極推廣動物友善社區。" },
           ].map(({ role, name, desc }) => (
-            <div key={name} className="card-dashed p-6 space-y-2">
+            <div key={name} className="border border-[var(--color-border)] p-6 space-y-2">
               <div className="text-sm text-[var(--color-primary)] font-semibold">{role}</div>
               <div className="font-display text-lg font-bold">{name}</div>
               <p className="text-sm text-[var(--color-text-muted)]">{desc}</p>
