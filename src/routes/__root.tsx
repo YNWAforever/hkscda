@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import { Header } from "../components/site/Header";
 import { Footer } from "../components/site/Footer";
 import { HelpWidget } from "../components/site/help/HelpWidget";
+import { PublicStateShell } from "../components/site/PublicStateShell";
 import { ShortlistProvider } from "../components/site/ShortlistProvider";
 import { ShortlistTray } from "../components/site/ShortlistTray";
 
@@ -22,24 +23,13 @@ import { initGA4 } from "../lib/analytics";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-[var(--color-text)]">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-[var(--color-text)]">找不到頁面</h2>
-        <p className="mt-2 text-sm text-[var(--color-text-muted)]">您要找的頁面不存在或已移動。</p>
-        <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-full bg-[var(--color-primary)] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-[var(--color-primary-hover)]"
-          >
-            返回主頁
-          </Link>
-        </div>
-      </div>
-    </div>
+    <PublicStateShell
+      title="找不到頁面"
+      description="您要找的頁面不存在或已移動。"
+      action={<Link to="/" className="btn-primary min-h-11 px-5">返回主頁</Link>}
+    />
   );
 }
-
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
@@ -48,36 +38,21 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   }, [error]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-[var(--color-text)]">
-          頁面未能載入
-        </h1>
-        <p className="mt-2 text-sm text-[var(--color-text-muted)]">
-          系統出現問題。您可以嘗試重新整理或返回主頁。
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <button
-            onClick={() => {
-              router.invalidate();
-              reset();
-            }}
-            className="inline-flex items-center justify-center rounded-full bg-[var(--color-primary)] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-[var(--color-primary-hover)]"
-          >
+    <PublicStateShell
+      role="alert"
+      title="頁面未能載入"
+      description="系統出現問題。您可以嘗試重新整理或返回主頁。"
+      action={(
+        <div className="flex flex-wrap justify-center gap-2">
+          <button type="button" onClick={() => { router.invalidate(); reset(); }} className="btn-primary min-h-11 px-5">
             重新整理
           </button>
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-3 text-sm font-bold text-[var(--color-text)] transition-colors hover:bg-[var(--color-surface-offset)]"
-          >
-            返回主頁
-          </Link>
+          <Link to="/" className="btn-secondary min-h-11 px-5">返回主頁</Link>
         </div>
-      </div>
-    </div>
+      )}
+    />
   );
 }
-
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
