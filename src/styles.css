@@ -3,45 +3,47 @@
 @import "tw-animate-css";
 
 @theme {
-  /* Poofyco-inspired palette — deep navy #232a5e, rose #d44d66, blush surfaces */
-  --color-bg: #fdf7f4;
+  --brand-blue-official: #05648e;
+  --brand-magenta-official: #a61c56;
+  --font-display: "Noto Sans HK", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Noto Sans HK", "Helvetica Neue", Arial, sans-serif;
+
+  /* Stable aliases remain available while public components migrate. */
+  --color-bg: #f7faf9;
   --color-surface: #ffffff;
-  --color-surface-2: #fffbfa;
-  --color-surface-offset: #faeceb;
-  --color-surface-offset-2: #f5dfde;
-  --color-divider: #ecd2d6;
-  --color-border: #e5c5cb;
-  --color-text: #2b2d42;
-  --color-text-muted: #6b6e85;
-  --color-text-faint: #a3a5b8;
-  --color-text-inverse: #fdf7f4;
-  /* #c94d6a reaches ~5:1 against white, clearing WCAG AA 4.5:1 for the white
-     button text used site-wide (the original #e05c78 was ~4.22:1). Hover/active
-     shift darker to keep a legible interaction ramp. */
-  --color-primary: #c94d6a;
-  --color-primary-hover: #b93d58;
-  --color-primary-active: #a5304a;
-  --color-primary-highlight: #fadfe4;
-  --color-secondary: #1d2353;
-  --color-success: #3a7a45;
-  --color-success-highlight: #d0e8d5;
-  --color-warning: #c07820;
-  --color-error: #b02828;
-  --color-cat: #e05c78;
-  --color-dog: #1d2353;
-  --color-cat-bg: #fdeef1;
-  --color-dog-bg: #e9ebf7;
-  --color-footer-bg: #1d2353;
-  --color-accent-warm: #f27d92;
-  --color-accent-soft: #fce8eb;
-  --color-lavender: #e9e9f6;
-  --color-lavender-deep: #dcdcf0;
-  --color-pink-strip: #f298a4;
-  --color-panel: #1d2353;
-  --color-panel-2: #283066;
-  --color-hero-gradient-start: #171c45;
-  --color-hero-gradient-mid: #1d2353;
-  --color-hero-gradient-end: #283066;
+  --color-surface-2: #fbfdfc;
+  --color-surface-offset: #edf4f5;
+  --color-surface-offset-2: #e1ecef;
+  --color-divider: #d7e2e5;
+  --color-border: #c6d6dc;
+  --color-text: #163644;
+  --color-text-muted: #526b75;
+  --color-text-faint: #728790;
+  --color-text-inverse: #ffffff;
+  --color-primary: #05648e;
+  --color-primary-hover: #044f71;
+  --color-primary-active: #033b54;
+  --color-primary-highlight: #e5f2f6;
+  --color-secondary: #a61c56;
+  --color-secondary-hover: #861646;
+  --color-secondary-highlight: #f7e9ef;
+  --color-success: #3f6f4a;
+  --color-success-highlight: #e8f2e9;
+  --color-warning: #8a5a12;
+  --color-warning-highlight: #fbf0d7;
+  --color-error: #a12a2a;
+  --color-error-highlight: #f9e4e4;
+  --color-info: #05648e;
+  --color-info-highlight: #e5f2f6;
+  --color-cat: #466a78;
+  --color-dog: #5e675f;
+  --color-cat-bg: #edf4f5;
+  --color-dog-bg: #f0f2ef;
+  --color-chart-series-1: #2f6f84;
+  --color-chart-series-2: #66734f;
+  --color-footer-bg: #06435f;
+  --color-panel: #163644;
+  --color-panel-2: #245266;
 
   /* shadcn/Radix token aliases for opaque overlays and form controls */
   --color-background: var(--color-bg);
@@ -60,15 +62,73 @@
   --color-primary-foreground: #ffffff;
   --color-secondary-foreground: #ffffff;
 
-  --color-cta: #f27d92;
-  --color-cta-hover: #ee6781;
+  /* Deprecated aliases stay available until the public migration is complete. */
+  --color-cta: var(--color-secondary);
+  --color-cta-hover: var(--color-secondary-hover);
+  --color-accent-warm: #a61c56;
+  --color-accent-soft: #f7e9ef;
+  --color-lavender: #e1ecef;
+  --color-lavender-deep: #c6d6dc;
+  --color-pink-strip: #a61c56;
+  --color-hero-gradient-start: #163644;
+  --color-hero-gradient-mid: #163644;
+  --color-hero-gradient-end: #245266;
 
-  --radius-card: 1.5rem;
-  --radius-panel: 2.5rem;
-  --radius-blob: 3rem;
+  --radius-card: 0.5rem;
+  --radius-panel: 0.75rem;
+  --radius-blob: 1rem;
+}
 
-  --font-display: "Baloo 2", "Noto Sans HK", "Helvetica Neue", sans-serif;
-  --font-body: "Noto Sans HK", "Helvetica Neue", sans-serif;
+.site-shell {
+  --color-bg: #f7faf9;
+  --color-surface: #ffffff;
+  --color-surface-2: #fbfdfc;
+  --color-surface-offset: #edf4f5;
+  --color-surface-offset-2: #e1ecef;
+  --color-divider: #d7e2e5;
+  --color-border: #c6d6dc;
+  --color-text: #163644;
+  --color-text-muted: #526b75;
+  --color-text-faint: #728790;
+  --color-text-inverse: #ffffff;
+  --color-primary: var(--brand-blue-official);
+  --color-primary-hover: #044f71;
+  --color-primary-active: #033b54;
+  --color-primary-highlight: #e5f2f6;
+  --color-secondary: var(--brand-magenta-official);
+  --color-secondary-hover: #861646;
+  --color-secondary-highlight: #f7e9ef;
+  --color-success: #3f6f4a;
+  --color-success-highlight: #e8f2e9;
+  --color-warning: #8a5a12;
+  --color-warning-highlight: #fbf0d7;
+  --color-error: #a12a2a;
+  --color-error-highlight: #f9e4e4;
+  --color-info: var(--brand-blue-official);
+  --color-info-highlight: #e5f2f6;
+  --color-footer-bg: #06435f;
+  --color-panel: #163644;
+  --color-panel-2: #245266;
+  --color-cat: #466a78;
+  --color-dog: #5e675f;
+  --color-cat-bg: #edf4f5;
+  --color-dog-bg: #f0f2ef;
+  --color-chart-series-1: #2f6f84;
+  --color-chart-series-2: #66734f;
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+.admin-shell {
+  --color-bg: #f7f8fa;
+  --color-surface: #ffffff;
+  --color-surface-offset: #f1f3f5;
+  --color-border: #d8dee4;
+  --color-text: #202a33;
+  --color-text-muted: #5d6a75;
+  --color-primary: #075f89;
+  --color-primary-hover: #044f71;
+  --color-panel: #163644;
 }
 
 @layer base {
@@ -112,48 +172,55 @@
   padding-inline: 1.5rem;
 }
 
-/* Poofyco button system — salmon pill with navy text is the signature CTA */
+/* Temporary compatibility alias; public routes migrate to btn-primary. */
 @utility btn-cta {
   display: inline-flex;
+  min-height: 44px;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.875rem 1.75rem;
-  border-radius: 9999px;
-  background: var(--color-cta);
-  color: var(--color-panel);
+  border-radius: 0.375rem;
+  background: var(--color-primary);
+  color: #ffffff;
+  padding: 0.75rem 1.25rem;
   font-weight: 700;
-  font-size: 0.875rem;
-  box-shadow: 0 8px 24px rgba(238, 130, 149, 0.4);
-  transition:
-    background 0.3s ease,
-    box-shadow 0.3s ease,
-    color 0.3s ease;
+  transition: background-color 180ms ease;
 }
 .btn-cta:hover {
-  background: var(--color-cta-hover);
-  box-shadow: 0 12px 28px rgba(238, 130, 149, 0.5);
+  background: var(--color-primary-hover);
 }
 
-@utility btn-navy {
+@utility btn-primary {
   display: inline-flex;
+  min-height: 44px;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.875rem 1.75rem;
-  border-radius: 9999px;
-  background: var(--color-panel);
-  color: #ffffff;
+  border-radius: 0.375rem;
+  background: var(--color-primary);
+  color: #fff;
+  padding: 0.75rem 1.25rem;
   font-weight: 700;
-  font-size: 0.875rem;
-  box-shadow: 0 8px 24px rgba(29, 35, 83, 0.3);
-  transition:
-    background 0.3s ease,
-    box-shadow 0.3s ease,
-    color 0.3s ease;
+  transition: background-color 180ms ease;
 }
-.btn-navy:hover {
-  background: var(--color-panel-2);
+.btn-primary:hover {
+  background: var(--color-primary-hover);
+}
+
+@utility btn-secondary {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid var(--color-secondary);
+  border-radius: 0.375rem;
+  color: var(--color-secondary);
+  padding: 0.75rem 1.25rem;
+  font-weight: 700;
+}
+.btn-secondary:hover {
+  background: var(--color-secondary-highlight);
 }
 
 @utility btn-outline {

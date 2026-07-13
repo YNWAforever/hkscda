@@ -109,7 +109,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Noto+Sans+HK:wght@300;400;500;700;900&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@300;400;500;700;900&display=swap",
       },
     ],
     scripts: [
@@ -178,11 +178,13 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {isAdmin ? (
-        <div id="main-content" tabIndex={-1}>
+        <div className="admin-shell min-h-dvh" id="main-content" tabIndex={-1}>
           <Outlet />
         </div>
       ) : (
-        <ShortlistProvider>{publicContent}</ShortlistProvider>
+        <ShortlistProvider>
+          <div className="site-shell min-h-dvh">{publicContent}</div>
+        </ShortlistProvider>
       )}
     </QueryClientProvider>
   );
