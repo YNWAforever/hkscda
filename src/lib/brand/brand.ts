@@ -1,4 +1,4 @@
-﻿export const brand = {
+export const brand = {
   nameZh: "香港拯救貓狗協會",
   nameEn: "Hong Kong Saving Cat and Dog Association",
   acronym: "HKSCDA",

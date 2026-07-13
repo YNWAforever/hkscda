@@ -1,4 +1,4 @@
-﻿import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import { brand } from "./brand";
 
 describe("HKSCDA brand contract", () => {
