@@ -31,6 +31,16 @@ describe("public brand tokens", () => {
     expect(css).toContain("--brand-magenta-official: #a61c56");
     expect(css).toContain(".site-shell");
     expect(css).toContain(".admin-shell");
-    expect(css).not.toContain("Poofyco-inspired");
+    expect(css).toContain("@utility btn-primary");
+    expect(css).toContain("@utility btn-secondary");
+    expect(css).toContain("@utility btn-cta");
+    expect(css).not.toMatch(/poofyco/i);
+    expect(css).not.toContain("Baloo 2");
+
+    const root = await Bun.file("src/routes/__root.tsx").text();
+    expect(root).toContain('className="admin-shell min-h-dvh"');
+    expect(root).toContain('className="site-shell min-h-dvh"');
+    expect(root).toContain("Noto+Sans+HK");
+    expect(root).not.toContain("Baloo+2");
   });
 });
