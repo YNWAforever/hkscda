@@ -96,15 +96,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content: "支持領養 · 拯救生命 · 不殺機構 · 每年救助超過600隻毛孩",
       },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: "https://hkscda.com/brand/hkscda-logo-primary.jpg" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "香港拯救貓狗協會 HKSCDA" },
       {
         name: "twitter:description",
         content: "支持領養 · 拯救生命 · 不殺機構",
       },
+      { name: "twitter:image", content: "https://hkscda.com/brand/hkscda-logo-primary.jpg" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "icon", type: "image/jpeg", href: "/brand/hkscda-logo-primary.jpg" },
+      { rel: "apple-touch-icon", href: "/brand/hkscda-logo-primary.jpg" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
