@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import * as Tabs from "@radix-ui/react-tabs";
+import { SectionHeading } from "../../components/site/SectionHeading";
 
 export const Route = createFileRoute("/adoption/instructions")({
   head: () => ({
@@ -114,8 +115,8 @@ const dogCareTopics = [
 
 function InstructionsPage() {
   return (
-    <main className="max-w-3xl mx-auto px-4 py-12 space-y-12">
-      <h1 className="font-display text-3xl font-bold">領養需知</h1>
+    <main className="container-wide space-y-12 px-4 py-14 sm:px-6 lg:px-8">
+      <SectionHeading eyebrow="領養準備" title="領養需知" description="了解申請、家訪和日常照護，為你和動物做好長期準備。" />
 
       <section className="space-y-4">
         <h2 className="font-display text-xl font-bold">領養規則</h2>
@@ -139,7 +140,7 @@ function InstructionsPage() {
               <Tabs.Trigger
                 key={t.value}
                 value={t.value}
-                className="px-3 py-2 text-sm rounded-t data-[state=active]:border-b-2 data-[state=active]:border-[var(--color-cat)] data-[state=active]:text-[var(--color-cat)] text-[var(--color-text-muted)]"
+                className="min-h-11 px-3 py-2 text-sm rounded-t data-[state=active]:border-b-2 data-[state=active]:border-[var(--color-primary)] data-[state=active]:text-[var(--color-primary)] text-[var(--color-text-muted)]"
               >
                 {t.label}
               </Tabs.Trigger>
@@ -165,7 +166,7 @@ function InstructionsPage() {
               <Tabs.Trigger
                 key={t.value}
                 value={t.value}
-                className="px-3 py-2 text-sm rounded-t data-[state=active]:border-b-2 data-[state=active]:border-[var(--color-dog)] data-[state=active]:text-[var(--color-dog)] text-[var(--color-text-muted)]"
+                className="min-h-11 px-3 py-2 text-sm rounded-t data-[state=active]:border-b-2 data-[state=active]:border-[var(--color-secondary)] data-[state=active]:text-[var(--color-secondary)] text-[var(--color-text-muted)]"
               >
                 {t.label}
               </Tabs.Trigger>

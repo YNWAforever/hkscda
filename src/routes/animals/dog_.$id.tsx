@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { PartyPopper } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 import { AnimalDetail } from "../../components/site/AnimalDetail";
+import { PublicStateShell } from "../../components/site/PublicStateShell";
 import { Skeleton } from "../../components/ui/skeleton";
 
 export const Route = createFileRoute("/animals/dog_/$id")({
@@ -11,12 +11,7 @@ export const Route = createFileRoute("/animals/dog_/$id")({
 
 function DogDetailPage() {
   const { id } = Route.useParams();
-
-  const {
-    data: animal,
-    isLoading,
-    isError,
-  } = useQuery({
+  const { data: animal, isLoading, isError } = useQuery({
     queryKey: ["animal", id],
     queryFn: async () => {
       const { data, error } = await supabase.from("animals").select("*").eq("id", id).single();
@@ -25,45 +20,33 @@ function DogDetailPage() {
     },
   });
 
-  if (isLoading)
+  if (isLoading) {
     return (
-      <main className="max-w-4xl mx-auto px-4 py-8 space-y-6">
-        <Skeleton className="h-4 w-24" />
-        <div className="grid md:grid-cols-2 gap-8">
-          <Skeleton className="aspect-square w-full rounded-2xl" />
-          <div className="space-y-4">
-            <Skeleton className="h-8 w-3/4" />
-            <div className="flex gap-2">
-              <Skeleton className="h-6 w-12 rounded-full" />
-              <Skeleton className="h-6 w-16 rounded-full" />
-            </div>
-            <Skeleton className="h-20 w-full" />
-            <Skeleton className="h-12 w-full rounded-full" />
-          </div>
-        </div>
+      <main className="container-wide grid gap-8 px-4 py-10 md:grid-cols-2 sm:px-6 lg:px-8">
+        <Skeleton className="aspect-square w-full rounded-md" />
+        <div className="space-y-4"><Skeleton className="h-8 w-3/4" /><Skeleton className="h-5 w-1/3" /><Skeleton className="h-24 w-full" /><Skeleton className="h-11 w-full" /></div>
       </main>
     );
+  }
 
   if (isError) {
     return (
-      <main className="max-w-4xl mx-auto px-4 py-12 text-center space-y-4">
-        <p className="text-xl text-[var(--color-text-muted)]">載入失敗，請稍後再試</p>
-        <Link to="/animals/dog" className="text-[var(--color-primary)] hover:underline">
-          返回狗狗列表
-        </Link>
-      </main>
+      <PublicStateShell
+        role="alert"
+        title="暫時未能載入狗狗資料"
+        description="系統未能取得這隻狗狗的資料，請稍後再試。"
+        action={<Link to="/animals/dog" className="btn-primary min-h-11 px-5">返回狗狗列表</Link>}
+      />
     );
   }
 
   if (!animal || animal.status !== "available") {
     return (
-      <main className="max-w-4xl mx-auto px-4 py-12 text-center space-y-4">
-        <PartyPopper className="h-12 w-12 text-[var(--color-primary)] mx-auto" />
-        <p className="text-xl text-[var(--color-text-muted)]">此動物已被領養</p>
-        <Link to="/animals/dog" className="text-[var(--color-primary)] hover:underline">
-          ← 返回狗狗列表
-        </Link>
-      </main>
+      <PublicStateShell
+        title="這隻動物目前不在公開領養名單"
+        description="公開名單會隨照護和領養進度更新，請查看其他正在等待家庭的狗狗。"
+        action={<Link to="/animals/dog" className="btn-secondary min-h-11 px-5">查看狗狗列表</Link>}
+      />
     );
   }
 
