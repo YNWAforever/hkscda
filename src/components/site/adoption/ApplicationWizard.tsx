@@ -471,7 +471,7 @@ export function ApplicationWizard() {
             <span className="font-semibold text-[var(--color-panel)]">{submission.reference}</span>
           </p>
           <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
-            <a href={submission.statusUrl} className="btn-cta">
+            <a href={submission.statusUrl} className="btn-primary min-h-11">
               <ClipboardCheck className="h-4 w-4" />
               查看申請狀態
             </a>
@@ -507,7 +507,7 @@ export function ApplicationWizard() {
           <p className="mt-2 text-sm text-[var(--color-text-muted)]">
             申請表會根據你的領養清單建立動物排序，最多可選三隻。
           </p>
-          <Link to="/animals/cat" className="btn-cta mt-6">
+          <Link to="/animals/cat" className="btn-primary min-h-11 mt-6">
             <PawPrint className="h-4 w-4" />
             瀏覽可領養貓隻
           </Link>
@@ -616,7 +616,7 @@ export function ApplicationWizard() {
                   <button
                     type="submit"
                     disabled={isSubmitting || (turnstileEnabled && !turnstileToken)}
-                    className="btn-cta"
+                    className="btn-primary min-h-11"
                   >
                     {isSubmitting ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -626,7 +626,7 @@ export function ApplicationWizard() {
                     {isSubmitting ? "提交中" : "提交申請"}
                   </button>
                 ) : (
-                  <button type="button" onClick={goToNextStep} className="btn-cta">
+                  <button type="button" onClick={goToNextStep} className="btn-primary min-h-11">
                     下一步
                     <ArrowRight className="h-4 w-4" />
                   </button>

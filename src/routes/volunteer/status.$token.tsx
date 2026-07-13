@@ -50,9 +50,9 @@ function VolunteerStatusRoute() {
 
   if (error || !status) {
     return (
-      <StatusShell icon={<AlertCircle className="h-7 w-7" />} title="找不到義工登記">
+      <StatusShell role="alert" icon={<AlertCircle className="h-7 w-7" />} title="找不到義工登記">
         <p>{error ?? "連結可能已過期或輸入錯誤。"}</p>
-        <Link to="/volunteer" className="btn-cta mt-5">
+        <Link to="/volunteer" className="btn-primary min-h-11 mt-5">
           返回義工頁面
         </Link>
       </StatusShell>
@@ -104,21 +104,17 @@ function StatusShell({
   icon,
   title,
   children,
+  role = "status",
 }: {
   icon: ReactNode;
   title: string;
   children: ReactNode;
+  role?: "status" | "alert";
 }) {
   return (
-    <main className="bg-topo bg-[var(--color-bg)] py-10">
+    <main className="bg-[var(--color-bg)] py-10">
       <section className="container-wide">
-        <div className="mx-auto max-w-2xl rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-6 text-center shadow-soft">
-          <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[var(--color-primary-highlight)] text-[var(--color-primary)]">
-            {icon}
-          </div>
-          <h1 className="mt-4 text-2xl font-bold text-[var(--color-panel)]">{title}</h1>
-          <div className="mt-3 text-sm text-[var(--color-text-muted)]">{children}</div>
-        </div>
+        <PublicStateShell icon={icon} title={title} description={children} role={role} />
       </section>
     </main>
   );
