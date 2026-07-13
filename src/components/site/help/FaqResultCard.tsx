@@ -16,8 +16,7 @@ export function FaqResultCard({
   const cta = text.cta;
   const shouldClampAnswer = compact && !faq.sensitive;
 
-  const ctaClassName =
-    "inline-flex whitespace-nowrap items-center justify-center gap-2 rounded-full bg-[var(--color-primary)] px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-[var(--color-primary-hover)]";
+  const ctaClassName = "btn-primary min-h-11 whitespace-nowrap text-xs";
 
   function handleCtaClick() {
     trackHelpEvent("help_cta_click", {

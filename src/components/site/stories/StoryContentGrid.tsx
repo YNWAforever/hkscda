@@ -32,7 +32,7 @@ export function StoryContentGrid({ items }: StoryContentGridProps) {
         </div>
 
         {promotionItems.length === 0 ? (
-          <div className="card-dashed bg-[var(--color-surface-offset)] p-6 text-sm text-[var(--color-text-muted)]">
+          <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-6 text-sm text-[var(--color-text-muted)]">
             暫時未有公開活動、義賣或報告。
           </div>
         ) : (
@@ -43,7 +43,7 @@ export function StoryContentGrid({ items }: StoryContentGridProps) {
               return (
                 <article
                   key={item.id}
-                  className="card-dashed flex min-h-[260px] flex-col overflow-hidden bg-[var(--color-surface)]"
+                  className="rounded-md border border-[var(--color-border)] flex min-h-[260px] flex-col overflow-hidden bg-[var(--color-surface)]"
                 >
                   {item.coverImageUrl ? (
                     <img

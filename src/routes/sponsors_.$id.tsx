@@ -29,7 +29,7 @@ function SponsorDetailPage() {
       <main className="max-w-4xl mx-auto px-4 py-8 space-y-6">
         <Skeleton className="h-4 w-24" />
         <div className="grid md:grid-cols-2 gap-8">
-          <Skeleton className="aspect-square w-full rounded-2xl" />
+          <Skeleton className="aspect-square w-full rounded-md" />
           <div className="space-y-4">
             <Skeleton className="h-8 w-3/4" />
             <div className="flex gap-2">
@@ -45,7 +45,7 @@ function SponsorDetailPage() {
 
   if (isError) {
     return (
-      <main className="max-w-4xl mx-auto px-4 py-12 text-center space-y-4">
+      <main className="mx-auto max-w-4xl space-y-4 px-4 py-12 text-center">
         <p className="text-xl text-[var(--color-text-muted)]">載入時發生問題，請稍後再試</p>
         <Link to="/sponsors" className="text-[var(--color-primary)] hover:underline">
           ← 返回助養區
@@ -56,7 +56,7 @@ function SponsorDetailPage() {
 
   if (!animal || animal.status !== "available") {
     return (
-      <main className="max-w-4xl mx-auto px-4 py-12 text-center space-y-4">
+      <main className="mx-auto max-w-4xl space-y-4 px-4 py-12 text-center">
         <p className="text-xl text-[var(--color-text-muted)]">此動物已完成助養</p>
         <Link to="/sponsors" className="text-[var(--color-primary)] hover:underline">
           ← 返回助養區

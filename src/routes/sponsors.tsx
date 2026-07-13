@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import { supabase } from "../lib/supabase";
 import { AnimalGrid } from "../components/site/AnimalGrid";
+import { BrandLogo } from "../components/site/BrandLogo";
 import { Skeleton } from "../components/ui/skeleton";
 import type { AgeFilter } from "../types/animal";
 
@@ -49,15 +50,19 @@ function SponsorsPage() {
   });
 
   return (
-    <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
-      <h1 className="font-display text-3xl font-bold">助養區</h1>
+    <main className="mx-auto max-w-6xl space-y-8 px-4 py-8">
+      <BrandLogo className="mb-4 h-16 w-16" eager />
+      <h1 className="font-display text-3xl font-bold">{"\u52a9\u990a"}</h1>
 
-      <div className="bg-[var(--color-surface-offset)] rounded-2xl p-6">
+      <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-6 shadow-soft">
         <h2 className="font-semibold mb-1">助養付款方式</h2>
         <p className="text-sm text-[var(--color-text-muted)] mb-4">每月助養 HK$100</p>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {paymentMethods.map((m) => (
-            <div key={m.label} className="bg-[var(--color-surface)] rounded-lg p-3 space-y-1">
+            <div
+              key={m.label}
+              className="space-y-1 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-3"
+            >
               <div className="text-xs font-semibold text-[var(--color-text-muted)]">{m.label}</div>
               <div className="text-sm">{m.value}</div>
             </div>
@@ -72,7 +77,7 @@ function SponsorsPage() {
       ) : isLoading ? (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="rounded-xl overflow-hidden border border-[var(--color-border)]">
+            <div key={i} className="overflow-hidden rounded-md border border-[var(--color-border)]">
               <Skeleton className="aspect-square w-full rounded-none" />
               <div className="p-3 space-y-2">
                 <Skeleton className="h-4 w-2/3" />

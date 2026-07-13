@@ -12,7 +12,13 @@ import { requiresStaffContact, searchHelpFaqs } from "../../../lib/help/search";
 import { ContactFallback } from "./ContactFallback";
 import { FaqResultCard } from "./FaqResultCard";
 
-const quickTopics: HelpCategory[] = ["sponsorship", "adoption", "tax_receipt", "donation", "contact"];
+const quickTopics: HelpCategory[] = [
+  "sponsorship",
+  "adoption",
+  "tax_receipt",
+  "donation",
+  "contact",
+];
 
 const popularFaqIds = [
   "sponsorship-start",
@@ -89,9 +95,9 @@ export function HelpSearch({
 
   const inputId = `${surface}-help-query`;
   const compactInputClass =
-    "min-w-0 flex-1 rounded-full border border-[var(--color-border)] bg-white px-4 py-2.5 text-sm focus:border-[var(--color-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]";
+    "min-h-11 min-w-0 flex-1 rounded-md border border-[var(--color-border)] bg-white px-4 py-2.5 text-sm focus:border-[var(--color-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]";
   const pageInputClass =
-    "min-w-0 flex-1 rounded-full border border-[var(--color-border)] bg-white px-4 py-3 text-base focus:border-[var(--color-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]";
+    "min-h-11 min-w-0 flex-1 rounded-md border border-[var(--color-border)] bg-white px-4 py-3 text-base focus:border-[var(--color-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]";
 
   return (
     <div className={compact ? "space-y-3" : "space-y-4"}>
@@ -101,7 +107,7 @@ export function HelpSearch({
             key={category}
             type="button"
             onClick={() => handleTopicClick(category)}
-            className="whitespace-nowrap rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1.5 text-xs font-bold text-[var(--color-panel)] transition-colors hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+            className="min-h-11 whitespace-nowrap rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1.5 text-xs font-bold text-[var(--color-panel)] transition-colors hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
           >
             {helpCategoryLabels[category][language]}
           </button>
@@ -131,8 +137,8 @@ export function HelpSearch({
         />
         <button
           type="submit"
-          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary)] text-white transition-colors hover:bg-[var(--color-primary-hover)]"
-          aria-label={language === "zh-HK" ? "搜尋" : "Search"}
+          className="btn-primary min-h-11 w-11 shrink-0 p-0"
+          aria-label={language === "zh-HK" ? "\u641c\u5c0b\u5e38\u898b\u554f\u984c" : "Search FAQs"}
         >
           <Search className="h-4 w-4" aria-hidden="true" />
         </button>
@@ -150,7 +156,9 @@ export function HelpSearch({
           </div>
         )}
 
-        {directResult && <FaqResultCard faq={directResult.faq} language={language} compact={compact} />}
+        {directResult && (
+          <FaqResultCard faq={directResult.faq} language={language} compact={compact} />
+        )}
 
         {showRelated && (
           <div className="space-y-3">
@@ -158,7 +166,12 @@ export function HelpSearch({
               {language === "zh-HK" ? "可能相關的答案" : "Related answers"}
             </p>
             {response.results.map((result) => (
-              <FaqResultCard key={result.faq.id} faq={result.faq} language={language} compact={compact} />
+              <FaqResultCard
+                key={result.faq.id}
+                faq={result.faq}
+                language={language}
+                compact={compact}
+              />
             ))}
           </div>
         )}

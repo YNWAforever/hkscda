@@ -17,7 +17,7 @@ export function StoryDetail({ content }: StoryDetailProps) {
   return (
     <main className="bg-[var(--color-surface)]">
       <article>
-        <section className="bg-topo px-4 py-8 sm:py-10">
+        <section className="bg-[var(--color-surface-offset)] px-4 py-8 sm:py-10">
           <div className="container-wide">
             <Link
               to="/stories"
@@ -57,10 +57,10 @@ export function StoryDetail({ content }: StoryDetailProps) {
                 <img
                   src={content.coverImageUrl}
                   alt={content.title}
-                  className="aspect-[4/3] w-full rounded-3xl border border-[var(--color-border)] object-cover shadow-soft"
+                  className="aspect-[4/3] w-full rounded-md border border-[var(--color-border)] object-cover shadow-soft"
                 />
               ) : (
-                <div className="flex aspect-[4/3] w-full items-center justify-center rounded-3xl border border-[var(--color-border)] bg-[var(--color-primary-highlight)] shadow-soft">
+                <div className="flex aspect-[4/3] w-full items-center justify-center rounded-md border border-[var(--color-border)] bg-[var(--color-primary-highlight)] shadow-soft">
                   <PlaceholderIcon
                     className="h-20 w-20 text-[var(--color-primary)] opacity-45"
                     strokeWidth={1.2}
@@ -76,7 +76,7 @@ export function StoryDetail({ content }: StoryDetailProps) {
           <div className="container-wide grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
             <div className="space-y-8">
               {content.body ? (
-                <div className="prose prose-neutral max-w-none rounded-3xl bg-[var(--color-surface-offset)] p-6 text-[var(--color-text)]">
+                <div className="prose prose-neutral max-w-none rounded-md bg-[var(--color-surface-offset)] p-6 text-[var(--color-text)]">
                   {content.body.split(/\n{2,}/).map((paragraph) => (
                     <p key={paragraph} className="leading-8">
                       {paragraph}
@@ -94,7 +94,7 @@ export function StoryDetail({ content }: StoryDetailProps) {
                     {gallery.map((media) => (
                       <figure
                         key={media.id}
-                        className="overflow-hidden rounded-2xl bg-[var(--color-surface-offset)]"
+                        className="overflow-hidden rounded-md bg-[var(--color-surface-offset)]"
                       >
                         <img
                           src={media.url}
@@ -118,12 +118,15 @@ export function StoryDetail({ content }: StoryDetailProps) {
                 </h2>
                 <div className="mt-4 space-y-3">
                   {publicUpdates.length === 0 ? (
-                    <p className="card-dashed bg-[var(--color-surface-offset)] p-5 text-sm text-[var(--color-text-muted)]">
+                    <p className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-5 text-sm text-[var(--color-text-muted)]">
                       暫時未有公開更新。
                     </p>
                   ) : (
                     publicUpdates.map((update) => (
-                      <div key={update.id} className="card-dashed bg-[var(--color-surface)] p-5">
+                      <div
+                        key={update.id}
+                        className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-5"
+                      >
                         <div className="text-xs font-bold text-[var(--color-primary)]">
                           {new Date(update.occurredAt).toLocaleDateString("zh-HK", {
                             dateStyle: "medium",
@@ -146,7 +149,7 @@ export function StoryDetail({ content }: StoryDetailProps) {
 
             <aside className="space-y-4">
               {profile ? (
-                <div className="card-dashed bg-[var(--color-surface-offset)] p-5">
+                <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-5">
                   <h2 className="font-display text-xl font-bold text-[var(--color-panel)]">
                     救援概況
                   </h2>
@@ -175,13 +178,13 @@ export function StoryDetail({ content }: StoryDetailProps) {
                 </div>
               ) : null}
 
-              <div className="rounded-3xl bg-[var(--color-panel)] p-5 text-white shadow-soft">
+              <div className="rounded-md bg-[var(--color-panel)] p-5 text-white shadow-soft">
                 <Heart className="h-6 w-6 text-[var(--color-accent-warm)]" aria-hidden="true" />
                 <h2 className="mt-3 font-display text-2xl font-bold">支持下一次救援</h2>
                 <p className="mt-2 text-sm leading-6 text-white/75">
                   你的捐助會用於醫療、暫托、糧食與日常照護，讓更多動物等到安全的一天。
                 </p>
-                <Link to="/donate" className="btn-cta mt-4 w-full text-sm!">
+                <Link to="/donate" className="btn-primary min-h-11 mt-4 w-full text-sm!">
                   立即捐助
                 </Link>
               </div>

@@ -62,7 +62,7 @@ function StoriesPage() {
     <main>
       {loadError ? (
         <div className="mx-auto max-w-3xl px-4 pt-8">
-          <p className="rounded-2xl bg-[var(--color-surface-offset)] p-4 text-sm text-[var(--color-text-muted)]">
+          <p className="rounded-md bg-[var(--color-surface-offset)] p-4 text-sm text-[var(--color-text-muted)]">
             {loadError}
           </p>
         </div>

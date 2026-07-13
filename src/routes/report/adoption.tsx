@@ -95,11 +95,11 @@ function AdoptionReportPage() {
         <div className="space-y-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-28 rounded-2xl" />
+              <Skeleton key={i} className="h-28 rounded-md" />
             ))}
           </div>
-          <Skeleton className="h-80 rounded-2xl" />
-          <Skeleton className="h-48 rounded-2xl" />
+          <Skeleton className="h-80 rounded-md" />
+          <Skeleton className="h-48 rounded-md" />
         </div>
       ) : (
         <>
@@ -114,13 +114,13 @@ function AdoptionReportPage() {
               value={String(totalCats)}
               label="貓咪獲領養"
               icon={Cat}
-              color="var(--color-cat)"
+              color="var(--color-chart-series-1)"
             />
             <StatCard
               value={String(totalDogs)}
               label="狗狗獲領養"
               icon={Dog}
-              color="var(--color-dog)"
+              color="var(--color-chart-series-2)"
             />
             <StatCard
               value={String(months.length)}
@@ -133,7 +133,7 @@ function AdoptionReportPage() {
           <AdoptionChart animals={animals} />
 
           {animals.length > 0 && (
-            <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6">
+            <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-md p-6">
               <h2 className="font-display text-lg font-bold mb-4">最近獲領養動物</h2>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">

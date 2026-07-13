@@ -61,5 +61,6 @@ describe("StoryWall", () => {
     expect(markup).toContain("小白康復中");
     expect(markup).toContain("醫療照護");
     expect(markup).toContain("灣仔");
+    expect(markup).not.toContain("card-dashed");
   });
 });
