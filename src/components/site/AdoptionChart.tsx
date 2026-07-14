@@ -48,8 +48,29 @@ interface AdoptionChartProps {
   animals: Animal[];
 }
 
-const CAT_COLOR = "var(--color-cat)";
-const DOG_COLOR = "var(--color-dog)";
+const CAT_COLOR = "var(--color-chart-series-1)";
+const DOG_COLOR = "var(--color-chart-series-2)";
+function AnimalChartLegend() {
+  const items = [
+    { label: "\u8c93", color: CAT_COLOR, Icon: Cat },
+    { label: "\u72d7", color: DOG_COLOR, Icon: Dog },
+  ];
+
+  return (
+    <div
+      className="flex flex-wrap justify-center gap-4 pt-2 text-sm text-[var(--color-text-muted)]"
+      aria-label="\u5716\u4f8b"
+      role="list"
+    >
+      {items.map(({ label, color, Icon }) => (
+        <div key={label} className="inline-flex items-center gap-2" role="listitem">
+          <Icon className="h-4 w-4" style={{ color }} aria-hidden="true" />
+          <span>{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export function AdoptionChart({ animals }: AdoptionChartProps) {
   const data = groupByMonth(animals);
@@ -70,10 +91,10 @@ export function AdoptionChart({ animals }: AdoptionChartProps) {
 
   return (
     <div className="space-y-10">
-      <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6">
+      <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-md p-6">
         <h2 className="font-display text-lg font-bold mb-4">每月領養趨勢（近12個月）</h2>
         <div className="sr-only">
-          過去12個月每月貓狗領養數據趨勢圖，貓以啡紅色標示，狗以藍色標示。
+          過去12個月每月貓狗領養數據趨勢圖，圖例以貓狗圖示及文字分辨類別。
         </div>
         <div className="h-72 lg:h-80">
           <ResponsiveContainer width="100%" height="100%">
@@ -88,7 +109,7 @@ export function AdoptionChart({ animals }: AdoptionChartProps) {
                   borderRadius: 12,
                 }}
               />
-              <Legend />
+              <Legend content={<AnimalChartLegend />} />
               <Bar dataKey="cats" name="貓" fill={CAT_COLOR} radius={[4, 4, 0, 0]} />
               <Bar dataKey="dogs" name="狗" fill={DOG_COLOR} radius={[4, 4, 0, 0]} />
             </BarChart>
@@ -97,7 +118,7 @@ export function AdoptionChart({ animals }: AdoptionChartProps) {
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6">
+        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-md p-6">
           <h2 className="font-display text-lg font-bold mb-4">貓狗領養比例</h2>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -127,7 +148,7 @@ export function AdoptionChart({ animals }: AdoptionChartProps) {
           </div>
         </div>
 
-        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 flex flex-col justify-center">
+        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-md p-6 flex flex-col justify-center">
           <div className="space-y-4">
             {pieData.map(({ name, value, color, icon: Icon }) => (
               <div key={name} className="flex items-center justify-between">

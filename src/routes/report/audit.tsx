@@ -12,8 +12,8 @@ const auditData = {
     breakdown: [
       { name: "公眾捐款", value: 1200000, color: "var(--color-primary)" },
       { name: "助養計劃", value: 350000, color: "var(--color-secondary)" },
-      { name: "企業贊助", value: 200000, color: "var(--color-cat)" },
-      { name: "其他收入", value: 100000, color: "var(--color-dog)" },
+      { name: "企業贊助", value: 200000, color: "var(--color-chart-series-1)" },
+      { name: "其他收入", value: 100000, color: "var(--color-chart-series-2)" },
     ],
   },
   expenditure: {
@@ -21,7 +21,7 @@ const auditData = {
     breakdown: [
       { name: "醫療及藥物", value: 680000, color: "var(--color-primary)" },
       { name: "糧食及物資", value: 420000, color: "var(--color-secondary)" },
-      { name: "營運及租金", value: 320000, color: "var(--color-dog)" },
+      { name: "營運及租金", value: 320000, color: "var(--color-chart-series-2)" },
       { name: "外展及教育", value: 130000, color: "var(--color-success)" },
       { name: "其他支出", value: 70000, color: "var(--color-warning)" },
     ],
@@ -86,7 +86,7 @@ function AuditReportPage() {
           value={`HK$${(surplus / 10000).toFixed(0)}萬`}
           label="盈餘"
           icon={Building}
-          color="var(--color-dog)"
+          color="var(--color-chart-series-2)"
         />
       </div>
 
@@ -103,21 +103,18 @@ function AuditReportPage() {
         totalLabel="總支出"
       />
 
-      <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 text-center space-y-4">
+      <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-md p-6 text-center space-y-4">
         <h2 className="font-display text-lg font-bold">完整核數報告</h2>
         <p className="text-sm text-[var(--color-text-muted)] max-w-[52ch] mx-auto">
           本會為政府認可慈善機構（91/14493）及稅務局 §88 免稅機構。 完整核數報告 PDF 可電郵
           info@hkscda.com 索取查閱。捐款 HK$100 以上可申請退稅收條。
         </p>
-        <Link
-          to="/donate"
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[var(--color-primary)] text-white font-bold text-sm hover:bg-[var(--color-primary-hover)] transition-colors"
-        >
+        <Link to="/donate" className="btn-primary min-h-11">
           申請退稅收條
         </Link>
       </div>
 
-      <div className="bg-[var(--color-surface-offset)] border border-[var(--color-border)] rounded-2xl p-6">
+      <div className="bg-[var(--color-surface-offset)] border border-[var(--color-border)] rounded-md p-6">
         <h2 className="font-display text-lg font-bold mb-4">鳴謝</h2>
         <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">
           感謝所有捐款者、企業贊助商及義工對本會的持續支持。

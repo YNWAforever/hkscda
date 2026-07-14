@@ -1,19 +1,19 @@
 import * as NavigationMenu from "@radix-ui/react-navigation-menu";
 import { Link } from "@tanstack/react-router";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import {
-  PawPrint,
-  Heart,
-  Menu,
-  X,
   ChevronDown,
-  Users,
-  Phone,
+  Facebook,
+  Heart,
+  Instagram,
   Mail,
   MapPin,
-  Facebook,
-  Instagram,
+  Menu,
+  Phone,
+  Users,
+  X,
 } from "lucide-react";
+import { BrandLogo } from "./BrandLogo";
 
 const aboutLinks = [
   { to: "/about", label: "協會簡介", desc: "了解我們的使命與歷史" },
@@ -36,222 +36,104 @@ const reportLinks = [
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const headerRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    let ticking = false;
-    function onScroll() {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          setScrolled(window.scrollY > 20);
-          ticking = false;
-        });
-        ticking = true;
-      }
-    }
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   return (
     <>
-      <style>{`
-        @keyframes navItemSlideIn {
-          from { opacity: 0; transform: translateY(4px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes mobileSlideDown {
-          from { opacity: 0; max-height: 0; }
-          to { opacity: 1; max-height: 800px; }
-        }
-        @keyframes shimmer {
-          0% { background-position: 200% 0; }
-          100% { background-position: -200% 0; }
-        }
-        .nav-item-enter { animation: navItemSlideIn 0.3s ease-out both; }
-        .mobile-enter { animation: mobileSlideDown 0.3s ease-out; overflow: hidden; }
-        .shimmer-surface {
-          background: linear-gradient(120deg, transparent 25%, rgba(255,255,255,0.15) 50%, transparent 75%);
-          background-size: 200% 100%;
-        }
-      `}</style>
-
-      {/* Top utility bar */}
-      <div className="bg-[var(--color-panel)] text-white/85 text-[12px]">
-        <div className="container-wide flex items-center justify-between gap-4 h-9">
-          <div className="flex items-center gap-5 min-w-0">
-            <a
-              href="tel:+85298641089"
-              className="hidden sm:flex items-center gap-1.5 hover:text-white transition-colors"
-            >
+      <div className="bg-[var(--color-panel)] text-[12px] text-white/85">
+        <div className="container-wide flex h-9 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+          <div className="flex min-w-0 items-center gap-5">
+            <a href="tel:+85298641089" className="hidden items-center gap-1.5 hover:text-white sm:flex">
               <Phone className="h-3 w-3" aria-hidden="true" /> 9864 1089
             </a>
-            <a
-              href="mailto:info@hkscda.com"
-              className="flex items-center gap-1.5 hover:text-white transition-colors truncate"
-            >
+            <a href="mailto:info@hkscda.com" className="flex min-w-0 items-center gap-1.5 truncate hover:text-white">
               <Mail className="h-3 w-3 shrink-0" aria-hidden="true" /> info@hkscda.com
             </a>
-            <span className="hidden lg:flex items-center gap-1.5 text-white/60">
+            <span className="hidden items-center gap-1.5 text-white/60 lg:flex">
               <MapPin className="h-3 w-3" aria-hidden="true" /> 香港 · 服務全港十八區
             </span>
           </div>
           <div className="flex items-center gap-1">
-            <a
-              href="https://www.facebook.com/HKSCDA"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Facebook"
-              className="h-9 w-9 -my-0 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors"
-            >
-              <Facebook className="h-3.5 w-3.5" />
+            <a href="https://www.facebook.com/HKSCDA" target="_blank" rel="noreferrer" aria-label="Facebook" className="flex h-9 w-9 items-center justify-center hover:bg-white/10">
+              <Facebook className="h-3.5 w-3.5" aria-hidden="true" />
             </a>
-            <a
-              href="https://www.instagram.com/hkscda/"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Instagram"
-              className="h-9 w-9 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors"
-            >
-              <Instagram className="h-3.5 w-3.5" />
+            <a href="https://www.instagram.com/hkscda/" target="_blank" rel="noreferrer" aria-label="Instagram" className="flex h-9 w-9 items-center justify-center hover:bg-white/10">
+              <Instagram className="h-3.5 w-3.5" aria-hidden="true" />
             </a>
           </div>
         </div>
       </div>
 
-      <header ref={headerRef} className="relative z-50 px-3 sm:px-6 pt-3 pointer-events-none">
-        <div
-          className={`container-wide pointer-events-auto rounded-full border transition-all duration-300 ${
-            scrolled
-              ? "border-[var(--color-border)] bg-[var(--color-surface)]/95 backdrop-blur-md shadow-soft"
-              : "border-[var(--color-divider)]/60 bg-[var(--color-surface)]/90 backdrop-blur-sm shadow-soft"
-          }`}
-        >
-          <div className="flex h-[64px] items-center gap-4 px-5 lg:px-7">
-            {/* Logo */}
-            <Link to="/" className="flex items-center gap-3 shrink-0 group">
-              <div className="relative flex h-[42px] w-[42px] items-center justify-center rounded-full bg-[var(--color-primary)] shadow-soft">
-                <PawPrint
-                  className="h-[22px] w-[22px] text-white transition-transform duration-300 group-hover:scale-110"
-                  strokeWidth={1.5}
-                />
-              </div>
-              <div className="flex flex-col leading-tight">
-                <span className="font-display text-[13px] font-bold text-[var(--color-primary)] tracking-tight">
-                  香港拯救貓狗協會
-                </span>
-                <span className="text-[10px] text-[var(--color-text-muted)] font-medium tracking-wide uppercase">
-                  HKSCDA · since 2007
-                </span>
-              </div>
-            </Link>
+      <header className="relative z-50 border-b border-[var(--color-divider)] bg-[var(--color-surface)]">
+        <div className="container-wide flex min-h-20 items-center gap-4 px-4 sm:px-6 lg:px-8">
+          <Link to="/" aria-label="香港拯救貓狗協會首頁" className="shrink-0">
+            <BrandLogo className="h-12 sm:h-14" eager />
+          </Link>
 
-            {/* Desktop nav */}
-            <NavigationMenu.Root className="ml-auto hidden lg:flex relative" delayDuration={100}>
-              <NavigationMenu.List className="flex items-center">
-                <NavLink to="/">主頁</NavLink>
+          <NavigationMenu.Root className="ml-auto hidden lg:flex" delayDuration={100}>
+            <NavigationMenu.List className="flex items-center gap-1">
+              <NavLink to="/">主頁</NavLink>
+              <NavDropdown trigger="關於協會" links={aboutLinks} />
+              <NavDropdown trigger="領養" links={adoptLinks} />
+              <NavLink to="/sponsors">助養區</NavLink>
+              <NavLink to="/stories">故事</NavLink>
+              <NavDropdown trigger="透明度" links={reportLinks} />
+              <NavigationMenu.Item>
+                <NavigationMenu.Link asChild>
+                  <Link to="/volunteer" className="inline-flex min-h-11 items-center gap-1.5 px-3 text-[13px] font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)]">
+                    <Users className="h-3.5 w-3.5" aria-hidden="true" /> 加入義工
+                  </Link>
+                </NavigationMenu.Link>
+              </NavigationMenu.Item>
+              <NavigationMenu.Item className="ml-2">
+                <NavigationMenu.Link asChild>
+                  <Link to="/animals/cat" className="btn-primary min-h-11 px-4 text-[13px]">查看待領養動物</Link>
+                </NavigationMenu.Link>
+              </NavigationMenu.Item>
+              <NavigationMenu.Item>
+                <NavigationMenu.Link asChild>
+                  <Link to="/donate" className="btn-secondary min-h-11 px-4 text-[13px]">
+                    <Heart className="h-4 w-4" fill="currentColor" aria-hidden="true" /> 立即捐助
+                  </Link>
+                </NavigationMenu.Link>
+              </NavigationMenu.Item>
+            </NavigationMenu.List>
+          </NavigationMenu.Root>
 
-                <NavDropdown trigger="關於協會" links={aboutLinks} />
-                <NavDropdown trigger="領養" links={adoptLinks} />
-
-                <NavLink to="/sponsors">助養區</NavLink>
-                <NavLink to="/stories">故事</NavLink>
-
-                <NavDropdown trigger="透明度" links={reportLinks} />
-
-                <NavigationMenu.Item>
-                  <NavigationMenu.Link asChild>
-                    <Link
-                      to="/volunteer"
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[13px] font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-highlight)]/70 transition-all duration-200"
-                    >
-                      <Users className="h-3.5 w-3.5" aria-hidden="true" /> 加入義工
-                    </Link>
-                  </NavigationMenu.Link>
-                </NavigationMenu.Item>
-
-                <NavigationMenu.Item className="ml-3">
-                  <NavigationMenu.Link asChild>
-                    <Link
-                      to="/donate"
-                      className="btn-cta group/donate relative overflow-hidden px-5! py-2.5! text-[13px]!"
-                    >
-                      <span className="shimmer-surface absolute inset-0 animate-[shimmer_3s_ease-in-out_infinite] pointer-events-none" />
-                      <Heart
-                        className="relative h-4 w-4 transition-transform duration-300 group-hover/donate:scale-110"
-                        fill="currentColor"
-                        aria-hidden="true"
-                      />{" "}
-                      立即捐助
-                    </Link>
-                  </NavigationMenu.Link>
-                </NavigationMenu.Item>
-              </NavigationMenu.List>
-            </NavigationMenu.Root>
-
-            {/* Mobile hamburger */}
-            <button
-              aria-label={mobileOpen ? "關閉選單" : "開啟選單"}
-              aria-expanded={mobileOpen}
-              aria-controls="mobile-nav"
-              onClick={() => setMobileOpen(!mobileOpen)}
-              className="ml-auto lg:hidden relative h-11 w-11 flex items-center justify-center rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-offset)] hover:border-[var(--color-primary)]/30 transition-all duration-200"
-            >
-              <span
-                className={`absolute transition-all duration-300 ${mobileOpen ? "opacity-0 rotate-90 scale-50" : "opacity-100 rotate-0 scale-100"}`}
-              >
-                <Menu className="h-5 w-5" />
-              </span>
-              <span
-                className={`absolute transition-all duration-300 ${mobileOpen ? "opacity-100 rotate-0 scale-100" : "opacity-0 -rotate-90 scale-50"}`}
-              >
-                <X className="h-5 w-5" />
-              </span>
-            </button>
-          </div>
+          <button
+            type="button"
+            aria-label={mobileOpen ? "關閉選單" : "開啟選單"}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-nav"
+            onClick={() => setMobileOpen((open) => !open)}
+            className="ml-auto flex h-11 w-11 items-center justify-center border border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-primary)] hover:bg-[var(--color-surface-offset)] lg:hidden"
+          >
+            {mobileOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
+          </button>
         </div>
 
-        {/* Mobile menu */}
-        {mobileOpen && (
-          <nav
-            id="mobile-nav"
-            aria-label="主選單"
-            className="lg:hidden mobile-enter pointer-events-auto container-wide mt-2 rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-panel"
-          >
-            <div className="px-5 py-5 space-y-1 max-h-[calc(100vh-80px)] overflow-y-auto">
-              <MobileSheetLink to="/" setOpen={setMobileOpen}>
-                主頁
-              </MobileSheetLink>
-
+        {mobileOpen ? (
+          <nav id="mobile-nav" aria-label="主選單" className="border-t border-[var(--color-divider)] bg-[var(--color-surface)] lg:hidden">
+            <div className="container-wide max-h-[calc(100vh-80px)] space-y-1 overflow-y-auto px-4 py-5 sm:px-6">
+              <MobileSheetLink to="/" setOpen={setMobileOpen}>主頁</MobileSheetLink>
               <MobileSheetSection title="關於協會" links={aboutLinks} setOpen={setMobileOpen} />
               <MobileSheetSection title="領養" links={adoptLinks} setOpen={setMobileOpen} />
-
-              <MobileSheetLink to="/sponsors" setOpen={setMobileOpen}>
-                助養區
-              </MobileSheetLink>
-              <MobileSheetLink to="/stories" setOpen={setMobileOpen}>
-                故事
-              </MobileSheetLink>
-
+              <MobileSheetLink to="/sponsors" setOpen={setMobileOpen}>助養區</MobileSheetLink>
+              <MobileSheetLink to="/stories" setOpen={setMobileOpen}>故事</MobileSheetLink>
               <MobileSheetSection title="透明度" links={reportLinks} setOpen={setMobileOpen} />
-
               <MobileSheetLink to="/volunteer" setOpen={setMobileOpen}>
                 <Users className="h-4 w-4" aria-hidden="true" /> 加入義工
               </MobileSheetLink>
-
-              <div className="pt-3">
-                <Link
-                  to="/donate"
-                  onClick={() => setMobileOpen(false)}
-                  className="btn-cta w-full text-[15px]!"
-                >
+              <div className="grid gap-2 pt-3 sm:grid-cols-2">
+                <Link to="/animals/cat" onClick={() => setMobileOpen(false)} className="btn-primary min-h-11 w-full">
+                  查看待領養動物
+                </Link>
+                <Link to="/donate" onClick={() => setMobileOpen(false)} className="btn-secondary min-h-11 w-full">
                   <Heart className="h-4 w-4" fill="currentColor" aria-hidden="true" /> 立即捐助
                 </Link>
               </div>
             </div>
           </nav>
-        )}
+        ) : null}
       </header>
     </>
   );
@@ -261,12 +143,8 @@ function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
   return (
     <NavigationMenu.Item>
       <NavigationMenu.Link asChild>
-        <Link
-          to={to}
-          className="relative px-3.5 py-2 rounded-lg text-[13px] font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors duration-200 group/nav"
-        >
+        <Link to={to} className="inline-flex min-h-11 items-center px-3 text-[13px] font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)]">
           {children}
-          <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-0 rounded-full bg-[var(--color-primary)] transition-all duration-[400ms] ease-[ease] group-hover/nav:w-4/5" />
         </Link>
       </NavigationMenu.Link>
     </NavigationMenu.Item>
@@ -282,23 +160,16 @@ function NavDropdown({
 }) {
   return (
     <NavigationMenu.Item>
-      <NavigationMenu.Trigger className="group/trigger relative px-3.5 py-2 rounded-lg text-[13px] font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors duration-200 flex items-center gap-1 select-none">
-        {trigger}{" "}
-        <ChevronDown className="h-3 w-3 opacity-50 transition-transform duration-200 group-data-[state=open]/trigger:rotate-180" />
-        <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-0 rounded-full bg-[var(--color-primary)] transition-all duration-300 group-hover/trigger:w-4/5" />
+      <NavigationMenu.Trigger className="group/trigger inline-flex min-h-11 items-center gap-1 px-3 text-[13px] font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)]">
+        {trigger}
+        <ChevronDown className="h-3 w-3 opacity-50 transition-transform group-data-[state=open]/trigger:rotate-180" aria-hidden="true" />
       </NavigationMenu.Trigger>
-      <NavigationMenu.Content className="absolute top-full left-0 mt-2 w-[260px] bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl shadow-soft p-2 z-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 duration-200">
-        {links.map((link, i) => (
+      <NavigationMenu.Content className="absolute left-0 top-full z-50 mt-2 w-[260px] border border-[var(--color-border)] bg-[var(--color-surface)] p-2 shadow-soft">
+        {links.map((link) => (
           <NavigationMenu.Link key={link.to} asChild>
-            <Link
-              to={link.to}
-              className="block px-4 py-3 rounded-xl hover:bg-[var(--color-primary-highlight)]/50 transition-colors duration-150 nav-item-enter"
-              style={{ animationDelay: `${i * 40}ms` }}
-            >
+            <Link to={link.to} className="block min-h-11 px-4 py-3 hover:bg-[var(--color-primary-highlight)]">
               <div className="text-[13px] font-bold text-[var(--color-text)]">{link.label}</div>
-              <div className="text-[11px] text-[var(--color-text-muted)] mt-0.5 leading-tight">
-                {link.desc}
-              </div>
+              <div className="mt-0.5 text-[11px] leading-tight text-[var(--color-text-muted)]">{link.desc}</div>
             </Link>
           </NavigationMenu.Link>
         ))}
@@ -314,23 +185,16 @@ function MobileSheetSection({
 }: {
   title: string;
   links: { to: string; label: string; desc: string }[];
-  setOpen: (v: boolean) => void;
+  setOpen: (value: boolean) => void;
 }) {
   return (
     <>
-      <div className="px-4 pt-5 pb-2 text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-[0.12em]">
-        {title}
-      </div>
+      <div className="px-4 pb-2 pt-4 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--color-text-muted)]">{title}</div>
       {links.map((link) => (
-        <Link
-          key={link.to}
-          to={link.to}
-          onClick={() => setOpen(false)}
-          className="flex items-start gap-3 px-4 py-3 rounded-xl hover:bg-[var(--color-primary-highlight)]/40 transition-colors duration-150"
-        >
-          <div className="flex-1 min-w-0">
+        <Link key={link.to} to={link.to} onClick={() => setOpen(false)} className="flex min-h-11 items-start gap-3 px-4 py-3 hover:bg-[var(--color-primary-highlight)]">
+          <div className="min-w-0 flex-1">
             <div className="text-[15px] font-medium text-[var(--color-text)]">{link.label}</div>
-            <div className="text-[12px] text-[var(--color-text-muted)] mt-0.5">{link.desc}</div>
+            <div className="mt-0.5 text-[12px] text-[var(--color-text-muted)]">{link.desc}</div>
           </div>
         </Link>
       ))}
@@ -344,15 +208,11 @@ function MobileSheetLink({
   children,
 }: {
   to: string;
-  setOpen: (v: boolean) => void;
+  setOpen: (value: boolean) => void;
   children: React.ReactNode;
 }) {
   return (
-    <Link
-      to={to}
-      onClick={() => setOpen(false)}
-      className="flex items-center gap-2.5 px-4 py-3.5 rounded-xl text-[15px] font-medium text-[var(--color-text)] hover:bg-[var(--color-primary-highlight)]/40 transition-colors duration-150"
-    >
+    <Link to={to} onClick={() => setOpen(false)} className="flex min-h-11 items-center gap-2.5 px-4 py-3 text-[15px] font-medium text-[var(--color-text)] hover:bg-[var(--color-primary-highlight)]">
       {children}
     </Link>
   );

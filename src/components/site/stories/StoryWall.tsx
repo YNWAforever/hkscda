@@ -65,13 +65,13 @@ export function StoryWall({ stories }: StoryWallProps) {
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-2 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-2">
+          <div className="flex flex-wrap gap-2 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-2">
             <Filter className="mt-2 h-4 w-4 text-[var(--color-primary)]" aria-hidden="true" />
             <select
               aria-label="動物類型"
               value={animalType}
               onChange={(event) => setAnimalType(event.target.value as AnimalStoryType | "all")}
-              className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)]"
+              className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)]"
             >
               {animalFilters.map((filter) => (
                 <option key={filter.value} value={filter.value}>
@@ -85,7 +85,7 @@ export function StoryWall({ stories }: StoryWallProps) {
               onChange={(event) =>
                 setPublicStatus(event.target.value as RescuePublicStatus | "all")
               }
-              className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)]"
+              className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)]"
             >
               {statusFilters.map((filter) => (
                 <option key={filter.value} value={filter.value}>
@@ -97,7 +97,7 @@ export function StoryWall({ stories }: StoryWallProps) {
               aria-label="救援區域"
               value={rescueRegion}
               onChange={(event) => setRescueRegion(event.target.value)}
-              className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)]"
+              className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)]"
             >
               <option value="all">全部地區</option>
               {regions.map((region) => (
@@ -110,7 +110,7 @@ export function StoryWall({ stories }: StoryWallProps) {
         </div>
 
         {filteredStories.length === 0 ? (
-          <div className="card-dashed bg-[var(--color-surface-offset)] p-8 text-center text-sm text-[var(--color-text-muted)]">
+          <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-8 text-center text-sm text-[var(--color-text-muted)]">
             暫時未有符合篩選的公開救援故事。
           </div>
         ) : (
@@ -131,7 +131,7 @@ function StoryCard({ story }: { story: ContentSummary }) {
   const PlaceholderIcon = profile.animalType === "dog" ? Dog : Cat;
 
   return (
-    <article className="card-dashed flex h-full flex-col overflow-hidden bg-[var(--color-surface)] transition hover:shadow-md">
+    <article className="rounded-md border border-[var(--color-border)] flex h-full flex-col overflow-hidden bg-[var(--color-surface)] transition hover:shadow-md">
       <Link to="/stories/$slug" params={{ slug: story.slug }} className="block">
         {story.coverImageUrl ? (
           <img
@@ -151,7 +151,7 @@ function StoryCard({ story }: { story: ContentSummary }) {
       </Link>
       <div className="flex flex-1 flex-col gap-3 p-5">
         <div className="flex flex-wrap gap-2">
-          <span className="rounded-full bg-[var(--color-accent-warm)] px-3 py-1 text-xs font-bold text-white">
+          <span className="rounded-full bg-[var(--color-secondary)] px-3 py-1 text-xs font-bold text-white">
             {publicStatusLabel(profile.publicStatus)}
           </span>
           <span className="inline-flex items-center gap-1 rounded-full bg-[var(--color-surface-offset)] px-3 py-1 text-xs font-bold text-[var(--color-text-muted)]">
@@ -173,7 +173,7 @@ function StoryCard({ story }: { story: ContentSummary }) {
           {story.summary}
         </p>
         {story.latestPublicUpdate ? (
-          <p className="mt-auto rounded-xl bg-[var(--color-surface-offset)] px-3 py-2 text-xs font-medium text-[var(--color-text-muted)]">
+          <p className="mt-auto rounded-md bg-[var(--color-surface-offset)] px-3 py-2 text-xs font-medium text-[var(--color-text-muted)]">
             最新：{story.latestPublicUpdate.title}
           </p>
         ) : null}

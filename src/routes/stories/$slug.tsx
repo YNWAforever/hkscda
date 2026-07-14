@@ -43,7 +43,7 @@ function StoryDetailPage() {
   if (loadError) {
     return (
       <main className="mx-auto max-w-3xl px-4 py-12">
-        <p className="rounded-2xl bg-[var(--color-surface-offset)] p-5 text-sm text-[var(--color-text-muted)]">
+        <p className="rounded-md bg-[var(--color-surface-offset)] p-5 text-sm text-[var(--color-text-muted)]">
           {loadError}
         </p>
       </main>
@@ -53,7 +53,7 @@ function StoryDetailPage() {
   if (!content) {
     return (
       <main className="mx-auto max-w-3xl px-4 py-12">
-        <p className="rounded-2xl bg-[var(--color-surface-offset)] p-5 text-sm text-[var(--color-text-muted)]">
+        <p className="rounded-md bg-[var(--color-surface-offset)] p-5 text-sm text-[var(--color-text-muted)]">
           載入故事中...
         </p>
       </main>

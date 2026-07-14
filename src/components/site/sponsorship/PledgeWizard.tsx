@@ -205,7 +205,7 @@ export function PledgeWizard() {
   if (sponsorshipItems.length === 0 && !result) {
     return (
       <main className="max-w-2xl mx-auto px-4 py-16 text-center space-y-4">
-        <p className="text-[var(--color-text-muted)]">{t.empty}</p>
+        <h1 className="font-display text-2xl font-bold text-[var(--color-panel)]">{t.empty}</h1>
         <Link to="/sponsors" className="text-[var(--color-primary)] hover:underline">
           ← {t.backToSponsors}
         </Link>
@@ -230,7 +230,10 @@ export function PledgeWizard() {
 
   return (
     <main className="max-w-2xl mx-auto px-4 py-8">
-      <form onSubmit={handleSubmit} className="card-dashed bg-[var(--color-surface)] p-5 space-y-6">
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-6 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-soft"
+      >
         <div className="flex justify-end">
           <div className="inline-flex rounded-full border border-[var(--color-border)] p-1 text-xs font-bold">
             {(["zh-HK", "en"] as const).map((lang) => (
@@ -280,11 +283,15 @@ export function PledgeWizard() {
           </div>
           {monthlyTier === "custom" && (
             <input
+              id="pledge-custom-amount"
+              aria-invalid={false}
+              aria-describedby={undefined}
+              aria-label={t.customAmount}
               type="number"
               min="10"
               value={customAmount}
               onChange={(event) => setCustomAmount(event.target.value)}
-              className="w-full rounded-xl border border-[var(--color-border)] px-4 py-3 text-sm"
+              className="min-h-11 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm"
               placeholder="HK$"
             />
           )}
@@ -298,10 +305,13 @@ export function PledgeWizard() {
               {t.name}
             </span>
             <input
+              id="pledge-supporter-name"
+              aria-invalid={false}
+              aria-describedby={undefined}
               required
               value={supporterName}
               onChange={(event) => setSupporterName(event.target.value)}
-              className="w-full rounded-xl border border-[var(--color-border)] px-4 py-3 text-sm"
+              className="min-h-11 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm"
             />
           </label>
           <label className="block">
@@ -309,11 +319,14 @@ export function PledgeWizard() {
               {t.email}
             </span>
             <input
+              id="pledge-email"
+              aria-invalid={false}
+              aria-describedby={undefined}
               required
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="w-full rounded-xl border border-[var(--color-border)] px-4 py-3 text-sm"
+              className="min-h-11 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm"
             />
           </label>
           <label className="block sm:col-span-2">
@@ -321,9 +334,12 @@ export function PledgeWizard() {
               {t.phone}
             </span>
             <input
+              id="pledge-phone"
+              aria-invalid={false}
+              aria-describedby={undefined}
               value={phone}
               onChange={(event) => setPhone(event.target.value)}
-              className="w-full rounded-xl border border-[var(--color-border)] px-4 py-3 text-sm"
+              className="min-h-11 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm"
             />
           </label>
         </fieldset>
@@ -332,6 +348,9 @@ export function PledgeWizard() {
           <legend className="text-sm font-bold">{t.proofTitle}</legend>
           <label className="flex items-center gap-2 text-sm">
             <input
+              id="pledge-include-proof"
+              aria-invalid={false}
+              aria-describedby={undefined}
               type="checkbox"
               checked={includeProof}
               onChange={(event) => setIncludeProof(event.target.checked)}
@@ -346,9 +365,12 @@ export function PledgeWizard() {
                   {t.method}
                 </span>
                 <select
+                  id="pledge-proof-method"
+                  aria-invalid={false}
+                  aria-describedby={undefined}
                   value={proofMethod}
                   onChange={(event) => setProofMethod(event.target.value as PaymentMethod)}
-                  className="w-full rounded-xl border border-[var(--color-border)] px-4 py-3 text-sm"
+                  className="min-h-11 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm"
                 >
                   {paymentMethods.map((m) => (
                     <option key={m.value} value={m.value}>
@@ -362,9 +384,12 @@ export function PledgeWizard() {
                   {t.reference}
                 </span>
                 <input
+                  id="pledge-proof-reference"
+                  aria-invalid={false}
+                  aria-describedby={undefined}
                   value={proofReference}
                   onChange={(event) => setProofReference(event.target.value)}
-                  className="w-full rounded-xl border border-[var(--color-border)] px-4 py-3 text-sm"
+                  className="min-h-11 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm"
                 />
               </label>
               <label className="block">
@@ -372,11 +397,14 @@ export function PledgeWizard() {
                   {t.amount}
                 </span>
                 <input
+                  id="pledge-proof-amount"
+                  aria-invalid={false}
+                  aria-describedby={undefined}
                   type="number"
                   min="1"
                   value={proofAmount}
                   onChange={(event) => setProofAmount(event.target.value)}
-                  className="w-full rounded-xl border border-[var(--color-border)] px-4 py-3 text-sm"
+                  className="min-h-11 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm"
                 />
               </label>
               <label className="block">
@@ -384,10 +412,13 @@ export function PledgeWizard() {
                   {t.date}
                 </span>
                 <input
+                  id="pledge-proof-date"
+                  aria-invalid={false}
+                  aria-describedby={undefined}
                   type="date"
                   value={proofDate}
                   onChange={(event) => setProofDate(event.target.value)}
-                  className="w-full rounded-xl border border-[var(--color-border)] px-4 py-3 text-sm"
+                  className="min-h-11 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm"
                 />
               </label>
               <label className="block sm:col-span-2">
@@ -395,6 +426,9 @@ export function PledgeWizard() {
                   Proof image / PDF
                 </span>
                 <input
+                  id="pledge-proof-file"
+                  aria-invalid={false}
+                  aria-describedby={undefined}
                   type="file"
                   accept="image/jpeg,image/png,image/webp,application/pdf"
                   onChange={(event) => setProofFile(event.target.files?.[0] ?? null)}
@@ -410,16 +444,23 @@ export function PledgeWizard() {
             {t.notes}
           </span>
           <textarea
+            id="pledge-notes"
+            aria-invalid={false}
+            aria-describedby={undefined}
             value={notes}
             onChange={(event) => setNotes(event.target.value)}
-            className="w-full rounded-xl border border-[var(--color-border)] px-4 py-3 text-sm"
+            className="min-h-11 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm"
             rows={2}
           />
         </label>
 
-        <div className="space-y-3 rounded-2xl bg-[var(--color-surface-offset)] p-4">
+        <fieldset className="space-y-3 rounded-md bg-[var(--color-surface-offset)] p-4">
+          <legend className="text-sm font-bold">Consent and terms</legend>
           <label className="flex items-start gap-3 text-sm">
             <input
+              id="pledge-email-consent"
+              aria-invalid={false}
+              aria-describedby={undefined}
               type="checkbox"
               checked={emailConsent}
               onChange={(event) => setEmailConsent(event.target.checked)}
@@ -429,6 +470,9 @@ export function PledgeWizard() {
           </label>
           <label className="flex items-start gap-3 text-sm">
             <input
+              id="pledge-whatsapp-consent"
+              aria-invalid={false}
+              aria-describedby={undefined}
               type="checkbox"
               checked={whatsappConsent}
               onChange={(event) => setWhatsappConsent(event.target.checked)}
@@ -438,6 +482,9 @@ export function PledgeWizard() {
           </label>
           <label className="flex items-start gap-3 text-sm">
             <input
+              id="pledge-terms"
+              aria-invalid={false}
+              aria-describedby={undefined}
               required
               type="checkbox"
               checked={termsAgreed}
@@ -446,7 +493,7 @@ export function PledgeWizard() {
             />
             <span>{language === "zh-HK" ? "我同意條款及細則" : "I agree to the terms"}</span>
           </label>
-        </div>
+        </fieldset>
 
         <TurnstileWidget
           onVerify={setTurnstileToken}
@@ -463,7 +510,7 @@ export function PledgeWizard() {
         <button
           type="submit"
           disabled={loading || !termsAgreed || (turnstileEnabled && !turnstileToken)}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[var(--color-primary)] px-6 py-4 text-sm font-extrabold text-white disabled:opacity-60"
+          className="btn-primary w-full disabled:opacity-60"
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}
           {loading ? t.processing : t.submit}

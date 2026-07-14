@@ -3,13 +3,7 @@ import { Mail, Smartphone } from "lucide-react";
 import { trackHelpEvent } from "../../../lib/help/analytics";
 import type { HelpLanguage } from "../../../lib/help/faq";
 
-export function ContactFallback({
-  language,
-  query,
-}: {
-  language: HelpLanguage;
-  query?: string;
-}) {
+export function ContactFallback({ language, query }: { language: HelpLanguage; query?: string }) {
   function trackFallback() {
     trackHelpEvent("help_contact_fallback", {
       language,
@@ -31,7 +25,7 @@ export function ContactFallback({
         <a
           href="tel:+85298641089"
           onClick={trackFallback}
-          className="inline-flex whitespace-nowrap items-center gap-2 rounded-full bg-[var(--color-panel)] px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-[var(--color-panel)]/90"
+          className="btn-primary min-h-11 whitespace-nowrap bg-[var(--color-panel)] text-xs hover:bg-[var(--color-panel)]/90"
         >
           <Smartphone className="h-3.5 w-3.5" aria-hidden="true" />
           9864 1089
@@ -39,7 +33,7 @@ export function ContactFallback({
         <a
           href="mailto:info@hkscda.com"
           onClick={trackFallback}
-          className="inline-flex whitespace-nowrap items-center gap-2 rounded-full border border-[var(--color-border)] bg-white px-4 py-2 text-xs font-bold text-[var(--color-panel)] transition-colors hover:bg-[var(--color-surface-offset)]"
+          className="btn-secondary min-h-11 whitespace-nowrap bg-white text-xs hover:bg-[var(--color-surface-offset)]"
         >
           <Mail className="h-3.5 w-3.5" aria-hidden="true" />
           info@hkscda.com
@@ -48,4 +42,3 @@ export function ContactFallback({
     </section>
   );
 }
-

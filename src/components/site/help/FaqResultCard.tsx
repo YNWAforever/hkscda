@@ -16,8 +16,7 @@ export function FaqResultCard({
   const cta = text.cta;
   const shouldClampAnswer = compact && !faq.sensitive;
 
-  const ctaClassName =
-    "inline-flex whitespace-nowrap items-center justify-center gap-2 rounded-full bg-[var(--color-primary)] px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-[var(--color-primary-hover)]";
+  const ctaClassName = "btn-primary min-h-11 max-w-full whitespace-normal text-center text-xs";
 
   function handleCtaClick() {
     trackHelpEvent("help_cta_click", {
@@ -28,7 +27,7 @@ export function FaqResultCard({
   }
 
   return (
-    <article className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-sm">
+    <article className="min-w-0 max-w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-sm">
       <div className="mb-2 flex flex-wrap items-center gap-2">
         <span className="rounded-full bg-[var(--color-primary-highlight)] px-2.5 py-1 text-[11px] font-bold text-[var(--color-primary)]">
           {text.categoryLabel}

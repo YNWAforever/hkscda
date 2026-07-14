@@ -7,13 +7,15 @@
     "dev": "vite dev",
     "build": "vite build",
     "build:dev": "vite build --mode development",
-    "preview": "vite preview",
+    "preview": "nitro preview",
     "test": "bun test",
     "lint": "eslint src eslint.config.js vite.config.ts",
     "format": "prettier --write .",
     "scrape:hkscda": "node scripts/scrape-hkscda-animals.js",
     "import:hkscda": "node scripts/import-hkscda-animals.js",
-    "seed:admin": "node scripts/seed-admin.js"
+    "seed:admin": "node scripts/seed-admin.js",
+    "verify:brand": "node scripts/verify-public-brand.mjs",
+    "verify:brand:install": "playwright install chromium"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

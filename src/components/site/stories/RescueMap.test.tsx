@@ -50,6 +50,7 @@ describe("RescueMap", () => {
 
     expect(markup).toContain('data-google-rescue-map="canvas"');
     expect(markup).toContain('aria-label="Hong Kong rescue locations"');
+    expect(markup).not.toContain("card-dashed");
     expect(markup).not.toContain("test-key");
     expect(markup).not.toContain("internalAddress");
     expect(markup).not.toContain("internalLocationNotes");

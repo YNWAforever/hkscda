@@ -18,8 +18,7 @@ export const Route = createFileRoute("/help")({
       { title: "常見問題與客服 | HKSCDA" },
       {
         name: "description",
-        content:
-          "HKSCDA 常見問題中心，解答助養、領養、捐款、報稅收據及聯絡職員問題。",
+        content: "HKSCDA 常見問題中心，解答助養、領養、捐款、報稅收據及聯絡職員問題。",
       },
     ],
     links: [{ rel: "canonical", href: "https://hkscda.com/help" }],
@@ -43,14 +42,11 @@ const pageCopy = {
       "搜尋助養、領養、捐款、報稅收據和聯絡方法。涉及個人資料、付款或申請狀態時，請直接聯絡職員。",
     summary: (count: number) => `${count} 條已審批答案`,
     searchTitle: "搜尋答案",
-    searchBody:
-      "輸入關鍵字尋找固定答案。涉及個人資料、付款、收據或申請狀態時，請直接聯絡職員。",
+    searchBody: "輸入關鍵字尋找固定答案。涉及個人資料、付款、收據或申請狀態時，請直接聯絡職員。",
     categoriesTitle: "常見主題",
-    categoriesBody:
-      "這些主題整理了訪客最常問的問題，方便你快速找到正確方向。",
+    categoriesBody: "這些主題整理了訪客最常問的問題，方便你快速找到正確方向。",
     contactTitle: "需要職員協助？",
-    contactBody:
-      "如問題涉及個人個案、付款狀態、收據、申請進度或需要人手處理，請直接聯絡職員。",
+    contactBody: "如問題涉及個人個案、付款狀態、收據、申請進度或需要人手處理，請直接聯絡職員。",
     whatsappLabel: "WhatsApp",
     emailLabel: "電郵",
     whatsappNote: "9864 1089",
@@ -118,17 +114,13 @@ export function HelpFaqDirectory({ language }: { language: HelpLanguage }) {
   const copy = pageCopy[language];
 
   return (
-    <div className="space-y-8">
+    <div className="min-w-0 space-y-8">
       {categories.map((category) => {
         const faqs = getFaqsByCategory(category);
         const label = helpCategoryLabels[category][language];
 
         return (
-          <section
-            key={category}
-            className="space-y-4"
-            aria-labelledby={`help-topic-${category}`}
-          >
+          <section key={category} className="space-y-4" aria-labelledby={`help-topic-${category}`}>
             <div className="flex flex-wrap items-start justify-between gap-3 border-b border-[var(--color-border)] pb-3">
               <div className="space-y-1">
                 <p className="text-xs font-bold uppercase tracking-wide text-[var(--color-text-muted)]">
@@ -166,10 +158,7 @@ function HelpPage() {
   const copy = pageCopy[language];
 
   return (
-    <main
-      className="bg-[var(--color-background)]"
-      lang={language === "en" ? "en" : "zh-Hant-HK"}
-    >
+    <main className="bg-[var(--color-background)]" lang={language === "en" ? "en" : "zh-Hant-HK"}>
       <section className="border-b border-[var(--color-border)] bg-[var(--color-surface-offset)]">
         <div className="container-wide py-10 lg:py-14">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
@@ -212,9 +201,9 @@ function HelpPage() {
         </div>
       </section>
 
-      <section className="px-6 py-10 lg:py-14">
-        <div className="container-wide grid gap-8 lg:grid-cols-[minmax(0,1fr)_18rem]">
-          <div className="space-y-8">
+      <section className="py-10 lg:py-14">
+        <div className="container-wide grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_18rem]">
+          <div className="min-w-0 space-y-8">
             <section
               id="search"
               className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-sm lg:p-6"
@@ -243,11 +232,7 @@ function HelpPage() {
               <HelpSearch language={language} surface="page" />
             </section>
 
-            <section
-              id="topics"
-              className="space-y-4"
-              aria-labelledby="help-topics-heading"
-            >
+            <section id="topics" className="space-y-4" aria-labelledby="help-topics-heading">
               <div className="space-y-1">
                 <h2
                   id="help-topics-heading"
@@ -270,10 +255,7 @@ function HelpPage() {
             aria-labelledby="help-contact-heading"
           >
             <div className="space-y-3">
-              <h2
-                id="help-contact-heading"
-                className="font-display text-xl font-bold"
-              >
+              <h2 id="help-contact-heading" className="font-display text-xl font-bold">
                 {copy.contactTitle}
               </h2>
               <p className="text-sm leading-6 text-white/75">{copy.contactBody}</p>
@@ -302,7 +284,7 @@ function HelpPage() {
                 <Mail className="h-4 w-4 shrink-0" aria-hidden="true" />
                 <span className="min-w-0 flex-1">
                   <span className="block">{copy.emailLabel}</span>
-                  <span className="block text-xs font-medium text-white/70">
+                  <span className="block break-all text-xs font-medium text-white/70">
                     {copy.emailNote}
                   </span>
                 </span>
