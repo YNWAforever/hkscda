@@ -51,6 +51,22 @@ interface AdminCopy {
     submit: string;
     loading: string;
     error: string;
+    forgotPassword: string;
+    resetTitle: string;
+    resetInstructions: string;
+    sendResetLink: string;
+    sendingResetLink: string;
+    resetSent: string;
+    backToLogin: string;
+    resetError: string;
+    newPassword: string;
+    confirmPassword: string;
+    updatePassword: string;
+    updatingPassword: string;
+    passwordTooShort: string;
+    passwordMismatch: string;
+    invalidRecoveryLink: string;
+    passwordUpdated: string;
   };
   dashboard: {
     title: Record<AdminSection, string>;
@@ -180,6 +196,22 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       submit: "登入",
       loading: "登入中...",
       error: "電郵或密碼錯誤",
+      forgotPassword: "忘記密碼？",
+      resetTitle: "重設密碼",
+      resetInstructions: "輸入管理員帳戶的電郵，我們會發送重設連結。",
+      sendResetLink: "發送重設連結",
+      sendingResetLink: "正在發送...",
+      resetSent: "如該電郵已登記，你將會收到重設密碼連結。",
+      backToLogin: "返回登入",
+      resetError: "暫時未能發送重設連結，請稍後再試。",
+      newPassword: "新密碼",
+      confirmPassword: "確認新密碼",
+      updatePassword: "更新密碼",
+      updatingPassword: "正在更新...",
+      passwordTooShort: "密碼至少需要 8 個字元。",
+      passwordMismatch: "兩次輸入的密碼不相符。",
+      invalidRecoveryLink: "重設連結無效或已過期，請重新申請。",
+      passwordUpdated: "密碼已更新，請使用新密碼登入。",
     },
     dashboard: {
       title: {
@@ -333,6 +365,22 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       submit: "Sign in",
       loading: "Signing in...",
       error: "Email or password is incorrect",
+      forgotPassword: "Forgot password?",
+      resetTitle: "Reset password",
+      resetInstructions: "Enter your admin email and we will send you a reset link.",
+      sendResetLink: "Send reset link",
+      sendingResetLink: "Sending...",
+      resetSent: "If an account exists for that email, you will receive a password reset link.",
+      backToLogin: "Back to sign in",
+      resetError: "We could not send a reset link. Please try again later.",
+      newPassword: "New password",
+      confirmPassword: "Confirm new password",
+      updatePassword: "Update password",
+      updatingPassword: "Updating...",
+      passwordTooShort: "Password must be at least 8 characters.",
+      passwordMismatch: "The passwords do not match.",
+      invalidRecoveryLink: "This reset link is invalid or has expired. Please request a new one.",
+      passwordUpdated: "Your password has been updated. Sign in with your new password.",
     },
     dashboard: {
       title: {
