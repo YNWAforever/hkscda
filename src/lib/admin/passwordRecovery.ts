@@ -12,9 +12,7 @@ export interface PasswordRecoveryAuth {
 }
 
 export type PasswordRecoveryFailure = "too_short" | "mismatch" | "provider_error";
-export type PasswordRecoveryResult =
-  | { ok: true }
-  | { ok: false; reason: PasswordRecoveryFailure };
+export type PasswordRecoveryResult = { ok: true } | { ok: false; reason: PasswordRecoveryFailure };
 
 export function normalizeAdminEmail(email: string) {
   return email.trim().toLowerCase();

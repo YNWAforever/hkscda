@@ -30,6 +30,7 @@ import { Route as AdoptionInstructionsRouteImport } from './routes/adoption/inst
 import { Route as AdoptionApplyRouteImport } from './routes/adoption/apply'
 import { Route as AdminVolunteersRouteImport } from './routes/admin/volunteers'
 import { Route as AdminSupportersRouteImport } from './routes/admin/supporters'
+import { Route as AdminResetPasswordRouteImport } from './routes/admin/reset-password'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminContentRouteImport } from './routes/admin/content'
 import { Route as AdminApplicationsRouteImport } from './routes/admin/applications'
@@ -238,6 +239,11 @@ const AdminVolunteersRoute = AdminVolunteersRouteImport.update({
 const AdminSupportersRoute = AdminSupportersRouteImport.update({
   id: '/admin/supporters',
   path: '/admin/supporters',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminResetPasswordRoute = AdminResetPasswordRouteImport.update({
+  id: '/admin/reset-password',
+  path: '/admin/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
@@ -829,6 +835,7 @@ export interface FileRoutesByFullPath {
   '/admin/applications': typeof AdminApplicationsRouteWithChildren
   '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
+  '/admin/reset-password': typeof AdminResetPasswordRoute
   '/admin/supporters': typeof AdminSupportersRouteWithChildren
   '/admin/volunteers': typeof AdminVolunteersRouteWithChildren
   '/adoption/apply': typeof AdoptionApplyRoute
@@ -955,6 +962,7 @@ export interface FileRoutesByTo {
   '/admin/access-denied': typeof AdminAccessDeniedRoute
   '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
+  '/admin/reset-password': typeof AdminResetPasswordRoute
   '/admin/supporters': typeof AdminSupportersRouteWithChildren
   '/admin/volunteers': typeof AdminVolunteersRouteWithChildren
   '/adoption/apply': typeof AdoptionApplyRoute
@@ -1083,6 +1091,7 @@ export interface FileRoutesById {
   '/admin/applications': typeof AdminApplicationsRouteWithChildren
   '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
+  '/admin/reset-password': typeof AdminResetPasswordRoute
   '/admin/supporters': typeof AdminSupportersRouteWithChildren
   '/admin/volunteers': typeof AdminVolunteersRouteWithChildren
   '/adoption/apply': typeof AdoptionApplyRoute
@@ -1212,6 +1221,7 @@ export interface FileRouteTypes {
     | '/admin/applications'
     | '/admin/content'
     | '/admin/login'
+    | '/admin/reset-password'
     | '/admin/supporters'
     | '/admin/volunteers'
     | '/adoption/apply'
@@ -1338,6 +1348,7 @@ export interface FileRouteTypes {
     | '/admin/access-denied'
     | '/admin/content'
     | '/admin/login'
+    | '/admin/reset-password'
     | '/admin/supporters'
     | '/admin/volunteers'
     | '/adoption/apply'
@@ -1465,6 +1476,7 @@ export interface FileRouteTypes {
     | '/admin/applications'
     | '/admin/content'
     | '/admin/login'
+    | '/admin/reset-password'
     | '/admin/supporters'
     | '/admin/volunteers'
     | '/adoption/apply'
@@ -1593,6 +1605,7 @@ export interface RootRouteChildren {
   AdminApplicationsRoute: typeof AdminApplicationsRouteWithChildren
   AdminContentRoute: typeof AdminContentRouteWithChildren
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminResetPasswordRoute: typeof AdminResetPasswordRoute
   AdminSupportersRoute: typeof AdminSupportersRouteWithChildren
   AdminVolunteersRoute: typeof AdminVolunteersRouteWithChildren
   AdoptionApplyRoute: typeof AdoptionApplyRoute
@@ -1811,6 +1824,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/supporters'
       fullPath: '/admin/supporters'
       preLoaderRoute: typeof AdminSupportersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/reset-password': {
+      id: '/admin/reset-password'
+      path: '/admin/reset-password'
+      fullPath: '/admin/reset-password'
+      preLoaderRoute: typeof AdminResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/login': {
@@ -2927,6 +2947,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminApplicationsRoute: AdminApplicationsRouteWithChildren,
   AdminContentRoute: AdminContentRouteWithChildren,
   AdminLoginRoute: AdminLoginRoute,
+  AdminResetPasswordRoute: AdminResetPasswordRoute,
   AdminSupportersRoute: AdminSupportersRouteWithChildren,
   AdminVolunteersRoute: AdminVolunteersRouteWithChildren,
   AdoptionApplyRoute: AdoptionApplyRoute,

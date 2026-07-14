@@ -114,7 +114,10 @@ export function AdminLoginContent({
         {mode === "request-reset" ? (
           resetSent ? (
             <div className="space-y-4">
-              <p role="status" className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+              <p
+                role="status"
+                className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800"
+              >
                 {copy.login.resetSent}
               </p>
               <button
@@ -142,7 +145,11 @@ export function AdminLoginContent({
                   className="w-full border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary-highlight)]"
                 />
               </div>
-              {error && <p role="alert" className="text-red-600 text-sm">{error}</p>}
+              {error && (
+                <p role="alert" className="text-red-600 text-sm">
+                  {error}
+                </p>
+              )}
               <button
                 type="submit"
                 disabled={loading}
@@ -199,7 +206,11 @@ export function AdminLoginContent({
                 className="w-full border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary-highlight)]"
               />
             </div>
-            {error && <p role="alert" className="text-red-600 text-sm">{error}</p>}
+            {error && (
+              <p role="alert" className="text-red-600 text-sm">
+                {error}
+              </p>
+            )}
             <button
               type="submit"
               disabled={loading}

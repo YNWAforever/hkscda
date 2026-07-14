@@ -59,6 +59,7 @@ interface AdminCopy {
     resetSent: string;
     backToLogin: string;
     resetError: string;
+    updateError: string;
     newPassword: string;
     confirmPassword: string;
     updatePassword: string;
@@ -204,6 +205,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       resetSent: "如該電郵已登記，你將會收到重設密碼連結。",
       backToLogin: "返回登入",
       resetError: "暫時未能發送重設連結，請稍後再試。",
+      updateError: "暫時未能更新密碼，請稍後再試。",
       newPassword: "新密碼",
       confirmPassword: "確認新密碼",
       updatePassword: "更新密碼",
@@ -373,6 +375,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       resetSent: "If an account exists for that email, you will receive a password reset link.",
       backToLogin: "Back to sign in",
       resetError: "We could not send a reset link. Please try again later.",
+      updateError: "We could not update your password. Please try again later.",
       newPassword: "New password",
       confirmPassword: "Confirm new password",
       updatePassword: "Update password",

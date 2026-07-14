@@ -18,8 +18,9 @@ function makeAuth(overrides: Partial<PasswordRecoveryAuth> = {}): PasswordRecove
 
 describe("admin password recovery", () => {
   test("builds the reset route without a duplicate slash", () => {
-    expect(getAdminPasswordResetRedirect("https://hkscda.vercel.app/"))
-      .toBe("https://hkscda.vercel.app/admin/reset-password");
+    expect(getAdminPasswordResetRedirect("https://hkscda.vercel.app/")).toBe(
+      "https://hkscda.vercel.app/admin/reset-password",
+    );
   });
 
   test("normalizes email and requests a recovery link for the reset route", async () => {
@@ -31,15 +32,19 @@ describe("admin password recovery", () => {
       },
     });
 
-    expect(await requestAdminPasswordReset({
-      auth,
-      email: " Admin@Example.COM ",
-      origin: "https://hkscda.vercel.app",
-    })).toEqual({ ok: true });
-    expect(calls).toEqual([{
-      email: "admin@example.com",
-      options: { redirectTo: "https://hkscda.vercel.app/admin/reset-password" },
-    }]);
+    expect(
+      await requestAdminPasswordReset({
+        auth,
+        email: " Admin@Example.COM ",
+        origin: "https://hkscda.vercel.app",
+      }),
+    ).toEqual({ ok: true });
+    expect(calls).toEqual([
+      {
+        email: "admin@example.com",
+        options: { redirectTo: "https://hkscda.vercel.app/admin/reset-password" },
+      },
+    ]);
   });
 
   test("returns a safe provider failure without exposing its message", async () => {
