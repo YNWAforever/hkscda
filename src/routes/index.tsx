@@ -105,15 +105,29 @@ function Index() {
               description="查看目前可申請領養的貓狗，了解牠們的個性與照顧需要。"
             />
             <div className="mt-10 grid gap-4 md:grid-cols-2">
-              <a href="/animals/cat" className="border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-6 hover:border-[var(--color-primary)]">
+              <a
+                href="/animals/cat"
+                className="border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-6 hover:border-[var(--color-primary)]"
+              >
                 <h3 className="text-xl font-bold text-[var(--color-text)]">待領養貓貓</h3>
-                <p className="mt-3 text-sm leading-relaxed text-[var(--color-text-muted)]">查看目前公開的貓貓資料和領養申請流程。</p>
-                <span className="mt-6 inline-flex min-h-11 items-center text-sm font-bold text-[var(--color-primary)]">查看貓貓</span>
+                <p className="mt-3 text-sm leading-relaxed text-[var(--color-text-muted)]">
+                  查看目前公開的貓貓資料和領養申請流程。
+                </p>
+                <span className="mt-6 inline-flex min-h-11 items-center text-sm font-bold text-[var(--color-primary)]">
+                  查看貓貓
+                </span>
               </a>
-              <a href="/animals/dog" className="border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-6 hover:border-[var(--color-primary)]">
+              <a
+                href="/animals/dog"
+                className="border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-6 hover:border-[var(--color-primary)]"
+              >
                 <h3 className="text-xl font-bold text-[var(--color-text)]">待領養狗狗</h3>
-                <p className="mt-3 text-sm leading-relaxed text-[var(--color-text-muted)]">查看目前公開的狗狗資料和領養申請流程。</p>
-                <span className="mt-6 inline-flex min-h-11 items-center text-sm font-bold text-[var(--color-primary)]">查看狗狗</span>
+                <p className="mt-3 text-sm leading-relaxed text-[var(--color-text-muted)]">
+                  查看目前公開的狗狗資料和領養申請流程。
+                </p>
+                <span className="mt-6 inline-flex min-h-11 items-center text-sm font-bold text-[var(--color-primary)]">
+                  查看狗狗
+                </span>
               </a>
             </div>
           </div>
@@ -144,8 +158,10 @@ function Index() {
                 <p>
                   本會致力為流浪貓狗提供糧食、醫療、絕育及領養服務，同時積極援救街頭受傷或被遺棄的小動物，為牠們尋找
                   <strong>永久的家</strong>。
-                </p>                <p>
-                  我們是一個「<strong>不殺（No Kill）</strong>」機構，重視每個生命的照護、康復和負責任領養。
+                </p>{" "}
+                <p>
+                  我們是一個「<strong>不殺（No Kill）</strong>
+                  」機構，重視每個生命的照護、康復和負責任領養。
                 </p>
               </div>
               <div className="flex flex-wrap gap-2 mt-6">
@@ -225,9 +241,9 @@ function Index() {
         {/* Donate */}
         <section id="donate" className="px-6 py-16 lg:py-24 bg-[var(--color-bg)]">
           <div className="container-wide">
-            <div className="rounded-[2.5rem] bg-[var(--color-panel)] shadow-panel p-8 lg:p-12 grid lg:grid-cols-5 gap-10 items-start">
-              <div className="lg:col-span-2">
-                <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-accent-warm)] mb-3 flex items-center gap-1.5">
+            <div className="min-w-0 rounded-[2.5rem] bg-[var(--color-panel)] shadow-panel p-8 lg:p-12 grid lg:grid-cols-5 gap-10 items-start">
+              <div className="min-w-0 lg:col-span-2">
+                <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-secondary)] mb-3 flex items-center gap-1.5">
                   <Heart className="h-3.5 w-3.5" /> 捐助我們
                 </div>
                 <h2 className="font-display text-3xl lg:text-5xl font-bold text-white mb-6 leading-tight">
@@ -239,17 +255,17 @@ function Index() {
                   本會為政府認可慈善機構（91/14493），捐款 HK$100 以上可申請退稅收條（IRD
                   §88）。所有善款均用於小動物醫療及護理。
                 </p>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-[var(--color-accent-soft)] text-xs font-bold">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-[var(--color-secondary-highlight)] text-xs font-bold">
                   <Check className="h-3 w-3" /> 稅務局認可 IRD §88 免稅機構
                 </div>
               </div>
-              <div className="lg:col-span-3 grid sm:grid-cols-2 gap-4">
+              <div className="min-w-0 lg:col-span-3 grid sm:grid-cols-2 gap-4">
                 {donateMethods.map((d) => (
                   <div
                     key={d.title}
-                    className="bg-white/10 border border-white/10 rounded-[1.5rem] p-5 flex gap-4 hover:bg-white/15 transition-colors"
+                    className="min-w-0 bg-white/10 border border-white/10 rounded-[1.5rem] p-5 flex flex-col gap-3 hover:bg-white/15 transition-colors sm:flex-row"
                   >
-                    <div className="h-11 w-11 rounded-full bg-[var(--color-cta)] flex items-center justify-center shrink-0">
+                    <div className="h-11 w-11 rounded-full bg-[var(--color-secondary)] flex items-center justify-center shrink-0">
                       <d.Icon className="h-5 w-5 text-[var(--color-panel)]" />
                     </div>
                     <div className="min-w-0">

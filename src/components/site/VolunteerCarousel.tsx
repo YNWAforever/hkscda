@@ -34,7 +34,7 @@ const stories = [
   },
   {
     initials: "May",
-    color: "var(--color-accent-warm)",
+    color: "var(--color-secondary)",
     name: "May Lam",
     role: "暫托家庭 · 4年",
     quote: "短短幾個月把牠們從怕人養到撒嬌，然後送去新家庭。每次都不捨，但這就是我們的使命。",

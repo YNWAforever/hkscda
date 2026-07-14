@@ -2,15 +2,11 @@ import { describe, expect, test } from "bun:test";
 
 function channel(value: number) {
   const normalized = value / 255;
-  return normalized <= 0.04045
-    ? normalized / 12.92
-    : ((normalized + 0.055) / 1.055) ** 2.4;
+  return normalized <= 0.04045 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
 }
 
 function luminance(hex: string) {
-  const [r, g, b] = [1, 3, 5].map((index) =>
-    Number.parseInt(hex.slice(index, index + 2), 16),
-  );
+  const [r, g, b] = [1, 3, 5].map((index) => Number.parseInt(hex.slice(index, index + 2), 16));
   return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
 }
 
@@ -33,7 +29,7 @@ describe("public brand tokens", () => {
     expect(css).toContain(".admin-shell");
     expect(css).toContain("@utility btn-primary");
     expect(css).toContain("@utility btn-secondary");
-    expect(css).toContain("@utility btn-cta");
+    expect(css).toContain("@utility btn-outline");
     expect(css).not.toMatch(/poofyco/i);
     expect(css).not.toContain("Baloo 2");
 

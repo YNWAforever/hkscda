@@ -213,8 +213,8 @@ function DonatePage() {
 
   return (
     <main className="bg-[var(--color-background)]">
-      <section className="bg-[var(--color-surface-offset)] bg-topo">
-        <div className="container-wide grid gap-8 py-10 lg:grid-cols-[0.9fr_1.1fr] lg:py-14">
+      <section className="bg-[var(--color-surface-offset)]">
+        <div className="container-wide grid grid-cols-1 gap-8 py-10 lg:grid-cols-[0.9fr_1.1fr] lg:py-14">
           <div className="space-y-6">
             <div className="inline-flex items-center gap-2 rounded-full bg-[var(--color-primary-highlight)] px-3 py-1 text-xs font-bold uppercase tracking-widest text-[var(--color-primary)]">
               <Heart className="h-3.5 w-3.5" /> {t.eyebrow}
@@ -226,9 +226,9 @@ function DonatePage() {
               <p className="max-w-[52ch] text-sm leading-7 text-[var(--color-text-muted)] lg:text-base">
                 {t.intro}
               </p>
-              <div className="flex items-start gap-3 border-l-4 border-[var(--color-secondary)] pl-4">
+              <div className="flex min-w-0 items-start gap-3 border-l-4 border-[var(--color-secondary)] pl-4">
                 <BrandLogo className="h-16 w-16 shrink-0" eager />
-                <div className="space-y-1 text-sm text-[var(--color-text-muted)]">
+                <div className="min-w-0 space-y-1 break-words text-sm text-[var(--color-text-muted)]">
                   <p className="font-bold text-[var(--color-panel)]">{brand.nameZh}</p>
                   <p>{brand.nameEn}</p>
                   <p>
@@ -287,7 +287,7 @@ function DonatePage() {
             <div className="space-y-6">
               <fieldset className="space-y-3">
                 <legend className="text-sm font-bold text-[var(--color-panel)]">{t.amount}</legend>
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
                   {amounts.map((amount) => (
                     <button
                       key={amount}
@@ -328,7 +328,7 @@ function DonatePage() {
 
               <fieldset className="space-y-3">
                 <legend className="text-sm font-bold text-[var(--color-panel)]">{t.purpose}</legend>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                   {purposes.map((item) => (
                     <button
                       key={item.value}

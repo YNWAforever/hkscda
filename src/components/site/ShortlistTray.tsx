@@ -53,7 +53,7 @@ export function ShortlistTray() {
               key={item.id}
               type="button"
               onClick={() => removeItem(item.id)}
-              className="inline-flex max-w-32 items-center gap-1 rounded-full bg-[var(--color-cta)] px-3 py-1 text-xs font-medium text-[var(--color-panel)]"
+              className="inline-flex max-w-32 items-center gap-1 rounded-full bg-[var(--color-secondary)] px-3 py-1 text-xs font-medium text-[var(--color-panel)]"
               aria-label={`移除 ${item.name}`}
               title={`移除 ${item.name}`}
             >
@@ -79,13 +79,13 @@ export function ShortlistTray() {
                 animalName: firstRankedAdoptionItem.name,
                 type: firstRankedAdoptionItem.animalType,
               }}
-              className="btn-cta py-2! px-4! text-xs!"
+              className="btn-primary py-2! px-4! text-xs!"
             >
               申請領養
             </Link>
           )}
           {sponsorshipItems.length > 0 && (
-            <Link to="/sponsors/pledge" className="btn-cta py-2! px-4! text-xs!">
+            <Link to="/sponsors/pledge" className="btn-primary py-2! px-4! text-xs!">
               開始助養
             </Link>
           )}

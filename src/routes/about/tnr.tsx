@@ -36,6 +36,7 @@ function TNRPage() {
       <SectionHeading
         eyebrow="社區合作"
         title="TNR 計劃"
+        as="h1"
         description="誘捕、絕育、放回（Trap-Neuter-Return）"
       />
 
@@ -43,7 +44,8 @@ function TNRPage() {
         <section>
           <SectionHeading title="什麼是 TNR？" />
           <p className="mt-4 max-w-3xl leading-relaxed text-[var(--color-text-muted)]">
-            TNR 是管理社區流浪貓的其中一種人道方法，透過捕捉、絕育和原地放回，配合持續照顧，逐步減少繁殖壓力。
+            TNR
+            是管理社區流浪貓的其中一種人道方法，透過捕捉、絕育和原地放回，配合持續照顧，逐步減少繁殖壓力。
           </p>
         </section>
 
@@ -51,13 +53,18 @@ function TNRPage() {
           <SectionHeading title="TNR 三個階段" />
           <ol className="mt-6 grid gap-5 md:grid-cols-3">
             {stages.map(({ step, title, Icon, desc }) => (
-              <li key={step} className="border-t-4 border-[var(--color-primary)] bg-[var(--color-surface-offset)] p-5">
+              <li
+                key={step}
+                className="border-t-4 border-[var(--color-primary)] bg-[var(--color-surface-offset)] p-5"
+              >
                 <div className="flex items-center gap-3 text-[var(--color-primary)]">
                   <Icon className="h-6 w-6" aria-hidden="true" />
                   <span className="text-sm font-bold">{step}</span>
                 </div>
                 <h3 className="mt-5 text-lg font-bold text-[var(--color-text)]">{title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-[var(--color-text-muted)]">{desc}</p>
+                <p className="mt-3 text-sm leading-relaxed text-[var(--color-text-muted)]">
+                  {desc}
+                </p>
               </li>
             ))}
           </ol>
@@ -68,7 +75,9 @@ function TNRPage() {
           <p className="mt-4 max-w-3xl leading-relaxed text-[var(--color-text-muted)]">
             如果你發現社區有需要協助的流浪貓，請先記錄地點、數量和狀況，再聯絡協會了解合適的支援方法。正確的資訊和持續觀察，有助義工安排後續工作。
           </p>
-          <a href="mailto:info@hkscda.com" className="btn-secondary mt-6 min-h-11 px-5">聯絡協會</a>
+          <a href="mailto:info@hkscda.com" className="btn-secondary mt-6 min-h-11 px-5">
+            聯絡協會
+          </a>
         </section>
       </div>
     </main>

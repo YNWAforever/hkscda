@@ -46,20 +46,20 @@ export function AdoptionSteps() {
 
         <ol className="relative grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           <div
-            className="hidden lg:block absolute top-0 left-[12%] right-[12%] border-t-2 border-dashed border-[var(--color-accent-warm)]/60"
+            className="hidden lg:block absolute top-0 left-[12%] right-[12%] border-t-2 border-dashed border-[var(--color-secondary)]/60"
             aria-hidden="true"
           />
           {steps.map((s, i) => (
             <Reveal
               as="li"
               key={s.n}
-              className="relative bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[1.75rem] p-6 pt-8 hover:shadow-lg hover:border-[var(--color-accent-warm)]/60 transition-[box-shadow,border-color] duration-300"
+              className="relative bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[1.75rem] p-6 pt-8 hover:shadow-lg hover:border-[var(--color-secondary)]/60 transition-[box-shadow,border-color] duration-300"
             >
               <span
                 className={`absolute -top-5 left-6 h-10 w-10 rounded-full flex items-center justify-center font-display font-bold text-sm shadow-md ${
                   i % 2 === 0
                     ? "bg-[var(--color-panel)] text-white"
-                    : "bg-[var(--color-accent-warm)] text-white"
+                    : "bg-[var(--color-secondary)] text-white"
                 }`}
               >
                 {s.n}

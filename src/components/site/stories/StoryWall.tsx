@@ -151,7 +151,7 @@ function StoryCard({ story }: { story: ContentSummary }) {
       </Link>
       <div className="flex flex-1 flex-col gap-3 p-5">
         <div className="flex flex-wrap gap-2">
-          <span className="rounded-full bg-[var(--color-accent-warm)] px-3 py-1 text-xs font-bold text-white">
+          <span className="rounded-full bg-[var(--color-secondary)] px-3 py-1 text-xs font-bold text-white">
             {publicStatusLabel(profile.publicStatus)}
           </span>
           <span className="inline-flex items-center gap-1 rounded-full bg-[var(--color-surface-offset)] px-3 py-1 text-xs font-bold text-[var(--color-text-muted)]">

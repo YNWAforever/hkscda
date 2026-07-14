@@ -205,7 +205,7 @@ export function PledgeWizard() {
   if (sponsorshipItems.length === 0 && !result) {
     return (
       <main className="max-w-2xl mx-auto px-4 py-16 text-center space-y-4">
-        <p className="text-[var(--color-text-muted)]">{t.empty}</p>
+        <h1 className="font-display text-2xl font-bold text-[var(--color-panel)]">{t.empty}</h1>
         <Link to="/sponsors" className="text-[var(--color-primary)] hover:underline">
           ← {t.backToSponsors}
         </Link>

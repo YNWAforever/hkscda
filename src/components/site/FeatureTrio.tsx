@@ -38,7 +38,7 @@ export function FeatureTrio() {
           <a
             href="#adoption"
             aria-label="瀏覽待領養動物"
-            className="absolute -right-4 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-[var(--color-cta)] text-[var(--color-panel)] flex items-center justify-center shadow-md hover:bg-[var(--color-cta-hover)] hover:scale-105 transition-all"
+            className="absolute -right-4 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-[var(--color-secondary)] text-[var(--color-panel)] flex items-center justify-center shadow-md hover:bg-[var(--color-secondary-hover)] hover:scale-105 transition-all"
           >
             <ArrowRight className="h-5 w-5" />
           </a>
@@ -57,13 +57,13 @@ export function FeatureTrio() {
                   : "md:pl-0"
               }`}
             >
-              <div className="h-12 w-12 rounded-full bg-white/10 flex items-center justify-center mb-4 group-hover:bg-[var(--color-cta)] transition-colors">
+              <div className="h-12 w-12 rounded-full bg-white/10 flex items-center justify-center mb-4 group-hover:bg-[var(--color-secondary)] transition-colors">
                 <f.Icon
-                  className="h-5 w-5 text-[var(--color-accent-warm)] group-hover:text-[var(--color-panel)] transition-colors"
+                  className="h-5 w-5 text-[var(--color-secondary)] group-hover:text-[var(--color-panel)] transition-colors"
                   strokeWidth={2}
                 />
               </div>
-              <h3 className="font-display text-lg font-bold text-[var(--color-accent-warm)] mb-1.5 flex items-center gap-1.5">
+              <h3 className="font-display text-lg font-bold text-[var(--color-secondary)] mb-1.5 flex items-center gap-1.5">
                 {f.title}
                 <ArrowRight className="h-4 w-4 opacity-0 -translate-x-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0" />
               </h3>

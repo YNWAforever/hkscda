@@ -126,6 +126,7 @@ export function HelpSearch({
         </label>
         <input
           id={inputId}
+          type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder={

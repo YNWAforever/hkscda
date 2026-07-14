@@ -30,7 +30,7 @@ export function StoryDetail({ content }: StoryDetailProps) {
               <div>
                 <div className="mb-3 flex flex-wrap gap-2">
                   {profile ? (
-                    <span className="rounded-full bg-[var(--color-accent-warm)] px-3 py-1 text-xs font-bold text-white">
+                    <span className="rounded-full bg-[var(--color-secondary)] px-3 py-1 text-xs font-bold text-white">
                       {publicStatusLabel(profile.publicStatus)}
                     </span>
                   ) : null}
@@ -179,7 +179,7 @@ export function StoryDetail({ content }: StoryDetailProps) {
               ) : null}
 
               <div className="rounded-md bg-[var(--color-panel)] p-5 text-white shadow-soft">
-                <Heart className="h-6 w-6 text-[var(--color-accent-warm)]" aria-hidden="true" />
+                <Heart className="h-6 w-6 text-[var(--color-secondary)]" aria-hidden="true" />
                 <h2 className="mt-3 font-display text-2xl font-bold">支持下一次救援</h2>
                 <p className="mt-2 text-sm leading-6 text-white/75">
                   你的捐助會用於醫療、暫托、糧食與日常照護，讓更多動物等到安全的一天。

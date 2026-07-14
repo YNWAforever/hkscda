@@ -57,7 +57,7 @@ function SponsorsPage() {
       <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-6 shadow-soft">
         <h2 className="font-semibold mb-1">助養付款方式</h2>
         <p className="text-sm text-[var(--color-text-muted)] mb-4">每月助養 HK$100</p>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
           {paymentMethods.map((m) => (
             <div
               key={m.label}
@@ -75,7 +75,7 @@ function SponsorsPage() {
           載入助養動物時發生錯誤，請稍後再試。
         </p>
       ) : isLoading ? (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="overflow-hidden rounded-md border border-[var(--color-border)]">
               <Skeleton className="aspect-square w-full rounded-none" />

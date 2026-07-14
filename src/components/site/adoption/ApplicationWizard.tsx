@@ -490,6 +490,7 @@ export function ApplicationWizard() {
       <main className="container-wide py-10">
         <section className="mx-auto max-w-2xl rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-6 text-center shadow-soft">
           <Loader2 className="mx-auto h-8 w-8 animate-spin text-[var(--color-primary)]" />
+          <h1 className="mt-4 text-2xl font-bold text-[var(--color-panel)]">領養申請</h1>
           <p className="mt-3 text-sm text-[var(--color-text-muted)]">正在準備申請表...</p>
         </section>
       </main>

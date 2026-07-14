@@ -58,7 +58,10 @@ export function HelpWidget() {
         >
           <div className="flex items-start justify-between gap-3 bg-[var(--color-panel)] px-4 py-3 text-white">
             <div className="flex min-w-0 items-start gap-2">
-              <HelpCircle className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-accent-warm)]" aria-hidden="true" />
+              <HelpCircle
+                className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-secondary)]"
+                aria-hidden="true"
+              />
               <div className="min-w-0">
                 <h2 className="font-display text-base font-bold leading-tight">
                   {language === "zh-HK" ? "HKSCDA 小幫手" : "HKSCDA help"}

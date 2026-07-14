@@ -195,7 +195,7 @@ function GenericErrorState({ onRetry }: { onRetry: () => void }) {
       icon={<AlertCircle className="h-7 w-7" aria-hidden="true" />}
       title="暫時未能載入"
     >
-      <p>系統暫時未能讀取你的申請狀態。請稍後再試，或直接聯絡 HKSCDA。</p>
+      <p>系統暫時未能讀取你的申請狀態。請稍後再試，或請聯絡 HKSCDA。</p>
       <button type="button" onClick={onRetry} className="btn-primary min-h-11 mt-5">
         <RefreshCw className="h-4 w-4" aria-hidden="true" />
         重新載入
@@ -210,20 +210,20 @@ function StatusContent({ status }: { status: PublicStatusSummary }) {
       <div className="container-wide">
         <header className="grid gap-5 rounded-lg border border-[var(--color-border)] bg-[var(--color-panel)] p-5 text-[var(--color-text-inverse)] shadow-panel md:grid-cols-[minmax(0,1fr)_260px] md:p-7">
           <div>
-            <p className="text-sm font-semibold text-[var(--color-accent-warm)]">
+            <p className="text-sm font-semibold text-[var(--color-secondary)]">
               Adoption application status
             </p>
             <h1 className="mt-2 text-3xl font-bold">領養申請已收到</h1>
-            <p className="mt-3 max-w-2xl text-sm text-[var(--color-lavender)]">
+            <p className="mt-3 max-w-2xl text-sm text-[var(--color-surface-offset-2)]">
               這頁只顯示申請摘要及下一步安排，不包含相片、詳細問卷或內部審批狀態。
             </p>
           </div>
-          <div className="rounded-lg border border-[var(--color-accent-warm)] bg-[var(--color-panel-2)] p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-accent-warm)]">
+          <div className="rounded-lg border border-[var(--color-secondary)] bg-[var(--color-panel-2)] p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-secondary)]">
               Reference
             </p>
             <p className="mt-1 font-display text-2xl font-bold">{status.reference}</p>
-            <p className="mt-3 text-xs text-[var(--color-lavender)]">
+            <p className="mt-3 text-xs text-[var(--color-surface-offset-2)]">
               Submitted {formatDateTime(status.submittedAt)}
             </p>
           </div>
@@ -262,7 +262,7 @@ function StatusContent({ status }: { status: PublicStatusSummary }) {
                     <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[var(--color-primary-highlight)] text-sm font-bold text-[var(--color-primary)]">
                       {animal.rank}
                     </div>
-                    <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[var(--color-lavender)] text-[var(--color-panel)]">
+                    <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[var(--color-surface-offset-2)] text-[var(--color-panel)]">
                       <AnimalIcon type={animal.type} />
                     </div>
                     <div className="min-w-0">

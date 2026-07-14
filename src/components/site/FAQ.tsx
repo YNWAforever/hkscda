@@ -29,12 +29,11 @@ export function FAQ() {
             助養、領養與收據
           </h2>
           <p className="text-[var(--color-text-muted)] mb-8 max-w-[40ch]">
-            如果找不到合適答案，可 WhatsApp 9864 1089 或電郵 info@hkscda.com
-            聯絡職員。
+            如果找不到合適答案，可 WhatsApp 9864 1089 或電郵 info@hkscda.com 聯絡職員。
           </p>
           <div className="relative hidden lg:block">
             <div
-              className="absolute inset-3 rounded-md -rotate-3 bg-[var(--color-accent-soft)]"
+              className="absolute inset-3 rounded-md -rotate-3 bg-[var(--color-secondary-highlight)]"
               aria-hidden="true"
             />
             <img
@@ -48,7 +47,7 @@ export function FAQ() {
 
         <Reveal className="lg:col-span-3">
           <div className="rounded-[2rem] bg-[var(--color-panel)] text-white px-6 py-4 mb-4 font-display font-bold flex items-center gap-2">
-            <MessageCircleQuestion className="h-5 w-5 text-[var(--color-accent-warm)]" />
+            <MessageCircleQuestion className="h-5 w-5 text-[var(--color-secondary)]" />
             Frequently Asked Questions
           </div>
           <Accordion type="single" collapsible className="space-y-3">

@@ -114,7 +114,7 @@ export function HelpFaqDirectory({ language }: { language: HelpLanguage }) {
   const copy = pageCopy[language];
 
   return (
-    <div className="space-y-8">
+    <div className="min-w-0 space-y-8">
       {categories.map((category) => {
         const faqs = getFaqsByCategory(category);
         const label = helpCategoryLabels[category][language];
@@ -201,9 +201,9 @@ function HelpPage() {
         </div>
       </section>
 
-      <section className="px-6 py-10 lg:py-14">
-        <div className="container-wide grid gap-8 lg:grid-cols-[minmax(0,1fr)_18rem]">
-          <div className="space-y-8">
+      <section className="py-10 lg:py-14">
+        <div className="container-wide grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_18rem]">
+          <div className="min-w-0 space-y-8">
             <section
               id="search"
               className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-sm lg:p-6"
@@ -284,7 +284,9 @@ function HelpPage() {
                 <Mail className="h-4 w-4 shrink-0" aria-hidden="true" />
                 <span className="min-w-0 flex-1">
                   <span className="block">{copy.emailLabel}</span>
-                  <span className="block text-xs font-medium text-white/70">{copy.emailNote}</span>
+                  <span className="block break-all text-xs font-medium text-white/70">
+                    {copy.emailNote}
+                  </span>
                 </span>
               </a>
             </div>

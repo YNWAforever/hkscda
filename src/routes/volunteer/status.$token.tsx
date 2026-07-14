@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { PublicStateShell } from "../../components/site/PublicStateShell";
 import { AlertCircle, CalendarDays, CheckCircle2, Clock3, Loader2 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 

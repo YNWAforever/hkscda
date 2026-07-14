@@ -62,21 +62,8 @@
   --color-primary-foreground: #ffffff;
   --color-secondary-foreground: #ffffff;
 
-  /* Deprecated aliases stay available until the public migration is complete. */
-  --color-cta: var(--color-secondary);
-  --color-cta-hover: var(--color-secondary-hover);
-  --color-accent-warm: #a61c56;
-  --color-accent-soft: #f7e9ef;
-  --color-lavender: #e1ecef;
-  --color-lavender-deep: #c6d6dc;
-  --color-pink-strip: #a61c56;
-  --color-hero-gradient-start: #163644;
-  --color-hero-gradient-mid: #163644;
-  --color-hero-gradient-end: #245266;
-
   --radius-card: 0.5rem;
   --radius-panel: 0.75rem;
-  --radius-blob: 1rem;
 }
 
 .site-shell {
@@ -129,15 +116,23 @@
   --color-primary: #075f89;
   --color-primary-hover: #044f71;
   --color-panel: #163644;
+  /* Admin-only compatibility aliases for the operational surface. */
+  --color-accent-warm: #a61c56;
+  --color-accent-soft: #f7e9ef;
+  --color-lavender: #e1ecef;
+  --color-lavender-deep: #c6d6dc;
+  --color-panel-2: #245266;
 }
 
 @layer base {
   html {
     scroll-behavior: smooth;
     scroll-padding-top: 80px;
+    overflow-x: clip;
     -webkit-font-smoothing: antialiased;
   }
   body {
+    overflow-x: clip;
     background: var(--color-bg);
     color: var(--color-text);
     font-family: var(--font-body);
@@ -170,24 +165,6 @@
   max-width: 1200px;
   margin-inline: auto;
   padding-inline: 1.5rem;
-}
-
-/* Temporary compatibility alias; public routes migrate to btn-primary. */
-@utility btn-cta {
-  display: inline-flex;
-  min-height: 44px;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  border-radius: 0.375rem;
-  background: var(--color-primary);
-  color: #ffffff;
-  padding: 0.75rem 1.25rem;
-  font-weight: 700;
-  transition: background-color 180ms ease;
-}
-.btn-cta:hover {
-  background: var(--color-primary-hover);
 }
 
 @utility btn-primary {
@@ -250,24 +227,6 @@
 }
 @utility shadow-panel {
   box-shadow: 0 24px 60px rgba(29, 35, 83, 0.25);
-}
-
-/* Rounded-card compatibility utility for migration. */
-@utility card-dashed {
-  border: 2px dashed color-mix(in srgb, var(--color-panel) 25%, transparent);
-  border-radius: var(--radius-card);
-  background: var(--color-surface);
-}
-
-/* Compatibility photo mask retained until public route migration. */
-@utility arch-mask {
-  border-radius: 999px 999px 24px 24px;
-}
-
-/* Compatibility contour texture retained until public route migration. */
-@utility bg-topo {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Cg fill='none' stroke='%23f27d92' stroke-opacity='0.07' stroke-width='1.5'%3E%3Cpath d='M50 200q50-80 150-60t150 80'/%3E%3Cpath d='M30 230q60-90 170-70t170 90'/%3E%3Cpath d='M10 260q70-100 190-80t190 100'/%3E%3Cpath d='M70 170q40-70 130-50t130 70'/%3E%3Cpath d='M90 140q30-60 110-40t110 60'/%3E%3C/g%3E%3C/svg%3E");
-  background-size: 400px 400px;
 }
 
 @media (prefers-reduced-motion: no-preference) {

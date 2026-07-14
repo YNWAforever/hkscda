@@ -41,3 +41,6 @@ supabase/.temp/
 
 # Scraper session cookies (scripts/scrape-hkscda.js)
 data/.cf-state.json
+# Browser verification captures are local evidence; representative pairs live under docs/assets.
+artifacts/brand-redesign/*
+!artifacts/brand-redesign/.gitkeep

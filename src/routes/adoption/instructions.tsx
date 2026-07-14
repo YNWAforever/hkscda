@@ -116,7 +116,12 @@ const dogCareTopics = [
 function InstructionsPage() {
   return (
     <main className="container-wide space-y-12 px-4 py-14 sm:px-6 lg:px-8">
-      <SectionHeading eyebrow="領養準備" title="領養需知" description="了解申請、家訪和日常照護，為你和動物做好長期準備。" />
+      <SectionHeading
+        as="h1"
+        eyebrow="領養準備"
+        title="領養需知"
+        description="了解申請、家訪和日常照護，為你和動物做好長期準備。"
+      />
 
       <section className="space-y-4">
         <h2 className="font-display text-xl font-bold">領養規則</h2>

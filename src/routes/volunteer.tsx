@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useRouterState } from "@tanstack/react-router";
 import { CalendarDays, Cat, Dog, Heart, House, Scissors, UserPlus, Users } from "lucide-react";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
@@ -65,6 +65,16 @@ export const Route = createFileRoute("/volunteer")({
 });
 
 function VolunteerPage() {
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+
+  if (pathname.startsWith("/volunteer/status/")) {
+    return <Outlet />;
+  }
+
+  return <VolunteerDirectoryPage />;
+}
+
+function VolunteerDirectoryPage() {
   const [activities, setActivities] = useState<VolunteerActivitySummary[]>([]);
   const [selectedActivityId, setSelectedActivityId] = useState<string>("");
   const [registrationType, setRegistrationType] = useState<VolunteerRegistrationType>("individual");
