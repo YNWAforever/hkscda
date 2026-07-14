@@ -74,6 +74,7 @@ export type AdminAccessRepository = {
 
 export type AdminInviteAuthProvider = {
   inviteByEmail(email: string): Promise<{ authUserId: string; email: string | null }>;
+  resendInvite(email: string): Promise<void>;
 };
 
 export class AdminAccessError extends Error {
@@ -226,7 +227,7 @@ export function createAdminAccessService({
         throw new AdminAccessError("invite_not_pending", "Only pending invites can be resent", 422);
       }
 
-      await auth.inviteByEmail(user.email);
+      await auth.resendInvite(user.email);
       const sentAt = timestamp(now);
       const updated = await repo.updateUser(user.id, {
         invite_sent_at: sentAt,

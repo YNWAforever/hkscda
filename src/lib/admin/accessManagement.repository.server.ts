@@ -1,4 +1,7 @@
+import { Resend } from "resend";
 import type { SupabaseClient } from "@supabase/supabase-js";
+
+import { getEmailConfig } from "../donations/config.server";
 
 import type {
   AdminAccessAuditRow,
@@ -153,7 +156,56 @@ export function createSupabaseAdminAccessRepository(client: SupabaseClient): Adm
   };
 }
 
-export function createSupabaseInviteAuthProvider(client: SupabaseClient): AdminInviteAuthProvider {
+type InviteEmail = {
+  to: string;
+  actionLink: string;
+};
+
+type InviteEmailSender = (input: InviteEmail) => Promise<void>;
+
+function escapeHtml(value: string) {
+  return value.replace(/[&<>"']/g, (character) => {
+    const entities: Record<string, string> = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    };
+    return entities[character] ?? character;
+  });
+}
+
+async function sendAdminInviteEmail({ to, actionLink }: InviteEmail) {
+  const config = getEmailConfig();
+  if (!config.resendApiKey) {
+    throw new Error("Missing RESEND_API_KEY for admin invite email");
+  }
+
+  const safeEmail = escapeHtml(to);
+  const safeActionLink = escapeHtml(actionLink);
+  const result = await new Resend(config.resendApiKey).emails.send({
+    from: config.from,
+    to,
+    replyTo: config.replyTo,
+    subject: "HKSCDA admin access invitation",
+    html:
+      "<p>You have been invited to the HKSCDA admin panel.</p>" +
+      "<p>Invited email: <strong>" +
+      safeEmail +
+      '</strong></p><p><a href="' +
+      safeActionLink +
+      '">Accept invitation</a></p>' +
+      "<p>This link lets you finish setting up your admin access.</p>",
+  });
+
+  if (result.error) throw result.error;
+}
+
+export function createSupabaseInviteAuthProvider(
+  client: SupabaseClient,
+  options: { sendInviteEmail?: InviteEmailSender } = {},
+): AdminInviteAuthProvider {
   return {
     async inviteByEmail(email) {
       const { data, error } = await client.auth.admin.inviteUserByEmail(email);
@@ -162,6 +214,24 @@ export function createSupabaseInviteAuthProvider(client: SupabaseClient): AdminI
         throw new Error("Supabase invite did not return a user id");
       }
       return { authUserId: data.user.id, email: data.user.email ?? email };
+    },
+
+    async resendInvite(email) {
+      const { data, error } = await client.auth.admin.generateLink({
+        type: "invite",
+        email,
+      });
+      if (error) throw error;
+
+      const actionLink = data?.properties?.action_link;
+      if (!actionLink) {
+        throw new Error("Supabase invite link generation did not return an action link");
+      }
+
+      await (options.sendInviteEmail ?? sendAdminInviteEmail)({
+        to: email,
+        actionLink,
+      });
     },
   };
 }
