@@ -33,6 +33,13 @@ export function buildDonationAttribution(
 }
 
 export function buildDonationPromptHref(value: DonationAttribution) {
-  const params = new URLSearchParams(Object.entries(value));
+  const attribution = donationAttributionSchema.parse(value);
+  const params = new URLSearchParams([
+    ["source", attribution.source],
+    ["context", attribution.context],
+    ["purpose", attribution.purpose],
+    ["placement", attribution.placement],
+    ["trigger", attribution.trigger],
+  ]);
   return `/donate?${params.toString()}`;
 }

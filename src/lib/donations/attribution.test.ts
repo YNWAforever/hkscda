@@ -27,4 +27,21 @@ describe("donation attribution", () => {
       }),
     ).toThrow();
   });
+
+  test("does not serialize extra runtime properties", () => {
+    const attribution = {
+      source: "contextual-cta",
+      context: "story",
+      purpose: "general",
+      placement: "mobile-bottom",
+      trigger: "scroll",
+      email: "person@example.com",
+      name: "A Person",
+      note: "free-form context",
+    } as unknown as Parameters<typeof buildDonationPromptHref>[0];
+
+    expect(buildDonationPromptHref(attribution)).toBe(
+      "/donate?source=contextual-cta&context=story&purpose=general&placement=mobile-bottom&trigger=scroll",
+    );
+  });
 });
