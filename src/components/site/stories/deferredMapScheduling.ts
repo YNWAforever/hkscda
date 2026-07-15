@@ -25,27 +25,53 @@ export function observeNearViewport(
   }
 
   let activated = false;
+  let disposed = false;
+  const observerRef: { current?: ObserverHandle } = {};
   const observer = env.createObserver(
     (entries) => {
-      if (activated || !entries.some((entry) => entry.isIntersecting)) return;
+      if (disposed || activated || !entries.some((entry) => entry.isIntersecting)) return;
       activated = true;
-      observer.disconnect();
+      observerRef.current?.disconnect();
       onNear();
     },
     { rootMargin: MAP_ROOT_MARGIN },
   );
-  observer.observe(target);
-  return () => observer.disconnect();
+  observerRef.current = observer;
+
+  if (activated || disposed) {
+    observer.disconnect();
+  } else {
+    observer.observe(target);
+  }
+
+  return () => {
+    disposed = true;
+    observerRef.current?.disconnect();
+  };
 }
 
 export function scheduleIdlePreload(callback: () => void, env: DeferredMapEnvironment) {
+  let disposed = false;
+  let ran = false;
+  const runOnce = () => {
+    if (disposed || ran) return;
+    ran = true;
+    callback();
+  };
+
   if (env.requestIdle && env.cancelIdle) {
-    const id = env.requestIdle(callback, { timeout: MAP_IDLE_TIMEOUT_MS });
-    return () => env.cancelIdle?.(id);
+    const id = env.requestIdle(runOnce, { timeout: MAP_IDLE_TIMEOUT_MS });
+    return () => {
+      disposed = true;
+      env.cancelIdle?.(id);
+    };
   }
 
-  const id = env.setTimer(callback, MAP_IDLE_TIMEOUT_MS);
-  return () => env.clearTimer(id);
+  const id = env.setTimer(runOnce, MAP_IDLE_TIMEOUT_MS);
+  return () => {
+    disposed = true;
+    env.clearTimer(id);
+  };
 }
 
 type BrowserWindow = Window & {
