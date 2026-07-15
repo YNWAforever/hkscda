@@ -2,15 +2,12 @@ import { Link } from "@tanstack/react-router";
 import { Cat, Dog, Filter, Heart, MapPin } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import type {
-  AnimalStoryType,
-  ContentSummary,
-  RescuePublicStatus,
-} from "../../../lib/content/types";
+import type { PublicStorySummary } from "../../../lib/content/publicStoriesPage.types";
+import type { AnimalStoryType, RescuePublicStatus } from "../../../lib/content/types";
 import { filterStoryCards, publicStatusLabel } from "./storyPublicLogic";
 
 type StoryWallProps = {
-  stories: ContentSummary[];
+  stories: PublicStorySummary[];
 };
 
 const animalFilters: { value: AnimalStoryType | "all"; label: string }[] = [
@@ -125,7 +122,7 @@ export function StoryWall({ stories }: StoryWallProps) {
   );
 }
 
-function StoryCard({ story }: { story: ContentSummary }) {
+function StoryCard({ story }: { story: PublicStorySummary }) {
   const profile = story.storyProfile;
   if (!profile) return null;
   const PlaceholderIcon = profile.animalType === "dog" ? Dog : Cat;
