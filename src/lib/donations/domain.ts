@@ -1,12 +1,9 @@
 import { z } from "zod";
 
-export const donationPurposes = ["general", "medical", "sponsor"] as const;
-export const donationMethods = ["stripe", "paypal", "fps", "payme"] as const;
-export const donationLanguages = ["zh-HK", "en"] as const;
+import { donationLanguages, donationMethods, donationPurposes } from "./contracts";
 
-export type DonationPurpose = (typeof donationPurposes)[number];
-export type DonationMethod = (typeof donationMethods)[number];
-export type DonationLanguage = (typeof donationLanguages)[number];
+export { donationLanguages, donationMethods, donationPurposes } from "./contracts";
+export type { DonationLanguage, DonationMethod, DonationPurpose } from "./contracts";
 export type ConsentChannel = "email" | "whatsapp";
 export type ConsentStatus = "opt_in" | "opt_out";
 
