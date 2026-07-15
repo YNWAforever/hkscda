@@ -1,7 +1,8 @@
 import type {
   AnimalStoryType,
-  ContentSummary,
+  ContentType,
   RescuePublicStatus,
+  RescueStoryProfile,
 } from "../../../lib/content/types";
 
 export type StoryCardFilters = {
@@ -24,7 +25,12 @@ export function publicStatusLabel(status: RescuePublicStatus) {
   return labels[status];
 }
 
-export function filterStoryCards<T extends Pick<ContentSummary, "type" | "storyProfile">>(
+type FilterableStory = {
+  type: ContentType;
+  storyProfile: Pick<RescueStoryProfile, "animalType" | "publicStatus" | "rescueRegion"> | null;
+};
+
+export function filterStoryCards<T extends FilterableStory>(
   stories: T[],
   filters: StoryCardFilters,
 ) {

@@ -50,8 +50,6 @@ const data: PublicStoriesPageData = {
         publicMapLabel: null,
         publicLat: null,
         publicLng: null,
-        internalAddress: null,
-        internalLocationNotes: null,
         isFeatured: true,
       },
       latestPublicUpdate: null,
