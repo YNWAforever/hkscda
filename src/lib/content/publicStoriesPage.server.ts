@@ -13,6 +13,8 @@ type PublicStoriesPageService = {
   listPublicStoriesPage(input: unknown): Promise<PublicStoriesPageData>;
 };
 
+type PublicStoriesPageServiceFactory = () => PublicStoriesPageService;
+
 export function createPublicStoriesPageReader(service: PublicStoriesPageService) {
   return async (): Promise<PublicStoriesPageData> => {
     try {
@@ -23,11 +25,20 @@ export function createPublicStoriesPageReader(service: PublicStoriesPageService)
   };
 }
 
-export async function loadPublicStoriesPage() {
+function createPublicStoriesPageService() {
   const client = createSupabaseServiceClient();
-  const service = createContentService({
+  return createContentService({
     repo: createSupabaseContentRepository(client),
     publicBaseUrl: process.env.APP_URL ?? "http://localhost:5173",
   });
-  return createPublicStoriesPageReader(service)();
+}
+
+export async function loadPublicStoriesPage(
+  createService: PublicStoriesPageServiceFactory = createPublicStoriesPageService,
+) {
+  try {
+    return await createPublicStoriesPageReader(createService())();
+  } catch {
+    throw new Error("Could not load stories");
+  }
 }
