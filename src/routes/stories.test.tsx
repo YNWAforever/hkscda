@@ -87,8 +87,10 @@ describe("stories route", () => {
   test("renders only the Traditional Chinese load error", async () => {
     const { StoriesLoadError } = await import("./stories");
     const markup = renderToStaticMarkup(<StoriesLoadError />);
+    const visibleText = markup.replace(/<[^>]*>/g, "");
+    const providerDetail = "SupabaseError: connection refused";
 
-    expect(markup).toContain("暫時未能載入故事，請稍後再試。");
-    expect(markup).not.toContain("Lucky");
+    expect(visibleText).toBe("暫時未能載入故事，請稍後再試。");
+    expect(markup).not.toContain(providerDetail);
   });
 });
