@@ -1,120 +1,134 @@
-import { describe, expect, test } from "bun:test";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
-  MAP_IDLE_TIMEOUT_MS,
-  MAP_ROOT_MARGIN,
-  observeNearViewport,
-  scheduleIdlePreload,
+  scheduleDeferredMapPreload,
+  type DeferredMapPreloadHandle,
 } from "./deferredMapScheduling";
 
-type ObserverCallback = (entries: Array<{ isIntersecting: boolean }>) => void;
+describe("scheduleDeferredMapPreload", () => {
+  const savedIntersectionObserver = globalThis.IntersectionObserver;
+  const savedRequestIdleCallback = globalThis.requestIdleCallback;
+  const savedCancelIdleCallback = globalThis.cancelIdleCallback;
+  const savedSetTimeout = globalThis.setTimeout;
+  const savedClearTimeout = globalThis.clearTimeout;
 
-describe("observeNearViewport", () => {
-  test("observes with a 600px root margin, activates once, and disconnects", () => {
-    const target = {} as Element;
-    let callback: ObserverCallback | undefined;
-    let observedTarget: Element | undefined;
-    let disconnectCount = 0;
+  beforeEach(() => vi.restoreAllMocks());
 
-    const cleanup = observeNearViewport(
-      target,
-      () => {
-        activationCount += 1;
-      },
-      {
-        createObserver: (observerCallback, options) => {
-          callback = observerCallback;
-          expect(options.rootMargin).toBe(MAP_ROOT_MARGIN);
-          return {
-            observe: (observed) => {
-              observedTarget = observed;
-            },
-            disconnect: () => {
-              disconnectCount += 1;
-            },
-          };
-        },
-        setTimer: () => 0,
-        clearTimer: () => {},
-      },
-    );
-    let activationCount = 0;
-
-    expect(observedTarget).toBe(target);
-    callback?.([{ isIntersecting: false }]);
-    expect(activationCount).toBe(0);
-    callback?.([{ isIntersecting: true }, { isIntersecting: true }]);
-    callback?.([{ isIntersecting: true }]);
-    expect(activationCount).toBe(1);
-    expect(disconnectCount).toBe(1);
-
-    cleanup();
-    expect(disconnectCount).toBe(2);
+  afterEach(() => {
+    globalThis.IntersectionObserver = savedIntersectionObserver;
+    globalThis.requestIdleCallback = savedRequestIdleCallback;
+    globalThis.cancelIdleCallback = savedCancelIdleCallback;
+    globalThis.setTimeout = savedSetTimeout;
+    globalThis.clearTimeout = savedClearTimeout;
   });
 
-  test("activates immediately when observers are unavailable", () => {
-    let activationCount = 0;
+  it("registers the observer with the required preload margin", () => {
+    const observe = vi.fn();
+    const disconnect = vi.fn();
+    const Observer = vi.fn(function (this: IntersectionObserver) {
+      Object.assign(this, { observe, disconnect });
+    });
+    globalThis.IntersectionObserver = Observer as unknown as typeof IntersectionObserver;
 
-    const cleanup = observeNearViewport(
-      {} as Element,
-      () => {
-        activationCount += 1;
-      },
-      {
-        setTimer: () => 0,
-        clearTimer: () => {},
-      },
-    );
+    scheduleDeferredMapPreload(vi.fn());
 
-    cleanup();
-    expect(activationCount).toBe(1);
+    expect(Observer).toHaveBeenCalledWith(expect.any(Function), {
+      rootMargin: "600px",
+    });
+    expect(observe).toHaveBeenCalledTimes(1);
   });
-});
 
-describe("scheduleIdlePreload", () => {
-  test("uses an idle callback with a 2000ms timeout and cancels it", () => {
+  it("cancels the observer registration", () => {
+    const disconnect = vi.fn();
+    const Observer = vi.fn(function (this: IntersectionObserver) {
+      Object.assign(this, { observe: vi.fn(), disconnect });
+    });
+    globalThis.IntersectionObserver = Observer as unknown as typeof IntersectionObserver;
+
+    const handle = scheduleDeferredMapPreload(vi.fn());
+    handle.cancel();
+
+    expect(disconnect).toHaveBeenCalledTimes(1);
+  });
+
+  it("runs the captured idle callback exactly once", () => {
+    const preload = vi.fn();
+    let scheduledCallback: IdleRequestCallback | undefined;
+    globalThis.requestIdleCallback = vi.fn((callback: IdleRequestCallback) => {
+      scheduledCallback = callback;
+      return 17;
+    });
+    globalThis.cancelIdleCallback = vi.fn();
+
+    const handle: DeferredMapPreloadHandle = scheduleDeferredMapPreload(preload);
+    expect(preload).not.toHaveBeenCalled();
+
+    scheduledCallback?.({ didTimeout: false, timeRemaining: () => 50 });
+
+    expect(preload).toHaveBeenCalledTimes(1);
+    handle.cancel();
+    expect(globalThis.cancelIdleCallback).toHaveBeenCalledWith(17);
+  });
+
+  it("uses the timer fallback and runs the captured callback exactly once", () => {
+    const preload = vi.fn();
     let scheduledCallback: (() => void) | undefined;
-    let scheduledTimeout = 0;
-    let cancelledId = 0;
+    globalThis.requestIdleCallback = undefined;
+    globalThis.cancelIdleCallback = undefined;
+    globalThis.setTimeout = vi.fn((callback: () => void, delay?: number) => {
+      scheduledCallback = callback;
+      expect(delay).toBe(2000);
+      return 23 as unknown as ReturnType<typeof setTimeout>;
+    }) as unknown as typeof setTimeout;
+    globalThis.clearTimeout = vi.fn() as unknown as typeof clearTimeout;
 
-    const cleanup = scheduleIdlePreload(() => {}, {
-      requestIdle: (callback, options) => {
-        scheduledCallback = callback;
-        scheduledTimeout = options.timeout;
-        return 7;
-      },
-      cancelIdle: (id) => {
-        cancelledId = id;
-      },
-      setTimer: () => 0,
-      clearTimer: () => {},
-    });
+    const handle = scheduleDeferredMapPreload(preload);
+    expect(preload).not.toHaveBeenCalled();
 
-    expect(scheduledCallback).toBeDefined();
-    expect(scheduledTimeout).toBe(MAP_IDLE_TIMEOUT_MS);
-    cleanup();
-    expect(cancelledId).toBe(7);
+    scheduledCallback?.();
+
+    expect(preload).toHaveBeenCalledTimes(1);
+    handle.cancel();
+    expect(globalThis.clearTimeout).toHaveBeenCalledWith(23);
   });
 
-  test("uses and clears a 2000ms timer when idle callbacks are unavailable", () => {
-    let timerCallback: (() => void) | undefined;
-    let timerDelay = 0;
-    let clearedId = 0;
-
-    const cleanup = scheduleIdlePreload(() => {}, {
-      setTimer: (callback, delay) => {
-        timerCallback = callback;
-        timerDelay = delay;
-        return 11;
-      },
-      clearTimer: (id) => {
-        clearedId = id;
-      },
+  it("disconnects the observer after an intersecting entry", () => {
+    const preload = vi.fn();
+    const disconnect = vi.fn();
+    let observerCallback: IntersectionObserverCallback | undefined;
+    const Observer = vi.fn(function (
+      this: IntersectionObserver,
+      callback: IntersectionObserverCallback,
+    ) {
+      observerCallback = callback;
+      Object.assign(this, { observe: vi.fn(), disconnect });
     });
+    globalThis.IntersectionObserver = Observer as unknown as typeof IntersectionObserver;
+    globalThis.requestIdleCallback = vi.fn(() => 31);
+    globalThis.cancelIdleCallback = vi.fn();
 
-    expect(timerCallback).toBeDefined();
-    expect(timerDelay).toBe(MAP_IDLE_TIMEOUT_MS);
-    cleanup();
-    expect(clearedId).toBe(11);
+    scheduleDeferredMapPreload(preload);
+    observerCallback?.(
+      [{ isIntersecting: true } as IntersectionObserverEntry],
+      {} as IntersectionObserver,
+    );
+
+    expect(disconnect).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not preload after cancellation", () => {
+    const preload = vi.fn();
+    let scheduledCallback: IdleRequestCallback | undefined;
+    globalThis.requestIdleCallback = vi.fn((callback: IdleRequestCallback) => {
+      scheduledCallback = callback;
+      return 41;
+    });
+    globalThis.cancelIdleCallback = vi.fn();
+
+    const handle = scheduleDeferredMapPreload(preload);
+    handle.cancel();
+    scheduledCallback?.({ didTimeout: false, timeRemaining: () => 50 });
+
+    expect(preload).not.toHaveBeenCalled();
   });
 });
