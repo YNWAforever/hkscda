@@ -44,13 +44,14 @@ describe("RescueMap", () => {
     expect(markup).not.toContain('data-google-rescue-map="ready"');
   });
 
-  test("mounts the Google map canvas only when a key and points exist", async () => {
+  test("defers the Google map canvas while preserving the stable shell and story link", async () => {
     const { RescueMap } = await import("./RescueMap");
     const markup = renderToStaticMarkup(<RescueMap points={[makePoint(1)]} apiKey="test-key" />);
 
-    expect(markup).toContain('data-google-rescue-map="canvas"');
-    expect(markup).toContain('aria-label="Hong Kong rescue locations"');
-    expect(markup).not.toContain("card-dashed");
+    expect(markup).toContain('data-google-rescue-map="deferred"');
+    expect(markup).toContain("min-h-[300px]");
+    expect(markup).not.toContain('data-google-rescue-map="canvas"');
+    expect(markup).toContain('href="/stories/story-1"');
     expect(markup).not.toContain("test-key");
     expect(markup).not.toContain("internalAddress");
     expect(markup).not.toContain("internalLocationNotes");

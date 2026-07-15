@@ -1,10 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { CalendarDays, FileText, ShoppingBag } from "lucide-react";
 
-import type { ContentSummary, ContentType } from "../../../lib/content/types";
+import type { PublicStorySummary } from "../../../lib/content/publicStoriesPage.types";
+import type { ContentType } from "../../../lib/content/types";
 
 type StoryContentGridProps = {
-  items: ContentSummary[];
+  items: PublicStorySummary[];
 };
 
 const typeMeta: Record<

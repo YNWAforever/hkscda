@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Cat, Dog, MapPinned } from "lucide-react";
 
 import type { PublicStoryMapPoint } from "../../../lib/content/types";
-import { GoogleRescueMap } from "./GoogleRescueMap";
+import { DeferredGoogleRescueMap } from "./DeferredGoogleRescueMap";
 import { publicStatusLabel } from "./storyPublicLogic";
 
 type RescueMapProps = { points: PublicStoryMapPoint[]; apiKey?: string };
@@ -28,7 +28,7 @@ export function RescueMap({ points, apiKey }: RescueMapProps) {
 
         <div className="grid gap-4 md:grid-cols-[0.9fr_1.1fr]">
           {resolvedApiKey && points.length > 0 ? (
-            <GoogleRescueMap apiKey={resolvedApiKey} points={points} />
+            <DeferredGoogleRescueMap apiKey={resolvedApiKey} points={points} />
           ) : (
             <div className="rounded-md border border-[var(--color-border)] flex min-h-[300px] items-center justify-center bg-[var(--color-surface)] p-5 text-center text-sm text-[var(--color-text-muted)]">
               地圖暫時未能載入，請使用救援地點清單。
