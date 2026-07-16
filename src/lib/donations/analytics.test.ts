@@ -1,4 +1,4 @@
-﻿import { describe, expect, spyOn, test } from "bun:test";
+import { describe, expect, spyOn, test } from "bun:test";
 import * as baseAnalytics from "../analytics";
 import {
   markDonationEventOnce,
