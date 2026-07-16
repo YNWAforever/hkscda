@@ -92,7 +92,14 @@ export function saveCheckoutSnapshot(
   if (!storage) return false;
 
   try {
-    storage.setItem(`${checkoutStoragePrefix}:${donationId}`, JSON.stringify(snapshot));
+    const safeSnapshot: DonationCheckoutSnapshot = {
+      context: snapshot.context,
+      purpose: snapshot.purpose,
+      method: snapshot.method,
+      value: snapshot.value,
+      currency: snapshot.currency,
+    };
+    storage.setItem(`${checkoutStoragePrefix}:${donationId}`, JSON.stringify(safeSnapshot));
     return true;
   } catch {
     return false;
@@ -112,7 +119,7 @@ function isCheckoutSnapshot(value: unknown): value is DonationCheckoutSnapshot {
     typeof snapshot.value === "number" &&
     Number.isFinite(snapshot.value) &&
     typeof snapshot.currency === "string" &&
-    snapshot.currency.length > 0
+    snapshot.currency.trim().length > 0
   );
 }
 
@@ -124,7 +131,14 @@ export function readCheckoutSnapshot(donationId: string): DonationCheckoutSnapsh
     const raw = storage.getItem(`${checkoutStoragePrefix}:${donationId}`);
     if (!raw) return undefined;
     const parsed: unknown = JSON.parse(raw);
-    return isCheckoutSnapshot(parsed) ? parsed : undefined;
+    if (!isCheckoutSnapshot(parsed)) return undefined;
+    return {
+      context: parsed.context,
+      purpose: parsed.purpose,
+      method: parsed.method,
+      value: parsed.value,
+      currency: parsed.currency,
+    };
   } catch {
     return undefined;
   }

@@ -14,10 +14,14 @@ const sessionStorageMock = {
   setItem: (key: string, value: string) => sessionValues.set(key, value),
 };
 
-Object.defineProperty(globalThis, "sessionStorage", {
-  configurable: true,
-  value: sessionStorageMock,
-});
+function installSessionStorage(value: unknown) {
+  Object.defineProperty(globalThis, "sessionStorage", {
+    configurable: true,
+    value,
+  });
+}
+
+installSessionStorage(sessionStorageMock);
 
 const attribution = {
   source: "contextual-cta" as const,
@@ -26,6 +30,16 @@ const attribution = {
   placement: "mobile-bottom" as const,
   trigger: "scroll" as const,
 };
+
+const checkoutSnapshot = {
+  context: "story" as const,
+  purpose: "general" as const,
+  method: "stripe" as const,
+  value: 250,
+  currency: "HKD",
+};
+
+const checkoutKey = "hkscda:donation-checkout:donation-1";
 
 describe("donation analytics", () => {
   test("sends only controlled non-PII parameters", () => {
@@ -48,6 +62,7 @@ describe("donation analytics", () => {
   });
 
   test("marks an event only once per session journey", () => {
+    installSessionStorage(sessionStorageMock);
     sessionStorage.clear();
     expect(markDonationEventOnce("donation_cta_impression", "journey-1")).toBe(true);
     expect(markDonationEventOnce("donation_cta_impression", "journey-1")).toBe(false);
@@ -55,16 +70,55 @@ describe("donation analytics", () => {
   });
 
   test("round-trips an analytics-safe checkout snapshot", () => {
+    installSessionStorage(sessionStorageMock);
     sessionStorage.clear();
-    const snapshot = {
-      context: "story" as const,
-      purpose: "general" as const,
-      method: "stripe" as const,
-      value: 250,
-      currency: "HKD",
-    };
-    expect(saveCheckoutSnapshot("donation-1", snapshot)).toBe(true);
-    expect(readCheckoutSnapshot("donation-1")).toEqual(snapshot);
+    expect(saveCheckoutSnapshot("donation-1", checkoutSnapshot)).toBe(true);
+    expect(readCheckoutSnapshot("donation-1")).toEqual(checkoutSnapshot);
     expect(readCheckoutSnapshot("missing")).toBeUndefined();
+  });
+
+  test("does not persist or return extra checkout fields", () => {
+    installSessionStorage(sessionStorageMock);
+    sessionStorage.clear();
+    expect(
+      saveCheckoutSnapshot("donation-1", {
+        ...checkoutSnapshot,
+        email: "private@example.com",
+      } as never),
+    ).toBe(true);
+    expect(JSON.parse(sessionStorage.getItem(checkoutKey)!)).toEqual(checkoutSnapshot);
+    expect(readCheckoutSnapshot("donation-1")).toEqual(checkoutSnapshot);
+  });
+
+  test("rejects malformed checkout snapshots", () => {
+    installSessionStorage(sessionStorageMock);
+    sessionStorage.clear();
+    sessionStorageMock.setItem(checkoutKey, "{not-json");
+    expect(readCheckoutSnapshot("donation-1")).toBeUndefined();
+    sessionStorageMock.setItem(checkoutKey, JSON.stringify({ ...checkoutSnapshot, value: null }));
+    expect(readCheckoutSnapshot("donation-1")).toBeUndefined();
+    sessionStorageMock.setItem(checkoutKey, JSON.stringify({ ...checkoutSnapshot, currency: " " }));
+    expect(readCheckoutSnapshot("donation-1")).toBeUndefined();
+  });
+
+  test("handles unavailable and throwing session storage", () => {
+    installSessionStorage(undefined);
+    expect(markDonationEventOnce("donation_cta_impression", "journey-1")).toBe(false);
+    expect(saveCheckoutSnapshot("donation-1", checkoutSnapshot)).toBe(false);
+    expect(readCheckoutSnapshot("donation-1")).toBeUndefined();
+
+    installSessionStorage({
+      getItem: () => {
+        throw new Error("blocked");
+      },
+      setItem: () => {
+        throw new Error("blocked");
+      },
+    });
+    expect(markDonationEventOnce("donation_cta_impression", "journey-1")).toBe(false);
+    expect(saveCheckoutSnapshot("donation-1", checkoutSnapshot)).toBe(false);
+    expect(readCheckoutSnapshot("donation-1")).toBeUndefined();
+
+    installSessionStorage(sessionStorageMock);
   });
 });
