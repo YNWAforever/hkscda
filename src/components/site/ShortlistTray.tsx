@@ -2,9 +2,11 @@ import { Link } from "@tanstack/react-router";
 import { Heart, X } from "lucide-react";
 
 import { useShortlist } from "./ShortlistContext";
+import { useFixedActionRegistration } from "./fixedActions/PublicFixedActions";
 
 export function ShortlistTray() {
   const { items, message, persistenceWarning, clearMessage, removeItem } = useShortlist();
+  const shortlistRef = useFixedActionRegistration("shortlist", items.length > 0);
   const adoptionItems = items.filter((item) => item.intent === "adoption");
   const sponsorshipItems = items.filter((item) => item.intent === "sponsorship");
   const firstRankedAdoptionItem = [...adoptionItems].sort(
@@ -15,8 +17,10 @@ export function ShortlistTray() {
 
   return (
     <aside
+      ref={shortlistRef}
       aria-live="polite"
-      className="fixed inset-x-3 bottom-3 z-40 mx-auto max-w-4xl rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-panel"
+      className="fixed inset-x-3 z-40 mx-auto max-w-4xl rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-panel"
+      style={{ bottom: "calc(env(safe-area-inset-bottom) + 0.75rem)" }}
     >
       <div className="flex flex-wrap items-center gap-3 px-4 py-3">
         <div className="flex min-w-0 flex-1 items-center gap-2">
