@@ -1,0 +1,131 @@
+import { gtagEvent } from "../analytics";
+import type { DonationAttribution } from "./attribution";
+import {
+  donationContexts,
+  donationMethods,
+  donationPurposes,
+  type DonationContext,
+  type DonationMethod,
+  type DonationPurpose,
+} from "./contracts";
+
+export type DonationAnalyticsEvent =
+  | "donation_cta_impression"
+  | "donation_cta_click"
+  | "donation_form_view"
+  | "begin_checkout"
+  | "donation_success";
+
+export type DonationAnalyticsParams = {
+  attribution?: DonationAttribution;
+  method?: DonationMethod;
+  value?: number;
+  currency?: string;
+};
+
+export type DonationCheckoutSnapshot = {
+  context: DonationContext;
+  purpose: DonationPurpose;
+  method: DonationMethod;
+  value: number;
+  currency: string;
+};
+
+const eventStoragePrefix = "hkscda:donation-event";
+const checkoutStoragePrefix = "hkscda:donation-checkout";
+
+function getSessionStorage(): Storage | undefined {
+  try {
+    return typeof sessionStorage === "undefined" ? undefined : sessionStorage;
+  } catch {
+    return undefined;
+  }
+}
+
+function attributionParams(attribution: DonationAttribution) {
+  return {
+    context: attribution.context,
+    purpose: attribution.purpose,
+    placement: attribution.placement,
+    trigger: attribution.trigger,
+  };
+}
+
+export function trackDonationEvent(
+  event: DonationAnalyticsEvent,
+  params: DonationAnalyticsParams = {},
+) {
+  if (event === "begin_checkout" || event === "donation_success") {
+    const attribution = params.attribution;
+    gtagEvent(event, {
+      context: attribution?.context,
+      purpose: attribution?.purpose,
+      method: params.method,
+      value: params.value,
+      currency: params.currency,
+    });
+    return;
+  }
+
+  gtagEvent(event, params.attribution ? attributionParams(params.attribution) : {});
+}
+
+export function markDonationEventOnce(event: DonationAnalyticsEvent, journeyKey: string): boolean {
+  const storage = getSessionStorage();
+  if (!storage) return false;
+
+  const key = `${eventStoragePrefix}:${event}:${journeyKey}`;
+  try {
+    if (storage.getItem(key) !== null) return false;
+    storage.setItem(key, "1");
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function saveCheckoutSnapshot(
+  donationId: string,
+  snapshot: DonationCheckoutSnapshot,
+): boolean {
+  const storage = getSessionStorage();
+  if (!storage) return false;
+
+  try {
+    storage.setItem(`${checkoutStoragePrefix}:${donationId}`, JSON.stringify(snapshot));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function isCheckoutSnapshot(value: unknown): value is DonationCheckoutSnapshot {
+  if (!value || typeof value !== "object") return false;
+  const snapshot = value as Record<string, unknown>;
+  return (
+    typeof snapshot.context === "string" &&
+    donationContexts.includes(snapshot.context as DonationContext) &&
+    typeof snapshot.purpose === "string" &&
+    donationPurposes.includes(snapshot.purpose as DonationPurpose) &&
+    typeof snapshot.method === "string" &&
+    donationMethods.includes(snapshot.method as DonationMethod) &&
+    typeof snapshot.value === "number" &&
+    Number.isFinite(snapshot.value) &&
+    typeof snapshot.currency === "string" &&
+    snapshot.currency.length > 0
+  );
+}
+
+export function readCheckoutSnapshot(donationId: string): DonationCheckoutSnapshot | undefined {
+  const storage = getSessionStorage();
+  if (!storage) return undefined;
+
+  try {
+    const raw = storage.getItem(`${checkoutStoragePrefix}:${donationId}`);
+    if (!raw) return undefined;
+    const parsed: unknown = JSON.parse(raw);
+    return isCheckoutSnapshot(parsed) ? parsed : undefined;
+  } catch {
+    return undefined;
+  }
+}
