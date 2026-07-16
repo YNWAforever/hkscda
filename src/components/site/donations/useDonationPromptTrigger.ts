@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer } from "react";
+import { useCallback, useEffect, useReducer, useRef } from "react";
 
 import {
   initialPromptTriggerState,
@@ -10,6 +10,10 @@ const dismissalKey = "hkscda:donation-prompt:dismissed";
 const triggerDelay = 10_000;
 const minimumScrollProgress = 0.35;
 
+export function isPromptStateCurrent(statePathname: string, pathname: string) {
+  return statePathname === pathname;
+}
+
 function isDismissed() {
   try {
     return sessionStorage.getItem(dismissalKey) !== null;
@@ -20,8 +24,11 @@ function isDismissed() {
 
 export function useDonationPromptTrigger(pathname: string, enabled: boolean) {
   const [state, dispatch] = useReducer(reducePromptTrigger, initialPromptTriggerState);
+  const statePathnameRef = useRef(pathname);
+  const stateBelongsToPath = isPromptStateCurrent(statePathnameRef.current, pathname);
 
   useEffect(() => {
+    statePathnameRef.current = pathname;
     const dismissed = isDismissed();
     dispatch({ type: "reset", dismissed });
     if (!enabled || dismissed) return;
@@ -68,5 +75,9 @@ export function useDonationPromptTrigger(pathname: string, enabled: boolean) {
     dispatch({ type: "dismiss" });
   }, []);
 
-  return { visible: state.visible && enabled, trigger: state.trigger, dismiss };
+  return {
+    visible: stateBelongsToPath && state.visible && enabled,
+    trigger: stateBelongsToPath ? state.trigger : undefined,
+    dismiss,
+  };
 }

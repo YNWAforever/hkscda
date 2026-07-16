@@ -36,7 +36,7 @@ export function DonationPromptSurface({
       ref={register}
       data-donation-prompt
       aria-label="捐助提示"
-      className="fixed inset-x-3 z-40 mx-auto max-w-sm animate-in fade-in slide-in-from-bottom-2 duration-200 motion-reduce:animate-none md:left-6 md:right-auto md:mx-0"
+      className="fixed inset-x-3 z-40 mx-auto animate-in fade-in slide-in-from-bottom-2 duration-200 motion-reduce:animate-none md:left-6 md:right-auto md:mx-0 md:max-w-sm"
       style={{ bottom: "calc(env(safe-area-inset-bottom) + var(--donation-prompt-bottom))" }}
     >
       <div className="flex items-center gap-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-3 shadow-panel">
