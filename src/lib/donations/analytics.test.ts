@@ -77,6 +77,25 @@ describe("donation analytics", () => {
     expect(readCheckoutSnapshot("missing")).toBeUndefined();
   });
 
+  test.each([
+    ["context", { context: "unknown" }],
+    ["purpose", { purpose: "unknown" }],
+    ["method", { method: "unknown" }],
+    ["value", { value: Number.NaN }],
+    ["currency", { currency: "   " }],
+  ])("rejects invalid checkout %s before persisting", (_field, invalidField) => {
+    installSessionStorage(sessionStorageMock);
+    sessionStorage.clear();
+
+    expect(
+      saveCheckoutSnapshot("donation-1", {
+        ...checkoutSnapshot,
+        ...invalidField,
+      } as never),
+    ).toBe(false);
+    expect(sessionStorage.getItem(checkoutKey)).toBeNull();
+  });
+
   test("does not persist or return extra checkout fields", () => {
     installSessionStorage(sessionStorageMock);
     sessionStorage.clear();
