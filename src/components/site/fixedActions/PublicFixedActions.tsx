@@ -7,8 +7,10 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type Dispatch,
   type ReactNode,
   type RefCallback,
+  type SetStateAction,
 } from "react";
 
 import { calculateFixedActionLayout } from "./fixedActionLayout";
@@ -17,7 +19,7 @@ type FixedActionName = "shortlist" | "donation";
 
 type PublicFixedActionsContextValue = {
   helpOpen: boolean;
-  setHelpOpen: (open: boolean) => void;
+  setHelpOpen: Dispatch<SetStateAction<boolean>>;
   setFixedActionHeight: (name: FixedActionName, height: number) => void;
 };
 
