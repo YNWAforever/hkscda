@@ -100,7 +100,6 @@ export function saveCheckoutSnapshot(
       currency: snapshot.currency,
     };
     if (!isCheckoutSnapshot(safeSnapshot)) return false;
-    if (!isCheckoutSnapshot(safeSnapshot)) return false;
     storage.setItem(`${checkoutStoragePrefix}:${donationId}`, JSON.stringify(safeSnapshot));
     return true;
   } catch {
