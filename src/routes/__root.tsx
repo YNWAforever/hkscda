@@ -16,6 +16,7 @@ import { PublicStateShell } from "../components/site/PublicStateShell";
 import { ShortlistProvider } from "../components/site/ShortlistProvider";
 import { ShortlistTray } from "../components/site/ShortlistTray";
 import { PublicFixedActionsProvider } from "../components/site/fixedActions/PublicFixedActions";
+import { ContextualDonationPrompt } from "../components/site/donations/ContextualDonationPrompt";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -164,6 +165,7 @@ function RootComponent() {
       </div>
       <Footer />
       <ShortlistTray />
+      <ContextualDonationPrompt pathname={location.pathname} />
       <HelpWidget />
     </>
   );
