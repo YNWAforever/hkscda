@@ -82,6 +82,27 @@ describe("donation analytics", () => {
     expect(spy.mock.calls[0]?.[1]).not.toHaveProperty("donation_id");
     spy.mockRestore();
   });
+  test("retains full controlled attribution for donation success", () => {
+    const spy = spyOn(baseAnalytics, "gtagEvent");
+    trackDonationEvent("donation_success", {
+      attribution,
+      method: "stripe",
+      value: 250,
+      currency: "HKD",
+      donationId: "private-donation-id",
+    } as never);
+    expect(spy.mock.calls[0]?.[1]).toEqual({
+      context: "story",
+      purpose: "general",
+      placement: "mobile-bottom",
+      trigger: "scroll",
+      method: "stripe",
+      value: 250,
+      currency: "HKD",
+    });
+    expect(spy.mock.calls[0]?.[1]).not.toHaveProperty("donation_id");
+    spy.mockRestore();
+  });
   test("marks an event only once per session journey", () => {
     installSessionStorage(sessionStorageMock);
     sessionStorage.clear();
