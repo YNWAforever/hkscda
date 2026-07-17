@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { donationAttributionSchema } from "./attribution";
 import { donationLanguages, donationMethods, donationPurposes } from "./contracts";
 
 export { donationLanguages, donationMethods, donationPurposes } from "./contracts";
@@ -36,6 +37,7 @@ export const donationRequestSchema = z.object({
     email: z.boolean(),
     whatsapp: z.boolean(),
   }),
+  attribution: donationAttributionSchema.optional(),
 });
 
 export type DonationRequest = z.infer<typeof donationRequestSchema>;

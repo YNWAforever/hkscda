@@ -16,6 +16,35 @@ function readMigrationBySuffix(suffix: string) {
 }
 
 describe("supabase migration safety", () => {
+  test("adds controlled nullable donation acquisition attribution", () => {
+    const sql = readMigration("20260716120000_contextual_donation_attribution.sql");
+
+    for (const column of [
+      "acquisition_source text",
+      "acquisition_context text",
+      "acquisition_placement text",
+      "acquisition_trigger text",
+    ]) {
+      expect(sql).toContain(`add column if not exists ${column}`);
+    }
+
+    expect(sql).toContain("drop constraint if exists donation_acquisition_source_check");
+    expect(sql).toContain("acquisition_source is null or acquisition_source = 'contextual-cta'");
+    expect(sql).toContain("drop constraint if exists donation_acquisition_context_check");
+    expect(sql).toContain(
+      "acquisition_context is null or acquisition_context in ('general','story','animal','sponsor','transparency','community')",
+    );
+    expect(sql).toContain("drop constraint if exists donation_acquisition_placement_check");
+    expect(sql).toContain(
+      "acquisition_placement is null or acquisition_placement in ('mobile-bottom','desktop-left')",
+    );
+    expect(sql).toContain("drop constraint if exists donation_acquisition_trigger_check");
+    expect(sql).toContain(
+      "acquisition_trigger is null or acquisition_trigger in ('scroll','timer')",
+    );
+    expect(sql).not.toMatch(/\b(grant|revoke|policy|row level security|rls)\b/i);
+  });
+
   test("tightens adoption application PII access to staff and admins", () => {
     const sql = readMigration("20260626201620_secure_adoption_applications_policy.sql");
 
