@@ -25,35 +25,78 @@ function fail(message) {
 }
 
 function rectanglesOverlap(left, right) {
+  const leftRight = left.x + left.width;
+  const leftBottom = left.y + left.height;
+  const rightRight = right.x + right.width;
+  const rightBottom = right.y + right.height;
+
   return !(
-    left.right <= right.left ||
-    right.right <= left.left ||
-    left.bottom <= right.top ||
-    right.bottom <= left.top
+    leftRight <= right.x ||
+    rightRight <= left.x ||
+    leftBottom <= right.y ||
+    rightBottom <= left.y
   );
 }
 
 async function assertNoOverlap(page, selectors) {
-  const boxes = await Promise.all(
-    selectors.map(async (selector) => {
-      const box = await page.locator(selector).boundingBox();
-      if (!box) fail(`missing bounding box for ${selector}`);
-      return { selector, ...box };
-    }),
-  );
+  const boxes = await page.evaluate((requestedSelectors) => {
+    return requestedSelectors.map((selector) => {
+      const element = document.querySelector(selector);
+      if (!element) return null;
+
+      const box = element.getBoundingClientRect();
+      return {
+        selector,
+        x: box.x,
+        y: box.y,
+        width: box.width,
+        height: box.height,
+      };
+    });
+  }, selectors);
+
+  for (const [index, box] of boxes.entries()) {
+    if (!box) fail("missing bounding box for " + selectors[index]);
+  }
 
   for (let leftIndex = 0; leftIndex < boxes.length; leftIndex += 1) {
     for (let rightIndex = leftIndex + 1; rightIndex < boxes.length; rightIndex += 1) {
-      if (rectanglesOverlap(boxes[leftIndex], boxes[rightIndex])) {
-        fail(`overlap between ${boxes[leftIndex].selector} and ${boxes[rightIndex].selector}`);
+      const left = boxes[leftIndex];
+      const right = boxes[rightIndex];
+      if (left && right && rectanglesOverlap(left, right)) {
+        fail("overlap between " + left.selector + " and " + right.selector);
       }
     }
   }
 }
 
+async function waitForPageUrl(page, predicate, description) {
+  const deadline = Date.now() + 30_000;
+
+  while (Date.now() < deadline) {
+    const url = page.url();
+    if (predicate(url)) return url;
+    await page.waitForTimeout(100);
+  }
+
+  fail("timed out waiting for " + description + " (current URL: " + page.url() + ")");
+}
+
 async function waitForDonationPrompt(page) {
   const prompt = page.locator("[data-donation-prompt]");
   await prompt.waitFor({ state: "visible", timeout: 15_000 });
+  await page.waitForFunction(
+    () => {
+      const promptElement = document.querySelector("[data-donation-prompt]");
+      const shortlistElement = document.querySelector('aside[aria-live="polite"]');
+      if (!promptElement || !shortlistElement) return true;
+
+      const promptBox = promptElement.getBoundingClientRect();
+      const shortlistBox = shortlistElement.getBoundingClientRect();
+      return promptBox.bottom <= shortlistBox.top || shortlistBox.bottom <= promptBox.top;
+    },
+    { timeout: 5_000 },
+  );
   return prompt;
 }
 
@@ -139,10 +182,11 @@ async function verifyDonationAnalytics(browser) {
     };
   });
   const page = await context.newPage();
+
   const donationId = "f8dce8fa-83f4-4d5f-b0b0-fbc3348efb7a";
   let statusCalls = 0;
 
-  await context.route("**/api/donations", async (route) => {
+  await context.route("**/api/donations**", async (route) => {
     await route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -165,12 +209,28 @@ async function verifyDonationAnalytics(browser) {
   try {
     await page.goto(`${baseUrl}/about`, { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(10_500);
+    await waitForDonationPrompt(page);
     await page.locator("[data-donation-prompt] a").click();
-    await page.waitForURL(/\/donate\?/);
+    await waitForPageUrl(page, (url) => new URL(url).pathname === "/donate", "donate route");
+    await page.locator("#donor-name").waitFor({ state: "visible", timeout: 30_000 });
+    await page.waitForLoadState("domcontentloaded");
+    await page.waitForTimeout(3_000);
     await page.locator("#donor-name").fill("Verification Donor");
     await page.locator("#donor-email").fill("verification@example.com");
     await page.locator('button[type="submit"]').click();
-    await page.waitForURL(/status=success/);
+
+    await waitForPageUrl(
+      page,
+      (url) => new URL(url).searchParams.get("status") === "success",
+      "successful donation route",
+    );
+    await page.waitForLoadState("domcontentloaded");
+
+    const firstStatusDeadline = Date.now() + 30_000;
+    while (statusCalls < 1 && Date.now() < firstStatusDeadline) {
+      await page.waitForTimeout(100);
+    }
+    if (statusCalls < 1) fail("donation status polling did not start");
     await page.waitForTimeout(500);
 
     let events = await page.evaluate(() =>
@@ -180,7 +240,12 @@ async function verifyDonationAnalytics(browser) {
       fail("donation_success emitted before server success confirmation");
     }
 
-    await page.waitForTimeout(2_000);
+    const successStatusDeadline = Date.now() + 10_000;
+    while (statusCalls < 2 && Date.now() < successStatusDeadline) {
+      await page.waitForTimeout(100);
+    }
+    if (statusCalls < 2) fail("donation status polling did not confirm success");
+    await page.waitForTimeout(250);
     events = await page.evaluate(() =>
       JSON.parse(localStorage.getItem("hkscda:verification:donation-events") ?? "[]"),
     );
