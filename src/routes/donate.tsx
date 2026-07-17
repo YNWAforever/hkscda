@@ -17,9 +17,11 @@ import { brand } from "../lib/brand/brand";
 import { extractDonationAttribution, donateSearchSchema } from "../lib/donations/donateSearch";
 import {
   markDonationEventOnce,
+  readCheckoutSnapshot,
   saveCheckoutSnapshot,
   trackDonationEvent,
 } from "../lib/donations/analytics";
+import { pollDonationSucceeded } from "../lib/donations/publicStatus";
 import { centsToHkd, type DonationMethod, type DonationPurpose } from "../lib/donations/domain";
 import { BrandLogo } from "../components/site/BrandLogo";
 import { TurnstileWidget, turnstileEnabled } from "../components/site/TurnstileWidget";
@@ -168,6 +170,34 @@ function DonatePage() {
       trackDonationEvent("donation_form_view", { attribution });
     }
   }, [attribution]);
+
+  useEffect(() => {
+    const donationId = search.donation;
+    if (!donationId || (search.status !== "success" && search.status !== "paypal-approved")) {
+      return;
+    }
+
+    const snapshot = readCheckoutSnapshot(donationId);
+    if (!snapshot) return;
+
+    let active = true;
+    void pollDonationSucceeded(donationId).then((confirmed) => {
+      if (!active || !confirmed) return;
+      if (markDonationEventOnce("donation_success", donationId)) {
+        trackDonationEvent("donation_success", {
+          context: snapshot.context,
+          purpose: snapshot.purpose,
+          method: snapshot.method,
+          value: snapshot.value,
+          currency: snapshot.currency,
+        });
+      }
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [search.donation, search.status]);
 
   const amountHkd = useMemo(() => {
     const parsedCustom = Number(customAmount);

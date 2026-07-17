@@ -18,6 +18,8 @@ export type DonationAnalyticsEvent =
 
 export type DonationAnalyticsParams = {
   attribution?: DonationAttribution;
+  context?: DonationContext;
+  purpose?: DonationPurpose;
   method?: DonationMethod;
   value?: number;
   currency?: string;
@@ -51,14 +53,24 @@ function attributionParams(attribution: DonationAttribution) {
   };
 }
 
+function controlledContextParams(params: DonationAnalyticsParams) {
+  return {
+    ...(params.context ? { context: params.context } : {}),
+    ...(params.purpose ? { purpose: params.purpose } : {}),
+  };
+}
+
 export function trackDonationEvent(
   event: DonationAnalyticsEvent,
   params: DonationAnalyticsParams = {},
 ) {
+  const attributionParamsValue = params.attribution
+    ? attributionParams(params.attribution)
+    : controlledContextParams(params);
+
   if (event === "begin_checkout" || event === "donation_success") {
-    const attribution = params.attribution;
     gtagEvent(event, {
-      ...(attribution ? attributionParams(attribution) : {}),
+      ...attributionParamsValue,
       method: params.method,
       value: params.value,
       currency: params.currency,
@@ -66,7 +78,7 @@ export function trackDonationEvent(
     return;
   }
 
-  gtagEvent(event, params.attribution ? attributionParams(params.attribution) : {});
+  gtagEvent(event, attributionParamsValue);
 }
 
 export function markDonationEventOnce(event: DonationAnalyticsEvent, journeyKey: string): boolean {
