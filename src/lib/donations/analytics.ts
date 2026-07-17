@@ -58,8 +58,7 @@ export function trackDonationEvent(
   if (event === "begin_checkout" || event === "donation_success") {
     const attribution = params.attribution;
     gtagEvent(event, {
-      context: attribution?.context,
-      purpose: attribution?.purpose,
+      ...(attribution ? attributionParams(attribution) : {}),
       method: params.method,
       value: params.value,
       currency: params.currency,
