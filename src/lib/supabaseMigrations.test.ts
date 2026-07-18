@@ -16,6 +16,17 @@ function readMigrationBySuffix(suffix: string) {
 }
 
 describe("supabase migration safety", () => {
+  test("adds publish-safe public documents and bounded donation purpose notes", () => {
+    const sql = readMigration("20260718100000_public_documents_and_donation_purpose.sql");
+    expect(sql).toContain("create table if not exists public.document_assets");
+    expect(sql).toContain("unique (slot_key, language)");
+    expect(sql).toContain("alter table public.donation add column if not exists custom_purpose text");
+    expect(sql).toContain("check (custom_purpose is null or char_length(custom_purpose) <= 200)");
+    expect(sql).toContain("revoke all on public.document_assets from anon, authenticated");
+    expect(sql).toContain("values ('site-documents', 'site-documents', true, 52428800");
+    expect(sql).toContain("'donation_receipt_template_url'");
+  });
+
   test("adds controlled nullable donation acquisition attribution", () => {
     const sql = readMigration("20260716120000_contextual_donation_attribution.sql");
 
