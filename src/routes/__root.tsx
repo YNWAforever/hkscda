@@ -15,6 +15,8 @@ import { HelpWidget } from "../components/site/help/HelpWidget";
 import { PublicStateShell } from "../components/site/PublicStateShell";
 import { ShortlistProvider } from "../components/site/ShortlistProvider";
 import { ShortlistTray } from "../components/site/ShortlistTray";
+import { PublicFixedActionsProvider } from "../components/site/fixedActions/PublicFixedActions";
+import { ContextualDonationPrompt } from "../components/site/donations/ContextualDonationPrompt";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -26,7 +28,11 @@ function NotFoundComponent() {
     <PublicStateShell
       title="找不到頁面"
       description="您要找的頁面不存在或已移動。"
-      action={<Link to="/" className="btn-primary min-h-11 px-5">返回主頁</Link>}
+      action={
+        <Link to="/" className="btn-primary min-h-11 px-5">
+          返回主頁
+        </Link>
+      }
     />
   );
 }
@@ -42,14 +48,23 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
       role="alert"
       title="頁面未能載入"
       description="系統出現問題。您可以嘗試重新整理或返回主頁。"
-      action={(
+      action={
         <div className="flex flex-wrap justify-center gap-2">
-          <button type="button" onClick={() => { router.invalidate(); reset(); }} className="btn-primary min-h-11 px-5">
+          <button
+            type="button"
+            onClick={() => {
+              router.invalidate();
+              reset();
+            }}
+            className="btn-primary min-h-11 px-5"
+          >
             重新整理
           </button>
-          <Link to="/" className="btn-secondary min-h-11 px-5">返回主頁</Link>
+          <Link to="/" className="btn-secondary min-h-11 px-5">
+            返回主頁
+          </Link>
         </div>
-      )}
+      }
     />
   );
 }
@@ -150,6 +165,7 @@ function RootComponent() {
       </div>
       <Footer />
       <ShortlistTray />
+      <ContextualDonationPrompt pathname={location.pathname} />
       <HelpWidget />
     </>
   );
@@ -162,7 +178,7 @@ function RootComponent() {
         </div>
       ) : (
         <ShortlistProvider>
-          <div className="site-shell min-h-dvh">{publicContent}</div>
+          <PublicFixedActionsProvider>{publicContent}</PublicFixedActionsProvider>
         </ShortlistProvider>
       )}
     </QueryClientProvider>

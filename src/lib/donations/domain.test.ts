@@ -35,6 +35,33 @@ describe("donation domain", () => {
     expect(parsed.donor.phone).toBe("9123 4567");
   });
 
+  test("accepts controlled donation attribution and rejects unknown contexts", () => {
+    const attribution = {
+      source: "contextual-cta",
+      context: "animal",
+      purpose: "medical",
+      placement: "mobile-bottom",
+      trigger: "scroll",
+    };
+    const input = {
+      amountCents: 30000,
+      currency: "HKD",
+      purpose: "medical",
+      method: "stripe",
+      receiptRequested: true,
+      donor: { name: "Ada", email: "ada@example.com", language: "en" },
+      consents: { email: true, whatsapp: false },
+      attribution,
+    };
+
+    expect(donationRequestSchema.parse(input).attribution).toEqual(attribution);
+    expect(() =>
+      donationRequestSchema.parse({
+        ...input,
+        attribution: { ...attribution, context: "unknown" },
+      }),
+    ).toThrow();
+  });
   test("rejects non-integer money and unsupported currency", () => {
     expect(() =>
       donationRequestSchema.parse({

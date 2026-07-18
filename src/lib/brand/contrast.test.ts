@@ -35,7 +35,7 @@ describe("public brand tokens", () => {
 
     const root = await Bun.file("src/routes/__root.tsx").text();
     expect(root).toContain('className="admin-shell min-h-dvh"');
-    expect(root).toContain('className="site-shell min-h-dvh"');
+    expect(root).toContain("<PublicFixedActionsProvider>");
     expect(root).toContain("Noto+Sans+HK");
     expect(root).not.toContain("Baloo+2");
   });

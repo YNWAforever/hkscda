@@ -5,15 +5,18 @@ import type { DonationRepository, PaymentProviders } from "./service";
 
 function createFakeRepository(): DonationRepository & {
   supporterConsents: unknown[];
+  donations: unknown[];
   payments: unknown[];
 } {
   const supporter = { id: "supporter-1", email: "donor@example.com" };
   const donation = { id: "f8dce8fa-83f4-4d5f-b0b0-fbc3348efb7a", amount_cents: 30000 };
   const payments: unknown[] = [];
+  const donations: unknown[] = [];
   const supporterConsents: unknown[] = [];
 
   return {
     supporterConsents,
+    donations,
     payments,
     async upsertSupporter() {
       return supporter;
@@ -22,7 +25,8 @@ function createFakeRepository(): DonationRepository & {
     async replaceConsents(rows) {
       supporterConsents.push(...rows);
     },
-    async createDonation() {
+    async createDonation(input) {
+      donations.push(input);
       return donation;
     },
     async createPayment(payment) {
@@ -89,6 +93,12 @@ describe("createDonation", () => {
       status: "pending",
     });
     expect(repository.supporterConsents).toHaveLength(2);
+    expect(repository.donations[0]).toMatchObject({
+      acquisition_source: null,
+      acquisition_context: null,
+      acquisition_placement: null,
+      acquisition_trigger: null,
+    });
   });
 
   test("compensates by deleting the donation and payment when checkout fails", async () => {
@@ -127,7 +137,17 @@ describe("createDonation", () => {
     const repository = createFakeRepository();
 
     const result = await createDonation({
-      input: { ...baseInput, method: "stripe" as const },
+      input: {
+        ...baseInput,
+        method: "stripe" as const,
+        attribution: {
+          source: "contextual-cta" as const,
+          context: "animal" as const,
+          purpose: "medical" as const,
+          placement: "mobile-bottom" as const,
+          trigger: "scroll" as const,
+        },
+      },
       repository,
       providers,
       now: () => new Date("2026-06-24T10:00:00.000Z"),
@@ -140,5 +160,11 @@ describe("createDonation", () => {
       url: "https://checkout.stripe.test/session",
     });
     expect(repository.payments).toContainEqual({ id: "payment-1", provider_ref: "cs_test_123" });
+    expect(repository.donations[0]).toMatchObject({
+      acquisition_source: "contextual-cta",
+      acquisition_context: "animal",
+      acquisition_placement: "mobile-bottom",
+      acquisition_trigger: "scroll",
+    });
   });
 });

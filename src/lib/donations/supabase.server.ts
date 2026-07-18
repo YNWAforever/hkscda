@@ -1,6 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createSupabaseServiceClient } from "../supabase.server";
+import { publicDonationStatuses, type PublicDonationStatus } from "./publicStatus";
+import type { PublicDonationStatusRepository } from "./publicStatus.server";
 import type { DonationRepository } from "./service";
 
 export { createSupabaseServiceClient };
@@ -67,6 +69,26 @@ export function createSupabaseDonationRepository(client: SupabaseClient): Donati
     async deleteDonation(donationId) {
       const { error } = await client.from("donation").delete().eq("id", donationId);
       if (error) throw error;
+    },
+  };
+}
+
+export function createSupabaseDonationStatusRepository(
+  client: SupabaseClient,
+): PublicDonationStatusRepository {
+  return {
+    async findStatus(donationId) {
+      const { data, error } = await client
+        .from("donation")
+        .select("status")
+        .eq("id", donationId)
+        .maybeSingle<{ status: string }>();
+
+      if (error) throw error;
+      if (!data || !publicDonationStatuses.includes(data.status as PublicDonationStatus)) {
+        return null;
+      }
+      return data.status as PublicDonationStatus;
     },
   };
 }

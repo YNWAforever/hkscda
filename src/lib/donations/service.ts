@@ -41,6 +41,10 @@ export type DonationRepository = {
     status: "pending";
     method: DonationMethod;
     receipt_requested: boolean;
+    acquisition_source: NonNullable<DonationRequest["attribution"]>["source"] | null;
+    acquisition_context: NonNullable<DonationRequest["attribution"]>["context"] | null;
+    acquisition_placement: NonNullable<DonationRequest["attribution"]>["placement"] | null;
+    acquisition_trigger: NonNullable<DonationRequest["attribution"]>["trigger"] | null;
   }): Promise<DonationRow>;
   createPayment(input: PaymentInsert): Promise<PaymentRow>;
   updatePaymentProviderRef(paymentId: string, providerRef: string): Promise<void>;
@@ -139,6 +143,10 @@ export async function createDonation({
     status: "pending",
     method: donationInput.method,
     receipt_requested: donationInput.receiptRequested,
+    acquisition_source: donationInput.attribution?.source ?? null,
+    acquisition_context: donationInput.attribution?.context ?? null,
+    acquisition_placement: donationInput.attribution?.placement ?? null,
+    acquisition_trigger: donationInput.attribution?.trigger ?? null,
   });
 
   if (donationInput.method === "fps" || donationInput.method === "payme") {

@@ -104,6 +104,7 @@
   --color-chart-series-2: #66734f;
   color: var(--color-text);
   background: var(--color-bg);
+  padding-bottom: var(--public-content-bottom-offset, 0px);
 }
 
 .admin-shell {

@@ -3,15 +3,13 @@ import { HelpCircle, MessageCircleQuestion, X } from "lucide-react";
 
 import { trackHelpEvent } from "../../../lib/help/analytics";
 import type { HelpLanguage } from "../../../lib/help/faq";
-import { useShortlist } from "../ShortlistContext";
+import { usePublicFixedActions } from "../fixedActions/PublicFixedActions";
 import { HelpSearch } from "./HelpSearch";
 
 export function HelpWidget() {
-  const [open, setOpen] = useState(false);
+  const { helpOpen: open, setHelpOpen: setOpen } = usePublicFixedActions();
   const [language, setLanguage] = useState<HelpLanguage>("zh-HK");
   const panelRef = useRef<HTMLDivElement | null>(null);
-  const { items } = useShortlist();
-  const hasShortlistItems = items.length > 0;
 
   useEffect(() => {
     if (!open) return;
@@ -44,10 +42,12 @@ export function HelpWidget() {
   }
 
   const panelId = "help-widget-panel";
-  const bottomOffsetClass = hasShortlistItems ? "bottom-28" : "bottom-4";
 
   return (
-    <div className={`fixed right-4 z-50 sm:right-6 ${bottomOffsetClass}`}>
+    <div
+      className="fixed right-4 z-50 sm:right-6"
+      style={{ bottom: "calc(env(safe-area-inset-bottom) + var(--help-widget-bottom))" }}
+    >
       {open && (
         <div
           ref={panelRef}

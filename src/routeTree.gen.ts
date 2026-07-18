@@ -72,6 +72,7 @@ import { Route as AdminApplicationsIdRouteImport } from './routes/admin/applicat
 import { Route as AdminAnimalsNewRouteImport } from './routes/admin/animals/new'
 import { Route as ApiVolunteerStatusTokenRouteImport } from './routes/api/volunteer/status/$token'
 import { Route as ApiSponsorshipsStatusTokenRouteImport } from './routes/api/sponsorships/status/$token'
+import { Route as ApiDonationsDonationIdStatusRouteImport } from './routes/api/donations/$donationId/status'
 import { Route as ApiAdoptionStatusTokenRouteImport } from './routes/api/adoption/status/$token'
 import { Route as ApiAdminVolunteersRegistrationsRouteImport } from './routes/api/admin/volunteers/registrations'
 import { Route as ApiAdminVolunteersActivitiesRouteImport } from './routes/api/admin/volunteers/activities'
@@ -454,6 +455,12 @@ const ApiSponsorshipsStatusTokenRoute =
     id: '/api/sponsorships/status/$token',
     path: '/api/sponsorships/status/$token',
     getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiDonationsDonationIdStatusRoute =
+  ApiDonationsDonationIdStatusRouteImport.update({
+    id: '/$donationId/status',
+    path: '/$donationId/status',
+    getParentRoute: () => ApiDonationsRoute,
   } as any)
 const ApiAdoptionStatusTokenRoute = ApiAdoptionStatusTokenRouteImport.update({
   id: '/api/adoption/status/$token',
@@ -842,7 +849,7 @@ export interface FileRoutesByFullPath {
   '/adoption/instructions': typeof AdoptionInstructionsRoute
   '/animals/cat': typeof AnimalsCatRoute
   '/animals/dog': typeof AnimalsDogRoute
-  '/api/donations': typeof ApiDonationsRoute
+  '/api/donations': typeof ApiDonationsRouteWithChildren
   '/api/stories': typeof ApiStoriesRouteWithChildren
   '/report/adoption': typeof ReportAdoptionRoute
   '/report/audit': typeof ReportAuditRoute
@@ -901,6 +908,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/volunteers/activities': typeof ApiAdminVolunteersActivitiesRouteWithChildren
   '/api/admin/volunteers/registrations': typeof ApiAdminVolunteersRegistrationsRouteWithChildren
   '/api/adoption/status/$token': typeof ApiAdoptionStatusTokenRoute
+  '/api/donations/$donationId/status': typeof ApiDonationsDonationIdStatusRoute
   '/api/sponsorships/status/$token': typeof ApiSponsorshipsStatusTokenRoute
   '/api/volunteer/status/$token': typeof ApiVolunteerStatusTokenRoute
   '/api/admin/access/users/$id': typeof ApiAdminAccessUsersIdRoute
@@ -969,7 +977,7 @@ export interface FileRoutesByTo {
   '/adoption/instructions': typeof AdoptionInstructionsRoute
   '/animals/cat': typeof AnimalsCatRoute
   '/animals/dog': typeof AnimalsDogRoute
-  '/api/donations': typeof ApiDonationsRoute
+  '/api/donations': typeof ApiDonationsRouteWithChildren
   '/api/stories': typeof ApiStoriesRouteWithChildren
   '/report/adoption': typeof ReportAdoptionRoute
   '/report/audit': typeof ReportAuditRoute
@@ -1028,6 +1036,7 @@ export interface FileRoutesByTo {
   '/api/admin/volunteers/activities': typeof ApiAdminVolunteersActivitiesRouteWithChildren
   '/api/admin/volunteers/registrations': typeof ApiAdminVolunteersRegistrationsRouteWithChildren
   '/api/adoption/status/$token': typeof ApiAdoptionStatusTokenRoute
+  '/api/donations/$donationId/status': typeof ApiDonationsDonationIdStatusRoute
   '/api/sponsorships/status/$token': typeof ApiSponsorshipsStatusTokenRoute
   '/api/volunteer/status/$token': typeof ApiVolunteerStatusTokenRoute
   '/api/admin/access/users/$id': typeof ApiAdminAccessUsersIdRoute
@@ -1098,7 +1107,7 @@ export interface FileRoutesById {
   '/adoption/instructions': typeof AdoptionInstructionsRoute
   '/animals/cat': typeof AnimalsCatRoute
   '/animals/dog': typeof AnimalsDogRoute
-  '/api/donations': typeof ApiDonationsRoute
+  '/api/donations': typeof ApiDonationsRouteWithChildren
   '/api/stories': typeof ApiStoriesRouteWithChildren
   '/report/adoption': typeof ReportAdoptionRoute
   '/report/audit': typeof ReportAuditRoute
@@ -1157,6 +1166,7 @@ export interface FileRoutesById {
   '/api/admin/volunteers/activities': typeof ApiAdminVolunteersActivitiesRouteWithChildren
   '/api/admin/volunteers/registrations': typeof ApiAdminVolunteersRegistrationsRouteWithChildren
   '/api/adoption/status/$token': typeof ApiAdoptionStatusTokenRoute
+  '/api/donations/$donationId/status': typeof ApiDonationsDonationIdStatusRoute
   '/api/sponsorships/status/$token': typeof ApiSponsorshipsStatusTokenRoute
   '/api/volunteer/status/$token': typeof ApiVolunteerStatusTokenRoute
   '/api/admin/access/users/$id': typeof ApiAdminAccessUsersIdRoute
@@ -1287,6 +1297,7 @@ export interface FileRouteTypes {
     | '/api/admin/volunteers/activities'
     | '/api/admin/volunteers/registrations'
     | '/api/adoption/status/$token'
+    | '/api/donations/$donationId/status'
     | '/api/sponsorships/status/$token'
     | '/api/volunteer/status/$token'
     | '/api/admin/access/users/$id'
@@ -1414,6 +1425,7 @@ export interface FileRouteTypes {
     | '/api/admin/volunteers/activities'
     | '/api/admin/volunteers/registrations'
     | '/api/adoption/status/$token'
+    | '/api/donations/$donationId/status'
     | '/api/sponsorships/status/$token'
     | '/api/volunteer/status/$token'
     | '/api/admin/access/users/$id'
@@ -1542,6 +1554,7 @@ export interface FileRouteTypes {
     | '/api/admin/volunteers/activities'
     | '/api/admin/volunteers/registrations'
     | '/api/adoption/status/$token'
+    | '/api/donations/$donationId/status'
     | '/api/sponsorships/status/$token'
     | '/api/volunteer/status/$token'
     | '/api/admin/access/users/$id'
@@ -1612,7 +1625,7 @@ export interface RootRouteChildren {
   AdoptionInstructionsRoute: typeof AdoptionInstructionsRoute
   AnimalsCatRoute: typeof AnimalsCatRoute
   AnimalsDogRoute: typeof AnimalsDogRoute
-  ApiDonationsRoute: typeof ApiDonationsRoute
+  ApiDonationsRoute: typeof ApiDonationsRouteWithChildren
   ApiStoriesRoute: typeof ApiStoriesRouteWithChildren
   ReportAdoptionRoute: typeof ReportAdoptionRoute
   ReportAuditRoute: typeof ReportAuditRoute
@@ -2119,6 +2132,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/sponsorships/status/$token'
       preLoaderRoute: typeof ApiSponsorshipsStatusTokenRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/api/donations/$donationId/status': {
+      id: '/api/donations/$donationId/status'
+      path: '/$donationId/status'
+      fullPath: '/api/donations/$donationId/status'
+      preLoaderRoute: typeof ApiDonationsDonationIdStatusRouteImport
+      parentRoute: typeof ApiDonationsRoute
     }
     '/api/adoption/status/$token': {
       id: '/api/adoption/status/$token'
@@ -2636,6 +2656,18 @@ const AdminVolunteersRouteWithChildren = AdminVolunteersRoute._addFileChildren(
   AdminVolunteersRouteChildren,
 )
 
+interface ApiDonationsRouteChildren {
+  ApiDonationsDonationIdStatusRoute: typeof ApiDonationsDonationIdStatusRoute
+}
+
+const ApiDonationsRouteChildren: ApiDonationsRouteChildren = {
+  ApiDonationsDonationIdStatusRoute: ApiDonationsDonationIdStatusRoute,
+}
+
+const ApiDonationsRouteWithChildren = ApiDonationsRoute._addFileChildren(
+  ApiDonationsRouteChildren,
+)
+
 interface ApiStoriesRouteChildren {
   ApiStoriesSlugRoute: typeof ApiStoriesSlugRoute
   ApiStoriesMapRoute: typeof ApiStoriesMapRoute
@@ -2954,7 +2986,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdoptionInstructionsRoute: AdoptionInstructionsRoute,
   AnimalsCatRoute: AnimalsCatRoute,
   AnimalsDogRoute: AnimalsDogRoute,
-  ApiDonationsRoute: ApiDonationsRoute,
+  ApiDonationsRoute: ApiDonationsRouteWithChildren,
   ApiStoriesRoute: ApiStoriesRouteWithChildren,
   ReportAdoptionRoute: ReportAdoptionRoute,
   ReportAuditRoute: ReportAuditRoute,

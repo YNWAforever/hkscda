@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { z } from "zod";
 import {
   BadgeCheck,
   Building,
@@ -12,20 +11,23 @@ import {
   Smartphone,
   Zap,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { brand } from "../lib/brand/brand";
+import { extractDonationAttribution, donateSearchSchema } from "../lib/donations/donateSearch";
+import {
+  markDonationEventOnce,
+  readCheckoutSnapshot,
+  saveCheckoutSnapshot,
+  trackDonationEvent,
+} from "../lib/donations/analytics";
+import { pollDonationSucceeded } from "../lib/donations/publicStatus";
 import { centsToHkd, type DonationMethod, type DonationPurpose } from "../lib/donations/domain";
 import { BrandLogo } from "../components/site/BrandLogo";
 import { TurnstileWidget, turnstileEnabled } from "../components/site/TurnstileWidget";
 
-const searchSchema = z.object({
-  status: z.enum(["success", "cancelled", "paypal-approved"]).optional(),
-  donation: z.string().optional(),
-});
-
 export const Route = createFileRoute("/donate")({
-  validateSearch: searchSchema,
+  validateSearch: donateSearchSchema,
   head: () => ({
     meta: [
       { title: "捐助我們 · 香港拯救貓狗協會 HKSCDA" },
@@ -59,6 +61,12 @@ type ManualResult = {
     identifier: string;
     amountCents: number;
   };
+};
+
+type RedirectResult = {
+  kind: "redirect";
+  donationId: string;
+  url: string;
 };
 
 const copy = {
@@ -137,11 +145,12 @@ const methods: { value: DonationMethod; zh: string; en: string; Icon: typeof Cre
 
 function DonatePage() {
   const search = Route.useSearch();
+  const attribution = extractDonationAttribution(search);
   const [language, setLanguage] = useState<Language>("zh-HK");
   const t = copy[language];
   const [selectedAmount, setSelectedAmount] = useState(300);
   const [customAmount, setCustomAmount] = useState("");
-  const [purpose, setPurpose] = useState<DonationPurpose>("general");
+  const [purpose, setPurpose] = useState<DonationPurpose>(search.purpose ?? "general");
   const [method, setMethod] = useState<DonationMethod>("stripe");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -153,6 +162,42 @@ function DonatePage() {
   const [error, setError] = useState<string | null>(null);
   const [manualResult, setManualResult] = useState<ManualResult | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!attribution) return;
+
+    if (markDonationEventOnce("donation_form_view", JSON.stringify(attribution))) {
+      trackDonationEvent("donation_form_view", { attribution });
+    }
+  }, [attribution]);
+
+  useEffect(() => {
+    const donationId = search.donation;
+    if (!donationId || (search.status !== "success" && search.status !== "paypal-approved")) {
+      return;
+    }
+
+    const snapshot = readCheckoutSnapshot(donationId);
+    if (!snapshot) return;
+
+    let active = true;
+    void pollDonationSucceeded(donationId).then((confirmed) => {
+      if (!active || !confirmed) return;
+      if (markDonationEventOnce("donation_success", donationId)) {
+        trackDonationEvent("donation_success", {
+          context: snapshot.context,
+          purpose: snapshot.purpose,
+          method: snapshot.method,
+          value: snapshot.value,
+          currency: snapshot.currency,
+        });
+      }
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [search.donation, search.status]);
 
   const amountHkd = useMemo(() => {
     const parsedCustom = Number(customAmount);
@@ -184,11 +229,31 @@ function DonatePage() {
           donor: { name, email, phone, language },
           consents: { email: emailConsent, whatsapp: whatsappConsent },
           turnstileToken,
+          ...(attribution ? { attribution } : {}),
         }),
       });
 
       if (!response.ok) throw new Error("Donation request failed");
-      const data = (await response.json()) as ManualResult | { kind: "redirect"; url: string };
+      const data = (await response.json()) as ManualResult | RedirectResult;
+
+      if (attribution) {
+        saveCheckoutSnapshot(data.donationId, {
+          context: attribution.context,
+          purpose,
+          method,
+          value: amountHkd,
+          currency: "HKD",
+        });
+        if (markDonationEventOnce("begin_checkout", data.donationId)) {
+          trackDonationEvent("begin_checkout", {
+            attribution,
+            method,
+            value: amountHkd,
+            currency: "HKD",
+          });
+        }
+      }
+
       if (data.kind === "redirect") {
         window.location.href = data.url;
         return;
