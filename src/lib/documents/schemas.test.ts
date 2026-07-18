@@ -3,12 +3,20 @@ import { describe, expect, test } from "bun:test";
 import {
   annualReportInputSchema,
   documentAssetInputSchema,
+  documentIdSchema,
   documentListSearchSchema,
   documentSlotInputSchema,
   uploadTargetSchema,
 } from "./schemas";
 
 describe("document schemas", () => {
+  test("validates shared document IDs as UUIDs", () => {
+    expect(documentIdSchema.parse("11111111-2222-4333-8444-555555555555")).toBe(
+      "11111111-2222-4333-8444-555555555555",
+    );
+    expect(() => documentIdSchema.parse("asset")).toThrow();
+  });
+
   test("normalizes a PDF asset and rejects unsafe paths", () => {
     expect(
       documentAssetInputSchema.parse({
@@ -51,7 +59,11 @@ describe("document schemas", () => {
       { bucketName: "site-documents", objectPath: "/forms/wedding-application.pdf", byteSize: 1 },
       { bucketName: "site-documents", objectPath: "forms/../wedding-application.pdf", byteSize: 1 },
       { bucketName: "site-documents", objectPath: "forms/wedding-application.docx", byteSize: 1 },
-      { bucketName: "site-documents", objectPath: "forms/wedding-application.pdf", byteSize: 50 * 1024 * 1024 + 1 },
+      {
+        bucketName: "site-documents",
+        objectPath: "forms/wedding-application.pdf",
+        byteSize: 50 * 1024 * 1024 + 1,
+      },
     ]) {
       expect(() => uploadTargetSchema.parse(invalidTarget)).toThrow();
     }

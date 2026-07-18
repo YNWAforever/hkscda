@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import {
   documentAssetInputSchema,
+  documentIdSchema,
   documentListSearchSchema,
   uploadTargetSchema,
   type DocumentAssetInput,
@@ -31,6 +32,7 @@ export type DocumentRepository = {
   listPublishedAnnualReports(): Promise<AnnualReport[]>;
   listPublishedSlots(slotKeys: string[]): Promise<DocumentSlot[]>;
   listAssets(search: DocumentListSearch): Promise<{ items: DocumentAsset[]; total: number }>;
+  getAssetById(id: string): Promise<DocumentAsset | null>;
   createAsset(input: DocumentAssetInput): Promise<DocumentAsset>;
   updateAsset(id: string, input: Partial<DocumentAssetInput>): Promise<DocumentAsset>;
   setAssetPublished(id: string, isPublished: boolean): Promise<DocumentAsset>;
@@ -78,8 +80,7 @@ export function createDocumentService({
   }
 
   async function assetForPublication(assetId: string) {
-    const { items } = await repo.listAssets({ page: 1, pageSize: 1, q: assetId });
-    const asset = items.find((item) => item.id === assetId);
+    const asset = await repo.getAssetById(assetId);
     if (!asset) throw new Error("Document asset not found");
     return asset;
   }
@@ -129,13 +130,22 @@ export function createDocumentService({
     },
 
     async updateAsset({ actorUserId, assetId, input }: AssetActionArgs & { input: unknown }) {
+      const parsedAssetId = documentIdSchema.parse(assetId);
       const parsed = updateAssetInputSchema.parse(input);
-      const asset = await repo.updateAsset(assetId, parsed);
+      if (parsed.objectPath !== undefined) {
+        const current = await repo.getAssetById(parsedAssetId);
+        if (!current) throw new Error("Document asset not found");
+        if (current.isPublished && parsed.objectPath !== current.objectPath) {
+          throw new DocumentConflictError("Unpublish the document before changing its object path");
+        }
+      }
+
+      const asset = await repo.updateAsset(parsedAssetId, parsed);
       await audit({
         actor_user_id: actorUserId,
         action: "document.update",
         entity: "document_asset",
-        entity_id: assetId,
+        entity_id: parsedAssetId,
         detail: parsed,
       });
 
@@ -143,14 +153,15 @@ export function createDocumentService({
     },
 
     async publishAsset({ actorUserId, assetId }: AssetActionArgs) {
-      const asset = await assetForPublication(assetId);
+      const parsedAssetId = documentIdSchema.parse(assetId);
+      const asset = await assetForPublication(parsedAssetId);
       await ensureVerifiedObject(asset.objectPath);
-      const published = await repo.setAssetPublished(assetId, true);
+      const published = await repo.setAssetPublished(parsedAssetId, true);
       await audit({
         actor_user_id: actorUserId,
         action: "document.publish",
         entity: "document_asset",
-        entity_id: assetId,
+        entity_id: parsedAssetId,
         detail: { objectPath: asset.objectPath },
       });
 
@@ -158,12 +169,13 @@ export function createDocumentService({
     },
 
     async unpublishAsset({ actorUserId, assetId }: AssetActionArgs) {
-      const unpublished = await repo.setAssetPublished(assetId, false);
+      const parsedAssetId = documentIdSchema.parse(assetId);
+      const unpublished = await repo.setAssetPublished(parsedAssetId, false);
       await audit({
         actor_user_id: actorUserId,
         action: "document.unpublish",
         entity: "document_asset",
-        entity_id: assetId,
+        entity_id: parsedAssetId,
         detail: {},
       });
 
@@ -171,16 +183,17 @@ export function createDocumentService({
     },
 
     async deleteAsset({ actorUserId, assetId }: AssetActionArgs) {
-      if ((await repo.countAssetReferences(assetId)) > 0) {
+      const parsedAssetId = documentIdSchema.parse(assetId);
+      if ((await repo.countAssetReferences(parsedAssetId)) > 0) {
         throw new DocumentConflictError("Document asset is still referenced");
       }
 
-      await repo.deleteAsset(assetId);
+      await repo.deleteAsset(parsedAssetId);
       await audit({
         actor_user_id: actorUserId,
         action: "document.delete",
         entity: "document_asset",
-        entity_id: assetId,
+        entity_id: parsedAssetId,
         detail: {},
       });
     },
