@@ -33,7 +33,6 @@ export const annualReportInputSchema = z.object({
   title: z.string().trim().min(1).max(180),
   yearLabel: z.string().trim().min(1),
   documentAssetId: z.string().uuid(),
-  slotKey: slotKeySchema.optional(),
   isPublished: z.boolean().default(false),
   sortOrder: sortOrderSchema,
 });

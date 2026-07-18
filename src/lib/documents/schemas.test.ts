@@ -4,6 +4,7 @@ import {
   annualReportInputSchema,
   documentAssetInputSchema,
   documentListSearchSchema,
+  documentSlotInputSchema,
   uploadTargetSchema,
 } from "./schemas";
 
@@ -56,23 +57,45 @@ describe("document schemas", () => {
     }
   });
 
-  test("validates annual report and document slot metadata", () => {
+  test("validates annual report metadata", () => {
     expect(
       annualReportInputSchema.parse({
         title: "Annual Report 2025/26",
         yearLabel: "2025/26",
         documentAssetId: "11111111-2222-4333-8444-555555555555",
-        slotKey: "annual_report_2025_26",
       }),
-    ).toMatchObject({ slotKey: "annual_report_2025_26" });
+    ).toMatchObject({
+      title: "Annual Report 2025/26",
+      yearLabel: "2025/26",
+    });
+    expect(annualReportInputSchema.shape).not.toHaveProperty("slotKey");
+  });
 
-    expect(() =>
-      annualReportInputSchema.parse({
-        title: "Annual Report",
-        yearLabel: "2025/26",
+  test("validates document slot keys and languages", () => {
+    expect(
+      documentSlotInputSchema.parse({
+        slotKey: "annual_report_2025_26",
+        language: "zh-HK",
         documentAssetId: "11111111-2222-4333-8444-555555555555",
-        slotKey: "annual-report",
       }),
-    ).toThrow();
+    ).toMatchObject({
+      slotKey: "annual_report_2025_26",
+      language: "zh-HK",
+    });
+
+    for (const invalidSlot of [
+      {
+        slotKey: "annual-report",
+        language: "zh-HK",
+        documentAssetId: "11111111-2222-4333-8444-555555555555",
+      },
+      {
+        slotKey: "annual_report",
+        language: "bilingual",
+        documentAssetId: "11111111-2222-4333-8444-555555555555",
+      },
+    ]) {
+      expect(() => documentSlotInputSchema.parse(invalidSlot)).toThrow();
+    }
   });
 });
