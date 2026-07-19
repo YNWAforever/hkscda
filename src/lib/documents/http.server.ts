@@ -1,0 +1,152 @@
+import { z } from "zod";
+
+import { DocumentConflictError } from "./service";
+
+type DocumentAdmin = { authUserId: string };
+type HandlerContext = {
+  request: Request;
+  params?: Record<string, string | undefined>;
+};
+type DocumentHandlerService = {
+  listAssets(input: unknown): Promise<unknown>;
+  createAsset(input: { actorUserId: string; input: unknown }): Promise<unknown>;
+  updateAsset(input: { actorUserId: string; assetId: string; input: unknown }): Promise<unknown>;
+  publishAsset(input: { actorUserId: string; assetId: string }): Promise<unknown>;
+  unpublishAsset(input: { actorUserId: string; assetId: string }): Promise<unknown>;
+  deleteAsset(input: { actorUserId: string; assetId: string }): Promise<unknown>;
+  createUploadTarget(input: unknown): Promise<unknown>;
+};
+
+type CreateDocumentHandlersArgs = {
+  requireDocumentAdmin(request: Request): Promise<DocumentAdmin>;
+  service: DocumentHandlerService;
+};
+
+function jsonResponse(body: unknown, init?: ResponseInit) {
+  const headers = new Headers(init?.headers);
+  headers.set("cache-control", "no-store");
+  return Response.json(body, { ...init, headers });
+}
+
+async function jsonBody(request: Request) {
+  try {
+    return await request.json();
+  } catch {
+    throw jsonResponse({ error: "Invalid JSON body" }, { status: 400 });
+  }
+}
+
+function searchParams(request: Request) {
+  return Object.fromEntries(new URL(request.url).searchParams);
+}
+
+function requiredId(params: HandlerContext["params"]) {
+  const id = params?.id;
+  if (!id) throw jsonResponse({ error: "Invalid document id" }, { status: 400 });
+  return id;
+}
+
+async function withDocumentErrors(operation: () => Promise<Response>) {
+  try {
+    return await operation();
+  } catch (error) {
+    if (error instanceof Response) return error;
+    if (error instanceof z.ZodError) {
+      return jsonResponse(
+        {
+          error: "Invalid document request",
+          issues: error.issues.map((issue) => ({
+            path: issue.path.join("."),
+            message: issue.message,
+          })),
+        },
+        { status: 400 },
+      );
+    }
+    if (error instanceof DocumentConflictError) {
+      return jsonResponse({ error: error.message }, { status: 409 });
+    }
+
+    console.error(error);
+    return jsonResponse({ error: "Could not process document request" }, { status: 500 });
+  }
+}
+
+export function createDocumentHandlers({
+  requireDocumentAdmin,
+  service,
+}: CreateDocumentHandlersArgs) {
+  return {
+    listAssets({ request }: HandlerContext) {
+      return withDocumentErrors(async () => {
+        await requireDocumentAdmin(request);
+        return jsonResponse(await service.listAssets(searchParams(request)));
+      });
+    },
+
+    createAsset({ request }: HandlerContext) {
+      return withDocumentErrors(async () => {
+        const admin = await requireDocumentAdmin(request);
+        const asset = await service.createAsset({
+          actorUserId: admin.authUserId,
+          input: await jsonBody(request),
+        });
+        return jsonResponse({ asset }, { status: 201 });
+      });
+    },
+
+    updateAsset({ request, params }: HandlerContext) {
+      return withDocumentErrors(async () => {
+        const admin = await requireDocumentAdmin(request);
+        const asset = await service.updateAsset({
+          actorUserId: admin.authUserId,
+          assetId: requiredId(params),
+          input: await jsonBody(request),
+        });
+        return jsonResponse({ asset });
+      });
+    },
+
+    publishAsset({ request, params }: HandlerContext) {
+      return withDocumentErrors(async () => {
+        const admin = await requireDocumentAdmin(request);
+        const asset = await service.publishAsset({
+          actorUserId: admin.authUserId,
+          assetId: requiredId(params),
+        });
+        return jsonResponse({ asset });
+      });
+    },
+
+    unpublishAsset({ request, params }: HandlerContext) {
+      return withDocumentErrors(async () => {
+        const admin = await requireDocumentAdmin(request);
+        const asset = await service.unpublishAsset({
+          actorUserId: admin.authUserId,
+          assetId: requiredId(params),
+        });
+        return jsonResponse({ asset });
+      });
+    },
+
+    deleteAsset({ request, params }: HandlerContext) {
+      return withDocumentErrors(async () => {
+        const admin = await requireDocumentAdmin(request);
+        await service.deleteAsset({
+          actorUserId: admin.authUserId,
+          assetId: requiredId(params),
+        });
+        return jsonResponse({ ok: true });
+      });
+    },
+
+    createUploadTarget({ request }: HandlerContext) {
+      return withDocumentErrors(async () => {
+        await requireDocumentAdmin(request);
+        return jsonResponse(await service.createUploadTarget(await jsonBody(request)), {
+          status: 201,
+        });
+      });
+    },
+  };
+}
