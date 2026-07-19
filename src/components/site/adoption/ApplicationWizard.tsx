@@ -24,6 +24,10 @@ import {
   MAX_ADOPTION_PREFERENCES,
   type ExpandedAdoptionApplication,
 } from "../../../lib/publicAdoption/schemas";
+import {
+  normalizeVisitWindows,
+  type AdoptionSpecies,
+} from "../../../lib/publicAdoption/visitWindows";
 import { cn } from "../../../lib/utils";
 import { GuidancePanel } from "./GuidancePanel";
 import { PhotoUploader } from "./PhotoUploader";
@@ -81,7 +85,8 @@ const STEP_FIELDS: Record<WizardStepId, FieldPath<ApplicationFormValues>[]> = {
   visit: [
     "visit.dateRangeStart",
     "visit.dateRangeEnd",
-    "visit.preferredTimeWindows",
+    "visit.dogTimeWindows",
+    "visit.catTimeWindows",
     "visit.notes",
   ],
   photos: [],
@@ -129,7 +134,7 @@ function datePlusDays(days: number) {
   return new Date(date.getTime() - date.getTimezoneOffset() * 60_000).toISOString().slice(0, 10);
 }
 
-function createDefaultValues(): ApplicationFormValues {
+export function createDefaultValues(): ApplicationFormValues {
   return {
     language: "zh-HK",
     animalPreferences: [],
@@ -160,7 +165,8 @@ function createDefaultValues(): ApplicationFormValues {
     visit: {
       dateRangeStart: datePlusDays(3),
       dateRangeEnd: datePlusDays(17),
-      preferredTimeWindows: [],
+      dogTimeWindows: [],
+      catTimeWindows: [],
       notes: "",
     },
     terms: {
@@ -178,7 +184,21 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
-function mergeDraftValues(defaultValues: ApplicationFormValues, draft: Record<string, unknown>) {
+export function normalizeApplicationVisitValues(
+  visit: ApplicationFormValues["visit"],
+  species: readonly AdoptionSpecies[],
+): ApplicationFormValues["visit"] {
+  const windows = normalizeVisitWindows(species, {
+    dog: visit.dogTimeWindows,
+    cat: visit.catTimeWindows,
+  });
+  return { ...visit, dogTimeWindows: windows.dog, catTimeWindows: windows.cat };
+}
+export function mergeDraftValues(
+  defaultValues: ApplicationFormValues,
+  draft: Record<string, unknown>,
+  species: readonly AdoptionSpecies[],
+) {
   const contact = isRecord(draft.contact) ? draft.contact : {};
   const home = isRecord(draft.home) ? draft.home : {};
   const readiness = isRecord(draft.readiness) ? draft.readiness : {};
@@ -186,19 +206,24 @@ function mergeDraftValues(defaultValues: ApplicationFormValues, draft: Record<st
   const terms = isRecord(draft.terms) ? draft.terms : {};
   const sourceMetadata = isRecord(draft.sourceMetadata) ? draft.sourceMetadata : {};
 
+  const mergedVisit = {
+    ...defaultValues.visit,
+    ...visit,
+    dogTimeWindows: Array.isArray(visit.dogTimeWindows)
+      ? visit.dogTimeWindows
+      : defaultValues.visit.dogTimeWindows,
+    catTimeWindows: Array.isArray(visit.catTimeWindows)
+      ? visit.catTimeWindows
+      : defaultValues.visit.catTimeWindows,
+  } as ApplicationFormValues["visit"];
+
   return {
     ...defaultValues,
     language: draft.language === "en" || draft.language === "zh-HK" ? draft.language : "zh-HK",
     contact: { ...defaultValues.contact, ...contact },
     home: { ...defaultValues.home, ...home },
     readiness: { ...defaultValues.readiness, ...readiness },
-    visit: {
-      ...defaultValues.visit,
-      ...visit,
-      preferredTimeWindows: Array.isArray(visit.preferredTimeWindows)
-        ? visit.preferredTimeWindows
-        : defaultValues.visit.preferredTimeWindows,
-    },
+    visit: normalizeApplicationVisitValues(mergedVisit, species),
     terms: {
       ...defaultValues.terms,
       ...terms,
@@ -303,7 +328,13 @@ export function ApplicationWizard() {
     const timer = window.setTimeout(() => {
       try {
         const restoredDraft = parseDraft(window.localStorage.getItem(ADOPTION_DRAFT_STORAGE_KEY));
-        reset(mergeDraftValues(defaultValues, restoredDraft));
+        reset(
+          mergeDraftValues(
+            defaultValues,
+            restoredDraft,
+            rankedPreferences.map((animal) => animal.animalType),
+          ),
+        );
         setDraftStatus(Object.keys(restoredDraft).length > 0 ? "restored" : "idle");
       } catch {
         setDraftStatus("unavailable");
@@ -313,15 +344,29 @@ export function ApplicationWizard() {
     }, 0);
 
     return () => window.clearTimeout(timer);
-  }, [defaultValues, reset]);
+  }, [defaultValues, rankedPreferences, reset]);
 
   useEffect(() => {
     if (!storageReady) return;
+    const species = rankedPreferences.map((animal) => animal.animalType);
+    const windows = normalizeVisitWindows(species, {
+      dog: getValues("visit.dogTimeWindows"),
+      cat: getValues("visit.catTimeWindows"),
+    });
+
     setValue("animalPreferences", rankedPreferences, {
       shouldDirty: true,
       shouldValidate: currentStep.id === "animals",
     });
-  }, [currentStep.id, rankedPreferences, setValue, storageReady]);
+    setValue("visit.dogTimeWindows", windows.dog, {
+      shouldDirty: true,
+      shouldValidate: currentStep.id === "visit",
+    });
+    setValue("visit.catTimeWindows", windows.cat, {
+      shouldDirty: true,
+      shouldValidate: currentStep.id === "visit",
+    });
+  }, [currentStep.id, getValues, rankedPreferences, setValue, storageReady]);
 
   useEffect(() => {
     if (!storageReady || submission) return;

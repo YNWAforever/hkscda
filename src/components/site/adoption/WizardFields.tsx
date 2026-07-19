@@ -6,6 +6,13 @@ import { z } from "zod";
 
 import { cn } from "../../../lib/utils";
 import { expandedAdoptionApplicationSchema } from "../../../lib/publicAdoption/schemas";
+import {
+  CAT_VISIT_WINDOWS,
+  DOG_VISIT_WINDOWS,
+  type CatVisitWindow,
+  type DogVisitWindow,
+  type VisitWindow,
+} from "../../../lib/publicAdoption/visitWindows";
 import { Input } from "../../ui/input";
 import { Textarea } from "../../ui/textarea";
 import { PHOTO_CATEGORY_LABELS, type SelectedPhoto } from "./photoUploaderLogic";
@@ -52,13 +59,16 @@ const CONTACT_METHODS = [
   { value: "phone", zh: "電話", en: "Phone" },
   { value: "email", zh: "電郵", en: "Email" },
 ] as const;
-const VISIT_WINDOWS = [
-  { value: "weekday_morning", zh: "平日上午", en: "Weekday morning" },
-  { value: "weekday_afternoon", zh: "平日下午", en: "Weekday afternoon" },
-  { value: "weekday_evening", zh: "平日晚上", en: "Weekday evening" },
-  { value: "weekend_morning", zh: "週末上午", en: "Weekend morning" },
-  { value: "weekend_afternoon", zh: "週末下午", en: "Weekend afternoon" },
-] as const;
+const VISIT_WINDOW_LABELS: Record<VisitWindow, { zh: string; en: string }> = {
+  weekday_morning: { zh: "平日上午", en: "Weekday morning" },
+  weekday_afternoon: { zh: "平日下午", en: "Weekday afternoon" },
+  weekday_evening: { zh: "平日晚上", en: "Weekday evening" },
+  weekend_morning: { zh: "週末上午", en: "Weekend morning" },
+  weekend_afternoon: { zh: "週末下午", en: "Weekend afternoon" },
+};
+const VISIT_WINDOWS = CAT_VISIT_WINDOWS.map((value) => ({ value, ...VISIT_WINDOW_LABELS[value] }));
+const DOG_VISIT_OPTIONS = DOG_VISIT_WINDOWS.map((value) => ({ value, ...VISIT_WINDOW_LABELS[value] }));
+const CAT_VISIT_OPTIONS = CAT_VISIT_WINDOWS.map((value) => ({ value, ...VISIT_WINDOW_LABELS[value] }));
 
 function numberOrUndefined(value: unknown) {
   if (value === "" || value === null || typeof value === "undefined") return undefined;
@@ -492,17 +502,37 @@ export function ReadinessFields({ register, errors }: BaseFieldsProps) {
   );
 }
 
+export function nextVisitWindowSelection<T extends VisitWindow>(
+  selected: readonly T[],
+  value: T,
+  order: readonly T[],
+) {
+  const nextValues = selected.includes(value)
+    ? selected.filter((selectedValue) => selectedValue !== value)
+    : [...selected, value];
+  const nextSet = new Set(nextValues);
+  return order.filter((option) => nextSet.has(option));
+}
 export function VisitFields({ register, errors, setValue, watch }: ControlledFieldsProps) {
-  const selectedWindows = watch("visit.preferredTimeWindows") ?? [];
-  const visitWindowsError = errors.visit?.preferredTimeWindows?.message;
-  const visitWindowsErrorId = "visit-preferredTimeWindows-error";
+  const animalPreferences = watch("animalPreferences") ?? [];
+  const selectedSpecies = new Set(animalPreferences.map((animal) => animal.animalType));
+  const dogWindows = watch("visit.dogTimeWindows") ?? [];
+  const catWindows = watch("visit.catTimeWindows") ?? [];
+  const dogError = errors.visit?.dogTimeWindows?.message;
+  const catError = errors.visit?.catTimeWindows?.message;
 
-  function toggleWindow(value: (typeof VISIT_WINDOWS)[number]["value"]) {
+  function toggleDogWindow(value: DogVisitWindow) {
     setValue(
-      "visit.preferredTimeWindows",
-      selectedWindows.includes(value)
-        ? selectedWindows.filter((windowValue) => windowValue !== value)
-        : [...selectedWindows, value],
+      "visit.dogTimeWindows",
+      nextVisitWindowSelection(dogWindows, value, DOG_VISIT_WINDOWS),
+      { shouldDirty: true, shouldValidate: true },
+    );
+  }
+
+  function toggleCatWindow(value: CatVisitWindow) {
+    setValue(
+      "visit.catTimeWindows",
+      nextVisitWindowSelection(catWindows, value, CAT_VISIT_WINDOWS),
       { shouldDirty: true, shouldValidate: true },
     );
   }
@@ -535,30 +565,31 @@ export function VisitFields({ register, errors, setValue, watch }: ControlledFie
           className={fieldClass}
         />
       </FormField>
-      <div className="sm:col-span-2">
+      <div className="grid gap-4 sm:col-span-2 lg:grid-cols-2">
+        {selectedSpecies.has("dog") ? (
         <fieldset
           className="space-y-2"
-          aria-describedby={visitWindowsError ? visitWindowsErrorId : undefined}
+          aria-describedby={dogError ? "visit-dogTimeWindows-error" : undefined}
         >
           <legend className="text-sm font-semibold text-[var(--color-panel)]">
-            合適探望時段
+            狗舍參觀時間
             <span className="ml-2 font-body text-xs font-medium text-[var(--color-text-muted)]">
-              Preferred windows
+              Dog visit windows
             </span>
           </legend>
           <div className="grid gap-2 sm:grid-cols-2">
-            {VISIT_WINDOWS.map((windowOption) => (
+            {DOG_VISIT_OPTIONS.map((windowOption) => (
               <label
                 key={windowOption.value}
                 className="flex cursor-pointer items-start gap-3 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-panel)]"
               >
                 <input
                   type="checkbox"
-                  checked={selectedWindows.includes(windowOption.value)}
-                  onChange={() => toggleWindow(windowOption.value)}
+                  checked={dogWindows.includes(windowOption.value)}
+                  onChange={() => toggleDogWindow(windowOption.value)}
                   className={checkboxClass}
-                  aria-invalid={Boolean(visitWindowsError)}
-                  aria-describedby={visitWindowsError ? visitWindowsErrorId : undefined}
+                  aria-invalid={Boolean(dogError)}
+                  aria-describedby={dogError ? "visit-dogTimeWindows-error" : undefined}
                 />
                 <span>
                   {windowOption.zh}
@@ -569,12 +600,55 @@ export function VisitFields({ register, errors, setValue, watch }: ControlledFie
               </label>
             ))}
           </div>
-          {visitWindowsError ? (
-            <p id={visitWindowsErrorId} className="text-xs text-[var(--color-error)]" role="alert">
-              {visitWindowsError}
+          {dogError ? (
+            <p id="visit-dogTimeWindows-error" className="text-xs text-[var(--color-error)]" role="alert">
+              {dogError}
             </p>
           ) : null}
         </fieldset>
+        ) : null}
+
+        {selectedSpecies.has("cat") ? (
+          <fieldset
+            className="space-y-2"
+            aria-describedby={catError ? "visit-catTimeWindows-error" : undefined}
+          >
+            <legend className="text-sm font-semibold text-[var(--color-panel)]">
+              貓舍參觀時間
+              <span className="ml-2 font-body text-xs font-medium text-[var(--color-text-muted)]">
+                Cat visit windows
+              </span>
+            </legend>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {CAT_VISIT_OPTIONS.map((windowOption) => (
+                <label
+                  key={windowOption.value}
+                  className="flex cursor-pointer items-start gap-3 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-panel)]"
+                >
+                  <input
+                    type="checkbox"
+                    checked={catWindows.includes(windowOption.value)}
+                    onChange={() => toggleCatWindow(windowOption.value)}
+                    className={checkboxClass}
+                    aria-invalid={Boolean(catError)}
+                    aria-describedby={catError ? "visit-catTimeWindows-error" : undefined}
+                  />
+                  <span>
+                    {windowOption.zh}
+                    <span className="ml-2 text-xs text-[var(--color-text-muted)]">
+                      {windowOption.en}
+                    </span>
+                  </span>
+                </label>
+              ))}
+            </div>
+            {catError ? (
+              <p id="visit-catTimeWindows-error" className="text-xs text-[var(--color-error)]" role="alert">
+                {catError}
+              </p>
+            ) : null}
+          </fieldset>
+        ) : null}
       </div>
       <div className="sm:col-span-2">
         <FormField
@@ -642,7 +716,16 @@ export function ReviewFields({
           <p>
             {values.visit.dateRangeStart} 至 {values.visit.dateRangeEnd}
           </p>
-          <p>{values.visit.preferredTimeWindows.map(visitWindowLabel).join("、") || "未選擇"}</p>
+          {values.animalPreferences.some((animal) => animal.animalType === "dog") ? (
+            <p>
+              狗舍參觀時間：{values.visit.dogTimeWindows.map(visitWindowLabel).join("、") || "未選擇"}
+            </p>
+          ) : null}
+          {values.animalPreferences.some((animal) => animal.animalType === "cat") ? (
+            <p>
+              貓舍參觀時間：{values.visit.catTimeWindows.map(visitWindowLabel).join("、") || "未選擇"}
+            </p>
+          ) : null}
         </SummaryBlock>
         <SummaryBlock title="環境相片" titleEn="Photos">
           <p>{photoCategories.length ? photoCategories.join("、") : "未選擇相片"}</p>
