@@ -10,8 +10,8 @@ class FakeQuery {
   selectedColumns = "";
   filters: Filter[] = [];
   rangeArgs: [number, number] | null = null;
-  private action: "select" | "insert" | "update" | "delete" = "select";
-  private payload: unknown;
+  action: "select" | "insert" | "update" | "delete" = "select";
+  payload: unknown;
   private countMode = false;
 
   constructor(
@@ -237,6 +237,16 @@ describe("createSupabaseDocumentRepository", () => {
           document_assets: assetRow({ mime_type: "text/plain" }),
         },
         { id: "title", is_published: true, document_assets: assetRow({ title: "" }) },
+        {
+          id: "created-at",
+          is_published: true,
+          document_assets: assetRow({ created_at: "not-a-timestamp" }),
+        },
+        {
+          id: "updated-at",
+          is_published: true,
+          document_assets: assetRow({ updated_at: "tomorrow" }),
+        },
       ],
     });
     const repository = createSupabaseDocumentRepository(fake.client);
@@ -288,6 +298,89 @@ describe("createSupabaseDocumentRepository", () => {
     const repository = createSupabaseDocumentRepository(fake.client);
 
     await expect(repository.getAssetById("missing")).resolves.toBeNull();
+  });
+
+  test("creates assets with explicit columns and snake-case fields", async () => {
+    const fake = createFakeClient({ document_assets: [assetRow({ is_published: false })] });
+    const repository = createSupabaseDocumentRepository(fake.client);
+
+    await expect(
+      repository.createAsset({
+        kind: "annual_report",
+        title: "Annual Report 2025/26",
+        language: "bilingual",
+        bucketName: "site-documents",
+        objectPath: "annual-reports/2025-26.pdf",
+        mimeType: "application/pdf",
+        byteSize: 1024,
+        checksumSha256: null,
+        isPublished: false,
+        sortOrder: 1,
+      }),
+    ).resolves.toMatchObject({ id: assetId, isPublished: false });
+
+    const query = fake.queryFor("document_assets");
+    expect(query.action).toBe("insert");
+    expect(query.selectedColumns).not.toContain("*");
+    expect(query.payload).toEqual({
+      kind: "annual_report",
+      title: "Annual Report 2025/26",
+      language: "bilingual",
+      bucket_name: "site-documents",
+      object_path: "annual-reports/2025-26.pdf",
+      mime_type: "application/pdf",
+      byte_size: 1024,
+      checksum_sha256: null,
+      is_published: false,
+      sort_order: 1,
+    });
+  });
+
+  test("updates publication state and deletes by exact asset id", async () => {
+    const fake = createFakeClient({ document_assets: [assetRow({ is_published: false })] });
+    const repository = createSupabaseDocumentRepository(fake.client);
+
+    await expect(
+      repository.updateAsset(assetId, {
+        title: "Updated report",
+        objectPath: "annual-reports/updated.pdf",
+      }),
+    ).resolves.toMatchObject({ title: "Updated report" });
+    await expect(repository.setAssetPublished(assetId, true)).resolves.toMatchObject({
+      isPublished: true,
+    });
+    await expect(repository.deleteAsset(assetId)).resolves.toBeUndefined();
+
+    const [update, publish, deletion] = fake.queriesFor("document_assets");
+    expect(update?.action).toBe("update");
+    expect(update?.payload).toEqual({
+      title: "Updated report",
+      object_path: "annual-reports/updated.pdf",
+    });
+    expect(update?.filters).toContainEqual(["eq", "id", assetId]);
+    expect(publish?.payload).toEqual({ is_published: true });
+    expect(publish?.filters).toContainEqual(["eq", "id", assetId]);
+    expect(deletion?.action).toBe("delete");
+    expect(deletion?.filters).toContainEqual(["eq", "id", assetId]);
+  });
+
+  test("inserts document actions into the existing audit log", async () => {
+    const fake = createFakeClient({ audit_log: [] });
+    const repository = createSupabaseDocumentRepository(fake.client);
+    const row = {
+      actor_user_id: assetId,
+      action: "document.update" as const,
+      entity: "document_asset" as const,
+      entity_id: assetId,
+      detail: { title: "Updated report" },
+      timestamp: "2026-07-19T01:02:03.000Z",
+    };
+
+    await expect(repository.insertAuditLog(row)).resolves.toBeUndefined();
+
+    const query = fake.queryFor("audit_log");
+    expect(query.action).toBe("insert");
+    expect(query.payload).toEqual(row);
   });
 
   test("uses signed upload and existence APIs without downloading objects", async () => {

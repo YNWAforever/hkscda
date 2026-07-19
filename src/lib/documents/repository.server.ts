@@ -1,7 +1,9 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { z } from "zod";
 
 import { documentAssetInputSchema, documentIdSchema } from "./schemas";
 import type { DocumentAssetInput, DocumentListSearch } from "./schemas";
+import type { DocumentAuditLogInsert } from "./service";
 import type { AnnualReport, DocumentAsset, DocumentSlot } from "./types";
 
 const SITE_DOCUMENTS_BUCKET = "site-documents";
@@ -12,6 +14,10 @@ const ANNUAL_REPORT_COLUMNS = `id,title,year_label,is_published,sort_order,creat
 const SLOT_COLUMNS = `id,slot_key,language,is_published,document_assets!inner(${ASSET_COLUMNS})`;
 
 type Row = Record<string, unknown>;
+const documentTimestampsSchema = z.object({
+  createdAt: z.string().datetime({ offset: true }),
+  updatedAt: z.string().datetime({ offset: true }),
+});
 
 function postgrestLikeOperand(value: string) {
   const escaped = value
@@ -48,22 +54,16 @@ function mapAsset(client: SupabaseClient, row: Row): DocumentAsset | null {
     isPublished: row.is_published,
     sortOrder: row.sort_order,
   });
-  const createdAt = row.created_at;
-  const updatedAt = row.updated_at;
+  const timestamps = documentTimestampsSchema.safeParse({
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  });
   const hasRequiredStorageFields =
     row.bucket_name === SITE_DOCUMENTS_BUCKET &&
     row.mime_type === "application/pdf" &&
     typeof row.is_published === "boolean" &&
     row.sort_order !== undefined;
-  if (
-    !hasRequiredStorageFields ||
-    !id.success ||
-    !asset.success ||
-    typeof createdAt !== "string" ||
-    createdAt.length === 0 ||
-    typeof updatedAt !== "string" ||
-    updatedAt.length === 0
-  ) {
+  if (!hasRequiredStorageFields || !id.success || !asset.success || !timestamps.success) {
     return null;
   }
 
@@ -71,9 +71,32 @@ function mapAsset(client: SupabaseClient, row: Row): DocumentAsset | null {
     id: id.data,
     ...asset.data,
     fileUrl: publicUrl(client, asset.data),
-    createdAt,
-    updatedAt,
+    ...timestamps.data,
   };
+}
+
+function assetRowInput(input: Partial<DocumentAssetInput>) {
+  const row: Row = {};
+  if (input.kind !== undefined) row.kind = input.kind;
+  if (input.title !== undefined) row.title = input.title;
+  if (input.language !== undefined) row.language = input.language;
+  if (input.bucketName !== undefined) row.bucket_name = input.bucketName;
+  if (input.objectPath !== undefined) row.object_path = input.objectPath;
+  if (input.mimeType !== undefined) row.mime_type = input.mimeType;
+  if (input.byteSize !== undefined) row.byte_size = input.byteSize;
+  if (input.checksumSha256 !== undefined) row.checksum_sha256 = input.checksumSha256;
+  if (input.isPublished !== undefined) row.is_published = input.isPublished;
+  if (input.sortOrder !== undefined) row.sort_order = input.sortOrder;
+  return row;
+}
+
+function requireMappedAsset(client: SupabaseClient, value: unknown) {
+  if (!value || typeof value !== "object") {
+    throw new Error("Document asset mutation returned no row");
+  }
+  const asset = mapAsset(client, value as Row);
+  if (!asset) throw new Error("Document asset mutation returned an invalid row");
+  return asset;
 }
 
 function mapPublishedAsset(client: SupabaseClient, value: unknown) {
@@ -183,6 +206,48 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
         .maybeSingle();
       if (error) throw error;
       return data ? mapAsset(client, data as Row) : null;
+    },
+
+    async createAsset(input: DocumentAssetInput) {
+      const { data, error } = await client
+        .from("document_assets")
+        .insert(assetRowInput(input))
+        .select(ASSET_COLUMNS)
+        .single();
+      if (error) throw error;
+      return requireMappedAsset(client, data);
+    },
+
+    async updateAsset(id: string, input: Partial<DocumentAssetInput>) {
+      const { data, error } = await client
+        .from("document_assets")
+        .update(assetRowInput(input))
+        .eq("id", id)
+        .select(ASSET_COLUMNS)
+        .single();
+      if (error) throw error;
+      return requireMappedAsset(client, data);
+    },
+
+    async setAssetPublished(id: string, isPublished: boolean) {
+      const { data, error } = await client
+        .from("document_assets")
+        .update({ is_published: isPublished })
+        .eq("id", id)
+        .select(ASSET_COLUMNS)
+        .single();
+      if (error) throw error;
+      return requireMappedAsset(client, data);
+    },
+
+    async deleteAsset(id: string) {
+      const { error } = await client.from("document_assets").delete().eq("id", id);
+      if (error) throw error;
+    },
+
+    async insertAuditLog(row: DocumentAuditLogInsert) {
+      const { error } = await client.from("audit_log").insert(row);
+      if (error) throw error;
     },
 
     async createSignedUploadUrl(objectPath: string) {
