@@ -1,4 +1,6 @@
-import { createSupabaseServiceClient } from "../supabase.server";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+import { getSupabaseClient } from "../supabase";
 import { createSupabaseDocumentRepository } from "./repository.server";
 import type { DocumentRepository } from "./service";
 
@@ -7,8 +9,12 @@ type PublicDocumentRepository = Pick<
   "listPublishedAnnualReports" | "listPublishedSlots"
 >;
 
+export function createPublicDocumentRepository(client: SupabaseClient = getSupabaseClient()) {
+  return createSupabaseDocumentRepository(client);
+}
+
 function defaultRepository() {
-  return createSupabaseDocumentRepository(createSupabaseServiceClient());
+  return createPublicDocumentRepository();
 }
 
 export async function loadPublishedAnnualReports(repository?: PublicDocumentRepository) {

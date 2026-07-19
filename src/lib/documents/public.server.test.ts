@@ -1,8 +1,18 @@
 import { describe, expect, test } from "bun:test";
 
-import { loadPublishedAnnualReports, loadPublishedDocumentSlots } from "./public.server";
+import {
+  createPublicDocumentRepository,
+  loadPublishedAnnualReports,
+  loadPublishedDocumentSlots,
+} from "./public.server";
 
 describe("public document readers", () => {
+  test("creates the public reader repository from an explicitly supplied anon client", () => {
+    const repository = createPublicDocumentRepository({} as never);
+
+    expect(repository.listPublishedAnnualReports).toBeFunction();
+    expect(repository.listPublishedSlots).toBeFunction();
+  });
   test("delegates annual reports and requested slots", async () => {
     const calls: unknown[] = [];
     const repository = {

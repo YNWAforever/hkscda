@@ -31,6 +31,19 @@ describe("supabase migration safety", () => {
     expect(sql).not.toMatch(/foreach table_name in array\s*\[/);
   });
 
+  test("allows anonymous reads only for published public documents", () => {
+    const sql = readMigration("20260719223000_public_document_read_policies.sql");
+
+    for (const table of ["document_assets", "site_document_slots", "annual_reports"]) {
+      expect(sql).toContain(`grant select on public.${table} to anon, authenticated`);
+      expect(sql).toMatch(
+        new RegExp(
+          `on public\\.${table} for select[\\s\\S]*to anon, authenticated[\\s\\S]*using \\(is_published = true\\)`,
+        ),
+      );
+    }
+    expect(sql).not.toMatch(/grant\s+(insert|update|delete|all)/i);
+  });
   test("adds controlled nullable donation acquisition attribution", () => {
     const sql = readMigration("20260716120000_contextual_donation_attribution.sql");
 
