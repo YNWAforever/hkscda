@@ -4,6 +4,7 @@ import {
   Building,
   Check,
   CreditCard,
+  Download,
   Globe,
   Heart,
   Loader2,
@@ -14,7 +15,13 @@ import {
 import { useEffect, useMemo, useState } from "react";
 
 import { brand } from "../lib/brand/brand";
-import { extractDonationAttribution, donateSearchSchema } from "../lib/donations/donateSearch";
+import {
+  extractDonationAttribution,
+  donateSearchSchema,
+  type DonateSearch,
+} from "../lib/donations/donateSearch";
+import { loadDonationDocumentSlots } from "../lib/documents/donation.server";
+import type { DocumentSlot } from "../lib/documents/types";
 import {
   markDonationEventOnce,
   readCheckoutSnapshot,
@@ -28,6 +35,7 @@ import { TurnstileWidget, turnstileEnabled } from "../components/site/TurnstileW
 
 export const Route = createFileRoute("/donate")({
   validateSearch: donateSearchSchema,
+  loader: loadDonationDocumentSlots,
   head: () => ({
     meta: [
       { title: "捐助我們 · 香港拯救貓狗協會 HKSCDA" },
@@ -45,7 +53,7 @@ export const Route = createFileRoute("/donate")({
     ],
     links: [{ rel: "canonical", href: "https://hkscda.com/donate" }],
   }),
-  component: DonatePage,
+  component: DonateRoute,
 });
 
 type Language = "zh-HK" | "en";
@@ -78,6 +86,7 @@ const copy = {
     amount: "捐款金額",
     customAmount: "自訂金額",
     purpose: "捐款用途",
+    customPurpose: "其他捐款用途（婚宴／活動／粉絲籌款 等）",
     details: "捐款人資料",
     method: "付款方式",
     receipt: "我需要退稅收條",
@@ -106,6 +115,7 @@ const copy = {
     amount: "Donation amount",
     customAmount: "Custom amount",
     purpose: "Purpose",
+    customPurpose: "Other donation purpose (wedding, event, fan fundraiser, etc.)",
     details: "Donor details",
     method: "Payment method",
     receipt: "I need a tax receipt",
@@ -143,14 +153,25 @@ const methods: { value: DonationMethod; zh: string; en: string; Icon: typeof Cre
   { value: "paypal", zh: "PayPal", en: "PayPal", Icon: Globe },
 ];
 
-function DonatePage() {
-  const search = Route.useSearch();
+function DonateRoute() {
+  return <DonatePage initialSlots={Route.useLoaderData()} initialSearch={Route.useSearch()} />;
+}
+
+export function DonatePage({
+  initialSlots,
+  initialSearch,
+}: {
+  initialSlots: DocumentSlot[];
+  initialSearch: DonateSearch;
+}) {
+  const search = initialSearch;
   const attribution = extractDonationAttribution(search);
   const [language, setLanguage] = useState<Language>("zh-HK");
   const t = copy[language];
   const [selectedAmount, setSelectedAmount] = useState(300);
   const [customAmount, setCustomAmount] = useState("");
   const [purpose, setPurpose] = useState<DonationPurpose>(search.purpose ?? "general");
+  const [customPurpose, setCustomPurpose] = useState("");
   const [method, setMethod] = useState<DonationMethod>("stripe");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -224,6 +245,7 @@ function DonatePage() {
           amountCents: Math.round(amountHkd * 100),
           currency: "HKD",
           purpose,
+          customPurpose,
           method,
           receiptRequested,
           donor: { name, email, phone, language },
@@ -275,6 +297,15 @@ function DonatePage() {
         : search.status === "paypal-approved"
           ? t.paypalApproved
           : null;
+
+  const availableWeddingSlots = initialSlots.filter(
+    (slot) => slot.slotKey === "wedding_gift_return_plan" && slot.document.fileUrl,
+  );
+  const primaryWedding =
+    availableWeddingSlots.find((slot) => slot.language === language) ?? availableWeddingSlots[0];
+  const alternateWedding = availableWeddingSlots.find(
+    (slot) => slot.id !== primaryWedding?.id,
+  );
 
   return (
     <main className="bg-[var(--color-background)]">
@@ -410,6 +441,19 @@ function DonatePage() {
                     </button>
                   ))}
                 </div>
+                <label className="block">
+                  <span className="mb-1 block text-xs font-bold text-[var(--color-text-muted)]">
+                    {t.customPurpose}
+                  </span>
+                  <input
+                    name="customPurpose"
+                    value={customPurpose}
+                    onChange={(event) => setCustomPurpose(event.target.value)}
+                    maxLength={200}
+                    autoComplete="off"
+                    className="w-full rounded-md border border-[var(--color-border)] bg-white px-4 py-3 text-sm focus:border-[var(--color-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]"
+                  />
+                </label>
               </fieldset>
 
               <fieldset className="grid gap-3 sm:grid-cols-2">
@@ -576,6 +620,44 @@ function DonatePage() {
               </div>
             )}
           </form>
+        </div>
+      </section>
+
+      <section className="bg-[var(--color-surface)]">
+        <div className="container-wide py-10 lg:py-14">
+          <div className="max-w-3xl">
+            <h2 className="font-display text-2xl font-bold text-[var(--color-panel)] lg:text-3xl">
+              💍 Share the Love – 婚宴回禮計劃
+            </h2>
+            <p className="mt-3 max-w-[60ch] text-sm leading-7 text-[var(--color-text-muted)]">
+              以婚禮分享愛心，賓客祝福化作救援能量。填寫表格，我們會與您聯絡安排感謝證書及小卡。
+            </p>
+            {primaryWedding?.document.fileUrl ? (
+              <div className="mt-6 flex flex-wrap items-center gap-4">
+                <a
+                  href={primaryWedding.document.fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-primary min-h-11"
+                >
+                  <Download className="h-4 w-4" aria-hidden="true" />
+                  下載表格 / Download Form
+                </a>
+                {alternateWedding?.document.fileUrl ? (
+                  <a
+                    href={alternateWedding.document.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-semibold text-[var(--color-primary)] underline underline-offset-4"
+                  >
+                    {alternateWedding.language === "en" ? "English form" : "中文表格"}
+                  </a>
+                ) : null}
+              </div>
+            ) : (
+              <p className="mt-5 text-sm text-[var(--color-text-muted)]">表格暫時未能提供。</p>
+            )}
+          </div>
         </div>
       </section>
     </main>

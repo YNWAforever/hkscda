@@ -21,7 +21,9 @@ describe("donate search attribution", () => {
     expect(extractDonationAttribution(parsed)).toBeUndefined();
   });
 
-  test("rejects unsupported purposes", () => {
-    expect(() => donateSearchSchema.parse({ purpose: "campaign-free-text" })).toThrow();
+  test("accepts only controlled donation purpose query values", () => {
+    expect(donateSearchSchema.parse({ purpose: "medical" }).purpose).toBe("medical");
+    expect(donateSearchSchema.parse({ purpose: "醫療" }).purpose).toBeUndefined();
+    expect(donateSearchSchema.parse({ purpose: "campaign-free-text" }).purpose).toBeUndefined();
   });
 });
