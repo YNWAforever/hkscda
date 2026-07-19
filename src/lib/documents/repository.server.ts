@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import type { DocumentListSearch } from "./schemas";
+import { documentAssetInputSchema, documentIdSchema } from "./schemas";
+import type { DocumentAssetInput, DocumentListSearch } from "./schemas";
 import type { AnnualReport, DocumentAsset, DocumentSlot } from "./types";
 
 const SITE_DOCUMENTS_BUCKET = "site-documents";
@@ -12,8 +13,13 @@ const SLOT_COLUMNS = `id,slot_key,language,is_published,document_assets!inner(${
 
 type Row = Record<string, unknown>;
 
-function escapeLike(value: string) {
-  return value.replaceAll("\\", "\\\\").replaceAll("%", "\\%").replaceAll("_", "\\_");
+function postgrestLikeOperand(value: string) {
+  const escaped = value
+    .replaceAll("\\", "\\\\")
+    .replaceAll('"', '\\"')
+    .replaceAll("%", "\\%")
+    .replaceAll("_", "\\_");
+  return `"%${escaped}%"`;
 }
 
 function relatedRow(value: unknown): Row | null {
@@ -21,37 +27,60 @@ function relatedRow(value: unknown): Row | null {
   return value && typeof value === "object" ? (value as Row) : null;
 }
 
-function publicUrl(client: SupabaseClient, row: Row) {
-  if (row.is_published !== true) return null;
-  const bucket = row.bucket_name;
-  const objectPath = row.object_path;
-  if (typeof bucket !== "string" || typeof objectPath !== "string") return null;
-  return client.storage.from(bucket).getPublicUrl(objectPath).data.publicUrl ?? null;
+function publicUrl(client: SupabaseClient, asset: DocumentAssetInput) {
+  if (!asset.isPublished) return null;
+  return (
+    client.storage.from(asset.bucketName).getPublicUrl(asset.objectPath).data.publicUrl ?? null
+  );
 }
 
-function mapAsset(client: SupabaseClient, row: Row): DocumentAsset {
+function mapAsset(client: SupabaseClient, row: Row): DocumentAsset | null {
+  const id = documentIdSchema.safeParse(row.id);
+  const asset = documentAssetInputSchema.safeParse({
+    kind: row.kind,
+    title: row.title,
+    language: row.language,
+    bucketName: row.bucket_name,
+    objectPath: row.object_path,
+    mimeType: row.mime_type,
+    byteSize: row.byte_size,
+    checksumSha256: row.checksum_sha256,
+    isPublished: row.is_published,
+    sortOrder: row.sort_order,
+  });
+  const createdAt = row.created_at;
+  const updatedAt = row.updated_at;
+  const hasRequiredStorageFields =
+    row.bucket_name === SITE_DOCUMENTS_BUCKET &&
+    row.mime_type === "application/pdf" &&
+    typeof row.is_published === "boolean" &&
+    row.sort_order !== undefined;
+  if (
+    !hasRequiredStorageFields ||
+    !id.success ||
+    !asset.success ||
+    typeof createdAt !== "string" ||
+    createdAt.length === 0 ||
+    typeof updatedAt !== "string" ||
+    updatedAt.length === 0
+  ) {
+    return null;
+  }
+
   return {
-    id: String(row.id),
-    kind: row.kind as DocumentAsset["kind"],
-    title: String(row.title),
-    language: row.language as DocumentAsset["language"],
-    bucketName: String(row.bucket_name),
-    objectPath: String(row.object_path),
-    fileUrl: publicUrl(client, row),
-    mimeType: "application/pdf",
-    byteSize: Number(row.byte_size),
-    checksumSha256: typeof row.checksum_sha256 === "string" ? row.checksum_sha256 : null,
-    isPublished: row.is_published === true,
-    sortOrder: Number(row.sort_order ?? 0),
-    createdAt: String(row.created_at),
-    updatedAt: String(row.updated_at),
+    id: id.data,
+    ...asset.data,
+    fileUrl: publicUrl(client, asset.data),
+    createdAt,
+    updatedAt,
   };
 }
 
 function mapPublishedAsset(client: SupabaseClient, value: unknown) {
   const row = relatedRow(value);
   if (!row || row.is_published !== true) return null;
-  return mapAsset(client, row);
+  const asset = mapAsset(client, row);
+  return asset?.isPublished === true && asset.fileUrl ? asset : null;
 }
 
 function mapAnnualReport(client: SupabaseClient, row: Row): AnnualReport | null {
@@ -131,7 +160,7 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
       if (search.kind) query = query.eq("kind", search.kind);
       if (search.language) query = query.eq("language", search.language);
       if (search.q) {
-        const like = `%${escapeLike(search.q)}%`;
+        const like = postgrestLikeOperand(search.q);
         query = query.or(`title.ilike.${like},object_path.ilike.${like}`);
       }
 
@@ -139,7 +168,9 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
       if (error) throw error;
 
       return {
-        items: ((data ?? []) as Row[]).map((row) => mapAsset(client, row)),
+        items: ((data ?? []) as Row[])
+          .map((row) => mapAsset(client, row))
+          .filter((row): row is DocumentAsset => row !== null),
         total: count ?? 0,
       };
     },

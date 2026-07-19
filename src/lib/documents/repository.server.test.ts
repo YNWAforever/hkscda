@@ -4,6 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createSupabaseDocumentRepository } from "./repository.server";
 
 type Filter = ["eq" | "in" | "ilike" | "or", string, unknown];
+const assetId = "11111111-2222-4333-8444-555555555555";
 
 class FakeQuery {
   selectedColumns = "";
@@ -85,7 +86,7 @@ class FakeQuery {
 
 function assetRow(overrides: Record<string, unknown> = {}) {
   return {
-    id: "asset-1",
+    id: assetId,
     kind: "annual_report",
     title: "Annual Report 2025/26",
     language: "bilingual",
@@ -215,11 +216,27 @@ describe("createSupabaseDocumentRepository", () => {
     expect(slots).toHaveLength(1);
   });
 
-  test("never creates public links for missing or unpublished joined assets", async () => {
+  test("never creates public links for missing, unpublished, or malformed joined assets", async () => {
     const fake = createFakeClient({
       annual_reports: [
         { id: "missing", is_published: true, document_assets: null },
         { id: "draft", is_published: true, document_assets: assetRow({ is_published: false }) },
+        {
+          id: "bucket",
+          is_published: true,
+          document_assets: assetRow({ bucket_name: "other" }),
+        },
+        {
+          id: "path",
+          is_published: true,
+          document_assets: assetRow({ object_path: "report.docx" }),
+        },
+        {
+          id: "mime",
+          is_published: true,
+          document_assets: assetRow({ mime_type: "text/plain" }),
+        },
+        { id: "title", is_published: true, document_assets: assetRow({ title: "" }) },
       ],
     });
     const repository = createSupabaseDocumentRepository(fake.client);
@@ -235,7 +252,7 @@ describe("createSupabaseDocumentRepository", () => {
     const result = await repository.listAssets({
       kind: "annual_report",
       language: "bilingual",
-      q: "20%_25",
+      q: "board,(draft)%_",
       page: 2,
       pageSize: 10,
     });
@@ -246,7 +263,7 @@ describe("createSupabaseDocumentRepository", () => {
       expect.arrayContaining([
         ["eq", "kind", "annual_report"],
         ["eq", "language", "bilingual"],
-        ["or", "", "title.ilike.%20\\%\\_25%,object_path.ilike.%20\\%\\_25%"],
+        ["or", "", 'title.ilike."%board,(draft)\\%\\_%",object_path.ilike."%board,(draft)\\%\\_%"'],
       ]),
     );
     expect(query.rangeArgs).toEqual([10, 19]);
@@ -259,12 +276,12 @@ describe("createSupabaseDocumentRepository", () => {
     });
     const repository = createSupabaseDocumentRepository(fake.client);
 
-    await expect(repository.getAssetById("asset-1")).resolves.toMatchObject({
-      id: "asset-1",
+    await expect(repository.getAssetById(assetId)).resolves.toMatchObject({
+      id: assetId,
       objectPath: "annual-reports/2025-26.pdf",
     });
     expect(fake.queryFor("document_assets").selectedColumns).not.toContain("*");
-    expect(fake.queryFor("document_assets").filters).toContainEqual(["eq", "id", "asset-1"]);
+    expect(fake.queryFor("document_assets").filters).toContainEqual(["eq", "id", assetId]);
   });
   test("returns null when an exact asset id is missing", async () => {
     const fake = createFakeClient({ document_assets: [] });
