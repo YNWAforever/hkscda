@@ -122,6 +122,7 @@ function paymentRow(id: string, overrides: Record<string, unknown> = {}) {
       id: `don-${id}`,
       purpose: "general",
       receipt_requested: true,
+      custom_purpose: "個案 A",
       status: "pending",
       supporter: {
         id: `sup-${id}`,
@@ -386,6 +387,7 @@ describe("listAdminPaymentExportRows", () => {
       paymentId: "a",
       provider: "fps",
       purpose: "general",
+      customPurpose: "個案 A",
       status: "pending",
       amountCents: 10000,
     });

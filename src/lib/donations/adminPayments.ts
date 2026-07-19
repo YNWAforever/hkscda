@@ -22,6 +22,7 @@ export type AdminPaymentRow = {
   donation: {
     id: string;
     purpose: string;
+    custom_purpose: string | null;
     receipt_requested: boolean;
     status: PaymentStatus;
     supporter: {

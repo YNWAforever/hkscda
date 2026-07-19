@@ -100,6 +100,37 @@ describe("createDonation", () => {
       acquisition_trigger: null,
     });
   });
+  test("stores a custom purpose without exposing it to checkout providers", async () => {
+    const repository = createFakeRepository();
+    let checkoutInput: Parameters<PaymentProviders["createStripeCheckout"]>[0] | undefined;
+    const capturingProviders: PaymentProviders = {
+      async createStripeCheckout(input) {
+        checkoutInput = input;
+        return { providerRef: "cs_test_123", url: "https://checkout.stripe.test/session" };
+      },
+      async createPayPalOrder() {
+        return { providerRef: "paypal_order_123", url: "https://paypal.test/checkout" };
+      },
+    };
+
+    await createDonation({
+      input: {
+        ...baseInput,
+        method: "stripe" as const,
+        customPurpose: "  個案 A  ",
+      },
+      repository,
+      providers: capturingProviders,
+      now: () => new Date("2026-06-24T10:00:00.000Z"),
+    });
+
+    expect(repository.donations[0]).toMatchObject({
+      purpose: "medical",
+      custom_purpose: "個案 A",
+    });
+    expect(checkoutInput).toMatchObject({ purpose: "medical" });
+    expect(checkoutInput).not.toHaveProperty("customPurpose");
+  });
 
   test("compensates by deleting the donation and payment when checkout fails", async () => {
     const repository = createFakeRepository();

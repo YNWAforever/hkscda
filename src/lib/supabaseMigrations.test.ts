@@ -16,6 +16,34 @@ function readMigrationBySuffix(suffix: string) {
 }
 
 describe("supabase migration safety", () => {
+  test("adds publish-safe public documents and bounded donation purpose notes", () => {
+    const sql = readMigration("20260718100000_public_documents_and_donation_purpose.sql");
+    expect(sql).toContain("create table if not exists public.document_assets");
+    expect(sql).toContain("unique (slot_key, language)");
+    expect(sql).toContain(
+      "alter table public.donation add column if not exists custom_purpose text",
+    );
+    expect(sql).toContain("check (custom_purpose is null or char_length(custom_purpose) <= 200)");
+    expect(sql).toContain("revoke all on public.document_assets from anon, authenticated");
+    expect(sql).toContain("values ('site-documents', 'site-documents', true, 52428800");
+    expect(sql).toContain("'donation_receipt_template_url'");
+    expect(sql).toContain("foreach table_name in array array[");
+    expect(sql).not.toMatch(/foreach table_name in array\s*\[/);
+  });
+
+  test("allows anonymous reads only for published public documents", () => {
+    const sql = readMigration("20260719223000_public_document_read_policies.sql");
+
+    for (const table of ["document_assets", "site_document_slots", "annual_reports"]) {
+      expect(sql).toContain(`grant select on public.${table} to anon, authenticated`);
+      expect(sql).toMatch(
+        new RegExp(
+          `on public\\.${table} for select[\\s\\S]*to anon, authenticated[\\s\\S]*using \\(is_published = true\\)`,
+        ),
+      );
+    }
+    expect(sql).not.toMatch(/grant\s+(insert|update|delete|all)/i);
+  });
   test("adds controlled nullable donation acquisition attribution", () => {
     const sql = readMigration("20260716120000_contextual_donation_attribution.sql");
 
@@ -254,6 +282,7 @@ describe("supabase migration safety", () => {
     expect(sql).toContain(
       "add constraint public_status_token_entity_type_check check (entity_type in ('adoption_application', 'sponsorship_pledge'))",
     );
+
     expect(sql).toContain("sponsorship-payment-proof");
     expect(sql).toContain("private.has_admin_role(array['staff', 'admin'])");
   });
@@ -292,5 +321,20 @@ describe("supabase migration safety", () => {
       "add constraint public_status_token_entity_type_check check (entity_type in ('adoption_application', 'sponsorship_pledge', 'volunteer_registration'))",
     );
     expect(sql).toContain("private.has_admin_role(array['staff', 'admin'])");
+  });
+
+  test("hardens document mutations with database invariants and atomic audit RPCs", () => {
+    const sql = readMigrationBySuffix("document_admin_mutation_hardening.sql");
+
+    expect(sql).toContain("create or replace function private.enforce_annual_report_asset");
+    expect(sql).toContain("create constraint trigger enforce_annual_report_asset");
+    expect(sql).toContain("create or replace function public.mutate_document_asset_with_audit");
+    expect(sql).toContain("create or replace function public.mutate_annual_report_with_audit");
+    expect(sql).toContain("insert into public.audit_log");
+    expect(sql.match(/security invoker/g)).toHaveLength(2);
+    expect(sql).toContain("for update");
+    expect(sql).toContain("revoke all on function public.mutate_document_asset_with_audit");
+    expect(sql).toContain("grant execute on function public.mutate_document_asset_with_audit");
+    expect(sql).toContain("grant insert on public.audit_log to service_role");
   });
 });

@@ -23,6 +23,7 @@ import {
   canVoidReceipt,
   financeActionLabel,
   findIssuedReceipt,
+  paymentPurposeText,
   paymentStatusPill,
   receiptPill,
   type AdminPaymentRow,
@@ -253,7 +254,11 @@ export function PaymentsReconcile() {
       header: "金額",
       cell: (payment) => <span className="font-medium">{centsToHkd(payment.amount_cents)}</span>,
     },
-    { id: "purpose", header: "用途", cell: (payment) => payment.donation.purpose },
+    {
+      id: "purpose",
+      header: "用途",
+      cell: (payment) => paymentPurposeText(payment.donation),
+    },
     {
       id: "reference",
       header: "參考",
@@ -296,7 +301,7 @@ export function PaymentsReconcile() {
               {payment.donation.supporter.name}
             </div>
             <div className="text-xs text-[var(--color-text-muted)]">
-              {payment.provider.toUpperCase()} · {payment.donation.purpose}
+              {payment.provider.toUpperCase()} · {paymentPurposeText(payment.donation)}
             </div>
           </div>
           <div className="text-right font-medium">{centsToHkd(payment.amount_cents)}</div>

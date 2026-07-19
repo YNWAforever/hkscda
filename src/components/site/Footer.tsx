@@ -64,7 +64,7 @@ export function Footer() {
           <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-white">透明度</h2>
           <ul className="space-y-1 text-sm text-white/85">
             <li><a href="/report/adoption" className="flex min-h-11 items-center hover:text-white">每月領養報告</a></li>
-            <li><a href="/report/audit" className="flex min-h-11 items-center hover:text-white">年度核數報告</a></li>
+            <li><a href="/report/audit" className="flex min-h-11 items-center hover:text-white">年度報告</a></li>
             <li><a href="/donate" className="flex min-h-11 items-center hover:text-white">捐助我們</a></li>
             <li><a href="/volunteer" className="flex min-h-11 items-center hover:text-white">加入義工團隊</a></li>
           </ul>

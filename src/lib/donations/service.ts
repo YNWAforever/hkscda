@@ -37,6 +37,7 @@ export type DonationRepository = {
     amount_cents: number;
     currency: "HKD";
     purpose: DonationRequest["purpose"];
+    custom_purpose: string | null;
     type: "one_time";
     status: "pending";
     method: DonationMethod;
@@ -139,6 +140,7 @@ export async function createDonation({
     amount_cents: donationInput.amountCents,
     currency: donationInput.currency,
     purpose: donationInput.purpose,
+    custom_purpose: donationInput.customPurpose ?? null,
     type: "one_time",
     status: "pending",
     method: donationInput.method,

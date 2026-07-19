@@ -14,6 +14,7 @@ import {
   X,
 } from "lucide-react";
 import { BrandLogo } from "./BrandLogo";
+import { reportLinks } from "./reportNavigation";
 
 const aboutLinks = [
   { to: "/about", label: "協會簡介", desc: "了解我們的使命與歷史" },
@@ -27,11 +28,6 @@ const adoptLinks = [
   { to: "/adoption/instructions", label: "領養需知", desc: "申請流程及飼養指引" },
   { to: "/animals/cat", label: "待領養貓貓", desc: "目前等待家園的貓咪" },
   { to: "/animals/dog", label: "待領養狗狗", desc: "目前等待家園的狗狗" },
-];
-
-const reportLinks = [
-  { to: "/report/adoption", label: "每月領養報告", desc: "領養數據及趨勢分析" },
-  { to: "/report/audit", label: "年度核數報告", desc: "財務透明度及審計" },
 ];
 
 export function Header() {

@@ -52,6 +52,7 @@ export type DonationHistoryRow = {
   amountCents: number;
   currency: "HKD";
   purpose: DonationPurpose;
+  customPurpose: string | null;
   status: "pending" | "succeeded" | "failed" | "refunded";
   method: "stripe" | "paypal" | "fps" | "payme" | "manual";
   receiptRequested: boolean;

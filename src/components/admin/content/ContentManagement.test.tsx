@@ -140,3 +140,15 @@ describe("ContentManagement", () => {
     expect(markup).toContain('href="/admin/content/content-1"');
   });
 });
+
+test("links to document and annual-report workspaces", async () => {
+  const markup = await renderContentManagement({
+    content: [],
+    pagination: { page: 1, pageSize: 25, total: 0, pageCount: 1 },
+  });
+
+  expect(markup).toContain('href="/admin/content/documents"');
+  expect(markup).toContain(">文件</a>");
+  expect(markup).toContain('href="/admin/content/annual-reports"');
+  expect(markup).toContain(">年度報告</a>");
+});

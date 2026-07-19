@@ -39,6 +39,7 @@ const SUPPORTER_DETAIL_COPY = {
     donationsSubtitle: "捐款紀錄及收據操作。",
     noDonations: "尚未有捐款。",
     receiptRequested: "需要收據",
+    customPurpose: "其他用途",
     issueReceipt: "發出收據",
     receipts: "收據",
     receiptsSubtitle: "已發出及已作廢的收據紀錄。",
@@ -84,6 +85,7 @@ const SUPPORTER_DETAIL_COPY = {
     donationsSubtitle: "Gift history and receipt actions.",
     noDonations: "No donations yet.",
     receiptRequested: "receipt requested",
+    customPurpose: "Other purpose",
     issueReceipt: "Issue receipt",
     receipts: "Receipts",
     receiptsSubtitle: "Issued and voided receipt records.",
@@ -281,6 +283,11 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
                       {formatHkd(donation.amountCents, language)} ·{" "}
                       {labelFromMap(donation.purpose, purposeLabels)}
                     </div>
+                    {donation.customPurpose ? (
+                      <div className="text-xs font-medium text-[var(--color-text-muted)]">
+                        {copy.customPurpose}：{donation.customPurpose}
+                      </div>
+                    ) : null}
                     <div className="text-xs text-[var(--color-text-muted)]">
                       {labelFromMap(donation.method, methodLabels)} ·{" "}
                       {labelFromMap(donation.status, statusLabels)} ·{" "}
