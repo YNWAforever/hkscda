@@ -27,6 +27,8 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("revoke all on public.document_assets from anon, authenticated");
     expect(sql).toContain("values ('site-documents', 'site-documents', true, 52428800");
     expect(sql).toContain("'donation_receipt_template_url'");
+    expect(sql).toContain("foreach table_name in array array[");
+    expect(sql).not.toMatch(/foreach table_name in array\s*\[/);
   });
 
   test("adds controlled nullable donation acquisition attribution", () => {
