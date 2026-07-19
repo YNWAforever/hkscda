@@ -69,6 +69,8 @@ import { Route as AdminCoordinatorIntakeRouteImport } from './routes/admin/coord
 import { Route as AdminCoordinatorInboxRouteImport } from './routes/admin/coordinator/inbox'
 import { Route as AdminCoordinatorAnimalsRouteImport } from './routes/admin/coordinator/animals'
 import { Route as AdminCoordinatorAdoptersRouteImport } from './routes/admin/coordinator/adopters'
+import { Route as AdminContentDocumentsRouteImport } from './routes/admin/content/documents'
+import { Route as AdminContentAnnualReportsRouteImport } from './routes/admin/content/annual-reports'
 import { Route as AdminContentIdRouteImport } from './routes/admin/content/$id'
 import { Route as AdminApplicationsIdRouteImport } from './routes/admin/applications/$id'
 import { Route as AdminAnimalsNewRouteImport } from './routes/admin/animals/new'
@@ -446,6 +448,17 @@ const AdminCoordinatorAdoptersRoute =
     id: '/admin/coordinator/adopters',
     path: '/admin/coordinator/adopters',
     getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminContentDocumentsRoute = AdminContentDocumentsRouteImport.update({
+  id: '/documents',
+  path: '/documents',
+  getParentRoute: () => AdminContentRoute,
+} as any)
+const AdminContentAnnualReportsRoute =
+  AdminContentAnnualReportsRouteImport.update({
+    id: '/annual-reports',
+    path: '/annual-reports',
+    getParentRoute: () => AdminContentRoute,
   } as any)
 const AdminContentIdRoute = AdminContentIdRouteImport.update({
   id: '/$id',
@@ -906,6 +919,8 @@ export interface FileRoutesByFullPath {
   '/admin/animals/new': typeof AdminAnimalsNewRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
   '/admin/content/$id': typeof AdminContentIdRoute
+  '/admin/content/annual-reports': typeof AdminContentAnnualReportsRoute
+  '/admin/content/documents': typeof AdminContentDocumentsRoute
   '/admin/coordinator/adopters': typeof AdminCoordinatorAdoptersRouteWithChildren
   '/admin/coordinator/animals': typeof AdminCoordinatorAnimalsRoute
   '/admin/coordinator/inbox': typeof AdminCoordinatorInboxRoute
@@ -1041,6 +1056,8 @@ export interface FileRoutesByTo {
   '/admin/animals/new': typeof AdminAnimalsNewRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
   '/admin/content/$id': typeof AdminContentIdRoute
+  '/admin/content/annual-reports': typeof AdminContentAnnualReportsRoute
+  '/admin/content/documents': typeof AdminContentDocumentsRoute
   '/admin/coordinator/adopters': typeof AdminCoordinatorAdoptersRouteWithChildren
   '/admin/coordinator/animals': typeof AdminCoordinatorAnimalsRoute
   '/admin/coordinator/inbox': typeof AdminCoordinatorInboxRoute
@@ -1178,6 +1195,8 @@ export interface FileRoutesById {
   '/admin/animals/new': typeof AdminAnimalsNewRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
   '/admin/content/$id': typeof AdminContentIdRoute
+  '/admin/content/annual-reports': typeof AdminContentAnnualReportsRoute
+  '/admin/content/documents': typeof AdminContentDocumentsRoute
   '/admin/coordinator/adopters': typeof AdminCoordinatorAdoptersRouteWithChildren
   '/admin/coordinator/animals': typeof AdminCoordinatorAnimalsRoute
   '/admin/coordinator/inbox': typeof AdminCoordinatorInboxRoute
@@ -1316,6 +1335,8 @@ export interface FileRouteTypes {
     | '/admin/animals/new'
     | '/admin/applications/$id'
     | '/admin/content/$id'
+    | '/admin/content/annual-reports'
+    | '/admin/content/documents'
     | '/admin/coordinator/adopters'
     | '/admin/coordinator/animals'
     | '/admin/coordinator/inbox'
@@ -1451,6 +1472,8 @@ export interface FileRouteTypes {
     | '/admin/animals/new'
     | '/admin/applications/$id'
     | '/admin/content/$id'
+    | '/admin/content/annual-reports'
+    | '/admin/content/documents'
     | '/admin/coordinator/adopters'
     | '/admin/coordinator/animals'
     | '/admin/coordinator/inbox'
@@ -1587,6 +1610,8 @@ export interface FileRouteTypes {
     | '/admin/animals/new'
     | '/admin/applications/$id'
     | '/admin/content/$id'
+    | '/admin/content/annual-reports'
+    | '/admin/content/documents'
     | '/admin/coordinator/adopters'
     | '/admin/coordinator/animals'
     | '/admin/coordinator/inbox'
@@ -2201,6 +2226,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCoordinatorAdoptersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/content/documents': {
+      id: '/admin/content/documents'
+      path: '/documents'
+      fullPath: '/admin/content/documents'
+      preLoaderRoute: typeof AdminContentDocumentsRouteImport
+      parentRoute: typeof AdminContentRoute
+    }
+    '/admin/content/annual-reports': {
+      id: '/admin/content/annual-reports'
+      path: '/annual-reports'
+      fullPath: '/admin/content/annual-reports'
+      preLoaderRoute: typeof AdminContentAnnualReportsRouteImport
+      parentRoute: typeof AdminContentRoute
+    }
     '/admin/content/$id': {
       id: '/admin/content/$id'
       path: '/$id'
@@ -2760,10 +2799,14 @@ const AdminApplicationsRouteWithChildren =
 
 interface AdminContentRouteChildren {
   AdminContentIdRoute: typeof AdminContentIdRoute
+  AdminContentAnnualReportsRoute: typeof AdminContentAnnualReportsRoute
+  AdminContentDocumentsRoute: typeof AdminContentDocumentsRoute
 }
 
 const AdminContentRouteChildren: AdminContentRouteChildren = {
   AdminContentIdRoute: AdminContentIdRoute,
+  AdminContentAnnualReportsRoute: AdminContentAnnualReportsRoute,
+  AdminContentDocumentsRoute: AdminContentDocumentsRoute,
 }
 
 const AdminContentRouteWithChildren = AdminContentRoute._addFileChildren(

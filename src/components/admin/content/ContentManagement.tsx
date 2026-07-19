@@ -207,16 +207,30 @@ function ContentManagementView({
           <h1 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">宣傳內容</h1>
           <p className="text-sm text-[var(--color-text-muted)]">管理故事、活動、市集與報告頁面。</p>
         </div>
-        {onRefresh ? (
-          <button
-            type="button"
-            onClick={onRefresh}
-            className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)]"
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            to="/admin/content/documents"
+            className="rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)]"
           >
-            <RefreshCw className="h-4 w-4" />
-            重新整理
-          </button>
-        ) : null}
+            文件
+          </Link>
+          <Link
+            to="/admin/content/annual-reports"
+            className="rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)]"
+          >
+            年度報告
+          </Link>
+          {onRefresh ? (
+            <button
+              type="button"
+              onClick={onRefresh}
+              className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)]"
+            >
+              <RefreshCw className="h-4 w-4" />
+              重新整理
+            </button>
+          ) : null}
+        </div>
       </div>
 
       <div className="grid gap-3 md:grid-cols-4">
