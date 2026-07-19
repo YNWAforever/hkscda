@@ -3,7 +3,10 @@ import type { ReactNode } from "react";
 import { renderToString } from "react-dom/server";
 import type { AnnualReport } from "@/lib/documents/types";
 
+const realReactRouter = await import("@tanstack/react-router");
+
 mock.module("@tanstack/react-router", () => ({
+  ...realReactRouter,
   createFileRoute: () => (options: unknown) => options,
   Link: ({ children, to, ...props }: { children: ReactNode; to: string }) => (
     <a href={to} {...props}>
