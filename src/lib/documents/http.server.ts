@@ -15,6 +15,16 @@ type DocumentHandlerService = {
   unpublishAsset(input: { actorUserId: string; assetId: string }): Promise<unknown>;
   deleteAsset(input: { actorUserId: string; assetId: string }): Promise<unknown>;
   createUploadTarget(input: unknown): Promise<unknown>;
+  listAnnualReports(): Promise<unknown>;
+  createAnnualReport(input: { actorUserId: string; input: unknown }): Promise<unknown>;
+  updateAnnualReport(input: {
+    actorUserId: string;
+    reportId: string;
+    input: unknown;
+  }): Promise<unknown>;
+  publishAnnualReport(input: { actorUserId: string; reportId: string }): Promise<unknown>;
+  unpublishAnnualReport(input: { actorUserId: string; reportId: string }): Promise<unknown>;
+  deleteAnnualReport(input: { actorUserId: string; reportId: string }): Promise<unknown>;
 };
 
 type CreateDocumentHandlersArgs = {
@@ -146,6 +156,68 @@ export function createDocumentHandlers({
         return jsonResponse(await service.createUploadTarget(await jsonBody(request)), {
           status: 201,
         });
+      });
+    },
+    listAnnualReports({ request }: HandlerContext) {
+      return withDocumentErrors(async () => {
+        await requireDocumentAdmin(request);
+        return jsonResponse(await service.listAnnualReports());
+      });
+    },
+
+    createAnnualReport({ request }: HandlerContext) {
+      return withDocumentErrors(async () => {
+        const admin = await requireDocumentAdmin(request);
+        const report = await service.createAnnualReport({
+          actorUserId: admin.authUserId,
+          input: await jsonBody(request),
+        });
+        return jsonResponse({ report }, { status: 201 });
+      });
+    },
+
+    updateAnnualReport({ request, params }: HandlerContext) {
+      return withDocumentErrors(async () => {
+        const admin = await requireDocumentAdmin(request);
+        const report = await service.updateAnnualReport({
+          actorUserId: admin.authUserId,
+          reportId: requiredId(params),
+          input: await jsonBody(request),
+        });
+        return jsonResponse({ report });
+      });
+    },
+
+    publishAnnualReport({ request, params }: HandlerContext) {
+      return withDocumentErrors(async () => {
+        const admin = await requireDocumentAdmin(request);
+        const report = await service.publishAnnualReport({
+          actorUserId: admin.authUserId,
+          reportId: requiredId(params),
+        });
+        return jsonResponse({ report });
+      });
+    },
+
+    unpublishAnnualReport({ request, params }: HandlerContext) {
+      return withDocumentErrors(async () => {
+        const admin = await requireDocumentAdmin(request);
+        const report = await service.unpublishAnnualReport({
+          actorUserId: admin.authUserId,
+          reportId: requiredId(params),
+        });
+        return jsonResponse({ report });
+      });
+    },
+
+    deleteAnnualReport({ request, params }: HandlerContext) {
+      return withDocumentErrors(async () => {
+        const admin = await requireDocumentAdmin(request);
+        await service.deleteAnnualReport({
+          actorUserId: admin.authUserId,
+          reportId: requiredId(params),
+        });
+        return jsonResponse({ ok: true });
       });
     },
   };

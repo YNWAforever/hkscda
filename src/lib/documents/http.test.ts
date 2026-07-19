@@ -56,6 +56,29 @@ function createService(overrides: Record<string, unknown> = {}) {
       return { token: "token", path: "forms/wedding.pdf" };
     },
     ...overrides,
+    async listAnnualReports() {
+      calls.push("listAnnualReports");
+      return [];
+    },
+    async createAnnualReport() {
+      calls.push("createAnnualReport");
+      return {};
+    },
+    async updateAnnualReport() {
+      calls.push("updateAnnualReport");
+      return {};
+    },
+    async publishAnnualReport() {
+      calls.push("publishAnnualReport");
+      return {};
+    },
+    async unpublishAnnualReport() {
+      calls.push("unpublishAnnualReport");
+      return {};
+    },
+    async deleteAnnualReport() {
+      calls.push("deleteAnnualReport");
+    },
   };
 }
 
@@ -182,6 +205,53 @@ describe("createDocumentHandlers", () => {
       "updateAsset",
       "publishAsset",
       "unpublishAsset",
+    ]);
+  });
+
+  test("routes authenticated annual-report CRUD and publication operations", async () => {
+    const service = createService();
+    const handlers = createDocumentHandlers({
+      requireDocumentAdmin: async () => admin,
+      service,
+    });
+    const params = { id: "report" };
+
+    await handlers.listAnnualReports({
+      request: new Request("https://example.test/api/admin/annual-reports"),
+    });
+    await handlers.createAnnualReport({
+      request: jsonRequest("/api/admin/annual-reports", {}),
+    });
+    await handlers.updateAnnualReport({
+      request: jsonRequest("/api/admin/annual-reports/report", {}, "PATCH"),
+      params,
+    });
+    await handlers.publishAnnualReport({
+      request: new Request("https://example.test/api/admin/annual-reports/report/publish", {
+        method: "POST",
+      }),
+      params,
+    });
+    await handlers.unpublishAnnualReport({
+      request: new Request("https://example.test/api/admin/annual-reports/report/publish", {
+        method: "DELETE",
+      }),
+      params,
+    });
+    await handlers.deleteAnnualReport({
+      request: new Request("https://example.test/api/admin/annual-reports/report", {
+        method: "DELETE",
+      }),
+      params,
+    });
+
+    expect(service.calls).toEqual([
+      "listAnnualReports",
+      "createAnnualReport",
+      "updateAnnualReport",
+      "publishAnnualReport",
+      "unpublishAnnualReport",
+      "deleteAnnualReport",
     ]);
   });
 });

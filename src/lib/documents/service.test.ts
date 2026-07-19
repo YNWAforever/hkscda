@@ -1,9 +1,10 @@
 import { describe, expect, mock, test } from "bun:test";
 
 import { createDocumentService, DocumentConflictError, type DocumentRepository } from "./service";
-import type { DocumentAsset } from "./types";
+import type { AnnualReport, DocumentAsset } from "./types";
 
 const assetId = "11111111-2222-4333-8444-555555555555";
+const reportId = "22222222-3333-4444-8555-666666666666";
 
 const asset: DocumentAsset = {
   id: assetId,
@@ -21,6 +22,16 @@ const asset: DocumentAsset = {
   createdAt: "2026-07-18T00:00:00.000Z",
   updatedAt: "2026-07-18T00:00:00.000Z",
 };
+const annualReport: AnnualReport = {
+  id: reportId,
+  title: "Annual Report 2025/26",
+  yearLabel: "2025/26",
+  document: asset,
+  isPublished: false,
+  sortOrder: 1,
+  createdAt: "2026-07-18T00:00:00.000Z",
+  updatedAt: "2026-07-18T00:00:00.000Z",
+};
 
 function createRepo(overrides: Partial<DocumentRepository> = {}) {
   const auditLogs: Parameters<DocumentRepository["insertAuditLog"]>[0][] = [];
@@ -29,6 +40,12 @@ function createRepo(overrides: Partial<DocumentRepository> = {}) {
     listPublishedSlots: mock(async () => []),
     listAssets: mock(async () => ({ items: [asset], total: 1 })),
     getAssetById: mock(async () => asset),
+    listAnnualReports: mock(async () => [annualReport]),
+    getAnnualReportById: mock(async () => annualReport),
+    createAnnualReport: mock(async (input) => ({ ...annualReport, ...input })),
+    updateAnnualReport: mock(async (_id, input) => ({ ...annualReport, ...input })),
+    setAnnualReportPublished: mock(async (_id, value) => ({ ...annualReport, isPublished: value })),
+    deleteAnnualReport: mock(async () => undefined),
     createAsset: mock(async (input) => ({ ...asset, ...input })),
     updateAsset: mock(async (_id, input) => ({ ...asset, ...input })),
     setAssetPublished: mock(async (_id, isPublished) => ({ ...asset, isPublished })),
@@ -188,4 +205,67 @@ describe("createDocumentService", () => {
       }),
     ).resolves.toEqual({ token: "upload-token", path: "annual-reports/report.pdf" });
   });
+});
+
+test("creates draft annual reports and lists them for admin", async () => {
+  const { repo } = createRepo();
+  const service = createDocumentService({ repo });
+
+  await expect(service.listAnnualReports()).resolves.toEqual([annualReport]);
+  await expect(
+    service.createAnnualReport({
+      actorUserId: "admin",
+      input: {
+        title: "Annual Report 2025/26",
+        yearLabel: "2025/26",
+        documentAssetId: assetId,
+        isPublished: false,
+        sortOrder: 1,
+      },
+    }),
+  ).resolves.toMatchObject({ id: reportId });
+  expect(repo.getAssetById).toHaveBeenCalledWith(assetId);
+  expect(repo.createAnnualReport).toHaveBeenCalled();
+});
+
+test("rejects annual-report publication until its PDF asset is published", async () => {
+  const { repo } = createRepo();
+  const service = createDocumentService({ repo });
+
+  await expect(service.publishAnnualReport({ actorUserId: "admin", reportId })).rejects.toThrow(
+    "Publish the annual report PDF first",
+  );
+  expect(repo.setAnnualReportPublished).not.toHaveBeenCalled();
+});
+
+test("updates, publishes, unpublishes, and deletes annual reports with audit logs", async () => {
+  const publishedReadyReport = {
+    ...annualReport,
+    document: { ...asset, isPublished: true },
+  };
+  const { repo, auditLogs } = createRepo({
+    getAnnualReportById: mock(async () => publishedReadyReport),
+    getAssetById: mock(async () => publishedReadyReport.document),
+  });
+  const service = createDocumentService({ repo });
+
+  await service.updateAnnualReport({
+    actorUserId: "admin",
+    reportId,
+    input: { title: "Updated report", sortOrder: 2 },
+  });
+  await service.publishAnnualReport({ actorUserId: "admin", reportId });
+  await service.unpublishAnnualReport({ actorUserId: "admin", reportId });
+  await service.deleteAnnualReport({ actorUserId: "admin", reportId });
+
+  expect(repo.updateAnnualReport).toHaveBeenCalledWith(reportId, {
+    title: "Updated report",
+    sortOrder: 2,
+  });
+  expect(auditLogs.map((row) => row.action)).toEqual([
+    "annual_report.update",
+    "annual_report.publish",
+    "annual_report.unpublish",
+    "annual_report.delete",
+  ]);
 });

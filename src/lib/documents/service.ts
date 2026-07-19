@@ -1,10 +1,12 @@
 import { z } from "zod";
 
 import {
+  annualReportInputSchema,
   documentAssetInputSchema,
   documentIdSchema,
   documentListSearchSchema,
   uploadTargetSchema,
+  type AnnualReportInput,
   type DocumentAssetInput,
   type DocumentListSearch,
 } from "./schemas";
@@ -21,8 +23,13 @@ export type DocumentAuditLogInsert = {
     | "document.update"
     | "document.publish"
     | "document.unpublish"
-    | "document.delete";
-  entity: "document_asset";
+    | "document.delete"
+    | "annual_report.create"
+    | "annual_report.update"
+    | "annual_report.publish"
+    | "annual_report.unpublish"
+    | "annual_report.delete";
+  entity: "document_asset" | "annual_report";
   entity_id: string;
   detail: Record<string, unknown>;
   timestamp?: string;
@@ -30,6 +37,12 @@ export type DocumentAuditLogInsert = {
 
 export type DocumentRepository = {
   listPublishedAnnualReports(): Promise<AnnualReport[]>;
+  listAnnualReports(): Promise<AnnualReport[]>;
+  getAnnualReportById(id: string): Promise<AnnualReport | null>;
+  createAnnualReport(input: AnnualReportInput): Promise<AnnualReport>;
+  updateAnnualReport(id: string, input: Partial<AnnualReportInput>): Promise<AnnualReport>;
+  setAnnualReportPublished(id: string, isPublished: boolean): Promise<AnnualReport>;
+  deleteAnnualReport(id: string): Promise<void>;
   listPublishedSlots(slotKeys: string[]): Promise<DocumentSlot[]>;
   listAssets(search: DocumentListSearch): Promise<{ items: DocumentAsset[]; total: number }>;
   getAssetById(id: string): Promise<DocumentAsset | null>;
@@ -66,6 +79,10 @@ const slotKeysSchema = z.array(
     .trim()
     .regex(/^[a-z0-9_]+$/),
 );
+const updateAnnualReportInputSchema = annualReportInputSchema
+  .omit({ isPublished: true })
+  .partial()
+  .strict();
 
 function timestamp(now: () => Date) {
   return now().toISOString();
@@ -91,6 +108,20 @@ export function createDocumentService({
     }
   }
 
+  async function annualReportForMutation(reportId: string) {
+    const report = await repo.getAnnualReportById(reportId);
+    if (!report) throw new Error("Annual report not found");
+    return report;
+  }
+
+  async function requireAnnualReportAsset(assetId: string, mustBePublished: boolean) {
+    const asset = await repo.getAssetById(assetId);
+    if (!asset || asset.kind !== "annual_report") throw new Error("Annual report PDF not found");
+    if (mustBePublished && !asset.isPublished)
+      throw new Error("Publish the annual report PDF first");
+    return asset;
+  }
+
   return {
     async listPublishedAnnualReports() {
       return repo.listPublishedAnnualReports();
@@ -98,6 +129,95 @@ export function createDocumentService({
 
     async listPublishedSlots(rawSlotKeys: unknown) {
       return repo.listPublishedSlots(slotKeysSchema.parse(rawSlotKeys));
+    },
+
+    async listAnnualReports() {
+      return repo.listAnnualReports();
+    },
+
+    async createAnnualReport({ actorUserId, input }: ActorInput & { input: unknown }) {
+      const parsed = annualReportInputSchema.parse(input);
+      await requireAnnualReportAsset(parsed.documentAssetId, parsed.isPublished);
+      const report = await repo.createAnnualReport(parsed);
+      await audit({
+        actor_user_id: actorUserId,
+        action: "annual_report.create",
+        entity: "annual_report",
+        entity_id: report.id,
+        detail: { yearLabel: report.yearLabel, documentAssetId: parsed.documentAssetId },
+      });
+      if (report.isPublished) {
+        await audit({
+          actor_user_id: actorUserId,
+          action: "annual_report.publish",
+          entity: "annual_report",
+          entity_id: report.id,
+          detail: { documentAssetId: parsed.documentAssetId },
+        });
+      }
+      return report;
+    },
+
+    async updateAnnualReport({
+      actorUserId,
+      reportId,
+      input,
+    }: ActorInput & { reportId: string; input: unknown }) {
+      const parsedReportId = documentIdSchema.parse(reportId);
+      const parsed = updateAnnualReportInputSchema.parse(input);
+      if (parsed.documentAssetId !== undefined) {
+        const current = await annualReportForMutation(parsedReportId);
+        await requireAnnualReportAsset(parsed.documentAssetId, current.isPublished);
+      }
+      const report = await repo.updateAnnualReport(parsedReportId, parsed);
+      await audit({
+        actor_user_id: actorUserId,
+        action: "annual_report.update",
+        entity: "annual_report",
+        entity_id: parsedReportId,
+        detail: parsed,
+      });
+      return report;
+    },
+
+    async publishAnnualReport({ actorUserId, reportId }: ActorInput & { reportId: string }) {
+      const parsedReportId = documentIdSchema.parse(reportId);
+      const current = await annualReportForMutation(parsedReportId);
+      await requireAnnualReportAsset(current.document.id, true);
+      const report = await repo.setAnnualReportPublished(parsedReportId, true);
+      await audit({
+        actor_user_id: actorUserId,
+        action: "annual_report.publish",
+        entity: "annual_report",
+        entity_id: parsedReportId,
+        detail: { documentAssetId: current.document.id },
+      });
+      return report;
+    },
+
+    async unpublishAnnualReport({ actorUserId, reportId }: ActorInput & { reportId: string }) {
+      const parsedReportId = documentIdSchema.parse(reportId);
+      const report = await repo.setAnnualReportPublished(parsedReportId, false);
+      await audit({
+        actor_user_id: actorUserId,
+        action: "annual_report.unpublish",
+        entity: "annual_report",
+        entity_id: parsedReportId,
+        detail: {},
+      });
+      return report;
+    },
+
+    async deleteAnnualReport({ actorUserId, reportId }: ActorInput & { reportId: string }) {
+      const parsedReportId = documentIdSchema.parse(reportId);
+      await repo.deleteAnnualReport(parsedReportId);
+      await audit({
+        actor_user_id: actorUserId,
+        action: "annual_report.delete",
+        entity: "annual_report",
+        entity_id: parsedReportId,
+        detail: {},
+      });
     },
 
     async listAssets(raw: unknown) {

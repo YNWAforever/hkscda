@@ -55,7 +55,9 @@ import { Route as ApiAdminSupportersRouteImport } from './routes/api/admin/suppo
 import { Route as ApiAdminReceiptsRouteImport } from './routes/api/admin/receipts'
 import { Route as ApiAdminPaymentsRouteImport } from './routes/api/admin/payments'
 import { Route as ApiAdminMeRouteImport } from './routes/api/admin/me'
+import { Route as ApiAdminDocumentsRouteImport } from './routes/api/admin/documents'
 import { Route as ApiAdminContentRouteImport } from './routes/api/admin/content'
+import { Route as ApiAdminAnnualReportsRouteImport } from './routes/api/admin/annual-reports'
 import { Route as AnimalsDogIdRouteImport } from './routes/animals/dog_.$id'
 import { Route as AnimalsCatIdRouteImport } from './routes/animals/cat_.$id'
 import { Route as AdoptionStatusTokenRouteImport } from './routes/adoption/status.$token'
@@ -82,7 +84,10 @@ import { Route as ApiAdminExportsSupportersDotcsvRouteImport } from './routes/ap
 import { Route as ApiAdminExportsPaymentsDotcsvRouteImport } from './routes/api/admin/exports/payments[.]csv'
 import { Route as ApiAdminExportsDonationsDotcsvRouteImport } from './routes/api/admin/exports/donations[.]csv'
 import { Route as ApiAdminDonationsManualRouteImport } from './routes/api/admin/donations/manual'
+import { Route as ApiAdminDocumentsUploadTargetRouteImport } from './routes/api/admin/documents/upload-target'
+import { Route as ApiAdminDocumentsIdRouteImport } from './routes/api/admin/documents/$id'
 import { Route as ApiAdminContentIdRouteImport } from './routes/api/admin/content/$id'
+import { Route as ApiAdminAnnualReportsIdRouteImport } from './routes/api/admin/annual-reports/$id'
 import { Route as ApiAdminAdoptionsTasksRouteImport } from './routes/api/admin/adoptions/tasks'
 import { Route as ApiAdminAdoptionsStatusesRouteImport } from './routes/api/admin/adoptions/statuses'
 import { Route as ApiAdminAdoptionsCasesRouteImport } from './routes/api/admin/adoptions/cases'
@@ -98,6 +103,7 @@ import { Route as ApiAdminVolunteersActivitiesIdRouteImport } from './routes/api
 import { Route as ApiAdminSupportersIdConsentsRouteImport } from './routes/api/admin/supporters/$id/consents'
 import { Route as ApiAdminReceiptsIdVoidRouteImport } from './routes/api/admin/receipts/$id/void'
 import { Route as ApiAdminPaymentsIdReconcileRouteImport } from './routes/api/admin/payments/$id/reconcile'
+import { Route as ApiAdminDocumentsIdPublishRouteImport } from './routes/api/admin/documents/$id/publish'
 import { Route as ApiAdminContentSocialCopyIdRouteImport } from './routes/api/admin/content/social-copy/$id'
 import { Route as ApiAdminContentNotificationDraftsIdRouteImport } from './routes/api/admin/content/notification-drafts/$id'
 import { Route as ApiAdminContentIdUpdatesRouteImport } from './routes/api/admin/content/$id/updates'
@@ -107,6 +113,7 @@ import { Route as ApiAdminContentIdPublishRouteImport } from './routes/api/admin
 import { Route as ApiAdminContentIdMediaRouteImport } from './routes/api/admin/content/$id/media'
 import { Route as ApiAdminContentIdLinksRouteImport } from './routes/api/admin/content/$id/links'
 import { Route as ApiAdminContentIdArchiveRouteImport } from './routes/api/admin/content/$id/archive'
+import { Route as ApiAdminAnnualReportsIdPublishRouteImport } from './routes/api/admin/annual-reports/$id/publish'
 import { Route as ApiAdminAdoptionsTasksIdRouteImport } from './routes/api/admin/adoptions/tasks/$id'
 import { Route as ApiAdminAdoptionsStatusesIdRouteImport } from './routes/api/admin/adoptions/statuses/$id'
 import { Route as ApiAdminAdoptionsReportsSummaryRouteImport } from './routes/api/admin/adoptions/reports/summary'
@@ -368,9 +375,19 @@ const ApiAdminMeRoute = ApiAdminMeRouteImport.update({
   path: '/api/admin/me',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminDocumentsRoute = ApiAdminDocumentsRouteImport.update({
+  id: '/api/admin/documents',
+  path: '/api/admin/documents',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminContentRoute = ApiAdminContentRouteImport.update({
   id: '/api/admin/content',
   path: '/api/admin/content',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminAnnualReportsRoute = ApiAdminAnnualReportsRouteImport.update({
+  id: '/api/admin/annual-reports',
+  path: '/api/admin/annual-reports',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnimalsDogIdRoute = AnimalsDogIdRouteImport.update({
@@ -512,10 +529,26 @@ const ApiAdminDonationsManualRoute = ApiAdminDonationsManualRouteImport.update({
   path: '/api/admin/donations/manual',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminDocumentsUploadTargetRoute =
+  ApiAdminDocumentsUploadTargetRouteImport.update({
+    id: '/upload-target',
+    path: '/upload-target',
+    getParentRoute: () => ApiAdminDocumentsRoute,
+  } as any)
+const ApiAdminDocumentsIdRoute = ApiAdminDocumentsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiAdminDocumentsRoute,
+} as any)
 const ApiAdminContentIdRoute = ApiAdminContentIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => ApiAdminContentRoute,
+} as any)
+const ApiAdminAnnualReportsIdRoute = ApiAdminAnnualReportsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiAdminAnnualReportsRoute,
 } as any)
 const ApiAdminAdoptionsTasksRoute = ApiAdminAdoptionsTasksRouteImport.update({
   id: '/api/admin/adoptions/tasks',
@@ -600,6 +633,12 @@ const ApiAdminPaymentsIdReconcileRoute =
     path: '/$id/reconcile',
     getParentRoute: () => ApiAdminPaymentsRoute,
   } as any)
+const ApiAdminDocumentsIdPublishRoute =
+  ApiAdminDocumentsIdPublishRouteImport.update({
+    id: '/publish',
+    path: '/publish',
+    getParentRoute: () => ApiAdminDocumentsIdRoute,
+  } as any)
 const ApiAdminContentSocialCopyIdRoute =
   ApiAdminContentSocialCopyIdRouteImport.update({
     id: '/social-copy/$id',
@@ -651,6 +690,12 @@ const ApiAdminContentIdArchiveRoute =
     id: '/archive',
     path: '/archive',
     getParentRoute: () => ApiAdminContentIdRoute,
+  } as any)
+const ApiAdminAnnualReportsIdPublishRoute =
+  ApiAdminAnnualReportsIdPublishRouteImport.update({
+    id: '/publish',
+    path: '/publish',
+    getParentRoute: () => ApiAdminAnnualReportsIdRoute,
   } as any)
 const ApiAdminAdoptionsTasksIdRoute =
   ApiAdminAdoptionsTasksIdRouteImport.update({
@@ -872,7 +917,9 @@ export interface FileRoutesByFullPath {
   '/adoption/status/$token': typeof AdoptionStatusTokenRoute
   '/animals/cat/$id': typeof AnimalsCatIdRoute
   '/animals/dog/$id': typeof AnimalsDogIdRoute
+  '/api/admin/annual-reports': typeof ApiAdminAnnualReportsRouteWithChildren
   '/api/admin/content': typeof ApiAdminContentRouteWithChildren
+  '/api/admin/documents': typeof ApiAdminDocumentsRouteWithChildren
   '/api/admin/me': typeof ApiAdminMeRoute
   '/api/admin/payments': typeof ApiAdminPaymentsRouteWithChildren
   '/api/admin/receipts': typeof ApiAdminReceiptsRouteWithChildren
@@ -898,7 +945,10 @@ export interface FileRoutesByFullPath {
   '/api/admin/adoptions/cases': typeof ApiAdminAdoptionsCasesRouteWithChildren
   '/api/admin/adoptions/statuses': typeof ApiAdminAdoptionsStatusesRouteWithChildren
   '/api/admin/adoptions/tasks': typeof ApiAdminAdoptionsTasksRouteWithChildren
+  '/api/admin/annual-reports/$id': typeof ApiAdminAnnualReportsIdRouteWithChildren
   '/api/admin/content/$id': typeof ApiAdminContentIdRouteWithChildren
+  '/api/admin/documents/$id': typeof ApiAdminDocumentsIdRouteWithChildren
+  '/api/admin/documents/upload-target': typeof ApiAdminDocumentsUploadTargetRoute
   '/api/admin/donations/manual': typeof ApiAdminDonationsManualRoute
   '/api/admin/exports/donations.csv': typeof ApiAdminExportsDonationsDotcsvRoute
   '/api/admin/exports/payments.csv': typeof ApiAdminExportsPaymentsDotcsvRoute
@@ -927,6 +977,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/adoptions/reports/summary': typeof ApiAdminAdoptionsReportsSummaryRoute
   '/api/admin/adoptions/statuses/$id': typeof ApiAdminAdoptionsStatusesIdRoute
   '/api/admin/adoptions/tasks/$id': typeof ApiAdminAdoptionsTasksIdRoute
+  '/api/admin/annual-reports/$id/publish': typeof ApiAdminAnnualReportsIdPublishRoute
   '/api/admin/content/$id/archive': typeof ApiAdminContentIdArchiveRoute
   '/api/admin/content/$id/links': typeof ApiAdminContentIdLinksRoute
   '/api/admin/content/$id/media': typeof ApiAdminContentIdMediaRoute
@@ -936,6 +987,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/content/$id/updates': typeof ApiAdminContentIdUpdatesRoute
   '/api/admin/content/notification-drafts/$id': typeof ApiAdminContentNotificationDraftsIdRoute
   '/api/admin/content/social-copy/$id': typeof ApiAdminContentSocialCopyIdRoute
+  '/api/admin/documents/$id/publish': typeof ApiAdminDocumentsIdPublishRoute
   '/api/admin/payments/$id/reconcile': typeof ApiAdminPaymentsIdReconcileRoute
   '/api/admin/receipts/$id/void': typeof ApiAdminReceiptsIdVoidRoute
   '/api/admin/supporters/$id/consents': typeof ApiAdminSupportersIdConsentsRoute
@@ -1000,7 +1052,9 @@ export interface FileRoutesByTo {
   '/adoption/status/$token': typeof AdoptionStatusTokenRoute
   '/animals/cat/$id': typeof AnimalsCatIdRoute
   '/animals/dog/$id': typeof AnimalsDogIdRoute
+  '/api/admin/annual-reports': typeof ApiAdminAnnualReportsRouteWithChildren
   '/api/admin/content': typeof ApiAdminContentRouteWithChildren
+  '/api/admin/documents': typeof ApiAdminDocumentsRouteWithChildren
   '/api/admin/me': typeof ApiAdminMeRoute
   '/api/admin/payments': typeof ApiAdminPaymentsRouteWithChildren
   '/api/admin/receipts': typeof ApiAdminReceiptsRouteWithChildren
@@ -1026,7 +1080,10 @@ export interface FileRoutesByTo {
   '/api/admin/adoptions/cases': typeof ApiAdminAdoptionsCasesRouteWithChildren
   '/api/admin/adoptions/statuses': typeof ApiAdminAdoptionsStatusesRouteWithChildren
   '/api/admin/adoptions/tasks': typeof ApiAdminAdoptionsTasksRouteWithChildren
+  '/api/admin/annual-reports/$id': typeof ApiAdminAnnualReportsIdRouteWithChildren
   '/api/admin/content/$id': typeof ApiAdminContentIdRouteWithChildren
+  '/api/admin/documents/$id': typeof ApiAdminDocumentsIdRouteWithChildren
+  '/api/admin/documents/upload-target': typeof ApiAdminDocumentsUploadTargetRoute
   '/api/admin/donations/manual': typeof ApiAdminDonationsManualRoute
   '/api/admin/exports/donations.csv': typeof ApiAdminExportsDonationsDotcsvRoute
   '/api/admin/exports/payments.csv': typeof ApiAdminExportsPaymentsDotcsvRoute
@@ -1055,6 +1112,7 @@ export interface FileRoutesByTo {
   '/api/admin/adoptions/reports/summary': typeof ApiAdminAdoptionsReportsSummaryRoute
   '/api/admin/adoptions/statuses/$id': typeof ApiAdminAdoptionsStatusesIdRoute
   '/api/admin/adoptions/tasks/$id': typeof ApiAdminAdoptionsTasksIdRoute
+  '/api/admin/annual-reports/$id/publish': typeof ApiAdminAnnualReportsIdPublishRoute
   '/api/admin/content/$id/archive': typeof ApiAdminContentIdArchiveRoute
   '/api/admin/content/$id/links': typeof ApiAdminContentIdLinksRoute
   '/api/admin/content/$id/media': typeof ApiAdminContentIdMediaRoute
@@ -1064,6 +1122,7 @@ export interface FileRoutesByTo {
   '/api/admin/content/$id/updates': typeof ApiAdminContentIdUpdatesRoute
   '/api/admin/content/notification-drafts/$id': typeof ApiAdminContentNotificationDraftsIdRoute
   '/api/admin/content/social-copy/$id': typeof ApiAdminContentSocialCopyIdRoute
+  '/api/admin/documents/$id/publish': typeof ApiAdminDocumentsIdPublishRoute
   '/api/admin/payments/$id/reconcile': typeof ApiAdminPaymentsIdReconcileRoute
   '/api/admin/receipts/$id/void': typeof ApiAdminReceiptsIdVoidRoute
   '/api/admin/supporters/$id/consents': typeof ApiAdminSupportersIdConsentsRoute
@@ -1130,7 +1189,9 @@ export interface FileRoutesById {
   '/adoption/status/$token': typeof AdoptionStatusTokenRoute
   '/animals/cat_/$id': typeof AnimalsCatIdRoute
   '/animals/dog_/$id': typeof AnimalsDogIdRoute
+  '/api/admin/annual-reports': typeof ApiAdminAnnualReportsRouteWithChildren
   '/api/admin/content': typeof ApiAdminContentRouteWithChildren
+  '/api/admin/documents': typeof ApiAdminDocumentsRouteWithChildren
   '/api/admin/me': typeof ApiAdminMeRoute
   '/api/admin/payments': typeof ApiAdminPaymentsRouteWithChildren
   '/api/admin/receipts': typeof ApiAdminReceiptsRouteWithChildren
@@ -1156,7 +1217,10 @@ export interface FileRoutesById {
   '/api/admin/adoptions/cases': typeof ApiAdminAdoptionsCasesRouteWithChildren
   '/api/admin/adoptions/statuses': typeof ApiAdminAdoptionsStatusesRouteWithChildren
   '/api/admin/adoptions/tasks': typeof ApiAdminAdoptionsTasksRouteWithChildren
+  '/api/admin/annual-reports/$id': typeof ApiAdminAnnualReportsIdRouteWithChildren
   '/api/admin/content/$id': typeof ApiAdminContentIdRouteWithChildren
+  '/api/admin/documents/$id': typeof ApiAdminDocumentsIdRouteWithChildren
+  '/api/admin/documents/upload-target': typeof ApiAdminDocumentsUploadTargetRoute
   '/api/admin/donations/manual': typeof ApiAdminDonationsManualRoute
   '/api/admin/exports/donations.csv': typeof ApiAdminExportsDonationsDotcsvRoute
   '/api/admin/exports/payments.csv': typeof ApiAdminExportsPaymentsDotcsvRoute
@@ -1185,6 +1249,7 @@ export interface FileRoutesById {
   '/api/admin/adoptions/reports/summary': typeof ApiAdminAdoptionsReportsSummaryRoute
   '/api/admin/adoptions/statuses/$id': typeof ApiAdminAdoptionsStatusesIdRoute
   '/api/admin/adoptions/tasks/$id': typeof ApiAdminAdoptionsTasksIdRoute
+  '/api/admin/annual-reports/$id/publish': typeof ApiAdminAnnualReportsIdPublishRoute
   '/api/admin/content/$id/archive': typeof ApiAdminContentIdArchiveRoute
   '/api/admin/content/$id/links': typeof ApiAdminContentIdLinksRoute
   '/api/admin/content/$id/media': typeof ApiAdminContentIdMediaRoute
@@ -1194,6 +1259,7 @@ export interface FileRoutesById {
   '/api/admin/content/$id/updates': typeof ApiAdminContentIdUpdatesRoute
   '/api/admin/content/notification-drafts/$id': typeof ApiAdminContentNotificationDraftsIdRoute
   '/api/admin/content/social-copy/$id': typeof ApiAdminContentSocialCopyIdRoute
+  '/api/admin/documents/$id/publish': typeof ApiAdminDocumentsIdPublishRoute
   '/api/admin/payments/$id/reconcile': typeof ApiAdminPaymentsIdReconcileRoute
   '/api/admin/receipts/$id/void': typeof ApiAdminReceiptsIdVoidRoute
   '/api/admin/supporters/$id/consents': typeof ApiAdminSupportersIdConsentsRoute
@@ -1261,7 +1327,9 @@ export interface FileRouteTypes {
     | '/adoption/status/$token'
     | '/animals/cat/$id'
     | '/animals/dog/$id'
+    | '/api/admin/annual-reports'
     | '/api/admin/content'
+    | '/api/admin/documents'
     | '/api/admin/me'
     | '/api/admin/payments'
     | '/api/admin/receipts'
@@ -1287,7 +1355,10 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/cases'
     | '/api/admin/adoptions/statuses'
     | '/api/admin/adoptions/tasks'
+    | '/api/admin/annual-reports/$id'
     | '/api/admin/content/$id'
+    | '/api/admin/documents/$id'
+    | '/api/admin/documents/upload-target'
     | '/api/admin/donations/manual'
     | '/api/admin/exports/donations.csv'
     | '/api/admin/exports/payments.csv'
@@ -1316,6 +1387,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/reports/summary'
     | '/api/admin/adoptions/statuses/$id'
     | '/api/admin/adoptions/tasks/$id'
+    | '/api/admin/annual-reports/$id/publish'
     | '/api/admin/content/$id/archive'
     | '/api/admin/content/$id/links'
     | '/api/admin/content/$id/media'
@@ -1325,6 +1397,7 @@ export interface FileRouteTypes {
     | '/api/admin/content/$id/updates'
     | '/api/admin/content/notification-drafts/$id'
     | '/api/admin/content/social-copy/$id'
+    | '/api/admin/documents/$id/publish'
     | '/api/admin/payments/$id/reconcile'
     | '/api/admin/receipts/$id/void'
     | '/api/admin/supporters/$id/consents'
@@ -1389,7 +1462,9 @@ export interface FileRouteTypes {
     | '/adoption/status/$token'
     | '/animals/cat/$id'
     | '/animals/dog/$id'
+    | '/api/admin/annual-reports'
     | '/api/admin/content'
+    | '/api/admin/documents'
     | '/api/admin/me'
     | '/api/admin/payments'
     | '/api/admin/receipts'
@@ -1415,7 +1490,10 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/cases'
     | '/api/admin/adoptions/statuses'
     | '/api/admin/adoptions/tasks'
+    | '/api/admin/annual-reports/$id'
     | '/api/admin/content/$id'
+    | '/api/admin/documents/$id'
+    | '/api/admin/documents/upload-target'
     | '/api/admin/donations/manual'
     | '/api/admin/exports/donations.csv'
     | '/api/admin/exports/payments.csv'
@@ -1444,6 +1522,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/reports/summary'
     | '/api/admin/adoptions/statuses/$id'
     | '/api/admin/adoptions/tasks/$id'
+    | '/api/admin/annual-reports/$id/publish'
     | '/api/admin/content/$id/archive'
     | '/api/admin/content/$id/links'
     | '/api/admin/content/$id/media'
@@ -1453,6 +1532,7 @@ export interface FileRouteTypes {
     | '/api/admin/content/$id/updates'
     | '/api/admin/content/notification-drafts/$id'
     | '/api/admin/content/social-copy/$id'
+    | '/api/admin/documents/$id/publish'
     | '/api/admin/payments/$id/reconcile'
     | '/api/admin/receipts/$id/void'
     | '/api/admin/supporters/$id/consents'
@@ -1518,7 +1598,9 @@ export interface FileRouteTypes {
     | '/adoption/status/$token'
     | '/animals/cat_/$id'
     | '/animals/dog_/$id'
+    | '/api/admin/annual-reports'
     | '/api/admin/content'
+    | '/api/admin/documents'
     | '/api/admin/me'
     | '/api/admin/payments'
     | '/api/admin/receipts'
@@ -1544,7 +1626,10 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/cases'
     | '/api/admin/adoptions/statuses'
     | '/api/admin/adoptions/tasks'
+    | '/api/admin/annual-reports/$id'
     | '/api/admin/content/$id'
+    | '/api/admin/documents/$id'
+    | '/api/admin/documents/upload-target'
     | '/api/admin/donations/manual'
     | '/api/admin/exports/donations.csv'
     | '/api/admin/exports/payments.csv'
@@ -1573,6 +1658,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/reports/summary'
     | '/api/admin/adoptions/statuses/$id'
     | '/api/admin/adoptions/tasks/$id'
+    | '/api/admin/annual-reports/$id/publish'
     | '/api/admin/content/$id/archive'
     | '/api/admin/content/$id/links'
     | '/api/admin/content/$id/media'
@@ -1582,6 +1668,7 @@ export interface FileRouteTypes {
     | '/api/admin/content/$id/updates'
     | '/api/admin/content/notification-drafts/$id'
     | '/api/admin/content/social-copy/$id'
+    | '/api/admin/documents/$id/publish'
     | '/api/admin/payments/$id/reconcile'
     | '/api/admin/receipts/$id/void'
     | '/api/admin/supporters/$id/consents'
@@ -1644,7 +1731,9 @@ export interface RootRouteChildren {
   AdoptionStatusTokenRoute: typeof AdoptionStatusTokenRoute
   AnimalsCatIdRoute: typeof AnimalsCatIdRoute
   AnimalsDogIdRoute: typeof AnimalsDogIdRoute
+  ApiAdminAnnualReportsRoute: typeof ApiAdminAnnualReportsRouteWithChildren
   ApiAdminContentRoute: typeof ApiAdminContentRouteWithChildren
+  ApiAdminDocumentsRoute: typeof ApiAdminDocumentsRouteWithChildren
   ApiAdminMeRoute: typeof ApiAdminMeRoute
   ApiAdminPaymentsRoute: typeof ApiAdminPaymentsRouteWithChildren
   ApiAdminReceiptsRoute: typeof ApiAdminReceiptsRouteWithChildren
@@ -2014,11 +2103,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminMeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/documents': {
+      id: '/api/admin/documents'
+      path: '/api/admin/documents'
+      fullPath: '/api/admin/documents'
+      preLoaderRoute: typeof ApiAdminDocumentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/content': {
       id: '/api/admin/content'
       path: '/api/admin/content'
       fullPath: '/api/admin/content'
       preLoaderRoute: typeof ApiAdminContentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/annual-reports': {
+      id: '/api/admin/annual-reports'
+      path: '/api/admin/annual-reports'
+      fullPath: '/api/admin/annual-reports'
+      preLoaderRoute: typeof ApiAdminAnnualReportsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/animals/dog_/$id': {
@@ -2203,12 +2306,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminDonationsManualRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/documents/upload-target': {
+      id: '/api/admin/documents/upload-target'
+      path: '/upload-target'
+      fullPath: '/api/admin/documents/upload-target'
+      preLoaderRoute: typeof ApiAdminDocumentsUploadTargetRouteImport
+      parentRoute: typeof ApiAdminDocumentsRoute
+    }
+    '/api/admin/documents/$id': {
+      id: '/api/admin/documents/$id'
+      path: '/$id'
+      fullPath: '/api/admin/documents/$id'
+      preLoaderRoute: typeof ApiAdminDocumentsIdRouteImport
+      parentRoute: typeof ApiAdminDocumentsRoute
+    }
     '/api/admin/content/$id': {
       id: '/api/admin/content/$id'
       path: '/$id'
       fullPath: '/api/admin/content/$id'
       preLoaderRoute: typeof ApiAdminContentIdRouteImport
       parentRoute: typeof ApiAdminContentRoute
+    }
+    '/api/admin/annual-reports/$id': {
+      id: '/api/admin/annual-reports/$id'
+      path: '/$id'
+      fullPath: '/api/admin/annual-reports/$id'
+      preLoaderRoute: typeof ApiAdminAnnualReportsIdRouteImport
+      parentRoute: typeof ApiAdminAnnualReportsRoute
     }
     '/api/admin/adoptions/tasks': {
       id: '/api/admin/adoptions/tasks'
@@ -2315,6 +2439,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminPaymentsIdReconcileRouteImport
       parentRoute: typeof ApiAdminPaymentsRoute
     }
+    '/api/admin/documents/$id/publish': {
+      id: '/api/admin/documents/$id/publish'
+      path: '/publish'
+      fullPath: '/api/admin/documents/$id/publish'
+      preLoaderRoute: typeof ApiAdminDocumentsIdPublishRouteImport
+      parentRoute: typeof ApiAdminDocumentsIdRoute
+    }
     '/api/admin/content/social-copy/$id': {
       id: '/api/admin/content/social-copy/$id'
       path: '/social-copy/$id'
@@ -2377,6 +2508,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/admin/content/$id/archive'
       preLoaderRoute: typeof ApiAdminContentIdArchiveRouteImport
       parentRoute: typeof ApiAdminContentIdRoute
+    }
+    '/api/admin/annual-reports/$id/publish': {
+      id: '/api/admin/annual-reports/$id/publish'
+      path: '/publish'
+      fullPath: '/api/admin/annual-reports/$id/publish'
+      preLoaderRoute: typeof ApiAdminAnnualReportsIdPublishRouteImport
+      parentRoute: typeof ApiAdminAnnualReportsIdRoute
     }
     '/api/admin/adoptions/tasks/$id': {
       id: '/api/admin/adoptions/tasks/$id'
@@ -2696,6 +2834,33 @@ const AdminCoordinatorAdoptersRouteWithChildren =
     AdminCoordinatorAdoptersRouteChildren,
   )
 
+interface ApiAdminAnnualReportsIdRouteChildren {
+  ApiAdminAnnualReportsIdPublishRoute: typeof ApiAdminAnnualReportsIdPublishRoute
+}
+
+const ApiAdminAnnualReportsIdRouteChildren: ApiAdminAnnualReportsIdRouteChildren =
+  {
+    ApiAdminAnnualReportsIdPublishRoute: ApiAdminAnnualReportsIdPublishRoute,
+  }
+
+const ApiAdminAnnualReportsIdRouteWithChildren =
+  ApiAdminAnnualReportsIdRoute._addFileChildren(
+    ApiAdminAnnualReportsIdRouteChildren,
+  )
+
+interface ApiAdminAnnualReportsRouteChildren {
+  ApiAdminAnnualReportsIdRoute: typeof ApiAdminAnnualReportsIdRouteWithChildren
+}
+
+const ApiAdminAnnualReportsRouteChildren: ApiAdminAnnualReportsRouteChildren = {
+  ApiAdminAnnualReportsIdRoute: ApiAdminAnnualReportsIdRouteWithChildren,
+}
+
+const ApiAdminAnnualReportsRouteWithChildren =
+  ApiAdminAnnualReportsRoute._addFileChildren(
+    ApiAdminAnnualReportsRouteChildren,
+  )
+
 interface ApiAdminContentIdRouteChildren {
   ApiAdminContentIdArchiveRoute: typeof ApiAdminContentIdArchiveRoute
   ApiAdminContentIdLinksRoute: typeof ApiAdminContentIdLinksRoute
@@ -2738,6 +2903,30 @@ const ApiAdminContentRouteChildren: ApiAdminContentRouteChildren = {
 const ApiAdminContentRouteWithChildren = ApiAdminContentRoute._addFileChildren(
   ApiAdminContentRouteChildren,
 )
+
+interface ApiAdminDocumentsIdRouteChildren {
+  ApiAdminDocumentsIdPublishRoute: typeof ApiAdminDocumentsIdPublishRoute
+}
+
+const ApiAdminDocumentsIdRouteChildren: ApiAdminDocumentsIdRouteChildren = {
+  ApiAdminDocumentsIdPublishRoute: ApiAdminDocumentsIdPublishRoute,
+}
+
+const ApiAdminDocumentsIdRouteWithChildren =
+  ApiAdminDocumentsIdRoute._addFileChildren(ApiAdminDocumentsIdRouteChildren)
+
+interface ApiAdminDocumentsRouteChildren {
+  ApiAdminDocumentsIdRoute: typeof ApiAdminDocumentsIdRouteWithChildren
+  ApiAdminDocumentsUploadTargetRoute: typeof ApiAdminDocumentsUploadTargetRoute
+}
+
+const ApiAdminDocumentsRouteChildren: ApiAdminDocumentsRouteChildren = {
+  ApiAdminDocumentsIdRoute: ApiAdminDocumentsIdRouteWithChildren,
+  ApiAdminDocumentsUploadTargetRoute: ApiAdminDocumentsUploadTargetRoute,
+}
+
+const ApiAdminDocumentsRouteWithChildren =
+  ApiAdminDocumentsRoute._addFileChildren(ApiAdminDocumentsRouteChildren)
 
 interface ApiAdminPaymentsRouteChildren {
   ApiAdminPaymentsIdReconcileRoute: typeof ApiAdminPaymentsIdReconcileRoute
@@ -3005,7 +3194,9 @@ const rootRouteChildren: RootRouteChildren = {
   AdoptionStatusTokenRoute: AdoptionStatusTokenRoute,
   AnimalsCatIdRoute: AnimalsCatIdRoute,
   AnimalsDogIdRoute: AnimalsDogIdRoute,
+  ApiAdminAnnualReportsRoute: ApiAdminAnnualReportsRouteWithChildren,
   ApiAdminContentRoute: ApiAdminContentRouteWithChildren,
+  ApiAdminDocumentsRoute: ApiAdminDocumentsRouteWithChildren,
   ApiAdminMeRoute: ApiAdminMeRoute,
   ApiAdminPaymentsRoute: ApiAdminPaymentsRouteWithChildren,
   ApiAdminReceiptsRoute: ApiAdminReceiptsRouteWithChildren,

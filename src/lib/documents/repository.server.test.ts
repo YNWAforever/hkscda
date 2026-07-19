@@ -5,6 +5,7 @@ import { createSupabaseDocumentRepository } from "./repository.server";
 
 type Filter = ["eq" | "in" | "ilike" | "or", string, unknown];
 const assetId = "11111111-2222-4333-8444-555555555555";
+const reportId = "22222222-3333-4444-8555-666666666666";
 
 class FakeQuery {
   selectedColumns = "";
@@ -99,6 +100,21 @@ function assetRow(overrides: Record<string, unknown> = {}) {
     sort_order: 1,
     created_at: "2026-07-18T00:00:00.000Z",
     updated_at: "2026-07-18T00:00:00.000Z",
+    ...overrides,
+  };
+}
+
+function annualReportRow(overrides: Record<string, unknown> = {}) {
+  return {
+    id: reportId,
+    title: "Annual Report 2025/26",
+    year_label: "2025/26",
+    document_asset_id: assetId,
+    is_published: false,
+    sort_order: 1,
+    created_at: "2026-07-18T00:00:00.000Z",
+    updated_at: "2026-07-18T00:00:00.000Z",
+    document_assets: assetRow({ is_published: false }),
     ...overrides,
   };
 }
@@ -411,4 +427,57 @@ describe("createSupabaseDocumentRepository", () => {
       "asset-1",
     ]);
   });
+});
+
+test("lists draft annual reports with their unpublished PDF assets", async () => {
+  const fake = createFakeClient({ annual_reports: [annualReportRow()] });
+  const repository = createSupabaseDocumentRepository(fake.client);
+
+  await expect(repository.listAnnualReports()).resolves.toEqual([
+    expect.objectContaining({
+      id: reportId,
+      isPublished: false,
+      document: expect.objectContaining({ id: assetId, isPublished: false }),
+    }),
+  ]);
+  expect(fake.queryFor("annual_reports").selectedColumns).not.toContain("*");
+});
+
+test("creates, updates, publishes, and deletes annual reports by exact id", async () => {
+  const fake = createFakeClient({ annual_reports: [annualReportRow()] });
+  const repository = createSupabaseDocumentRepository(fake.client);
+
+  await repository.createAnnualReport({
+    title: "Annual Report 2025/26",
+    yearLabel: "2025/26",
+    documentAssetId: assetId,
+    isPublished: false,
+    sortOrder: 1,
+  });
+  await repository.updateAnnualReport(reportId, { title: "Updated report", sortOrder: 2 });
+  await repository.setAnnualReportPublished(reportId, true);
+  await repository.deleteAnnualReport(reportId);
+
+  const [creation, update, publish, deletion] = fake.queriesFor("annual_reports");
+  expect(creation?.payload).toEqual({
+    title: "Annual Report 2025/26",
+    year_label: "2025/26",
+    document_asset_id: assetId,
+    is_published: false,
+    sort_order: 1,
+  });
+  expect(update?.payload).toEqual({ title: "Updated report", sort_order: 2 });
+  expect(update?.filters).toContainEqual(["eq", "id", reportId]);
+  expect(publish?.payload).toEqual({ is_published: true });
+  expect(publish?.filters).toContainEqual(["eq", "id", reportId]);
+  expect(deletion?.action).toBe("delete");
+  expect(deletion?.filters).toContainEqual(["eq", "id", reportId]);
+});
+
+test("gets annual reports by exact id", async () => {
+  const fake = createFakeClient({ annual_reports: [annualReportRow()] });
+  const repository = createSupabaseDocumentRepository(fake.client);
+
+  await expect(repository.getAnnualReportById(reportId)).resolves.toMatchObject({ id: reportId });
+  expect(fake.queryFor("annual_reports").filters).toContainEqual(["eq", "id", reportId]);
 });

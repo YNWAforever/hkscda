@@ -1,8 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
-import { documentAssetInputSchema, documentIdSchema } from "./schemas";
-import type { DocumentAssetInput, DocumentListSearch } from "./schemas";
+import { annualReportInputSchema, documentAssetInputSchema, documentIdSchema } from "./schemas";
+import type { AnnualReportInput, DocumentAssetInput, DocumentListSearch } from "./schemas";
 import type { DocumentAuditLogInsert } from "./service";
 import type { AnnualReport, DocumentAsset, DocumentSlot } from "./types";
 
@@ -10,7 +10,7 @@ const SITE_DOCUMENTS_BUCKET = "site-documents";
 
 const ASSET_COLUMNS =
   "id,kind,title,language,bucket_name,object_path,mime_type,byte_size,checksum_sha256,is_published,sort_order,created_at,updated_at";
-const ANNUAL_REPORT_COLUMNS = `id,title,year_label,is_published,sort_order,created_at,updated_at,document_assets!inner(${ASSET_COLUMNS})`;
+const ANNUAL_REPORT_COLUMNS = `id,title,year_label,document_asset_id,is_published,sort_order,created_at,updated_at,document_assets!inner(${ASSET_COLUMNS})`;
 const SLOT_COLUMNS = `id,slot_key,language,is_published,document_assets!inner(${ASSET_COLUMNS})`;
 
 type Row = Record<string, unknown>;
@@ -99,6 +99,52 @@ function requireMappedAsset(client: SupabaseClient, value: unknown) {
   return asset;
 }
 
+function mapAdminAnnualReport(client: SupabaseClient, row: Row): AnnualReport | null {
+  const id = documentIdSchema.safeParse(row.id);
+  const report = annualReportInputSchema.safeParse({
+    title: row.title,
+    yearLabel: row.year_label,
+    documentAssetId: row.document_asset_id,
+    isPublished: row.is_published,
+    sortOrder: row.sort_order,
+  });
+  const timestamps = documentTimestampsSchema.safeParse({
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  });
+  const document = mapAsset(client, relatedRow(row.document_assets) ?? {});
+  if (!id.success || !report.success || !timestamps.success || !document) return null;
+
+  return {
+    id: id.data,
+    title: report.data.title,
+    yearLabel: report.data.yearLabel,
+    document,
+    isPublished: report.data.isPublished,
+    sortOrder: report.data.sortOrder,
+    ...timestamps.data,
+  };
+}
+
+function annualReportRowInput(input: Partial<AnnualReportInput>) {
+  const row: Row = {};
+  if (input.title !== undefined) row.title = input.title;
+  if (input.yearLabel !== undefined) row.year_label = input.yearLabel;
+  if (input.documentAssetId !== undefined) row.document_asset_id = input.documentAssetId;
+  if (input.isPublished !== undefined) row.is_published = input.isPublished;
+  if (input.sortOrder !== undefined) row.sort_order = input.sortOrder;
+  return row;
+}
+
+function requireMappedAnnualReport(client: SupabaseClient, value: unknown) {
+  if (!value || typeof value !== "object") {
+    throw new Error("Annual report mutation returned no row");
+  }
+  const report = mapAdminAnnualReport(client, value as Row);
+  if (!report) throw new Error("Annual report mutation returned an invalid row");
+  return report;
+}
+
 function mapPublishedAsset(client: SupabaseClient, value: unknown) {
   const row = relatedRow(value);
   if (!row || row.is_published !== true) return null;
@@ -152,6 +198,65 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
       return ((data ?? []) as Row[])
         .map((row) => mapAnnualReport(client, row))
         .filter((row): row is AnnualReport => row !== null);
+    },
+
+    async listAnnualReports() {
+      const { data, error } = await client
+        .from("annual_reports")
+        .select(ANNUAL_REPORT_COLUMNS)
+        .order("sort_order", { ascending: true })
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return ((data ?? []) as Row[])
+        .map((row) => mapAdminAnnualReport(client, row))
+        .filter((row): row is AnnualReport => row !== null);
+    },
+
+    async getAnnualReportById(id: string) {
+      const { data, error } = await client
+        .from("annual_reports")
+        .select(ANNUAL_REPORT_COLUMNS)
+        .eq("id", id)
+        .maybeSingle();
+      if (error) throw error;
+      return data ? mapAdminAnnualReport(client, data as Row) : null;
+    },
+
+    async createAnnualReport(input: AnnualReportInput) {
+      const { data, error } = await client
+        .from("annual_reports")
+        .insert(annualReportRowInput(input))
+        .select(ANNUAL_REPORT_COLUMNS)
+        .single();
+      if (error) throw error;
+      return requireMappedAnnualReport(client, data);
+    },
+
+    async updateAnnualReport(id: string, input: Partial<AnnualReportInput>) {
+      const { data, error } = await client
+        .from("annual_reports")
+        .update(annualReportRowInput(input))
+        .eq("id", id)
+        .select(ANNUAL_REPORT_COLUMNS)
+        .single();
+      if (error) throw error;
+      return requireMappedAnnualReport(client, data);
+    },
+
+    async setAnnualReportPublished(id: string, isPublished: boolean) {
+      const { data, error } = await client
+        .from("annual_reports")
+        .update({ is_published: isPublished })
+        .eq("id", id)
+        .select(ANNUAL_REPORT_COLUMNS)
+        .single();
+      if (error) throw error;
+      return requireMappedAnnualReport(client, data);
+    },
+
+    async deleteAnnualReport(id: string) {
+      const { error } = await client.from("annual_reports").delete().eq("id", id);
+      if (error) throw error;
     },
 
     async listPublishedSlots(slotKeys: string[]) {
