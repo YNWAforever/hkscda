@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+import {
+  CAT_VISIT_WINDOWS,
+  DOG_VISIT_WINDOWS,
+  VISIT_WINDOWS,
+  normalizeVisitWindows,
+} from "./visitWindows";
+
 export const ADOPTION_TERMS_VERSION = "adoption-terms-2026-07";
 export const MAX_ADOPTION_PREFERENCES = 3;
 export const MAX_PHOTO_BYTES = 8 * 1024 * 1024;
@@ -16,13 +23,9 @@ export const languageSchema = z.enum(["zh-HK", "en"]);
 export const adoptionAnimalTypeSchema = z.enum(["cat", "dog"]);
 export const preferredContactMethodSchema = z.enum(["phone", "whatsapp", "email"]);
 export const housingTypeSchema = z.enum(["私人樓宇", "居屋", "公屋", "村屋", "其他"]);
-export const visitWindowSchema = z.enum([
-  "weekday_morning",
-  "weekday_afternoon",
-  "weekday_evening",
-  "weekend_morning",
-  "weekend_afternoon",
-]);
+export const visitWindowSchema = z.enum(VISIT_WINDOWS);
+export const dogVisitWindowSchema = z.enum(DOG_VISIT_WINDOWS);
+export const catVisitWindowSchema = z.enum(CAT_VISIT_WINDOWS);
 export const photoCategorySchema = z.enum(["home", "window", "living"]);
 
 function isIsoDate(value: string) {
@@ -75,7 +78,8 @@ export const expandedAdoptionApplicationSchema = z
     visit: z.object({
       dateRangeStart: isoDate,
       dateRangeEnd: isoDate,
-      preferredTimeWindows: z.array(visitWindowSchema).min(1),
+      dogTimeWindows: z.array(dogVisitWindowSchema),
+      catTimeWindows: z.array(catVisitWindowSchema),
       notes: optionalTrimmed,
     }),
     terms: z.object({
@@ -101,6 +105,32 @@ export const expandedAdoptionApplicationSchema = z
         path: ["animalPreferences"],
         message: "Each animal can only appear once",
       });
+    }
+
+    const selectedSpecies = new Set(
+      value.animalPreferences.map((animal) => animal.animalType),
+    );
+    const groupedWindows = [
+      { species: "dog", key: "dogTimeWindows" },
+      { species: "cat", key: "catTimeWindows" },
+    ] as const;
+
+    for (const group of groupedWindows) {
+      const windows = value.visit[group.key];
+      if (selectedSpecies.has(group.species) && windows.length === 0) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["visit", group.key],
+          message: `Select at least one ${group.species} visit window`,
+        });
+      }
+      if (!selectedSpecies.has(group.species) && windows.length > 0) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["visit", group.key],
+          message: `Remove ${group.species} visit windows when that species is not selected`,
+        });
+      }
     }
 
     if (value.visit.dateRangeEnd < value.visit.dateRangeStart) {
@@ -202,11 +232,20 @@ export function toVisitPreferenceInsert(
   publicApplicationId: string,
   input: ExpandedAdoptionApplication,
 ) {
+  const species = input.animalPreferences.map((animal) => animal.animalType);
+  const windows = normalizeVisitWindows(species, {
+    dog: input.visit.dogTimeWindows,
+    cat: input.visit.catTimeWindows,
+  });
+  const selectedWindows = new Set([...windows.dog, ...windows.cat]);
+
   return {
     public_application_id: publicApplicationId,
     date_range_start: input.visit.dateRangeStart,
     date_range_end: input.visit.dateRangeEnd,
-    preferred_time_windows: input.visit.preferredTimeWindows,
+    dog_time_windows: windows.dog,
+    cat_time_windows: windows.cat,
+    preferred_time_windows: VISIT_WINDOWS.filter((window) => selectedWindows.has(window)),
     notes: input.visit.notes,
   };
 }
