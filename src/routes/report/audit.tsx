@@ -1,127 +1,129 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { TrendingUp, TrendingDown, Building } from "lucide-react";
+import { ExternalLink, FileText } from "lucide-react";
 import { ReportHeader } from "@/components/site/ReportHeader";
-import { StatCard } from "@/components/site/StatCard";
-import { AuditChart } from "@/components/site/AuditChart";
+import { loadPublishedAnnualReports } from "@/lib/documents/public.server";
+import type { AnnualReport } from "@/lib/documents/types";
 import { datasetSchema, renderJsonLd } from "@/lib/schema";
 
-const auditData = {
-  fiscalYear: "2025-2026",
-  income: {
-    total: 1850000,
-    breakdown: [
-      { name: "公眾捐款", value: 1200000, color: "var(--color-primary)" },
-      { name: "助養計劃", value: 350000, color: "var(--color-secondary)" },
-      { name: "企業贊助", value: 200000, color: "var(--color-chart-series-1)" },
-      { name: "其他收入", value: 100000, color: "var(--color-chart-series-2)" },
-    ],
-  },
-  expenditure: {
-    total: 1620000,
-    breakdown: [
-      { name: "醫療及藥物", value: 680000, color: "var(--color-primary)" },
-      { name: "糧食及物資", value: 420000, color: "var(--color-secondary)" },
-      { name: "營運及租金", value: 320000, color: "var(--color-chart-series-2)" },
-      { name: "外展及教育", value: 130000, color: "var(--color-success)" },
-      { name: "其他支出", value: 70000, color: "var(--color-warning)" },
-    ],
-  },
-  surplus: 230000,
-};
+const pageTitle = "年度報告 Annual Report";
+const pageDescription = "我們每年發表協會年度報告電子書，分享救援成果與資金運用摘要。";
 
 export const Route = createFileRoute("/report/audit")({
+  loader: loadPublishedAnnualReports,
+  errorComponent: AnnualReportLoadError,
   head: () => ({
     meta: [
-      { title: "核數報告 · 香港拯救貓狗協會 HKSCDA" },
-      {
-        name: "description",
-        content:
-          "香港拯救貓狗協會年度核數報告，公開透明展示協會收入、支出及善款運用情況。慈善牌照91/14493，IRD §88免稅機構。",
-      },
-      { property: "og:title", content: "核數報告 · HKSCDA" },
-      { property: "og:description", content: "協會年度核數報告，公開透明展示收入及支出" },
+      { title: `${pageTitle} · 香港拯救貓狗協會 HKSCDA` },
+      { name: "description", content: pageDescription },
+      { property: "og:title", content: `${pageTitle} · HKSCDA` },
+      { property: "og:description", content: pageDescription },
       { property: "og:type", content: "website" },
     ],
     links: [{ rel: "canonical", href: "https://hkscda.com/report/audit" }],
   }),
-  component: AuditReportPage,
+  component: AnnualReportRoute,
 });
 
-function AuditReportPage() {
-  const schema = datasetSchema("HKSCDA 核數報告", "香港拯救貓狗協會年度財務核數報告");
-  const { income, expenditure, surplus } = auditData;
+function AnnualReportRoute() {
+  return <AnnualReportPage reports={Route.useLoaderData()} />;
+}
+
+export function AnnualReportPage({ reports }: { reports: AnnualReport[] }) {
+  const availableReports = reports.filter((report) => report.document.fileUrl !== null);
+  const schema = datasetSchema("HKSCDA 年度報告", pageDescription);
 
   return (
-    <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+    <main className="mx-auto max-w-6xl space-y-8 px-4 py-8">
       {renderJsonLd(schema)}
 
-      <nav className="text-sm text-[var(--color-text-muted)] mb-2" aria-label="麵包屑導航">
-        <Link to="/" className="hover:text-[var(--color-primary)] transition-colors">
+      <nav className="mb-2 text-sm text-[var(--color-text-muted)]" aria-label="麵包屑導航">
+        <Link to="/" className="transition-colors hover:text-[var(--color-primary)]">
           主頁
         </Link>
         <span className="mx-2">/</span>
-        <span className="text-[var(--color-text)]">核數報告</span>
+        <span className="text-[var(--color-text)]">年度報告</span>
       </nav>
 
-      <ReportHeader
-        title="核數報告"
-        subtitle="透明度是信任的基石，我們對每一位捐款者負責"
-        period={auditData.fiscalYear}
-      />
+      <ReportHeader title={pageTitle} subtitle={pageDescription} />
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <StatCard
-          value={`HK$${(income.total / 10000).toFixed(0)}萬`}
-          label="總收入"
-          icon={TrendingUp}
-          color="var(--color-success)"
-        />
-        <StatCard
-          value={`HK$${(expenditure.total / 10000).toFixed(0)}萬`}
-          label="總支出"
-          icon={TrendingDown}
-          color="var(--color-primary)"
-        />
-        <StatCard
-          value={`HK$${(surplus / 10000).toFixed(0)}萬`}
-          label="盈餘"
-          icon={Building}
-          color="var(--color-chart-series-2)"
-        />
-      </div>
+      {availableReports.length > 0 ? (
+        <section aria-label="已發布年度報告" className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+          {availableReports.map((report) => (
+            <article
+              key={report.id}
+              className="flex min-h-64 flex-col border border-[var(--color-border)] bg-[var(--color-surface)] p-6"
+            >
+              <FileText
+                className="h-9 w-9 text-[var(--color-primary)]"
+                strokeWidth={1.7}
+                aria-hidden="true"
+              />
+              <p className="mt-6 text-xs font-bold uppercase text-[var(--color-text-muted)]">
+                {report.yearLabel}
+              </p>
+              <h2 className="mt-2 text-lg font-bold leading-snug text-[var(--color-text)]">
+                {report.title}
+              </h2>
+              <p className="mt-3 text-sm text-[var(--color-text-muted)]">
+                PDF · {formatFileSize(report.document.byteSize)}
+              </p>
+              <a
+                href={report.document.fileUrl!}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary mt-auto min-h-11 w-full"
+              >
+                閱覽報告 / View Report
+                <ExternalLink className="h-4 w-4" aria-hidden="true" />
+              </a>
+            </article>
+          ))}
+        </section>
+      ) : (
+        <section className="border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-6">
+          <h2 className="text-lg font-bold">年度報告暫時未能提供</h2>
+          <p className="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]">
+            如需查詢，請電郵至{" "}
+            <a
+              className="font-medium text-[var(--color-primary)] underline"
+              href="mailto:info@hkscda.com"
+            >
+              info@hkscda.com
+            </a>
+            。
+          </p>
+        </section>
+      )}
+    </main>
+  );
+}
 
-      <AuditChart
-        title="收入來源"
-        data={income.breakdown}
-        total={income.total}
-        totalLabel="總收入"
-      />
-      <AuditChart
-        title="支出分佈"
-        data={expenditure.breakdown}
-        total={expenditure.total}
-        totalLabel="總支出"
-      />
-
-      <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-md p-6 text-center space-y-4">
-        <h2 className="font-display text-lg font-bold">完整核數報告</h2>
-        <p className="text-sm text-[var(--color-text-muted)] max-w-[52ch] mx-auto">
-          本會為政府認可慈善機構（91/14493）及稅務局 §88 免稅機構。 完整核數報告 PDF 可電郵
-          info@hkscda.com 索取查閱。捐款 HK$100 以上可申請退稅收條。
+export function AnnualReportLoadError() {
+  return (
+    <main className="mx-auto max-w-3xl px-4 py-12">
+      <div
+        role="alert"
+        className="border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-6"
+      >
+        <h1 className="text-lg font-bold">暫時未能載入年度報告</h1>
+        <p className="mt-2 text-sm text-[var(--color-text-muted)]">
+          請稍後再試，或電郵至{" "}
+          <a className="underline" href="mailto:info@hkscda.com">
+            info@hkscda.com
+          </a>
+          。
         </p>
-        <Link to="/donate" className="btn-primary min-h-11">
-          申請退稅收條
-        </Link>
-      </div>
-
-      <div className="bg-[var(--color-surface-offset)] border border-[var(--color-border)] rounded-md p-6">
-        <h2 className="font-display text-lg font-bold mb-4">鳴謝</h2>
-        <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">
-          感謝所有捐款者、企業贊助商及義工對本會的持續支持。
-          每一分善款均用於動物醫療、糧食及絕育服務。 如欲查閱詳細核數報告，請電郵至
-          info@hkscda.com。
-        </p>
+        <a href="/report/audit" className="btn-secondary mt-5 min-h-11">
+          重新載入 / Retry
+        </a>
       </div>
     </main>
   );
+}
+
+function formatFileSize(byteSize: number) {
+  if (byteSize < 1024 * 1024) {
+    return `${Math.max(1, Math.round(byteSize / 1024))} KB`;
+  }
+  return `${(byteSize / (1024 * 1024)).toFixed(1)} MB`;
 }
