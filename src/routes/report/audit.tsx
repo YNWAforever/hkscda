@@ -59,7 +59,7 @@ export function AnnualReportPage({ reports }: { reports: AnnualReport[] }) {
                 aria-hidden="true"
               />
               <p className="mt-6 text-xs font-bold uppercase text-[var(--color-text-muted)]">
-                {report.yearLabel}
+                {formatReportYearLabel(report.yearLabel)}
               </p>
               <h2 className="mt-2 text-lg font-bold leading-snug text-[var(--color-text)]">
                 {report.title}
@@ -68,12 +68,13 @@ export function AnnualReportPage({ reports }: { reports: AnnualReport[] }) {
                 PDF · {formatFileSize(report.document.byteSize)}
               </p>
               <a
+                aria-label={`查看 ${report.title}（在新分頁開啟） / View report in a new tab`}
                 href={report.document.fileUrl!}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-primary mt-auto min-h-11 w-full"
               >
-                閱覽報告 / View Report
+                查看報告 / View Report
                 <ExternalLink className="h-4 w-4" aria-hidden="true" />
               </a>
             </article>
@@ -119,6 +120,15 @@ export function AnnualReportLoadError() {
       </div>
     </main>
   );
+}
+
+function formatReportYearLabel(yearLabel: string) {
+  const match = /^(\d{4})[-/](\d{2}|\d{4})$/.exec(yearLabel.trim());
+  if (!match) return yearLabel;
+
+  const [, startYear, endYear] = match;
+  const shortEndYear = endYear.length === 4 ? endYear.slice(2) : endYear;
+  return `${startYear}–${shortEndYear}`;
 }
 
 function formatFileSize(byteSize: number) {

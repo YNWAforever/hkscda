@@ -78,6 +78,12 @@ test("renders annual reports and removes all sensitive audit summaries", async (
   expect(html).not.toContain("總收入");
   expect(html).not.toContain("總支出");
   expect(html).not.toContain("盈餘");
-  expect(html.match(/閱覽報告 \/ View Report/g)).toHaveLength(2);
+  expect(html).toContain(">2025–26<");
+  expect(html).toContain(">2024–25<");
+  expect(html.match(/查看報告 \/ View Report/g)).toHaveLength(2);
+  expect(html).toContain(
+    'aria-label="查看 2025-2026 Annual Report（在新分頁開啟） / View report in a new tab"',
+  );
+  expect(html.match(/target="_blank"/g)).toHaveLength(2);
   expect(html.match(/rel="noopener noreferrer"/g)).toHaveLength(2);
 });
