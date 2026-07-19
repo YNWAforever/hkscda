@@ -320,5 +320,6 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("for update");
     expect(sql).toContain("revoke all on function public.mutate_document_asset_with_audit");
     expect(sql).toContain("grant execute on function public.mutate_document_asset_with_audit");
+    expect(sql).toContain("grant insert on public.audit_log to service_role");
   });
 });

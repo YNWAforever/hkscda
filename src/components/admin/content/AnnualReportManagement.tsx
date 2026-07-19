@@ -137,7 +137,7 @@ type ViewProps = {
   ) => void;
 };
 
-function AnnualReportManagementView({
+export function AnnualReportManagementView({
   rows,
   assets = [],
   loading = false,
@@ -289,13 +289,16 @@ function AnnualReportManagementView({
                     <td className="px-3 py-3">
                       {onAction ? (
                         <input
+                          disabled={actionPending}
                           aria-label={`${report.title} 次序`}
                           type="number"
                           min={0}
                           defaultValue={report.sortOrder}
-                          onBlur={(event) =>
-                            onAction(report.id, "order", Number(event.target.value))
-                          }
+                          onBlur={(event) => {
+                            if (!actionPending) {
+                              onAction(report.id, "order", Number(event.target.value));
+                            }
+                          }}
                           className="w-20 rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-2 py-1"
                         />
                       ) : (

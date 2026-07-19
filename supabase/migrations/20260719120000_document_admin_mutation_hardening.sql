@@ -234,6 +234,8 @@ revoke all on function public.mutate_document_asset_with_audit(uuid, text, uuid,
   from public, anon, authenticated;
 revoke all on function public.mutate_annual_report_with_audit(uuid, text, uuid, jsonb)
   from public, anon, authenticated;
+grant insert on public.audit_log to service_role;
+
 grant execute on function public.mutate_document_asset_with_audit(uuid, text, uuid, jsonb)
   to service_role;
 grant execute on function public.mutate_annual_report_with_audit(uuid, text, uuid, jsonb)

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import { AnnualReportManagement } from "./AnnualReportManagement";
+import { AnnualReportManagement, AnnualReportManagementView } from "./AnnualReportManagement";
 
 const draftReport = {
   id: "22222222-3333-4444-8555-666666666666",
@@ -37,5 +37,13 @@ describe("AnnualReportManagement", () => {
     expect(markup).toContain("Annual Report 2025/26");
     expect(markup).toMatch(/<button[^>]*disabled=""[^>]*>發佈<\/button>/);
     expect(markup).toContain("請先發佈 PDF");
+  });
+
+  test("locks ordering while a report action is pending", () => {
+    const markup = renderToStaticMarkup(
+      <AnnualReportManagementView rows={[draftReport]} actionPending onAction={() => undefined} />,
+    );
+
+    expect(markup).toMatch(/<input[^>]*disabled=""[^>]*aria-label="Annual Report 2025\/26 次序"/);
   });
 });
