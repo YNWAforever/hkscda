@@ -149,6 +149,7 @@ describe("createDocumentService", () => {
 
     expect(repo.createAsset).toHaveBeenCalledWith(
       expect.objectContaining({ title: "Annual Report 2025/26" }),
+      "admin",
     );
     expect(auditLogs.map((row) => row.action)).toEqual([
       "document.create",
@@ -258,14 +259,72 @@ test("updates, publishes, unpublishes, and deletes annual reports with audit log
   await service.unpublishAnnualReport({ actorUserId: "admin", reportId });
   await service.deleteAnnualReport({ actorUserId: "admin", reportId });
 
-  expect(repo.updateAnnualReport).toHaveBeenCalledWith(reportId, {
-    title: "Updated report",
-    sortOrder: 2,
-  });
+  expect(repo.updateAnnualReport).toHaveBeenCalledWith(
+    reportId,
+    {
+      title: "Updated report",
+      sortOrder: 2,
+    },
+    "admin",
+  );
   expect(auditLogs.map((row) => row.action)).toEqual([
     "annual_report.update",
     "annual_report.publish",
     "annual_report.unpublish",
     "annual_report.delete",
   ]);
+});
+
+test("rejects empty asset and annual-report patches", async () => {
+  const { repo } = createRepo();
+  const service = createDocumentService({ repo });
+
+  await expect(service.updateAsset({ actorUserId: "admin", assetId, input: {} })).rejects.toThrow();
+  await expect(
+    service.updateAnnualReport({ actorUserId: "admin", reportId, input: {} }),
+  ).rejects.toThrow();
+
+  expect(repo.updateAsset).not.toHaveBeenCalled();
+  expect(repo.updateAnnualReport).not.toHaveBeenCalled();
+});
+
+test("protects assets referenced by published annual reports", async () => {
+  const publishedReport = {
+    ...annualReport,
+    isPublished: true,
+    document: { ...asset, isPublished: true },
+  };
+  const { repo } = createRepo({
+    getAssetById: mock(async () => publishedReport.document),
+    listAnnualReports: mock(async () => [publishedReport]),
+  });
+  const service = createDocumentService({ repo });
+
+  await expect(
+    service.updateAsset({
+      actorUserId: "admin",
+      assetId,
+      input: { kind: "wedding_form" },
+    }),
+  ).rejects.toBeInstanceOf(DocumentConflictError);
+  await expect(service.unpublishAsset({ actorUserId: "admin", assetId })).rejects.toBeInstanceOf(
+    DocumentConflictError,
+  );
+
+  expect(repo.updateAsset).not.toHaveBeenCalled();
+  expect(repo.setAssetPublished).not.toHaveBeenCalled();
+});
+
+test("delegates production mutation audits to the atomic repository boundary", async () => {
+  const { repo } = createRepo({ usesAtomicAudit: true });
+  const service = createDocumentService({ repo });
+
+  await service.updateAsset({
+    actorUserId: assetId,
+    assetId,
+    input: { title: "Updated atomically" },
+  });
+
+  expect(repo.updateAsset).toHaveBeenCalledWith(assetId, { title: "Updated atomically" }, assetId);
+  expect(repo.insertAuditLog).not.toHaveBeenCalled();
 });

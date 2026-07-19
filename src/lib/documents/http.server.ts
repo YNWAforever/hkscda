@@ -60,7 +60,24 @@ async function withDocumentErrors(operation: () => Promise<Response>) {
   try {
     return await operation();
   } catch (error) {
-    if (error instanceof Response) return error;
+    if (error instanceof Response) {
+      const text = await error.text();
+      let body: unknown;
+      try {
+        body = JSON.parse(text);
+      } catch {
+        body = {
+          error:
+            text ||
+            (error.status === 401
+              ? "Unauthorized"
+              : error.status === 403
+                ? "Forbidden"
+                : "Document request failed"),
+        };
+      }
+      return jsonResponse(body, { status: error.status });
+    }
     if (error instanceof z.ZodError) {
       return jsonResponse(
         {

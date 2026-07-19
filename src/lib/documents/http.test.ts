@@ -106,6 +106,11 @@ describe("createDocumentHandlers", () => {
       });
 
       expect(response.status).toBe(status);
+      expect(response.headers.get("cache-control")).toBe("no-store");
+      expect(response.headers.get("content-type")).toContain("application/json");
+      expect(await response.json()).toEqual({
+        error: status === 401 ? "Unauthorized" : "Forbidden",
+      });
       expect(service.calls).toEqual([]);
     }
   });

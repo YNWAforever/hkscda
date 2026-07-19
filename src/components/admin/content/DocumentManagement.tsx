@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState, type RefObject } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -12,6 +12,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
 import { getSupabaseClient } from "../../../lib/supabase";
+import { pageAfterDelete } from "./documentManagementLogic";
 import type { DocumentAsset, DocumentKind, DocumentLanguage } from "../../../lib/documents/types";
 import { uploadDocumentPdf } from "./documentUpload";
 
@@ -43,6 +44,7 @@ function DocumentManagementRuntime() {
   const [uploadKind, setUploadKind] = useState<DocumentKind>("annual_report");
   const [uploadLanguage, setUploadLanguage] = useState<DocumentLanguage>("bilingual");
   const [file, setFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const search = useMemo(() => {
     const params = new URLSearchParams({ page: String(page), pageSize: "25" });
@@ -92,6 +94,7 @@ function DocumentManagementRuntime() {
     onSuccess: async () => {
       setTitle("");
       setFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
       await queryClient.invalidateQueries({ queryKey: ["admin-documents"] });
     },
   });
@@ -110,7 +113,13 @@ function DocumentManagementRuntime() {
         method: action === "publish" ? "POST" : "DELETE",
       });
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-documents"] }),
+    onSuccess: (_data, variables) => {
+      if (variables.action === "delete") {
+        const total = documentsQuery.data?.total ?? 0;
+        setPage((current) => pageAfterDelete({ page: current, total, pageSize: 25 }));
+      }
+      return queryClient.invalidateQueries({ queryKey: ["admin-documents"] });
+    },
   });
 
   return (
@@ -130,6 +139,8 @@ function DocumentManagementRuntime() {
       uploadKind={uploadKind}
       uploadLanguage={uploadLanguage}
       uploading={uploadMutation.isPending}
+      actionPending={actionMutation.isPending}
+      fileInputRef={fileInputRef}
       onQueryChange={(value) => {
         setQuery(value);
         setPage(1);
@@ -167,6 +178,8 @@ type ViewProps = {
   uploading?: boolean;
   onQueryChange?: (value: string) => void;
   onKindChange?: (value: DocumentKind | "all") => void;
+  actionPending?: boolean;
+  fileInputRef?: RefObject<HTMLInputElement | null>;
   onLanguageChange?: (value: DocumentLanguage | "all") => void;
   onPageChange?: (value: number) => void;
   onTitleChange?: (value: string) => void;
@@ -192,6 +205,8 @@ function DocumentManagementView({
   onQueryChange,
   onKindChange,
   onLanguageChange,
+  actionPending = false,
+  fileInputRef,
   onPageChange,
   onTitleChange,
   onUploadKindChange,
@@ -260,6 +275,7 @@ function DocumentManagementView({
               type="file"
               accept="application/pdf,.pdf"
               onChange={(event) => onFileChange?.(event.target.files?.[0] ?? null)}
+              ref={fileInputRef}
               className="block w-full text-sm font-normal"
             />
           </label>
@@ -318,7 +334,11 @@ function DocumentManagementView({
       </div>
 
       {error ? (
-        <p className="border-l-4 border-[var(--color-error)] px-3 py-2 text-sm font-semibold text-[var(--color-error)]">
+        <p
+          role="alert"
+          aria-live="assertive"
+          className="border-l-4 border-[var(--color-error)] px-3 py-2 text-sm font-semibold text-[var(--color-error)]"
+        >
           {error}
         </p>
       ) : null}
@@ -376,13 +396,21 @@ function DocumentManagementView({
                               onAction(item.id, item.isPublished ? "unpublish" : "publish")
                             }
                             className="rounded-md border border-[var(--color-border)] px-3 py-1.5 font-semibold"
+                            disabled={actionPending}
                           >
                             {item.isPublished ? "取消發佈" : "發佈"}
                           </button>
                           <button
                             type="button"
                             aria-label={`刪除 ${item.title}`}
-                            onClick={() => onAction(item.id, "delete")}
+                            disabled={actionPending}
+                            onClick={() => {
+                              if (
+                                globalThis.confirm?.(`確定刪除「${item.title}」？此操作無法復原。`)
+                              ) {
+                                onAction(item.id, "delete");
+                              }
+                            }}
                             className="rounded-md border border-[var(--color-border)] p-2 text-[var(--color-error)]"
                           >
                             <Trash2 className="h-4 w-4" />

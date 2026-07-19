@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { annualReportInputSchema, documentAssetInputSchema, documentIdSchema } from "./schemas";
 import type { AnnualReportInput, DocumentAssetInput, DocumentListSearch } from "./schemas";
-import type { DocumentAuditLogInsert } from "./service";
+import { DocumentConflictError, type DocumentAuditLogInsert } from "./service";
 import type { AnnualReport, DocumentAsset, DocumentSlot } from "./types";
 
 const SITE_DOCUMENTS_BUCKET = "site-documents";
@@ -18,6 +18,18 @@ const documentTimestampsSchema = z.object({
   createdAt: z.string().datetime({ offset: true }),
   updatedAt: z.string().datetime({ offset: true }),
 });
+
+function throwRepositoryError(error: unknown): never {
+  if (
+    error &&
+    typeof error === "object" &&
+    "code" in error &&
+    ["23505", "23514"].includes(String((error as { code?: unknown }).code))
+  ) {
+    throw new DocumentConflictError("Document record conflicts with existing data");
+  }
+  throw error;
+}
 
 function postgrestLikeOperand(value: string) {
   const escaped = value
@@ -184,7 +196,45 @@ function mapSlot(client: SupabaseClient, row: Row): DocumentSlot | null {
 }
 
 export function createSupabaseDocumentRepository(client: SupabaseClient) {
+  async function runAtomicMutation(
+    name: "mutate_document_asset_with_audit" | "mutate_annual_report_with_audit",
+    operation: "create" | "update" | "publish" | "unpublish" | "delete",
+    id: string | null,
+    values: Row,
+    actorUserId: string | null,
+  ) {
+    const { data, error } = await client.rpc(name, {
+      p_actor_user_id: actorUserId,
+      p_operation: operation,
+      p_id: id,
+      p_values: values,
+    });
+    if (error) throwRepositoryError(error);
+    return documentIdSchema.parse(data);
+  }
+
+  async function loadAnnualReport(id: string) {
+    const { data, error } = await client
+      .from("annual_reports")
+      .select(ANNUAL_REPORT_COLUMNS)
+      .eq("id", id)
+      .maybeSingle();
+    if (error) throwRepositoryError(error);
+    return data ? mapAdminAnnualReport(client, data as Row) : null;
+  }
+
+  async function loadAsset(id: string) {
+    const { data, error } = await client
+      .from("document_assets")
+      .select(ASSET_COLUMNS)
+      .eq("id", id)
+      .maybeSingle();
+    if (error) throwRepositoryError(error);
+    return data ? mapAsset(client, data as Row) : null;
+  }
+
   return {
+    usesAtomicAudit: true,
     async listPublishedAnnualReports() {
       const { data, error } = await client
         .from("annual_reports")
@@ -222,28 +272,69 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
       return data ? mapAdminAnnualReport(client, data as Row) : null;
     },
 
-    async createAnnualReport(input: AnnualReportInput) {
+    async createAnnualReport(input: AnnualReportInput, actorUserId?: string | null) {
+      if (actorUserId !== undefined) {
+        const id = await runAtomicMutation(
+          "mutate_annual_report_with_audit",
+          "create",
+          null,
+          annualReportRowInput(input),
+          actorUserId,
+        );
+        const report = await loadAnnualReport(id);
+        if (!report) throw new Error("Annual report mutation returned no row");
+        return report;
+      }
       const { data, error } = await client
         .from("annual_reports")
         .insert(annualReportRowInput(input))
         .select(ANNUAL_REPORT_COLUMNS)
         .single();
-      if (error) throw error;
+      if (error) throwRepositoryError(error);
       return requireMappedAnnualReport(client, data);
     },
 
-    async updateAnnualReport(id: string, input: Partial<AnnualReportInput>) {
+    async updateAnnualReport(
+      id: string,
+      input: Partial<AnnualReportInput>,
+      actorUserId?: string | null,
+    ) {
+      if (actorUserId !== undefined) {
+        const resultId = await runAtomicMutation(
+          "mutate_annual_report_with_audit",
+          "update",
+          id,
+          annualReportRowInput(input),
+          actorUserId,
+        );
+        const report = await loadAnnualReport(resultId);
+        if (!report) throw new Error("Annual report mutation returned no row");
+        return report;
+      }
       const { data, error } = await client
         .from("annual_reports")
         .update(annualReportRowInput(input))
         .eq("id", id)
         .select(ANNUAL_REPORT_COLUMNS)
         .single();
-      if (error) throw error;
+      if (error) throwRepositoryError(error);
       return requireMappedAnnualReport(client, data);
     },
 
-    async setAnnualReportPublished(id: string, isPublished: boolean) {
+    async setAnnualReportPublished(id: string, isPublished: boolean, actorUserId?: string | null) {
+      if (actorUserId !== undefined) {
+        const operation = isPublished ? "publish" : "unpublish";
+        const resultId = await runAtomicMutation(
+          "mutate_annual_report_with_audit",
+          operation,
+          id,
+          {},
+          actorUserId,
+        );
+        const report = await loadAnnualReport(resultId);
+        if (!report) throw new Error("Annual report mutation returned no row");
+        return report;
+      }
       const { data, error } = await client
         .from("annual_reports")
         .update({ is_published: isPublished })
@@ -254,7 +345,11 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
       return requireMappedAnnualReport(client, data);
     },
 
-    async deleteAnnualReport(id: string) {
+    async deleteAnnualReport(id: string, actorUserId?: string | null) {
+      if (actorUserId !== undefined) {
+        await runAtomicMutation("mutate_annual_report_with_audit", "delete", id, {}, actorUserId);
+        return;
+      }
       const { error } = await client.from("annual_reports").delete().eq("id", id);
       if (error) throw error;
     },
@@ -313,7 +408,19 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
       return data ? mapAsset(client, data as Row) : null;
     },
 
-    async createAsset(input: DocumentAssetInput) {
+    async createAsset(input: DocumentAssetInput, actorUserId?: string | null) {
+      if (actorUserId !== undefined) {
+        const id = await runAtomicMutation(
+          "mutate_document_asset_with_audit",
+          "create",
+          null,
+          assetRowInput(input),
+          actorUserId,
+        );
+        const asset = await loadAsset(id);
+        if (!asset) throw new Error("Document asset mutation returned no row");
+        return asset;
+      }
       const { data, error } = await client
         .from("document_assets")
         .insert(assetRowInput(input))
@@ -323,7 +430,19 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
       return requireMappedAsset(client, data);
     },
 
-    async updateAsset(id: string, input: Partial<DocumentAssetInput>) {
+    async updateAsset(id: string, input: Partial<DocumentAssetInput>, actorUserId?: string | null) {
+      if (actorUserId !== undefined) {
+        const resultId = await runAtomicMutation(
+          "mutate_document_asset_with_audit",
+          "update",
+          id,
+          assetRowInput(input),
+          actorUserId,
+        );
+        const asset = await loadAsset(resultId);
+        if (!asset) throw new Error("Document asset mutation returned no row");
+        return asset;
+      }
       const { data, error } = await client
         .from("document_assets")
         .update(assetRowInput(input))
@@ -334,7 +453,20 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
       return requireMappedAsset(client, data);
     },
 
-    async setAssetPublished(id: string, isPublished: boolean) {
+    async setAssetPublished(id: string, isPublished: boolean, actorUserId?: string | null) {
+      if (actorUserId !== undefined) {
+        const operation = isPublished ? "publish" : "unpublish";
+        const resultId = await runAtomicMutation(
+          "mutate_document_asset_with_audit",
+          operation,
+          id,
+          {},
+          actorUserId,
+        );
+        const asset = await loadAsset(resultId);
+        if (!asset) throw new Error("Document asset mutation returned no row");
+        return asset;
+      }
       const { data, error } = await client
         .from("document_assets")
         .update({ is_published: isPublished })
@@ -345,7 +477,11 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
       return requireMappedAsset(client, data);
     },
 
-    async deleteAsset(id: string) {
+    async deleteAsset(id: string, actorUserId?: string | null) {
+      if (actorUserId !== undefined) {
+        await runAtomicMutation("mutate_document_asset_with_audit", "delete", id, {}, actorUserId);
+        return;
+      }
       const { error } = await client.from("document_assets").delete().eq("id", id);
       if (error) throw error;
     },

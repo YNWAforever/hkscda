@@ -36,21 +36,38 @@ export type DocumentAuditLogInsert = {
 };
 
 export type DocumentRepository = {
+  usesAtomicAudit?: boolean;
   listPublishedAnnualReports(): Promise<AnnualReport[]>;
   listAnnualReports(): Promise<AnnualReport[]>;
   getAnnualReportById(id: string): Promise<AnnualReport | null>;
-  createAnnualReport(input: AnnualReportInput): Promise<AnnualReport>;
-  updateAnnualReport(id: string, input: Partial<AnnualReportInput>): Promise<AnnualReport>;
-  setAnnualReportPublished(id: string, isPublished: boolean): Promise<AnnualReport>;
-  deleteAnnualReport(id: string): Promise<void>;
+  createAnnualReport(input: AnnualReportInput, actorUserId?: string | null): Promise<AnnualReport>;
+  updateAnnualReport(
+    id: string,
+    input: Partial<AnnualReportInput>,
+    actorUserId?: string | null,
+  ): Promise<AnnualReport>;
+  setAnnualReportPublished(
+    id: string,
+    isPublished: boolean,
+    actorUserId?: string | null,
+  ): Promise<AnnualReport>;
+  deleteAnnualReport(id: string, actorUserId?: string | null): Promise<void>;
   listPublishedSlots(slotKeys: string[]): Promise<DocumentSlot[]>;
   listAssets(search: DocumentListSearch): Promise<{ items: DocumentAsset[]; total: number }>;
   getAssetById(id: string): Promise<DocumentAsset | null>;
-  createAsset(input: DocumentAssetInput): Promise<DocumentAsset>;
-  updateAsset(id: string, input: Partial<DocumentAssetInput>): Promise<DocumentAsset>;
-  setAssetPublished(id: string, isPublished: boolean): Promise<DocumentAsset>;
+  createAsset(input: DocumentAssetInput, actorUserId?: string | null): Promise<DocumentAsset>;
+  updateAsset(
+    id: string,
+    input: Partial<DocumentAssetInput>,
+    actorUserId?: string | null,
+  ): Promise<DocumentAsset>;
+  setAssetPublished(
+    id: string,
+    isPublished: boolean,
+    actorUserId?: string | null,
+  ): Promise<DocumentAsset>;
   countAssetReferences(id: string): Promise<number>;
-  deleteAsset(id: string): Promise<void>;
+  deleteAsset(id: string, actorUserId?: string | null): Promise<void>;
   createSignedUploadUrl(objectPath: string): Promise<{ token: string; path: string }>;
   verifyObject(objectPath: string): Promise<boolean>;
   insertAuditLog(row: DocumentAuditLogInsert): Promise<void>;
@@ -72,7 +89,8 @@ type AssetActionArgs = ActorInput & {
 const updateAssetInputSchema = documentAssetInputSchema
   .omit({ isPublished: true })
   .partial()
-  .strict();
+  .strict()
+  .refine((input) => Object.keys(input).length > 0, { message: "No document updates supplied" });
 const slotKeysSchema = z.array(
   z
     .string()
@@ -82,7 +100,10 @@ const slotKeysSchema = z.array(
 const updateAnnualReportInputSchema = annualReportInputSchema
   .omit({ isPublished: true })
   .partial()
-  .strict();
+  .strict()
+  .refine((input) => Object.keys(input).length > 0, {
+    message: "No annual report updates supplied",
+  });
 
 function timestamp(now: () => Date) {
   return now().toISOString();
@@ -93,6 +114,7 @@ export function createDocumentService({
   now = () => new Date(),
 }: CreateDocumentServiceOptions) {
   async function audit(row: Omit<DocumentAuditLogInsert, "timestamp">) {
+    if (repo.usesAtomicAudit) return;
     await repo.insertAuditLog({ ...row, timestamp: timestamp(now) });
   }
 
@@ -122,6 +144,16 @@ export function createDocumentService({
     return asset;
   }
 
+  async function ensureAssetCanStopServingPublishedReports(assetId: string) {
+    const reports = await repo.listAnnualReports();
+    const referencedByPublishedReport = reports.some(
+      (report) => report.isPublished && report.document.id === assetId,
+    );
+    if (referencedByPublishedReport) {
+      throw new DocumentConflictError("Unpublish the annual report before changing its PDF asset");
+    }
+  }
+
   return {
     async listPublishedAnnualReports() {
       return repo.listPublishedAnnualReports();
@@ -138,7 +170,7 @@ export function createDocumentService({
     async createAnnualReport({ actorUserId, input }: ActorInput & { input: unknown }) {
       const parsed = annualReportInputSchema.parse(input);
       await requireAnnualReportAsset(parsed.documentAssetId, parsed.isPublished);
-      const report = await repo.createAnnualReport(parsed);
+      const report = await repo.createAnnualReport(parsed, actorUserId);
       await audit({
         actor_user_id: actorUserId,
         action: "annual_report.create",
@@ -169,7 +201,7 @@ export function createDocumentService({
         const current = await annualReportForMutation(parsedReportId);
         await requireAnnualReportAsset(parsed.documentAssetId, current.isPublished);
       }
-      const report = await repo.updateAnnualReport(parsedReportId, parsed);
+      const report = await repo.updateAnnualReport(parsedReportId, parsed, actorUserId);
       await audit({
         actor_user_id: actorUserId,
         action: "annual_report.update",
@@ -184,7 +216,7 @@ export function createDocumentService({
       const parsedReportId = documentIdSchema.parse(reportId);
       const current = await annualReportForMutation(parsedReportId);
       await requireAnnualReportAsset(current.document.id, true);
-      const report = await repo.setAnnualReportPublished(parsedReportId, true);
+      const report = await repo.setAnnualReportPublished(parsedReportId, true, actorUserId);
       await audit({
         actor_user_id: actorUserId,
         action: "annual_report.publish",
@@ -197,7 +229,7 @@ export function createDocumentService({
 
     async unpublishAnnualReport({ actorUserId, reportId }: ActorInput & { reportId: string }) {
       const parsedReportId = documentIdSchema.parse(reportId);
-      const report = await repo.setAnnualReportPublished(parsedReportId, false);
+      const report = await repo.setAnnualReportPublished(parsedReportId, false, actorUserId);
       await audit({
         actor_user_id: actorUserId,
         action: "annual_report.unpublish",
@@ -210,7 +242,7 @@ export function createDocumentService({
 
     async deleteAnnualReport({ actorUserId, reportId }: ActorInput & { reportId: string }) {
       const parsedReportId = documentIdSchema.parse(reportId);
-      await repo.deleteAnnualReport(parsedReportId);
+      await repo.deleteAnnualReport(parsedReportId, actorUserId);
       await audit({
         actor_user_id: actorUserId,
         action: "annual_report.delete",
@@ -228,7 +260,7 @@ export function createDocumentService({
       const parsed = documentAssetInputSchema.parse(input);
       if (parsed.isPublished) await ensureVerifiedObject(parsed.objectPath);
 
-      const asset = await repo.createAsset(parsed);
+      const asset = await repo.createAsset(parsed, actorUserId);
       await audit({
         actor_user_id: actorUserId,
         action: "document.create",
@@ -252,15 +284,18 @@ export function createDocumentService({
     async updateAsset({ actorUserId, assetId, input }: AssetActionArgs & { input: unknown }) {
       const parsedAssetId = documentIdSchema.parse(assetId);
       const parsed = updateAssetInputSchema.parse(input);
-      if (parsed.objectPath !== undefined) {
+      if (parsed.objectPath !== undefined || parsed.kind !== undefined) {
         const current = await repo.getAssetById(parsedAssetId);
         if (!current) throw new Error("Document asset not found");
         if (current.isPublished && parsed.objectPath !== current.objectPath) {
           throw new DocumentConflictError("Unpublish the document before changing its object path");
         }
+        if (parsed.kind !== undefined && parsed.kind !== current.kind) {
+          await ensureAssetCanStopServingPublishedReports(parsedAssetId);
+        }
       }
 
-      const asset = await repo.updateAsset(parsedAssetId, parsed);
+      const asset = await repo.updateAsset(parsedAssetId, parsed, actorUserId);
       await audit({
         actor_user_id: actorUserId,
         action: "document.update",
@@ -276,7 +311,7 @@ export function createDocumentService({
       const parsedAssetId = documentIdSchema.parse(assetId);
       const asset = await assetForPublication(parsedAssetId);
       await ensureVerifiedObject(asset.objectPath);
-      const published = await repo.setAssetPublished(parsedAssetId, true);
+      const published = await repo.setAssetPublished(parsedAssetId, true, actorUserId);
       await audit({
         actor_user_id: actorUserId,
         action: "document.publish",
@@ -290,7 +325,8 @@ export function createDocumentService({
 
     async unpublishAsset({ actorUserId, assetId }: AssetActionArgs) {
       const parsedAssetId = documentIdSchema.parse(assetId);
-      const unpublished = await repo.setAssetPublished(parsedAssetId, false);
+      await ensureAssetCanStopServingPublishedReports(parsedAssetId);
+      const unpublished = await repo.setAssetPublished(parsedAssetId, false, actorUserId);
       await audit({
         actor_user_id: actorUserId,
         action: "document.unpublish",
@@ -308,7 +344,7 @@ export function createDocumentService({
         throw new DocumentConflictError("Document asset is still referenced");
       }
 
-      await repo.deleteAsset(parsedAssetId);
+      await repo.deleteAsset(parsedAssetId, actorUserId);
       await audit({
         actor_user_id: actorUserId,
         action: "document.delete",

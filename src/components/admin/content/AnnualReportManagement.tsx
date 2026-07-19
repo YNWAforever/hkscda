@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type { AnnualReport, DocumentAsset } from "../../../lib/documents/types";
+import { fetchAllAnnualReportAssets } from "./documentManagementLogic";
 
 type AssetListResponse = { items: DocumentAsset[]; total: number };
 
@@ -26,8 +27,10 @@ function AnnualReportManagementRuntime() {
   const assetsQuery = useQuery({
     queryKey: ["admin-documents", "annual-report-options"],
     queryFn: () =>
-      fetchAdminJson<AssetListResponse>(
-        "/api/admin/documents?kind=annual_report&page=1&pageSize=50",
+      fetchAllAnnualReportAssets((page, pageSize) =>
+        fetchAdminJson<AssetListResponse>(
+          `/api/admin/documents?kind=annual_report&page=${page}&pageSize=${pageSize}`,
+        ),
       ),
   });
 
@@ -92,7 +95,7 @@ function AnnualReportManagementRuntime() {
   return (
     <AnnualReportManagementView
       rows={reportsQuery.data ?? []}
-      assets={assetsQuery.data?.items ?? []}
+      assets={assetsQuery.data ?? []}
       loading={reportsQuery.isLoading}
       error={error}
       title={title}
@@ -103,6 +106,7 @@ function AnnualReportManagementRuntime() {
       onTitleChange={setTitle}
       onYearLabelChange={setYearLabel}
       onDocumentAssetChange={setDocumentAssetId}
+      actionPending={actionMutation.isPending}
       onSortOrderChange={setSortOrder}
       onCreate={() => createMutation.mutate()}
       onAction={(id, action, nextSortOrder) => actionMutation.mutate({ id, action, nextSortOrder })}
@@ -123,6 +127,7 @@ type ViewProps = {
   onTitleChange?: (value: string) => void;
   onYearLabelChange?: (value: string) => void;
   onDocumentAssetChange?: (value: string) => void;
+  actionPending?: boolean;
   onSortOrderChange?: (value: number) => void;
   onCreate?: () => void;
   onAction?: (
@@ -145,6 +150,7 @@ function AnnualReportManagementView({
   onTitleChange,
   onYearLabelChange,
   onDocumentAssetChange,
+  actionPending = false,
   onSortOrderChange,
   onCreate,
   onAction,
@@ -223,7 +229,11 @@ function AnnualReportManagementView({
       ) : null}
 
       {error ? (
-        <p className="border-l-4 border-[var(--color-error)] px-3 py-2 text-sm font-semibold text-[var(--color-error)]">
+        <p
+          role="alert"
+          aria-live="assertive"
+          className="border-l-4 border-[var(--color-error)] px-3 py-2 text-sm font-semibold text-[var(--color-error)]"
+        >
           {error}
         </p>
       ) : null}
@@ -297,7 +307,7 @@ function AnnualReportManagementView({
                       <div className="flex justify-end gap-2">
                         <button
                           type="button"
-                          disabled={!report.isPublished && !canPublish}
+                          disabled={actionPending || (!report.isPublished && !canPublish)}
                           onClick={() =>
                             onAction?.(report.id, report.isPublished ? "unpublish" : "publish")
                           }
@@ -309,7 +319,16 @@ function AnnualReportManagementView({
                           <button
                             type="button"
                             aria-label={`刪除 ${report.title}`}
-                            onClick={() => onAction(report.id, "delete")}
+                            disabled={actionPending}
+                            onClick={() => {
+                              if (
+                                globalThis.confirm?.(
+                                  `確定刪除「${report.title}」？此操作無法復原。`,
+                                )
+                              ) {
+                                onAction(report.id, "delete");
+                              }
+                            }}
                             className="rounded-md border border-[var(--color-border)] p-2 text-[var(--color-error)]"
                           >
                             <Trash2 className="h-4 w-4" />

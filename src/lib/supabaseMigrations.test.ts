@@ -20,7 +20,9 @@ describe("supabase migration safety", () => {
     const sql = readMigration("20260718100000_public_documents_and_donation_purpose.sql");
     expect(sql).toContain("create table if not exists public.document_assets");
     expect(sql).toContain("unique (slot_key, language)");
-    expect(sql).toContain("alter table public.donation add column if not exists custom_purpose text");
+    expect(sql).toContain(
+      "alter table public.donation add column if not exists custom_purpose text",
+    );
     expect(sql).toContain("check (custom_purpose is null or char_length(custom_purpose) <= 200)");
     expect(sql).toContain("revoke all on public.document_assets from anon, authenticated");
     expect(sql).toContain("values ('site-documents', 'site-documents', true, 52428800");
@@ -265,6 +267,7 @@ describe("supabase migration safety", () => {
     expect(sql).toContain(
       "add constraint public_status_token_entity_type_check check (entity_type in ('adoption_application', 'sponsorship_pledge'))",
     );
+
     expect(sql).toContain("sponsorship-payment-proof");
     expect(sql).toContain("private.has_admin_role(array['staff', 'admin'])");
   });
@@ -303,5 +306,19 @@ describe("supabase migration safety", () => {
       "add constraint public_status_token_entity_type_check check (entity_type in ('adoption_application', 'sponsorship_pledge', 'volunteer_registration'))",
     );
     expect(sql).toContain("private.has_admin_role(array['staff', 'admin'])");
+  });
+
+  test("hardens document mutations with database invariants and atomic audit RPCs", () => {
+    const sql = readMigrationBySuffix("document_admin_mutation_hardening.sql");
+
+    expect(sql).toContain("create or replace function private.enforce_annual_report_asset");
+    expect(sql).toContain("create constraint trigger enforce_annual_report_asset");
+    expect(sql).toContain("create or replace function public.mutate_document_asset_with_audit");
+    expect(sql).toContain("create or replace function public.mutate_annual_report_with_audit");
+    expect(sql).toContain("insert into public.audit_log");
+    expect(sql.match(/security invoker/g)).toHaveLength(2);
+    expect(sql).toContain("for update");
+    expect(sql).toContain("revoke all on function public.mutate_document_asset_with_audit");
+    expect(sql).toContain("grant execute on function public.mutate_document_asset_with_audit");
   });
 });

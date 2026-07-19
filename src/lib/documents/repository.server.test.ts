@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createSupabaseDocumentRepository } from "./repository.server";
+import { DocumentConflictError } from "./service";
 
 type Filter = ["eq" | "in" | "ilike" | "or", string, unknown];
 const assetId = "11111111-2222-4333-8444-555555555555";
@@ -480,4 +481,109 @@ test("gets annual reports by exact id", async () => {
 
   await expect(repository.getAnnualReportById(reportId)).resolves.toMatchObject({ id: reportId });
   expect(fake.queryFor("annual_reports").filters).toContainEqual(["eq", "id", reportId]);
+});
+
+test("maps annual-report unique violations to DocumentConflictError", async () => {
+  const query = {
+    insert() {
+      return this;
+    },
+    select() {
+      return this;
+    },
+    async single() {
+      return {
+        data: null,
+        error: { code: "23505", message: "duplicate key value violates unique constraint" },
+      };
+    },
+  };
+  const client = {
+    from() {
+      return query;
+    },
+  } as unknown as SupabaseClient;
+  const repository = createSupabaseDocumentRepository(client);
+
+  await expect(
+    repository.createAnnualReport({
+      title: "Annual Report 2025/26",
+      yearLabel: "2025/26",
+      documentAssetId: assetId,
+      isPublished: false,
+      sortOrder: 1,
+    }),
+  ).rejects.toBeInstanceOf(DocumentConflictError);
+});
+test("uses one RPC for an authenticated mutation and its audit record", async () => {
+  const rpcCalls: Array<{ name: string; args: Record<string, unknown> }> = [];
+  const query = new FakeQuery("document_assets", [assetRow({ title: "Updated atomically" })]);
+  const client = {
+    rpc(name: string, args: Record<string, unknown>) {
+      rpcCalls.push({ name, args });
+      return Promise.resolve({ data: assetId, error: null });
+    },
+    from() {
+      return query;
+    },
+    storage: {
+      from(bucket: string) {
+        return {
+          getPublicUrl(path: string) {
+            return { data: { publicUrl: `https://cdn.test/${bucket}/${path}` } };
+          },
+        };
+      },
+    },
+  } as unknown as SupabaseClient;
+  const repository = createSupabaseDocumentRepository(client);
+
+  await expect(
+    repository.updateAsset(assetId, { title: "Updated atomically" }, assetId),
+  ).resolves.toMatchObject({ title: "Updated atomically" });
+
+  expect(rpcCalls).toEqual([
+    {
+      name: "mutate_document_asset_with_audit",
+      args: {
+        p_actor_user_id: assetId,
+        p_operation: "update",
+        p_id: assetId,
+        p_values: { title: "Updated atomically" },
+      },
+    },
+  ]);
+});
+
+test("maps document invariant violations to DocumentConflictError", async () => {
+  const query = {
+    insert() {
+      return this;
+    },
+    select() {
+      return this;
+    },
+    async single() {
+      return {
+        data: null,
+        error: { code: "23514", message: "annual report asset invariant" },
+      };
+    },
+  };
+  const client = {
+    from() {
+      return query;
+    },
+  } as unknown as SupabaseClient;
+  const repository = createSupabaseDocumentRepository(client);
+
+  await expect(
+    repository.createAnnualReport({
+      title: "Annual Report 2025/26",
+      yearLabel: "2026/27",
+      documentAssetId: assetId,
+      isPublished: false,
+      sortOrder: 1,
+    }),
+  ).rejects.toBeInstanceOf(DocumentConflictError);
 });
