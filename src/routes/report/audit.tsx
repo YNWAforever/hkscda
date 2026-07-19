@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ExternalLink, FileText } from "lucide-react";
 import { ReportHeader } from "@/components/site/ReportHeader";
 import { loadPublishedAnnualReports } from "@/lib/documents/public.server";
+import { asContextFreeRouteLoader } from "@/lib/documents/routeLoaders.server";
 import type { AnnualReport } from "@/lib/documents/types";
 import { datasetSchema, renderJsonLd } from "@/lib/schema";
 
@@ -9,7 +10,7 @@ const pageTitle = "年度報告 Annual Report";
 const pageDescription = "我們每年發表協會年度報告電子書，分享救援成果與資金運用摘要。";
 
 export const Route = createFileRoute("/report/audit")({
-  loader: loadPublishedAnnualReports,
+  loader: asContextFreeRouteLoader(loadPublishedAnnualReports),
   errorComponent: AnnualReportLoadError,
   head: () => ({
     meta: [

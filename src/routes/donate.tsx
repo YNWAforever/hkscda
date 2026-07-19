@@ -21,6 +21,7 @@ import {
   type DonateSearch,
 } from "../lib/donations/donateSearch";
 import { loadDonationDocumentSlots } from "../lib/documents/donation.server";
+import { asContextFreeRouteLoader } from "../lib/documents/routeLoaders.server";
 import type { DocumentSlot } from "../lib/documents/types";
 import {
   markDonationEventOnce,
@@ -35,7 +36,7 @@ import { TurnstileWidget, turnstileEnabled } from "../components/site/TurnstileW
 
 export const Route = createFileRoute("/donate")({
   validateSearch: donateSearchSchema,
-  loader: loadDonationDocumentSlots,
+  loader: asContextFreeRouteLoader(loadDonationDocumentSlots),
   head: () => ({
     meta: [
       { title: "捐助我們 · 香港拯救貓狗協會 HKSCDA" },
