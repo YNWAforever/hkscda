@@ -67,6 +67,15 @@ describe("donation domain", () => {
     expect(() =>
       donationRequestSchema.parse({
         ...validRequest,
+        customPurpose: "個案 A\n",
+      }),
+    ).toThrow();
+    expect(() =>
+      donationRequestSchema.parse({ ...validRequest, customPurpose: "\t個案 A" }),
+    ).toThrow();
+    expect(() =>
+      donationRequestSchema.parse({
+        ...validRequest,
         customPurpose: "A".repeat(201),
       }),
     ).toThrow();

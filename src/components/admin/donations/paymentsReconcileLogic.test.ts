@@ -10,6 +10,7 @@ import {
   canVoidReceipt,
   financeActionLabel,
   findIssuedReceipt,
+  paymentPurposeText,
   paymentStatusPill,
   receiptPill,
   summarizePayments,
@@ -30,6 +31,7 @@ function payment(overrides: Partial<AdminPaymentRow> = {}): AdminPaymentRow {
     donation: {
       id: "don-1",
       purpose: "general",
+      custom_purpose: null,
       receipt_requested: true,
       status: "pending",
       supporter: {
@@ -57,6 +59,15 @@ describe("paymentStatusPill", () => {
     expect(paymentStatusPill("succeeded")).toEqual({ tone: "success", label: "已確認" });
     expect(paymentStatusPill("failed")).toEqual({ tone: "danger", label: "失敗" });
     expect(paymentStatusPill("refunded")).toEqual({ tone: "neutral", label: "已退款" });
+  });
+});
+
+describe("paymentPurposeText", () => {
+  test("shows the staff-only purpose note when present", () => {
+    expect(paymentPurposeText(payment().donation)).toBe("general");
+    expect(paymentPurposeText({ ...payment().donation, custom_purpose: "婚宴回禮" })).toBe(
+      "general · 其他用途：婚宴回禮",
+    );
   });
 });
 
@@ -244,9 +255,9 @@ describe("payment search params", () => {
   });
 
   test("always includes safe page defaults for the list request", () => {
-    expect(buildPaymentSearchParams({ search: "", status: "all", provider: "all" }).toString()).toBe(
-      "page=1&pageSize=25",
-    );
+    expect(
+      buildPaymentSearchParams({ search: "", status: "all", provider: "all" }).toString(),
+    ).toBe("page=1&pageSize=25");
   });
 
   test("builds export params without pagination", () => {

@@ -59,6 +59,14 @@ export function paymentStatusPill(status: PaymentStatus): PillSpec {
   return PAYMENT_PILLS[status];
 }
 
+export function paymentPurposeText(
+  donation: Pick<AdminPaymentRow["donation"], "purpose" | "custom_purpose">,
+) {
+  return donation.custom_purpose
+    ? `${donation.purpose} · 其他用途：${donation.custom_purpose}`
+    : donation.purpose;
+}
+
 export function receiptPill(
   payment: AdminPaymentRow,
   receipts: AdminReceiptRow[],

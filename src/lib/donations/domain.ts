@@ -22,9 +22,9 @@ export const donationRequestSchema = z.object({
   purpose: z.enum(donationPurposes),
   customPurpose: z
     .string()
-    .trim()
     .max(200)
     .refine((value) => !/\p{Cc}/u.test(value), "Custom purpose contains control characters")
+    .transform((value) => value.trim())
     .optional()
     .transform((value) => value || undefined),
   method: z.enum(donationMethods),

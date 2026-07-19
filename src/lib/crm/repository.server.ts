@@ -153,6 +153,7 @@ function mapDonation(row: DonationRow): DonationHistoryRow {
     amountCents: row.amount_cents,
     currency: row.currency,
     purpose: row.purpose,
+    customPurpose: row.custom_purpose,
     status: row.status,
     method: row.method,
     receiptRequested: row.receipt_requested,
