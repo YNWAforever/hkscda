@@ -52,6 +52,7 @@ type DonationRow = {
   amount_cents: number;
   currency: "HKD";
   purpose: "general" | "medical" | "sponsor";
+  custom_purpose: string | null;
   status: "pending" | "succeeded" | "failed" | "refunded";
   method: "stripe" | "paypal" | "fps" | "payme" | "manual";
   receipt_requested: boolean;
@@ -741,6 +742,7 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
           donationId: row.id,
           amountCents: row.amount_cents,
           purpose: row.purpose,
+          customPurpose: row.custom_purpose,
           status: row.status,
           method: row.method,
           receiptRequested: row.receipt_requested,

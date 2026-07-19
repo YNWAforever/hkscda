@@ -7,6 +7,7 @@ export type DonationExportRow = {
   donationId: string;
   amountCents: number;
   purpose: string;
+  customPurpose: string | null;
   status: string;
   method: string;
   receiptRequested: boolean;
@@ -77,6 +78,7 @@ export function buildDonationCsv(rows: DonationExportRow[]) {
       "donation_id",
       "amount_hkd",
       "purpose",
+      "其他用途",
       "status",
       "method",
       "receipt_requested",
@@ -90,6 +92,7 @@ export function buildDonationCsv(rows: DonationExportRow[]) {
       row.donationId,
       centsToDecimal(row.amountCents),
       row.purpose,
+      row.customPurpose,
       row.status,
       row.method,
       row.receiptRequested,
@@ -106,6 +109,7 @@ export type PaymentExportRow = {
   provider: string;
   amountCents: number;
   purpose: string;
+  customPurpose: string | null;
   status: string;
   providerRef: string | null;
   bankReference: string | null;
@@ -122,6 +126,7 @@ export function buildPaymentCsv(rows: PaymentExportRow[]) {
       "provider",
       "amount_hkd",
       "purpose",
+      "其他用途",
       "status",
       "provider_ref",
       "bank_reference",
@@ -135,6 +140,7 @@ export function buildPaymentCsv(rows: PaymentExportRow[]) {
       row.provider,
       centsToDecimal(row.amountCents),
       row.purpose,
+      row.customPurpose,
       row.status,
       row.providerRef,
       row.bankReference,

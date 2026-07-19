@@ -20,6 +20,13 @@ export const donationRequestSchema = z.object({
   amountCents: z.number().int().min(1000).max(1_000_000),
   currency: z.literal("HKD"),
   purpose: z.enum(donationPurposes),
+  customPurpose: z
+    .string()
+    .trim()
+    .max(200)
+    .refine((value) => !/\p{Cc}/u.test(value), "Custom purpose contains control characters")
+    .optional()
+    .transform((value) => value || undefined),
   method: z.enum(donationMethods),
   receiptRequested: z.boolean(),
   donor: z.object({

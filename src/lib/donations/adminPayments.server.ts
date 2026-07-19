@@ -12,7 +12,7 @@ import {
 } from "./adminPayments";
 
 const PAYMENT_SELECT =
-  "id,provider,provider_ref,amount_cents,status,received_at,bank_reference,created_at,donation_id,donation:donation_id(id,purpose,receipt_requested,status,supporter:supporter_id(id,name,email,phone,language))";
+  "id,provider,provider_ref,amount_cents,status,received_at,bank_reference,created_at,donation_id,donation:donation_id(id,purpose,custom_purpose,receipt_requested,status,supporter:supporter_id(id,name,email,phone,language))";
 const PAYMENT_SUMMARY_SELECT =
   "id,provider,amount_cents,status,donation:donation_id(id,receipt_requested,status)";
 const READ_BATCH_SIZE = 1000;
@@ -342,6 +342,7 @@ export async function listAdminPaymentExportRows(
     provider: payment.provider,
     amountCents: payment.amount_cents,
     purpose: payment.donation.purpose,
+    customPurpose: payment.donation.custom_purpose,
     status: payment.status,
     providerRef: payment.provider_ref,
     bankReference: payment.bank_reference,

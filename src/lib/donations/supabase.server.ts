@@ -97,7 +97,7 @@ export async function listAdminPayments(client: SupabaseClient) {
   const { data, error } = await client
     .from("payment")
     .select(
-      "id,provider,provider_ref,amount_cents,status,received_at,bank_reference,created_at,donation:donation_id(id,purpose,receipt_requested,status,supporter:supporter_id(id,name,email,phone,language))",
+      "id,provider,provider_ref,amount_cents,status,received_at,bank_reference,created_at,donation:donation_id(id,purpose,custom_purpose,receipt_requested,status,supporter:supporter_id(id,name,email,phone,language))",
     )
     .order("created_at", { ascending: false })
     .limit(100);
