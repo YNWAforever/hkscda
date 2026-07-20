@@ -87,6 +87,14 @@ describe("admin nav active state", () => {
     ).toEqual(["content"]);
   });
 
+  test("uses the adoption information item on its route", () => {
+    const item = ADMIN_NAV_ITEMS.find((candidate) => candidate.id === "adoption-information");
+    expect(item?.to).toBe("/admin/content/adoption");
+    expect(getActiveAdminNavItemIds(ADMIN_NAV_ITEMS, "/admin/content/adoption", "content")).toEqual(
+      ["adoption-information"],
+    );
+  });
+
   test("keeps the content nav target backed by a route file", () => {
     const contentItem = ADMIN_NAV_ITEMS.find((item) => item.id === "content");
 
