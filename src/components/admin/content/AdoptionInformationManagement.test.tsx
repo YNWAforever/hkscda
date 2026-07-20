@@ -1,12 +1,16 @@
 import { describe, expect, mock, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import type { AdminAdoptionInformationPage } from "../../../lib/adoptionInformation/types";
+import type {
+  AdoptionFee,
+  AdminAdoptionInformationPage,
+} from "../../../lib/adoptionInformation/types";
 import {
   ADOPTION_INFORMATION_QUERY_KEY,
   AdoptionInformationManagement,
   AdoptionInformationManagementView,
   buildAdoptionInformationSearchParams,
+  buildFeeMoveSequence,
   invalidateAdoptionInformationQueries,
 } from "./AdoptionInformationManagement";
 
@@ -106,5 +110,20 @@ describe("AdoptionInformationManagement", () => {
     expect(invalidateQueries).toHaveBeenCalledWith({
       queryKey: ADOPTION_INFORMATION_QUERY_KEY,
     });
+  });
+
+  test("moves fees through a temporary sort order to avoid unique-key conflicts", () => {
+    const current: AdoptionFee = { ...(fees.items[0] as AdoptionFee), sortOrder: 1 };
+    const target: AdoptionFee = {
+      ...current,
+      id: "22222222-3333-4444-8555-666666666666",
+      sortOrder: 2,
+    };
+
+    expect(buildFeeMoveSequence([current, target], 3)).toEqual([
+      { ...current, sortOrder: 3 },
+      target,
+      current,
+    ]);
   });
 });

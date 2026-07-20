@@ -51,7 +51,7 @@ type MutationInput =
   | { action: "fee"; input: AdoptionFee }
   | { action: "estate"; input: DogFriendlyEstate }
   | { action: "delete-estate"; id: string }
-  | { action: "move-fees"; inputs: AdoptionFee[] };
+  | { action: "move-fees"; inputs: AdoptionFee[]; temporarySortOrder: number };
 
 function AdoptionInformationManagementRuntime() {
   const queryClient = useQueryClient();
@@ -81,18 +81,25 @@ function AdoptionInformationManagementRuntime() {
           body: JSON.stringify({ id: operation.id }),
         });
       }
-      const inputs = operation.action === "move-fees" ? operation.inputs : [operation.input];
-      return Promise.all(
-        inputs.map((input) =>
-          fetchAdminJson("/api/admin/adoption-information", {
-            method: "POST",
-            body: JSON.stringify({
-              resource: operation.action === "estate" ? "estate" : "fee",
-              input,
+      if (operation.action === "move-fees") {
+        const results = [];
+        for (const input of buildFeeMoveSequence(operation.inputs, operation.temporarySortOrder)) {
+          results.push(
+            await fetchAdminJson("/api/admin/adoption-information", {
+              method: "POST",
+              body: JSON.stringify({ resource: "fee", input }),
             }),
-          }),
-        ),
-      );
+          );
+        }
+        return results;
+      }
+      return fetchAdminJson("/api/admin/adoption-information", {
+        method: "POST",
+        body: JSON.stringify({
+          resource: operation.action === "estate" ? "estate" : "fee",
+          input: operation.input,
+        }),
+      });
     },
     onSuccess: () => invalidateAdoptionInformationQueries(queryClient),
   });
@@ -126,7 +133,17 @@ function AdoptionInformationManagementRuntime() {
           input.id,
           direction,
         );
-        if (updates.length) mutation.mutate({ action: "move-fees", inputs: updates });
+        const temporarySortOrder =
+          Math.max(
+            -1,
+            ...(informationQuery.data?.items ?? [])
+              .filter(
+                (item): item is AdoptionFee => isFee(item) && item.animalType === input.animalType,
+              )
+              .map((fee) => fee.sortOrder),
+          ) + 1;
+        if (updates.length)
+          mutation.mutate({ action: "move-fees", inputs: updates, temporarySortOrder });
       }}
       onSaveEstate={(input) => mutation.mutate({ action: "estate", input })}
       onDeleteEstate={(id) => mutation.mutate({ action: "delete-estate", id })}
@@ -434,6 +451,13 @@ export function moveFeeWithinSpecies(
     { ...current, sortOrder: target.sortOrder },
     { ...target, sortOrder: current.sortOrder },
   ];
+}
+
+export function buildFeeMoveSequence(inputs: AdoptionFee[], temporarySortOrder: number) {
+  const [current, target] = inputs;
+  if (!current || !target) return [];
+
+  return [{ ...current, sortOrder: temporarySortOrder }, target, current];
 }
 
 const inputClass =
