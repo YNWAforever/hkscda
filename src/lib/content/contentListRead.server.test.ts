@@ -462,6 +462,21 @@ describe("createSupabaseContentListRead", () => {
     });
   });
 
+  test("rejects unpublished rows leaked through the public query", async () => {
+    const leakedDraft = { ...contentRow("draft-1"), status: "draft" as const };
+    const { client, calls } = createFakeClient([leakedDraft]);
+    const reader = createSupabaseContentListRead(client);
+
+    const result = await reader.listPublicStoriesPage({
+      status: "published",
+      page: 1,
+      pageSize: 25,
+    });
+
+    expect(result).toEqual({ items: [], total: 0, points: [] });
+    expect(calls).toHaveLength(1);
+  });
+
   test("returns null public relationships when profile, media, and updates are absent", async () => {
     const { client } = createFakeClient([contentRow("1")], {
       rescue_story_profile: [{ data: [], error: null }],

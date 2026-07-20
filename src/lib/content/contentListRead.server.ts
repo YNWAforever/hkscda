@@ -73,10 +73,7 @@ type PublicUpdateRow = {
 
 export type ContentListReadModule = Pick<
   ContentRepository,
-  | "listAdminContent"
-  | "listPublicContent"
-  | "listPublicMapStories"
-  | "listPublicStoriesPage"
+  "listAdminContent" | "listPublicContent" | "listPublicMapStories" | "listPublicStoriesPage"
 >;
 
 const contentColumns = [
@@ -318,6 +315,10 @@ function assemblePublicSummary(
   };
 }
 
+function retainPublishedRows(rows: ContentListRow[]) {
+  return rows.filter((row) => row.status === "published");
+}
+
 function findCoverMedia(media: ContentMedia[], coverMediaId: string | null) {
   return (
     (coverMediaId ? media.find((item) => item.id === coverMediaId) : null) ??
@@ -412,7 +413,7 @@ export function createSupabaseContentListRead(client: SupabaseClient): ContentLi
 
       const { data, error } = await query;
       if (error) throw error;
-      const rows = (data ?? []) as unknown as ContentListRow[];
+      const rows = retainPublishedRows((data ?? []) as unknown as ContentListRow[]);
       if (rows.length === 0) return [];
 
       const relations = await loadRelations(
@@ -443,8 +444,9 @@ export function createSupabaseContentListRead(client: SupabaseClient): ContentLi
 
       const { data, error, count } = await query;
       if (error) throw error;
-      const rows = (data ?? []) as unknown as ContentListRow[];
-      if (rows.length === 0) return { items: [], total: count ?? 0 };
+      const rawRows = (data ?? []) as unknown as ContentListRow[];
+      const rows = retainPublishedRows(rawRows);
+      if (rows.length === 0) return { items: [], total: rawRows.length === 0 ? (count ?? 0) : 0 };
 
       const relations = await loadRelations(
         client,
@@ -452,7 +454,7 @@ export function createSupabaseContentListRead(client: SupabaseClient): ContentLi
       );
       return {
         items: rows.map((row) => assemblePublicSummary(row, relations)),
-        total: count ?? 0,
+        total: rows.length === rawRows.length ? (count ?? 0) : rows.length,
       };
     },
 
@@ -477,14 +479,19 @@ export function createSupabaseContentListRead(client: SupabaseClient): ContentLi
 
       const { data, error, count } = await query;
       if (error) throw error;
-      const rows = (data ?? []) as unknown as ContentListRow[];
-      if (rows.length === 0) return { items: [], total: count ?? 0, points: [] };
+      const rawRows = (data ?? []) as unknown as ContentListRow[];
+      const rows = retainPublishedRows(rawRows);
+      if (rows.length === 0)
+        return { items: [], total: rawRows.length === 0 ? (count ?? 0) : 0, points: [] };
 
-      const relations = await loadRelations(client, rows.map((row) => row.id));
+      const relations = await loadRelations(
+        client,
+        rows.map((row) => row.id),
+      );
       const items = rows.map((row) => assemblePublicSummary(row, relations));
       return {
         items,
-        total: count ?? 0,
+        total: rows.length === rawRows.length ? (count ?? 0) : rows.length,
         points: items.map(mapStoryPoint).filter(nonNullable),
       };
     },

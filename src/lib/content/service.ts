@@ -191,7 +191,8 @@ export function createContentService({
       return repo.listPublicStoriesPage(publicContentSearchSchema.parse(raw));
     },
     async getPublicContentBySlug(slug: string) {
-      return repo.getPublicContentBySlug(slug);
+      const content = await repo.getPublicContentBySlug(slug);
+      return content?.status === "published" ? content : null;
     },
 
     async listPublicMapStories(raw: unknown) {

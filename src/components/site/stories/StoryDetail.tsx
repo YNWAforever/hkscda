@@ -24,7 +24,7 @@ export function StoryDetail({ content }: StoryDetailProps) {
               className="mb-5 inline-flex items-center gap-2 text-sm font-bold text-[var(--color-primary)]"
             >
               <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-              返回故事牆
+              返回救援個案
             </Link>
             <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
               <div>
@@ -180,13 +180,16 @@ export function StoryDetail({ content }: StoryDetailProps) {
 
               <div className="rounded-md bg-[var(--color-panel)] p-5 text-white shadow-soft">
                 <Heart className="h-6 w-6 text-[var(--color-secondary)]" aria-hidden="true" />
-                <h2 className="mt-3 font-display text-2xl font-bold">支持下一次救援</h2>
+                <h2 className="mt-3 font-display text-2xl font-bold">支持救援個案醫療</h2>
                 <p className="mt-2 text-sm leading-6 text-white/75">
                   你的捐助會用於醫療、暫托、糧食與日常照護，讓更多動物等到安全的一天。
                 </p>
-                <Link to="/donate" className="btn-primary min-h-11 mt-4 w-full text-sm!">
-                  立即捐助
-                </Link>
+                <a
+                  href="/donate?purpose=medical"
+                  className="btn-primary min-h-11 mt-4 w-full text-sm!"
+                >
+                  支援醫療費用 ｜ 立即捐助
+                </a>
               </div>
             </aside>
           </div>

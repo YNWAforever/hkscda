@@ -2,7 +2,12 @@ import { describe, expect, test } from "bun:test";
 import type { ContentSummary, PublicStoryMapPoint } from "./types";
 import { createPublicStoriesPageReader, loadPublicStoriesPage } from "./publicStoriesPage.server";
 
-const item = { id: "story-1", title: "Lucky", storyProfile: null } as ContentSummary;
+const item = {
+  id: "story-1",
+  title: "Lucky",
+  status: "published",
+  storyProfile: null,
+} as ContentSummary;
 const point = { id: "story-1", title: "Lucky" } as PublicStoryMapPoint;
 
 describe("public stories page reader", () => {
@@ -71,5 +76,15 @@ describe("public stories page reader", () => {
 
     expect(error).toBeInstanceOf(Error);
     expect((error as Error).message).toBe("Could not load stories");
+  });
+  test("drops leaked drafts and their map points at serialization", async () => {
+    const leakedDraft = { ...item, status: "draft" as const };
+    const read = createPublicStoriesPageReader({
+      async listPublicStoriesPage() {
+        return { items: [leakedDraft], total: 1, points: [point] };
+      },
+    });
+
+    expect(await read()).toEqual({ items: [], total: 0, points: [] });
   });
 });
