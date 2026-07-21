@@ -1,3 +1,4 @@
+import { PUBLIC_INDIVIDUAL_MIN_AGE } from "./types";
 import type {
   VolunteerAttendanceStatus,
   VolunteerRegistrationDecision,
@@ -38,7 +39,14 @@ export function decideVolunteerRegistrationStatus(input: {
   }
 
   const age = participantAge(draft);
-  if (activity.minAge !== null && age !== null && age !== undefined && age < activity.minAge) {
+  const minimumAge =
+    draft.registrationType === "individual"
+      ? Math.max(PUBLIC_INDIVIDUAL_MIN_AGE, activity.minAge ?? 0)
+      : activity.minAge;
+  if (minimumAge !== null && age !== null && age !== undefined && age < minimumAge) {
+    if (draft.registrationType === "individual" && age < PUBLIC_INDIVIDUAL_MIN_AGE) {
+      return { status: "rejected", reason: "minimum_age_not_met" };
+    }
     if (activity.underagePolicy === "block") {
       return { status: "rejected", reason: "minimum_age_not_met" };
     }

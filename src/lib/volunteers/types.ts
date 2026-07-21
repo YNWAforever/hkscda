@@ -19,6 +19,7 @@ export const volunteerAttendanceStatuses = [
   "no_show",
 ] as const;
 export const volunteerUnderagePolicies = ["block", "allow_with_guardian_pending"] as const;
+export const PUBLIC_INDIVIDUAL_MIN_AGE = 21;
 
 export type VolunteerActivityType = (typeof volunteerActivityTypes)[number];
 export type VolunteerActivityStatus = (typeof volunteerActivityStatuses)[number];
