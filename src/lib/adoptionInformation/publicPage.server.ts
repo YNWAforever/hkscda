@@ -1,4 +1,6 @@
-import { loadPublishedDocumentSlots } from "../documents/public.server";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+import { createPublicDocumentRepository, loadPublishedDocumentSlots } from "../documents/public.server";
 import type { DocumentSlot } from "../documents/types";
 import { createSupabaseServiceClient } from "../donations/supabase.server";
 import { createSupabaseAdoptionInformationRepository } from "./repository.server";
@@ -58,13 +60,17 @@ export function createPublicAdoptionPageReader({
   };
 }
 
+export function createPublicAdoptionPageReaderFromClient(client: SupabaseClient) {
+  const documentRepository = createPublicDocumentRepository(client);
+  return createPublicAdoptionPageReader({
+    adoptionRepository: createSupabaseAdoptionInformationRepository(client),
+    loadGuides: (slotKeys) => loadPublishedDocumentSlots(slotKeys, documentRepository),
+  });
+}
+
 export async function loadPublicAdoptionPage() {
   try {
-    const client = createSupabaseServiceClient();
-    return await createPublicAdoptionPageReader({
-      adoptionRepository: createSupabaseAdoptionInformationRepository(client),
-      loadGuides: (slotKeys) => loadPublishedDocumentSlots(slotKeys),
-    })();
+    return await createPublicAdoptionPageReaderFromClient(createSupabaseServiceClient())();
   } catch {
     throw new Error("Could not load adoption information");
   }
