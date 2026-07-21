@@ -71,7 +71,7 @@ export const Route = createFileRoute("/volunteer")({
 function VolunteerPage() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
 
-  if (pathname.startsWith("/volunteer/status/")) {
+  if (pathname.startsWith("/volunteer/status/") || pathname.startsWith("/volunteer/group")) {
     return <Outlet />;
   }
 
