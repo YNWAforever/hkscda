@@ -16,12 +16,12 @@ const loadStories = createStoriesLoader(() => getPublicStoriesPage());
 
 const storiesHead = () => ({
   meta: [
-    { title: "救援故事牆 · 香港拯救貓狗協會 HKSCDA" },
+    { title: "救援個案 · 香港拯救貓狗協會 HKSCDA" },
     {
       name: "description",
-      content: "瀏覽香港拯救貓狗協會公開救援故事、區域救援地圖、活動、義賣與報告。",
+      content: "瀏覽香港拯救貓狗協會公開救援個案、區域救援地圖、活動、義賣與報告。",
     },
-    { property: "og:title", content: "救援故事牆 · HKSCDA" },
+    { property: "og:title", content: "救援個案 · HKSCDA" },
     {
       property: "og:description",
       content: "追蹤貓狗救援、康復、領養與協會活動報告。",

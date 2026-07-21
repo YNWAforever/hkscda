@@ -2,10 +2,17 @@ import { describe, expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 import { DonationPromptSurface } from "./ContextualDonationPrompt";
 import { isPromptStateCurrent } from "./useDonationPromptTrigger";
+import { hasLocalDonationAction } from "./localDonationAction";
 
 test("hides reducer state owned by the previous pathname before effect reset", () => {
   expect(isPromptStateCurrent("/stories/old", "/stories/new")).toBe(false);
   expect(isPromptStateCurrent("/stories/new", "/stories/new")).toBe(true);
+});
+
+test("suppresses the floating prompt where stories have local medical actions", () => {
+  expect(hasLocalDonationAction("/stories")).toBe(true);
+  expect(hasLocalDonationAction("/stories/siu-bak")).toBe(true);
+  expect(hasLocalDonationAction("/adoption/instructions")).toBe(false);
 });
 
 describe("DonationPromptSurface", () => {

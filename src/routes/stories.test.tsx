@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, mock, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 
@@ -90,5 +92,15 @@ describe("stories route", () => {
 
     expect(visibleText).toBe("暫時未能載入故事，請稍後再試。");
     expect(markup).not.toContain(providerDetail);
+  });
+
+  test("uses rescue-case metadata and medical donation actions", async () => {
+    const { StoriesPageContent } = await import("./stories");
+    const markup = renderToStaticMarkup(<StoriesPageContent data={data} />);
+    const head = readFileSync(join(process.cwd(), "src/routes/stories.tsx"), "utf8");
+
+    expect(markup).toContain("救援個案");
+    expect(markup).toContain("支援醫療費用 ｜ 立即捐助");
+    expect(head).toContain("救援個案");
   });
 });

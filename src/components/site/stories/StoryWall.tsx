@@ -52,10 +52,10 @@ export function StoryWall({ stories }: StoryWallProps) {
           <div>
             <div className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[var(--color-primary)]">
               <Heart className="h-4 w-4" aria-hidden="true" />
-              Public Stories
+              Rescue Cases
             </div>
             <h1 className="font-display text-3xl font-bold leading-tight text-[var(--color-panel)] sm:text-4xl">
-              救援故事牆
+              救援個案
             </h1>
             <p className="mt-2 max-w-[58ch] text-sm leading-7 text-[var(--color-text-muted)]">
               追蹤正在康復、等待家庭或已展開新生活的貓狗故事。位置只顯示公開安全區域。
@@ -174,6 +174,9 @@ function StoryCard({ story }: { story: PublicStorySummary }) {
             最新：{story.latestPublicUpdate.title}
           </p>
         ) : null}
+        <a href="/donate?purpose=medical" className="btn-primary mt-auto min-h-11 w-full text-sm!">
+          支援醫療費用 ｜ 立即捐助
+        </a>
       </div>
     </article>
   );

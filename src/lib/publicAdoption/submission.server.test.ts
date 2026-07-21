@@ -196,7 +196,8 @@ function validPayload(overrides: Record<string, unknown> = {}) {
     visit: {
       dateRangeStart: "2026-07-10",
       dateRangeEnd: "2026-07-12",
-      preferredTimeWindows: ["weekend_morning"],
+      dogTimeWindows: ["weekend_afternoon"],
+      catTimeWindows: ["weekend_morning"],
       notes: "Call first",
     },
     terms: {
@@ -377,6 +378,16 @@ describe("persistPublicAdoptionJourney", () => {
       options: undefined,
     });
     expect(state.calls).toContainEqual({
+      table: "adoption_application_visit_preference",
+      method: "insert",
+      payload: expect.objectContaining({
+        dog_time_windows: ["weekend_afternoon"],
+        cat_time_windows: ["weekend_morning"],
+        preferred_time_windows: ["weekend_morning", "weekend_afternoon"],
+      }),
+      options: undefined,
+    });
+    expect(state.calls).toContainEqual({
       table: "public_status_token",
       method: "insert",
       payload: expect.objectContaining({
@@ -422,7 +433,8 @@ describe("persistPublicAdoptionJourney", () => {
           ],
           visit: {
             dateRangeStart: "2026-07-10",
-            preferredTimeWindows: ["weekend_morning"],
+            dogTimeWindows: ["weekend_afternoon"],
+            catTimeWindows: ["weekend_morning"],
           },
         },
       },

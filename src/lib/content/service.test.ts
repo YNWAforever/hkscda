@@ -128,6 +128,15 @@ describe("createContentService", () => {
     });
   });
 
+  test("treats an unpublished public detail as not found", async () => {
+    const { repo } = createRepo({
+      getPublicContentBySlug: async () => ({ ...detail, status: "draft" }),
+    });
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    expect(await service.getPublicContentBySlug("siu-bak-recovery")).toBeNull();
+  });
+
   test("publishes valid content and audits the action", async () => {
     const { repo, auditLogs } = createRepo();
     const service = createContentService({ repo, publicBaseUrl: "https://example.test" });

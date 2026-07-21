@@ -151,4 +151,6 @@ test("links to document and annual-report workspaces", async () => {
   expect(markup).toContain(">文件</a>");
   expect(markup).toContain('href="/admin/content/annual-reports"');
   expect(markup).toContain(">年度報告</a>");
+  expect(markup).toContain('href="/admin/content/adoption"');
+  expect(markup).toContain(">????</a>");
 });

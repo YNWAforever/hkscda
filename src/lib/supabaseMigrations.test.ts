@@ -16,6 +16,17 @@ function readMigrationBySuffix(suffix: string) {
 }
 
 describe("supabase migration safety", () => {
+  test("adds grouped visits and adoption information", () => {
+    const sql = readMigration("20260718110000_adoption_information.sql");
+    expect(sql).toContain("add column if not exists dog_time_windows text[]");
+    expect(sql).toContain("add column if not exists cat_time_windows text[]");
+    expect(sql).toContain("create table if not exists public.adoption_fees");
+    expect(sql).toContain("create table if not exists public.dog_friendly_estates");
+    expect(sql).toContain("Typical Species 一般品種");
+    expect(sql).toContain("Big Cage Rental");
+    expect(sql).toContain("revoke all on public.adoption_fees from anon, authenticated");
+  });
+
   test("adds publish-safe public documents and bounded donation purpose notes", () => {
     const sql = readMigration("20260718100000_public_documents_and_donation_purpose.sql");
     expect(sql).toContain("create table if not exists public.document_assets");

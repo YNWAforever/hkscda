@@ -13,6 +13,7 @@ import {
   usePublicFixedActions,
 } from "../fixedActions/PublicFixedActions";
 import { useDonationPromptTrigger } from "./useDonationPromptTrigger";
+import { hasLocalDonationAction } from "./localDonationAction";
 
 type DonationPromptSurfaceProps = {
   message: string;
@@ -70,7 +71,9 @@ export function ContextualDonationPrompt({ pathname }: { pathname: string }) {
   const placement = isMobile ? "mobile-bottom" : "desktop-left";
   const { helpOpen } = usePublicFixedActions();
   const { visible, trigger, dismiss } = useDonationPromptTrigger(pathname, profile !== null);
-  const rendered = Boolean(profile && visible && trigger && !helpOpen);
+  const rendered = Boolean(
+    profile && visible && trigger && !helpOpen && !hasLocalDonationAction(pathname),
+  );
   const register = useFixedActionRegistration("donation", rendered);
 
   const attribution =

@@ -40,7 +40,13 @@ function projectPublicStory(item: ContentSummary): PublicStorySummary {
 }
 
 function projectPublicStoriesPage(data: PublicStoriesPageSourceData): PublicStoriesPageData {
-  return { ...data, items: data.items.map(projectPublicStory) };
+  const publishedItems = data.items.filter((item) => item.status === "published");
+  const publishedIds = new Set(publishedItems.map((item) => item.id));
+  return {
+    items: publishedItems.map(projectPublicStory),
+    total: publishedItems.length === data.items.length ? data.total : publishedItems.length,
+    points: data.points.filter((point) => publishedIds.has(point.id)),
+  };
 }
 
 export function createPublicStoriesPageReader(service: PublicStoriesPageService) {
