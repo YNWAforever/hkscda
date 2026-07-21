@@ -348,4 +348,17 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("grant execute on function public.mutate_document_asset_with_audit");
     expect(sql).toContain("grant insert on public.audit_log to service_role");
   });
+  test("adds group enquiries and publish-safe knowledge posts", () => {
+    const sql = readMigration("20260718120000_group_enquiries_and_knowledge.sql");
+
+    expect(sql).toContain("create table if not exists public.group_enquiries");
+    expect(sql).toContain("notification_status");
+    expect(sql).toContain("create table if not exists public.knowledge_posts");
+    expect(sql).toContain("num_nonnulls(external_url, document_asset_id) = 1");
+    expect(sql).toContain("https://www.hk01.com/article/288651");
+    expect(sql).toContain(
+      "https://www.10life.com/zh-HK/blog/Pet-Owners-Alert-Comparing-Pet-Insurance-Coverage",
+    );
+    expect(sql).toContain("revoke all on public.group_enquiries from anon, authenticated");
+  });
 });
