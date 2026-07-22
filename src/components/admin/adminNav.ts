@@ -148,6 +148,15 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     activePath: "/admin/volunteers",
   },
   {
+    id: "volunteer-group-enquiries",
+    section: "volunteers",
+    group: "adoptions",
+    label: "團體查詢",
+    icon: ClipboardPenLine,
+    to: "/admin/volunteers/group-enquiries",
+    activePath: "/admin/volunteers/group-enquiries",
+  },
+  {
     id: "payments",
     section: "payments",
     group: "donations",

@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-import { groupEnquiryActivityTypes } from "./types";
+import {
+  groupEnquiryActivityTypes,
+  groupEnquiryNotificationStatuses,
+  groupEnquiryStatuses,
+} from "./types";
 
 const trimmed = z.string().trim();
 const optionalTrimmed = z
@@ -71,3 +75,19 @@ export const adminGroupEnquiryUpdateSchema = z.object({
 });
 
 export type PublicGroupEnquiryInput = z.infer<typeof publicGroupEnquirySchema>;
+
+const boundedPage = z.coerce.number().int().min(1).catch(1);
+const boundedPageSize = z.coerce.number().int().min(1).catch(25).transform((value) => Math.min(value, 50));
+
+export const groupEnquirySearchSchema = z.object({
+  q: optionalTrimmed.optional().transform((value) => value ?? undefined),
+  status: z.enum(groupEnquiryStatuses).optional(),
+  notificationStatus: z.enum(groupEnquiryNotificationStatuses).optional(),
+  page: boundedPage.default(1),
+  pageSize: boundedPageSize.default(25),
+});
+
+export const adminGroupEnquiryPatchSchema = adminGroupEnquiryUpdateSchema.extend({
+  id: z.string().min(1),
+  action: z.literal("retryNotification").optional(),
+});

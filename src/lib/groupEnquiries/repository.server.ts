@@ -4,6 +4,8 @@ import type {
   GroupEnquiry,
   GroupEnquiryActivityType,
   GroupEnquiryInsert,
+  GroupEnquiryAdminUpdate,
+  GroupEnquirySearch,
   GroupEnquiryNotificationStatus,
   GroupEnquiryStatus,
 } from "./types";
@@ -71,6 +73,32 @@ function toDomain(row: GroupEnquiryRow): GroupEnquiry {
   };
 }
 
+function toSummary(row: GroupEnquiryRow) {
+  return {
+    id: row.id,
+    organisationName: row.organisation,
+    contactPerson: row.contact_name,
+    activityType: row.activity_type,
+    participantCount: row.participant_count,
+    status: row.status,
+    notificationStatus: row.notification_status,
+    assignedTo: row.assigned_to,
+    createdAt: row.created_at,
+  };
+}
+
+function escapeLike(value: string) {
+  return value.replaceAll("\\", "\\\\").replaceAll("%", "\\%").replaceAll("_", "\\_");
+}
+
+function toUpdate(input: GroupEnquiryAdminUpdate) {
+  const payload: Record<string, unknown> = {};
+  if (input.status !== undefined) payload.status = input.status;
+  if (input.assignedTo !== undefined) payload.assigned_to = input.assignedTo;
+  if (input.adminNotes !== undefined) payload.admin_notes = input.adminNotes;
+  return payload;
+}
+
 function isDuplicateKeyError(error: unknown) {
   if (!error || typeof error !== "object") return false;
   const maybe = error as { code?: string; message?: string };
@@ -122,5 +150,46 @@ export function createSupabaseGroupEnquiryRepository(
         .eq("id", id);
       if (error) throw error;
     },
-  };
+
+    async list(input: GroupEnquirySearch) {
+      const from = (input.page - 1) * input.pageSize;
+      let query = client
+        .from("group_enquiries")
+        .select(
+          "id,organisation,contact_name,activity_type,participant_count,status,notification_status,assigned_to,created_at",
+          { count: "exact" },
+        )
+        .order("created_at", { ascending: false })
+        .range(from, from + input.pageSize - 1);
+      if (input.status) query = query.eq("status", input.status);
+      if (input.notificationStatus) query = query.eq("notification_status", input.notificationStatus);
+      if (input.q) {
+        const like = `%${escapeLike(input.q)}%`;
+        query = query.or(`organisation.ilike.${like},contact_name.ilike.${like},contact_email.ilike.${like}`);
+      }
+      const { data, error, count } = await query;
+      if (error) throw error;
+      return { enquiries: ((data ?? []) as GroupEnquiryRow[]).map(toSummary), total: count ?? 0 };
+    },
+
+    async getById(id) {
+      const { data, error } = await client
+        .from("group_enquiries")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
+      if (error) throw error;
+      return data ? toDomain(data as GroupEnquiryRow) : null;
+    },
+
+    async update(id, input) {
+      const { data, error } = await client
+        .from("group_enquiries")
+        .update(toUpdate(input))
+        .eq("id", id)
+        .select("*")
+        .single();
+      if (error) throw error;
+      return toDomain(data as GroupEnquiryRow);
+    },  };
 }

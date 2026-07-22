@@ -38,6 +38,15 @@ function createRepo(result: { enquiry: GroupEnquiry; created: boolean } = { enqu
     async markNotificationFailed(id, safeError) {
       calls.push({ name: "markNotificationFailed", input: { id, safeError } });
     },
+    async list() {
+      return { enquiries: [], total: 0 };
+    },
+    async getById() {
+      return null;
+    },
+    async update() {
+      return enquiry;
+    },
   };
   return { repo, calls };
 }
@@ -61,7 +70,7 @@ describe("group enquiry service", () => {
     const { repo, calls } = createRepo();
     const service = createGroupEnquiryService({
       repo,
-      notifyAdmins: async () => calls.push({ name: "notifyAdmins" }),
+      notifyAdmins: async () => { calls.push({ name: "notifyAdmins" }); },
     });
 
     await expect(service.submitPublicEnquiry(payload)).resolves.toEqual({ ok: true, enquiryId: "enquiry-1" });
@@ -80,7 +89,7 @@ describe("group enquiry service", () => {
     const { repo, calls } = createRepo({ enquiry, created: false });
     const service = createGroupEnquiryService({
       repo,
-      notifyAdmins: async () => calls.push({ name: "notifyAdmins" }),
+      notifyAdmins: async () => { calls.push({ name: "notifyAdmins" }); },
     });
 
     await expect(service.submitPublicEnquiry(payload)).resolves.toEqual({ ok: true, enquiryId: "enquiry-1" });

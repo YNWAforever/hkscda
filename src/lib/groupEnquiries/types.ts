@@ -35,3 +35,30 @@ export type GroupEnquiry = GroupEnquiryInsert & {
   createdAt: string;
   updatedAt: string;
 };
+
+export type GroupEnquirySummary = Pick<
+  GroupEnquiry,
+  | "id"
+  | "organisationName"
+  | "contactPerson"
+  | "activityType"
+  | "participantCount"
+  | "status"
+  | "notificationStatus"
+  | "assignedTo"
+  | "createdAt"
+>;
+
+export type GroupEnquirySearch = {
+  q?: string;
+  status?: GroupEnquiryStatus;
+  notificationStatus?: GroupEnquiryNotificationStatus;
+  page: number;
+  pageSize: number;
+};
+
+export type GroupEnquiryAdminUpdate = {
+  status?: GroupEnquiryStatus;
+  assignedTo?: string | null;
+  adminNotes?: string | null;
+};

@@ -10,7 +10,7 @@ import { enforceRateLimit, getClientIp, retryAfterSeconds } from "../../../lib/s
 import { verifyTurnstile } from "../../../lib/security/turnstile.server";
 
 type HandlerContext = { request: Request };
-type SubmitService = { submitPublicEnquiry(input: unknown): Promise<{ ok: true; enquiryId: string }> };
+type SubmitService = { submitPublicEnquiry(input: unknown): Promise<{ ok: boolean; enquiryId: string }> };
 
 type CreateGroupEnquiryRouteHandlerArgs = SubmitService & {
   verifyTurnstileToken?: (token: string | undefined, ip: string, request: Request) => Promise<boolean>;
