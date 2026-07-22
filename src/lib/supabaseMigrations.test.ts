@@ -361,4 +361,19 @@ describe("supabase migration safety", () => {
     );
     expect(sql).toContain("revoke all on public.group_enquiries from anon, authenticated");
   });
+  test("seeds knowledge guide posts from existing document slots without duplicating assets", () => {
+    const sql = readMigration("20260718121000_seed_knowledge_guides.sql");
+
+    expect(sql).toContain("post_adoption_guide");
+    expect(sql).toContain("language = 'zh-HK'");
+    expect(sql).toContain("language = 'en'");
+    expect(sql).toContain("insert into public.knowledge_posts");
+    expect(sql).toContain("select document_asset_id");
+    expect(sql).toContain("from public.site_document_slots");
+    expect(sql).toContain("on conflict (document_asset_id) where document_asset_id is not null do update");
+    expect(sql).toContain("raise exception");
+    expect(sql).not.toContain("insert into public.document_assets");
+    expect(sql).not.toContain("storage.objects");
+  });
+
 });

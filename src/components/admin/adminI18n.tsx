@@ -185,6 +185,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       supporters: "支持者",
       content: "宣傳內容",
       "adoption-information": "????",
+      knowledge: "知識庫",
       "access-management": "權限管理",
     },
     layout: {
@@ -358,6 +359,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       supporters: "Supporters",
       content: "Content",
       "adoption-information": "Adoption information",
+      knowledge: "Knowledge hub",
       "access-management": "Access Management",
     },
     layout: {

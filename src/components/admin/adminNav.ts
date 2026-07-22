@@ -190,6 +190,15 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     activePath: "/admin/content/adoption",
   },
   {
+    id: "knowledge",
+    section: "content",
+    group: "promotion",
+    label: "知識庫",
+    icon: ClipboardPenLine,
+    to: "/admin/content/knowledge",
+    activePath: "/admin/content/knowledge",
+  },
+  {
     id: "access-management",
     section: "access",
     group: "system",
