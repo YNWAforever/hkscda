@@ -331,7 +331,6 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       payments: "Payments",
       supporters: "Supporters",
       volunteers: "Volunteers",
-      "volunteer-group-enquiries": "Group enquiries",
       content: "Content",
       access: "Access Management",
     },
