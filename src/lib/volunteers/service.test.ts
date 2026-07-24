@@ -18,8 +18,12 @@ function createRepo(overrides: Partial<VolunteerRepository> = {}) {
     updateActivity: async () => undefined,
     cloneActivity: async () => "activity-clone",
     upsertSupporter: async () => ({ id: "supporter-1", email: "ada@example.com" }),
-    ensureSupporterRole: async (input) => supporterRoles.push(input),
-    insertConsentRows: async (rows) => consents.push(...rows),
+    ensureSupporterRole: async (input) => {
+      supporterRoles.push(input);
+    },
+    insertConsentRows: async (rows) => {
+      consents.push(...rows);
+    },
     createRegistration: async (input) => {
       registrations.push(input);
       return { ...registration, ...input, id: "registration-1" } as VolunteerRegistrationDetail;
@@ -29,7 +33,9 @@ function createRepo(overrides: Partial<VolunteerRepository> = {}) {
     getRegistrationByStatusToken: async () => registration,
     updateRegistrationStatus: async () => registration,
     updateAttendance: async () => registration,
-    insertAuditLog: async (row) => auditLogs.push(row),
+    insertAuditLog: async (row) => {
+      auditLogs.push(row);
+    },
     ...overrides,
   };
   return { repo, registrations, auditLogs, supporterRoles, consents };
@@ -53,6 +59,7 @@ const activity: VolunteerActivityDetail = {
   approvedParticipants: 4,
   pendingParticipants: 0,
   waitlistedParticipants: 0,
+  remainingCapacity: 8,
   createdAt: "2026-07-01T00:00:00.000Z",
   updatedAt: "2026-07-01T00:00:00.000Z",
 };

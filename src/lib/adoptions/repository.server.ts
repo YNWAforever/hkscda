@@ -122,24 +122,8 @@ type AnimalExportAnimalRow = AnimalRow & {
 const animalPipelineAnimalColumns =
   "id,type,name,name_en,gender,age,status,image_url,created_at,updated_at";
 
-const animalPipelineProfileColumns = [
-  "animal_id",
-  "internal_code",
-  "arrival_date",
-  "arrival_source_id",
-  "current_position_id",
-  "cage",
-  "has_chip",
-  "chip_remarks",
-  "is_desexed",
-  "desexed_at",
-  "desex_remarks",
-  "is_adoptable",
-  "is_inside_support_pool",
-  "adopted_at",
-  "deceased_at",
-  "internal_remarks",
-].join(",");
+const animalPipelineProfileColumns =
+  "animal_id,internal_code,arrival_date,arrival_source_id,current_position_id,cage,has_chip,chip_remarks,is_desexed,desexed_at,desex_remarks,is_adoptable,is_inside_support_pool,adopted_at,deceased_at,internal_remarks";
 
 type AnimalInternalProfileRow = {
   animal_id: string;
@@ -764,10 +748,7 @@ async function resolveAnimalPipelineCandidateScope(
           .or(`internal_code.ilike.${pattern},cage.ilike.${pattern}`),
       ),
       loadBoundedAnimalPipelineCandidates<{ id: string }>(
-        client
-          .from("animal_position")
-          .select("id", { count: "exact" })
-          .or(`name.ilike.${pattern}`),
+        client.from("animal_position").select("id", { count: "exact" }).or(`name.ilike.${pattern}`),
       ),
       loadBoundedAnimalPipelineCandidates<{ id: string }>(
         client
@@ -912,8 +893,8 @@ function mapAnimalPipelineRow(
     age: row.age as string,
     status: row.status as AnimalPipelineRow["status"],
     image_url: (row.image_url as string | null) ?? null,
-    created_at: (row.created_at as string | null) ?? null,
-    updated_at: (row.updated_at as string | null) ?? null,
+    created_at: row.created_at as string,
+    updated_at: row.updated_at as string,
     profile: profileRow,
     currentPosition: position
       ? {
@@ -1781,7 +1762,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
         .in("animal_id", animalIds);
       if (profileError) throw profileError;
 
-      const profileRows = (profileData ?? []) as AnimalInternalProfile[];
+      const profileRows = profileData ?? [];
       const positionIds = unique(profileRows.map((profile) => profile.current_position_id));
       const sourceIds = unique(profileRows.map((profile) => profile.arrival_source_id));
 

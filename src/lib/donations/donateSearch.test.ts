@@ -1,18 +1,20 @@
 import { describe, expect, test } from "bun:test";
 
 import { donateSearchSchema, extractDonationAttribution } from "./donateSearch";
+import type { DonationAttribution } from "./attribution";
 
 describe("donate search attribution", () => {
   test("accepts a complete controlled attribution", () => {
-    const parsed = donateSearchSchema.parse({
+    const attribution = {
       source: "contextual-cta",
       context: "animal",
       purpose: "medical",
       placement: "desktop-left",
       trigger: "timer",
-    });
+    } satisfies DonationAttribution;
+    const parsed = donateSearchSchema.parse(attribution);
 
-    expect(extractDonationAttribution(parsed)).toEqual(parsed);
+    expect(extractDonationAttribution(parsed)).toEqual(attribution);
   });
 
   test("treats a partial attribution as a direct visit", () => {

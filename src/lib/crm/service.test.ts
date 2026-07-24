@@ -77,6 +77,7 @@ function createFakeRepository(): CrmRepository & {
           donationId: "donation-1",
           amountCents: 30000,
           purpose: "medical",
+          customPurpose: null,
           status: "succeeded",
           method: "manual",
           receiptRequested: true,

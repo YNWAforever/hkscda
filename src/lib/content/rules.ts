@@ -69,7 +69,8 @@ export function validatePublishableContent(content: ContentDetail): PublishValid
 export function buildPublicStoryMapPoint(content: ContentDetail): PublicStoryMapPoint | null {
   const profile = content.storyProfile;
   if (!profile?.showOnMap) return null;
-  if (blank(profile.publicMapLabel) || profile.publicLat === null || profile.publicLng === null)
+  const publicMapLabel = profile.publicMapLabel;
+  if (!publicMapLabel?.trim() || profile.publicLat === null || profile.publicLng === null)
     return null;
   return {
     id: content.id,
@@ -78,7 +79,7 @@ export function buildPublicStoryMapPoint(content: ContentDetail): PublicStoryMap
     animalType: profile.animalType,
     publicStatus: profile.publicStatus,
     rescueRegion: profile.rescueRegion,
-    publicMapLabel: profile.publicMapLabel,
+    publicMapLabel,
     lat: profile.publicLat,
     lng: profile.publicLng,
     latestUpdateTitle: content.latestPublicUpdate?.title ?? null,

@@ -3,6 +3,13 @@ import { join } from "node:path";
 import { describe, expect, test } from "bun:test";
 
 describe("deployment environment contract", () => {
+  test("exposes the repository TypeScript check through the package scripts", () => {
+    const packageJson = JSON.parse(readFileSync(join(process.cwd(), "package.json"), "utf8")) as {
+      scripts?: Record<string, string>;
+    };
+
+    expect(packageJson.scripts?.typecheck).toBe("tsc --noEmit");
+  });
   test("documents every Supabase variable required by server and browser clients", () => {
     const example = readFileSync(join(process.cwd(), ".env.example"), "utf8");
 

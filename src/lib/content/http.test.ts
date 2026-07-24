@@ -4,6 +4,7 @@ import { z } from "zod";
 import type { AdminUser } from "../donations/supabase.server";
 import { createContentHandlers } from "./http.server";
 import { ContentValidationError } from "./service";
+import type { ContentDetail, ContentSummary, PublicStoryMapPoint } from "./types";
 
 const admin: AdminUser = {
   id: "admin-row",
@@ -12,6 +13,54 @@ const admin: AdminUser = {
   role: "staff",
   status: "active",
 };
+const publicContent: ContentSummary = {
+  id: "content-1",
+  slug: "siu-bak",
+  type: "rescue_story",
+  title: "小白",
+  subtitle: null,
+  summary: "小白的故事",
+  coverMediaId: null,
+  coverImageUrl: null,
+  status: "published",
+  publishedAt: "2026-07-05T10:00:00.000Z",
+  ctaLabel: null,
+  ctaUrl: null,
+  storyProfile: null,
+  latestPublicUpdate: null,
+  createdAt: "2026-07-05T09:00:00.000Z",
+  updatedAt: "2026-07-05T09:00:00.000Z",
+};
+const contentDetail: ContentDetail = {
+  ...publicContent,
+  body: null,
+  seoTitle: null,
+  seoDescription: null,
+  ogTitle: null,
+  ogDescription: null,
+  links: [],
+  media: [],
+  updates: [],
+  socialCopies: [],
+  notificationDrafts: [],
+};
+const archivedContent: ContentDetail = {
+  ...contentDetail,
+  status: "archived",
+};
+
+const publicStoryMapPoint: PublicStoryMapPoint = {
+  id: "content-1",
+  slug: "siu-bak",
+  title: "小白",
+  animalType: "cat",
+  publicStatus: "medical_care",
+  rescueRegion: "灣仔",
+  publicMapLabel: "灣仔區救援",
+  lat: 22.277,
+  lng: 114.173,
+  latestUpdateTitle: null,
+};
 
 function createService(overrides: Record<string, unknown> = {}) {
   const calls: string[] = [];
@@ -19,7 +68,7 @@ function createService(overrides: Record<string, unknown> = {}) {
     calls,
     async listPublicContent() {
       calls.push("listPublicContent");
-      return { items: [{ id: "content-1", title: "小白" }], total: 1 };
+      return { items: [publicContent], total: 1 };
     },
     async listPublicStoriesPage() {
       calls.push("listPublicStoriesPage");
@@ -27,11 +76,11 @@ function createService(overrides: Record<string, unknown> = {}) {
     },
     async getPublicContentBySlug() {
       calls.push("getPublicContentBySlug");
-      return { id: "content-1", slug: "siu-bak", title: "小白" };
+      return contentDetail;
     },
     async listPublicMapStories() {
       calls.push("listPublicMapStories");
-      return [{ id: "content-1", title: "小白", lat: 22.277, lng: 114.173 }];
+      return [publicStoryMapPoint];
     },
     async listAdminContent() {
       calls.push("listAdminContent");
@@ -43,23 +92,23 @@ function createService(overrides: Record<string, unknown> = {}) {
     },
     async getAdminContent() {
       calls.push("getAdminContent");
-      return { id: "content-1", title: "小白" };
+      return contentDetail;
     },
     async updateContent() {
       calls.push("updateContent");
-      return { id: "content-1", title: "小白 updated" };
+      return contentDetail;
     },
     async publishContent() {
       calls.push("publishContent");
-      return { id: "content-1", status: "published" };
+      return contentDetail;
     },
     async archiveContent() {
       calls.push("archiveContent");
-      return { id: "content-1", status: "archived" };
+      return archivedContent;
     },
     async upsertStoryProfile() {
       calls.push("upsertStoryProfile");
-      return { id: "content-1", storyProfile: { rescueRegion: "灣仔" } };
+      return contentDetail;
     },
     async createStoryUpdate() {
       calls.push("createStoryUpdate");
@@ -109,7 +158,7 @@ describe("createContentHandlers", () => {
     expect(response.status).toBe(200);
     expect(response.headers.get("cache-control")).toBe("no-store");
     expect(await response.json()).toEqual({
-      items: [{ id: "content-1", title: "小白" }],
+      items: [publicContent],
       total: 1,
     });
   });
