@@ -3,8 +3,8 @@ import { join, relative } from "node:path";
 
 import { describe, expect, test } from "bun:test";
 
-const obsoleteServiceSlogan = "?亙???????";
-const correctedServiceSlogan = "?祆?隞仿?蝝撘脰??舀???拇???銝阡? 24 撠??嗅潦";
+const obsoleteServiceSlogan = "日夜堅守前線動物救援";
+const correctedServiceSlogan = "本會以預約方式進行拯救與援助服務，並非 24 小時當值。";
 const migrationPath = join(process.cwd(), "supabase/migrations/20260718122000_correct_service_slogan.sql");
 
 function trackedContentFiles(directory: string): string[] {
