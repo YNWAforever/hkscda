@@ -121,17 +121,10 @@ export type ArrivalSourceSummary = {
 
 export type AnimalPipelineRow = Pick<
   Animal,
-  | "id"
-  | "type"
-  | "name"
-  | "name_en"
-  | "gender"
-  | "age"
-  | "status"
-  | "image_url"
-  | "created_at"
-  | "updated_at"
+  "id" | "type" | "name" | "name_en" | "gender" | "age" | "status" | "image_url"
 > & {
+  created_at: string | null;
+  updated_at: string | null;
   profile: AnimalInternalProfile;
   currentPosition: AnimalPositionSummary | null;
   arrivalSource: ArrivalSourceSummary | null;

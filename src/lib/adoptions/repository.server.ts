@@ -893,8 +893,8 @@ function mapAnimalPipelineRow(
     age: row.age as string,
     status: row.status as AnimalPipelineRow["status"],
     image_url: (row.image_url as string | null) ?? null,
-    created_at: row.created_at as string,
-    updated_at: row.updated_at as string,
+    created_at: (row.created_at as string | null) ?? null,
+    updated_at: (row.updated_at as string | null) ?? null,
     profile: profileRow,
     currentPosition: position
       ? {
