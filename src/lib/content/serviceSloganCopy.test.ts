@@ -1,4 +1,5 @@
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 
 import { describe, expect, test } from "bun:test";
@@ -7,14 +8,28 @@ const obsoleteServiceSlogan = "日夜堅守前線動物救援";
 const correctedServiceSlogan = "本會以預約方式進行拯救與援助服務，並非 24 小時當值。";
 const migrationPath = join(process.cwd(), "supabase/migrations/20260718122000_correct_service_slogan.sql");
 
-function trackedContentFiles(directory: string): string[] {
-  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
-    const path = join(directory, entry.name);
-    if (entry.isDirectory()) return trackedContentFiles(path);
-    if (relative(process.cwd(), path).replaceAll("\\", "/") === "src/lib/content/serviceSloganCopy.test.ts") return [];
-    if (path === migrationPath) return [];
-    return [path];
-  });
+const excludedAuditPaths = new Set([
+  "src/lib/content/serviceSloganCopy.test.ts",
+  "supabase/migrations/20260718122000_correct_service_slogan.sql",
+]);
+
+function isPlanOrSpecDocumentation(repositoryPath: string): boolean {
+  return repositoryPath.startsWith(".superpowers/sdd/")
+    || /(?:^|\/)(?:plans?|specs?)(?:\/|$)|(?:^|\/)[^/]*(?:plan|spec)[^/]*\.(?:md|mdx|txt)$/i.test(repositoryPath);
+}
+
+function trackedContentFiles(): string[] {
+  return execFileSync("git", ["ls-files", "-z"], { cwd: process.cwd(), encoding: "utf8" })
+    .split("\0")
+    .filter((repositoryPath) => repositoryPath.length > 0)
+    .filter((repositoryPath) => !excludedAuditPaths.has(repositoryPath))
+    .filter((repositoryPath) => !isPlanOrSpecDocumentation(repositoryPath))
+    .map((repositoryPath) => join(process.cwd(), repositoryPath));
+}
+
+function readTrackedTextFile(filePath: string): string {
+  const contents = readFileSync(filePath);
+  return contents.includes(0) ? "" : contents.toString("utf8");
 }
 
 describe("service slogan correction", () => {
@@ -28,9 +43,13 @@ describe("service slogan correction", () => {
     expect(migration).toContain("update public.content_item");
     expect(migration).toContain("select id, slug, title");
 
-    const obsoleteFiles = ["src", "supabase", "public"]
-      .flatMap((directory) => trackedContentFiles(join(process.cwd(), directory)))
-      .filter((filePath) => readFileSync(filePath, "utf8").includes(obsoleteServiceSlogan));
+    const auditFilePaths = trackedContentFiles();
+    expect(auditFilePaths.map((filePath) => relative(process.cwd(), filePath).replaceAll("\\", "/"))).toEqual(
+      expect.arrayContaining(["scripts/seed-admin.js", "vite.config.ts", "eslint.config.js"]),
+    );
+
+    const obsoleteFiles = auditFilePaths
+      .filter((filePath) => readTrackedTextFile(filePath).includes(obsoleteServiceSlogan));
     expect(obsoleteFiles).toEqual([]);
   });
 
