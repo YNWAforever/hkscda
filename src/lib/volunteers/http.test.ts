@@ -3,6 +3,8 @@ import { z } from "zod";
 
 import type { AdminUser } from "../donations/supabase.server";
 import { createVolunteerHandlers } from "./http.server";
+import { createVolunteerService } from "./service";
+import type { VolunteerActivitySummary, VolunteerRegistrationDetail } from "./types";
 
 const admin: AdminUser = {
   id: "admin-row",
@@ -12,13 +14,64 @@ const admin: AdminUser = {
   status: "active",
 };
 
-function createService(overrides: Record<string, unknown> = {}) {
+const publishedActivity: VolunteerActivitySummary = {
+  id: "activity-1",
+  type: "cleaning_day",
+  title: "\u6e05\u6f54\u65e5",
+  description: null,
+  startsAt: "2026-08-01T02:00:00.000Z",
+  endsAt: "2026-08-01T05:00:00.000Z",
+  location: "Hong Kong",
+  capacity: 12,
+  approvedParticipants: 4,
+  pendingParticipants: 0,
+  waitlistedParticipants: 0,
+  remainingCapacity: 8,
+  allowWaitlist: true,
+  autoApprove: true,
+  minAge: 16,
+  underagePolicy: "allow_with_guardian_pending",
+  registrationModes: ["individual", "group"],
+  status: "published",
+  createdAt: "2026-07-01T00:00:00.000Z",
+  updatedAt: "2026-07-01T00:00:00.000Z",
+};
+
+const registration: VolunteerRegistrationDetail = {
+  id: "registration-1",
+  activityId: publishedActivity.id,
+  supporterId: "supporter-1",
+  registrationType: "individual",
+  status: "approved",
+  statusReason: "auto_approved",
+  attendanceStatus: "not_marked",
+  participantCount: 1,
+  contactName: "Ada",
+  contactEmail: "ada@example.com",
+  contactPhone: "91234567",
+  language: "zh-HK",
+  organizationName: null,
+  declaredAge: 21,
+  youngestAge: null,
+  guardianName: null,
+  guardianPhone: null,
+  notes: null,
+  internalNotes: null,
+  volunteerHours: null,
+  statusToken: "raw-token",
+  createdAt: "2026-07-02T00:00:00.000Z",
+  updatedAt: "2026-07-02T00:00:00.000Z",
+  activity: publishedActivity,
+};
+
+type VolunteerHandlerService = ReturnType<typeof createVolunteerService>;
+function createService(overrides: Partial<VolunteerHandlerService> = {}) {
   const calls: string[] = [];
-  const service = {
+  const service: VolunteerHandlerService & { calls: string[] } = {
     calls,
     async listPublishedActivities() {
       calls.push("listPublishedActivities");
-      return [{ id: "activity-1", title: "清潔日" }];
+      return [publishedActivity];
     },
     async submitPublicRegistration() {
       calls.push("submitPublicRegistration");
@@ -31,7 +84,15 @@ function createService(overrides: Record<string, unknown> = {}) {
     },
     async getPublicRegistrationStatus() {
       calls.push("getPublicRegistrationStatus");
-      return { reference: "VOL-REGISTRA", status: "approved" };
+      return {
+        reference: "VOL-REGISTRA",
+        status: "approved",
+        attendanceStatus: "not_marked",
+        participantCount: 1,
+        activityTitle: publishedActivity.title,
+        startsAt: publishedActivity.startsAt,
+        location: publishedActivity.location,
+      };
     },
     async listActivities() {
       calls.push("listActivities");
@@ -51,7 +112,7 @@ function createService(overrides: Record<string, unknown> = {}) {
     },
     async getActivityDetail() {
       calls.push("getActivityDetail");
-      return { id: "activity-1", registrations: [] };
+      return publishedActivity;
     },
     async listRegistrations() {
       calls.push("listRegistrations");
@@ -59,15 +120,15 @@ function createService(overrides: Record<string, unknown> = {}) {
     },
     async getRegistrationDetail() {
       calls.push("getRegistrationDetail");
-      return { id: "registration-1" };
+      return registration;
     },
     async updateRegistrationStatus() {
       calls.push("updateRegistrationStatus");
-      return { id: "registration-1", status: "approved" };
+      return registration;
     },
     async updateAttendance() {
       calls.push("updateAttendance");
-      return { id: "registration-1", attendanceStatus: "completed" };
+      return registration;
     },
     ...overrides,
   };
@@ -89,7 +150,7 @@ describe("createVolunteerHandlers", () => {
     expect(response.status).toBe(200);
     expect(response.headers.get("cache-control")).toBe("no-store");
     expect(await response.json()).toEqual({
-      activities: [{ id: "activity-1", title: "清潔日" }],
+      activities: [publishedActivity],
     });
   });
 

@@ -24,7 +24,7 @@ const baseActivity: VolunteerActivityRuleSnapshot = {
 const individualDraft: VolunteerRegistrationDraft = {
   registrationType: "individual",
   participantCount: 1,
-  declaredAge: 18,
+  declaredAge: 21,
   guardianName: null,
   guardianPhone: null,
 };
@@ -62,8 +62,10 @@ describe("volunteer registration rules", () => {
       decideVolunteerRegistrationStatus({
         activity: baseActivity,
         draft: {
-          ...individualDraft,
-          declaredAge: 14,
+          registrationType: "group",
+          participantCount: 1,
+          declaredAge: null,
+          youngestAge: 14,
           guardianName: "Parent Lee",
           guardianPhone: "92345678",
         },
@@ -91,5 +93,14 @@ describe("volunteer registration rules", () => {
 
   test("formats short public volunteer references", () => {
     expect(formatVolunteerReference("f43d0f00-aa4f-4bb9-856d-6fe2f9f13bd0")).toBe("VOL-F43D0F00");
+  });
+  test("rejects individual applicants below the public age floor", () => {
+    expect(
+      decideVolunteerRegistrationStatus({
+        activity: { ...baseActivity, minAge: 16, underagePolicy: "allow_with_guardian_pending" },
+        draft: { ...individualDraft, declaredAge: 20, guardianName: "Parent Lee", guardianPhone: "92345678" },
+        now: new Date("2026-07-01T00:00:00.000Z"),
+      }),
+    ).toEqual({ status: "rejected", reason: "minimum_age_not_met" });
   });
 });

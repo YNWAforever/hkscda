@@ -8,6 +8,7 @@ import {
   formatReceiptNumber,
   isReceiptEligible,
 } from "./domain";
+import type { DonationAttribution } from "./attribution";
 
 describe("donation domain", () => {
   test("normalizes valid HKD donation requests", () => {
@@ -88,7 +89,7 @@ describe("donation domain", () => {
       purpose: "medical",
       placement: "mobile-bottom",
       trigger: "scroll",
-    };
+    } satisfies DonationAttribution;
     const input = {
       amountCents: 30000,
       currency: "HKD",

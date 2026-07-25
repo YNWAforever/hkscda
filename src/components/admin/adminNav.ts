@@ -148,6 +148,15 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     activePath: "/admin/volunteers",
   },
   {
+    id: "volunteer-group-enquiries",
+    section: "volunteers",
+    group: "adoptions",
+    label: "團體查詢",
+    icon: ClipboardPenLine,
+    to: "/admin/volunteers/group-enquiries",
+    activePath: "/admin/volunteers/group-enquiries",
+  },
+  {
     id: "payments",
     section: "payments",
     group: "donations",
@@ -179,6 +188,15 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     icon: ClipboardPenLine,
     to: "/admin/content/adoption",
     activePath: "/admin/content/adoption",
+  },
+  {
+    id: "knowledge",
+    section: "content",
+    group: "promotion",
+    label: "知識庫",
+    icon: ClipboardPenLine,
+    to: "/admin/content/knowledge",
+    activePath: "/admin/content/knowledge",
   },
   {
     id: "access-management",

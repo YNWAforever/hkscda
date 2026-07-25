@@ -10,7 +10,6 @@ import {
   MapPin,
   Menu,
   Phone,
-  Users,
   X,
 } from "lucide-react";
 import { BrandLogo } from "./BrandLogo";
@@ -22,12 +21,17 @@ const aboutLinks = [
   { to: "/about/tnr", label: "TNR計劃", desc: "捕捉絕育放回行動" },
   { to: "/about/team", label: "團隊", desc: "董事會及核心義工" },
   { to: "/about/privacy", label: "私隱聲明", desc: "個人資料收集政策" },
+  { to: "/knowledge", label: "知識資源", desc: "領養及寵物照顧實用指南" },
 ];
 
 const adoptLinks = [
   { to: "/adoption/instructions", label: "領養需知", desc: "申請流程及飼養指引" },
   { to: "/animals/cat", label: "待領養貓貓", desc: "目前等待家園的貓咪" },
   { to: "/animals/dog", label: "待領養狗狗", desc: "目前等待家園的狗狗" },
+];
+const volunteerLinks = [
+  { to: "/volunteer", label: "加入義工", desc: "了解個人義工服務" },
+  { to: "/volunteer/group", label: "團體義工", desc: "安排學校及團體活動" },
 ];
 
 export function Header() {
@@ -73,13 +77,7 @@ export function Header() {
               <NavLink to="/sponsors">助養區</NavLink>
               <NavLink to="/stories">故事</NavLink>
               <NavDropdown trigger="透明度" links={reportLinks} />
-              <NavigationMenu.Item>
-                <NavigationMenu.Link asChild>
-                  <Link to="/volunteer" className="inline-flex min-h-11 items-center gap-1.5 px-3 text-[13px] font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)]">
-                    <Users className="h-3.5 w-3.5" aria-hidden="true" /> 加入義工
-                  </Link>
-                </NavigationMenu.Link>
-              </NavigationMenu.Item>
+              <NavDropdown trigger="加入義工" links={volunteerLinks} />
               <NavigationMenu.Item className="ml-2">
                 <NavigationMenu.Link asChild>
                   <Link to="/animals/cat" className="btn-primary min-h-11 px-4 text-[13px]">查看待領養動物</Link>
@@ -116,9 +114,7 @@ export function Header() {
               <MobileSheetLink to="/sponsors" setOpen={setMobileOpen}>助養區</MobileSheetLink>
               <MobileSheetLink to="/stories" setOpen={setMobileOpen}>故事</MobileSheetLink>
               <MobileSheetSection title="透明度" links={reportLinks} setOpen={setMobileOpen} />
-              <MobileSheetLink to="/volunteer" setOpen={setMobileOpen}>
-                <Users className="h-4 w-4" aria-hidden="true" /> 加入義工
-              </MobileSheetLink>
+              <MobileSheetSection title="加入義工" links={volunteerLinks} setOpen={setMobileOpen} />
               <div className="grid gap-2 pt-3 sm:grid-cols-2">
                 <Link to="/animals/cat" onClick={() => setMobileOpen(false)} className="btn-primary min-h-11 w-full">
                   查看待領養動物

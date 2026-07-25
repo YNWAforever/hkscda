@@ -6,6 +6,7 @@ import {
   hongKongDayBounds,
 } from "./repository.server";
 import type { CaseFromPublicApplicationInput } from "./service";
+import type { AnimalPipelineRow } from "./types";
 
 const statusId = "33333333-4444-4333-8444-555555555555";
 const createdSupporterId = "11111111-2222-4333-8444-555555555555";
@@ -772,6 +773,14 @@ async function withFixedDate<T>(iso: string, run: () => Promise<T>) {
 }
 
 describe("createSupabaseAdoptionCoordinatorRepository", () => {
+  test("keeps nullable database timestamps explicit in animal pipeline rows", () => {
+    const timestamps: Pick<AnimalPipelineRow, "created_at" | "updated_at"> = {
+      created_at: null,
+      updated_at: null,
+    };
+
+    expect(timestamps).toEqual({ created_at: null, updated_at: null });
+  });
   test("fake Supabase rejects malformed in filters", () => {
     const { client } = createFakeClient();
 

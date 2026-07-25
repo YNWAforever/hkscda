@@ -52,6 +52,7 @@ function supporter(overrides: Partial<SupporterDetail> = {}): SupporterDetail {
       followups: [],
       successfulAdoptions: [],
     },
+    volunteer: { registrations: [] },
     ...overrides,
   };
 }

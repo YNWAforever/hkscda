@@ -65,8 +65,10 @@ export function Footer() {
           <ul className="space-y-1 text-sm text-white/85">
             <li><a href="/report/adoption" className="flex min-h-11 items-center hover:text-white">每月領養報告</a></li>
             <li><a href="/report/audit" className="flex min-h-11 items-center hover:text-white">年度報告</a></li>
+            <li><a href="/knowledge" className="flex min-h-11 items-center hover:text-white">知識資源</a></li>
             <li><a href="/donate" className="flex min-h-11 items-center hover:text-white">捐助我們</a></li>
             <li><a href="/volunteer" className="flex min-h-11 items-center hover:text-white">加入義工團隊</a></li>
+            <li><a href="/volunteer/group" className="flex min-h-11 items-center hover:text-white">團體義工查詢</a></li>
           </ul>
         </div>
       </div>

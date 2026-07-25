@@ -18,8 +18,12 @@ function createRepo(overrides: Partial<VolunteerRepository> = {}) {
     updateActivity: async () => undefined,
     cloneActivity: async () => "activity-clone",
     upsertSupporter: async () => ({ id: "supporter-1", email: "ada@example.com" }),
-    ensureSupporterRole: async (input) => supporterRoles.push(input),
-    insertConsentRows: async (rows) => consents.push(...rows),
+    ensureSupporterRole: async (input) => {
+      supporterRoles.push(input);
+    },
+    insertConsentRows: async (rows) => {
+      consents.push(...rows);
+    },
     createRegistration: async (input) => {
       registrations.push(input);
       return { ...registration, ...input, id: "registration-1" } as VolunteerRegistrationDetail;
@@ -29,7 +33,9 @@ function createRepo(overrides: Partial<VolunteerRepository> = {}) {
     getRegistrationByStatusToken: async () => registration,
     updateRegistrationStatus: async () => registration,
     updateAttendance: async () => registration,
-    insertAuditLog: async (row) => auditLogs.push(row),
+    insertAuditLog: async (row) => {
+      auditLogs.push(row);
+    },
     ...overrides,
   };
   return { repo, registrations, auditLogs, supporterRoles, consents };
@@ -53,6 +59,7 @@ const activity: VolunteerActivityDetail = {
   approvedParticipants: 4,
   pendingParticipants: 0,
   waitlistedParticipants: 0,
+  remainingCapacity: 8,
   createdAt: "2026-07-01T00:00:00.000Z",
   updatedAt: "2026-07-01T00:00:00.000Z",
 };
@@ -71,7 +78,7 @@ const registration: VolunteerRegistrationDetail = {
   contactPhone: "91234567",
   language: "zh-HK",
   organizationName: null,
-  declaredAge: 18,
+  declaredAge: 21,
   youngestAge: null,
   guardianName: null,
   guardianPhone: null,
@@ -106,7 +113,7 @@ describe("volunteer service", () => {
         phone: "91234567",
         language: "zh-HK",
       },
-      declaredAge: 18,
+      declaredAge: 21,
       consents: { email: true, whatsapp: false },
     });
 
@@ -148,7 +155,7 @@ describe("volunteer service", () => {
         registrationType: "individual",
         participantCount: 1,
         contact: { name: "Ada", email: "ada@example.com", phone: "91234567", language: "zh-HK" },
-        declaredAge: 18,
+        declaredAge: 21,
         consents: { email: true },
       }),
     ).resolves.toMatchObject({ status: "approved" });
@@ -187,5 +194,21 @@ describe("volunteer service", () => {
         entity_id: "registration-1",
       },
     ]);
+  });
+  test("rejects public individual registrations below the public age floor", async () => {
+    const { repo, registrations } = createRepo();
+    const service = createVolunteerService({ repo });
+
+    await expect(
+      service.submitPublicRegistration({
+        activityId: activity.id,
+        registrationType: "individual",
+        participantCount: 1,
+        contact: { name: "Ada", email: "ada@example.com", phone: "91234567", language: "zh-HK" },
+        declaredAge: 20,
+        consents: { email: true },
+      }),
+    ).rejects.toThrow(/21/);
+    expect(registrations).toHaveLength(0);
   });
 });

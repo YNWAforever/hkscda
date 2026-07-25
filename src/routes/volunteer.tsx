@@ -8,7 +8,11 @@ import {
   buildVolunteerRegistrationPayload,
   canRegisterForActivity,
 } from "../components/site/volunteer/volunteerSignupLogic";
-import type { VolunteerActivitySummary, VolunteerRegistrationType } from "../lib/volunteers/types";
+import {
+  PUBLIC_INDIVIDUAL_MIN_AGE,
+  type VolunteerActivitySummary,
+  type VolunteerRegistrationType,
+} from "../lib/volunteers/types";
 
 const volunteerRoles = [
   {
@@ -67,7 +71,7 @@ export const Route = createFileRoute("/volunteer")({
 function VolunteerPage() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
 
-  if (pathname.startsWith("/volunteer/status/")) {
+  if (pathname.startsWith("/volunteer/status/") || pathname.startsWith("/volunteer/group")) {
     return <Outlet />;
   }
 
@@ -234,9 +238,15 @@ function VolunteerDirectoryPage() {
           className="space-y-4 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-5 shadow-soft"
         >
           <div>
-            <h2 className="font-display text-xl font-bold">義工報名</h2>
+            <h2 className="font-display text-xl font-bold">個人義工報名</h2>
             <p className="text-sm text-[var(--color-text-muted)]">
-              選擇活動後填寫聯絡資料，系統會根據名額與年齡規則處理審批。
+              {"只接受" + PUBLIC_INDIVIDUAL_MIN_AGE + "歲以上個人義工申請。"}
+              <a
+                href="/volunteer/group"
+                className="font-semibold text-[var(--color-primary)] underline-offset-4 hover:underline"
+              >
+                團體或學校查詢
+              </a>
             </p>
           </div>
 
@@ -361,7 +371,7 @@ function VolunteerDirectoryPage() {
                 aria-invalid={false}
                 aria-describedby={undefined}
                 type="number"
-                min={0}
+                min={PUBLIC_INDIVIDUAL_MIN_AGE}
                 value={declaredAge}
                 onChange={(event) => setDeclaredAge(event.target.value)}
                 className="mt-1 min-h-11 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
