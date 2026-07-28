@@ -11,6 +11,7 @@ import type {
   CoordinatorAuthorizer,
   HandlerContext,
 } from "./http/shared.server";
+import { createStatusHandlers } from "./http/statusHandlers.server";
 
 type CreateAdoptionCoordinatorHandlersArgs = {
   requireCoordinator: CoordinatorAuthorizer;
@@ -23,58 +24,7 @@ export function createAdoptionCoordinatorHandlers({
   service,
 }: CreateAdoptionCoordinatorHandlersArgs) {
   return {
-    listStatuses({ request }: HandlerContext) {
-      return withErrors(async () => {
-        await requireCoordinator(request);
-        const category = new URL(request.url).searchParams.get("category") ?? undefined;
-        return jsonResponse({ statuses: await service.listStatuses(category) });
-      });
-    },
-
-    createStatus({ request }: HandlerContext) {
-      return withErrors(async () => {
-        const admin = await requireStatusAdmin(request);
-        const status = await service.createStatus({
-          actorUserId: admin.authUserId,
-          input: await jsonBody(request),
-        });
-        return jsonResponse({ status }, { status: 201 });
-      });
-    },
-
-    getStatus({ request, params }: HandlerContext) {
-      return withErrors(async () => {
-        const statusId = requiredUuid(params, "id");
-        await requireCoordinator(request);
-        const status = await service.getStatus(statusId);
-        if (!status) {
-          return jsonResponse({ error: "Status not found" }, { status: 404 });
-        }
-        return jsonResponse({ status });
-      });
-    },
-
-    updateStatus({ request, params }: HandlerContext) {
-      return withErrors(async () => {
-        const statusId = requiredUuid(params, "id");
-        const admin = await requireStatusAdmin(request);
-        const status = await service.updateStatus({
-          actorUserId: admin.authUserId,
-          statusId,
-          input: await jsonBody(request),
-        });
-        return jsonResponse({ status });
-      });
-    },
-
-    deleteStatus({ request, params }: HandlerContext) {
-      return withErrors(async () => {
-        const statusId = requiredUuid(params, "id");
-        const admin = await requireStatusAdmin(request);
-        await service.deleteStatus({ actorUserId: admin.authUserId, statusId });
-        return jsonResponse({ ok: true });
-      });
-    },
+    ...createStatusHandlers({ requireCoordinator, requireStatusAdmin, service }),
 
     listCases({ request }: HandlerContext) {
       return withErrors(async () => {
