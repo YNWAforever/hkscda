@@ -10,6 +10,7 @@ import type {
   CoordinatorAuthorizer,
   HandlerContext,
 } from "./http/shared.server";
+import { createAdopterHandlers } from "./http/adopterHandlers.server";
 import { createReportingHandlers } from "./http/reportingHandlers.server";
 import { createStatusHandlers } from "./http/statusHandlers.server";
 import { createTaskHandlers } from "./http/taskHandlers.server";
@@ -27,6 +28,7 @@ export function createAdoptionCoordinatorHandlers({
   return {
     ...createStatusHandlers({ requireCoordinator, requireStatusAdmin, service }),
     ...createTaskHandlers({ requireCoordinator, service }),
+    ...createAdopterHandlers({ requireCoordinator, service }),
 
     listCases({ request }: HandlerContext) {
       return withErrors(async () => {
@@ -52,22 +54,6 @@ export function createAdoptionCoordinatorHandlers({
       });
     },
 
-    listAdopters({ request }: HandlerContext) {
-      return withErrors(async () => {
-        await requireCoordinator(request);
-        const search = queryParams(request);
-        return jsonResponse(await service.listAdopters(search));
-      });
-    },
-
-    searchManualCaseIdentity({ request }: HandlerContext) {
-      return withErrors(async () => {
-        await requireCoordinator(request);
-        const search = queryParams(request);
-        return jsonResponse(await service.searchManualCaseIdentity(search));
-      });
-    },
-
     createManualCase({ request }: HandlerContext) {
       return withErrors(async () => {
         const admin = await requireCoordinator(request);
@@ -88,18 +74,6 @@ export function createAdoptionCoordinatorHandlers({
     },
 
     ...createReportingHandlers({ requireCoordinator, service }),
-
-    getAdopter({ request, params }: HandlerContext) {
-      return withErrors(async () => {
-        const adopterProfileId = requiredUuid(params, "id");
-        await requireCoordinator(request);
-        const adopter = await service.getAdopterDetail(adopterProfileId);
-        if (!adopter) {
-          return jsonResponse({ error: "Adopter profile not found" }, { status: 404 });
-        }
-        return jsonResponse({ adopter });
-      });
-    },
 
     getCase({ request, params }: HandlerContext) {
       return withErrors(async () => {
