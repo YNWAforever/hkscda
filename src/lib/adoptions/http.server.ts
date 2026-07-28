@@ -12,6 +12,7 @@ import type {
   HandlerContext,
 } from "./http/shared.server";
 import { createStatusHandlers } from "./http/statusHandlers.server";
+import { createTaskHandlers } from "./http/taskHandlers.server";
 
 type CreateAdoptionCoordinatorHandlersArgs = {
   requireCoordinator: CoordinatorAuthorizer;
@@ -25,6 +26,7 @@ export function createAdoptionCoordinatorHandlers({
 }: CreateAdoptionCoordinatorHandlersArgs) {
   return {
     ...createStatusHandlers({ requireCoordinator, requireStatusAdmin, service }),
+    ...createTaskHandlers({ requireCoordinator, service }),
 
     listCases({ request }: HandlerContext) {
       return withErrors(async () => {
@@ -47,14 +49,6 @@ export function createAdoptionCoordinatorHandlers({
         await requireCoordinator(request);
         const search = queryParams(request);
         return jsonResponse(await service.listAnimalPipeline(search));
-      });
-    },
-
-    listTasks({ request }: HandlerContext) {
-      return withErrors(async () => {
-        await requireCoordinator(request);
-        const search = queryParams(request);
-        return jsonResponse(await service.listTasks(search));
       });
     },
 
@@ -142,42 +136,6 @@ export function createAdoptionCoordinatorHandlers({
           return jsonResponse({ error: "Adopter profile not found" }, { status: 404 });
         }
         return jsonResponse({ adopter });
-      });
-    },
-
-    createTask({ request }: HandlerContext) {
-      return withErrors(async () => {
-        const admin = await requireCoordinator(request);
-        const task = await service.createTask({
-          actorUserId: admin.authUserId,
-          input: await jsonBody(request),
-        });
-        return jsonResponse({ task }, { status: 201 });
-      });
-    },
-
-    getTask({ request, params }: HandlerContext) {
-      return withErrors(async () => {
-        const taskId = requiredUuid(params, "id");
-        await requireCoordinator(request);
-        const task = await service.getTask(taskId);
-        if (!task) {
-          return jsonResponse({ error: "Task not found" }, { status: 404 });
-        }
-        return jsonResponse({ task });
-      });
-    },
-
-    updateTask({ request, params }: HandlerContext) {
-      return withErrors(async () => {
-        const taskId = requiredUuid(params, "id");
-        const admin = await requireCoordinator(request);
-        const task = await service.updateTask({
-          actorUserId: admin.authUserId,
-          taskId,
-          input: await jsonBody(request),
-        });
-        return jsonResponse({ task });
       });
     },
 
