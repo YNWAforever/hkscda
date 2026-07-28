@@ -234,6 +234,22 @@ function createHandlers({
 }
 
 describe("createAdoptionCoordinatorHandlers", () => {
+  test("exposes the complete stable coordinator handler contract", () => {
+    const { service } = createFakeService();
+    const handlers = createHandlers({ service });
+    expect(Object.keys(handlers).sort()).toEqual(
+      [
+        "changeCaseStatus", "createFollowup", "createManualCase", "createMatch",
+        "createStatus", "createTask", "deleteStatus", "exportCoordinatorCsv",
+        "finalizeAdoption", "getAdopter", "getCase",
+        "getCoordinatorMonthlySummary", "getStatus", "getTask", "listAdopters",
+        "listAnimalPipeline", "listCases", "listCoordinatorExportHistory",
+        "listIntakeItems", "listStatuses", "listTasks",
+        "regenerateCoordinatorExport", "searchManualCaseIdentity",
+        "updateStatus", "updateTask",
+      ].sort(),
+    );
+  });
   test("rejects missing auth before listing cases and does not call service", async () => {
     const { calls, service } = createFakeService();
     const handlers = createHandlers({
