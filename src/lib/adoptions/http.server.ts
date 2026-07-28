@@ -1,5 +1,4 @@
 import {
-  csvResponse,
   jsonBody,
   jsonResponse,
   queryParams,
@@ -11,6 +10,7 @@ import type {
   CoordinatorAuthorizer,
   HandlerContext,
 } from "./http/shared.server";
+import { createReportingHandlers } from "./http/reportingHandlers.server";
 import { createStatusHandlers } from "./http/statusHandlers.server";
 import { createTaskHandlers } from "./http/taskHandlers.server";
 
@@ -87,45 +87,7 @@ export function createAdoptionCoordinatorHandlers({
       });
     },
 
-    listCoordinatorExportHistory({ request }: HandlerContext) {
-      return withErrors(async () => {
-        await requireCoordinator(request);
-        const search = queryParams(request);
-        return jsonResponse(await service.listCoordinatorExportHistory(search));
-      });
-    },
-
-    getCoordinatorMonthlySummary({ request }: HandlerContext) {
-      return withErrors(async () => {
-        await requireCoordinator(request);
-        const search = queryParams(request);
-        return jsonResponse({ summary: await service.getCoordinatorMonthlySummary(search) });
-      });
-    },
-
-    exportCoordinatorCsv({ request, params }: HandlerContext) {
-      return withErrors(async () => {
-        const admin = await requireCoordinator(request);
-        const result = await service.exportCoordinatorCsv({
-          actorUserId: admin.authUserId,
-          kind: params?.kind,
-          rawSearch: queryParams(request),
-        });
-        return csvResponse(result.csv, result.filename);
-      });
-    },
-
-    regenerateCoordinatorExport({ request, params }: HandlerContext) {
-      return withErrors(async () => {
-        const auditLogId = requiredUuid(params, "id");
-        const admin = await requireCoordinator(request);
-        const result = await service.regenerateCoordinatorExport({
-          actorUserId: admin.authUserId,
-          auditLogId,
-        });
-        return csvResponse(result.csv, result.filename);
-      });
-    },
+    ...createReportingHandlers({ requireCoordinator, service }),
 
     getAdopter({ request, params }: HandlerContext) {
       return withErrors(async () => {
