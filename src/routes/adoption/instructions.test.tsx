@@ -40,7 +40,7 @@ const fee = (animalType: "dog" | "cat", row: readonly [string, string], index: n
   isPublished: true,
 });
 
-const data: PublicAdoptionPageData = {
+const data = {
   feesBySpecies: {
     dog: dogRows.map((row, index) => fee("dog", row, index)),
     cat: catRows.map((row, index) => fee("cat", row, index)),
@@ -55,6 +55,7 @@ const data: PublicAdoptionPageData = {
       isPublished: true,
     },
   ],
+  guideGroups: [],
   guides: [
     {
       id: "slot-zh",
@@ -101,7 +102,7 @@ const data: PublicAdoptionPageData = {
       },
     },
   ],
-};
+} as unknown as PublicAdoptionPageData;
 
 describe("adoption instructions route", () => {
   test("delegates SSR loading once", async () => {
@@ -114,7 +115,7 @@ describe("adoption instructions route", () => {
     expect(calls).toBe(1);
   });
 
-  test("renders accessible exact fee tables, estates, and shared guides", async () => {
+  test("renders accessible exact fee tables and estates", async () => {
     const { AdoptionInstructionsContent } = await import("./instructions");
     const markup = renderToStaticMarkup(<AdoptionInstructionsContent data={data} />);
 
@@ -130,10 +131,38 @@ describe("adoption instructions route", () => {
     expect(markup).toContain("可養狗屋苑參考名單");
     expect(markup).toContain("以下名單僅供參考，請向屋苑管理處查詢最新規定。");
     expect(markup).toContain("海怡半島");
-    expect(markup).toContain('href="https://cdn.test/zh.pdf"');
-    expect(markup).toContain('href="https://cdn.test/en.pdf"');
-    expect(markup).toContain("中文領養後指南");
-    expect(markup).toContain("English post-adoption cat guide");
+  });
+
+  test("renders each released species guide with bilingual actions", async () => {
+    const { AdoptionInstructionsContent } = await import("./instructions");
+    const guideSlots = (
+      data as unknown as {
+        guides: [
+          PublicAdoptionPageData["guideGroups"][number]["zhHk"],
+          PublicAdoptionPageData["guideGroups"][number]["en"],
+        ];
+      }
+    ).guides;
+    const markup = renderToStaticMarkup(
+      <AdoptionInstructionsContent
+        data={{
+          ...data,
+          guideGroups: [
+            { species: "cat", zhHk: guideSlots[0], en: guideSlots[1] },
+            {
+              species: "dog",
+              zhHk: { ...guideSlots[0], id: "slot-dog-zh" },
+              en: { ...guideSlots[1], id: "slot-dog-en" },
+            },
+          ],
+        }}
+      />,
+    );
+
+    expect(markup).toContain("貓隻領養後指南");
+    expect(markup).toContain("狗隻領養後指南");
+    expect(markup).toContain(">中文版<");
+    expect(markup).toContain(">English<");
   });
 
   test("keeps an empty-estate contact path", async () => {
