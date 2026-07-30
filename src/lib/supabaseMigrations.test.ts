@@ -376,4 +376,32 @@ describe("supabase migration safety", () => {
     expect(sql).not.toContain("storage.objects");
   });
 
+  test("adds bilingual adoption guide releases with atomic admin publication", () => {
+    const sql = readMigration("20260731120000_adoption_guide_release_cms.sql");
+
+    expect(sql).toContain("create table if not exists public.adoption_guide_releases");
+    expect(sql).toContain("state in ('draft', 'in_review', 'published', 'archived')");
+    expect(sql).toContain("species in ('cat', 'dog', 'general')");
+    expect(sql).toContain("version integer not null default 1");
+    expect(sql).toContain("create table if not exists public.adoption_guide_publish_requests");
+    expect(sql).toContain(
+      "alter table public.knowledge_posts add column if not exists zh_hk_document_asset_id",
+    );
+    expect(sql).toContain(
+      "alter table public.knowledge_posts add column if not exists en_document_asset_id",
+    );
+    expect(sql).toContain(
+      "create or replace function public.mutate_adoption_guide_release_with_audit",
+    );
+    expect(sql).toContain("create or replace function public.publish_adoption_guide_release");
+    expect(sql).toContain("for update");
+    expect(sql).toContain("role = 'admin'");
+    expect(sql).toContain("insert into public.audit_log");
+    expect(sql).toContain(
+      "revoke all on public.adoption_guide_releases from anon, authenticated",
+    );
+    expect(sql).toContain("grant execute on function public.publish_adoption_guide_release");
+    expect(sql).toContain("set search_path = public, pg_temp");
+  });
+
 });
