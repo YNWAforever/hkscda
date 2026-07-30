@@ -294,14 +294,11 @@ export function createAdoptionGuideReleaseService(
         idempotencyKey: rawIdempotencyKey,
       });
       const release = await getRelease(actor, id);
-      assertVersion(release, expectedVersion);
-      assertState(
-        release,
-        "in_review",
-        "Only in-review adoption guide releases can be published.",
-      );
-      const { readiness } = await readinessFor(release);
-      assertReady(readiness);
+      if (release.state === "in_review" && release.version === expectedVersion) {
+        const { readiness } = await readinessFor(release);
+        assertReady(readiness);
+      }
+
       return repository.publish({
         id,
         expectedVersion,

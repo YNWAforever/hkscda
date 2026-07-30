@@ -335,6 +335,7 @@ export function createSupabaseAdoptionGuideReleaseRepository(
         .from("adoption_guide_releases")
         .select(RELEASE_COLUMNS, { count: "exact" })
         .order("updated_at", { ascending: false })
+        .order("id", { ascending: false })
         .range(from, from + pageSize - 1);
 
       if (query.species) request = request.eq("species", query.species);

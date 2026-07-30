@@ -244,6 +244,59 @@ describe("createAdoptionGuideReleaseService", () => {
     });
   });
 
+  test("does not publish an initially matching in-review release that is unready", async () => {
+    const repository = createRepository({
+      getById: mock(async () => ({
+        ...release,
+        state: "in_review" as const,
+      })),
+      getAssets: mock(async () => ({
+        zhHk: { asset: zhAsset, objectVerified: true },
+        en: { asset: enAsset, objectVerified: false },
+      })),
+    });
+    const service = createAdoptionGuideReleaseService(repository);
+
+    const error = await captureError(() =>
+      service.publish({
+        actor: admin,
+        id: releaseId,
+        expectedVersion: 2,
+        idempotencyKey: "publish-cat-guide-0001",
+      }),
+    );
+
+    expect(error).toMatchObject({ code: "invalid", status: 422 });
+    expect(repository.getAssets).toHaveBeenCalledWith(zhAssetId, enAssetId);
+    expect(repository.publish).not.toHaveBeenCalled();
+  });
+
+  test("lets a published incremented release retry reach the idempotent publish RPC", async () => {
+    const repository = createRepository({
+      getById: mock(async () => ({
+        ...release,
+        state: "published" as const,
+        version: 3,
+      })),
+    });
+    const service = createAdoptionGuideReleaseService(repository);
+
+    await service.publish({
+      actor: admin,
+      id: releaseId,
+      expectedVersion: 2,
+      idempotencyKey: "publish-cat-guide-0001",
+    });
+
+    expect(repository.getAssets).not.toHaveBeenCalled();
+    expect(repository.publish).toHaveBeenCalledWith({
+      id: releaseId,
+      expectedVersion: 2,
+      actorUserId: authUserId,
+      idempotencyKey: "publish-cat-guide-0001",
+    });
+  });
+
   test("rejects edits to non-draft releases before mutation", async () => {
     const repository = createRepository({
       getById: mock(async () => ({ ...release, state: "in_review" as const })),

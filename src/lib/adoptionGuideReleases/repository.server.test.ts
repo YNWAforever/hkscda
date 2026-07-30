@@ -1,5 +1,6 @@
 import { describe, expect, mock, test } from "bun:test";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { DocumentAsset } from "../documents/types";
 
 import {
   AdoptionGuideReleaseError,
@@ -74,6 +75,7 @@ function createClient(options: {
   queryResult?: { data: unknown; error: unknown; count?: number | null };
   rpcResult?: { data: unknown; error: unknown };
   existsByPath?: Record<string, boolean>;
+  signedUrlResult?: { data: { signedUrl?: string } | null; error: unknown };
 } = {}) {
   const queryResult = options.queryResult ?? { data: [releaseRow], error: null, count: 1 };
   const query: Record<string, unknown> = {};
@@ -102,10 +104,13 @@ function createClient(options: {
     data: options.existsByPath?.[objectPath] ?? true,
     error: null,
   }));
-  const createSignedUrl = mock(async (objectPath: string) => ({
-    data: { signedUrl: `https://private.example/${objectPath}` },
-    error: null,
-  }));
+  const createSignedUrl = mock(
+    async (objectPath: string) =>
+      options.signedUrlResult ?? {
+        data: { signedUrl: `https://private.example/${objectPath}` },
+        error: null,
+      },
+  );
   const getPublicUrl = mock((objectPath: string) => ({
     data: { publicUrl: `https://public.example/${objectPath}` },
   }));
@@ -153,7 +158,8 @@ describe("createSupabaseAdoptionGuideReleaseRepository", () => {
     expect(select).toHaveBeenCalledWith(expect.stringContaining("knowledge_post_id"), {
       count: "exact",
     });
-    expect(order).toHaveBeenCalledWith("updated_at", { ascending: false });
+    expect(order).toHaveBeenNthCalledWith(1, "updated_at", { ascending: false });
+    expect(order).toHaveBeenNthCalledWith(2, "id", { ascending: false });
     expect(range).toHaveBeenCalledWith(0, 24);
     expect(eq).toHaveBeenCalledWith("species", "cat");
     expect(eq).toHaveBeenCalledWith("state", "draft");
@@ -232,6 +238,63 @@ describe("createSupabaseAdoptionGuideReleaseRepository", () => {
     expect(exists).toHaveBeenCalledTimes(2);
   });
 
+  test("signs previews from the exact asset bucket and path for five minutes", async () => {
+    const { client, storageFrom, createSignedUrl } = createClient();
+    const repository = createSupabaseAdoptionGuideReleaseRepository(client);
+    const asset: DocumentAsset = {
+      id: zhAssetId,
+      kind: "adoption_guide",
+      title: "Cat adoption guide",
+      language: "zh-HK",
+      bucketName: "site-documents",
+      objectPath: "adoption-guides/cat-zh.pdf",
+      fileUrl: null,
+      mimeType: "application/pdf",
+      byteSize: 10,
+      checksumSha256: null,
+      isPublished: false,
+      sortOrder: 0,
+      createdAt: "2026-07-31T00:00:00.000Z",
+      updatedAt: "2026-07-31T00:00:00.000Z",
+    };
+
+    await expect(repository.previewAssetUrl(asset)).resolves.toBe(
+      "https://private.example/adoption-guides/cat-zh.pdf",
+    );
+    expect(storageFrom).toHaveBeenCalledWith("site-documents");
+    expect(createSignedUrl).toHaveBeenCalledWith("adoption-guides/cat-zh.pdf", 300);
+  });
+
+  test("sanitizes signed preview provider failures", async () => {
+    const { client } = createClient({
+      signedUrlResult: {
+        data: null,
+        error: { code: "storage_failure", message: "select secret from storage.objects" },
+      },
+    });
+    const repository = createSupabaseAdoptionGuideReleaseRepository(client);
+    const asset = {
+      id: zhAssetId,
+      kind: "adoption_guide",
+      title: "Cat adoption guide",
+      language: "zh-HK",
+      bucketName: "site-documents",
+      objectPath: "adoption-guides/cat-zh.pdf",
+      fileUrl: null,
+      mimeType: "application/pdf",
+      byteSize: 10,
+      checksumSha256: null,
+      isPublished: false,
+      sortOrder: 0,
+      createdAt: "2026-07-31T00:00:00.000Z",
+      updatedAt: "2026-07-31T00:00:00.000Z",
+    } as DocumentAsset;
+    const error = await repository.previewAssetUrl(asset).catch((reason) => reason);
+
+    expect(error).toMatchObject({ code: "internal", status: 500 });
+    expect(error.message).not.toContain("storage.objects");
+  });
+
   test("maps stale-version provider failures to a sanitized conflict", async () => {
     const { client } = createClient({
       rpcResult: {
@@ -258,4 +321,56 @@ describe("createSupabaseAdoptionGuideReleaseRepository", () => {
     expect(error).toMatchObject({ code: "conflict", status: 409 });
     expect(error.message).not.toContain("update public");
   });
+
+  const providerCases = [
+    {
+      label: "not-found",
+      provider: { code: "PGRST116", message: "JSON object requested, multiple (or no) rows returned" },
+      expected: { code: "not_found", status: 404 },
+    },
+    {
+      label: "readiness invariant",
+      provider: { code: "23514", message: "Both adoption guide assets are required" },
+      expected: { code: "invalid", status: 422 },
+    },
+    {
+      label: "authorization",
+      provider: { code: "42501", message: "Active admin actor required" },
+      expected: { code: "forbidden", status: 403 },
+    },
+    {
+      label: "unknown provider",
+      provider: {
+        code: "XX999",
+        message: "select secret from public.adoption_guide_releases",
+        details: "sensitive SQL",
+      },
+      expected: { code: "internal", status: 500 },
+    },
+  ] as const;
+
+  for (const providerCase of providerCases) {
+    test(`maps ${providerCase.label} failures without leaking provider details`, async () => {
+      const { client } = createClient({
+        rpcResult: { data: null, error: providerCase.provider },
+      });
+      const repository = createSupabaseAdoptionGuideReleaseRepository(client);
+
+      const error = await repository
+        .transition({
+          id: releaseId,
+          expectedVersion: 2,
+          operation: "submit",
+          actorUserId,
+        })
+        .catch((reason) => reason);
+
+      expect(error).toBeInstanceOf(AdoptionGuideReleaseError);
+      expect(error).toMatchObject(providerCase.expected);
+      expect(error.message).not.toContain(String(providerCase.provider.message));
+      if ("details" in providerCase.provider) {
+        expect(error.message).not.toContain(providerCase.provider.details);
+      }
+    });
+  }
 });
