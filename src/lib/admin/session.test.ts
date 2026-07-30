@@ -14,7 +14,8 @@ mock.module("../supabase", () => ({
   },
 }));
 
-const { fetchAdminIdentity, fetchAdminJson, getAdminAccessToken } = await import("./session");
+const { AdminApiError, fetchAdminIdentity, fetchAdminJson, getAdminAccessToken } =
+  await import("./session");
 
 describe("admin browser session", () => {
   const originalFetch = globalThis.fetch;
@@ -60,6 +61,50 @@ describe("admin browser session", () => {
         }),
       }),
     );
+  });
+
+  test("preserves structured safe errors for a conflict response", async () => {
+    globalThis.fetch = mock(async () =>
+      Response.json(
+        {
+          error: {
+            code: "conflict",
+            message: "This release changed elsewhere.",
+            fields: { expectedVersion: ["Reload the release and try again."] },
+          },
+        },
+        { status: 409 },
+      ),
+    ) as unknown as typeof fetch;
+
+    const error = await fetchAdminJson("/api/admin/adoption-guide-releases/release-1").catch(
+      (reason: unknown) => reason,
+    );
+
+    expect(error).toBeInstanceOf(AdminApiError);
+    expect(error).toBeInstanceOf(Error);
+    expect(error).toMatchObject({
+      status: 409,
+      code: "conflict",
+      message: "This release changed elsewhere.",
+      fields: { expectedVersion: ["Reload the release and try again."] },
+    });
+  });
+
+  test("keeps string error messages compatible", async () => {
+    globalThis.fetch = mock(async () =>
+      Response.json({ error: "Request denied." }, { status: 403 }),
+    ) as unknown as typeof fetch;
+
+    await expect(fetchAdminJson("/api/admin/content")).rejects.toThrow("Request denied.");
+  });
+
+  test("uses the generic error for malformed error bodies", async () => {
+    globalThis.fetch = mock(
+      async () => new Response("not json", { status: 500 }),
+    ) as unknown as typeof fetch;
+
+    await expect(fetchAdminJson("/api/admin/content")).rejects.toThrow("API request failed");
   });
 
   test("loads admin identity through the shared admin JSON interface", async () => {
