@@ -60,6 +60,8 @@ describe("AdoptionInformationManagement", () => {
     expect(markup).toContain("??");
     expect(markup).toContain("??");
     expect(markup).toContain("??");
+    expect(markup).toContain('href="/admin/content/adoption-guides"');
+    expect(markup).toContain("\u9818\u990a\u5f8c\u6307\u5357\u7248\u672c");
   });
 
   test("supports estate create, edit, publish, and delete controls", () => {

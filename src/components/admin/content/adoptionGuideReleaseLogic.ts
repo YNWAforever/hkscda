@@ -154,6 +154,51 @@ export async function fetchAdoptionGuideReleases(
     `/api/admin/adoption-guide-releases?${buildAdoptionGuideReleaseSearchParams(filters)}`,
   );
 }
+export type AdoptionGuideReleaseOwnership = {
+  ownerReleaseIdsByAssetId: Record<string, string>;
+  ownerReleaseIdsByKnowledgePostId: Record<string, string>;
+};
+
+export function buildAdoptionGuideReleaseOwnership(releases: AdoptionGuideRelease[]) {
+  const ownership: AdoptionGuideReleaseOwnership = {
+    ownerReleaseIdsByAssetId: {},
+    ownerReleaseIdsByKnowledgePostId: {},
+  };
+
+  for (const release of releases) {
+    for (const assetId of [release.zhHkAssetId, release.enAssetId]) {
+      if (assetId && !ownership.ownerReleaseIdsByAssetId[assetId]) {
+        ownership.ownerReleaseIdsByAssetId[assetId] = release.id;
+      }
+    }
+    if (
+      release.knowledgePostId &&
+      !ownership.ownerReleaseIdsByKnowledgePostId[release.knowledgePostId]
+    ) {
+      ownership.ownerReleaseIdsByKnowledgePostId[release.knowledgePostId] = release.id;
+    }
+  }
+
+  return ownership;
+}
+
+export async function fetchAdoptionGuideReleaseOwnership(
+  request: AdminJsonRequest = fetchAdminJson,
+) {
+  const releases: AdoptionGuideRelease[] = [];
+  let page = 1;
+  let total = Number.POSITIVE_INFINITY;
+
+  while (releases.length < total && page <= 50) {
+    const response = await fetchAdoptionGuideReleases({ page, pageSize: 50 }, request);
+    releases.push(...response.items);
+    total = response.total;
+    if (response.items.length === 0 || response.page * response.pageSize >= total) break;
+    page += 1;
+  }
+
+  return buildAdoptionGuideReleaseOwnership(releases);
+}
 
 export async function mutateAdoptionGuideRelease(
   id: string,

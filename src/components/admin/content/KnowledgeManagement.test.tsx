@@ -124,6 +124,7 @@ describe("KnowledgeManagement", () => {
         }}
         documents={[documentAsset]}
         query=""
+        ownerReleaseIds={{ "paired-post": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee" }}
       />,
     );
 
@@ -133,7 +134,10 @@ describe("KnowledgeManagement", () => {
     const sectionEnd = markup.indexOf("</section>", sectionStart);
     const pairedSection = markup.slice(sectionStart, sectionEnd);
 
-    expect(pairedSection).toContain("Managed by Adoption guide releases");
+    expect(pairedSection).toContain("\u7531\u9818\u990a\u6307\u5357\u7248\u672c\u7ba1\u7406");
+    expect(pairedSection).toContain(
+      'href="/admin/content/adoption-guides?releaseId=aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"',
+    );
     expect(pairedSection).toContain(zhHkAssetId);
     expect(pairedSection).toContain(enAssetId);
     expect(pairedSection).not.toContain("Destination mode");
