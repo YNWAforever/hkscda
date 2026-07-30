@@ -74,7 +74,7 @@ export function buildAdoptionGuideReleaseSearchParams(input: ReleaseFilters = {}
   if (query) params.set("q", query);
   if (input.species && input.species !== "all") params.set("species", input.species);
   if (input.state && input.state !== "all") params.set("state", input.state);
-  params.set("page", String(boundInteger(input.page ?? 1, 1, 50)));
+  params.set("page", String(boundInteger(input.page ?? 1, 1, Number.MAX_SAFE_INTEGER)));
   params.set("pageSize", String(boundInteger(input.pageSize ?? 25, 1, 50)));
 
   return params;
@@ -189,7 +189,7 @@ export async function fetchAdoptionGuideReleaseOwnership(
   let page = 1;
   let total = Number.POSITIVE_INFINITY;
 
-  while (releases.length < total && page <= 50) {
+  while (releases.length < total) {
     const response = await fetchAdoptionGuideReleases({ page, pageSize: 50 }, request);
     releases.push(...response.items);
     total = response.total;
@@ -198,6 +198,19 @@ export async function fetchAdoptionGuideReleaseOwnership(
   }
 
   return buildAdoptionGuideReleaseOwnership(releases);
+}
+
+export function resolveLinkedAdoptionGuideRelease(
+  releases: AdoptionGuideRelease[],
+  selectedId: string | null,
+  linkedRelease?: AdoptionGuideRelease | null,
+) {
+  return (
+    releases.find((release) => release.id === selectedId) ??
+    (linkedRelease?.id === selectedId ? linkedRelease : null) ??
+    releases[0] ??
+    null
+  );
 }
 
 export async function mutateAdoptionGuideRelease(

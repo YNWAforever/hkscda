@@ -131,6 +131,7 @@ function DocumentManagementRuntime() {
   return (
     <DocumentManagementView
       data={documentsQuery.data}
+      ownershipReady={ownershipQuery.isSuccess}
       ownerReleaseIds={ownershipQuery.data?.ownerReleaseIdsByAssetId}
       loading={documentsQuery.isLoading || ownershipQuery.isLoading}
       error={
@@ -174,6 +175,7 @@ function DocumentManagementRuntime() {
 
 type ViewProps = {
   data?: DocumentListData;
+  ownershipReady?: boolean;
   ownerReleaseIds?: Readonly<Record<string, string>>;
   loading?: boolean;
   error?: string | null;
@@ -201,6 +203,7 @@ type ViewProps = {
 
 export function DocumentManagementView({
   data,
+  ownershipReady = true,
   ownerReleaseIds = {},
   loading = false,
   error,
@@ -406,7 +409,7 @@ export function DocumentManagementView({
                   <td className="px-3 py-3">{item.isPublished ? "已發佈" : "未發佈"}</td>
                   <td className="px-3 py-3">
                     <div className="flex justify-end gap-2">
-                      {onAction && !ownerReleaseIds[item.id] ? (
+                      {ownershipReady && onAction && !ownerReleaseIds[item.id] ? (
                         <>
                           <button
                             type="button"

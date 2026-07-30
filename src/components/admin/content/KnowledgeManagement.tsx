@@ -142,6 +142,7 @@ export function KnowledgeManagement() {
   return (
     <KnowledgeManagementView
       data={knowledgeQuery.data}
+      ownershipReady={ownershipQuery.isSuccess}
       ownerReleaseIds={ownershipQuery.data?.ownerReleaseIdsByKnowledgePostId}
       documents={documentsQuery.data ?? []}
       query={query}
@@ -164,6 +165,7 @@ export function KnowledgeManagement() {
 
 export function KnowledgeManagementView({
   data,
+  ownershipReady = true,
   ownerReleaseIds = {},
   documents,
   query,
@@ -177,6 +179,7 @@ export function KnowledgeManagementView({
   onDelete,
 }: {
   data?: AdminKnowledgePage;
+  ownershipReady?: boolean;
   ownerReleaseIds?: Readonly<Record<string, string>>;
   documents: DocumentAsset[];
   query: string;
@@ -229,13 +232,15 @@ export function KnowledgeManagementView({
         </p>
       ) : null}
       {loading ? <p aria-live="polite">Loading knowledge posts...</p> : null}
+      {!loading && !ownershipReady ? <p role="alert">Ownership could not be verified.</p> : null}
 
-      {!loading ? (
+      {!loading && ownershipReady ? (
         <KnowledgeEditor documents={documents} pending={pending} onSave={onSave} />
       ) : null}
 
-      {!loading && posts.length === 0 ? <p>No knowledge posts yet.</p> : null}
+      {!loading && ownershipReady && posts.length === 0 ? <p>No knowledge posts yet.</p> : null}
       {!loading &&
+        ownershipReady &&
         posts.map((post) => (
           <KnowledgeEditor
             key={post.id}

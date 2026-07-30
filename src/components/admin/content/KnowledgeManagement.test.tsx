@@ -148,6 +148,35 @@ describe("KnowledgeManagement", () => {
     expect(pairedSection).not.toContain("Delete");
   });
 
+  test("keeps unrelated Knowledge controls and fails closed while ownership is unknown", () => {
+    const unrelated = renderToStaticMarkup(
+      <KnowledgeManagementView
+        data={{ posts: [post], total: 1, page: 1, pageSize: 50 }}
+        documents={[documentAsset]}
+        query=""
+        ownershipReady
+        onSave={() => undefined}
+        onDelete={() => undefined}
+      />,
+    );
+    expect(unrelated).toContain("Save");
+    expect(unrelated).toContain("Delete");
+    expect(unrelated).not.toContain("/admin/content/adoption-guides?releaseId=");
+
+    const unknown = renderToStaticMarkup(
+      <KnowledgeManagementView
+        data={{ posts: [post], total: 1, page: 1, pageSize: 50 }}
+        documents={[documentAsset]}
+        query=""
+        ownershipReady={false}
+        onSave={() => undefined}
+        onDelete={() => undefined}
+      />,
+    );
+    expect(unknown).not.toContain("Save");
+    expect(unknown).not.toContain("Delete");
+  });
+
   test("renders loading and empty states", () => {
     expect(
       renderToStaticMarkup(

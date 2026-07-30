@@ -22,6 +22,7 @@ import {
   fetchAdoptionGuideReleases,
   mutateAdoptionGuideRelease,
   presentAdoptionGuideReadiness,
+  resolveLinkedAdoptionGuideRelease,
   selectAdoptionGuideAssetsForLanguage,
   type AdoptionGuideReleaseMutationOperation,
   type ReleaseFilters,
@@ -68,7 +69,11 @@ function errorMessage(error: unknown) {
   return error instanceof Error ? error.message : undefined;
 }
 
-export function AdoptionGuideReleaseManagement() {
+export function AdoptionGuideReleaseManagement({
+  initialReleaseId,
+}: {
+  initialReleaseId?: string;
+}) {
   const queryClient = useQueryClient();
   const [filters, setFilters] = useState<ReleaseFilters>({
     species: "all",
@@ -76,7 +81,7 @@ export function AdoptionGuideReleaseManagement() {
     page: 1,
     pageSize: 25,
   });
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(initialReleaseId ?? null);
   const [localError, setLocalError] = useState<string>();
   const runtimeController = useMemo(
     () => createAdoptionGuideReleaseRuntimeController({ queryClient, setLocalError }),
@@ -91,6 +96,14 @@ export function AdoptionGuideReleaseManagement() {
     queryKey: ["adoption-guide-releases", filters],
     queryFn: () => fetchAdoptionGuideReleases(filters),
   });
+  const linkedReleaseQuery = useQuery({
+    queryKey: ["adoption-guide-releases", initialReleaseId, "linked"],
+    enabled: Boolean(initialReleaseId),
+    queryFn: () =>
+      fetchAdminJson<AdoptionGuideRelease>(
+        `/api/admin/adoption-guide-releases/${encodeURIComponent(initialReleaseId!)}`,
+      ),
+  });
   const assetsQuery = useQuery({
     queryKey: ["documents", "adoption-guide-options"],
     queryFn: () =>
@@ -102,7 +115,7 @@ export function AdoptionGuideReleaseManagement() {
   });
 
   const releases = releasesQuery.data?.items ?? [];
-  const selected = releases.find((release) => release.id === selectedId) ?? releases[0] ?? null;
+  const selected = resolveLinkedAdoptionGuideRelease(releases, selectedId, linkedReleaseQuery.data);
   const previewQuery = useQuery({
     queryKey: ["adoption-guide-releases", selected?.id, "preview"],
     enabled: Boolean(selected),
@@ -196,6 +209,7 @@ export function AdoptionGuideReleaseManagement() {
     localError ??
     errorMessage(identityQuery.error) ??
     errorMessage(releasesQuery.error) ??
+    errorMessage(linkedReleaseQuery.error) ??
     errorMessage(assetsQuery.error) ??
     errorMessage(previewQuery.error);
 
@@ -213,7 +227,7 @@ export function AdoptionGuideReleaseManagement() {
       page={releasesQuery.data?.page ?? filters.page ?? 1}
       pageSize={releasesQuery.data?.pageSize ?? filters.pageSize ?? 25}
       filters={filters}
-      loading={releasesQuery.isLoading || identityQuery.isLoading}
+      loading={releasesQuery.isLoading || linkedReleaseQuery.isLoading || identityQuery.isLoading}
       error={combinedError}
       pendingAction={pendingAction}
       onFiltersChange={setFilters}

@@ -54,29 +54,44 @@ describe("DocumentManagement", () => {
     expect(unrelatedRow).toContain("<button");
     expect(unrelatedRow).not.toContain("\u7531\u9818\u990a\u6307\u5357\u7248\u672c\u7ba1\u7406");
   });
+  test("fails closed while document ownership is unknown", () => {
+    const markup = renderToStaticMarkup(
+      <DocumentManagementView
+        data={{ items: [asset], total: 1 }}
+        ownershipReady={false}
+        onAction={() => undefined}
+      />,
+    );
+
+    expect(markup).not.toContain("<button");
+  });
+
   test("loads ownership across every release page", async () => {
     const paths: string[] = [];
     const request = mock(async (path: string) => {
       paths.push(path);
-      const page = path.includes("page=2") ? 2 : 1;
+      const page = Number(new URL(path, "https://admin.test").searchParams.get("page"));
+      const itemCount = page === 51 ? 1 : 50;
       return {
-        items:
-          page === 1
-            ? [{ id: "release-1", zhHkAssetId: asset.id, enAssetId: null, knowledgePostId: null }]
-            : [{ id: "release-2", zhHkAssetId: null, enAssetId: null, knowledgePostId: "post-2" }],
-        total: 2,
+        items: Array.from({ length: itemCount }, (_, index) => ({
+          id: `release-${page}-${index}`,
+          zhHkAssetId: page === 1 && index === 0 ? asset.id : null,
+          enAssetId: null,
+          knowledgePostId: page === 51 ? "post-last" : null,
+        })),
+        total: 2501,
         page,
-        pageSize: 1,
+        pageSize: 50,
       };
     });
 
     const ownership = await fetchAdoptionGuideReleaseOwnership(request as never);
 
-    expect(paths).toHaveLength(2);
+    expect(paths).toHaveLength(51);
     expect(paths[0]).toContain("page=1&pageSize=50");
-    expect(paths[1]).toContain("page=2&pageSize=50");
-    expect(ownership.ownerReleaseIdsByAssetId[asset.id]).toBe("release-1");
-    expect(ownership.ownerReleaseIdsByKnowledgePostId["post-2"]).toBe("release-2");
+    expect(paths[50]).toContain("page=51&pageSize=50");
+    expect(ownership.ownerReleaseIdsByAssetId[asset.id]).toBe("release-1-0");
+    expect(ownership.ownerReleaseIdsByKnowledgePostId["post-last"]).toBe("release-51-0");
   });
 
   test("uploads with the signed token before creating metadata", async () => {

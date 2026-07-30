@@ -13,6 +13,7 @@ import {
   evaluateAdoptionGuideReleaseWorkflow,
   fetchAllAdoptionGuideAssets,
   invalidateAdoptionGuidePublishQueries,
+  resolveLinkedAdoptionGuideRelease,
   selectAdoptionGuideAssetsForLanguage,
   resolveMutationError,
 } from "./adoptionGuideReleaseLogic";
@@ -74,6 +75,12 @@ const draft = {
 };
 
 describe("adoption guide release workspace runtime helpers", () => {
+  test("selects the release referenced by an owner link even outside the current page", () => {
+    const linked = { ...release, id: "linked-release" };
+    expect(resolveLinkedAdoptionGuideRelease([release], linked.id, linked)).toBe(linked);
+    expect(resolveLinkedAdoptionGuideRelease([release], release.id, linked)).toBe(release);
+  });
+
   test("blocks stale previews and unsaved changes, then unlocks after save and a fresh preview", () => {
     expect(
       evaluateAdoptionGuideReleaseWorkflow({
