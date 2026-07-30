@@ -1,6 +1,13 @@
 ﻿export type KnowledgeDestination =
   | { kind: "external"; url: string }
-  | { kind: "document"; assetId: string; url?: string };
+  | { kind: "document"; assetId: string; url?: string }
+  | {
+      kind: "document_pair";
+      zhHkAssetId: string;
+      enAssetId: string;
+      zhHkUrl?: string;
+      enUrl?: string;
+    };
 
 export type KnowledgePost = {
   id: string;
