@@ -36,6 +36,7 @@ export type AdoptionGuideReleaseMutationOperation =
   | "withdraw"
   | "return-to-draft"
   | "publish";
+export type AdminJsonRequest = <T>(path: string, init?: RequestInit) => Promise<T>;
 
 export type AdoptionGuidePublishInput = {
   expectedVersion: number;
@@ -124,10 +125,12 @@ export function resolveMutationError<T>(
   error: unknown,
   localDraft: T,
 ): AdoptionGuideMutationError<T> {
-  if (
-    (error instanceof AdminApiError && error.status === 409 && error.code === "conflict") ||
-    hasErrorCode(error, "conflict")
-  ) {
+  const isConflict =
+    error instanceof AdminApiError
+      ? error.status === 409 && error.code === "conflict"
+      : hasStructuredConflict(error);
+
+  if (isConflict) {
     return {
       kind: "conflict",
       message: "This release changed elsewhere. Reload before saving again.",
@@ -142,8 +145,11 @@ export function resolveMutationError<T>(
   };
 }
 
-export async function fetchAdoptionGuideReleases(filters: ReleaseFilters = {}) {
-  return fetchAdminJson<PaginatedAdoptionGuideReleases>(
+export async function fetchAdoptionGuideReleases(
+  filters: ReleaseFilters = {},
+  request: AdminJsonRequest = fetchAdminJson,
+) {
+  return request<PaginatedAdoptionGuideReleases>(
     `/api/admin/adoption-guide-releases?${buildAdoptionGuideReleaseSearchParams(filters)}`,
   );
 }
@@ -152,6 +158,7 @@ export async function mutateAdoptionGuideRelease(
   id: string,
   operation: AdoptionGuideReleaseMutationOperation,
   payload: unknown,
+  request: AdminJsonRequest = fetchAdminJson,
 ) {
   const releaseId = encodeURIComponent(id);
   const route =
@@ -159,7 +166,7 @@ export async function mutateAdoptionGuideRelease(
       ? `/api/admin/adoption-guide-releases/${releaseId}`
       : `/api/admin/adoption-guide-releases/${releaseId}/${operation}`;
 
-  return fetchAdminJson<AdoptionGuideRelease | AdoptionGuidePublishResult>(route, {
+  return request<AdoptionGuideRelease | AdoptionGuidePublishResult>(route, {
     method: operation === "save" ? "PATCH" : "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -171,8 +178,8 @@ function boundInteger(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, Math.trunc(value)));
 }
 
-function hasErrorCode(error: unknown, expectedCode: string) {
+function hasStructuredConflict(error: unknown) {
   if (!error || typeof error !== "object") return false;
-  const candidate = error as { code?: unknown; error?: { code?: unknown } };
-  return candidate.code === expectedCode || candidate.error?.code === expectedCode;
+  const candidate = error as { status?: unknown; error?: { code?: unknown } };
+  return candidate.status === 409 && candidate.error?.code === "conflict";
 }

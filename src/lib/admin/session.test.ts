@@ -107,6 +107,59 @@ describe("admin browser session", () => {
     await expect(fetchAdminJson("/api/admin/content")).rejects.toThrow("API request failed");
   });
 
+  test("omits unsafe structured error codes and invalid field collections", async () => {
+    globalThis.fetch = mock(async () =>
+      Response.json(
+        {
+          error: {
+            code: "conflict;drop",
+            message: "Review the request.",
+            fields: {
+              expectedVersion: "Reload first.",
+              topic: ["Required.", 42],
+            },
+          },
+        },
+        { status: 400 },
+      ),
+    ) as unknown as typeof fetch;
+
+    const error = await fetchAdminJson("/api/admin/content").catch((reason: unknown) => reason);
+
+    expect(error).toBeInstanceOf(AdminApiError);
+    expect(error).toMatchObject({
+      status: 400,
+      message: "Review the request.",
+    });
+    expect((error as InstanceType<typeof AdminApiError>).code).toBeUndefined();
+    expect((error as InstanceType<typeof AdminApiError>).fields).toBeUndefined();
+  });
+
+  test("keeps only validated structured error fields", async () => {
+    globalThis.fetch = mock(async () =>
+      Response.json(
+        {
+          error: {
+            code: "validation_error",
+            message: "Review the highlighted fields.",
+            fields: {
+              topic: ["Topic is required."],
+              expectedVersion: "Reload first.",
+              mixed: ["Safe-looking text", null],
+            },
+          },
+        },
+        { status: 400 },
+      ),
+    ) as unknown as typeof fetch;
+
+    const error = await fetchAdminJson("/api/admin/content").catch((reason: unknown) => reason);
+
+    expect(error).toMatchObject({
+      code: "validation_error",
+      fields: { topic: ["Topic is required."] },
+    });
+  });
   test("loads admin identity through the shared admin JSON interface", async () => {
     const fetchSpy = mock(async () =>
       Response.json({
