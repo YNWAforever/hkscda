@@ -90,6 +90,94 @@ describe("adoption guide release readiness", () => {
     });
   });
 
+  test("requires release asset IDs even when verified assets are supplied", () => {
+    const readiness = evaluateAdoptionGuideReadiness(
+      { ...release, zhHkAssetId: null, enAssetId: null },
+      {
+        zhHk: { asset: zhAsset, objectVerified: true },
+        en: { asset: enAsset, objectVerified: true },
+      },
+    );
+
+    expect(readiness.ready).toBe(false);
+    expect(readiness.issues).toEqual([
+      {
+        field: "zhHkAssetId",
+        code: "chinese_asset_required",
+        message: "Chinese (Hong Kong) PDF is required before submission.",
+      },
+      {
+        field: "enAssetId",
+        code: "english_asset_required",
+        message: "English PDF is required before submission.",
+      },
+    ]);
+  });
+
+  test("blocks readiness when the Chinese asset does not match the release ID", () => {
+    const readiness = evaluateAdoptionGuideReadiness(
+      { ...release, zhHkAssetId: "21e42e2a-5d0e-4778-97ba-4e2c3ac3b594" },
+      {
+        zhHk: { asset: zhAsset, objectVerified: true },
+        en: { asset: enAsset, objectVerified: true },
+      },
+    );
+
+    expect(readiness.ready).toBe(false);
+    expect(readiness.issues).toContainEqual({
+      field: "zhHkAssetId",
+      code: "chinese_asset_id_mismatch",
+      message: "Chinese (Hong Kong) PDF does not match the release asset.",
+    });
+  });
+
+  test("blocks readiness when the English asset does not match the release ID", () => {
+    const readiness = evaluateAdoptionGuideReadiness(
+      { ...release, enAssetId: "21e42e2a-5d0e-4778-97ba-4e2c3ac3b594" },
+      {
+        zhHk: { asset: zhAsset, objectVerified: true },
+        en: { asset: enAsset, objectVerified: true },
+      },
+    );
+
+    expect(readiness.ready).toBe(false);
+    expect(readiness.issues).toContainEqual({
+      field: "enAssetId",
+      code: "english_asset_id_mismatch",
+      message: "English PDF does not match the release asset.",
+    });
+  });
+
+  test("blocks readiness when an asset MIME type is not PDF", () => {
+    const readiness = evaluateAdoptionGuideReadiness(release, {
+      zhHk: { asset: zhAsset, objectVerified: true },
+      en: {
+        asset: { ...enAsset, mimeType: "application/octet-stream" } as unknown as DocumentAsset,
+        objectVerified: true,
+      },
+    });
+
+    expect(readiness.ready).toBe(false);
+    expect(readiness.issues).toContainEqual({
+      field: "assets",
+      code: "english_asset_mime_type_invalid",
+      message: "English asset must be a PDF.",
+    });
+  });
+
+  test("blocks readiness when the English Storage object is unverified", () => {
+    const readiness = evaluateAdoptionGuideReadiness(release, {
+      zhHk: { asset: zhAsset, objectVerified: true },
+      en: { asset: enAsset, objectVerified: false },
+    });
+
+    expect(readiness.ready).toBe(false);
+    expect(readiness.issues).toContainEqual({
+      field: "assets",
+      code: "english_asset_unverified",
+      message: "English PDF must be verified in Storage before submission.",
+    });
+  });
   test("requires the expected document contracts and knowledge content", () => {
     const readiness = evaluateAdoptionGuideReadiness(
       {
