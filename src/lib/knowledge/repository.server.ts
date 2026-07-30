@@ -51,6 +51,19 @@ function safeExternal(url: string | null) {
   }
 }
 
+function isSafeObjectPath(value: unknown): value is string {
+  if (
+    typeof value !== "string" ||
+    value.length === 0 ||
+    value.trim() !== value ||
+    value.startsWith("/") ||
+    value.includes("\\")
+  ) {
+    return false;
+  }
+  return value.split("/").every((segment) => segment.length > 0 && segment !== "." && segment !== "..");
+}
+
 function publicAssetUrl(client: SupabaseClient, value: unknown) {
   const row = relatedRow(value);
   if (
@@ -58,7 +71,7 @@ function publicAssetUrl(client: SupabaseClient, value: unknown) {
     row.is_published !== true ||
     row.bucket_name !== SITE_DOCUMENTS_BUCKET ||
     row.mime_type !== "application/pdf" ||
-    typeof row.object_path !== "string"
+    !isSafeObjectPath(row.object_path)
   ) {
     return null;
   }
@@ -172,7 +185,11 @@ export function createSupabaseKnowledgeRepository(client: SupabaseClient): Knowl
       const posts = [...((pairResult.data ?? []) as Row[]), ...((legacyResult.data ?? []) as Row[])]
         .map((row) => mapPost(client, row, true))
         .filter((row): row is KnowledgePost => row !== null);
-      const uniquePosts = [...new Map(posts.map((post) => [post.id, post])).values()];
+      const uniquePostsById = new Map<string, KnowledgePost>();
+      for (const post of posts) {
+        if (!uniquePostsById.has(post.id)) uniquePostsById.set(post.id, post);
+      }
+      const uniquePosts = [...uniquePostsById.values()];
       return uniquePosts.sort(
         (left, right) =>
           left.sortOrder - right.sortOrder || right.createdAt.localeCompare(left.createdAt),

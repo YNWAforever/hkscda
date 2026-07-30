@@ -101,6 +101,49 @@ describe("KnowledgeManagement", () => {
     expect(markup).toContain("What you need to know after adoption");
   });
 
+  test("renders release-managed bilingual posts read-only with both asset IDs", () => {
+    const zhHkAssetId = "11111111-2222-4333-8444-555555555555";
+    const enAssetId = "66666666-7777-4888-8999-000000000000";
+    const markup = renderToStaticMarkup(
+      <KnowledgeManagementView
+        data={{
+          posts: [
+            {
+              ...post,
+              id: "paired-post",
+              destination: {
+                kind: "document_pair",
+                zhHkAssetId,
+                enAssetId,
+              },
+            },
+          ],
+          total: 1,
+          page: 1,
+          pageSize: 50,
+        }}
+        documents={[documentAsset]}
+        query=""
+      />,
+    );
+
+    const marker = 'data-release-managed-knowledge="paired-post"';
+    expect(markup).toContain(marker);
+    const sectionStart = markup.indexOf(marker);
+    const sectionEnd = markup.indexOf("</section>", sectionStart);
+    const pairedSection = markup.slice(sectionStart, sectionEnd);
+
+    expect(pairedSection).toContain("Managed by Adoption guide releases");
+    expect(pairedSection).toContain(zhHkAssetId);
+    expect(pairedSection).toContain(enAssetId);
+    expect(pairedSection).not.toContain("Destination mode");
+    expect(pairedSection).not.toContain("<input");
+    expect(pairedSection).not.toContain("<select");
+    expect(pairedSection).not.toContain("<button");
+    expect(pairedSection).not.toContain("Save");
+    expect(pairedSection).not.toContain("Delete");
+  });
+
   test("renders loading and empty states", () => {
     expect(
       renderToStaticMarkup(

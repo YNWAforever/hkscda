@@ -45,9 +45,13 @@ const pairedRow = {
   },
 };
 
-function createBuilder(calls: unknown[], data: unknown[] = [row], count = data.length) {
+type RowSource = unknown[] | ((selectedColumns: string) => unknown[]);
+
+function createBuilder(calls: unknown[], source: RowSource = [row]) {
+  let selectedColumns = "";
   const builder: Record<string, unknown> = {
     select(columns: string, options?: unknown) {
+      selectedColumns = columns;
       calls.push({ name: "select", columns, options });
       return builder;
     },
@@ -64,8 +68,9 @@ function createBuilder(calls: unknown[], data: unknown[] = [row], count = data.l
       return builder;
     },
     range(from: number, to: number) {
+      const data = typeof source === "function" ? source(selectedColumns) : source;
       calls.push({ name: "range", from, to });
-      return Promise.resolve({ data, error: null, count });
+      return Promise.resolve({ data, error: null, count: data.length });
     },
     upsert(payload: unknown) {
       calls.push({ name: "upsert", payload });
@@ -83,7 +88,7 @@ function createBuilder(calls: unknown[], data: unknown[] = [row], count = data.l
   return builder;
 }
 
-function createClient(data?: unknown[]) {
+function createClient(data?: RowSource) {
   const calls: unknown[] = [];
   return {
     calls,
@@ -95,6 +100,7 @@ function createClient(data?: unknown[]) {
       from(bucket: string) {
         return {
           getPublicUrl(objectPath: string) {
+            calls.push({ name: "getPublicUrl", objectPath });
             if (objectPath === "knowledge/unsafe-url.pdf") {
               return { data: { publicUrl: "javascript:alert(1)" } };
             }
@@ -142,6 +148,51 @@ describe("Supabase knowledge repository", () => {
     });
   });
 
+  test("keeps pair-query duplicate precedence and restores stable public ordering", async () => {
+    const pairOlder = {
+      ...pairedRow,
+      id: "pair-older",
+      title: "Pair older",
+      sort_order: 1,
+      created_at: "2026-07-01T00:00:00.000Z",
+    };
+    const duplicatePair = {
+      ...pairedRow,
+      id: "duplicate",
+      title: "Pair precedence",
+      sort_order: 2,
+      created_at: "2026-07-02T00:00:00.000Z",
+    };
+    const legacyNewer = {
+      ...row,
+      id: "legacy-newer",
+      title: "Legacy newer",
+      sort_order: 1,
+      created_at: "2026-07-03T00:00:00.000Z",
+    };
+    const duplicateLegacy = {
+      ...row,
+      id: "duplicate",
+      title: "Legacy duplicate",
+      sort_order: 0,
+      created_at: "2026-07-04T00:00:00.000Z",
+    };
+    const client = createClient((selectedColumns) =>
+      selectedColumns.includes("!inner")
+        ? [pairOlder, duplicatePair]
+        : [legacyNewer, duplicateLegacy],
+    );
+    const repo = createSupabaseKnowledgeRepository(client as never);
+
+    const posts = await repo.listPublished();
+
+    expect(posts.map(({ id, title }) => ({ id, title }))).toEqual([
+      { id: "legacy-newer", title: "Legacy newer" },
+      { id: "pair-older", title: "Pair older" },
+      { id: "duplicate", title: "Pair precedence" },
+    ]);
+  });
+
   test("selects both pair assets and maps a public pair only when both assets are safe", async () => {
     const client = createClient([
       pairedRow,
@@ -186,6 +237,46 @@ describe("Supabase knowledge repository", () => {
     expect(selectCall?.columns).toContain("en_document_asset_id");
     expect(selectCall?.columns).toContain("zh_hk_document_assets");
     expect(selectCall?.columns).toContain("en_document_assets");
+  });
+
+  test("rejects empty and whitespace-only object paths before public URL lookup", async () => {
+    for (const objectPath of ["", "   "]) {
+      const client = createClient([
+        {
+          ...pairedRow,
+          id: `invalid-${JSON.stringify(objectPath)}`,
+          en_document_assets: { ...pairedRow.en_document_assets, object_path: objectPath },
+        },
+      ]);
+      const repo = createSupabaseKnowledgeRepository(client as never);
+
+      await expect(repo.listPublished()).resolves.toEqual([]);
+      expect(client.calls).not.toContainEqual({ name: "getPublicUrl", objectPath });
+    }
+  });
+
+  test("rejects leading, non-normalized, and traversal object paths before public URL lookup", async () => {
+    const invalidPaths = [
+      "/knowledge/guide.pdf",
+      "knowledge//guide.pdf",
+      "knowledge/./guide.pdf",
+      "knowledge/../secret.pdf",
+      "knowledge\\guide.pdf",
+    ];
+
+    for (const objectPath of invalidPaths) {
+      const client = createClient([
+        {
+          ...pairedRow,
+          id: `invalid-${objectPath}`,
+          en_document_assets: { ...pairedRow.en_document_assets, object_path: objectPath },
+        },
+      ]);
+      const repo = createSupabaseKnowledgeRepository(client as never);
+
+      await expect(repo.listPublished()).resolves.toEqual([]);
+      expect(client.calls).not.toContainEqual({ name: "getPublicUrl", objectPath });
+    }
   });
 
   test("caps admin pages and escapes search filters", async () => {
