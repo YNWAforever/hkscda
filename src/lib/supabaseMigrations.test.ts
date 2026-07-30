@@ -402,6 +402,20 @@ describe("supabase migration safety", () => {
     );
     expect(sql).toContain("grant execute on function public.publish_adoption_guide_release");
     expect(sql).toContain("set search_path = public, pg_temp");
+    expect(sql).toContain("grant usage on schema private to service_role");
+    expect(sql).toMatch(
+      /p_operation = 'withdraw'[\s\S]*actor\.role <> 'admin'[\s\S]*current_release\.submitted_by is distinct from actor\.id[\s\S]*update public\.adoption_guide_releases/,
+    );
+    expect(sql.match(/where slots\.slot_key = 'post_adoption_guide'/g)).toHaveLength(2);
+    expect(sql).toMatch(
+      /if previous_release\.id is null then[\s\S]*where slots\.slot_key = 'post_adoption_guide'/,
+    );
+    expect(sql).toMatch(
+      /document_asset_id in \(\s*old_zh_hk_asset_id,\s*old_en_asset_id,\s*legacy_zh_hk_asset_id,\s*legacy_en_asset_id\s*\)/,
+    );
+    expect(sql.match(/'site_document_slot\.upsert'/g)).toHaveLength(2);
+    expect(sql).toContain("target_slot_key || ':zh-HK'");
+    expect(sql).toContain("target_slot_key || ':en'");
   });
 
 });

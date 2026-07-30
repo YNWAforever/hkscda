@@ -302,6 +302,11 @@ begin
       if current_release.state <> 'in_review' then
         raise exception 'Only in-review adoption guide releases can be withdrawn' using errcode = '23514';
       end if;
+      if actor.role <> 'admin'
+        and current_release.submitted_by is distinct from actor.id
+      then
+        raise exception 'Staff can only withdraw releases they submitted' using errcode = '42501';
+      end if;
 
       update public.adoption_guide_releases set
         state = 'draft',
@@ -383,6 +388,8 @@ declare
   cached_request public.adoption_guide_publish_requests%rowtype;
   old_zh_hk_asset_id uuid;
   old_en_asset_id uuid;
+  legacy_zh_hk_asset_id uuid;
+  legacy_en_asset_id uuid;
   paired_knowledge_post_id uuid;
   target_slot_key text;
   result jsonb;
@@ -472,6 +479,20 @@ begin
     and language = 'en'
   for update;
 
+  if previous_release.id is null then
+    select document_asset_id into legacy_zh_hk_asset_id
+    from public.site_document_slots slots
+    where slots.slot_key = 'post_adoption_guide'
+      and language = 'zh-HK'
+    for update;
+
+    select document_asset_id into legacy_en_asset_id
+    from public.site_document_slots slots
+    where slots.slot_key = 'post_adoption_guide'
+      and language = 'en'
+    for update;
+  end if;
+
   perform private.assert_adoption_guide_release_assets(
     release_to_publish.zh_hk_asset_id,
     release_to_publish.en_asset_id
@@ -538,7 +559,12 @@ begin
       updated_at = now()
   where id <> paired_knowledge_post_id
     and (
-      document_asset_id in (old_zh_hk_asset_id, old_en_asset_id)
+      document_asset_id in (
+        old_zh_hk_asset_id,
+        old_en_asset_id,
+        legacy_zh_hk_asset_id,
+        legacy_en_asset_id
+      )
       or zh_hk_document_asset_id in (old_zh_hk_asset_id, old_en_asset_id)
       or en_document_asset_id in (old_zh_hk_asset_id, old_en_asset_id)
       or id = previous_release.knowledge_post_id
@@ -606,6 +632,28 @@ begin
     ),
     (
       p_actor_user_id,
+      'site_document_slot.upsert',
+      'site_document_slot',
+      target_slot_key || ':zh-HK',
+      jsonb_build_object(
+        'release_id', release_to_publish.id,
+        'document_asset_id', release_to_publish.zh_hk_asset_id,
+        'language', 'zh-HK'
+      )
+    ),
+    (
+      p_actor_user_id,
+      'site_document_slot.upsert',
+      'site_document_slot',
+      target_slot_key || ':en',
+      jsonb_build_object(
+        'release_id', release_to_publish.id,
+        'document_asset_id', release_to_publish.en_asset_id,
+        'language', 'en'
+      )
+    ),
+    (
+      p_actor_user_id,
       'knowledge_post.publish',
       'knowledge_post',
       paired_knowledge_post_id::text,
@@ -656,6 +704,7 @@ revoke all on function public.publish_adoption_guide_release(uuid, integer, uuid
   from public, anon, authenticated;
 
 grant insert on public.audit_log to service_role;
+grant usage on schema private to service_role;
 grant execute on function private.assert_adoption_guide_release_assets(uuid, uuid)
   to service_role;
 grant execute on function public.mutate_adoption_guide_release_with_audit(uuid, text, uuid, integer, jsonb)
