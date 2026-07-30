@@ -202,6 +202,7 @@ describe("createAdoptionGuideReleaseHandlers", () => {
     );
 
     expect(response.status).toBe(400);
+    expect(response.headers.get("cache-control")).toBe("no-store");
     expect(await response.json()).toEqual({
       error: {
         code: "validation_error",
@@ -219,13 +220,17 @@ describe("createAdoptionGuideReleaseHandlers", () => {
   test("maps missing releases and conflicts without leaking provider detail", async () => {
     const service = createService();
     service.get.mockImplementation(async () => {
-      throw new AdoptionGuideReleaseError("not_found", 404);
+      throw new AdoptionGuideReleaseError(
+        "not_found",
+        404,
+        "SQL: release row 73cc7721 provider detail",
+      );
     });
     service.withdraw.mockImplementation(async () => {
       throw new AdoptionGuideReleaseError(
         "conflict",
         409,
-        "Only in-review adoption guide releases can be withdrawn.",
+        "SQLSTATE 40001: provider transaction detail",
       );
     });
     const { handlers } = createHandlers(service);
@@ -242,6 +247,7 @@ describe("createAdoptionGuideReleaseHandlers", () => {
     );
 
     expect(missing.status).toBe(404);
+    expect(missing.headers.get("cache-control")).toBe("no-store");
     expect(await missing.json()).toEqual({
       error: {
         code: "not_found",
@@ -249,10 +255,53 @@ describe("createAdoptionGuideReleaseHandlers", () => {
       },
     });
     expect(conflict.status).toBe(409);
+    expect(conflict.headers.get("cache-control")).toBe("no-store");
     expect(await conflict.json()).toEqual({
       error: {
         code: "conflict",
-        message: "Only in-review adoption guide releases can be withdrawn.",
+        message: "This adoption guide release changed or cannot make that transition.",
+      },
+    });
+  });
+
+  test("uses boundary-owned messages for unstructured domain failures", async () => {
+    const service = createService();
+    service.list.mockImplementation(async () => {
+      throw new AdoptionGuideReleaseError(
+        "forbidden",
+        403,
+        "policy adoption_guide_internal leaked detail",
+      );
+    });
+    service.submit.mockImplementation(async () => {
+      throw new AdoptionGuideReleaseError("invalid", 422, "storage provider object secret");
+    });
+    const { handlers } = createHandlers(service);
+
+    const forbidden = await handlers.list(
+      new Request("https://test/api/admin/adoption-guide-releases"),
+    );
+    const invalid = await handlers.submit(
+      jsonRequest(`/api/admin/adoption-guide-releases/${releaseId}/submit`, {
+        expectedVersion: 2,
+      }),
+      { id: releaseId },
+    );
+
+    expect(forbidden.status).toBe(403);
+    expect(forbidden.headers.get("cache-control")).toBe("no-store");
+    expect(await forbidden.json()).toEqual({
+      error: {
+        code: "forbidden",
+        message: "You do not have permission to perform this action.",
+      },
+    });
+    expect(invalid.status).toBe(400);
+    expect(invalid.headers.get("cache-control")).toBe("no-store");
+    expect(await invalid.json()).toEqual({
+      error: {
+        code: "invalid",
+        message: "The adoption guide release is not ready for this action.",
       },
     });
   });
@@ -358,6 +407,9 @@ describe("createAdoptionGuideReleaseHandlers", () => {
     expect(fetched.status).toBe(200);
     expect(updated.status).toBe(200);
     expect(previewed.status).toBe(200);
+    for (const response of [created, fetched, updated, previewed]) {
+      expect(response.headers.get("cache-control")).toBe("no-store");
+    }
     expect(await previewed.json()).toMatchObject({
       release: { id: releaseId },
       adoptionPanel: { enUrl: "https://private.test/en.pdf" },
@@ -451,6 +503,7 @@ describe("createAdoptionGuideReleaseHandlers", () => {
     );
 
     expect(response.status).toBe(400);
+    expect(response.headers.get("cache-control")).toBe("no-store");
     expect(await response.json()).toEqual({
       error: {
         code: "validation_error",

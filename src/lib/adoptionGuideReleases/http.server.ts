@@ -87,8 +87,19 @@ function adoptionGuideErrorResponse(error: AdoptionGuideReleaseError) {
   }
 
   const status = error.code === "invalid" ? 400 : error.status;
-  const message = error.code === "internal" ? defaultMessages.internal : error.message;
-  return jsonNoStore({ error: { code: error.code, message } }, status);
+  return jsonNoStore({ error: { code: error.code, message: defaultMessages[error.code] } }, status);
+}
+
+export function adoptionGuideReleaseInternalErrorResponse() {
+  return jsonNoStore(
+    {
+      error: {
+        code: "internal",
+        message: defaultMessages.internal,
+      },
+    },
+    500,
+  );
 }
 
 function authResponse(status: 401 | 403) {
@@ -111,15 +122,7 @@ async function withHttpErrors(operation: () => Promise<Response>) {
         return authResponse(error.status);
       }
     }
-    return jsonNoStore(
-      {
-        error: {
-          code: "internal",
-          message: defaultMessages.internal,
-        },
-      },
-      500,
-    );
+    return adoptionGuideReleaseInternalErrorResponse();
   }
 }
 

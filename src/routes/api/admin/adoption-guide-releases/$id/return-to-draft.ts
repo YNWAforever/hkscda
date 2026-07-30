@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { createHandlers } from "../-handlers";
+import { releaseRouteHandlers } from "../-handlers";
 
 export const Route = createFileRoute("/api/admin/adoption-guide-releases/$id/return-to-draft")({
   server: {
     handlers: {
-      POST: ({ request, params }) => createHandlers().returnToDraft(request, params),
+      POST: ({ request, params }) => releaseRouteHandlers.returnToDraft(request, params),
     },
   },
 });
