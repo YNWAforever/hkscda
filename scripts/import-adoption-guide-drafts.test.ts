@@ -5,6 +5,7 @@ import {
   buildDraftDefinitions,
   inspectPdfBuffer,
   parseImportArgs,
+  preflightImportActor,
 } from "./import-adoption-guide-drafts.mjs";
 
 const catPdf =
@@ -104,6 +105,7 @@ describe("controlled adoption guide draft importer", () => {
       apply: true,
       readPdf: async () => Buffer.from("%PDF-1.7\nsafe"),
       createAdapter: () => ({
+        preflight: async () => undefined,
         findAsset: async (objectPath: string) => assets.get(objectPath),
         uploadObject: async (input: unknown) => events.push({ action: "upload", input }),
         createAsset: async (input: unknown) => {
@@ -147,6 +149,7 @@ describe("controlled adoption guide draft importer", () => {
         apply: true,
         readPdf: async () => Buffer.from("%PDF-1.7\nsafe"),
         createAdapter: () => ({
+          preflight: async () => undefined,
           findAsset: async (objectPath: string) => ({ ...assets.get(objectPath), language: "en" }),
           uploadObject: async () => undefined,
           createAsset: async () => assets.values().next().value,
@@ -164,6 +167,7 @@ describe("controlled adoption guide draft importer", () => {
       apply: true,
       readPdf: async () => Buffer.from("%PDF-1.7\nsafe"),
       createAdapter: () => ({
+        preflight: async () => undefined,
         findAsset: async () => null,
         uploadObject: async (input: Record<string, unknown>) =>
           events.push({ action: "upload", input }),
@@ -239,6 +243,7 @@ describe("controlled adoption guide draft importer", () => {
       apply: true,
       readPdf: async () => Buffer.from("%PDF-1.7\nsafe"),
       createAdapter: () => ({
+        preflight: async () => undefined,
         findAsset: async (objectPath: string) => {
           const count = (assetLookups.get(objectPath) ?? 0) + 1;
           assetLookups.set(objectPath, count);
@@ -283,5 +288,124 @@ describe("controlled adoption guide draft importer", () => {
       { assetId: "asset-cat", releaseId: "release-cat" },
       { assetId: "asset-dog", releaseId: "release-dog" },
     ]);
+  });
+
+  test.each([
+    ["malformed actor UUID", "not-a-uuid", { id: "not-a-uuid", role: "admin", status: "active" }],
+    ["missing admin_user", "11111111-1111-4111-8111-111111111111", null],
+    [
+      "disallowed role",
+      "11111111-1111-4111-8111-111111111111",
+      { id: "11111111-1111-4111-8111-111111111111", role: "treasurer", status: "active" },
+    ],
+    [
+      "inactive admin",
+      "11111111-1111-4111-8111-111111111111",
+      { id: "11111111-1111-4111-8111-111111111111", role: "staff", status: "disabled" },
+    ],
+  ])("rejects %s before any storage or row writes", async (_label, actorId, adminUser) => {
+    const definitions = buildDraftDefinitions({ catPdf, dogPdf });
+    const events: string[] = [];
+
+    await expect(
+      applyDraftDefinitions({
+        definitions,
+        apply: true,
+        readPdf: async () => Buffer.from("%PDF-1.7\nsafe"),
+        createAdapter: () => ({
+          preflight: () =>
+            preflightImportActor({
+              actorId,
+              findAdminUser: async () => adminUser,
+            }),
+          findAsset: async () => {
+            events.push("find-asset");
+            return null;
+          },
+          uploadObject: async () => events.push("upload"),
+          createAsset: async () => events.push("create-asset"),
+          findDraft: async () => {
+            events.push("find-draft");
+            return null;
+          },
+          createDraft: async () => events.push("create-draft"),
+        }),
+      }),
+    ).rejects.toThrow();
+
+    expect(events).toEqual([]);
+  });
+
+  test("actor preflight accepts only an active staff or admin row", async () => {
+    const actorId = "11111111-1111-4111-8111-111111111111";
+    await expect(
+      preflightImportActor({
+        actorId,
+        findAdminUser: async () => ({ id: actorId, role: "staff", status: "active" }),
+      }),
+    ).resolves.toEqual({ id: actorId, role: "staff", status: "active" });
+  });
+
+  test("rejects a duplicate storage object whose checksum differs", async () => {
+    const definitions = buildDraftDefinitions({ catPdf, dogPdf });
+    let rowWrites = 0;
+
+    await expect(
+      applyDraftDefinitions({
+        definitions,
+        apply: true,
+        readPdf: async () => Buffer.from("%PDF-1.7\nrequested"),
+        createAdapter: () => ({
+          preflight: async () => undefined,
+          findAsset: async () => null,
+          uploadObject: async () => {
+            throw { status: 409, message: "resource already exists" };
+          },
+          readObject: async () => Buffer.from("%PDF-1.7\ndifferent"),
+          createAsset: async () => {
+            rowWrites += 1;
+            return null;
+          },
+          findDraft: async () => null,
+          createDraft: async () => null,
+        }),
+      }),
+    ).rejects.toThrow("Existing storage object does not match");
+
+    expect(rowWrites).toBe(0);
+  });
+
+  test("rejects an existing draft whose state or asset differs", async () => {
+    const definitions = buildDraftDefinitions({ catPdf, dogPdf });
+    const checksumSha256 = inspectPdfBuffer(Buffer.from("%PDF-1.7\nsafe")).checksumSha256;
+
+    await expect(
+      applyDraftDefinitions({
+        definitions,
+        apply: true,
+        readPdf: async () => Buffer.from("%PDF-1.7\nsafe"),
+        createAdapter: () => ({
+          preflight: async () => undefined,
+          findAsset: async (objectPath: string) => ({
+            id: "asset-cat",
+            kind: "adoption_guide",
+            language: "zh-HK",
+            objectPath,
+            checksumSha256,
+          }),
+          uploadObject: async () => undefined,
+          createAsset: async () => null,
+          findDraft: async () => ({
+            id: "release-cat",
+            topic: "post_adoption",
+            species: "cat",
+            zhHkAssetId: "other-asset",
+            enAssetId: null,
+            state: "submitted",
+          }),
+          createDraft: async () => null,
+        }),
+      }),
+    ).rejects.toThrow("Existing release does not match");
   });
 });

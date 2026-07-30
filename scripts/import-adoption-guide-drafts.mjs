@@ -113,6 +113,11 @@ export async function applyDraftDefinitions({
   }
 
   const adapter = createAdapter();
+  if (typeof adapter.preflight !== "function") {
+    throw new Error("Apply mode requires actor preflight");
+  }
+  await adapter.preflight();
+
   const results = [];
   for (const { definition, inspection } of inspected) {
     const asset = await findOrCreateAsset(adapter, definition, inspection);
@@ -276,6 +281,29 @@ function isDuplicateError(error) {
   );
 }
 
+export async function preflightImportActor({ actorId, findAdminUser }) {
+  if (
+    typeof actorId !== "string" ||
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(actorId)
+  ) {
+    throw new Error("ADOPTION_GUIDE_IMPORT_ACTOR_ID must be a valid UUID");
+  }
+  if (typeof findAdminUser !== "function") {
+    throw new Error("Actor preflight requires an admin_user lookup");
+  }
+
+  const adminUser = await findAdminUser(actorId);
+  if (!adminUser || adminUser.id !== actorId) {
+    throw new Error(`No admin_user exists for import actor ${actorId}`);
+  }
+  if (adminUser.status !== "active") {
+    throw new Error(`Import actor ${actorId} must be active`);
+  }
+  if (adminUser.role !== "staff" && adminUser.role !== "admin") {
+    throw new Error(`Import actor ${actorId} must have the staff or admin role`);
+  }
+  return adminUser;
+}
 function readEnvironment() {
   const loaded = {};
   for (const filename of [".env", ".env.local"]) {
@@ -290,6 +318,24 @@ function readEnvironment() {
 
 function createSupabaseAdapter({ supabase, actorId }) {
   return {
+    async preflight() {
+      return preflightImportActor({
+        actorId,
+        findAdminUser: async (id) => {
+          const { data, error } = await supabase
+            .from("admin_user")
+            .select("id,role,status")
+            .eq("id", id)
+            .maybeSingle();
+          if (error) {
+            throw new Error("Unable to verify service-role connection and import actor", {
+              cause: error,
+            });
+          }
+          return data;
+        },
+      });
+    },
     async findAsset(objectPath) {
       const { data, error } = await supabase
         .from("document_assets")
