@@ -332,3 +332,89 @@ export function getAdoptionGuidePublishAttempt(
   const attempt = createAttempt({ expectedVersion });
   return { releaseId, version: expectedVersion, payload: attempt.payload };
 }
+
+export type AdoptionGuideReleaseRuntimeQueryClient = {
+  invalidateQueries: (input: { queryKey: readonly string[] }) => Promise<unknown>;
+  refetchQueries: (input: { queryKey: readonly string[] }) => Promise<unknown>;
+};
+
+export function createAdoptionGuideReleaseRuntimeController({
+  queryClient,
+  setLocalError,
+  createIdempotencyKey = () => crypto.randomUUID(),
+}: {
+  queryClient: AdoptionGuideReleaseRuntimeQueryClient;
+  setLocalError: (message: string | undefined) => void;
+  createIdempotencyKey?: () => string;
+}) {
+  let publishAttempt: {
+    releaseId: string;
+    version: number;
+    payload: AdoptionGuidePublishInput;
+  } | null = null;
+
+  return {
+    getPublishPayload(release: Pick<AdoptionGuideRelease, "id" | "version">) {
+      publishAttempt = getAdoptionGuidePublishAttempt(
+        publishAttempt,
+        release.id,
+        release.version,
+        (payload) => createAdoptionGuidePublishAttempt(payload, createIdempotencyKey),
+      );
+      return publishAttempt.payload;
+    },
+    onActionError<T>(error: unknown, localDraft: T) {
+      const resolved = resolveMutationError(error, localDraft);
+      setLocalError(resolved.message);
+      return resolved;
+    },
+    async onActionSuccess({
+      operation,
+      releaseId,
+    }: {
+      operation: AdoptionGuideReleaseMutationOperation;
+      releaseId: string;
+    }) {
+      setLocalError(undefined);
+      const previewQueryKey = ["adoption-guide-releases", releaseId, "preview"] as const;
+      if (operation === "publish") {
+        publishAttempt = null;
+        await invalidateAdoptionGuidePublishQueries(queryClient);
+      } else {
+        await queryClient.invalidateQueries({ queryKey: ["adoption-guide-releases"] });
+      }
+      await queryClient.invalidateQueries({ queryKey: previewQueryKey });
+      if (operation === "save") {
+        await Promise.all([
+          queryClient.refetchQueries({ queryKey: ["adoption-guide-releases"] }),
+          queryClient.refetchQueries({ queryKey: previewQueryKey }),
+        ]);
+      }
+    },
+    async upload<T>({
+      release,
+      language,
+      file,
+      id,
+      uploadPdf,
+    }: {
+      release: Pick<AdoptionGuideRelease, "topic" | "species" | "sortOrder">;
+      language: "zh-HK" | "en";
+      file: File;
+      id: string;
+      uploadPdf: (input: {
+        file: File;
+        objectPath: string;
+        metadata: Omit<ReturnType<typeof buildAdoptionGuideUploadMetadata>, "objectPathPrefix">;
+      }) => Promise<T>;
+    }) {
+      const { objectPathPrefix, ...metadata } = buildAdoptionGuideUploadMetadata(release, language);
+      const result = await uploadPdf({
+        file,
+        objectPath: `${objectPathPrefix}/${id}.pdf`,
+        metadata,
+      });
+      return { metadata, result };
+    },
+  };
+}

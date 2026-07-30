@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
@@ -15,15 +15,13 @@ import type {
 import { uploadDocumentPdf } from "./documentUpload";
 import {
   ADOPTION_GUIDE_EDITOR_STEPS,
-  createAdoptionGuidePublishAttempt,
+  createAdoptionGuideReleaseRuntimeController,
   evaluateAdoptionGuideReleaseWorkflow,
   fetchAllAdoptionGuideAssets,
-  invalidateAdoptionGuidePublishQueries,
   isAdoptionGuideReleaseContextLocked,
   fetchAdoptionGuideReleases,
   mutateAdoptionGuideRelease,
   presentAdoptionGuideReadiness,
-  resolveMutationError,
   selectAdoptionGuideAssetsForLanguage,
   type AdoptionGuideReleaseMutationOperation,
   type ReleaseFilters,
@@ -72,11 +70,6 @@ function errorMessage(error: unknown) {
 
 export function AdoptionGuideReleaseManagement() {
   const queryClient = useQueryClient();
-  const publishAttempt = useRef<{
-    releaseId: string;
-    version: number;
-    payload: { expectedVersion: number; idempotencyKey: string };
-  } | null>(null);
   const [filters, setFilters] = useState<ReleaseFilters>({
     species: "all",
     state: "all",
@@ -85,6 +78,10 @@ export function AdoptionGuideReleaseManagement() {
   });
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [localError, setLocalError] = useState<string>();
+  const runtimeController = useMemo(
+    () => createAdoptionGuideReleaseRuntimeController({ queryClient, setLocalError }),
+    [queryClient],
+  );
 
   const identityQuery = useQuery({
     queryKey: ["admin-identity"],
@@ -139,25 +136,13 @@ export function AdoptionGuideReleaseManagement() {
       operation: AdoptionGuideReleaseMutationOperation;
       payload: unknown;
     }) => mutateAdoptionGuideRelease(release.id, operation, payload),
-    onSuccess: async (_result, variables) => {
-      setLocalError(undefined);
-      if (variables.operation === "publish") {
-        publishAttempt.current = null;
-        await invalidateAdoptionGuidePublishQueries(queryClient);
-      } else {
-        await queryClient.invalidateQueries({ queryKey: ["adoption-guide-releases"] });
-      }
-      const previewQueryKey = ["adoption-guide-releases", variables.release.id, "preview"] as const;
-      await queryClient.invalidateQueries({ queryKey: previewQueryKey });
-      if (variables.operation === "save") {
-        await Promise.all([
-          queryClient.refetchQueries({ queryKey: ["adoption-guide-releases"] }),
-          queryClient.refetchQueries({ queryKey: previewQueryKey }),
-        ]);
-      }
-    },
+    onSuccess: (_result, variables) =>
+      runtimeController.onActionSuccess({
+        operation: variables.operation,
+        releaseId: variables.release.id,
+      }),
     onError: (error, variables) => {
-      setLocalError(resolveMutationError(error, variables.payload).message);
+      runtimeController.onActionError(error, variables.payload);
     },
   });
 
@@ -165,30 +150,32 @@ export function AdoptionGuideReleaseManagement() {
     mutationFn: async ({ language, file }: { language: AssetLanguage; file: File }) => {
       if (!selected) throw new Error("請先選擇領養後指南");
       const id = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}`;
-      return uploadDocumentPdf({
+      return runtimeController.upload({
+        release: selected,
+        language,
         file,
-        objectPath: `adoption-guides/${selected.species}/${language}/${id}.pdf`,
-        metadata: {
-          kind: "adoption_guide",
-          title: `${selected.topic} ${language === "zh-HK" ? "中文" : "English"} PDF`,
-          language,
-          sortOrder: selected.sortOrder,
-        },
-        requestUploadTarget: (input) =>
-          fetchAdminJson("/api/admin/documents/upload-target", {
-            method: "POST",
-            body: JSON.stringify(input),
-          }),
-        uploadToSignedUrl: async (path, token, selectedFile) => {
-          const { error } = await getSupabaseClient()
-            .storage.from("site-documents")
-            .uploadToSignedUrl(path, token, selectedFile, { contentType: "application/pdf" });
-          if (error) throw error;
-        },
-        createAsset: (input) =>
-          fetchAdminJson("/api/admin/documents", {
-            method: "POST",
-            body: JSON.stringify(input),
+        id,
+        uploadPdf: ({ file: selectedFile, objectPath, metadata }) =>
+          uploadDocumentPdf({
+            file: selectedFile,
+            objectPath,
+            metadata,
+            requestUploadTarget: (input) =>
+              fetchAdminJson("/api/admin/documents/upload-target", {
+                method: "POST",
+                body: JSON.stringify(input),
+              }),
+            uploadToSignedUrl: async (path, token, uploadedFile) => {
+              const { error } = await getSupabaseClient()
+                .storage.from("site-documents")
+                .uploadToSignedUrl(path, token, uploadedFile, { contentType: "application/pdf" });
+              if (error) throw error;
+            },
+            createAsset: (input) =>
+              fetchAdminJson("/api/admin/documents", {
+                method: "POST",
+                body: JSON.stringify(input),
+              }),
           }),
       });
     },
@@ -266,22 +253,10 @@ export function AdoptionGuideReleaseManagement() {
       }}
       onPublish={() => {
         if (!selected) return;
-        if (
-          !publishAttempt.current ||
-          publishAttempt.current.releaseId !== selected.id ||
-          publishAttempt.current.version !== selected.version
-        ) {
-          const attempt = createAdoptionGuidePublishAttempt({ expectedVersion: selected.version });
-          publishAttempt.current = {
-            releaseId: selected.id,
-            version: selected.version,
-            payload: attempt.payload,
-          };
-        }
         actionMutation.mutate({
           release: selected,
           operation: "publish",
-          payload: publishAttempt.current.payload,
+          payload: runtimeController.getPublishPayload(selected),
         });
       }}
       onRefreshPreview={() => previewQuery.refetch()}

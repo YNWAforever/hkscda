@@ -164,4 +164,68 @@ describe("adoption guide release workspace runtime helpers", () => {
       }),
     ).rejects.toThrow();
   });
+  test("uses the production runtime controller for retry, effects, conflict retention, and upload metadata", async () => {
+    const { createAdoptionGuideReleaseRuntimeController } =
+      await import("./adoptionGuideReleaseLogic");
+    expect(typeof createAdoptionGuideReleaseRuntimeController).toBe("function");
+
+    const calls: Array<{ kind: "invalidate" | "refetch"; key: unknown }> = [];
+    const errors: Array<string | undefined> = [];
+    let keyNumber = 0;
+    let uploadInput: unknown;
+    const controller = createAdoptionGuideReleaseRuntimeController({
+      queryClient: {
+        invalidateQueries: async ({ queryKey }: { queryKey: unknown }) => {
+          calls.push({ kind: "invalidate", key: queryKey });
+        },
+        refetchQueries: async ({ queryKey }: { queryKey: unknown }) => {
+          calls.push({ kind: "refetch", key: queryKey });
+        },
+      },
+      setLocalError: (message: string | undefined) => errors.push(message),
+      createIdempotencyKey: () => `publish-${++keyNumber}`,
+    });
+
+    const localDraft = { ...draft, knowledgeTitle: "Kept locally" };
+    const conflict = controller.onActionError(
+      new AdminApiError({ status: 409, code: "conflict", message: "Changed elsewhere" }),
+      localDraft,
+    );
+    expect(conflict).toMatchObject({ kind: "conflict", preservedDraft: localDraft });
+    expect(errors.at(-1)).toBe("This release changed elsewhere. Reload before saving again.");
+
+    const firstPublish = controller.getPublishPayload(release);
+    controller.onActionError(new Error("publish failed"), firstPublish);
+    expect(controller.getPublishPayload(release)).toEqual(firstPublish);
+    await controller.onActionSuccess({ operation: "publish", releaseId: release.id });
+    expect(controller.getPublishPayload(release).idempotencyKey).toBe("publish-2");
+
+    await controller.onActionSuccess({ operation: "save", releaseId: release.id });
+    expect(calls).toEqual([
+      { kind: "invalidate", key: ["adoption-guide-releases"] },
+      { kind: "invalidate", key: ["documents"] },
+      { kind: "invalidate", key: ["knowledge"] },
+      { kind: "invalidate", key: ["adoption-guide-releases", release.id, "preview"] },
+      { kind: "invalidate", key: ["adoption-guide-releases"] },
+      { kind: "invalidate", key: ["adoption-guide-releases", release.id, "preview"] },
+      { kind: "refetch", key: ["adoption-guide-releases"] },
+      { kind: "refetch", key: ["adoption-guide-releases", release.id, "preview"] },
+    ]);
+
+    const upload = await controller.upload({
+      release,
+      language: "en",
+      file: new File(["pdf"], "guide.pdf", { type: "application/pdf" }),
+      id: "asset-id",
+      uploadPdf: async (input: unknown) => {
+        uploadInput = input;
+        return { id: "asset" };
+      },
+    });
+    expect(uploadInput).toMatchObject({
+      objectPath: "adoption-guides/cat/en/asset-id.pdf",
+      metadata: { kind: "adoption_guide", language: "en" },
+    });
+    expect((uploadInput as { metadata: unknown }).metadata).toBe(upload.metadata);
+  });
 });
