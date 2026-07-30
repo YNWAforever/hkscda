@@ -16,15 +16,25 @@ import { uploadDocumentPdf } from "./documentUpload";
 import {
   ADOPTION_GUIDE_EDITOR_STEPS,
   createAdoptionGuidePublishAttempt,
+  evaluateAdoptionGuideReleaseWorkflow,
+  fetchAllAdoptionGuideAssets,
+  invalidateAdoptionGuidePublishQueries,
+  isAdoptionGuideReleaseContextLocked,
   fetchAdoptionGuideReleases,
   mutateAdoptionGuideRelease,
   presentAdoptionGuideReadiness,
   resolveMutationError,
+  selectAdoptionGuideAssetsForLanguage,
   type AdoptionGuideReleaseMutationOperation,
   type ReleaseFilters,
 } from "./adoptionGuideReleaseLogic";
 
-type DocumentListResponse = { items: DocumentAsset[]; total: number };
+type DocumentListResponse = {
+  items: DocumentAsset[];
+  total: number;
+  page: number;
+  pageSize: number;
+};
 type AssetLanguage = "zh-HK" | "en";
 
 type DraftFields = Omit<AdoptionGuideMutationInput, "expectedVersion">;
@@ -67,7 +77,12 @@ export function AdoptionGuideReleaseManagement() {
     version: number;
     payload: { expectedVersion: number; idempotencyKey: string };
   } | null>(null);
-  const [filters, setFilters] = useState<ReleaseFilters>({ species: "all", state: "all" });
+  const [filters, setFilters] = useState<ReleaseFilters>({
+    species: "all",
+    state: "all",
+    page: 1,
+    pageSize: 25,
+  });
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [localError, setLocalError] = useState<string>();
 
@@ -82,8 +97,10 @@ export function AdoptionGuideReleaseManagement() {
   const assetsQuery = useQuery({
     queryKey: ["documents", "adoption-guide-options"],
     queryFn: () =>
-      fetchAdminJson<DocumentListResponse>(
-        "/api/admin/documents?kind=adoption_guide&page=1&pageSize=50",
+      fetchAllAdoptionGuideAssets((page, pageSize) =>
+        fetchAdminJson<DocumentListResponse>(
+          `/api/admin/documents?kind=adoption_guide&page=${page}&pageSize=${pageSize}`,
+        ),
       ),
   });
 
@@ -126,17 +143,18 @@ export function AdoptionGuideReleaseManagement() {
       setLocalError(undefined);
       if (variables.operation === "publish") {
         publishAttempt.current = null;
-        await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ["adoption-guide-releases"] }),
-          queryClient.invalidateQueries({ queryKey: ["documents"] }),
-          queryClient.invalidateQueries({ queryKey: ["knowledge"] }),
-        ]);
+        await invalidateAdoptionGuidePublishQueries(queryClient);
       } else {
         await queryClient.invalidateQueries({ queryKey: ["adoption-guide-releases"] });
       }
-      await queryClient.invalidateQueries({
-        queryKey: ["adoption-guide-releases", variables.release.id, "preview"],
-      });
+      const previewQueryKey = ["adoption-guide-releases", variables.release.id, "preview"] as const;
+      await queryClient.invalidateQueries({ queryKey: previewQueryKey });
+      if (variables.operation === "save") {
+        await Promise.all([
+          queryClient.refetchQueries({ queryKey: ["adoption-guide-releases"] }),
+          queryClient.refetchQueries({ queryKey: previewQueryKey }),
+        ]);
+      }
     },
     onError: (error, variables) => {
       setLocalError(resolveMutationError(error, variables.payload).message);
@@ -202,12 +220,17 @@ export function AdoptionGuideReleaseManagement() {
       releases={releases}
       selected={selected}
       preview={previewQuery.data ?? null}
-      assets={assetsQuery.data?.items ?? []}
+      previewSucceeded={previewQuery.isSuccess}
+      assets={assetsQuery.data ?? []}
+      total={releasesQuery.data?.total ?? 0}
+      page={releasesQuery.data?.page ?? filters.page ?? 1}
+      pageSize={releasesQuery.data?.pageSize ?? filters.pageSize ?? 25}
       filters={filters}
       loading={releasesQuery.isLoading || identityQuery.isLoading}
       error={combinedError}
       pendingAction={pendingAction}
       onFiltersChange={setFilters}
+      onPageChange={(page) => setFilters({ ...filters, page })}
       onSelect={setSelectedId}
       onCreate={() => createMutation.mutate()}
       onSave={(input) => {
@@ -272,6 +295,10 @@ export type AdoptionGuideReleaseManagementViewProps = {
   releases: AdoptionGuideRelease[];
   selected: AdoptionGuideRelease | null;
   preview: AdoptionGuidePreview | null;
+  previewSucceeded?: boolean;
+  total?: number;
+  page?: number;
+  pageSize?: number;
   loading?: boolean;
   error?: string;
   pendingAction?: string;
@@ -286,6 +313,7 @@ export type AdoptionGuideReleaseManagementViewProps = {
   assets?: DocumentAsset[];
   filters?: ReleaseFilters;
   onFiltersChange?: (filters: ReleaseFilters) => void;
+  onPageChange?: (page: number) => void;
   onUpload?: (language: AssetLanguage, file: File) => void;
 };
 
@@ -294,6 +322,10 @@ export function AdoptionGuideReleaseManagementView({
   releases,
   selected,
   preview,
+  previewSucceeded = Boolean(preview),
+  total = releases.length,
+  page = 1,
+  pageSize = 25,
   loading = false,
   error,
   pendingAction,
@@ -308,6 +340,7 @@ export function AdoptionGuideReleaseManagementView({
   assets = [],
   filters = {},
   onFiltersChange,
+  onPageChange,
   onUpload,
 }: AdoptionGuideReleaseManagementViewProps) {
   const [draft, setDraft] = useState<DraftFields>(() => draftFromRelease(selected));
@@ -319,13 +352,13 @@ export function AdoptionGuideReleaseManagementView({
     () => (preview ? presentAdoptionGuideReadiness(preview.readiness) : null),
     [preview],
   );
-  const locked = Boolean(pendingAction);
-  const chineseAssets = assets.filter(
-    (asset) => asset.kind === "adoption_guide" && asset.language === "zh-HK",
-  );
-  const englishAssets = assets.filter(
-    (asset) => asset.kind === "adoption_guide" && asset.language === "en",
-  );
+  const locked = isAdoptionGuideReleaseContextLocked(pendingAction);
+  const editorDisabled = locked || selected?.state !== "draft";
+  const workflow = selected
+    ? evaluateAdoptionGuideReleaseWorkflow({ release: selected, draft, preview, previewSucceeded })
+    : null;
+  const chineseAssets = selectAdoptionGuideAssetsForLanguage(assets, "zh-HK");
+  const englishAssets = selectAdoptionGuideAssetsForLanguage(assets, "en");
   const issuesFor = (step: (typeof ADOPTION_GUIDE_EDITOR_STEPS)[number]["id"]) =>
     readiness?.issues.filter((issue) => issue.step === step) ?? [];
 
@@ -361,6 +394,7 @@ export function AdoptionGuideReleaseManagementView({
           搜尋
           <input
             value={filters.q ?? ""}
+            disabled={locked}
             onChange={(event) => setFilter("q", event.target.value)}
             className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-normal"
           />
@@ -369,6 +403,7 @@ export function AdoptionGuideReleaseManagementView({
           物種
           <select
             value={filters.species ?? "all"}
+            disabled={locked}
             onChange={(event) =>
               setFilter("species", event.target.value as AdoptionGuideSpecies | "all")
             }
@@ -384,6 +419,7 @@ export function AdoptionGuideReleaseManagementView({
           狀態
           <select
             value={filters.state ?? "all"}
+            disabled={locked}
             onChange={(event) =>
               setFilter("state", event.target.value as AdoptionGuideReleaseState | "all")
             }
@@ -419,6 +455,7 @@ export function AdoptionGuideReleaseManagementView({
               <li key={release.id}>
                 <button
                   type="button"
+                  disabled={locked}
                   onClick={() => onSelect?.(release.id)}
                   className="w-full px-4 py-3 text-left hover:bg-[var(--color-background)]"
                   aria-current={selected?.id === release.id ? "true" : undefined}
@@ -433,6 +470,30 @@ export function AdoptionGuideReleaseManagementView({
               </li>
             ))}
           </ul>
+          {total > pageSize ? (
+            <nav
+              aria-label="Release pages"
+              className="flex items-center justify-between gap-2 border-t border-[var(--color-border)] px-4 py-3 text-sm"
+            >
+              <button
+                type="button"
+                disabled={locked || page <= 1}
+                onClick={() => onPageChange?.(page - 1)}
+              >
+                Previous
+              </button>
+              <span>
+                {page} / {Math.max(1, Math.ceil(total / pageSize))}
+              </span>
+              <button
+                type="button"
+                disabled={locked || page >= Math.ceil(total / pageSize)}
+                onClick={() => onPageChange?.(page + 1)}
+              >
+                Next
+              </button>
+            </nav>
+          ) : null}
         </section>
 
         <section
@@ -464,7 +525,7 @@ export function AdoptionGuideReleaseManagementView({
                     主題
                     <input
                       value={draft.topic}
-                      disabled={locked}
+                      disabled={editorDisabled}
                       onChange={(event) => setDraft({ ...draft, topic: event.target.value })}
                       className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-normal"
                     />
@@ -473,7 +534,7 @@ export function AdoptionGuideReleaseManagementView({
                     物種
                     <select
                       value={draft.species}
-                      disabled={locked}
+                      disabled={editorDisabled}
                       onChange={(event) =>
                         setDraft({ ...draft, species: event.target.value as AdoptionGuideSpecies })
                       }
@@ -492,7 +553,7 @@ export function AdoptionGuideReleaseManagementView({
                   language="zh-HK"
                   assets={chineseAssets}
                   value={draft.zhHkAssetId}
-                  disabled={locked}
+                  disabled={editorDisabled}
                   onChange={(zhHkAssetId) => setDraft({ ...draft, zhHkAssetId })}
                   onUpload={onUpload}
                 />
@@ -503,7 +564,7 @@ export function AdoptionGuideReleaseManagementView({
                   language="en"
                   assets={englishAssets}
                   value={draft.enAssetId}
-                  disabled={locked}
+                  disabled={editorDisabled}
                   onChange={(enAssetId) => setDraft({ ...draft, enAssetId })}
                   onUpload={onUpload}
                 />
@@ -515,7 +576,7 @@ export function AdoptionGuideReleaseManagementView({
                     標題
                     <input
                       value={draft.knowledgeTitle}
-                      disabled={locked}
+                      disabled={editorDisabled}
                       onChange={(event) =>
                         setDraft({ ...draft, knowledgeTitle: event.target.value })
                       }
@@ -526,7 +587,7 @@ export function AdoptionGuideReleaseManagementView({
                     主題
                     <input
                       value={draft.knowledgeTopic}
-                      disabled={locked}
+                      disabled={editorDisabled}
                       onChange={(event) =>
                         setDraft({ ...draft, knowledgeTopic: event.target.value })
                       }
@@ -537,7 +598,7 @@ export function AdoptionGuideReleaseManagementView({
                     簡介
                     <textarea
                       value={draft.knowledgeShortIntro}
-                      disabled={locked}
+                      disabled={editorDisabled}
                       onChange={(event) =>
                         setDraft({ ...draft, knowledgeShortIntro: event.target.value })
                       }
@@ -548,7 +609,7 @@ export function AdoptionGuideReleaseManagementView({
                     來源名稱（可選）
                     <input
                       value={draft.knowledgeSourceName ?? ""}
-                      disabled={locked}
+                      disabled={editorDisabled}
                       onChange={(event) =>
                         setDraft({ ...draft, knowledgeSourceName: event.target.value || null })
                       }
@@ -581,6 +642,9 @@ export function AdoptionGuideReleaseManagementView({
                     ))}
                   </ul>
                 ) : null}
+                {workflow?.message ? (
+                  <p className="mt-3 text-sm text-[var(--color-error)]">{workflow.message}</p>
+                ) : null}
               </EditorSection>
 
               <section
@@ -595,18 +659,20 @@ export function AdoptionGuideReleaseManagementView({
               </section>
 
               <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  disabled={locked}
-                  onClick={() => onSave?.({ ...draft, expectedVersion: selected.version })}
-                  className="rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold disabled:opacity-50"
-                >
-                  儲存草稿
-                </button>
                 {selected.state === "draft" ? (
                   <button
                     type="button"
-                    disabled={locked || !readiness?.ready}
+                    disabled={locked}
+                    onClick={() => onSave?.({ ...draft, expectedVersion: selected.version })}
+                    className="rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold disabled:opacity-50"
+                  >
+                    儲存草稿
+                  </button>
+                ) : null}
+                {selected.state === "draft" ? (
+                  <button
+                    type="button"
+                    disabled={locked || !workflow?.canSubmit}
                     onClick={onSubmit}
                     className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50"
                   >
@@ -633,10 +699,10 @@ export function AdoptionGuideReleaseManagementView({
                     退回草稿
                   </button>
                 ) : null}
-                {selected.state === "in_review" && actorRole === "admin" && readiness?.ready ? (
+                {selected.state === "in_review" && actorRole === "admin" ? (
                   <button
                     type="button"
-                    disabled={locked}
+                    disabled={locked || !workflow?.canPublish}
                     onClick={onPublish}
                     className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50"
                   >
@@ -758,14 +824,14 @@ function PreviewCard({
       <div className="mt-3 flex flex-wrap gap-3 text-sm">
         {zhHkUrl ? (
           <a href={zhHkUrl} target="_blank" rel="noreferrer">
-            預覽中文版 PDF
+            中文版
           </a>
         ) : (
           <span>中文版 PDF 尚未準備</span>
         )}
         {enUrl ? (
           <a href={enUrl} target="_blank" rel="noreferrer">
-            Preview English PDF
+            English
           </a>
         ) : (
           <span>English PDF 尚未準備</span>

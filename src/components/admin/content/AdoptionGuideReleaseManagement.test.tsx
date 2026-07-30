@@ -152,7 +152,7 @@ describe("AdoptionGuideReleaseManagementView", () => {
 
     expect(draftHtml).toContain('accept="application/pdf"');
     expect(draftHtml).toContain("只可上傳 PDF 檔案");
-    expect(draftHtml).toContain("預覽中文版 PDF");
+    expect(draftHtml).toContain("中文版");
     expect(draftHtml).toContain("https://preview.test/cat-zh.pdf");
     expect(reviewHtml).toContain("撤回提交");
     expect(reviewHtml).toContain("退回草稿");
@@ -171,5 +171,49 @@ describe("AdoptionGuideReleaseManagementView", () => {
 
     expect(html).toContain("This release changed elsewhere. Reload before saving again.");
     expect(html).toContain('value="貓咪領養後照顧"');
+  });
+  test("renders every non-draft state read-only", () => {
+    for (const state of ["in_review", "published", "archived"] as const) {
+      const html = renderToStaticMarkup(
+        <AdoptionGuideReleaseManagementView
+          actorRole="admin"
+          releases={[{ ...readyReview, state }]}
+          selected={{ ...readyReview, state }}
+          preview={{
+            ...incompletePreview,
+            release: { ...readyReview, state },
+            readiness: { ready: true, issues: [] },
+          }}
+        />,
+      );
+
+      expect(html).toContain("disabled");
+      expect(html).not.toContain("儲存草稿");
+    }
+  });
+
+  test("uses exact bilingual preview action labels", () => {
+    const html = renderToStaticMarkup(
+      <AdoptionGuideReleaseManagementView
+        actorRole="admin"
+        releases={[readyReview]}
+        selected={readyReview}
+        preview={{
+          ...incompletePreview,
+          release: readyReview,
+          readiness: { ready: true, issues: [] },
+          adoptionPanel: {
+            heading: "Cat guide",
+            zhHkUrl: "https://preview.test/zh",
+            enUrl: "https://preview.test/en",
+          },
+        }}
+      />,
+    );
+
+    expect(html).toContain(">中文版</a>");
+    expect(html).toContain(">English</a>");
+    expect(html).not.toContain("預覽中文版 PDF");
+    expect(html).not.toContain("Preview English PDF");
   });
 });
