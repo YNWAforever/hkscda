@@ -94,6 +94,12 @@ describe("adoption instructions content schema", () => {
         hero: { ...initialAdoptionInstructionContent.hero, description: "https://example.test" },
       }).success,
     ).toBe(false);
+    expect(
+      adoptionInstructionContentSchema.safeParse({
+        ...initialAdoptionInstructionContent,
+        hero: { ...initialAdoptionInstructionContent.hero, description: "www.example.test" },
+      }).success,
+    ).toBe(false);
   });
 
   test("keeps the SQL seed reviewable against the application seed", () => {
@@ -110,5 +116,38 @@ describe("adoption instructions content schema", () => {
     expect(migration).toContain(initialAdoptionInstructionContent.care.cat.topics.at(-1)!.value);
     expect(migration).toContain(initialAdoptionInstructionContent.care.dog.topics[0].value);
     expect(migration).toContain(initialAdoptionInstructionContent.care.dog.topics.at(-1)!.value);
+    expect(migration).toContain("www\\.");
+    expect(migration).not.toContain("www\\\\.");
+  });
+
+  test("keeps SQL fixed-field limits aligned with the application schema", () => {
+    const migration = readFileSync(migrationPath, "utf8");
+
+    for (const [path, max] of [
+      ["hero.eyebrow", 120],
+      ["hero.title", 180],
+      ["hero.description", 500],
+      ["fees.sectionTitle", 180],
+      ["fees.itemLabel", 120],
+      ["fees.notice", 500],
+      ["estates.introduction", 500],
+      ["guides.zhHkActionLabel", 120],
+      ["rules.title", 180],
+      ["care.cat.title", 180],
+    ]) {
+      expect(migration).toContain(`when '${path}' then ${max}`);
+    }
+  });
+
+  test("uses the seed document as the route rules and care copy source", () => {
+    const routeSource = readFileSync(
+      join(process.cwd(), "src", "routes", "adoption", "instructions.tsx"),
+      "utf8",
+    );
+
+    expect(routeSource).toContain('import { initialAdoptionInstructionContent }');
+    expect(routeSource).not.toContain("const adoptionRules =");
+    expect(routeSource).not.toContain("const catCareTopics =");
+    expect(routeSource).not.toContain("const dogCareTopics =");
   });
 });

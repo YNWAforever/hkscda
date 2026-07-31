@@ -53,8 +53,8 @@ export interface AdoptionInstructionRevision {
   content: AdoptionInstructionContent;
   sourceRevisionId: string | null;
   version: number;
-  createdBy: string;
-  updatedBy: string;
+  createdBy: string | null;
+  updatedBy: string | null;
   publishedBy: string | null;
   publishedAt: string | null;
   createdAt: string;

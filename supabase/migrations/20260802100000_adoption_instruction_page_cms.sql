@@ -7,7 +7,7 @@ immutable
 as $$
   select value is not null
     and char_length(btrim(value)) between 1 and max_length
-    and value !~* '(<|>|javascript:|https://|http://|www\\.)';
+    and value !~* '(<|>|javascript:|https://|http://|www\.)';
 $$;
 
 create or replace function private.has_exact_jsonb_keys(candidate jsonb, expected text[])
@@ -27,6 +27,7 @@ immutable
 as $$
 declare
   text_path text[];
+  max_length integer;
   rule jsonb;
   topic jsonb;
 begin
@@ -52,8 +53,36 @@ begin
     array['guides', 'generalTitle'], array['guides', 'zhHkActionLabel'], array['guides', 'enActionLabel'],
     array['rules', 'title'], array['care', 'cat', 'title'], array['care', 'dog', 'title']
   ] loop
-    if jsonb_typeof(candidate #> text_path) <> 'string'
-      or not private.is_adoption_instruction_plain_text(candidate #>> text_path, 2000)
+    max_length := case array_to_string(text_path, '.')
+      when 'hero.eyebrow' then 120
+      when 'hero.title' then 180
+      when 'hero.description' then 500
+      when 'fees.sectionTitle' then 180
+      when 'fees.dogTitle' then 180
+      when 'fees.catTitle' then 180
+      when 'fees.itemLabel' then 120
+      when 'fees.amountLabel' then 120
+      when 'fees.notice' then 500
+      when 'estates.sectionTitle' then 180
+      when 'estates.introduction' then 500
+      when 'estates.estateLabel' then 120
+      when 'estates.districtLabel' then 120
+      when 'estates.notesLabel' then 120
+      when 'estates.emptyState' then 500
+      when 'guides.sectionTitle' then 180
+      when 'guides.catTitle' then 180
+      when 'guides.dogTitle' then 180
+      when 'guides.generalTitle' then 180
+      when 'guides.zhHkActionLabel' then 120
+      when 'guides.enActionLabel' then 120
+      when 'rules.title' then 180
+      when 'care.cat.title' then 180
+      when 'care.dog.title' then 180
+      else null
+    end;
+    if max_length is null
+      or jsonb_typeof(candidate #> text_path) <> 'string'
+      or not private.is_adoption_instruction_plain_text(candidate #>> text_path, max_length)
     then
       return false;
     end if;
