@@ -15,7 +15,7 @@ const POST_BASE_COLUMNS =
   "id,title,topic,short_intro,external_url,document_asset_id,zh_hk_document_asset_id,en_document_asset_id,source_name,is_published,sort_order,created_at,updated_at";
 const ZH_HK_ASSET_RELATION = `zh_hk_document_assets:document_assets!knowledge_posts_zh_hk_document_asset_id_fkey(${ASSET_COLUMNS})`;
 const EN_ASSET_RELATION = `en_document_assets:document_assets!knowledge_posts_en_document_asset_id_fkey(${ASSET_COLUMNS})`;
-const POST_COLUMNS = `${POST_BASE_COLUMNS},document_assets(${ASSET_COLUMNS}),${ZH_HK_ASSET_RELATION},${EN_ASSET_RELATION}`;
+const POST_COLUMNS = `${POST_BASE_COLUMNS},document_assets:document_assets!knowledge_posts_document_asset_id_fkey(${ASSET_COLUMNS}),${ZH_HK_ASSET_RELATION},${EN_ASSET_RELATION}`;
 const PUBLIC_PAIR_COLUMNS = `${POST_BASE_COLUMNS},zh_hk_document_assets:document_assets!knowledge_posts_zh_hk_document_asset_id_fkey!inner(${ASSET_COLUMNS}),en_document_assets:document_assets!knowledge_posts_en_document_asset_id_fkey!inner(${ASSET_COLUMNS})`;
 
 type Row = Record<string, unknown>;

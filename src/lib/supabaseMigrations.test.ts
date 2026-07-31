@@ -418,4 +418,34 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("target_slot_key || ':en'");
   });
 
+  test("optimizes adoption guide release foreign keys and authenticated RLS lookups", () => {
+    const fileName = readdirSync(join(process.cwd(), "supabase", "migrations")).find((entry) =>
+      entry.endsWith("_adoption_guide_release_cms_advisor_fixes.sql"),
+    );
+
+    expect(fileName).toBeDefined();
+    if (!fileName) return;
+
+    const sql = readMigration(fileName);
+    const indexedColumns = [
+      "release_id",
+      "archived_by",
+      "created_by",
+      "en_asset_id",
+      "knowledge_post_id",
+      "published_by",
+      "submitted_by",
+      "updated_by",
+      "zh_hk_asset_id",
+    ];
+
+    for (const column of indexedColumns) {
+      expect(sql).toMatch(
+        new RegExp(`create index if not exists [^\\n]+\\s+on public\\.[^(\\n]+ \\(${column}\\);`),
+      );
+    }
+    expect(sql.match(/actor\.auth_user_id = \(select auth\.uid\(\)\)/g)).toHaveLength(2);
+    expect(sql).not.toContain("actor.auth_user_id = auth.uid()");
+  });
+
 });

@@ -148,6 +148,22 @@ describe("Supabase knowledge repository", () => {
     });
   });
 
+  test("disambiguates the legacy document asset relationship after adding bilingual assets", async () => {
+    const client = createClient([row]);
+    const repo = createSupabaseKnowledgeRepository(client as never);
+
+    await repo.listPublished();
+
+    const selectCalls = client.calls.filter(
+      (call): call is { name: "select"; columns: string } =>
+        (call as { name?: unknown }).name === "select",
+    );
+    const legacySelect = selectCalls.find(({ columns }) => !columns.includes("!inner"));
+    expect(legacySelect?.columns).toContain(
+      "document_assets:document_assets!knowledge_posts_document_asset_id_fkey",
+    );
+  });
+
   test("keeps pair-query duplicate precedence and restores stable public ordering", async () => {
     const pairOlder = {
       ...pairedRow,
