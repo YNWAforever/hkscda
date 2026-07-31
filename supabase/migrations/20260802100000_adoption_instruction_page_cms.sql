@@ -130,6 +130,9 @@ begin
     if (select count(*) <> count(distinct value->>'id') from jsonb_array_elements(candidate #> text_path)) then
       return false;
     end if;
+    if (select count(*) <> count(distinct value->>'value') from jsonb_array_elements(candidate #> text_path)) then
+      return false;
+    end if;
   end loop;
 
   return true;

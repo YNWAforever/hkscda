@@ -156,6 +156,12 @@ describe("adoption instructions content schema", () => {
     }
   });
 
+  test("keeps database topic values unique per species", () => {
+    const migration = readFileSync(migrationPath, "utf8");
+
+    expect(migration).toContain("count(distinct value->>'value')");
+  });
+
   test("uses the seed document as the route rules and care copy source", () => {
     const routeSource = readFileSync(
       join(process.cwd(), "src", "routes", "adoption", "instructions.tsx"),
