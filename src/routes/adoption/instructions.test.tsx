@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 
 import type { PublicAdoptionPageData } from "../../lib/adoptionInformation/publicPage.server";
 import { createAdoptionInstructionsLoader } from "../../lib/adoptionInformation/publicPage.loader";
+import { initialAdoptionInstructionContent } from "../../lib/adoptionInstructions/content";
 
 mock.module("@tanstack/react-router", () => ({
   createFileRoute: () => (options: unknown) => options,
@@ -46,6 +47,7 @@ const fee = (animalType: "dog" | "cat", row: readonly [string, string], index: n
 });
 
 const data = {
+  copy: initialAdoptionInstructionContent,
   feesBySpecies: {
     dog: dogRows.map((row, index) => fee("dog", row, index)),
     cat: catRows.map((row, index) => fee("cat", row, index)),
@@ -235,5 +237,41 @@ describe("adoption instructions route", () => {
     expect(markup).toContain("領養規則");
     expect(markup).toContain("養貓需知");
     expect(markup).toContain("養狗需知");
+  });
+
+  test("renders the selected published copy and activates its first custom care topic", async () => {
+    const { AdoptionInstructionsContent } = await import("./instructions");
+    const copy = {
+      ...initialAdoptionInstructionContent,
+      hero: {
+        ...initialAdoptionInstructionContent.hero,
+        eyebrow: "Published eyebrow",
+        title: "Published instructions title",
+      },
+      rules: {
+        title: "Published rules",
+        items: [{ id: "published-rule", text: "Published rule text" }],
+      },
+      care: {
+        ...initialAdoptionInstructionContent.care,
+        cat: {
+          title: "Published cat care",
+          topics: [
+            { id: "cat-away", value: "away", label: "Away first", content: "Away content" },
+            { id: "cat-home", value: "home", label: "Home second", content: "Home content" },
+          ],
+        },
+      },
+    };
+    const markup = renderToStaticMarkup(
+      <AdoptionInstructionsContent data={{ ...data, copy } as PublicAdoptionPageData} />,
+    );
+
+    expect(markup).toContain("Published eyebrow");
+    expect(markup).toContain("Published instructions title");
+    expect(markup).toContain("Published rules");
+    expect(markup).toContain("Published rule text");
+    expect(markup).toContain('aria-controls="radix-_R_k_-content-away"');
+    expect(markup).toMatch(/aria-controls="radix-_R_k_-content-away" data-state="active"/);
   });
 });

@@ -117,6 +117,7 @@ import { Route as AdminContentNewRouteImport } from './routes/admin/content/new'
 import { Route as AdminContentKnowledgeRouteImport } from './routes/admin/content/knowledge'
 import { Route as AdminContentDocumentsRouteImport } from './routes/admin/content/documents'
 import { Route as AdminContentAnnualReportsRouteImport } from './routes/admin/content/annual-reports'
+import { Route as AdminContentAdoptionPreviewRouteImport } from './routes/admin/content/adoption-preview'
 import { Route as AdminContentAdoptionGuidesRouteImport } from './routes/admin/content/adoption-guides'
 import { Route as AdminContentAdoptionRouteImport } from './routes/admin/content/adoption'
 import { Route as AdminContentAboutRouteImport } from './routes/admin/content/about'
@@ -804,6 +805,12 @@ const AdminContentAnnualReportsRoute =
   AdminContentAnnualReportsRouteImport.update({
     id: '/annual-reports',
     path: '/annual-reports',
+    getParentRoute: () => AdminContentRoute,
+  } as any)
+const AdminContentAdoptionPreviewRoute =
+  AdminContentAdoptionPreviewRouteImport.update({
+    id: '/adoption-preview',
+    path: '/adoption-preview',
     getParentRoute: () => AdminContentRoute,
   } as any)
 const AdminContentAdoptionGuidesRoute =
@@ -1622,6 +1629,7 @@ export interface FileRoutesByFullPath {
   '/admin/content/about': typeof AdminContentAboutRoute
   '/admin/content/adoption': typeof AdminContentAdoptionRoute
   '/admin/content/adoption-guides': typeof AdminContentAdoptionGuidesRoute
+  '/admin/content/adoption-preview': typeof AdminContentAdoptionPreviewRoute
   '/admin/content/annual-reports': typeof AdminContentAnnualReportsRoute
   '/admin/content/documents': typeof AdminContentDocumentsRoute
   '/admin/content/knowledge': typeof AdminContentKnowledgeRoute
@@ -1863,6 +1871,7 @@ export interface FileRoutesByTo {
   '/admin/content/about': typeof AdminContentAboutRoute
   '/admin/content/adoption': typeof AdminContentAdoptionRoute
   '/admin/content/adoption-guides': typeof AdminContentAdoptionGuidesRoute
+  '/admin/content/adoption-preview': typeof AdminContentAdoptionPreviewRoute
   '/admin/content/annual-reports': typeof AdminContentAnnualReportsRoute
   '/admin/content/documents': typeof AdminContentDocumentsRoute
   '/admin/content/knowledge': typeof AdminContentKnowledgeRoute
@@ -2106,6 +2115,7 @@ export interface FileRoutesById {
   '/admin/content/about': typeof AdminContentAboutRoute
   '/admin/content/adoption': typeof AdminContentAdoptionRoute
   '/admin/content/adoption-guides': typeof AdminContentAdoptionGuidesRoute
+  '/admin/content/adoption-preview': typeof AdminContentAdoptionPreviewRoute
   '/admin/content/annual-reports': typeof AdminContentAnnualReportsRoute
   '/admin/content/documents': typeof AdminContentDocumentsRoute
   '/admin/content/knowledge': typeof AdminContentKnowledgeRoute
@@ -2350,6 +2360,7 @@ export interface FileRouteTypes {
     | '/admin/content/about'
     | '/admin/content/adoption'
     | '/admin/content/adoption-guides'
+    | '/admin/content/adoption-preview'
     | '/admin/content/annual-reports'
     | '/admin/content/documents'
     | '/admin/content/knowledge'
@@ -2591,6 +2602,7 @@ export interface FileRouteTypes {
     | '/admin/content/about'
     | '/admin/content/adoption'
     | '/admin/content/adoption-guides'
+    | '/admin/content/adoption-preview'
     | '/admin/content/annual-reports'
     | '/admin/content/documents'
     | '/admin/content/knowledge'
@@ -2833,6 +2845,7 @@ export interface FileRouteTypes {
     | '/admin/content/about'
     | '/admin/content/adoption'
     | '/admin/content/adoption-guides'
+    | '/admin/content/adoption-preview'
     | '/admin/content/annual-reports'
     | '/admin/content/documents'
     | '/admin/content/knowledge'
@@ -3927,6 +3940,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminContentAnnualReportsRouteImport
       parentRoute: typeof AdminContentRoute
     }
+    '/admin/content/adoption-preview': {
+      id: '/admin/content/adoption-preview'
+      path: '/adoption-preview'
+      fullPath: '/admin/content/adoption-preview'
+      preLoaderRoute: typeof AdminContentAdoptionPreviewRouteImport
+      parentRoute: typeof AdminContentRoute
+    }
     '/admin/content/adoption-guides': {
       id: '/admin/content/adoption-guides'
       path: '/adoption-guides'
@@ -4899,6 +4919,7 @@ interface AdminContentRouteChildren {
   AdminContentAboutRoute: typeof AdminContentAboutRoute
   AdminContentAdoptionRoute: typeof AdminContentAdoptionRoute
   AdminContentAdoptionGuidesRoute: typeof AdminContentAdoptionGuidesRoute
+  AdminContentAdoptionPreviewRoute: typeof AdminContentAdoptionPreviewRoute
   AdminContentAnnualReportsRoute: typeof AdminContentAnnualReportsRoute
   AdminContentDocumentsRoute: typeof AdminContentDocumentsRoute
   AdminContentKnowledgeRoute: typeof AdminContentKnowledgeRoute
@@ -4910,6 +4931,7 @@ const AdminContentRouteChildren: AdminContentRouteChildren = {
   AdminContentAboutRoute: AdminContentAboutRoute,
   AdminContentAdoptionRoute: AdminContentAdoptionRoute,
   AdminContentAdoptionGuidesRoute: AdminContentAdoptionGuidesRoute,
+  AdminContentAdoptionPreviewRoute: AdminContentAdoptionPreviewRoute,
   AdminContentAnnualReportsRoute: AdminContentAnnualReportsRoute,
   AdminContentDocumentsRoute: AdminContentDocumentsRoute,
   AdminContentKnowledgeRoute: AdminContentKnowledgeRoute,
