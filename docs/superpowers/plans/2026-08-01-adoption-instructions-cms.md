@@ -64,7 +64,7 @@
   }).success).toBe(false);
   ```
 
-  Also read `supabase/migrations/20260802100000_adoption_instruction_page_cms.sql` as UTF-8 and assert that it contains `initialAdoptionInstructionContentJson`; this keeps the SQL seed reviewable against the application seed rather than silently drifting.
+  Also read `supabase/migrations/20260802100000_adoption_instruction_page_cms.sql` as UTF-8 and assert that it contains the seeded page key, every top-level JSON key, the current hero title, the first and last rule, and the first and last care-topic values. This keeps the SQL seed reviewable against the application seed without pretending SQL can import a TypeScript module.
 
 - [ ] **Step 2: Run the focused test to verify the contract is not implemented**
 
@@ -78,7 +78,7 @@
 
 - [ ] **Step 4: Add the additive Supabase schema, seed, grants, and invariants**
 
-  In one migration, create `public.adoption_instruction_pages` keyed by `page_key = 'adoption-instructions'`, `public.adoption_instruction_revisions` with `revision_number`, `state` (`draft`, `published`, `archived`), `content jsonb`, `source_revision_id`, `version`, actor/timestamp columns, and `public.adoption_instruction_publish_requests` for idempotency. Add foreign keys after both tables exist, a unique `(page_key, revision_number)`, partial unique indexes for one draft and one published revision, and checks for positive versions and the singleton page key. Insert the singleton pointer and revision 1 using the exact JSON from the current page.
+  First run `supabase --version`, `supabase migration new --help`, and `supabase migration new adoption_instruction_page_cms`; use the generated file as the starting point, then rename it to `supabase/migrations/20260802100000_adoption_instruction_page_cms.sql` so the committed path remains deterministic. In that migration, create `public.adoption_instruction_pages` keyed by `page_key = 'adoption-instructions'`, `public.adoption_instruction_revisions` with `revision_number`, `state` (`draft`, `published`, `archived`), `content jsonb`, `source_revision_id`, `version`, actor/timestamp columns, and `public.adoption_instruction_publish_requests` for idempotency. Add foreign keys after both tables exist, a unique `(page_key, revision_number)`, partial unique indexes for one draft and one published revision, and checks for positive versions and the singleton page key. Insert the singleton pointer and revision 1 using the exact JSON from the current page.
 
   Enable RLS, grant server-side access to `service_role`, revoke direct anonymous/authenticated writes, and add the existing staff/admin read/write policies. Add the atomic security-invoker RPCs `ensure_adoption_instruction_draft`, `update_adoption_instruction_draft`, `publish_adoption_instruction_page`, and `restore_adoption_instruction_revision`; each RPC must lock the singleton/revision rows, verify an active actor from `admin_user`, enforce expected version, validate the JSON shape with the database checks, update pointers atomically, and insert an `audit_log` row. Publishing archives the prior pointer, clears the draft pointer, and records the idempotency result. Restoring copies the selected historical content into a new draft with `source_revision_id`.
 
