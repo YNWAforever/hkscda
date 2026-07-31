@@ -215,6 +215,12 @@ function ContentManagementView({
             ????
           </Link>
           <Link
+            to="/admin/content/adoption-guides"
+            className="rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)]"
+          >
+            {"\u9818\u990a\u5f8c\u6307\u5357\u7248\u672c"}
+          </Link>
+          <Link
             to="/admin/content/documents"
             className="rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)]"
           >

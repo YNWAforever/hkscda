@@ -196,6 +196,12 @@ export function AdoptionInformationManagementView({
         <p className="text-sm text-[var(--color-text-muted)]">
           管理公開領養費用及可養狗屋苑參考名單。
         </p>
+        <a
+          href="/admin/content/adoption-guides"
+          className="mt-3 inline-flex rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)]"
+        >
+          {"\u9818\u990a\u5f8c\u6307\u5357\u7248\u672c"}
+        </a>
       </div>
 
       <div className="flex gap-2 border-b border-[var(--color-border)]" role="tablist">

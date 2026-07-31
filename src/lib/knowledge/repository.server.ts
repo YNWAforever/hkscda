@@ -11,7 +11,12 @@ import type {
 
 const SITE_DOCUMENTS_BUCKET = "site-documents";
 const ASSET_COLUMNS = "id,bucket_name,object_path,mime_type,is_published";
-const POST_COLUMNS = `id,title,topic,short_intro,external_url,document_asset_id,source_name,is_published,sort_order,created_at,updated_at,document_assets(${ASSET_COLUMNS})`;
+const POST_BASE_COLUMNS =
+  "id,title,topic,short_intro,external_url,document_asset_id,zh_hk_document_asset_id,en_document_asset_id,source_name,is_published,sort_order,created_at,updated_at";
+const ZH_HK_ASSET_RELATION = `zh_hk_document_assets:document_assets!knowledge_posts_zh_hk_document_asset_id_fkey(${ASSET_COLUMNS})`;
+const EN_ASSET_RELATION = `en_document_assets:document_assets!knowledge_posts_en_document_asset_id_fkey(${ASSET_COLUMNS})`;
+const POST_COLUMNS = `${POST_BASE_COLUMNS},document_assets:document_assets!knowledge_posts_document_asset_id_fkey(${ASSET_COLUMNS}),${ZH_HK_ASSET_RELATION},${EN_ASSET_RELATION}`;
+const PUBLIC_PAIR_COLUMNS = `${POST_BASE_COLUMNS},zh_hk_document_assets:document_assets!knowledge_posts_zh_hk_document_asset_id_fkey!inner(${ASSET_COLUMNS}),en_document_assets:document_assets!knowledge_posts_en_document_asset_id_fkey!inner(${ASSET_COLUMNS})`;
 
 type Row = Record<string, unknown>;
 
@@ -21,6 +26,8 @@ const postRowSchema = z.object({
   topic: z.string().min(1),
   short_intro: z.string().min(1),
   external_url: z.string().nullable(),
+  zh_hk_document_asset_id: z.string().nullable(),
+  en_document_asset_id: z.string().nullable(),
   document_asset_id: z.string().nullable(),
   source_name: z.string().nullable(),
   is_published: z.boolean(),
@@ -44,6 +51,19 @@ function safeExternal(url: string | null) {
   }
 }
 
+function isSafeObjectPath(value: unknown): value is string {
+  if (
+    typeof value !== "string" ||
+    value.length === 0 ||
+    value.trim() !== value ||
+    value.startsWith("/") ||
+    value.includes("\\")
+  ) {
+    return false;
+  }
+  return value.split("/").every((segment) => segment.length > 0 && segment !== "." && segment !== "..");
+}
+
 function publicAssetUrl(client: SupabaseClient, value: unknown) {
   const row = relatedRow(value);
   if (
@@ -51,11 +71,14 @@ function publicAssetUrl(client: SupabaseClient, value: unknown) {
     row.is_published !== true ||
     row.bucket_name !== SITE_DOCUMENTS_BUCKET ||
     row.mime_type !== "application/pdf" ||
-    typeof row.object_path !== "string"
+    !isSafeObjectPath(row.object_path)
   ) {
     return null;
   }
-  return client.storage?.from(String(row.bucket_name)).getPublicUrl(row.object_path).data.publicUrl ?? null;
+  const publicUrl =
+    client.storage?.from(String(row.bucket_name)).getPublicUrl(row.object_path).data.publicUrl ??
+    null;
+  return safeExternal(publicUrl);
 }
 
 function mapPost(client: SupabaseClient, raw: Row, publicOnly = false): KnowledgePost | null {
@@ -65,9 +88,16 @@ function mapPost(client: SupabaseClient, raw: Row, publicOnly = false): Knowledg
 
   const externalUrl = safeExternal(parsed.data.external_url);
   const assetUrl = publicAssetUrl(client, raw.document_assets);
+  const zhHkAssetUrl = publicAssetUrl(client, raw.zh_hk_document_assets);
+  const enAssetUrl = publicAssetUrl(client, raw.en_document_assets);
+  const hasZhHkAssetId = Boolean(parsed.data.zh_hk_document_asset_id);
+  const hasEnAssetId = Boolean(parsed.data.en_document_asset_id);
+  if (hasZhHkAssetId !== hasEnAssetId) return null;
+
   const hasExternal = Boolean(externalUrl);
   const hasDocument = Boolean(parsed.data.document_asset_id && (!publicOnly || assetUrl));
-  if (Number(hasExternal) + Number(hasDocument) !== 1) return null;
+  const hasPair = hasZhHkAssetId && (!publicOnly || Boolean(zhHkAssetUrl && enAssetUrl));
+  if (Number(hasExternal) + Number(hasDocument) + Number(hasPair) !== 1) return null;
 
   return {
     id: parsed.data.id,
@@ -77,7 +107,15 @@ function mapPost(client: SupabaseClient, raw: Row, publicOnly = false): Knowledg
     sourceName: parsed.data.source_name,
     destination: hasExternal
       ? { kind: "external", url: externalUrl! }
-      : { kind: "document", assetId: parsed.data.document_asset_id!, url: assetUrl ?? undefined },
+      : hasDocument
+        ? { kind: "document", assetId: parsed.data.document_asset_id!, url: assetUrl ?? undefined }
+        : {
+            kind: "document_pair",
+            zhHkAssetId: parsed.data.zh_hk_document_asset_id!,
+            enAssetId: parsed.data.en_document_asset_id!,
+            zhHkUrl: zhHkAssetUrl ?? undefined,
+            enUrl: enAssetUrl ?? undefined,
+          },
     isPublished: parsed.data.is_published,
     sortOrder: parsed.data.sort_order,
     createdAt: parsed.data.created_at,
@@ -103,6 +141,10 @@ function toRow(input: KnowledgePostInput) {
     source_name: input.sourceName,
     external_url: input.destination.kind === "external" ? input.destination.url : null,
     document_asset_id: input.destination.kind === "document" ? input.destination.assetId : null,
+    zh_hk_document_asset_id:
+      input.destination.kind === "document_pair" ? input.destination.zhHkAssetId : null,
+    en_document_asset_id:
+      input.destination.kind === "document_pair" ? input.destination.enAssetId : null,
     is_published: input.isPublished,
     sort_order: input.sortOrder,
   };
@@ -117,18 +159,41 @@ function requirePost(client: SupabaseClient, data: unknown) {
 export function createSupabaseKnowledgeRepository(client: SupabaseClient): KnowledgeRepository {
   return {
     async listPublished() {
-      const { data, error } = await client
-        .from("knowledge_posts")
-        .select(POST_COLUMNS)
-        .eq("is_published", true)
-        .eq("document_assets.is_published", true)
-        .order("sort_order", { ascending: true })
-        .order("created_at", { ascending: false })
-        .range(0, 999);
-      if (error) throw error;
-      return ((data ?? []) as Row[])
+      const [pairResult, legacyResult] = await Promise.all([
+        client
+          .from("knowledge_posts")
+          .select(PUBLIC_PAIR_COLUMNS)
+          .eq("is_published", true)
+          .eq("zh_hk_document_assets.is_published", true)
+          .eq("en_document_assets.is_published", true)
+          .order("sort_order", { ascending: true })
+          .order("created_at", { ascending: false })
+          .range(0, 999),
+        client
+          .from("knowledge_posts")
+          .select(POST_COLUMNS)
+          .eq("is_published", true)
+          .eq("document_assets.is_published", true)
+          .or("external_url.not.is.null,document_asset_id.not.is.null")
+          .order("sort_order", { ascending: true })
+          .order("created_at", { ascending: false })
+          .range(0, 999),
+      ]);
+      if (pairResult.error) throw pairResult.error;
+      if (legacyResult.error) throw legacyResult.error;
+
+      const posts = [...((pairResult.data ?? []) as Row[]), ...((legacyResult.data ?? []) as Row[])]
         .map((row) => mapPost(client, row, true))
         .filter((row): row is KnowledgePost => row !== null);
+      const uniquePostsById = new Map<string, KnowledgePost>();
+      for (const post of posts) {
+        if (!uniquePostsById.has(post.id)) uniquePostsById.set(post.id, post);
+      }
+      const uniquePosts = [...uniquePostsById.values()];
+      return uniquePosts.sort(
+        (left, right) =>
+          left.sortOrder - right.sortOrder || right.createdAt.localeCompare(left.createdAt),
+      );
     },
 
     async listAdmin(input: AdminKnowledgeQuery) {

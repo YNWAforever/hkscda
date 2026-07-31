@@ -15,6 +15,7 @@ import { getSupabaseClient } from "../../../lib/supabase";
 import { pageAfterDelete } from "./documentManagementLogic";
 import type { DocumentAsset, DocumentKind, DocumentLanguage } from "../../../lib/documents/types";
 import { uploadDocumentPdf } from "./documentUpload";
+import { fetchAdoptionGuideReleaseOwnership } from "./adoptionGuideReleaseLogic";
 
 const kindLabels: Record<DocumentKind, string> = {
   annual_report: "年度報告",
@@ -57,6 +58,11 @@ function DocumentManagementRuntime() {
   const documentsQuery = useQuery({
     queryKey: ["admin-documents", search],
     queryFn: () => fetchAdminJson<DocumentListData>(`/api/admin/documents?${search}`),
+  });
+
+  const ownershipQuery = useQuery({
+    queryKey: ["adoption-guide-release-ownership"],
+    queryFn: () => fetchAdoptionGuideReleaseOwnership(),
   });
 
   const uploadMutation = useMutation({
@@ -125,9 +131,12 @@ function DocumentManagementRuntime() {
   return (
     <DocumentManagementView
       data={documentsQuery.data}
-      loading={documentsQuery.isLoading}
+      ownershipReady={ownershipQuery.isSuccess}
+      ownerReleaseIds={ownershipQuery.data?.ownerReleaseIdsByAssetId}
+      loading={documentsQuery.isLoading || ownershipQuery.isLoading}
       error={
         (documentsQuery.error instanceof Error ? documentsQuery.error.message : null) ??
+        (ownershipQuery.error instanceof Error ? ownershipQuery.error.message : null) ??
         (uploadMutation.error instanceof Error ? uploadMutation.error.message : null) ??
         (actionMutation.error instanceof Error ? actionMutation.error.message : null)
       }
@@ -166,6 +175,8 @@ function DocumentManagementRuntime() {
 
 type ViewProps = {
   data?: DocumentListData;
+  ownershipReady?: boolean;
+  ownerReleaseIds?: Readonly<Record<string, string>>;
   loading?: boolean;
   error?: string | null;
   query?: string;
@@ -190,8 +201,10 @@ type ViewProps = {
   onAction?: (id: string, action: "publish" | "unpublish" | "delete") => void;
 };
 
-function DocumentManagementView({
+export function DocumentManagementView({
   data,
+  ownershipReady = true,
+  ownerReleaseIds = {},
   loading = false,
   error,
   query = "",
@@ -377,6 +390,14 @@ function DocumentManagementView({
                     <span className="mt-1 block text-xs text-[var(--color-text-muted)]">
                       {item.objectPath}
                     </span>
+                    {ownerReleaseIds[item.id] ? (
+                      <a
+                        href={`/admin/content/adoption-guides?releaseId=${encodeURIComponent(ownerReleaseIds[item.id])}`}
+                        className="mt-1 block text-xs font-semibold text-[var(--color-primary)] underline"
+                      >
+                        {"\u7531\u9818\u990a\u6307\u5357\u7248\u672c\u7ba1\u7406"}
+                      </a>
+                    ) : null}
                   </td>
                   <td className="px-3 py-3">
                     {kindLabels[item.kind]}
@@ -388,7 +409,7 @@ function DocumentManagementView({
                   <td className="px-3 py-3">{item.isPublished ? "已發佈" : "未發佈"}</td>
                   <td className="px-3 py-3">
                     <div className="flex justify-end gap-2">
-                      {onAction ? (
+                      {ownershipReady && onAction && !ownerReleaseIds[item.id] ? (
                         <>
                           <button
                             type="button"

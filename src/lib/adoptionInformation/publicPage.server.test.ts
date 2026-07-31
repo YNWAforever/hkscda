@@ -3,9 +3,13 @@ import { describe, expect, test } from "bun:test";
 import type { DocumentSlot } from "../documents/types";
 import { POST_ADOPTION_GUIDE_SLOT_KEY, createPublicAdoptionPageReader } from "./publicPage.server";
 
-const guide = (language: "zh-HK" | "en", id: string): DocumentSlot => ({
+const guide = (
+  language: "zh-HK" | "en",
+  id: string,
+  slotKey = POST_ADOPTION_GUIDE_SLOT_KEY,
+): DocumentSlot => ({
   id: "slot-" + id,
-  slotKey: POST_ADOPTION_GUIDE_SLOT_KEY,
+  slotKey,
   language,
   isPublished: true,
   document: {
@@ -27,7 +31,7 @@ const guide = (language: "zh-HK" | "en", id: string): DocumentSlot => ({
 });
 
 describe("public adoption information page reader", () => {
-  test("groups fees in stable species order and resolves shared guide slots", async () => {
+  test("groups complete bilingual guide slots by species", async () => {
     const calls: string[][] = [];
     const read = createPublicAdoptionPageReader({
       adoptionRepository: {
@@ -57,7 +61,10 @@ describe("public adoption information page reader", () => {
       },
       async loadGuides(slotKeys) {
         calls.push(slotKeys);
-        return [guide("en", "guide-en"), guide("zh-HK", "guide-zh")];
+        return [
+          guide("en", "guide-en", "post_adoption_guide_cat"),
+          guide("zh-HK", "guide-zh", "post_adoption_guide_cat"),
+        ];
       },
     });
 
@@ -65,12 +72,24 @@ describe("public adoption information page reader", () => {
     expect(result.feesBySpecies.dog.map((fee) => fee.id)).toEqual(["fee-dog"]);
     expect(result.feesBySpecies.cat.map((fee) => fee.id)).toEqual(["fee-cat"]);
     expect(result.estates).toEqual([]);
-    expect(result.guides.map((slot) => slot.language)).toEqual(["zh-HK", "en"]);
-    expect(calls).toEqual([[POST_ADOPTION_GUIDE_SLOT_KEY]]);
+    expect(result.guideGroups).toEqual([
+      {
+        species: "cat",
+        zhHk: expect.objectContaining({ language: "zh-HK" }),
+        en: expect.objectContaining({ language: "en" }),
+      },
+    ]);
+    expect(calls).toEqual([
+      [
+        "post_adoption_guide_cat",
+        "post_adoption_guide_dog",
+        "post_adoption_guide_general",
+        POST_ADOPTION_GUIDE_SLOT_KEY,
+      ],
+    ]);
   });
 
-  test("discards unpublished guide slots defensively", async () => {
-    const unpublished = { ...guide("zh-HK", "guide-zh"), isPublished: false };
+  test("falls back to legacy slots before a coordinated release exists", async () => {
     const read = createPublicAdoptionPageReader({
       adoptionRepository: {
         async listPublic() {
@@ -78,10 +97,33 @@ describe("public adoption information page reader", () => {
         },
       },
       async loadGuides() {
-        return [unpublished];
+        return [guide("zh-HK", "guide-zh"), guide("en", "guide-en")];
       },
     });
 
-    expect((await read()).guides).toEqual([]);
+    expect((await read()).guideGroups).toEqual([
+      {
+        species: "general",
+        zhHk: expect.objectContaining({ slotKey: POST_ADOPTION_GUIDE_SLOT_KEY }),
+        en: expect.objectContaining({ slotKey: POST_ADOPTION_GUIDE_SLOT_KEY }),
+      },
+    ]);
+  });
+
+  test("does not expose an incomplete or unpublished pair", async () => {
+    const unpublished = guide("en", "guide-en", "post_adoption_guide_dog");
+    unpublished.document.isPublished = false;
+    const read = createPublicAdoptionPageReader({
+      adoptionRepository: {
+        async listPublic() {
+          return { fees: [], estates: [] };
+        },
+      },
+      async loadGuides() {
+        return [guide("zh-HK", "guide-zh", "post_adoption_guide_dog"), unpublished];
+      },
+    });
+
+    expect((await read()).guideGroups).toEqual([]);
   });
 });

@@ -101,6 +101,82 @@ describe("KnowledgeManagement", () => {
     expect(markup).toContain("What you need to know after adoption");
   });
 
+  test("renders release-managed bilingual posts read-only with both asset IDs", () => {
+    const zhHkAssetId = "11111111-2222-4333-8444-555555555555";
+    const enAssetId = "66666666-7777-4888-8999-000000000000";
+    const markup = renderToStaticMarkup(
+      <KnowledgeManagementView
+        data={{
+          posts: [
+            {
+              ...post,
+              id: "paired-post",
+              destination: {
+                kind: "document_pair",
+                zhHkAssetId,
+                enAssetId,
+              },
+            },
+          ],
+          total: 1,
+          page: 1,
+          pageSize: 50,
+        }}
+        documents={[documentAsset]}
+        query=""
+        ownerReleaseIds={{ "paired-post": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee" }}
+      />,
+    );
+
+    const marker = 'data-release-managed-knowledge="paired-post"';
+    expect(markup).toContain(marker);
+    const sectionStart = markup.indexOf(marker);
+    const sectionEnd = markup.indexOf("</section>", sectionStart);
+    const pairedSection = markup.slice(sectionStart, sectionEnd);
+
+    expect(pairedSection).toContain("\u7531\u9818\u990a\u6307\u5357\u7248\u672c\u7ba1\u7406");
+    expect(pairedSection).toContain(
+      'href="/admin/content/adoption-guides?releaseId=aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"',
+    );
+    expect(pairedSection).toContain(zhHkAssetId);
+    expect(pairedSection).toContain(enAssetId);
+    expect(pairedSection).not.toContain("Destination mode");
+    expect(pairedSection).not.toContain("<input");
+    expect(pairedSection).not.toContain("<select");
+    expect(pairedSection).not.toContain("<button");
+    expect(pairedSection).not.toContain("Save");
+    expect(pairedSection).not.toContain("Delete");
+  });
+
+  test("keeps unrelated Knowledge controls and fails closed while ownership is unknown", () => {
+    const unrelated = renderToStaticMarkup(
+      <KnowledgeManagementView
+        data={{ posts: [post], total: 1, page: 1, pageSize: 50 }}
+        documents={[documentAsset]}
+        query=""
+        ownershipReady
+        onSave={() => undefined}
+        onDelete={() => undefined}
+      />,
+    );
+    expect(unrelated).toContain("Save");
+    expect(unrelated).toContain("Delete");
+    expect(unrelated).not.toContain("/admin/content/adoption-guides?releaseId=");
+
+    const unknown = renderToStaticMarkup(
+      <KnowledgeManagementView
+        data={{ posts: [post], total: 1, page: 1, pageSize: 50 }}
+        documents={[documentAsset]}
+        query=""
+        ownershipReady={false}
+        onSave={() => undefined}
+        onDelete={() => undefined}
+      />,
+    );
+    expect(unknown).not.toContain("Save");
+    expect(unknown).not.toContain("Delete");
+  });
+
   test("renders loading and empty states", () => {
     expect(
       renderToStaticMarkup(

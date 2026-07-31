@@ -3,7 +3,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type { DocumentAsset } from "../../../lib/documents/types";
-import type { AdminKnowledgePage, AdminKnowledgeStatus, KnowledgePost, KnowledgePostInput } from "../../../lib/knowledge/types";
+import type {
+  AdminKnowledgePage,
+  AdminKnowledgeStatus,
+  KnowledgePost,
+  KnowledgePostInput,
+} from "../../../lib/knowledge/types";
+import { fetchAdoptionGuideReleaseOwnership } from "./adoptionGuideReleaseLogic";
 
 export const ADMIN_KNOWLEDGE_QUERY_KEY = ["admin-knowledge"] as const;
 
@@ -52,6 +58,9 @@ export function invalidateKnowledgeQueries(client: {
 }
 
 function draftFromPost(post?: KnowledgePost): KnowledgeDraft {
+  if (post?.destination.kind === "document_pair") {
+    throw new Error("Release-managed knowledge posts cannot be edited here");
+  }
   return {
     id: post?.id,
     title: post?.title ?? "",
@@ -66,7 +75,9 @@ function draftFromPost(post?: KnowledgePost): KnowledgeDraft {
   };
 }
 
-function toInput(draft: KnowledgeDraft): KnowledgePostInput & { externalUrl?: string; documentAssetId?: string } {
+function toInput(
+  draft: KnowledgeDraft,
+): KnowledgePostInput & { externalUrl?: string; documentAssetId?: string } {
   return {
     ...(draft.id ? { id: draft.id } : {}),
     title: draft.title,
@@ -106,8 +117,14 @@ export function KnowledgeManagement() {
       return filterPublishedPdfAssets(response.items);
     },
   });
+  const ownershipQuery = useQuery({
+    queryKey: ["adoption-guide-release-ownership"],
+    queryFn: () => fetchAdoptionGuideReleaseOwnership(),
+  });
   const mutation = useMutation({
-    mutationFn: async (operation: { action: "save"; draft: KnowledgeDraft } | { action: "delete"; id: string }) => {
+    mutationFn: async (
+      operation: { action: "save"; draft: KnowledgeDraft } | { action: "delete"; id: string },
+    ) => {
       if (operation.action === "delete") {
         return fetchAdminJson("/api/admin/knowledge", {
           method: "DELETE",
@@ -125,13 +142,16 @@ export function KnowledgeManagement() {
   return (
     <KnowledgeManagementView
       data={knowledgeQuery.data}
+      ownershipReady={ownershipQuery.isSuccess}
+      ownerReleaseIds={ownershipQuery.data?.ownerReleaseIdsByKnowledgePostId}
       documents={documentsQuery.data ?? []}
       query={query}
       status={status}
-      loading={knowledgeQuery.isLoading || documentsQuery.isLoading}
+      loading={knowledgeQuery.isLoading || documentsQuery.isLoading || ownershipQuery.isLoading}
       pending={mutation.isPending}
       error={
         (knowledgeQuery.error instanceof Error ? knowledgeQuery.error.message : null) ??
+        (ownershipQuery.error instanceof Error ? ownershipQuery.error.message : null) ??
         (documentsQuery.error instanceof Error ? documentsQuery.error.message : null) ??
         (mutation.error instanceof Error ? mutation.error.message : null)
       }
@@ -145,6 +165,8 @@ export function KnowledgeManagement() {
 
 export function KnowledgeManagementView({
   data,
+  ownershipReady = true,
+  ownerReleaseIds = {},
   documents,
   query,
   status = "all",
@@ -157,6 +179,8 @@ export function KnowledgeManagementView({
   onDelete,
 }: {
   data?: AdminKnowledgePage;
+  ownershipReady?: boolean;
+  ownerReleaseIds?: Readonly<Record<string, string>>;
   documents: DocumentAsset[];
   query: string;
   status?: AdminKnowledgeStatus;
@@ -174,17 +198,27 @@ export function KnowledgeManagementView({
       <header>
         <p className="text-sm font-semibold text-[var(--color-primary)]">Content</p>
         <h1 className="text-2xl font-bold text-[var(--color-panel)]">Knowledge hub</h1>
-        <p className="text-sm text-[var(--color-text-muted)]">Manage public adoption, pet care, and reference links.</p>
+        <p className="text-sm text-[var(--color-text-muted)]">
+          Manage public adoption, pet care, and reference links.
+        </p>
       </header>
 
       <div className="grid gap-3 md:grid-cols-[1fr_14rem]">
         <label className="space-y-1 text-sm font-semibold">
           Search
-          <input value={query} onChange={(event) => onQueryChange?.(event.target.value)} className={inputClass} />
+          <input
+            value={query}
+            onChange={(event) => onQueryChange?.(event.target.value)}
+            className={inputClass}
+          />
         </label>
         <label className="space-y-1 text-sm font-semibold">
           Publication
-          <select value={status} onChange={(event) => onStatusChange?.(event.target.value as AdminKnowledgeStatus)} className={inputClass}>
+          <select
+            value={status}
+            onChange={(event) => onStatusChange?.(event.target.value as AdminKnowledgeStatus)}
+            className={inputClass}
+          >
             <option value="all">All</option>
             <option value="published">Published</option>
             <option value="draft">Draft</option>
@@ -192,20 +226,92 @@ export function KnowledgeManagementView({
         </label>
       </div>
 
-      {error ? <p role="alert" className="text-sm font-semibold text-[var(--color-error)]">{error}</p> : null}
+      {error ? (
+        <p role="alert" className="text-sm font-semibold text-[var(--color-error)]">
+          {error}
+        </p>
+      ) : null}
       {loading ? <p aria-live="polite">Loading knowledge posts...</p> : null}
+      {!loading && !ownershipReady ? <p role="alert">Ownership could not be verified.</p> : null}
 
-      {!loading ? <KnowledgeEditor documents={documents} pending={pending} onSave={onSave} /> : null}
+      {!loading && ownershipReady ? (
+        <KnowledgeEditor documents={documents} pending={pending} onSave={onSave} />
+      ) : null}
 
-      {!loading && posts.length === 0 ? <p>No knowledge posts yet.</p> : null}
-      {!loading && posts.map((post) => (
-        <KnowledgeEditor key={post.id} post={post} documents={documents} pending={pending} onSave={onSave} onDelete={onDelete} />
-      ))}
+      {!loading && ownershipReady && posts.length === 0 ? <p>No knowledge posts yet.</p> : null}
+      {!loading &&
+        ownershipReady &&
+        posts.map((post) => (
+          <KnowledgeEditor
+            key={post.id}
+            post={post}
+            ownerReleaseId={ownerReleaseIds[post.id]}
+            documents={documents}
+            pending={pending}
+            onSave={onSave}
+            onDelete={onDelete}
+          />
+        ))}
     </div>
   );
 }
 
 function KnowledgeEditor({
+  post,
+  ownerReleaseId,
+  ...props
+}: {
+  post?: KnowledgePost;
+  ownerReleaseId?: string;
+  documents: DocumentAsset[];
+  pending: boolean;
+  onSave?: (draft: KnowledgeDraft) => void;
+  onDelete?: (id: string) => void;
+}) {
+  if (post && (ownerReleaseId || post.destination.kind === "document_pair")) {
+    return (
+      <section
+        data-release-managed-knowledge={post.id}
+        className="space-y-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4"
+      >
+        <h2 className="font-bold">{post.title}</h2>
+        {ownerReleaseId ? (
+          <a
+            href={`/admin/content/adoption-guides?releaseId=${encodeURIComponent(ownerReleaseId)}`}
+            className="text-sm font-semibold text-[var(--color-primary)] underline"
+          >
+            {"\u7531\u9818\u990a\u6307\u5357\u7248\u672c\u7ba1\u7406"}
+          </a>
+        ) : (
+          <p className="text-sm font-semibold text-[var(--color-primary)]">
+            {"\u7531\u9818\u990a\u6307\u5357\u7248\u672c\u7ba1\u7406"}
+          </p>
+        )}
+        <p className="text-sm text-[var(--color-text-muted)]">
+          This bilingual post is read-only here. Update it through the release workflow.
+        </p>
+        <dl className="grid gap-3 text-sm md:grid-cols-2">
+          <div>
+            <dt className="font-semibold">Chinese asset ID</dt>
+            <dd className="break-all font-mono">
+              {post.destination.kind === "document_pair" ? post.destination.zhHkAssetId : "?"}
+            </dd>
+          </div>
+          <div>
+            <dt className="font-semibold">English asset ID</dt>
+            <dd className="break-all font-mono">
+              {post.destination.kind === "document_pair" ? post.destination.enAssetId : "?"}
+            </dd>
+          </div>
+        </dl>
+      </section>
+    );
+  }
+
+  return <EditableKnowledgeEditor post={post} {...props} />;
+}
+
+function EditableKnowledgeEditor({
   post,
   documents,
   pending,
@@ -223,29 +329,119 @@ function KnowledgeEditor({
     <section className="space-y-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
       <h2 className="font-bold">{post ? post.title : "New knowledge post"}</h2>
       <div className="grid gap-3 md:grid-cols-2">
-        <label className="space-y-1 text-sm font-semibold">Title<input className={inputClass} value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} /></label>
-        <label className="space-y-1 text-sm font-semibold">Topic<input className={inputClass} value={draft.topic} onChange={(event) => setDraft({ ...draft, topic: event.target.value })} /></label>
+        <label className="space-y-1 text-sm font-semibold">
+          Title
+          <input
+            className={inputClass}
+            value={draft.title}
+            onChange={(event) => setDraft({ ...draft, title: event.target.value })}
+          />
+        </label>
+        <label className="space-y-1 text-sm font-semibold">
+          Topic
+          <input
+            className={inputClass}
+            value={draft.topic}
+            onChange={(event) => setDraft({ ...draft, topic: event.target.value })}
+          />
+        </label>
       </div>
-      <label className="block space-y-1 text-sm font-semibold">Short intro<textarea className={inputClass} value={draft.shortIntro} onChange={(event) => setDraft({ ...draft, shortIntro: event.target.value })} /></label>
+      <label className="block space-y-1 text-sm font-semibold">
+        Short intro
+        <textarea
+          className={inputClass}
+          value={draft.shortIntro}
+          onChange={(event) => setDraft({ ...draft, shortIntro: event.target.value })}
+        />
+      </label>
       <div className="grid gap-3 md:grid-cols-2">
-        <label className="space-y-1 text-sm font-semibold">Destination mode<select className={inputClass} value={draft.destinationMode} onChange={(event) => setDraft({ ...draft, destinationMode: event.target.value as DraftDestinationMode })}><option value="external">External URL</option><option value="document">Document PDF</option></select></label>
+        <label className="space-y-1 text-sm font-semibold">
+          Destination mode
+          <select
+            className={inputClass}
+            value={draft.destinationMode}
+            onChange={(event) =>
+              setDraft({ ...draft, destinationMode: event.target.value as DraftDestinationMode })
+            }
+          >
+            <option value="external">External URL</option>
+            <option value="document">Document PDF</option>
+          </select>
+        </label>
         {draft.destinationMode === "external" ? (
-          <label className="space-y-1 text-sm font-semibold">External URL<input className={inputClass} value={draft.externalUrl} onChange={(event) => setDraft({ ...draft, externalUrl: event.target.value })} placeholder="https://" /><span className="text-xs text-[var(--color-text-muted)]">HTTPS only</span></label>
+          <label className="space-y-1 text-sm font-semibold">
+            External URL
+            <input
+              className={inputClass}
+              value={draft.externalUrl}
+              onChange={(event) => setDraft({ ...draft, externalUrl: event.target.value })}
+              placeholder="https://"
+            />
+            <span className="text-xs text-[var(--color-text-muted)]">HTTPS only</span>
+          </label>
         ) : (
-          <label className="space-y-1 text-sm font-semibold">Document PDF<select className={inputClass} value={draft.documentAssetId} onChange={(event) => setDraft({ ...draft, documentAssetId: event.target.value })}><option value="">Choose a published PDF</option>{documents.map((asset) => <option key={asset.id} value={asset.id}>{asset.title}</option>)}</select></label>
+          <label className="space-y-1 text-sm font-semibold">
+            Document PDF
+            <select
+              className={inputClass}
+              value={draft.documentAssetId}
+              onChange={(event) => setDraft({ ...draft, documentAssetId: event.target.value })}
+            >
+              <option value="">Choose a published PDF</option>
+              {documents.map((asset) => (
+                <option key={asset.id} value={asset.id}>
+                  {asset.title}
+                </option>
+              ))}
+            </select>
+          </label>
         )}
       </div>
       <div className="grid gap-3 md:grid-cols-3">
-        <label className="space-y-1 text-sm font-semibold">Source<input className={inputClass} value={draft.sourceName} onChange={(event) => setDraft({ ...draft, sourceName: event.target.value })} /></label>
-        <label className="space-y-1 text-sm font-semibold">Sort order<input className={inputClass} type="number" min={0} value={draft.sortOrder} onChange={(event) => setDraft({ ...draft, sortOrder: Number(event.target.value) || 0 })} /></label>
-        <label className="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" checked={draft.isPublished} onChange={(event) => setDraft({ ...draft, isPublished: event.target.checked })} />{draft.isPublished ? "Published" : "Draft"}</label>
+        <label className="space-y-1 text-sm font-semibold">
+          Source
+          <input
+            className={inputClass}
+            value={draft.sourceName}
+            onChange={(event) => setDraft({ ...draft, sourceName: event.target.value })}
+          />
+        </label>
+        <label className="space-y-1 text-sm font-semibold">
+          Sort order
+          <input
+            className={inputClass}
+            type="number"
+            min={0}
+            value={draft.sortOrder}
+            onChange={(event) => setDraft({ ...draft, sortOrder: Number(event.target.value) || 0 })}
+          />
+        </label>
+        <label className="flex items-center gap-2 text-sm font-semibold">
+          <input
+            type="checkbox"
+            checked={draft.isPublished}
+            onChange={(event) => setDraft({ ...draft, isPublished: event.target.checked })}
+          />
+          {draft.isPublished ? "Published" : "Draft"}
+        </label>
       </div>
       <div className="flex gap-2">
-        <button type="button" disabled={pending || !draft.title.trim() || !draft.shortIntro.trim()} onClick={() => onSave?.(draft)}>Save</button>
-        {post ? <button type="button" disabled={pending} onClick={() => onDelete?.(post.id)}>Delete</button> : null}
+        <button
+          type="button"
+          disabled={pending || !draft.title.trim() || !draft.shortIntro.trim()}
+          onClick={() => onSave?.(draft)}
+        >
+          Save
+        </button>
+        {post ? (
+          <button type="button" disabled={pending} onClick={() => onDelete?.(post.id)}>
+            Delete
+          </button>
+        ) : null}
       </div>
     </section>
   );
 }
 
-const inputClass = "w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm";
+const inputClass =
+  "w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm";

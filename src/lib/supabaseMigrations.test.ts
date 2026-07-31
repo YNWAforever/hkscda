@@ -376,4 +376,76 @@ describe("supabase migration safety", () => {
     expect(sql).not.toContain("storage.objects");
   });
 
+  test("adds bilingual adoption guide releases with atomic admin publication", () => {
+    const sql = readMigration("20260731120000_adoption_guide_release_cms.sql");
+
+    expect(sql).toContain("create table if not exists public.adoption_guide_releases");
+    expect(sql).toContain("state in ('draft', 'in_review', 'published', 'archived')");
+    expect(sql).toContain("species in ('cat', 'dog', 'general')");
+    expect(sql).toContain("version integer not null default 1");
+    expect(sql).toContain("create table if not exists public.adoption_guide_publish_requests");
+    expect(sql).toContain(
+      "alter table public.knowledge_posts add column if not exists zh_hk_document_asset_id",
+    );
+    expect(sql).toContain(
+      "alter table public.knowledge_posts add column if not exists en_document_asset_id",
+    );
+    expect(sql).toContain(
+      "create or replace function public.mutate_adoption_guide_release_with_audit",
+    );
+    expect(sql).toContain("create or replace function public.publish_adoption_guide_release");
+    expect(sql).toContain("for update");
+    expect(sql).toContain("role = 'admin'");
+    expect(sql).toContain("insert into public.audit_log");
+    expect(sql).toContain(
+      "revoke all on public.adoption_guide_releases from anon, authenticated",
+    );
+    expect(sql).toContain("grant execute on function public.publish_adoption_guide_release");
+    expect(sql).toContain("set search_path = public, pg_temp");
+    expect(sql).toContain("grant usage on schema private to service_role");
+    expect(sql).toMatch(
+      /p_operation = 'withdraw'[\s\S]*actor\.role <> 'admin'[\s\S]*current_release\.submitted_by is distinct from actor\.id[\s\S]*update public\.adoption_guide_releases/,
+    );
+    expect(sql.match(/where slots\.slot_key = 'post_adoption_guide'/g)).toHaveLength(2);
+    expect(sql).toMatch(
+      /if previous_release\.id is null then[\s\S]*where slots\.slot_key = 'post_adoption_guide'/,
+    );
+    expect(sql).toMatch(
+      /document_asset_id in \(\s*old_zh_hk_asset_id,\s*old_en_asset_id,\s*legacy_zh_hk_asset_id,\s*legacy_en_asset_id\s*\)/,
+    );
+    expect(sql.match(/'site_document_slot\.upsert'/g)).toHaveLength(2);
+    expect(sql).toContain("target_slot_key || ':zh-HK'");
+    expect(sql).toContain("target_slot_key || ':en'");
+  });
+
+  test("optimizes adoption guide release foreign keys and authenticated RLS lookups", () => {
+    const fileName = readdirSync(join(process.cwd(), "supabase", "migrations")).find((entry) =>
+      entry.endsWith("_adoption_guide_release_cms_advisor_fixes.sql"),
+    );
+
+    expect(fileName).toBeDefined();
+    if (!fileName) return;
+
+    const sql = readMigration(fileName);
+    const indexedColumns = [
+      "release_id",
+      "archived_by",
+      "created_by",
+      "en_asset_id",
+      "knowledge_post_id",
+      "published_by",
+      "submitted_by",
+      "updated_by",
+      "zh_hk_asset_id",
+    ];
+
+    for (const column of indexedColumns) {
+      expect(sql).toMatch(
+        new RegExp(`create index if not exists [^\\n]+\\s+on public\\.[^(\\n]+ \\(${column}\\);`),
+      );
+    }
+    expect(sql.match(/actor\.auth_user_id = \(select auth\.uid\(\)\)/g)).toHaveLength(2);
+    expect(sql).not.toContain("actor.auth_user_id = auth.uid()");
+  });
+
 });
