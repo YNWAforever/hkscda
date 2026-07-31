@@ -78,6 +78,23 @@ describe("adoption instructions content schema", () => {
     ).toBe(false);
   });
 
+  test("rejects duplicate topic values when topic IDs differ", () => {
+    const [firstTopic, secondTopic] = initialAdoptionInstructionContent.care.cat.topics;
+
+    expect(
+      adoptionInstructionContentSchema.safeParse({
+        ...initialAdoptionInstructionContent,
+        care: {
+          ...initialAdoptionInstructionContent.care,
+          cat: {
+            ...initialAdoptionInstructionContent.care.cat,
+            topics: [firstTopic, { ...secondTopic, value: firstTopic.value }],
+          },
+        },
+      }).success,
+    ).toBe(false);
+  });
+
   test("rejects markup and URLs in plain-text fields", () => {
     expect(
       adoptionInstructionContentSchema.safeParse({
@@ -149,5 +166,33 @@ describe("adoption instructions content schema", () => {
     expect(routeSource).not.toContain("const adoptionRules =");
     expect(routeSource).not.toContain("const catCareTopics =");
     expect(routeSource).not.toContain("const dogCareTopics =");
+    expect(routeSource).toContain(
+      'defaultValue={initialAdoptionInstructionContent.care.cat.topics[0]?.value}',
+    );
+    expect(routeSource).toContain(
+      'defaultValue={initialAdoptionInstructionContent.care.dog.topics[0]?.value}',
+    );
+    for (const path of [
+      "fees.sectionTitle",
+      "fees.dogTitle",
+      "fees.catTitle",
+      "fees.itemLabel",
+      "fees.amountLabel",
+      "fees.notice",
+      "estates.sectionTitle",
+      "estates.introduction",
+      "estates.estateLabel",
+      "estates.districtLabel",
+      "estates.notesLabel",
+      "estates.emptyState",
+      "guides.sectionTitle",
+      "guides.catTitle",
+      "guides.dogTitle",
+      "guides.generalTitle",
+      "guides.zhHkActionLabel",
+      "guides.enActionLabel",
+    ]) {
+      expect(routeSource).toContain(`initialAdoptionInstructionContent.${path}`);
+    }
   });
 });

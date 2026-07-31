@@ -25,6 +25,8 @@ const careTopicSchema = z
 
 const uniqueIds = <T extends { id: string }>(items: T[]) =>
   new Set(items.map((item) => item.id)).size === items.length;
+const uniqueValues = (items: Array<{ value: string }>) =>
+  new Set(items.map((item) => item.value)).size === items.length;
 
 const careSectionSchema = z
   .object({ title: plainText(180), topics: z.array(careTopicSchema).max(30) })
@@ -32,6 +34,9 @@ const careSectionSchema = z
   .superRefine(({ topics }, ctx) => {
     if (!uniqueIds(topics)) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Topic IDs must be unique", path: ["topics"] });
+    }
+    if (!uniqueValues(topics)) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Topic values must be unique", path: ["topics"] });
     }
   });
 
