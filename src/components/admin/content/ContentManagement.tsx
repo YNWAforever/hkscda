@@ -6,6 +6,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ContentStatus, ContentSummary, ContentType } from "../../../lib/content/types";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import { DataTable, type DataTableColumn } from "../DataTable";
+import { TablePager } from "../TablePager";
 import { StatusPill, type StatusTone } from "../StatusBadge";
 import {
   buildContentSearchParams,
@@ -73,6 +74,16 @@ function ContentManagementRuntime() {
   const [type, setType] = useState<ContentType | "all">("all");
   const [status, setStatus] = useState<ContentStatus | "all">("all");
   const [rescueRegion, setRescueRegion] = useState("");
+  const [page, setPage] = useState(1);
+
+  // Narrowing the result set invalidates the page number — page 3 of a smaller
+  // set renders empty and reads as "no matches".
+  function withPageReset<T>(setter: (value: T) => void) {
+    return (value: T) => {
+      setter(value);
+      setPage(1);
+    };
+  }
 
   const search = useMemo(
     () =>
@@ -81,9 +92,9 @@ function ContentManagementRuntime() {
         type,
         status,
         rescueRegion,
-        page: 1,
+        page,
       }).toString(),
-    [query, rescueRegion, status, type],
+    [query, rescueRegion, status, type, page],
   );
 
   const contentQuery = useQuery({
@@ -105,10 +116,12 @@ function ContentManagementRuntime() {
       status={status}
       rescueRegion={rescueRegion}
       error={contentQuery.error instanceof Error ? contentQuery.error.message : null}
-      onQueryChange={setQuery}
-      onTypeChange={setType}
-      onStatusChange={setStatus}
-      onRescueRegionChange={setRescueRegion}
+      onQueryChange={withPageReset(setQuery)}
+      onTypeChange={withPageReset(setType)}
+      onStatusChange={withPageReset(setStatus)}
+      onRescueRegionChange={withPageReset(setRescueRegion)}
+      onPageChange={setPage}
+      fetching={contentQuery.isFetching}
       onRefresh={() => void queryClient.invalidateQueries({ queryKey: ["admin-content"] })}
     />
   );
@@ -126,6 +139,8 @@ type ContentManagementViewProps = {
   onTypeChange?: (value: ContentType | "all") => void;
   onStatusChange?: (value: ContentStatus | "all") => void;
   onRescueRegionChange?: (value: string) => void;
+  onPageChange?: (page: number) => void;
+  fetching?: boolean;
   onRefresh?: () => void;
 };
 
@@ -141,6 +156,8 @@ function ContentManagementView({
   onTypeChange,
   onStatusChange,
   onRescueRegionChange,
+  onPageChange,
+  fetching,
   onRefresh,
 }: ContentManagementViewProps) {
   const rows = data?.content ?? [];
@@ -321,6 +338,16 @@ function ContentManagementView({
           loading={loading}
           empty="沒有宣傳內容"
         />
+        {data?.pagination && onPageChange ? (
+          <TablePager
+            page={data.pagination.page}
+            pageSize={data.pagination.pageSize}
+            total={data.pagination.total}
+            onPageChange={onPageChange}
+            busy={fetching}
+            label="內容"
+          />
+        ) : null}
       </section>
     </div>
   );

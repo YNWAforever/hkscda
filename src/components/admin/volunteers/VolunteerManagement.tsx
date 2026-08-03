@@ -12,6 +12,7 @@ import type {
   VolunteerRegistrationSummary,
 } from "../../../lib/volunteers/types";
 import { DataTable, type DataTableColumn } from "../DataTable";
+import { TablePager } from "../TablePager";
 import {
   activityStatusLabels,
   activityTypeLabels,
@@ -24,6 +25,7 @@ import {
   registrationStatusLabels,
   registrationTypeLabels,
   summarizeActivityCapacity,
+  VOLUNTEER_ADMIN_PAGE_SIZE,
   volunteerStatusTone,
 } from "./volunteerAdminLogic";
 
@@ -134,6 +136,8 @@ export function VolunteerManagement() {
   // below it, which is how you answer "who signed up for this event".
   const [activityFilter, setActivityFilter] = useState<VolunteerActivitySummary | null>(null);
   const [showCreate, setShowCreate] = useState(false);
+  const [activityPage, setActivityPage] = useState(1);
+  const [registrationPage, setRegistrationPage] = useState(1);
 
   const [title, setTitle] = useState("");
   const [type, setType] = useState<VolunteerActivityType>("cleaning_day");
@@ -151,9 +155,9 @@ export function VolunteerManagement() {
         q: activityQuery,
         status: "all",
         type: "all",
-        page: 1,
+        page: activityPage,
       }).toString(),
-    [activityQuery],
+    [activityQuery, activityPage],
   );
   const registrationSearch = useMemo(
     () =>
@@ -162,10 +166,18 @@ export function VolunteerManagement() {
         status: registrationStatus,
         attendanceStatus,
         activityId: activityFilter?.id ?? "",
-        page: 1,
+        page: registrationPage,
       }).toString(),
-    [registrationQuery, registrationStatus, attendanceStatus, activityFilter],
+    [registrationQuery, registrationStatus, attendanceStatus, activityFilter, registrationPage],
   );
+
+  // Any change to a filter invalidates the current page number: staying on
+  // page 3 of a freshly narrowed result set shows an empty table that looks
+  // like "no matches".
+  function applyRegistrationFilter(change: () => void) {
+    change();
+    setRegistrationPage(1);
+  }
 
   const activitiesQuery = useQuery({
     queryKey: ["volunteer-activities", activitySearch],
@@ -330,7 +342,9 @@ export function VolunteerManagement() {
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              onClick={() => setActivityFilter(selected ? null : activity)}
+              onClick={() =>
+                applyRegistrationFilter(() => setActivityFilter(selected ? null : activity))
+              }
               aria-pressed={selected}
               className={`${buttonBase} ${
                 selected
@@ -457,66 +471,144 @@ export function VolunteerManagement() {
     {
       id: "actions",
       header: "操作",
-      cell: (registration) => {
-        const transitions = availableRegistrationTransitions(registration.status);
-        const attendable = canMarkAttendance(
-          registration,
-          registration.activity?.startsAt,
-          () => new Date(),
-        );
-
-        if (transitions.length === 0 && !attendable) {
-          return <span className="text-xs text-[var(--color-text-muted)]">無需處理</span>;
-        }
-
-        return (
-          <div className="flex min-w-44 flex-wrap gap-2">
-            {transitions.map((status) => {
-              const destructive = isDestructiveTransition(status);
-              const primary = status === "approved";
-              return (
-                <button
-                  key={status}
-                  type="button"
-                  disabled={updateRegistration.isPending}
-                  onClick={() => {
-                    if (
-                      destructive &&
-                      !window.confirm(
-                        `確定拒絕 ${registration.contactName} 的報名？對方會收到通知。`,
-                      )
-                    ) {
-                      return;
-                    }
-                    updateRegistration.mutate({ id: registration.id, status });
-                  }}
-                  className={`${buttonBase} ${
-                    primary
-                      ? "bg-[var(--color-primary)] text-[var(--color-primary-foreground)] hover:opacity-90"
-                      : destructive
-                        ? "border border-[var(--color-error)] text-[var(--color-error)] hover:bg-[var(--color-primary-highlight)]"
-                        : "border border-[var(--color-border)] hover:bg-[var(--color-surface-offset)]"
-                  }`}
-                >
-                  {registrationStatusLabels[status]}
-                </button>
-              );
-            })}
-            {attendable ? (
-              <button
-                type="button"
-                disabled={completeAttendance.isPending}
-                onClick={() => completeAttendance.mutate(registration.id)}
-                className={`${buttonBase} border border-[var(--color-success)] text-[var(--color-success)] hover:bg-[var(--color-success-highlight)]`}
-              >
-                標記完成
-              </button>
-            ) : null}
-          </div>
-        );
-      },
+      cell: (registration) => renderRegistrationActions(registration),
     },
   ];
+
+  function renderRegistrationActions(registration: RegistrationRow) {
+    {
+      const transitions = availableRegistrationTransitions(registration.status);
+      const attendable = canMarkAttendance(
+        registration,
+        registration.activity?.startsAt,
+        () => new Date(),
+      );
+
+      if (transitions.length === 0 && !attendable) {
+        return <span className="text-xs text-[var(--color-text-muted)]">無需處理</span>;
+      }
+
+      return (
+        <div className="flex min-w-44 flex-wrap gap-2">
+          {transitions.map((status) => {
+            const destructive = isDestructiveTransition(status);
+            const primary = status === "approved";
+            return (
+              <button
+                key={status}
+                type="button"
+                disabled={updateRegistration.isPending}
+                onClick={() => {
+                  if (
+                    destructive &&
+                    !window.confirm(`確定拒絕 ${registration.contactName} 的報名？對方會收到通知。`)
+                  ) {
+                    return;
+                  }
+                  updateRegistration.mutate({ id: registration.id, status });
+                }}
+                className={`${buttonBase} ${
+                  primary
+                    ? "bg-[var(--color-primary)] text-[var(--color-primary-foreground)] hover:opacity-90"
+                    : destructive
+                      ? "border border-[var(--color-error)] text-[var(--color-error)] hover:bg-[var(--color-primary-highlight)]"
+                      : "border border-[var(--color-border)] hover:bg-[var(--color-surface-offset)]"
+                }`}
+              >
+                {registrationStatusLabels[status]}
+              </button>
+            );
+          })}
+          {attendable ? (
+            <button
+              type="button"
+              disabled={completeAttendance.isPending}
+              onClick={() => completeAttendance.mutate(registration.id)}
+              className={`${buttonBase} border border-[var(--color-success)] text-[var(--color-success)] hover:bg-[var(--color-success-highlight)]`}
+            >
+              標記完成
+            </button>
+          ) : null}
+        </div>
+      );
+    }
+  }
+
+  /**
+   * Below `md` the five columns collapse into a card. The action column holds up
+   * to four buttons; squeezed into a table cell on a phone they wrap into an
+   * unreadable stack and fall under the 44px touch target. A card gives them a
+   * full-width row of their own.
+   */
+  function renderRegistrationCard(registration: RegistrationRow) {
+    return (
+      <div className="space-y-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <Link
+              to="/admin/volunteers/registrations/$id"
+              params={{ id: registration.id }}
+              className="font-semibold text-[var(--color-primary)] hover:underline"
+            >
+              {registration.contactName}
+            </Link>
+            <p className="text-xs text-[var(--color-text-muted)]">{registration.contactEmail}</p>
+            <p className="text-xs tabular-nums text-[var(--color-text-muted)]">
+              {registration.contactPhone}
+            </p>
+          </div>
+          <span
+            className={`shrink-0 rounded-full px-2 py-1 text-xs font-bold ${statusClass(registration.status)}`}
+          >
+            {registrationStatusLabels[registration.status]}
+          </span>
+        </div>
+
+        {registration.activity ? (
+          <div className="rounded-md bg-[var(--color-surface-offset)] p-3 text-sm">
+            <p className="font-medium text-[var(--color-panel)]">{registration.activity.title}</p>
+            <p className="text-xs tabular-nums text-[var(--color-text-muted)]">
+              {formatDateTime(registration.activity.startsAt)} · {registration.activity.location}
+            </p>
+          </div>
+        ) : null}
+
+        <dl className="grid grid-cols-2 gap-2 text-xs">
+          <div>
+            <dt className="text-[var(--color-text-muted)]">人數 / 形式</dt>
+            <dd className="tabular-nums text-[var(--color-panel)]">
+              {registration.participantCount} 人 ·{" "}
+              {registrationTypeLabels[registration.registrationType]}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-[var(--color-text-muted)]">出席</dt>
+            <dd className="text-[var(--color-panel)]">
+              {attendanceStatusLabels[registration.attendanceStatus]}
+            </dd>
+          </div>
+          {registration.organizationName ? (
+            <div className="col-span-2">
+              <dt className="text-[var(--color-text-muted)]">機構</dt>
+              <dd className="text-[var(--color-panel)]">{registration.organizationName}</dd>
+            </div>
+          ) : null}
+          {registration.guardianName ? (
+            <div className="col-span-2">
+              <dt className="text-[var(--color-text-muted)]">家長同意</dt>
+              <dd className="text-[var(--color-warning)]">
+                {registration.guardianName} · {registration.guardianPhone ?? "未提供電話"}
+              </dd>
+            </div>
+          ) : null}
+        </dl>
+
+        <div className="border-t border-[var(--color-border)] pt-3">
+          {renderRegistrationActions(registration)}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 p-6">
@@ -696,7 +788,10 @@ export function VolunteerManagement() {
           <h2 className="text-lg font-bold text-[var(--color-panel)]">活動</h2>
           <input
             value={activityQuery}
-            onChange={(event) => setActivityQuery(event.target.value)}
+            onChange={(event) => {
+              setActivityQuery(event.target.value);
+              setActivityPage(1);
+            }}
             placeholder="搜尋活動名稱或地點"
             aria-label="搜尋活動"
             className={`${inputClass} max-w-64`}
@@ -709,6 +804,14 @@ export function VolunteerManagement() {
           loading={activitiesQuery.isLoading}
           empty="尚未建立任何活動。按「新增活動」開始。"
         />
+        <TablePager
+          page={activityPage}
+          pageSize={VOLUNTEER_ADMIN_PAGE_SIZE}
+          total={activitiesQuery.data?.total}
+          onPageChange={setActivityPage}
+          busy={activitiesQuery.isFetching}
+          label="活動"
+        />
       </section>
 
       <section className="space-y-3">
@@ -718,7 +821,9 @@ export function VolunteerManagement() {
             <select
               value={registrationStatus}
               onChange={(event) =>
-                setRegistrationStatus(event.target.value as VolunteerRegistrationStatus | "all")
+                applyRegistrationFilter(() =>
+                  setRegistrationStatus(event.target.value as VolunteerRegistrationStatus | "all"),
+                )
               }
               aria-label="按狀態篩選"
               className={`${inputClass} max-w-40`}
@@ -733,7 +838,9 @@ export function VolunteerManagement() {
             <select
               value={attendanceStatus}
               onChange={(event) =>
-                setAttendanceStatus(event.target.value as VolunteerAttendanceStatus | "all")
+                applyRegistrationFilter(() =>
+                  setAttendanceStatus(event.target.value as VolunteerAttendanceStatus | "all"),
+                )
               }
               aria-label="按出席狀況篩選"
               className={`${inputClass} max-w-40`}
@@ -747,7 +854,9 @@ export function VolunteerManagement() {
             </select>
             <input
               value={registrationQuery}
-              onChange={(event) => setRegistrationQuery(event.target.value)}
+              onChange={(event) =>
+                applyRegistrationFilter(() => setRegistrationQuery(event.target.value))
+              }
               placeholder="搜尋姓名、電郵或電話"
               aria-label="搜尋報名人"
               className={`${inputClass} max-w-56`}
@@ -763,7 +872,7 @@ export function VolunteerManagement() {
             </span>
             <button
               type="button"
-              onClick={() => setActivityFilter(null)}
+              onClick={() => applyRegistrationFilter(() => setActivityFilter(null))}
               className={`${buttonBase} border border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-offset)]`}
             >
               <X className="h-3.5 w-3.5" />
@@ -777,11 +886,20 @@ export function VolunteerManagement() {
           rows={registrations}
           getRowKey={(registration) => registration.id}
           loading={registrationsQuery.isLoading}
+          renderMobileCard={renderRegistrationCard}
           empty={
             activityFilter
               ? `「${activityFilter.title}」目前沒有符合條件的報名。`
               : "沒有符合條件的報名。試試放寬篩選條件。"
           }
+        />
+        <TablePager
+          page={registrationPage}
+          pageSize={VOLUNTEER_ADMIN_PAGE_SIZE}
+          total={registrationsQuery.data?.total}
+          onPageChange={setRegistrationPage}
+          busy={registrationsQuery.isFetching}
+          label="報名"
         />
       </section>
     </div>
