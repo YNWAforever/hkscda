@@ -8,6 +8,14 @@ import type {
 import { StatusPill } from "../StatusBadge";
 import { copyTextToClipboard } from "./contentAdminLogic";
 
+// These are database enums; the panel rendered them raw next to Chinese copy.
+const notificationDraftStatusLabels: Record<NotificationDraftStatus, string> = {
+  draft: "草稿",
+  copied: "已複製",
+  sent_manually: "已人手發送",
+  dismissed: "已略過",
+};
+
 type NotificationDraftPanelProps = {
   drafts: RecipientNotificationDraft[];
   onUpdateStatus?: (draftId: string, status: NotificationDraftStatus) => void;
@@ -51,7 +59,7 @@ export function NotificationDraftPanel({
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
                     <StatusPill tone={draft.status === "sent_manually" ? "success" : "neutral"}>
-                      {draft.status}
+                      {notificationDraftStatusLabels[draft.status]}
                     </StatusPill>
                     <span className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--color-text-muted)]">
                       {draft.channel === "email" ? (
