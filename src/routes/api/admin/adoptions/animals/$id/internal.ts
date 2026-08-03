@@ -5,7 +5,10 @@ import {
   createSupabaseServiceClient,
   requireAdmin,
 } from "../../../../../../lib/donations/supabase.server";
-import { buildInternalProfileUpsertPayload } from "../-internalProfile";
+import {
+  buildInternalProfileAuditEntry,
+  buildInternalProfileUpsertPayload,
+} from "../-internalProfile";
 
 function jsonResponse(body: unknown, init?: ResponseInit) {
   const headers = new Headers(init?.headers);
@@ -88,14 +91,9 @@ async function upsertInternalProfile({
     // The audit_animal_profile_internal trigger only fires for direct-from-browser
     // writes (a real JWT); this route goes over the service-role connection, so it
     // records its own audit_log row here, with the real actor already resolved above.
-    const { error: auditError } = await client.from("audit_log").insert({
-      actor_user_id: admin.authUserId,
-      action: "animal_profile_internal.upsert",
-      entity: "animal_profile_internal",
-      entity_id: params.id,
-      timestamp: new Date().toISOString(),
-      detail: { profile: data },
-    });
+    const { error: auditError } = await client
+      .from("audit_log")
+      .insert(buildInternalProfileAuditEntry(admin.authUserId, payload, data));
     if (auditError) throw auditError;
 
     return jsonResponse({ profile: data });
