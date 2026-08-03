@@ -146,7 +146,15 @@ function AdoptionInformationManagementRuntime() {
           mutation.mutate({ action: "move-fees", inputs: updates, temporarySortOrder });
       }}
       onSaveEstate={(input) => mutation.mutate({ action: "estate", input })}
-      onDeleteEstate={(id) => mutation.mutate({ action: "delete-estate", id })}
+      onDeleteEstate={(id) => {
+        // Irreversible and triggered from an inline row button; name the estate
+        // so the operator can confirm they hit the row they meant.
+        const estate = informationQuery.data?.items.find((item) => item.id === id);
+        const label =
+          estate && "estateName" in estate ? (estate as { estateName?: string }).estateName : null;
+        if (!window.confirm(`確定刪除「${label ?? "此屋苑"}」？此操作無法復原。`)) return;
+        mutation.mutate({ action: "delete-estate", id });
+      }}
     />
   );
 }
