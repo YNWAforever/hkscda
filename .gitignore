@@ -15,6 +15,13 @@ dist-ssr
 .tanstack/**
 .nitro
 *.local
+
+# Secrets. `*.local` above only covers .env.local — a plain .env or .env.production
+# would otherwise be committed. .env.example is the tracked template.
+.env
+.env.*
+!.env.example
+
 .codex/
 .superpowers/
 .worktrees/
