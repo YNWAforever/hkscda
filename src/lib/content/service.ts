@@ -358,7 +358,6 @@ export function createContentService({
     },
 
     async generateSocialCopy({ actorUserId, contentId, input }: GenerateSocialCopyArgs) {
-      void actorUserId;
       const parsed = socialCopyGenerateSchema.parse(input);
       const content = await repo.getAdminContent(contentId);
       if (!content) throw new Error("Content item not found");
@@ -389,13 +388,31 @@ export function createContentService({
         })),
       );
 
+      await audit({
+        actor_user_id: actorUserId,
+        action: "content.social_copy.generate",
+        entity: "social_copy_variant",
+        entity_id: content.id,
+        detail: {
+          count: variants.length,
+          storyUpdateId: storyUpdate?.id ?? null,
+          platform: parsed.platform ?? null,
+        },
+      });
+
       return { count: variants.length };
     },
 
     async updateSocialCopyStatus({ actorUserId, copyId, input }: UpdateSocialCopyStatusArgs) {
-      void actorUserId;
       const parsed: SocialCopyStatusInput = socialCopyStatusSchema.parse(input);
       await repo.updateSocialCopyStatus(copyId, parsed.status);
+      await audit({
+        actor_user_id: actorUserId,
+        action: "content.social_copy.status",
+        entity: "social_copy_variant",
+        entity_id: copyId,
+        detail: { status: parsed.status },
+      });
 
       return { ok: true };
     },
@@ -404,7 +421,6 @@ export function createContentService({
       actorUserId,
       storyUpdateId,
     }: GenerateNotificationDraftsArgs) {
-      void actorUserId;
       const update = await repo.getStoryUpdate(storyUpdateId);
       if (!update) throw new Error("Story update not found");
       assertPublicOutboundStoryUpdate(update);
@@ -426,6 +442,16 @@ export function createContentService({
 
       await repo.insertNotificationDrafts(drafts);
 
+      // Drafting messages addressed to adopters reaches recipient PII, so the
+      // count is the part that matters to a later reviewer — not the bodies.
+      await audit({
+        actor_user_id: actorUserId,
+        action: "content.notification_draft.generate",
+        entity: "recipient_notification_draft",
+        entity_id: storyUpdateId,
+        detail: { count: drafts.length },
+      });
+
       return { count: drafts.length };
     },
 
@@ -434,9 +460,15 @@ export function createContentService({
       draftId,
       input,
     }: UpdateNotificationDraftStatusArgs) {
-      void actorUserId;
       const parsed: NotificationDraftStatusInput = notificationDraftStatusSchema.parse(input);
       await repo.updateNotificationDraftStatus(draftId, parsed.status);
+      await audit({
+        actor_user_id: actorUserId,
+        action: "content.notification_draft.status",
+        entity: "recipient_notification_draft",
+        entity_id: draftId,
+        detail: { status: parsed.status },
+      });
 
       return { ok: true };
     },

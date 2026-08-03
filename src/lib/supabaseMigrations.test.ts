@@ -518,7 +518,9 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("insert into public.knowledge_posts");
     expect(sql).toContain("select document_asset_id");
     expect(sql).toContain("from public.site_document_slots");
-    expect(sql).toContain("on conflict (document_asset_id) where document_asset_id is not null do update");
+    expect(sql).toContain(
+      "on conflict (document_asset_id) where document_asset_id is not null do update",
+    );
     expect(sql).toContain("raise exception");
     expect(sql).not.toContain("insert into public.document_assets");
     expect(sql).not.toContain("storage.objects");
@@ -545,9 +547,7 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("for update");
     expect(sql).toContain("role = 'admin'");
     expect(sql).toContain("insert into public.audit_log");
-    expect(sql).toContain(
-      "revoke all on public.adoption_guide_releases from anon, authenticated",
-    );
+    expect(sql).toContain("revoke all on public.adoption_guide_releases from anon, authenticated");
     expect(sql).toContain("grant execute on function public.publish_adoption_guide_release");
     expect(sql).toContain("set search_path = public, pg_temp");
     expect(sql).toContain("grant usage on schema private to service_role");
@@ -595,5 +595,4 @@ describe("supabase migration safety", () => {
     expect(sql.match(/actor\.auth_user_id = \(select auth\.uid\(\)\)/g)).toHaveLength(2);
     expect(sql).not.toContain("actor.auth_user_id = auth.uid()");
   });
-
 });

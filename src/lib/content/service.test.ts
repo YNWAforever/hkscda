@@ -204,6 +204,95 @@ describe("createContentService", () => {
     expect(notificationDrafts).toHaveLength(2);
   });
 
+  // Every other mutation on this service audits (content.create, content.publish,
+  // content.media.create, ...). These four resolved actorUserId all the way from
+  // requireAdmin and then dropped it with `void actorUserId`, so a staff member
+  // could draft outbound social copy, generate notification drafts addressed to
+  // adopters, and move both toward "sent" without leaving any record of who did it.
+  test("audits generated social copy", async () => {
+    const { repo, auditLogs } = createRepo();
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await service.generateSocialCopy({
+      actorUserId: "admin-user",
+      contentId: "content-1",
+      input: { storyUpdateId },
+    });
+
+    expect(auditLogs).toContainEqual(
+      expect.objectContaining({
+        actor_user_id: "admin-user",
+        action: "content.social_copy.generate",
+        entity: "social_copy_variant",
+        entity_id: "content-1",
+      }),
+    );
+  });
+
+  test("audits social copy status changes", async () => {
+    const { repo, auditLogs } = createRepo();
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    // "copied" is the outbound moment — staff lifting the text out to post it.
+    await service.updateSocialCopyStatus({
+      actorUserId: "admin-user",
+      copyId: "copy-1",
+      input: { status: "copied" },
+    });
+
+    expect(auditLogs).toContainEqual(
+      expect.objectContaining({
+        actor_user_id: "admin-user",
+        action: "content.social_copy.status",
+        entity: "social_copy_variant",
+        entity_id: "copy-1",
+        detail: { status: "copied" },
+      }),
+    );
+  });
+
+  test("audits generated adopter notification drafts", async () => {
+    const { repo, auditLogs } = createRepo();
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await service.generateNotificationDrafts({ actorUserId: "admin-user", storyUpdateId });
+
+    // Drafting messages addressed to adopters touches recipient PII — the row
+    // count is the part a later reviewer actually needs.
+    expect(auditLogs).toContainEqual(
+      expect.objectContaining({
+        actor_user_id: "admin-user",
+        action: "content.notification_draft.generate",
+        entity: "recipient_notification_draft",
+        entity_id: storyUpdateId,
+        detail: { count: 2 },
+      }),
+    );
+  });
+
+  test("audits notification draft status changes", async () => {
+    const { repo, auditLogs } = createRepo();
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    // sent_manually is the transition that most needs a name attached to it:
+    // it asserts a message actually went out to an adopter.
+    await service.updateNotificationDraftStatus({
+      actorUserId: "admin-user",
+      draftId: "draft-1",
+      input: { status: "sent_manually" },
+    });
+
+    expect(auditLogs).toContainEqual(
+      expect.objectContaining({
+        actor_user_id: "admin-user",
+        action: "content.notification_draft.status",
+        entity: "recipient_notification_draft",
+        entity_id: "draft-1",
+        detail: { status: "sent_manually" },
+      }),
+    );
+  });
+
   test("rejects invalid social copy story update ids", async () => {
     const { repo } = createRepo();
     const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
