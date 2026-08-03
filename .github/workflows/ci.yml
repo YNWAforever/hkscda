@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - run: bun install --frozen-lockfile
+
+      # `bun run build` transpiles without type checking, so this is the only
+      # thing standing between a type error and production. Keep it before the
+      # build: it is fast and its failures are the most actionable.
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Test
+        run: bun test
+
+      - name: Lint
+        run: bun run lint
+
+      # Turnstile boot-asserts on an inconsistent site-key/secret pair. CI has
+      # neither, and VERCEL_ENV is unset, so it takes the non-production path.
+      - name: Build
+        run: bun run build
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: ci-placeholder-anon-key
