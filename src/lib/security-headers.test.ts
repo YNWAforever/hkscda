@@ -1,6 +1,11 @@
 import { describe, expect, test } from "bun:test";
 
-import { applySecurityHeaders, SECURITY_HEADERS } from "./security-headers";
+import {
+  applySecurityHeaders,
+  CSP_REPORT_GROUP,
+  CSP_REPORT_PATH,
+  SECURITY_HEADERS,
+} from "./security-headers";
 
 describe("applySecurityHeaders", () => {
   test("sets the baseline security headers on a response", () => {
@@ -42,5 +47,23 @@ describe("applySecurityHeaders", () => {
   test("ships CSP as Report-Only so it cannot break the app", () => {
     expect(SECURITY_HEADERS["Content-Security-Policy-Report-Only"]).toBeDefined();
     expect(SECURITY_HEADERS["Content-Security-Policy"]).toBeUndefined();
+  });
+
+  test("routes violations to a collector so Report-Only produces data", () => {
+    const csp = SECURITY_HEADERS["Content-Security-Policy-Report-Only"]!;
+
+    // Without a reporting destination, Report-Only only writes to the console of
+    // whoever happens to have devtools open — there is nothing to tune the
+    // allow-list against before switching CSP to enforcing.
+    expect(csp).toContain(`report-uri ${CSP_REPORT_PATH}`);
+    expect(csp).toContain(`report-to ${CSP_REPORT_GROUP}`);
+  });
+
+  test("declares the report-to group via Reporting-Endpoints", () => {
+    const result = applySecurityHeaders(new Response("ok"));
+
+    expect(result.headers.get("Reporting-Endpoints")).toBe(
+      `${CSP_REPORT_GROUP}="${CSP_REPORT_PATH}"`,
+    );
   });
 });

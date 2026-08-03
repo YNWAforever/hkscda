@@ -20,6 +20,7 @@ import { Route as SponsorsIdRouteImport } from './routes/sponsors_.$id'
 import { Route as ReportAuditRouteImport } from './routes/report/audit'
 import { Route as ReportAdoptionRouteImport } from './routes/report/adoption'
 import { Route as ApiDonationsRouteImport } from './routes/api/donations'
+import { Route as ApiCspReportRouteImport } from './routes/api/csp-report'
 import { Route as AnimalsDogRouteImport } from './routes/animals/dog'
 import { Route as AnimalsCatRouteImport } from './routes/animals/cat'
 import { Route as AdoptionInstructionsRouteImport } from './routes/adoption/instructions'
@@ -167,6 +168,11 @@ const ReportAdoptionRoute = ReportAdoptionRouteImport.update({
 const ApiDonationsRoute = ApiDonationsRouteImport.update({
   id: '/api/donations',
   path: '/api/donations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCspReportRoute = ApiCspReportRouteImport.update({
+  id: '/api/csp-report',
+  path: '/api/csp-report',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnimalsDogRoute = AnimalsDogRouteImport.update({
@@ -697,6 +703,7 @@ export interface FileRoutesByFullPath {
   '/adoption/instructions': typeof AdoptionInstructionsRoute
   '/animals/cat': typeof AnimalsCatRoute
   '/animals/dog': typeof AnimalsDogRoute
+  '/api/csp-report': typeof ApiCspReportRoute
   '/api/donations': typeof ApiDonationsRoute
   '/report/adoption': typeof ReportAdoptionRoute
   '/report/audit': typeof ReportAuditRoute
@@ -802,6 +809,7 @@ export interface FileRoutesByTo {
   '/adoption/instructions': typeof AdoptionInstructionsRoute
   '/animals/cat': typeof AnimalsCatRoute
   '/animals/dog': typeof AnimalsDogRoute
+  '/api/csp-report': typeof ApiCspReportRoute
   '/api/donations': typeof ApiDonationsRoute
   '/report/adoption': typeof ReportAdoptionRoute
   '/report/audit': typeof ReportAuditRoute
@@ -909,6 +917,7 @@ export interface FileRoutesById {
   '/adoption/instructions': typeof AdoptionInstructionsRoute
   '/animals/cat': typeof AnimalsCatRoute
   '/animals/dog': typeof AnimalsDogRoute
+  '/api/csp-report': typeof ApiCspReportRoute
   '/api/donations': typeof ApiDonationsRoute
   '/report/adoption': typeof ReportAdoptionRoute
   '/report/audit': typeof ReportAuditRoute
@@ -1017,6 +1026,7 @@ export interface FileRouteTypes {
     | '/adoption/instructions'
     | '/animals/cat'
     | '/animals/dog'
+    | '/api/csp-report'
     | '/api/donations'
     | '/report/adoption'
     | '/report/audit'
@@ -1122,6 +1132,7 @@ export interface FileRouteTypes {
     | '/adoption/instructions'
     | '/animals/cat'
     | '/animals/dog'
+    | '/api/csp-report'
     | '/api/donations'
     | '/report/adoption'
     | '/report/audit'
@@ -1228,6 +1239,7 @@ export interface FileRouteTypes {
     | '/adoption/instructions'
     | '/animals/cat'
     | '/animals/dog'
+    | '/api/csp-report'
     | '/api/donations'
     | '/report/adoption'
     | '/report/audit'
@@ -1335,6 +1347,7 @@ export interface RootRouteChildren {
   AdoptionInstructionsRoute: typeof AdoptionInstructionsRoute
   AnimalsCatRoute: typeof AnimalsCatRoute
   AnimalsDogRoute: typeof AnimalsDogRoute
+  ApiCspReportRoute: typeof ApiCspReportRoute
   ApiDonationsRoute: typeof ApiDonationsRoute
   ReportAdoptionRoute: typeof ReportAdoptionRoute
   ReportAuditRoute: typeof ReportAuditRoute
@@ -1474,6 +1487,13 @@ declare module '@tanstack/react-router' {
       path: '/api/donations'
       fullPath: '/api/donations'
       preLoaderRoute: typeof ApiDonationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/csp-report': {
+      id: '/api/csp-report'
+      path: '/api/csp-report'
+      fullPath: '/api/csp-report'
+      preLoaderRoute: typeof ApiCspReportRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/animals/dog': {
@@ -2436,6 +2456,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdoptionInstructionsRoute: AdoptionInstructionsRoute,
   AnimalsCatRoute: AnimalsCatRoute,
   AnimalsDogRoute: AnimalsDogRoute,
+  ApiCspReportRoute: ApiCspReportRoute,
   ApiDonationsRoute: ApiDonationsRoute,
   ReportAdoptionRoute: ReportAdoptionRoute,
   ReportAuditRoute: ReportAuditRoute,
