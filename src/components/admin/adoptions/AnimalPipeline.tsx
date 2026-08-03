@@ -678,7 +678,9 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
               lifecycleMutation.mutate({ animalId: row.id, status: value as AnimalStatus })
             }
           >
-            <SelectTrigger aria-label={`Update ${row.name} lifecycle`} className="h-10 w-40">
+            {/* min-h-11 to match the Edit button below it; h-10 left this the
+                one sub-44px touch target in the card. */}
+            <SelectTrigger aria-label={`Update ${row.name} lifecycle`} className="min-h-11 w-40">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
