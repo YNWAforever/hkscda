@@ -304,9 +304,7 @@ export function DonatePage({
   );
   const primaryWedding =
     availableWeddingSlots.find((slot) => slot.language === language) ?? availableWeddingSlots[0];
-  const alternateWedding = availableWeddingSlots.find(
-    (slot) => slot.id !== primaryWedding?.id,
-  );
+  const alternateWedding = availableWeddingSlots.find((slot) => slot.id !== primaryWedding?.id);
 
   return (
     <main className="bg-[var(--color-background)]">

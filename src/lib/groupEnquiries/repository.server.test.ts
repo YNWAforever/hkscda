@@ -46,7 +46,14 @@ function createClient(options: { insertError?: unknown; selectRow?: unknown } = 
       return {
         insert(payload: unknown) {
           calls.push({ name: "insert", payload: { table, payload } });
-          return { select: () => ({ single: async () => ({ data: options.insertError ? null : row, error: options.insertError ?? null }) }) };
+          return {
+            select: () => ({
+              single: async () => ({
+                data: options.insertError ? null : row,
+                error: options.insertError ?? null,
+              }),
+            }),
+          };
         },
         select() {
           return {
@@ -58,7 +65,14 @@ function createClient(options: { insertError?: unknown; selectRow?: unknown } = 
         },
         update(payload: unknown) {
           calls.push({ name: "update", payload: { table, payload } });
-          return { eq: async (column: string, value: unknown) => ({ data: null, error: null, column, value }) };
+          return {
+            eq: async (column: string, value: unknown) => ({
+              data: null,
+              error: null,
+              column,
+              value,
+            }),
+          };
         },
       };
     },
@@ -77,15 +91,23 @@ describe("Supabase group enquiry repository", () => {
     });
     expect(calls[0]).toMatchObject({
       name: "insert",
-      payload: { table: "group_enquiries", payload: { organisation: "Happy School", idempotency_key: insert.idempotencyKey } },
+      payload: {
+        table: "group_enquiries",
+        payload: { organisation: "Happy School", idempotency_key: insert.idempotencyKey },
+      },
     });
   });
 
   test("loads the existing row when the idempotency key already exists", async () => {
-    const { client, calls } = createClient({ insertError: { code: "23505", message: "duplicate key" } });
+    const { client, calls } = createClient({
+      insertError: { code: "23505", message: "duplicate key" },
+    });
     const repo = createSupabaseGroupEnquiryRepository(client as never);
 
-    await expect(repo.createOrGet(insert)).resolves.toMatchObject({ created: false, enquiry: { id: "enquiry-1" } });
+    await expect(repo.createOrGet(insert)).resolves.toMatchObject({
+      created: false,
+      enquiry: { id: "enquiry-1" },
+    });
     expect(calls.map((call) => call.name)).toEqual(["insert", "select.eq"]);
   });
 
@@ -96,7 +118,13 @@ describe("Supabase group enquiry repository", () => {
     await repo.markNotificationSent("enquiry-1");
     await repo.markNotificationFailed("enquiry-1", "safe failure");
 
-    expect(calls.map((call) => call.payload)).toContainEqual({ table: "group_enquiries", payload: { notification_status: "sent", notification_error: null } });
-    expect(calls.map((call) => call.payload)).toContainEqual({ table: "group_enquiries", payload: { notification_status: "failed", notification_error: "safe failure" } });
+    expect(calls.map((call) => call.payload)).toContainEqual({
+      table: "group_enquiries",
+      payload: { notification_status: "sent", notification_error: null },
+    });
+    expect(calls.map((call) => call.payload)).toContainEqual({
+      table: "group_enquiries",
+      payload: { notification_status: "failed", notification_error: "safe failure" },
+    });
   });
 });

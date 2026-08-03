@@ -30,10 +30,18 @@ export const estateInputSchema = z.object({
 
 export const adminAdoptionInformationQuerySchema = z.object({
   resource: z.enum(["fees", "estates"]).catch("fees"),
-  q: z.string().optional().transform((value) => value?.trim() || undefined),
+  q: z
+    .string()
+    .optional()
+    .transform((value) => value?.trim() || undefined),
   animalType: z.enum(["dog", "cat"]).optional(),
   page: z.coerce.number().int().min(1).catch(1),
-  pageSize: z.coerce.number().int().min(1).catch(25).transform((value) => Math.min(value, 50)),
+  pageSize: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .catch(25)
+    .transform((value) => Math.min(value, 50)),
 });
 
 export const adoptionInformationMutationSchema = z.discriminatedUnion("resource", [

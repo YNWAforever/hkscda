@@ -25,7 +25,9 @@ const enquiry: GroupEnquiry = {
   updatedAt: "2026-07-22T00:00:00.000Z",
 };
 
-function createRepo(result: { enquiry: GroupEnquiry; created: boolean } = { enquiry, created: true }) {
+function createRepo(
+  result: { enquiry: GroupEnquiry; created: boolean } = { enquiry, created: true },
+) {
   const calls: Array<{ name: string; input?: unknown }> = [];
   const repo: GroupEnquiryRepository = {
     async createOrGet(input) {
@@ -70,11 +72,20 @@ describe("group enquiry service", () => {
     const { repo, calls } = createRepo();
     const service = createGroupEnquiryService({
       repo,
-      notifyAdmins: async () => { calls.push({ name: "notifyAdmins" }); },
+      notifyAdmins: async () => {
+        calls.push({ name: "notifyAdmins" });
+      },
     });
 
-    await expect(service.submitPublicEnquiry(payload)).resolves.toEqual({ ok: true, enquiryId: "enquiry-1" });
-    expect(calls.map((call) => call.name)).toEqual(["createOrGet", "notifyAdmins", "markNotificationSent"]);
+    await expect(service.submitPublicEnquiry(payload)).resolves.toEqual({
+      ok: true,
+      enquiryId: "enquiry-1",
+    });
+    expect(calls.map((call) => call.name)).toEqual([
+      "createOrGet",
+      "notifyAdmins",
+      "markNotificationSent",
+    ]);
     expect(calls[0].input).toMatchObject({
       organisationName: "Happy School",
       contactPerson: "Ms Chan",
@@ -89,10 +100,15 @@ describe("group enquiry service", () => {
     const { repo, calls } = createRepo({ enquiry, created: false });
     const service = createGroupEnquiryService({
       repo,
-      notifyAdmins: async () => { calls.push({ name: "notifyAdmins" }); },
+      notifyAdmins: async () => {
+        calls.push({ name: "notifyAdmins" });
+      },
     });
 
-    await expect(service.submitPublicEnquiry(payload)).resolves.toEqual({ ok: true, enquiryId: "enquiry-1" });
+    await expect(service.submitPublicEnquiry(payload)).resolves.toEqual({
+      ok: true,
+      enquiryId: "enquiry-1",
+    });
     expect(calls.map((call) => call.name)).toEqual(["createOrGet"]);
   });
 
@@ -106,8 +122,13 @@ describe("group enquiry service", () => {
       logger: { error: () => undefined },
     });
 
-    await expect(service.submitPublicEnquiry(payload)).resolves.toEqual({ ok: true, enquiryId: "enquiry-1" });
+    await expect(service.submitPublicEnquiry(payload)).resolves.toEqual({
+      ok: true,
+      enquiryId: "enquiry-1",
+    });
     expect(calls.map((call) => call.name)).toEqual(["createOrGet", "markNotificationFailed"]);
-    expect(String((calls[1].input as { safeError: string }).safeError).length).toBeLessThanOrEqual(300);
+    expect(String((calls[1].input as { safeError: string }).safeError).length).toBeLessThanOrEqual(
+      300,
+    );
   });
 });

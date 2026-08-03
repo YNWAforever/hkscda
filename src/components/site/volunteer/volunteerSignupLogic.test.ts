@@ -36,22 +36,41 @@ describe("volunteer signup logic", () => {
   });
 
   test("disables registration for closed or past activities", () => {
+    // Clock is pinned: this must not depend on when the suite happens to run.
+    const now = () => new Date("2026-07-25T00:00:00.000Z");
+    const upcoming = "2026-08-01T00:00:00.000Z";
+    const past = "2026-07-01T00:00:00.000Z";
+
     expect(
-      canRegisterForActivity({
-        status: "published",
-        startsAt: "2026-08-01T00:00:00.000Z",
-        remainingCapacity: 1,
-        allowWaitlist: false,
-      }),
+      canRegisterForActivity(
+        { status: "published", startsAt: upcoming, remainingCapacity: 1, allowWaitlist: false },
+        now,
+      ),
     ).toBe(true);
     expect(
-      canRegisterForActivity({
-        status: "closed",
-        startsAt: "2026-08-01T00:00:00.000Z",
-        remainingCapacity: 1,
-        allowWaitlist: false,
-      }),
+      canRegisterForActivity(
+        { status: "closed", startsAt: upcoming, remainingCapacity: 1, allowWaitlist: false },
+        now,
+      ),
     ).toBe(false);
+    expect(
+      canRegisterForActivity(
+        { status: "published", startsAt: past, remainingCapacity: 1, allowWaitlist: false },
+        now,
+      ),
+    ).toBe(false);
+    expect(
+      canRegisterForActivity(
+        { status: "published", startsAt: upcoming, remainingCapacity: 0, allowWaitlist: false },
+        now,
+      ),
+    ).toBe(false);
+    expect(
+      canRegisterForActivity(
+        { status: "published", startsAt: upcoming, remainingCapacity: 0, allowWaitlist: true },
+        now,
+      ),
+    ).toBe(true);
   });
 
   test("labels availability with waitlist fallback", () => {

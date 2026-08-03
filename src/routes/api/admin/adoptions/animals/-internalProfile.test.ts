@@ -1,6 +1,10 @@
 import { describe, expect, test } from "bun:test";
 
-import { buildInternalProfileUpsertPayload, parseAnimalProfileUuid } from "./-internalProfile";
+import {
+  buildInternalProfileAuditEntry,
+  buildInternalProfileUpsertPayload,
+  parseAnimalProfileUuid,
+} from "./-internalProfile";
 
 const animalId = "11111111-1111-4111-8111-111111111111";
 const sourceId = "22222222-2222-4222-8222-222222222222";
@@ -92,5 +96,49 @@ describe("internal animal profile payload", () => {
         }),
       ),
     ).toThrow();
+  });
+});
+
+describe("internal profile audit entry", () => {
+  const actorUserId = "44444444-4444-4444-8444-444444444444";
+
+  test("attributes the write to the admin who made it", () => {
+    // This route upserts animal_profile_internal over the service-role
+    // connection, where auth.uid() is null — so log_animal_mutation() skips it.
+    // Without this row an admin edit to an animal's internal record leaves no
+    // trace in either the trigger path or the app layer.
+    const payload = buildInternalProfileUpsertPayload(animalId, fullProfile());
+    const profile = { animal_id: animalId, internal_code: "CAT-204" };
+
+    expect(
+      buildInternalProfileAuditEntry(
+        actorUserId,
+        payload,
+        profile,
+        () => new Date("2026-06-27T10:30:00.000Z"),
+      ),
+    ).toEqual({
+      actor_user_id: actorUserId,
+      action: "animal_profile_internal.upsert",
+      entity: "animal_profile_internal",
+      entity_id: animalId,
+      timestamp: "2026-06-27T10:30:00.000Z",
+      detail: { profile },
+    });
+  });
+
+  test("takes its timestamp from the injected clock, not the wall clock", () => {
+    // The whole point of injecting the clock: a test that pins the timestamp
+    // can't rot on a future calendar date the way an inline new Date() would.
+    const payload = buildInternalProfileUpsertPayload(animalId, fullProfile());
+
+    expect(
+      buildInternalProfileAuditEntry(
+        actorUserId,
+        payload,
+        null,
+        () => new Date("2020-01-02T03:04:05.000Z"),
+      ).timestamp,
+    ).toBe("2020-01-02T03:04:05.000Z");
   });
 });

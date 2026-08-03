@@ -100,3 +100,40 @@ export function buildInternalProfileUpsertPayload(
     internal_remarks: parsed.internal_remarks,
   };
 }
+
+export type InternalProfileAuditEntry = {
+  actor_user_id: string;
+  action: "animal_profile_internal.upsert";
+  entity: "animal_profile_internal";
+  entity_id: string;
+  timestamp: string;
+  detail: { profile: unknown };
+};
+
+/**
+ * Audit row for an admin internal-profile upsert.
+ *
+ * This route writes animal_profile_internal over the service-role connection,
+ * where auth.uid() is null, so log_animal_mutation() skips it by design (see
+ * 20260803120000_audit_animal_mutations.sql). This row is the only record of
+ * the change.
+ *
+ * Unlike the sibling status route there is no updatedAt on the payload to reuse,
+ * so the clock is injected rather than read inline — the house rule for anything
+ * whose behaviour depends on time.
+ */
+export function buildInternalProfileAuditEntry(
+  actorUserId: string,
+  payload: InternalProfileUpsertPayload,
+  profile: unknown,
+  now = () => new Date(),
+): InternalProfileAuditEntry {
+  return {
+    actor_user_id: actorUserId,
+    action: "animal_profile_internal.upsert",
+    entity: "animal_profile_internal",
+    entity_id: payload.animal_id,
+    timestamp: now().toISOString(),
+    detail: { profile },
+  };
+}

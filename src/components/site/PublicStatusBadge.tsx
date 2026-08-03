@@ -10,13 +10,22 @@ const tones = {
   error: "bg-[var(--color-error-highlight)] text-[var(--color-error)]",
 } as const;
 
-export function PublicStatusBadge({ tone, icon: Icon, children }: {
+export function PublicStatusBadge({
+  tone,
+  icon: Icon,
+  children,
+}: {
   tone: keyof typeof tones;
   icon?: LucideIcon;
   children: ReactNode;
 }) {
   return (
-    <span className={cn("inline-flex min-h-7 items-center gap-1.5 rounded px-2 py-1 text-xs font-bold", tones[tone])}>
+    <span
+      className={cn(
+        "inline-flex min-h-7 items-center gap-1.5 rounded px-2 py-1 text-xs font-bold",
+        tones[tone],
+      )}
+    >
       {Icon ? <Icon className="h-3.5 w-3.5" aria-hidden="true" /> : null}
       {children}
     </span>

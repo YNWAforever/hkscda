@@ -6,7 +6,10 @@ import { describe, expect, test } from "bun:test";
 
 const obsoleteServiceSlogan = "日夜堅守前線動物救援";
 const correctedServiceSlogan = "本會以預約方式進行拯救與援助服務，並非 24 小時當值。";
-const migrationPath = join(process.cwd(), "supabase/migrations/20260718122000_correct_service_slogan.sql");
+const migrationPath = join(
+  process.cwd(),
+  "supabase/migrations/20260718122000_correct_service_slogan.sql",
+);
 
 const excludedAuditPaths = new Set([
   "src/lib/content/serviceSloganCopy.test.ts",
@@ -14,8 +17,12 @@ const excludedAuditPaths = new Set([
 ]);
 
 function isPlanOrSpecDocumentation(repositoryPath: string): boolean {
-  return repositoryPath.startsWith(".superpowers/sdd/")
-    || /(?:^|\/)(?:plans?|specs?)(?:\/|$)|(?:^|\/)[^/]*(?:plan|spec)[^/]*\.(?:md|mdx|txt)$/i.test(repositoryPath);
+  return (
+    repositoryPath.startsWith(".superpowers/sdd/") ||
+    /(?:^|\/)(?:plans?|specs?)(?:\/|$)|(?:^|\/)[^/]*(?:plan|spec)[^/]*\.(?:md|mdx|txt)$/i.test(
+      repositoryPath,
+    )
+  );
 }
 
 function trackedContentFiles(): string[] {
@@ -44,12 +51,15 @@ describe("service slogan correction", () => {
     expect(migration).toContain("select id, slug, title");
 
     const auditFilePaths = trackedContentFiles();
-    expect(auditFilePaths.map((filePath) => relative(process.cwd(), filePath).replaceAll("\\", "/"))).toEqual(
+    expect(
+      auditFilePaths.map((filePath) => relative(process.cwd(), filePath).replaceAll("\\", "/")),
+    ).toEqual(
       expect.arrayContaining(["scripts/seed-admin.js", "vite.config.ts", "eslint.config.js"]),
     );
 
-    const obsoleteFiles = auditFilePaths
-      .filter((filePath) => readTrackedTextFile(filePath).includes(obsoleteServiceSlogan));
+    const obsoleteFiles = auditFilePaths.filter((filePath) =>
+      readTrackedTextFile(filePath).includes(obsoleteServiceSlogan),
+    );
     expect(obsoleteFiles).toEqual([]);
   });
 

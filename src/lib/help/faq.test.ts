@@ -1,11 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import {
-  getFaqById,
-  getFaqsByCategory,
-  helpCategoryLabels,
-  helpFaqs,
-} from "./faq";
+import { getFaqById, getFaqsByCategory, helpCategoryLabels, helpFaqs } from "./faq";
 
 describe("help FAQ data", () => {
   test("has stable unique ids", () => {

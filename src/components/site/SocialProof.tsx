@@ -47,34 +47,54 @@ export function SocialProof() {
 
         <div className="mb-14 border-y border-[var(--color-border)] py-6 text-sm leading-relaxed text-[var(--color-text-muted)]">
           公開影響資料只會在資料庫成功核實後顯示，請到協會簡介查看目前可核實的資料日期。
-          <a href="/about" className="ml-2 font-bold text-[var(--color-primary)] underline">查看協會簡介</a>
+          <a href="/about" className="ml-2 font-bold text-[var(--color-primary)] underline">
+            查看協會簡介
+          </a>
         </div>
 
         <div className="mb-12">
-          <p className="mb-6 text-center text-xs font-semibold text-[var(--color-text-muted)]">傳媒報導</p>
+          <p className="mb-6 text-center text-xs font-semibold text-[var(--color-text-muted)]">
+            傳媒報導
+          </p>
           <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
             {press.map((item) => (
-              <span key={item} className="text-lg font-bold text-[var(--color-text-muted)]">{item}</span>
+              <span key={item} className="text-lg font-bold text-[var(--color-text-muted)]">
+                {item}
+              </span>
             ))}
           </div>
         </div>
 
         <div className="mb-16">
-          <p className="mb-6 text-center text-xs font-semibold text-[var(--color-text-muted)]">合作夥伴及贊助機構</p>
+          <p className="mb-6 text-center text-xs font-semibold text-[var(--color-text-muted)]">
+            合作夥伴及贊助機構
+          </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             {partners.map((item) => (
-              <span key={item} className="border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-sm font-medium text-[var(--color-text-muted)]">{item}</span>
+              <span
+                key={item}
+                className="border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-sm font-medium text-[var(--color-text-muted)]"
+              >
+                {item}
+              </span>
             ))}
           </div>
         </div>
 
         <div className="grid gap-6 md:grid-cols-3">
           {testimonials.map((item) => (
-            <figure key={item.name} className="flex flex-col border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
+            <figure
+              key={item.name}
+              className="flex flex-col border border-[var(--color-border)] bg-[var(--color-surface)] p-6"
+            >
               <div className="mb-3 text-3xl leading-none text-[var(--color-primary)]">“</div>
-              <blockquote className="flex-1 text-sm leading-relaxed text-[var(--color-text)]">{item.quote}</blockquote>
+              <blockquote className="flex-1 text-sm leading-relaxed text-[var(--color-text)]">
+                {item.quote}
+              </blockquote>
               <figcaption className="mt-5 flex items-center gap-3 border-t border-[var(--color-border)] pt-5">
-                <div className="flex h-10 w-10 items-center justify-center bg-[var(--color-primary-highlight)] font-bold text-[var(--color-primary)]">{item.initials}</div>
+                <div className="flex h-10 w-10 items-center justify-center bg-[var(--color-primary-highlight)] font-bold text-[var(--color-primary)]">
+                  {item.initials}
+                </div>
                 <div>
                   <div className="text-sm font-bold">{item.name}</div>
                   <div className="text-xs text-[var(--color-text-muted)]">{item.pet}</div>

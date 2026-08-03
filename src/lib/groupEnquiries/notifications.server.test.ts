@@ -31,7 +31,11 @@ describe("group enquiry admin notifications", () => {
     const result = await notifyGroupEnquiryAdmins(
       { enquiry },
       {
-        getEmailConfig: () => ({ resendApiKey: "key", from: "HKSCDA <noreply@example.test>", replyTo: "admin@example.test" }),
+        getEmailConfig: () => ({
+          resendApiKey: "key",
+          from: "HKSCDA <noreply@example.test>",
+          replyTo: "admin@example.test",
+        }),
         createEmailSender: async () => ({ send: async (input: unknown) => sent.push(input) }),
       },
     );
@@ -47,7 +51,13 @@ describe("group enquiry admin notifications", () => {
     await expect(
       notifyGroupEnquiryAdmins(
         { enquiry },
-        { getEmailConfig: () => ({ resendApiKey: null, from: "noreply@example.test", replyTo: null }) },
+        {
+          getEmailConfig: () => ({
+            resendApiKey: null,
+            from: "noreply@example.test",
+            replyTo: null,
+          }),
+        },
       ),
     ).resolves.toBe("skipped");
 
@@ -55,8 +65,16 @@ describe("group enquiry admin notifications", () => {
       notifyGroupEnquiryAdmins(
         { enquiry },
         {
-          getEmailConfig: () => ({ resendApiKey: "key", from: "noreply@example.test", replyTo: "admin@example.test" }),
-          createEmailSender: async () => ({ send: async () => { throw new Error("SMTP down"); } }),
+          getEmailConfig: () => ({
+            resendApiKey: "key",
+            from: "noreply@example.test",
+            replyTo: "admin@example.test",
+          }),
+          createEmailSender: async () => ({
+            send: async () => {
+              throw new Error("SMTP down");
+            },
+          }),
           logger: { error: () => undefined },
         },
       ),

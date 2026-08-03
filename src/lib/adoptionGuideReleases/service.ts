@@ -91,9 +91,7 @@ function selectedAsset(
     : null;
 }
 
-export function createAdoptionGuideReleaseService(
-  repository: AdoptionGuideReleaseRepository,
-) {
+export function createAdoptionGuideReleaseService(repository: AdoptionGuideReleaseRepository) {
   async function getRelease(actor: AdoptionGuideActor, rawId: string) {
     requireActor(actor);
     const id = adoptionGuideReleaseIdSchema.parse(rawId);
@@ -111,13 +109,7 @@ export function createAdoptionGuideReleaseService(
   }
 
   return {
-    async list({
-      actor,
-      query,
-    }: {
-      actor: AdoptionGuideActor;
-      query: AdoptionGuideAdminQuery;
-    }) {
+    async list({ actor, query }: { actor: AdoptionGuideActor; query: AdoptionGuideAdminQuery }) {
       requireActor(actor);
       return repository.list(query);
     },
@@ -199,11 +191,7 @@ export function createAdoptionGuideReleaseService(
       });
       const release = await getRelease(actor, id);
       assertVersion(release, expectedVersion);
-      assertState(
-        release,
-        "in_review",
-        "Only in-review adoption guide releases can be withdrawn.",
-      );
+      assertState(release, "in_review", "Only in-review adoption guide releases can be withdrawn.");
       return repository.transition({
         id,
         expectedVersion,
@@ -228,11 +216,7 @@ export function createAdoptionGuideReleaseService(
       });
       const release = await getRelease(actor, id);
       assertVersion(release, expectedVersion);
-      assertState(
-        release,
-        "in_review",
-        "Only in-review adoption guide releases can be returned.",
-      );
+      assertState(release, "in_review", "Only in-review adoption guide releases can be returned.");
       return repository.transition({
         id,
         expectedVersion,

@@ -1,10 +1,7 @@
 import { describe, expect, mock, test } from "bun:test";
 
 import type { DocumentAsset } from "../documents/types";
-import type {
-  AdoptionGuideReleaseRepository,
-  AdoptionGuideAdminQuery,
-} from "./repository.server";
+import type { AdoptionGuideReleaseRepository, AdoptionGuideAdminQuery } from "./repository.server";
 import { AdoptionGuideReleaseError, createAdoptionGuideReleaseService } from "./service";
 import type { AdoptionGuideActor, AdoptionGuideDraftInput } from "./service";
 import type { AdoptionGuideRelease } from "./types";

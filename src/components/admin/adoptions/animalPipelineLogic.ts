@@ -71,7 +71,9 @@ export function buildAnimalPipelineSearchParams(filters: AnimalPipelineSearchPar
   return params;
 }
 
-export function buildAnimalPipelineExportSearchParams(filters: AnimalPipelineSearchParamsInput = {}) {
+export function buildAnimalPipelineExportSearchParams(
+  filters: AnimalPipelineSearchParamsInput = {},
+) {
   const params = new URLSearchParams();
   const query = trimmed(filters.q);
   const animalId = trimmed(filters.animalId);

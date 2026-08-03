@@ -1,10 +1,4 @@
-import {
-  jsonBody,
-  jsonResponse,
-  queryParams,
-  requiredUuid,
-  withErrors,
-} from "./shared.server";
+import { jsonBody, jsonResponse, queryParams, requiredUuid, withErrors } from "./shared.server";
 import type {
   AdoptionCoordinatorService,
   CoordinatorAuthorizer,

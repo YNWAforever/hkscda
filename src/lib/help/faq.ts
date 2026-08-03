@@ -66,7 +66,15 @@ export const helpFaqs: HelpFaq[] = [
     },
     keywords: {
       "zh-HK": ["助養", "開始", "申請", "動物", "每月", "繳費"],
-      en: ["start sponsorship", "pledge form", "payment proof", "reference", "HK$100", "HK$300", "HK$500"],
+      en: [
+        "start sponsorship",
+        "pledge form",
+        "payment proof",
+        "reference",
+        "HK$100",
+        "HK$300",
+        "HK$500",
+      ],
     },
     cta: {
       href: "/sponsors/pledge",

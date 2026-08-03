@@ -98,7 +98,12 @@ describe("volunteer registration rules", () => {
     expect(
       decideVolunteerRegistrationStatus({
         activity: { ...baseActivity, minAge: 16, underagePolicy: "allow_with_guardian_pending" },
-        draft: { ...individualDraft, declaredAge: 20, guardianName: "Parent Lee", guardianPhone: "92345678" },
+        draft: {
+          ...individualDraft,
+          declaredAge: 20,
+          guardianName: "Parent Lee",
+          guardianPhone: "92345678",
+        },
         now: new Date("2026-07-01T00:00:00.000Z"),
       }),
     ).toEqual({ status: "rejected", reason: "minimum_age_not_met" });

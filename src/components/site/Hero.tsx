@@ -10,12 +10,16 @@ export function Hero() {
         description="救援、醫療、絕育與負責任領養，以社區力量守護香港流浪貓狗。"
         imageSrc={heroImg}
         imageAlt="義工懷抱獲救小動物"
-        actions={(
+        actions={
           <>
-            <a href="/animals/cat" className="btn-primary min-h-11 px-5">查看待領養動物</a>
-            <a href="/donate" className="btn-secondary min-h-11 px-5">立即捐助</a>
+            <a href="/animals/cat" className="btn-primary min-h-11 px-5">
+              查看待領養動物
+            </a>
+            <a href="/donate" className="btn-secondary min-h-11 px-5">
+              立即捐助
+            </a>
           </>
-        )}
+        }
       />
     </div>
   );

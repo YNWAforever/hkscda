@@ -96,9 +96,7 @@ describe("volunteer schemas", () => {
     });
 
     expect(underage.success).toBe(false);
-    expect(underage.error?.issues.map((issue) => issue.path.join("."))).toContain(
-      "declaredAge",
-    );
+    expect(underage.error?.issues.map((issue) => issue.path.join("."))).toContain("declaredAge");
 
     expect(
       publicRegistrationSchema.parse({

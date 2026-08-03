@@ -1,10 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
 import type { AdminUser } from "../../donations/supabase.server";
-import {
-  createTaskHandlers,
-  type TaskService,
-} from "./taskHandlers.server";
+import { createTaskHandlers, type TaskService } from "./taskHandlers.server";
 
 const staff: AdminUser = {
   id: "staff-row",
@@ -137,9 +134,7 @@ describe("createTaskHandlers", () => {
     });
 
     const response = await handlers.getTask({
-      request: new Request(
-        `https://example.test/api/admin/adoptions/tasks/${taskId}`,
-      ),
+      request: new Request(`https://example.test/api/admin/adoptions/tasks/${taskId}`),
       params: { id: taskId },
     });
 
@@ -156,10 +151,10 @@ describe("createTaskHandlers", () => {
     });
 
     const response = await handlers.updateTask({
-      request: jsonRequest(
-        `https://example.test/api/admin/adoptions/tasks/${taskId}`,
-        { title: "Updated follow-up", priority: "urgent" },
-      ),
+      request: jsonRequest(`https://example.test/api/admin/adoptions/tasks/${taskId}`, {
+        title: "Updated follow-up",
+        priority: "urgent",
+      }),
       params: { id: taskId },
     });
 

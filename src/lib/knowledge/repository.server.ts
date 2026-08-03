@@ -61,7 +61,9 @@ function isSafeObjectPath(value: unknown): value is string {
   ) {
     return false;
   }
-  return value.split("/").every((segment) => segment.length > 0 && segment !== "." && segment !== "..");
+  return value
+    .split("/")
+    .every((segment) => segment.length > 0 && segment !== "." && segment !== "..");
 }
 
 function publicAssetUrl(client: SupabaseClient, value: unknown) {

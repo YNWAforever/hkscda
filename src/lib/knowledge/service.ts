@@ -1,7 +1,17 @@
-﻿import { adminKnowledgeQuerySchema, deleteKnowledgePostSchema, knowledgePostInputSchema } from "./schemas";
+﻿import {
+  adminKnowledgeQuerySchema,
+  deleteKnowledgePostSchema,
+  knowledgePostInputSchema,
+} from "./schemas";
 import type { KnowledgeAuditLog, KnowledgeRepository } from "./types";
 
-export function createKnowledgeService({ repo, now = () => new Date() }: { repo: KnowledgeRepository; now?: () => Date }) {
+export function createKnowledgeService({
+  repo,
+  now = () => new Date(),
+}: {
+  repo: KnowledgeRepository;
+  now?: () => Date;
+}) {
   async function audit(input: Omit<KnowledgeAuditLog, "timestamp">) {
     await repo.insertAuditLog({ ...input, timestamp: now().toISOString() });
   }
