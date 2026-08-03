@@ -19,13 +19,14 @@ volunteer journey and a role-gated admin back office.
 
 - Dev: `bun run dev`
 - Build: `bun run build`
-- Test: `bun test` (505 tests, 73 files, ~1s)
+- Test: `bun test` (520 tests, 74 files, ~1-2s)
 - Typecheck: `bunx tsc --noEmit` — **the build does NOT typecheck.** Run this
   before pushing; Vite transpiles without type checking, so type errors ship green.
 - Lint: `bun run lint` (slow, ~minutes) — `bunx eslint <file>` for single files
 - Format: `bun run format`
 
-There is no CI. `bun test` + `bunx tsc --noEmit` are manual gates.
+CI (`.github/workflows/ci.yml`) runs typecheck → test → lint → build on push and
+PR. Lint alone takes 10+ minutes — see the note above.
 
 ## Architecture
 
@@ -48,8 +49,10 @@ Domains following this: `adoptions`, `crm`, `donations`, `volunteers`, `admin`,
 `AnimalPipeline`, `MatchPanel`) write to Supabase directly from the browser with the
 anon client, guarded only by RLS. Do not copy this pattern — new mutations go through
 the API layer. Their audit trail comes from a database trigger
-(`log_animal_mutation`, migration `20260803120000`) rather than the repository layer,
-because a client-side audit would miss exactly the path that needs auditing.
+(`log_animal_mutation`, migration `20260803120000`) that fires only when the write
+carries a real JWT (`auth.uid()` is set) — service-role writes are skipped there and
+must write their own `audit_log` row at the app layer instead (matching the rule
+below), so the same event is never logged twice with two different actors.
 
 ## Security Invariants
 
@@ -62,9 +65,13 @@ because a client-side audit would miss exactly the path that needs auditing.
   `set search_path = public, pg_temp`. Keep both true for new migrations.
 - App-called RPCs go in the `public` schema and must be granted to `service_role` —
   the `private` schema is not exposed to PostgREST.
-- Public POST endpoints are rate limited (`enforceRateLimit`) and Turnstile-verified.
-  Both fail *open* when unconfigured; `assertTurnstileConfigFromEnv()` boot-fails on
-  an inconsistent production pair.
+- Public POST endpoints accepting a **user-submitted form** are rate limited
+  (`enforceRateLimit`) and Turnstile-verified. Both fail *open* when unconfigured;
+  `assertTurnstileConfigFromEnv()` boot-fails on an inconsistent production pair.
+  Endpoints that receive a **browser-native automated payload** instead (e.g.
+  `/api/csp-report`, populated by the browser's own CSP reporting machinery, not
+  by page JS or a user action) have no Turnstile widget to obtain a token from —
+  rate limiting alone is the correct control there.
 - Never trust `x-forwarded-for[0]` — use `getClientIp()`.
 - Admin mutations write an `audit_log` row. Match that in new domains.
 
@@ -78,6 +85,14 @@ because a client-side audit would miss exactly the path that needs auditing.
 - **Injectable clocks**: functions whose behaviour depends on time take
   `now = () => new Date()` as a parameter. Never call `Date.now()` inline in logic
   you intend to test — that is what makes tests rot on a calendar date.
+- **Discarded side-effect deps**: a DI factory dependency whose result is
+  intentionally ignored (e.g. an email sender that resolves to a delivery status
+  the caller doesn't act on) is typed `Promise<unknown>`, never `Promise<void>` —
+  TypeScript's void-return exemption does not apply through a `Promise<T>` type
+  argument, so `Promise<void>` rejects the real implementation at the call site.
+  Landed independently three times (`volunteers/service.ts`,
+  `publicAdoption/submission.server.ts`, `sponsorship/submission.server.ts`)
+  before being written down here.
 - CSS theming: use `var(--color-*)` tokens from `styles.css`, never hardcoded colours
 - Tests: `*.test.ts` beside the source, `bun:test`, dependency-injected fakes
 - Commits: Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`, `refactor:`)

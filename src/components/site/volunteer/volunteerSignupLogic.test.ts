@@ -37,7 +37,7 @@ describe("volunteer signup logic", () => {
 
   test("disables registration for closed or past activities", () => {
     // Clock is pinned: this must not depend on when the suite happens to run.
-    const now = new Date("2026-07-25T00:00:00.000Z");
+    const now = () => new Date("2026-07-25T00:00:00.000Z");
     const upcoming = "2026-08-01T00:00:00.000Z";
     const past = "2026-07-01T00:00:00.000Z";
 

@@ -1,20 +1,27 @@
--- Audit every write to the animal tables, at the database layer.
+-- Audit direct-from-browser writes to the animal tables, at the database layer.
 --
--- Most admin mutations go browser -> /api/admin/* -> requireAdmin -> repository,
--- and the repository writes an audit_log row. The animal surfaces predate that
--- pattern: AnimalForm, AnimalsTable, AnimalPipeline and MatchPanel write to
--- Supabase DIRECTLY from the browser with the anon client, guarded only by RLS.
--- Those writes were completely unaudited — animals could be created, edited, or
--- deleted with no record of who did it, while every other admin action left one.
+-- AnimalForm and AnimalsTable write to public.animals DIRECTLY from the
+-- browser with the anon client (guarded only by RLS), bypassing the
+-- repository layer that writes an audit_log row for every other admin
+-- mutation. Those writes were completely unaudited.
 --
 -- Fixing this in the client would only cover today's call sites, and an
 -- application-layer audit is bypassed by the very path that caused the gap.
--- A trigger covers every writer: the direct client path, a future API handler,
--- and the SQL console alike.
+-- A trigger covers every writer: the direct client path, a future API
+-- handler, and the SQL console alike.
 --
--- Actor: auth.uid() is the authenticated admin for the direct-client path. It is
--- null for service_role connections (no JWT), which is honest — those writes are
--- attributed by the application-layer audit row instead.
+-- Scope: the trigger only fires when auth.uid() is present, i.e. the write
+-- carries a real end-user JWT (the anon/authenticated browser-direct path —
+-- the actual gap this migration closes). Writes made over the service-role
+-- connection (auth.uid() is null; every /api/admin/* route) are skipped
+-- here entirely, because those routes already resolve the real actor via
+-- requireAdmin and write their own, correctly-attributed audit_log row
+-- (see src/lib/adoptions/service.ts createMatch, and the insertAuditLog
+-- call added alongside this migration for the animal_profile_internal
+-- route). Auditing service-role writes here too would either duplicate an
+-- audit_log row that already has the real actor (animal_match), or record a
+-- second, actor-less row that undercuts the specific actor identity the
+-- app-layer call already has in hand — worse than not logging at all.
 
 create or replace function public.log_animal_mutation()
 returns trigger
@@ -27,6 +34,10 @@ declare
   v_entity_id text;
   v_detail jsonb;
 begin
+  if auth.uid() is null then
+    return null; -- ignored for AFTER triggers; see the scope note above.
+  end if;
+
   -- animal_profile_internal has no `id` column — its primary key is
   -- animal_id (references public.animals(id)). Every other audited table
   -- keys off `id`. Pick the right column per table rather than assuming `id`
@@ -64,15 +75,12 @@ begin
     v_detail
   );
 
-  if tg_op = 'DELETE' then
-    return old;
-  end if;
-  return new;
+  return null; -- ignored for AFTER row-level triggers regardless of value.
 end;
 $$;
 
 comment on function public.log_animal_mutation() is
-  'Writes an audit_log row for every insert/update/delete on the animal tables, including writes made directly from the browser with the anon client.';
+  'Writes an audit_log row for direct-from-browser (anon/authenticated JWT) writes to the animal tables. Service-role writes are skipped — those routes already write their own actor-attributed audit_log row.';
 
 drop trigger if exists audit_animals on public.animals;
 create trigger audit_animals

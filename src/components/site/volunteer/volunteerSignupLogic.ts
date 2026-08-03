@@ -55,11 +55,11 @@ export function canRegisterForActivity(
     remainingCapacity: number;
     allowWaitlist: boolean;
   },
-  now = new Date(),
+  now = () => new Date(),
 ) {
   return (
     activity.status === "published" &&
-    new Date(activity.startsAt).getTime() > now.getTime() &&
+    new Date(activity.startsAt).getTime() > now().getTime() &&
     (activity.remainingCapacity > 0 || activity.allowWaitlist)
   );
 }

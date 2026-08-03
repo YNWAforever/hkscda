@@ -32,6 +32,10 @@ function str(value: unknown): string | undefined {
   return typeof value === "string" ? value.slice(0, 512) : undefined;
 }
 
+function num(value: unknown): number | undefined {
+  return typeof value === "number" ? value : undefined;
+}
+
 /**
  * Normalise the two wire formats into one shape:
  * - `report-uri` sends `{ "csp-report": {...} }` as application/csp-report
@@ -42,7 +46,11 @@ export function normalizeCspReports(payload: unknown): CspViolation[] {
 
   if (Array.isArray(payload)) {
     for (const entry of payload) {
-      if (entry && typeof entry === "object") {
+      if (
+        entry &&
+        typeof entry === "object" &&
+        (entry as Record<string, unknown>).type === "csp-violation"
+      ) {
         const body = (entry as Record<string, unknown>).body;
         if (body && typeof body === "object") bodies.push(body as Record<string, unknown>);
       }
@@ -54,13 +62,13 @@ export function normalizeCspReports(payload: unknown): CspViolation[] {
 
   return bodies.map((body) => ({
     // report-uri uses kebab-case keys; report-to uses camelCase. Accept both.
-    documentUri: str(body["document-uri"] ?? body.documentURL ?? body.documentUri),
-    blockedUri: str(body["blocked-uri"] ?? body.blockedURL ?? body.blockedUri),
+    documentUri: str(body["document-uri"] ?? body.documentURL),
+    blockedUri: str(body["blocked-uri"] ?? body.blockedURL),
     violatedDirective: str(body["violated-directive"] ?? body.violatedDirective),
     effectiveDirective: str(body["effective-directive"] ?? body.effectiveDirective),
     disposition: str(body.disposition),
     sourceFile: str(body["source-file"] ?? body.sourceFile),
-    lineNumber: typeof body["line-number"] === "number" ? body["line-number"] : undefined,
+    lineNumber: num(body["line-number"]) ?? num(body.lineNumber),
   }));
 }
 
@@ -80,8 +88,20 @@ export const Route = createFileRoute("/api/csp-report")({
           });
         }
 
+        // Reject on the Content-Length header where present, before ever reading
+        // the body — matches the pattern used elsewhere (submission.server.ts).
+        const contentLength = request.headers.get("content-length");
+        if (contentLength && Number(contentLength) > MAX_REPORT_BYTES) {
+          return new Response(null, { status: 413 });
+        }
+
         const raw = await request.text();
-        if (raw.length > MAX_REPORT_BYTES) return new Response(null, { status: 413 });
+        // `.length` is UTF-16 code units, not bytes — check the real UTF-8 size,
+        // since this app's bilingual zh-HK/en content makes a >1-byte-per-char
+        // report field a realistic way to smuggle a body past a code-unit check.
+        if (Buffer.byteLength(raw, "utf8") > MAX_REPORT_BYTES) {
+          return new Response(null, { status: 413 });
+        }
 
         let payload: unknown;
         try {

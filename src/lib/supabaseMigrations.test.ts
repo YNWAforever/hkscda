@@ -268,9 +268,9 @@ describe("supabase migration safety", () => {
   test("audits animal writes at the database layer, not the client", () => {
     const sql = readMigrationBySuffix("_audit_animal_mutations.sql");
 
-    // The gap this closes: animal writes happen directly from the browser with
-    // the anon client, so an application-layer audit would miss them entirely.
-    // Only a trigger covers every writer.
+    // The gap this closes: browser-direct animal writes happen with the anon
+    // client, so an application-layer audit would miss them entirely. A
+    // trigger covers every writer with a real JWT.
     for (const table of ["animals", "animal_profile_internal", "animal_match"]) {
       expect(sql).toMatch(
         new RegExp(
@@ -285,6 +285,37 @@ describe("supabase migration safety", () => {
 
     // Actor comes from the JWT, never from a caller-supplied argument.
     expect(sql).toContain("auth.uid()");
+  });
+
+  test("skips service-role writes, since those routes already audit themselves", () => {
+    const sql = readMigrationBySuffix("_audit_animal_mutations.sql");
+
+    // service-role connections carry no JWT, so auth.uid() is null there.
+    // /api/admin/* routes already resolve the real actor via requireAdmin and
+    // write their own audit_log row — auditing those writes here too would
+    // either duplicate a row that already has the real actor (animal_match),
+    // or add a second, actor-less row that undercuts the actor identity the
+    // app-layer call already has (animal_profile_internal). The trigger must
+    // bail out before doing any work when there's no JWT.
+    expect(sql).toMatch(/if auth\.uid\(\) is null then\s*\n\s*return null;/);
+
+    // The bail-out must come before the audit_log insert, not after.
+    const nullCheckIndex = sql.indexOf("if auth.uid() is null then");
+    const insertIndex = sql.indexOf("insert into public.audit_log");
+    expect(nullCheckIndex).toBeGreaterThan(-1);
+    expect(nullCheckIndex).toBeLessThan(insertIndex);
+  });
+
+  test("does not branch on tg_op to pick a trigger return value", () => {
+    const sql = readMigrationBySuffix("_audit_animal_mutations.sql");
+
+    // PostgreSQL ignores the return value of an AFTER row-level trigger
+    // entirely — branching on tg_op to choose between `return old` and
+    // `return new` has zero runtime effect and only invites a reader to
+    // assume it matters. A single unconditional `return null;` says what's
+    // actually true.
+    expect(sql).not.toMatch(/if tg_op = 'DELETE' then\s*\n\s*return old;/);
+    expect((sql.match(/return null;/g) ?? []).length).toBeGreaterThanOrEqual(2);
   });
 
   test("derives entity_id per-table, since animal_profile_internal has no id column", () => {
@@ -316,6 +347,63 @@ describe("supabase migration safety", () => {
           `${fileName}:${index + 1} — security definer without a pinned search_path`,
         ).toBe(true);
       });
+    }
+  });
+
+  test("every table granting authenticated writes is audited or explicitly exempted", () => {
+    // The audit-trigger migration only covers 3 hand-named tables. Nothing
+    // else ties "has a trigger" to "grants direct write access" — so the
+    // exact gap that migration closes can silently reopen for the next
+    // table someone grants authenticated writes on. This test is that tie:
+    // it fails the moment a new table gets a write grant without either a
+    // trigger or a documented reason it doesn't need one.
+    const dir = join(process.cwd(), "supabase", "migrations");
+    const allSql = readdirSync(dir)
+      .filter((entry) => entry.endsWith(".sql"))
+      .map(readMigration)
+      .join("\n");
+
+    const grantedTables = new Set<string>();
+    const grantRegex =
+      /grant\s+[a-z, ]*(?:insert|update|delete)[a-z, ]*\s+on\s+public\.([a-z_]+)\s+to\s+authenticated/gi;
+    for (const match of allSql.matchAll(grantRegex)) {
+      grantedTables.add(match[1]);
+    }
+
+    const auditedTables = new Set(["animals", "animal_profile_internal", "animal_match"]);
+
+    // Live risk assessments, not a permanent pass. If any of these gets a
+    // browser-direct write path, move it into auditedTables with its own
+    // trigger instead of leaving it here.
+    const exemptTables = new Set([
+      // Coordinator workflow tables: written only through requireAdmin-gated
+      // /api/admin/adoptions/* routes, each with its own insertAuditLog call.
+      // Verified: no browser component reads or writes these directly.
+      "adopter_profile",
+      "adoption_attachment",
+      "adoption_case",
+      "adoption_fee",
+      "adoption_followup",
+      "coordinator_status",
+      "coordinator_status_history",
+      "living_area",
+      "successful_adoption",
+      // Already read directly from the browser via the anon client
+      // (AnimalPipeline.tsx) — the exact precondition that made `animals`
+      // unaudited. Read-only today; add a trigger the moment either gets a
+      // direct-write component, don't just widen this exemption.
+      "animal_position",
+      "arrival_source",
+    ]);
+
+    for (const table of grantedTables) {
+      if (auditedTables.has(table)) continue;
+      expect(
+        exemptTables.has(table),
+        `public.${table} grants authenticated writes but has no audit trigger and isn't in the ` +
+          `exempt list in this test — add a trigger (see 20260803120000_audit_animal_mutations.sql) ` +
+          `or add it to the exempt list with a reason.`,
+      ).toBe(true);
     }
   });
 });

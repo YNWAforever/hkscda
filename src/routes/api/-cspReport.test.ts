@@ -63,4 +63,32 @@ describe("normalizeCspReports", () => {
     expect(normalizeCspReports([{ type: "csp-violation" }])).toEqual([]);
     expect(normalizeCspReports({})).toEqual([]);
   });
+
+  test("reads lineNumber from the Reporting API's camelCase key too", () => {
+    const [report] = normalizeCspReports([
+      { type: "csp-violation", body: { documentURL: "https://hkscda.com/", lineNumber: 42 } },
+    ]);
+
+    expect(report?.lineNumber).toBe(42);
+  });
+
+  test("ignores batch entries whose type isn't csp-violation", () => {
+    expect(
+      normalizeCspReports([
+        { type: "deprecation", body: { documentURL: "https://hkscda.com/" } },
+        { body: { documentURL: "https://hkscda.com/no-type" } },
+      ]),
+    ).toEqual([]);
+  });
+
+  test("does not accept a bare camelCase documentUri/blockedUri key", () => {
+    // Neither real wire format ever sends this shape (report-uri uses
+    // kebab-case, report-to uses a "URL" suffix) — it must stay unreachable.
+    const [report] = normalizeCspReports({
+      "csp-report": { documentUri: "https://hkscda.com/", blockedUri: "inline" },
+    });
+
+    expect(report?.documentUri).toBeUndefined();
+    expect(report?.blockedUri).toBeUndefined();
+  });
 });

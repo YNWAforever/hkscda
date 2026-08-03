@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 import { describe, expect, test } from "bun:test";
 
 import {
@@ -65,5 +68,19 @@ describe("applySecurityHeaders", () => {
     expect(result.headers.get("Reporting-Endpoints")).toBe(
       `${CSP_REPORT_GROUP}="${CSP_REPORT_PATH}"`,
     );
+  });
+
+  test("CSP_REPORT_PATH matches the actual collector route's URL", () => {
+    // TanStack Router requires createFileRoute's argument to be a static
+    // literal, so CSP_REPORT_PATH can't be imported into that call — these
+    // are necessarily two separate literals. This test is what keeps them
+    // in sync: change one without the other and this fails, instead of CSP
+    // reports silently 404ing against a URL with no route behind it.
+    const routeSource = readFileSync(
+      join(process.cwd(), "src", "routes", "api", "csp-report.ts"),
+      "utf8",
+    );
+    const match = routeSource.match(/createFileRoute\("([^"]+)"\)/);
+    expect(match?.[1]).toBe(CSP_REPORT_PATH);
   });
 });
