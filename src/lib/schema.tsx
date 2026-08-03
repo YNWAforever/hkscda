@@ -6,6 +6,7 @@ const orgSchema = {
   name: "香港拯救貓狗協會 HKSCDA",
   alternateName: "HK Saving Cat And Dog Association Limited",
   url: BASE_URL,
+  logo: BASE_URL + "/brand/hkscda-logo-primary.jpg",
   email: "info@hkscda.com",
   telephone: "+852-98641089",
   description:
@@ -25,11 +26,6 @@ export function websiteSchema() {
     "@type": "WebSite",
     url: BASE_URL,
     name: "香港拯救貓狗協會 HKSCDA",
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${BASE_URL}/search?q={search_term_string}`,
-      "query-input": "required name=search_term_string",
-    },
   };
 }
 

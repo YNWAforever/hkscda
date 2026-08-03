@@ -3,34 +3,43 @@ import { z } from "zod";
 
 import type { AdminUser } from "../donations/supabase.server";
 import { createVolunteerHandlers } from "./http.server";
+import { createVolunteerService } from "./service";
 import type { VolunteerActivitySummary, VolunteerRegistrationDetail } from "./types";
 
-const activitySummary: VolunteerActivitySummary = {
+const admin: AdminUser = {
+  id: "admin-row",
+  authUserId: "11111111-2222-4333-8444-555555555555",
+  email: "staff@example.com",
+  role: "staff",
+  status: "active",
+};
+
+const publishedActivity: VolunteerActivitySummary = {
   id: "activity-1",
-  status: "published",
+  type: "cleaning_day",
+  title: "\u6e05\u6f54\u65e5",
+  description: null,
   startsAt: "2026-08-01T02:00:00.000Z",
+  endsAt: "2026-08-01T05:00:00.000Z",
+  location: "Hong Kong",
   capacity: 12,
   approvedParticipants: 4,
+  pendingParticipants: 0,
   waitlistedParticipants: 0,
+  remainingCapacity: 8,
   allowWaitlist: true,
   autoApprove: true,
   minAge: 16,
   underagePolicy: "allow_with_guardian_pending",
   registrationModes: ["individual", "group"],
-  type: "cleaning_day",
-  title: "清潔日",
-  description: null,
-  endsAt: "2026-08-01T05:00:00.000Z",
-  location: "荃灣",
-  pendingParticipants: 0,
-  remainingCapacity: 8,
+  status: "published",
   createdAt: "2026-07-01T00:00:00.000Z",
   updatedAt: "2026-07-01T00:00:00.000Z",
 };
 
-const registrationDetail: VolunteerRegistrationDetail = {
+const registration: VolunteerRegistrationDetail = {
   id: "registration-1",
-  activityId: activitySummary.id,
+  activityId: publishedActivity.id,
   supporterId: "supporter-1",
   registrationType: "individual",
   status: "approved",
@@ -42,41 +51,34 @@ const registrationDetail: VolunteerRegistrationDetail = {
   contactPhone: "91234567",
   language: "zh-HK",
   organizationName: null,
-  declaredAge: 20,
+  declaredAge: 21,
   youngestAge: null,
   guardianName: null,
   guardianPhone: null,
   notes: null,
   internalNotes: null,
   volunteerHours: null,
-  statusToken: null,
+  statusToken: "raw-token",
   createdAt: "2026-07-02T00:00:00.000Z",
   updatedAt: "2026-07-02T00:00:00.000Z",
-  activity: activitySummary,
+  activity: publishedActivity,
 };
 
-const admin: AdminUser = {
-  id: "admin-row",
-  authUserId: "11111111-2222-4333-8444-555555555555",
-  email: "staff@example.com",
-  role: "staff",
-  status: "active",
-};
-
-function createService(overrides: Record<string, unknown> = {}) {
+type VolunteerHandlerService = ReturnType<typeof createVolunteerService>;
+function createService(overrides: Partial<VolunteerHandlerService> = {}) {
   const calls: string[] = [];
-  const service = {
+  const service: VolunteerHandlerService & { calls: string[] } = {
     calls,
     async listPublishedActivities() {
       calls.push("listPublishedActivities");
-      return [activitySummary];
+      return [publishedActivity];
     },
     async submitPublicRegistration() {
       calls.push("submitPublicRegistration");
       return {
         registrationId: "registration-1",
         reference: "VOL-REGISTRA",
-        status: "approved" as const,
+        status: "approved",
         statusUrl: "https://example.test/volunteer/status/raw-token",
       };
     },
@@ -84,12 +86,12 @@ function createService(overrides: Record<string, unknown> = {}) {
       calls.push("getPublicRegistrationStatus");
       return {
         reference: "VOL-REGISTRA",
-        status: "approved" as const,
-        attendanceStatus: "not_marked" as const,
+        status: "approved",
+        attendanceStatus: "not_marked",
         participantCount: 1,
-        activityTitle: activitySummary.title,
-        startsAt: activitySummary.startsAt,
-        location: activitySummary.location,
+        activityTitle: publishedActivity.title,
+        startsAt: publishedActivity.startsAt,
+        location: publishedActivity.location,
       };
     },
     async listActivities() {
@@ -110,7 +112,7 @@ function createService(overrides: Record<string, unknown> = {}) {
     },
     async getActivityDetail() {
       calls.push("getActivityDetail");
-      return activitySummary;
+      return publishedActivity;
     },
     async listRegistrations() {
       calls.push("listRegistrations");
@@ -118,15 +120,15 @@ function createService(overrides: Record<string, unknown> = {}) {
     },
     async getRegistrationDetail() {
       calls.push("getRegistrationDetail");
-      return registrationDetail;
+      return registration;
     },
     async updateRegistrationStatus() {
       calls.push("updateRegistrationStatus");
-      return { ...registrationDetail, status: "approved" as const };
+      return registration;
     },
     async updateAttendance() {
       calls.push("updateAttendance");
-      return { ...registrationDetail, attendanceStatus: "completed" as const };
+      return registration;
     },
     ...overrides,
   };
@@ -147,7 +149,9 @@ describe("createVolunteerHandlers", () => {
 
     expect(response.status).toBe(200);
     expect(response.headers.get("cache-control")).toBe("no-store");
-    expect(await response.json()).toEqual({ activities: [activitySummary] });
+    expect(await response.json()).toEqual({
+      activities: [publishedActivity],
+    });
   });
 
   test("maps public registration validation errors to 400", async () => {

@@ -7,6 +7,7 @@ import {
   volunteerRegistrationStatuses,
   volunteerRegistrationTypes,
   volunteerUnderagePolicies,
+  PUBLIC_INDIVIDUAL_MIN_AGE,
 } from "./types";
 
 const trimmed = z.string().trim();
@@ -136,12 +137,27 @@ export const publicRegistrationSchema = z
           message: "Supervisor phone is required for group registrations",
         });
       }
-    } else if (value.participantCount !== 1) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["participantCount"],
-        message: "Individual registrations must be for one participant",
-      });
+    } else {
+      if (value.participantCount !== 1) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["participantCount"],
+          message: "Individual registrations must be for one participant",
+        });
+      }
+      if (value.declaredAge === null || value.declaredAge === undefined) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["declaredAge"],
+          message: "Individual volunteers must be at least " + PUBLIC_INDIVIDUAL_MIN_AGE,
+        });
+      } else if (value.declaredAge < PUBLIC_INDIVIDUAL_MIN_AGE) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["declaredAge"],
+          message: "Individual volunteers must be at least " + PUBLIC_INDIVIDUAL_MIN_AGE,
+        });
+      }
     }
   })
   .transform((value) => ({

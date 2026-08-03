@@ -1,0 +1,44 @@
+import { Mail, Smartphone } from "lucide-react";
+
+import { trackHelpEvent } from "../../../lib/help/analytics";
+import type { HelpLanguage } from "../../../lib/help/faq";
+
+export function ContactFallback({ language, query }: { language: HelpLanguage; query?: string }) {
+  function trackFallback() {
+    trackHelpEvent("help_contact_fallback", {
+      language,
+      query,
+    });
+  }
+
+  return (
+    <section className="rounded-lg border border-dashed border-[var(--color-primary)] bg-[var(--color-primary-highlight)] p-4">
+      <h3 className="font-display text-base font-bold text-[var(--color-panel)]">
+        {language === "zh-HK" ? "仍然找不到答案？" : "Still need help?"}
+      </h3>
+      <p className="mt-1 text-sm leading-6 text-[var(--color-text-muted)]">
+        {language === "zh-HK"
+          ? "如問題涉及個人資料、付款、收據或申請狀態，請直接聯絡職員處理。"
+          : "For personal data, payment, receipt, or application-status questions, please contact staff directly."}
+      </p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        <a
+          href="tel:+85298641089"
+          onClick={trackFallback}
+          className="btn-primary min-h-11 whitespace-nowrap bg-[var(--color-panel)] text-xs hover:bg-[var(--color-panel)]/90"
+        >
+          <Smartphone className="h-3.5 w-3.5" aria-hidden="true" />
+          9864 1089
+        </a>
+        <a
+          href="mailto:info@hkscda.com"
+          onClick={trackFallback}
+          className="btn-secondary min-h-11 whitespace-nowrap bg-white text-xs hover:bg-[var(--color-surface-offset)]"
+        >
+          <Mail className="h-3.5 w-3.5" aria-hidden="true" />
+          info@hkscda.com
+        </a>
+      </div>
+    </section>
+  );
+}

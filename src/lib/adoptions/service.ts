@@ -11,6 +11,7 @@ import {
 } from "./csv";
 import {
   adopterSearchSchema,
+  animalPipelineSearchSchema,
   caseSearchSchema,
   coordinatorMonthlySummarySearchSchema,
   coordinatorExportKindSchema,
@@ -33,6 +34,8 @@ import type {
   AdoptionIntakeLane,
   AdopterDetail,
   AdopterSummary,
+  AnimalPipelineListResult,
+  AnimalPipelineSearch,
   CoordinatorAdopterExportRow,
   CoordinatorAnimalExportRow,
   CoordinatorExportAuditRow,
@@ -84,6 +87,7 @@ export type AdoptionCoordinatorRepository = {
   createStatus(input: StatusInput): Promise<CoordinatorStatus>;
   updateStatus(id: string, input: StatusUpdate): Promise<CoordinatorStatus>;
   deleteStatus(id: string): Promise<void>;
+  listAnimalPipeline(input: AnimalPipelineSearch): Promise<AnimalPipelineListResult>;
   listCases(input: CaseSearch): Promise<{ cases: AdoptionCaseSummary[]; total: number }>;
   listIntakeItems(input: {
     lane?: AdoptionIntakeLane;
@@ -99,7 +103,7 @@ export type AdoptionCoordinatorRepository = {
   listSuccessfulAdoptionExportRows(
     input: CoordinatorExportPage,
   ): Promise<CoordinatorSuccessfulAdoptionExportRow[]>;
-  listAnimalExportRows(input: CoordinatorExportPage): Promise<CoordinatorAnimalExportRow[]>;
+  listAnimalExportRows(input: AnimalPipelineSearch): Promise<CoordinatorAnimalExportRow[]>;
   listTaskExportRows(input: TaskListSearch): Promise<CoordinatorTaskExportRow[]>;
   getTask(id: string): Promise<CoordinatorTask | null>;
   createTask(
@@ -279,6 +283,10 @@ export function createAdoptionCoordinatorService({
       });
     },
 
+    listAnimalPipeline(rawSearch: unknown) {
+      return repo.listAnimalPipeline(animalPipelineSearchSchema.parse(rawSearch));
+    },
+
     listCases(rawSearch: unknown) {
       return repo.listCases(caseSearchSchema.parse(rawSearch));
     },
@@ -394,7 +402,8 @@ export function createAdoptionCoordinatorService({
         csv = buildCoordinatorSuccessfulAdoptionCsv(rows);
         rowCount = rows.length;
       } else if (kind === "animals") {
-        const page = coordinatorExportPage();
+        const parsed = animalPipelineSearchSchema.parse(args.rawSearch);
+        const page = { ...parsed, ...coordinatorExportPage() };
         filters = page;
         const rows = await repo.listAnimalExportRows(page);
         csv = buildCoordinatorAnimalCsv(rows);

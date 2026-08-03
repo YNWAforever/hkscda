@@ -1,12 +1,5 @@
+import { SectionHeading } from "@/components/site/SectionHeading";
 import { Reveal } from "@/lib/reveal";
-import { StatCard } from "@/components/site/StatCard";
-
-const stats = [
-  { n: "5,000+", l: "貓咪成功領養" },
-  { n: "1,800+", l: "狗狗成功領養" },
-  { n: "600+", l: "每年救助毛孩" },
-  { n: "18+", l: "年服務年資" },
-];
 
 const press = ["Apple Daily", "SCMP", "HK01", "Stand News", "TVB News", "Ming Pao"];
 
@@ -42,74 +35,49 @@ const testimonials = [
 
 export function SocialProof() {
   return (
-    <section id="impact" className="px-6 py-16 lg:py-24 bg-[var(--color-surface-offset)]">
+    <section id="impact" className="bg-[var(--color-surface-offset)] px-6 py-16 lg:py-24">
       <div className="container-wide">
-        <Reveal className="text-center mb-12">
-          <h2 className="font-display text-3xl lg:text-5xl font-bold mb-4">18 年來，與香港同行</h2>
-          <p className="text-[var(--color-text-muted)] max-w-[52ch] mx-auto">
-            來自香港社會各界、傳媒及合作夥伴的信任，是我們繼續救助每一個生命的力量。
-          </p>
+        <Reveal className="mb-12">
+          <SectionHeading
+            eyebrow="社區支持"
+            title="與香港同行，讓照護可以持續"
+            description="領養家庭、義工、合作夥伴和支持者的參與，讓每一次救援都有延續的可能。"
+          />
         </Reveal>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-16">
-          {stats.map((s) => (
-            <StatCard key={s.l} value={s.n} label={s.l} color="var(--color-primary)" />
-          ))}
+        <div className="mb-14 border-y border-[var(--color-border)] py-6 text-sm leading-relaxed text-[var(--color-text-muted)]">
+          公開影響資料只會在資料庫成功核實後顯示，請到協會簡介查看目前可核實的資料日期。
+          <a href="/about" className="ml-2 font-bold text-[var(--color-primary)] underline">查看協會簡介</a>
         </div>
 
-        {/* Press */}
         <div className="mb-12">
-          <p className="text-center text-xs text-[var(--color-text-muted)] mb-6 font-semibold">
-            傳媒報導
-          </p>
-          <div className="flex flex-wrap justify-center items-center gap-x-10 gap-y-4">
-            {press.map((p) => (
-              <span
-                key={p}
-                className="font-display text-lg lg:text-xl font-bold text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
-              >
-                {p}
-              </span>
+          <p className="mb-6 text-center text-xs font-semibold text-[var(--color-text-muted)]">傳媒報導</p>
+          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
+            {press.map((item) => (
+              <span key={item} className="text-lg font-bold text-[var(--color-text-muted)]">{item}</span>
             ))}
           </div>
         </div>
 
-        {/* Partners */}
         <div className="mb-16">
-          <p className="text-center text-xs text-[var(--color-text-muted)] mb-6 font-semibold">
-            合作夥伴及贊助機構
-          </p>
-          <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-3">
-            {partners.map((p) => (
-              <span
-                key={p}
-                className="px-4 py-2 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] text-sm text-[var(--color-text-muted)] font-medium"
-              >
-                {p}
-              </span>
+          <p className="mb-6 text-center text-xs font-semibold text-[var(--color-text-muted)]">合作夥伴及贊助機構</p>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            {partners.map((item) => (
+              <span key={item} className="border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-sm font-medium text-[var(--color-text-muted)]">{item}</span>
             ))}
           </div>
         </div>
 
-        {/* Testimonials */}
-        <div className="grid md:grid-cols-3 gap-6">
-          {testimonials.map((t) => (
-            <figure
-              key={t.name}
-              className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 flex flex-col"
-            >
-              <div className="text-[var(--color-primary)] text-3xl leading-none mb-3">“</div>
-              <blockquote className="text-sm text-[var(--color-text)] leading-relaxed flex-1">
-                {t.quote}
-              </blockquote>
-              <figcaption className="flex items-center gap-3 mt-5 pt-5 border-t border-[var(--color-border)]">
-                <div className="h-10 w-10 rounded-full bg-[var(--color-primary-highlight)] text-[var(--color-primary)] flex items-center justify-center font-display font-bold">
-                  {t.initials}
-                </div>
+        <div className="grid gap-6 md:grid-cols-3">
+          {testimonials.map((item) => (
+            <figure key={item.name} className="flex flex-col border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
+              <div className="mb-3 text-3xl leading-none text-[var(--color-primary)]">“</div>
+              <blockquote className="flex-1 text-sm leading-relaxed text-[var(--color-text)]">{item.quote}</blockquote>
+              <figcaption className="mt-5 flex items-center gap-3 border-t border-[var(--color-border)] pt-5">
+                <div className="flex h-10 w-10 items-center justify-center bg-[var(--color-primary-highlight)] font-bold text-[var(--color-primary)]">{item.initials}</div>
                 <div>
-                  <div className="text-sm font-bold">{t.name}</div>
-                  <div className="text-xs text-[var(--color-text-muted)]">{t.pet}</div>
+                  <div className="text-sm font-bold">{item.name}</div>
+                  <div className="text-xs text-[var(--color-text-muted)]">{item.pet}</div>
                 </div>
               </figcaption>
             </figure>

@@ -1,7 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import * as Tabs from "@radix-ui/react-tabs";
+import { SectionHeading } from "../../components/site/SectionHeading";
+import { getPublicAdoptionPage } from "../../lib/adoptionInformation/publicPage.functions";
+import type { PublicAdoptionPageData } from "../../lib/adoptionInformation/publicPage.server";
+import { createAdoptionInstructionsLoader } from "../../lib/adoptionInformation/publicPage.loader";
+import type { AdoptionFee } from "../../lib/adoptionInformation/types";
 
+const loadAdoptionInstructions = createAdoptionInstructionsLoader(() => getPublicAdoptionPage());
 export const Route = createFileRoute("/adoption/instructions")({
+  loader: loadAdoptionInstructions,
   head: () => ({
     links: [{ rel: "canonical", href: "https://hkscda.com/adoption/instructions" }],
   }),
@@ -11,7 +18,7 @@ export const Route = createFileRoute("/adoption/instructions")({
 const adoptionRules = [
   "申請人須年滿18歲，並持有香港居留權或工作證。",
   "申請人須提供真實個人資料及住址，以便協會進行家訪。",
-  "領養前須繳付領養費（貓：HK$500；唐狗免費），費用包括絕育、晶片及疫苗。",
+  "領養前須按本頁最新領養費用表繳付相關費用。",
   "領養後不得遺棄、轉讓或出售動物，如無法繼續飼養須通知協會安排。",
   "須確保動物生活在安全、舒適的室內環境。",
   "須定期帶動物進行健康檢查及接種疫苗。",
@@ -51,7 +58,7 @@ const catCareTopics = [
     value: "health",
     label: "保健",
     content:
-      "每年接種疫苗及進行健康檢查。定期驅蟲（體內及體外）。留意貓咪的飲食及排便習慣，如有異常盡快求醫。",
+      "半歲或以上為成貓。每年接種疫苗及進行健康檢查。定期驅蟲（體內及體外）。留意貓咪的飲食及排便習慣，如有異常盡快求醫。",
   },
   {
     value: "supplies",
@@ -113,9 +120,20 @@ const dogCareTopics = [
 ];
 
 function InstructionsPage() {
+  return <AdoptionInstructionsContent data={Route.useLoaderData()} />;
+}
+
+export function AdoptionInstructionsContent({ data }: { data: PublicAdoptionPageData }) {
   return (
-    <main className="max-w-3xl mx-auto px-4 py-12 space-y-12">
-      <h1 className="font-display text-3xl font-bold">領養需知</h1>
+    <main className="container-wide space-y-12 px-4 py-14 sm:px-6 lg:px-8">
+      <SectionHeading
+        as="h1"
+        eyebrow="領養準備"
+        title="領養需知"
+        description="了解申請、家訪和日常照護，為你和動物做好長期準備。"
+      />
+
+      <AdoptionInformationSections data={data} />
 
       <section className="space-y-4">
         <h2 className="font-display text-xl font-bold">領養規則</h2>
@@ -139,7 +157,7 @@ function InstructionsPage() {
               <Tabs.Trigger
                 key={t.value}
                 value={t.value}
-                className="px-3 py-2 text-sm rounded-t data-[state=active]:border-b-2 data-[state=active]:border-[var(--color-cat)] data-[state=active]:text-[var(--color-cat)] text-[var(--color-text-muted)]"
+                className="min-h-11 px-3 py-2 text-sm rounded-t data-[state=active]:border-b-2 data-[state=active]:border-[var(--color-primary)] data-[state=active]:text-[var(--color-primary)] text-[var(--color-text-muted)]"
               >
                 {t.label}
               </Tabs.Trigger>
@@ -165,7 +183,7 @@ function InstructionsPage() {
               <Tabs.Trigger
                 key={t.value}
                 value={t.value}
-                className="px-3 py-2 text-sm rounded-t data-[state=active]:border-b-2 data-[state=active]:border-[var(--color-dog)] data-[state=active]:text-[var(--color-dog)] text-[var(--color-text-muted)]"
+                className="min-h-11 px-3 py-2 text-sm rounded-t data-[state=active]:border-b-2 data-[state=active]:border-[var(--color-secondary)] data-[state=active]:text-[var(--color-secondary)] text-[var(--color-text-muted)]"
               >
                 {t.label}
               </Tabs.Trigger>
@@ -183,5 +201,139 @@ function InstructionsPage() {
         </Tabs.Root>
       </section>
     </main>
+  );
+}
+function AdoptionInformationSections({ data }: { data: PublicAdoptionPageData }) {
+  return (
+    <>
+      <section className="space-y-5" aria-labelledby="adoption-fees-title">
+        <h2 id="adoption-fees-title" className="font-display text-2xl font-bold">
+          領養費用
+        </h2>
+        <div className="grid gap-6 lg:grid-cols-2">
+          <FeeTable title="狗隻領養費用" fees={data.feesBySpecies.dog} />
+          <FeeTable title="貓隻領養費用" fees={data.feesBySpecies.cat} />
+        </div>
+        <p className="text-sm text-[var(--color-text-muted)]">
+          All prices subject to adjustment; HKSCDA reserves the right to amend.
+        </p>
+      </section>
+
+      <section className="space-y-4" aria-labelledby="dog-estates-title">
+        <h2 id="dog-estates-title" className="font-display text-2xl font-bold">
+          可養狗屋苑參考名單
+        </h2>
+        <p className="text-sm text-[var(--color-text-muted)]">
+          以下名單僅供參考，請向屋苑管理處查詢最新規定。
+        </p>
+        {data.estates.length ? (
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-left text-sm">
+              <thead>
+                <tr className="border-b border-[var(--color-border)]">
+                  <th scope="col" className="px-3 py-3 font-bold">
+                    屋苑
+                  </th>
+                  <th scope="col" className="px-3 py-3 font-bold">
+                    地區
+                  </th>
+                  <th scope="col" className="px-3 py-3 font-bold">
+                    備註
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.estates.map((estate) => (
+                  <tr key={estate.id} className="border-b border-[var(--color-border)]">
+                    <th scope="row" className="px-3 py-3 font-semibold">
+                      {estate.estateName}
+                    </th>
+                    <td className="px-3 py-3">{estate.district}</td>
+                    <td className="px-3 py-3">{estate.notes ?? "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="text-sm text-[var(--color-text-muted)]">
+            暫時未有屋苑資料。如需最新資訊，請
+            <a href="/contact" className="font-bold text-[var(--color-primary)] underline">
+              聯絡我們
+            </a>
+            。
+          </p>
+        )}
+      </section>
+
+      <section className="space-y-4" aria-labelledby="post-adoption-guides-title">
+        <h2 id="post-adoption-guides-title" className="font-display text-2xl font-bold">
+          領養後指南
+        </h2>
+        <div className="space-y-4">
+          {data.guideGroups.map((group) => (
+            <article key={group.species} className="space-y-2">
+              <h3 className="font-display text-xl font-bold">
+                {group.species === "cat"
+                  ? "貓隻領養後指南"
+                  : group.species === "dog"
+                    ? "狗隻領養後指南"
+                    : "領養後指南"}
+              </h3>
+              <div className="flex flex-wrap gap-3">
+                <a
+                  key={group.zhHk.id}
+                  href={group.zhHk.document.fileUrl ?? undefined}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-secondary min-h-11"
+                >
+                  中文版
+                </a>
+                <a
+                  key={group.en.id}
+                  href={group.en.document.fileUrl ?? undefined}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-secondary min-h-11"
+                >
+                  English
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    </>
+  );
+}
+
+function FeeTable({ title, fees }: { title: string; fees: AdoptionFee[] }) {
+  return (
+    <div className="overflow-x-auto">
+      <table aria-label={title} className="w-full border-collapse text-left text-sm">
+        <caption className="pb-3 text-left font-display text-xl font-bold">{title}</caption>
+        <thead>
+          <tr className="border-b border-[var(--color-border)]">
+            <th scope="col" className="px-3 py-3 font-bold">
+              項目
+            </th>
+            <th scope="col" className="px-3 py-3 font-bold">
+              費用（HK$）
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {fees.map((fee) => (
+            <tr key={fee.id} className="border-b border-[var(--color-border)]">
+              <th scope="row" className="px-3 py-3 font-medium">
+                {fee.itemName}
+              </th>
+              <td className="px-3 py-3 tabular-nums">{fee.priceHkd}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

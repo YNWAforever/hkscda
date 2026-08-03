@@ -16,6 +16,74 @@ function readMigrationBySuffix(suffix: string) {
 }
 
 describe("supabase migration safety", () => {
+  test("adds grouped visits and adoption information", () => {
+    const sql = readMigration("20260718110000_adoption_information.sql");
+    expect(sql).toContain("add column if not exists dog_time_windows text[]");
+    expect(sql).toContain("add column if not exists cat_time_windows text[]");
+    expect(sql).toContain("create table if not exists public.adoption_fees");
+    expect(sql).toContain("create table if not exists public.dog_friendly_estates");
+    expect(sql).toContain("Typical Species 一般品種");
+    expect(sql).toContain("Big Cage Rental");
+    expect(sql).toContain("revoke all on public.adoption_fees from anon, authenticated");
+  });
+
+  test("adds publish-safe public documents and bounded donation purpose notes", () => {
+    const sql = readMigration("20260718100000_public_documents_and_donation_purpose.sql");
+    expect(sql).toContain("create table if not exists public.document_assets");
+    expect(sql).toContain("unique (slot_key, language)");
+    expect(sql).toContain(
+      "alter table public.donation add column if not exists custom_purpose text",
+    );
+    expect(sql).toContain("check (custom_purpose is null or char_length(custom_purpose) <= 200)");
+    expect(sql).toContain("revoke all on public.document_assets from anon, authenticated");
+    expect(sql).toContain("values ('site-documents', 'site-documents', true, 52428800");
+    expect(sql).toContain("'donation_receipt_template_url'");
+    expect(sql).toContain("foreach table_name in array array[");
+    expect(sql).not.toMatch(/foreach table_name in array\s*\[/);
+  });
+
+  test("allows anonymous reads only for published public documents", () => {
+    const sql = readMigration("20260719223000_public_document_read_policies.sql");
+
+    for (const table of ["document_assets", "site_document_slots", "annual_reports"]) {
+      expect(sql).toContain(`grant select on public.${table} to anon, authenticated`);
+      expect(sql).toMatch(
+        new RegExp(
+          `on public\\.${table} for select[\\s\\S]*to anon, authenticated[\\s\\S]*using \\(is_published = true\\)`,
+        ),
+      );
+    }
+    expect(sql).not.toMatch(/grant\s+(insert|update|delete|all)/i);
+  });
+  test("adds controlled nullable donation acquisition attribution", () => {
+    const sql = readMigration("20260716120000_contextual_donation_attribution.sql");
+
+    for (const column of [
+      "acquisition_source text",
+      "acquisition_context text",
+      "acquisition_placement text",
+      "acquisition_trigger text",
+    ]) {
+      expect(sql).toContain(`add column if not exists ${column}`);
+    }
+
+    expect(sql).toContain("drop constraint if exists donation_acquisition_source_check");
+    expect(sql).toContain("acquisition_source is null or acquisition_source = 'contextual-cta'");
+    expect(sql).toContain("drop constraint if exists donation_acquisition_context_check");
+    expect(sql).toContain(
+      "acquisition_context is null or acquisition_context in ('general','story','animal','sponsor','transparency','community')",
+    );
+    expect(sql).toContain("drop constraint if exists donation_acquisition_placement_check");
+    expect(sql).toContain(
+      "acquisition_placement is null or acquisition_placement in ('mobile-bottom','desktop-left')",
+    );
+    expect(sql).toContain("drop constraint if exists donation_acquisition_trigger_check");
+    expect(sql).toContain(
+      "acquisition_trigger is null or acquisition_trigger in ('scroll','timer')",
+    );
+    expect(sql).not.toMatch(/\b(grant|revoke|policy|row level security|rls)\b/i);
+  });
+
   test("tightens adoption application PII access to staff and admins", () => {
     const sql = readMigration("20260626201620_secure_adoption_applications_policy.sql");
 
@@ -225,6 +293,7 @@ describe("supabase migration safety", () => {
     expect(sql).toContain(
       "add constraint public_status_token_entity_type_check check (entity_type in ('adoption_application', 'sponsorship_pledge'))",
     );
+
     expect(sql).toContain("sponsorship-payment-proof");
     expect(sql).toContain("private.has_admin_role(array['staff', 'admin'])");
   });
@@ -342,9 +411,15 @@ describe("supabase migration safety", () => {
       lines.forEach((line, index) => {
         if (!/^\s*security definer\s*$/i.test(line)) return;
         const following = lines.slice(index + 1, index + 3).join("\n");
+        // Two acceptable forms. `public, pg_temp` is the house default. `''`
+        // is stricter still — it resolves nothing implicitly, so every
+        // reference in the body must already be schema-qualified. Accept it
+        // rather than push a migration that earned the stronger guarantee
+        // back down to the weaker one.
         expect(
-          /set search_path\s*=\s*public,\s*pg_temp/i.test(following),
-          `${fileName}:${index + 1} — security definer without a pinned search_path`,
+          /set search_path\s*=\s*(?:public,\s*pg_temp|'')/i.test(following),
+          `${fileName}:${index + 1} — security definer without a pinned search_path ` +
+            `(expected "public, pg_temp" or "''")`,
         ).toBe(true);
       });
     }
@@ -406,4 +481,119 @@ describe("supabase migration safety", () => {
       ).toBe(true);
     }
   });
+
+  test("hardens document mutations with database invariants and atomic audit RPCs", () => {
+    const sql = readMigrationBySuffix("document_admin_mutation_hardening.sql");
+
+    expect(sql).toContain("create or replace function private.enforce_annual_report_asset");
+    expect(sql).toContain("create constraint trigger enforce_annual_report_asset");
+    expect(sql).toContain("create or replace function public.mutate_document_asset_with_audit");
+    expect(sql).toContain("create or replace function public.mutate_annual_report_with_audit");
+    expect(sql).toContain("insert into public.audit_log");
+    expect(sql.match(/security invoker/g)).toHaveLength(2);
+    expect(sql).toContain("for update");
+    expect(sql).toContain("revoke all on function public.mutate_document_asset_with_audit");
+    expect(sql).toContain("grant execute on function public.mutate_document_asset_with_audit");
+    expect(sql).toContain("grant insert on public.audit_log to service_role");
+  });
+  test("adds group enquiries and publish-safe knowledge posts", () => {
+    const sql = readMigration("20260718120000_group_enquiries_and_knowledge.sql");
+
+    expect(sql).toContain("create table if not exists public.group_enquiries");
+    expect(sql).toContain("notification_status");
+    expect(sql).toContain("create table if not exists public.knowledge_posts");
+    expect(sql).toContain("num_nonnulls(external_url, document_asset_id) = 1");
+    expect(sql).toContain("https://www.hk01.com/article/288651");
+    expect(sql).toContain(
+      "https://www.10life.com/zh-HK/blog/Pet-Owners-Alert-Comparing-Pet-Insurance-Coverage",
+    );
+    expect(sql).toContain("revoke all on public.group_enquiries from anon, authenticated");
+  });
+  test("seeds knowledge guide posts from existing document slots without duplicating assets", () => {
+    const sql = readMigration("20260718121000_seed_knowledge_guides.sql");
+
+    expect(sql).toContain("post_adoption_guide");
+    expect(sql).toContain("language = 'zh-HK'");
+    expect(sql).toContain("language = 'en'");
+    expect(sql).toContain("insert into public.knowledge_posts");
+    expect(sql).toContain("select document_asset_id");
+    expect(sql).toContain("from public.site_document_slots");
+    expect(sql).toContain("on conflict (document_asset_id) where document_asset_id is not null do update");
+    expect(sql).toContain("raise exception");
+    expect(sql).not.toContain("insert into public.document_assets");
+    expect(sql).not.toContain("storage.objects");
+  });
+
+  test("adds bilingual adoption guide releases with atomic admin publication", () => {
+    const sql = readMigration("20260731120000_adoption_guide_release_cms.sql");
+
+    expect(sql).toContain("create table if not exists public.adoption_guide_releases");
+    expect(sql).toContain("state in ('draft', 'in_review', 'published', 'archived')");
+    expect(sql).toContain("species in ('cat', 'dog', 'general')");
+    expect(sql).toContain("version integer not null default 1");
+    expect(sql).toContain("create table if not exists public.adoption_guide_publish_requests");
+    expect(sql).toContain(
+      "alter table public.knowledge_posts add column if not exists zh_hk_document_asset_id",
+    );
+    expect(sql).toContain(
+      "alter table public.knowledge_posts add column if not exists en_document_asset_id",
+    );
+    expect(sql).toContain(
+      "create or replace function public.mutate_adoption_guide_release_with_audit",
+    );
+    expect(sql).toContain("create or replace function public.publish_adoption_guide_release");
+    expect(sql).toContain("for update");
+    expect(sql).toContain("role = 'admin'");
+    expect(sql).toContain("insert into public.audit_log");
+    expect(sql).toContain(
+      "revoke all on public.adoption_guide_releases from anon, authenticated",
+    );
+    expect(sql).toContain("grant execute on function public.publish_adoption_guide_release");
+    expect(sql).toContain("set search_path = public, pg_temp");
+    expect(sql).toContain("grant usage on schema private to service_role");
+    expect(sql).toMatch(
+      /p_operation = 'withdraw'[\s\S]*actor\.role <> 'admin'[\s\S]*current_release\.submitted_by is distinct from actor\.id[\s\S]*update public\.adoption_guide_releases/,
+    );
+    expect(sql.match(/where slots\.slot_key = 'post_adoption_guide'/g)).toHaveLength(2);
+    expect(sql).toMatch(
+      /if previous_release\.id is null then[\s\S]*where slots\.slot_key = 'post_adoption_guide'/,
+    );
+    expect(sql).toMatch(
+      /document_asset_id in \(\s*old_zh_hk_asset_id,\s*old_en_asset_id,\s*legacy_zh_hk_asset_id,\s*legacy_en_asset_id\s*\)/,
+    );
+    expect(sql.match(/'site_document_slot\.upsert'/g)).toHaveLength(2);
+    expect(sql).toContain("target_slot_key || ':zh-HK'");
+    expect(sql).toContain("target_slot_key || ':en'");
+  });
+
+  test("optimizes adoption guide release foreign keys and authenticated RLS lookups", () => {
+    const fileName = readdirSync(join(process.cwd(), "supabase", "migrations")).find((entry) =>
+      entry.endsWith("_adoption_guide_release_cms_advisor_fixes.sql"),
+    );
+
+    expect(fileName).toBeDefined();
+    if (!fileName) return;
+
+    const sql = readMigration(fileName);
+    const indexedColumns = [
+      "release_id",
+      "archived_by",
+      "created_by",
+      "en_asset_id",
+      "knowledge_post_id",
+      "published_by",
+      "submitted_by",
+      "updated_by",
+      "zh_hk_asset_id",
+    ];
+
+    for (const column of indexedColumns) {
+      expect(sql).toMatch(
+        new RegExp(`create index if not exists [^\\n]+\\s+on public\\.[^(\\n]+ \\(${column}\\);`),
+      );
+    }
+    expect(sql.match(/actor\.auth_user_id = \(select auth\.uid\(\)\)/g)).toHaveLength(2);
+    expect(sql).not.toContain("actor.auth_user_id = auth.uid()");
+  });
+
 });

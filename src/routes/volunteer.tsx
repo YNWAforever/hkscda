@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useRouterState } from "@tanstack/react-router";
 import { CalendarDays, Cat, Dog, Heart, House, Scissors, UserPlus, Users } from "lucide-react";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
@@ -8,7 +8,11 @@ import {
   buildVolunteerRegistrationPayload,
   canRegisterForActivity,
 } from "../components/site/volunteer/volunteerSignupLogic";
-import type { VolunteerActivitySummary, VolunteerRegistrationType } from "../lib/volunteers/types";
+import {
+  PUBLIC_INDIVIDUAL_MIN_AGE,
+  type VolunteerActivitySummary,
+  type VolunteerRegistrationType,
+} from "../lib/volunteers/types";
 
 const volunteerRoles = [
   {
@@ -65,6 +69,16 @@ export const Route = createFileRoute("/volunteer")({
 });
 
 function VolunteerPage() {
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+
+  if (pathname.startsWith("/volunteer/status/") || pathname.startsWith("/volunteer/group")) {
+    return <Outlet />;
+  }
+
+  return <VolunteerDirectoryPage />;
+}
+
+function VolunteerDirectoryPage() {
   const [activities, setActivities] = useState<VolunteerActivitySummary[]>([]);
   const [selectedActivityId, setSelectedActivityId] = useState<string>("");
   const [registrationType, setRegistrationType] = useState<VolunteerRegistrationType>("individual");
@@ -171,9 +185,11 @@ function VolunteerPage() {
             <CalendarDays className="h-4 w-4" /> 可報名活動
           </div>
           {loadError ? (
-            <p className="rounded-lg bg-[var(--color-surface-offset)] p-4 text-sm text-[var(--color-text-muted)]">
-              {loadError}
-            </p>
+            <p
+              role="alert"
+              aria-live="assertive"
+              className="rounded-lg bg-[var(--color-surface-offset)] p-4 text-sm text-[var(--color-text-muted)]"
+            ></p>
           ) : activities.length === 0 ? (
             <p className="rounded-lg bg-[var(--color-surface-offset)] p-4 text-sm text-[var(--color-text-muted)]">
               目前未有開放報名的義工活動。你仍可透過電郵 info@hkscda.com 或 WhatsApp 9864 1089
@@ -184,13 +200,14 @@ function VolunteerPage() {
               <button
                 key={activity.id}
                 type="button"
+                aria-pressed={activity.id === selectedActivityId}
                 onClick={() => {
                   setSelectedActivityId(activity.id);
                   if (!activity.registrationModes.includes(registrationType)) {
                     setRegistrationType(activity.registrationModes[0] ?? "individual");
                   }
                 }}
-                className={`card-dashed w-full bg-[var(--color-surface)] p-4 text-left transition ${
+                className={`w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-left transition ${
                   activity.id === selectedActivityId ? "shadow-md" : "hover:shadow-sm"
                 }`}
               >
@@ -218,12 +235,18 @@ function VolunteerPage() {
 
         <form
           onSubmit={handleSubmit}
-          className="card-dashed space-y-4 bg-[var(--color-surface-offset)] p-5"
+          className="space-y-4 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-5 shadow-soft"
         >
           <div>
-            <h2 className="font-display text-xl font-bold">義工報名</h2>
+            <h2 className="font-display text-xl font-bold">個人義工報名</h2>
             <p className="text-sm text-[var(--color-text-muted)]">
-              選擇活動後填寫聯絡資料，系統會根據名額與年齡規則處理審批。
+              {"只接受" + PUBLIC_INDIVIDUAL_MIN_AGE + "歲以上個人義工申請。"}
+              <a
+                href="/volunteer/group"
+                className="font-semibold text-[var(--color-primary)] underline-offset-4 hover:underline"
+              >
+                團體或學校查詢
+              </a>
             </p>
           </div>
 
@@ -231,39 +254,51 @@ function VolunteerPage() {
             <label className="text-sm font-semibold">
               姓名
               <input
+                id="volunteer-contact-name"
+                aria-invalid={false}
+                aria-describedby={undefined}
                 required
                 value={contactName}
                 onChange={(event) => setContactName(event.target.value)}
-                className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
+                className="mt-1 min-h-11 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
               />
             </label>
             <label className="text-sm font-semibold">
               電郵
               <input
+                id="volunteer-email"
+                aria-invalid={false}
+                aria-describedby={undefined}
                 required
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
+                className="mt-1 min-h-11 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
               />
             </label>
             <label className="text-sm font-semibold">
               電話 / WhatsApp
               <input
+                id="volunteer-phone"
+                aria-invalid={false}
+                aria-describedby={undefined}
                 required
                 value={phone}
                 onChange={(event) => setPhone(event.target.value)}
-                className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
+                className="mt-1 min-h-11 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
               />
             </label>
             <label className="text-sm font-semibold">
               報名類型
               <select
+                id="volunteer-registration-type"
+                aria-invalid={false}
+                aria-describedby={undefined}
                 value={registrationType}
                 onChange={(event) =>
                   setRegistrationType(event.target.value as VolunteerRegistrationType)
                 }
-                className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
+                className="mt-1 min-h-11 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
               >
                 {(selectedActivity?.registrationModes ?? ["individual", "group"]).map((mode) => (
                   <option key={mode} value={mode}>
@@ -279,40 +314,52 @@ function VolunteerPage() {
               <label className="text-sm font-semibold">
                 團體 / 學校名稱
                 <input
+                  id="volunteer-organization"
+                  aria-invalid={false}
+                  aria-describedby={undefined}
                   required
                   value={organizationName}
                   onChange={(event) => setOrganizationName(event.target.value)}
-                  className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
+                  className="mt-1 min-h-11 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
                 />
               </label>
               <label className="text-sm font-semibold">
                 參加人數
                 <input
+                  id="volunteer-participant-count"
+                  aria-invalid={false}
+                  aria-describedby={undefined}
                   required
                   type="number"
                   min={2}
                   value={participantCount}
                   onChange={(event) => setParticipantCount(Number(event.target.value))}
-                  className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
+                  className="mt-1 min-h-11 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
                 />
               </label>
               <label className="text-sm font-semibold">
                 最年輕參加者年齡
                 <input
+                  id="volunteer-youngest-age"
+                  aria-invalid={false}
+                  aria-describedby={undefined}
                   type="number"
                   min={0}
                   value={youngestAge}
                   onChange={(event) => setYoungestAge(event.target.value)}
-                  className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
+                  className="mt-1 min-h-11 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
                 />
               </label>
               <label className="text-sm font-semibold">
                 負責成人 / 老師姓名
                 <input
+                  id="volunteer-guardian-name"
+                  aria-invalid={false}
+                  aria-describedby={undefined}
                   required
                   value={guardianName}
                   onChange={(event) => setGuardianName(event.target.value)}
-                  className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
+                  className="mt-1 min-h-11 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
                 />
               </label>
             </div>
@@ -320,11 +367,14 @@ function VolunteerPage() {
             <label className="block text-sm font-semibold">
               年齡
               <input
+                id="volunteer-declared-age"
+                aria-invalid={false}
+                aria-describedby={undefined}
                 type="number"
-                min={0}
+                min={PUBLIC_INDIVIDUAL_MIN_AGE}
                 value={declaredAge}
                 onChange={(event) => setDeclaredAge(event.target.value)}
-                className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
+                className="mt-1 min-h-11 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
               />
             </label>
           )}
@@ -332,6 +382,9 @@ function VolunteerPage() {
           <label className="block text-sm font-semibold">
             備註
             <textarea
+              id="volunteer-notes"
+              aria-invalid={false}
+              aria-describedby={undefined}
               value={notes}
               onChange={(event) => setNotes(event.target.value)}
               className="mt-1 min-h-24 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
@@ -341,6 +394,9 @@ function VolunteerPage() {
           <div className="space-y-2 text-sm">
             <label className="flex items-center gap-2">
               <input
+                id="volunteer-email-consent"
+                aria-invalid={false}
+                aria-describedby={undefined}
                 type="checkbox"
                 checked={emailConsent}
                 onChange={(event) => setEmailConsent(event.target.checked)}
@@ -349,6 +405,9 @@ function VolunteerPage() {
             </label>
             <label className="flex items-center gap-2">
               <input
+                id="volunteer-whatsapp-consent"
+                aria-invalid={false}
+                aria-describedby={undefined}
                 type="checkbox"
                 checked={whatsappConsent}
                 onChange={(event) => setWhatsappConsent(event.target.checked)}
@@ -364,11 +423,19 @@ function VolunteerPage() {
           />
 
           {submitError && (
-            <p className="text-sm font-semibold text-[var(--color-primary)]">{submitError}</p>
+            <p
+              role="alert"
+              aria-live="assertive"
+              className="text-sm font-semibold text-[var(--color-error)]"
+            >
+              {submitError}
+            </p>
           )}
           {successUrl && (
             <a
               href={successUrl}
+              role="status"
+              aria-live="polite"
               className="block rounded-md bg-[var(--color-primary-highlight)] px-3 py-2 text-sm font-bold text-[var(--color-primary)]"
             >
               登記已送出，查看狀態
@@ -378,7 +445,7 @@ function VolunteerPage() {
           <button
             type="submit"
             disabled={!canSubmit || submitting}
-            className="w-full rounded-md bg-[var(--color-primary)] px-4 py-3 font-bold text-[var(--color-primary-foreground)] disabled:cursor-not-allowed disabled:opacity-60"
+            className="btn-primary w-full disabled:cursor-not-allowed disabled:opacity-60"
           >
             {submitting ? "送出中..." : "送出義工報名"}
           </button>
@@ -389,7 +456,7 @@ function VolunteerPage() {
         {volunteerRoles.map(({ Icon, title, desc }) => (
           <div
             key={title}
-            className="card-dashed bg-[var(--color-surface)] p-6 hover:shadow-md transition-shadow"
+            className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-6 transition-shadow hover:shadow-md"
           >
             <div className="h-11 w-11 rounded-lg bg-[var(--color-primary-highlight)] flex items-center justify-center mb-4">
               <Icon className="h-5 w-5 text-[var(--color-primary)]" />
@@ -400,7 +467,7 @@ function VolunteerPage() {
         ))}
       </div>
 
-      <div className="card-dashed bg-[var(--color-surface-offset)] p-6 space-y-4">
+      <div className="space-y-4 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-6">
         <h2 className="font-display text-lg font-bold">如何加入？</h2>
         <div className="space-y-3 text-sm text-[var(--color-text-muted)]">
           {[

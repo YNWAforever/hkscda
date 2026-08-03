@@ -24,6 +24,10 @@ import {
   MAX_ADOPTION_PREFERENCES,
   type ExpandedAdoptionApplication,
 } from "../../../lib/publicAdoption/schemas";
+import {
+  normalizeVisitWindows,
+  type AdoptionSpecies,
+} from "../../../lib/publicAdoption/visitWindows";
 import { cn } from "../../../lib/utils";
 import { GuidancePanel } from "./GuidancePanel";
 import { PhotoUploader } from "./PhotoUploader";
@@ -81,7 +85,8 @@ const STEP_FIELDS: Record<WizardStepId, FieldPath<ApplicationFormValues>[]> = {
   visit: [
     "visit.dateRangeStart",
     "visit.dateRangeEnd",
-    "visit.preferredTimeWindows",
+    "visit.dogTimeWindows",
+    "visit.catTimeWindows",
     "visit.notes",
   ],
   photos: [],
@@ -129,7 +134,7 @@ function datePlusDays(days: number) {
   return new Date(date.getTime() - date.getTimezoneOffset() * 60_000).toISOString().slice(0, 10);
 }
 
-function createDefaultValues(): ApplicationFormValues {
+export function createDefaultValues(): ApplicationFormValues {
   return {
     language: "zh-HK",
     animalPreferences: [],
@@ -160,7 +165,8 @@ function createDefaultValues(): ApplicationFormValues {
     visit: {
       dateRangeStart: datePlusDays(3),
       dateRangeEnd: datePlusDays(17),
-      preferredTimeWindows: [],
+      dogTimeWindows: [],
+      catTimeWindows: [],
       notes: "",
     },
     terms: {
@@ -178,7 +184,21 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
-function mergeDraftValues(defaultValues: ApplicationFormValues, draft: Record<string, unknown>) {
+export function normalizeApplicationVisitValues(
+  visit: ApplicationFormValues["visit"],
+  species: readonly AdoptionSpecies[],
+): ApplicationFormValues["visit"] {
+  const windows = normalizeVisitWindows(species, {
+    dog: visit.dogTimeWindows,
+    cat: visit.catTimeWindows,
+  });
+  return { ...visit, dogTimeWindows: windows.dog, catTimeWindows: windows.cat };
+}
+export function mergeDraftValues(
+  defaultValues: ApplicationFormValues,
+  draft: Record<string, unknown>,
+  species: readonly AdoptionSpecies[],
+) {
   const contact = isRecord(draft.contact) ? draft.contact : {};
   const home = isRecord(draft.home) ? draft.home : {};
   const readiness = isRecord(draft.readiness) ? draft.readiness : {};
@@ -186,19 +206,24 @@ function mergeDraftValues(defaultValues: ApplicationFormValues, draft: Record<st
   const terms = isRecord(draft.terms) ? draft.terms : {};
   const sourceMetadata = isRecord(draft.sourceMetadata) ? draft.sourceMetadata : {};
 
+  const mergedVisit = {
+    ...defaultValues.visit,
+    ...visit,
+    dogTimeWindows: Array.isArray(visit.dogTimeWindows)
+      ? visit.dogTimeWindows
+      : defaultValues.visit.dogTimeWindows,
+    catTimeWindows: Array.isArray(visit.catTimeWindows)
+      ? visit.catTimeWindows
+      : defaultValues.visit.catTimeWindows,
+  } as ApplicationFormValues["visit"];
+
   return {
     ...defaultValues,
     language: draft.language === "en" || draft.language === "zh-HK" ? draft.language : "zh-HK",
     contact: { ...defaultValues.contact, ...contact },
     home: { ...defaultValues.home, ...home },
     readiness: { ...defaultValues.readiness, ...readiness },
-    visit: {
-      ...defaultValues.visit,
-      ...visit,
-      preferredTimeWindows: Array.isArray(visit.preferredTimeWindows)
-        ? visit.preferredTimeWindows
-        : defaultValues.visit.preferredTimeWindows,
-    },
+    visit: normalizeApplicationVisitValues(mergedVisit, species),
     terms: {
       ...defaultValues.terms,
       ...terms,
@@ -303,7 +328,13 @@ export function ApplicationWizard() {
     const timer = window.setTimeout(() => {
       try {
         const restoredDraft = parseDraft(window.localStorage.getItem(ADOPTION_DRAFT_STORAGE_KEY));
-        reset(mergeDraftValues(defaultValues, restoredDraft));
+        reset(
+          mergeDraftValues(
+            defaultValues,
+            restoredDraft,
+            rankedPreferences.map((animal) => animal.animalType),
+          ),
+        );
         setDraftStatus(Object.keys(restoredDraft).length > 0 ? "restored" : "idle");
       } catch {
         setDraftStatus("unavailable");
@@ -313,15 +344,29 @@ export function ApplicationWizard() {
     }, 0);
 
     return () => window.clearTimeout(timer);
-  }, [defaultValues, reset]);
+  }, [defaultValues, rankedPreferences, reset]);
 
   useEffect(() => {
     if (!storageReady) return;
+    const species = rankedPreferences.map((animal) => animal.animalType);
+    const windows = normalizeVisitWindows(species, {
+      dog: getValues("visit.dogTimeWindows"),
+      cat: getValues("visit.catTimeWindows"),
+    });
+
     setValue("animalPreferences", rankedPreferences, {
       shouldDirty: true,
       shouldValidate: currentStep.id === "animals",
     });
-  }, [currentStep.id, rankedPreferences, setValue, storageReady]);
+    setValue("visit.dogTimeWindows", windows.dog, {
+      shouldDirty: true,
+      shouldValidate: currentStep.id === "visit",
+    });
+    setValue("visit.catTimeWindows", windows.cat, {
+      shouldDirty: true,
+      shouldValidate: currentStep.id === "visit",
+    });
+  }, [currentStep.id, getValues, rankedPreferences, setValue, storageReady]);
 
   useEffect(() => {
     if (!storageReady || submission) return;
@@ -471,7 +516,7 @@ export function ApplicationWizard() {
             <span className="font-semibold text-[var(--color-panel)]">{submission.reference}</span>
           </p>
           <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
-            <a href={submission.statusUrl} className="btn-cta">
+            <a href={submission.statusUrl} className="btn-primary min-h-11">
               <ClipboardCheck className="h-4 w-4" />
               查看申請狀態
             </a>
@@ -490,6 +535,7 @@ export function ApplicationWizard() {
       <main className="container-wide py-10">
         <section className="mx-auto max-w-2xl rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-6 text-center shadow-soft">
           <Loader2 className="mx-auto h-8 w-8 animate-spin text-[var(--color-primary)]" />
+          <h1 className="mt-4 text-2xl font-bold text-[var(--color-panel)]">領養申請</h1>
           <p className="mt-3 text-sm text-[var(--color-text-muted)]">正在準備申請表...</p>
         </section>
       </main>
@@ -507,7 +553,7 @@ export function ApplicationWizard() {
           <p className="mt-2 text-sm text-[var(--color-text-muted)]">
             申請表會根據你的領養清單建立動物排序，最多可選三隻。
           </p>
-          <Link to="/animals/cat" className="btn-cta mt-6">
+          <Link to="/animals/cat" className="btn-primary min-h-11 mt-6">
             <PawPrint className="h-4 w-4" />
             瀏覽可領養貓隻
           </Link>
@@ -616,7 +662,7 @@ export function ApplicationWizard() {
                   <button
                     type="submit"
                     disabled={isSubmitting || (turnstileEnabled && !turnstileToken)}
-                    className="btn-cta"
+                    className="btn-primary min-h-11"
                   >
                     {isSubmitting ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -626,7 +672,7 @@ export function ApplicationWizard() {
                     {isSubmitting ? "提交中" : "提交申請"}
                   </button>
                 ) : (
-                  <button type="button" onClick={goToNextStep} className="btn-cta">
+                  <button type="button" onClick={goToNextStep} className="btn-primary min-h-11">
                     下一步
                     <ArrowRight className="h-4 w-4" />
                   </button>

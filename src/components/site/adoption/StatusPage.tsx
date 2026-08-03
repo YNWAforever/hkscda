@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import type { ReactNode } from "react";
 
+import { PublicStateShell } from "../PublicStateShell";
+
 type PublicStatusSummary = {
   reference: string;
   submittedAt: string;
@@ -116,21 +118,17 @@ function StateShell({
   icon,
   title,
   children,
+  role = "status",
 }: {
   icon: ReactNode;
   title: string;
   children: ReactNode;
+  role?: "status" | "alert";
 }) {
   return (
-    <main className="bg-topo bg-[var(--color-bg)] py-10">
+    <main className="bg-[var(--color-bg)] py-10">
       <section className="container-wide">
-        <div className="mx-auto max-w-2xl rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-6 text-center shadow-soft">
-          <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[var(--color-primary-highlight)] text-[var(--color-primary)]">
-            {icon}
-          </div>
-          <h1 className="mt-4 text-2xl font-bold text-[var(--color-panel)]">{title}</h1>
-          <div className="mt-3 text-sm text-[var(--color-text-muted)]">{children}</div>
-        </div>
+        <PublicStateShell icon={icon} title={title} description={children} role={role} />
       </section>
     </main>
   );
@@ -157,11 +155,15 @@ function LoadingState() {
 
 function ExpiredState() {
   return (
-    <StateShell icon={<Clock3 className="h-7 w-7" aria-hidden="true" />} title="狀態連結已過期">
+    <StateShell
+      role="alert"
+      icon={<Clock3 className="h-7 w-7" aria-hidden="true" />}
+      title="狀態連結已過期"
+    >
       <p>為保障申請資料，狀態連結會定期失效。你可以電郵 HKSCDA 申請新的查閱連結。</p>
       <a
         href="mailto:info@hkscda.com?subject=Adoption%20status%20link%20request"
-        className="btn-cta mt-5"
+        className="btn-primary min-h-11 mt-5"
       >
         <Mail className="h-4 w-4" aria-hidden="true" />
         申請新連結
@@ -173,11 +175,12 @@ function ExpiredState() {
 function MissingState() {
   return (
     <StateShell
+      role="alert"
       icon={<AlertCircle className="h-7 w-7" aria-hidden="true" />}
       title="找不到此申請連結"
     >
       <p>連結可能已輸入錯誤或不再有效。你仍可返回待領養動物列表，重新查看可申請的貓狗。</p>
-      <Link to="/animals/cat" className="btn-cta mt-5">
+      <Link to="/animals/cat" className="btn-primary min-h-11 mt-5">
         <PawPrint className="h-4 w-4" aria-hidden="true" />
         返回待領養動物
       </Link>
@@ -187,9 +190,13 @@ function MissingState() {
 
 function GenericErrorState({ onRetry }: { onRetry: () => void }) {
   return (
-    <StateShell icon={<AlertCircle className="h-7 w-7" aria-hidden="true" />} title="暫時未能載入">
-      <p>系統暫時未能讀取你的申請狀態。請稍後再試，或直接聯絡 HKSCDA。</p>
-      <button type="button" onClick={onRetry} className="btn-cta mt-5">
+    <StateShell
+      role="alert"
+      icon={<AlertCircle className="h-7 w-7" aria-hidden="true" />}
+      title="暫時未能載入"
+    >
+      <p>系統暫時未能讀取你的申請狀態。請稍後再試，或請聯絡 HKSCDA。</p>
+      <button type="button" onClick={onRetry} className="btn-primary min-h-11 mt-5">
         <RefreshCw className="h-4 w-4" aria-hidden="true" />
         重新載入
       </button>
@@ -203,20 +210,20 @@ function StatusContent({ status }: { status: PublicStatusSummary }) {
       <div className="container-wide">
         <header className="grid gap-5 rounded-lg border border-[var(--color-border)] bg-[var(--color-panel)] p-5 text-[var(--color-text-inverse)] shadow-panel md:grid-cols-[minmax(0,1fr)_260px] md:p-7">
           <div>
-            <p className="text-sm font-semibold text-[var(--color-accent-warm)]">
+            <p className="text-sm font-semibold text-[var(--color-secondary)]">
               Adoption application status
             </p>
             <h1 className="mt-2 text-3xl font-bold">領養申請已收到</h1>
-            <p className="mt-3 max-w-2xl text-sm text-[var(--color-lavender)]">
+            <p className="mt-3 max-w-2xl text-sm text-[var(--color-surface-offset-2)]">
               這頁只顯示申請摘要及下一步安排，不包含相片、詳細問卷或內部審批狀態。
             </p>
           </div>
-          <div className="rounded-lg border border-[var(--color-accent-warm)] bg-[var(--color-panel-2)] p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-accent-warm)]">
+          <div className="rounded-lg border border-[var(--color-secondary)] bg-[var(--color-panel-2)] p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-secondary)]">
               Reference
             </p>
             <p className="mt-1 font-display text-2xl font-bold">{status.reference}</p>
-            <p className="mt-3 text-xs text-[var(--color-lavender)]">
+            <p className="mt-3 text-xs text-[var(--color-surface-offset-2)]">
               Submitted {formatDateTime(status.submittedAt)}
             </p>
           </div>
@@ -255,7 +262,7 @@ function StatusContent({ status }: { status: PublicStatusSummary }) {
                     <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[var(--color-primary-highlight)] text-sm font-bold text-[var(--color-primary)]">
                       {animal.rank}
                     </div>
-                    <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[var(--color-lavender)] text-[var(--color-panel)]">
+                    <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[var(--color-surface-offset-2)] text-[var(--color-panel)]">
                       <AnimalIcon type={animal.type} />
                     </div>
                     <div className="min-w-0">

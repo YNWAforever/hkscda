@@ -61,8 +61,11 @@ below), so the same event is never logged twice with two different actors.
 - Every admin API route calls `requireAdmin(request, roles, client)`
   (`lib/donations/supabase.server.ts`) — bearer token → `admin_user` row → role check.
   The role matrix lives in `lib/admin/access.ts` and is mirrored by RLS policies.
-- Every table has RLS enabled; every `security definer` function pins
-  `set search_path = public, pg_temp`. Keep both true for new migrations.
+- Every table has RLS enabled; every `security definer` function pins its
+  `search_path` — either `public, pg_temp` (the house default) or `''`, which is
+  stricter and requires every reference in the body to be schema-qualified
+  (see `20260719120000_document_admin_mutation_hardening.sql`). Keep both true
+  for new migrations; `supabaseMigrations.test.ts` enforces it.
 - App-called RPCs go in the `public` schema and must be granted to `service_role` —
   the `private` schema is not exposed to PostgREST.
 - Public POST endpoints accepting a **user-submitted form** are rate limited

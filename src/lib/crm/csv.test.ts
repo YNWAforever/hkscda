@@ -53,6 +53,7 @@ describe("crm csv", () => {
         purpose: "general",
         status: "succeeded",
         method: "manual",
+        customPurpose: "婚宴回禮",
         receiptRequested: true,
         receiptNo: "HKSCDA-2026-000001",
         createdAt: "2026-06-01T00:00:00.000Z",
@@ -61,6 +62,8 @@ describe("crm csv", () => {
 
     expect(csv).toContain("receipt_no");
     expect(csv).toContain("HKSCDA-2026-000001");
+    expect(csv.split("\n")[0]).toContain("purpose,其他用途,status");
+    expect(csv).toContain("婚宴回禮");
   });
 
   test("buildPaymentCsv writes a header and a row with HKD amount", () => {
@@ -71,6 +74,7 @@ describe("crm csv", () => {
         supporterEmail: "tai.man@example.com",
         provider: "fps",
         amountCents: 50000,
+        customPurpose: "個案 A",
         purpose: "general",
         status: "succeeded",
         providerRef: "HKSCDA-ABC123",
@@ -80,9 +84,10 @@ describe("crm csv", () => {
       },
     ]);
     expect(csv.split("\n")[0]).toBe(
-      "payment_id,supporter_name,supporter_email,provider,amount_hkd,purpose,status,provider_ref,bank_reference,received_at,created_at",
+      "payment_id,supporter_name,supporter_email,provider,amount_hkd,purpose,其他用途,status,provider_ref,bank_reference,received_at,created_at",
     );
     expect(csv).toContain("500.00");
     expect(csv).toContain("FPS-9988");
+    expect(csv).toContain("個案 A");
   });
 });

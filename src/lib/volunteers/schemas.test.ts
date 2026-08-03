@@ -18,7 +18,7 @@ describe("volunteer schemas", () => {
         language: "zh-HK",
       },
       participantCount: 1,
-      declaredAge: "18",
+      declaredAge: "21",
       consents: { email: true, whatsapp: false },
       turnstileToken: "token",
     });
@@ -28,7 +28,7 @@ describe("volunteer schemas", () => {
       email: "ming@example.com",
       phone: "9123 4567",
     });
-    expect(parsed.declaredAge).toBe(18);
+    expect(parsed.declaredAge).toBe(21);
     expect(parsed.participantCount).toBe(1);
   });
 
@@ -84,5 +84,31 @@ describe("volunteer schemas", () => {
       page: 1,
       pageSize: 50,
     });
+  });
+  test("rejects individual applicants below the public age floor", () => {
+    const underage = publicRegistrationSchema.safeParse({
+      activityId: "f43d0f00-aa4f-4bb9-856d-6fe2f9f13bd0",
+      registrationType: "individual",
+      contact: { name: "Ada", email: "ada@example.com", phone: "91234567", language: "zh-HK" },
+      participantCount: 1,
+      declaredAge: 20,
+      consents: { email: true, whatsapp: false },
+    });
+
+    expect(underage.success).toBe(false);
+    expect(underage.error?.issues.map((issue) => issue.path.join("."))).toContain(
+      "declaredAge",
+    );
+
+    expect(
+      publicRegistrationSchema.parse({
+        activityId: "f43d0f00-aa4f-4bb9-856d-6fe2f9f13bd0",
+        registrationType: "individual",
+        contact: { name: "Ada", email: "ada@example.com", phone: "91234567", language: "zh-HK" },
+        participantCount: 1,
+        declaredAge: 21,
+        consents: { email: true, whatsapp: false },
+      }).declaredAge,
+    ).toBe(21);
   });
 });

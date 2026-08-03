@@ -48,7 +48,8 @@ function validPayload(overrides: Record<string, unknown> = {}) {
     visit: {
       dateRangeStart: "2026-07-10",
       dateRangeEnd: "2026-07-24",
-      preferredTimeWindows: ["weekday_evening", "weekend_afternoon"],
+      dogTimeWindows: ["weekend_afternoon"],
+      catTimeWindows: ["weekday_evening", "weekend_afternoon"],
       notes: "WhatsApp before visiting",
     },
     terms: {
@@ -122,12 +123,62 @@ describe("expandedAdoptionApplicationSchema", () => {
           visit: {
             dateRangeStart: "2026-08-10",
             dateRangeEnd: "2026-08-01",
-            preferredTimeWindows: ["weekend_afternoon"],
+            dogTimeWindows: ["weekend_afternoon"],
+            catTimeWindows: ["weekday_evening"],
             notes: "",
           },
         }),
       ),
     ).toThrow("Visit end date must be on or after the start date");
+  });
+
+  test("validates grouped windows for every selected species", () => {
+    const dogOnly = validPayload({
+      animalPreferences: [
+        { rank: 1, animalId: dogId, animalName: "Lucky", animalType: "dog" },
+      ],
+      visit: {
+        dateRangeStart: "2026-07-10",
+        dateRangeEnd: "2026-07-24",
+        dogTimeWindows: ["weekday_afternoon"],
+        catTimeWindows: [],
+        notes: "",
+      },
+    });
+    expect(expandedAdoptionApplicationSchema.parse(dogOnly).visit).toMatchObject({
+      dogTimeWindows: ["weekday_afternoon"],
+      catTimeWindows: [],
+    });
+
+    expect(() =>
+      expandedAdoptionApplicationSchema.parse({
+        ...dogOnly,
+        visit: { ...dogOnly.visit, dogTimeWindows: [], catTimeWindows: ["weekday_morning"] },
+      }),
+    ).toThrow();
+
+    expect(() =>
+      expandedAdoptionApplicationSchema.parse({
+        ...dogOnly,
+        visit: { ...dogOnly.visit, dogTimeWindows: ["weekday_morning"] },
+      }),
+    ).toThrow();
+
+    const catOnly = validPayload({
+      animalPreferences: [
+        { rank: 1, animalId: catId, animalName: "Mochi", animalType: "cat" },
+      ],
+      visit: {
+        dateRangeStart: "2026-07-10",
+        dateRangeEnd: "2026-07-24",
+        dogTimeWindows: [],
+        catTimeWindows: ["weekday_morning"],
+        notes: "",
+      },
+    });
+    expect(expandedAdoptionApplicationSchema.parse(catOnly).visit.catTimeWindows).toEqual([
+      "weekday_morning",
+    ]);
   });
 
   test("maps payloads into compatibility and detail inserts", () => {
@@ -160,6 +211,8 @@ describe("expandedAdoptionApplicationSchema", () => {
       public_application_id: applicationId,
       date_range_start: "2026-07-10",
       date_range_end: "2026-07-24",
+      dog_time_windows: ["weekend_afternoon"],
+      cat_time_windows: ["weekday_evening", "weekend_afternoon"],
       preferred_time_windows: ["weekday_evening", "weekend_afternoon"],
     });
   });

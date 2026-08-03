@@ -1,11 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import {
-  PawPrint,
   Heart,
   House,
   Check,
-  Cat,
-  Dog,
   Smartphone,
   Zap,
   Building,
@@ -25,11 +22,8 @@ import { SocialProof } from "@/components/site/SocialProof";
 import { VolunteerCarousel } from "@/components/site/VolunteerCarousel";
 import { SocialWall } from "@/components/site/SocialWall";
 import { PhotoMarquee } from "@/components/site/PhotoMarquee";
+import { SectionHeading } from "@/components/site/SectionHeading";
 import heroImg from "@/assets/hero.jpg";
-import cat1 from "@/assets/cat1.jpg";
-import cat2 from "@/assets/cat2.jpg";
-import dog1 from "@/assets/dog1.jpg";
-import dog2 from "@/assets/dog2.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -43,7 +37,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "香港拯救貓狗協會 HKSCDA" },
       {
         property: "og:description",
-        content: "支持領養 · 拯救生命 · 不殺機構 · 每年救助超過600隻毛孩",
+        content: "支持領養 · 拯救生命 · 不殺機構",
       },
       { property: "og:image", content: heroImg },
       { property: "og:type", content: "website" },
@@ -52,21 +46,6 @@ export const Route = createFileRoute("/")({
   }),
   component: Index,
 });
-
-const animals = {
-  cats: [
-    { img: cat1, name: "Mochi 麻糬", age: "1.5 歲", sex: "母", note: "親人", id: "C-241" },
-    { img: cat2, name: "Pebble 石仔", age: "4 個月", sex: "公", note: "BB一對", id: "C-256" },
-    { img: cat1, name: "Latte 拿鐵", age: "2 歲", sex: "母", note: "靜靜", id: "C-201" },
-    { img: cat2, name: "Soba 蕎麥", age: "3 個月", sex: "公", note: "BB一對", id: "C-257" },
-  ],
-  dogs: [
-    { img: dog1, name: "Brownie 布朗尼", age: "3 歲", sex: "公", note: "親人", id: "D-118" },
-    { img: dog2, name: "Coco 可可", age: "8 歲", sex: "母", note: "適合靜家庭", id: "D-095" },
-    { img: dog1, name: "Lucky 大旺", age: "2 歲", sex: "公", note: "活潑", id: "D-122" },
-    { img: dog2, name: "Bagel", age: "6 歲", sex: "母", note: "TNR康復", id: "D-110" },
-  ],
-};
 
 const programs = [
   {
@@ -118,42 +97,41 @@ function Index() {
         <PhotoMarquee />
 
         {/* Adoption */}
-        <section id="adoption" className="px-6 py-16 lg:py-24 bg-[var(--color-surface)]">
+        <section id="adoption" className="bg-[var(--color-surface)] px-6 py-16 lg:py-24">
           <div className="container-wide">
-            <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] mb-3 flex items-center gap-1.5">
-              <PawPrint className="h-3.5 w-3.5" /> 領養動物
-            </div>
-            <h2 className="font-display text-3xl lg:text-5xl font-bold mb-4">牠們在等待一個家</h2>
-            <p className="text-[var(--color-text-muted)] max-w-[52ch] mb-10">
-              現時待領養的貓貓和狗狗，所有動物均需家訪審核。貓咪領養費 HK$500 · 唐狗免費。
-            </p>
-
-            <h3 className="font-display text-xl font-bold mb-5 flex items-center gap-2">
-              <Cat className="h-5 w-5 text-[var(--color-cat)]" /> 待領養貓貓
-              <span className="text-sm bg-[var(--color-cat-bg)] text-[var(--color-cat)] px-3 py-1 rounded-full">
-                {animals.cats.length} 隻
-              </span>
-            </h3>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-12">
-              {animals.cats.map((a) => (
-                <AnimalCard key={a.id} a={a} type="cat" />
-              ))}
-            </div>
-
-            <h3 className="font-display text-xl font-bold mb-5 flex items-center gap-2">
-              <Dog className="h-5 w-5 text-[var(--color-dog)]" /> 待領養狗狗
-              <span className="text-sm bg-[var(--color-dog-bg)] text-[var(--color-dog)] px-3 py-1 rounded-full">
-                {animals.dogs.length} 隻
-              </span>
-            </h3>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
-              {animals.dogs.map((a) => (
-                <AnimalCard key={a.id} a={a} type="dog" />
-              ))}
+            <SectionHeading
+              eyebrow="領養動物"
+              title="牠們在等待一個家"
+              description="查看目前可申請領養的貓狗，了解牠們的個性與照顧需要。"
+            />
+            <div className="mt-10 grid gap-4 md:grid-cols-2">
+              <a
+                href="/animals/cat"
+                className="border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-6 hover:border-[var(--color-primary)]"
+              >
+                <h3 className="text-xl font-bold text-[var(--color-text)]">待領養貓貓</h3>
+                <p className="mt-3 text-sm leading-relaxed text-[var(--color-text-muted)]">
+                  查看目前公開的貓貓資料和領養申請流程。
+                </p>
+                <span className="mt-6 inline-flex min-h-11 items-center text-sm font-bold text-[var(--color-primary)]">
+                  查看貓貓
+                </span>
+              </a>
+              <a
+                href="/animals/dog"
+                className="border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-6 hover:border-[var(--color-primary)]"
+              >
+                <h3 className="text-xl font-bold text-[var(--color-text)]">待領養狗狗</h3>
+                <p className="mt-3 text-sm leading-relaxed text-[var(--color-text-muted)]">
+                  查看目前公開的狗狗資料和領養申請流程。
+                </p>
+                <span className="mt-6 inline-flex min-h-11 items-center text-sm font-bold text-[var(--color-primary)]">
+                  查看狗狗
+                </span>
+              </a>
             </div>
           </div>
         </section>
-
         {/* Fundraising progress — NEW */}
         <FundraisingCard />
 
@@ -180,11 +158,10 @@ function Index() {
                 <p>
                   本會致力為流浪貓狗提供糧食、醫療、絕育及領養服務，同時積極援救街頭受傷或被遺棄的小動物，為牠們尋找
                   <strong>永久的家</strong>。
-                </p>
+                </p>{" "}
                 <p>
                   我們是一個「<strong>不殺（No Kill）</strong>
-                  」機構，只要小動物一息尚存，絕不放棄任何生命。平均每 14
-                  小時就有一隻動物獲成功領養。
+                  」機構，重視每個生命的照護、康復和負責任領養。
                 </p>
               </div>
               <div className="flex flex-wrap gap-2 mt-6">
@@ -264,9 +241,9 @@ function Index() {
         {/* Donate */}
         <section id="donate" className="px-6 py-16 lg:py-24 bg-[var(--color-bg)]">
           <div className="container-wide">
-            <div className="rounded-[2.5rem] bg-[var(--color-panel)] shadow-panel p-8 lg:p-12 grid lg:grid-cols-5 gap-10 items-start">
-              <div className="lg:col-span-2">
-                <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-accent-warm)] mb-3 flex items-center gap-1.5">
+            <div className="min-w-0 rounded-[2.5rem] bg-[var(--color-panel)] shadow-panel p-8 lg:p-12 grid lg:grid-cols-5 gap-10 items-start">
+              <div className="min-w-0 lg:col-span-2">
+                <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-secondary)] mb-3 flex items-center gap-1.5">
                   <Heart className="h-3.5 w-3.5" /> 捐助我們
                 </div>
                 <h2 className="font-display text-3xl lg:text-5xl font-bold text-white mb-6 leading-tight">
@@ -278,17 +255,17 @@ function Index() {
                   本會為政府認可慈善機構（91/14493），捐款 HK$100 以上可申請退稅收條（IRD
                   §88）。所有善款均用於小動物醫療及護理。
                 </p>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-[var(--color-accent-soft)] text-xs font-bold">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-[var(--color-secondary-highlight)] text-xs font-bold">
                   <Check className="h-3 w-3" /> 稅務局認可 IRD §88 免稅機構
                 </div>
               </div>
-              <div className="lg:col-span-3 grid sm:grid-cols-2 gap-4">
+              <div className="min-w-0 lg:col-span-3 grid sm:grid-cols-2 gap-4">
                 {donateMethods.map((d) => (
                   <div
                     key={d.title}
-                    className="bg-white/10 border border-white/10 rounded-[1.5rem] p-5 flex gap-4 hover:bg-white/15 transition-colors"
+                    className="min-w-0 bg-white/10 border border-white/10 rounded-[1.5rem] p-5 flex flex-col gap-3 hover:bg-white/15 transition-colors sm:flex-row"
                   >
-                    <div className="h-11 w-11 rounded-full bg-[var(--color-cta)] flex items-center justify-center shrink-0">
+                    <div className="h-11 w-11 rounded-full bg-[var(--color-secondary)] flex items-center justify-center shrink-0">
                       <d.Icon className="h-5 w-5 text-[var(--color-panel)]" />
                     </div>
                     <div className="min-w-0">
@@ -297,7 +274,7 @@ function Index() {
                     </div>
                   </div>
                 ))}
-                <a href="#contact" className="btn-cta sm:col-span-2 mt-2 py-4!">
+                <a href="#contact" className="btn-secondary sm:col-span-2 mt-2 py-4!">
                   <ReceiptText className="h-4 w-4" /> 申請退稅收條 / 聯絡我們
                 </a>
               </div>
@@ -306,55 +283,5 @@ function Index() {
         </section>
       </main>
     </div>
-  );
-}
-
-function AnimalCard({
-  a,
-  type,
-}: {
-  a: { img: string; name: string; age: string; sex: string; note: string; id: string };
-  type: "cat" | "dog";
-}) {
-  const isCat = type === "cat";
-  return (
-    <article className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[1.5rem] overflow-hidden hover:-translate-y-1 hover:shadow-soft transition-all">
-      <div className="relative aspect-square overflow-hidden">
-        <img
-          src={a.img}
-          alt={a.name}
-          loading="lazy"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <span
-          className={`absolute top-2 right-2 text-xs font-bold px-2 py-0.5 rounded-full ${
-            isCat
-              ? "bg-[var(--color-cat-bg)] text-[var(--color-cat)]"
-              : "bg-[var(--color-dog-bg)] text-[var(--color-dog)]"
-          }`}
-        >
-          {a.id}
-        </span>
-      </div>
-      <div className="p-4">
-        <h4 className="font-display font-bold mb-2">{a.name}</h4>
-        <div className="flex flex-wrap gap-2 mb-3">
-          {[a.age, a.sex, a.note].map((t) => (
-            <span
-              key={t}
-              className="text-xs bg-[var(--color-surface-offset)] text-[var(--color-text-muted)] px-2 py-0.5 rounded-full"
-            >
-              {t}
-            </span>
-          ))}
-        </div>
-        <Link
-          to={type === "cat" ? "/animals/cat" : "/animals/dog"}
-          className="btn-cta w-full px-4! py-2! text-sm!"
-        >
-          申請領養
-        </Link>
-      </div>
-    </article>
   );
 }

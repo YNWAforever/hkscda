@@ -34,7 +34,7 @@ const stories = [
   },
   {
     initials: "May",
-    color: "var(--color-accent-warm)",
+    color: "var(--color-secondary)",
     name: "May Lam",
     role: "暫托家庭 · 4年",
     quote: "短短幾個月把牠們從怕人養到撒嬌，然後送去新家庭。每次都不捨，但這就是我們的使命。",
@@ -131,7 +131,7 @@ export function VolunteerCarousel() {
                 key={s.name}
                 className="flex-[0_0_85%] sm:flex-[0_0_60%] md:flex-[0_0_42%] lg:flex-[0_0_33.333%] px-2"
               >
-                <div className="h-full card-dashed p-4 flex flex-col">
+                <div className="h-full border border-[var(--color-border)] p-4 flex flex-col">
                   <div
                     className="h-24 rounded-2xl flex items-center justify-center text-white font-display font-bold text-2xl"
                     style={{ background: s.color }}

@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import { supabase } from "../../lib/supabase";
 import { AnimalGrid } from "../../components/site/AnimalGrid";
+import { PublicStateShell } from "../../components/site/PublicStateShell";
 import { Skeleton } from "../../components/ui/skeleton";
 import type { AgeFilter } from "../../types/animal";
 
@@ -23,7 +24,6 @@ export const Route = createFileRoute("/animals/dog")({
 
 function DogListingPage() {
   const { page, filter } = Route.useSearch();
-
   const { data, isLoading, isError } = useQuery({
     queryKey: ["animals", "dog", page, filter],
     queryFn: async () => {
@@ -40,49 +40,41 @@ function DogListingPage() {
     },
   });
 
-  if (isLoading)
+  if (isLoading) {
     return (
-      <main className="max-w-6xl mx-auto px-4 py-8">
-        <h1 className="font-display text-3xl font-bold mb-8">待領養狗狗</h1>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="rounded-xl overflow-hidden border border-[var(--color-border)]">
+      <main className="container-wide px-4 py-10 sm:px-6 lg:px-8">
+        <h1 className="text-3xl font-bold text-[var(--color-text)]">待領養狗狗</h1>
+        <p className="mt-3 text-[var(--color-text-muted)]">正在載入目前可申請領養的狗狗。</p>
+        <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <div key={index} className="overflow-hidden rounded-md border border-[var(--color-border)]">
               <Skeleton className="aspect-square w-full rounded-none" />
-              <div className="p-3 space-y-2">
-                <Skeleton className="h-4 w-2/3" />
-                <div className="flex gap-1">
-                  <Skeleton className="h-5 w-10 rounded-full" />
-                  <Skeleton className="h-5 w-12 rounded-full" />
-                </div>
-                <Skeleton className="h-8 w-full rounded-full" />
-              </div>
+              <div className="space-y-3 p-4"><Skeleton className="h-5 w-2/3" /><Skeleton className="h-11 w-full" /></div>
             </div>
           ))}
         </div>
       </main>
     );
+  }
 
-  if (isError)
+  if (isError) {
     return (
-      <main className="max-w-6xl mx-auto px-4 py-8">
-        <h1 className="font-display text-3xl font-bold mb-8">待領養狗狗</h1>
-        <p className="text-center py-12 text-[var(--color-text-muted)]">
-          載入狗狗資料時發生問題，請稍後再試。
-        </p>
-      </main>
+      <PublicStateShell
+        role="alert"
+        title="暫時未能載入狗狗資料"
+        description="系統未能取得目前的領養資料，請稍後再試。"
+        action={<a href="/animals/dog" className="btn-primary min-h-11 px-5">重新整理</a>}
+      />
     );
+  }
 
   return (
-    <main className="max-w-6xl mx-auto px-4 py-8">
-      <h1 className="font-display text-3xl font-bold mb-8">待領養狗狗</h1>
-      <AnimalGrid
-        animals={data?.animals ?? []}
-        total={data?.total ?? 0}
-        page={page}
-        ageFilter={filter as AgeFilter}
-        pageSize={PAGE_SIZE}
-        animalLabel="狗"
-      />
+    <main className="container-wide px-4 py-10 sm:px-6 lg:px-8">
+      <h1 className="text-3xl font-bold text-[var(--color-text)]">待領養狗狗</h1>
+      <p className="mt-3 text-[var(--color-text-muted)]">查看目前可申請領養的狗狗，了解牠們的需要。</p>
+      <div className="mt-8">
+        <AnimalGrid animals={data?.animals ?? []} total={data?.total ?? 0} page={page} ageFilter={filter as AgeFilter} pageSize={PAGE_SIZE} animalLabel="狗" />
+      </div>
     </main>
   );
 }

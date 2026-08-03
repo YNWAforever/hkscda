@@ -97,6 +97,7 @@ describe("createAdminAccessService", () => {
           invited.push(email);
           return { authUserId: "invite-auth-id", email };
         },
+        resendInvite: async () => {},
       },
       now,
     });
@@ -133,7 +134,10 @@ describe("createAdminAccessService", () => {
     });
     const service = createAdminAccessService({
       repo,
-      auth: { inviteByEmail: async () => ({ authUserId: "unused", email: "a@example.com" }) },
+      auth: {
+        inviteByEmail: async () => ({ authUserId: "unused", email: "a@example.com" }),
+        resendInvite: async () => {},
+      },
       now,
     });
 
@@ -152,9 +156,11 @@ describe("createAdminAccessService", () => {
     const service = createAdminAccessService({
       repo,
       auth: {
-        async inviteByEmail(email) {
+        async inviteByEmail() {
+          return { authUserId: "unused", email: "unused@example.com" };
+        },
+        async resendInvite(email) {
           resent.push(email);
-          return { authUserId: "pending-auth", email };
         },
       },
       now,
@@ -173,6 +179,37 @@ describe("createAdminAccessService", () => {
     expect(calls.insertAuditLog[0]).toMatchObject({ action: "admin_user.invite_resend" });
   });
 
+  test("resends an existing pending auth user without inviting a duplicate", async () => {
+    const { repo, calls } = makeRepo({
+      async findUserById() {
+        return adminUser({ status: "pending", email: "pending@example.com" });
+      },
+    });
+    const resent: string[] = [];
+    const service = createAdminAccessService({
+      repo,
+      auth: {
+        async inviteByEmail() {
+          throw new Error("inviteUserByEmail must not be used for resend");
+        },
+        async resendInvite(email) {
+          resent.push(email);
+        },
+      },
+      now,
+    });
+
+    await service.resendInvite({ actor, userId: "target-row" });
+
+    expect(resent).toEqual(["pending@example.com"]);
+    expect(calls.updateUser[0]).toMatchObject({
+      id: "target-row",
+      input: {
+        invite_sent_at: "2026-07-01T10:00:00.000Z",
+        last_invited_by: "actor-auth",
+      },
+    });
+  });
   test("rejects resend for non-pending users", async () => {
     const { repo } = makeRepo({
       async findUserById() {
@@ -181,7 +218,10 @@ describe("createAdminAccessService", () => {
     });
     const service = createAdminAccessService({
       repo,
-      auth: { inviteByEmail: async () => ({ authUserId: "unused", email: "a@example.com" }) },
+      auth: {
+        inviteByEmail: async () => ({ authUserId: "unused", email: "a@example.com" }),
+        resendInvite: async () => {},
+      },
       now,
     });
 
@@ -199,7 +239,10 @@ describe("createAdminAccessService", () => {
     });
     const service = createAdminAccessService({
       repo,
-      auth: { inviteByEmail: async () => ({ authUserId: "unused", email: "a@example.com" }) },
+      auth: {
+        inviteByEmail: async () => ({ authUserId: "unused", email: "a@example.com" }),
+        resendInvite: async () => {},
+      },
       now,
     });
 
@@ -222,7 +265,10 @@ describe("createAdminAccessService", () => {
     });
     const service = createAdminAccessService({
       repo,
-      auth: { inviteByEmail: async () => ({ authUserId: "unused", email: "a@example.com" }) },
+      auth: {
+        inviteByEmail: async () => ({ authUserId: "unused", email: "a@example.com" }),
+        resendInvite: async () => {},
+      },
       now,
     });
 
@@ -247,7 +293,10 @@ describe("createAdminAccessService", () => {
     });
     const service = createAdminAccessService({
       repo,
-      auth: { inviteByEmail: async () => ({ authUserId: "unused", email: "a@example.com" }) },
+      auth: {
+        inviteByEmail: async () => ({ authUserId: "unused", email: "a@example.com" }),
+        resendInvite: async () => {},
+      },
       now,
     });
 

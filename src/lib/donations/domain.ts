@@ -1,12 +1,10 @@
 import { z } from "zod";
 
-export const donationPurposes = ["general", "medical", "sponsor"] as const;
-export const donationMethods = ["stripe", "paypal", "fps", "payme"] as const;
-export const donationLanguages = ["zh-HK", "en"] as const;
+import { donationAttributionSchema } from "./attribution";
+import { donationLanguages, donationMethods, donationPurposes } from "./contracts";
 
-export type DonationPurpose = (typeof donationPurposes)[number];
-export type DonationMethod = (typeof donationMethods)[number];
-export type DonationLanguage = (typeof donationLanguages)[number];
+export { donationLanguages, donationMethods, donationPurposes } from "./contracts";
+export type { DonationLanguage, DonationMethod, DonationPurpose } from "./contracts";
 export type ConsentChannel = "email" | "whatsapp";
 export type ConsentStatus = "opt_in" | "opt_out";
 
@@ -22,6 +20,13 @@ export const donationRequestSchema = z.object({
   amountCents: z.number().int().min(1000).max(1_000_000),
   currency: z.literal("HKD"),
   purpose: z.enum(donationPurposes),
+  customPurpose: z
+    .string()
+    .max(200)
+    .refine((value) => !/\p{Cc}/u.test(value), "Custom purpose contains control characters")
+    .transform((value) => value.trim())
+    .optional()
+    .transform((value) => value || undefined),
   method: z.enum(donationMethods),
   receiptRequested: z.boolean(),
   donor: z.object({
@@ -39,6 +44,7 @@ export const donationRequestSchema = z.object({
     email: z.boolean(),
     whatsapp: z.boolean(),
   }),
+  attribution: donationAttributionSchema.optional(),
 });
 
 export type DonationRequest = z.infer<typeof donationRequestSchema>;

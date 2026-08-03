@@ -26,7 +26,7 @@ export function ReportHeader({
           <select
             value={selectedPeriod}
             onChange={(e) => onPeriodChange(e.target.value)}
-            className="px-4 py-2 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] text-sm font-medium focus:outline-none focus:border-[var(--color-primary)]"
+            className="min-h-11 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-sm font-medium focus:outline-none focus:border-[var(--color-primary)]"
             aria-label="選擇時期"
           >
             {periods.map((p) => (

@@ -22,6 +22,12 @@ describe("applySecurityHeaders", () => {
     expect(result.headers.get("Content-Security-Policy-Report-Only")).toContain(
       "frame-ancestors 'none'",
     );
+    expect(result.headers.get("Content-Security-Policy-Report-Only")).toContain(
+      "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://maps.googleapis.com",
+    );
+    expect(result.headers.get("Content-Security-Policy-Report-Only")).toContain(
+      "connect-src 'self' https://*.supabase.co https://api.stripe.com https://www.google-analytics.com https://*.google-analytics.com https://maps.googleapis.com https://maps.gstatic.com",
+    );
   });
 
   test("preserves status, body, and existing headers", async () => {

@@ -1,5 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { AnimalCard } from "./AnimalCard";
+import { PublicStateShell } from "./PublicStateShell";
 import type { Animal, AgeFilter } from "../../types/animal";
 import { parseAgeFilter } from "../../types/animal";
 
@@ -29,92 +30,69 @@ export function AnimalGrid({
 }: AnimalGridProps) {
   const navigate = useNavigate();
   const totalPages = Math.ceil(total / pageSize);
+  const filtered = ageFilter === "all" ? animals : animals.filter((animal) => parseAgeFilter(animal.age) === ageFilter);
 
-  const filtered =
-    ageFilter === "all" ? animals : animals.filter((a) => parseAgeFilter(a.age) === ageFilter);
-
-  function setFilter(f: AgeFilter) {
+  function setFilter(filter: AgeFilter) {
     // @ts-expect-error search params typing varies by route
-    navigate({ search: (prev: Record<string, unknown>) => ({ ...prev, filter: f, page: 1 }) });
+    navigate({ search: (prev: Record<string, unknown>) => ({ ...prev, filter, page: 1 }) });
   }
 
-  function setPage(p: number) {
+  function setPage(nextPage: number) {
     // @ts-expect-error search params typing varies by route
-    navigate({ search: (prev: Record<string, unknown>) => ({ ...prev, page: p }) });
+    navigate({ search: (prev: Record<string, unknown>) => ({ ...prev, page: nextPage }) });
   }
 
   return (
-    <div className="space-y-6">
-      {/* Filter tabs */}
-      <div className="flex gap-2 flex-wrap">
-        <div role="group" aria-label="按年齡篩選" className="flex gap-2 flex-wrap">
+    <div className="space-y-7">
+      <div className="flex flex-wrap items-center gap-3">
+        <div role="group" aria-label="按年齡篩選" className="flex flex-wrap gap-2">
           {AGE_TABS.map((tab) => (
             <button
               key={tab.value}
+              type="button"
               onClick={() => setFilter(tab.value)}
               aria-pressed={ageFilter === tab.value}
-              className={`px-4 py-1.5 rounded-full text-sm transition-colors ${
-                ageFilter === tab.value
-                  ? "bg-[var(--color-primary)] text-white"
-                  : "bg-[var(--color-surface-offset)] text-[var(--color-text-muted)] hover:bg-[var(--color-border)]"
-              }`}
+              className={ageFilter === tab.value
+                ? "min-h-11 rounded-md bg-[var(--color-primary)] px-4 text-sm text-white"
+                : "min-h-11 rounded-md bg-[var(--color-surface-offset)] px-4 text-sm text-[var(--color-text-muted)] hover:bg-[var(--color-border)]"}
             >
               {tab.label}
             </button>
           ))}
         </div>
-        <span className="ml-auto text-sm text-[var(--color-text-muted)] self-center">
-          共 {total} 隻{animalLabel}
-        </span>
+        <span className="text-sm text-[var(--color-text-muted)] sm:ml-auto">共 {total} 隻{animalLabel}</span>
       </div>
 
-      {/* Grid */}
       {filtered.length === 0 ? (
-        <p className="text-center py-12 text-[var(--color-text-muted)]">
-          暫時沒有符合條件的{animalLabel}
-        </p>
+        <PublicStateShell
+          title={"暫時沒有符合條件的" + animalLabel}
+          description={"目前沒有符合條件的" + animalLabel + "，你可以調整篩選條件或稍後再來查看。"}
+        />
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {filtered.map((animal) => (
-            <AnimalCard key={animal.id} animal={animal} />
-          ))}
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-4">
+          {filtered.map((animal) => <AnimalCard key={animal.id} animal={animal} />)}
         </div>
       )}
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center gap-1 pt-4">
-          <button
-            onClick={() => setPage(page - 1)}
-            disabled={page <= 1}
-            aria-label="上一頁"
-            className="px-3 py-1.5 rounded text-sm disabled:opacity-30 hover:bg-[var(--color-surface-offset)]"
-          >
-            ←
-          </button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+      {totalPages > 1 ? (
+        <nav aria-label="動物列表分頁" className="flex flex-wrap justify-center gap-2 pt-4">
+          <button type="button" onClick={() => setPage(page - 1)} disabled={page <= 1} aria-label="上一頁" className="min-h-11 min-w-11 rounded-md border border-[var(--color-border)] disabled:opacity-30 hover:bg-[var(--color-surface-offset)]">←</button>
+          {Array.from({ length: totalPages }, (_, index) => index + 1).map((itemPage) => (
             <button
-              key={p}
-              onClick={() => setPage(p)}
-              className={`px-3 py-1.5 rounded text-sm ${
-                p === page
-                  ? "bg-[var(--color-primary)] text-white"
-                  : "hover:bg-[var(--color-surface-offset)]"
-              }`}
+              key={itemPage}
+              type="button"
+              onClick={() => setPage(itemPage)}
+              aria-current={itemPage === page ? "page" : undefined}
+              className={itemPage === page
+                ? "min-h-11 min-w-11 rounded-md bg-[var(--color-primary)] px-3 text-sm text-white"
+                : "min-h-11 min-w-11 rounded-md border border-[var(--color-border)] px-3 text-sm hover:bg-[var(--color-surface-offset)]"}
             >
-              {p}
+              {itemPage}
             </button>
           ))}
-          <button
-            onClick={() => setPage(page + 1)}
-            disabled={page >= totalPages}
-            aria-label="下一頁"
-            className="px-3 py-1.5 rounded text-sm disabled:opacity-30 hover:bg-[var(--color-surface-offset)]"
-          >
-            →
-          </button>
-        </div>
-      )}
+          <button type="button" onClick={() => setPage(page + 1)} disabled={page >= totalPages} aria-label="下一頁" className="min-h-11 min-w-11 rounded-md border border-[var(--color-border)] disabled:opacity-30 hover:bg-[var(--color-surface-offset)]">→</button>
+        </nav>
+      ) : null}
     </div>
   );
 }

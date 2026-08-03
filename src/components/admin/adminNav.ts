@@ -2,6 +2,7 @@ import {
   BarChart3,
   Banknote,
   CalendarDays,
+  ClipboardPenLine,
   Cat,
   ClipboardList,
   Dog,
@@ -10,6 +11,7 @@ import {
   Heart,
   Inbox,
   ListTodo,
+  Megaphone,
   ShieldCheck,
   Settings2,
   Users,
@@ -24,11 +26,12 @@ export type AdminSection =
   | "payments"
   | "supporters"
   | "volunteers"
+  | "content"
   | "access";
 
 // Visual grouping for the sidebar. Purely presentational — the active-state
 // logic below still keys off `section`/`activePath`, so routing is unchanged.
-export type AdminNavGroup = "animals" | "adoptions" | "donations" | "system";
+export type AdminNavGroup = "animals" | "adoptions" | "donations" | "promotion" | "system";
 
 export type AdminNavItem = {
   id: string;
@@ -44,6 +47,7 @@ export const ADMIN_NAV_GROUPS: { id: AdminNavGroup; label: string }[] = [
   { id: "animals", label: "動物" },
   { id: "adoptions", label: "領養" },
   { id: "donations", label: "捐款" },
+  { id: "promotion", label: "宣傳" },
   { id: "system", label: "系統" },
 ];
 
@@ -144,6 +148,15 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     activePath: "/admin/volunteers",
   },
   {
+    id: "volunteer-group-enquiries",
+    section: "volunteers",
+    group: "adoptions",
+    label: "團體查詢",
+    icon: ClipboardPenLine,
+    to: "/admin/volunteers/group-enquiries",
+    activePath: "/admin/volunteers/group-enquiries",
+  },
+  {
     id: "payments",
     section: "payments",
     group: "donations",
@@ -158,6 +171,32 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     label: "支持者",
     icon: HandCoins,
     to: "/admin/supporters",
+  },
+  {
+    id: "content",
+    section: "content",
+    group: "promotion",
+    label: "宣傳內容",
+    icon: Megaphone,
+    to: "/admin/content",
+  },
+  {
+    id: "adoption-information",
+    section: "content",
+    group: "promotion",
+    label: "????",
+    icon: ClipboardPenLine,
+    to: "/admin/content/adoption",
+    activePath: "/admin/content/adoption",
+  },
+  {
+    id: "knowledge",
+    section: "content",
+    group: "promotion",
+    label: "知識庫",
+    icon: ClipboardPenLine,
+    to: "/admin/content/knowledge",
+    activePath: "/admin/content/knowledge",
   },
   {
     id: "access-management",

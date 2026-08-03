@@ -8,6 +8,7 @@ import {
   formatReceiptNumber,
   isReceiptEligible,
 } from "./domain";
+import type { DonationAttribution } from "./attribution";
 
 describe("donation domain", () => {
   test("normalizes valid HKD donation requests", () => {
@@ -35,6 +36,79 @@ describe("donation domain", () => {
     expect(parsed.donor.phone).toBe("9123 4567");
   });
 
+  test("normalizes and bounds an optional custom purpose", () => {
+    const validRequest = {
+      amountCents: 30000,
+      currency: "HKD",
+      purpose: "medical",
+      method: "stripe",
+      receiptRequested: true,
+      donor: { name: "Ada", email: "ada@example.com", language: "en" },
+      consents: { email: true, whatsapp: false },
+    };
+
+    expect(
+      donationRequestSchema.parse({
+        ...validRequest,
+        customPurpose: "  婚宴回禮  ",
+      }).customPurpose,
+    ).toBe("婚宴回禮");
+    expect(
+      donationRequestSchema.parse({
+        ...validRequest,
+        customPurpose: "   ",
+      }).customPurpose,
+    ).toBeUndefined();
+    expect(() =>
+      donationRequestSchema.parse({
+        ...validRequest,
+        customPurpose: "個案\nA",
+      }),
+    ).toThrow();
+    expect(() =>
+      donationRequestSchema.parse({
+        ...validRequest,
+        customPurpose: "個案 A\n",
+      }),
+    ).toThrow();
+    expect(() =>
+      donationRequestSchema.parse({ ...validRequest, customPurpose: "\t個案 A" }),
+    ).toThrow();
+    expect(() =>
+      donationRequestSchema.parse({
+        ...validRequest,
+        customPurpose: "A".repeat(201),
+      }),
+    ).toThrow();
+  });
+
+  test("accepts controlled donation attribution and rejects unknown contexts", () => {
+    const attribution = {
+      source: "contextual-cta",
+      context: "animal",
+      purpose: "medical",
+      placement: "mobile-bottom",
+      trigger: "scroll",
+    } satisfies DonationAttribution;
+    const input = {
+      amountCents: 30000,
+      currency: "HKD",
+      purpose: "medical",
+      method: "stripe",
+      receiptRequested: true,
+      donor: { name: "Ada", email: "ada@example.com", language: "en" },
+      consents: { email: true, whatsapp: false },
+      attribution,
+    };
+
+    expect(donationRequestSchema.parse(input).attribution).toEqual(attribution);
+    expect(() =>
+      donationRequestSchema.parse({
+        ...input,
+        attribution: { ...attribution, context: "unknown" },
+      }),
+    ).toThrow();
+  });
   test("rejects non-integer money and unsupported currency", () => {
     expect(() =>
       donationRequestSchema.parse({

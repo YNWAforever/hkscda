@@ -2,9 +2,11 @@ import { Link } from "@tanstack/react-router";
 import { Heart, X } from "lucide-react";
 
 import { useShortlist } from "./ShortlistContext";
+import { useFixedActionRegistration } from "./fixedActions/PublicFixedActions";
 
 export function ShortlistTray() {
   const { items, message, persistenceWarning, clearMessage, removeItem } = useShortlist();
+  const shortlistRef = useFixedActionRegistration("shortlist", items.length > 0);
   const adoptionItems = items.filter((item) => item.intent === "adoption");
   const sponsorshipItems = items.filter((item) => item.intent === "sponsorship");
   const firstRankedAdoptionItem = [...adoptionItems].sort(
@@ -15,8 +17,10 @@ export function ShortlistTray() {
 
   return (
     <aside
+      ref={shortlistRef}
       aria-live="polite"
-      className="fixed inset-x-3 bottom-3 z-40 mx-auto max-w-4xl rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-panel"
+      className="fixed inset-x-3 z-40 mx-auto max-w-4xl rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-panel"
+      style={{ bottom: "calc(env(safe-area-inset-bottom) + 0.75rem)" }}
     >
       <div className="flex flex-wrap items-center gap-3 px-4 py-3">
         <div className="flex min-w-0 flex-1 items-center gap-2">
@@ -53,7 +57,7 @@ export function ShortlistTray() {
               key={item.id}
               type="button"
               onClick={() => removeItem(item.id)}
-              className="inline-flex max-w-32 items-center gap-1 rounded-full bg-[var(--color-cta)] px-3 py-1 text-xs font-medium text-[var(--color-panel)]"
+              className="inline-flex max-w-32 items-center gap-1 rounded-full bg-[var(--color-secondary)] px-3 py-1 text-xs font-medium text-[var(--color-panel)]"
               aria-label={`移除 ${item.name}`}
               title={`移除 ${item.name}`}
             >
@@ -79,13 +83,13 @@ export function ShortlistTray() {
                 animalName: firstRankedAdoptionItem.name,
                 type: firstRankedAdoptionItem.animalType,
               }}
-              className="btn-cta py-2! px-4! text-xs!"
+              className="btn-primary py-2! px-4! text-xs!"
             >
               申請領養
             </Link>
           )}
           {sponsorshipItems.length > 0 && (
-            <Link to="/sponsors/pledge" className="btn-cta py-2! px-4! text-xs!">
+            <Link to="/sponsors/pledge" className="btn-primary py-2! px-4! text-xs!">
               開始助養
             </Link>
           )}

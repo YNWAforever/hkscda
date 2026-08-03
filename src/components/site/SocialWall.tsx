@@ -32,7 +32,7 @@ export function SocialWall() {
         <div
           role="tablist"
           aria-label="社群媒體"
-          className="flex justify-center gap-2 mb-8 border-b border-[var(--color-border)]"
+          className="flex w-full flex-wrap justify-center gap-2 mb-8 border-b border-[var(--color-border)]"
         >
           {(
             [
@@ -47,7 +47,7 @@ export function SocialWall() {
               aria-selected={tab === k}
               aria-controls={`panel-${k}`}
               onClick={() => setTab(k)}
-              className={`relative -mb-px px-6 py-3 text-sm font-bold transition-colors ${
+              className={`relative -mb-px min-w-0 flex-1 px-3 py-3 text-center text-sm font-bold transition-colors ${
                 tab === k
                   ? "text-[var(--color-primary)] border-b-2 border-[var(--color-primary)]"
                   : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
