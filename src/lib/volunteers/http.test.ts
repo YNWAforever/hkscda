@@ -3,6 +3,57 @@ import { z } from "zod";
 
 import type { AdminUser } from "../donations/supabase.server";
 import { createVolunteerHandlers } from "./http.server";
+import type { VolunteerActivitySummary, VolunteerRegistrationDetail } from "./types";
+
+const activitySummary: VolunteerActivitySummary = {
+  id: "activity-1",
+  status: "published",
+  startsAt: "2026-08-01T02:00:00.000Z",
+  capacity: 12,
+  approvedParticipants: 4,
+  waitlistedParticipants: 0,
+  allowWaitlist: true,
+  autoApprove: true,
+  minAge: 16,
+  underagePolicy: "allow_with_guardian_pending",
+  registrationModes: ["individual", "group"],
+  type: "cleaning_day",
+  title: "清潔日",
+  description: null,
+  endsAt: "2026-08-01T05:00:00.000Z",
+  location: "荃灣",
+  pendingParticipants: 0,
+  remainingCapacity: 8,
+  createdAt: "2026-07-01T00:00:00.000Z",
+  updatedAt: "2026-07-01T00:00:00.000Z",
+};
+
+const registrationDetail: VolunteerRegistrationDetail = {
+  id: "registration-1",
+  activityId: activitySummary.id,
+  supporterId: "supporter-1",
+  registrationType: "individual",
+  status: "approved",
+  statusReason: "auto_approved",
+  attendanceStatus: "not_marked",
+  participantCount: 1,
+  contactName: "Ada",
+  contactEmail: "ada@example.com",
+  contactPhone: "91234567",
+  language: "zh-HK",
+  organizationName: null,
+  declaredAge: 20,
+  youngestAge: null,
+  guardianName: null,
+  guardianPhone: null,
+  notes: null,
+  internalNotes: null,
+  volunteerHours: null,
+  statusToken: null,
+  createdAt: "2026-07-02T00:00:00.000Z",
+  updatedAt: "2026-07-02T00:00:00.000Z",
+  activity: activitySummary,
+};
 
 const admin: AdminUser = {
   id: "admin-row",
@@ -18,20 +69,28 @@ function createService(overrides: Record<string, unknown> = {}) {
     calls,
     async listPublishedActivities() {
       calls.push("listPublishedActivities");
-      return [{ id: "activity-1", title: "清潔日" }];
+      return [activitySummary];
     },
     async submitPublicRegistration() {
       calls.push("submitPublicRegistration");
       return {
         registrationId: "registration-1",
         reference: "VOL-REGISTRA",
-        status: "approved",
+        status: "approved" as const,
         statusUrl: "https://example.test/volunteer/status/raw-token",
       };
     },
     async getPublicRegistrationStatus() {
       calls.push("getPublicRegistrationStatus");
-      return { reference: "VOL-REGISTRA", status: "approved" };
+      return {
+        reference: "VOL-REGISTRA",
+        status: "approved" as const,
+        attendanceStatus: "not_marked" as const,
+        participantCount: 1,
+        activityTitle: activitySummary.title,
+        startsAt: activitySummary.startsAt,
+        location: activitySummary.location,
+      };
     },
     async listActivities() {
       calls.push("listActivities");
@@ -51,7 +110,7 @@ function createService(overrides: Record<string, unknown> = {}) {
     },
     async getActivityDetail() {
       calls.push("getActivityDetail");
-      return { id: "activity-1", registrations: [] };
+      return activitySummary;
     },
     async listRegistrations() {
       calls.push("listRegistrations");
@@ -59,15 +118,15 @@ function createService(overrides: Record<string, unknown> = {}) {
     },
     async getRegistrationDetail() {
       calls.push("getRegistrationDetail");
-      return { id: "registration-1" };
+      return registrationDetail;
     },
     async updateRegistrationStatus() {
       calls.push("updateRegistrationStatus");
-      return { id: "registration-1", status: "approved" };
+      return { ...registrationDetail, status: "approved" as const };
     },
     async updateAttendance() {
       calls.push("updateAttendance");
-      return { id: "registration-1", attendanceStatus: "completed" };
+      return { ...registrationDetail, attendanceStatus: "completed" as const };
     },
     ...overrides,
   };
@@ -88,9 +147,7 @@ describe("createVolunteerHandlers", () => {
 
     expect(response.status).toBe(200);
     expect(response.headers.get("cache-control")).toBe("no-store");
-    expect(await response.json()).toEqual({
-      activities: [{ id: "activity-1", title: "清潔日" }],
-    });
+    expect(await response.json()).toEqual({ activities: [activitySummary] });
   });
 
   test("maps public registration validation errors to 400", async () => {

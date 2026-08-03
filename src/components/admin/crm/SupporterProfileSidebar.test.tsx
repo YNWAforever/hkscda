@@ -28,6 +28,7 @@ function supporter(overrides: Partial<SupporterDetail> = {}): SupporterDetail {
     payments: [],
     receipts: [],
     consents: [],
+    volunteer: { registrations: [] },
     messages: [],
     auditLogs: [],
     timeline: [],
