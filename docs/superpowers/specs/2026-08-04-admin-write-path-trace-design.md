@@ -77,22 +77,39 @@ accessibility findings to 0. Reporting zero is preferable to padding.
 
 ## Verification
 
-Static tracing establishes that a bug is *possible*. For `AnimalPipeline` there
-is now a way to establish whether it has *happened*.
+Static tracing establishes that a bug is *possible*. Production `audit_log` can
+sometimes establish whether it has *happened* — but more weakly than an earlier
+draft of this document claimed, and the correction matters enough to state
+plainly.
 
-`AnimalPipeline` is one of the legacy browser-direct surfaces described in
-CLAUDE.md: it writes `animals` and related tables from the browser with the anon
-client, carrying a real end-user JWT. The `log_animal_mutation` trigger
-(migration `20260803120000`, applied to production on 2026-08-04) therefore
-records those writes, with `detail.changed` holding per-column `{from, to}`
-pairs.
+**`AnimalPipeline` does not write browser-direct.** Despite being listed among
+the legacy surfaces in CLAUDE.md, its only two writes go through the API layer:
 
-For any P0 candidate found in `AnimalPipeline`, query `audit_log` and corroborate:
-does the trail show edits landing on records the operator plausibly was not
-looking at? This converts "this could break" into "this did break, N times".
+- `lifecycleMutation` → `PATCH /api/admin/adoptions/animals/{id}/status`
+- `saveProfileMutation` → `PUT /api/admin/adoptions/animals/{id}/internal`
 
-`ContentEditor` writes through the API layer, where the trigger deliberately does
-not fire, so it has no equivalent corroboration and stays static-only.
+Both are service-role writes where `auth.uid()` is null, so `log_animal_mutation`
+deliberately skips them. Its `detail.changed` `{from, to}` pairs are therefore
+**not** available for this screen. The audit rows that do exist come from the
+app-layer inserts added on 2026-08-04 (`animals.status_update`,
+`animal_profile_internal.upsert`), carrying `actor_user_id`, `entity_id` and the
+resulting record — but no before-value.
+
+That still supports a weaker check. For a P0 candidate in `AnimalPipeline`, query
+`audit_log` for the affected actor and look for temporal anomalies: the same
+actor writing a different `entity_id` than the record they had open, or two
+writes seconds apart against different animals. This can corroborate a
+stale-identifier bug. It cannot show a wrong-value bug, because there is nothing
+to diff against.
+
+The strong `{from, to}` corroboration exists only for the genuinely
+browser-direct writers — `AnimalsTable` (`supabase.from("animals").delete()`) and
+`AnimalForm` (insert and update). Both are outside this sweep's scope; if a
+finding here suggests the same bug shape exists there, that is a follow-up, not a
+scope expansion.
+
+`ContentEditor` writes through the API layer throughout and has no corroboration
+route at all. It stays static-only.
 
 Connection details for the production query are in the `hkscda-supabase-access`
 memory: the direct host is IPv6-only and unreachable, so use the `aws-1`
