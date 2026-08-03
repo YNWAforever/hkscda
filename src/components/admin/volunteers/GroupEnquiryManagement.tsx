@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { RefreshCw, Send } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type {
@@ -44,7 +44,6 @@ export function GroupEnquiryManagement() {
   const [status, setStatus] = useState<GroupEnquiryStatus | "all">("all");
   const [page, setPage] = useState(1);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [adminNotes, setAdminNotes] = useState("");
 
   const search = useMemo(
     () => buildGroupEnquirySearchParams({ q, status, page }).toString(),
@@ -66,14 +65,6 @@ export function GroupEnquiryManagement() {
   });
 
   const detail = detailQuery.data?.enquiry;
-
-  // The notes box used to keep whatever was typed for the previously selected
-  // enquiry. Opening a different one and saving wrote the first enquiry's notes
-  // onto the second — silent cross-contamination of operator-entered text.
-  // Reset to the selected enquiry's own stored notes whenever it changes.
-  useEffect(() => {
-    setAdminNotes(detail?.adminNotes ?? "");
-  }, [detail?.id, detail?.adminNotes]);
 
   const patch = useMutation({
     mutationFn: (body: Record<string, unknown>) =>
@@ -227,105 +218,134 @@ export function GroupEnquiryManagement() {
       </div>
 
       {detail ? (
-        <section className="space-y-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <h2 className="text-lg font-bold text-[var(--color-panel)]">
-                {detail.organisationName}
-              </h2>
-              <p className="text-sm text-[var(--color-text-muted)]">
-                {detail.contactPerson} · {detail.email} · {detail.phone}
-              </p>
-            </div>
-            <span
-              className={`rounded-full px-2 py-1 text-xs font-bold ${statusClass(detail.status)}`}
-            >
-              {groupEnquiryStatusLabels[detail.status]}
-            </span>
-          </div>
-
-          {/* The enquiry's own content was never shown — staff had to guess what
-              the group actually asked for. */}
-          <dl className="grid gap-3 text-sm sm:grid-cols-2">
-            <div>
-              <dt className="text-xs text-[var(--color-text-muted)]">活動類型</dt>
-              <dd className="text-[var(--color-panel)]">
-                {groupEnquiryActivityLabels[detail.activityType]}
-                {detail.otherActivityDescription ? `（${detail.otherActivityDescription}）` : ""}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-xs text-[var(--color-text-muted)]">人數</dt>
-              <dd className="tabular-nums text-[var(--color-panel)]">
-                {detail.participantCount ?? "未提供"}
-                {detail.participantAgeProfile ? ` · ${detail.participantAgeProfile}` : ""}
-              </dd>
-            </div>
-            {detail.preferredDateNotes ? (
-              <div className="sm:col-span-2">
-                <dt className="text-xs text-[var(--color-text-muted)]">期望日期</dt>
-                <dd className="text-[var(--color-panel)]">{detail.preferredDateNotes}</dd>
-              </div>
-            ) : null}
-            {detail.message ? (
-              <div className="sm:col-span-2">
-                <dt className="text-xs text-[var(--color-text-muted)]">查詢內容</dt>
-                <dd className="whitespace-pre-wrap text-[var(--color-panel)]">{detail.message}</dd>
-              </div>
-            ) : null}
-          </dl>
-
-          {detail.notificationStatus === "failed" ? (
-            <p
-              role="alert"
-              className="rounded-md border border-[var(--color-error)] bg-[var(--color-primary-highlight)] p-3 text-sm font-semibold text-[var(--color-error)]"
-            >
-              通知發送失敗：{detail.notificationError ?? "未提供錯誤訊息"}
-            </p>
-          ) : null}
-
-          <label className="flex flex-col gap-1">
-            <span className="text-xs font-semibold text-[var(--color-panel)]">內部備註</span>
-            <textarea
-              value={adminNotes}
-              onChange={(event) => setAdminNotes(event.target.value)}
-              placeholder="只有職員看到，例如跟進安排或聯絡紀錄"
-              className="min-h-24 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
-            />
-          </label>
-
-          <div className="flex flex-wrap items-center gap-2 border-t border-[var(--color-border)] pt-3">
-            <span className="text-xs text-[var(--color-text-muted)]">更新狀態並儲存備註：</span>
-            {availableEnquiryTransitions(detail.status).map((next) => (
-              <button
-                key={next}
-                type="button"
-                disabled={patch.isPending}
-                onClick={() => patch.mutate({ id: detail.id, status: next, adminNotes })}
-                className={`${buttonBase} border border-[var(--color-border)] hover:bg-[var(--color-surface-offset)]`}
-              >
-                {groupEnquiryStatusLabels[next]}
-              </button>
-            ))}
-            {detail.notificationStatus === "failed" ? (
-              <button
-                type="button"
-                disabled={patch.isPending}
-                onClick={() => patch.mutate({ id: detail.id, action: "retryNotification" })}
-                className={`${buttonBase} bg-[var(--color-primary)] text-[var(--color-primary-foreground)] hover:opacity-90`}
-              >
-                <Send className="h-3.5 w-3.5" />
-                重新發送通知
-              </button>
-            ) : null}
-          </div>
-          {patch.isError ? (
-            <p role="alert" className="text-sm text-[var(--color-error)]">
-              更新失敗，請稍後再試。
-            </p>
-          ) : null}
-        </section>
+        <EnquiryDetailPanel
+          key={detail.id}
+          detail={detail}
+          pending={patch.isPending}
+          failed={patch.isError}
+          onPatch={(body) => patch.mutate(body)}
+        />
       ) : null}
     </div>
+  );
+}
+
+/**
+ * Detail panel, remounted per enquiry via `key={detail.id}`.
+ *
+ * adminNotes used to be state on the parent that nothing reset, so text typed
+ * against one enquiry was still in the box when a different one was opened —
+ * and saving wrote it onto the wrong record. Keying the panel makes that
+ * impossible by construction: a different enquiry is a different component
+ * instance with its own freshly seeded state.
+ */
+function EnquiryDetailPanel({
+  detail,
+  pending,
+  failed,
+  onPatch,
+}: {
+  detail: GroupEnquiry;
+  pending: boolean;
+  failed: boolean;
+  onPatch: (body: Record<string, unknown>) => void;
+}) {
+  const [adminNotes, setAdminNotes] = useState(detail.adminNotes ?? "");
+
+  return (
+    <section className="space-y-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-bold text-[var(--color-panel)]">{detail.organisationName}</h2>
+          <p className="text-sm text-[var(--color-text-muted)]">
+            {detail.contactPerson} · {detail.email} · {detail.phone}
+          </p>
+        </div>
+        <span className={`rounded-full px-2 py-1 text-xs font-bold ${statusClass(detail.status)}`}>
+          {groupEnquiryStatusLabels[detail.status]}
+        </span>
+      </div>
+
+      {/* The enquiry's own content was never shown — staff had to guess what
+              the group actually asked for. */}
+      <dl className="grid gap-3 text-sm sm:grid-cols-2">
+        <div>
+          <dt className="text-xs text-[var(--color-text-muted)]">活動類型</dt>
+          <dd className="text-[var(--color-panel)]">
+            {groupEnquiryActivityLabels[detail.activityType]}
+            {detail.otherActivityDescription ? `（${detail.otherActivityDescription}）` : ""}
+          </dd>
+        </div>
+        <div>
+          <dt className="text-xs text-[var(--color-text-muted)]">人數</dt>
+          <dd className="tabular-nums text-[var(--color-panel)]">
+            {detail.participantCount ?? "未提供"}
+            {detail.participantAgeProfile ? ` · ${detail.participantAgeProfile}` : ""}
+          </dd>
+        </div>
+        {detail.preferredDateNotes ? (
+          <div className="sm:col-span-2">
+            <dt className="text-xs text-[var(--color-text-muted)]">期望日期</dt>
+            <dd className="text-[var(--color-panel)]">{detail.preferredDateNotes}</dd>
+          </div>
+        ) : null}
+        {detail.message ? (
+          <div className="sm:col-span-2">
+            <dt className="text-xs text-[var(--color-text-muted)]">查詢內容</dt>
+            <dd className="whitespace-pre-wrap text-[var(--color-panel)]">{detail.message}</dd>
+          </div>
+        ) : null}
+      </dl>
+
+      {detail.notificationStatus === "failed" ? (
+        <p
+          role="alert"
+          className="rounded-md border border-[var(--color-error)] bg-[var(--color-primary-highlight)] p-3 text-sm font-semibold text-[var(--color-error)]"
+        >
+          通知發送失敗：{detail.notificationError ?? "未提供錯誤訊息"}
+        </p>
+      ) : null}
+
+      <label className="flex flex-col gap-1">
+        <span className="text-xs font-semibold text-[var(--color-panel)]">內部備註</span>
+        <textarea
+          value={adminNotes}
+          onChange={(event) => setAdminNotes(event.target.value)}
+          placeholder="只有職員看到，例如跟進安排或聯絡紀錄"
+          className="min-h-24 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
+        />
+      </label>
+
+      <div className="flex flex-wrap items-center gap-2 border-t border-[var(--color-border)] pt-3">
+        <span className="text-xs text-[var(--color-text-muted)]">更新狀態並儲存備註：</span>
+        {availableEnquiryTransitions(detail.status).map((next) => (
+          <button
+            key={next}
+            type="button"
+            disabled={pending}
+            onClick={() => onPatch({ id: detail.id, status: next, adminNotes })}
+            className={`${buttonBase} border border-[var(--color-border)] hover:bg-[var(--color-surface-offset)]`}
+          >
+            {groupEnquiryStatusLabels[next]}
+          </button>
+        ))}
+        {detail.notificationStatus === "failed" ? (
+          <button
+            type="button"
+            disabled={pending}
+            onClick={() => onPatch({ id: detail.id, action: "retryNotification" })}
+            className={`${buttonBase} bg-[var(--color-primary)] text-[var(--color-primary-foreground)] hover:opacity-90`}
+          >
+            <Send className="h-3.5 w-3.5" />
+            重新發送通知
+          </button>
+        ) : null}
+      </div>
+      {failed ? (
+        <p role="alert" className="text-sm text-[var(--color-error)]">
+          更新失敗，請稍後再試。
+        </p>
+      ) : null}
+    </section>
   );
 }
