@@ -9,7 +9,9 @@ export function createHandlers() {
   const client = createSupabaseServiceClient();
   return createAdoptionInformationHandlers({
     requireAdoptionInformationAdmin: (request) => requireAdmin(request, ["staff", "admin"], client),
-    service: createAdoptionInformationService({ repo: createSupabaseAdoptionInformationRepository(client) }),
+    service: createAdoptionInformationService({
+      repo: createSupabaseAdoptionInformationRepository(client),
+    }),
   });
 }
 

@@ -87,6 +87,9 @@ describe("group enquiry public route handler", () => {
     expect(response.headers.get("cache-control")).toBe("no-store");
     expect(await response.json()).toEqual({ ok: true });
     expect(calls).toContainEqual({ token: "token", ip: "203.0.113.8" });
-    expect(calls[1]).toMatchObject({ organisationName: "Happy School", idempotencyKey: payload.idempotencyKey });
+    expect(calls[1]).toMatchObject({
+      organisationName: "Happy School",
+      idempotencyKey: payload.idempotencyKey,
+    });
   });
 });

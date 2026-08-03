@@ -33,6 +33,11 @@ export function useDonationPromptTrigger(pathname: string, enabled: boolean) {
     dispatch({ type: "reset", dismissed });
     if (!enabled || dismissed) return;
 
+    // Not const: removeTriggers() below closes over `timer` and can run on an
+    // early cleanup, before the setTimeout further down ever assigns it. A const
+    // declared at the assignment site would leave that read in the temporal dead
+    // zone. prefer-const doesn't model read-before-assign by default.
+    // eslint-disable-next-line prefer-const
     let timer: number | undefined;
     let qualified = false;
 

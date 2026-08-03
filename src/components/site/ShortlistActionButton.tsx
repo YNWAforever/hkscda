@@ -31,7 +31,11 @@ export function ShortlistActionButton({
       <button
         type="button"
         onClick={() => removeItem(animal.id)}
-        className={compact ? "btn-secondary min-h-11 mt-auto w-full text-xs" : "btn-secondary min-h-11 w-full"}
+        className={
+          compact
+            ? "btn-secondary min-h-11 mt-auto w-full text-xs"
+            : "btn-secondary min-h-11 w-full"
+        }
       >
         <Check className="h-4 w-4" />
         已加入，按此移除
@@ -51,7 +55,9 @@ export function ShortlistActionButton({
           intent,
         })
       }
-      className={compact ? "btn-primary min-h-11 mt-auto w-full text-xs" : "btn-primary min-h-11 w-full"}
+      className={
+        compact ? "btn-primary min-h-11 mt-auto w-full text-xs" : "btn-primary min-h-11 w-full"
+      }
     >
       <Plus className="h-4 w-4" />
       {ADD_LABEL[intent]}

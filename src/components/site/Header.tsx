@@ -42,10 +42,16 @@ export function Header() {
       <div className="bg-[var(--color-panel)] text-[12px] text-white/85">
         <div className="container-wide flex h-9 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <div className="flex min-w-0 items-center gap-5">
-            <a href="tel:+85298641089" className="hidden items-center gap-1.5 hover:text-white sm:flex">
+            <a
+              href="tel:+85298641089"
+              className="hidden items-center gap-1.5 hover:text-white sm:flex"
+            >
               <Phone className="h-3 w-3" aria-hidden="true" /> 9864 1089
             </a>
-            <a href="mailto:info@hkscda.com" className="flex min-w-0 items-center gap-1.5 truncate hover:text-white">
+            <a
+              href="mailto:info@hkscda.com"
+              className="flex min-w-0 items-center gap-1.5 truncate hover:text-white"
+            >
               <Mail className="h-3 w-3 shrink-0" aria-hidden="true" /> info@hkscda.com
             </a>
             <span className="hidden items-center gap-1.5 text-white/60 lg:flex">
@@ -53,10 +59,22 @@ export function Header() {
             </span>
           </div>
           <div className="flex items-center gap-1">
-            <a href="https://www.facebook.com/HKSCDA" target="_blank" rel="noreferrer" aria-label="Facebook" className="flex h-9 w-9 items-center justify-center hover:bg-white/10">
+            <a
+              href="https://www.facebook.com/HKSCDA"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Facebook"
+              className="flex h-9 w-9 items-center justify-center hover:bg-white/10"
+            >
               <Facebook className="h-3.5 w-3.5" aria-hidden="true" />
             </a>
-            <a href="https://www.instagram.com/hkscda/" target="_blank" rel="noreferrer" aria-label="Instagram" className="flex h-9 w-9 items-center justify-center hover:bg-white/10">
+            <a
+              href="https://www.instagram.com/hkscda/"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Instagram"
+              className="flex h-9 w-9 items-center justify-center hover:bg-white/10"
+            >
               <Instagram className="h-3.5 w-3.5" aria-hidden="true" />
             </a>
           </div>
@@ -80,7 +98,9 @@ export function Header() {
               <NavDropdown trigger="加入義工" links={volunteerLinks} />
               <NavigationMenu.Item className="ml-2">
                 <NavigationMenu.Link asChild>
-                  <Link to="/animals/cat" className="btn-primary min-h-11 px-4 text-[13px]">查看待領養動物</Link>
+                  <Link to="/animals/cat" className="btn-primary min-h-11 px-4 text-[13px]">
+                    查看待領養動物
+                  </Link>
                 </NavigationMenu.Link>
               </NavigationMenu.Item>
               <NavigationMenu.Item>
@@ -101,25 +121,47 @@ export function Header() {
             onClick={() => setMobileOpen((open) => !open)}
             className="ml-auto flex h-11 w-11 items-center justify-center border border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-primary)] hover:bg-[var(--color-surface-offset)] lg:hidden"
           >
-            {mobileOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
+            {mobileOpen ? (
+              <X className="h-5 w-5" aria-hidden="true" />
+            ) : (
+              <Menu className="h-5 w-5" aria-hidden="true" />
+            )}
           </button>
         </div>
 
         {mobileOpen ? (
-          <nav id="mobile-nav" aria-label="主選單" className="border-t border-[var(--color-divider)] bg-[var(--color-surface)] lg:hidden">
+          <nav
+            id="mobile-nav"
+            aria-label="主選單"
+            className="border-t border-[var(--color-divider)] bg-[var(--color-surface)] lg:hidden"
+          >
             <div className="container-wide max-h-[calc(100vh-80px)] space-y-1 overflow-y-auto px-4 py-5 sm:px-6">
-              <MobileSheetLink to="/" setOpen={setMobileOpen}>主頁</MobileSheetLink>
+              <MobileSheetLink to="/" setOpen={setMobileOpen}>
+                主頁
+              </MobileSheetLink>
               <MobileSheetSection title="關於協會" links={aboutLinks} setOpen={setMobileOpen} />
               <MobileSheetSection title="領養" links={adoptLinks} setOpen={setMobileOpen} />
-              <MobileSheetLink to="/sponsors" setOpen={setMobileOpen}>助養區</MobileSheetLink>
-              <MobileSheetLink to="/stories" setOpen={setMobileOpen}>故事</MobileSheetLink>
+              <MobileSheetLink to="/sponsors" setOpen={setMobileOpen}>
+                助養區
+              </MobileSheetLink>
+              <MobileSheetLink to="/stories" setOpen={setMobileOpen}>
+                故事
+              </MobileSheetLink>
               <MobileSheetSection title="透明度" links={reportLinks} setOpen={setMobileOpen} />
               <MobileSheetSection title="加入義工" links={volunteerLinks} setOpen={setMobileOpen} />
               <div className="grid gap-2 pt-3 sm:grid-cols-2">
-                <Link to="/animals/cat" onClick={() => setMobileOpen(false)} className="btn-primary min-h-11 w-full">
+                <Link
+                  to="/animals/cat"
+                  onClick={() => setMobileOpen(false)}
+                  className="btn-primary min-h-11 w-full"
+                >
                   查看待領養動物
                 </Link>
-                <Link to="/donate" onClick={() => setMobileOpen(false)} className="btn-secondary min-h-11 w-full">
+                <Link
+                  to="/donate"
+                  onClick={() => setMobileOpen(false)}
+                  className="btn-secondary min-h-11 w-full"
+                >
                   <Heart className="h-4 w-4" fill="currentColor" aria-hidden="true" /> 立即捐助
                 </Link>
               </div>
@@ -135,7 +177,10 @@ function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
   return (
     <NavigationMenu.Item>
       <NavigationMenu.Link asChild>
-        <Link to={to} className="inline-flex min-h-11 items-center px-3 text-[13px] font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)]">
+        <Link
+          to={to}
+          className="inline-flex min-h-11 items-center px-3 text-[13px] font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)]"
+        >
           {children}
         </Link>
       </NavigationMenu.Link>
@@ -154,14 +199,22 @@ function NavDropdown({
     <NavigationMenu.Item>
       <NavigationMenu.Trigger className="group/trigger inline-flex min-h-11 items-center gap-1 px-3 text-[13px] font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)]">
         {trigger}
-        <ChevronDown className="h-3 w-3 opacity-50 transition-transform group-data-[state=open]/trigger:rotate-180" aria-hidden="true" />
+        <ChevronDown
+          className="h-3 w-3 opacity-50 transition-transform group-data-[state=open]/trigger:rotate-180"
+          aria-hidden="true"
+        />
       </NavigationMenu.Trigger>
       <NavigationMenu.Content className="absolute left-0 top-full z-50 mt-2 w-[260px] border border-[var(--color-border)] bg-[var(--color-surface)] p-2 shadow-soft">
         {links.map((link) => (
           <NavigationMenu.Link key={link.to} asChild>
-            <Link to={link.to} className="block min-h-11 px-4 py-3 hover:bg-[var(--color-primary-highlight)]">
+            <Link
+              to={link.to}
+              className="block min-h-11 px-4 py-3 hover:bg-[var(--color-primary-highlight)]"
+            >
               <div className="text-[13px] font-bold text-[var(--color-text)]">{link.label}</div>
-              <div className="mt-0.5 text-[11px] leading-tight text-[var(--color-text-muted)]">{link.desc}</div>
+              <div className="mt-0.5 text-[11px] leading-tight text-[var(--color-text-muted)]">
+                {link.desc}
+              </div>
             </Link>
           </NavigationMenu.Link>
         ))}
@@ -181,9 +234,16 @@ function MobileSheetSection({
 }) {
   return (
     <>
-      <div className="px-4 pb-2 pt-4 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--color-text-muted)]">{title}</div>
+      <div className="px-4 pb-2 pt-4 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--color-text-muted)]">
+        {title}
+      </div>
       {links.map((link) => (
-        <Link key={link.to} to={link.to} onClick={() => setOpen(false)} className="flex min-h-11 items-start gap-3 px-4 py-3 hover:bg-[var(--color-primary-highlight)]">
+        <Link
+          key={link.to}
+          to={link.to}
+          onClick={() => setOpen(false)}
+          className="flex min-h-11 items-start gap-3 px-4 py-3 hover:bg-[var(--color-primary-highlight)]"
+        >
           <div className="min-w-0 flex-1">
             <div className="text-[15px] font-medium text-[var(--color-text)]">{link.label}</div>
             <div className="mt-0.5 text-[12px] text-[var(--color-text-muted)]">{link.desc}</div>
@@ -204,7 +264,11 @@ function MobileSheetLink({
   children: React.ReactNode;
 }) {
   return (
-    <Link to={to} onClick={() => setOpen(false)} className="flex min-h-11 items-center gap-2.5 px-4 py-3 text-[15px] font-medium text-[var(--color-text)] hover:bg-[var(--color-primary-highlight)]">
+    <Link
+      to={to}
+      onClick={() => setOpen(false)}
+      className="flex min-h-11 items-center gap-2.5 px-4 py-3 text-[15px] font-medium text-[var(--color-text)] hover:bg-[var(--color-primary-highlight)]"
+    >
       {children}
     </Link>
   );

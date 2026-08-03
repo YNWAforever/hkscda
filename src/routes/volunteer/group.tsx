@@ -20,7 +20,10 @@ function VolunteerGroupPage() {
   return (
     <main className="mx-auto max-w-3xl px-4 py-8 space-y-6">
       <div className="space-y-3">
-        <a href="/volunteer" className="text-sm font-semibold text-[var(--color-primary)] underline-offset-4 hover:underline">
+        <a
+          href="/volunteer"
+          className="text-sm font-semibold text-[var(--color-primary)] underline-offset-4 hover:underline"
+        >
           返回個人義工報名
         </a>
         <h1 className="font-display text-3xl font-bold lg:text-5xl">團體活動查詢</h1>

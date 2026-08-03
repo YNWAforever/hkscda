@@ -1,10 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
 import type { AdminUser } from "../../donations/supabase.server";
-import {
-  createReportingHandlers,
-  type ReportingService,
-} from "./reportingHandlers.server";
+import { createReportingHandlers, type ReportingService } from "./reportingHandlers.server";
 
 const staff: AdminUser = {
   id: "staff-row",
@@ -64,9 +61,7 @@ describe("createReportingHandlers", () => {
     });
 
     const response = await handlers.exportCoordinatorCsv({
-      request: new Request(
-        "https://example.test/api/admin/adoptions/exports/adopters.csv?q=Ada",
-      ),
+      request: new Request("https://example.test/api/admin/adoptions/exports/adopters.csv?q=Ada"),
       params: { kind: "adopters" },
     });
 

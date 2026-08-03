@@ -71,12 +71,14 @@ const assetRows = [
   },
 ];
 
-function createClient(options: {
-  queryResult?: { data: unknown; error: unknown; count?: number | null };
-  rpcResult?: { data: unknown; error: unknown };
-  existsByPath?: Record<string, boolean>;
-  signedUrlResult?: { data: { signedUrl?: string } | null; error: unknown };
-} = {}) {
+function createClient(
+  options: {
+    queryResult?: { data: unknown; error: unknown; count?: number | null };
+    rpcResult?: { data: unknown; error: unknown };
+    existsByPath?: Record<string, boolean>;
+    signedUrlResult?: { data: { signedUrl?: string } | null; error: unknown };
+  } = {},
+) {
   const queryResult = options.queryResult ?? { data: [releaseRow], error: null, count: 1 };
   const query: Record<string, unknown> = {};
   const select = mock(() => query);
@@ -94,10 +96,8 @@ function createClient(options: {
     or,
     in: inFilter,
     maybeSingle,
-    then: (
-      resolve: (value: typeof queryResult) => unknown,
-      reject: (reason: unknown) => unknown,
-    ) => Promise.resolve(queryResult).then(resolve, reject),
+    then: (resolve: (value: typeof queryResult) => unknown, reject: (reason: unknown) => unknown) =>
+      Promise.resolve(queryResult).then(resolve, reject),
   });
 
   const exists = mock(async (objectPath: string) => ({
@@ -116,9 +116,7 @@ function createClient(options: {
   }));
   const storageFrom = mock(() => ({ exists, createSignedUrl, getPublicUrl }));
   const from = mock(() => query);
-  const rpc = mock(
-    async () => options.rpcResult ?? { data: releaseRow, error: null },
-  );
+  const rpc = mock(async () => options.rpcResult ?? { data: releaseRow, error: null });
   const client = {
     from,
     rpc,
@@ -230,9 +228,7 @@ describe("createSupabaseAdoptionGuideReleaseRepository", () => {
 
     const assets = await repository.getAssets(zhAssetId, enAssetId);
 
-    expect(assets.zhHk?.asset.fileUrl).toBe(
-      "https://public.example/adoption-guides/cat-zh.pdf",
-    );
+    expect(assets.zhHk?.asset.fileUrl).toBe("https://public.example/adoption-guides/cat-zh.pdf");
     expect(assets.zhHk?.objectVerified).toBe(false);
     expect(assets.en?.objectVerified).toBe(true);
     expect(exists).toHaveBeenCalledTimes(2);
@@ -325,7 +321,10 @@ describe("createSupabaseAdoptionGuideReleaseRepository", () => {
   const providerCases = [
     {
       label: "not-found",
-      provider: { code: "PGRST116", message: "JSON object requested, multiple (or no) rows returned" },
+      provider: {
+        code: "PGRST116",
+        message: "JSON object requested, multiple (or no) rows returned",
+      },
       expected: { code: "not_found", status: 404 },
     },
     {

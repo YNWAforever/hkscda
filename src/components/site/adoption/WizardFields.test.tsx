@@ -6,7 +6,12 @@ import { VisitFields, nextVisitWindowSelection } from "./WizardFields";
 function renderVisitFields(values: Record<string, unknown>, errors: unknown = {}) {
   const watch = ((name: string) => values[name]) as never;
   return renderToStaticMarkup(
-    <VisitFields register={(() => ({})) as never} errors={errors as never} setValue={(() => {}) as never} watch={watch} />,
+    <VisitFields
+      register={(() => ({})) as never}
+      errors={errors as never}
+      setValue={(() => {}) as never}
+      watch={watch}
+    />,
   );
 }
 
@@ -38,18 +43,16 @@ describe("VisitFields", () => {
 
   test("toggles and orders checkbox values canonically", () => {
     expect(
-      nextVisitWindowSelection(
-        ["weekend_afternoon"],
+      nextVisitWindowSelection(["weekend_afternoon"], "weekday_afternoon", [
         "weekday_afternoon",
-        ["weekday_afternoon", "weekend_afternoon"],
-      ),
+        "weekend_afternoon",
+      ]),
     ).toEqual(["weekday_afternoon", "weekend_afternoon"]);
     expect(
-      nextVisitWindowSelection(
-        ["weekday_afternoon", "weekend_afternoon"],
+      nextVisitWindowSelection(["weekday_afternoon", "weekend_afternoon"], "weekday_afternoon", [
         "weekday_afternoon",
-        ["weekday_afternoon", "weekend_afternoon"],
-      ),
+        "weekend_afternoon",
+      ]),
     ).toEqual(["weekend_afternoon"]);
   });
 

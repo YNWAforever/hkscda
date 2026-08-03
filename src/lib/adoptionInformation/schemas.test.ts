@@ -28,7 +28,14 @@ describe("adoption information schemas", () => {
         isPublished: true,
       }),
     ).toMatchObject({ itemName: "PROHEART Injection", priceHkd: "300–600" });
-    expect(() => adoptionFeeInputSchema.parse({ animalType: "sponsor", itemName: "x", priceHkd: "0", sortOrder: 0 })).toThrow();
+    expect(() =>
+      adoptionFeeInputSchema.parse({
+        animalType: "sponsor",
+        itemName: "x",
+        priceHkd: "0",
+        sortOrder: 0,
+      }),
+    ).toThrow();
   });
 
   test("trims estate fields while retaining optional notes", () => {

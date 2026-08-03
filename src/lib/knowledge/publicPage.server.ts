@@ -10,7 +10,10 @@ export function createPublicKnowledgePageReader({ repository }: { repository: Pu
   return async (): Promise<PublicKnowledgePageData> => {
     const posts = (await repository.listPublished())
       .filter((post) => post.isPublished)
-      .sort((left, right) => left.sortOrder - right.sortOrder || right.createdAt.localeCompare(left.createdAt));
+      .sort(
+        (left, right) =>
+          left.sortOrder - right.sortOrder || right.createdAt.localeCompare(left.createdAt),
+      );
     return { posts };
   };
 }
@@ -18,7 +21,9 @@ export function createPublicKnowledgePageReader({ repository }: { repository: Pu
 export async function loadPublicKnowledgePage() {
   try {
     const client = createSupabaseServiceClient();
-    return await createPublicKnowledgePageReader({ repository: createSupabaseKnowledgeRepository(client) })();
+    return await createPublicKnowledgePageReader({
+      repository: createSupabaseKnowledgeRepository(client),
+    })();
   } catch {
     throw new Error("Could not load knowledge resources");
   }

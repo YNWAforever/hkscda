@@ -6,14 +6,24 @@ import { notifyGroupEnquiryAdmins } from "../../../lib/groupEnquiries/notificati
 import { createSupabaseGroupEnquiryRepository } from "../../../lib/groupEnquiries/repository.server";
 import { createGroupEnquiryService } from "../../../lib/groupEnquiries/service";
 import type { RateLimitResult } from "../../../lib/security/rate-limit.server";
-import { enforceRateLimit, getClientIp, retryAfterSeconds } from "../../../lib/security/rate-limit.server";
+import {
+  enforceRateLimit,
+  getClientIp,
+  retryAfterSeconds,
+} from "../../../lib/security/rate-limit.server";
 import { verifyTurnstile } from "../../../lib/security/turnstile.server";
 
 type HandlerContext = { request: Request };
-type SubmitService = { submitPublicEnquiry(input: unknown): Promise<{ ok: boolean; enquiryId: string }> };
+type SubmitService = {
+  submitPublicEnquiry(input: unknown): Promise<{ ok: boolean; enquiryId: string }>;
+};
 
 type CreateGroupEnquiryRouteHandlerArgs = SubmitService & {
-  verifyTurnstileToken?: (token: string | undefined, ip: string, request: Request) => Promise<boolean>;
+  verifyTurnstileToken?: (
+    token: string | undefined,
+    ip: string,
+    request: Request,
+  ) => Promise<boolean>;
   enforceRateLimitForRequest?: (request: Request) => Promise<RateLimitResult>;
 };
 
@@ -36,7 +46,8 @@ async function withGroupEnquiryErrors(operation: () => Promise<Response>) {
     return await operation();
   } catch (error) {
     if (error instanceof Response) return error;
-    if (error instanceof z.ZodError) return jsonNoStore({ error: "Invalid group enquiry request" }, { status: 400 });
+    if (error instanceof z.ZodError)
+      return jsonNoStore({ error: "Invalid group enquiry request" }, { status: 400 });
     console.error(error);
     return jsonNoStore({ error: "Group enquiry could not be processed" }, { status: 500 });
   }

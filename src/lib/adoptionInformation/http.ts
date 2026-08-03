@@ -24,7 +24,11 @@ function jsonResponse(body: unknown, id: string, init?: ResponseInit) {
 }
 
 async function jsonBody(request: Request, id: string) {
-  try { return await request.json(); } catch { throw jsonResponse({ error: "Invalid JSON body" }, id, { status: 400 }); }
+  try {
+    return await request.json();
+  } catch {
+    throw jsonResponse({ error: "Invalid JSON body" }, id, { status: 400 });
+  }
 }
 
 function queryParams(request: Request) {
@@ -39,15 +43,40 @@ async function withErrors(request: Request, operation: (id: string) => Promise<R
     if (error instanceof Response) {
       const text = await error.text();
       let body: unknown;
-      try { body = JSON.parse(text); } catch { body = { error: text || (error.status === 401 ? "Unauthorized" : error.status === 403 ? "Forbidden" : "Request failed") }; }
+      try {
+        body = JSON.parse(text);
+      } catch {
+        body = {
+          error:
+            text ||
+            (error.status === 401
+              ? "Unauthorized"
+              : error.status === 403
+                ? "Forbidden"
+                : "Request failed"),
+        };
+      }
       return jsonResponse(body, id, { status: error.status });
     }
     if (error instanceof z.ZodError) {
-      return jsonResponse({ error: "Invalid adoption information request", issues: error.issues.map((issue) => ({ path: issue.path.join("."), message: issue.message })) }, id, { status: 400 });
+      return jsonResponse(
+        {
+          error: "Invalid adoption information request",
+          issues: error.issues.map((issue) => ({
+            path: issue.path.join("."),
+            message: issue.message,
+          })),
+        },
+        id,
+        { status: 400 },
+      );
     }
-    if (error instanceof AdoptionInformationConflictError) return jsonResponse({ error: error.message }, id, { status: 409 });
+    if (error instanceof AdoptionInformationConflictError)
+      return jsonResponse({ error: error.message }, id, { status: 409 });
     console.error("Adoption information request failed", { requestId: id, error });
-    return jsonResponse({ error: "Could not process adoption information request" }, id, { status: 500 });
+    return jsonResponse({ error: "Could not process adoption information request" }, id, {
+      status: 500,
+    });
   }
 }
 
@@ -71,9 +100,27 @@ export function createAdoptionInformationHandlers({
         const admin = await requireAdoptionInformationAdmin(request);
         const mutation = adoptionInformationMutationSchema.parse(await jsonBody(request, id));
         if (mutation.resource === "fee") {
-          return jsonResponse({ fee: await service.upsertFee({ actorUserId: admin.authUserId, input: mutation.input }) }, id, { status: 201 });
+          return jsonResponse(
+            {
+              fee: await service.upsertFee({
+                actorUserId: admin.authUserId,
+                input: mutation.input,
+              }),
+            },
+            id,
+            { status: 201 },
+          );
         }
-        return jsonResponse({ estate: await service.upsertEstate({ actorUserId: admin.authUserId, input: mutation.input }) }, id, { status: 201 });
+        return jsonResponse(
+          {
+            estate: await service.upsertEstate({
+              actorUserId: admin.authUserId,
+              input: mutation.input,
+            }),
+          },
+          id,
+          { status: 201 },
+        );
       });
     },
 

@@ -6,6 +6,6 @@ describe("admin group enquiries route", () => {
     const source = readFileSync(new URL("./group-enquiries.tsx", import.meta.url), "utf8");
     expect(source).toContain("/admin/volunteers/group-enquiries");
     expect(source).toContain("GroupEnquiryManagement");
-    expect(source).toContain('activeSection=\"volunteers\"');
+    expect(source).toContain('activeSection="volunteers"');
   });
 });

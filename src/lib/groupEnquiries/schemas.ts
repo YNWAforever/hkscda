@@ -77,7 +77,12 @@ export const adminGroupEnquiryUpdateSchema = z.object({
 export type PublicGroupEnquiryInput = z.infer<typeof publicGroupEnquirySchema>;
 
 const boundedPage = z.coerce.number().int().min(1).catch(1);
-const boundedPageSize = z.coerce.number().int().min(1).catch(25).transform((value) => Math.min(value, 50));
+const boundedPageSize = z.coerce
+  .number()
+  .int()
+  .min(1)
+  .catch(25)
+  .transform((value) => Math.min(value, 50));
 
 export const groupEnquirySearchSchema = z.object({
   q: optionalTrimmed.optional().transform((value) => value ?? undefined),

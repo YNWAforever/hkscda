@@ -26,10 +26,7 @@ describe("application wizard grouped visit state", () => {
       ["dog"],
     );
 
-    expect(restored.visit.dogTimeWindows).toEqual([
-      "weekday_afternoon",
-      "weekend_afternoon",
-    ]);
+    expect(restored.visit.dogTimeWindows).toEqual(["weekday_afternoon", "weekend_afternoon"]);
     expect(restored.visit.catTimeWindows).toEqual([]);
   });
 

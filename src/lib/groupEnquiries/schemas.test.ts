@@ -49,7 +49,9 @@ describe("group enquiry schemas", () => {
       turnstileToken: "token",
     };
 
-    expect(publicGroupEnquirySchema.safeParse({ ...base, activityType: "other" }).success).toBe(false);
+    expect(publicGroupEnquirySchema.safeParse({ ...base, activityType: "other" }).success).toBe(
+      false,
+    );
     expect(
       publicGroupEnquirySchema.parse({
         ...base,
@@ -57,6 +59,12 @@ describe("group enquiry schemas", () => {
         otherActivityDescription: "Animal care career talk",
       }).otherActivityDescription,
     ).toBe("Animal care career talk");
-    expect(publicGroupEnquirySchema.safeParse({ ...base, activityType: "shelter_visit", participantCount: 0 }).success).toBe(false);
+    expect(
+      publicGroupEnquirySchema.safeParse({
+        ...base,
+        activityType: "shelter_visit",
+        participantCount: 0,
+      }).success,
+    ).toBe(false);
   });
 });

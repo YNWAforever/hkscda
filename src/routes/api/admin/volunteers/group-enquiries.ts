@@ -2,7 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
 import type { AdminUser } from "../../../../lib/donations/supabase.server";
-import { createSupabaseServiceClient, requireAdmin } from "../../../../lib/donations/supabase.server";
+import {
+  createSupabaseServiceClient,
+  requireAdmin,
+} from "../../../../lib/donations/supabase.server";
 import { notifyGroupEnquiryAdmins } from "../../../../lib/groupEnquiries/notifications.server";
 import { createSupabaseGroupEnquiryRepository } from "../../../../lib/groupEnquiries/repository.server";
 import { createGroupEnquiryService } from "../../../../lib/groupEnquiries/service";
@@ -14,7 +17,10 @@ type CreateAdminGroupEnquiryHandlersArgs = {
   requireVolunteerAdmin: (request: Request) => Promise<AdminUser>;
   service: Pick<
     AdminGroupEnquiryService,
-    "listGroupEnquiries" | "getGroupEnquiry" | "updateGroupEnquiry" | "retryGroupEnquiryNotification"
+    | "listGroupEnquiries"
+    | "getGroupEnquiry"
+    | "updateGroupEnquiry"
+    | "retryGroupEnquiryNotification"
   >;
 };
 
@@ -41,7 +47,8 @@ async function withAdminGroupEnquiryErrors(operation: () => Promise<Response>) {
     return await operation();
   } catch (error) {
     if (error instanceof Response) return error;
-    if (error instanceof z.ZodError) return jsonNoStore({ error: "Invalid group enquiry admin request" }, { status: 400 });
+    if (error instanceof z.ZodError)
+      return jsonNoStore({ error: "Invalid group enquiry admin request" }, { status: 400 });
     console.error(error);
     return jsonNoStore({ error: "Could not process group enquiry admin request" }, { status: 500 });
   }

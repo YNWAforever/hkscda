@@ -232,7 +232,11 @@ export function GroupEnquiryForm() {
       />
 
       {submitError && (
-        <p role="alert" aria-live="assertive" className="text-sm font-semibold text-[var(--color-error)]">
+        <p
+          role="alert"
+          aria-live="assertive"
+          className="text-sm font-semibold text-[var(--color-error)]"
+        >
           {submitError}
         </p>
       )}
@@ -246,7 +250,11 @@ export function GroupEnquiryForm() {
         </p>
       )}
 
-      <button type="submit" disabled={!canSubmit} className="btn-primary w-full disabled:opacity-60">
+      <button
+        type="submit"
+        disabled={!canSubmit}
+        className="btn-primary w-full disabled:opacity-60"
+      >
         {submitting ? "送出中..." : "送出團體活動查詢"}
       </button>
     </form>

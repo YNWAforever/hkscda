@@ -4,7 +4,10 @@ import { readFileSync } from "node:fs";
 describe("volunteer group enquiry page", () => {
   test("contains the approved title, disclaimer, labels, and accessible states", () => {
     const routeSource = readFileSync(new URL("./group.tsx", import.meta.url), "utf8");
-    const formSource = readFileSync(new URL("../../components/site/volunteer/GroupEnquiryForm.tsx", import.meta.url), "utf8");
+    const formSource = readFileSync(
+      new URL("../../components/site/volunteer/GroupEnquiryForm.tsx", import.meta.url),
+      "utf8",
+    );
 
     expect(routeSource).toContain("團體活動查詢");
     expect(routeSource).toContain("本頁僅供註冊團體使用。");
