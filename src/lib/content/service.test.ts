@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { createContentService, type ContentRepository } from "./service";
-import type { ContentDetail, StoryUpdate } from "./types";
+import type { ContentDetail, RecipientNotificationDraft, StoryUpdate } from "./types";
 
 const storyUpdateId = "22222222-2222-4333-8444-555555555555";
 const missingStoryUpdateId = "33333333-3333-4333-8444-555555555555";
@@ -249,6 +249,94 @@ describe("createContentService", () => {
         detail: { status: "copied" },
       }),
     );
+  });
+
+  test("does not re-draft a delivery target that already has a draft for this update", async () => {
+    // The panel's generate button appends on every press. An operator who
+    // presses it twice gets two drafts addressed to the same adopter, copies
+    // both, and sends the same message to a real person twice.
+    //
+    // One recipient with an email and a phone is two delivery targets. With the
+    // email target already drafted, regenerating should produce the whatsapp
+    // one and nothing else.
+    const existing: RecipientNotificationDraft = {
+      id: "draft-existing",
+      storyUpdateId,
+      contentItemId: "content-1",
+      adoptionCaseId: "case-1",
+      supporterId: "supporter-1",
+      channel: "email",
+      recipientName: "陳小姐",
+      recipientContact: "ada@example.com",
+      subject: "小白康復中 近況更新：已完成疫苗接種",
+      body: "已產生的草稿",
+      status: "draft",
+      createdAt: "2026-07-05T11:00:00.000Z",
+      updatedAt: "2026-07-05T11:00:00.000Z",
+    };
+
+    const { repo, notificationDrafts } = createRepo({
+      getAdminContent: async () => ({ ...detail, notificationDrafts: [existing] }),
+    });
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    const result = await service.generateNotificationDrafts({
+      actorUserId: "admin-user",
+      storyUpdateId,
+    });
+
+    expect(notificationDrafts).toHaveLength(1);
+    expect(notificationDrafts[0]?.channel).toBe("whatsapp");
+    expect(notificationDrafts[0]?.recipientContact).toBe("91234567");
+    expect(result.count).toBe(1);
+  });
+
+  test("still drafts an adopter added since the last generation", async () => {
+    // Guard, not a driver: this passed the moment the filter above existed.
+    // It is here because the tempting wrong fix — make the whole call a no-op
+    // once any draft exists — also satisfies the test above, and would leave
+    // newly-adopted animals' families silently never notified.
+    const drafted: RecipientNotificationDraft = {
+      id: "draft-existing",
+      storyUpdateId,
+      contentItemId: "content-1",
+      adoptionCaseId: "case-1",
+      supporterId: "supporter-1",
+      channel: "email",
+      recipientName: "陳小姐",
+      recipientContact: "ada@example.com",
+      subject: null,
+      body: "已產生的草稿",
+      status: "sent_manually",
+      createdAt: "2026-07-05T11:00:00.000Z",
+      updatedAt: "2026-07-05T11:00:00.000Z",
+    };
+
+    const { repo, notificationDrafts } = createRepo({
+      getAdminContent: async () => ({ ...detail, notificationDrafts: [drafted] }),
+      resolveAdopterRecipients: async () => [
+        {
+          adoptionCaseId: "case-1",
+          supporterId: "supporter-1",
+          name: "陳小姐",
+          email: "ada@example.com",
+          phone: null,
+        },
+        {
+          adoptionCaseId: "case-2",
+          supporterId: "supporter-2",
+          name: "李先生",
+          email: "lee@example.com",
+          phone: null,
+        },
+      ],
+    });
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await service.generateNotificationDrafts({ actorUserId: "admin-user", storyUpdateId });
+
+    expect(notificationDrafts).toHaveLength(1);
+    expect(notificationDrafts[0]?.recipientContact).toBe("lee@example.com");
   });
 
   test("audits generated adopter notification drafts", async () => {

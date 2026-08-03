@@ -430,6 +430,19 @@ export function createContentService({
 
       const recipients = await repo.resolveAdopterRecipients(content.id);
       const publicUrl = publicStoryUrl(publicBaseUrl, content.slug);
+
+      // buildAdopterNotificationDrafts dedupes within one call, but knows
+      // nothing about earlier ones. Without this filter a second press of the
+      // generate button re-drafts every adopter, and the operator sends the
+      // same message to a real person twice. Status is deliberately ignored:
+      // a dismissed draft was a decision, and a sent one must never be
+      // regenerated.
+      const alreadyDrafted = new Set(
+        content.notificationDrafts
+          .filter((draft) => draft.storyUpdateId === update.id)
+          .map((draft) => `${draft.channel}:${draft.recipientContact}`),
+      );
+
       const drafts = buildAdopterNotificationDrafts({
         contentItemId: content.id,
         storyUpdateId: update.id,
@@ -438,7 +451,7 @@ export function createContentService({
         updateBody: update.body,
         publicUrl,
         recipients,
-      });
+      }).filter((draft) => !alreadyDrafted.has(`${draft.channel}:${draft.recipientContact}`));
 
       await repo.insertNotificationDrafts(drafts);
 
