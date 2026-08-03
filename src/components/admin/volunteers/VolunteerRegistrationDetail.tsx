@@ -3,6 +3,11 @@ import { Link } from "@tanstack/react-router";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type { VolunteerRegistrationDetail as VolunteerRegistrationDetailType } from "../../../lib/volunteers/types";
+import {
+  attendanceStatusLabels,
+  registrationStatusLabels,
+  registrationTypeLabels,
+} from "./volunteerAdminLogic";
 
 type RegistrationResponse = {
   registration: VolunteerRegistrationDetailType;
@@ -57,8 +62,12 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
             </p>
           </div>
           <div className="text-right text-sm">
-            <p className="font-bold text-[var(--color-panel)]">{registration.status}</p>
-            <p className="text-[var(--color-text-muted)]">{registration.attendanceStatus}</p>
+            <p className="font-bold text-[var(--color-panel)]">
+              {registrationStatusLabels[registration.status]}
+            </p>
+            <p className="text-[var(--color-text-muted)]">
+              出席：{attendanceStatusLabels[registration.attendanceStatus]}
+            </p>
           </div>
         </div>
 
@@ -72,7 +81,7 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
             })}
           />
           <DetailItem label="人數" value={String(registration.participantCount)} />
-          <DetailItem label="類型" value={registration.registrationType} />
+          <DetailItem label="類型" value={registrationTypeLabels[registration.registrationType]} />
           <DetailItem label="團體" value={registration.organizationName ?? "-"} />
           <DetailItem
             label="年齡"

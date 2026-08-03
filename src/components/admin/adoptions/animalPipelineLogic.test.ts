@@ -1,8 +1,10 @@
 import { describe, expect, test } from "bun:test";
 
+import type { AnimalInternalProfile } from "../../../lib/adoptions/types";
 import type { AnimalPipelineRow } from "./animalPipelineLogic";
 import {
   buildAnimalPipelineExportSearchParams,
+  hasUnsavedProfileChanges,
   buildAnimalTaskSearchParams,
   buildAnimalPipelineSearchParams,
   filterAnimalPipelineRows,
@@ -202,5 +204,57 @@ describe("animal pipeline logic", () => {
         total: 0,
       }),
     ).toEqual({ page: 1, pageSize: 25, totalPages: 1 });
+  });
+});
+
+describe("hasUnsavedProfileChanges", () => {
+  const saved: AnimalInternalProfile = {
+    animal_id: "animal-1",
+    internal_code: "CAT-204",
+    arrival_date: "2026-06-15",
+    arrival_source_id: null,
+    current_position_id: null,
+    cage: null,
+    has_chip: false,
+    chip_remarks: null,
+    is_desexed: true,
+    desexed_at: null,
+    desex_remarks: null,
+    is_adoptable: true,
+    is_inside_support_pool: false,
+    adopted_at: null,
+    deceased_at: null,
+    internal_remarks: null,
+  };
+
+  test("reports an edited field as unsaved", () => {
+    expect(hasUnsavedProfileChanges({ ...saved, cage: "A-12" }, saved)).toBe(true);
+  });
+
+  test("treats a never-touched empty field as unchanged", () => {
+    // The server sends null; the input renders `value={... ?? ""}` and writes
+    // back "" the moment the field is focused and blurred. Comparing raw values
+    // would call that dirty, so merely tabbing through the form would raise the
+    // discard prompt — which teaches operators to dismiss it on sight.
+    expect(hasUnsavedProfileChanges({ ...saved, cage: "" }, saved)).toBe(false);
+    expect(hasUnsavedProfileChanges({ ...saved, internal_remarks: "" }, saved)).toBe(false);
+  });
+
+  test("still reports clearing a field that had a value", () => {
+    // The mirror case: internal_code was "CAT-204", so emptying it is a real
+    // edit and must not be normalised away.
+    expect(hasUnsavedProfileChanges({ ...saved, internal_code: "" }, saved)).toBe(true);
+    expect(hasUnsavedProfileChanges({ ...saved, internal_code: null }, saved)).toBe(true);
+  });
+
+  test("reports no changes for an untouched form", () => {
+    expect(hasUnsavedProfileChanges({ ...saved }, saved)).toBe(false);
+  });
+
+  test("compares booleans without normalising false to unset", () => {
+    // has_chip is boolean | null: false means "confirmed no chip", null means
+    // "not yet checked". Collapsing them would hide a real edit.
+    expect(hasUnsavedProfileChanges({ ...saved, has_chip: null }, saved)).toBe(true);
+    expect(hasUnsavedProfileChanges({ ...saved, is_adoptable: false }, saved)).toBe(true);
   });
 });

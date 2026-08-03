@@ -1,6 +1,7 @@
 ﻿import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { TablePager } from "../TablePager";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type { DocumentAsset } from "../../../lib/documents/types";
 import type {
@@ -99,9 +100,17 @@ export function KnowledgeManagement() {
   const queryClient = useQueryClient();
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<AdminKnowledgeStatus>("all");
+  const [page, setPage] = useState(1);
+
+  function withPageReset<T>(setter: (value: T) => void) {
+    return (value: T) => {
+      setter(value);
+      setPage(1);
+    };
+  }
   const search = useMemo(
-    () => buildKnowledgeSearchParams({ q: query, status, page: 1, pageSize: 50 }).toString(),
-    [query, status],
+    () => buildKnowledgeSearchParams({ q: query, status, page, pageSize: 50 }).toString(),
+    [query, status, page],
   );
 
   const knowledgeQuery = useQuery({
@@ -155,10 +164,18 @@ export function KnowledgeManagement() {
         (documentsQuery.error instanceof Error ? documentsQuery.error.message : null) ??
         (mutation.error instanceof Error ? mutation.error.message : null)
       }
-      onQueryChange={setQuery}
-      onStatusChange={setStatus}
+      onQueryChange={withPageReset(setQuery)}
+      onStatusChange={withPageReset(setStatus)}
+      onPageChange={setPage}
+      fetching={knowledgeQuery.isFetching}
       onSave={(draft) => mutation.mutate({ action: "save", draft })}
-      onDelete={(id) => mutation.mutate({ action: "delete", id })}
+      onDelete={(id) => {
+        // Irreversible, and the trigger sits inline in a list where a mis-click
+        // is easy. Name the post so the operator can tell which row they hit.
+        const title = knowledgeQuery.data?.posts.find((post) => post.id === id)?.title ?? "此文章";
+        if (!window.confirm(`確定刪除「${title}」？此操作無法復原。`)) return;
+        mutation.mutate({ action: "delete", id });
+      }}
     />
   );
 }
@@ -175,6 +192,8 @@ export function KnowledgeManagementView({
   error,
   onQueryChange,
   onStatusChange,
+  onPageChange,
+  fetching,
   onSave,
   onDelete,
 }: {
@@ -189,6 +208,8 @@ export function KnowledgeManagementView({
   error?: string | null;
   onQueryChange?: (value: string) => void;
   onStatusChange?: (value: AdminKnowledgeStatus) => void;
+  onPageChange?: (page: number) => void;
+  fetching?: boolean;
   onSave?: (draft: KnowledgeDraft) => void;
   onDelete?: (id: string) => void;
 }) {
@@ -252,6 +273,16 @@ export function KnowledgeManagementView({
             onDelete={onDelete}
           />
         ))}
+      {data && onPageChange ? (
+        <TablePager
+          page={data.page}
+          pageSize={data.pageSize}
+          total={data.total}
+          onPageChange={onPageChange}
+          busy={fetching}
+          label="知識文章"
+        />
+      ) : null}
     </div>
   );
 }

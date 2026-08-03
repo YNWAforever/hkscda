@@ -167,3 +167,33 @@ export function groupAnimalPipelineRows(
     return left.label.localeCompare(right.label);
   });
 }
+
+/**
+ * Whether the internal-profile form differs from the record it was seeded from.
+ *
+ * Used to decide whether closing the dialog needs a confirmation. The dialog
+ * holds sixteen fields and closes on any outside click, so discarding silently
+ * loses real work.
+ */
+export function hasUnsavedProfileChanges(
+  form: AnimalInternalProfile,
+  saved: AnimalInternalProfile,
+) {
+  return (Object.keys(saved) as Array<keyof AnimalInternalProfile>).some(
+    (key) => normalizeProfileValue(form[key]) !== normalizeProfileValue(saved[key]),
+  );
+}
+
+/**
+ * Null and empty string are the same absence for a text field: the server sends
+ * null, the input renders `value={... ?? ""}`, and focusing then leaving the
+ * field writes "" back. Without this, tabbing through an untouched form would
+ * report unsaved changes — and a discard prompt that cries wolf gets dismissed
+ * on sight, which is worse than not having one.
+ *
+ * Booleans are left alone. `has_chip: false` means "checked, no chip" while
+ * null means "not yet checked", so collapsing them would hide a real edit.
+ */
+function normalizeProfileValue(value: string | boolean | null) {
+  return value === null ? "" : value;
+}
