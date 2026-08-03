@@ -5,7 +5,11 @@ import {
   createSupabaseServiceClient,
   requireAdmin,
 } from "../../../../../../lib/donations/supabase.server";
-import { buildAnimalStatusUpdatePayload, parseAnimalStatusUuid } from "../-status";
+import {
+  buildAnimalStatusAuditEntry,
+  buildAnimalStatusUpdatePayload,
+  parseAnimalStatusUuid,
+} from "../-status";
 
 type HandlerContext = {
   request: Request;
@@ -74,7 +78,7 @@ async function updateAnimalStatus({ request, params }: HandlerContext) {
   return withAnimalStatusErrors(async () => {
     const animalId = parseAnimalStatusUuid(params.id, "id");
     const client = createSupabaseServiceClient();
-    await requireAdmin(request, ["staff", "admin"], client);
+    const admin = await requireAdmin(request, ["staff", "admin"], client);
     const payload = buildAnimalStatusUpdatePayload(animalId, await jsonBody(request));
 
     const { data, error } = await client
@@ -93,6 +97,14 @@ async function updateAnimalStatus({ request, params }: HandlerContext) {
     if (!data) {
       return jsonResponse({ error: "Animal not found" }, { status: 404 });
     }
+
+    // The audit_animals trigger only fires for direct-from-browser writes (a real
+    // JWT); this route goes over the service-role connection, so it records its
+    // own audit_log row here, with the real actor already resolved above.
+    const { error: auditError } = await client
+      .from("audit_log")
+      .insert(buildAnimalStatusAuditEntry(admin.authUserId, payload, data));
+    if (auditError) throw auditError;
 
     return jsonResponse({ animal: data });
   });
