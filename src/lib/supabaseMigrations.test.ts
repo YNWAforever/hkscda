@@ -264,4 +264,58 @@ describe("supabase migration safety", () => {
     );
     expect(sql).toContain("private.has_admin_role(array['staff', 'admin'])");
   });
+
+  test("audits animal writes at the database layer, not the client", () => {
+    const sql = readMigrationBySuffix("_audit_animal_mutations.sql");
+
+    // The gap this closes: animal writes happen directly from the browser with
+    // the anon client, so an application-layer audit would miss them entirely.
+    // Only a trigger covers every writer.
+    for (const table of ["animals", "animal_profile_internal", "animal_match"]) {
+      expect(sql).toMatch(
+        new RegExp(
+          `after insert or update or delete on public\\.${table}[\\s\\S]*?execute function public\\.log_animal_mutation\\(\\)`,
+        ),
+      );
+    }
+
+    // Same hardening every other security definer function in this schema gets.
+    expect(sql).toContain("security definer");
+    expect(sql).toContain("set search_path = public, pg_temp");
+
+    // Actor comes from the JWT, never from a caller-supplied argument.
+    expect(sql).toContain("auth.uid()");
+  });
+
+  test("derives entity_id per-table, since animal_profile_internal has no id column", () => {
+    const sql = readMigrationBySuffix("_audit_animal_mutations.sql");
+
+    // animal_profile_internal's primary key is animal_id (see
+    // 20260626140914_adoption_coordinator_foundation.sql) — it has no `id`
+    // column at all. A bare `new.id`/`old.id` assignment blows up at runtime
+    // with "record ... has no field \"id\"" on every insert/update/delete
+    // against that table. The fix must special-case it rather than assume
+    // `id` everywhere.
+    expect(sql).toContain("tg_table_name = 'animal_profile_internal'");
+    expect(sql).toMatch(/coalesce\(new\.animal_id,\s*old\.animal_id\)/);
+
+    // Guard against reintroducing the unconditional form anywhere in the
+    // entity_id assignment.
+    expect(sql).not.toMatch(/v_entity_id\s*:=\s*(new|old)\.id::text;/);
+  });
+
+  test("every security definer function pins search_path", () => {
+    const dir = join(process.cwd(), "supabase", "migrations");
+    for (const fileName of readdirSync(dir).filter((entry) => entry.endsWith(".sql"))) {
+      const lines = readMigration(fileName).split("\n");
+      lines.forEach((line, index) => {
+        if (!/^\s*security definer\s*$/i.test(line)) return;
+        const following = lines.slice(index + 1, index + 3).join("\n");
+        expect(
+          /set search_path\s*=\s*public,\s*pg_temp/i.test(following),
+          `${fileName}:${index + 1} — security definer without a pinned search_path`,
+        ).toBe(true);
+      });
+    }
+  });
 });
