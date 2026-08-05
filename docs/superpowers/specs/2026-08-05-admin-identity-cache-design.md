@@ -3,181 +3,214 @@
 Date: 2026-08-05
 Status: approved, ready for implementation planning
 
+> Revised during implementation planning. The first version specced a
+> hand-rolled promise memo in `src/lib/admin/session.ts`. That was wrong: the
+> codebase already caches this data with react-query in four places, and a
+> second caching layer would have gone stale exactly when it mattered. See
+> "Rejected: hand-rolled cache" at the end.
+
 ## Problem
 
 Every admin page load runs a serial request waterfall, and the middle of it is
 redundant work.
 
-Traced through the code:
+| Step | HTTP |
+| --- | --- |
+| `beforeLoad` → `requireAdminPageAccess` → `requireSignedInAdminIdentity` | `GET /api/admin/me` |
+| `AdminLayout` mount effect (`AdminLayout.tsx:136`) | `GET /api/admin/me` **again** |
+| Page body component effect | `GET /api/admin/<data>` |
 
-| Step | `getSession()` | HTTP |
-| --- | --- | --- |
-| `beforeLoad` → `requireAdminPageAccess` → `requireSignedInAdminIdentity` | ×1, then `fetchAdminJson` calls it again | `GET /api/admin/me` |
-| `AdminLayout` mount effect (`AdminLayout.tsx:136`) | ×1, then `fetchAdminJson` calls it again | `GET /api/admin/me` **again** |
-| Page body component effect | ×1 | `GET /api/admin/<data>` |
+`fetchAdminIdentity()` is a bare `fetch` with no caching, so `/api/admin/me` is
+requested twice per page load with an identical response — each costing a
+server-side Supabase `admin_user` lookup — and the whole sequence repeats on
+every client-side admin→admin navigation.
 
-`fetchAdminIdentity()` is a bare `fetch` with no caching, so:
+### The identity is already cached, inconsistently
 
-- **`/api/admin/me` is requested twice per page load**, with an identical
-  response. Each request costs a server-side Supabase `admin_user` lookup.
-- **The whole sequence repeats on every client-side admin→admin navigation.**
-  Moving from Animals to Knowledge re-resolves identity twice from scratch.
-- `supabase.auth.getSession()` is called four or more times per page load.
+Six places resolve the signed-in admin, and they do not agree:
 
-Measured context: 36 admin routes, 24 of them gated by
-`requireAdminPageAccess`. There is no admin layout route — the routes are flat
-siblings — and `/admin/login` and `/admin/reset-password` live under the same
-`/admin/` prefix, so there is no existing shared parent where identity could be
-resolved once.
+| Site | Key | queryFn | staleTime |
+| --- | --- | --- | --- |
+| `session.ts` `requireSignedInAdminIdentity` | — | bare `fetchAdminIdentity` | — |
+| `AdminLayout.tsx:136` | — | bare `fetchAdminIdentity` | — |
+| `AccessManagement.tsx:182` | `["admin-me"]` | `fetchAdminIdentity` | none |
+| `access-denied.tsx:43` | `["admin-me"]` | `fetchAdminIdentity` | none |
+| `PaymentsReconcile.tsx:105` | `["admin-me"]` | inline `fetchAdminJson("/api/admin/me")` | none |
+| `AdoptionGuideReleaseManagement.tsx:91` | `["admin-identity"]` | `fetchAdminIdentity` | none |
+
+Consequences that exist today, independent of the duplicate:
+
+- **Two cache keys for one resource.** `AdoptionGuideReleaseManagement` reads
+  `["admin-identity"]`, so `AccessManagement`'s
+  `invalidateQueries({ queryKey: ["admin-me"] })` never clears it. After an
+  admin changes a role, that surface keeps the old identity.
+- **No `staleTime` anywhere.** react-query's default is `0`, so every mount of
+  these components refetches `/api/admin/me`.
+- **One site duplicates the fetch inline** rather than calling
+  `fetchAdminIdentity`, with its own local response type.
+
+Measured context: 36 admin routes, 24 gated by `requireAdminPageAccess`. There
+is no admin layout route — routes are flat siblings — and `/admin/login` and
+`/admin/reset-password` sit under the same prefix.
 
 ## Goals
 
 - One `/api/admin/me` request per page load instead of two.
-- Zero identity requests on admin→admin navigation within a short window.
-- No change to the route tree, and no change to how the 12 ungated admin routes
-  (login, reset-password, access-denied) behave.
+- Zero identity requests on admin→admin navigation inside the stale window.
+- One cache key, one `queryFn`, one `staleTime` for the admin identity, so
+  invalidation reaches every consumer.
 
 ## Non-goals
 
-Explicitly out of scope for this spec, tracked as follow-ups below:
-
-- Converting admin routes to TanStack Router `loader`s so page data fetches in
-  parallel with the shell. This is the larger perceived win, but it touches all
-  36 route files and every self-fetching component, and it is much safer to do
-  on top of a single cached identity source.
+- Converting admin routes to router `loader`s so page data fetches in parallel
+  with the shell. Larger perceived win, but it touches all 36 route files and
+  every self-fetching component; safer on top of a single identity source.
 - Public bundle work (recharts on `/report/adoption`, Supabase `RealtimeClient`
-  shipping in the entry chunk with zero `.channel()` usage, dead
-  `AuditChart.tsx`).
-
-## Security constraint: the cache must be client-only
-
-`src/lib/supabase.ts` builds a **module-level singleton** browser client with no
-`window` guard, and `src/lib/admin/session.ts` is imported by route modules that
-are bundled for SSR. Module state in `session.ts` is therefore shared across
-server requests.
-
-A naive module-level identity cache would serve one admin's identity and role to
-another admin's request. This is a data leak, not a performance detail.
-
-The cache is therefore guarded so it is **only ever populated in the browser**.
-On the server, `getAdminIdentity()` delegates straight to `fetchAdminIdentity()`
-with no caching.
-
-Today a server-side call already fails fast — the browser client has no session
-on the server — so the guard is not load-bearing yet. It is written in anyway:
-if cookie-based sessions are added later, an unguarded cache silently becomes a
-cross-admin leak, and that is not a failure mode worth leaving latent.
+  in the entry chunk with zero `.channel()` usage, dead `AuditChart.tsx`).
 
 ## Design
 
-### The cache
+react-query is already the caching layer, the `QueryClient` is already in router
+context (`src/router.tsx:10`), and `getRouter()` builds a fresh client per call —
+so on the server each request gets its own cache with no cross-request leak.
+Use it rather than adding a second layer beside it.
 
-In `src/lib/admin/session.ts`:
+### Shared query definition
+
+New module `src/lib/admin/identity.ts`, one responsibility — the canonical
+definition of "who is the signed-in admin":
 
 ```ts
-const IDENTITY_TTL_MS = 60_000;
-let cache: { promise: Promise<AdminMeResponse>; fetchedAt: number } | null = null;
+import { queryOptions } from "@tanstack/react-query";
+import { fetchAdminIdentity } from "./session";
 
-export function getAdminIdentity(now = () => new Date()): Promise<AdminMeResponse> {
-  if (typeof window === "undefined") return fetchAdminIdentity(); // never cache server-side
-  const current = cache;
-  if (current && now().getTime() - current.fetchedAt < IDENTITY_TTL_MS) return current.promise;
+export const ADMIN_IDENTITY_QUERY_KEY = ["admin-me"] as const;
 
-  const promise = fetchAdminIdentity();
-  cache = { promise, fetchedAt: now().getTime() };
-  // A failed identity must not stick, or one transient error bricks the panel
-  // until reload. Only clear if this entry is still the current one, so a late
-  // rejection cannot wipe a newer successful fetch.
-  void promise.catch(() => {
-    if (cache?.promise === promise) cache = null;
+/**
+ * Long enough that a page load and the navigations that follow it share one
+ * response; short enough that a role changed elsewhere shows up promptly.
+ */
+export const ADMIN_IDENTITY_STALE_TIME_MS = 60_000;
+
+export function adminIdentityQueryOptions() {
+  return queryOptions({
+    queryKey: ADMIN_IDENTITY_QUERY_KEY,
+    queryFn: fetchAdminIdentity,
+    staleTime: ADMIN_IDENTITY_STALE_TIME_MS,
   });
-  return promise;
-}
-
-export function invalidateAdminIdentity() {
-  cache = null;
 }
 ```
 
-Three details carry the weight:
+Every consumer goes through this factory, so the key, fetcher and staleTime
+cannot drift apart again.
 
-1. **Memoize the promise, not the resolved value.** `beforeLoad` and
-   `AdminLayout`'s mount effect overlap in time. Caching only settled values
-   would still let both fire a request. Sharing the in-flight promise is what
-   actually removes the duplicate.
-2. **`cache?.promise === promise`** on the failure path, so a late rejection
-   cannot clear a newer entry.
-3. **Injectable clock.** Per CLAUDE.md, functions whose behaviour depends on
-   time take `now = () => new Date()` rather than reading the clock inline.
+### `beforeLoad` primes the cache
+
+`requireSignedInAdminIdentity` and `requireAdminPageAccess` take the
+`QueryClient` from router context:
+
+```ts
+export async function requireSignedInAdminIdentity(queryClient: QueryClient) {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session) throw redirect({ to: "/admin/login" });
+  return queryClient.ensureQueryData(adminIdentityQueryOptions());
+}
+```
+
+Call sites become `beforeLoad: async ({ context }) =>
+  requireAdminPageAccess("area", context.queryClient)`.
+
+Passing the client explicitly rather than reaching for a module-level singleton
+is what keeps the cache per-request on the server.
+
+### Consumers
+
+- `AdminLayout` replaces its mount effect with
+  `useQuery(adminIdentityQueryOptions())`. `beforeLoad` has already populated
+  the entry for this navigation, so this is a cache hit with no request — it is
+  the second `GET /api/admin/me` today.
+- `AdminLayout` also drops its own `supabase.auth.getSession()` call, which
+  exists only to read `session.user.email` and bail when signed out. Both are
+  already in the identity response, and the signed-out case is handled upstream
+  by `requireSignedInAdminIdentity`'s redirect.
+- `AccessManagement`, `access-denied`, `PaymentsReconcile` and
+  `AdoptionGuideReleaseManagement` all switch to
+  `useQuery(adminIdentityQueryOptions())`. This is what folds
+  `["admin-identity"]` back into `["admin-me"]`.
 
 ### Invalidation
 
-- **TTL: 60 seconds.** Backstop for a role change made elsewhere.
-- **Auth events:** invalidate on `SIGNED_OUT`, `SIGNED_IN`, and `USER_UPDATED`.
-  `TOKEN_REFRESHED` does **not** invalidate — same user, same role.
-- **Explicit:** call `invalidateAdminIdentity()` after access-management
-  mutations that can change the acting user's own role, and in
-  `AdminLayout.handleLogout`.
+`AccessManagement`'s existing
+`queryClient.invalidateQueries({ queryKey: ["admin-me"] })` becomes correct for
+every consumer once they share the key — no new invalidation machinery. It
+should use `ADMIN_IDENTITY_QUERY_KEY` rather than a repeated literal.
 
-The `onAuthStateChange` listener is registered **lazily on first client-side
-call**, guarded to register once. A module-level `supabase.auth.onAuthStateChange`
-would be a side effect running during SSR.
-
-### Call sites
-
-- `requireSignedInAdminIdentity()` → `getAdminIdentity()`.
-- `AdminLayout`'s mount effect → `getAdminIdentity()`; becomes a cache hit with
-  zero HTTP.
-- `AdminLayout` currently calls `supabase.auth.getSession()` itself (line 133)
-  purely to read `session.user.email` and to bail when signed out. Both facts are
-  already carried by the identity response — it sets `setEmail(admin.email)`
-  immediately afterwards — so that call is dropped and the component reads
-  `admin.email` from `getAdminIdentity()`. The signed-out case is already handled
-  upstream by `requireSignedInAdminIdentity`'s redirect.
+`AdminLayout.handleLogout` calls `queryClient.clear()` after `signOut()`, so the
+next admin to sign in on the same tab cannot read the previous one's cached
+identity.
 
 ### Expected effect
 
 - `/api/admin/me` per page load: **2 → 1**.
-- Identity requests per admin→admin navigation within the TTL: **1 → 0**.
-- `getSession()` calls per page load: **5 → 2** — one on the `beforeLoad`
-  identity path, one in the page body's own `fetchAdminJson`. (Before: two on the
-  `beforeLoad` path, two on `AdminLayout`'s, one in the page body.) Note
-  `getSession()` is local — it reads storage and may refresh the token — so this
-  is a smaller win than the HTTP reduction and is not the point of the change.
+- Identity requests per admin→admin navigation inside the stale window: **1 → 0**.
+- Mounting `AccessManagement`, `PaymentsReconcile` or the guide-release surface
+  no longer refetches identity, because `staleTime` is no longer `0`.
+- `AdoptionGuideReleaseManagement` starts honouring role-change invalidation.
 
 ## Error handling
 
-- **Fetch failure:** not cached; the next call retries.
-- **401/403:** unchanged. The existing `AdminApiError` path and
-  `requireAdminPageAccess`'s redirect to `/admin/login` or `/admin/access-denied`
-  still apply.
-- **Stale role:** bounded by the 60s TTL. A stale cached role affects **UI
-  affordances only** — every admin mutation is still enforced server-side by
-  `requireAdmin(request, roles, client)`. This is not a privilege-escalation
-  surface.
+- **Fetch failure:** react-query does not cache rejections as data; the next
+  mount or `ensureQueryData` retries. `ensureQueryData` rejects, so a failure in
+  `beforeLoad` propagates exactly as `fetchAdminIdentity` does today.
+- **401/403:** unchanged. `AdminApiError` and `requireAdminPageAccess`'s
+  redirects to `/admin/login` and `/admin/access-denied` still apply.
+- **Stale role:** bounded by the 60s `staleTime`, and invalidated immediately on
+  a role change through the shared key. A stale role affects **UI affordances
+  only** — every admin mutation is still enforced server-side by
+  `requireAdmin(request, roles, client)`. Not a privilege-escalation surface.
 
 ## Testing
 
-`src/lib/admin/session.test.ts`, using an injected clock and a call-counting
-fake identity fetch:
+`bun test` runs without a DOM, so these are logic and wiring tests, not renders.
 
-- Two concurrent calls issue **one** underlying fetch.
-- A repeat call after resolution but within the TTL issues **no** fetch.
-- A call past the TTL refetches.
-- A rejected fetch is not cached; the next call refetches.
-- `invalidateAdminIdentity()` forces the next call to refetch.
-- A late rejection does not clear a newer cached entry.
-- With no `window`, the cache is never populated.
+- `src/lib/admin/identity.test.ts` — the factory returns the shared key, the
+  shared `queryFn`, and a non-zero `staleTime`. Cheap, but it is what stops a
+  future edit reintroducing `staleTime: 0`.
+- `src/lib/admin/session.test.ts` (exists; extend) — `requireSignedInAdminIdentity`
+  redirects when there is no session, and otherwise resolves through
+  `ensureQueryData` on the client it was handed. Use a real `QueryClient` and a
+  `globalThis.fetch` spy, matching the file's existing style; assert that a
+  second call with the same client issues no second request.
+- `src/lib/adminIdentityCaching.test.ts` (new) — source-level regression guard,
+  in the style of `src/lib/adminRouteAuditing.test.ts`: no admin source outside
+  `identity.ts` may reference a raw `"admin-me"` or `"admin-identity"` literal,
+  and `AdminLayout` may not call `fetchAdminIdentity` directly. This is the
+  check that keeps the six consumers from drifting apart a second time.
 
-Plus a small regression guard asserting that both `requireSignedInAdminIdentity`
-and `AdminLayout` route through `getAdminIdentity` rather than
-`fetchAdminIdentity` — the same style as the existing
-`src/lib/adminRouteAuditing.test.ts`.
+## Rejected: hand-rolled cache
 
-## Follow-ups (separate specs)
+The first draft memoized the in-flight promise in a module-level variable in
+`session.ts`, with a 60s TTL, an injected `isBrowser` guard, and an
+`onAuthStateChange` listener.
 
-1. **Route loaders for admin page data** — the larger perceived win; convert the
-   busiest pages first rather than all 36 at once.
-2. **Public bundle diet** — lazy-load recharts on `/report/adoption`
-   (409 kB raw / 111 kB gzip), drop Supabase realtime from the entry chunk
-   (251 kB gzip, zero `.channel()` usage), delete dead `AuditChart.tsx`.
+Rejected once the full call-site inventory came in:
+
+- **It would have gone stale exactly when it mattered.** `AccessManagement`
+  invalidates `["admin-me"]` after a role change. That clears react-query's copy
+  but not a module-level one, so `AdminLayout` would show the old role right
+  after the operation designed to change it.
+- **It solved an SSR problem that does not exist.** The `isBrowser` guard was
+  there because module state is shared across server requests. `getRouter()`
+  already creates a `QueryClient` per request, so react-query's cache is
+  per-request by construction.
+- **It left the existing drift in place** — two keys, four uncoordinated
+  consumers, `staleTime: 0` — and added a third caching mechanism beside them.
+
+The react-query version is also less code: no promise bookkeeping, no TTL
+arithmetic, no browser guard, no auth listener.
+
+Its one real cost: `requireAdminPageAccess` gains a `QueryClient` parameter, so
+all 24 gated route files need a one-line `beforeLoad` change. Mechanical, and
+`bun run typecheck` catches any miss.
