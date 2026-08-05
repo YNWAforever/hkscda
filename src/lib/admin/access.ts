@@ -68,14 +68,18 @@ const NAV_ITEM_AREAS: Record<string, AdminAccessArea> = {
   dog: "animals",
   sponsor: "animals",
   applications: "adoptionCases",
+  "coordinator-inbox": "manualIntake",
   "coordinator-intake": "manualIntake",
   "coordinator-tasks": "coordinatorTasks",
   "coordinator-adopters": "adopters",
   "coordinator-reports": "coordinatorReports",
   "coordinator-statuses": "coordinatorStatuses",
   volunteers: "volunteerManagement",
+  "volunteer-group-enquiries": "volunteerManagement",
   payments: "payments",
   content: "contentManagement",
+  "adoption-information": "contentManagement",
+  knowledge: "contentManagement",
   supporters: "supporters",
   "access-management": "accessManagement",
 };
@@ -103,6 +107,7 @@ export function getAdminAreaForLocation(input: {
   }
   if (input.pathname.startsWith("/admin/animals")) return "animals";
   if (input.pathname.startsWith("/admin/applications")) return "adoptionCases";
+  if (input.pathname.startsWith("/admin/coordinator/inbox")) return "manualIntake";
   if (input.pathname.startsWith("/admin/coordinator/intake")) return "manualIntake";
   if (input.pathname.startsWith("/admin/coordinator/tasks")) return "coordinatorTasks";
   if (input.pathname.startsWith("/admin/coordinator/adopters")) return "adopters";
