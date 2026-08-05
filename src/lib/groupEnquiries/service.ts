@@ -11,6 +11,19 @@ import type {
   GroupEnquirySummary,
 } from "./types";
 
+/**
+ * Detail carries changed field names and the new status, never the enquirer's
+ * contact details: audit_log is readable by treasurer, group_enquiries is not.
+ */
+export type GroupEnquiryAuditLog = {
+  actor_user_id: string;
+  action: "group_enquiries.update" | "group_enquiries.retry_notification";
+  entity: "group_enquiries";
+  entity_id: string;
+  timestamp: string;
+  detail: Record<string, unknown>;
+};
+
 export interface GroupEnquiryRepository {
   createOrGet(input: GroupEnquiryInsert): Promise<{ enquiry: GroupEnquiry; created: boolean }>;
   markNotificationSent(id: string): Promise<void>;
@@ -18,12 +31,14 @@ export interface GroupEnquiryRepository {
   list(input: GroupEnquirySearch): Promise<{ enquiries: GroupEnquirySummary[]; total: number }>;
   getById(id: string): Promise<GroupEnquiry | null>;
   update(id: string, input: GroupEnquiryAdminUpdate): Promise<GroupEnquiry>;
+  insertAuditLog(input: GroupEnquiryAuditLog): Promise<void>;
 }
 
 type GroupEnquiryServiceArgs = {
   repo: GroupEnquiryRepository;
   notifyAdmins?: (input: { enquiry: GroupEnquiry }) => Promise<unknown>;
   logger?: Pick<Console, "error">;
+  now?: () => Date;
 };
 
 function safeDiagnostic(error: unknown) {
@@ -35,7 +50,16 @@ export function createGroupEnquiryService({
   repo,
   notifyAdmins = async () => undefined,
   logger = console,
+  now = () => new Date(),
 }: GroupEnquiryServiceArgs) {
+  function audit(input: Omit<GroupEnquiryAuditLog, "entity" | "timestamp">) {
+    return repo.insertAuditLog({
+      ...input,
+      entity: "group_enquiries",
+      timestamp: now().toISOString(),
+    });
+  }
+
   async function sendAndMark(enquiry: GroupEnquiry) {
     try {
       await notifyAdmins({ enquiry });
@@ -66,16 +90,29 @@ export function createGroupEnquiryService({
       return { enquiry };
     },
 
-    async updateGroupEnquiry(args: { id: string; input: unknown }) {
+    async updateGroupEnquiry(args: { id: string; input: unknown; actorUserId: string }) {
       const input = adminGroupEnquiryPatchSchema.parse({ id: args.id, ...(args.input as object) });
       const { id, action: _action, ...patch } = input;
-      return { enquiry: await repo.update(id, patch) };
+      const enquiry = await repo.update(id, patch);
+      await audit({
+        actor_user_id: args.actorUserId,
+        action: "group_enquiries.update",
+        entity_id: id,
+        detail: { fields: Object.keys(patch).sort(), status: patch.status ?? null },
+      });
+      return { enquiry };
     },
 
-    async retryGroupEnquiryNotification(args: { id: string }) {
+    async retryGroupEnquiryNotification(args: { id: string; actorUserId: string }) {
       const enquiry = await repo.getById(args.id);
       if (!enquiry) throw new Error("Group enquiry not found");
       await sendAndMark(enquiry);
+      await audit({
+        actor_user_id: args.actorUserId,
+        action: "group_enquiries.retry_notification",
+        entity_id: enquiry.id,
+        detail: { fields: ["notificationStatus"], status: null },
+      });
       return { ok: true };
     },
   };

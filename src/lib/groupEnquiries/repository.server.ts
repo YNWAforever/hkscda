@@ -195,5 +195,10 @@ export function createSupabaseGroupEnquiryRepository(
       if (error) throw error;
       return toDomain(data as GroupEnquiryRow);
     },
+
+    async insertAuditLog(input) {
+      const { error } = await client.from("audit_log").insert(input);
+      if (error) throw error;
+    },
   };
 }
