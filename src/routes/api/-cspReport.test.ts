@@ -81,6 +81,18 @@ describe("normalizeCspReports", () => {
     ).toEqual([]);
   });
 
+  test("caps how many violations one request can produce", () => {
+    // A minimal entry is ~34 bytes, so the 16 KiB body cap still admits ~468 of
+    // them. Without a count cap a single POST turns into hundreds of records in
+    // a billed log stream, which is a cheap way to drown the real reports.
+    const flood = Array.from({ length: 500 }, () => ({
+      type: "csp-violation",
+      body: {},
+    }));
+
+    expect(normalizeCspReports(flood).length).toBe(20);
+  });
+
   test("does not accept a bare camelCase documentUri/blockedUri key", () => {
     // Neither real wire format ever sends this shape (report-uri uses
     // kebab-case, report-to uses a "URL" suffix) — it must stay unreachable.
