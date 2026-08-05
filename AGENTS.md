@@ -19,14 +19,15 @@ volunteer journey and a role-gated admin back office.
 
 - Dev: `bun run dev`
 - Build: `bun run build`
-- Test: `bun test` (520 tests, 74 files, ~1-2s)
+- Test: `bun test` (~1090 tests, ~193 files, a few seconds)
 - Typecheck: `bunx tsc --noEmit` — **the build does NOT typecheck.** Run this
   before pushing; Vite transpiles without type checking, so type errors ship green.
-- Lint: `bun run lint` (slow, ~minutes) — `bunx eslint <file>` for single files
+- Lint: `bun run lint` (~30s over the whole tree) — `bunx eslint <file>` for a
+  single file, but the full run is cheap enough to just do before pushing
 - Format: `bun run format`
 
 CI (`.github/workflows/ci.yml`) runs typecheck → test → lint → build on push and
-PR. Lint alone takes 10+ minutes — see the note above.
+PR. The whole job is a couple of minutes; run the same four locally first.
 
 ## Architecture
 
@@ -49,10 +50,14 @@ Domains following this: `adoptions`, `crm`, `donations`, `volunteers`, `admin`,
 `AnimalPipeline`, `MatchPanel`) write to Supabase directly from the browser with the
 anon client, guarded only by RLS. Do not copy this pattern — new mutations go through
 the API layer. Their audit trail comes from a database trigger
-(`log_animal_mutation`, migration `20260803120000`) that fires only when the write
-carries a real JWT (`auth.uid()` is set) — service-role writes are skipped there and
-must write their own `audit_log` row at the app layer instead (matching the rule
-below), so the same event is never logged twice with two different actors.
+(`log_animal_mutation`, migrations `20260803120000` + `20260805120000`) that fires only
+when the write carries a real JWT (`auth.uid()` is set) — service-role writes are
+skipped there and must write their own `audit_log` row at the app layer instead
+(matching the rule below), so the same event is never logged twice with two different
+actors. Write that row inside a `*_with_audit` RPC, not as a second PostgREST call:
+the mutation commits first, so a separate audit insert that fails leaves the change
+applied, unaudited, and reported to the caller as a 500. `adminRouteAuditing.test.ts`
+enforces the pairing.
 
 ## Security Invariants
 
@@ -61,12 +66,15 @@ below), so the same event is never logged twice with two different actors.
 - Every admin API route calls `requireAdmin(request, roles, client)`
   (`lib/donations/supabase.server.ts`) — bearer token → `admin_user` row → role check.
   The role matrix lives in `lib/admin/access.ts` and is mirrored by RLS policies.
-- Every table has RLS enabled; every `security definer` function pins
-  `set search_path = public, pg_temp`. Keep both true for new migrations.
+- Every table has RLS enabled; every `security definer` function pins its
+  `search_path` — either `public, pg_temp` (the house default) or `''`, which is
+  stricter and requires every reference in the body to be schema-qualified
+  (see `20260719120000_document_admin_mutation_hardening.sql`). Keep both true
+  for new migrations; `supabaseMigrations.test.ts` enforces it.
 - App-called RPCs go in the `public` schema and must be granted to `service_role` —
   the `private` schema is not exposed to PostgREST.
 - Public POST endpoints accepting a **user-submitted form** are rate limited
-  (`enforceRateLimit`) and Turnstile-verified. Both fail *open* when unconfigured;
+  (`enforceRateLimit`) and Turnstile-verified. Both fail _open_ when unconfigured;
   `assertTurnstileConfigFromEnv()` boot-fails on an inconsistent production pair.
   Endpoints that receive a **browser-native automated payload** instead (e.g.
   `/api/csp-report`, populated by the browser's own CSP reporting machinery, not
