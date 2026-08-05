@@ -5,8 +5,8 @@ import { ManualCaseIntake } from "../../../components/admin/adoptions/ManualCase
 import { requireAdminPageAccess } from "../../../lib/admin/pageAccess";
 
 export const Route = createFileRoute("/admin/coordinator/intake")({
-  beforeLoad: async () => {
-    await requireAdminPageAccess("manualIntake");
+  beforeLoad: async ({ context }) => {
+    await requireAdminPageAccess("manualIntake", context.queryClient);
   },
   component: CoordinatorIntakePage,
 });

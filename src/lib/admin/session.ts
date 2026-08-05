@@ -1,3 +1,4 @@
+import type { QueryClient } from "@tanstack/react-query";
 import { redirect } from "@tanstack/react-router";
 
 import {
@@ -6,6 +7,7 @@ import {
   type AdminAccessArea,
   type AdminIdentity,
 } from "./access";
+import { adminIdentityQueryOptions } from "./identity";
 import { supabase } from "../supabase";
 
 export type AdminMeResponse = {
@@ -119,16 +121,18 @@ function safeErrorFields(value: unknown): AdminApiErrorFields | undefined {
   return Object.keys(fields).length > 0 ? fields : undefined;
 }
 
-export async function requireSignedInAdminIdentity() {
+export async function requireSignedInAdminIdentity(queryClient: QueryClient) {
   const {
     data: { session },
   } = await supabase.auth.getSession();
   if (!session) throw redirect({ to: "/admin/login" });
-  return fetchAdminIdentity();
+  // ensureQueryData is what makes AdminLayout's later useQuery a cache hit
+  // instead of a second GET /api/admin/me.
+  return queryClient.ensureQueryData(adminIdentityQueryOptions());
 }
 
-export async function requireAdminPageAccess(area: AdminAccessArea) {
-  const { admin } = await requireSignedInAdminIdentity();
+export async function requireAdminPageAccess(area: AdminAccessArea, queryClient: QueryClient) {
+  const { admin } = await requireSignedInAdminIdentity(queryClient);
   if (!canRoleAccessAdminArea(admin.role, area)) {
     throw redirect({
       to: "/admin/access-denied",

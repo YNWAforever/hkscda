@@ -5,8 +5,8 @@ import { TaskCenter } from "../../../components/admin/adoptions/TaskCenter";
 import { requireAdminPageAccess } from "../../../lib/admin/pageAccess";
 
 export const Route = createFileRoute("/admin/coordinator/tasks")({
-  beforeLoad: async () => {
-    await requireAdminPageAccess("coordinatorTasks");
+  beforeLoad: async ({ context }) => {
+    await requireAdminPageAccess("coordinatorTasks", context.queryClient);
   },
   component: CoordinatorTasksPage,
 });

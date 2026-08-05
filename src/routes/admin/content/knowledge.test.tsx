@@ -10,7 +10,7 @@ describe("admin knowledge content route", () => {
       "utf8",
     );
     expect(source).toContain('createFileRoute("/admin/content/knowledge")');
-    expect(source).toContain('requireAdminPageAccess("contentManagement")');
+    expect(source).toContain('requireAdminPageAccess("contentManagement", context.queryClient)');
     expect(source).toContain('<AdminLayout activeSection="content">');
     expect(source).toContain("<KnowledgeManagement />");
   });

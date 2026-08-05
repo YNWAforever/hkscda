@@ -5,8 +5,8 @@ import { KnowledgeManagement } from "../../../components/admin/content/Knowledge
 import { requireAdminPageAccess } from "../../../lib/admin/pageAccess";
 
 export const Route = createFileRoute("/admin/content/knowledge")({
-  beforeLoad: async () => {
-    await requireAdminPageAccess("contentManagement");
+  beforeLoad: async ({ context }) => {
+    await requireAdminPageAccess("contentManagement", context.queryClient);
   },
   component: AdminKnowledgeContentPage,
 });
