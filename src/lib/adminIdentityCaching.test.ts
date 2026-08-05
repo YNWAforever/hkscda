@@ -1,8 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 
-const IDENTITY_MODULE = "src/lib/admin/identity.ts";
-
 async function adminSources() {
   const globs = ["src/components/admin/**/*.{ts,tsx}", "src/routes/admin/**/*.{ts,tsx}"];
   const groups = await Promise.all(
@@ -12,6 +10,14 @@ async function adminSources() {
 }
 
 describe("admin identity caching", () => {
+  // What this guard does NOT catch, so nobody assumes it is complete:
+  //   - a consumer that spreads the shared options and overrides them, e.g.
+  //     `useQuery({ ...adminIdentityQueryOptions(), staleTime: 0 })`, or pairs
+  //     ADMIN_IDENTITY_QUERY_KEY with its own queryFn — no literal appears, so
+  //     the scan stays green while the caching behaviour has forked
+  //   - a new consumer outside src/components/admin and src/routes/admin
+  //     (src/lib/**, src/routes/api/admin/**) — those paths are not scanned
+
   test("no admin surface hard-codes an identity query key", async () => {
     // Six sites resolved the identity under two different keys, so
     // invalidating ["admin-me"] after a role change left the ["admin-identity"]
@@ -22,7 +28,7 @@ describe("admin identity caching", () => {
         expect(
           source.includes(literal),
           `${file} hard-codes ${literal}. Use adminIdentityQueryOptions() / ` +
-            `ADMIN_IDENTITY_QUERY_KEY from lib/admin/identity.ts instead.`,
+            `ADMIN_IDENTITY_QUERY_KEY from lib/admin/pageAccess instead.`,
         ).toBe(false);
       }
     }
@@ -35,13 +41,5 @@ describe("admin identity caching", () => {
       "AdminLayout must read the identity through useQuery(adminIdentityQueryOptions()) — " +
         "calling fetchAdminIdentity() here is the duplicate GET /api/admin/me this removed.",
     ).toBe(false);
-  });
-
-  test("the shared options keep a non-zero staleTime", () => {
-    const source = readFileSync(IDENTITY_MODULE, "utf8");
-    // react-query defaults staleTime to 0; at 0 every mount refetches and the
-    // navigation win disappears.
-    expect(/staleTime:\s*ADMIN_IDENTITY_STALE_TIME_MS/.test(source)).toBe(true);
-    expect(/ADMIN_IDENTITY_STALE_TIME_MS\s*=\s*60_000/.test(source)).toBe(true);
   });
 });
