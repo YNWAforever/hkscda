@@ -611,15 +611,21 @@ warnings are expected), build succeeds.
 The tests cover the wiring, not the end-to-end effect. Start the dev server,
 sign in to `/admin`, open the network tab filtered to `admin/me`:
 
-1. Load an admin page — expect **one** `GET /api/admin/me`, not two.
-2. Navigate to another admin page within a minute — expect **zero** further
-   requests.
-3. Open Access Management and change a role — expect one refetch, and the
+1. **Navigate between two admin pages** within a minute — expect **zero**
+   `GET /api/admin/me`. This is the change's real win and the check that matters.
+2. Open Access Management and change a role — expect one refetch, and the
    sidebar role to update.
-4. Sign out and back in — expect a fresh request.
+3. Sign out and back in — expect a fresh request.
+
+**Do not use a hard page load as the check.** On a hard load `beforeLoad` runs on
+the server and primes the *server's* per-request `QueryClient`; the browser's own
+client starts empty and `AdminLayout` fetches once after hydration. The
+server-side lookup is invisible in the Network tab, so a hard load shows one
+request whether or not the duplicate was fixed — it proves nothing. See "Known
+gap: SSR hydration" in the spec.
 
 This needs admin credentials. If they are unavailable, say so explicitly rather
-than reporting the change as verified — the unit tests do not prove step 1.
+than reporting the change as verified.
 
 - [ ] **Step 3: Confirm the tree is clean**
 

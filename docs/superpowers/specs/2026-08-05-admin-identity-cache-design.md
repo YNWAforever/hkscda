@@ -153,11 +153,40 @@ identity.
 
 ### Expected effect
 
-- `/api/admin/me` per page load: **2 → 1**.
-- Identity requests per admin→admin navigation inside the stale window: **1 → 0**.
+Corrected after implementation — the original draft claimed "2 → 1 per page
+load", which is **not** true for the first load. See "Known gap: SSR hydration".
+
+- **Client-side admin→admin navigation** (the common case in a working session):
+  identity requests **2 → 0** inside the stale window. `beforeLoad` and
+  `AdminLayout` both hit the same cache entry on the same client.
+- **First/hard load** (typed URL, refresh, new tab): **unchanged at 2** backend
+  identity lookups — one server-side in `beforeLoad`, one client-side after
+  hydration. One of the two moves from the browser to the server, which is
+  cheaper, but it is not eliminated.
 - Mounting `AccessManagement`, `PaymentsReconcile` or the guide-release surface
   no longer refetches identity, because `staleTime` is no longer `0`.
 - `AdoptionGuideReleaseManagement` starts honouring role-change invalidation.
+
+### Known gap: SSR hydration
+
+`ensureQueryData` populates the `QueryClient` it is handed. On a hard load that
+is the server's per-request client from `getRouter()`; the browser builds its
+own, empty one. Carrying the primed entry across that boundary needs an explicit
+dehydrate/hydrate bridge — `@tanstack/react-router-with-query`'s
+`routerWithQueryClient`, or equivalent — which this repo does not have (not a
+dependency, no `dehydrate`/`hydrate` wiring anywhere in `src/`).
+
+TanStack Router also skips `router.load()` on hydration when every match was
+SSR'd, so `beforeLoad` does not re-run client-side to prime the browser's cache
+as a fallback.
+
+Adding that bridge is a genuine follow-up, but it introduces a dependency, and
+`bunfig.toml`'s `minimumReleaseAge` guard requires sign-off before adding one —
+so it is deliberately out of scope here rather than slipped in.
+
+**When verifying by hand, note the server-side lookup is invisible in the
+browser's Network tab.** Seeing one `GET /api/admin/me` on a hard load does not
+mean the duplicate is gone; it means you cannot see the other half.
 
 ## Error handling
 
