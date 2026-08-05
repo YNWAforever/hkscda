@@ -36,10 +36,13 @@ describe("admin identity caching", () => {
 
   test("AdminLayout does not fetch the identity itself", () => {
     const source = readFileSync("src/components/admin/AdminLayout.tsx", "utf8");
+    // \b rather than \( on purpose: a bare reference is just as much a bypass as
+    // a call. `useQuery({ queryFn: fetchAdminIdentity })` here would rebuild the
+    // duplicate request without ever writing `fetchAdminIdentity(`.
     expect(
-      /fetchAdminIdentity\(/.test(source),
+      /\bfetchAdminIdentity\b/.test(source),
       "AdminLayout must read the identity through useQuery(adminIdentityQueryOptions()) — " +
-        "calling fetchAdminIdentity() here is the duplicate GET /api/admin/me this removed.",
+        "referencing fetchAdminIdentity here rebuilds the duplicate GET /api/admin/me this removed.",
     ).toBe(false);
   });
 });
