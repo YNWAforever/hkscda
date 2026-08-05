@@ -101,39 +101,35 @@ export function buildInternalProfileUpsertPayload(
   };
 }
 
-export type InternalProfileAuditEntry = {
-  actor_user_id: string;
-  action: "animal_profile_internal.upsert";
-  entity: "animal_profile_internal";
-  entity_id: string;
-  timestamp: string;
-  detail: { profile: unknown };
+export type InternalProfileUpsertRpcArgs = {
+  p_actor_user_id: string;
+  p_animal_id: string;
+  p_values: Omit<InternalProfileUpsertPayload, "animal_id">;
 };
 
 /**
- * Audit row for an admin internal-profile upsert.
+ * Arguments for public.upsert_animal_internal_profile_with_audit.
  *
  * This route writes animal_profile_internal over the service-role connection,
  * where auth.uid() is null, so log_animal_mutation() skips it by design (see
- * 20260803120000_audit_animal_mutations.sql). This row is the only record of
- * the change.
+ * 20260803120000_audit_animal_mutations.sql). The app layer owns the audit row.
  *
- * Unlike the sibling status route there is no updatedAt on the payload to reuse,
- * so the clock is injected rather than read inline — the house rule for anything
- * whose behaviour depends on time.
+ * Two reasons it is written inside the RPC rather than here. The upsert commits
+ * before a second PostgREST call could run, so a failing audit insert left the
+ * profile changed, unaudited, and reported as a 500. And the row content is
+ * staff-only while audit_log is readable by treasurer — the RPC records which
+ * columns changed and never their values, so the audit trail stops relaying
+ * internal_remarks across that role boundary
+ * (20260805120000_animal_mutation_audit_atomicity.sql).
  */
-export function buildInternalProfileAuditEntry(
+export function buildInternalProfileUpsertRpcArgs(
   actorUserId: string,
   payload: InternalProfileUpsertPayload,
-  profile: unknown,
-  now = () => new Date(),
-): InternalProfileAuditEntry {
+): InternalProfileUpsertRpcArgs {
+  const { animal_id: animalId, ...values } = payload;
   return {
-    actor_user_id: actorUserId,
-    action: "animal_profile_internal.upsert",
-    entity: "animal_profile_internal",
-    entity_id: payload.animal_id,
-    timestamp: now().toISOString(),
-    detail: { profile },
+    p_actor_user_id: actorUserId,
+    p_animal_id: animalId,
+    p_values: values,
   };
 }
