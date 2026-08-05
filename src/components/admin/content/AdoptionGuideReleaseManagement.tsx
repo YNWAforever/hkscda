@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
-import { fetchAdminIdentity } from "../../../lib/admin/pageAccess";
+import { adminIdentityQueryOptions } from "../../../lib/admin/pageAccess";
 import type { DocumentAsset } from "../../../lib/documents/types";
 import { getSupabaseClient } from "../../../lib/supabase";
 import type { AdoptionGuideMutationInput } from "../../../lib/adoptionGuideReleases/repository.server";
@@ -88,10 +88,7 @@ export function AdoptionGuideReleaseManagement({
     [queryClient],
   );
 
-  const identityQuery = useQuery({
-    queryKey: ["admin-identity"],
-    queryFn: fetchAdminIdentity,
-  });
+  const identityQuery = useQuery(adminIdentityQueryOptions());
   const releasesQuery = useQuery({
     queryKey: ["adoption-guide-releases", filters],
     queryFn: () => fetchAdoptionGuideReleases(filters),

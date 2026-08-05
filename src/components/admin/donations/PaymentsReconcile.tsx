@@ -2,8 +2,8 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tansta
 import { ChevronLeft, ChevronRight, Download, FileCheck, FileX } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-import type { AdminRole } from "../../../lib/admin/access";
 import { fetchAdminJson, getAdminAccessToken } from "../../../lib/admin/http";
+import { adminIdentityQueryOptions } from "../../../lib/admin/pageAccess";
 import {
   PAYMENT_RECONCILE_PAGE_SIZE,
   type AdminPaymentListResult,
@@ -37,12 +37,6 @@ type FinanceActivityItem = {
   entityId: string;
   detail: unknown;
   createdAt: string;
-};
-
-type AdminIdentityResponse = {
-  admin: {
-    role: AdminRole;
-  };
 };
 
 const STATUS_OPTIONS: { value: PaymentFilters["status"]; label: string }[] = [
@@ -101,10 +95,7 @@ export function PaymentsReconcile() {
     placeholderData: keepPreviousData,
   });
 
-  const { data: identityData } = useQuery({
-    queryKey: ["admin-me"],
-    queryFn: () => fetchAdminJson<AdminIdentityResponse>("/api/admin/me"),
-  });
+  const { data: identityData } = useQuery(adminIdentityQueryOptions());
 
   const { data: activityData } = useQuery({
     queryKey: ["admin-finance-activity"],
