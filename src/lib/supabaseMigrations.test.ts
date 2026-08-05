@@ -407,21 +407,30 @@ describe("supabase migration safety", () => {
   test("every security definer function pins search_path", () => {
     const dir = join(process.cwd(), "supabase", "migrations");
     for (const fileName of readdirSync(dir).filter((entry) => entry.endsWith(".sql"))) {
-      const lines = readMigration(fileName).split("\n");
-      lines.forEach((line, index) => {
-        if (!/^\s*security definer\s*$/i.test(line)) return;
-        const following = lines.slice(index + 1, index + 3).join("\n");
+      const sql = readMigration(fileName);
+      // Scan the whole create-function header — everything from `create function`
+      // up to the body delimiter. Anchoring on a line that is exactly
+      // "security definer" skipped the inline `language sql security definer as
+      // $$` form without asserting anything, and a fixed two-line lookahead
+      // failed correct functions that put `set search_path` before the attribute
+      // or further down the header. Attribute order is free in PostgreSQL.
+      for (const match of sql.matchAll(
+        /create\s+(?:or\s+replace\s+)?function\b([\s\S]*?)\bas\s+\$/gi,
+      )) {
+        const header = match[1];
+        if (!/\bsecurity\s+definer\b/i.test(header)) continue;
+        const line = sql.slice(0, match.index).split("\n").length;
         // Two acceptable forms. `public, pg_temp` is the house default. `''`
         // is stricter still — it resolves nothing implicitly, so every
         // reference in the body must already be schema-qualified. Accept it
         // rather than push a migration that earned the stronger guarantee
         // back down to the weaker one.
         expect(
-          /set search_path\s*=\s*(?:public,\s*pg_temp|'')/i.test(following),
-          `${fileName}:${index + 1} — security definer without a pinned search_path ` +
+          /set\s+search_path\s*=\s*(?:public,\s*pg_temp|'')/i.test(header),
+          `${fileName}:${line} — security definer without a pinned search_path ` +
             `(expected "public, pg_temp" or "''")`,
         ).toBe(true);
-      });
+      }
     }
   });
 
@@ -433,53 +442,113 @@ describe("supabase migration safety", () => {
     // it fails the moment a new table gets a write grant without either a
     // trigger or a documented reason it doesn't need one.
     const dir = join(process.cwd(), "supabase", "migrations");
-    const allSql = readdirSync(dir)
+    // Timestamp order matters: a schema-wide grant covers the tables that exist
+    // when it runs, and a later migration can revoke it again.
+    const migrationFiles = readdirSync(dir)
       .filter((entry) => entry.endsWith(".sql"))
-      .map(readMigration)
-      .join("\n");
+      .sort();
 
+    const conveysWrite = (privileges: string) =>
+      /\ball\b|\binsert\b|\bupdate\b|\bdelete\b/i.test(privileges);
+    const includesAuthenticated = (roles: string) =>
+      roles.split(",").some((role) => role.trim().toLowerCase() === "authenticated");
+
+    const createdTables = new Set<string>();
     const grantedTables = new Set<string>();
-    const grantRegex =
-      /grant\s+[a-z, ]*(?:insert|update|delete)[a-z, ]*\s+on\s+public\.([a-z_]+)\s+to\s+authenticated/gi;
-    for (const match of allSql.matchAll(grantRegex)) {
-      grantedTables.add(match[1]);
+
+    for (const fileName of migrationFiles) {
+      const sql = readMigration(fileName);
+
+      for (const match of sql.matchAll(
+        /create\s+table\s+(?:if\s+not\s+exists\s+)?(?:public\.)?([a-z_]+)/gi,
+      )) {
+        createdTables.add(match[1]);
+      }
+
+      // The repo's single largest source of authenticated write access, and the
+      // form the previous per-table regex could not see at all — every table
+      // that existed at 20260623160506 got insert/update/delete this way.
+      for (const match of sql.matchAll(
+        /grant\s+([a-z, ]*?)\s+on\s+all\s+tables\s+in\s+schema\s+public\s+to\s+([a-z_, ]+)/gi,
+      )) {
+        if (!conveysWrite(match[1]) || !includesAuthenticated(match[2])) continue;
+        for (const table of createdTables) grantedTables.add(table);
+      }
+
+      // `grant all`, `grant all privileges`, `on table public.x`, and
+      // `to anon, authenticated` all convey the same write access as the
+      // canonical spelling and all used to slip past unchecked.
+      for (const match of sql.matchAll(
+        /grant\s+([a-z, ]*?)\s+on\s+(?:table\s+)?public\.([a-z_]+)\s+to\s+([a-z_, ]+)/gi,
+      )) {
+        if (conveysWrite(match[1]) && includesAuthenticated(match[3])) grantedTables.add(match[2]);
+      }
+
+      for (const match of sql.matchAll(
+        /revoke\s+([a-z, ]*?)\s+on\s+(?:table\s+)?public\.([a-z_]+)\s+from\s+([a-z_, ]+)/gi,
+      )) {
+        if (conveysWrite(match[1]) && includesAuthenticated(match[3]))
+          grantedTables.delete(match[2]);
+      }
     }
 
-    const auditedTables = new Set(["animals", "animal_profile_internal", "animal_match"]);
-
-    // Live risk assessments, not a permanent pass. If any of these gets a
-    // browser-direct write path, move it into auditedTables with its own
-    // trigger instead of leaving it here.
-    const exemptTables = new Set([
-      // Coordinator workflow tables: written only through requireAdmin-gated
-      // /api/admin/adoptions/* routes, each with its own insertAuditLog call.
-      // Verified: no browser component reads or writes these directly.
+    const auditedTables = new Set([
+      // log_animal_mutation() triggers — 20260803120000 and 20260805120000.
+      "animals",
+      "animal_profile_internal",
+      "animal_match",
+      "coordinator_status",
+      "living_area",
+      "arrival_source",
+      "animal_position",
+      "admin_user",
+      "adoption_applications",
+      "supporter",
+      "consent",
+      "donation",
+      "payment",
+      "receipt",
+      "message_template",
       "adopter_profile",
-      "adoption_attachment",
       "adoption_case",
       "adoption_fee",
       "adoption_followup",
-      "coordinator_status",
-      "coordinator_status_history",
-      "living_area",
+      "adoption_attachment",
       "successful_adoption",
-      // Already read directly from the browser via the anon client
-      // (AnimalPipeline.tsx) — the exact precondition that made `animals`
-      // unaudited. Read-only today; add a trigger the moment either gets a
-      // direct-write component, don't just widen this exemption.
-      "animal_position",
-      "arrival_source",
+      "coordinator_status_history",
     ]);
 
-    for (const table of grantedTables) {
-      if (auditedTables.has(table)) continue;
-      expect(
-        exemptTables.has(table),
-        `public.${table} grants authenticated writes but has no audit trigger and isn't in the ` +
-          `exempt list in this test — add a trigger (see 20260803120000_audit_animal_mutations.sql) ` +
-          `or add it to the exempt list with a reason.`,
-      ).toBe(true);
-    }
+    // Exempt only where the grant cannot actually be exercised from a browser —
+    // i.e. no RLS policy lets an `authenticated` JWT write the table, so the
+    // grant is inert and the service-role path (which already writes its own
+    // audit_log row) is the only writer. "No component writes it today" is a
+    // property of our UI, not of the privilege, and is not a reason to exempt:
+    // that was the precondition that left public.animals unaudited.
+    const exemptTables = new Set([
+      // The grant is inert: every one of these exposes only a `for select`
+      // policy to `authenticated`, so RLS denies a browser-direct write outright
+      // however the grant reads. Their sole writers are service-role paths that
+      // audit at the app layer.
+      "supporter_role",
+      "message",
+      "webhook_event",
+      // Plus the append-only sink for the audit rows themselves — a trigger here
+      // would recurse.
+      "audit_log",
+    ]);
+
+    // Report every uncovered table at once — failing on the first one hides how
+    // much of the schema is unassessed.
+    const uncovered = [...grantedTables]
+      .filter((table) => !auditedTables.has(table) && !exemptTables.has(table))
+      .sort();
+
+    expect(
+      uncovered,
+      `these tables grant authenticated writes but have no audit trigger and aren't in the exempt ` +
+        `list in this test — add a trigger (see 20260805120000_animal_mutation_audit_atomicity.sql) ` +
+        `or add each to the exempt list with a reason: ${uncovered.join(", ")}`,
+    ).toEqual([]);
   });
 
   test("hardens document mutations with database invariants and atomic audit RPCs", () => {

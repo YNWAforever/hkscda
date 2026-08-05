@@ -17,6 +17,24 @@ import {
 /** Reports larger than this are almost certainly not genuine browser reports. */
 const MAX_REPORT_BYTES = 16 * 1024;
 
+/**
+ * Violations kept from a single request. The byte cap alone bounds nothing
+ * useful here: a minimal Reporting-API entry is ~34 bytes, so 16 KiB holds ~468
+ * of them, and one log line each turns a single POST into hundreds of records in
+ * a billed log stream. Real batches from a browser are small.
+ */
+const MAX_REPORTS_PER_REQUEST = 20;
+
+/**
+ * The two content types the reporting machinery actually sends. Neither is
+ * CORS-safelisted, so requiring one of them forces a preflight on any
+ * cross-origin POST — and with no OPTIONS handler that preflight fails. Without
+ * this check the endpoint accepts `text/plain`, which is safelisted, letting any
+ * third-party page forge violations from a visitor's browser and skew the
+ * allow-list this data is collected to tune.
+ */
+const ALLOWED_CONTENT_TYPES = ["application/csp-report", "application/reports+json"];
+
 /** Fields worth keeping. Everything else in the report is noise or unbounded. */
 type CspViolation = {
   documentUri?: string;
@@ -60,7 +78,7 @@ export function normalizeCspReports(payload: unknown): CspViolation[] {
     if (legacy && typeof legacy === "object") bodies.push(legacy as Record<string, unknown>);
   }
 
-  return bodies.map((body) => ({
+  return bodies.slice(0, MAX_REPORTS_PER_REQUEST).map((body) => ({
     // report-uri uses kebab-case keys; report-to uses camelCase. Accept both.
     documentUri: str(body["document-uri"] ?? body.documentURL),
     blockedUri: str(body["blocked-uri"] ?? body.blockedURL),
@@ -88,6 +106,17 @@ export const Route = createFileRoute("/api/csp-report")({
           });
         }
 
+        // Only the real reporting content types. Anything else is either a
+        // misconfiguration or a cross-origin forgery attempt riding a
+        // CORS-safelisted type; see ALLOWED_CONTENT_TYPES.
+        const contentType = (request.headers.get("content-type") ?? "")
+          .split(";")[0]
+          .trim()
+          .toLowerCase();
+        if (!ALLOWED_CONTENT_TYPES.includes(contentType)) {
+          return new Response(null, { status: 415 });
+        }
+
         // Reject on the Content-Length header where present, before ever reading
         // the body — matches the pattern used elsewhere (submission.server.ts).
         const contentLength = request.headers.get("content-length");
@@ -110,10 +139,12 @@ export const Route = createFileRoute("/api/csp-report")({
           return new Response(null, { status: 400 });
         }
 
-        for (const violation of normalizeCspReports(payload)) {
+        const violations = normalizeCspReports(payload);
+        if (violations.length > 0) {
           // console.error so it lands in Vercel's error stream, where the CSP
-          // allow-list can actually be reviewed before enforcing the policy.
-          console.error("CSP violation", violation);
+          // allow-list can actually be reviewed before enforcing the policy. One
+          // line per request, not per violation — see MAX_REPORTS_PER_REQUEST.
+          console.error("CSP violations", violations);
         }
 
         // 204: the browser ignores the body, and returning nothing keeps this

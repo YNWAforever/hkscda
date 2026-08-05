@@ -5,8 +5,8 @@ import { useAdminLanguage } from "../../../components/admin/adminI18n";
 import { requireAdminPageAccess } from "../../../lib/admin/pageAccess";
 
 export const Route = createFileRoute("/admin/animals/new")({
-  beforeLoad: async () => {
-    await requireAdminPageAccess("animals");
+  beforeLoad: async ({ context }) => {
+    await requireAdminPageAccess("animals", context.queryClient);
   },
   component: NewAnimalPage,
 });

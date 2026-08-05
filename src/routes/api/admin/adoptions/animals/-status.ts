@@ -37,38 +37,38 @@ export function buildAnimalStatusUpdatePayload(
   };
 }
 
-export type AnimalStatusAuditEntry = {
-  actor_user_id: string;
-  action: "animals.status_update";
-  entity: "animals";
-  entity_id: string;
-  timestamp: string;
-  detail: { status: AnimalStatus; animal: unknown };
+export type AnimalStatusUpdateRpcArgs = {
+  p_actor_user_id: string;
+  p_animal_id: string;
+  p_status: AnimalStatus;
+  p_updated_at: string;
 };
 
 /**
- * Audit row for an admin lifecycle-status change.
+ * Arguments for public.update_animal_status_with_audit.
  *
  * The status route writes to public.animals over the service-role connection,
  * where auth.uid() is null, so log_animal_mutation() skips it by design (see
- * 20260803120000_audit_animal_mutations.sql). That makes this row the only
- * record of the change — the app layer owns it, exactly as the sibling
- * animal_profile_internal route does.
+ * 20260803120000_audit_animal_mutations.sql). The app layer owns the audit row.
  *
- * `timestamp` reuses the payload's updatedAt so the audit row and the row's own
- * updated_at column can't drift apart.
+ * It cannot own it as a second PostgREST call, though: the update commits first,
+ * so a failing audit insert leaves the change applied and unaudited while the
+ * caller is told it failed. The RPC does both in one transaction and derives the
+ * before-value itself, matching the trigger's `<table>.<op>` action and
+ * `{changed: {col: {from, to}}}` detail so one query covers both write paths
+ * (20260805120000_animal_mutation_audit_atomicity.sql).
+ *
+ * `p_updated_at` reuses the payload's updatedAt so the audit row and the row's
+ * own updated_at column can't drift apart.
  */
-export function buildAnimalStatusAuditEntry(
+export function buildAnimalStatusUpdateRpcArgs(
   actorUserId: string,
   payload: AnimalStatusUpdatePayload,
-  animal: unknown,
-): AnimalStatusAuditEntry {
+): AnimalStatusUpdateRpcArgs {
   return {
-    actor_user_id: actorUserId,
-    action: "animals.status_update",
-    entity: "animals",
-    entity_id: payload.animalId,
-    timestamp: payload.updatedAt,
-    detail: { status: payload.status, animal },
+    p_actor_user_id: actorUserId,
+    p_animal_id: payload.animalId,
+    p_status: payload.status,
+    p_updated_at: payload.updatedAt,
   };
 }

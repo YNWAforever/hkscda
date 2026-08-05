@@ -5,8 +5,8 @@ import { CoordinatorReports } from "../../../components/admin/adoptions/Coordina
 import { requireAdminPageAccess } from "../../../lib/admin/pageAccess";
 
 export const Route = createFileRoute("/admin/coordinator/reports")({
-  beforeLoad: async () => {
-    await requireAdminPageAccess("coordinatorReports");
+  beforeLoad: async ({ context }) => {
+    await requireAdminPageAccess("coordinatorReports", context.queryClient);
   },
   component: CoordinatorReportsPage,
 });

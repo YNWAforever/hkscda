@@ -49,9 +49,14 @@ function createRepo() {
       calls.push({ name: "update", input: { id, input } });
       return { ...enquiry, ...input };
     },
+    async insertAuditLog(input) {
+      calls.push({ name: "audit", input });
+    },
   };
   return { repo, calls };
 }
+
+const actorUserId = "99999999-9999-4999-8999-999999999999";
 
 describe("group enquiry admin service", () => {
   test("bounds search params and updates status/notes", async () => {
@@ -64,9 +69,39 @@ describe("group enquiry admin service", () => {
       service.updateGroupEnquiry({
         id: "enquiry-1",
         input: { status: "resolved", adminNotes: " done " },
+        actorUserId,
       }),
     ).resolves.toMatchObject({ enquiry: { status: "resolved" } });
     expect(calls[0].input).toMatchObject({ q: "school", page: 1, pageSize: 50 });
+  });
+
+  test("records who changed an enquiry, without copying the enquirer's details", async () => {
+    // This route mutates group_enquiries over the service-role connection, where
+    // auth.uid() is null and no trigger covers the table — so a reassignment or
+    // status change had no actor attached to it anywhere. Detail stays to field
+    // names and the new status: audit_log is readable by treasurer, and the row
+    // itself holds the enquirer's email and phone.
+    const { repo, calls } = createRepo();
+    const service = createGroupEnquiryService({
+      repo,
+      now: () => new Date("2026-08-05T09:00:00.000Z"),
+    });
+
+    await service.updateGroupEnquiry({
+      id: "enquiry-1",
+      input: { status: "closed", adminNotes: "handled offline" },
+      actorUserId,
+    });
+
+    expect(calls.map((call) => call.name)).toEqual(["update", "audit"]);
+    expect(calls[1].input).toEqual({
+      actor_user_id: actorUserId,
+      action: "group_enquiries.update",
+      entity: "group_enquiries",
+      entity_id: "enquiry-1",
+      timestamp: "2026-08-05T09:00:00.000Z",
+      detail: { fields: ["adminNotes", "status"], status: "closed" },
+    });
   });
 
   test("retries notification from the stored row without creating another enquiry", async () => {
@@ -77,9 +112,9 @@ describe("group enquiry admin service", () => {
         calls.push({ name: "notify" });
       },
     });
-    await expect(service.retryGroupEnquiryNotification({ id: "enquiry-1" })).resolves.toEqual({
-      ok: true,
-    });
-    expect(calls.map((call) => call.name)).toEqual(["get", "notify", "markSent"]);
+    await expect(
+      service.retryGroupEnquiryNotification({ id: "enquiry-1", actorUserId }),
+    ).resolves.toEqual({ ok: true });
+    expect(calls.map((call) => call.name)).toEqual(["get", "notify", "markSent", "audit"]);
   });
 });

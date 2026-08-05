@@ -42,6 +42,8 @@ function searchParams(request: Request) {
   return Object.fromEntries(new URL(request.url).searchParams);
 }
 
+const notFoundDomainErrors = new Set(["Group enquiry not found"]);
+
 async function withAdminGroupEnquiryErrors(operation: () => Promise<Response>) {
   try {
     return await operation();
@@ -49,6 +51,12 @@ async function withAdminGroupEnquiryErrors(operation: () => Promise<Response>) {
     if (error instanceof Response) return error;
     if (error instanceof z.ZodError)
       return jsonNoStore({ error: "Invalid group enquiry admin request" }, { status: 400 });
+    // A stale link is a client-side fact, not a server fault. Falling through to
+    // 500 here left the admin UI unable to tell "gone" from "broken" and wrote a
+    // spurious error into the production stream on every dead id. Peer domains
+    // map this to 404 — lib/adoptions/http/shared.server.ts, lib/volunteers/http.server.ts.
+    if (error instanceof Error && notFoundDomainErrors.has(error.message))
+      return jsonNoStore({ error: error.message }, { status: 404 });
     console.error(error);
     return jsonNoStore({ error: "Could not process group enquiry admin request" }, { status: 500 });
   }
@@ -72,13 +80,27 @@ export function createAdminGroupEnquiryHandlers({
 
     update({ request }: HandlerContext) {
       return withAdminGroupEnquiryErrors(async () => {
-        await requireVolunteerAdmin(request);
+        // The resolved admin has to reach the service: this route mutates
+        // group_enquiries over the service-role connection, where auth.uid() is
+        // null, so nothing else can attribute the change.
+        const admin = await requireVolunteerAdmin(request);
         const body = (await jsonBody(request)) as { id?: string; action?: string };
         if (!body.id) return jsonNoStore({ error: "Missing group enquiry id" }, { status: 400 });
         if (body.action === "retryNotification") {
-          return jsonNoStore(await service.retryGroupEnquiryNotification({ id: body.id }));
+          return jsonNoStore(
+            await service.retryGroupEnquiryNotification({
+              id: body.id,
+              actorUserId: admin.authUserId,
+            }),
+          );
         }
-        return jsonNoStore(await service.updateGroupEnquiry({ id: body.id, input: body }));
+        return jsonNoStore(
+          await service.updateGroupEnquiry({
+            id: body.id,
+            input: body,
+            actorUserId: admin.authUserId,
+          }),
+        );
       });
     },
   };

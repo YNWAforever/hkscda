@@ -10,7 +10,7 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute("/admin/content/adoption-guides")({
   validateSearch: searchSchema,
-  beforeLoad: () => requireAdminPageAccess("contentManagement"),
+  beforeLoad: ({ context }) => requireAdminPageAccess("contentManagement", context.queryClient),
   component: AdminAdoptionGuideReleasesPage,
 });
 

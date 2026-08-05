@@ -5,8 +5,8 @@ import { ContentEditor } from "../../../components/admin/content/ContentEditor";
 import { requireAdminPageAccess } from "../../../lib/admin/pageAccess";
 
 export const Route = createFileRoute("/admin/content/$id")({
-  beforeLoad: async () => {
-    await requireAdminPageAccess("contentManagement");
+  beforeLoad: async ({ context }) => {
+    await requireAdminPageAccess("contentManagement", context.queryClient);
   },
   component: AdminContentEditorPage,
 });

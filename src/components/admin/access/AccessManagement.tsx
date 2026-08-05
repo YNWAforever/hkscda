@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import type { AdminRole, AdminStatus } from "../../../lib/admin/access";
 import { fetchAdminJson } from "../../../lib/admin/http";
-import { fetchAdminIdentity } from "../../../lib/admin/pageAccess";
+import { ADMIN_IDENTITY_QUERY_KEY, adminIdentityQueryOptions } from "../../../lib/admin/pageAccess";
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
 import {
@@ -178,16 +178,13 @@ export function AccessManagement() {
     queryKey: ["admin-access-audit"],
     queryFn: () => fetchAdminJson<AccessAuditResponse>("/api/admin/access/audit"),
   });
-  const meQuery = useQuery({
-    queryKey: ["admin-me"],
-    queryFn: fetchAdminIdentity,
-  });
+  const meQuery = useQuery(adminIdentityQueryOptions());
 
   const invalidate = async () => {
     await Promise.all([
       queryClient.invalidateQueries({ queryKey: ["admin-access-users"] }),
       queryClient.invalidateQueries({ queryKey: ["admin-access-audit"] }),
-      queryClient.invalidateQueries({ queryKey: ["admin-me"] }),
+      queryClient.invalidateQueries({ queryKey: ADMIN_IDENTITY_QUERY_KEY }),
     ]);
   };
 

@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
+import { QueryClient } from "@tanstack/react-query";
 
 const getSession = mock(
   async (): Promise<{ data: { session: { access_token: string } | null } }> => ({
@@ -14,8 +15,13 @@ mock.module("../supabase", () => ({
   },
 }));
 
-const { AdminApiError, fetchAdminIdentity, fetchAdminJson, getAdminAccessToken } =
-  await import("./session");
+const {
+  AdminApiError,
+  fetchAdminIdentity,
+  fetchAdminJson,
+  getAdminAccessToken,
+  requireSignedInAdminIdentity,
+} = await import("./session");
 
 describe("admin browser session", () => {
   const originalFetch = globalThis.fetch;
@@ -189,5 +195,48 @@ describe("admin browser session", () => {
         headers: expect.objectContaining({ authorization: "Bearer session-token" }),
       }),
     );
+  });
+});
+
+describe("requireSignedInAdminIdentity", () => {
+  const originalFetch = globalThis.fetch;
+  let calls: number;
+
+  beforeEach(() => {
+    calls = 0;
+    globalThis.fetch = mock(async () => {
+      calls += 1;
+      return new Response(JSON.stringify({ admin: { id: "a1", email: "a@b.c", role: "admin" } }), {
+        headers: { "content-type": "application/json" },
+      });
+    }) as unknown as typeof fetch;
+    getSession.mockResolvedValue({ data: { session: { access_token: "session-token" } } });
+  });
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+  });
+
+  test("resolves the identity through the query client it is given", async () => {
+    const queryClient = new QueryClient();
+    const { admin } = await requireSignedInAdminIdentity(queryClient);
+    expect(admin.role).toBe("admin");
+    expect(calls).toBe(1);
+  });
+
+  test("a second call on the same client issues no second request", async () => {
+    // This is the duplicate GET /api/admin/me: beforeLoad primes the entry and
+    // AdminLayout reads it back.
+    const queryClient = new QueryClient();
+    await requireSignedInAdminIdentity(queryClient);
+    await requireSignedInAdminIdentity(queryClient);
+    expect(calls).toBe(1);
+  });
+
+  test("redirects to login when there is no session", async () => {
+    getSession.mockResolvedValue({ data: { session: null } });
+    const queryClient = new QueryClient();
+    await expect(requireSignedInAdminIdentity(queryClient)).rejects.toBeDefined();
+    expect(calls).toBe(0);
   });
 });

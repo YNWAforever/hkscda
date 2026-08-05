@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AdminLayout } from "../../components/admin/AdminLayout";
 import { useAdminLanguage } from "../../components/admin/adminI18n";
 import {
-  fetchAdminIdentity,
+  adminIdentityQueryOptions,
   firstAllowedAdminRouteForIdentity,
   requireSignedInAdminIdentity,
 } from "../../lib/admin/pageAccess";
@@ -23,8 +23,8 @@ const deniedCopy = {
 } as const;
 
 export const Route = createFileRoute("/admin/access-denied")({
-  beforeLoad: async () => {
-    await requireSignedInAdminIdentity();
+  beforeLoad: async ({ context }) => {
+    await requireSignedInAdminIdentity(context.queryClient);
   },
   component: AdminAccessDeniedPage,
 });
@@ -40,7 +40,7 @@ function AdminAccessDeniedPage() {
 function AccessDeniedContent() {
   const { language } = useAdminLanguage();
   const t = deniedCopy[language];
-  const { data } = useQuery({ queryKey: ["admin-me"], queryFn: fetchAdminIdentity });
+  const { data } = useQuery(adminIdentityQueryOptions());
   const backHref = firstAllowedAdminRouteForIdentity(data?.admin);
 
   return (

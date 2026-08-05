@@ -19,9 +19,10 @@ type DashboardSection = Exclude<AdminSection, "supporters" | "access">;
 
 export const Route = createFileRoute("/admin/")({
   validateSearch: searchSchema,
-  beforeLoad: async ({ search }) => {
+  beforeLoad: async ({ context, search }) => {
     await requireAdminPageAccess(
       getAdminAreaForLocation({ pathname: "/admin", section: search.section }),
+      context.queryClient,
     );
   },
   component: AdminDashboard,

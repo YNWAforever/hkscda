@@ -1,11 +1,11 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { LogOut, Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { supabase } from "../../lib/supabase";
-import type { AdminRole } from "../../lib/admin/access";
 import { canRoleAccessAdminNavItem } from "../../lib/admin/access";
-import { fetchAdminIdentity } from "../../lib/admin/pageAccess";
+import { adminIdentityQueryOptions } from "../../lib/admin/pageAccess";
 import { cn } from "../../lib/utils";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "../ui/sheet";
 import { AdminLanguageProvider, AdminLanguageToggle, useAdminLanguage } from "./adminI18n";
@@ -125,21 +125,15 @@ function AdminLayoutShell({ children, activeSection }: AdminLayoutProps) {
   const { copy } = useAdminLanguage();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [email, setEmail] = useState<string | null>(null);
-  const [adminRole, setAdminRole] = useState<AdminRole | null>(null);
+  const queryClient = useQueryClient();
+  // beforeLoad already primed this entry for the current navigation, so this is
+  // a cache hit with no request. It used to be a second GET /api/admin/me.
+  const { data: identity } = useQuery(adminIdentityQueryOptions());
+  const email = identity?.admin.email ?? null;
+  const adminRole = identity?.admin.role ?? null;
 
   useEffect(() => {
     setCollapsed(localStorage.getItem(COLLAPSE_KEY) === "1");
-    void supabase.auth.getSession().then(({ data }) => {
-      setEmail(data.session?.user.email ?? null);
-      if (!data.session) return;
-      void fetchAdminIdentity()
-        .then(({ admin }) => {
-          setEmail(admin.email);
-          setAdminRole(admin.role);
-        })
-        .catch(() => setAdminRole(null));
-    });
   }, []);
 
   function toggleCollapsed() {
@@ -152,6 +146,9 @@ function AdminLayoutShell({ children, activeSection }: AdminLayoutProps) {
 
   async function handleLogout() {
     await supabase.auth.signOut();
+    // Otherwise the next admin to sign in on this tab reads the previous one's
+    // cached identity.
+    queryClient.clear();
     navigate({ to: "/admin/login" });
   }
 

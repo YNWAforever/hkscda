@@ -12,13 +12,19 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
+      # Pinned, not `latest`. bunfig.toml holds every dependency back a day
+      # (minimumReleaseAge) as a supply-chain guard; installing whatever Bun
+      # shipped that hour would run the whole gate on an unvetted toolchain, and
+      # a point release that changes bun.lock's format or bun:test's defaults
+      # would turn every PR red with no repository change and no way back to the
+      # last green. Bump this deliberately.
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: latest
+          bun-version: 1.3.12
 
       - run: bun install --frozen-lockfile
 

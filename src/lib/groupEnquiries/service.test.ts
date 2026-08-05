@@ -49,6 +49,9 @@ function createRepo(
     async update() {
       return enquiry;
     },
+    async insertAuditLog(input) {
+      calls.push({ name: "insertAuditLog", input });
+    },
   };
   return { repo, calls };
 }

@@ -6,8 +6,8 @@ import {
   requireAdmin,
 } from "../../../../../../lib/donations/supabase.server";
 import {
-  buildAnimalStatusAuditEntry,
   buildAnimalStatusUpdatePayload,
+  buildAnimalStatusUpdateRpcArgs,
   parseAnimalStatusUuid,
 } from "../-status";
 
@@ -81,15 +81,15 @@ async function updateAnimalStatus({ request, params }: HandlerContext) {
     const admin = await requireAdmin(request, ["staff", "admin"], client);
     const payload = buildAnimalStatusUpdatePayload(animalId, await jsonBody(request));
 
+    // The audit_animals trigger only fires for direct-from-browser writes (a real
+    // JWT); this route goes over the service-role connection, so the app layer
+    // owns the audit row. The RPC writes the animals update and that row in one
+    // transaction — as two PostgREST calls, a failing audit insert would leave
+    // the status changed, unaudited, and reported to the caller as a 500.
     const { data, error } = await client
-      .from("animals")
-      .update({
-        status: payload.status,
-        updated_at: payload.updatedAt,
-      })
-      .eq("id", payload.animalId)
-      .select(
-        "id,type,name,name_en,gender,age,description,notes,status,image_url,created_at,updated_at",
+      .rpc(
+        "update_animal_status_with_audit",
+        buildAnimalStatusUpdateRpcArgs(admin.authUserId, payload),
       )
       .maybeSingle();
 
@@ -97,14 +97,6 @@ async function updateAnimalStatus({ request, params }: HandlerContext) {
     if (!data) {
       return jsonResponse({ error: "Animal not found" }, { status: 404 });
     }
-
-    // The audit_animals trigger only fires for direct-from-browser writes (a real
-    // JWT); this route goes over the service-role connection, so it records its
-    // own audit_log row here, with the real actor already resolved above.
-    const { error: auditError } = await client
-      .from("audit_log")
-      .insert(buildAnimalStatusAuditEntry(admin.authUserId, payload, data));
-    if (auditError) throw auditError;
 
     return jsonResponse({ animal: data });
   });
