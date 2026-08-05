@@ -100,8 +100,13 @@ describe("admin identity query options", () => {
   test("every consumer gets the same cache key", () => {
     // Six places resolved the identity before this existed, under two different
     // keys — so invalidating one left the other showing a stale role.
-    expect(adminIdentityQueryOptions().queryKey).toEqual(ADMIN_IDENTITY_QUERY_KEY);
-    expect(ADMIN_IDENTITY_QUERY_KEY).toEqual(["admin-me"]);
+    //
+    // queryOptions() brands queryKey with react-query's DataTag type so it can
+    // infer data types at the useQuery call sites. Spread both sides to compare
+    // contents rather than the branded type — comparing branded-to-plain fails
+    // `bun run typecheck`.
+    expect([...adminIdentityQueryOptions().queryKey]).toEqual([...ADMIN_IDENTITY_QUERY_KEY]);
+    expect([...ADMIN_IDENTITY_QUERY_KEY]).toEqual(["admin-me"]);
   });
 
   test("uses the shared fetcher rather than an inline duplicate", () => {
