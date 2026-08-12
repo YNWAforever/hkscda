@@ -1,6 +1,6 @@
 import { CheckCircle2 } from "lucide-react";
-import cat2 from "@/assets/cat2.jpg";
-import dog2 from "@/assets/dog2.jpg";
+import catMotherKittens from "@/assets/cat-mother-kittens.jpg";
+import puppiesTrio from "@/assets/puppies-trio.jpg";
 import { Reveal } from "@/lib/reveal";
 
 const checklist = [
@@ -18,14 +18,14 @@ export function BestRescue() {
           <Reveal className="relative">
             <div className="grid grid-cols-2 gap-4">
               <img
-                src={dog2}
-                alt="獲救的唐狗"
+                src={puppiesTrio}
+                alt="三隻獲救的混種幼犬乖乖坐在犬舍門前"
                 loading="lazy"
                 className="aspect-[3/4] w-full object-cover shadow-lg"
               />
               <img
-                src={cat2}
-                alt="獲救的貓咪"
+                src={catMotherKittens}
+                alt="貓媽媽守護著窩中的初生小貓"
                 loading="lazy"
                 className="mt-10 aspect-[3/4] w-full object-cover shadow-lg"
               />

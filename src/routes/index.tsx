@@ -23,7 +23,7 @@ import { VolunteerCarousel } from "@/components/site/VolunteerCarousel";
 import { SocialWall } from "@/components/site/SocialWall";
 import { PhotoMarquee } from "@/components/site/PhotoMarquee";
 import { SectionHeading } from "@/components/site/SectionHeading";
-import heroImg from "@/assets/hero.jpg";
+import heroImg from "@/assets/dog-smiling.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({

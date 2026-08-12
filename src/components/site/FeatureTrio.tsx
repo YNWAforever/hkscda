@@ -1,5 +1,5 @@
 import { Siren, Stethoscope, House, ArrowRight } from "lucide-react";
-import heroImg from "@/assets/hero.jpg";
+import puppiesSleeping from "@/assets/puppies-sleeping.jpg";
 import { Reveal } from "@/lib/reveal";
 
 const features = [
@@ -30,8 +30,8 @@ export function FeatureTrio() {
         {/* Photo card with coral arrow badge */}
         <Reveal className="relative max-w-[320px]">
           <img
-            src={heroImg}
-            alt="義工與獲救的毛孩"
+            src={puppiesSleeping}
+            alt="獲救後相依而睡的兩隻幼犬"
             loading="lazy"
             className="rounded-2xl aspect-[4/3] object-cover w-full shadow-panel"
           />

@@ -1,5 +1,5 @@
 import { Heart, ReceiptText, ShieldCheck } from "lucide-react";
-import cat1 from "@/assets/cat1.jpg";
+import dogRecovering from "@/assets/dog-recovering.jpg";
 import { Reveal } from "@/lib/reveal";
 
 export function FundraisingCard() {
@@ -12,8 +12,8 @@ export function FundraisingCard() {
         <div className="grid items-center gap-8 border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-6 lg:grid-cols-2 lg:gap-14 lg:p-12">
           <Reveal className="relative">
             <img
-              src={cat1}
-              alt="正在接受醫療照顧的貓咪"
+              src={dogRecovering}
+              alt="在犬舍中休養的獲救唐狗"
               loading="lazy"
               className="aspect-[4/3] w-full object-cover shadow-xl"
             />
