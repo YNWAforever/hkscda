@@ -1,20 +1,21 @@
 import { useState } from "react";
-import cat1 from "@/assets/cat1.jpg";
-import cat2 from "@/assets/cat2.jpg";
-import dog1 from "@/assets/dog1.jpg";
-import dog2 from "@/assets/dog2.jpg";
-import hero from "@/assets/hero.jpg";
+import dogSmiling from "@/assets/dog-smiling.jpg";
+import kittensBasket from "@/assets/kittens-basket.jpg";
+import kittensCream from "@/assets/kittens-cream.jpg";
+import kittensTrio from "@/assets/kittens-trio.jpg";
+import puppiesSleeping from "@/assets/puppies-sleeping.jpg";
+import volunteerPuppies from "@/assets/volunteer-puppies.jpg";
 
 const FB_PAGE = "https://www.facebook.com/HKSCDA";
 const IG_HANDLE = "hkscda";
 
 const igPosts = [
-  { img: cat1, caption: "本週新到 · Mochi 等待你的家 🧡", likes: 482 },
-  { img: dog1, caption: "Brownie 找到家了！恭喜 🎉", likes: 1204 },
-  { img: cat2, caption: "BB貓一對 · 必須一齊領養", likes: 318 },
-  { img: hero, caption: "義工日 · 多謝大家來幫手 🙌", likes: 856 },
-  { img: dog2, caption: "TNR 行動進行中 · 灣仔後巷", likes: 290 },
-  { img: cat1, caption: "助養計劃 · HK$100 起 💛", likes: 612 },
+  { img: kittensTrio, caption: "三姊弟BB貓新報到 · 等待你的家 🧡", likes: 482 },
+  { img: volunteerPuppies, caption: "義工日 · 兩隻黑寶寶做完身體檢查 🙌", likes: 1204 },
+  { img: kittensBasket, caption: "一籃四寶 · 開眼未夠一個月", likes: 318 },
+  { img: dogSmiling, caption: "笑得最甜的鎮舍之寶 · 等緊一個家 🎉", likes: 856 },
+  { img: puppiesSleeping, caption: "獲救第一晚 · 終於可以安心瞓覺 😴", likes: 290 },
+  { img: kittensCream, caption: "助養計劃 · HK$100 起 💛", likes: 612 },
 ];
 
 export function SocialWall() {

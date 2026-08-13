@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/accordion";
 import { getFaqText, helpFaqs } from "@/lib/help/faq";
 import { MessageCircleQuestion } from "lucide-react";
-import dog1 from "@/assets/dog1.jpg";
+import puppiesPlaying from "@/assets/puppies-playing.jpg";
 import { Reveal } from "@/lib/reveal";
 
 const homepageFaqs = helpFaqs.slice(0, 5);
@@ -37,8 +37,8 @@ export function FAQ() {
               aria-hidden="true"
             />
             <img
-              src={dog1}
-              alt="等待領養的狗狗"
+              src={puppiesPlaying}
+              alt="等待領養的幼犬在收容所裡玩耍"
               loading="lazy"
               className="relative rounded-md w-full aspect-[4/3] object-cover shadow-soft"
             />

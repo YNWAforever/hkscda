@@ -6,6 +6,7 @@ export function PublicPageHero({
   description,
   imageSrc,
   imageAlt,
+  imageClassName = "",
   actions,
 }: {
   title: string;
@@ -13,6 +14,7 @@ export function PublicPageHero({
   description?: string;
   imageSrc: string;
   imageAlt: string;
+  imageClassName?: string;
   actions?: ReactNode;
 }) {
   return (
@@ -20,7 +22,7 @@ export function PublicPageHero({
       <img
         src={imageSrc}
         alt={imageAlt}
-        className="absolute inset-0 h-full w-full object-cover opacity-55"
+        className={`absolute inset-0 h-full w-full object-cover opacity-55 ${imageClassName}`}
       />
       <div className="absolute inset-0 bg-[var(--color-panel)]/65" aria-hidden="true" />
       <div className="relative mx-auto flex min-h-[420px] max-w-7xl items-end px-4 py-12 sm:min-h-[500px] sm:px-6 lg:px-8">
