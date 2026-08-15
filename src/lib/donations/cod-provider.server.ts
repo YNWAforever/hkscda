@@ -59,6 +59,7 @@ export async function createCodAlipayHkCheckout(
 
   return {
     providerRef: response.outTradeNo,
+    providerOrderRef: order.orderRef,
     url: composeHostedUrl(response.url, response.alipayOrderString),
   };
 }

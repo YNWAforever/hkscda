@@ -33,8 +33,12 @@ function createFakeRepository(): DonationRepository & {
       payments.push(payment);
       return { id: "payment-1", ...payment };
     },
-    async updatePaymentProviderRef(paymentId, providerRef) {
-      payments.push({ id: paymentId, provider_ref: providerRef });
+    async updatePaymentProviderRef(paymentId, providerRef, providerOrderRef) {
+      payments.push({
+        id: paymentId,
+        provider_ref: providerRef,
+        ...(providerOrderRef ? { provider_order_ref: providerOrderRef } : {}),
+      });
     },
   };
 }
@@ -47,7 +51,11 @@ const providers: PaymentProviders = {
     return { providerRef: "paypal_order_123", url: "https://paypal.test/checkout" };
   },
   async createCodAlipayHkCheckout() {
-    return { providerRef: "cod_order_123", url: "https://cod.test/checkout" };
+    return {
+      providerRef: "cod_order_123",
+      providerOrderRef: "hkscda-order-123",
+      url: "https://cod.test/checkout",
+    };
   },
 };
 
@@ -222,7 +230,11 @@ describe("createDonation", () => {
       },
       async createCodAlipayHkCheckout(input: unknown) {
         calls.cod.push(input);
-        return { providerRef: "cod_order_123", url: "https://cod.test/checkout" };
+        return {
+          providerRef: "cod_order_123",
+          providerOrderRef: "hkscda-order-123",
+          url: "https://cod.test/checkout",
+        };
       },
     } satisfies PaymentProviders;
 
@@ -259,6 +271,11 @@ describe("createDonation", () => {
       donationId: "f8dce8fa-83f4-4d5f-b0b0-fbc3348efb7a",
       provider: "cod",
       url: "https://cod.test/checkout",
+    });
+    expect(repository.payments).toContainEqual({
+      id: "payment-1",
+      provider_ref: "cod_order_123",
+      provider_order_ref: "hkscda-order-123",
     });
   });
 });

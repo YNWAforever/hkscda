@@ -4,7 +4,10 @@ import { sendDonationAcknowledgement } from "./notifications.server";
 
 // Minimal message-table fake: the claim insert does .insert().select("id").single(),
 // the send-status flip does .update().eq().
-function createMessageFake({ conflict = false }: { conflict?: boolean } = {}) {
+function createMessageFake({
+  conflict = false,
+  retryableFailure = false,
+}: { conflict?: boolean; retryableFailure?: boolean } = {}) {
   const ops: Array<{ action: string; payload?: unknown; filters?: Array<[string, unknown]> }> = [];
   const client = {
     from() {
@@ -31,6 +34,20 @@ function createMessageFake({ conflict = false }: { conflict?: boolean } = {}) {
             eq(column: string, value: unknown) {
               filters.push([column, value]);
               return builder;
+            },
+            contains(column: string, value: unknown) {
+              filters.push([column, value]);
+              return builder;
+            },
+            select() {
+              return builder;
+            },
+            maybeSingle() {
+              ops.push({ action: "update", payload, filters });
+              return Promise.resolve({
+                data: retryableFailure ? { id: "message-1" } : null,
+                error: null,
+              });
             },
             then(resolve: (value: { error: null }) => void) {
               ops.push({ action: "update", payload, filters });
@@ -80,7 +97,26 @@ describe("sendDonationAcknowledgement", () => {
     const result = await sendDonationAcknowledgement(client as never, input);
 
     expect(result).toBe("skipped");
-    // The unique-index conflict short-circuits: no status flip, no second email.
-    expect(ops.filter((operation) => operation.action === "update")).toHaveLength(0);
+    // The only follow-up is a guarded failed -> queued claim. With no failed
+    // row affected, the existing queued/sent acknowledgement is not resent.
+    const updates = ops.filter((operation) => operation.action === "update");
+    expect(updates).toHaveLength(1);
+    expect(updates[0].filters).toContainEqual(["status", "failed"]);
+  });
+
+  test("atomically reclaims a failed acknowledgement for retry", async () => {
+    delete process.env.RESEND_API_KEY;
+    const { client, ops } = createMessageFake({ conflict: true, retryableFailure: true });
+
+    const result = await sendDonationAcknowledgement(client as never, input);
+
+    expect(result).toBe("queued");
+    const retry = ops.find((operation) => operation.action === "update");
+    expect(retry?.payload).toEqual({ status: "queued" });
+    expect(retry?.filters).toContainEqual(["status", "failed"]);
+    expect(retry?.filters).toContainEqual([
+      "payload",
+      { kind: "donation_acknowledgement", donationId: "donation-1" },
+    ]);
   });
 });

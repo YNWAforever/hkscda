@@ -32,8 +32,9 @@ export async function sendDonationAcknowledgement(
   // Claim the acknowledgement BEFORE any external work. The
   // message_donation_ack_unique index enforces one ack per (supporter,
   // donation), so a redelivered/concurrent success event that loses the race
-  // gets a 23505 here and skips — there is no second email, and the
-  // check-then-send TOCTOU is gone.
+  // gets a 23505 here. Sent/queued rows skip; failed rows are reclaimed below
+  // with a guarded transition, so there is no second email or check-then-send
+  // TOCTOU.
   const { data: claimed, error: claimError } = await client
     .from("message")
     .insert({
@@ -44,11 +45,29 @@ export async function sendDonationAcknowledgement(
     })
     .select("id")
     .single();
+  let messageId: string;
   if (claimError) {
-    if ((claimError as { code?: string }).code === "23505") return "skipped";
-    throw claimError;
+    if ((claimError as { code?: string }).code !== "23505") throw claimError;
+
+    // A prior provider outage leaves the unique acknowledgement row failed.
+    // Reclaim it with a guarded state transition. Only one concurrent retry can
+    // move failed -> queued; sent, delivered, or already-queued rows are never
+    // sent again.
+    const { data: retried, error: retryError } = await client
+      .from("message")
+      .update({ status: "queued" })
+      .eq("supporter_id", input.supporterId)
+      .eq("channel", "email")
+      .eq("status", "failed")
+      .contains("payload", { kind: "donation_acknowledgement", donationId: input.donationId })
+      .select("id")
+      .maybeSingle();
+    if (retryError) throw retryError;
+    if (!retried) return "skipped";
+    messageId = (retried as { id: string }).id;
+  } else {
+    messageId = (claimed as { id: string }).id;
   }
-  const messageId = (claimed as { id: string }).id;
 
   if (!config.resendApiKey) {
     // Dev/preview without an email provider: leave the claim queued.

@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
 import {
+  completeDonationSideEffects,
   failProviderPayment,
   flagProviderWebhookForReview,
   issueReceiptIfNeeded,
@@ -186,6 +187,16 @@ describe("issueReceiptIfNeeded", () => {
 
     expect(generatorCalls).toBe(1);
     expect(state.uploads).toHaveLength(1);
+  });
+});
+
+describe("completeDonationSideEffects", () => {
+  test("surfaces a failed acknowledgement so the provider event stays retryable", async () => {
+    await expect(
+      completeDonationSideEffects({} as never, pendingPaymentNoReceipt, {
+        sendAcknowledgement: async () => "failed",
+      }),
+    ).rejects.toThrow("acknowledgement");
   });
 });
 

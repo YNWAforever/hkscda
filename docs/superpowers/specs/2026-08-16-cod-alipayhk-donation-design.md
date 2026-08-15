@@ -58,6 +58,9 @@ A forward-only Supabase migration will:
 2. Extend the `payment.provider` check constraint with `cod`.
 3. Extend the `webhook_event.provider` check constraint with `cod`.
 4. Preserve the existing unique `(provider, provider_ref)` index.
+5. Add nullable `payment.provider_order_ref` plus a unique partial
+   `(provider, provider_order_ref)` index so COD's supported `order_details`
+   lookup can be bound to the order created for this payment.
 
 No existing rows are rewritten. The migration must fail closed if an expected constraint cannot be replaced safely.
 
@@ -101,7 +104,9 @@ The module accepts explicit inputs and returns typed byte/string results. It doe
 - Validate response shape before returning typed results.
 - Normalize COD business errors into safe internal error categories.
 
-The client exposes focused operations for `create_order` and `refresh_transaction_status`. It never accepts raw browser input.
+The client exposes focused operations for `create_order`,
+`refresh_transaction_status`, and `order_details`. It never accepts raw browser
+input. A `paid` refresh status alone is insufficient to reconcile.
 
 ### COD payment adapter
 
@@ -115,7 +120,7 @@ The existing payment-provider interface gains a COD AlipayHK operation. The adap
 - Solution fixed to `WAP` or `PC2MOBILE` from a validated presentation hint.
 - A return URL containing only the donation ID and a pending status marker.
 
-The adapter composes COD's returned `url` and `alipay_order_string` on the server according to the selected solution. It returns the final hosted checkout URL plus `out_trade_no`, which becomes `payment.provider_ref`.
+The adapter composes COD's returned `url` and `alipay_order_string` on the server according to the selected solution. It returns the final hosted checkout URL plus `out_trade_no`, which becomes `payment.provider_ref`, and persists the generated `order_ref` as `payment.provider_order_ref`.
 
 ### Notification route
 
@@ -123,7 +128,12 @@ The adapter composes COD's returned `url` and `alipay_order_string` on the serve
 
 ### Status refresh service
 
-A small server service queries COD only when the donation is still pending and its payment provider is `cod`. The public donation-status route invokes this service under its no-store and rate-limit boundary before returning the latest local status.
+A small server service queries COD when the payment provider is `cod`. Pending
+payments refresh COD status; a paid result then loads `order_details` by the
+persisted `order_ref` and validates merchant, segment, wallet, currency, type,
+status, both references, amount, and transaction ID before reconciliation.
+Succeeded payments re-run the existing idempotent receipt/acknowledgement path
+until incomplete side effects recover.
 
 The browser polls no faster than once every 10 seconds for at most 15 minutes. The existing per-IP status rate limit caps abusive or multi-tab refresh traffic. A refresh failure leaves the donation pending and returns the current local status; it never creates a false failure or success.
 
@@ -134,7 +144,7 @@ The browser polls no faster than once every 10 seconds for at most 15 minutes. T
 3. `POST /api/donations` validates the donation and presentation hint.
 4. The existing service creates the supporter, consent, pending donation, and pending payment records.
 5. The COD adapter creates the encrypted and signed sandbox order.
-6. On a valid COD response, the service stores `out_trade_no` as the provider reference.
+6. On a valid COD response, the service stores `out_trade_no` as the provider reference and the generated `order_ref` as the provider order reference.
 7. The API returns a redirect result containing the donation ID and COD-hosted checkout URL.
 8. Mobile donors enter COD's WAP flow; desktop donors see COD's hosted QR flow.
 9. COD returns the donor to `/donate` with a pending marker. The return never changes payment state.
@@ -171,9 +181,9 @@ Verified full-refund notifications enter the existing refund lifecycle and void 
 
 ## Status refresh and delayed confirmation
 
-`refresh_transaction_status` is a recovery confirmation path, not an independent local state machine. It uses the stored `out_trade_no` and validated merchant context.
+`refresh_transaction_status` is a recovery hint, not an independent local state machine. It uses the stored `out_trade_no`; `paid` must then be corroborated by the supported `order_details(order_ref)` response.
 
-- `paid`: enter the same idempotent reconciliation function with a stable synthetic refresh-event identity.
+- `paid`: require exact detail binding, then enter the same idempotent reconciliation function with an identity derived from validated transaction ID, `out_trade_no`, and status.
 - Not found or still unpaid: keep the donation pending.
 - Invalid, mismatched, or unverifiable response: keep the donation pending and record a safe operational error.
 - Transport error: keep the donation pending and allow a later poll or webhook to recover.

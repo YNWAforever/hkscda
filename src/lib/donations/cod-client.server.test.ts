@@ -136,6 +136,59 @@ describe("COD encrypted client", () => {
     });
   });
 
+  test("loads typed order details through COD's supported order_ref lookup", async () => {
+    let capturedBody = "";
+    globalThis.fetch = (async (_input, init) => {
+      capturedBody = String(init?.body);
+      return encryptedResponse({
+        amount: 300,
+        currency: "HKD",
+        wallet: "ALIPAYHK",
+        order_ref: "hkscda-order-test",
+        payment_solution: "WAP",
+        status: "paid",
+        out_trade_no: "COD-1",
+        transaction_id: "ALIPAY-1",
+        subject: "HKSCDA Donation",
+        type: "payment",
+        segment_id: "segment-test",
+        merchant_id: "merchant-test",
+        payment_time: "2026-08-16T12:00:00+08:00",
+      });
+    }) as typeof fetch;
+
+    const result = await createCodClient({ config: config() }).getOrderDetails({
+      orderRef: "hkscda-order-test",
+    });
+
+    expect(decryptRequest(capturedBody)).toMatchObject({
+      service: "order_details",
+      parameters: { order_ref: "hkscda-order-test" },
+    });
+    expect(result).toEqual({
+      amount: 300,
+      currency: "HKD",
+      wallet: "ALIPAYHK",
+      orderRef: "hkscda-order-test",
+      status: "paid",
+      outTradeNo: "COD-1",
+      transactionId: "ALIPAY-1",
+      subject: "HKSCDA Donation",
+      type: "payment",
+      segmentId: "segment-test",
+      merchantId: "merchant-test",
+    });
+  });
+
+  test("rejects incomplete order details", async () => {
+    globalThis.fetch = (async () =>
+      encryptedResponse({ status: "paid", out_trade_no: "COD-1" })) as unknown as typeof fetch;
+
+    await expect(
+      createCodClient({ config: config() }).getOrderDetails({ orderRef: "hkscda-order-test" }),
+    ).rejects.toMatchObject({ category: "malformed_response" } satisfies Partial<CodClientError>);
+  });
+
   test("rejects malformed, failed, and incomplete responses without a retry", async () => {
     let calls = 0;
     globalThis.fetch = (async () => {

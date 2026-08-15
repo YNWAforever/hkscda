@@ -177,6 +177,22 @@ describe("AlipayHK donation checkout", () => {
     ]);
   });
 
+  test("forwards cancellation to the donation status poll", async () => {
+    const { resolveDonationReturn } = await import("./donate");
+    const controller = new AbortController();
+    let receivedSignal: AbortSignal | undefined;
+
+    await resolveDonationReturn("11111111-1111-4111-8111-111111111111", undefined, {
+      signal: controller.signal,
+      pollDonationStatus: async (_donationId, options) => {
+        receivedSignal = options?.signal;
+        return false;
+      },
+    });
+
+    expect(receivedSignal).toBe(controller.signal);
+  });
+
   test("does not record success when a COD pending return remains pending after polling", async () => {
     const { resolveDonationReturn } = await import("./donate");
     const trackedEvents: unknown[][] = [];

@@ -132,7 +132,7 @@ describe("COD notification verification", () => {
   });
 
   test("parses a documented negative full-refund amount and requires out_return_no", () => {
-    const refund = paymentData({
+    const refund: Record<string, unknown> = paymentData({
       amount: -150,
       type: "refund",
       out_return_no: "refund-test",

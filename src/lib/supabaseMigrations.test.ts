@@ -29,6 +29,13 @@ describe("supabase migration safety", () => {
     expect(sql).not.toMatch(/delete\s+from\s+(public\.)?(donation|payment|webhook_event)/i);
   });
 
+  test("persists the COD order reference used by the supported details lookup", () => {
+    const sql = readMigration("20260816120000_cod_payment_order_reference.sql");
+    expect(sql).toContain("add column if not exists provider_order_ref text");
+    expect(sql).toContain("payment_provider_order_ref_idx");
+    expect(sql).not.toMatch(/delete\s+from\s+(public\.)?payment/i);
+  });
+
   test("adds grouped visits and adoption information", () => {
     const sql = readMigration("20260718110000_adoption_information.sql");
     expect(sql).toContain("add column if not exists dog_time_windows text[]");
@@ -383,10 +390,11 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("insert into public.knowledge_posts");
     expect(sql).toContain("select document_asset_id");
     expect(sql).toContain("from public.site_document_slots");
-    expect(sql).toContain("on conflict (document_asset_id) where document_asset_id is not null do update");
+    expect(sql).toContain(
+      "on conflict (document_asset_id) where document_asset_id is not null do update",
+    );
     expect(sql).toContain("raise exception");
     expect(sql).not.toContain("insert into public.document_assets");
     expect(sql).not.toContain("storage.objects");
   });
-
 });

@@ -62,6 +62,7 @@ describe("COD AlipayHK provider adapter", () => {
     });
     expect(result).toEqual({
       providerRef: "COD-1",
+      providerOrderRef: createCodOrderReference(input.paymentId),
       url: "https://gateway.example/pay?service=create_forex_trade_wap&out_trade_no=COD-1",
     });
     expect(JSON.stringify(result)).not.toContain("alipayOrderString");
@@ -87,6 +88,7 @@ describe("COD AlipayHK provider adapter", () => {
 
     expect(result).toEqual({
       providerRef: "COD-2",
+      providerOrderRef: createCodOrderReference(input.paymentId),
       url: "https://gateway.example/pay?source=cod&service=create_forex_trade_wap&out_trade_no=COD-2",
     });
   });

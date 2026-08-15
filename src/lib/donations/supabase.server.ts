@@ -55,10 +55,13 @@ export function createSupabaseDonationRepository(client: SupabaseClient): Donati
       if (error) throw error;
       return data;
     },
-    async updatePaymentProviderRef(paymentId, providerRef) {
+    async updatePaymentProviderRef(paymentId, providerRef, providerOrderRef) {
       const { error } = await client
         .from("payment")
-        .update({ provider_ref: providerRef })
+        .update({
+          provider_ref: providerRef,
+          ...(providerOrderRef ? { provider_order_ref: providerOrderRef } : {}),
+        })
         .eq("id", paymentId);
       if (error) throw error;
     },

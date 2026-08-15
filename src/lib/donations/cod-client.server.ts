@@ -3,7 +3,10 @@ import { randomUUID } from "node:crypto";
 import { getCodConfig, type CodConfig } from "./config.server";
 import { aesCbcDecrypt, createCodRequestEnvelope, decodeBase64Strict } from "./cod-crypto.server";
 
-const COD_REQUEST_TIMEOUT_MS = 300_000;
+// Transport timeout only. COD's checkout order expiry is configured separately
+// in create_order; a single status request must not consume the 15-minute donor
+// polling window.
+const COD_REQUEST_TIMEOUT_MS = 15_000;
 
 export type CodClientErrorCategory =
   | "business"
@@ -36,6 +39,20 @@ export type CodCreateOrderResult = {
   url: string;
   alipayOrderString: string;
   outTradeNo: string;
+};
+
+export type CodOrderDetails = {
+  amount: number;
+  currency: string;
+  wallet: string;
+  orderRef: string;
+  status: string;
+  outTradeNo: string;
+  transactionId: string;
+  subject: string;
+  type: string;
+  segmentId: string;
+  merchantId: string;
 };
 
 export type CodTransactionStatus =
@@ -186,6 +203,38 @@ export function createCodClient({
       ]);
       if (!statuses.has(result.status)) throw new CodClientError("malformed_response");
       return { status: result.status as CodTransactionStatus };
+    },
+
+    // COD documents out_trade_no as unsupported for transaction_details.
+    // order_details is the supported lookup for the order_ref we persisted at
+    // checkout and returns the same payment identity fields needed for binding.
+    async getOrderDetails({ orderRef }: { orderRef: string }): Promise<CodOrderDetails> {
+      const result = await request<unknown>("order_details", { order_ref: orderRef });
+      if (
+        !isRecord(result) ||
+        typeof result.amount !== "number" ||
+        !Number.isFinite(result.amount)
+      ) {
+        throw new CodClientError("malformed_response");
+      }
+
+      const details = {
+        amount: result.amount,
+        currency: requiredString(result.currency),
+        wallet: requiredString(result.wallet),
+        orderRef: requiredString(result.order_ref),
+        status: requiredString(result.status),
+        outTradeNo: requiredString(result.out_trade_no),
+        transactionId: requiredString(result.transaction_id),
+        subject: requiredString(result.subject),
+        type: requiredString(result.type),
+        segmentId: requiredString(result.segment_id),
+        merchantId: requiredString(result.merchant_id),
+      };
+      if (Object.values(details).some((value) => value === null)) {
+        throw new CodClientError("malformed_response");
+      }
+      return details as CodOrderDetails;
     },
   };
 }

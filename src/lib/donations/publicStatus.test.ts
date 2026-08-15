@@ -4,7 +4,7 @@ import { pollDonationDefaults, pollDonationSucceeded } from "./publicStatus";
 
 describe("pollDonationSucceeded", () => {
   test("defaults to a 15-minute polling window", () => {
-    expect(pollDonationDefaults).toEqual({ attempts: 90, delayMs: 10_000 });
+    expect(pollDonationDefaults).toEqual({ attempts: 90, delayMs: 10_000, deadlineMs: 900_000 });
   });
 
   test("stops when the server confirms success", async () => {
@@ -57,11 +57,11 @@ describe("pollDonationSucceeded", () => {
     const originalFetch = globalThis.fetch;
     let requestedUrl = "";
     let requestedCache: RequestCache | undefined;
-    globalThis.fetch = async (input, init) => {
+    globalThis.fetch = (async (input, init) => {
       requestedUrl = String(input);
       requestedCache = init?.cache;
       return Response.json({ status: "succeeded" });
-    };
+    }) as typeof fetch;
 
     try {
       await expect(pollDonationSucceeded("donation-1", { attempts: 1 })).resolves.toBe(true);
@@ -88,15 +88,64 @@ describe("pollDonationSucceeded", () => {
     expect(calls).toBe(1);
   });
 
-  test("returns false when a status request fails", async () => {
+  test("retries a transient status request failure within the deadline", async () => {
+    let calls = 0;
     const result = await pollDonationSucceeded("donation-1", {
       attempts: 4,
       delayMs: 0,
       load: async () => {
-        throw new Error("network down");
+        calls += 1;
+        if (calls === 1) throw new Error("network down");
+        return { status: "succeeded" };
+      },
+    });
+
+    expect(result).toBe(true);
+    expect(calls).toBe(2);
+  });
+
+  test("uses an absolute deadline and caps the final delay", async () => {
+    let now = 0;
+    let calls = 0;
+    const sleeps: number[] = [];
+    const result = await pollDonationSucceeded("donation-1", {
+      attempts: 90,
+      delayMs: 60,
+      deadlineMs: 100,
+      now: () => now,
+      sleep: async (delay) => {
+        sleeps.push(delay);
+        now += delay;
+      },
+      load: async () => {
+        calls += 1;
+        return { status: "pending" };
       },
     });
 
     expect(result).toBe(false);
+    expect(calls).toBe(2);
+    expect(sleeps).toEqual([60, 40]);
+  });
+
+  test("passes cancellation to the request and stops after abort", async () => {
+    const controller = new AbortController();
+    let calls = 0;
+    let receivedSignal: AbortSignal | undefined;
+    const result = await pollDonationSucceeded("donation-1", {
+      attempts: 90,
+      delayMs: 0,
+      signal: controller.signal,
+      load: async (_donationId, { signal } = {}) => {
+        calls += 1;
+        receivedSignal = signal;
+        controller.abort();
+        throw new DOMException("aborted", "AbortError");
+      },
+    });
+
+    expect(result).toBe(false);
+    expect(calls).toBe(1);
+    expect(receivedSignal).toBe(controller.signal);
   });
 });

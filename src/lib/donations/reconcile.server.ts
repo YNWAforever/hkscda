@@ -67,6 +67,7 @@ type ReceiptPdfGenerator = (input: {
 export type ReconcileDeps = {
   generatePdf?: ReceiptPdfGenerator;
   now?: () => Date;
+  sendAcknowledgement?: typeof sendDonationAcknowledgement;
 };
 
 type ApplyOptions = {
@@ -304,7 +305,7 @@ export async function completeDonationSideEffects(
     ? await issueReceiptIfNeeded(client, payment, deps)
     : undefined;
 
-  await sendDonationAcknowledgement(client, {
+  const acknowledgement = await (deps.sendAcknowledgement ?? sendDonationAcknowledgement)(client, {
     supporterId: donation.supporter_id,
     donationId: donation.id,
     to: donation.supporter.email,
@@ -313,6 +314,9 @@ export async function completeDonationSideEffects(
     language: donation.supporter.language,
     receiptNo,
   });
+  if (acknowledgement === "failed") {
+    throw new Error("Donation acknowledgement delivery failed");
+  }
 
   return receiptNo;
 }
@@ -554,6 +558,18 @@ export async function issueManualDonationSideEffects(
   deps: ReconcileDeps = {},
 ) {
   const payment = await findPaymentById(client, paymentId);
+  return completeDonationSideEffects(client, payment, deps);
+}
+
+export async function retrySucceededDonationSideEffects(
+  client: SupabaseClient,
+  paymentId: string,
+  deps: ReconcileDeps = {},
+) {
+  const payment = await findPaymentById(client, paymentId);
+  if (payment.status !== "succeeded" || payment.donation.status !== "succeeded") {
+    throw new Error("Donation side effects can only be retried after successful reconciliation");
+  }
   return completeDonationSideEffects(client, payment, deps);
 }
 

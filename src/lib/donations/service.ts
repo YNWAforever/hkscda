@@ -50,7 +50,11 @@ export type DonationRepository = {
     acquisition_trigger: NonNullable<DonationRequest["attribution"]>["trigger"] | null;
   }): Promise<DonationRow>;
   createPayment(input: PaymentInsert): Promise<PaymentRow>;
-  updatePaymentProviderRef(paymentId: string, providerRef: string): Promise<void>;
+  updatePaymentProviderRef(
+    paymentId: string,
+    providerRef: string,
+    providerOrderRef?: string,
+  ): Promise<void>;
   // Compensation hooks used when an external checkout call fails after the
   // donation/payment rows were already written. Optional so existing fakes stay
   // valid; the Supabase repository implements both.
@@ -75,6 +79,7 @@ export type CheckoutProviderInput = {
 
 export type CheckoutProviderResult = {
   providerRef: string;
+  providerOrderRef?: string;
   url: string;
 };
 
@@ -221,7 +226,11 @@ export async function createDonation({
     throw error;
   }
 
-  await repository.updatePaymentProviderRef(pendingPayment.id, checkout.providerRef);
+  await repository.updatePaymentProviderRef(
+    pendingPayment.id,
+    checkout.providerRef,
+    checkout.providerOrderRef,
+  );
 
   return {
     kind: "redirect",

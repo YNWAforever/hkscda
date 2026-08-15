@@ -63,4 +63,18 @@ describe("public donation status", () => {
 
     expect(result).toEqual({ status: "pending" });
   });
+
+  test("does not expose succeeded while COD side-effect recovery is failing", async () => {
+    const result = await loadPublicDonationStatus({
+      donationId: "f8dce8fa-83f4-4d5f-b0b0-fbc3348efb7a",
+      repository: {
+        refreshPendingCod: async () => {
+          throw new Error("acknowledgement retry failed");
+        },
+        findStatus: async () => "succeeded",
+      },
+    });
+
+    expect(result).toEqual({ status: "pending" });
+  });
 });

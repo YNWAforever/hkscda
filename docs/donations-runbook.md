@@ -44,9 +44,25 @@ status refresh confirms the transaction.
 
 ## Supabase
 
-Apply `supabase/migrations/20260623160506_phase_2_donations_mvp.sql`.
-It creates donation, supporter, consent, receipt, message, webhook, audit, and
-admin-role tables with RLS enabled.
+Apply the repository's full ordered migration chain, not only the original
+donations migration. In particular, COD AlipayHK requires both:
+
+- `supabase/migrations/20260720100000_cod_alipayhk_payment_support.sql`
+- `supabase/migrations/20260816120000_cod_payment_order_reference.sql`
+
+After verifying the linked Supabase project identity, review the pending list
+and SQL before applying it:
+
+```bash
+supabase migration list --linked
+supabase db push --linked --dry-run
+supabase db push --linked
+```
+
+The earlier `20260623160506_phase_2_donations_mvp.sql` migration creates the
+donation, supporter, consent, receipt, message, webhook, audit, and admin-role
+tables with RLS enabled. The later lifecycle migrations and both COD migrations
+must be applied in timestamp order by the normal CLI flow above.
 
 Admin users are mapped by inserting rows into `admin_user`:
 

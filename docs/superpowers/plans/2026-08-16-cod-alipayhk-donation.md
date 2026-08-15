@@ -122,12 +122,12 @@ bun test src/lib/donations/cod-crypto.server.test.ts
 - Add `getCodConfig()` to `config.server.ts` with lazy reads of:
 
   ```text
-COD_ENV=sandbox|production
-COD_MERCHANT_ID
-COD_SEGMENT_ID
-COD_AES_SECRET_BASE64
-COD_PRIVATE_KEY_BASE64
-COD_NOTIFICATION_PUBLIC_KEY_BASE64
+  COD_ENV=sandbox|production
+  COD_MERCHANT_ID
+  COD_SEGMENT_ID
+  COD_AES_SECRET_BASE64
+  COD_PRIVATE_KEY_BASE64
+  COD_NOTIFICATION_PUBLIC_KEY_BASE64
   ```
 
 - Derive the API base internally (`https://aqs-api.sandbox-codpayment.com` for sandbox and `https://aqs-api.codpayment.com` for production); do not accept an arbitrary URL environment variable. Decode key material only inside this function, validate AES length (16 or 32 bytes), parse both PEM keys, and return a typed object. Do not log the decoded values.
@@ -168,8 +168,10 @@ COD_NOTIFICATION_PUBLIC_KEY_BASE64
   ```
 
   `order_ref` must contain only COD-allowed characters, be stable for the internal payment ID, and be no longer than 64 characters. The subject must be bounded and bilingual without donor PII.
+
 - Feed an encrypted success response containing `url`, `alipay_order_string`, and `out_trade_no`; assert WAP and PC2MOBILE compose a server-owned hosted URL without exposing provider payloads to the browser. Store `out_trade_no` as the provider reference.
 - Test `refresh_transaction_status` request parameters (`out_trade_no`, `segment_id`, `request_details: true`) and map `paid`, `not_exists`, `new`, `expired`, `canceled`, and `failed` to typed internal results.
+- Test the supported `order_details` request by persisted `order_ref` and its typed merchant, segment, wallet, currency, type, status, reference, amount, and transaction fields.
 - Test malformed envelopes, invalid decrypted JSON, COD `success: false` errors, non-2xx responses, timeout/abort, and missing required success fields. Assert create-order transport ambiguity is surfaced without an automatic retry.
 
 Run:
@@ -180,9 +182,9 @@ bun test src/lib/donations/cod-client.server.test.ts src/lib/donations/cod-provi
 
 ### 3.2 Implement the client and adapter
 
-- `cod-client.server.ts` owns request UUID/time generation, JSON serialization, crypto envelope construction, bounded `fetch` timeout, response envelope validation/decryption, and safe internal error categories. It must expose only focused `createOrder` and `refreshTransactionStatus` operations and must not accept raw browser input.
+- `cod-client.server.ts` owns request UUID/time generation, JSON serialization, crypto envelope construction, bounded `fetch` timeout, response envelope validation/decryption, and safe internal error categories. It exposes focused `createOrder`, `refreshTransactionStatus`, and `getOrderDetails` operations and must not accept raw browser input.
 - Use the PDF service names `create_order` and `refresh_transaction_status`. For `create_order`, use `payment_solution: "WAP"` or `"PC2MOBILE"`, `wallet: "ALIPAYHK"`, `currency: "HKD"`, a bounded `timeout` of at least the documented 5 minutes, and the configured segment ID.
-- `cod-provider.server.ts` converts `amountCents` to an exact two-decimal number, builds the stable order reference, passes the validated checkout experience, and returns `{ providerRef: out_trade_no, url }`. Keep return URLs limited to the internal donation ID and a pending marker.
+- `cod-provider.server.ts` converts `amountCents` to an exact two-decimal number, builds the stable order reference, passes the validated checkout experience, and returns `{ providerRef: out_trade_no, providerOrderRef: order_ref, url }`. Persist both references. Keep return URLs limited to the internal donation ID and a pending marker.
 - Extend `PaymentProviders` and `createPaymentProviders()` with `createCodAlipayHkCheckout` while leaving PayPal functions unchanged. Change Stripe Checkout to `payment_method_types: ["card"]`; add a regression assertion that Alipay is no longer sent to Stripe.
 
 ### 3.3 Verify this task
@@ -245,7 +247,7 @@ bun test src/lib/donations/publicStatus.test.ts src/lib/donations/checkoutExperi
 - For payment data, assert exact validation of `transaction_id`, `amount`, `currency: "HKD"`, `merchant_id`, `segment_id`, `out_trade_no`, `type: "payment"`, `status: "paid"`, and optional `wallet: "ALIPAYHK"`. Reject mismatched merchant/segment/wallet/currency/type/status, unmapped provider references, and amount mismatches without crediting.
 - For refund data, use the PDF fields (`transaction_id`, negative `amount`, `currency`, `merchant_id`, `segment_id`, `out_trade_no`, `out_return_no`, `type: "refund"`, `status: "paid"`). Full refund enters the existing refund lifecycle; partial refund creates a manual-review audit and does not void the whole receipt.
 - Assert valid payment, valid duplicate, verified-but-unmapped, and transient processing outcomes return exactly plain `success`, while invalid signatures/malformed envelopes return a non-success response and database errors return 500 for retry.
-- Test `refreshPendingCodDonation` selects only a pending `cod` payment, calls `refresh_transaction_status`, reconciles a `paid` response through the same idempotent function using a stable synthetic event ID, and leaves `not_exists`/unpaid/transport errors pending.
+- Test `refreshPendingCodDonation` selects pending or succeeded `cod` payments. Pending payments must corroborate a paid refresh with fully bound `order_details`; every mismatch must avoid reconciliation. Succeeded payments retry idempotent receipt/acknowledgement side effects.
 - Extend public-status tests with an optional `refreshPendingCod` callback and assert it runs after UUID validation and before `findStatus`. A callback error must be swallowed by the route's existing error policy without inventing a terminal status.
 
 Run:
@@ -259,7 +261,7 @@ bun test src/lib/donations/cod-webhook.server.test.ts src/routes/api/webhooks/-c
 - `cod-webhook.server.ts` keeps the received `data` string byte-for-byte intact, verifies RSA-SHA256 with the configured COD notification public key, then parses JSON. It validates the configured merchant and segment, wallet/currency, type/status, amount in cents, and provider reference before returning a typed payment/refund action. It must not import React or read browser state.
 - `src/routes/api/webhooks/cod.ts` applies the existing webhook rate-limit pattern, reads the raw body, extracts the outer envelope, delegates verification/validation, then calls `reconcileProviderPayment` or `refundProviderPayment` with `provider: "cod"`, `providerRef: out_trade_no`, and a stable event ID such as `transaction_id:type:status:amount`. Keep acknowledged responses exactly `new Response("success")` with no JSON wrapper.
 - Valid but permanently inconsistent events should be safely audited and acknowledged. Only transient database/internal failures should return 500. Never log decrypted data, signatures, donor information, or full provider responses.
-- `cod-status.server.ts` queries the pending donation/payment join, instantiates the lazy COD client only when a matching pending `cod` payment exists, and maps `paid` to the existing reconciliation function. Use a deterministic refresh event ID derived from `out_trade_no`, status, and transaction ID so webhook-plus-refresh is idempotent.
+- `cod-status.server.ts` queries the COD payment, instantiates the lazy COD client only for a pending payment with both persisted references, and treats status-only `paid` as insufficient. Load `order_details` by `provider_order_ref`, validate all provider/local identity and amount fields, then reconcile with an event ID derived from validated transaction ID, `out_trade_no`, and status. For succeeded rows, retry the existing idempotent side effects and keep public status pending while recovery fails.
 - Extend `PublicDonationStatusRepository` with an optional `refreshPendingCod(donationId)` hook. `loadPublicDonationStatus` calls it only after the UUID check and before `findStatus`. `createSupabaseDonationStatusRepository` accepts the hook as a dependency, and the status route supplies `refreshPendingCodDonation` while retaining its current no-store response and 20-per-minute IP limit.
 - A refresh timeout, `not_exists`, or non-paid result returns the current local status unchanged. The route must never mark a donation failed merely because COD could not be reached.
 

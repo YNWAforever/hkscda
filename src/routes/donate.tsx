@@ -208,6 +208,7 @@ type DonationReturnDependencies = {
   pollDonationStatus?: typeof pollDonationSucceeded;
   markDonationEvent?: typeof markDonationEventOnce;
   trackDonationEvent?: typeof trackDonationEvent;
+  signal?: AbortSignal;
 };
 
 export async function resolveDonationReturn(
@@ -215,7 +216,9 @@ export async function resolveDonationReturn(
   snapshot: DonationCheckoutSnapshot | undefined,
   dependencies: DonationReturnDependencies = {},
 ): Promise<DonationReturnState> {
-  const confirmed = await (dependencies.pollDonationStatus ?? pollDonationSucceeded)(donationId);
+  const confirmed = await (dependencies.pollDonationStatus ?? pollDonationSucceeded)(donationId, {
+    signal: dependencies.signal,
+  });
   if (!confirmed) return "unavailable";
 
   const markEvent = dependencies.markDonationEvent ?? markDonationEventOnce;
@@ -281,15 +284,19 @@ export function DonatePage({
 
     setReturnState("pending");
     const snapshot = readCheckoutSnapshot(donationId);
+    const controller = new AbortController();
 
     let active = true;
-    void resolveDonationReturn(donationId, snapshot).then((state) => {
-      if (!active) return;
-      setReturnState(state);
-    });
+    void resolveDonationReturn(donationId, snapshot, { signal: controller.signal }).then(
+      (state) => {
+        if (!active) return;
+        setReturnState(state);
+      },
+    );
 
     return () => {
       active = false;
+      controller.abort();
     };
   }, [search.donation, search.status]);
 
@@ -315,18 +322,20 @@ export function DonatePage({
       const response = await fetch("/api/donations", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify(createDonationRequest({
-          amountCents: Math.round(amountHkd * 100),
-          purpose,
-          customPurpose,
-          method,
-          checkoutExperience,
-          receiptRequested,
-          donor: { name, email, phone, language },
-          consents: { email: emailConsent, whatsapp: whatsappConsent },
-          turnstileToken,
-          ...(attribution ? { attribution } : {}),
-        })),
+        body: JSON.stringify(
+          createDonationRequest({
+            amountCents: Math.round(amountHkd * 100),
+            purpose,
+            customPurpose,
+            method,
+            checkoutExperience,
+            receiptRequested,
+            donor: { name, email, phone, language },
+            consents: { email: emailConsent, whatsapp: whatsappConsent },
+            turnstileToken,
+            ...(attribution ? { attribution } : {}),
+          }),
+        ),
       });
 
       if (!response.ok) throw new Error("Donation request failed");
@@ -376,9 +385,7 @@ export function DonatePage({
   );
   const primaryWedding =
     availableWeddingSlots.find((slot) => slot.language === language) ?? availableWeddingSlots[0];
-  const alternateWedding = availableWeddingSlots.find(
-    (slot) => slot.id !== primaryWedding?.id,
-  );
+  const alternateWedding = availableWeddingSlots.find((slot) => slot.id !== primaryWedding?.id);
 
   return (
     <main className="bg-[var(--color-background)]">
