@@ -1,6 +1,7 @@
 # Donations MVP Runbook
 
-This build runs in test mode until production keys are explicitly configured.
+This build is sandbox-only until the separate production approval gates below
+are completed. Do not activate a live payment method from this runbook.
 
 ## Required Environment
 
@@ -14,6 +15,32 @@ Copy `.env.example` to `.env.local` and fill test-mode values only:
 
 Do not commit real keys. Do not put service role or provider secrets in `VITE_*`
 variables.
+
+## COD AlipayHK Sandbox Setup
+
+Direct COD is the processor for AlipayHK; Stripe remains card-only. Copy
+`.env.example` to `.env.local`, then set only sandbox values for these six
+server-only variables:
+
+- `COD_ENV=sandbox`
+- `COD_MERCHANT_ID`
+- `COD_SEGMENT_ID`
+- `COD_AES_SECRET_BASE64`
+- `COD_PRIVATE_KEY_BASE64`
+- `COD_NOTIFICATION_PUBLIC_KEY_BASE64`
+
+The values ending in `_BASE64` are encoded server secrets or keys, not browser
+configuration. `COD_PRIVATE_KEY_BASE64` is the merchant private key used to
+sign outbound COD requests. `COD_NOTIFICATION_PUBLIC_KEY_BASE64` is the
+separate COD notification public key used to verify inbound notifications.
+Never substitute one for the other, commit either value, log their decoded
+contents, or expose any COD value through a `VITE_*` variable.
+
+Configure COD to send signed notifications to `POST {APP_URL}/api/webhooks/cod`
+only after the webhook-registration gate is approved. The route verifies and
+deduplicates notifications before reconciliation. A browser return cannot mark
+a donation paid: it remains pending until a verified notification or server-side
+status refresh confirms the transaction.
 
 ## Supabase
 
@@ -33,11 +60,36 @@ signed URLs when needed.
 
 ## Payment Test Checklist
 
-- Stripe: use Checkout in test mode with cards and Alipay/AlipayHK enabled.
+- Stripe: use Checkout in test mode with cards only. Do not enable Stripe
+  Alipay or AlipayHK for this donation flow.
+- AlipayHK: use direct COD sandbox checkout. Mobile uses COD `WAP`; desktop
+  uses COD `PC2MOBILE` and the hosted QR flow. Both return the donor to a
+  pending confirmation screen until the server confirms payment.
 - PayPal: use sandbox buyer approval and capture.
 - FPS/PayMe: use assisted-manual flow and confirm through admin reconciliation.
-- Webhooks: verify Stripe signatures and dedupe every provider event id.
+- Webhooks: verify Stripe, PayPal, and COD notifications before processing and
+  dedupe every provider event id. COD notifications are signed and must be
+  idempotent; do not process unverified or mismatched payment data.
+- Status refresh: while a COD return remains pending, the public status route
+  can request the provider status from the server. It is a recovery path, not
+  browser authority to change payment state.
+- Refunds: a verified full COD refund reverses the payment through the existing
+  lifecycle. Partial refunds require manual review and must not be automatically
+  credited or reversed.
 - Receipts: only issue for requested gifts of HK$100 or more.
+
+## External Payment Gates
+
+Keep real payment activity disabled by default. A real sandbox smoke test needs
+explicit local sandbox credentials and separate network authorization; do not
+run it from CI or a preview deployment. Before any sandbox smoke test, approve
+the sandbox credential install, merchant public-key registration, and COD
+notification endpoint registration.
+
+Production remains a separate review: approve the production endpoint and
+credentials, production key registration, webhook registration, deployment,
+and activation independently. Confirm the public HTTPS `APP_URL` and the
+registered notification URL before activating COD in production.
 
 ## Verification
 
@@ -45,11 +97,13 @@ Run:
 
 ```bash
 bun run test
+bun run typecheck
 bun run lint
 bun run build
 ```
 
-Upgrade the Vercel CLI before deployment work:
+Only after the deployment gate is approved, upgrade the Vercel CLI before
+deployment work:
 
 ```bash
 npm i -g vercel@latest
