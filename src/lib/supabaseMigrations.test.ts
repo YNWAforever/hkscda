@@ -16,6 +16,19 @@ function readMigrationBySuffix(suffix: string) {
 }
 
 describe("supabase migration safety", () => {
+  test("extends donation payment checks for COD AlipayHK without rewriting rows", () => {
+    const sql = readMigration("20260720100000_cod_alipayhk_payment_support.sql");
+
+    expect(sql).toContain("drop constraint if exists donation_method_check");
+    expect(sql).toContain("add constraint donation_method_check check");
+    expect(sql).toContain("'alipayhk'");
+    expect(sql).toContain("drop constraint if exists payment_provider_check");
+    expect(sql).toContain("'cod'");
+    expect(sql).toContain("drop constraint if exists webhook_event_provider_check");
+    expect(sql).toContain("'cod'");
+    expect(sql).not.toMatch(/delete\s+from\s+(public\.)?(donation|payment|webhook_event)/i);
+  });
+
   test("adds grouped visits and adoption information", () => {
     const sql = readMigration("20260718110000_adoption_information.sql");
     expect(sql).toContain("add column if not exists dog_time_windows text[]");

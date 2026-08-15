@@ -46,6 +46,9 @@ const providers: PaymentProviders = {
   async createPayPalOrder() {
     return { providerRef: "paypal_order_123", url: "https://paypal.test/checkout" };
   },
+  async createCodAlipayHkCheckout() {
+    return { providerRef: "cod_order_123", url: "https://cod.test/checkout" };
+  },
 };
 
 const baseInput = {
@@ -111,6 +114,9 @@ describe("createDonation", () => {
       async createPayPalOrder() {
         return { providerRef: "paypal_order_123", url: "https://paypal.test/checkout" };
       },
+      async createCodAlipayHkCheckout() {
+        return { providerRef: "cod_order_123", url: "https://cod.test/checkout" };
+      },
     };
 
     await createDonation({
@@ -148,6 +154,9 @@ describe("createDonation", () => {
       },
       async createPayPalOrder() {
         throw new Error("paypal unavailable");
+      },
+      async createCodAlipayHkCheckout() {
+        throw new Error("cod unavailable");
       },
     };
 
@@ -196,6 +205,60 @@ describe("createDonation", () => {
       acquisition_context: "animal",
       acquisition_placement: "mobile-bottom",
       acquisition_trigger: "scroll",
+    });
+  });
+
+  test("maps AlipayHK to COD and passes the validated checkout experience only to COD", async () => {
+    const repository = createFakeRepository();
+    const calls = { stripe: 0, paypal: 0, cod: [] as unknown[] };
+    const instrumentedProviders = {
+      async createStripeCheckout() {
+        calls.stripe += 1;
+        return { providerRef: "cs_test_123", url: "https://checkout.stripe.test/session" };
+      },
+      async createPayPalOrder() {
+        calls.paypal += 1;
+        return { providerRef: "paypal_order_123", url: "https://paypal.test/checkout" };
+      },
+      async createCodAlipayHkCheckout(input: unknown) {
+        calls.cod.push(input);
+        return { providerRef: "cod_order_123", url: "https://cod.test/checkout" };
+      },
+    } satisfies PaymentProviders;
+
+    const result = await createDonation({
+      input: { ...baseInput, method: "alipayhk", checkoutExperience: "wap" },
+      repository,
+      providers: instrumentedProviders,
+      now: () => new Date("2026-06-24T10:00:00.000Z"),
+    });
+
+    expect(repository.payments).toContainEqual({
+      donation_id: "f8dce8fa-83f4-4d5f-b0b0-fbc3348efb7a",
+      provider: "cod",
+      provider_ref: null,
+      amount_cents: 30000,
+      status: "pending",
+    });
+    expect(calls).toEqual({
+      stripe: 0,
+      paypal: 0,
+      cod: [
+        {
+          donationId: "f8dce8fa-83f4-4d5f-b0b0-fbc3348efb7a",
+          paymentId: "payment-1",
+          amountCents: 30000,
+          donorEmail: "donor@example.com",
+          purpose: "medical",
+          checkoutExperience: "wap",
+        },
+      ],
+    });
+    expect(result).toEqual({
+      kind: "redirect",
+      donationId: "f8dce8fa-83f4-4d5f-b0b0-fbc3348efb7a",
+      provider: "cod",
+      url: "https://cod.test/checkout",
     });
   });
 });

@@ -6,10 +6,11 @@ import { isReceiptEligible } from "./domain";
 import { buildReconciliationPlan } from "./reconciliation";
 import { generateReceiptPdf } from "./receipt-pdf.server";
 import { sendDonationAcknowledgement } from "./notifications.server";
+import type { OnlinePaymentProvider } from "./contracts";
 
 type ReconcileProviderArgs = {
   client: SupabaseClient;
-  provider: "stripe" | "paypal";
+  provider: OnlinePaymentProvider;
   providerRef: string;
   providerEventId: string;
   eventType: string;

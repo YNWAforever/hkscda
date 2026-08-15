@@ -110,6 +110,15 @@ export async function createPayPalOrder(
   return { providerRef: data.id, url: approveLink.href };
 }
 
+// The concrete COD implementation is introduced with its encrypted client.
+// Keeping the checked interface present here prevents an AlipayHK request from
+// silently falling through to another processor while that adapter is wired in.
+export async function createCodAlipayHkCheckout(
+  _input: CheckoutProviderInput,
+): Promise<CheckoutProviderResult> {
+  throw new Error("COD AlipayHK checkout is not configured");
+}
+
 export function assertPayPalCaptureCompleted(httpStatus: number, body: unknown) {
   const payload = body as {
     status?: string;
@@ -172,5 +181,6 @@ export function createPaymentProviders() {
   return {
     createStripeCheckout,
     createPayPalOrder,
+    createCodAlipayHkCheckout,
   };
 }

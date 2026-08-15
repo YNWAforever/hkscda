@@ -9,6 +9,7 @@ import {
   isReceiptEligible,
 } from "./domain";
 import type { DonationAttribution } from "./attribution";
+import type { OnlinePaymentProvider, PaymentProvider } from "./domain";
 
 describe("donation domain", () => {
   test("normalizes valid HKD donation requests", () => {
@@ -34,6 +35,37 @@ describe("donation domain", () => {
     expect(parsed.donor.name).toBe("陳 小明");
     expect(parsed.donor.email).toBe("donor@example.com");
     expect(parsed.donor.phone).toBe("9123 4567");
+  });
+
+  test("accepts AlipayHK and validates its checkout experience", () => {
+    const input = {
+      amountCents: 30000,
+      currency: "HKD" as const,
+      purpose: "medical" as const,
+      method: "alipayhk",
+      receiptRequested: true,
+      donor: { name: "Ada", email: "ada@example.com", language: "en" as const },
+      consents: { email: true, whatsapp: false },
+    };
+
+    expect(donationRequestSchema.parse(input)).toMatchObject({
+      method: "alipayhk",
+      checkoutExperience: "desktop_qr",
+    });
+    expect(
+      donationRequestSchema.parse({ ...input, checkoutExperience: "wap" }).checkoutExperience,
+    ).toBe("wap");
+    expect(() =>
+      donationRequestSchema.parse({ ...input, checkoutExperience: "unsupported" }),
+    ).toThrow();
+  });
+
+  test("keeps donor methods distinct from stored payment providers", () => {
+    const paymentProviders = ["stripe", "paypal", "fps", "payme", "manual", "cod"] satisfies PaymentProvider[];
+    const onlineProviders = ["stripe", "paypal", "cod"] satisfies OnlinePaymentProvider[];
+
+    expect(paymentProviders).toEqual(["stripe", "paypal", "fps", "payme", "manual", "cod"]);
+    expect(onlineProviders).toEqual(["stripe", "paypal", "cod"]);
   });
 
   test("normalizes and bounds an optional custom purpose", () => {

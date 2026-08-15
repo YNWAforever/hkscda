@@ -4,6 +4,8 @@ import {
   donationRequestSchema,
   type DonationMethod,
   type DonationRequest,
+  type OnlinePaymentProvider,
+  type PaymentProvider,
 } from "./domain";
 
 type SupporterRow = {
@@ -18,7 +20,7 @@ type DonationRow = {
 
 type PaymentInsert = {
   donation_id: string;
-  provider: DonationMethod;
+  provider: PaymentProvider;
   provider_ref: string | null;
   amount_cents: number;
   status: "pending";
@@ -59,6 +61,7 @@ export type DonationRepository = {
 export type PaymentProviders = {
   createStripeCheckout(input: CheckoutProviderInput): Promise<CheckoutProviderResult>;
   createPayPalOrder(input: CheckoutProviderInput): Promise<CheckoutProviderResult>;
+  createCodAlipayHkCheckout(input: CheckoutProviderInput): Promise<CheckoutProviderResult>;
 };
 
 export type CheckoutProviderInput = {
@@ -67,6 +70,7 @@ export type CheckoutProviderInput = {
   amountCents: number;
   donorEmail: string;
   purpose: DonationRequest["purpose"];
+  checkoutExperience: DonationRequest["checkoutExperience"];
 };
 
 export type CheckoutProviderResult = {
@@ -85,7 +89,7 @@ export type CreateDonationResult =
   | {
       kind: "redirect";
       donationId: string;
-      provider: "stripe" | "paypal";
+      provider: OnlinePaymentProvider;
       url: string;
     }
   | {
@@ -178,9 +182,11 @@ export async function createDonation({
     };
   }
 
+  const paymentProvider: OnlinePaymentProvider =
+    donationInput.method === "alipayhk" ? "cod" : donationInput.method;
   const pendingPayment = await repository.createPayment({
     donation_id: donation.id,
-    provider: donationInput.method,
+    provider: paymentProvider,
     provider_ref: null,
     amount_cents: donationInput.amountCents,
     status: "pending",
@@ -192,13 +198,19 @@ export async function createDonation({
     amountCents: donationInput.amountCents,
     donorEmail: donationInput.donor.email,
     purpose: donationInput.purpose,
+    checkoutExperience: donationInput.checkoutExperience,
   };
   let checkout: CheckoutProviderResult;
   try {
-    checkout =
-      donationInput.method === "stripe"
-        ? await providers.createStripeCheckout(checkoutInput)
-        : await providers.createPayPalOrder(checkoutInput);
+    if (donationInput.method === "stripe") {
+      checkout = await providers.createStripeCheckout(checkoutInput);
+    } else if (donationInput.method === "paypal") {
+      checkout = await providers.createPayPalOrder(checkoutInput);
+    } else if (donationInput.method === "alipayhk") {
+      checkout = await providers.createCodAlipayHkCheckout(checkoutInput);
+    } else {
+      throw new Error(`Unsupported online donation method: ${donationInput.method}`);
+    }
   } catch (error) {
     // The checkout provider failed after we wrote the donation + pending
     // payment. Without compensation these orphan rows accumulate and a retry
@@ -214,7 +226,7 @@ export async function createDonation({
   return {
     kind: "redirect",
     donationId: donation.id,
-    provider: donationInput.method,
+    provider: paymentProvider,
     url: checkout.url,
   };
 }
