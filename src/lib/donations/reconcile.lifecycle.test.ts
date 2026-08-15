@@ -264,12 +264,14 @@ function createWebhookFake({
   payment,
   paymentByProvider = payment,
   issuedReceipts = [],
+  transitionMiss = false,
 }: {
   payment: typeof basePayment | null;
   // What the provider_ref lookup returns (defaults to `payment`). Set null to
   // simulate a provider_ref miss that must fall back to the payment-id lookup.
   paymentByProvider?: typeof basePayment | null;
   issuedReceipts?: Array<{ id: string; pdf_url: string | null }>;
+  transitionMiss?: boolean;
 }) {
   const operations: Array<{
     table: string;
@@ -290,6 +292,10 @@ function createWebhookFake({
         filters.push(["is", column, value]);
         return builder;
       },
+      in(column: string, value: unknown) {
+        filters.push(["in", column, value]);
+        return builder;
+      },
       contains(column: string, value: unknown) {
         filters.push(["contains", column, value]);
         return builder;
@@ -301,6 +307,13 @@ function createWebhookFake({
         return Promise.resolve(readSingle(table, filters));
       },
       maybeSingle() {
+        if (mode === "update" && (payload as { status?: string })?.status === "refunded") {
+          operations.push({ table, action: mode, payload, filters });
+          return Promise.resolve({
+            data: transitionMiss ? null : { id: `${table}-1` },
+            error: null,
+          });
+        }
         return Promise.resolve(readSingle(table, filters));
       },
       then(resolve: (value: { data?: unknown; error: null }) => void) {
@@ -413,6 +426,59 @@ describe("failProviderPayment", () => {
 });
 
 describe("refundProviderPayment", () => {
+  test("makes a verified refund terminal even when it arrives before the paid notification", async () => {
+    const pendingCodPayment = {
+      ...pendingPaymentNoReceipt,
+      provider: "cod",
+      provider_ref: "cod-order-test",
+    };
+    const { client, operations } = createWebhookFake({ payment: pendingCodPayment });
+
+    const refund = await refundProviderPayment({
+      client: client as never,
+      provider: "cod",
+      providerRef: "cod-order-test",
+      providerEventId: "transaction-refund:refund:paid:-150",
+      eventType: "refund.paid",
+      payload: { type: "refund", status: "paid" },
+    });
+
+    expect(refund).toMatchObject({ kind: "refunded" });
+    const paymentUpdate = operations.find(
+      (operation) => operation.table === "payment" && operation.action === "update",
+    );
+    const donationUpdate = operations.find(
+      (operation) => operation.table === "donation" && operation.action === "update",
+    );
+    expect(paymentUpdate?.filters).toContainEqual(["in", "status", ["pending", "succeeded"]]);
+    expect(donationUpdate?.filters).toContainEqual(["in", "status", ["pending", "succeeded"]]);
+
+    const terminal = {
+      ...pendingCodPayment,
+      status: "refunded",
+      donation: { ...pendingCodPayment.donation, status: "refunded" },
+    };
+    const latePaid = createWebhookFake({ payment: terminal });
+    const reconcile = await reconcileProviderPayment({
+      client: latePaid.client as never,
+      provider: "cod",
+      providerRef: "cod-order-test",
+      providerEventId: "transaction-payment:payment:paid:150",
+      eventType: "payment.paid",
+      payload: { type: "payment", status: "paid" },
+    });
+
+    expect(reconcile).toMatchObject({ kind: "skipped", reason: "terminal_status" });
+    expect(
+      latePaid.operations.some(
+        (operation) =>
+          operation.table === "payment" &&
+          operation.action === "update" &&
+          (operation.payload as { status?: string }).status === "succeeded",
+      ),
+    ).toBe(false);
+  });
+
   test("marks refunded (guarded on succeeded), voids the receipt, and removes its PDF", async () => {
     const { client, operations, removals } = createWebhookFake({
       payment: basePayment,
@@ -433,7 +499,7 @@ describe("refundProviderPayment", () => {
     expect(statusUpdate(operations, "donation")?.status).toBe("refunded");
 
     const paymentUpdate = operations.find((o) => o.table === "payment" && o.action === "update");
-    expect(paymentUpdate?.filters).toContainEqual(["eq", "status", "succeeded"]);
+    expect(paymentUpdate?.filters).toContainEqual(["in", "status", ["pending", "succeeded"]]);
 
     const receiptUpdate = operations.find((o) => o.table === "receipt" && o.action === "update");
     expect((receiptUpdate?.payload as { status?: string }).status).toBe("void");
@@ -473,6 +539,39 @@ describe("flagProviderWebhookForReview", () => {
     ).toBe(true);
     expect(operations.some((o) => o.table === "payment" && o.action === "update")).toBe(false);
     expect(operations.some((o) => o.table === "donation" && o.action === "update")).toBe(false);
+  });
+});
+
+describe("refundProviderPayment guard outcomes", () => {
+  test("does not report refunded when guarded state transitions affect no rows", async () => {
+    const pendingCodPayment = {
+      ...pendingPaymentNoReceipt,
+      provider: "cod",
+      provider_ref: "cod-order-test",
+    };
+    const { client, operations } = createWebhookFake({
+      payment: pendingCodPayment,
+      transitionMiss: true,
+    });
+
+    const result = await refundProviderPayment({
+      client: client as never,
+      provider: "cod",
+      providerRef: "cod-order-test",
+      providerEventId: "transaction-refund:refund:paid:-150",
+      eventType: "refund.paid",
+      payload: { type: "refund", status: "paid" },
+    });
+
+    expect(result).toMatchObject({ kind: "manual_review", reason: "state_transition_conflict" });
+    expect(
+      operations.some(
+        (operation) =>
+          operation.table === "audit_log" &&
+          operation.action === "insert" &&
+          (operation.payload as { action?: string }).action === "payment.refund_state_conflict",
+      ),
+    ).toBe(true);
   });
 });
 

@@ -149,6 +149,25 @@ async function markWebhookEventProcessed(args: ReconcileProviderArgs, processing
   if (error) throw error;
 }
 
+async function releaseWebhookEventReservation(
+  args: ReconcileProviderArgs,
+  processingOwner: string,
+) {
+  const { error } = await args.client
+    .from("webhook_event")
+    .update({
+      processing_started_at: null,
+      processing_expires_at: null,
+      processing_owner: null,
+    })
+    .eq("provider", args.provider)
+    .eq("provider_event_id", args.providerEventId)
+    .eq("processing_owner", processingOwner)
+    .is("processed_at", null);
+
+  if (error) throw error;
+}
+
 const PAYMENT_WITH_DONATION_SELECT =
   "id,provider,provider_ref,amount_cents,status,donation:donation_id(id,amount_cents,receipt_requested,status,supporter_id,supporter:supporter_id(id,name,email,language))";
 
@@ -378,50 +397,59 @@ async function processProviderWebhook<T>(
   const reservation = await reserveWebhookEvent(args);
   if (reservation.kind === "duplicate") return { kind: "duplicate" as const };
 
-  let payment = await findPaymentByProvider(args.client, args.provider, args.providerRef);
+  try {
+    let payment = await findPaymentByProvider(args.client, args.provider, args.providerRef);
 
-  // Fallback: the provider_ref lookup missed (e.g. provider_ref was never
-  // persisted). Match the payment id from provider metadata so a real paid
-  // donation isn't lost, then backfill provider_ref for future events.
-  if (!payment && args.fallbackPaymentId) {
-    const candidate = await findPaymentByIdMaybe(args.client, args.fallbackPaymentId);
-    if (candidate && candidate.provider === args.provider) {
-      payment = candidate;
-      if (!payment.provider_ref && args.providerRef) {
-        const { error } = await args.client
-          .from("payment")
-          .update({ provider_ref: args.providerRef })
-          .eq("id", payment.id)
-          .is("provider_ref", null);
-        if (error) throw error;
-        payment.provider_ref = args.providerRef;
+    // Fallback: the provider_ref lookup missed (e.g. provider_ref was never
+    // persisted). Match the payment id from provider metadata so a real paid
+    // donation isn't lost, then backfill provider_ref for future events.
+    if (!payment && args.fallbackPaymentId) {
+      const candidate = await findPaymentByIdMaybe(args.client, args.fallbackPaymentId);
+      if (candidate && candidate.provider === args.provider) {
+        payment = candidate;
+        if (!payment.provider_ref && args.providerRef) {
+          const { error } = await args.client
+            .from("payment")
+            .update({ provider_ref: args.providerRef })
+            .eq("id", payment.id)
+            .is("provider_ref", null);
+          if (error) throw error;
+          payment.provider_ref = args.providerRef;
+        }
       }
     }
-  }
 
-  if (!payment) {
-    // The event verified but references a payment we don't have. Retrying will
-    // never succeed, so mark it processed to stop the provider's retry storm.
-    // The caller surfaces this so the route can return 200 (acknowledged).
-    await onNotFound?.();
-    await markWebhookEventProcessed(args, reservation.processingOwner);
-    return { kind: "not_found" as const };
-  }
+    if (!payment) {
+      // The event verified but references a payment we don't have. Retrying will
+      // never succeed, so mark it processed to stop the provider's retry storm.
+      // The caller surfaces this so the route can return 200 (acknowledged).
+      await onNotFound?.();
+      await markWebhookEventProcessed(args, reservation.processingOwner);
+      return { kind: "not_found" as const };
+    }
 
-  const result = await apply(payment);
-  // The mutations + side effects are already committed. If marking the event
-  // processed fails now, do NOT 500 (which would make the provider retry and
-  // re-run everything). The work is idempotent, so log and acknowledge; a
-  // future redelivery re-claims the still-unprocessed event and no-ops.
-  try {
-    await markWebhookEventProcessed(args, reservation.processingOwner);
-  } catch (markError) {
-    console.error(
-      "Failed to mark webhook event processed after applying; side effects already committed",
-      markError,
-    );
+    const result = await apply(payment);
+    // The mutations + side effects are already committed. If marking the event
+    // processed fails now, do NOT 500 (which would make the provider retry and
+    // re-run everything). The work is idempotent, so log and acknowledge; a
+    // future redelivery re-claims the still-unprocessed event and no-ops.
+    try {
+      await markWebhookEventProcessed(args, reservation.processingOwner);
+    } catch (markError) {
+      console.error(
+        "Failed to mark webhook event processed after applying; side effects already committed",
+        markError,
+      );
+    }
+    return result;
+  } catch (error) {
+    try {
+      await releaseWebhookEventReservation(args, reservation.processingOwner);
+    } catch {
+      console.error("Failed to release webhook reservation after processing error");
+    }
+    throw error;
   }
-  return result;
 }
 
 export async function reconcileProviderPayment(
@@ -489,19 +517,58 @@ export async function failProviderPayment(args: ReconcileProviderArgs) {
 
 export async function refundProviderPayment(args: ReconcileProviderArgs) {
   return processProviderWebhook(args, async (payment) => {
-    const { error: paymentError } = await args.client
-      .from("payment")
-      .update({ status: "refunded" })
-      .eq("id", payment.id)
-      .eq("status", "succeeded");
-    if (paymentError) throw paymentError;
+    const transitionRefundStatus = async (
+      table: "payment" | "donation",
+      id: string,
+      currentStatus: string,
+    ) => {
+      if (currentStatus === "refunded") return true;
+      if (currentStatus !== "pending" && currentStatus !== "succeeded") return false;
 
-    const { error: donationError } = await args.client
-      .from("donation")
-      .update({ status: "refunded" })
-      .eq("id", payment.donation.id)
-      .eq("status", "succeeded");
-    if (donationError) throw donationError;
+      const { data, error } = await args.client
+        .from(table)
+        .update({ status: "refunded" })
+        .eq("id", id)
+        .in("status", ["pending", "succeeded"])
+        .select("id")
+        .maybeSingle<{ id: string }>();
+      if (error) throw error;
+      return Boolean(data);
+    };
+
+    const paymentRefunded = await transitionRefundStatus("payment", payment.id, payment.status);
+    const donationRefunded = await transitionRefundStatus(
+      "donation",
+      payment.donation.id,
+      payment.donation.status,
+    );
+
+    if (!paymentRefunded || !donationRefunded) {
+      const { error } = await args.client.from("audit_log").insert({
+        actor_user_id: null,
+        action: "payment.refund_state_conflict",
+        entity: "payment",
+        entity_id: payment.id,
+        detail: {
+          provider: args.provider,
+          providerEventId: args.providerEventId,
+          donationId: payment.donation.id,
+          paymentStatus: payment.status,
+          donationStatus: payment.donation.status,
+          paymentRefunded,
+          donationRefunded,
+        },
+      });
+      if (error) throw error;
+
+      await voidIssuedReceiptsForDonation(args.client, payment.donation.id, { reason: "refund" });
+      return {
+        kind: "manual_review" as const,
+        reason: "state_transition_conflict" as const,
+        donationId: payment.donation.id,
+        paymentId: payment.id,
+      };
+    }
 
     await voidIssuedReceiptsForDonation(args.client, payment.donation.id, { reason: "refund" });
 
