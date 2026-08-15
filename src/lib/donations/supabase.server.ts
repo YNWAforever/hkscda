@@ -75,8 +75,10 @@ export function createSupabaseDonationRepository(client: SupabaseClient): Donati
 
 export function createSupabaseDonationStatusRepository(
   client: SupabaseClient,
+  dependencies: Pick<PublicDonationStatusRepository, "refreshPendingCod"> = {},
 ): PublicDonationStatusRepository {
   return {
+    refreshPendingCod: dependencies.refreshPendingCod,
     async findStatus(donationId) {
       const { data, error } = await client
         .from("donation")

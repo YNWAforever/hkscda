@@ -8,7 +8,7 @@ import { generateReceiptPdf } from "./receipt-pdf.server";
 import { sendDonationAcknowledgement } from "./notifications.server";
 import type { OnlinePaymentProvider } from "./contracts";
 
-type ReconcileProviderArgs = {
+export type ReconcileProviderArgs = {
   client: SupabaseClient;
   provider: OnlinePaymentProvider;
   providerRef: string;
@@ -373,6 +373,7 @@ async function applySucceededPayment(
 async function processProviderWebhook<T>(
   args: ReconcileProviderArgs,
   apply: (payment: PaymentWithDonation) => Promise<T>,
+  onNotFound?: () => Promise<void>,
 ): Promise<T | { kind: "duplicate" } | { kind: "not_found" }> {
   const reservation = await reserveWebhookEvent(args);
   if (reservation.kind === "duplicate") return { kind: "duplicate" as const };
@@ -402,6 +403,7 @@ async function processProviderWebhook<T>(
     // The event verified but references a payment we don't have. Retrying will
     // never succeed, so mark it processed to stop the provider's retry storm.
     // The caller surfaces this so the route can return 200 (acknowledged).
+    await onNotFound?.();
     await markWebhookEventProcessed(args, reservation.processingOwner);
     return { kind: "not_found" as const };
   }
@@ -505,6 +507,41 @@ export async function refundProviderPayment(args: ReconcileProviderArgs) {
 
     return { kind: "refunded" as const, donationId: payment.donation.id };
   });
+}
+
+export async function flagProviderWebhookForReview(
+  args: ReconcileProviderArgs,
+  review: { reason: string; detail?: Record<string, unknown> },
+) {
+  const insertAudit = async (entityId: string, donationId?: string) => {
+    const { error } = await args.client.from("audit_log").insert({
+      actor_user_id: null,
+      action: "payment.cod_manual_review",
+      entity: "payment",
+      entity_id: entityId,
+      detail: {
+        provider: args.provider,
+        providerEventId: args.providerEventId,
+        reason: review.reason,
+        donationId: donationId ?? null,
+        ...(review.detail ?? {}),
+      },
+    });
+    if (error) throw error;
+  };
+
+  return processProviderWebhook(
+    args,
+    async (payment) => {
+      await insertAudit(payment.id, payment.donation.id);
+      return {
+        kind: "manual_review" as const,
+        paymentId: payment.id,
+        donationId: payment.donation.id,
+      };
+    },
+    () => insertAudit(args.providerRef || args.providerEventId),
+  );
 }
 
 export async function reconcileManualPayment(args: ReconcileManualArgs) {

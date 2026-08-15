@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { loadPublicDonationStatus } from "../../../../lib/donations/publicStatus.server";
+import { refreshPendingCodDonation } from "../../../../lib/donations/cod-status.server";
 import {
   createSupabaseDonationStatusRepository,
   createSupabaseServiceClient,
@@ -39,9 +40,12 @@ async function loadDonationStatus({ request, params }: HandlerContext & { reques
   if (!params.donationId) return jsonNoStore({ error: "Donation not found" }, { status: 404 });
 
   try {
+    const client = createSupabaseServiceClient();
     const result = await loadPublicDonationStatus({
       donationId: params.donationId,
-      repository: createSupabaseDonationStatusRepository(createSupabaseServiceClient()),
+      repository: createSupabaseDonationStatusRepository(client, {
+        refreshPendingCod: (donationId) => refreshPendingCodDonation({ donationId, client }),
+      }),
     });
     if (!result) return jsonNoStore({ error: "Donation not found" }, { status: 404 });
     return jsonNoStore(result);

@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 
 import {
   failProviderPayment,
+  flagProviderWebhookForReview,
   issueReceiptIfNeeded,
   issueReceiptForDonation,
   reconcileManualPayment,
@@ -437,6 +438,41 @@ describe("refundProviderPayment", () => {
     const receiptUpdate = operations.find((o) => o.table === "receipt" && o.action === "update");
     expect((receiptUpdate?.payload as { status?: string }).status).toBe("void");
     expect(removals).toEqual(["2026/HKSCDA-2026-000001.pdf"]);
+  });
+});
+
+describe("flagProviderWebhookForReview", () => {
+  test("audits and acknowledges a mapped payment without changing payment state", async () => {
+    const codPayment = {
+      ...pendingPaymentNoReceipt,
+      provider: "cod",
+      provider_ref: "cod-order-test",
+    };
+    const { client, operations } = createWebhookFake({ payment: codPayment });
+
+    const result = await flagProviderWebhookForReview(
+      {
+        client: client as never,
+        provider: "cod",
+        providerRef: "cod-order-test",
+        providerEventId: "transaction-test:payment:paid:150",
+        eventType: "payment.paid",
+        payload: { type: "payment", status: "paid" },
+      },
+      { reason: "amount_mismatch", detail: { expectedCents: 20000, actualCents: 15000 } },
+    );
+
+    expect(result).toMatchObject({ kind: "manual_review", paymentId: "payment-1" });
+    expect(
+      operations.some(
+        (operation) =>
+          operation.table === "audit_log" &&
+          operation.action === "insert" &&
+          (operation.payload as { action?: string }).action === "payment.cod_manual_review",
+      ),
+    ).toBe(true);
+    expect(operations.some((o) => o.table === "payment" && o.action === "update")).toBe(false);
+    expect(operations.some((o) => o.table === "donation" && o.action === "update")).toBe(false);
   });
 });
 
