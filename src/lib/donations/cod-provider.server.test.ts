@@ -107,4 +107,21 @@ describe("COD AlipayHK provider adapter", () => {
       }),
     ).rejects.toThrow("HTTPS");
   });
+
+  test("rejects a hosted URL with a fragment before composing the order string", async () => {
+    await expect(
+      createCodAlipayHkCheckout(input, {
+        config: config(),
+        createClient: () => ({
+          async createOrder() {
+            return {
+              url: "https://gateway.example/pay#fragment",
+              alipayOrderString: "service=create_forex_trade_wap",
+              outTradeNo: "COD-1",
+            };
+          },
+        }),
+      }),
+    ).rejects.toThrow("fragment");
+  });
 });

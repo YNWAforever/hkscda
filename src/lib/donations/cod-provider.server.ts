@@ -36,6 +36,9 @@ function composeHostedUrl(url: string, alipayOrderString: string) {
   if (hostedUrl.protocol !== "https:") {
     throw new Error("COD did not return an absolute HTTPS hosted URL");
   }
+  if (hostedUrl.hash) {
+    throw new Error("COD hosted URL must not contain a fragment");
+  }
   return `${url}${url.includes("?") ? "&" : "?"}${alipayOrderString}`;
 }
 

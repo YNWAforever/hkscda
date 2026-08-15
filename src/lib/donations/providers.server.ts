@@ -10,7 +10,8 @@ const purposeLabels: Record<string, string> = {
   sponsor: "助養動物 Sponsor a pet",
 };
 
-export const stripeCheckoutPaymentMethodTypes = ["card"] as const;
+export const stripeCheckoutPaymentMethodTypes: Stripe.Checkout.SessionCreateParams.PaymentMethodType[] =
+  ["card"];
 
 export async function createStripeCheckout(
   input: CheckoutProviderInput,

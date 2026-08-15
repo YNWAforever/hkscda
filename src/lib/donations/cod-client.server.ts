@@ -1,11 +1,7 @@
 import { randomUUID } from "node:crypto";
 
 import { getCodConfig, type CodConfig } from "./config.server";
-import {
-  aesCbcDecrypt,
-  createCodRequestEnvelope,
-  decodeBase64Strict,
-} from "./cod-crypto.server";
+import { aesCbcDecrypt, createCodRequestEnvelope, decodeBase64Strict } from "./cod-crypto.server";
 
 const COD_REQUEST_TIMEOUT_MS = 300_000;
 
@@ -42,7 +38,13 @@ export type CodCreateOrderResult = {
   outTradeNo: string;
 };
 
-export type CodTransactionStatus = "paid" | "not_exists" | "new" | "expired" | "canceled" | "failed";
+export type CodTransactionStatus =
+  | "paid"
+  | "not_exists"
+  | "new"
+  | "expired"
+  | "canceled"
+  | "failed";
 
 type CodClientDependencies = {
   config?: CodConfig;
@@ -77,7 +79,7 @@ export function createCodClient({
 }: CodClientDependencies = {}) {
   async function request<T>(service: string, parameters: Record<string, unknown>): Promise<T> {
     const uuid = requestUuid();
-    if (!/^[A-Za-z0-9-]{1,36}$/.test(uuid)) {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(uuid)) {
       throw new CodClientError("malformed_response");
     }
 

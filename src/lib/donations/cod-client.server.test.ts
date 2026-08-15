@@ -2,7 +2,12 @@ import { generateKeyPairSync } from "node:crypto";
 import { afterEach, describe, expect, test } from "bun:test";
 
 import type { CodConfig } from "./config.server";
-import { aesCbcDecrypt, aesCbcEncrypt, decodeBase64Strict, encodeBase64 } from "./cod-crypto.server";
+import {
+  aesCbcDecrypt,
+  aesCbcEncrypt,
+  decodeBase64Strict,
+  encodeBase64,
+} from "./cod-crypto.server";
 import { CodClientError, createCodClient } from "./cod-client.server";
 
 const keyPair = generateKeyPairSync("rsa", { modulusLength: 2048 });
@@ -136,7 +141,7 @@ describe("COD encrypted client", () => {
     globalThis.fetch = (async () => {
       calls += 1;
       return Response.json({ success: false, error_code: "wrong_parameters" }, { status: 422 });
-    }) as typeof fetch;
+    }) as unknown as typeof fetch;
 
     await expect(
       createCodClient({ config: config() }).createOrder({
@@ -149,7 +154,8 @@ describe("COD encrypted client", () => {
     ).rejects.toMatchObject({ category: "business" } satisfies Partial<CodClientError>);
     expect(calls).toBe(1);
 
-    globalThis.fetch = (async () => encryptedResponse({ url: "https://gateway.example/pay" })) as typeof fetch;
+    globalThis.fetch = (async () =>
+      encryptedResponse({ url: "https://gateway.example/pay" })) as unknown as typeof fetch;
     await expect(
       createCodClient({ config: config() }).createOrder({
         orderRef: "hkscda-payment-2",
@@ -162,31 +168,64 @@ describe("COD encrypted client", () => {
   });
 
   test("categorizes non-2xx, invalid envelopes, invalid JSON, and an aborted request safely", async () => {
-    globalThis.fetch = (async () => new Response("unavailable", { status: 503 })) as typeof fetch;
-    await expect(createCodClient({ config: config() }).refreshTransactionStatus({ outTradeNo: "COD-1" })).rejects.toMatchObject({
+    globalThis.fetch = (async () =>
+      new Response("unavailable", { status: 503 })) as unknown as typeof fetch;
+    await expect(
+      createCodClient({ config: config() }).refreshTransactionStatus({ outTradeNo: "COD-1" }),
+    ).rejects.toMatchObject({
       category: "http",
     } satisfies Partial<CodClientError>);
 
-    globalThis.fetch = (async () => Response.json({ success: true, result: { nonce: "bad", message: "bad" } })) as typeof fetch;
-    await expect(createCodClient({ config: config() }).refreshTransactionStatus({ outTradeNo: "COD-1" })).rejects.toMatchObject({
+    globalThis.fetch = (async () =>
+      Response.json({
+        success: true,
+        result: { nonce: "bad", message: "bad" },
+      })) as unknown as typeof fetch;
+    await expect(
+      createCodClient({ config: config() }).refreshTransactionStatus({ outTradeNo: "COD-1" }),
+    ).rejects.toMatchObject({
       category: "malformed_response",
     } satisfies Partial<CodClientError>);
 
     globalThis.fetch = (async () => {
       const currentConfig = config();
-      const { iv, ciphertext } = aesCbcEncrypt(Buffer.from("not json", "utf8"), currentConfig.aesKey, Buffer.alloc(16, 3));
-      return Response.json({ success: true, result: { nonce: encodeBase64(iv), message: encodeBase64(ciphertext) } });
-    }) as typeof fetch;
-    await expect(createCodClient({ config: config() }).refreshTransactionStatus({ outTradeNo: "COD-1" })).rejects.toMatchObject({
+      const { iv, ciphertext } = aesCbcEncrypt(
+        Buffer.from("not json", "utf8"),
+        currentConfig.aesKey,
+        Buffer.alloc(16, 3),
+      );
+      return Response.json({
+        success: true,
+        result: { nonce: encodeBase64(iv), message: encodeBase64(ciphertext) },
+      });
+    }) as unknown as typeof fetch;
+    await expect(
+      createCodClient({ config: config() }).refreshTransactionStatus({ outTradeNo: "COD-1" }),
+    ).rejects.toMatchObject({
       category: "malformed_response",
     } satisfies Partial<CodClientError>);
 
-    globalThis.fetch = ((_, init) =>
+    globalThis.fetch = ((_input: RequestInfo | URL, init?: RequestInit) =>
       new Promise((_resolve, reject) => {
-        init?.signal?.addEventListener("abort", () => reject(new DOMException("aborted", "AbortError")));
-      })) as typeof fetch;
+        init?.signal?.addEventListener("abort", () =>
+          reject(new DOMException("aborted", "AbortError")),
+        );
+      })) as unknown as typeof fetch;
     await expect(
-      createCodClient({ config: config(), timeoutMs: 1 }).refreshTransactionStatus({ outTradeNo: "COD-1" }),
+      createCodClient({ config: config(), timeoutMs: 1 }).refreshTransactionStatus({
+        outTradeNo: "COD-1",
+      }),
     ).rejects.toMatchObject({ category: "timeout" } satisfies Partial<CodClientError>);
+  });
+
+  test("rejects a request identifier that is not RFC-4122-shaped", async () => {
+    globalThis.fetch = (async () =>
+      encryptedResponse({ status: "paid" })) as unknown as typeof fetch;
+
+    await expect(
+      createCodClient({ config: config(), requestUuid: () => "a" }).refreshTransactionStatus({
+        outTradeNo: "COD-1",
+      }),
+    ).rejects.toMatchObject({ category: "malformed_response" } satisfies Partial<CodClientError>);
   });
 });
