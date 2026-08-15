@@ -91,6 +91,14 @@ describe("COD configuration", () => {
     expect(() => getCodConfig()).toThrow("private key");
   });
 
+  test("rejects a private PEM supplied as the notification public key", () => {
+    setValidCodEnvironment({
+      COD_NOTIFICATION_PUBLIC_KEY_BASE64: Buffer.from(privateKeyPem, "utf8").toString("base64"),
+    });
+
+    expect(() => getCodConfig()).toThrow("notification public key");
+  });
+
   test("rejects unsupported COD environments", () => {
     setValidCodEnvironment({ COD_ENV: "development" });
 

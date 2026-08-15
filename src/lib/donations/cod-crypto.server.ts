@@ -82,6 +82,7 @@ export function parseRsaPrivateKey(pem: string): KeyObject {
 
 export function parseRsaPublicKey(pem: string): KeyObject {
   try {
+    if (/-----BEGIN (?:RSA )?PRIVATE KEY-----/.test(pem)) throw new Error("private PEM");
     const key = createPublicKey(pem);
     if (key.asymmetricKeyType !== "rsa") throw new Error("not RSA");
     return key;
