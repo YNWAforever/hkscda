@@ -1,7 +1,7 @@
 # COD AlipayHK Donation Gateway Design
 
 **Date:** 2026-08-16
-**Status:** Design approved; awaiting written-spec review
+**Status:** Design and written specification approved; implementation plan in progress
 **Source protocol:** Acquire TMS API for merchants v2.7.1 (2024-12-11), supplied out of band
 
 ## Summary
