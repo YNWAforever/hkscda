@@ -386,7 +386,7 @@ async function applySucceededPayment(
         reason: "terminal_status" as const,
       };
     }
-    if (current && (current.status === "succeeded" || current.donation.status === "succeeded")) {
+    if (current?.status === "succeeded" && current.donation.status === "succeeded") {
       return {
         kind: "skipped" as const,
         donationId: current.donation.id,
@@ -406,12 +406,9 @@ async function applySucceededPayment(
       },
     });
     if (error) throw error;
-    return {
-      kind: "manual_review" as const,
-      donationId: payment.donation.id,
-      paymentId: payment.id,
-      reason: "state_transition_conflict" as const,
-    };
+    // Keep the provider event retryable: returning here would mark the event
+    // processed while payment and donation still disagree.
+    throw new Error("Payment reconciliation state conflict");
   };
 
   // Guard every transition on the source status so a replayed event can never

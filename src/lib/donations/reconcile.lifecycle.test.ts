@@ -646,6 +646,53 @@ describe("reconcileProviderPayment terminal-state guard", () => {
 });
 
 describe("reconcileProviderPayment success path", () => {
+  test("keeps a mixed succeeded payment and pending donation retryable after a guard miss", async () => {
+    const mixedPayment = {
+      ...pendingPaymentNoReceipt,
+      provider: "cod",
+      provider_ref: "cod-order-test",
+      status: "succeeded",
+      donation: { ...pendingPaymentNoReceipt.donation, status: "pending" },
+    };
+    const { client, operations } = createWebhookFake({
+      payment: mixedPayment,
+      succeededTransitionMiss: true,
+      paymentAfterTransitionMiss: mixedPayment,
+    });
+
+    await expect(
+      reconcileProviderPayment({
+        client: client as never,
+        provider: "cod",
+        providerRef: "cod-order-test",
+        providerEventId: "transaction-payment:mixed-state:paid:150",
+        eventType: "payment.paid",
+        payload: { type: "payment", status: "paid" },
+      }),
+    ).rejects.toThrow("Payment reconciliation state conflict");
+
+    expect(
+      operations.some(
+        (operation) =>
+          operation.table === "audit_log" &&
+          (operation.payload as { action?: string }).action === "payment.reconcile_state_conflict",
+      ),
+    ).toBe(true);
+    expect(
+      operations.some(
+        (operation) => operation.table === "message" && operation.action === "insert",
+      ),
+    ).toBe(false);
+    expect(
+      operations.some(
+        (operation) =>
+          operation.table === "webhook_event" &&
+          operation.action === "update" &&
+          Boolean((operation.payload as { processed_at?: string }).processed_at),
+      ),
+    ).toBe(false);
+  });
+
   test("does not run receipt or acknowledgement side effects when a concurrent refund wins", async () => {
     const stalePending = {
       ...pendingPaymentNoReceipt,
