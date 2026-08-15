@@ -53,6 +53,25 @@ describe("pollDonationSucceeded", () => {
     expect(calls).toBe(90);
   });
 
+  test("loads a confirmed status from the no-store donation status endpoint", async () => {
+    const originalFetch = globalThis.fetch;
+    let requestedUrl = "";
+    let requestedCache: RequestCache | undefined;
+    globalThis.fetch = async (input, init) => {
+      requestedUrl = String(input);
+      requestedCache = init?.cache;
+      return Response.json({ status: "succeeded" });
+    };
+
+    try {
+      await expect(pollDonationSucceeded("donation-1", { attempts: 1 })).resolves.toBe(true);
+      expect(requestedUrl).toBe("/api/donations/donation-1/status");
+      expect(requestedCache).toBe("no-store");
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
   test("stops when the server reports a refund", async () => {
     let calls = 0;
 

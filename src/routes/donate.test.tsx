@@ -136,4 +136,68 @@ describe("AlipayHK donation checkout", () => {
     expect(html).toContain('aria-live="polite"');
     expect(html).toContain("正在等待付款確認");
   });
+
+  test("records success only after a COD pending return is confirmed by the status poll", async () => {
+    const { resolveDonationReturn } = await import("./donate");
+    const trackedEvents: unknown[][] = [];
+    let pollCalls = 0;
+
+    const state = await resolveDonationReturn(
+      "11111111-1111-4111-8111-111111111111",
+      {
+        context: "general",
+        purpose: "general",
+        method: "alipayhk",
+        value: 300,
+        currency: "HKD",
+      },
+      {
+        pollDonationStatus: async () => {
+          pollCalls += 1;
+          return true;
+        },
+        markDonationEvent: () => true,
+        trackDonationEvent: (...args) => trackedEvents.push(args),
+      },
+    );
+
+    expect(state).toBe("confirmed");
+    expect(pollCalls).toBe(1);
+    expect(trackedEvents).toEqual([
+      [
+        "donation_success",
+        {
+          context: "general",
+          purpose: "general",
+          method: "alipayhk",
+          value: 300,
+          currency: "HKD",
+        },
+      ],
+    ]);
+  });
+
+  test("does not record success when a COD pending return remains pending after polling", async () => {
+    const { resolveDonationReturn } = await import("./donate");
+    const trackedEvents: unknown[][] = [];
+
+    const state = await resolveDonationReturn(
+      "11111111-1111-4111-8111-111111111111",
+      {
+        context: "general",
+        purpose: "general",
+        method: "alipayhk",
+        value: 300,
+        currency: "HKD",
+      },
+      {
+        pollDonationStatus: async () => false,
+        markDonationEvent: () => true,
+        trackDonationEvent: (...args) => trackedEvents.push(args),
+      },
+    );
+
+    expect(state).toBe("unavailable");
+    expect(trackedEvents).toEqual([]);
+  });
 });

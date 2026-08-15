@@ -28,6 +28,7 @@ import {
   readCheckoutSnapshot,
   saveCheckoutSnapshot,
   trackDonationEvent,
+  type DonationCheckoutSnapshot,
 } from "../lib/donations/analytics";
 import { pollDonationSucceeded } from "../lib/donations/publicStatus";
 import { checkoutExperienceFromViewport } from "../lib/donations/checkoutExperience";
@@ -203,6 +204,35 @@ function isPendingCheckoutReturn(status: DonateSearch["status"] | undefined) {
   return status === "pending" || status === "success" || status === "paypal-approved";
 }
 
+type DonationReturnDependencies = {
+  pollDonationStatus?: typeof pollDonationSucceeded;
+  markDonationEvent?: typeof markDonationEventOnce;
+  trackDonationEvent?: typeof trackDonationEvent;
+};
+
+export async function resolveDonationReturn(
+  donationId: string,
+  snapshot: DonationCheckoutSnapshot | undefined,
+  dependencies: DonationReturnDependencies = {},
+): Promise<DonationReturnState> {
+  const confirmed = await (dependencies.pollDonationStatus ?? pollDonationSucceeded)(donationId);
+  if (!confirmed) return "unavailable";
+
+  const markEvent = dependencies.markDonationEvent ?? markDonationEventOnce;
+  const trackEvent = dependencies.trackDonationEvent ?? trackDonationEvent;
+  if (snapshot && markEvent("donation_success", donationId)) {
+    trackEvent("donation_success", {
+      context: snapshot.context,
+      purpose: snapshot.purpose,
+      method: snapshot.method,
+      value: snapshot.value,
+      currency: snapshot.currency,
+    });
+  }
+
+  return "confirmed";
+}
+
 function DonateRoute() {
   return <DonatePage initialSlots={Route.useLoaderData()} initialSearch={Route.useSearch()} />;
 }
@@ -253,22 +283,9 @@ export function DonatePage({
     const snapshot = readCheckoutSnapshot(donationId);
 
     let active = true;
-    void pollDonationSucceeded(donationId).then((confirmed) => {
+    void resolveDonationReturn(donationId, snapshot).then((state) => {
       if (!active) return;
-      if (!confirmed) {
-        setReturnState("unavailable");
-        return;
-      }
-      setReturnState("confirmed");
-      if (snapshot && markDonationEventOnce("donation_success", donationId)) {
-        trackDonationEvent("donation_success", {
-          context: snapshot.context,
-          purpose: snapshot.purpose,
-          method: snapshot.method,
-          value: snapshot.value,
-          currency: snapshot.currency,
-        });
-      }
+      setReturnState(state);
     });
 
     return () => {
