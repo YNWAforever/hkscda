@@ -1,6 +1,11 @@
 import { describe, expect, test } from "bun:test";
 
-import { assertPayPalCaptureCompleted } from "./providers.server";
+import { assertPayPalCaptureCompleted, stripeCheckoutPaymentMethodTypes } from "./providers.server";
+
+test("keeps Stripe Checkout card-only", () => {
+  expect(stripeCheckoutPaymentMethodTypes).toEqual(["card"]);
+  expect(stripeCheckoutPaymentMethodTypes).not.toContain("alipay");
+});
 
 describe("PayPal capture completion", () => {
   test("accepts completed capture responses", () => {

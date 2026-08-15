@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 
+import { createCodAlipayHkCheckout } from "./cod-provider.server";
 import { getAppUrl, getPayPalConfig, getStripeConfig } from "./config.server";
 import type { CheckoutProviderInput, CheckoutProviderResult } from "./service";
 
@@ -9,6 +10,8 @@ const purposeLabels: Record<string, string> = {
   sponsor: "助養動物 Sponsor a pet",
 };
 
+export const stripeCheckoutPaymentMethodTypes = ["card"] as const;
+
 export async function createStripeCheckout(
   input: CheckoutProviderInput,
 ): Promise<CheckoutProviderResult> {
@@ -16,7 +19,7 @@ export async function createStripeCheckout(
   const appUrl = getAppUrl();
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
-    payment_method_types: ["card", "alipay"],
+    payment_method_types: stripeCheckoutPaymentMethodTypes,
     customer_email: input.donorEmail,
     success_url: `${appUrl}/donate?status=success&donation=${input.donationId}`,
     cancel_url: `${appUrl}/donate?status=cancelled&donation=${input.donationId}`,
@@ -108,15 +111,6 @@ export async function createPayPalOrder(
   );
   if (!approveLink) throw new Error("PayPal did not return an approval URL");
   return { providerRef: data.id, url: approveLink.href };
-}
-
-// The concrete COD implementation is introduced with its encrypted client.
-// Keeping the checked interface present here prevents an AlipayHK request from
-// silently falling through to another processor while that adapter is wired in.
-export async function createCodAlipayHkCheckout(
-  _input: CheckoutProviderInput,
-): Promise<CheckoutProviderResult> {
-  throw new Error("COD AlipayHK checkout is not configured");
 }
 
 export function assertPayPalCaptureCompleted(httpStatus: number, body: unknown) {
