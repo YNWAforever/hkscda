@@ -1,4 +1,4 @@
-import { expect, mock, test } from "bun:test";
+import { describe, expect, mock, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 import type { DocumentSlot } from "@/lib/documents/types";
 
@@ -81,4 +81,59 @@ test("keeps the donation page available when optional documents fail to load", a
 
   expect(requestedSlotKeys).toEqual(["wedding_gift_return_plan"]);
   expect(slots).toEqual([]);
+});
+
+describe("AlipayHK donation checkout", () => {
+  test("renders Card and AlipayHK as separate payment methods", async () => {
+    const { DonatePage } = await import("./donate");
+
+    const html = renderToStaticMarkup(<DonatePage initialSlots={[]} initialSearch={{}} />);
+
+    expect(html).toContain(">信用卡<");
+    expect(html).not.toContain("信用卡 / Alipay");
+    expect(html).toContain("AlipayHK");
+    expect(html).toContain("轉數快 FPS");
+    expect(html).toContain("PayMe");
+    expect(html).toContain("PayPal");
+  });
+
+  test("builds an AlipayHK request with the checkout experience", async () => {
+    const { createDonationRequest } = await import("./donate");
+
+    expect(
+      createDonationRequest({
+        amountCents: 30_000,
+        purpose: "general",
+        customPurpose: "",
+        method: "alipayhk",
+        checkoutExperience: "wap",
+        receiptRequested: true,
+        donor: {
+          name: "Test Donor",
+          email: "donor@example.com",
+          phone: "",
+          language: "zh-HK",
+        },
+        consents: { email: true, whatsapp: false },
+        turnstileToken: null,
+      }),
+    ).toMatchObject({ method: "alipayhk", checkoutExperience: "wap" });
+  });
+
+  test("treats a COD pending return as waiting, not as a confirmed donation", async () => {
+    const { DonatePage, donationStatusMessage } = await import("./donate");
+
+    expect(donationStatusMessage("pending", "zh-HK")).toContain("確認");
+    expect(donationStatusMessage("pending", "zh-HK")).not.toContain("多謝您的支持");
+
+    const html = renderToStaticMarkup(
+      <DonatePage
+        initialSlots={[]}
+        initialSearch={{ donation: "11111111-1111-4111-8111-111111111111", status: "pending" }}
+      />,
+    );
+    expect(html).toContain('role="status"');
+    expect(html).toContain('aria-live="polite"');
+    expect(html).toContain("正在等待付款確認");
+  });
 });

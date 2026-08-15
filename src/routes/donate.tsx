@@ -30,7 +30,13 @@ import {
   trackDonationEvent,
 } from "../lib/donations/analytics";
 import { pollDonationSucceeded } from "../lib/donations/publicStatus";
-import { centsToHkd, type DonationMethod, type DonationPurpose } from "../lib/donations/domain";
+import { checkoutExperienceFromViewport } from "../lib/donations/checkoutExperience";
+import {
+  centsToHkd,
+  type CheckoutExperience,
+  type DonationMethod,
+  type DonationPurpose,
+} from "../lib/donations/domain";
 import { BrandLogo } from "../components/site/BrandLogo";
 import { TurnstileWidget, turnstileEnabled } from "../components/site/TurnstileWidget";
 
@@ -75,7 +81,24 @@ type ManualResult = {
 type RedirectResult = {
   kind: "redirect";
   donationId: string;
+  provider: "stripe" | "paypal" | "cod";
   url: string;
+};
+
+type DonationReturnState = "pending" | "confirmed" | "unavailable";
+
+export type DonationRequestPayload = {
+  amountCents: number;
+  currency: "HKD";
+  purpose: DonationPurpose;
+  customPurpose: string;
+  method: DonationMethod;
+  checkoutExperience: CheckoutExperience;
+  receiptRequested: boolean;
+  donor: { name: string; email: string; phone: string; language: Language };
+  consents: { email: boolean; whatsapp: boolean };
+  turnstileToken: string | null;
+  attribution?: ReturnType<typeof extractDonationAttribution>;
 };
 
 const copy = {
@@ -97,6 +120,9 @@ const copy = {
     donate: "繼續捐款",
     processing: "處理中",
     success: "多謝您的支持。付款確認後，系統會發出確認電郵及合資格收條。",
+    paymentWaiting: "正在等待付款確認。付款狀態以本會系統為準，請勿重複付款。",
+    paymentConfirmed: "付款已確認。多謝您的支持。",
+    paymentUnavailable: "暫時未能確認付款狀態。請稍後再試或聯絡我們，請勿重複付款。",
     cancelled: "付款尚未完成，您可以重新選擇付款方式。",
     paypalApproved: "PayPal 已授權，確認完成後會發出收據通知。",
     manualTitle: "請使用以下資料完成付款",
@@ -127,6 +153,11 @@ const copy = {
     processing: "Processing",
     success:
       "Thank you for your support. A confirmation email and eligible receipt will be sent after payment is confirmed.",
+    paymentWaiting:
+      "Waiting for payment confirmation. Our donation system is the source of truth; please do not pay again.",
+    paymentConfirmed: "Payment confirmed. Thank you for your support.",
+    paymentUnavailable:
+      "We cannot confirm the payment status yet. Please try again later or contact us; do not pay again.",
     cancelled: "Payment is not complete. You can choose a payment method again.",
     paypalApproved: "PayPal approval received. We will notify you after confirmation.",
     manualTitle: "Complete payment with these details",
@@ -148,11 +179,29 @@ const purposes: { value: DonationPurpose; zh: string; en: string }[] = [
 ];
 
 const methods: { value: DonationMethod; zh: string; en: string; Icon: typeof CreditCard }[] = [
-  { value: "stripe", zh: "信用卡 / Alipay", en: "Card / Alipay", Icon: CreditCard },
+  { value: "stripe", zh: "信用卡", en: "Card", Icon: CreditCard },
+  { value: "alipayhk", zh: "AlipayHK", en: "AlipayHK", Icon: Smartphone },
   { value: "fps", zh: "轉數快 FPS", en: "FPS", Icon: Zap },
   { value: "payme", zh: "PayMe", en: "PayMe", Icon: Smartphone },
   { value: "paypal", zh: "PayPal", en: "PayPal", Icon: Globe },
 ];
+
+export function createDonationRequest(
+  input: Omit<DonationRequestPayload, "currency">,
+): DonationRequestPayload {
+  return { ...input, currency: "HKD" };
+}
+
+export function donationStatusMessage(state: DonationReturnState, language: Language) {
+  const messages = copy[language];
+  if (state === "confirmed") return messages.paymentConfirmed;
+  if (state === "unavailable") return messages.paymentUnavailable;
+  return messages.paymentWaiting;
+}
+
+function isPendingCheckoutReturn(status: DonateSearch["status"] | undefined) {
+  return status === "pending" || status === "success" || status === "paypal-approved";
+}
 
 function DonateRoute() {
   return <DonatePage initialSlots={Route.useLoaderData()} initialSearch={Route.useSearch()} />;
@@ -184,6 +233,7 @@ export function DonatePage({
   const [error, setError] = useState<string | null>(null);
   const [manualResult, setManualResult] = useState<ManualResult | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [returnState, setReturnState] = useState<DonationReturnState | null>(null);
 
   useEffect(() => {
     if (!attribution) return;
@@ -195,17 +245,22 @@ export function DonatePage({
 
   useEffect(() => {
     const donationId = search.donation;
-    if (!donationId || (search.status !== "success" && search.status !== "paypal-approved")) {
+    if (!donationId || !isPendingCheckoutReturn(search.status)) {
       return;
     }
 
+    setReturnState("pending");
     const snapshot = readCheckoutSnapshot(donationId);
-    if (!snapshot) return;
 
     let active = true;
     void pollDonationSucceeded(donationId).then((confirmed) => {
-      if (!active || !confirmed) return;
-      if (markDonationEventOnce("donation_success", donationId)) {
+      if (!active) return;
+      if (!confirmed) {
+        setReturnState("unavailable");
+        return;
+      }
+      setReturnState("confirmed");
+      if (snapshot && markDonationEventOnce("donation_success", donationId)) {
         trackDonationEvent("donation_success", {
           context: snapshot.context,
           purpose: snapshot.purpose,
@@ -239,21 +294,22 @@ export function DonatePage({
     setLoading(true);
 
     try {
+      const checkoutExperience = checkoutExperienceFromViewport(window.innerWidth);
       const response = await fetch("/api/donations", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({
+        body: JSON.stringify(createDonationRequest({
           amountCents: Math.round(amountHkd * 100),
-          currency: "HKD",
           purpose,
           customPurpose,
           method,
+          checkoutExperience,
           receiptRequested,
           donor: { name, email, phone, language },
           consents: { email: emailConsent, whatsapp: whatsappConsent },
           turnstileToken,
           ...(attribution ? { attribution } : {}),
-        }),
+        })),
       });
 
       if (!response.ok) throw new Error("Donation request failed");
@@ -282,8 +338,7 @@ export function DonatePage({
         return;
       }
       setManualResult(data);
-    } catch (submitError) {
-      console.error(submitError);
+    } catch {
       setError(t.submitError);
     } finally {
       setLoading(false);
@@ -291,12 +346,12 @@ export function DonatePage({
   }
 
   const statusMessage =
-    search.status === "success"
-      ? t.success
-      : search.status === "cancelled"
-        ? t.cancelled
-        : search.status === "paypal-approved"
-          ? t.paypalApproved
+    search.status === "cancelled"
+      ? t.cancelled
+      : returnState
+        ? donationStatusMessage(returnState, language)
+        : isPendingCheckoutReturn(search.status)
+          ? donationStatusMessage("pending", language)
           : null;
 
   const availableWeddingSlots = initialSlots.filter(

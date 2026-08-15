@@ -16,8 +16,13 @@ export type PollDonationSucceededOptions = {
   load?: PublicDonationStatusLoader;
 };
 
-const maxAttempts = 4;
-const defaultDelayMs = 1_500;
+const maxAttempts = 90;
+const defaultDelayMs = 10_000;
+
+export const pollDonationDefaults = {
+  attempts: maxAttempts,
+  delayMs: defaultDelayMs,
+} as const;
 
 function isPublicDonationStatus(value: unknown): value is PublicDonationStatus {
   return (
