@@ -1,5 +1,13 @@
 import process from "node:process";
 
+import {
+  decodeBase64Strict,
+  getCodCipherSuite,
+  parseRsaPrivateKey,
+  parseRsaPublicKey,
+  type CodCipherSuite,
+} from "./cod-crypto.server";
+
 function required(name: string) {
   const value = process.env[name];
   if (!value) throw new Error(`Missing required environment variable: ${name}`);
@@ -38,6 +46,48 @@ export function getPayPalConfig() {
     clientSecret: required("PAYPAL_CLIENT_SECRET"),
     apiBase: process.env.PAYPAL_API_BASE ?? "https://api-m.sandbox.paypal.com",
     webhookId: process.env.PAYPAL_WEBHOOK_ID,
+  };
+}
+
+export interface CodConfig {
+  environment: "sandbox" | "production";
+  merchantId: string;
+  segmentId: string;
+  aesKey: Buffer;
+  privateKey: ReturnType<typeof parseRsaPrivateKey>;
+  notificationPublicKey: ReturnType<typeof parseRsaPublicKey>;
+  apiBase: "https://aqs-api.sandbox-codpayment.com" | "https://aqs-api.codpayment.com";
+  cipherSuite: CodCipherSuite;
+}
+
+export function getCodConfig(): CodConfig {
+  const environment = required("COD_ENV");
+  if (environment !== "sandbox" && environment !== "production") {
+    throw new Error("COD_ENV must be sandbox or production");
+  }
+
+  const aesKey = decodeBase64Strict(required("COD_AES_SECRET_BASE64"), "COD AES secret");
+  const privateKeyPem = decodeBase64Strict(
+    required("COD_PRIVATE_KEY_BASE64"),
+    "COD private key",
+  ).toString("utf8");
+  const notificationPublicKeyPem = decodeBase64Strict(
+    required("COD_NOTIFICATION_PUBLIC_KEY_BASE64"),
+    "COD notification public key",
+  ).toString("utf8");
+
+  return {
+    environment,
+    merchantId: required("COD_MERCHANT_ID"),
+    segmentId: required("COD_SEGMENT_ID"),
+    aesKey,
+    privateKey: parseRsaPrivateKey(privateKeyPem),
+    notificationPublicKey: parseRsaPublicKey(notificationPublicKeyPem),
+    apiBase:
+      environment === "sandbox"
+        ? "https://aqs-api.sandbox-codpayment.com"
+        : "https://aqs-api.codpayment.com",
+    cipherSuite: getCodCipherSuite(aesKey),
   };
 }
 
