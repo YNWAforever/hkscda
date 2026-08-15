@@ -39,6 +39,7 @@ describe("deployment environment contract", () => {
       expect(runbook).toContain(name);
     }
 
+    expect(example).toMatch(/^COD_ENV=sandbox$/m);
     expect(example).not.toMatch(/^VITE_COD_/m);
     expect(runbook).toContain("sandbox-only");
     expect(runbook).toContain("merchant private key");
