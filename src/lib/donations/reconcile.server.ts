@@ -77,6 +77,13 @@ type ApplyOptions = {
 
 const WEBHOOK_PROCESSING_LEASE_MS = 5 * 60 * 1000;
 
+export class WebhookEventInProgressError extends Error {
+  constructor() {
+    super("Webhook event is still processing");
+    this.name = "WebhookEventInProgressError";
+  }
+}
+
 async function reserveWebhookEvent(args: ReconcileProviderArgs) {
   const processingOwner = randomUUID();
   const now = new Date();
@@ -107,7 +114,7 @@ async function reserveWebhookEvent(args: ReconcileProviderArgs) {
     const processingExpires = data?.processing_expires_at
       ? new Date(data.processing_expires_at).getTime()
       : 0;
-    if (processingExpires > now.getTime()) return { kind: "duplicate" as const };
+    if (processingExpires > now.getTime()) throw new WebhookEventInProgressError();
 
     let claimQuery = args.client
       .from("webhook_event")
@@ -126,7 +133,7 @@ async function reserveWebhookEvent(args: ReconcileProviderArgs) {
 
     const { data: claimed, error: claimError } = await claimQuery.select("id").maybeSingle();
     if (claimError) throw claimError;
-    if (!claimed) return { kind: "duplicate" as const };
+    if (!claimed) throw new WebhookEventInProgressError();
     return { kind: "claimed" as const, processingOwner };
   }
   throw error;
@@ -363,26 +370,84 @@ async function applySucceededPayment(
   }
 
   const receivedAt = (deps.now ?? (() => new Date()))().toISOString();
+
+  const handleTransitionMiss = async () => {
+    const current = await findPaymentByIdMaybe(client, payment.id);
+    if (
+      current &&
+      (current.status === "refunded" ||
+        current.status === "failed" ||
+        current.donation.status === "refunded" ||
+        current.donation.status === "failed")
+    ) {
+      return {
+        kind: "skipped" as const,
+        donationId: current.donation.id,
+        reason: "terminal_status" as const,
+      };
+    }
+    if (current && (current.status === "succeeded" || current.donation.status === "succeeded")) {
+      return {
+        kind: "skipped" as const,
+        donationId: current.donation.id,
+        reason: "concurrent_succeeded" as const,
+      };
+    }
+
+    const { error } = await client.from("audit_log").insert({
+      actor_user_id: options.actorUserId ?? null,
+      action: "payment.reconcile_state_conflict",
+      entity: "payment",
+      entity_id: payment.id,
+      detail: {
+        donationId: payment.donation.id,
+        paymentStatus: current?.status ?? null,
+        donationStatus: current?.donation.status ?? null,
+      },
+    });
+    if (error) throw error;
+    return {
+      kind: "manual_review" as const,
+      donationId: payment.donation.id,
+      paymentId: payment.id,
+      reason: "state_transition_conflict" as const,
+    };
+  };
+
   // Guard every transition on the source status so a replayed event can never
   // overwrite a terminal (refunded/failed) row even if the read raced ahead.
-  const { error: paymentError } = await client
-    .from("payment")
-    .update({
-      status: plan.paymentStatus,
-      received_at: receivedAt,
-      reconciled_by: options.actorUserId ?? null,
-      bank_reference: options.bankReference ?? null,
-    })
-    .eq("id", payment.id)
-    .eq("status", "pending");
-  if (paymentError) throw paymentError;
+  let paymentTransitioned = payment.status === "succeeded";
+  if (!paymentTransitioned) {
+    const { data: updatedPayment, error: paymentError } = await client
+      .from("payment")
+      .update({
+        status: plan.paymentStatus,
+        received_at: receivedAt,
+        reconciled_by: options.actorUserId ?? null,
+        bank_reference: options.bankReference ?? null,
+      })
+      .eq("id", payment.id)
+      .eq("status", "pending")
+      .select("id")
+      .maybeSingle<{ id: string }>();
+    if (paymentError) throw paymentError;
+    paymentTransitioned = Boolean(updatedPayment);
+  }
+  if (!paymentTransitioned) return handleTransitionMiss();
 
-  const { error: donationError } = await client
-    .from("donation")
-    .update({ status: plan.donationStatus })
-    .eq("id", payment.donation.id)
-    .eq("status", "pending");
-  if (donationError) throw donationError;
+  let donationTransitioned = payment.donation.status === "succeeded";
+  if (!donationTransitioned) {
+    const { data: updatedDonation, error: donationError } = await client
+      .from("donation")
+      .update({ status: plan.donationStatus })
+      .eq("id", payment.donation.id)
+      .eq("status", "pending")
+      .select("id")
+      .maybeSingle<{ id: string }>();
+    if (donationError) throw donationError;
+    donationTransitioned = Boolean(updatedDonation);
+  }
+  if (!donationTransitioned) return handleTransitionMiss();
 
   const receiptNo = await completeDonationSideEffects(client, payment, deps);
 

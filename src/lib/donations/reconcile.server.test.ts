@@ -23,7 +23,7 @@ const pendingPayment = {
   },
 };
 
-function createImmediateRetryClient() {
+function createImmediateRetryClient({ releaseFails = false } = {}) {
   const state = {
     reservation: null as null | {
       processed_at: string | null;
@@ -55,6 +55,13 @@ function createImmediateRetryClient() {
         return builder.maybeSingle();
       },
       maybeSingle() {
+        if (
+          mode === "update" &&
+          (table === "payment" || table === "donation") &&
+          payload?.status === "succeeded"
+        ) {
+          return Promise.resolve({ data: { id: `${table}-1` }, error: null });
+        }
         if (table === "payment" && mode === "read") {
           state.paymentLookups += 1;
           if (state.paymentLookups === 1) {
@@ -74,6 +81,11 @@ function createImmediateRetryClient() {
       },
       then(resolve: (value: { error: null }) => void) {
         if (table === "webhook_event" && mode === "update" && state.reservation) {
+          if (payload?.processing_owner === null && !payload.processed_at && releaseFails) {
+            return Promise.resolve({ error: new Error("reservation release failed") }).then(
+              resolve as never,
+            );
+          }
           if (payload?.processed_at) {
             state.reservation.processed_at = String(payload.processed_at);
           }
@@ -155,11 +167,13 @@ function createReconcileClient({
   duplicateWebhookProcessingExpiresAt,
   payment = pendingPayment,
   existingAcknowledgement = false,
+  webhookLeaseReclaimSucceeds = true,
 }: {
   duplicateWebhookProcessedAt?: string | null;
   duplicateWebhookProcessingExpiresAt?: string | null;
   payment?: typeof pendingPayment;
   existingAcknowledgement?: boolean;
+  webhookLeaseReclaimSucceeds?: boolean;
 } = {}) {
   const operations: Operation[] = [];
 
@@ -203,6 +217,27 @@ function createReconcileClient({
         return Promise.resolve({ data: null, error: null });
       },
       maybeSingle() {
+        if (
+          table === "webhook_event" &&
+          action === "update" &&
+          (payload as { processing_owner?: string })?.processing_owner
+        ) {
+          return Promise.resolve({
+            data: webhookLeaseReclaimSucceeds ? { id: "webhook-event" } : null,
+            error: null,
+          });
+        }
+        if (
+          action === "update" &&
+          (table === "payment" || table === "donation") &&
+          (payload as { status?: string })?.status === "succeeded"
+        ) {
+          const currentStatus = table === "payment" ? payment.status : payment.donation.status;
+          return Promise.resolve({
+            data: currentStatus === "pending" ? { id: `${table}-1` } : null,
+            error: null,
+          });
+        }
         if (table === "message") {
           return Promise.resolve({
             data: existingAcknowledgement ? { id: "message-1" } : null,
@@ -285,6 +320,26 @@ describe("reconcileProviderPayment webhook event processing", () => {
     expect(state.releases).toBe(1);
   });
 
+  test("keeps immediate redelivery retryable when reservation cleanup itself fails", async () => {
+    const { client, state } = createImmediateRetryClient({ releaseFails: true });
+    const args = {
+      client: client as never,
+      provider: "cod" as const,
+      providerRef: "cod-order-test",
+      providerEventId: "transaction-test:payment:paid:150",
+      eventType: "payment.paid",
+      payload: { type: "payment", status: "paid" },
+    };
+
+    await expect(reconcileProviderPayment(args)).rejects.toThrow("transient payment lookup");
+    await expect(reconcileProviderPayment(args)).rejects.toThrow(
+      "Webhook event is still processing",
+    );
+
+    expect(state.paymentLookups).toBe(1);
+    expect(state.releases).toBe(0);
+  });
+
   test("marks provider events processed only after payment and donation updates succeed", async () => {
     const { client, operations } = createReconcileClient();
 
@@ -365,19 +420,68 @@ describe("reconcileProviderPayment webhook event processing", () => {
     expect(leaseReclaim?.filters).toContainEqual(["eq", "processing_expires_at", expiredLease]);
   });
 
-  test("does not process duplicate webhook events while the first attempt is still leased", async () => {
+  test("keeps a lost expired-lease reclaim retryable instead of acknowledging it", async () => {
+    const { client, operations } = createReconcileClient({
+      duplicateWebhookProcessedAt: null,
+      duplicateWebhookProcessingExpiresAt: "2026-06-26T00:00:00.000Z",
+      webhookLeaseReclaimSucceeds: false,
+    });
+
+    await expect(
+      reconcileProviderPayment({
+        client: client as never,
+        provider: "stripe",
+        providerRef: "cs_test_123",
+        providerEventId: "evt_lost_reclaim",
+        eventType: "checkout.session.completed",
+        payload: { id: "evt_lost_reclaim" },
+      }),
+    ).rejects.toThrow("Webhook event is still processing");
+
+    expect(
+      operations.some(
+        (operation) => operation.table === "payment" && operation.action === "update",
+      ),
+    ).toBe(false);
+  });
+
+  test("keeps an actively leased event retryable instead of acknowledging it as duplicate", async () => {
     const { client, operations } = createReconcileClient({
       duplicateWebhookProcessedAt: null,
       duplicateWebhookProcessingExpiresAt: "2999-01-01T00:00:00.000Z",
+    });
+
+    await expect(
+      reconcileProviderPayment({
+        client: client as never,
+        provider: "stripe",
+        providerRef: "cs_test_123",
+        providerEventId: "evt_in_flight",
+        eventType: "checkout.session.completed",
+        payload: { id: "evt_in_flight" },
+      }),
+    ).rejects.toThrow("Webhook event is still processing");
+
+    expect(
+      operations.some(
+        (operation) => operation.table === "payment" && operation.action === "update",
+      ),
+    ).toBe(false);
+  });
+
+  test("still acknowledges an event whose processed_at timestamp is committed", async () => {
+    const { client, operations } = createReconcileClient({
+      duplicateWebhookProcessedAt: "2026-08-16T10:00:00.000Z",
+      duplicateWebhookProcessingExpiresAt: null,
     });
 
     const result = await reconcileProviderPayment({
       client: client as never,
       provider: "stripe",
       providerRef: "cs_test_123",
-      providerEventId: "evt_in_flight",
+      providerEventId: "evt_processed",
       eventType: "checkout.session.completed",
-      payload: { id: "evt_in_flight" },
+      payload: { id: "evt_processed" },
     });
 
     expect(result).toEqual({ kind: "duplicate" });
