@@ -146,6 +146,24 @@ describe("pollDonationSucceeded", () => {
 
     expect(result).toBe(false);
     expect(calls).toBe(1);
-    expect(receivedSignal).toBe(controller.signal);
+    expect(receivedSignal).not.toBe(controller.signal);
+    expect(receivedSignal?.aborted).toBe(true);
+  });
+
+  test("aborts an in-flight status request at the absolute deadline", async () => {
+    let receivedSignal: AbortSignal | undefined;
+    const result = await pollDonationSucceeded("donation-1", {
+      attempts: 1,
+      deadlineMs: 20,
+      load: async (_donationId, { signal } = {}) => {
+        receivedSignal = signal;
+        return new Promise((resolve) => {
+          signal?.addEventListener("abort", () => resolve({ status: "pending" }));
+        });
+      },
+    });
+
+    expect(result).toBe(false);
+    expect(receivedSignal?.aborted).toBe(true);
   });
 });

@@ -72,6 +72,29 @@ function abortableSleep(delayMs: number, signal?: AbortSignal) {
   });
 }
 
+async function loadWithDeadline(
+  load: PublicDonationStatusLoader,
+  donationId: string,
+  signal: AbortSignal | undefined,
+  remainingMs: number,
+) {
+  const requestController = new AbortController();
+  const abortRequest = () => requestController.abort(signal?.reason);
+  if (signal?.aborted) {
+    abortRequest();
+  } else {
+    signal?.addEventListener("abort", abortRequest, { once: true });
+  }
+
+  const timeout = setTimeout(() => requestController.abort(), remainingMs);
+  try {
+    return await load(donationId, { signal: requestController.signal });
+  } finally {
+    clearTimeout(timeout);
+    signal?.removeEventListener("abort", abortRequest);
+  }
+}
+
 export async function pollDonationSucceeded(
   donationId: string,
   options: PollDonationSucceededOptions = {},
@@ -88,7 +111,9 @@ export async function pollDonationSucceeded(
     if (options.signal?.aborted || now() >= deadlineAt) return false;
 
     try {
-      const result = await load(donationId, { signal: options.signal });
+      const remainingMs = deadlineAt - now();
+      if (remainingMs <= 0) return false;
+      const result = await loadWithDeadline(load, donationId, options.signal, remainingMs);
       if (result.status === "succeeded") return true;
       if (result.status === "failed" || result.status === "refunded") return false;
     } catch {

@@ -7,8 +7,18 @@ import { sendDonationAcknowledgement } from "./notifications.server";
 function createMessageFake({
   conflict = false,
   retryableFailure = false,
-}: { conflict?: boolean; retryableFailure?: boolean } = {}) {
+  existingStatus = "queued",
+  existingUpdatedAt = new Date().toISOString(),
+}: {
+  conflict?: boolean;
+  retryableFailure?: boolean;
+  existingStatus?: "queued" | "sent" | "delivered" | "failed";
+  existingUpdatedAt?: string | null;
+} = {}) {
   const ops: Array<{ action: string; payload?: unknown; filters?: Array<[string, unknown]> }> = [];
+  let row = conflict
+    ? { id: "message-1", status: existingStatus, updated_at: existingUpdatedAt }
+    : null;
   const client = {
     from() {
       return {
@@ -28,10 +38,32 @@ function createMessageFake({
             },
           };
         },
+        select() {
+          const filters: Array<[string, unknown]> = [];
+          const builder = {
+            eq(column: string, value: unknown) {
+              filters.push([column, value]);
+              return builder;
+            },
+            contains(column: string, value: unknown) {
+              filters.push([column, value]);
+              return builder;
+            },
+            maybeSingle() {
+              ops.push({ action: "select", filters });
+              return Promise.resolve({ data: row, error: null });
+            },
+          };
+          return builder;
+        },
         update(payload: unknown) {
           const filters: Array<[string, unknown]> = [];
           const builder = {
             eq(column: string, value: unknown) {
+              filters.push([column, value]);
+              return builder;
+            },
+            lt(column: string, value: unknown) {
               filters.push([column, value]);
               return builder;
             },
@@ -44,8 +76,21 @@ function createMessageFake({
             },
             maybeSingle() {
               ops.push({ action: "update", payload, filters });
+              if (retryableFailure) {
+                row = { id: "message-1", status: "queued", updated_at: new Date().toISOString() };
+              } else if (
+                row &&
+                filters.some(([column, value]) => column === "status" && value === row?.status)
+              ) {
+                if (typeof payload === "object" && payload !== null && "status" in payload) {
+                  row = {
+                    ...row,
+                    status: (payload as { status: typeof row.status }).status,
+                  };
+                }
+              }
               return Promise.resolve({
-                data: retryableFailure ? { id: "message-1" } : null,
+                data: retryableFailure ? { id: "message-1" } : row,
                 error: null,
               });
             },
@@ -92,21 +137,27 @@ describe("sendDonationAcknowledgement", () => {
   });
 
   test("skips without double-sending when the acknowledgement is already claimed (23505)", async () => {
-    const { client, ops } = createMessageFake({ conflict: true });
+    const { client, ops } = createMessageFake({ conflict: true, existingStatus: "sent" });
 
     const result = await sendDonationAcknowledgement(client as never, input);
 
     expect(result).toBe("skipped");
-    // The only follow-up is a guarded failed -> queued claim. With no failed
-    // row affected, the existing queued/sent acknowledgement is not resent.
-    const updates = ops.filter((operation) => operation.action === "update");
-    expect(updates).toHaveLength(1);
-    expect(updates[0].filters).toContainEqual(["status", "failed"]);
+    expect(ops.some((operation) => operation.action === "update")).toBe(false);
+  });
+
+  test("keeps a fresh queued acknowledgement retryable while another sender owns it", async () => {
+    const { client } = createMessageFake({ conflict: true, existingStatus: "queued" });
+
+    await expect(sendDonationAcknowledgement(client as never, input)).resolves.toBe("failed");
   });
 
   test("atomically reclaims a failed acknowledgement for retry", async () => {
     delete process.env.RESEND_API_KEY;
-    const { client, ops } = createMessageFake({ conflict: true, retryableFailure: true });
+    const { client, ops } = createMessageFake({
+      conflict: true,
+      existingStatus: "failed",
+      retryableFailure: true,
+    });
 
     const result = await sendDonationAcknowledgement(client as never, input);
 
@@ -114,9 +165,6 @@ describe("sendDonationAcknowledgement", () => {
     const retry = ops.find((operation) => operation.action === "update");
     expect(retry?.payload).toEqual({ status: "queued" });
     expect(retry?.filters).toContainEqual(["status", "failed"]);
-    expect(retry?.filters).toContainEqual([
-      "payload",
-      { kind: "donation_acknowledgement", donationId: "donation-1" },
-    ]);
+    expect(retry?.filters).toContainEqual(["id", "message-1"]);
   });
 });

@@ -115,6 +115,9 @@ describe("COD notification verification", () => {
         config,
       ),
     ).toThrowError(new CodNotificationError("malformed_data"));
+    expect(() =>
+      parseCodNotificationEnvelope(signedEnvelope(paymentData({ wallet: undefined })), config),
+    ).toThrowError(new CodNotificationError("malformed_data"));
   });
 
   test.each([

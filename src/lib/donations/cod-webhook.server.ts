@@ -106,6 +106,7 @@ export function parseCodNotificationEnvelope(
   const merchantId = requiredString(decoded.merchant_id);
   const segmentId = requiredString(decoded.segment_id);
   const providerRef = requiredString(decoded.out_trade_no);
+  const wallet = requiredString(decoded.wallet);
   const type = requiredString(decoded.type);
   const status = requiredString(decoded.status);
   const amountCents = parseAmountCents(decoded.amount);
@@ -115,16 +116,13 @@ export function parseCodNotificationEnvelope(
     !merchantId ||
     !segmentId ||
     !providerRef ||
+    !wallet ||
     !type ||
     !status ||
     amountCents === null
   ) {
     throw new CodNotificationError("malformed_data");
   }
-  if (decoded.wallet !== undefined && typeof decoded.wallet !== "string") {
-    throw new CodNotificationError("malformed_data");
-  }
-
   const amount = decoded.amount as number;
   const base: CodNotificationBase = {
     transactionId,
@@ -142,7 +140,7 @@ export function parseCodNotificationEnvelope(
         ? "segment_mismatch"
         : currency !== "HKD"
           ? "currency_mismatch"
-          : decoded.wallet !== undefined && decoded.wallet !== "ALIPAYHK"
+          : wallet !== "ALIPAYHK"
             ? "wallet_mismatch"
             : type !== "payment" && type !== "refund"
               ? "type_mismatch"
