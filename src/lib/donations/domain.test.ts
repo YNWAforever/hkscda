@@ -61,7 +61,14 @@ describe("donation domain", () => {
   });
 
   test("keeps donor methods distinct from stored payment providers", () => {
-    const paymentProviders = ["stripe", "paypal", "fps", "payme", "manual", "cod"] satisfies PaymentProvider[];
+    const paymentProviders = [
+      "stripe",
+      "paypal",
+      "fps",
+      "payme",
+      "manual",
+      "cod",
+    ] satisfies PaymentProvider[];
     const onlineProviders = ["stripe", "paypal", "cod"] satisfies OnlinePaymentProvider[];
 
     expect(paymentProviders).toEqual(["stripe", "paypal", "fps", "payme", "manual", "cod"]);
