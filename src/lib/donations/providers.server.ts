@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 
+import { createCodAlipayHkCheckout } from "./cod-provider.server";
 import { getAppUrl, getPayPalConfig, getStripeConfig } from "./config.server";
 import type { CheckoutProviderInput, CheckoutProviderResult } from "./service";
 
@@ -9,6 +10,9 @@ const purposeLabels: Record<string, string> = {
   sponsor: "助養動物 Sponsor a pet",
 };
 
+export const stripeCheckoutPaymentMethodTypes: Stripe.Checkout.SessionCreateParams.PaymentMethodType[] =
+  ["card"];
+
 export async function createStripeCheckout(
   input: CheckoutProviderInput,
 ): Promise<CheckoutProviderResult> {
@@ -16,7 +20,7 @@ export async function createStripeCheckout(
   const appUrl = getAppUrl();
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
-    payment_method_types: ["card", "alipay"],
+    payment_method_types: stripeCheckoutPaymentMethodTypes,
     customer_email: input.donorEmail,
     success_url: `${appUrl}/donate?status=success&donation=${input.donationId}`,
     cancel_url: `${appUrl}/donate?status=cancelled&donation=${input.donationId}`,
@@ -172,5 +176,6 @@ export function createPaymentProviders() {
   return {
     createStripeCheckout,
     createPayPalOrder,
+    createCodAlipayHkCheckout,
   };
 }

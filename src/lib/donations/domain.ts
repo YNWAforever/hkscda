@@ -1,10 +1,24 @@
 import { z } from "zod";
 
 import { donationAttributionSchema } from "./attribution";
-import { donationLanguages, donationMethods, donationPurposes } from "./contracts";
+import {
+  donationLanguages,
+  donationMethods,
+  donationPurposes,
+  type CheckoutExperience,
+  type OnlinePaymentProvider,
+  type PaymentProvider,
+} from "./contracts";
 
 export { donationLanguages, donationMethods, donationPurposes } from "./contracts";
-export type { DonationLanguage, DonationMethod, DonationPurpose } from "./contracts";
+export type {
+  CheckoutExperience,
+  DonationLanguage,
+  DonationMethod,
+  DonationPurpose,
+  OnlinePaymentProvider,
+  PaymentProvider,
+} from "./contracts";
 export type ConsentChannel = "email" | "whatsapp";
 export type ConsentStatus = "opt_in" | "opt_out";
 
@@ -28,6 +42,7 @@ export const donationRequestSchema = z.object({
     .optional()
     .transform((value) => value || undefined),
   method: z.enum(donationMethods),
+  checkoutExperience: z.enum(["wap", "desktop_qr"]).default("desktop_qr"),
   receiptRequested: z.boolean(),
   donor: z.object({
     name: z.string().trim().min(1).max(120),

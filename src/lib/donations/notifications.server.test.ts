@@ -4,8 +4,21 @@ import { sendDonationAcknowledgement } from "./notifications.server";
 
 // Minimal message-table fake: the claim insert does .insert().select("id").single(),
 // the send-status flip does .update().eq().
-function createMessageFake({ conflict = false }: { conflict?: boolean } = {}) {
+function createMessageFake({
+  conflict = false,
+  retryableFailure = false,
+  existingStatus = "queued",
+  existingUpdatedAt = new Date().toISOString(),
+}: {
+  conflict?: boolean;
+  retryableFailure?: boolean;
+  existingStatus?: "queued" | "sent" | "delivered" | "failed";
+  existingUpdatedAt?: string | null;
+} = {}) {
   const ops: Array<{ action: string; payload?: unknown; filters?: Array<[string, unknown]> }> = [];
+  let row = conflict
+    ? { id: "message-1", status: existingStatus, updated_at: existingUpdatedAt }
+    : null;
   const client = {
     from() {
       return {
@@ -25,12 +38,61 @@ function createMessageFake({ conflict = false }: { conflict?: boolean } = {}) {
             },
           };
         },
+        select() {
+          const filters: Array<[string, unknown]> = [];
+          const builder = {
+            eq(column: string, value: unknown) {
+              filters.push([column, value]);
+              return builder;
+            },
+            contains(column: string, value: unknown) {
+              filters.push([column, value]);
+              return builder;
+            },
+            maybeSingle() {
+              ops.push({ action: "select", filters });
+              return Promise.resolve({ data: row, error: null });
+            },
+          };
+          return builder;
+        },
         update(payload: unknown) {
           const filters: Array<[string, unknown]> = [];
           const builder = {
             eq(column: string, value: unknown) {
               filters.push([column, value]);
               return builder;
+            },
+            lt(column: string, value: unknown) {
+              filters.push([column, value]);
+              return builder;
+            },
+            contains(column: string, value: unknown) {
+              filters.push([column, value]);
+              return builder;
+            },
+            select() {
+              return builder;
+            },
+            maybeSingle() {
+              ops.push({ action: "update", payload, filters });
+              if (retryableFailure) {
+                row = { id: "message-1", status: "queued", updated_at: new Date().toISOString() };
+              } else if (
+                row &&
+                filters.some(([column, value]) => column === "status" && value === row?.status)
+              ) {
+                if (typeof payload === "object" && payload !== null && "status" in payload) {
+                  row = {
+                    ...row,
+                    status: (payload as { status: typeof row.status }).status,
+                  };
+                }
+              }
+              return Promise.resolve({
+                data: retryableFailure ? { id: "message-1" } : row,
+                error: null,
+              });
             },
             then(resolve: (value: { error: null }) => void) {
               ops.push({ action: "update", payload, filters });
@@ -75,12 +137,34 @@ describe("sendDonationAcknowledgement", () => {
   });
 
   test("skips without double-sending when the acknowledgement is already claimed (23505)", async () => {
-    const { client, ops } = createMessageFake({ conflict: true });
+    const { client, ops } = createMessageFake({ conflict: true, existingStatus: "sent" });
 
     const result = await sendDonationAcknowledgement(client as never, input);
 
     expect(result).toBe("skipped");
-    // The unique-index conflict short-circuits: no status flip, no second email.
-    expect(ops.filter((operation) => operation.action === "update")).toHaveLength(0);
+    expect(ops.some((operation) => operation.action === "update")).toBe(false);
+  });
+
+  test("keeps a fresh queued acknowledgement retryable while another sender owns it", async () => {
+    const { client } = createMessageFake({ conflict: true, existingStatus: "queued" });
+
+    await expect(sendDonationAcknowledgement(client as never, input)).resolves.toBe("failed");
+  });
+
+  test("atomically reclaims a failed acknowledgement for retry", async () => {
+    delete process.env.RESEND_API_KEY;
+    const { client, ops } = createMessageFake({
+      conflict: true,
+      existingStatus: "failed",
+      retryableFailure: true,
+    });
+
+    const result = await sendDonationAcknowledgement(client as never, input);
+
+    expect(result).toBe("queued");
+    const retry = ops.find((operation) => operation.action === "update");
+    expect(retry?.payload).toEqual({ status: "queued" });
+    expect(retry?.filters).toContainEqual(["status", "failed"]);
+    expect(retry?.filters).toContainEqual(["id", "message-1"]);
   });
 });

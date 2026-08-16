@@ -5,7 +5,7 @@ import { donationPurposes } from "./contracts";
 
 export const donateSearchSchema = donationAttributionSchema.partial().extend({
   purpose: z.enum(donationPurposes).optional().catch(undefined),
-  status: z.enum(["success", "cancelled", "paypal-approved"]).optional(),
+  status: z.enum(["success", "cancelled", "paypal-approved", "pending"]).optional(),
   donation: z.string().optional(),
 });
 

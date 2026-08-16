@@ -1,7 +1,9 @@
 import { describe, expect, test } from "bun:test";
 
 import {
+  completeDonationSideEffects,
   failProviderPayment,
+  flagProviderWebhookForReview,
   issueReceiptIfNeeded,
   issueReceiptForDonation,
   reconcileManualPayment,
@@ -188,6 +190,16 @@ describe("issueReceiptIfNeeded", () => {
   });
 });
 
+describe("completeDonationSideEffects", () => {
+  test("surfaces a failed acknowledgement so the provider event stays retryable", async () => {
+    await expect(
+      completeDonationSideEffects({} as never, pendingPaymentNoReceipt, {
+        sendAcknowledgement: async () => "failed",
+      }),
+    ).rejects.toThrow("acknowledgement");
+  });
+});
+
 describe("issueReceiptForDonation", () => {
   test("rejects ineligible donations before calling the receipt RPC", async () => {
     const rpcCalls: string[] = [];
@@ -263,12 +275,18 @@ function createWebhookFake({
   payment,
   paymentByProvider = payment,
   issuedReceipts = [],
+  transitionMiss = false,
+  succeededTransitionMiss = false,
+  paymentAfterTransitionMiss,
 }: {
   payment: typeof basePayment | null;
   // What the provider_ref lookup returns (defaults to `payment`). Set null to
   // simulate a provider_ref miss that must fall back to the payment-id lookup.
   paymentByProvider?: typeof basePayment | null;
   issuedReceipts?: Array<{ id: string; pdf_url: string | null }>;
+  transitionMiss?: boolean;
+  succeededTransitionMiss?: boolean;
+  paymentAfterTransitionMiss?: typeof basePayment;
 }) {
   const operations: Array<{
     table: string;
@@ -289,6 +307,10 @@ function createWebhookFake({
         filters.push(["is", column, value]);
         return builder;
       },
+      in(column: string, value: unknown) {
+        filters.push(["in", column, value]);
+        return builder;
+      },
       contains(column: string, value: unknown) {
         filters.push(["contains", column, value]);
         return builder;
@@ -300,6 +322,20 @@ function createWebhookFake({
         return Promise.resolve(readSingle(table, filters));
       },
       maybeSingle() {
+        if (mode === "update" && (payload as { status?: string })?.status === "refunded") {
+          operations.push({ table, action: mode, payload, filters });
+          return Promise.resolve({
+            data: transitionMiss ? null : { id: `${table}-1` },
+            error: null,
+          });
+        }
+        if (mode === "update" && (payload as { status?: string })?.status === "succeeded") {
+          operations.push({ table, action: mode, payload, filters });
+          return Promise.resolve({
+            data: succeededTransitionMiss ? null : { id: `${table}-1` },
+            error: null,
+          });
+        }
         return Promise.resolve(readSingle(table, filters));
       },
       then(resolve: (value: { data?: unknown; error: null }) => void) {
@@ -316,7 +352,10 @@ function createWebhookFake({
   function readSingle(table: string, filters: Array<[string, string, unknown]>) {
     if (table === "payment") {
       const byId = filters.some((f) => f[1] === "id");
-      return { data: byId ? payment : paymentByProvider, error: null };
+      return {
+        data: byId ? (paymentAfterTransitionMiss ?? payment) : paymentByProvider,
+        error: null,
+      };
     }
     return { data: null, error: null };
   }
@@ -412,6 +451,59 @@ describe("failProviderPayment", () => {
 });
 
 describe("refundProviderPayment", () => {
+  test("makes a verified refund terminal even when it arrives before the paid notification", async () => {
+    const pendingCodPayment = {
+      ...pendingPaymentNoReceipt,
+      provider: "cod",
+      provider_ref: "cod-order-test",
+    };
+    const { client, operations } = createWebhookFake({ payment: pendingCodPayment });
+
+    const refund = await refundProviderPayment({
+      client: client as never,
+      provider: "cod",
+      providerRef: "cod-order-test",
+      providerEventId: "transaction-refund:refund:paid:-150",
+      eventType: "refund.paid",
+      payload: { type: "refund", status: "paid" },
+    });
+
+    expect(refund).toMatchObject({ kind: "refunded" });
+    const paymentUpdate = operations.find(
+      (operation) => operation.table === "payment" && operation.action === "update",
+    );
+    const donationUpdate = operations.find(
+      (operation) => operation.table === "donation" && operation.action === "update",
+    );
+    expect(paymentUpdate?.filters).toContainEqual(["in", "status", ["pending", "succeeded"]]);
+    expect(donationUpdate?.filters).toContainEqual(["in", "status", ["pending", "succeeded"]]);
+
+    const terminal = {
+      ...pendingCodPayment,
+      status: "refunded",
+      donation: { ...pendingCodPayment.donation, status: "refunded" },
+    };
+    const latePaid = createWebhookFake({ payment: terminal });
+    const reconcile = await reconcileProviderPayment({
+      client: latePaid.client as never,
+      provider: "cod",
+      providerRef: "cod-order-test",
+      providerEventId: "transaction-payment:payment:paid:150",
+      eventType: "payment.paid",
+      payload: { type: "payment", status: "paid" },
+    });
+
+    expect(reconcile).toMatchObject({ kind: "skipped", reason: "terminal_status" });
+    expect(
+      latePaid.operations.some(
+        (operation) =>
+          operation.table === "payment" &&
+          operation.action === "update" &&
+          (operation.payload as { status?: string }).status === "succeeded",
+      ),
+    ).toBe(false);
+  });
+
   test("marks refunded (guarded on succeeded), voids the receipt, and removes its PDF", async () => {
     const { client, operations, removals } = createWebhookFake({
       payment: basePayment,
@@ -432,11 +524,79 @@ describe("refundProviderPayment", () => {
     expect(statusUpdate(operations, "donation")?.status).toBe("refunded");
 
     const paymentUpdate = operations.find((o) => o.table === "payment" && o.action === "update");
-    expect(paymentUpdate?.filters).toContainEqual(["eq", "status", "succeeded"]);
+    expect(paymentUpdate?.filters).toContainEqual(["in", "status", ["pending", "succeeded"]]);
 
     const receiptUpdate = operations.find((o) => o.table === "receipt" && o.action === "update");
     expect((receiptUpdate?.payload as { status?: string }).status).toBe("void");
     expect(removals).toEqual(["2026/HKSCDA-2026-000001.pdf"]);
+  });
+});
+
+describe("flagProviderWebhookForReview", () => {
+  test("audits and acknowledges a mapped payment without changing payment state", async () => {
+    const codPayment = {
+      ...pendingPaymentNoReceipt,
+      provider: "cod",
+      provider_ref: "cod-order-test",
+    };
+    const { client, operations } = createWebhookFake({ payment: codPayment });
+
+    const result = await flagProviderWebhookForReview(
+      {
+        client: client as never,
+        provider: "cod",
+        providerRef: "cod-order-test",
+        providerEventId: "transaction-test:payment:paid:150",
+        eventType: "payment.paid",
+        payload: { type: "payment", status: "paid" },
+      },
+      { reason: "amount_mismatch", detail: { expectedCents: 20000, actualCents: 15000 } },
+    );
+
+    expect(result).toMatchObject({ kind: "manual_review", paymentId: "payment-1" });
+    expect(
+      operations.some(
+        (operation) =>
+          operation.table === "audit_log" &&
+          operation.action === "insert" &&
+          (operation.payload as { action?: string }).action === "payment.cod_manual_review",
+      ),
+    ).toBe(true);
+    expect(operations.some((o) => o.table === "payment" && o.action === "update")).toBe(false);
+    expect(operations.some((o) => o.table === "donation" && o.action === "update")).toBe(false);
+  });
+});
+
+describe("refundProviderPayment guard outcomes", () => {
+  test("does not report refunded when guarded state transitions affect no rows", async () => {
+    const pendingCodPayment = {
+      ...pendingPaymentNoReceipt,
+      provider: "cod",
+      provider_ref: "cod-order-test",
+    };
+    const { client, operations } = createWebhookFake({
+      payment: pendingCodPayment,
+      transitionMiss: true,
+    });
+
+    const result = await refundProviderPayment({
+      client: client as never,
+      provider: "cod",
+      providerRef: "cod-order-test",
+      providerEventId: "transaction-refund:refund:paid:-150",
+      eventType: "refund.paid",
+      payload: { type: "refund", status: "paid" },
+    });
+
+    expect(result).toMatchObject({ kind: "manual_review", reason: "state_transition_conflict" });
+    expect(
+      operations.some(
+        (operation) =>
+          operation.table === "audit_log" &&
+          operation.action === "insert" &&
+          (operation.payload as { action?: string }).action === "payment.refund_state_conflict",
+      ),
+    ).toBe(true);
   });
 });
 
@@ -497,6 +657,92 @@ describe("reconcileProviderPayment terminal-state guard", () => {
 });
 
 describe("reconcileProviderPayment success path", () => {
+  test("keeps a mixed succeeded payment and pending donation retryable after a guard miss", async () => {
+    const mixedPayment = {
+      ...pendingPaymentNoReceipt,
+      provider: "cod",
+      provider_ref: "cod-order-test",
+      status: "succeeded",
+      donation: { ...pendingPaymentNoReceipt.donation, status: "pending" },
+    };
+    const { client, operations } = createWebhookFake({
+      payment: mixedPayment,
+      succeededTransitionMiss: true,
+      paymentAfterTransitionMiss: mixedPayment,
+    });
+
+    await expect(
+      reconcileProviderPayment({
+        client: client as never,
+        provider: "cod",
+        providerRef: "cod-order-test",
+        providerEventId: "transaction-payment:mixed-state:paid:150",
+        eventType: "payment.paid",
+        payload: { type: "payment", status: "paid" },
+      }),
+    ).rejects.toThrow("Payment reconciliation state conflict");
+
+    expect(
+      operations.some(
+        (operation) =>
+          operation.table === "audit_log" &&
+          (operation.payload as { action?: string }).action === "payment.reconcile_state_conflict",
+      ),
+    ).toBe(true);
+    expect(
+      operations.some(
+        (operation) => operation.table === "message" && operation.action === "insert",
+      ),
+    ).toBe(false);
+    expect(
+      operations.some(
+        (operation) =>
+          operation.table === "webhook_event" &&
+          operation.action === "update" &&
+          Boolean((operation.payload as { processed_at?: string }).processed_at),
+      ),
+    ).toBe(false);
+  });
+
+  test("does not run receipt or acknowledgement side effects when a concurrent refund wins", async () => {
+    const stalePending = {
+      ...pendingPaymentNoReceipt,
+      provider: "cod",
+      provider_ref: "cod-order-test",
+    };
+    const refunded = {
+      ...stalePending,
+      status: "refunded",
+      donation: { ...stalePending.donation, status: "refunded" },
+    };
+    const { client, operations } = createWebhookFake({
+      payment: stalePending,
+      succeededTransitionMiss: true,
+      paymentAfterTransitionMiss: refunded,
+    });
+
+    const result = await reconcileProviderPayment({
+      client: client as never,
+      provider: "cod",
+      providerRef: "cod-order-test",
+      providerEventId: "transaction-payment:payment:paid:150",
+      eventType: "payment.paid",
+      payload: { type: "payment", status: "paid" },
+    });
+
+    expect(result).toMatchObject({ kind: "skipped", reason: "terminal_status" });
+    expect(
+      operations.some(
+        (operation) => operation.table === "message" && operation.action === "insert",
+      ),
+    ).toBe(false);
+    expect(
+      operations.some(
+        (operation) => operation.table === "receipt" && operation.action === "insert",
+      ),
+    ).toBe(false);
+  });
+
   test("applies pending->succeeded guarded on the pending status", async () => {
     const { client, operations } = createWebhookFake({ payment: pendingPaymentNoReceipt });
 

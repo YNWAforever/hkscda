@@ -16,6 +16,26 @@ function readMigrationBySuffix(suffix: string) {
 }
 
 describe("supabase migration safety", () => {
+  test("extends donation payment checks for COD AlipayHK without rewriting rows", () => {
+    const sql = readMigration("20260720100000_cod_alipayhk_payment_support.sql");
+
+    expect(sql).toContain("drop constraint if exists donation_method_check");
+    expect(sql).toContain("add constraint donation_method_check check");
+    expect(sql).toContain("'alipayhk'");
+    expect(sql).toContain("drop constraint if exists payment_provider_check");
+    expect(sql).toContain("'cod'");
+    expect(sql).toContain("drop constraint if exists webhook_event_provider_check");
+    expect(sql).toContain("'cod'");
+    expect(sql).not.toMatch(/delete\s+from\s+(public\.)?(donation|payment|webhook_event)/i);
+  });
+
+  test("persists the COD order reference used by the supported details lookup", () => {
+    const sql = readMigration("20260816120000_cod_payment_order_reference.sql");
+    expect(sql).toContain("add column if not exists provider_order_ref text");
+    expect(sql).toContain("payment_provider_order_ref_idx");
+    expect(sql).not.toMatch(/delete\s+from\s+(public\.)?payment/i);
+  });
+
   test("adds grouped visits and adoption information", () => {
     const sql = readMigration("20260718110000_adoption_information.sql");
     expect(sql).toContain("add column if not exists dog_time_windows text[]");
@@ -594,7 +614,6 @@ describe("supabase migration safety", () => {
     expect(sql).not.toContain("insert into public.document_assets");
     expect(sql).not.toContain("storage.objects");
   });
-
   test("adds bilingual adoption guide releases with atomic admin publication", () => {
     const sql = readMigration("20260731120000_adoption_guide_release_cms.sql");
 

@@ -28,4 +28,13 @@ describe("donate search attribution", () => {
     expect(donateSearchSchema.parse({ purpose: "醫療" }).purpose).toBeUndefined();
     expect(donateSearchSchema.parse({ purpose: "campaign-free-text" }).purpose).toBeUndefined();
   });
+
+  test("accepts a pending payment return so the donor status can be polled", () => {
+    expect(
+      donateSearchSchema.parse({
+        donation: "11111111-1111-4111-8111-111111111111",
+        status: "pending",
+      }),
+    ).toMatchObject({ status: "pending" });
+  });
 });

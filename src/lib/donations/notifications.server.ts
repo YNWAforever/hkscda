@@ -16,6 +16,29 @@ type EmailInput = {
 
 export type AcknowledgementResult = "sent" | "queued" | "skipped" | "failed";
 
+const ACKNOWLEDGEMENT_RETRY_LEASE_MS = 5 * 60 * 1000;
+
+type ExistingAcknowledgement = {
+  id: string;
+  status: "queued" | "sent" | "delivered" | "failed";
+  updated_at: string | null;
+};
+
+async function findAcknowledgement(
+  client: SupabaseClient,
+  input: Pick<EmailInput, "supporterId" | "donationId">,
+): Promise<ExistingAcknowledgement | null> {
+  const { data, error } = await client
+    .from("message")
+    .select("id,status,updated_at")
+    .eq("supporter_id", input.supporterId)
+    .eq("channel", "email")
+    .contains("payload", { kind: "donation_acknowledgement", donationId: input.donationId })
+    .maybeSingle<ExistingAcknowledgement>();
+  if (error) throw error;
+  return data;
+}
+
 export async function sendDonationAcknowledgement(
   client: SupabaseClient,
   input: EmailInput,
@@ -32,8 +55,10 @@ export async function sendDonationAcknowledgement(
   // Claim the acknowledgement BEFORE any external work. The
   // message_donation_ack_unique index enforces one ack per (supporter,
   // donation), so a redelivered/concurrent success event that loses the race
-  // gets a 23505 here and skips — there is no second email, and the
-  // check-then-send TOCTOU is gone.
+  // gets a 23505 here. Sent/delivered rows skip. A fresh queued row belongs to
+  // another in-flight sender and keeps reconciliation retryable; a stale
+  // queued row is reclaimed after the lease and retried with the same provider
+  // idempotency key.
   const { data: claimed, error: claimError } = await client
     .from("message")
     .insert({
@@ -44,11 +69,50 @@ export async function sendDonationAcknowledgement(
     })
     .select("id")
     .single();
+  let messageId: string;
   if (claimError) {
-    if ((claimError as { code?: string }).code === "23505") return "skipped";
-    throw claimError;
+    if ((claimError as { code?: string }).code !== "23505") throw claimError;
+
+    const existing = await findAcknowledgement(client, input);
+    if (!existing) throw new Error("Acknowledgement claim disappeared after unique conflict");
+    if (existing.status === "sent" || existing.status === "delivered") return "skipped";
+
+    if (existing.status === "queued") {
+      const updatedAt = existing.updated_at ? Date.parse(existing.updated_at) : Number.NaN;
+      const leaseExpired =
+        Number.isFinite(updatedAt) && Date.now() - updatedAt >= ACKNOWLEDGEMENT_RETRY_LEASE_MS;
+      if (!leaseExpired) return "failed";
+
+      const staleBefore = new Date(Date.now() - ACKNOWLEDGEMENT_RETRY_LEASE_MS).toISOString();
+      const { data: reclaimed, error: reclaimError } = await client
+        .from("message")
+        .update({ status: "queued" })
+        .eq("id", existing.id)
+        .eq("status", "queued")
+        .lt("updated_at", staleBefore)
+        .select("id")
+        .maybeSingle();
+      if (reclaimError) throw reclaimError;
+      if (!reclaimed) return "failed";
+      messageId = (reclaimed as { id: string }).id;
+    } else {
+      // A prior provider outage leaves the unique acknowledgement row failed.
+      // Reclaim it with a guarded transition. Only one concurrent retry can
+      // move failed -> queued; a race that loses the claim stays retryable.
+      const { data: retried, error: retryError } = await client
+        .from("message")
+        .update({ status: "queued" })
+        .eq("id", existing.id)
+        .eq("status", "failed")
+        .select("id")
+        .maybeSingle();
+      if (retryError) throw retryError;
+      if (!retried) return "failed";
+      messageId = (retried as { id: string }).id;
+    }
+  } else {
+    messageId = (claimed as { id: string }).id;
   }
-  const messageId = (claimed as { id: string }).id;
 
   if (!config.resendApiKey) {
     // Dev/preview without an email provider: leave the claim queued.
@@ -64,28 +128,45 @@ export async function sendDonationAcknowledgement(
 
   try {
     const resend = new Resend(config.resendApiKey);
-    await resend.emails.send({
-      from: config.from,
-      to: input.to,
-      replyTo: config.replyTo,
-      subject,
-      html:
-        input.language === "en"
-          ? `<p>Dear ${input.donorName},</p><p>Thank you for your donation of ${centsToHkd(input.amountCents)}.</p>${receiptLine}<p>Every gift helps rescued cats and dogs receive food, medical care, and a safe path to adoption.</p>`
-          : `<p>${input.donorName} 您好：</p><p>多謝您捐出 ${centsToHkd(input.amountCents)} 支持本會。</p>${receiptLine}<p>每一份善意都會用於流浪貓狗的糧食、醫療及領養工作。</p>`,
-    });
+    await resend.emails.send(
+      {
+        from: config.from,
+        to: input.to,
+        replyTo: config.replyTo,
+        subject,
+        html:
+          input.language === "en"
+            ? `<p>Dear ${input.donorName},</p><p>Thank you for your donation of ${centsToHkd(input.amountCents)}.</p>${receiptLine}<p>Every gift helps rescued cats and dogs receive food, medical care, and a safe path to adoption.</p>`
+            : `<p>${input.donorName} 您好：</p><p>多謝您捐出 ${centsToHkd(input.amountCents)} 支持本會。</p>${receiptLine}<p>每一份善意都會用於流浪貓狗的糧食、醫療及領養工作。</p>`,
+      },
+      { idempotencyKey: `donation-acknowledgement-${input.donationId}` },
+    );
   } catch (sendError) {
     // Best-effort: an email-provider outage must never roll back an
     // already-committed payment + receipt. Leave the claim row as 'failed' for
     // an outbox/retry and surface the error in logs.
     console.error("Failed to send donation acknowledgement email", sendError);
-    await client.from("message").update({ status: "failed" }).eq("id", messageId);
+    const { error: statusError } = await client
+      .from("message")
+      .update({ status: "failed" })
+      .eq("id", messageId)
+      .eq("status", "queued");
+    if (statusError) throw statusError;
     return "failed";
   }
 
-  await client
+  const { data: sent, error: statusError } = await client
     .from("message")
     .update({ status: "sent", sent_at: new Date().toISOString() })
-    .eq("id", messageId);
+    .eq("id", messageId)
+    .eq("status", "queued")
+    .select("id")
+    .maybeSingle();
+  if (statusError) throw statusError;
+  if (!sent) {
+    const current = await findAcknowledgement(client, input);
+    if (current?.status === "sent" || current?.status === "delivered") return "sent";
+    throw new Error("Acknowledgement delivery succeeded but status was not persisted");
+  }
   return "sent";
 }

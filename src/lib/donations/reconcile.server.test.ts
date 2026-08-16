@@ -23,6 +23,138 @@ const pendingPayment = {
   },
 };
 
+function createImmediateRetryClient({ releaseFails = false } = {}) {
+  const state = {
+    reservation: null as null | {
+      processed_at: string | null;
+      processing_expires_at: string | null;
+      processing_owner: string | null;
+    },
+    paymentLookups: 0,
+    releases: 0,
+  };
+
+  function query(table: string, mode: "read" | "update", payload?: Record<string, unknown>) {
+    const filters: Array<[string, string, unknown]> = [];
+    const builder = {
+      select() {
+        return builder;
+      },
+      eq(column: string, value: unknown) {
+        filters.push(["eq", column, value]);
+        return builder;
+      },
+      is(column: string, value: unknown) {
+        filters.push(["is", column, value]);
+        return builder;
+      },
+      single() {
+        if (table === "webhook_event") {
+          return Promise.resolve({ data: state.reservation, error: null });
+        }
+        return builder.maybeSingle();
+      },
+      maybeSingle() {
+        if (
+          mode === "update" &&
+          (table === "payment" || table === "donation") &&
+          payload?.status === "succeeded"
+        ) {
+          return Promise.resolve({ data: { id: `${table}-1` }, error: null });
+        }
+        if (table === "payment" && mode === "read") {
+          state.paymentLookups += 1;
+          if (state.paymentLookups === 1) {
+            return Promise.resolve({ data: null, error: new Error("transient payment lookup") });
+          }
+          return Promise.resolve({ data: pendingPayment, error: null });
+        }
+        if (table === "webhook_event" && mode === "update") {
+          state.reservation = {
+            processed_at: null,
+            processing_expires_at: String(payload?.processing_expires_at ?? ""),
+            processing_owner: String(payload?.processing_owner ?? ""),
+          };
+          return Promise.resolve({ data: { id: "webhook-event" }, error: null });
+        }
+        return Promise.resolve({ data: null, error: null });
+      },
+      then(resolve: (value: { error: null }) => void) {
+        if (table === "webhook_event" && mode === "update" && state.reservation) {
+          if (payload?.processing_owner === null && !payload.processed_at && releaseFails) {
+            return Promise.resolve({ error: new Error("reservation release failed") }).then(
+              resolve as never,
+            );
+          }
+          if (payload?.processed_at) {
+            state.reservation.processed_at = String(payload.processed_at);
+          }
+          if (payload?.processing_owner === null) {
+            state.reservation.processing_owner = null;
+            state.reservation.processing_expires_at = null;
+            if (!payload.processed_at) state.releases += 1;
+          }
+        }
+        return Promise.resolve({ error: null }).then(resolve);
+      },
+    };
+    return builder;
+  }
+
+  const client = {
+    from(table: string) {
+      return {
+        insert(payload: Record<string, unknown>) {
+          if (table === "webhook_event") {
+            const conflict = state.reservation !== null;
+            if (!conflict) {
+              state.reservation = {
+                processed_at: null,
+                processing_expires_at: String(payload.processing_expires_at),
+                processing_owner: String(payload.processing_owner),
+              };
+            }
+            return {
+              then(resolve: (value: { error: null | { code: string } }) => void) {
+                return Promise.resolve({ error: conflict ? { code: "23505" } : null }).then(
+                  resolve,
+                );
+              },
+              select() {
+                return {
+                  single() {
+                    return Promise.resolve({ data: { id: "message" }, error: null });
+                  },
+                };
+              },
+            };
+          }
+          return {
+            then(resolve: (value: { error: null }) => void) {
+              return Promise.resolve({ error: null }).then(resolve);
+            },
+            select() {
+              return {
+                single() {
+                  return Promise.resolve({ data: { id: "message" }, error: null });
+                },
+              };
+            },
+          };
+        },
+        select() {
+          return query(table, "read");
+        },
+        update(payload: Record<string, unknown>) {
+          return query(table, "update", payload);
+        },
+      };
+    },
+  };
+
+  return { client, state };
+}
+
 type Operation = {
   table: string;
   action: "insert" | "select" | "update";
@@ -35,11 +167,13 @@ function createReconcileClient({
   duplicateWebhookProcessingExpiresAt,
   payment = pendingPayment,
   existingAcknowledgement = false,
+  webhookLeaseReclaimSucceeds = true,
 }: {
   duplicateWebhookProcessedAt?: string | null;
   duplicateWebhookProcessingExpiresAt?: string | null;
   payment?: typeof pendingPayment;
   existingAcknowledgement?: boolean;
+  webhookLeaseReclaimSucceeds?: boolean;
 } = {}) {
   const operations: Operation[] = [];
 
@@ -83,6 +217,27 @@ function createReconcileClient({
         return Promise.resolve({ data: null, error: null });
       },
       maybeSingle() {
+        if (
+          table === "webhook_event" &&
+          action === "update" &&
+          (payload as { processing_owner?: string })?.processing_owner
+        ) {
+          return Promise.resolve({
+            data: webhookLeaseReclaimSucceeds ? { id: "webhook-event" } : null,
+            error: null,
+          });
+        }
+        if (
+          action === "update" &&
+          (table === "payment" || table === "donation") &&
+          (payload as { status?: string })?.status === "succeeded"
+        ) {
+          const currentStatus = table === "payment" ? payment.status : payment.donation.status;
+          return Promise.resolve({
+            data: currentStatus === "pending" ? { id: `${table}-1` } : null,
+            error: null,
+          });
+        }
         if (table === "message") {
           return Promise.resolve({
             data: existingAcknowledgement ? { id: "message-1" } : null,
@@ -146,6 +301,45 @@ function createReconcileClient({
 }
 
 describe("reconcileProviderPayment webhook event processing", () => {
+  test("releases its reservation after a transient failure so immediate redelivery reprocesses", async () => {
+    const { client, state } = createImmediateRetryClient();
+    const args = {
+      client: client as never,
+      provider: "cod" as const,
+      providerRef: "cod-order-test",
+      providerEventId: "transaction-test:payment:paid:150",
+      eventType: "payment.paid",
+      payload: { type: "payment", status: "paid" },
+    };
+
+    await expect(reconcileProviderPayment(args)).rejects.toThrow("transient payment lookup");
+    const retry = await reconcileProviderPayment(args);
+
+    expect(retry).toMatchObject({ kind: "applied" });
+    expect(state.paymentLookups).toBe(2);
+    expect(state.releases).toBe(1);
+  });
+
+  test("keeps immediate redelivery retryable when reservation cleanup itself fails", async () => {
+    const { client, state } = createImmediateRetryClient({ releaseFails: true });
+    const args = {
+      client: client as never,
+      provider: "cod" as const,
+      providerRef: "cod-order-test",
+      providerEventId: "transaction-test:payment:paid:150",
+      eventType: "payment.paid",
+      payload: { type: "payment", status: "paid" },
+    };
+
+    await expect(reconcileProviderPayment(args)).rejects.toThrow("transient payment lookup");
+    await expect(reconcileProviderPayment(args)).rejects.toThrow(
+      "Webhook event is still processing",
+    );
+
+    expect(state.paymentLookups).toBe(1);
+    expect(state.releases).toBe(0);
+  });
+
   test("marks provider events processed only after payment and donation updates succeed", async () => {
     const { client, operations } = createReconcileClient();
 
@@ -226,19 +420,68 @@ describe("reconcileProviderPayment webhook event processing", () => {
     expect(leaseReclaim?.filters).toContainEqual(["eq", "processing_expires_at", expiredLease]);
   });
 
-  test("does not process duplicate webhook events while the first attempt is still leased", async () => {
+  test("keeps a lost expired-lease reclaim retryable instead of acknowledging it", async () => {
+    const { client, operations } = createReconcileClient({
+      duplicateWebhookProcessedAt: null,
+      duplicateWebhookProcessingExpiresAt: "2026-06-26T00:00:00.000Z",
+      webhookLeaseReclaimSucceeds: false,
+    });
+
+    await expect(
+      reconcileProviderPayment({
+        client: client as never,
+        provider: "stripe",
+        providerRef: "cs_test_123",
+        providerEventId: "evt_lost_reclaim",
+        eventType: "checkout.session.completed",
+        payload: { id: "evt_lost_reclaim" },
+      }),
+    ).rejects.toThrow("Webhook event is still processing");
+
+    expect(
+      operations.some(
+        (operation) => operation.table === "payment" && operation.action === "update",
+      ),
+    ).toBe(false);
+  });
+
+  test("keeps an actively leased event retryable instead of acknowledging it as duplicate", async () => {
     const { client, operations } = createReconcileClient({
       duplicateWebhookProcessedAt: null,
       duplicateWebhookProcessingExpiresAt: "2999-01-01T00:00:00.000Z",
+    });
+
+    await expect(
+      reconcileProviderPayment({
+        client: client as never,
+        provider: "stripe",
+        providerRef: "cs_test_123",
+        providerEventId: "evt_in_flight",
+        eventType: "checkout.session.completed",
+        payload: { id: "evt_in_flight" },
+      }),
+    ).rejects.toThrow("Webhook event is still processing");
+
+    expect(
+      operations.some(
+        (operation) => operation.table === "payment" && operation.action === "update",
+      ),
+    ).toBe(false);
+  });
+
+  test("still acknowledges an event whose processed_at timestamp is committed", async () => {
+    const { client, operations } = createReconcileClient({
+      duplicateWebhookProcessedAt: "2026-08-16T10:00:00.000Z",
+      duplicateWebhookProcessingExpiresAt: null,
     });
 
     const result = await reconcileProviderPayment({
       client: client as never,
       provider: "stripe",
       providerRef: "cs_test_123",
-      providerEventId: "evt_in_flight",
+      providerEventId: "evt_processed",
       eventType: "checkout.session.completed",
-      payload: { id: "evt_in_flight" },
+      payload: { id: "evt_processed" },
     });
 
     expect(result).toEqual({ kind: "duplicate" });
