@@ -33,6 +33,7 @@ import {
   buildAnimalPipelineSearchParams,
   buildAnimalTaskSearchParams,
   groupAnimalPipelineRows,
+  hasUnsavedProfileChanges,
   resolveAnimalPipelinePagination,
   type AnimalInternalProfile,
   type AnimalPipelineFilters,
@@ -446,6 +447,25 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
     setProfileForm(cloneProfile(row.profile));
   }
 
+  /**
+   * Close path for operator-initiated dismissal. The dialog holds sixteen
+   * fields and Radix closes it on any outside click, so an unguarded close
+   * discards real typing. onSuccess still calls closeProfileDialog directly —
+   * a saved form has nothing to lose.
+   */
+  function requestCloseProfileDialog() {
+    const saved = selectedRow?.profile;
+    if (
+      profileForm &&
+      saved &&
+      hasUnsavedProfileChanges(profileForm, saved) &&
+      !window.confirm("尚未儲存的變更將會遺失，確定關閉？")
+    ) {
+      return;
+    }
+    closeProfileDialog();
+  }
+
   function closeProfileDialog() {
     setSelectedAnimalId(null);
     setProfileForm(null);
@@ -678,7 +698,9 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
               lifecycleMutation.mutate({ animalId: row.id, status: value as AnimalStatus })
             }
           >
-            <SelectTrigger aria-label={`Update ${row.name} lifecycle`} className="h-10 w-40">
+            {/* min-h-11 to match the Edit button below it; h-10 left this the
+                one sub-44px touch target in the card. */}
+            <SelectTrigger aria-label={`Update ${row.name} lifecycle`} className="min-h-11 w-40">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -1032,7 +1054,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
 
       <Dialog
         open={Boolean(selectedAnimalId)}
-        onOpenChange={(open) => !open && closeProfileDialog()}
+        onOpenChange={(open) => !open && requestCloseProfileDialog()}
       >
         <DialogContent className="max-h-[86vh] max-w-4xl overflow-y-auto border-[var(--color-border)] bg-[var(--color-surface)]">
           <DialogHeader>
@@ -1304,7 +1326,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={closeProfileDialog}
+                    onClick={requestCloseProfileDialog}
                     disabled={saveProfileMutation.isPending}
                   >
                     Cancel

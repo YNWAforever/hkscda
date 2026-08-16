@@ -46,15 +46,20 @@ export function buildVolunteerRegistrationPayload(state: VolunteerRegistrationFo
   };
 }
 
-export function canRegisterForActivity(activity: {
-  status: VolunteerActivityStatus;
-  startsAt: string;
-  remainingCapacity: number;
-  allowWaitlist: boolean;
-}) {
+// `now` is injectable so tests can pin the clock. Asserting against the real
+// wall clock makes a test that passes today fail on a later calendar date.
+export function canRegisterForActivity(
+  activity: {
+    status: VolunteerActivityStatus;
+    startsAt: string;
+    remainingCapacity: number;
+    allowWaitlist: boolean;
+  },
+  now = () => new Date(),
+) {
   return (
     activity.status === "published" &&
-    new Date(activity.startsAt).getTime() > Date.now() &&
+    new Date(activity.startsAt).getTime() > now().getTime() &&
     (activity.remainingCapacity > 0 || activity.allowWaitlist)
   );
 }

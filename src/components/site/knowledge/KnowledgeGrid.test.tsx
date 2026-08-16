@@ -3,12 +3,62 @@ import { renderToStaticMarkup } from "react-dom/server";
 
 import { KnowledgeGrid, KnowledgeGridSkeleton } from "./KnowledgeGrid";
 
-const external = { id: "external-1", title: "HK01 pet care guide", topic: "pet-care", shortIntro: "External seed.", sourceName: "HK01", destination: { kind: "external" as const, url: "https://example.test/hk01" }, isPublished: true, sortOrder: 0, createdAt: "2026-07-22T00:00:00.000Z", updatedAt: "2026-07-22T00:00:00.000Z" };
-const pdf = { ...external, id: "pdf-1", title: "What you need to know after adoption", sourceName: "HKSCDA", destination: { kind: "document" as const, assetId: "asset-1", url: "https://cdn.example.test/guide.pdf" }, sortOrder: 2 };
+const external = {
+  id: "external-1",
+  title: "HK01 pet care guide",
+  topic: "pet-care",
+  shortIntro: "External seed.",
+  sourceName: "HK01",
+  destination: { kind: "external" as const, url: "https://example.test/hk01" },
+  isPublished: true,
+  sortOrder: 0,
+  createdAt: "2026-07-22T00:00:00.000Z",
+  updatedAt: "2026-07-22T00:00:00.000Z",
+};
+const pdf = {
+  ...external,
+  id: "pdf-1",
+  title: "What you need to know after adoption",
+  sourceName: "HKSCDA",
+  destination: {
+    kind: "document" as const,
+    assetId: "asset-1",
+    url: "https://cdn.example.test/guide.pdf",
+  },
+  sortOrder: 2,
+};
+
+const zhUrl = "https://cdn.test/knowledge/guide-zh.pdf";
+const enUrl = "https://cdn.test/knowledge/guide-en.pdf";
+const pairedPost = {
+  ...external,
+  id: "paired-post",
+  destination: {
+    kind: "document_pair" as const,
+    zhHkAssetId: "zh-1",
+    enAssetId: "en-1",
+    zhHkUrl: zhUrl,
+    enUrl,
+  },
+};
 
 describe("KnowledgeGrid", () => {
   test("renders repeated responsive items with source and safe actions", () => {
-    const markup = renderToStaticMarkup(<KnowledgeGrid posts={[external, { ...external, id: "external-2", title: "10Life pet insurance comparison", sourceName: "10Life" }, pdf, { ...pdf, id: "pdf-2", title: "What you need to know after adopting a cat" }]} />);
+    const markup = renderToStaticMarkup(
+      <KnowledgeGrid
+        posts={[
+          external,
+          {
+            ...external,
+            id: "external-2",
+            title: "10Life pet insurance comparison",
+            sourceName: "10Life",
+          },
+          pdf,
+          { ...pdf, id: "pdf-2", title: "What you need to know after adopting a cat" },
+        ]}
+      />,
+    );
     expect(markup).toContain("grid");
     expect(markup).toContain("HK01 pet care guide");
     expect(markup).toContain("10Life pet insurance comparison");
@@ -20,7 +70,40 @@ describe("KnowledgeGrid", () => {
     expect(markup).toContain('rel="noopener noreferrer"');
   });
 
+  test("renders Chinese and English actions for a document pair", () => {
+    const html = renderToStaticMarkup(<KnowledgeGrid posts={[pairedPost]} />);
+
+    expect(html).toContain(">中文版<");
+    expect(html).toContain(">English<");
+    expect(html).toContain(zhUrl);
+    expect(html).toContain(enUrl);
+  });
+
+  test("does not render an incomplete document pair", () => {
+    const html = renderToStaticMarkup(
+      <KnowledgeGrid
+        posts={[{ ...pairedPost, destination: { ...pairedPost.destination, enUrl: undefined } }]}
+      />,
+    );
+
+    expect(html).not.toContain("HK01 pet care guide");
+
+    const unsafeHtml = renderToStaticMarkup(
+      <KnowledgeGrid
+        posts={[
+          {
+            ...pairedPost,
+            destination: { ...pairedPost.destination, enUrl: "javascript:alert(1)" },
+          },
+        ]}
+      />,
+    );
+    expect(unsafeHtml).not.toContain("HK01 pet care guide");
+  });
+
   test("renders stable skeleton for client transitions", () => {
-    expect(renderToStaticMarkup(<KnowledgeGridSkeleton />)).toContain("Loading knowledge resources");
+    expect(renderToStaticMarkup(<KnowledgeGridSkeleton />)).toContain(
+      "Loading knowledge resources",
+    );
   });
 });

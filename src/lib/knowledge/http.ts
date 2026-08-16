@@ -34,13 +34,17 @@ async function withKnowledgeErrors(operation: () => Promise<Response>) {
     return await operation();
   } catch (error) {
     if (error instanceof Response) return error;
-    if (error instanceof z.ZodError) return jsonNoStore({ error: "Invalid knowledge request" }, { status: 400 });
+    if (error instanceof z.ZodError)
+      return jsonNoStore({ error: "Invalid knowledge request" }, { status: 400 });
     console.error(error);
     return jsonNoStore({ error: "Could not process knowledge request" }, { status: 500 });
   }
 }
 
-export function createAdminKnowledgeHandlers({ requireKnowledgeAdmin, service }: CreateAdminKnowledgeHandlersArgs) {
+export function createAdminKnowledgeHandlers({
+  requireKnowledgeAdmin,
+  service,
+}: CreateAdminKnowledgeHandlersArgs) {
   return {
     list({ request }: HandlerContext) {
       return withKnowledgeErrors(async () => {
@@ -52,7 +56,9 @@ export function createAdminKnowledgeHandlers({ requireKnowledgeAdmin, service }:
     upsert({ request }: HandlerContext) {
       return withKnowledgeErrors(async () => {
         const admin = await requireKnowledgeAdmin(request);
-        return jsonNoStore({ post: await service.upsert({ actorUserId: admin.id, input: await jsonBody(request) }) });
+        return jsonNoStore({
+          post: await service.upsert({ actorUserId: admin.id, input: await jsonBody(request) }),
+        });
       });
     },
 

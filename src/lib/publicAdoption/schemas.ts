@@ -107,9 +107,7 @@ export const expandedAdoptionApplicationSchema = z
       });
     }
 
-    const selectedSpecies = new Set(
-      value.animalPreferences.map((animal) => animal.animalType),
-    );
+    const selectedSpecies = new Set(value.animalPreferences.map((animal) => animal.animalType));
     const groupedWindows = [
       { species: "dog", key: "dogTimeWindows" },
       { species: "cat", key: "catTimeWindows" },

@@ -153,4 +153,6 @@ test("links to document and annual-report workspaces", async () => {
   expect(markup).toContain(">年度報告</a>");
   expect(markup).toContain('href="/admin/content/adoption"');
   expect(markup).toContain(">????</a>");
+  expect(markup).toContain('href="/admin/content/adoption-guides"');
+  expect(markup).toContain(">\u9818\u990a\u5f8c\u6307\u5357\u7248\u672c</a>");
 });

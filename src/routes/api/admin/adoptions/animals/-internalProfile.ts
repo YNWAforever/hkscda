@@ -100,3 +100,36 @@ export function buildInternalProfileUpsertPayload(
     internal_remarks: parsed.internal_remarks,
   };
 }
+
+export type InternalProfileUpsertRpcArgs = {
+  p_actor_user_id: string;
+  p_animal_id: string;
+  p_values: Omit<InternalProfileUpsertPayload, "animal_id">;
+};
+
+/**
+ * Arguments for public.upsert_animal_internal_profile_with_audit.
+ *
+ * This route writes animal_profile_internal over the service-role connection,
+ * where auth.uid() is null, so log_animal_mutation() skips it by design (see
+ * 20260803120000_audit_animal_mutations.sql). The app layer owns the audit row.
+ *
+ * Two reasons it is written inside the RPC rather than here. The upsert commits
+ * before a second PostgREST call could run, so a failing audit insert left the
+ * profile changed, unaudited, and reported as a 500. And the row content is
+ * staff-only while audit_log is readable by treasurer — the RPC records which
+ * columns changed and never their values, so the audit trail stops relaying
+ * internal_remarks across that role boundary
+ * (20260805120000_animal_mutation_audit_atomicity.sql).
+ */
+export function buildInternalProfileUpsertRpcArgs(
+  actorUserId: string,
+  payload: InternalProfileUpsertPayload,
+): InternalProfileUpsertRpcArgs {
+  const { animal_id: animalId, ...values } = payload;
+  return {
+    p_actor_user_id: actorUserId,
+    p_animal_id: animalId,
+    p_values: values,
+  };
+}

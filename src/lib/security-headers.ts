@@ -7,6 +7,11 @@
 // switching to an enforcing Content-Security-Policy. 'unsafe-inline' is allowed
 // for now (TanStack Start injects inline hydration script/style); migrating to
 // nonces is the eventual hardening step.
+/** Where the browser POSTs CSP violation reports. See routes/api/csp-report.ts. */
+export const CSP_REPORT_PATH = "/api/csp-report";
+/** Reporting API group name, declared by the `Reporting-Endpoints` header. */
+export const CSP_REPORT_GROUP = "csp";
+
 export const CONTENT_SECURITY_POLICY_REPORT_ONLY = [
   "default-src 'self'",
   "base-uri 'self'",
@@ -18,9 +23,15 @@ export const CONTENT_SECURITY_POLICY_REPORT_ONLY = [
   "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://maps.googleapis.com",
   "connect-src 'self' https://*.supabase.co https://api.stripe.com https://www.google-analytics.com https://*.google-analytics.com https://maps.googleapis.com https://maps.gstatic.com",
   "form-action 'self'",
+  // Both spellings on purpose: `report-uri` is deprecated but is what Safari and
+  // older Chrome still honour; `report-to` is the Reporting API successor and
+  // needs the `Reporting-Endpoints` header below to resolve the group name.
+  `report-uri ${CSP_REPORT_PATH}`,
+  `report-to ${CSP_REPORT_GROUP}`,
 ].join("; ");
 
 export const SECURITY_HEADERS: Record<string, string> = {
+  "Reporting-Endpoints": `${CSP_REPORT_GROUP}="${CSP_REPORT_PATH}"`,
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",
   "Referrer-Policy": "strict-origin-when-cross-origin",

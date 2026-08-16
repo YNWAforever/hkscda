@@ -5,7 +5,11 @@ import {
   createSupabaseServiceClient,
   requireAdmin,
 } from "../../../../../../lib/donations/supabase.server";
-import { buildAnimalStatusUpdatePayload, parseAnimalStatusUuid } from "../-status";
+import {
+  buildAnimalStatusUpdatePayload,
+  buildAnimalStatusUpdateRpcArgs,
+  parseAnimalStatusUuid,
+} from "../-status";
 
 type HandlerContext = {
   request: Request;
@@ -74,18 +78,18 @@ async function updateAnimalStatus({ request, params }: HandlerContext) {
   return withAnimalStatusErrors(async () => {
     const animalId = parseAnimalStatusUuid(params.id, "id");
     const client = createSupabaseServiceClient();
-    await requireAdmin(request, ["staff", "admin"], client);
+    const admin = await requireAdmin(request, ["staff", "admin"], client);
     const payload = buildAnimalStatusUpdatePayload(animalId, await jsonBody(request));
 
+    // The audit_animals trigger only fires for direct-from-browser writes (a real
+    // JWT); this route goes over the service-role connection, so the app layer
+    // owns the audit row. The RPC writes the animals update and that row in one
+    // transaction — as two PostgREST calls, a failing audit insert would leave
+    // the status changed, unaudited, and reported to the caller as a 500.
     const { data, error } = await client
-      .from("animals")
-      .update({
-        status: payload.status,
-        updated_at: payload.updatedAt,
-      })
-      .eq("id", payload.animalId)
-      .select(
-        "id,type,name,name_en,gender,age,description,notes,status,image_url,created_at,updated_at",
+      .rpc(
+        "update_animal_status_with_audit",
+        buildAnimalStatusUpdateRpcArgs(admin.authUserId, payload),
       )
       .maybeSingle();
 

@@ -4,7 +4,11 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { ShortlistProvider } from "./ShortlistProvider";
 
 mock.module("@tanstack/react-router", () => ({
-  Link: ({ children, to, ...props }: { children: ReactNode; to: string }) => <a href={to} {...props}>{children}</a>,
+  Link: ({ children, to, ...props }: { children: ReactNode; to: string }) => (
+    <a href={to} {...props}>
+      {children}
+    </a>
+  ),
   useNavigate: () => () => undefined,
 }));
 
@@ -29,7 +33,11 @@ const animal = {
 describe("AnimalCard", () => {
   test("uses explicit status text and neutral identity treatment", async () => {
     const { AnimalCard } = await import("./AnimalCard");
-    const markup = renderToStaticMarkup(<ShortlistProvider><AnimalCard animal={animal} /></ShortlistProvider>);
+    const markup = renderToStaticMarkup(
+      <ShortlistProvider>
+        <AnimalCard animal={animal} />
+      </ShortlistProvider>,
+    );
 
     expect(markup).toContain("待領養");
     expect(markup).toContain("小白");

@@ -1,10 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { listAdminPaymentPage } from "../../../lib/donations/adminPayments.server";
-import {
-  createSupabaseServiceClient,
-  requireAdmin,
-} from "../../../lib/donations/supabase.server";
+import { createSupabaseServiceClient, requireAdmin } from "../../../lib/donations/supabase.server";
 
 function searchRecord(request: Request) {
   return Object.fromEntries(new URL(request.url).searchParams.entries());

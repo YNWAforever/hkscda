@@ -67,8 +67,14 @@ const VISIT_WINDOW_LABELS: Record<VisitWindow, { zh: string; en: string }> = {
   weekend_afternoon: { zh: "週末下午", en: "Weekend afternoon" },
 };
 const VISIT_WINDOWS = CAT_VISIT_WINDOWS.map((value) => ({ value, ...VISIT_WINDOW_LABELS[value] }));
-const DOG_VISIT_OPTIONS = DOG_VISIT_WINDOWS.map((value) => ({ value, ...VISIT_WINDOW_LABELS[value] }));
-const CAT_VISIT_OPTIONS = CAT_VISIT_WINDOWS.map((value) => ({ value, ...VISIT_WINDOW_LABELS[value] }));
+const DOG_VISIT_OPTIONS = DOG_VISIT_WINDOWS.map((value) => ({
+  value,
+  ...VISIT_WINDOW_LABELS[value],
+}));
+const CAT_VISIT_OPTIONS = CAT_VISIT_WINDOWS.map((value) => ({
+  value,
+  ...VISIT_WINDOW_LABELS[value],
+}));
 
 function numberOrUndefined(value: unknown) {
   if (value === "" || value === null || typeof value === "undefined") return undefined;
@@ -567,45 +573,49 @@ export function VisitFields({ register, errors, setValue, watch }: ControlledFie
       </FormField>
       <div className="grid gap-4 sm:col-span-2 lg:grid-cols-2">
         {selectedSpecies.has("dog") ? (
-        <fieldset
-          className="space-y-2"
-          aria-describedby={dogError ? "visit-dogTimeWindows-error" : undefined}
-        >
-          <legend className="text-sm font-semibold text-[var(--color-panel)]">
-            狗舍參觀時間
-            <span className="ml-2 font-body text-xs font-medium text-[var(--color-text-muted)]">
-              Dog visit windows
-            </span>
-          </legend>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {DOG_VISIT_OPTIONS.map((windowOption) => (
-              <label
-                key={windowOption.value}
-                className="flex cursor-pointer items-start gap-3 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-panel)]"
-              >
-                <input
-                  type="checkbox"
-                  checked={dogWindows.includes(windowOption.value)}
-                  onChange={() => toggleDogWindow(windowOption.value)}
-                  className={checkboxClass}
-                  aria-invalid={Boolean(dogError)}
-                  aria-describedby={dogError ? "visit-dogTimeWindows-error" : undefined}
-                />
-                <span>
-                  {windowOption.zh}
-                  <span className="ml-2 text-xs text-[var(--color-text-muted)]">
-                    {windowOption.en}
+          <fieldset
+            className="space-y-2"
+            aria-describedby={dogError ? "visit-dogTimeWindows-error" : undefined}
+          >
+            <legend className="text-sm font-semibold text-[var(--color-panel)]">
+              狗舍參觀時間
+              <span className="ml-2 font-body text-xs font-medium text-[var(--color-text-muted)]">
+                Dog visit windows
+              </span>
+            </legend>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {DOG_VISIT_OPTIONS.map((windowOption) => (
+                <label
+                  key={windowOption.value}
+                  className="flex cursor-pointer items-start gap-3 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-panel)]"
+                >
+                  <input
+                    type="checkbox"
+                    checked={dogWindows.includes(windowOption.value)}
+                    onChange={() => toggleDogWindow(windowOption.value)}
+                    className={checkboxClass}
+                    aria-invalid={Boolean(dogError)}
+                    aria-describedby={dogError ? "visit-dogTimeWindows-error" : undefined}
+                  />
+                  <span>
+                    {windowOption.zh}
+                    <span className="ml-2 text-xs text-[var(--color-text-muted)]">
+                      {windowOption.en}
+                    </span>
                   </span>
-                </span>
-              </label>
-            ))}
-          </div>
-          {dogError ? (
-            <p id="visit-dogTimeWindows-error" className="text-xs text-[var(--color-error)]" role="alert">
-              {dogError}
-            </p>
-          ) : null}
-        </fieldset>
+                </label>
+              ))}
+            </div>
+            {dogError ? (
+              <p
+                id="visit-dogTimeWindows-error"
+                className="text-xs text-[var(--color-error)]"
+                role="alert"
+              >
+                {dogError}
+              </p>
+            ) : null}
+          </fieldset>
         ) : null}
 
         {selectedSpecies.has("cat") ? (
@@ -643,7 +653,11 @@ export function VisitFields({ register, errors, setValue, watch }: ControlledFie
               ))}
             </div>
             {catError ? (
-              <p id="visit-catTimeWindows-error" className="text-xs text-[var(--color-error)]" role="alert">
+              <p
+                id="visit-catTimeWindows-error"
+                className="text-xs text-[var(--color-error)]"
+                role="alert"
+              >
                 {catError}
               </p>
             ) : null}
@@ -718,12 +732,14 @@ export function ReviewFields({
           </p>
           {values.animalPreferences.some((animal) => animal.animalType === "dog") ? (
             <p>
-              狗舍參觀時間：{values.visit.dogTimeWindows.map(visitWindowLabel).join("、") || "未選擇"}
+              狗舍參觀時間：
+              {values.visit.dogTimeWindows.map(visitWindowLabel).join("、") || "未選擇"}
             </p>
           ) : null}
           {values.animalPreferences.some((animal) => animal.animalType === "cat") ? (
             <p>
-              貓舍參觀時間：{values.visit.catTimeWindows.map(visitWindowLabel).join("、") || "未選擇"}
+              貓舍參觀時間：
+              {values.visit.catTimeWindows.map(visitWindowLabel).join("、") || "未選擇"}
             </p>
           ) : null}
         </SummaryBlock>

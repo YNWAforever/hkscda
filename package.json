@@ -14,6 +14,7 @@
     "format": "prettier --write .",
     "scrape:hkscda": "node scripts/scrape-hkscda-animals.js",
     "import:hkscda": "node scripts/import-hkscda-animals.js",
+    "import:adoption-guides": "node scripts/import-adoption-guide-drafts.mjs",
     "seed:admin": "node scripts/seed-admin.js",
     "verify:brand": "node scripts/verify-public-brand.mjs",
     "verify:brand:install": "playwright install chromium"

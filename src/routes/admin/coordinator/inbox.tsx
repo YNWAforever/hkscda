@@ -1,15 +1,17 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 import { AdminLayout } from "../../../components/admin/AdminLayout";
 import { IntakeInbox } from "../../../components/admin/adoptions/IntakeInbox";
-import { supabase } from "../../../lib/supabase";
+import { requireAdminPageAccess } from "../../../lib/admin/pageAccess";
 
 export const Route = createFileRoute("/admin/coordinator/inbox")({
-  beforeLoad: async () => {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    if (!session) throw redirect({ to: "/admin/login" });
+  beforeLoad: async ({ context }) => {
+    // manualIntake, matching the sibling /admin/coordinator/intake route: this
+    // page reads /api/admin/adoptions/intake/items, which the server gates with
+    // requireCoordinator (staff + admin). The raw getSession() check this
+    // replaced admitted any signed-in admin, so a treasurer reached the page and
+    // then watched its only request fail with a 403.
+    await requireAdminPageAccess("manualIntake", context.queryClient);
   },
   component: CoordinatorInboxPage,
 });

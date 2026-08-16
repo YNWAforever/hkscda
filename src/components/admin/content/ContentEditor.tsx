@@ -322,7 +322,15 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
           <button
             type="button"
             disabled={editorActionPending}
-            onClick={() => archiveContent.mutate()}
+            onClick={() => {
+              // Sits immediately beside 發布 and takes one click to pull a live
+              // item off the public site. Reversible from the status select
+              // below, but only if the operator notices it happened.
+              if (!window.confirm(`確定封存「${content.title}」？封存後將不再於公開頁面顯示。`)) {
+                return;
+              }
+              archiveContent.mutate();
+            }}
             className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)] disabled:opacity-60"
           >
             <Archive className="h-4 w-4" />

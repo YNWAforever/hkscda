@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { createContentService, type ContentRepository } from "./service";
-import type { ContentDetail, StoryUpdate } from "./types";
+import type { ContentDetail, RecipientNotificationDraft, StoryUpdate } from "./types";
 
 const storyUpdateId = "22222222-2222-4333-8444-555555555555";
 const missingStoryUpdateId = "33333333-3333-4333-8444-555555555555";
@@ -202,6 +202,183 @@ describe("createContentService", () => {
 
     expect(socialCopies).toHaveLength(3);
     expect(notificationDrafts).toHaveLength(2);
+  });
+
+  // Every other mutation on this service audits (content.create, content.publish,
+  // content.media.create, ...). These four resolved actorUserId all the way from
+  // requireAdmin and then dropped it with `void actorUserId`, so a staff member
+  // could draft outbound social copy, generate notification drafts addressed to
+  // adopters, and move both toward "sent" without leaving any record of who did it.
+  test("audits generated social copy", async () => {
+    const { repo, auditLogs } = createRepo();
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await service.generateSocialCopy({
+      actorUserId: "admin-user",
+      contentId: "content-1",
+      input: { storyUpdateId },
+    });
+
+    expect(auditLogs).toContainEqual(
+      expect.objectContaining({
+        actor_user_id: "admin-user",
+        action: "content.social_copy.generate",
+        entity: "social_copy_variant",
+        entity_id: "content-1",
+      }),
+    );
+  });
+
+  test("audits social copy status changes", async () => {
+    const { repo, auditLogs } = createRepo();
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    // "copied" is the outbound moment — staff lifting the text out to post it.
+    await service.updateSocialCopyStatus({
+      actorUserId: "admin-user",
+      copyId: "copy-1",
+      input: { status: "copied" },
+    });
+
+    expect(auditLogs).toContainEqual(
+      expect.objectContaining({
+        actor_user_id: "admin-user",
+        action: "content.social_copy.status",
+        entity: "social_copy_variant",
+        entity_id: "copy-1",
+        detail: { status: "copied" },
+      }),
+    );
+  });
+
+  test("does not re-draft a delivery target that already has a draft for this update", async () => {
+    // The panel's generate button appends on every press. An operator who
+    // presses it twice gets two drafts addressed to the same adopter, copies
+    // both, and sends the same message to a real person twice.
+    //
+    // One recipient with an email and a phone is two delivery targets. With the
+    // email target already drafted, regenerating should produce the whatsapp
+    // one and nothing else.
+    const existing: RecipientNotificationDraft = {
+      id: "draft-existing",
+      storyUpdateId,
+      contentItemId: "content-1",
+      adoptionCaseId: "case-1",
+      supporterId: "supporter-1",
+      channel: "email",
+      recipientName: "陳小姐",
+      recipientContact: "ada@example.com",
+      subject: "小白康復中 近況更新：已完成疫苗接種",
+      body: "已產生的草稿",
+      status: "draft",
+      createdAt: "2026-07-05T11:00:00.000Z",
+      updatedAt: "2026-07-05T11:00:00.000Z",
+    };
+
+    const { repo, notificationDrafts } = createRepo({
+      getAdminContent: async () => ({ ...detail, notificationDrafts: [existing] }),
+    });
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    const result = await service.generateNotificationDrafts({
+      actorUserId: "admin-user",
+      storyUpdateId,
+    });
+
+    expect(notificationDrafts).toHaveLength(1);
+    expect(notificationDrafts[0]?.channel).toBe("whatsapp");
+    expect(notificationDrafts[0]?.recipientContact).toBe("91234567");
+    expect(result.count).toBe(1);
+  });
+
+  test("still drafts an adopter added since the last generation", async () => {
+    // Guard, not a driver: this passed the moment the filter above existed.
+    // It is here because the tempting wrong fix — make the whole call a no-op
+    // once any draft exists — also satisfies the test above, and would leave
+    // newly-adopted animals' families silently never notified.
+    const drafted: RecipientNotificationDraft = {
+      id: "draft-existing",
+      storyUpdateId,
+      contentItemId: "content-1",
+      adoptionCaseId: "case-1",
+      supporterId: "supporter-1",
+      channel: "email",
+      recipientName: "陳小姐",
+      recipientContact: "ada@example.com",
+      subject: null,
+      body: "已產生的草稿",
+      status: "sent_manually",
+      createdAt: "2026-07-05T11:00:00.000Z",
+      updatedAt: "2026-07-05T11:00:00.000Z",
+    };
+
+    const { repo, notificationDrafts } = createRepo({
+      getAdminContent: async () => ({ ...detail, notificationDrafts: [drafted] }),
+      resolveAdopterRecipients: async () => [
+        {
+          adoptionCaseId: "case-1",
+          supporterId: "supporter-1",
+          name: "陳小姐",
+          email: "ada@example.com",
+          phone: null,
+        },
+        {
+          adoptionCaseId: "case-2",
+          supporterId: "supporter-2",
+          name: "李先生",
+          email: "lee@example.com",
+          phone: null,
+        },
+      ],
+    });
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await service.generateNotificationDrafts({ actorUserId: "admin-user", storyUpdateId });
+
+    expect(notificationDrafts).toHaveLength(1);
+    expect(notificationDrafts[0]?.recipientContact).toBe("lee@example.com");
+  });
+
+  test("audits generated adopter notification drafts", async () => {
+    const { repo, auditLogs } = createRepo();
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await service.generateNotificationDrafts({ actorUserId: "admin-user", storyUpdateId });
+
+    // Drafting messages addressed to adopters touches recipient PII — the row
+    // count is the part a later reviewer actually needs.
+    expect(auditLogs).toContainEqual(
+      expect.objectContaining({
+        actor_user_id: "admin-user",
+        action: "content.notification_draft.generate",
+        entity: "recipient_notification_draft",
+        entity_id: storyUpdateId,
+        detail: { count: 2 },
+      }),
+    );
+  });
+
+  test("audits notification draft status changes", async () => {
+    const { repo, auditLogs } = createRepo();
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    // sent_manually is the transition that most needs a name attached to it:
+    // it asserts a message actually went out to an adopter.
+    await service.updateNotificationDraftStatus({
+      actorUserId: "admin-user",
+      draftId: "draft-1",
+      input: { status: "sent_manually" },
+    });
+
+    expect(auditLogs).toContainEqual(
+      expect.objectContaining({
+        actor_user_id: "admin-user",
+        action: "content.notification_draft.status",
+        entity: "recipient_notification_draft",
+        entity_id: "draft-1",
+        detail: { status: "sent_manually" },
+      }),
+    );
   });
 
   test("rejects invalid social copy story update ids", async () => {

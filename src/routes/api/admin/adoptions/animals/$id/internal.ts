@@ -5,7 +5,10 @@ import {
   createSupabaseServiceClient,
   requireAdmin,
 } from "../../../../../../lib/donations/supabase.server";
-import { buildInternalProfileUpsertPayload } from "../-internalProfile";
+import {
+  buildInternalProfileUpsertPayload,
+  buildInternalProfileUpsertRpcArgs,
+} from "../-internalProfile";
 
 function jsonResponse(body: unknown, init?: ResponseInit) {
   const headers = new Headers(init?.headers);
@@ -74,16 +77,28 @@ async function upsertInternalProfile({
 }) {
   return withInternalProfileErrors(async () => {
     const client = createSupabaseServiceClient();
-    await requireAdmin(request, ["staff", "admin"], client);
+    const admin = await requireAdmin(request, ["staff", "admin"], client);
 
     const payload = buildInternalProfileUpsertPayload(params.id, await jsonBody(request));
+
+    // The audit_animal_profile_internal trigger only fires for direct-from-browser
+    // writes (a real JWT); this route goes over the service-role connection, so the
+    // app layer owns the audit row. The RPC writes the upsert and that row in one
+    // transaction, and records only the changed column names — audit_log is
+    // readable by treasurer, animal_profile_internal is not.
     const { data, error } = await client
-      .from("animal_profile_internal")
-      .upsert(payload, { onConflict: "animal_id" })
-      .select("*")
-      .single();
+      .rpc(
+        "upsert_animal_internal_profile_with_audit",
+        buildInternalProfileUpsertRpcArgs(admin.authUserId, payload),
+      )
+      .maybeSingle();
 
     if (error) throw error;
+    // The RPC always returns the upserted row, so an empty result means the call
+    // did not do what we think it did. Fail loudly rather than answering 200 with
+    // a null profile the admin UI would render as an empty form.
+    if (!data) throw new Error("Internal profile upsert returned no row");
+
     return jsonResponse({ profile: data });
   });
 }

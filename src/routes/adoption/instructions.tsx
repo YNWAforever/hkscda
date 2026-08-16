@@ -270,17 +270,37 @@ function AdoptionInformationSections({ data }: { data: PublicAdoptionPageData })
         <h2 id="post-adoption-guides-title" className="font-display text-2xl font-bold">
           領養後指南
         </h2>
-        <div className="flex flex-wrap gap-3">
-          {data.guides.map((slot) => (
-            <a
-              key={slot.id}
-              href={slot.document.fileUrl ?? undefined}
-              target="_blank"
-              rel="noreferrer"
-              className="btn-secondary min-h-11"
-            >
-              {slot.language === "zh-HK" ? "中文領養後指南" : "English post-adoption cat guide"}
-            </a>
+        <div className="space-y-4">
+          {data.guideGroups.map((group) => (
+            <article key={group.species} className="space-y-2">
+              <h3 className="font-display text-xl font-bold">
+                {group.species === "cat"
+                  ? "貓隻領養後指南"
+                  : group.species === "dog"
+                    ? "狗隻領養後指南"
+                    : "領養後指南"}
+              </h3>
+              <div className="flex flex-wrap gap-3">
+                <a
+                  key={group.zhHk.id}
+                  href={group.zhHk.document.fileUrl ?? undefined}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-secondary min-h-11"
+                >
+                  中文版
+                </a>
+                <a
+                  key={group.en.id}
+                  href={group.en.document.fileUrl ?? undefined}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-secondary min-h-11"
+                >
+                  English
+                </a>
+              </div>
+            </article>
           ))}
         </div>
       </section>

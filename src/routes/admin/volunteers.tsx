@@ -5,8 +5,8 @@ import { VolunteerManagement } from "../../components/admin/volunteers/Volunteer
 import { requireAdminPageAccess } from "../../lib/admin/pageAccess";
 
 export const Route = createFileRoute("/admin/volunteers")({
-  beforeLoad: async () => {
-    await requireAdminPageAccess("volunteerManagement");
+  beforeLoad: async ({ context }) => {
+    await requireAdminPageAccess("volunteerManagement", context.queryClient);
   },
   component: AdminVolunteersPage,
 });

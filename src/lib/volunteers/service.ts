@@ -87,11 +87,15 @@ type VolunteerServiceArgs = {
   now?: () => Date;
   createStatusTokenPair?: typeof createStatusTokenPair;
   appUrl?: string;
+  // The real senders resolve to a delivery outcome ("sent" | "skipped" | "failed")
+  // which the service intentionally discards — `unknown` says so without forcing
+  // callers to wrap them. `Promise<void>` would reject them: TypeScript's
+  // void-return exemption does not apply through a Promise type argument.
   sendRegistrationEmail?: (input: {
     registration: VolunteerRegistrationDetail;
     statusUrl: string;
-  }) => Promise<void>;
-  notifyAdmins?: (input: { registration: VolunteerRegistrationDetail }) => Promise<void>;
+  }) => Promise<unknown>;
+  notifyAdmins?: (input: { registration: VolunteerRegistrationDetail }) => Promise<unknown>;
   logger?: Pick<Console, "error">;
 };
 

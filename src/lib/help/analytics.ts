@@ -36,10 +36,14 @@ const referencePattern =
 const chineseReferencePattern =
   /(?:付款|捐款|收據|申請|領養|助養|交易|參考|單據|個案)\s*(?:編號|號碼|號|id|ref|reference)?\s*[:：#]?\s*[A-Za-z0-9][A-Za-z0-9-]{4,}/iu;
 const donationIdPattern = /\bdonation\s*id\s*[:#]?\s*[A-Za-z0-9-]+\b/i;
-const uploadedFilePattern = /\b[\w,\-. ]+\.(?:pdf|doc|docx|xls|xlsx|ppt|pptx|txt|csv|json|xml|yml|yaml|jpg|jpeg|png|webp|gif)\b/i;
-const transcriptPattern = /\b(?:conversation|chat|transcript|message\s*history|full\s*transcript)\b/i;
-const applicationAnswerPattern = /\b(?:application\s*(?:answer|answers|details?)|answer\s*(?:question|questions)|my\s+answers)\b/i;
-const englishNamePattern = /\b(?:my\s+name\s+is|name\s+is|i\s+am|i'm)\s+[a-z]+(?:[\s-][a-z]+){1,3}\b/i;
+const uploadedFilePattern =
+  /\b[\w,\-. ]+\.(?:pdf|doc|docx|xls|xlsx|ppt|pptx|txt|csv|json|xml|yml|yaml|jpg|jpeg|png|webp|gif)\b/i;
+const transcriptPattern =
+  /\b(?:conversation|chat|transcript|message\s*history|full\s*transcript)\b/i;
+const applicationAnswerPattern =
+  /\b(?:application\s*(?:answer|answers|details?)|answer\s*(?:question|questions)|my\s+answers)\b/i;
+const englishNamePattern =
+  /\b(?:my\s+name\s+is|name\s+is|i\s+am|i'm)\s+[a-z]+(?:[\s-][a-z]+){1,3}\b/i;
 const chineseNamePattern =
   /(?:我(?:叫|是)|本人(?:叫|是)|姓名|名字)\s*[:：]?\s*[\p{Script=Han}]{2,5}/u;
 const chineseCaseStatusPattern =
@@ -91,7 +95,8 @@ export function sanitizeHelpQuery(query: string): SanitizedHelpQuery {
 
 export function trackHelpEvent(action: HelpAnalyticsAction, params: HelpAnalyticsParams = {}) {
   const sanitized = params.query ? sanitizeHelpQuery(params.query) : undefined;
-  const pagePath = params.pagePath ?? (typeof window !== "undefined" ? window.location.pathname : undefined);
+  const pagePath =
+    params.pagePath ?? (typeof window !== "undefined" ? window.location.pathname : undefined);
 
   gtagEvent(action, {
     faq_id: params.faqId,

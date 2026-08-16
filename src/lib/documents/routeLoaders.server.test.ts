@@ -9,9 +9,10 @@ test("does not forward TanStack Router loader context to an injectable dependenc
     return ["loaded"];
   });
 
-  const result = await (routeLoader as (context: unknown) => Promise<string[]>)(
-    { params: {}, preload: false },
-  );
+  const result = await (routeLoader as (context: unknown) => Promise<string[]>)({
+    params: {},
+    preload: false,
+  });
 
   expect(result).toEqual(["loaded"]);
   expect(calls).toEqual([[]]);

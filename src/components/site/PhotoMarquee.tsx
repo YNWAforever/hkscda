@@ -1,16 +1,16 @@
-import cat1 from "@/assets/cat1.jpg";
-import cat2 from "@/assets/cat2.jpg";
-import dog1 from "@/assets/dog1.jpg";
-import dog2 from "@/assets/dog2.jpg";
-import hero from "@/assets/hero.jpg";
+import catPortrait from "@/assets/cat-portrait.jpg";
+import catsTabbyPair from "@/assets/cats-tabby-pair.jpg";
+import kittensCream from "@/assets/kittens-cream.jpg";
+import puppiesPlaying from "@/assets/puppies-playing.jpg";
+import volunteerPuppies from "@/assets/volunteer-puppies.jpg";
 import { Reveal } from "@/lib/reveal";
 
 const photos = [
-  { img: hero, alt: "義工懷抱獲救小動物" },
-  { img: cat1, alt: "獲救貓咪 Mochi" },
-  { img: dog1, alt: "獲救狗狗 Brownie" },
-  { img: cat2, alt: "等待領養的BB貓" },
-  { img: dog2, alt: "TNR 行動中的狗狗" },
+  { img: volunteerPuppies, alt: "義工懷抱兩隻獲救的黑色幼犬" },
+  { img: catsTabbyPair, alt: "一對等待領養的虎斑貓" },
+  { img: puppiesPlaying, alt: "兩隻幼犬在收容所裡玩耍" },
+  { img: kittensCream, alt: "四隻獲救的小貓擠在一起張望" },
+  { img: catPortrait, alt: "康復中的白胸虎斑貓" },
 ];
 
 // Slow photo conveyor — the track is rendered twice so the CSS keyframe can

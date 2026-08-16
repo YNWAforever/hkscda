@@ -8,7 +8,7 @@ describe("adoption information admin route", () => {
     expect(existsSync(path)).toBe(true);
     const source = readFileSync(path, "utf8");
     expect(source).toContain('createFileRoute("/admin/content/adoption")');
-    expect(source).toContain('requireAdminPageAccess("contentManagement")');
+    expect(source).toContain('requireAdminPageAccess("contentManagement", context.queryClient)');
     expect(source).toContain("<AdoptionInformationManagement />");
     expect(source).toContain('<AdminLayout activeSection="content">');
   });

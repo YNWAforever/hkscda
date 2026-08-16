@@ -12,9 +12,7 @@ describe("FaqResultCard", () => {
       throw new Error("Expected tax receipt FAQ fixture");
     }
 
-    const markup = renderToStaticMarkup(
-      <FaqResultCard faq={faq} language="en" compact />,
-    );
+    const markup = renderToStaticMarkup(<FaqResultCard faq={faq} language="en" compact />);
 
     expect(markup).toContain("cannot provide personal tax advice");
     expect(markup).not.toContain("line-clamp-4");

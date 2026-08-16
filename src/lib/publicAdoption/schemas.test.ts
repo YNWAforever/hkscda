@@ -134,9 +134,7 @@ describe("expandedAdoptionApplicationSchema", () => {
 
   test("validates grouped windows for every selected species", () => {
     const dogOnly = validPayload({
-      animalPreferences: [
-        { rank: 1, animalId: dogId, animalName: "Lucky", animalType: "dog" },
-      ],
+      animalPreferences: [{ rank: 1, animalId: dogId, animalName: "Lucky", animalType: "dog" }],
       visit: {
         dateRangeStart: "2026-07-10",
         dateRangeEnd: "2026-07-24",
@@ -165,9 +163,7 @@ describe("expandedAdoptionApplicationSchema", () => {
     ).toThrow();
 
     const catOnly = validPayload({
-      animalPreferences: [
-        { rank: 1, animalId: catId, animalName: "Mochi", animalType: "cat" },
-      ],
+      animalPreferences: [{ rank: 1, animalId: catId, animalName: "Mochi", animalType: "cat" }],
       visit: {
         dateRangeStart: "2026-07-10",
         dateRangeEnd: "2026-07-24",

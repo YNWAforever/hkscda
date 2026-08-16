@@ -47,9 +47,15 @@ function DogListingPage() {
         <p className="mt-3 text-[var(--color-text-muted)]">正在載入目前可申請領養的狗狗。</p>
         <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-4">
           {Array.from({ length: 8 }).map((_, index) => (
-            <div key={index} className="overflow-hidden rounded-md border border-[var(--color-border)]">
+            <div
+              key={index}
+              className="overflow-hidden rounded-md border border-[var(--color-border)]"
+            >
               <Skeleton className="aspect-square w-full rounded-none" />
-              <div className="space-y-3 p-4"><Skeleton className="h-5 w-2/3" /><Skeleton className="h-11 w-full" /></div>
+              <div className="space-y-3 p-4">
+                <Skeleton className="h-5 w-2/3" />
+                <Skeleton className="h-11 w-full" />
+              </div>
             </div>
           ))}
         </div>
@@ -63,7 +69,11 @@ function DogListingPage() {
         role="alert"
         title="暫時未能載入狗狗資料"
         description="系統未能取得目前的領養資料，請稍後再試。"
-        action={<a href="/animals/dog" className="btn-primary min-h-11 px-5">重新整理</a>}
+        action={
+          <a href="/animals/dog" className="btn-primary min-h-11 px-5">
+            重新整理
+          </a>
+        }
       />
     );
   }
@@ -71,9 +81,18 @@ function DogListingPage() {
   return (
     <main className="container-wide px-4 py-10 sm:px-6 lg:px-8">
       <h1 className="text-3xl font-bold text-[var(--color-text)]">待領養狗狗</h1>
-      <p className="mt-3 text-[var(--color-text-muted)]">查看目前可申請領養的狗狗，了解牠們的需要。</p>
+      <p className="mt-3 text-[var(--color-text-muted)]">
+        查看目前可申請領養的狗狗，了解牠們的需要。
+      </p>
       <div className="mt-8">
-        <AnimalGrid animals={data?.animals ?? []} total={data?.total ?? 0} page={page} ageFilter={filter as AgeFilter} pageSize={PAGE_SIZE} animalLabel="狗" />
+        <AnimalGrid
+          animals={data?.animals ?? []}
+          total={data?.total ?? 0}
+          page={page}
+          ageFilter={filter as AgeFilter}
+          pageSize={PAGE_SIZE}
+          animalLabel="狗"
+        />
       </div>
     </main>
   );

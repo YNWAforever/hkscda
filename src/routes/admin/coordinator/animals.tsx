@@ -11,8 +11,8 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute("/admin/coordinator/animals")({
   validateSearch: searchSchema,
-  beforeLoad: async () => {
-    await requireAdminPageAccess("animals");
+  beforeLoad: async ({ context }) => {
+    await requireAdminPageAccess("animals", context.queryClient);
   },
   component: CoordinatorAnimalsPage,
 });

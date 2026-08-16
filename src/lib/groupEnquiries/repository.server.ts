@@ -162,10 +162,13 @@ export function createSupabaseGroupEnquiryRepository(
         .order("created_at", { ascending: false })
         .range(from, from + input.pageSize - 1);
       if (input.status) query = query.eq("status", input.status);
-      if (input.notificationStatus) query = query.eq("notification_status", input.notificationStatus);
+      if (input.notificationStatus)
+        query = query.eq("notification_status", input.notificationStatus);
       if (input.q) {
         const like = `%${escapeLike(input.q)}%`;
-        query = query.or(`organisation.ilike.${like},contact_name.ilike.${like},contact_email.ilike.${like}`);
+        query = query.or(
+          `organisation.ilike.${like},contact_name.ilike.${like},contact_email.ilike.${like}`,
+        );
       }
       const { data, error, count } = await query;
       if (error) throw error;
@@ -191,5 +194,11 @@ export function createSupabaseGroupEnquiryRepository(
         .single();
       if (error) throw error;
       return toDomain(data as GroupEnquiryRow);
-    },  };
+    },
+
+    async insertAuditLog(input) {
+      const { error } = await client.from("audit_log").insert(input);
+      if (error) throw error;
+    },
+  };
 }

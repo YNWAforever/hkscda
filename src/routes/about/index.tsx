@@ -15,7 +15,7 @@ import { buildPublicImpact, type PublicImpactItem } from "../../lib/animals/publ
 import { PublicPageHero } from "../../components/site/PublicPageHero";
 import { PublicStatusBadge } from "../../components/site/PublicStatusBadge";
 import { SectionHeading } from "../../components/site/SectionHeading";
-import heroImg from "@/assets/hero.jpg";
+import heroImg from "@/assets/dog-smiling.jpg";
 
 export const Route = createFileRoute("/about/")({
   head: () => ({
@@ -29,7 +29,10 @@ type CountResult = {
   error: { message: string } | null;
 };
 
-async function countAnimal(type: "cat" | "dog", status: "available" | "adopted"): Promise<CountResult> {
+async function countAnimal(
+  type: "cat" | "dog",
+  status: "available" | "adopted",
+): Promise<CountResult> {
   const { count, error } = await supabase
     .from("animals")
     .select("id", { count: "exact", head: true })
@@ -85,10 +88,30 @@ const journey = [
 ];
 
 const helpPaths = [
-  { title: "領養動物", description: "看看正在等待家庭的貓貓和狗狗。", href: "/animals/cat", label: "查看待領養動物" },
-  { title: "助養生命", description: "以每月支持幫助動物獲得持續照護。", href: "/sponsors", label: "了解助養" },
-  { title: "加入義工", description: "用時間和專長支援救援及社區工作。", href: "/volunteer", label: "加入義工" },
-  { title: "立即捐助", description: "支持醫療、絕育和日常救援所需。", href: "/donate", label: "支持協會" },
+  {
+    title: "領養動物",
+    description: "看看正在等待家庭的貓貓和狗狗。",
+    href: "/animals/cat",
+    label: "查看待領養動物",
+  },
+  {
+    title: "助養生命",
+    description: "以每月支持幫助動物獲得持續照護。",
+    href: "/sponsors",
+    label: "了解助養",
+  },
+  {
+    title: "加入義工",
+    description: "用時間和專長支援救援及社區工作。",
+    href: "/volunteer",
+    label: "加入義工",
+  },
+  {
+    title: "立即捐助",
+    description: "支持醫療、絕育和日常救援所需。",
+    href: "/donate",
+    label: "支持協會",
+  },
 ];
 
 export function AboutPage() {
@@ -109,13 +132,18 @@ export function AboutContent({ impact }: { impact: PublicImpactItem[] }) {
         title="領養代替購買"
         description="救援、醫療、絕育與負責任領養，以社區力量守護香港流浪貓狗。"
         imageSrc={heroImg}
-        imageAlt="香港拯救貓狗協會救援動物"
-        actions={(
+        imageAlt="在協會犬舍外開心迎接訪客的獲救唐狗"
+        imageClassName="object-[50%_30%]"
+        actions={
           <>
-            <a href="/animals/cat" className="btn-primary min-h-11 px-5">查看待領養動物</a>
-            <a href="/donate" className="btn-secondary min-h-11 px-5">立即捐助</a>
+            <a href="/animals/cat" className="btn-primary min-h-11 px-5">
+              查看待領養動物
+            </a>
+            <a href="/donate" className="btn-secondary min-h-11 px-5">
+              立即捐助
+            </a>
           </>
-        )}
+        }
       />
 
       <section className="container-wide px-4 py-14 sm:px-6 lg:px-8">
@@ -127,7 +155,9 @@ export function AboutContent({ impact }: { impact: PublicImpactItem[] }) {
             </p>
           </div>
           <div className="border-l-4 border-[var(--color-secondary)] pl-6">
-            <PublicStatusBadge tone="info" icon={ShieldCheck}>以動物福祉為先</PublicStatusBadge>
+            <PublicStatusBadge tone="info" icon={ShieldCheck}>
+              以動物福祉為先
+            </PublicStatusBadge>
             <p className="mt-4 text-base leading-relaxed text-[var(--color-text-muted)]">
               我們與義工、領養家庭及社區夥伴一起，讓照護和善意可以持續發生。
             </p>
@@ -137,20 +167,30 @@ export function AboutContent({ impact }: { impact: PublicImpactItem[] }) {
 
       <section className="border-y border-[var(--color-divider)] bg-[var(--color-surface-offset)]">
         <div className="container-wide px-4 py-14 sm:px-6 lg:px-8">
-          <SectionHeading eyebrow="可核實的公開資料" title="目前照護中的動物" description="數字只在資料庫成功回傳並大於零時顯示，並標示資料日期。" />
+          <SectionHeading
+            eyebrow="可核實的公開資料"
+            title="目前照護中的動物"
+            description="數字只在資料庫成功回傳並大於零時顯示，並標示資料日期。"
+          />
           {impact.length > 0 ? (
             <dl className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {impact.map((item) => (
                 <div key={item.label} className="border-t-4 border-[var(--color-primary)] pt-4">
                   <dt className="text-sm font-bold text-[var(--color-text-muted)]">{item.label}</dt>
-                  <dd className="mt-2 text-4xl font-bold text-[var(--color-primary)]">{item.value.toLocaleString("zh-HK")}</dd>
-                  <p className="mt-2 text-xs text-[var(--color-text-muted)]">資料截至 {item.asOf}</p>
+                  <dd className="mt-2 text-4xl font-bold text-[var(--color-primary)]">
+                    {item.value.toLocaleString("zh-HK")}
+                  </dd>
+                  <p className="mt-2 text-xs text-[var(--color-text-muted)]">
+                    資料截至 {item.asOf}
+                  </p>
                 </div>
               ))}
             </dl>
           ) : (
             <div className="mt-8">
-              <PublicStatusBadge tone="neutral" icon={CheckCircle2}>暫無可核實數據</PublicStatusBadge>
+              <PublicStatusBadge tone="neutral" icon={CheckCircle2}>
+                暫無可核實數據
+              </PublicStatusBadge>
             </div>
           )}
         </div>
@@ -166,7 +206,9 @@ export function AboutContent({ impact }: { impact: PublicImpactItem[] }) {
                 <span className="text-xs font-bold tracking-wide">0{index + 1}</span>
               </div>
               <h3 className="mt-5 text-xl font-bold text-[var(--color-text)]">{title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-[var(--color-text-muted)]">{description}</p>
+              <p className="mt-3 text-sm leading-relaxed text-[var(--color-text-muted)]">
+                {description}
+              </p>
             </div>
           ))}
         </div>
@@ -176,7 +218,9 @@ export function AboutContent({ impact }: { impact: PublicImpactItem[] }) {
         <div className="container-wide grid gap-10 px-4 py-14 sm:px-6 lg:grid-cols-2 lg:px-8">
           <div>
             <p className="text-sm font-bold tracking-wide text-white/80">社區合作</p>
-            <h2 className="mt-2 max-w-xl text-3xl font-bold leading-tight text-white sm:text-4xl">CCCP 與 TNR，從源頭改善動物處境</h2>
+            <h2 className="mt-2 max-w-xl text-3xl font-bold leading-tight text-white sm:text-4xl">
+              CCCP 與 TNR，從源頭改善動物處境
+            </h2>
             <p className="mt-5 max-w-xl leading-relaxed text-white/80">
               社區貓隻照顧計劃和捕捉、絕育、放回工作，讓動物福利不只發生在收容和領養，也能在社區中長久改善。
             </p>
@@ -186,13 +230,17 @@ export function AboutContent({ impact }: { impact: PublicImpactItem[] }) {
               <Users className="h-6 w-6" aria-hidden="true" />
               <h3 className="mt-5 text-lg font-bold">CCCP 計劃</h3>
               <p className="mt-2 text-sm text-white/75">了解社區貓隻照顧的合作方法。</p>
-              <span className="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-bold">了解更多 <ArrowRight className="h-4 w-4" aria-hidden="true" /></span>
+              <span className="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-bold">
+                了解更多 <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </span>
             </a>
             <a href="/about/tnr" className="border border-white/25 p-5 hover:border-white">
               <Syringe className="h-6 w-6" aria-hidden="true" />
               <h3 className="mt-5 text-lg font-bold">TNR 計劃</h3>
               <p className="mt-2 text-sm text-white/75">了解捕捉、絕育、放回的社區行動。</p>
-              <span className="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-bold">了解更多 <ArrowRight className="h-4 w-4" aria-hidden="true" /></span>
+              <span className="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-bold">
+                了解更多 <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </span>
             </a>
           </div>
         </div>
@@ -205,14 +253,23 @@ export function AboutContent({ impact }: { impact: PublicImpactItem[] }) {
             <p className="mt-5 leading-relaxed text-[var(--color-text-muted)]">
               了解家庭環境、時間安排和照護能力，讓你和動物都能安心開始。領養費用及流程等操作指引，請參閱領養需知。
             </p>
-            <a href="/adoption/instructions" className="btn-secondary mt-6 min-h-11 px-5">閱讀領養需知</a>
+            <a href="/adoption/instructions" className="btn-secondary mt-6 min-h-11 px-5">
+              閱讀領養需知
+            </a>
           </div>
           <div className="border-t-4 border-[var(--color-secondary)] pt-5">
             <h3 className="text-xl font-bold text-[var(--color-text)]">我們重視的配對原則</h3>
             <ul className="mt-5 space-y-4 text-[var(--color-text-muted)]">
-              {["先了解動物需要，再評估家庭是否合適", "把醫療、絕育和日常照護納入長期規劃", "以耐心和責任建立穩定而安全的關係"].map((item) => (
+              {[
+                "先了解動物需要，再評估家庭是否合適",
+                "把醫療、絕育和日常照護納入長期規劃",
+                "以耐心和責任建立穩定而安全的關係",
+              ].map((item) => (
                 <li key={item} className="flex gap-3">
-                  <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-primary)]" aria-hidden="true" />
+                  <CheckCircle2
+                    className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-primary)]"
+                    aria-hidden="true"
+                  />
                   <span>{item}</span>
                 </li>
               ))}
@@ -226,10 +283,18 @@ export function AboutContent({ impact }: { impact: PublicImpactItem[] }) {
           <SectionHeading eyebrow="一起幫助" title="你可以用四種方式加入" />
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {helpPaths.map((path) => (
-              <a key={path.href} href={path.href} className="border border-[var(--color-border)] bg-[var(--color-surface)] p-5 hover:border-[var(--color-primary)]">
+              <a
+                key={path.href}
+                href={path.href}
+                className="border border-[var(--color-border)] bg-[var(--color-surface)] p-5 hover:border-[var(--color-primary)]"
+              >
                 <h3 className="text-lg font-bold text-[var(--color-text)]">{path.title}</h3>
-                <p className="mt-3 min-h-12 text-sm leading-relaxed text-[var(--color-text-muted)]">{path.description}</p>
-                <span className="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-bold text-[var(--color-primary)]">{path.label} <ArrowRight className="h-4 w-4" aria-hidden="true" /></span>
+                <p className="mt-3 min-h-12 text-sm leading-relaxed text-[var(--color-text-muted)]">
+                  {path.description}
+                </p>
+                <span className="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-bold text-[var(--color-primary)]">
+                  {path.label} <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </span>
               </a>
             ))}
           </div>
@@ -237,8 +302,14 @@ export function AboutContent({ impact }: { impact: PublicImpactItem[] }) {
       </section>
 
       <section className="container-wide px-4 py-16 text-center sm:px-6 lg:px-8">
-        <SectionHeading align="center" title="讓下一個家，從今天開始" description="看看正在等待領養的動物，或者用你的支持讓更多救援可以繼續。" />
-        <a href="/animals/cat" className="btn-primary mt-7 min-h-12 px-6 text-base">查看待領養動物</a>
+        <SectionHeading
+          align="center"
+          title="讓下一個家，從今天開始"
+          description="看看正在等待領養的動物，或者用你的支持讓更多救援可以繼續。"
+        />
+        <a href="/animals/cat" className="btn-primary mt-7 min-h-12 px-6 text-base">
+          查看待領養動物
+        </a>
       </section>
     </main>
   );

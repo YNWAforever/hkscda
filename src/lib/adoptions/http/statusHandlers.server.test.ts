@@ -1,10 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
 import type { AdminUser } from "../../donations/supabase.server";
-import {
-  createStatusHandlers,
-  type StatusService,
-} from "./statusHandlers.server";
+import { createStatusHandlers, type StatusService } from "./statusHandlers.server";
 import type { CoordinatorStatus } from "../types";
 
 const coordinator: AdminUser = {

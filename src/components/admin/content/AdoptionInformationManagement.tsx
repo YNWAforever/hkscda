@@ -146,7 +146,15 @@ function AdoptionInformationManagementRuntime() {
           mutation.mutate({ action: "move-fees", inputs: updates, temporarySortOrder });
       }}
       onSaveEstate={(input) => mutation.mutate({ action: "estate", input })}
-      onDeleteEstate={(id) => mutation.mutate({ action: "delete-estate", id })}
+      onDeleteEstate={(id) => {
+        // Irreversible and triggered from an inline row button; name the estate
+        // so the operator can confirm they hit the row they meant.
+        const estate = informationQuery.data?.items.find((item) => item.id === id);
+        const label =
+          estate && "estateName" in estate ? (estate as { estateName?: string }).estateName : null;
+        if (!window.confirm(`確定刪除「${label ?? "此屋苑"}」？此操作無法復原。`)) return;
+        mutation.mutate({ action: "delete-estate", id });
+      }}
     />
   );
 }
@@ -196,6 +204,12 @@ export function AdoptionInformationManagementView({
         <p className="text-sm text-[var(--color-text-muted)]">
           管理公開領養費用及可養狗屋苑參考名單。
         </p>
+        <a
+          href="/admin/content/adoption-guides"
+          className="mt-3 inline-flex rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)]"
+        >
+          {"\u9818\u990a\u5f8c\u6307\u5357\u7248\u672c"}
+        </a>
       </div>
 
       <div className="flex gap-2 border-b border-[var(--color-border)]" role="tablist">

@@ -27,7 +27,9 @@ export type HelpSearchOptions = {
   category?: HelpCategory;
 };
 
-const punctuationPattern = /[!"#$%&'()*+,.\/:;<=>@\[\]\\^_`{|}~\-]/g;
+// `]` and `\` still need their backslashes; `/`, `[` and a trailing `-` are
+// literal inside a character class.
+const punctuationPattern = /[!"#$%&'()*+,./:;<=>@[\]\\^_`{|}~-]/g;
 const staffContactPatterns = [
   /\b(?:my|mine|case|status|progress|update|reference|receipt\s*(?:number|no|id)|payment\s*status|application\s*status|donation\s*id|order\s*id)\b/i,
   /(?:我的|本人|我想查|查詢|跟進).*(?:申請|進度|狀態|狀況|付款|捐款|收據|個案|編號|號碼)/u,
@@ -113,9 +115,7 @@ function scoreFaq(faq: HelpFaq, query: string, tokens: string[], language: HelpL
 
       if (query.includes(normalizedKeyword)) return total + 45;
       if (includesNormalized(query, normalizedKeyword)) return total + 25;
-      return tokens.some(
-        (token) => isSignificantToken(token) && normalizedKeyword.includes(token),
-      )
+      return tokens.some((token) => isSignificantToken(token) && normalizedKeyword.includes(token))
         ? total + 14
         : total;
     },

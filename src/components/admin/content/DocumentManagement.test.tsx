@@ -1,8 +1,9 @@
 import { describe, expect, mock, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import { DocumentManagement } from "./DocumentManagement";
+import { DocumentManagement, DocumentManagementView } from "./DocumentManagement";
 import { uploadDocumentPdf } from "./documentUpload";
+import { fetchAdoptionGuideReleaseOwnership } from "./adoptionGuideReleaseLogic";
 
 const asset = {
   id: "11111111-2222-4333-8444-555555555555",
@@ -30,6 +31,67 @@ describe("DocumentManagement", () => {
     expect(markup).toContain("文件");
     expect(markup).toContain("Annual Report 2025/26");
     expect(markup).toContain("未發佈");
+  });
+  test("guards release-managed documents while preserving unrelated controls", () => {
+    const releaseId = "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee";
+    const unrelated = { ...asset, id: "99999999-8888-4777-8666-555555555555", title: "Other PDF" };
+    const markup = renderToStaticMarkup(
+      <DocumentManagementView
+        data={{ items: [asset, unrelated], total: 2 }}
+        ownerReleaseIds={{ [asset.id]: releaseId }}
+        onAction={() => undefined}
+      />,
+    );
+
+    const managedStart = markup.indexOf(asset.title);
+    const managedRow = markup.slice(managedStart, markup.indexOf("</tr>", managedStart));
+    expect(managedRow).toContain("\u7531\u9818\u990a\u6307\u5357\u7248\u672c\u7ba1\u7406");
+    expect(managedRow).toContain(`href="/admin/content/adoption-guides?releaseId=${releaseId}"`);
+    expect(managedRow).not.toContain("<button");
+
+    const unrelatedStart = markup.indexOf(unrelated.title);
+    const unrelatedRow = markup.slice(unrelatedStart, markup.indexOf("</tr>", unrelatedStart));
+    expect(unrelatedRow).toContain("<button");
+    expect(unrelatedRow).not.toContain("\u7531\u9818\u990a\u6307\u5357\u7248\u672c\u7ba1\u7406");
+  });
+  test("fails closed while document ownership is unknown", () => {
+    const markup = renderToStaticMarkup(
+      <DocumentManagementView
+        data={{ items: [asset], total: 1 }}
+        ownershipReady={false}
+        onAction={() => undefined}
+      />,
+    );
+
+    expect(markup).not.toContain("<button");
+  });
+
+  test("loads ownership across every release page", async () => {
+    const paths: string[] = [];
+    const request = mock(async (path: string) => {
+      paths.push(path);
+      const page = Number(new URL(path, "https://admin.test").searchParams.get("page"));
+      const itemCount = page === 51 ? 1 : 50;
+      return {
+        items: Array.from({ length: itemCount }, (_, index) => ({
+          id: `release-${page}-${index}`,
+          zhHkAssetId: page === 1 && index === 0 ? asset.id : null,
+          enAssetId: null,
+          knowledgePostId: page === 51 ? "post-last" : null,
+        })),
+        total: 2501,
+        page,
+        pageSize: 50,
+      };
+    });
+
+    const ownership = await fetchAdoptionGuideReleaseOwnership(request as never);
+
+    expect(paths).toHaveLength(51);
+    expect(paths[0]).toContain("page=1&pageSize=50");
+    expect(paths[50]).toContain("page=51&pageSize=50");
+    expect(ownership.ownerReleaseIdsByAssetId[asset.id]).toBe("release-1-0");
+    expect(ownership.ownerReleaseIdsByKnowledgePostId["post-last"]).toBe("release-51-0");
   });
 
   test("uploads with the signed token before creating metadata", async () => {

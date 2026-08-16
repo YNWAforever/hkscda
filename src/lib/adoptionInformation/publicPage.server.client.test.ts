@@ -108,8 +108,6 @@ describe("public adoption page reader client wiring", () => {
     expect(calls).toContain("dog_friendly_estates");
     expect(calls).toContain("site_document_slots");
     expect(result.feesBySpecies.dog.map((fee) => fee.itemName)).toEqual(["Dog adoption fee"]);
-    expect(result.guides.map((slot) => slot.document.fileUrl)).toEqual([
-      "https://cdn.test/site-documents/adoption-guides/post-adoption-guide-en.pdf",
-    ]);
+    expect(result.guideGroups).toEqual([]);
   });
 });

@@ -1,10 +1,4 @@
-import {
-  csvResponse,
-  jsonResponse,
-  queryParams,
-  requiredUuid,
-  withErrors,
-} from "./shared.server";
+import { csvResponse, jsonResponse, queryParams, requiredUuid, withErrors } from "./shared.server";
 import type {
   AdoptionCoordinatorService,
   CoordinatorAuthorizer,

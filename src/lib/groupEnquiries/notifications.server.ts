@@ -2,7 +2,13 @@ import { getEmailConfig } from "../donations/config.server";
 import type { GroupEnquiry } from "./types";
 
 type EmailSender = {
-  send(input: { from: string; to: string; replyTo?: string; subject: string; html: string }): Promise<unknown>;
+  send(input: {
+    from: string;
+    to: string;
+    replyTo?: string;
+    subject: string;
+    html: string;
+  }): Promise<unknown>;
 };
 
 type EmailConfig = { resendApiKey?: string | null; from: string; replyTo?: string | null };

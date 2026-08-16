@@ -1,6 +1,10 @@
 import { describe, expect, test } from "bun:test";
 
-import { buildInternalProfileUpsertPayload, parseAnimalProfileUuid } from "./-internalProfile";
+import {
+  buildInternalProfileUpsertPayload,
+  buildInternalProfileUpsertRpcArgs,
+  parseAnimalProfileUuid,
+} from "./-internalProfile";
 
 const animalId = "11111111-1111-4111-8111-111111111111";
 const sourceId = "22222222-2222-4222-8222-222222222222";
@@ -92,5 +96,33 @@ describe("internal animal profile payload", () => {
         }),
       ),
     ).toThrow();
+  });
+});
+
+describe("internal profile upsert RPC arguments", () => {
+  const actorUserId = "44444444-4444-4444-8444-444444444444";
+
+  test("attributes the write to the admin who made it", () => {
+    // This route upserts animal_profile_internal over the service-role
+    // connection, where auth.uid() is null — so log_animal_mutation() skips it.
+    // Without the actor reaching the RPC, an admin edit to an animal's internal
+    // record leaves no trace in either the trigger path or the app layer.
+    const payload = buildInternalProfileUpsertPayload(animalId, fullProfile());
+
+    expect(buildInternalProfileUpsertRpcArgs(actorUserId, payload)).toEqual({
+      p_actor_user_id: actorUserId,
+      p_animal_id: animalId,
+      p_values: fullProfile(),
+    });
+  });
+
+  test("keeps the animal id out of the values payload", () => {
+    // The RPC takes the id as its own argument and writes it itself. Leaving a
+    // second copy inside p_values would let a caller upsert one animal's profile
+    // under another animal's id.
+    const payload = buildInternalProfileUpsertPayload(animalId, fullProfile());
+    const { p_values: values } = buildInternalProfileUpsertRpcArgs(actorUserId, payload);
+
+    expect(Object.keys(values)).not.toContain("animal_id");
   });
 });
