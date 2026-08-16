@@ -196,7 +196,7 @@ function NavDropdown({
   links: { to: string; label: string; desc: string }[];
 }) {
   return (
-    <NavigationMenu.Item>
+    <NavigationMenu.Item className="relative">
       <NavigationMenu.Trigger className="group/trigger inline-flex min-h-11 items-center gap-1 px-3 text-[13px] font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)]">
         {trigger}
         <ChevronDown
