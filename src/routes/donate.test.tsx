@@ -1,13 +1,6 @@
-import { describe, expect, mock, test } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 import type { DocumentSlot } from "@/lib/documents/types";
-
-const realReactRouter = await import("@tanstack/react-router");
-
-mock.module("@tanstack/react-router", () => ({
-  ...realReactRouter,
-  createFileRoute: () => (options: unknown) => options,
-}));
 
 function weddingSlot(language: "zh-HK" | "en", fileUrl: string): DocumentSlot {
   return {
