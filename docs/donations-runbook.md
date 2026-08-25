@@ -107,6 +107,13 @@ credentials, production key registration, webhook registration, deployment,
 and activation independently. Confirm the public HTTPS `APP_URL` and the
 registered notification URL before activating COD in production.
 
+The public form is additionally gated by
+`VITE_PUBLIC_DONATION_CHECKOUT_ENABLED=false`. Keep it false in local,
+preview, and production environments until every provider intended for public
+display has passed the production review above. Setting the flag to `true`
+only reveals the existing checkout UI; it does not replace provider,
+webhook, reconciliation, or merchant activation checks.
+
 ## Verification
 
 Run:

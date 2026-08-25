@@ -1,47 +1,54 @@
-/* HKSCDA - Warm Rescue · generated from brand/design-tokens.json */
-/* Note: the live site theme is src/styles.css; this file mirrors tokens for external/design use */
+/* HKSCDA approved public identity · August 2026 */
+/* The application maps these exports to semantic variables in src/styles.css. */
 
 :root {
-  /* Primitive · rescue-rose */
-  --color-rescue-rose-50: #fadfe4;
-  --color-rescue-rose-100: #fadfe4;
-  --color-rescue-rose-500: #e05c78;
-  --color-rescue-rose-600: #cf4a66;
-  --color-rescue-rose-700: #b93d58;
+  /* Official brand */
+  --hkscda-blue: #05648e;
+  --hkscda-blue-deep: #034a69;
+  --hkscda-blue-soft: #e4f2f7;
+  --hkscda-magenta: #a61c56;
+  --hkscda-magenta-deep: #821442;
+  --hkscda-magenta-soft: #f9e7ef;
 
-  /* Primitive · guardian-navy */
-  --color-guardian-navy-50: #e9e9f6;
-  --color-guardian-navy-100: #e9e9f6;
-  --color-guardian-navy-200: #dcdcf0;
-  --color-guardian-navy-400: #283066;
-  --color-guardian-navy-500: #1d2353;
-  --color-guardian-navy-600: #283066;
+  /* Warm neutral foundation */
+  --hkscda-ink: #162c36;
+  --hkscda-muted: #5b6e76;
+  --hkscda-paper: #fffdf9;
+  --hkscda-warm: #f6f1e9;
+  --hkscda-sand: #e8ded0;
+  --hkscda-line: #d7ddd9;
+  --hkscda-white: #ffffff;
+  --hkscda-success: #176f54;
 
-  /* Primitive · soft-salmon */
-  --color-soft-salmon-50: #fce8eb;
-  --color-soft-salmon-100: #fce8eb;
-  --color-soft-salmon-300: #f298a4;
-  --color-soft-salmon-500: #f27d92;
-  --color-soft-salmon-600: #ee6781;
-
-  /* Semantic */
-  --color-primary: var(--color-rescue-rose-500);
-  --color-primary-hover: var(--color-rescue-rose-600);
-  --color-primary-active: var(--color-rescue-rose-700);
-  --color-primary-lighter: var(--color-rescue-rose-100);
-  --color-secondary: var(--color-guardian-navy-500);
-  --color-secondary-hover: var(--color-guardian-navy-600);
-  --color-accent: var(--color-soft-salmon-500);
-  --color-accent-hover: var(--color-soft-salmon-600);
-  --color-accent-light: var(--color-soft-salmon-50);
-  --color-pink-strip: var(--color-soft-salmon-300);
-  --color-lavender: var(--color-guardian-navy-50);
-
-  /* Base surfaces */
-  --color-bg: #fdf7f4;
-  --color-text: #2b2d42;
+  /* Semantic aliases */
+  --color-primary: var(--hkscda-blue);
+  --color-primary-hover: var(--hkscda-blue-deep);
+  --color-primary-highlight: var(--hkscda-blue-soft);
+  --color-accent: var(--hkscda-magenta);
+  --color-accent-hover: var(--hkscda-magenta-deep);
+  --color-accent-highlight: var(--hkscda-magenta-soft);
+  --color-text: var(--hkscda-ink);
+  --color-text-muted: var(--hkscda-muted);
+  --color-background: var(--hkscda-paper);
+  --color-surface-warm: var(--hkscda-warm);
+  --color-border-warm: var(--hkscda-sand);
+  --color-border: var(--hkscda-line);
+  --color-success: var(--hkscda-success);
 
   /* Typography */
-  --font-display: "Baloo 2", "Noto Sans HK", sans-serif;
-  --font-body: "Noto Sans HK", "Helvetica Neue", sans-serif;
+  --font-body: "Noto Sans HK", "PingFang HK", "Microsoft JhengHei", system-ui, sans-serif;
+  --font-display: var(--font-body);
+  --line-height-body: 1.72;
+
+  /* Layout */
+  --content-max: 1200px;
+  --space-unit: 8px;
+  --radius-small: 8px;
+  --radius-card: 16px;
+  --radius-pill: 999px;
+
+  /* Motion */
+  --motion-reveal-fast: 350ms;
+  --motion-reveal-slow: 500ms;
 }
+

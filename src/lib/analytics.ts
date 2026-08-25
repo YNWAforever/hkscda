@@ -7,6 +7,19 @@ declare global {
 
 let gaInitialized = false;
 
+const sensitiveStatusPaths: ReadonlyArray<readonly [RegExp, string]> = [
+  [/^\/adoption\/status\/[^/]+\/?$/, "/adoption/status/[token]"],
+  [/^\/sponsors\/status\/[^/]+\/?$/, "/sponsors/status/[token]"],
+  [/^\/volunteer\/status\/[^/]+\/?$/, "/volunteer/status/[token]"],
+];
+
+export function redactSensitivePagePath(pathname: string): string | undefined {
+  for (const [pattern, replacement] of sensitiveStatusPaths) {
+    if (pattern.test(pathname)) return replacement;
+  }
+  return undefined;
+}
+
 export function initGA4(measurementId: string, options: { pagePath?: string } = {}) {
   if (typeof window === "undefined") return;
 

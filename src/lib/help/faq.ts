@@ -61,8 +61,8 @@ export const helpFaqs: HelpFaq[] = [
     },
     answer: {
       "zh-HK":
-        "先選擇你想支持的動物，然後前往助養表格完成申請。你可以選擇每月 HK$100、HK$300、HK$500 或自訂金額，提交後會收到繳費資料和參考編號。",
-      en: "Choose your preferred sponsor animals first, then continue to the sponsorship form. You can select HK$100, HK$300, HK$500, or a custom monthly amount. After submission, you will receive a reference and payment instructions.",
+        "先選擇你想支持的動物，然後前往助養表格完成申請。你可以選擇每月 HK$100、HK$300、HK$500 或自訂金額；提交後會收到參考編號，職員會跟進確認付款安排。",
+      en: "Choose your preferred sponsor animals first, then continue to the sponsorship form. You can select HK$100, HK$300, HK$500, or a custom monthly amount. After submission, you will receive a reference and staff will confirm the payment arrangement.",
     },
     keywords: {
       "zh-HK": ["助養", "開始", "申請", "動物", "每月", "繳費"],
@@ -181,8 +181,8 @@ export const helpFaqs: HelpFaq[] = [
     },
     answer: {
       "zh-HK":
-        "捐款頁面會列出可用方式，包括刷卡、FPS、PayMe、PayPal 或其他指定方法。請以捐款頁面最新顯示為準。",
-      en: "The donation page lists available options such as card or online payment, plus manual methods like FPS, PayMe, PayPal, or other listed methods. Please follow the latest details shown on the donation page.",
+        "捐款頁只會在付款服務完成正式啟用審批後顯示可用方式。如頁面顯示尚未啟用，請先聯絡職員核實安排，切勿使用測試或未經確認的付款資料。",
+      en: "The donation page shows payment methods only after production activation is approved. If the page says online donations are not active, contact staff to verify an arrangement and do not use test or unconfirmed payment details.",
     },
     keywords: {
       "zh-HK": ["捐款", "FPS", "PayMe", "PayPal", "刷卡", "支付"],
@@ -190,7 +190,7 @@ export const helpFaqs: HelpFaq[] = [
     },
     cta: {
       href: "/donate",
-      label: { "zh-HK": "查看捐款方法", en: "View donation methods" },
+      label: { "zh-HK": "查看捐款安排", en: "View donation arrangements" },
       analyticsAction: "view_donation_methods",
     },
   },

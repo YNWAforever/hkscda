@@ -8,5 +8,7 @@ describe("Footer navigation", () => {
     const footer = readFileSync(join(process.cwd(), "src/components/site/Footer.tsx"), "utf8");
     expect(footer).toContain('href="/knowledge"');
     expect(footer).toContain('href="/volunteer/group"');
+    expect(footer).toContain("bg-[var(--color-footer-bg)]");
+    expect(footer).toContain("public-footer-link");
   });
 });

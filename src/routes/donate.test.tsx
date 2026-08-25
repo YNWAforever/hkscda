@@ -77,10 +77,23 @@ test("keeps the donation page available when optional documents fail to load", a
 });
 
 describe("AlipayHK donation checkout", () => {
-  test("renders Card and AlipayHK as separate payment methods", async () => {
+  test("keeps every provider hidden until the production activation gate is approved", async () => {
     const { DonatePage } = await import("./donate");
 
     const html = renderToStaticMarkup(<DonatePage initialSlots={[]} initialSearch={{}} />);
+
+    expect(html).toContain("網上捐款尚未啟用");
+    expect(html).toContain("付款服務完成正式審批後");
+    expect(html).not.toContain(">信用卡<");
+    expect(html).not.toContain(">PayPal<");
+  });
+
+  test("renders Card and AlipayHK as separate payment methods", async () => {
+    const { DonatePage } = await import("./donate");
+
+    const html = renderToStaticMarkup(
+      <DonatePage initialSlots={[]} initialSearch={{}} checkoutEnabled />,
+    );
 
     expect(html).toContain(">信用卡<");
     expect(html).not.toContain("信用卡 / Alipay");

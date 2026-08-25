@@ -17,18 +17,10 @@ const searchSchema = z.object({
 export const Route = createFileRoute("/sponsors")({
   validateSearch: searchSchema,
   head: () => ({
-    links: [{ rel: "canonical", href: "https://hkscda.com/sponsors" }],
+    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/sponsors" }],
   }),
   component: SponsorsPage,
 });
-
-const paymentMethods = [
-  { label: "FPS 轉數快", value: "9864 1089" },
-  { label: "銀行轉帳", value: "匯豐銀行 012-345-678901" },
-  { label: "PayMe", value: "@hkscda" },
-  { label: "PayPal", value: "paypal@hkscda.com" },
-  { label: "Give.asia", value: "give.asia/hkscda" },
-];
 
 function SponsorsPage() {
   const { page, filter } = Route.useSearch();
@@ -55,19 +47,14 @@ function SponsorsPage() {
       <h1 className="font-display text-3xl font-bold">{"\u52a9\u990a"}</h1>
 
       <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-6 shadow-soft">
-        <h2 className="font-semibold mb-1">助養付款方式</h2>
-        <p className="text-sm text-[var(--color-text-muted)] mb-4">每月助養 HK$100</p>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
-          {paymentMethods.map((m) => (
-            <div
-              key={m.label}
-              className="space-y-1 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-3"
-            >
-              <div className="text-xs font-semibold text-[var(--color-text-muted)]">{m.label}</div>
-              <div className="text-sm">{m.value}</div>
-            </div>
-          ))}
-        </div>
+        <h2 className="font-semibold mb-2">助養付款安排</h2>
+        <p className="max-w-3xl text-sm leading-6 text-[var(--color-text-muted)]">
+          完成助養承諾後，本會職員會透過你提供的聯絡資料確認正式付款安排。收到確認前，
+          請勿向本頁、搜尋結果或任何未經職員核實的帳戶、電話號碼或電郵付款。
+        </p>
+        <a href="/help#contact" className="btn-secondary mt-4 min-h-11">
+          向職員核實付款安排
+        </a>
       </div>
 
       {isError ? (

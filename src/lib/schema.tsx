@@ -1,4 +1,4 @@
-const BASE_URL = "https://hkscda.com";
+const BASE_URL = "https://hkscda.vercel.app";
 
 const orgSchema = {
   "@context": "https://schema.org",

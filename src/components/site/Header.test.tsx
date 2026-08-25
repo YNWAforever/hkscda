@@ -26,4 +26,11 @@ describe("Header dropdown positioning", () => {
       /<NavigationMenu\.Item className="relative">\s*<NavigationMenu\.Trigger/,
     );
   });
+
+  test("keeps the Stage A public header treatment scoped to the public shell", () => {
+    const header = source();
+    expect(header).toContain('className="public-site-header"');
+    expect(header).toContain("public-nav-dropdown");
+    expect(header).toContain("public-mobile-nav");
+  });
 });

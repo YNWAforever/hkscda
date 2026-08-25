@@ -1,213 +1,70 @@
 {
-  "brand": "HKSCDA - Warm Rescue",
-  "primitive": {
-    "color": {
-      "rescue-rose": {
-        "50": {
-          "$value": "#FADFE4",
-          "$type": "color"
-        },
-        "100": {
-          "$value": "#FADFE4",
-          "$type": "color"
-        },
-        "200": {
-          "$value": "#FFE6FF",
-          "$type": "color"
-        },
-        "300": {
-          "$value": "#FFB3CC",
-          "$type": "color"
-        },
-        "400": {
-          "$value": "#FF8099",
-          "$type": "color"
-        },
-        "500": {
-          "$value": "#E05C78",
-          "$type": "color"
-        },
-        "600": {
-          "$value": "#CF4A66",
-          "$type": "color"
-        },
-        "700": {
-          "$value": "#B93D58",
-          "$type": "color"
-        },
-        "800": {
-          "$value": "#610000",
-          "$type": "color"
-        },
-        "900": {
-          "$value": "#3B0000",
-          "$type": "color"
-        }
-      },
-      "guardian-navy": {
-        "50": {
-          "$value": "#E9E9F6",
-          "$type": "color"
-        },
-        "100": {
-          "$value": "#E9E9F6",
-          "$type": "color"
-        },
-        "200": {
-          "$value": "#DCDCF0",
-          "$type": "color"
-        },
-        "300": {
-          "$value": "#8990C4",
-          "$type": "color"
-        },
-        "400": {
-          "$value": "#283066",
-          "$type": "color"
-        },
-        "500": {
-          "$value": "#1D2353",
-          "$type": "color"
-        },
-        "600": {
-          "$value": "#283066",
-          "$type": "color"
-        },
-        "700": {
-          "$value": "#000012",
-          "$type": "color"
-        },
-        "800": {
-          "$value": "#000000",
-          "$type": "color"
-        },
-        "900": {
-          "$value": "#000000",
-          "$type": "color"
-        }
-      },
-      "soft-salmon": {
-        "50": {
-          "$value": "#FCE8EB",
-          "$type": "color"
-        },
-        "100": {
-          "$value": "#FCE8EB",
-          "$type": "color"
-        },
-        "200": {
-          "$value": "#FFFFFF",
-          "$type": "color"
-        },
-        "300": {
-          "$value": "#F298A4",
-          "$type": "color"
-        },
-        "400": {
-          "$value": "#FFB5C8",
-          "$type": "color"
-        },
-        "500": {
-          "$value": "#F27D92",
-          "$type": "color"
-        },
-        "600": {
-          "$value": "#EE6781",
-          "$type": "color"
-        },
-        "700": {
-          "$value": "#A23649",
-          "$type": "color"
-        },
-        "800": {
-          "$value": "#7B0F22",
-          "$type": "color"
-        },
-        "900": {
-          "$value": "#550000",
-          "$type": "color"
-        }
-      }
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "brand": {
+    "name": "HKSCDA approved public identity",
+    "approved": "2026-08"
+  },
+  "color": {
+    "brand": {
+      "blue": { "$value": "#05648E", "$type": "color" },
+      "blue-deep": { "$value": "#034A69", "$type": "color" },
+      "blue-soft": { "$value": "#E4F2F7", "$type": "color" },
+      "magenta": { "$value": "#A61C56", "$type": "color" },
+      "magenta-deep": { "$value": "#821442", "$type": "color" },
+      "magenta-soft": { "$value": "#F9E7EF", "$type": "color" }
+    },
+    "neutral": {
+      "ink": { "$value": "#162C36", "$type": "color" },
+      "muted": { "$value": "#5B6E76", "$type": "color" },
+      "paper": { "$value": "#FFFDF9", "$type": "color" },
+      "warm": { "$value": "#F6F1E9", "$type": "color" },
+      "sand": { "$value": "#E8DED0", "$type": "color" },
+      "line": { "$value": "#D7DDD9", "$type": "color" },
+      "white": { "$value": "#FFFFFF", "$type": "color" }
+    },
+    "semantic": {
+      "primary": { "$value": "{color.brand.blue}", "$type": "color" },
+      "primary-hover": { "$value": "{color.brand.blue-deep}", "$type": "color" },
+      "primary-highlight": { "$value": "{color.brand.blue-soft}", "$type": "color" },
+      "accent": { "$value": "{color.brand.magenta}", "$type": "color" },
+      "accent-hover": { "$value": "{color.brand.magenta-deep}", "$type": "color" },
+      "accent-highlight": { "$value": "{color.brand.magenta-soft}", "$type": "color" },
+      "text": { "$value": "{color.neutral.ink}", "$type": "color" },
+      "text-muted": { "$value": "{color.neutral.muted}", "$type": "color" },
+      "background": { "$value": "{color.neutral.paper}", "$type": "color" },
+      "surface-warm": { "$value": "{color.neutral.warm}", "$type": "color" },
+      "border-warm": { "$value": "{color.neutral.sand}", "$type": "color" },
+      "border": { "$value": "{color.neutral.line}", "$type": "color" },
+      "success": { "$value": "#176F54", "$type": "color" }
     }
   },
-  "semantic": {
-    "color": {
-      "primary": {
-        "$value": "{primitive.color.rescue-rose.500}",
-        "$type": "color"
-      },
-      "primary-hover": {
-        "$value": "{primitive.color.rescue-rose.600}",
-        "$type": "color"
-      },
-      "primary-active": {
-        "$value": "{primitive.color.rescue-rose.700}",
-        "$type": "color"
-      },
-      "primary-light": {
-        "$value": "{primitive.color.rescue-rose.400}",
-        "$type": "color"
-      },
-      "primary-lighter": {
-        "$value": "{primitive.color.rescue-rose.100}",
-        "$type": "color"
-      },
-      "primary-dark": {
-        "$value": "{primitive.color.rescue-rose.600}",
-        "$type": "color"
-      },
-      "secondary": {
-        "$value": "{primitive.color.guardian-navy.500}",
-        "$type": "color"
-      },
-      "secondary-hover": {
-        "$value": "{primitive.color.guardian-navy.600}",
-        "$type": "color"
-      },
-      "secondary-light": {
-        "$value": "{primitive.color.guardian-navy.300}",
-        "$type": "color"
-      },
-      "secondary-dark": {
-        "$value": "{primitive.color.guardian-navy.600}",
-        "$type": "color"
-      },
-      "accent": {
-        "$value": "{primitive.color.soft-salmon.500}",
-        "$type": "color"
-      },
-      "accent-hover": {
-        "$value": "{primitive.color.soft-salmon.600}",
-        "$type": "color"
-      },
-      "accent-light": {
-        "$value": "{primitive.color.soft-salmon.300}",
-        "$type": "color"
-      },
-      "success": {
-        "$value": "{primitive.color.soft-salmon.500}",
-        "$type": "color"
-      },
-      "success-light": {
-        "$value": "{primitive.color.soft-salmon.300}",
-        "$type": "color"
-      },
-      "error": {
-        "$value": "{primitive.color.rescue-rose.500}",
-        "$type": "color"
-      },
-      "error-light": {
-        "$value": "{primitive.color.rescue-rose.300}",
-        "$type": "color"
-      },
-      "info": {
-        "$value": "{primitive.color.guardian-navy.500}",
-        "$type": "color"
-      },
-      "info-light": {
-        "$value": "{primitive.color.guardian-navy.300}",
-        "$type": "color"
-      }
-    }
+  "typography": {
+    "font-family": {
+      "$value": [
+        "Noto Sans HK",
+        "PingFang HK",
+        "Microsoft JhengHei",
+        "system-ui",
+        "sans-serif"
+      ],
+      "$type": "fontFamily"
+    },
+    "body-line-height": { "$value": 1.72, "$type": "number" },
+    "navigation-size": { "$value": "16px", "$type": "dimension" },
+    "body-size": { "$value": "16px", "$type": "dimension" }
+  },
+  "layout": {
+    "content-max": { "$value": "1200px", "$type": "dimension" },
+    "grid-columns": { "$value": 12, "$type": "number" },
+    "spacing-unit": { "$value": "8px", "$type": "dimension" },
+    "radius-small": { "$value": "8px", "$type": "dimension" },
+    "radius-card": { "$value": "16px", "$type": "dimension" },
+    "radius-pill": { "$value": "999px", "$type": "dimension" },
+    "touch-target-min": { "$value": "44px", "$type": "dimension" }
+  },
+  "motion": {
+    "reveal-fast": { "$value": "350ms", "$type": "duration" },
+    "reveal-slow": { "$value": "500ms", "$type": "duration" }
   }
 }
+

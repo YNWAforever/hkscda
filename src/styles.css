@@ -5,8 +5,8 @@
 @theme {
   --brand-blue-official: #05648e;
   --brand-magenta-official: #a61c56;
-  --font-display: "Noto Sans HK", "Helvetica Neue", Arial, sans-serif;
-  --font-body: "Noto Sans HK", "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Noto Sans HK", "PingFang HK", "Microsoft JhengHei", sans-serif;
+  --font-body: "Noto Sans HK", "PingFang HK", "Microsoft JhengHei", sans-serif;
 
   /* Stable aliases remain available while public components migrate. */
   --color-bg: #f7faf9;
@@ -67,41 +67,47 @@
 }
 
 .site-shell {
-  --color-bg: #f7faf9;
+  /* Stage A public palette. Admin tokens remain isolated below. */
+  --color-bg: #fffdf9;
   --color-surface: #ffffff;
-  --color-surface-2: #fbfdfc;
-  --color-surface-offset: #edf4f5;
-  --color-surface-offset-2: #e1ecef;
-  --color-divider: #d7e2e5;
-  --color-border: #c6d6dc;
-  --color-text: #163644;
-  --color-text-muted: #526b75;
-  --color-text-faint: #728790;
+  --color-surface-2: #fffdfa;
+  --color-surface-offset: #f6f1e9;
+  --color-surface-offset-2: #e8ded0;
+  --color-divider: #d7ddd9;
+  --color-border: #d7ddd9;
+  --color-text: #162c36;
+  --color-text-muted: #5b6e76;
+  --color-text-faint: #788a91;
   --color-text-inverse: #ffffff;
   --color-primary: var(--brand-blue-official);
   --color-primary-hover: #044f71;
   --color-primary-active: #033b54;
-  --color-primary-highlight: #e5f2f6;
+  --color-primary-highlight: #e4f2f7;
   --color-secondary: var(--brand-magenta-official);
   --color-secondary-hover: #861646;
-  --color-secondary-highlight: #f7e9ef;
-  --color-success: #3f6f4a;
-  --color-success-highlight: #e8f2e9;
+  --color-secondary-highlight: #f9e7ef;
+  --color-success: #176f54;
+  --color-success-highlight: #e2f4ed;
   --color-warning: #8a5a12;
   --color-warning-highlight: #fbf0d7;
   --color-error: #a12a2a;
   --color-error-highlight: #f9e4e4;
   --color-info: var(--brand-blue-official);
-  --color-info-highlight: #e5f2f6;
-  --color-footer-bg: #06435f;
-  --color-panel: #163644;
-  --color-panel-2: #245266;
+  --color-info-highlight: #e4f2f7;
+  --color-footer-bg: #edf2f1;
+  --color-panel: #162c36;
+  --color-panel-2: #034a69;
   --color-cat: #466a78;
   --color-dog: #5e675f;
   --color-cat-bg: #edf4f5;
   --color-dog-bg: #f0f2ef;
   --color-chart-series-1: #2f6f84;
   --color-chart-series-2: #66734f;
+  --public-radius-sm: 0.5rem;
+  --public-radius: 1rem;
+  --public-radius-lg: 1.5rem;
+  --public-shadow-soft: 0 8px 24px rgba(15, 51, 65, 0.08);
+  --public-shadow-raised: 0 24px 60px rgba(8, 52, 70, 0.14);
   color: var(--color-text);
   background: var(--color-bg);
   padding-bottom: var(--public-content-bottom-offset, 0px);
@@ -199,6 +205,254 @@
 }
 .btn-secondary:hover {
   background: var(--color-secondary-highlight);
+}
+
+/* Public controls mirror the rounded, tactile Stage A system without
+   changing admin controls that share the utility names. */
+.site-shell .btn-primary,
+.site-shell .btn-secondary {
+  min-height: 48px;
+  border-radius: 9999px;
+  font-weight: 800;
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+.site-shell .btn-primary:hover,
+.site-shell .btn-secondary:hover {
+  transform: translateY(-2px);
+}
+
+.site-shell :focus-visible {
+  outline: 3px solid #f1b7d0;
+  outline-offset: 3px;
+}
+
+.public-site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
+  background: color-mix(in srgb, var(--color-bg) 95%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+.public-header-main {
+  background: transparent;
+}
+
+.public-brand-link {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--public-radius-sm);
+}
+
+.public-nav-link,
+.public-nav-trigger {
+  border-radius: 9999px;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+.public-nav-link:hover,
+.public-nav-trigger:hover,
+.public-nav-trigger[data-state="open"] {
+  background: var(--color-primary-highlight);
+  color: var(--color-primary-hover);
+}
+
+.public-nav-dropdown {
+  border-radius: var(--public-radius);
+  box-shadow: var(--public-shadow-raised);
+}
+
+.public-nav-dropdown a {
+  border-radius: var(--public-radius-sm);
+}
+
+.public-mobile-nav {
+  background: color-mix(in srgb, var(--color-bg) 98%, transparent);
+  box-shadow: 0 18px 40px rgba(8, 52, 70, 0.12);
+}
+
+.public-page-hero {
+  position: relative;
+  overflow: hidden;
+  padding-block: clamp(3rem, 7vw, 5.5rem);
+  background: var(--color-bg);
+}
+
+.public-page-hero::before {
+  position: absolute;
+  top: -10rem;
+  right: -8rem;
+  width: 34rem;
+  height: 34rem;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 15%, transparent);
+  border-radius: 50%;
+  content: "";
+}
+
+.public-page-hero-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.public-page-hero-copy {
+  grid-column: 1 / span 7;
+  padding-right: clamp(0rem, 4vw, 3rem);
+}
+
+.public-page-hero-copy h1 {
+  max-width: 13ch;
+  font-size: clamp(2.75rem, 6vw, 5rem);
+  letter-spacing: -0.025em;
+}
+
+.public-page-hero-photo {
+  grid-column: 8 / span 5;
+  min-height: 32rem;
+  margin: 0;
+  border-radius: 11rem 11rem var(--public-radius) var(--public-radius);
+  background: var(--color-primary-highlight);
+  box-shadow: var(--public-shadow-raised);
+  overflow: hidden;
+}
+
+.public-page-hero-photo img {
+  width: 100%;
+  height: 100%;
+  min-height: 32rem;
+  object-fit: cover;
+}
+
+.public-animal-card {
+  min-width: 0;
+  border-radius: var(--public-radius);
+  box-shadow: var(--public-shadow-soft);
+  transition:
+    transform 260ms ease,
+    box-shadow 260ms ease,
+    border-color 260ms ease;
+}
+
+.public-animal-card:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
+  box-shadow: var(--public-shadow-raised);
+  transform: translateY(-5px);
+}
+
+.public-route-card {
+  display: flex;
+  min-height: 13rem;
+  flex-direction: column;
+  padding: 1.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--public-radius);
+  background: var(--color-surface);
+  box-shadow: var(--public-shadow-soft);
+  transition:
+    transform 240ms ease,
+    border-color 240ms ease,
+    box-shadow 240ms ease;
+}
+
+.public-route-card:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
+  box-shadow: var(--public-shadow-raised);
+  transform: translateY(-4px);
+}
+
+.public-route-card > :last-child {
+  margin-top: auto;
+}
+
+.public-animal-media {
+  aspect-ratio: 4 / 3;
+}
+
+.public-animal-fallback {
+  background:
+    radial-gradient(circle at 80% 20%, rgba(166, 28, 86, 0.16), transparent 32%),
+    linear-gradient(145deg, #eaf6fa, #f8f1e8);
+}
+
+.public-filter-shell,
+.public-state-shell,
+.public-detail-panel {
+  border: 1px solid var(--color-border);
+  border-radius: var(--public-radius);
+  background: var(--color-surface);
+  box-shadow: var(--public-shadow-soft);
+}
+
+.public-detail-photo {
+  border-radius: var(--public-radius);
+  box-shadow: var(--public-shadow-raised);
+}
+
+.public-footer-link {
+  color: var(--color-text-muted);
+  transition: color 180ms ease;
+}
+
+.public-footer-link:hover {
+  color: var(--color-primary);
+}
+
+@media (max-width: 1023px) {
+  .public-page-hero-copy,
+  .public-page-hero-photo {
+    grid-column: 1 / -1;
+  }
+
+  .public-page-hero-copy {
+    padding-right: 0;
+  }
+
+  .public-page-hero-photo {
+    width: min(100%, 40rem);
+    min-height: 30rem;
+    justify-self: center;
+    border-radius: 7.5rem 7.5rem var(--public-radius) var(--public-radius);
+  }
+
+  .public-page-hero-photo img {
+    min-height: 30rem;
+  }
+}
+
+@media (max-width: 639px) {
+  .public-page-hero {
+    padding-block: 3rem 4rem;
+  }
+
+  .public-page-hero-grid {
+    gap: 2rem;
+  }
+
+  .public-page-hero-copy h1 {
+    font-size: clamp(2.55rem, 12vw, 4rem);
+  }
+
+  .public-page-hero-copy [data-hero-actions] > * {
+    width: 100%;
+  }
+
+  .public-page-hero-photo,
+  .public-page-hero-photo img {
+    min-height: 24rem;
+  }
+
+  .public-page-hero-photo {
+    border-radius: 5.25rem 5.25rem var(--public-radius) var(--public-radius);
+  }
 }
 
 @utility btn-outline {

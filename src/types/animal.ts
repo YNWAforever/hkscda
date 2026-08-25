@@ -1,6 +1,7 @@
 export type AnimalType = "cat" | "dog" | "sponsor";
 export type AnimalStatus = "available" | "adopted" | "fostered";
 export type AgeFilter = "all" | "bb" | "adult" | "senior";
+export type GenderFilter = "all" | "male" | "female";
 export type HousingType = "私人樓宇" | "居屋" | "公屋" | "村屋" | "其他";
 
 export interface Animal {
@@ -39,10 +40,14 @@ export interface AdoptionApplication {
 }
 
 export function parseAgeFilter(age: string): AgeFilter {
-  if (age.includes("個月")) return "bb";
-  const match = age.match(/(\d+)/);
+  const normalized = age.trim().toLocaleLowerCase("en");
+  if (/個月|months?/.test(normalized)) return "bb";
+
+  const match = normalized.match(/(\d+(?:\.\d+)?)/);
   if (!match) return "adult";
-  const years = parseInt(match[1], 10);
+
+  const years = Number(match[1]);
+  if (!Number.isFinite(years)) return "adult";
   if (years < 1) return "bb";
   if (years <= 7) return "adult";
   return "senior";

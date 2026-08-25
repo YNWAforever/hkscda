@@ -26,8 +26,8 @@ volunteer journey and a role-gated admin back office.
   single file, but the full run is cheap enough to just do before pushing
 - Format: `bun run format`
 
-CI (`.github/workflows/ci.yml`) runs typecheck → test → lint → build on push and
-PR. The whole job is a couple of minutes; run the same four locally first.
+CI (`.github/workflows/ci.yml`) runs typecheck → test → lint → build → public brand
+verification on push and PR. Run the same gates locally before requesting review.
 
 ## Architecture
 
@@ -120,18 +120,26 @@ supabase/migrations/   Timestamped SQL; RLS + grants live here
 docs/superpowers/      Design specs and implementation plans
 ```
 
-## Brand Theme (Poofyco-inspired redesign, 2026-06)
+## Approved Public Design System (2026-08)
 
-Colour tokens in `src/styles.css` follow the Poofyco pet-rescue template style:
+The public experience uses HKSCDA's current official identity. The values in
+`brand/design-tokens.{json,css}` and `docs/brand-guidelines.md` are authoritative.
 
-- Deep indigo `#1d2353` (`--color-panel` / `--color-secondary`) — full-bleed dark bands, headings, footer
-- Coral `#e05c78` (`--color-primary`) — links, eyebrows, cat accents
-- Soft coral `#f27d92` (`--color-accent-warm` / `--color-cta`) — pills, stat numbers, badges, footer headings
-- Lavender `#e9e9f6` zones, pink strip `#f298a4`; dashed-border rounded cards (`card-dashed` utility) are the signature card style
-- Blush surfaces `#fce8eb` / cream bg `#fdf7f4`; body text `#2b2d42`
-- Display font: "Baloo 2" (+ Noto Sans HK for Chinese); body: Noto Sans HK
-- `bg-topo` utility adds the topographic contour texture (hero)
-- Never hardcode colours in components — always go through the tokens
+- Primary blue `#05648E`; deep interaction blue `#034A69`; soft blue `#E4F2F7`
+- Accent magenta `#A61C56`; deep interaction magenta `#821442`; soft magenta `#F9E7EF`
+- Warm paper `#FFFDF9`, warm section `#F6F1E9`, ink `#162C36`, muted ink `#5B6E76`
+- Typeface: Noto Sans HK with PingFang HK, Microsoft JhengHei, and system fallbacks
+- Content width about 1200px on a 12-column desktop grid; spacing follows an 8px scale
+- Approved radii are 8px, 16px, and pill; body copy is 16–18px with comfortable zh-HK leading
+- Public components use one hero family and one consistent card anatomy, adapted by domain
+- Real, approved HKSCDA photography comes first; never generate an image that could be
+  mistaken for a real adoptable animal or documented rescue event
+- Motion explains hierarchy or feedback, normally 350–500ms, and respects reduced motion
+
+Do not reintroduce the stale Poofyco/Baloo rose-and-navy theme. Do not hardcode
+component colours: use semantic `var(--color-*)` tokens from `src/styles.css`.
+Traditional Chinese (`zh-HK`) is primary. Copy stays compassionate, factual, and
+collective; avoid comparative superlatives and founder-centric organisational framing.
 
 ## Adding Pages / Sections
 
@@ -142,6 +150,8 @@ Colour tokens in `src/styles.css` follow the Poofyco pet-rescue template style:
 ## Deployment
 
 - Linked to Vercel project `hkscda` under `ynwaforevers-projects`
-- Push to `main` triggers a production deployment automatically
-- Preview: `vercel deploy --scope ynwaforevers-projects`
+- Push to `main` triggers a production deployment automatically; merge only after explicit release approval
+- Do not create or share a public preview while review access is meant to remain private
+- Preview command (only after approval): `vercel deploy --scope ynwaforevers-projects`
 - Nitro preset: `vercel` (configured in `vite.config.ts`)
+

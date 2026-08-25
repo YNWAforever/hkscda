@@ -17,10 +17,10 @@ export function PublicStateShell({
     <section
       role={role}
       aria-live={role === "alert" ? "assertive" : "polite"}
-      className="mx-auto max-w-xl px-4 py-16 text-center"
+      className="public-state-shell mx-auto max-w-xl px-6 py-12 text-center sm:px-10 sm:py-16"
     >
       {icon ? (
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center text-[var(--color-primary)]">
+        <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--color-primary-highlight)] text-[var(--color-primary)]">
           {icon}
         </div>
       ) : null}

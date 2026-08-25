@@ -14,6 +14,12 @@ type VolunteerStatus = {
 };
 
 export const Route = createFileRoute("/volunteer/status/$token")({
+  head: () => ({
+    meta: [
+      { name: "robots", content: "noindex, nofollow, noarchive" },
+      { name: "referrer", content: "no-referrer" },
+    ],
+  }),
   component: VolunteerStatusRoute,
 });
 

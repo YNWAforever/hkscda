@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Loader2, ReceiptText } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { centsToHkd } from "../../../lib/donations/domain";
 import {
@@ -93,22 +93,28 @@ export function PledgeWizard() {
   const [language, setLanguage] = useState<Language>("zh-HK");
   const t = copy[language];
 
-  const draft = useMemo(() => {
+  const [monthlyTier, setMonthlyTier] = useState<MonthlyTier>("300");
+  const [customAmount, setCustomAmount] = useState("");
+  const [supporterName, setSupporterName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [notes, setNotes] = useState("");
+
+  useEffect(() => {
     try {
-      return parseDraft(window.localStorage.getItem(SPONSORSHIP_PLEDGE_DRAFT_STORAGE_KEY));
+      const draft = parseDraft(
+        window.localStorage.getItem(SPONSORSHIP_PLEDGE_DRAFT_STORAGE_KEY),
+      );
+      setMonthlyTier((draft.monthlyTier as MonthlyTier) ?? "300");
+      setCustomAmount((draft.customAmount as string) ?? "");
+      setSupporterName((draft.supporterName as string) ?? "");
+      setEmail((draft.email as string) ?? "");
+      setPhone((draft.phone as string) ?? "");
+      setNotes((draft.notes as string) ?? "");
     } catch {
-      return {};
+      // Keep the server-rendered defaults when storage is unavailable or invalid.
     }
   }, []);
-
-  const [monthlyTier, setMonthlyTier] = useState<MonthlyTier>(
-    (draft.monthlyTier as MonthlyTier) ?? "300",
-  );
-  const [customAmount, setCustomAmount] = useState((draft.customAmount as string) ?? "");
-  const [supporterName, setSupporterName] = useState((draft.supporterName as string) ?? "");
-  const [email, setEmail] = useState((draft.email as string) ?? "");
-  const [phone, setPhone] = useState((draft.phone as string) ?? "");
-  const [notes, setNotes] = useState((draft.notes as string) ?? "");
   const [emailConsent, setEmailConsent] = useState(true);
   const [whatsappConsent, setWhatsappConsent] = useState(false);
   const [includeProof, setIncludeProof] = useState(false);
