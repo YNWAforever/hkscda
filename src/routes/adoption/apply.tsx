@@ -4,7 +4,7 @@ import { ApplicationWizard } from "../../components/site/adoption/ApplicationWiz
 
 export const Route = createFileRoute("/adoption/apply")({
   head: () => ({
-    links: [{ rel: "canonical", href: "https://hkscda.com/adoption/apply" }],
+    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/adoption/apply" }],
   }),
   component: ApplyPage,
 });

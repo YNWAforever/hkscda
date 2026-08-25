@@ -28,7 +28,7 @@ const storiesHead = () => ({
     },
     { property: "og:type", content: "website" },
   ],
-  links: [{ rel: "canonical", href: "https://hkscda.com/stories" }],
+  links: [{ rel: "canonical", href: "https://hkscda.vercel.app/stories" }],
 });
 
 export const Route = createFileRoute("/stories")({

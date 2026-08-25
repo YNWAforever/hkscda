@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/about/team")({
   head: () => ({
-    links: [{ rel: "canonical", href: "https://hkscda.com/about/team" }],
+    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/about/team" }],
   }),
   component: TeamPage,
 });

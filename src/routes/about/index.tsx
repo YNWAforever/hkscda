@@ -19,7 +19,7 @@ import heroImg from "@/assets/dog-smiling.jpg";
 
 export const Route = createFileRoute("/about/")({
   head: () => ({
-    links: [{ rel: "canonical", href: "https://hkscda.com/about" }],
+    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/about" }],
   }),
   component: AboutPage,
 });

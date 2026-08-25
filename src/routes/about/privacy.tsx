@@ -9,7 +9,7 @@ export const Route = createFileRoute("/about/privacy")({
         content: "香港拯救貓狗協會私隱聲明：說明我們如何收集、使用及保護您的個人資料。",
       },
     ],
-    links: [{ rel: "canonical", href: "https://hkscda.com/about/privacy" }],
+    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/about/privacy" }],
   }),
   component: PrivacyPage,
 });

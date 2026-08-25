@@ -22,7 +22,7 @@ export const Route = createFileRoute("/report/adoption")({
       { property: "og:description", content: "每月貓狗領養數據及趨勢圖表" },
       { property: "og:type", content: "website" },
     ],
-    links: [{ rel: "canonical", href: "https://hkscda.com/report/adoption" }],
+    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/report/adoption" }],
   }),
   component: AdoptionReportPage,
 });

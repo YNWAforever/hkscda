@@ -21,7 +21,7 @@ export const Route = createFileRoute("/help")({
         content: "HKSCDA 常見問題中心，解答助養、領養、捐款、報稅收據及聯絡職員問題。",
       },
     ],
-    links: [{ rel: "canonical", href: "https://hkscda.com/help" }],
+    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/help" }],
   }),
   component: HelpPage,
 });
