@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as VolunteerRouteImport } from './routes/volunteer'
 import { Route as StoriesRouteImport } from './routes/stories'
 import { Route as SponsorsRouteImport } from './routes/sponsors'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as KnowledgeRouteImport } from './routes/knowledge'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as DonateRouteImport } from './routes/donate'
@@ -178,6 +180,16 @@ const StoriesRoute = StoriesRouteImport.update({
 const SponsorsRoute = SponsorsRouteImport.update({
   id: '/sponsors',
   path: '/sponsors',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const KnowledgeRoute = KnowledgeRouteImport.update({
@@ -1015,6 +1027,8 @@ export interface FileRoutesByFullPath {
   '/donate': typeof DonateRoute
   '/help': typeof HelpRoute
   '/knowledge': typeof KnowledgeRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sponsors': typeof SponsorsRoute
   '/stories': typeof StoriesRouteWithChildren
   '/volunteer': typeof VolunteerRouteWithChildren
@@ -1172,6 +1186,8 @@ export interface FileRoutesByTo {
   '/donate': typeof DonateRoute
   '/help': typeof HelpRoute
   '/knowledge': typeof KnowledgeRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sponsors': typeof SponsorsRoute
   '/stories': typeof StoriesRouteWithChildren
   '/volunteer': typeof VolunteerRouteWithChildren
@@ -1329,6 +1345,8 @@ export interface FileRoutesById {
   '/donate': typeof DonateRoute
   '/help': typeof HelpRoute
   '/knowledge': typeof KnowledgeRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sponsors': typeof SponsorsRoute
   '/stories': typeof StoriesRouteWithChildren
   '/volunteer': typeof VolunteerRouteWithChildren
@@ -1488,6 +1506,8 @@ export interface FileRouteTypes {
     | '/donate'
     | '/help'
     | '/knowledge'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/sponsors'
     | '/stories'
     | '/volunteer'
@@ -1645,6 +1665,8 @@ export interface FileRouteTypes {
     | '/donate'
     | '/help'
     | '/knowledge'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/sponsors'
     | '/stories'
     | '/volunteer'
@@ -1801,6 +1823,8 @@ export interface FileRouteTypes {
     | '/donate'
     | '/help'
     | '/knowledge'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/sponsors'
     | '/stories'
     | '/volunteer'
@@ -1959,6 +1983,8 @@ export interface RootRouteChildren {
   DonateRoute: typeof DonateRoute
   HelpRoute: typeof HelpRoute
   KnowledgeRoute: typeof KnowledgeRoute
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SponsorsRoute: typeof SponsorsRoute
   StoriesRoute: typeof StoriesRouteWithChildren
   VolunteerRoute: typeof VolunteerRouteWithChildren
@@ -2073,6 +2099,20 @@ declare module '@tanstack/react-router' {
       path: '/sponsors'
       fullPath: '/sponsors'
       preLoaderRoute: typeof SponsorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/knowledge': {
@@ -3633,6 +3673,8 @@ const rootRouteChildren: RootRouteChildren = {
   DonateRoute: DonateRoute,
   HelpRoute: HelpRoute,
   KnowledgeRoute: KnowledgeRoute,
+  RobotsDottxtRoute: RobotsDottxtRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   SponsorsRoute: SponsorsRoute,
   StoriesRoute: StoriesRouteWithChildren,
   VolunteerRoute: VolunteerRouteWithChildren,
