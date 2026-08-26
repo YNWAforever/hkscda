@@ -9,7 +9,7 @@ interface AnimalGridProps {
   total: number;
   page: number;
   ageFilter: AgeFilter;
-  genderFilter: GenderFilter;
+  genderFilter?: GenderFilter;
   pageSize?: number;
   animalLabel?: string;
   isRefreshing?: boolean;
@@ -62,13 +62,13 @@ export function AnimalGrid({
 }: AnimalGridProps) {
   const navigate = useNavigate();
   const totalPages = Math.ceil(total / pageSize);
-  const hasFilters = ageFilter !== "all" || genderFilter !== "all";
+  // Only the species listing routes declare a `gender` search param. Consumers that
+  // omit the prop (e.g. /sponsors) get no gender controls and no gender in the URL.
+  const genderFilterEnabled = genderFilter !== undefined;
+  const activeGender: GenderFilter = genderFilter ?? "all";
+  const hasFilters = ageFilter !== "all" || activeGender !== "all";
 
-  function updateSearch(next: {
-    filter?: AgeFilter;
-    gender?: GenderFilter;
-    page?: number;
-  }) {
+  function updateSearch(next: { filter?: AgeFilter; gender?: GenderFilter; page?: number }) {
     // @ts-expect-error search params are shared by the species listing routes
     navigate({ search: (previous: Record<string, unknown>) => ({ ...previous, ...next }) });
   }
@@ -82,7 +82,9 @@ export function AnimalGrid({
   }
 
   function clearFilters() {
-    updateSearch({ filter: "all", gender: "all", page: 1 });
+    updateSearch(
+      genderFilterEnabled ? { filter: "all", gender: "all", page: 1 } : { filter: "all", page: 1 },
+    );
   }
 
   function setPage(nextPage: number) {
@@ -97,17 +99,19 @@ export function AnimalGrid({
       clear: () => setAgeFilter("all"),
     });
   }
-  if (genderFilter !== "all") {
+  if (activeGender !== "all") {
     activeFilters.push({
       id: "gender",
-      label: GENDER_OPTIONS.find(({ value }) => value === genderFilter)?.label ?? genderFilter,
+      label: GENDER_OPTIONS.find(({ value }) => value === activeGender)?.label ?? activeGender,
       clear: () => setGenderFilter("all"),
     });
   }
 
   return (
     <div className="space-y-7">
-      <div className="public-filter-shell grid gap-5 p-5 md:grid-cols-2">
+      <div
+        className={`public-filter-shell grid gap-5 p-5 ${genderFilterEnabled ? "md:grid-cols-2" : ""}`}
+      >
         <fieldset className="min-w-0">
           <legend className="mb-3 text-sm font-bold text-[var(--color-text)]">年齡</legend>
           <div className="flex flex-wrap gap-2">
@@ -129,26 +133,28 @@ export function AnimalGrid({
           </div>
         </fieldset>
 
-        <fieldset className="min-w-0">
-          <legend className="mb-3 text-sm font-bold text-[var(--color-text)]">性別</legend>
-          <div className="flex flex-wrap gap-2">
-            {GENDER_OPTIONS.map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => setGenderFilter(option.value)}
-                aria-pressed={genderFilter === option.value}
-                className={
-                  genderFilter === option.value
-                    ? "min-h-11 rounded-full bg-[var(--color-primary)] px-4 text-sm font-bold text-white"
-                    : "min-h-11 rounded-full border border-[var(--color-border)] bg-[var(--color-surface-offset)] px-4 text-sm text-[var(--color-text-muted)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
-                }
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        </fieldset>
+        {genderFilterEnabled ? (
+          <fieldset className="min-w-0">
+            <legend className="mb-3 text-sm font-bold text-[var(--color-text)]">性別</legend>
+            <div className="flex flex-wrap gap-2">
+              {GENDER_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => setGenderFilter(option.value)}
+                  aria-pressed={activeGender === option.value}
+                  className={
+                    activeGender === option.value
+                      ? "min-h-11 rounded-full bg-[var(--color-primary)] px-4 text-sm font-bold text-white"
+                      : "min-h-11 rounded-full border border-[var(--color-border)] bg-[var(--color-surface-offset)] px-4 text-sm text-[var(--color-text-muted)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+                  }
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+        ) : null}
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
@@ -186,7 +192,11 @@ export function AnimalGrid({
             title={"這一頁沒有更多" + animalLabel}
             description="你已到達結果最後一頁，可以返回第一頁繼續瀏覽。"
             action={
-              <button type="button" onClick={() => setPage(1)} className="btn-primary min-h-11 px-5">
+              <button
+                type="button"
+                onClick={() => setPage(1)}
+                className="btn-primary min-h-11 px-5"
+              >
                 返回第一頁
               </button>
             }
