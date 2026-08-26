@@ -21,8 +21,6 @@ describe("redactSensitivePagePath", () => {
   });
 
   test("redacts a token route with a trailing slash", () => {
-    expect(redactSensitivePagePath("/volunteer/status/secret/")).toBe(
-      "/volunteer/status/[token]",
-    );
+    expect(redactSensitivePagePath("/volunteer/status/secret/")).toBe("/volunteer/status/[token]");
   });
 });

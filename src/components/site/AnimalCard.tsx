@@ -59,7 +59,10 @@ export function AnimalCard({ animal }: AnimalCardProps) {
             </p>
           ) : null}
           <span className="mt-auto inline-flex min-h-11 items-center text-sm font-bold text-[var(--color-primary)]">
-            查看資料 <span className="ml-1" aria-hidden="true">→</span>
+            查看資料{" "}
+            <span className="ml-1" aria-hidden="true">
+              →
+            </span>
           </span>
         </div>
       </Link>

@@ -232,7 +232,10 @@ function Index() {
                     {item.desc}
                   </p>
                   <span className="mt-6 inline-flex min-h-11 items-center text-sm font-bold text-[var(--color-primary)]">
-                    前往頁面 <span className="ml-1" aria-hidden="true">→</span>
+                    前往頁面{" "}
+                    <span className="ml-1" aria-hidden="true">
+                      →
+                    </span>
                   </span>
                 </a>
               ))}

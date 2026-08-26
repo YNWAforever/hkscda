@@ -83,11 +83,7 @@ export function Header() {
 
       <header className="public-header-main relative border-b border-[var(--color-divider)]">
         <div className="container-wide flex min-h-20 items-center gap-4 px-4 sm:px-6 lg:px-8">
-          <Link
-            to="/"
-            aria-label="香港拯救貓狗協會首頁"
-            className="public-brand-link shrink-0"
-          >
+          <Link to="/" aria-label="香港拯救貓狗協會首頁" className="public-brand-link shrink-0">
             <BrandLogo className="h-12 sm:h-14" eager />
           </Link>
 

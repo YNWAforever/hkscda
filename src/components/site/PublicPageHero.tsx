@@ -39,11 +39,7 @@ export function PublicPageHero({
           ) : null}
         </div>
         <figure className="public-page-hero-photo">
-          <img
-            src={imageSrc}
-            alt={imageAlt}
-            className={`h-full w-full ${imageClassName}`}
-          />
+          <img src={imageSrc} alt={imageAlt} className={`h-full w-full ${imageClassName}`} />
         </figure>
       </div>
     </section>

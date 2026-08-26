@@ -49,8 +49,7 @@ export const Route = createFileRoute("/donate")({
       { title: "捐助我們 · 香港拯救貓狗協會 HKSCDA" },
       {
         name: "description",
-        content:
-          "了解香港拯救貓狗協會的善款用途、收條安排，以及經職員確認的捐款下一步。",
+        content: "了解香港拯救貓狗協會的善款用途、收條安排，以及經職員確認的捐款下一步。",
       },
       { property: "og:title", content: "捐助我們 · HKSCDA" },
       {
@@ -714,9 +713,7 @@ export function DonatePage({
 
               <button
                 type="submit"
-                disabled={
-                  !checkoutEnabled || loading || (turnstileEnabled && !turnstileToken)
-                }
+                disabled={!checkoutEnabled || loading || (turnstileEnabled && !turnstileToken)}
                 className="btn-primary w-full disabled:opacity-60"
               >
                 {loading ? (

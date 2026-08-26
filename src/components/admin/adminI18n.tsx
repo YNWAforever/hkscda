@@ -543,4 +543,3 @@ export function AdminLanguageToggle() {
     </div>
   );
 }
-

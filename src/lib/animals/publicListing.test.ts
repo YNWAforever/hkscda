@@ -70,11 +70,7 @@ describe("buildPublicAnimalListing", () => {
   });
 
   test("slices only after stable sorting and reports a no-more-pages result", () => {
-    const animals = [
-      animal("c"),
-      animal("a"),
-      animal("b"),
-    ];
+    const animals = [animal("c"), animal("a"), animal("b")];
 
     const secondPage = buildPublicAnimalListing({
       animals,

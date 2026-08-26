@@ -24,7 +24,9 @@ export function Footer() {
         </div>
 
         <div>
-          <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-[var(--color-text)]">聯絡我們</h2>
+          <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-[var(--color-text)]">
+            聯絡我們
+          </h2>
           <ul className="space-y-3 text-sm text-[var(--color-text-muted)]">
             <li>
               <a
@@ -56,7 +58,9 @@ export function Footer() {
         </div>
 
         <div>
-          <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-[var(--color-text)]">追蹤我們</h2>
+          <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-[var(--color-text)]">
+            追蹤我們
+          </h2>
           <div className="flex gap-3">
             <a
               href="https://www.facebook.com/HKSCDA"
@@ -83,7 +87,9 @@ export function Footer() {
         </div>
 
         <div>
-          <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-[var(--color-text)]">透明度</h2>
+          <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-[var(--color-text)]">
+            透明度
+          </h2>
           <ul className="space-y-1 text-sm text-[var(--color-text-muted)]">
             <li>
               <a href="/report/adoption" className="public-footer-link flex min-h-11 items-center">

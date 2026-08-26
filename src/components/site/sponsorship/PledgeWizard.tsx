@@ -102,9 +102,7 @@ export function PledgeWizard() {
 
   useEffect(() => {
     try {
-      const draft = parseDraft(
-        window.localStorage.getItem(SPONSORSHIP_PLEDGE_DRAFT_STORAGE_KEY),
-      );
+      const draft = parseDraft(window.localStorage.getItem(SPONSORSHIP_PLEDGE_DRAFT_STORAGE_KEY));
       setMonthlyTier((draft.monthlyTier as MonthlyTier) ?? "300");
       setCustomAmount((draft.customAmount as string) ?? "");
       setSupporterName((draft.supporterName as string) ?? "");

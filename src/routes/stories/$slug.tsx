@@ -26,7 +26,10 @@ export const Route = createFileRoute("/stories/$slug")({
     const title = loaderData?.seoTitle ?? loaderData?.title ?? "救援故事 · HKSCDA";
     const pageTitle = title.includes("HKSCDA") ? title : `${title} · 香港拯救貓狗協會 HKSCDA`;
     const description =
-      loaderData?.seoDescription ?? loaderData?.ogDescription ?? loaderData?.summary ?? "HKSCDA 公開救援故事。";
+      loaderData?.seoDescription ??
+      loaderData?.ogDescription ??
+      loaderData?.summary ??
+      "HKSCDA 公開救援故事。";
     const ogTitle = loaderData?.ogTitle ?? pageTitle;
     const image = absolutePublicUrl(loaderData?.coverImageUrl ?? null);
     return {

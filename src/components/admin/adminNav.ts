@@ -230,4 +230,3 @@ export function getActiveAdminNavItemIds(
     })
     .map((item) => item.id);
 }
-
