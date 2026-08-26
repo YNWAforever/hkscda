@@ -1,0 +1,17 @@
+# The repository stores text as LF. Declare it so every checkout materialises LF
+# regardless of the contributor's core.autocrlf setting. Without this, a Windows
+# clone (core.autocrlf=true) writes CRLF working files and `bun run lint` reports
+# a prettier/prettier "Delete `CR`" error on essentially every line of every file,
+# which makes the lint gate unusable locally even though CI (Linux) is green.
+* text=auto eol=lf
+
+# Binary assets must never be line-ending converted.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.ico  binary
+*.ttf  binary
+*.woff  binary
+*.woff2 binary
+*.gz   binary
+*.pdf  binary
