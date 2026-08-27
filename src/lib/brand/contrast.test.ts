@@ -45,9 +45,9 @@ describe("public brand tokens", () => {
     expect(fonts).toContain("font-family: 'Noto Sans HK'");
     expect(fonts).toContain("/fonts/noto-sans-hk/");
     expect(fonts).not.toMatch(/Baloo/i);
-    // Every weight the app uses must resolve locally, including 500 (font-medium).
-    for (const weight of [300, 400, 500, 700, 900]) {
-      expect(fonts).toContain(`font-weight: ${weight};`);
-    }
+    // One variable-font rule per subset spans the whole axis, so every weight the
+    // app uses - including 500 (font-medium) - resolves locally from the same files.
+    expect(fonts).toContain("font-weight: 300 900;");
+    expect(fonts).not.toContain("font-weight: 400;");
   });
 });
