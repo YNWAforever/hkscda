@@ -1,12 +1,14 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
+@import "./styles/fonts.css";
+@import "./styles/public.css";
 
 @theme {
   --brand-blue-official: #05648e;
   --brand-magenta-official: #a61c56;
-  --font-display: "Noto Sans HK", "PingFang HK", "Microsoft JhengHei", sans-serif;
-  --font-body: "Noto Sans HK", "PingFang HK", "Microsoft JhengHei", sans-serif;
+  --font-display: "Noto Sans HK", "PingFang HK", "Microsoft JhengHei", system-ui, sans-serif;
+  --font-body: "Noto Sans HK", "PingFang HK", "Microsoft JhengHei", system-ui, sans-serif;
 
   /* Stable aliases remain available while public components migrate. */
   --color-bg: #f7faf9;
@@ -80,11 +82,11 @@
   --color-text-faint: #788a91;
   --color-text-inverse: #ffffff;
   --color-primary: var(--brand-blue-official);
-  --color-primary-hover: #044f71;
+  --color-primary-hover: #034a69;
   --color-primary-active: #033b54;
   --color-primary-highlight: #e4f2f7;
   --color-secondary: var(--brand-magenta-official);
-  --color-secondary-hover: #861646;
+  --color-secondary-hover: #821442;
   --color-secondary-highlight: #f9e7ef;
   --color-success: #176f54;
   --color-success-highlight: #e2f4ed;
@@ -106,6 +108,89 @@
   --public-radius-sm: 0.5rem;
   --public-radius: 1rem;
   --public-radius-lg: 1.5rem;
+  --public-radius-pill: 999px;
+  /* Literals the ported design system would otherwise hardcode. */
+  --public-skeleton-base: #ecebe7;
+  --public-skeleton-sheen: #f7f4ee;
+  --public-header-border: rgba(22, 44, 54, 0.1);
+  --public-header-bg: rgba(255, 253, 249, 0.95);
+  --public-scrim: rgba(4, 29, 40, 0.55);
+  --public-drawer-shadow-color: rgba(4, 29, 40, 0.2);
+  --public-bar-shadow-color: rgba(22, 44, 54, 0.05);
+  --public-focus-ring: #f1b7d0;
+  /*
+   * Literals the ported design system would otherwise hardcode. Names come from
+   * the most specific class that uses each value; --public-on-dark-NN and
+   * --public-overlay-NN are one shared alpha scale for text and scrims over dark
+   * bands, used across the home, guide and story-hub surfaces.
+   */
+  --public-active-chips: #cf9eb4;
+  --public-adoption-guide-hero: rgba(166, 28, 86, 0.1);
+  --public-adoption-guide-hero-2: rgba(5, 100, 142, 0.13);
+  --public-adoption-guide-hero-photo: rgba(3, 46, 66, 0.86);
+  --public-adoption-guide-toc: rgba(3, 74, 105, 0.16);
+  --public-article-demo-note: #d4a95e;
+  --public-article-demo-note-2: #fff8e9;
+  --public-article-demo-note-3: #624719;
+  --public-candidate-bridge: rgba(166, 28, 86, 0.08);
+  --public-candidate-page-header: rgba(5, 100, 142, 0.12);
+  --public-content-card: #8ca8b3;
+  --public-detail-image-fallback: rgba(166, 28, 86, 0.16);
+  --public-detail-image-fallback-2: #eaf6fa;
+  --public-detail-image-fallback-3: #f8f1e8;
+  --public-drawer-close: #aab9bf;
+  --public-eyebrow-light: #a8deef;
+  --public-handoff-actions: #b8e8f6;
+  --public-home-hero: rgba(5, 100, 142, 0.15);
+  --public-on-dark-10: rgba(255, 255, 255, 0.1);
+  --public-on-dark-12: rgba(255, 255, 255, 0.12);
+  --public-on-dark-13: rgba(255, 255, 255, 0.13);
+  --public-on-dark-14: rgba(255, 255, 255, 0.14);
+  --public-on-dark-16: rgba(255, 255, 255, 0.16);
+  --public-on-dark-18: rgba(255, 255, 255, 0.18);
+  --public-on-dark-20: rgba(255, 255, 255, 0.2);
+  --public-on-dark-22: rgba(255, 255, 255, 0.22);
+  --public-on-dark-25: rgba(255, 255, 255, 0.25);
+  --public-on-dark-26: rgba(255, 255, 255, 0.26);
+  --public-on-dark-45: rgba(255, 255, 255, 0.45);
+  --public-on-dark-52: rgba(255, 255, 255, 0.52);
+  --public-on-dark-6: rgba(255, 255, 255, 0.06);
+  --public-on-dark-60: rgba(255, 255, 255, 0.6);
+  --public-on-dark-62: rgba(255, 255, 255, 0.62);
+  --public-on-dark-68: rgba(255, 255, 255, 0.68);
+  --public-on-dark-7: rgba(255, 255, 255, 0.07);
+  --public-on-dark-70: rgba(255, 255, 255, 0.7);
+  --public-on-dark-72: rgba(255, 255, 255, 0.72);
+  --public-on-dark-75: rgba(255, 255, 255, 0.75);
+  --public-on-dark-76: rgba(255, 255, 255, 0.76);
+  --public-on-dark-78: rgba(255, 255, 255, 0.78);
+  --public-on-dark-80: rgba(255, 255, 255, 0.8);
+  --public-on-dark-82: rgba(255, 255, 255, 0.82);
+  --public-on-dark-88: rgba(255, 255, 255, 0.88);
+  --public-on-dark-90: rgba(255, 255, 255, 0.9);
+  --public-on-dark-92: rgba(255, 255, 255, 0.92);
+  --public-overlay-14: rgba(0, 0, 0, 0.14);
+  --public-overlay-25: rgba(0, 0, 0, 0.25);
+  --public-page-hero: rgba(5, 100, 142, 0.08);
+  --public-promotion-center-section: rgba(166, 28, 86, 0.28);
+  --public-review-notice: #d7b2c2;
+  --public-review-notice-2: #fff7fa;
+  --public-review-notice-3: #633248;
+  --public-skeleton-copy: #edf0ed;
+  --public-skeleton-copy-2: #f8f8f5;
+  --public-status-live: #e2f4ed;
+  --public-story-case-placeholder-status-medical-care: #f7e8ee;
+  --public-story-case-placeholder-status-sponsor-needed: #f6ead8;
+  --public-story-case-placeholder-status-sponsor-needed-2: #7b5319;
+  --public-story-demo-notice: #edbfd2;
+  --public-story-hub-hero: rgba(168, 222, 239, 0.16);
+  --public-story-hub-hero-2: rgba(166, 28, 86, 0.26);
+  --public-story-hub-hero-3: rgba(3, 46, 66, 0.9);
+  --public-story-hub-stats: #b9e8f6;
+  --public-story-map-axis: #60727a;
+  --public-story-map-field: #eef5f4;
+  --public-story-map-gridline: #cbd9d7;
+  --public-story-map-marker: rgba(3, 74, 105, 0.25);
   --public-shadow-soft: 0 8px 24px rgba(15, 51, 65, 0.08);
   --public-shadow-raised: 0 24px 60px rgba(8, 52, 70, 0.14);
   color: var(--color-text);
@@ -168,6 +253,29 @@
   }
 }
 
+/*
+ * Skip link, ported from hkscdagpt app/globals.css L93-108.
+ *
+ * Deliberately NOT inside public.css: the link is rendered in <body>, outside
+ * .site-shell, and serves the admin surface too - scoping it would leave it
+ * unstyled everywhere.
+ */
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 200;
+  padding: 10px 16px;
+  border-radius: var(--public-radius-sm, 0.5rem);
+  background: var(--color-text);
+  color: var(--color-surface);
+  transform: translateY(-150%);
+  transition: transform 180ms ease;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+
 @utility container-wide {
   max-width: 1200px;
   margin-inline: auto;
@@ -225,8 +333,59 @@
   transform: translateY(-2px);
 }
 
+@utility btn-accent {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.375rem;
+  background: var(--color-secondary);
+  color: #fff;
+  padding: 0.75rem 1.25rem;
+  font-weight: 700;
+  transition: background-color 180ms ease;
+}
+.btn-accent:hover {
+  background: var(--color-secondary-hover);
+}
+
+@utility btn-light {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid var(--color-surface);
+  border-radius: 0.375rem;
+  background: var(--color-surface);
+  color: var(--color-primary);
+  padding: 0.75rem 1.25rem;
+  font-weight: 700;
+  transition: background-color 180ms ease;
+}
+.btn-light:hover {
+  background: var(--color-primary-highlight);
+}
+
+.site-shell .btn-accent,
+.site-shell .btn-light {
+  min-height: 48px;
+  border-radius: 9999px;
+  font-weight: 800;
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+.site-shell .btn-accent:hover,
+.site-shell .btn-light:hover {
+  transform: translateY(-2px);
+}
+
 .site-shell :focus-visible {
-  outline: 3px solid #f1b7d0;
+  outline: 3px solid var(--public-focus-ring);
   outline-offset: 3px;
 }
 

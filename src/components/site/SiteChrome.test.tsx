@@ -9,6 +9,8 @@ mock.module("@tanstack/react-router", () => ({
       {children}
     </a>
   ),
+  useRouterState: ({ select }: { select: (state: unknown) => unknown }) =>
+    select({ location: { pathname: "/" } }),
 }));
 
 describe("public site chrome", () => {
@@ -35,7 +37,7 @@ describe("public site chrome", () => {
 
     expect(markup).toContain("/brand/hkscda-logo-primary.jpg");
     expect(markup).toContain("91/14493");
-    expect(markup).toContain("年度報告");
+    expect(markup).toContain('href="/report/audit"');
     expect(markup).not.toContain("年度核數報告");
     expect(markup).not.toContain("🐾");
     expect(markup).not.toContain("pink-strip");
