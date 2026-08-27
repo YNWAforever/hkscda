@@ -51,3 +51,5 @@ data/.cf-state.json
 # Browser verification captures are local evidence; representative pairs live under docs/assets.
 artifacts/brand-redesign/*
 !artifacts/brand-redesign/.gitkeep
+# verify:brand writes here in CI (OUTPUT_DIR=artifacts/brand-ci)
+artifacts/brand-ci*/
