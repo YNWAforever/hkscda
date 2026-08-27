@@ -31,7 +31,7 @@ export function TransparencyBand() {
           <dl>
             <div>
               <dt>成立</dt>
-              <dd>2007 年 4 月 1 日</dd>
+              <dd>{brand.org.foundedLabel}</dd>
             </div>
             <div>
               <dt>慈善檔案</dt>

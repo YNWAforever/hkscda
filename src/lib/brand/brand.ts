@@ -20,6 +20,8 @@ export const brand = {
     email: "info@hkscda.com",
     phone: "9864 1089",
     phoneHref: "tel:+85298641089",
+    foundedLabel: "2007 年 4 月 1 日",
+    foundedYear: "2007",
   },
   social: {
     facebook: "https://www.facebook.com/HKSCDA",

@@ -59,8 +59,6 @@ const routesWithErrors = new Set();
 const asset404s = [];
 const assetTypes = new Set(["image", "stylesheet", "script", "font", "media"]);
 const allowedExternalHosts = new Set([
-  "fonts.googleapis.com",
-  "fonts.gstatic.com",
   "www.facebook.com",
   "www.instagram.com",
   "challenges.cloudflare.com",
