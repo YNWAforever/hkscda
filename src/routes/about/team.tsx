@@ -1,44 +1,65 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { PublicPageFrame } from "../../components/site/PublicPageFrame";
+import { PublicStateShell } from "../../components/site/PublicStateShell";
+import { brand } from "../../lib/brand/brand";
+
 export const Route = createFileRoute("/about/team")({
   head: () => ({
+    meta: [
+      { title: "團隊與管治 · 香港拯救貓狗協會 HKSCDA" },
+      {
+        name: "description",
+        content: "香港拯救貓狗協會的管治架構、義工團隊，以及聯絡團隊的方法。",
+      },
+    ],
     links: [{ rel: "canonical", href: "https://hkscda.vercel.app/about/team" }],
   }),
   component: TeamPage,
 });
 
+/**
+ * Defect G-09. The board section named two individuals and their offices in
+ * hardcoded page source. Those are real people and an accountability claim, and
+ * nothing in the repository establishes who approved the list or when it was last
+ * correct, so it is not published from source. BP-3 supplies governance records
+ * through the CMS with a review trail; until then the page states the structure
+ * without asserting unverified names.
+ */
 function TeamPage() {
   return (
-    <main className="max-w-3xl mx-auto px-4 py-12 space-y-10">
-      <h1 className="font-display text-3xl font-bold">團隊</h1>
-
-      <section className="space-y-4">
-        <h2 className="font-display text-xl font-bold">董事會</h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          {[
-            { role: "主席", name: "謝曉梅女士", desc: "帶領協會多年，致力推動香港動物福利發展。" },
-            { role: "名譽主席", name: "鄧殷女士", desc: "支持協會工作，積極推廣動物友善社區。" },
-          ].map(({ role, name, desc }) => (
-            <div key={name} className="border border-[var(--color-border)] p-6 space-y-2">
-              <div className="text-sm text-[var(--color-primary)] font-semibold">{role}</div>
-              <div className="font-display text-lg font-bold">{name}</div>
-              <p className="text-sm text-[var(--color-text-muted)]">{desc}</p>
-            </div>
-          ))}
+    <PublicPageFrame
+      eyebrow="關於協會"
+      title="團隊與管治"
+      description="協會由董事會監督，日常救援、照護與領養工作由職員及義工團隊執行。"
+      chapters={[
+        {
+          eyebrow: "義工團隊",
+          title: "日常救援與照護由義工支撐",
+          description:
+            "協會有一群熱心義工，定期參與餵飼、清潔貓舍狗舍、協助領養配對及活動籌辦等工作。",
+          bullets: ["餵飼與日常照護", "貓舍狗舍清潔", "領養配對協助", "活動籌辦與社區教育"],
+        },
+      ]}
+      cta={{
+        eyebrow: "加入我們",
+        title: "義工團隊長期歡迎新成員。",
+        description: "如有興趣參與，可先了解目前的義工崗位與安排。",
+        action: { label: "了解義工工作", to: "/volunteer" },
+      }}
+    >
+      <section className="section">
+        <div className="public-container">
+          <PublicStateShell
+            title="董事會名單暫未發佈"
+            description={
+              "管治名單會連同生效日期一併公開，核實前不會在此刊載。如需查詢協會管治安排，可電郵 " +
+              brand.org.email +
+              "。"
+            }
+          />
         </div>
       </section>
-
-      <section className="space-y-4">
-        <h2 className="font-display text-xl font-bold">義工團隊</h2>
-        <p className="text-[var(--color-text-muted)] leading-relaxed">
-          協會有一群熱心的義工，定期參與喂飼、清潔貓舍狗舍、協助領養配對及活動籌辦等工作。
-          如有興趣加入義工行列，歡迎電郵至{" "}
-          <a href="mailto:info@hkscda.com" className="text-[var(--color-primary)] underline">
-            info@hkscda.com
-          </a>{" "}
-          聯絡我們。
-        </p>
-      </section>
-    </main>
+    </PublicPageFrame>
   );
 }
