@@ -1,7 +1,7 @@
 import type { AgeFilter, Animal, GenderFilter } from "../../types/animal";
 import { parseAgeFilter } from "../../types/animal";
 
-export type PublicAnimalType = Extract<Animal["type"], "cat" | "dog">;
+export type PublicAnimalType = Extract<Animal["type"], "cat" | "dog" | "sponsor">;
 
 export interface PublicAnimalListingInput {
   animals: Animal[];

@@ -9,8 +9,8 @@ are shell and machine routes, listed separately below.
 
 ## Status at a glance
 
-- Routes reframed onto the ported design system: **5 of 27**
-- Routes still reading primary data in the browser: **2**
+- Routes reframed onto the ported design system: **8 of 27**
+- Routes still reading primary data in the browser: **0**
 - Content routes missing a canonical: **0**
 - Token routes correctly withholding a canonical: **3 of 3**
 - Token routes declaring noindex: **3 of 3**
@@ -27,7 +27,7 @@ are shell and machine routes, listed separately below.
 | `/adoption/instructions` | WP-4 | no | loader | no | yes |
 | `/adoption/apply` | WP-4 | no | static | no | yes |
 | `/adoption/status/$token` | WP-4 | no | static | no | correctly absent |
-| `/sponsors` | WP-5 | no | browser query | no | yes |
+| `/sponsors` | WP-5 | yes | loader | yes | yes |
 | `/sponsors/$id` | WP-5 | no | loader | yes | yes |
 | `/sponsors/pledge` | WP-5 | no | static | no | yes |
 | `/sponsors/status/$token` | WP-5 | no | static | no | correctly absent |
@@ -41,9 +41,9 @@ are shell and machine routes, listed separately below.
 | `/help` | WP-6 | no | static | no | yes |
 | `/report/adoption` | WP-6 | yes | static | yes | yes |
 | `/report/audit` | WP-6 | no | loader | yes | yes |
-| `/about` | WP-6 | no | browser query | no | yes |
-| `/about/cccp` | WP-6 | no | static | no | yes |
-| `/about/tnr` | WP-6 | no | static | no | yes |
+| `/about` | WP-6 | no | loader | no | yes |
+| `/about/cccp` | WP-6 | yes | static | no | yes |
+| `/about/tnr` | WP-6 | yes | static | no | yes |
 | `/about/team` | WP-6 | yes | static | yes | yes |
 | `/about/privacy` | WP-6 | no | static | no | yes |
 

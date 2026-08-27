@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   ArrowRight,
@@ -10,8 +9,8 @@ import {
   Syringe,
   Users,
 } from "lucide-react";
-import { supabase } from "../../lib/supabase";
-import { buildPublicImpact, type PublicImpactItem } from "../../lib/animals/publicImpact";
+import { type PublicImpactItem } from "../../lib/animals/publicImpact";
+import { getPublicImpactItems } from "../../lib/animals/publicImpact.functions";
 import { PublicPageHero } from "../../components/site/PublicPageHero";
 import { PublicStatusBadge } from "../../components/site/PublicStatusBadge";
 import { SectionHeading } from "../../components/site/SectionHeading";
@@ -21,48 +20,12 @@ export const Route = createFileRoute("/about/")({
   head: () => ({
     links: [{ rel: "canonical", href: "https://hkscda.vercel.app/about" }],
   }),
+  // Server rendered: the figures arrive with the first response rather than after
+  // a browser round trip, and the counting rules live in one projection shared
+  // with the home page instead of being restated here.
+  loader: () => getPublicImpactItems(),
   component: AboutPage,
 });
-
-type CountResult = {
-  count: number | null;
-  error: { message: string } | null;
-};
-
-async function countAnimal(
-  type: "cat" | "dog",
-  status: "available" | "adopted",
-): Promise<CountResult> {
-  const { count, error } = await supabase
-    .from("animals")
-    .select("id", { count: "exact", head: true })
-    .eq("type", type)
-    .eq("status", status);
-
-  return {
-    count: count ?? null,
-    error: error ? { message: error.message } : null,
-  };
-}
-
-async function getPublicImpact() {
-  const [availableCats, availableDogs, adoptedCats, adoptedDogs] = await Promise.all([
-    countAnimal("cat", "available"),
-    countAnimal("dog", "available"),
-    countAnimal("cat", "adopted"),
-    countAnimal("dog", "adopted"),
-  ]);
-
-  const verifiedCount = (result: CountResult) => (result.error ? null : result.count);
-
-  return buildPublicImpact({
-    availableCats: verifiedCount(availableCats),
-    availableDogs: verifiedCount(availableDogs),
-    adoptedCats: verifiedCount(adoptedCats),
-    adoptedDogs: verifiedCount(adoptedDogs),
-    asOf: new Date().toISOString(),
-  });
-}
 
 const journey = [
   {
@@ -115,13 +78,8 @@ const helpPaths = [
 ];
 
 export function AboutPage() {
-  const impact = useQuery({
-    queryKey: ["public", "about", "impact"],
-    queryFn: getPublicImpact,
-    staleTime: 5 * 60 * 1_000,
-  });
-
-  return <AboutContent impact={impact.data ?? []} />;
+  const { items } = Route.useLoaderData();
+  return <AboutContent impact={items} />;
 }
 
 export function AboutContent({ impact }: { impact: PublicImpactItem[] }) {
