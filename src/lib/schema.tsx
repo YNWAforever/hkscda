@@ -1,4 +1,5 @@
-const BASE_URL = "https://hkscda.vercel.app";
+const BASE_URL = PUBLIC_SITE_ORIGIN;
+import { PUBLIC_SITE_ORIGIN } from "./publicOrigin";
 
 const orgSchema = {
   "@context": "https://schema.org",

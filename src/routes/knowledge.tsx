@@ -1,4 +1,5 @@
 import { createFileRoute, useRouterState } from "@tanstack/react-router";
+import { publicUrl } from "@/lib/publicOrigin";
 import { resilientPublicLoader } from "../lib/routing/resilientLoader";
 import { PublicStateShell } from "../components/site/PublicStateShell";
 
@@ -16,7 +17,7 @@ export const Route = createFileRoute("/knowledge")({
         content: "HKSCDA adoption, pet care, insurance, and post-adoption guide resources.",
       },
     ],
-    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/knowledge" }],
+    links: [{ rel: "canonical", href: publicUrl("/knowledge") }],
   }),
   component: KnowledgePage,
 });

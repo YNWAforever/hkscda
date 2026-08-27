@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { publicUrl } from "@/lib/publicOrigin";
 import {
   BadgeCheck,
   Building,
@@ -58,7 +59,7 @@ export const Route = createFileRoute("/donate")({
       },
       { property: "og:type", content: "website" },
     ],
-    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/donate" }],
+    links: [{ rel: "canonical", href: publicUrl("/donate") }],
   }),
   component: DonateRoute,
 });

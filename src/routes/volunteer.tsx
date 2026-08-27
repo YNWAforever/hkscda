@@ -1,4 +1,5 @@
 import { createFileRoute, Outlet, useRouterState } from "@tanstack/react-router";
+import { publicUrl } from "@/lib/publicOrigin";
 import { CalendarDays, Cat, Dog, Heart, House, Scissors, UserPlus, Users } from "lucide-react";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
@@ -63,7 +64,7 @@ export const Route = createFileRoute("/volunteer")({
       },
       { property: "og:type", content: "website" },
     ],
-    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/volunteer" }],
+    links: [{ rel: "canonical", href: publicUrl("/volunteer") }],
   }),
   component: VolunteerPage,
 });

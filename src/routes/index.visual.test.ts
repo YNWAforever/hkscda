@@ -26,8 +26,14 @@ const homeModules = () =>
     .join("\n");
 
 describe("homepage review-safe presentation", () => {
-  test("uses the approved production canonical", () => {
-    expect(source()).toContain('href: "https://hkscda.vercel.app/"');
+  test("takes its canonical from the single public origin", () => {
+    // Origins used to be restated per route - main hardcoded hkscda.com in
+    // twenty-odd files, PR #60 rewrote them all to vercel.app. The value is
+    // decision D-1; what this pins is that the page does not restate it.
+    const homepage = source();
+    expect(homepage).toContain("publicUrl(");
+    expect(homepage).not.toContain("https://hkscda.com");
+    expect(homepage).not.toContain("https://hkscda.vercel.app");
   });
 
   test("does not render unverified testimonials, social metrics, or payment accounts", () => {

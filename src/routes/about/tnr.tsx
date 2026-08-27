@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { publicUrl } from "@/lib/publicOrigin";
 
 import { PublicPageFrame } from "../../components/site/PublicPageFrame";
 import { brand } from "../../lib/brand/brand";
@@ -13,7 +14,7 @@ export const Route = createFileRoute("/about/tnr")({
           "TNR 是管理社區流浪貓的人道方法：誘捕、絕育、原地放回，並配合持續照顧逐步減少繁殖壓力。",
       },
     ],
-    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/about/tnr" }],
+    links: [{ rel: "canonical", href: publicUrl("/about/tnr") }],
   }),
   component: TNRPage,
 });

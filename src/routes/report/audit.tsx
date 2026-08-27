@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { publicUrl } from "@/lib/publicOrigin";
 import { ExternalLink, FileText } from "lucide-react";
 import { ReportHeader } from "@/components/site/ReportHeader";
 import { loadPublishedAnnualReports } from "@/lib/documents/public.server";
@@ -21,7 +22,7 @@ export const Route = createFileRoute("/report/audit")({
       { property: "og:description", content: pageDescription },
       { property: "og:type", content: "website" },
     ],
-    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/report/audit" }],
+    links: [{ rel: "canonical", href: publicUrl("/report/audit") }],
   }),
   component: AnnualReportRoute,
 });

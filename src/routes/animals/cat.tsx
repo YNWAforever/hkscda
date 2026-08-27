@@ -1,4 +1,5 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { publicUrl } from "@/lib/publicOrigin";
 import { z } from "zod";
 
 import {
@@ -33,7 +34,7 @@ export const Route = createFileRoute("/animals/cat")({
       },
     }),
   head: () => ({
-    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/animals/cat" }],
+    links: [{ rel: "canonical", href: publicUrl("/animals/cat") }],
   }),
   pendingComponent: () => <AnimalListingPending species="cat" />,
   errorComponent: ListingError,

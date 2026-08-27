@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { PUBLIC_SITE_ORIGIN } from "@/lib/publicOrigin";
 
 import { AnimalDetail } from "../../components/site/AnimalDetail";
 import { PublicStateShell } from "../../components/site/PublicStateShell";
 import { Skeleton } from "../../components/ui/skeleton";
 import { getPublicAnimal } from "../../lib/animals/publicAnimal.functions";
 
-const ORIGIN = "https://hkscda.vercel.app";
+const ORIGIN = PUBLIC_SITE_ORIGIN;
 
 export const Route = createFileRoute("/animals/cat_/$id")({
   loader: ({ params }) => getPublicAnimal({ data: { id: params.id, type: "cat" } }),

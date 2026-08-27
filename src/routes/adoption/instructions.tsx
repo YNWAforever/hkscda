@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { publicUrl } from "@/lib/publicOrigin";
 import { resilientPublicLoader } from "../../lib/routing/resilientLoader";
 import { PublicStateShell } from "../../components/site/PublicStateShell";
 import * as Tabs from "@radix-ui/react-tabs";
@@ -12,7 +13,7 @@ const loadAdoptionInstructions = createAdoptionInstructionsLoader(() => getPubli
 export const Route = createFileRoute("/adoption/instructions")({
   loader: resilientPublicLoader(loadAdoptionInstructions),
   head: () => ({
-    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/adoption/instructions" }],
+    links: [{ rel: "canonical", href: publicUrl("/adoption/instructions") }],
   }),
   component: InstructionsPage,
 });

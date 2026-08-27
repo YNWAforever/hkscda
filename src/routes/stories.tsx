@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { publicUrl } from "@/lib/publicOrigin";
 import { resilientPublicLoader } from "../lib/routing/resilientLoader";
 import { PublicStateShell } from "../components/site/PublicStateShell";
 
@@ -30,7 +31,7 @@ const storiesHead = () => ({
     },
     { property: "og:type", content: "website" },
   ],
-  links: [{ rel: "canonical", href: "https://hkscda.vercel.app/stories" }],
+  links: [{ rel: "canonical", href: publicUrl("/stories") }],
 });
 
 export const Route = createFileRoute("/stories")({

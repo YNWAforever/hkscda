@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { publicUrl } from "@/lib/publicOrigin";
 
 import { GroupEnquiryForm } from "../../components/site/volunteer/GroupEnquiryForm";
 
@@ -11,7 +12,7 @@ export const Route = createFileRoute("/volunteer/group")({
         content: "本頁僅供註冊團體使用。提交團體義工工作坊、入校講座或貓狗舍教育參觀活動查詢。",
       },
     ],
-    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/volunteer/group" }],
+    links: [{ rel: "canonical", href: publicUrl("/volunteer/group") }],
   }),
   component: VolunteerGroupPage,
 });
