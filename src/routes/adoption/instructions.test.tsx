@@ -6,6 +6,11 @@ import { createAdoptionInstructionsLoader } from "../../lib/adoptionInformation/
 
 mock.module("@tanstack/react-router", () => ({
   createFileRoute: () => (options: unknown) => options,
+  Link: ({ children, to, ...props }: { children?: unknown; to: string }) => (
+    <a href={to} {...props}>
+      {children as never}
+    </a>
+  ),
 }));
 
 mock.module("../../lib/adoptionInformation/publicPage.functions", () => ({
@@ -125,9 +130,9 @@ describe("adoption instructions route", () => {
     }
     expect(markup.match(/aria-label="(?:狗隻|貓隻)領養費用"/g)).toHaveLength(2);
     expect(markup).toContain('scope="col"');
-    expect(markup).toContain(
-      "All prices subject to adjustment; HKSCDA reserves the right to amend.",
-    );
+    // Was an English-only disclaimer on an otherwise all-Chinese page (plan
+    // section 10); this is what it now reads.
+    expect(markup).toContain("以上費用如有調整，恕不另行通知；香港拯救貓狗協會保留最終決定權。");
     expect(markup).toContain("可養狗屋苑參考名單");
     expect(markup).toContain("以下名單僅供參考，請向屋苑管理處查詢最新規定。");
     expect(markup).toContain("海怡半島");

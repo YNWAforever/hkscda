@@ -4,6 +4,7 @@ import { resilientPublicLoader } from "../../lib/routing/resilientLoader";
 import { PublicStateShell } from "../../components/site/PublicStateShell";
 import * as Tabs from "@radix-ui/react-tabs";
 import { SectionHeading } from "../../components/site/SectionHeading";
+import { PublicPageFrame } from "../../components/site/PublicPageFrame";
 import { getPublicAdoptionPage } from "../../lib/adoptionInformation/publicPage.functions";
 import type { PublicAdoptionPageData } from "../../lib/adoptionInformation/publicPage.server";
 import { createAdoptionInstructionsLoader } from "../../lib/adoptionInformation/publicPage.loader";
@@ -143,82 +144,81 @@ function InstructionsPage() {
 
 export function AdoptionInstructionsContent({ data }: { data: PublicAdoptionPageData }) {
   return (
-    <main className="container-wide space-y-12 px-4 py-14 sm:px-6 lg:px-8">
-      <SectionHeading
-        as="h1"
-        eyebrow="領養準備"
-        title="領養需知"
-        description="了解申請、家訪和日常照護，為你和動物做好長期準備。"
-      />
+    <PublicPageFrame
+      eyebrow="領養準備"
+      title="領養需知"
+      description="了解申請、家訪和日常照護，為你和動物做好長期準備。"
+    >
+      <div className="public-container space-y-12 py-4">
+        <AdoptionInformationSections data={data} />
 
-      <AdoptionInformationSections data={data} />
+        <section className="space-y-4">
+          <h2 className="font-display text-xl font-bold">領養規則</h2>
+          <ol className="space-y-3">
+            {adoptionRules.map((rule, i) => (
+              <li key={i} className="flex gap-3 text-[var(--color-text-muted)]">
+                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--color-primary)] text-white text-xs flex items-center justify-center font-bold">
+                  {i + 1}
+                </span>
+                <span className="leading-relaxed">{rule}</span>
+              </li>
+            ))}
+          </ol>
+        </section>
 
-      <section className="space-y-4">
-        <h2 className="font-display text-xl font-bold">領養規則</h2>
-        <ol className="space-y-3">
-          {adoptionRules.map((rule, i) => (
-            <li key={i} className="flex gap-3 text-[var(--color-text-muted)]">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--color-primary)] text-white text-xs flex items-center justify-center font-bold">
-                {i + 1}
-              </span>
-              <span className="leading-relaxed">{rule}</span>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="font-display text-xl font-bold">養貓需知</h2>
-        <Tabs.Root defaultValue="home">
-          <Tabs.List className="flex flex-wrap gap-1 border-b border-[var(--color-border)] mb-4">
+        <section className="space-y-4">
+          <h2 className="font-display text-xl font-bold">養貓需知</h2>
+          <Tabs.Root defaultValue="home">
+            <Tabs.List className="flex flex-wrap gap-1 border-b border-[var(--color-border)] mb-4">
+              {catCareTopics.map((t) => (
+                <Tabs.Trigger
+                  key={t.value}
+                  value={t.value}
+                  className="min-h-11 px-3 py-2 text-sm rounded-t data-[state=active]:border-b-2 data-[state=active]:border-[var(--color-primary)] data-[state=active]:text-[var(--color-primary)] text-[var(--color-text-muted)]"
+                >
+                  {t.label}
+                </Tabs.Trigger>
+              ))}
+            </Tabs.List>
             {catCareTopics.map((t) => (
-              <Tabs.Trigger
+              <Tabs.Content
                 key={t.value}
                 value={t.value}
-                className="min-h-11 px-3 py-2 text-sm rounded-t data-[state=active]:border-b-2 data-[state=active]:border-[var(--color-primary)] data-[state=active]:text-[var(--color-primary)] text-[var(--color-text-muted)]"
+                className="text-[var(--color-text-muted)] leading-relaxed"
               >
-                {t.label}
-              </Tabs.Trigger>
+                {t.content}
+              </Tabs.Content>
             ))}
-          </Tabs.List>
-          {catCareTopics.map((t) => (
-            <Tabs.Content
-              key={t.value}
-              value={t.value}
-              className="text-[var(--color-text-muted)] leading-relaxed"
-            >
-              {t.content}
-            </Tabs.Content>
-          ))}
-        </Tabs.Root>
-      </section>
+          </Tabs.Root>
+        </section>
 
-      <section className="space-y-4">
-        <h2 className="font-display text-xl font-bold">養狗需知</h2>
-        <Tabs.Root defaultValue="home">
-          <Tabs.List className="flex flex-wrap gap-1 border-b border-[var(--color-border)] mb-4">
+        <section className="space-y-4">
+          <h2 className="font-display text-xl font-bold">養狗需知</h2>
+          <Tabs.Root defaultValue="home">
+            <Tabs.List className="flex flex-wrap gap-1 border-b border-[var(--color-border)] mb-4">
+              {dogCareTopics.map((t) => (
+                <Tabs.Trigger
+                  key={t.value}
+                  value={t.value}
+                  className="min-h-11 px-3 py-2 text-sm rounded-t data-[state=active]:border-b-2 data-[state=active]:border-[var(--color-secondary)] data-[state=active]:text-[var(--color-secondary)] text-[var(--color-text-muted)]"
+                >
+                  {t.label}
+                </Tabs.Trigger>
+              ))}
+            </Tabs.List>
             {dogCareTopics.map((t) => (
-              <Tabs.Trigger
+              <Tabs.Content
                 key={t.value}
                 value={t.value}
-                className="min-h-11 px-3 py-2 text-sm rounded-t data-[state=active]:border-b-2 data-[state=active]:border-[var(--color-secondary)] data-[state=active]:text-[var(--color-secondary)] text-[var(--color-text-muted)]"
+                className="text-[var(--color-text-muted)] leading-relaxed"
               >
-                {t.label}
-              </Tabs.Trigger>
+                {t.content}
+              </Tabs.Content>
             ))}
-          </Tabs.List>
-          {dogCareTopics.map((t) => (
-            <Tabs.Content
-              key={t.value}
-              value={t.value}
-              className="text-[var(--color-text-muted)] leading-relaxed"
-            >
-              {t.content}
-            </Tabs.Content>
-          ))}
-        </Tabs.Root>
-      </section>
-    </main>
+          </Tabs.Root>
+        </section>
+      </div>
+    </PublicPageFrame>
   );
 }
 function AdoptionInformationSections({ data }: { data: PublicAdoptionPageData }) {
@@ -233,7 +233,7 @@ function AdoptionInformationSections({ data }: { data: PublicAdoptionPageData })
           <FeeTable title="貓隻領養費用" fees={data.feesBySpecies.cat} />
         </div>
         <p className="text-sm text-[var(--color-text-muted)]">
-          All prices subject to adjustment; HKSCDA reserves the right to amend.
+          以上費用如有調整，恕不另行通知；香港拯救貓狗協會保留最終決定權。
         </p>
       </section>
 

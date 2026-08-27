@@ -210,9 +210,7 @@ function StatusContent({ status }: { status: PublicStatusSummary }) {
       <div className="container-wide">
         <header className="grid gap-5 rounded-lg border border-[var(--color-border)] bg-[var(--color-panel)] p-5 text-[var(--color-text-inverse)] shadow-panel md:grid-cols-[minmax(0,1fr)_260px] md:p-7">
           <div>
-            <p className="text-sm font-semibold text-[var(--color-secondary)]">
-              Adoption application status
-            </p>
+            <p className="text-sm font-semibold text-[var(--color-secondary)]">領養申請狀態</p>
             <h1 className="mt-2 text-3xl font-bold">領養申請已收到</h1>
             <p className="mt-3 max-w-2xl text-sm text-[var(--color-surface-offset-2)]">
               這頁只顯示申請摘要及下一步安排，不包含相片、詳細問卷或內部審批狀態。
@@ -220,7 +218,7 @@ function StatusContent({ status }: { status: PublicStatusSummary }) {
           </div>
           <div className="rounded-lg border border-[var(--color-secondary)] bg-[var(--color-panel-2)] p-4">
             <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-secondary)]">
-              Reference
+              參考編號
             </p>
             <p className="mt-1 font-display text-2xl font-bold">{status.reference}</p>
             <p className="mt-3 text-xs text-[var(--color-surface-offset-2)]">
@@ -238,9 +236,7 @@ function StatusContent({ status }: { status: PublicStatusSummary }) {
                   aria-hidden="true"
                 />
                 <div>
-                  <p className="text-sm font-semibold text-[var(--color-primary)]">
-                    Current public status
-                  </p>
+                  <p className="text-sm font-semibold text-[var(--color-primary)]">目前公開狀態</p>
                   <h2 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">
                     申請已進入義工跟進流程
                   </h2>

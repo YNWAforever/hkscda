@@ -200,9 +200,7 @@ function PledgeStatusContent({ status }: { status: PublicPledgeStatusSummary }) 
       <div className="container-wide">
         <header className="grid gap-5 rounded-lg border border-[var(--color-border)] bg-[var(--color-panel)] p-5 text-[var(--color-text-inverse)] shadow-panel md:grid-cols-[minmax(0,1fr)_260px] md:p-7">
           <div>
-            <p className="text-sm font-semibold text-[var(--color-secondary)]">
-              Sponsorship pledge status
-            </p>
+            <p className="text-sm font-semibold text-[var(--color-secondary)]">助養承諾狀態</p>
             <h1 className="mt-2 text-3xl font-bold">助養承諾已收到</h1>
             <p className="mt-3 max-w-2xl text-sm text-[var(--color-surface-offset-2)]">
               這頁只顯示助養摘要及狀態，不包含付款證明或內部審核資料。
@@ -210,7 +208,7 @@ function PledgeStatusContent({ status }: { status: PublicPledgeStatusSummary }) 
           </div>
           <div className="rounded-lg border border-[var(--color-secondary)] bg-[var(--color-panel-2)] p-4">
             <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-secondary)]">
-              Reference
+              參考編號
             </p>
             <p className="mt-1 font-display text-2xl font-bold">{status.reference}</p>
             <p className="mt-3 text-xs text-[var(--color-surface-offset-2)]">
@@ -225,9 +223,7 @@ function PledgeStatusContent({ status }: { status: PublicPledgeStatusSummary }) 
               <div className="flex items-start gap-3">
                 <div className="mt-1 shrink-0">{copy.icon}</div>
                 <div>
-                  <p className="text-sm font-semibold text-[var(--color-primary)]">
-                    Current status
-                  </p>
+                  <p className="text-sm font-semibold text-[var(--color-primary)]">目前狀態</p>
                   <h2 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">
                     {copy.title}
                   </h2>
