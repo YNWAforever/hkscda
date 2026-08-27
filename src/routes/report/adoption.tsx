@@ -1,25 +1,19 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { Cat, Dog, PawPrint, TrendingUp } from "lucide-react";
-import { supabase } from "@/lib/supabase";
-import { ReportHeader } from "@/components/site/ReportHeader";
-import { StatCard } from "@/components/site/StatCard";
-import { AdoptionChart } from "@/components/site/AdoptionChart";
-import { Skeleton } from "@/components/ui/skeleton";
-import { datasetSchema, renderJsonLd } from "@/lib/schema";
+import { createFileRoute } from "@tanstack/react-router";
+
+import { PublicPageFrame } from "../../components/site/PublicPageFrame";
+import { PublicStateShell } from "../../components/site/PublicStateShell";
 
 export const Route = createFileRoute("/report/adoption")({
   head: () => ({
     meta: [
-      { title: "每月領養報告 · 香港拯救貓狗協會 HKSCDA" },
+      { title: "領養工作成效 · 香港拯救貓狗協會 HKSCDA" },
       {
         name: "description",
         content:
-          "查看香港拯救貓狗協會每月貓狗領養數據、領養趨勢圖表及成功領養記錄。透明度報告定期更新。",
+          "香港拯救貓狗協會領養成效報告的統計口徑、資料截止日期與發佈安排。數據核實後於此公開。",
       },
-      { property: "og:title", content: "每月領養報告 · HKSCDA" },
-      { property: "og:description", content: "每月貓狗領養數據及趨勢圖表" },
+      { property: "og:title", content: "領養工作成效 · HKSCDA" },
+      { property: "og:description", content: "領養成效報告的統計口徑與發佈安排" },
       { property: "og:type", content: "website" },
     ],
     links: [{ rel: "canonical", href: "https://hkscda.vercel.app/report/adoption" }],
@@ -27,158 +21,58 @@ export const Route = createFileRoute("/report/adoption")({
   component: AdoptionReportPage,
 });
 
+/**
+ * Defect G-04 / blocker P0-05. This page read animals where status = adopted
+ * directly from the browser, but the anonymous policy exposes only available
+ * animals, so the query could only ever come back empty. The page then published
+ * a total of 0 adoptions as though it were a measured figure - on the one page
+ * whose purpose is transparency.
+ *
+ * Until BP-1 supplies a privacy-safe aggregate over successful_adoption, the page
+ * states that the figures are not published yet and explains the methodology it
+ * will publish them under. It does not show a zero, and it does not estimate.
+ * The dataset JSON-LD is withheld for the same reason: there is no dataset yet.
+ */
 function AdoptionReportPage() {
-  const [selectedMonth, setSelectedMonth] = useState("all");
-
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["adoption-report"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("animals")
-        .select("*")
-        .eq("status", "adopted")
-        .order("updated_at", { ascending: false });
-      if (error) throw error;
-      return data ?? [];
-    },
-  });
-
-  const animals = data ?? [];
-  const totalCats = animals.filter((a) => a.type === "cat").length;
-  const totalDogs = animals.filter((a) => a.type === "dog").length;
-  const totalAdopted = animals.length;
-
-  const months = Array.from(
-    new Set(
-      animals.map((a) => {
-        const d = new Date(a.updated_at ?? a.created_at ?? "");
-        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-      }),
-    ),
-  ).sort((a, b) => b.localeCompare(a));
-
-  const periodOptions = [
-    { value: "all", label: "全部時期" },
-    ...months.map((m) => ({
-      value: m,
-      label: m.replace("-", "年") + "月",
-    })),
-  ];
-
-  const schema = datasetSchema("HKSCDA 每月領養報告", "香港拯救貓狗協會每月貓狗領養數據統計");
-
   return (
-    <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
-      {renderJsonLd(schema)}
-
-      <nav className="text-sm text-[var(--color-text-muted)] mb-2" aria-label="麵包屑導航">
-        <Link to="/" className="hover:text-[var(--color-primary)] transition-colors">
-          主頁
-        </Link>
-        <span className="mx-2">/</span>
-        <span className="text-[var(--color-text)]">每月領養報告</span>
-      </nav>
-
-      <ReportHeader
-        title="每月領養報告"
-        subtitle="支持領養等於拯救生命，每隻成功領養的動物都是我們的驕傲"
-        periods={periodOptions}
-        selectedPeriod={selectedMonth}
-        onPeriodChange={setSelectedMonth}
-      />
-
-      {isError ? (
-        <p className="text-center py-16 text-[var(--color-text-muted)]">
-          載入領養數據時發生問題，請稍後再試。
-        </p>
-      ) : isLoading ? (
-        <div className="space-y-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-28 rounded-md" />
-            ))}
-          </div>
-          <Skeleton className="h-80 rounded-md" />
-          <Skeleton className="h-48 rounded-md" />
+    <PublicPageFrame
+      eyebrow="透明與問責"
+      title="領養工作成效"
+      description="我們公開領養成效的統計方式與資料來源。數據經核實後會連同截止日期一併發佈。"
+      chapters={[
+        {
+          eyebrow: "統計口徑",
+          title: "怎樣計算一次成功領養",
+          description:
+            "成效數據以已完成的領養記錄為準，並以核准日期歸入相應月份；未完成、已取消或仍在跟進的個案不會計入。",
+          bullets: [
+            "以核准日期歸入月份，不以資料更新時間計算",
+            "同一動物的重複記錄只計算一次",
+            "不公開任何可識別領養者身分的資料",
+          ],
+        },
+        {
+          eyebrow: "發佈安排",
+          title: "資料截止日期與更新頻率",
+          description:
+            "每次發佈都會標示資料截止日期與發佈日期，讓讀者知道數字對應的時間範圍；在未有核實數據前，本頁不會顯示零值或估算數字。",
+        },
+      ]}
+      cta={{
+        eyebrow: "查看其他公開資料",
+        title: "年報及審計報告已經公開。",
+        description: "如需了解協會的財務與工作紀錄，可先查閱已發佈的年報及審計報告。",
+        action: { label: "查看年報及審計", to: "/report/audit" },
+      }}
+    >
+      <section className="section">
+        <div className="public-container">
+          <PublicStateShell
+            title="暫未發佈"
+            description="領養成效數據仍在核實，因此本頁暫不顯示數字。我們不會以零值、舊數字或估算數字代替尚未核實的資料。"
+          />
         </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard
-              value={String(totalAdopted)}
-              label="成功領養"
-              icon={PawPrint}
-              color="var(--color-primary)"
-            />
-            <StatCard
-              value={String(totalCats)}
-              label="貓咪獲領養"
-              icon={Cat}
-              color="var(--color-chart-series-1)"
-            />
-            <StatCard
-              value={String(totalDogs)}
-              label="狗狗獲領養"
-              icon={Dog}
-              color="var(--color-chart-series-2)"
-            />
-            <StatCard
-              value={String(months.length)}
-              label="有記錄月份"
-              icon={TrendingUp}
-              color="var(--color-success)"
-            />
-          </div>
-
-          <AdoptionChart animals={animals} />
-
-          {animals.length > 0 && (
-            <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-md p-6">
-              <h2 className="font-display text-lg font-bold mb-4">最近獲領養動物</h2>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-[var(--color-divider)]">
-                      <th className="text-left p-3 font-medium text-[var(--color-text-muted)]">
-                        名稱
-                      </th>
-                      <th className="text-left p-3 font-medium text-[var(--color-text-muted)]">
-                        種類
-                      </th>
-                      <th className="text-left p-3 font-medium text-[var(--color-text-muted)]">
-                        性別
-                      </th>
-                      <th className="text-left p-3 font-medium text-[var(--color-text-muted)]">
-                        年齡
-                      </th>
-                      <th className="text-left p-3 font-medium text-[var(--color-text-muted)]">
-                        領養日期
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {animals.slice(0, 20).map((a) => (
-                      <tr key={a.id} className="border-b border-[var(--color-divider)]">
-                        <td className="p-3 font-medium">{a.name}</td>
-                        <td className="p-3 text-[var(--color-text-muted)]">
-                          {a.type === "cat" ? "貓" : "狗"}
-                        </td>
-                        <td className="p-3 text-[var(--color-text-muted)]">
-                          {a.gender === "male" ? "公" : "母"}
-                        </td>
-                        <td className="p-3 text-[var(--color-text-muted)]">{a.age}</td>
-                        <td className="p-3 text-[var(--color-text-muted)]">
-                          {a.updated_at ? new Date(a.updated_at).toLocaleDateString("zh-HK") : "-"}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-        </>
-      )}
-    </main>
+      </section>
+    </PublicPageFrame>
   );
 }
