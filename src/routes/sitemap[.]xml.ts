@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { PUBLIC_SITE_ORIGIN } from "@/lib/publicOrigin";
 
 import { loadPublicStoriesPage } from "../lib/content/publicStoriesPage.server";
 import { supabase } from "../lib/supabase";
 
-const PRODUCTION_ORIGIN = "https://hkscda.vercel.app";
+const PRODUCTION_ORIGIN = PUBLIC_SITE_ORIGIN;
 
 const staticPaths = [
   "/",

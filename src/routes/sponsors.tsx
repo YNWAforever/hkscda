@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { publicUrl } from "@/lib/publicOrigin";
 import { z } from "zod";
 
 import { AnimalGrid } from "../components/site/AnimalGrid";
@@ -25,7 +26,7 @@ export const Route = createFileRoute("/sponsors")({
       data: { page: deps.page, pageSize: PAGE_SIZE, ageFilter: deps.filter },
     }),
   head: () => ({
-    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/sponsors" }],
+    links: [{ rel: "canonical", href: publicUrl("/sponsors") }],
   }),
   pendingComponent: SponsorsPending,
   errorComponent: SponsorsError,

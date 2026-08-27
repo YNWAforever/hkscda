@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { publicUrl } from "@/lib/publicOrigin";
 import {
   ArrowRight,
   CheckCircle2,
@@ -18,7 +19,7 @@ import heroImg from "@/assets/dog-smiling.jpg";
 
 export const Route = createFileRoute("/about/")({
   head: () => ({
-    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/about" }],
+    links: [{ rel: "canonical", href: publicUrl("/about") }],
   }),
   // Server rendered: the figures arrive with the first response rather than after
   // a browser round trip, and the counting rules live in one projection shared

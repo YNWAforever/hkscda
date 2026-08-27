@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { PUBLIC_SITE_ORIGIN } from "@/lib/publicOrigin";
 
-const PRODUCTION_ORIGIN = "https://hkscda.vercel.app";
+const PRODUCTION_ORIGIN = PUBLIC_SITE_ORIGIN;
 
 export const Route = createFileRoute("/robots.txt")({
   server: {

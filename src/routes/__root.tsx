@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { publicUrl } from "@/lib/publicOrigin";
 import {
   Outlet,
   Link,
@@ -88,7 +89,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       {
         property: "og:image",
-        content: "https://hkscda.vercel.app/brand/hkscda-logo-primary.jpg",
+        content: publicUrl("/brand/hkscda-logo-primary.jpg"),
       },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "香港拯救貓狗協會 HKSCDA" },
@@ -98,7 +99,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       {
         name: "twitter:image",
-        content: "https://hkscda.vercel.app/brand/hkscda-logo-primary.jpg",
+        content: publicUrl("/brand/hkscda-logo-primary.jpg"),
       },
     ],
     links: [

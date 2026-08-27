@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { publicUrl } from "@/lib/publicOrigin";
 
 import { PublicPageFrame } from "../../components/site/PublicPageFrame";
 import { PublicStateShell } from "../../components/site/PublicStateShell";
@@ -16,7 +17,7 @@ export const Route = createFileRoute("/report/adoption")({
       { property: "og:description", content: "領養成效報告的統計口徑與發佈安排" },
       { property: "og:type", content: "website" },
     ],
-    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/report/adoption" }],
+    links: [{ rel: "canonical", href: publicUrl("/report/adoption") }],
   }),
   component: AdoptionReportPage,
 });

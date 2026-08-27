@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { publicUrl } from "@/lib/publicOrigin";
 import { ArrowRight, HelpCircle, Mail, MessageCircle } from "lucide-react";
 import { useState } from "react";
 
@@ -21,7 +22,7 @@ export const Route = createFileRoute("/help")({
         content: "HKSCDA 常見問題中心，解答助養、領養、捐款、報稅收據及聯絡職員問題。",
       },
     ],
-    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/help" }],
+    links: [{ rel: "canonical", href: publicUrl("/help") }],
   }),
   component: HelpPage,
 });

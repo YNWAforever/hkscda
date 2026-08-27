@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { publicUrl } from "@/lib/publicOrigin";
 
 export const Route = createFileRoute("/about/privacy")({
   head: () => ({
@@ -9,7 +10,7 @@ export const Route = createFileRoute("/about/privacy")({
         content: "香港拯救貓狗協會私隱聲明：說明我們如何收集、使用及保護您的個人資料。",
       },
     ],
-    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/about/privacy" }],
+    links: [{ rel: "canonical", href: publicUrl("/about/privacy") }],
   }),
   component: PrivacyPage,
 });

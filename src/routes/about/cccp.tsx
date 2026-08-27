@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { publicUrl } from "@/lib/publicOrigin";
 
 import { PublicPageFrame } from "../../components/site/PublicPageFrame";
 import { brand } from "../../lib/brand/brand";
@@ -13,7 +14,7 @@ export const Route = createFileRoute("/about/cccp")({
           "CCCP 是香港拯救貓狗協會的社區流浪貓管理計劃，透過義工訓練、日常照顧與絕育合作改善社區與貓隻的生活。",
       },
     ],
-    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/about/cccp" }],
+    links: [{ rel: "canonical", href: publicUrl("/about/cccp") }],
   }),
   component: CCCPPage,
 });

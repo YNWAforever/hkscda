@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { publicUrl } from "@/lib/publicOrigin";
 
 import { HomeHero } from "../components/site/home/HomeHero";
 import { FeaturedAnimals } from "../components/site/home/FeaturedAnimals";
@@ -63,7 +64,7 @@ export const Route = createFileRoute("/")({
       { property: "og:image", content: heroImg },
       { property: "og:type", content: "website" },
     ],
-    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/" }],
+    links: [{ rel: "canonical", href: publicUrl("/") }],
   }),
   component: Index,
 });

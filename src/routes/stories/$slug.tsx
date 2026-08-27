@@ -1,10 +1,11 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { PUBLIC_SITE_ORIGIN } from "@/lib/publicOrigin";
 
 import { PublicStateShell } from "../../components/site/PublicStateShell";
 import { StoryDetail } from "../../components/site/stories/StoryDetail";
 import { getPublicStory } from "../../lib/content/publicStory.functions";
 
-const ORIGIN = "https://hkscda.vercel.app";
+const ORIGIN = PUBLIC_SITE_ORIGIN;
 
 function absolutePublicUrl(value: string | null) {
   if (!value) return `${ORIGIN}/brand/hkscda-logo-primary.jpg`;

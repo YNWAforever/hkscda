@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { publicUrl } from "@/lib/publicOrigin";
 
 import { PublicPageFrame } from "../../components/site/PublicPageFrame";
 import { PublicStateShell } from "../../components/site/PublicStateShell";
@@ -13,7 +14,7 @@ export const Route = createFileRoute("/about/team")({
         content: "香港拯救貓狗協會的管治架構、義工團隊，以及聯絡團隊的方法。",
       },
     ],
-    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/about/team" }],
+    links: [{ rel: "canonical", href: publicUrl("/about/team") }],
   }),
   component: TeamPage,
 });
