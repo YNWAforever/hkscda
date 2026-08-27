@@ -1,12 +1,13 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
+@import "./styles/public.css";
 
 @theme {
   --brand-blue-official: #05648e;
   --brand-magenta-official: #a61c56;
-  --font-display: "Noto Sans HK", "PingFang HK", "Microsoft JhengHei", sans-serif;
-  --font-body: "Noto Sans HK", "PingFang HK", "Microsoft JhengHei", sans-serif;
+  --font-display: "Noto Sans HK", "PingFang HK", "Microsoft JhengHei", system-ui, sans-serif;
+  --font-body: "Noto Sans HK", "PingFang HK", "Microsoft JhengHei", system-ui, sans-serif;
 
   /* Stable aliases remain available while public components migrate. */
   --color-bg: #f7faf9;
@@ -80,11 +81,11 @@
   --color-text-faint: #788a91;
   --color-text-inverse: #ffffff;
   --color-primary: var(--brand-blue-official);
-  --color-primary-hover: #044f71;
+  --color-primary-hover: #034a69;
   --color-primary-active: #033b54;
   --color-primary-highlight: #e4f2f7;
   --color-secondary: var(--brand-magenta-official);
-  --color-secondary-hover: #861646;
+  --color-secondary-hover: #821442;
   --color-secondary-highlight: #f9e7ef;
   --color-success: #176f54;
   --color-success-highlight: #e2f4ed;
@@ -106,6 +107,16 @@
   --public-radius-sm: 0.5rem;
   --public-radius: 1rem;
   --public-radius-lg: 1.5rem;
+  --public-radius-pill: 999px;
+  /* Literals the ported design system would otherwise hardcode. */
+  --public-skeleton-base: #ecebe7;
+  --public-skeleton-sheen: #f7f4ee;
+  --public-header-border: rgba(22, 44, 54, 0.1);
+  --public-header-bg: rgba(255, 253, 249, 0.95);
+  --public-scrim: rgba(4, 29, 40, 0.55);
+  --public-drawer-shadow-color: rgba(4, 29, 40, 0.2);
+  --public-bar-shadow-color: rgba(22, 44, 54, 0.05);
+  --public-focus-ring: #f1b7d0;
   --public-shadow-soft: 0 8px 24px rgba(15, 51, 65, 0.08);
   --public-shadow-raised: 0 24px 60px rgba(8, 52, 70, 0.14);
   color: var(--color-text);
@@ -225,8 +236,59 @@
   transform: translateY(-2px);
 }
 
+@utility btn-accent {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.375rem;
+  background: var(--color-secondary);
+  color: #fff;
+  padding: 0.75rem 1.25rem;
+  font-weight: 700;
+  transition: background-color 180ms ease;
+}
+.btn-accent:hover {
+  background: var(--color-secondary-hover);
+}
+
+@utility btn-light {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid var(--color-surface);
+  border-radius: 0.375rem;
+  background: var(--color-surface);
+  color: var(--color-primary);
+  padding: 0.75rem 1.25rem;
+  font-weight: 700;
+  transition: background-color 180ms ease;
+}
+.btn-light:hover {
+  background: var(--color-primary-highlight);
+}
+
+.site-shell .btn-accent,
+.site-shell .btn-light {
+  min-height: 48px;
+  border-radius: 9999px;
+  font-weight: 800;
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+.site-shell .btn-accent:hover,
+.site-shell .btn-light:hover {
+  transform: translateY(-2px);
+}
+
 .site-shell :focus-visible {
-  outline: 3px solid #f1b7d0;
+  outline: 3px solid var(--public-focus-ring);
   outline-offset: 3px;
 }
 
