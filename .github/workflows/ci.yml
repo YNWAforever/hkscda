@@ -48,6 +48,12 @@ jobs:
           VITE_SUPABASE_URL: https://example.supabase.co
           VITE_SUPABASE_ANON_KEY: ci-placeholder-anon-key
 
+      # The build regenerates the route tree. If it differs from what was
+      # committed, the committed file was stale - the defect that made PR #60 fail
+      # typecheck on two routes that existed but were not registered.
+      - name: Route tree is current
+        run: git diff --exit-code -- src/routeTree.gen.ts
+
   # Separate job so the fast gate stays fast, and a browser sweep can never block
   # a typecheck fix. Non-blocking until it has been green on main twice; then it
   # becomes required (P0-12, tech lead).

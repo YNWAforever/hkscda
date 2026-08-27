@@ -4,7 +4,12 @@
   "buildCommand": "bun run build",
   "git": {
     "deploymentEnabled": {
-      "feat/public-layout-v2": false
+      "feat/public-layout-v2": false,
+      "feat/layout-*": false,
+      "chore/layout-*": false,
+      "fix/layout-*": false,
+      "ci/layout-*": false,
+      "docs/brand-reconciliation": false
     }
   }
 }

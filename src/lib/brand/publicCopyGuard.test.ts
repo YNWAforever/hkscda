@@ -22,6 +22,28 @@ const UNVERIFIED_ANNUAL_RESCUE = "\u6bcf\u5e74\u6551\u52a9\u8d85\u904e";
  */
 const RATE_CLAIM = /\u6bcf\s*\d+\s*(\u5206\u9418|\u5c0f\u6642|\u5929|\u65e5)/u;
 
+/** "\u6bcf\u6708 HK$100" - a sponsorship price the association has not published. */
+const UNVERIFIED_MONTHLY_AMOUNT = "\u6bcf\u6708 HK$100";
+
+/**
+ * Identifiers from the design source data layer and its cross-origin handoff.
+ * None may reach this codebase: after the merge every destination is same-origin,
+ * and the mock and review modes have no place in production source.
+ */
+const FORBIDDEN_IMPORTS = [
+  "G-XXXXXXXXXX",
+  "existingApp(",
+  "EXISTING_APP_ORIGIN",
+  "HKSCDA_BACKEND_ORIGIN",
+  "ENABLE_MOCK_DATA",
+  "CMS_READ_MODE",
+  "chatgpt.site",
+  "review-fallback",
+];
+
+/** Origins belong in one constant, never restated in a route (defect G-20). */
+const HARDCODED_ORIGINS = ["https://hkscda.com", "https://hkscda.vercel.app"];
+
 const DEPRECATED_TOKENS = [
   "btn-cta",
   "btn-navy",
@@ -67,7 +89,22 @@ describe("public brand migration", () => {
   test("carries no unverified impact claim", async () => {
     const { source } = await publicSource();
     expect(source).not.toContain(UNVERIFIED_ANNUAL_RESCUE);
+    expect(source).not.toContain(UNVERIFIED_MONTHLY_AMOUNT);
     expect(source).not.toMatch(RATE_CLAIM);
+  });
+
+  test("carries nothing from the design source data or handoff layer", async () => {
+    const { source } = await publicSource();
+    for (const token of FORBIDDEN_IMPORTS) {
+      expect(source).not.toContain(token);
+    }
+  });
+
+  test("restates no origin outside the shared constant", async () => {
+    const { source } = await publicSource();
+    for (const origin of HARDCODED_ORIGINS) {
+      expect(source).not.toContain(origin);
+    }
   });
 
   test("guard catches what it forbids", () => {
@@ -76,5 +113,6 @@ describe("public brand migration", () => {
     expect("\u6bcf14\u5206\u9418\u6551\u4e00\u96bb").toMatch(RATE_CLAIM);
     expect("\u6bcf 14 \u5206\u9418").toMatch(RATE_CLAIM);
     expect("\u6bcf\u5e74\u5e73\u5747").not.toMatch(RATE_CLAIM);
+    expect("\u652f\u6301" + UNVERIFIED_MONTHLY_AMOUNT).toContain(UNVERIFIED_MONTHLY_AMOUNT);
   });
 });

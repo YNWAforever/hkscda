@@ -15,7 +15,9 @@ export const getPublicStory = createServerFn({ method: "GET" })
     ]);
     const service = createContentService({
       repo: createSupabaseContentRepository(createSupabaseServiceClient()),
-      publicBaseUrl: process.env.APP_URL ?? "https://hkscda.vercel.app",
+      // Same default as the rest of the content module. A deployment hostname
+      // here would silently outlive decision D-1.
+      publicBaseUrl: process.env.APP_URL ?? "http://localhost:5173",
     });
     return service.getPublicContentBySlug(data.slug);
   });
