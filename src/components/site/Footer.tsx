@@ -8,7 +8,7 @@ import { brand } from "../../lib/brand/brand";
  * and merged with main's footer per plan section 4.1: the source's column layout,
  * with main's social links and registration line retained.
  *
- * The source's existingApp("/donate") cross-origin handoff becomes a router link.
+ * The source's cross-origin donate handoff becomes a router link.
  * Registration and contact details come from the brand constants so the footer and
  * the home trust panel cannot drift apart.
  *

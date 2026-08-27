@@ -2,8 +2,8 @@
  * Public navigation information architecture, ported from the hkscdagpt design
  * source (lib/site-links.ts @953ecba) per plan section 4.4.
  *
- * The source's existingApp()/EXISTING_APP_ORIGIN cross-origin handoff is dropped:
- * after the merge every destination is same-origin, so these are router links.
+ * The source's cross-origin handoff helpers are dropped: after the merge every
+ * destination is same-origin, so these are router links.
  *
  * Grouping only - no URL changes. Adopting this five-group IA over main's
  * seven-item bar is decision D-5, for which this is the plan's stated default.
