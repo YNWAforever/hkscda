@@ -23,7 +23,7 @@ export function HomeHero() {
             </Link>
           </div>
           <p className="trust-cue">
-            成立於 2007 年 · 香港註冊慈善機構 {brand.org.charityFileNumber}
+            成立於 {brand.org.foundedYear} 年 · 香港註冊慈善機構 {brand.org.charityFileNumber}
           </p>
         </div>
         <figure className="hero-photo">

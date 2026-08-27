@@ -19,15 +19,16 @@ describe("applySecurityHeaders", () => {
     expect(result.headers.get("Referrer-Policy")).toBe("strict-origin-when-cross-origin");
     expect(result.headers.get("Strict-Transport-Security")).toContain("max-age=");
     expect(result.headers.get("Permissions-Policy")).toContain("geolocation=()");
-    expect(result.headers.get("Content-Security-Policy-Report-Only")).toContain(
-      "frame-ancestors 'none'",
-    );
-    expect(result.headers.get("Content-Security-Policy-Report-Only")).toContain(
-      "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://maps.googleapis.com",
-    );
-    expect(result.headers.get("Content-Security-Policy-Report-Only")).toContain(
-      "connect-src 'self' https://*.supabase.co https://api.stripe.com https://www.google-analytics.com https://*.google-analytics.com https://maps.googleapis.com https://maps.gstatic.com",
-    );
+    // Enforcing, not report-only (BP-5).
+    const csp = result.headers.get("Content-Security-Policy");
+    expect(csp).toBeTruthy();
+    expect(result.headers.get("Content-Security-Policy-Report-Only")).toBeNull();
+    expect(csp).toContain("frame-ancestors 'none'");
+    expect(csp).toContain("https://www.googletagmanager.com");
+    expect(csp).toContain("https://maps.googleapis.com");
+    // Still reported, so an enforced block is visible rather than silent.
+    expect(csp).toContain("report-uri");
+    expect(csp).toContain("report-to");
   });
 
   test("preserves status, body, and existing headers", async () => {
@@ -53,17 +54,18 @@ describe("applySecurityHeaders", () => {
     expect(result.headers.get("X-Frame-Options")).toBe("SAMEORIGIN");
   });
 
-  test("ships CSP as Report-Only so it cannot break the app", () => {
-    expect(SECURITY_HEADERS["Content-Security-Policy-Report-Only"]).toBeDefined();
-    expect(SECURITY_HEADERS["Content-Security-Policy"]).toBeUndefined();
+  test("ships CSP enforcing", () => {
+    // Report-Only was the tuning phase. It ended when WP-1 self-hosted the fonts
+    // and removed the last third-party style and font origin.
+    expect(SECURITY_HEADERS["Content-Security-Policy"]).toBeDefined();
+    expect(SECURITY_HEADERS["Content-Security-Policy-Report-Only"]).toBeUndefined();
   });
 
-  test("routes violations to a collector so Report-Only produces data", () => {
-    const csp = SECURITY_HEADERS["Content-Security-Policy-Report-Only"]!;
+  test("routes violations to a collector so an enforced block is visible", () => {
+    const csp = SECURITY_HEADERS["Content-Security-Policy"]!;
 
-    // Without a reporting destination, Report-Only only writes to the console of
-    // whoever happens to have devtools open — there is nothing to tune the
-    // allow-list against before switching CSP to enforcing.
+    // Enforcing without reporting means a blocked resource fails silently for the
+    // visitor and leaves no trace for anyone else.
     expect(csp).toContain(`report-uri ${CSP_REPORT_PATH}`);
     expect(csp).toContain(`report-to ${CSP_REPORT_GROUP}`);
   });
@@ -88,5 +90,43 @@ describe("applySecurityHeaders", () => {
     );
     const match = routeSource.match(/createFileRoute\("([^"]+)"\)/);
     expect(match?.[1]).toBe(CSP_REPORT_PATH);
+  });
+});
+
+describe("the policy covers what the app actually loads", () => {
+  const csp = SECURITY_HEADERS["Content-Security-Policy"];
+
+  test("allows the Turnstile script and its iframe", () => {
+    // Report-Only hid this: Turnstile was never in the policy, and there was no
+    // frame-src at all. Enforcing without these breaks every gated public form.
+    const widget = readFileSync(
+      join(process.cwd(), "src/components/site/TurnstileWidget.tsx"),
+      "utf8",
+    );
+    expect(widget).toContain("https://challenges.cloudflare.com");
+
+    expect(csp).toContain("frame-src");
+    const frameSrc = csp.split("; ").find((d) => d.startsWith("frame-src"));
+    expect(frameSrc).toContain("https://challenges.cloudflare.com");
+    const scriptSrc = csp.split("; ").find((d) => d.startsWith("script-src"));
+    expect(scriptSrc).toContain("https://challenges.cloudflare.com");
+  });
+
+  test("allows the Google Maps loader", () => {
+    const loader = readFileSync(
+      join(process.cwd(), "src/components/site/stories/googleMapsLoader.ts"),
+      "utf8",
+    );
+    expect(loader).toContain("https://maps.googleapis.com");
+    const scriptSrc = csp.split("; ").find((d) => d.startsWith("script-src"));
+    expect(scriptSrc).toContain("https://maps.googleapis.com");
+  });
+
+  test("no longer allows third-party fonts or styles", () => {
+    // WP-1 self-hosted Noto Sans HK; nothing should reach Google Fonts.
+    expect(csp).not.toContain("fonts.googleapis.com");
+    expect(csp).not.toContain("fonts.gstatic.com");
+    const fontSrc = csp.split("; ").find((d) => d.startsWith("font-src"));
+    expect(fontSrc).toBe("font-src 'self' data:");
   });
 });
