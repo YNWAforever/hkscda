@@ -25,7 +25,15 @@ function parentLayoutRoute(file: string) {
 
 async function adminRouteFiles() {
   const paths = await Array.fromAsync(new Bun.Glob("src/routes/admin/**/*.tsx").scan("."));
-  return paths.filter((path) => !path.includes(".test.") && !path.includes("/-"));
+
+  // Bun.Glob yields platform separators, so on Windows these arrive as
+  // src\routes\admin\login.tsx. Every comparison that follows is written in
+  // POSIX form - the "/-" private-route filter here, PUBLIC_ADMIN_ROUTES, and
+  // parentLayoutRoute - so normalise once at the source rather than at each of
+  // them. Without this the suite passes on Linux CI and fails on a Windows clone.
+  return paths
+    .map((path) => path.split("\\").join("/"))
+    .filter((path) => !path.includes(".test.") && !path.includes("/-"));
 }
 
 describe("admin access coverage", () => {
