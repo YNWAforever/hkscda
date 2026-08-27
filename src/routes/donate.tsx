@@ -426,14 +426,14 @@ export function DonatePage({
                   <p className="font-bold text-[var(--color-panel)]">{brand.nameZh}</p>
                   <p>{brand.nameEn}</p>
                   <p>
-                    Approved charitable institution 91/14493. Donation purpose: food, medical care,
-                    desexing, and adoption work.
+                    香港註冊慈善機構 {brand.org.charityFileNumber}
+                    。捐款用於糧食、醫療、絕育及領養工作。
                   </p>
                   <a
                     className="font-semibold text-[var(--color-primary)] hover:underline"
-                    href="mailto:info@hkscda.com"
+                    href={`mailto:${brand.org.email}`}
                   >
-                    info@hkscda.com
+                    {brand.org.email}
                   </a>
                 </div>
               </div>

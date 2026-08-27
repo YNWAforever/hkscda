@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { type PublicImpactItem } from "../../lib/animals/publicImpact";
 import { getPublicImpactItems } from "../../lib/animals/publicImpact.functions";
-import { PublicPageHero } from "../../components/site/PublicPageHero";
+import { PublicPageFrame } from "../../components/site/PublicPageFrame";
 import { PublicStatusBadge } from "../../components/site/PublicStatusBadge";
 import { SectionHeading } from "../../components/site/SectionHeading";
 import heroImg from "@/assets/dog-smiling.jpg";
@@ -85,26 +85,17 @@ export function AboutPage() {
 
 export function AboutContent({ impact }: { impact: PublicImpactItem[] }) {
   return (
-    <main>
-      <PublicPageHero
-        eyebrow="香港本地動物救援慈善機構"
-        title="領養代替購買"
-        description="救援、醫療、絕育與負責任領養，以社區力量守護香港流浪貓狗。"
-        imageSrc={heroImg}
-        imageAlt="在協會犬舍外開心迎接訪客的獲救唐狗"
-        imageClassName="object-[50%_30%]"
-        actions={
-          <>
-            <a href="/animals/cat" className="btn-primary min-h-11 px-5">
-              查看待領養動物
-            </a>
-            <a href="/donate" className="btn-secondary min-h-11 px-5">
-              立即捐助
-            </a>
-          </>
-        }
-      />
-
+    <PublicPageFrame
+      eyebrow="香港本地動物救援慈善機構"
+      title="領養代替購買"
+      description="救援、醫療、絕育與負責任領養，以社區力量守護香港流浪貓狗。"
+      image={heroImg}
+      imageAlt="在協會犬舍外開心迎接訪客的獲救唐狗"
+      actions={[
+        { label: "查看待領養動物", to: "/animals/cat" },
+        { label: "立即捐助", to: "/donate" },
+      ]}
+    >
       <section className="container-wide px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
           <div>
@@ -270,6 +261,6 @@ export function AboutContent({ impact }: { impact: PublicImpactItem[] }) {
           查看待領養動物
         </a>
       </section>
-    </main>
+    </PublicPageFrame>
   );
 }

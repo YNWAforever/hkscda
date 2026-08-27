@@ -30,6 +30,7 @@ Branches off `main` that can be reviewed and merged on their own, in any order.
 | 12 | `fix/layout-wp0ab-guard-and-origin` | #11 | WP-0a/0b. The mojibake copy guard repaired, and every rendered origin routed through one constant (G-19, G-20). |
 | 13 | `chore/layout-wp0-completion` | #12 | Remaining WP-0 items: route-tree parity CI step, vercel.json branch exclusions, env contract, robots /api/. |
 | 14 | `feat/layout-wp1-bp5-hardening` | #13 | BP-5 CSP enforcing with the Turnstile gap closed, plus the WP-1 remnants and the shell isolation proof. |
+| 15 | `feat/layout-wp6-content-reframe` | #14 | WP-6 completion: knowledge, the annual report, about, privacy, help and the story hub reframed onto the shared page frame; three status pages, the instructions page, donate and volunteer had English-only or restated-inline content fixed. |
 
 ## Caveats a reviewer should know
 

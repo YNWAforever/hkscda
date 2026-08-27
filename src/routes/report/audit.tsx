@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { publicUrl } from "@/lib/publicOrigin";
 import { ExternalLink, FileText } from "lucide-react";
-import { ReportHeader } from "@/components/site/ReportHeader";
+import { PublicPageFrame } from "@/components/site/PublicPageFrame";
+import { brand } from "@/lib/brand/brand";
 import { loadPublishedAnnualReports } from "@/lib/documents/public.server";
 import { asContextFreeRouteLoader } from "@/lib/documents/routeLoaders.server";
 import { resilientPublicLoader } from "@/lib/routing/resilientLoader";
@@ -38,69 +39,71 @@ export function AnnualReportPage({ reports }: { reports: AnnualReport[] }) {
   const schema = datasetSchema("HKSCDA 年度報告", pageDescription);
 
   return (
-    <main className="mx-auto max-w-6xl space-y-8 px-4 py-8">
+    <PublicPageFrame eyebrow="透明與問責" title={pageTitle} description={pageDescription}>
       {renderJsonLd(schema)}
 
-      <nav className="mb-2 text-sm text-[var(--color-text-muted)]" aria-label="麵包屑導航">
-        <Link to="/" className="transition-colors hover:text-[var(--color-primary)]">
-          主頁
-        </Link>
-        <span className="mx-2">/</span>
-        <span className="text-[var(--color-text)]">年度報告</span>
-      </nav>
+      <section className="section">
+        <div className="public-container space-y-8">
+          <nav className="text-sm text-[var(--color-text-muted)]" aria-label="麵包屑導航">
+            <Link to="/" className="transition-colors hover:text-[var(--color-primary)]">
+              主頁
+            </Link>
+            <span className="mx-2">/</span>
+            <span className="text-[var(--color-text)]">年度報告</span>
+          </nav>
 
-      <ReportHeader title={pageTitle} subtitle={pageDescription} />
-
-      {availableReports.length > 0 ? (
-        <section aria-label="已發布年度報告" className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-          {availableReports.map((report) => (
-            <article
-              key={report.id}
-              className="flex min-h-64 flex-col border border-[var(--color-border)] bg-[var(--color-surface)] p-6"
-            >
-              <FileText
-                className="h-9 w-9 text-[var(--color-primary)]"
-                strokeWidth={1.7}
-                aria-hidden="true"
-              />
-              <p className="mt-6 text-xs font-bold uppercase text-[var(--color-text-muted)]">
-                {formatReportYearLabel(report.yearLabel)}
+          {availableReports.length > 0 ? (
+            <section aria-label="已發布年度報告" className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+              {availableReports.map((report) => (
+                <article
+                  key={report.id}
+                  className="flex min-h-64 flex-col border border-[var(--color-border)] bg-[var(--color-surface)] p-6"
+                >
+                  <FileText
+                    className="h-9 w-9 text-[var(--color-primary)]"
+                    strokeWidth={1.7}
+                    aria-hidden="true"
+                  />
+                  <p className="mt-6 text-xs font-bold uppercase text-[var(--color-text-muted)]">
+                    {formatReportYearLabel(report.yearLabel)}
+                  </p>
+                  <h2 className="mt-2 text-lg font-bold leading-snug text-[var(--color-text)]">
+                    {report.title}
+                  </h2>
+                  <p className="mt-3 text-sm text-[var(--color-text-muted)]">
+                    PDF · {formatFileSize(report.document.byteSize)}
+                  </p>
+                  <a
+                    aria-label={`查看 ${report.title}（在新分頁開啟） / View report in a new tab`}
+                    href={report.document.fileUrl!}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-primary mt-auto min-h-11 w-full"
+                  >
+                    查看報告 / View Report
+                    <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                  </a>
+                </article>
+              ))}
+            </section>
+          ) : (
+            <section className="border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-6">
+              <h2 className="text-lg font-bold">年度報告暫時未能提供</h2>
+              <p className="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]">
+                如需查詢，請電郵至{" "}
+                <a
+                  className="font-medium text-[var(--color-primary)] underline"
+                  href={`mailto:${brand.org.email}`}
+                >
+                  {brand.org.email}
+                </a>
+                。
               </p>
-              <h2 className="mt-2 text-lg font-bold leading-snug text-[var(--color-text)]">
-                {report.title}
-              </h2>
-              <p className="mt-3 text-sm text-[var(--color-text-muted)]">
-                PDF · {formatFileSize(report.document.byteSize)}
-              </p>
-              <a
-                aria-label={`查看 ${report.title}（在新分頁開啟） / View report in a new tab`}
-                href={report.document.fileUrl!}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary mt-auto min-h-11 w-full"
-              >
-                查看報告 / View Report
-                <ExternalLink className="h-4 w-4" aria-hidden="true" />
-              </a>
-            </article>
-          ))}
-        </section>
-      ) : (
-        <section className="border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-6">
-          <h2 className="text-lg font-bold">年度報告暫時未能提供</h2>
-          <p className="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]">
-            如需查詢，請電郵至{" "}
-            <a
-              className="font-medium text-[var(--color-primary)] underline"
-              href="mailto:info@hkscda.com"
-            >
-              info@hkscda.com
-            </a>
-            。
-          </p>
-        </section>
-      )}
-    </main>
+            </section>
+          )}
+        </div>
+      </section>
+    </PublicPageFrame>
   );
 }
 

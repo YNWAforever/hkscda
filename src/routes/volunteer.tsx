@@ -1,5 +1,6 @@
 import { createFileRoute, Outlet, useRouterState } from "@tanstack/react-router";
 import { publicUrl } from "@/lib/publicOrigin";
+import { brand } from "@/lib/brand/brand";
 import { CalendarDays, Cat, Dog, Heart, House, Scissors, UserPlus, Users } from "lucide-react";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
@@ -193,7 +194,7 @@ function VolunteerDirectoryPage() {
             >
               <p>{loadError}</p>
               <div className="mt-3 flex flex-wrap gap-2">
-                <a href="mailto:info@hkscda.com" className="btn-secondary min-h-11">
+                <a href={`mailto:${brand.org.email}`} className="btn-secondary min-h-11">
                   電郵聯絡職員
                 </a>
                 <a
@@ -210,7 +211,7 @@ function VolunteerDirectoryPage() {
             <div className="rounded-lg bg-[var(--color-surface-offset)] p-4 text-sm text-[var(--color-text-muted)]">
               <p>目前未有開放報名的義工活動。你仍可直接聯絡職員查詢之後的機會。</p>
               <div className="mt-3 flex flex-wrap gap-2">
-                <a href="mailto:info@hkscda.com" className="btn-secondary min-h-11">
+                <a href={`mailto:${brand.org.email}`} className="btn-secondary min-h-11">
                   電郵聯絡職員
                 </a>
                 <a
@@ -499,7 +500,7 @@ function VolunteerDirectoryPage() {
         <h2 className="font-display text-lg font-bold">如何加入？</h2>
         <div className="space-y-3 text-sm text-[var(--color-text-muted)]">
           {[
-            "透過電郵 info@hkscda.com 或 WhatsApp 9864 1089 聯絡我們，說明你想參與的義工崗位。",
+            `透過電郵 ${brand.org.email} 或 WhatsApp ${brand.org.phone} 聯絡我們，說明你想參與的義工崗位。`,
             "我們會安排一次簡短面談，了解你的背景、可付出的時間及期望。",
             "完成基本培訓後，即可開始義工服務。協會會為所有義工提供持續支援及指導。",
           ].map((text, i) => (

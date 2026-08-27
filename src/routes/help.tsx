@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { PublicPageFrame } from "../components/site/PublicPageFrame";
 import { publicUrl } from "@/lib/publicOrigin";
-import { ArrowRight, HelpCircle, Mail, MessageCircle } from "lucide-react";
+import { ArrowRight, Mail, MessageCircle } from "lucide-react";
 import { useState } from "react";
 
 import { FaqResultCard } from "../components/site/help/FaqResultCard";
@@ -159,26 +160,19 @@ function HelpPage() {
   const copy = pageCopy[language];
 
   return (
-    <main className="bg-[var(--color-background)]" lang={language === "en" ? "en" : "zh-Hant-HK"}>
+    <PublicPageFrame
+      eyebrow={copy.eyebrow}
+      title={copy.title}
+      description={copy.intro}
+      lang={language === "en" ? "en" : "zh-Hant-HK"}
+    >
       <section className="border-b border-[var(--color-border)] bg-[var(--color-surface-offset)]">
         <div className="container-wide py-10 lg:py-14">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-3xl space-y-4">
-              <div className="inline-flex items-center gap-2 rounded-full bg-[var(--color-primary-highlight)] px-3 py-1 text-xs font-bold text-[var(--color-primary)]">
-                <HelpCircle className="h-3.5 w-3.5" aria-hidden="true" />
-                {copy.eyebrow}
-              </div>
-              <div className="space-y-3">
-                <h1 className="font-display text-3xl font-bold leading-tight text-[var(--color-panel)] lg:text-5xl">
-                  {copy.title}
-                </h1>
-                <p className="max-w-[60ch] text-sm leading-7 text-[var(--color-text-muted)] lg:text-base">
-                  {copy.intro}
-                </p>
-                <p className="text-xs font-bold uppercase tracking-wide text-[var(--color-text-muted)]">
-                  {copy.summary(helpFaqs.length)}
-                </p>
-              </div>
+              <p className="text-xs font-bold uppercase tracking-wide text-[var(--color-text-muted)]">
+                {copy.summary(helpFaqs.length)}
+              </p>
             </div>
 
             <div className="inline-flex rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] p-1 text-xs font-bold">
@@ -294,6 +288,6 @@ function HelpPage() {
           </aside>
         </div>
       </section>
-    </main>
+    </PublicPageFrame>
   );
 }

@@ -46,22 +46,22 @@ export function StoryWall({ stories }: StoryWallProps) {
   const filteredStories = filterStoryCards(stories, { animalType, publicStatus, rescueRegion });
 
   return (
-    <section className="bg-[var(--color-surface)] px-4 py-10 sm:py-12">
-      <div className="container-wide space-y-6">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <div className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[var(--color-primary)]">
-              <Heart className="h-4 w-4" aria-hidden="true" />
-              Rescue Cases
-            </div>
-            <h1 className="font-display text-3xl font-bold leading-tight text-[var(--color-panel)] sm:text-4xl">
+    <>
+      <section className="page-hero">
+        <div className="public-container page-hero-grid">
+          <div className="page-hero-copy">
+            <p className="eyebrow">
+              <Heart className="mr-1 inline h-4 w-4" aria-hidden="true" />
               救援個案
-            </h1>
-            <p className="mt-2 max-w-[58ch] text-sm leading-7 text-[var(--color-text-muted)]">
-              追蹤正在康復、等待家庭或已展開新生活的貓狗故事。位置只顯示公開安全區域。
             </p>
+            <h1>正在康復、等待家庭的故事</h1>
+            <p>追蹤正在康復、等待家庭或已展開新生活的貓狗故事。位置只顯示公開安全區域。</p>
           </div>
+        </div>
+      </section>
 
+      <section className="bg-[var(--color-surface)] px-4 py-10 sm:py-12">
+        <div className="container-wide space-y-6">
           <div className="flex flex-wrap gap-2 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-2">
             <Filter className="mt-2 h-4 w-4 text-[var(--color-primary)]" aria-hidden="true" />
             <select
@@ -104,21 +104,21 @@ export function StoryWall({ stories }: StoryWallProps) {
               ))}
             </select>
           </div>
-        </div>
 
-        {filteredStories.length === 0 ? (
-          <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-8 text-center text-sm text-[var(--color-text-muted)]">
-            暫時未有符合篩選的公開救援故事。
-          </div>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredStories.map((story) => (
-              <StoryCard key={story.id} story={story} />
-            ))}
-          </div>
-        )}
-      </div>
-    </section>
+          {filteredStories.length === 0 ? (
+            <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-8 text-center text-sm text-[var(--color-text-muted)]">
+              暫時未有符合篩選的公開救援故事。
+            </div>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {filteredStories.map((story) => (
+                <StoryCard key={story.id} story={story} />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    </>
   );
 }
 

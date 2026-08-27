@@ -1,6 +1,16 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test, mock } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 import { AboutContent } from "./index";
+
+// AboutContent renders through PublicPageFrame, which uses router links.
+mock.module("@tanstack/react-router", () => ({
+  createFileRoute: () => (options: unknown) => options,
+  Link: ({ children, to, ...props }: { children?: unknown; to: string }) => (
+    <a href={to} {...props}>
+      {children as never}
+    </a>
+  ),
+}));
 
 describe("AboutContent", () => {
   test("renders the approved mission sequence without unverified legacy figures", () => {
