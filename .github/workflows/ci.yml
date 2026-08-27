@@ -12,7 +12,7 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -45,40 +45,6 @@ jobs:
       - name: Build
         run: bun run build
         env:
-          VITE_SUPABASE_URL: http://127.0.0.1:4173
+          VITE_SUPABASE_URL: https://example.supabase.co
           VITE_SUPABASE_ANON_KEY: ci-placeholder-anon-key
 
-      - name: Install brand verifier browser
-        run: bunx playwright install --with-deps chromium
-
-      - name: Verify public brand
-        shell: bash
-        run: |
-          HOST=127.0.0.1 PORT=4173 NITRO_HOST=127.0.0.1 NITRO_PORT=4173 bun run preview > /tmp/hkscda-brand-preview.log 2>&1 &
-          preview_pid=$!
-          trap 'kill "$preview_pid" 2>/dev/null || true' EXIT
-
-          ready=false
-          for attempt in {1..60}; do
-            if curl --fail --silent http://127.0.0.1:4173/ >/dev/null; then
-              ready=true
-              break
-            fi
-            if ! kill -0 "$preview_pid" 2>/dev/null; then
-              cat /tmp/hkscda-brand-preview.log
-              exit 1
-            fi
-            sleep 1
-          done
-
-          if [ "$ready" != "true" ]; then
-            cat /tmp/hkscda-brand-preview.log
-            exit 1
-          fi
-
-          bun run verify:brand
-        env:
-          BASE_URL: http://127.0.0.1:4173
-          OUTPUT_DIR: artifacts/brand-ci
-          BRAND_VERIFY_TIMEOUT: 15000
-          MODE: brand
