@@ -17,7 +17,16 @@ function absolutePublicUrl(value: string | null) {
 
 export const Route = createFileRoute("/stories/$slug")({
   loader: async ({ params }) => {
-    const content = await getPublicStory({ data: { slug: params.slug } });
+    let content;
+    try {
+      content = await getPublicStory({ data: { slug: params.slug } });
+    } catch (error) {
+      // Unreachable content store: degrade to the unavailable panel rather than
+      // returning 500 for the whole document (defect G-17).
+      console.error("Story detail read failed; rendering the unavailable state.", error);
+      return null;
+    }
+    // Genuinely absent, as opposed to unreadable: that is a 404.
     if (!content) throw notFound();
     return content;
   },
@@ -58,7 +67,9 @@ export const Route = createFileRoute("/stories/$slug")({
 });
 
 function StoryDetailPage() {
-  return <StoryDetail content={Route.useLoaderData()} />;
+  const content = Route.useLoaderData();
+  if (!content) return <StoryDetailError />;
+  return <StoryDetail content={content} />;
 }
 
 function StoryDetailPending() {

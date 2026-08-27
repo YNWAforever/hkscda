@@ -12,7 +12,7 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -45,8 +45,36 @@ jobs:
       - name: Build
         run: bun run build
         env:
-          VITE_SUPABASE_URL: http://127.0.0.1:4173
+          VITE_SUPABASE_URL: https://example.supabase.co
           VITE_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+
+  # Separate job so the fast gate stays fast, and a browser sweep can never block
+  # a typecheck fix. Non-blocking until it has been green on main twice; then it
+  # becomes required (P0-12, tech lead).
+  brand-verify:
+    runs-on: ubuntu-latest
+    needs: verify
+    timeout-minutes: 20
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - run: bun install --frozen-lockfile
+
+      # Point the app at the fixture rather than a name that does not resolve.
+      # With an unreachable host the verifier reports DNS failures on every page,
+      # which says nothing about the brand.
+      - name: Build against the fixture
+        run: bun run build
+        env:
+          VITE_SUPABASE_URL: http://127.0.0.1:54329
+          VITE_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+          SUPABASE_URL: http://127.0.0.1:54329
+          SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-service-role-key
 
       - name: Install brand verifier browser
         run: bunx playwright install --with-deps chromium
@@ -54,12 +82,14 @@ jobs:
       - name: Verify public brand
         shell: bash
         run: |
-          HOST=127.0.0.1 PORT=4173 NITRO_HOST=127.0.0.1 NITRO_PORT=4173 bun run preview > /tmp/hkscda-brand-preview.log 2>&1 &
+          node scripts/ci/supabase-fixture.mjs > /tmp/hkscda-fixture.log 2>&1 &
+          fixture_pid=$!
+          HOST=127.0.0.1 PORT=4173 NITRO_HOST=127.0.0.1 NITRO_PORT=4173             bun run preview > /tmp/hkscda-brand-preview.log 2>&1 &
           preview_pid=$!
-          trap 'kill "$preview_pid" 2>/dev/null || true' EXIT
+          trap 'kill "$preview_pid" "$fixture_pid" 2>/dev/null || true' EXIT
 
           ready=false
-          for attempt in {1..60}; do
+          for attempt in {1..120}; do
             if curl --fail --silent http://127.0.0.1:4173/ >/dev/null; then
               ready=true
               break
@@ -76,9 +106,23 @@ jobs:
             exit 1
           fi
 
+          curl --fail --silent "http://127.0.0.1:54329/rest/v1/animals?select=id&limit=1" >/dev/null || {
+            echo "fixture did not answer"
+            cat /tmp/hkscda-fixture.log
+            exit 1
+          }
+
           bun run verify:brand
         env:
           BASE_URL: http://127.0.0.1:4173
           OUTPUT_DIR: artifacts/brand-ci
           BRAND_VERIFY_TIMEOUT: 15000
           MODE: brand
+
+      - name: Upload brand artefacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: brand-ci
+          path: artifacts/brand-ci
+          if-no-files-found: ignore

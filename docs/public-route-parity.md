@@ -24,7 +24,7 @@ are shell and machine routes, listed separately below.
 | `/animals/dog` | WP-3 | yes | loader | yes | yes |
 | `/animals/cat/$id` | WP-3 | no | loader | yes | yes |
 | `/animals/dog/$id` | WP-3 | no | loader | yes | yes |
-| `/adoption/instructions` | WP-4 | no | loader | no | yes |
+| `/adoption/instructions` | WP-4 | no | loader | yes | yes |
 | `/adoption/apply` | WP-4 | no | static | no | yes |
 | `/adoption/status/$token` | WP-4 | no | static | no | correctly absent |
 | `/sponsors` | WP-5 | yes | loader | yes | yes |
@@ -37,7 +37,7 @@ are shell and machine routes, listed separately below.
 | `/volunteer/status/$token` | WP-5 | no | static | yes | correctly absent |
 | `/stories` | WP-6 | no | loader | yes | yes |
 | `/stories/$slug` | WP-6 | no | loader | yes | yes |
-| `/knowledge` | WP-6 | no | loader | no | yes |
+| `/knowledge` | WP-6 | no | loader | yes | yes |
 | `/help` | WP-6 | no | static | no | yes |
 | `/report/adoption` | WP-6 | yes | static | yes | yes |
 | `/report/audit` | WP-6 | no | loader | yes | yes |
@@ -93,3 +93,23 @@ Open by design; each belongs to work that has not run yet.
 - The brand verifier cannot pass in CI against an empty database: it discovers
   detail routes from listing pages, so with no rows it probes synthetic ids. That
   is a gate design decision, not a route defect.
+
+## Running the brand verifier locally
+
+The verifier fails on console errors and failed requests, so with no reachable
+Supabase it reports connectivity rather than brand. `scripts/ci/supabase-fixture.mjs`
+answers the PostgREST shapes the public pages issue, deterministically and
+read-only, so the sweep reports on layout and tokens instead.
+
+```bash
+VITE_SUPABASE_URL=http://127.0.0.1:54329 VITE_SUPABASE_ANON_KEY=ci-placeholder-anon-key \
+SUPABASE_URL=http://127.0.0.1:54329 SUPABASE_SERVICE_ROLE_KEY=ci-placeholder \
+  bun run build
+node scripts/ci/supabase-fixture.mjs &
+HOST=127.0.0.1 PORT=4173 NITRO_HOST=127.0.0.1 NITRO_PORT=4173 bun run preview &
+BASE_URL=http://127.0.0.1:4173 OUTPUT_DIR=artifacts/brand-ci MODE=brand \
+  BRAND_VERIFY_TIMEOUT=15000 bun run verify:brand
+```
+
+Set `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` to reuse an installed Chromium instead of
+downloading one. Expected output: `Verified 26 routes across 5 viewports in brand mode`.

@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { resilientPublicLoader } from "../lib/routing/resilientLoader";
+import { PublicStateShell } from "../components/site/PublicStateShell";
 
 import { RescueMap } from "../components/site/stories/RescueMap";
 import { StoryContentGrid } from "../components/site/stories/StoryContentGrid";
@@ -56,14 +57,21 @@ export function StoriesPageContent({ data }: { data: PublicStoriesPageData }) {
 }
 
 export function StoriesLoadError() {
+  // A page still needs exactly one h1 when it degrades. The previous panel was a
+  // bare paragraph, so an unavailable story library rendered a headingless
+  // document - which the brand verifier reports and screen readers land badly on.
   return (
-    <main className="mx-auto max-w-3xl px-4 py-12">
-      <p
+    <main>
+      <PublicStateShell
         role="alert"
-        className="rounded-md bg-[var(--color-surface-offset)] p-4 text-sm text-[var(--color-text-muted)]"
-      >
-        暫時未能載入故事，請稍後再試。
-      </p>
+        title="暫時未能載入故事"
+        description="系統未能取得救援故事，請稍後再試。"
+        action={
+          <a href="/stories" className="btn-primary min-h-11 px-5">
+            重新載入
+          </a>
+        }
+      />
     </main>
   );
 }

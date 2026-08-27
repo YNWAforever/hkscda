@@ -275,7 +275,7 @@ export function Header() {
                 <span className="sr-only">關閉選單</span>
               </button>
             </div>
-            <nav className="drawer-nav" aria-label="流動版主要選單">
+            <nav className="drawer-nav" aria-label="主選單">
               <Link
                 className="drawer-home"
                 to="/"
