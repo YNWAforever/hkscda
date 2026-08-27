@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { resilientPublicLoader } from "../lib/routing/resilientLoader";
 
 import { RescueMap } from "../components/site/stories/RescueMap";
 import { StoryContentGrid } from "../components/site/stories/StoryContentGrid";
@@ -32,14 +33,16 @@ const storiesHead = () => ({
 });
 
 export const Route = createFileRoute("/stories")({
-  loader: loadStories,
+  loader: resilientPublicLoader(loadStories),
   errorComponent: StoriesLoadError,
   head: storiesHead,
   component: StoriesPage,
 });
 
 function StoriesPage() {
-  return <StoriesPageContent data={Route.useLoaderData()} />;
+  const result = Route.useLoaderData();
+  if (result.status === "error") return <StoriesLoadError />;
+  return <StoriesPageContent data={result.data} />;
 }
 
 export function StoriesPageContent({ data }: { data: PublicStoriesPageData }) {

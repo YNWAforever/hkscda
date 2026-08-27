@@ -1,11 +1,13 @@
 import { createFileRoute, useRouterState } from "@tanstack/react-router";
+import { resilientPublicLoader } from "../lib/routing/resilientLoader";
+import { PublicStateShell } from "../components/site/PublicStateShell";
 
 import { KnowledgeGrid, KnowledgeGridSkeleton } from "../components/site/knowledge/KnowledgeGrid";
 import { getPublicKnowledgePage } from "../lib/knowledge/publicPage.functions";
 import type { KnowledgePost } from "../lib/knowledge/types";
 
 export const Route = createFileRoute("/knowledge")({
-  loader: () => getPublicKnowledgePage(),
+  loader: resilientPublicLoader(() => getPublicKnowledgePage()),
   head: () => ({
     meta: [
       { title: "知識資源 | HKSCDA" },
@@ -20,9 +22,25 @@ export const Route = createFileRoute("/knowledge")({
 });
 
 function KnowledgePage() {
-  const data = Route.useLoaderData();
+  const result = Route.useLoaderData();
   const isPending = useRouterState({ select: (state) => state.status === "pending" });
-  return <KnowledgePageView posts={data.posts} isPending={isPending} />;
+
+  if (result.status === "error") {
+    return (
+      <PublicStateShell
+        role="alert"
+        title="暫時未能載入飼養知識"
+        description="系統未能取得最新的知識內容，請稍後再試。"
+        action={
+          <a href="/knowledge" className="btn-primary min-h-11 px-5">
+            重新載入
+          </a>
+        }
+      />
+    );
+  }
+
+  return <KnowledgePageView posts={result.data.posts} isPending={isPending} />;
 }
 
 export function KnowledgePageView({

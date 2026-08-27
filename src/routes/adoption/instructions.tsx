@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { resilientPublicLoader } from "../../lib/routing/resilientLoader";
+import { PublicStateShell } from "../../components/site/PublicStateShell";
 import * as Tabs from "@radix-ui/react-tabs";
 import { SectionHeading } from "../../components/site/SectionHeading";
 import { getPublicAdoptionPage } from "../../lib/adoptionInformation/publicPage.functions";
@@ -8,7 +10,7 @@ import type { AdoptionFee } from "../../lib/adoptionInformation/types";
 
 const loadAdoptionInstructions = createAdoptionInstructionsLoader(() => getPublicAdoptionPage());
 export const Route = createFileRoute("/adoption/instructions")({
-  loader: loadAdoptionInstructions,
+  loader: resilientPublicLoader(loadAdoptionInstructions),
   head: () => ({
     links: [{ rel: "canonical", href: "https://hkscda.vercel.app/adoption/instructions" }],
   }),
@@ -120,7 +122,22 @@ const dogCareTopics = [
 ];
 
 function InstructionsPage() {
-  return <AdoptionInstructionsContent data={Route.useLoaderData()} />;
+  const result = Route.useLoaderData();
+  if (result.status === "error") {
+    return (
+      <PublicStateShell
+        role="alert"
+        title="暫時未能載入領養資訊"
+        description="系統未能取得最新的領養流程與費用資料，請稍後再試。"
+        action={
+          <a href="/adoption/instructions" className="btn-primary min-h-11 px-5">
+            重新載入
+          </a>
+        }
+      />
+    );
+  }
+  return <AdoptionInstructionsContent data={result.data} />;
 }
 
 export function AdoptionInstructionsContent({ data }: { data: PublicAdoptionPageData }) {
