@@ -10,7 +10,6 @@ const staticPaths = [
   "/animals/cat",
   "/animals/dog",
   "/adoption/instructions",
-  "/adoption/apply",
   "/sponsors",
   "/sponsors/pledge",
   "/donate",
