@@ -36,7 +36,18 @@ describe("public brand tokens", () => {
     const root = await Bun.file("src/routes/__root.tsx").text();
     expect(root).toContain('className="admin-shell min-h-dvh"');
     expect(root).toContain("<PublicFixedActionsProvider>");
-    expect(root).toContain("Noto+Sans+HK");
+    // The typeface is self-hosted now, so it is declared in fonts.css rather than
+    // requested from Google by __root. The identity assertion moves with it.
+    expect(root).not.toContain("fonts.googleapis.com");
     expect(root).not.toContain("Baloo+2");
+
+    const fonts = await Bun.file("src/styles/fonts.css").text();
+    expect(fonts).toContain("font-family: 'Noto Sans HK'");
+    expect(fonts).toContain("/fonts/noto-sans-hk/");
+    expect(fonts).not.toMatch(/Baloo/i);
+    // Every weight the app uses must resolve locally, including 500 (font-medium).
+    for (const weight of [300, 400, 500, 700, 900]) {
+      expect(fonts).toContain(`font-weight: ${weight};`);
+    }
   });
 });
