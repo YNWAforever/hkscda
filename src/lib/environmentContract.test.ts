@@ -48,4 +48,16 @@ describe("deployment environment contract", () => {
     expect(runbook).toContain("status refresh");
     expect(runbook).toContain("real sandbox smoke test");
   });
+
+  test("documents the public site origin and keeps it aligned with APP_URL", () => {
+    const example = readFileSync(join(process.cwd(), ".env.example"), "utf8");
+
+    expect(example).toContain("VITE_PUBLIC_SITE_ORIGIN=");
+
+    // Decision D-1 has to move both in one edit. A canonical that disagrees with
+    // the origin the app actually serves is worse than either value alone.
+    const read = (name: string) =>
+      example.match(new RegExp("^" + name + "=(.*)$", "m"))?.[1]?.trim();
+    expect(read("VITE_PUBLIC_SITE_ORIGIN")).toBe(read("APP_URL"));
+  });
 });

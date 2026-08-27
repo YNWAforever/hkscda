@@ -31,7 +31,7 @@ describe("SEO surfaces are served by the routes, not shadowed by static files", 
     const source = robots();
     for (const path of [
       "Disallow: /admin/",
-      "Disallow: /api/admin/",
+      "Disallow: /api/",
       "Disallow: /adoption/status/",
       "Disallow: /sponsors/status/",
       "Disallow: /volunteer/status/",

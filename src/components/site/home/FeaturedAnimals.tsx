@@ -5,9 +5,9 @@ import { PublicStateShell } from "../PublicStateShell";
 import type { Animal } from "../../../types/animal";
 
 /**
- * Ported from hkscdagpt app/page.tsx (featured-animals). The review-fallback
- * notice in the design source is dropped: this reads the live listing projection,
- * so an empty result is a real empty state rather than a review mode.
+ * Ported from hkscdagpt app/page.tsx (featured-animals). The design source shows a
+ * notice when it is serving stand-in data; that mode is not ported, so an empty
+ * result here is a real empty state.
  */
 export function FeaturedAnimals({ animals }: { animals: Animal[] }) {
   return (

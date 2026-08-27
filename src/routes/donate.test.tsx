@@ -56,7 +56,16 @@ test("renders the optional purpose note and language-aware wedding forms", async
   // Two wedding-form PDFs, plus the WhatsApp link in the checkout-unavailable panel
   // that renders whenever `checkoutEnabled` is false (the default for this render).
   const externalLinks = html.match(/target="_blank"/g) ?? [];
-  expect(externalLinks).toHaveLength(3);
+  // Named rather than counted: the two wedding forms and the WhatsApp fallback in
+  // the checkout-unavailable panel. A future link cannot silently pass by keeping
+  // a total right, and adding one does not break this test for no reason.
+  for (const href of [
+    "https://documents.example/wedding-zh.pdf",
+    "https://documents.example/wedding-en.pdf",
+    "https://wa.me/85298641089",
+  ]) {
+    expect(html).toContain(`href="${href}"`);
+  }
   // Every new-tab link must carry the opener guard.
   expect(html.match(/rel="noopener noreferrer"/g)).toHaveLength(externalLinks.length);
 
