@@ -76,10 +76,7 @@ export function AnimalDetail({ animal, backHref, backLabel }: AnimalDetailProps)
     >
       <div className="detail-gallery" aria-label={typeLabel + "相片：" + animal.name}>
         {animal.image_url ? (
-          <img
-            src={animal.image_url}
-            alt={"待領養" + typeLabel + "：" + animal.name}
-          />
+          <img src={animal.image_url} alt={"待領養" + typeLabel + "：" + animal.name} />
         ) : (
           <div className="detail-image-fallback flex flex-col items-center justify-center gap-3 p-8 text-center">
             <span className="flex h-28 w-28 items-center justify-center rounded-full bg-white text-[var(--color-primary)] shadow-soft">
