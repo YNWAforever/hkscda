@@ -179,6 +179,29 @@
   }
 }
 
+/*
+ * Skip link, ported from hkscdagpt app/globals.css L93-108.
+ *
+ * Deliberately NOT inside public.css: the link is rendered in <body>, outside
+ * .site-shell, and serves the admin surface too - scoping it would leave it
+ * unstyled everywhere.
+ */
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 200;
+  padding: 10px 16px;
+  border-radius: var(--public-radius-sm, 0.5rem);
+  background: var(--color-text);
+  color: var(--color-surface);
+  transform: translateY(-150%);
+  transition: transform 180ms ease;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+
 @utility container-wide {
   max-width: 1200px;
   margin-inline: auto;

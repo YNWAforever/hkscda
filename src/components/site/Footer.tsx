@@ -1,132 +1,107 @@
-import {
-  BadgeCheck,
-  Building2,
-  Facebook,
-  Instagram,
-  Mail,
-  ReceiptText,
-  Smartphone,
-} from "lucide-react";
-import { BrandLogo } from "./BrandLogo";
+import { Link } from "@tanstack/react-router";
 
+import { BrandLogo } from "./BrandLogo";
+import { brand } from "../../lib/brand/brand";
+
+/**
+ * Ported from the hkscdagpt design source (components/site-footer.tsx @953ecba)
+ * and merged with main's footer per plan section 4.1: the source's column layout,
+ * with main's social links and registration line retained.
+ *
+ * The source's existingApp("/donate") cross-origin handoff becomes a router link.
+ * Registration and contact details come from the brand constants so the footer and
+ * the home trust panel cannot drift apart.
+ *
+ * data-site-footer is required: the header's drawer marks it inert while open.
+ */
 export function Footer() {
   return (
-    <footer
-      id="contact"
-      className="border-t border-[var(--color-divider)] bg-[var(--color-footer-bg)] px-4 pt-14 text-[var(--color-text)] sm:px-6 lg:px-8"
-    >
-      <div className="container-wide grid gap-10 pb-10 md:grid-cols-4">
-        <div>
-          <BrandLogo className="h-16 w-16 rounded-[var(--public-radius-sm)] border border-[var(--color-divider)] bg-white p-1" />
-          <p className="mt-5 max-w-xs text-sm leading-relaxed text-[var(--color-text-muted)]">
-            「支持領養等於拯救生命」，為流浪貓狗提供糧食、醫療、絕育及領養服務的「不殺」機構。
-          </p>
-        </div>
-
-        <div>
-          <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-[var(--color-text)]">
-            聯絡我們
-          </h2>
-          <ul className="space-y-3 text-sm text-[var(--color-text-muted)]">
-            <li>
-              <a
-                href="mailto:info@hkscda.com"
-                className="public-footer-link flex min-h-11 items-center gap-2"
-              >
-                <Mail className="h-4 w-4 opacity-80" aria-hidden="true" /> info@hkscda.com
-              </a>
-            </li>
-            <li>
-              <a
-                href="tel:+85298641089"
-                className="public-footer-link flex min-h-11 items-center gap-2"
-              >
-                <Smartphone className="h-4 w-4 opacity-80" aria-hidden="true" /> WhatsApp / 電話：
-                9864 1089
-              </a>
-            </li>
-            <li className="flex min-h-11 items-center gap-2">
-              <BadgeCheck className="h-4 w-4 opacity-80" aria-hidden="true" /> 慈善牌照：91/14493
-            </li>
-            <li className="flex min-h-11 items-center gap-2">
-              <Building2 className="h-4 w-4 opacity-80" aria-hidden="true" /> 漁農署 ORG-00041
-            </li>
-            <li className="flex min-h-11 items-center gap-2">
-              <ReceiptText className="h-4 w-4 opacity-80" aria-hidden="true" /> IRD §88 免稅機構
-            </li>
-          </ul>
-        </div>
-
-        <div>
-          <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-[var(--color-text)]">
-            追蹤我們
-          </h2>
-          <div className="flex gap-3">
-            <a
-              href="https://www.facebook.com/HKSCDA"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-[var(--color-divider)] bg-[var(--color-surface)] text-[var(--color-primary)] hover:border-[var(--color-primary)] hover:bg-[var(--color-primary-highlight)]"
-              aria-label="Facebook 專頁"
-            >
-              <Facebook className="h-5 w-5" aria-hidden="true" />
-            </a>
-            <a
-              href="https://www.instagram.com/hkscda/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-[var(--color-divider)] bg-[var(--color-surface)] text-[var(--color-primary)] hover:border-[var(--color-primary)] hover:bg-[var(--color-primary-highlight)]"
-              aria-label="Instagram 專頁"
-            >
-              <Instagram className="h-5 w-5" aria-hidden="true" />
-            </a>
+    <footer className="site-footer" data-site-footer>
+      <div className="public-container footer-grid">
+        <div className="footer-brand">
+          <BrandLogo />
+          <div>
+            <strong>{brand.nameZh}</strong>
+            <p>以救援、醫療、絕育與負責任領養，守護香港流浪貓狗。</p>
           </div>
-          <p className="mt-5 max-w-xs text-xs leading-relaxed text-[var(--color-text-muted)]">
-            每月25日前提交退稅收條申請，正式收條於次月中發出。
-          </p>
         </div>
 
-        <div>
-          <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-[var(--color-text)]">
-            透明度
-          </h2>
-          <ul className="space-y-1 text-sm text-[var(--color-text-muted)]">
-            <li>
-              <a href="/report/adoption" className="public-footer-link flex min-h-11 items-center">
-                每月領養報告
-              </a>
-            </li>
-            <li>
-              <a href="/report/audit" className="public-footer-link flex min-h-11 items-center">
-                年度報告
-              </a>
-            </li>
-            <li>
-              <a href="/knowledge" className="public-footer-link flex min-h-11 items-center">
-                知識資源
-              </a>
-            </li>
-            <li>
-              <a href="/donate" className="public-footer-link flex min-h-11 items-center">
-                捐助我們
-              </a>
-            </li>
-            <li>
-              <a href="/volunteer" className="public-footer-link flex min-h-11 items-center">
-                加入義工團隊
-              </a>
-            </li>
-            <li>
-              <a href="/volunteer/group" className="public-footer-link flex min-h-11 items-center">
-                團體義工查詢
-              </a>
-            </li>
-          </ul>
+        <div className="footer-column">
+          <h2>立即行動</h2>
+          <Link to="/animals/cat" className="public-footer-link">
+            待領養貓隻
+          </Link>
+          <Link to="/animals/dog" className="public-footer-link">
+            待領養狗隻
+          </Link>
+          <Link to="/adoption/instructions" className="public-footer-link">
+            領養流程
+          </Link>
+          <Link to="/donate" className="public-footer-link">
+            安全捐助
+          </Link>
+          <Link to="/volunteer" className="public-footer-link">
+            成為義工
+          </Link>
+          <Link to="/volunteer/group" className="public-footer-link">
+            企業及團體參與
+          </Link>
+        </div>
+
+        <div className="footer-column">
+          <h2>資料與聯絡</h2>
+          <Link to="/report/adoption" className="public-footer-link">
+            每月領養報告
+          </Link>
+          <Link to="/report/audit" className="public-footer-link">
+            年報及審計報告
+          </Link>
+          <Link to="/knowledge" className="public-footer-link">
+            飼養知識
+          </Link>
+          <Link to="/help" className="public-footer-link">
+            求助及常見問題
+          </Link>
+          <a className="public-footer-link" href={`mailto:${brand.org.email}`}>
+            {brand.org.email}
+          </a>
+          <a className="public-footer-link" href={brand.org.phoneHref}>
+            {brand.org.phone}
+          </a>
+          <Link to="/about/privacy" className="public-footer-link">
+            私隱政策
+          </Link>
+        </div>
+
+        <div className="footer-column">
+          <h2>追蹤我們</h2>
+          <a
+            className="public-footer-link"
+            href={brand.social.facebook}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Facebook
+          </a>
+          <a
+            className="public-footer-link"
+            href={brand.social.instagram}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Instagram
+          </a>
         </div>
       </div>
-      <div className="container-wide flex flex-wrap justify-between gap-3 border-t border-[var(--color-divider)] py-6 text-xs text-[var(--color-text-muted)]">
-        <span>© 2007-{new Date().getFullYear()} HK Saving Cat And Dog Association Limited</span>
-        <span>支持領養 · 拯救生命</span>
+
+      <div className="public-container footer-bottom">
+        <span>
+          香港註冊慈善機構 · 檔案 {brand.org.charityFileNumber} · 漁農署{" "}
+          {brand.org.afcdLicenceNumber}
+        </span>
+        <span>
+          © {new Date().getFullYear()} {brand.acronym}
+        </span>
       </div>
     </footer>
   );

@@ -39,7 +39,16 @@
 
 .site-shell {
 
-  /* ---- ported from hkscdagpt app/globals.css L119-L296 (base: containers, sections, headings, buttons, links) ---- */
+  /* ---- ported from hkscdagpt app/globals.css L110-L296 (base: containers, sections, headings, buttons, links) ---- */
+  .public-container {
+    width: min(1200px, calc(100% - 48px));
+    margin-inline: auto;
+  }
+
+  .narrow-container {
+    max-width: 720px;
+  }
+
   .section {
     padding: 96px 0;
   }

@@ -9,6 +9,22 @@ export const brand = {
     width: 960,
     height: 960,
   },
+  /**
+   * Registration and contact details. Single source: the footer and the home
+   * trust panel must never state these independently, and they are operational
+   * facts the plan requires be stated once (section 9, WP-1).
+   */
+  org: {
+    charityFileNumber: "91/14493",
+    afcdLicenceNumber: "ORG-00041",
+    email: "info@hkscda.com",
+    phone: "9864 1089",
+    phoneHref: "tel:+85298641089",
+  },
+  social: {
+    facebook: "https://www.facebook.com/HKSCDA",
+    instagram: "https://www.instagram.com/hkscda/",
+  },
   colors: {
     blue: "#05648E",
     magenta: "#A61C56",

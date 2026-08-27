@@ -1,275 +1,341 @@
-import * as NavigationMenu from "@radix-ui/react-navigation-menu";
-import { Link } from "@tanstack/react-router";
-import { useState } from "react";
-import {
-  ChevronDown,
-  Facebook,
-  Heart,
-  Instagram,
-  Mail,
-  MapPin,
-  Menu,
-  Phone,
-  X,
-} from "lucide-react";
+import { Link, useRouterState } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
+
 import { BrandLogo } from "./BrandLogo";
-import { reportLinks } from "./reportNavigation";
+import { brand } from "../../lib/brand/brand";
+import { findCurrentNavigation, navGroups } from "./navigation";
 
-const aboutLinks = [
-  { to: "/about", label: "協會簡介", desc: "了解我們的使命與歷史" },
-  { to: "/about/cccp", label: "CCCP計劃", desc: "社區貓隻照顧計劃" },
-  { to: "/about/tnr", label: "TNR計劃", desc: "捕捉絕育放回行動" },
-  { to: "/about/team", label: "團隊", desc: "董事會及核心義工" },
-  { to: "/about/privacy", label: "私隱聲明", desc: "個人資料收集政策" },
-  { to: "/knowledge", label: "知識資源", desc: "領養及寵物照顧實用指南" },
-];
+const DESKTOP_QUERY = "(min-width: 1120px)";
 
-const adoptLinks = [
-  { to: "/adoption/instructions", label: "領養需知", desc: "申請流程及飼養指引" },
-  { to: "/animals/cat", label: "待領養貓貓", desc: "目前等待家園的貓咪" },
-  { to: "/animals/dog", label: "待領養狗狗", desc: "目前等待家園的狗狗" },
-];
-const volunteerLinks = [
-  { to: "/volunteer", label: "加入義工", desc: "了解個人義工服務" },
-  { to: "/volunteer/group", label: "團體義工", desc: "安排學校及團體活動" },
-];
+const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+function MenuIcon({ open }: { open: boolean }) {
+  return open ? (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M6 6l12 12M18 6 6 18" />
+    </svg>
+  ) : (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 7h16M4 12h16M4 17h16" />
+    </svg>
+  );
+}
+
+function ChevronIcon() {
+  return (
+    <svg className="menu-chevron" viewBox="0 0 16 16" aria-hidden="true">
+      <path d="m4 6 4 4 4-4" />
+    </svg>
+  );
+}
 
 export function Header() {
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const currentNavigation = findCurrentNavigation(pathname);
+  const currentGroupIndex = currentNavigation?.groupIndex ?? -1;
 
-  return (
-    <div className="public-site-header">
-      <div className="bg-[var(--color-panel)] text-[12px] text-white/85">
-        <div className="container-wide flex h-9 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-          <div className="flex min-w-0 items-center gap-5">
-            <a
-              href="tel:+85298641089"
-              className="hidden items-center gap-1.5 hover:text-white sm:flex"
-            >
-              <Phone className="h-3 w-3" aria-hidden="true" /> 9864 1089
-            </a>
-            <a
-              href="mailto:info@hkscda.com"
-              className="flex min-w-0 items-center gap-1.5 truncate hover:text-white"
-            >
-              <Mail className="h-3 w-3 shrink-0" aria-hidden="true" /> info@hkscda.com
-            </a>
-            <span className="hidden items-center gap-1.5 text-white/60 lg:flex">
-              <MapPin className="h-3 w-3" aria-hidden="true" /> 香港 · 服務全港十八區
-            </span>
-          </div>
-          <div className="flex items-center gap-1">
-            <a
-              href="https://www.facebook.com/HKSCDA"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Facebook"
-              className="flex h-9 w-9 items-center justify-center hover:bg-white/10"
-            >
-              <Facebook className="h-3.5 w-3.5" aria-hidden="true" />
-            </a>
-            <a
-              href="https://www.instagram.com/hkscda/"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Instagram"
-              className="flex h-9 w-9 items-center justify-center hover:bg-white/10"
-            >
-              <Instagram className="h-3.5 w-3.5" aria-hidden="true" />
-            </a>
-          </div>
-        </div>
-      </div>
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [desktopMenu, setDesktopMenu] = useState<number | null>(null);
+  const [mobileGroup, setMobileGroup] = useState(currentGroupIndex >= 0 ? currentGroupIndex : 0);
 
-      <header className="public-header-main relative border-b border-[var(--color-divider)]">
-        <div className="container-wide flex min-h-20 items-center gap-4 px-4 sm:px-6 lg:px-8">
-          <Link to="/" aria-label="香港拯救貓狗協會首頁" className="public-brand-link shrink-0">
-            <BrandLogo className="h-12 sm:h-14" eager />
-          </Link>
+  const brandRef = useRef<HTMLAnchorElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const desktopNavRef = useRef<HTMLElement>(null);
+  const desktopTriggerRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
-          <NavigationMenu.Root className="ml-auto hidden lg:flex" delayDuration={100}>
-            <NavigationMenu.List className="flex items-center gap-1">
-              <NavLink to="/">主頁</NavLink>
-              <NavDropdown trigger="關於協會" links={aboutLinks} />
-              <NavDropdown trigger="領養" links={adoptLinks} />
-              <NavLink to="/sponsors">助養區</NavLink>
-              <NavLink to="/stories">故事</NavLink>
-              <NavDropdown trigger="透明度" links={reportLinks} />
-              <NavDropdown trigger="加入義工" links={volunteerLinks} />
-              <NavigationMenu.Item className="ml-2">
-                <NavigationMenu.Link asChild>
-                  <Link to="/animals/cat" className="btn-primary min-h-11 px-4 text-[13px]">
-                    查看待領養動物
-                  </Link>
-                </NavigationMenu.Link>
-              </NavigationMenu.Item>
-              <NavigationMenu.Item>
-                <NavigationMenu.Link asChild>
-                  <Link to="/donate" className="btn-secondary min-h-11 px-4 text-[13px]">
-                    <Heart className="h-4 w-4" fill="currentColor" aria-hidden="true" /> 立即捐助
-                  </Link>
-                </NavigationMenu.Link>
-              </NavigationMenu.Item>
-            </NavigationMenu.List>
-          </NavigationMenu.Root>
+  // Crossing the desktop breakpoint tears down whichever menu belongs to the
+  // other layout, and carries focus with it so it never lands on a hidden node.
+  useEffect(() => {
+    const desktopViewport = window.matchMedia(DESKTOP_QUERY);
 
-          <button
-            type="button"
-            aria-label={mobileOpen ? "關閉選單" : "開啟選單"}
-            aria-expanded={mobileOpen}
-            aria-controls="mobile-nav"
-            onClick={() => setMobileOpen((open) => !open)}
-            className="ml-auto flex h-11 w-11 items-center justify-center rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-primary)] hover:bg-[var(--color-primary-highlight)] lg:hidden"
-          >
-            {mobileOpen ? (
-              <X className="h-5 w-5" aria-hidden="true" />
-            ) : (
-              <Menu className="h-5 w-5" aria-hidden="true" />
-            )}
-          </button>
-        </div>
+    function handleViewportChange(event: MediaQueryListEvent) {
+      const activeElement = document.activeElement;
+      if (event.matches) {
+        const focusNeedsTransfer =
+          activeElement === triggerRef.current ||
+          Boolean(drawerRef.current?.contains(activeElement));
+        setDrawerOpen(false);
+        if (focusNeedsTransfer) {
+          requestAnimationFrame(() => {
+            (desktopTriggerRefs.current[currentGroupIndex] ?? brandRef.current)?.focus();
+          });
+        }
+      } else {
+        const focusNeedsTransfer = Boolean(desktopNavRef.current?.contains(activeElement));
+        setDesktopMenu(null);
+        if (focusNeedsTransfer) requestAnimationFrame(() => triggerRef.current?.focus());
+      }
+    }
 
-        {mobileOpen ? (
-          <nav
-            id="mobile-nav"
-            aria-label="主選單"
-            className="public-mobile-nav border-t border-[var(--color-divider)] lg:hidden"
-          >
-            <div className="container-wide max-h-[calc(100vh-80px)] space-y-1 overflow-y-auto px-4 py-5 sm:px-6">
-              <MobileSheetLink to="/" setOpen={setMobileOpen}>
-                主頁
-              </MobileSheetLink>
-              <MobileSheetSection title="關於協會" links={aboutLinks} setOpen={setMobileOpen} />
-              <MobileSheetSection title="領養" links={adoptLinks} setOpen={setMobileOpen} />
-              <MobileSheetLink to="/sponsors" setOpen={setMobileOpen}>
-                助養區
-              </MobileSheetLink>
-              <MobileSheetLink to="/stories" setOpen={setMobileOpen}>
-                故事
-              </MobileSheetLink>
-              <MobileSheetSection title="透明度" links={reportLinks} setOpen={setMobileOpen} />
-              <MobileSheetSection title="加入義工" links={volunteerLinks} setOpen={setMobileOpen} />
-              <div className="grid gap-2 pt-3 sm:grid-cols-2">
-                <Link
-                  to="/animals/cat"
-                  onClick={() => setMobileOpen(false)}
-                  className="btn-primary min-h-11 w-full"
-                >
-                  查看待領養動物
-                </Link>
-                <Link
-                  to="/donate"
-                  onClick={() => setMobileOpen(false)}
-                  className="btn-secondary min-h-11 w-full"
-                >
-                  <Heart className="h-4 w-4" fill="currentColor" aria-hidden="true" /> 立即捐助
-                </Link>
-              </div>
-            </div>
-          </nav>
-        ) : null}
-      </header>
-    </div>
-  );
-}
+    desktopViewport.addEventListener("change", handleViewportChange);
+    return () => desktopViewport.removeEventListener("change", handleViewportChange);
+  }, [currentGroupIndex]);
 
-function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
-  return (
-    <NavigationMenu.Item>
-      <NavigationMenu.Link asChild>
-        <Link
-          to={to}
-          className="public-nav-link inline-flex min-h-11 items-center px-3 text-[13px] font-medium text-[var(--color-text-muted)]"
-        >
-          {children}
-        </Link>
-      </NavigationMenu.Link>
-    </NavigationMenu.Item>
-  );
-}
+  // Desktop popover: dismiss on outside pointer or Escape, returning focus to
+  // the trigger that opened it.
+  useEffect(() => {
+    if (desktopMenu === null) return;
 
-function NavDropdown({
-  trigger,
-  links,
-}: {
-  trigger: string;
-  links: { to: string; label: string; desc: string }[];
-}) {
-  return (
-    <NavigationMenu.Item className="relative">
-      <NavigationMenu.Trigger className="public-nav-trigger group/trigger inline-flex min-h-11 items-center gap-1 px-3 text-[13px] font-medium text-[var(--color-text-muted)]">
-        {trigger}
-        <ChevronDown
-          className="h-3 w-3 opacity-50 transition-transform group-data-[state=open]/trigger:rotate-180"
-          aria-hidden="true"
-        />
-      </NavigationMenu.Trigger>
-      <NavigationMenu.Content className="public-nav-dropdown absolute left-0 top-full z-50 mt-2 w-[260px] border border-[var(--color-border)] bg-[var(--color-surface)] p-2">
-        {links.map((link) => (
-          <NavigationMenu.Link key={link.to} asChild>
-            <Link
-              to={link.to}
-              className="block min-h-11 px-4 py-3 hover:bg-[var(--color-primary-highlight)]"
-            >
-              <div className="text-[13px] font-bold text-[var(--color-text)]">{link.label}</div>
-              <div className="mt-0.5 text-[11px] leading-tight text-[var(--color-text-muted)]">
-                {link.desc}
-              </div>
-            </Link>
-          </NavigationMenu.Link>
-        ))}
-      </NavigationMenu.Content>
-    </NavigationMenu.Item>
-  );
-}
+    function handlePointerDown(event: PointerEvent) {
+      if (!desktopNavRef.current?.contains(event.target as Node)) setDesktopMenu(null);
+    }
 
-function MobileSheetSection({
-  title,
-  links,
-  setOpen,
-}: {
-  title: string;
-  links: { to: string; label: string; desc: string }[];
-  setOpen: (value: boolean) => void;
-}) {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key !== "Escape") return;
+      const activeIndex = desktopMenu;
+      setDesktopMenu(null);
+      if (activeIndex !== null) desktopTriggerRefs.current[activeIndex]?.focus();
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [desktopMenu]);
+
+  // Mobile drawer: lock scroll without shifting layout, make the background
+  // inert to assistive tech, trap Tab, and restore focus on close.
+  useEffect(() => {
+    if (!drawerOpen) return;
+
+    const drawer = drawerRef.current;
+    const trigger = triggerRef.current;
+    const background = document.querySelectorAll<HTMLElement>(
+      ".site-header, [data-site-content], [data-site-footer]",
+    );
+    const previousOverflow = document.body.style.overflow;
+    const previousPaddingRight = document.body.style.paddingRight;
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+
+    document.body.style.overflow = "hidden";
+    if (scrollbarWidth > 0) document.body.style.paddingRight = `${scrollbarWidth}px`;
+    background.forEach((element) => element.setAttribute("inert", ""));
+
+    const focusable = () => Array.from(drawer?.querySelectorAll<HTMLElement>(FOCUSABLE) ?? []);
+    focusable()[0]?.focus();
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setDrawerOpen(false);
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const items = focusable();
+      if (items.length === 0) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+      document.body.style.paddingRight = previousPaddingRight;
+      background.forEach((element) => element.removeAttribute("inert"));
+      if (!window.matchMedia(DESKTOP_QUERY).matches) trigger?.focus();
+    };
+  }, [drawerOpen]);
+
   return (
     <>
-      <div className="px-4 pb-2 pt-4 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--color-text-muted)]">
-        {title}
-      </div>
-      {links.map((link) => (
-        <Link
-          key={link.to}
-          to={link.to}
-          onClick={() => setOpen(false)}
-          className="flex min-h-11 items-start gap-3 px-4 py-3 hover:bg-[var(--color-primary-highlight)]"
-        >
-          <div className="min-w-0 flex-1">
-            <div className="text-[15px] font-medium text-[var(--color-text)]">{link.label}</div>
-            <div className="mt-0.5 text-[12px] text-[var(--color-text-muted)]">{link.desc}</div>
-          </div>
-        </Link>
-      ))}
-    </>
-  );
-}
+      <header className="site-header">
+        <div className="header-shell">
+          <Link ref={brandRef} className="brand-lockup" to="/" aria-label={`${brand.nameZh}首頁`}>
+            <BrandLogo eager />
+            <span>
+              <strong>{brand.nameZh}</strong>
+              <small>{brand.acronym}</small>
+            </span>
+          </Link>
 
-function MobileSheetLink({
-  to,
-  setOpen,
-  children,
-}: {
-  to: string;
-  setOpen: (value: boolean) => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <Link
-      to={to}
-      onClick={() => setOpen(false)}
-      className="flex min-h-11 items-center gap-2.5 px-4 py-3 text-[15px] font-medium text-[var(--color-text)] hover:bg-[var(--color-primary-highlight)]"
-    >
-      {children}
-    </Link>
+          <nav
+            ref={desktopNavRef}
+            className="desktop-nav"
+            aria-label="主要選單"
+            onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                setDesktopMenu(null);
+              }
+            }}
+          >
+            {navGroups.map((group, index) => {
+              const expanded = desktopMenu === index;
+              const groupIsCurrent = currentGroupIndex === index;
+              return (
+                <div
+                  key={group.label}
+                  className={`nav-group${expanded ? " is-open" : ""}${groupIsCurrent ? " is-current" : ""}`}
+                >
+                  <button
+                    ref={(element) => {
+                      desktopTriggerRefs.current[index] = element;
+                    }}
+                    className="nav-group-trigger"
+                    type="button"
+                    aria-expanded={expanded}
+                    aria-controls={`desktop-menu-${index}`}
+                    onFocus={() => {
+                      if (desktopMenu !== null && desktopMenu !== index) setDesktopMenu(null);
+                    }}
+                    onClick={() => setDesktopMenu(expanded ? null : index)}
+                  >
+                    {group.label}
+                    <ChevronIcon />
+                  </button>
+                  {expanded ? (
+                    <div
+                      id={`desktop-menu-${index}`}
+                      className={`nav-popover${index >= navGroups.length - 2 ? " nav-popover-end" : ""}`}
+                      aria-label={`${group.label}子選單`}
+                    >
+                      {group.items.map((item) => (
+                        <Link
+                          key={item.to}
+                          to={item.to}
+                          aria-current={
+                            groupIsCurrent && currentNavigation?.to === item.to ? "page" : undefined
+                          }
+                          onClick={() => setDesktopMenu(null)}
+                        >
+                          <span>{item.label}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              );
+            })}
+          </nav>
+
+          <div className="header-actions">
+            {/* Adoption leads, donation follows: the association's positioning is
+                adopt-don't-buy, so the listing CTA precedes the donate CTA. */}
+            <Link className="button button-primary desktop-adopt" to="/animals/cat">
+              查看待領養動物
+            </Link>
+            <Link className="button button-accent desktop-donate" to="/donate">
+              立即捐助
+            </Link>
+            <button
+              ref={triggerRef}
+              className="menu-trigger"
+              type="button"
+              aria-expanded={drawerOpen}
+              aria-controls="mobile-drawer"
+              aria-label={drawerOpen ? "關閉選單" : "開啟選單"}
+              onClick={() => {
+                setDesktopMenu(null);
+                const nextOpen = !drawerOpen;
+                if (nextOpen) setMobileGroup(currentGroupIndex >= 0 ? currentGroupIndex : 0);
+                setDrawerOpen(nextOpen);
+              }}
+            >
+              <MenuIcon open={drawerOpen} />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {drawerOpen ? (
+        <div className="drawer-layer">
+          <button
+            type="button"
+            className="drawer-backdrop"
+            aria-label="關閉選單"
+            tabIndex={-1}
+            onClick={() => setDrawerOpen(false)}
+          />
+          <div
+            ref={drawerRef}
+            id="mobile-drawer"
+            className="mobile-drawer"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="drawer-title"
+          >
+            <div className="drawer-topline">
+              <div>
+                <strong id="drawer-title">網站選單</strong>
+                <small>{brand.nameZh}</small>
+              </div>
+              <button type="button" className="drawer-close" onClick={() => setDrawerOpen(false)}>
+                <MenuIcon open />
+                <span className="sr-only">關閉選單</span>
+              </button>
+            </div>
+            <nav className="drawer-nav" aria-label="流動版主要選單">
+              <Link
+                className="drawer-home"
+                to="/"
+                aria-current={pathname === "/" ? "page" : undefined}
+                onClick={() => setDrawerOpen(false)}
+              >
+                <span>首頁</span>
+                <span aria-hidden="true">→</span>
+              </Link>
+              {navGroups.map((group, index) => {
+                const expanded = mobileGroup === index;
+                const groupIsCurrent = currentGroupIndex === index;
+                return (
+                  <div
+                    key={group.label}
+                    className={`drawer-group${groupIsCurrent ? " is-current" : ""}`}
+                  >
+                    <button
+                      className="drawer-group-trigger"
+                      type="button"
+                      aria-expanded={expanded}
+                      aria-controls={`mobile-menu-${index}`}
+                      onClick={() => setMobileGroup(expanded ? -1 : index)}
+                    >
+                      <span>{group.label}</span>
+                      <ChevronIcon />
+                    </button>
+                    {expanded ? (
+                      <div id={`mobile-menu-${index}`} className="drawer-submenu">
+                        {group.items.map((item) => (
+                          <Link
+                            key={item.to}
+                            to={item.to}
+                            aria-current={
+                              groupIsCurrent && currentNavigation?.to === item.to
+                                ? "page"
+                                : undefined
+                            }
+                            onClick={() => setDrawerOpen(false)}
+                          >
+                            <span>{item.label}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              })}
+            </nav>
+            <div className="drawer-footer">
+              <Link className="button button-primary drawer-adopt" to="/animals/cat">
+                查看待領養動物
+              </Link>
+              <Link className="button button-accent drawer-donate" to="/donate">
+                立即捐助
+              </Link>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </>
   );
 }
