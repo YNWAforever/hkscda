@@ -9,7 +9,7 @@ are shell and machine routes, listed separately below.
 
 ## Status at a glance
 
-- Routes reframed onto the ported design system: **10 of 27**
+- Routes reframed onto the ported design system: **13 of 27**
 - Routes still reading primary data in the browser: **0**
 - Content routes missing a canonical: **0**
 - Token routes correctly withholding a canonical: **3 of 3**
@@ -38,14 +38,14 @@ are shell and machine routes, listed separately below.
 | `/stories` | WP-6 | no | loader | yes | yes |
 | `/stories/$slug` | WP-6 | no | loader | yes | yes |
 | `/knowledge` | WP-6 | yes | loader | yes | yes |
-| `/help` | WP-6 | no | static | no | yes |
+| `/help` | WP-6 | yes | static | no | yes |
 | `/report/adoption` | WP-6 | yes | static | yes | yes |
 | `/report/audit` | WP-6 | yes | loader | yes | yes |
-| `/about` | WP-6 | no | loader | no | yes |
+| `/about` | WP-6 | yes | loader | no | yes |
 | `/about/cccp` | WP-6 | yes | static | no | yes |
 | `/about/tnr` | WP-6 | yes | static | no | yes |
 | `/about/team` | WP-6 | yes | static | yes | yes |
-| `/about/privacy` | WP-6 | no | static | no | yes |
+| `/about/privacy` | WP-6 | yes | static | no | yes |
 
 ### Column meanings
 

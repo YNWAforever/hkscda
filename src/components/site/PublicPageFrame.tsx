@@ -61,6 +61,7 @@ export function PublicPageFrame({
   highlights = [],
   chapters = [],
   cta,
+  lang,
   children,
 }: {
   eyebrow: string;
@@ -72,10 +73,12 @@ export function PublicPageFrame({
   highlights?: PublicPageHighlight[];
   chapters?: PublicPageChapter[];
   cta?: PublicPageCta;
+  /** Set when a page serves a language other than the document default. */
+  lang?: string;
   children?: ReactNode;
 }) {
   return (
-    <main className="public-page">
+    <main className="public-page" lang={lang}>
       <section className="page-hero" aria-labelledby="page-title">
         <div className="public-container page-hero-grid">
           <div className="page-hero-copy">
