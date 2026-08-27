@@ -389,7 +389,10 @@ async function runReducedMotionCheck(browser, viewport) {
 
 await fs.mkdir(outputDir, { recursive: true });
 
-const browser = await chromium.launch();
+// Lets a developer run the verifier against an already-installed Chromium
+// instead of downloading one. Unset in CI, where playwright install provides it.
+const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined;
+const browser = await chromium.launch(executablePath ? { executablePath } : {});
 try {
   const discoveryPage = await browser.newPage();
   const detailRoutes = [

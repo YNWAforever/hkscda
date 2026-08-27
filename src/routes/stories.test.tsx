@@ -90,8 +90,17 @@ describe("stories route", () => {
     const visibleText = markup.replace(/<[^>]*>/g, "");
     const providerDetail = "SupabaseError: connection refused";
 
-    expect(visibleText).toBe("暫時未能載入故事，請稍後再試。");
+    // Intent unchanged: Traditional Chinese only, and never the provider's own
+    // words. The panel gained a heading and a retry action, so the assertion is
+    // on what the text may and may not contain rather than on one exact string.
+    expect(visibleText).toContain("暫時未能載入故事");
     expect(markup).not.toContain(providerDetail);
+    expect(markup).not.toContain("Supabase");
+    expect(visibleText).not.toMatch(/[A-Za-z]{4,}/);
+
+    // A degraded page still needs exactly one h1 - the previous panel had none.
+    expect(markup.match(/<h1/g) ?? []).toHaveLength(1);
+    expect(markup).toContain('role="alert"');
   });
 
   test("uses rescue-case metadata and medical donation actions", async () => {

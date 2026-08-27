@@ -51,6 +51,7 @@ function TeamPage() {
       <section className="section">
         <div className="public-container">
           <PublicStateShell
+            headingLevel={2}
             title="董事會名單暫未發佈"
             description={
               "管治名單會連同生效日期一併公開，核實前不會在此刊載。如需查詢協會管治安排，可電郵 " +

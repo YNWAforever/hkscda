@@ -68,6 +68,7 @@ function AdoptionReportPage() {
       <section className="section">
         <div className="public-container">
           <PublicStateShell
+            headingLevel={2}
             title="暫未發佈"
             description="領養成效數據仍在核實，因此本頁暫不顯示數字。我們不會以零值、舊數字或估算數字代替尚未核實的資料。"
           />
