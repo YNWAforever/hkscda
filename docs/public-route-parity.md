@@ -1,46 +1,95 @@
-# HKSCDA public route and state parity
+# Public route parity
 
-Audited against `YNWAforever/hkscda` at `8d717f5dbc7ab765bc8ebf3cf2e3be70c542a541`. The operational TanStack/Supabase application remains the source of truth. Stage A is the owner-only Sites review; Stage B is the non-deploying `feat/public-layout-v2` integration branch.
+Generated from the working tree by inspecting each route, not written by hand.
+Every column is read out of the route source, so this records what the code does
+rather than what the plan intends.
 
-Legend: `L` loading, `E0` empty/not found/withdrawn, `E!` recoverable error, `S` success. Every public data view must render all applicable states without silently substituting demo data.
+Scope: the 27 public routes. `__root`, `/robots.txt` and `/sitemap.xml`
+are shell and machine routes, listed separately below.
 
-| Route | Purpose | Current loader / data source | Existing action | Access / token | Required states | SEO / sharing | Stage A | Stage B integration |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `/` | Rescue, adoption and support entry | Static composition plus public animal/CMS summaries | Navigation only | Public | L, E0, E!, S per data module | Unique title/description, canonical, Organization/WebSite JSON-LD, absolute OG | Local seven-module page | Transfer shared presentation; preserve current reads and routes |
-| `/animals/cat` | Cat discovery | Public `animals` query, `species=cat`, `status=available` | Filters, pagination, shortlist | Public/RLS | L, E0, E!, S, page end | Canonical, ItemList; public images only | Local listing and safe handoff | Filter and stable-sort in database before pagination; keep shortlist |
-| `/animals/dog` | Dog discovery | Public `animals` query, `species=dog`, `status=available` | Filters, pagination, shortlist | Public/RLS | L, E0, E!, S, page end | Canonical, ItemList; public images only | Local listing and safe handoff | Same contract as cat listing |
-| `/animals/cat/$id` | Public cat profile | Public animal row by UUID; display only when available | Add/remove shortlist; begin adoption | Public/RLS | L, E0/withdrawn, E!, S | Record title/description/canonical/OG from public row | Local detail; application stays original | Preserve query and actions; move presentation only |
-| `/animals/dog/$id` | Public dog profile | Same as cat detail | Same as cat detail | Public/RLS | L, E0/withdrawn, E!, S | Record metadata and OG from public row | Local detail; application stays original | Same contract as cat detail |
-| `/adoption/instructions` | Approved adoption guide | Published adoption-guide CMS release | Continue to application | Public | L, E0, E!, S | Unique metadata and canonical | Local process summary and exact handoff | Preserve published-only CMS source |
-| `/adoption/apply` | Seven-step application | Existing wizard, local draft and public animal context | Upload up to six photos; Turnstile; submit application | Public form; no status token | Draft restore, validation errors, upload error, submit error, S | Canonical; never index draft/private values | Secure continuation only | Retain `ApplicationWizard`, validation, CAPTCHA, upload and API behavior |
-| `/adoption/status/$token` | Private application status | Token-scoped status API | Read-only status / allowed follow-up | Private capability token | L, invalid/expired, E!, S | `noindex,nofollow`; no canonical with token; analytics redaction | Original origin only | Keep same-origin; never log or expose token |
-| `/sponsors` | Select an animal to sponsor | Public available animals and sponsorship presentation | Shortlist/select candidate | Public | L, E0, E!, S | Unique metadata and canonical | Local programme page; selection handoff | Preserve shortlist and authoritative availability |
-| `/sponsors/$id` | Sponsorship animal detail | Public animal row by UUID | Select candidate / continue pledge | Public | L, E0/withdrawn, E!, S | Record metadata/OG from public row | Verification handoff; no invented record | Preserve row visibility and existing action |
-| `/sponsors/pledge` | Sponsorship pledge wizard | Existing tier/provider configuration and local draft | Proof upload / provider handoff / pledge submission | Public transactional form | Draft restore, validation/provider/upload/submit errors, S | Canonical; no private form values in analytics | Explainer and exact handoff | Retain `PledgeWizard` and payment behavior; remove hydration error only |
-| `/sponsors/status/$token` | Private pledge status | Token-scoped sponsorship API | Read-only status | Private capability token | L, invalid/expired, E!, S | `noindex,nofollow`; analytics redaction | Original origin only | Keep same-origin; never log or expose token |
-| `/donate` | Donation and receipt entry | Existing enabled-provider configuration and public documents | Existing sandbox/live provider handoff, receipt flow | Public transactional entry | Provider unavailable, validation/provider error, S | Unique metadata and canonical | Pre-donation page; no payment handling | Retain handlers/providers; show only verified enabled methods/details |
-| `/volunteer` | Individual opportunities and registration | `GET /api/volunteer/activities` | Turnstile/rate-limited registration POST | Public form | L, E0, E!, validation/submit error, S | Unique metadata and canonical | Local opportunities and form handoff | Fix invalid CTA; retain API, CAPTCHA and rate limit |
-| `/volunteer/group` | School/corporate enquiry | Public group-enquiry content | Validated group enquiry POST | Public form | Validation/submit error, S | Unique metadata and canonical | Local group page and form handoff | Preserve form contract and user-safe errors |
-| `/volunteer/status/$token` | Private registration status | Token-scoped volunteer API | Read-only status | Private capability token | L, invalid/expired, E!, S | `noindex,nofollow`; analytics redaction | Original origin only | Keep same-origin; never log or expose token |
-| `/stories` | Published rescue and programme archive | `getPublicStoriesPage`; published CMS items and public map points | Search/filter/open story | Public | L, E0, E!, S | Unique metadata, canonical; sitemap archive + published details | Local published-only archive | Preserve publish-state filtering; transplant cards/hero |
-| `/stories/$slug` | Published story detail | Public story API by slug | Read/share/navigate | Public published records only | L, not found/unpublished, E!, S | Actual record title/description/canonical/OG/Article JSON-LD | Local record summary and exact handoff | Keep unpublished records inaccessible; add record metadata during loader refactor |
-| `/knowledge` | Published animal-care resources | Published knowledge CMS | Search/open resource | Public | L, E0, E!, S | Unique metadata, canonical; include published detail URLs when routable | Local intent-led index | Preserve published-only CMS and search |
-| `/help` | FAQ and support routes | Approved bilingual help content | Search, email/telephone/navigation | Public | E0 search, E!, S | Unique metadata and canonical | Local help page; no invented `/contact` | Preserve approved emergency/contact wording |
-| `/report/adoption` | Public adoption impact | Public reporting query/documents | Month selection / document navigation | Public aggregated data | L, E0, E!, S | Dataset metadata and canonical | Method/empty-state page; no invented totals | Repair only with an approved public aggregate/RPC; never weaken RLS |
-| `/report/audit` | Annual/audit document library | Published public documents | Open/download approved document | Public | L, E0, E!, S | Dataset metadata, canonical, public documents in sitemap | Local report library and handoff | Preserve publish state and storage access rules |
-| `/about` | Mission, history and programmes | Verified public organisation content | Navigate to programme/support routes | Public | E!, S | Unique metadata, canonical, Organization JSON-LD | Local verified About page | Transfer page-family presentation |
-| `/about/cccp` | Community Cat Care Programme | Approved public programme content | Navigate/contact | Public | E!, S | Unique metadata and canonical | Local programme page | Preserve approved scope; no invented operating claims |
-| `/about/tnr` | TNR programme | Approved public programme content | Navigate/contact | Public | E!, S | Unique metadata and canonical | Local programme page | Preserve approved scope; no unreviewed field guide |
-| `/about/team` | Governance/team disclosure | Approved public governance content | Contact/navigation | Public | E0 when no approved profiles, E!, S | Unique metadata and canonical | Transparent governance page; no invented people | Remove unapproved hard-coded profiles; use approved source/empty state |
-| `/about/privacy` | Privacy notice | Approved policy/version content | Contact/navigation | Public | E!, S | Unique metadata and canonical | Policy explanation and exact-text handoff | Preserve approved legal text; do not paraphrase operational commitments |
+## Status at a glance
 
-## Protected operational surface
+- Routes reframed onto the ported design system: **5 of 27**
+- Routes still reading primary data in the browser: **2**
+- Content routes missing a canonical: **0**
+- Token routes correctly withholding a canonical: **3 of 3**
+- Token routes declaring noindex: **3 of 3**
 
-`/admin/**`, `/api/admin/**`, authentication, CMS/CRM transitions, applicant and donor records, payments, webhooks, receipts, storage policies, migrations and RLS are outside the visual transplant. They remain in the existing application and must not be copied into Sites.
+## Per route
 
-## Release gates
+| Route | WP | Design system | Data | States | Canonical |
+|---|---|---|---|---|---|
+| `/` | WP-2 | yes | loader | no | yes |
+| `/animals/cat` | WP-3 | yes | loader | yes | yes |
+| `/animals/dog` | WP-3 | yes | loader | yes | yes |
+| `/animals/cat/$id` | WP-3 | no | loader | yes | yes |
+| `/animals/dog/$id` | WP-3 | no | loader | yes | yes |
+| `/adoption/instructions` | WP-4 | no | loader | no | yes |
+| `/adoption/apply` | WP-4 | no | static | no | yes |
+| `/adoption/status/$token` | WP-4 | no | static | no | correctly absent |
+| `/sponsors` | WP-5 | no | browser query | no | yes |
+| `/sponsors/$id` | WP-5 | no | loader | yes | yes |
+| `/sponsors/pledge` | WP-5 | no | static | no | yes |
+| `/sponsors/status/$token` | WP-5 | no | static | no | correctly absent |
+| `/donate` | WP-5 | no | loader | no | yes |
+| `/volunteer` | WP-5 | no | static | no | yes |
+| `/volunteer/group` | WP-5 | no | static | no | yes |
+| `/volunteer/status/$token` | WP-5 | no | static | yes | correctly absent |
+| `/stories` | WP-6 | no | loader | yes | yes |
+| `/stories/$slug` | WP-6 | no | loader | yes | yes |
+| `/knowledge` | WP-6 | no | loader | no | yes |
+| `/help` | WP-6 | no | static | no | yes |
+| `/report/adoption` | WP-6 | yes | static | yes | yes |
+| `/report/audit` | WP-6 | no | loader | yes | yes |
+| `/about` | WP-6 | no | browser query | no | yes |
+| `/about/cccp` | WP-6 | no | static | no | yes |
+| `/about/tnr` | WP-6 | no | static | no | yes |
+| `/about/team` | WP-6 | yes | static | yes | yes |
+| `/about/privacy` | WP-6 | no | static | no | yes |
 
-- All six repository commands pass: frozen install, typecheck, isolated tests, lint, build and brand verification.
-- The three status routes are `noindex,nofollow` and their tokens are redacted before analytics.
-- No fake metrics, testimonials, people, payment accounts or provider-live claims remain.
-- The feature branch remains excluded from Vercel Git deployment and is not merged or published without explicit owner approval.
+### Column meanings
+
+- **Design system** - renders through `PublicPageFrame`, `AnimalListingPage`,
+  the home modules, or the ported hero and container classes. `no` means the route
+  keeps its pre-port markup: it inherits the shared tokens and the shell, so it is
+  visually consistent, but its section structure is not the design source layout.
+- **Data** - `loader` means server rendered in the first response.
+  `browser query` means the first paint carries no data.
+- **States** - declares a pending component, an error component, or an empty state.
+- **Canonical** - for the three capability-token routes the correct value is
+  *absent*. Section 7 requires that a token URL never becomes canonical, never
+  enters the sitemap, and never reaches analytics, so those rows read
+  `correctly absent` and would read `MUST NOT have one` if one were added.
+
+## Shell and machine routes
+
+| Route | Purpose | Notes |
+|---|---|---|
+| `__root` | Public and admin shell | `.site-shell` wraps public content, `.admin-shell` wraps admin; skip link and the `data-site-content` marker live here |
+| `/robots.txt` | Crawler policy | Route generated; registered in the route tree |
+| `/sitemap.xml` | Index surface | Route generated; excludes token routes |
+
+## Contracts held across the port
+
+- URLs, route filenames and query parameter names are unchanged. The only
+  addition is `gender` on the two species listings, approved as decision D-4 under
+  the PR #60 name rather than the design source `sex`.
+- Loader and action signatures, `/api/*` request and response shapes, Zod schemas,
+  domain services and repositories are untouched.
+- Shortlist localStorage keys and the application and pledge draft keys are unchanged.
+- No `supabase/` change, no migration, no RLS or Storage policy change.
+
+## Known gaps
+
+Open by design; each belongs to work that has not run yet.
+
+- Routes marked `no` under Design system keep their pre-port section structure.
+- `/sponsors` and `/about` still read their primary data in the browser.
+- `/report/adoption` shows an unpublished state rather than figures: the anonymous
+  policy exposes only available animals, so no adoption total can be derived
+  client-side. BP-1 owns the privacy-safe aggregate.
+- `/about/team` shows an unpublished state rather than a board list. BP-3 owns the
+  governance records.
+- The brand verifier cannot pass in CI against an empty database: it discovers
+  detail routes from listing pages, so with no rows it probes synthetic ids. That
+  is a gate design decision, not a route defect.
