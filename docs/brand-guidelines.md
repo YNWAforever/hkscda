@@ -1,88 +1,107 @@
 # HKSCDA Brand Guidelines
 
-> 香港拯救貓狗協會 · HK Saving Cat And Dog Association
-> Visual direction referenced from the Poofyco pet-rescue design language (ThemeForest #55964358), adapted to HKSCDA's identity. Implemented in `src/styles.css` theme tokens.
-> Design-token exports live in `brand/design-tokens.{json,css}` — NOT `assets/` (that's Nitro's server-assets dir and breaks the build).
+> 香港拯救貓狗協會 · Hong Kong Saving Cat And Dog Association
+>
+> Approved public identity, August 2026. The matching machine-readable exports are
+> `brand/design-tokens.json` and `brand/design-tokens.css`; the live application maps
+> these values into semantic variables in `src/styles.css`.
 
-## Quick Reference
+## Brand idea
 
-| Element         | Value                          |
-| --------------- | ------------------------------ |
-| Primary Color   | #E05C78 (Rescue Rose)          |
-| Secondary Color | #1D2353 (Guardian Navy)        |
-| Accent Color    | #F27D92 (Soft Salmon)          |
-| Background      | #FDF7F4 (Warm Cream)           |
-| Lavender Zone   | #E9E9F6                        |
-| Pink Strip      | #F298A4                        |
-| Display Font    | Baloo 2 (Latin) + Noto Sans HK |
-| Body Font       | Noto Sans HK                   |
+**Clear action, warm rescue.** HKSCDA should feel compassionate and approachable while
+remaining dependable enough for adoption decisions, donations, reporting, and public
+accountability. Real animals and real rescue work carry the emotion. Layout, colour, and
+copy make the next responsible action easy to understand.
 
-## Brand Concept
+The former Poofyco/Baloo rose-and-navy direction is retired. Do not copy it into new
+components, planning documents, screenshots, or generated assets.
 
-**Theme: Warm Rescue（暖心救援）**
+## Core palette
 
-Warm, approachable, and trustworthy. The blush-pink-and-navy palette signals compassion without losing the credibility a registered charity needs. Rounded shapes (pill buttons, blob-masked photos, circular badges) keep the mood friendly and pet-like; deep navy anchors data, reports, and transparency content.
+| Token | Value | Intended use |
+| --- | --- | --- |
+| Primary blue | `#05648E` | Main actions, links, active controls, key labels |
+| Deep blue | `#034A69` | Hover/pressed blue, dark emphasis |
+| Soft blue | `#E4F2F7` | Selected filters, information surfaces |
+| Accent magenta | `#A61C56` | Secondary emphasis, urgent/support actions |
+| Deep magenta | `#821442` | Hover/pressed magenta |
+| Soft magenta | `#F9E7EF` | Accent washes and quiet highlights |
+| Paper | `#FFFDF9` | Main page background |
+| Warm neutral | `#F6F1E9` | Alternating section background |
+| Sand | `#E8DED0` | Warm borders and supporting surfaces |
+| Ink | `#162C36` | Primary text |
+| Muted ink | `#5B6E76` | Supporting text |
+| Line | `#D7DDD9` | Borders and dividers |
+| Success | `#176F54` | Confirmed, successful states |
 
-## Color Palette
-
-### Primary Colors
-
-| Shade                  | Hex     | Usage                                       |
-| ---------------------- | ------- | ------------------------------------------- |
-| **Rescue Rose**        | #E05C78 | Links, eyebrows, cat accents, progress bars |
-| **Rescue Rose Hover**  | #CF4A66 | Hover states                                |
-| **Rescue Rose Active** | #B93D58 | Pressed states                              |
-| **Rescue Rose Light**  | #FADFE4 | Highlight backgrounds, icon chips           |
-
-### Secondary Colors
-
-| Shade               | Hex     | Usage                                                |
-| ------------------- | ------- | ---------------------------------------------------- |
-| **Guardian Navy**   | #1D2353 | Headings, full-bleed dark bands, footer, dog accents |
-| **Guardian Navy 2** | #283066 | Inset panels on navy (footer logo card)              |
-| **Lavender**        | #E9E9F6 | Light section zones, soft navy surfaces              |
-| **Lavender Deep**   | #DCDCF0 | Borders/dividers on lavender zones                   |
-
-### Accent Colors
-
-| Shade                 | Hex     | Usage                                                  |
-| --------------------- | ------- | ------------------------------------------------------ |
-| **Soft Salmon**       | #F27D92 | CTA pills, stat numbers, star ratings, footer headings |
-| **Soft Salmon Hover** | #EE6781 | CTA hover states                                       |
-| **Soft Salmon Light** | #FCE8EB | Blush section backgrounds (hero)                       |
-| **Pink Strip**        | #F298A4 | Footer copyright strip, thin brand bands               |
+White text may be used on the primary blue or accent magenta only where the resulting
+combination meets WCAG 2.2 AA. Error, warning, success, and availability must always
+include text or an icon; colour is never the only signal.
 
 ## Typography
 
-- **Display**: Baloo 2 (700–800) — rounded, playful; Chinese headings fall back to Noto Sans HK Bold
-- **Body**: Noto Sans HK (400/500), line-height 1.7
-- Headings use tight tracking (-0.01em); never use serif faces
+- Primary: **Noto Sans HK**.
+- Fallbacks: PingFang HK, Microsoft JhengHei, system-ui, sans-serif.
+- Do not use Baloo 2 or decorative display faces.
+- Navigation: 15–16px.
+- Body: 16–18px, with a Traditional Chinese line height around 1.65–1.75.
+- Keep long reading text to roughly 65–75 characters per line.
+- Use a clear, single H1 on every public route and a logical H2/H3 hierarchy.
 
-## Shape Language
+## Layout and shape
 
-- Pill-shaped buttons and nav bar (`rounded-full`)
-- Large card radii (`rounded-2xl` to `rounded-[2.5rem]`)
-- **Dashed-border rounded cards** (`card-dashed` utility) — the signature Poofyco card style for checklists, volunteer cards, info panels
-- Circular icon badges; arch-masked photography (`arch-mask` utility)
-- Topographic contour texture (`bg-topo` utility) on light sections
-- Dashed dividers (`border-dashed`) between stats and feature columns
+- Maximum content width: approximately 1200px.
+- Desktop structure: consistent 12-column grid.
+- Spacing: 8px base scale.
+- Radius set: 8px for controls/small elements, 16px for cards/panels, pill for chips and
+  compact actions.
+- Minimum interactive target: approximately 44 by 44px.
+- Use one public hero family and one card anatomy across animal, story, opportunity,
+  and report content, with only domain-specific details changing.
+- Visible focus indicators are mandatory. Never remove an outline without replacing it
+  with an equally clear focus treatment.
 
-## Voice & Tone
+## Photography and imagery
 
-- 繁體中文 (zh-HK) first; English secondary
-- Compassionate but factual — lead with the animal's story, back with transparent data
-- Core message: 「支持領養等於拯救生命」/ "Adoption saves lives"
-- Always credibility-anchored: charity licence 91/14493, No-Kill commitment, IRD §88
+- Prioritise approved, first-party HKSCDA animal, rescue, volunteer, and programme photos.
+- Do not generate imagery that could be mistaken for a real adoptable animal or a
+  documented rescue event.
+- Avoid generic stock images when an approved first-party image exists.
+- Crop responsively without hiding an animal's face.
+- Use meaningful CMS alt text, or a safe fallback built only from verified fields.
+- If an animal has no usable image, show a restrained branded fallback with its name;
+  do not leave a large empty square.
 
-### Hard bans (site copy)
+## Motion
 
-- **No comparative superlatives** vs other rescue groups（全港最…、第一、best in HK）— ranks peer organisations and invites offence; describe commitment, not competition（e.g. 「日夜堅守前線」not「全港最用心」）
-- **No founder-centric framing** in organisational copy（由創辦人 X 帶領…）— the work is collective; speak as 義工團隊/協會. Personal names are fine inside first-person volunteer stories/testimonials only
-- Comparative section labels like 「為何選擇我們」→ prefer commitment framing（「我們的承諾」）
+- Use motion to clarify hierarchy, state changes, or feedback.
+- Normal reveals should take about 350–500ms.
+- Avoid autoplay for important content. Any retained autoplay must have pause/play and
+  pause on hover and keyboard focus.
+- Respect `prefers-reduced-motion`.
 
-## AI Image Generation
+## Voice and content
 
-**Base prompt**: warm-toned photo of rescued cats and dogs with volunteers, soft blush-pink and cream environment, deep navy accents, gentle natural light, hopeful and affectionate mood, Hong Kong urban context
+- Traditional Chinese (`zh-HK`) first; English is secondary.
+- Be compassionate, specific, and factual.
+- State what an action accomplishes rather than repeating its label.
+- Keep organisational copy collective: 協會 / 義工團隊.
+- Avoid comparative superlatives such as 「全港最好」 or “best in Hong Kong”.
+- Avoid founder-centric framing in organisational copy.
+- Do not publish unverified people, impact numbers, payment details, or provider status.
+- Core message: 「支持領養等於拯救生命」 / “Adoption saves lives”.
 
-**Mood keywords**: warm, compassionate, trustworthy, playful, hopeful
-**Avoid**: clinical/cold lighting, cages in distress framing, aggressive colors
+## Accessibility baseline
+
+Public work targets WCAG 2.2 AA foundations: semantic landmarks, keyboard-operable
+navigation and filters, visible focus, labelled inputs, status announcements, error
+summaries with inline errors, adequate contrast, meaningful alt text, and no essential
+meaning conveyed by colour alone.
+
+## Review checklist
+
+Before merge, confirm the official blue/magenta identity, Noto Sans HK stack, 1200px
+grid, 8px spacing rhythm, approved radii, authentic imagery, Traditional Chinese copy,
+visible focus, reduced motion, responsive reflow, and the absence of Poofyco/Baloo
+tokens. Run `bun run verify:brand` with the application preview.
+

@@ -63,7 +63,7 @@ export const Route = createFileRoute("/volunteer")({
       },
       { property: "og:type", content: "website" },
     ],
-    links: [{ rel: "canonical", href: "https://hkscda.com/volunteer" }],
+    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/volunteer" }],
   }),
   component: VolunteerPage,
 });
@@ -185,16 +185,43 @@ function VolunteerDirectoryPage() {
             <CalendarDays className="h-4 w-4" /> 可報名活動
           </div>
           {loadError ? (
-            <p
+            <div
               role="alert"
               aria-live="assertive"
               className="rounded-lg bg-[var(--color-surface-offset)] p-4 text-sm text-[var(--color-text-muted)]"
-            ></p>
+            >
+              <p>{loadError}</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <a href="mailto:info@hkscda.com" className="btn-secondary min-h-11">
+                  電郵聯絡職員
+                </a>
+                <a
+                  href="https://wa.me/85298641089"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-secondary min-h-11"
+                >
+                  WhatsApp 9864 1089
+                </a>
+              </div>
+            </div>
           ) : activities.length === 0 ? (
-            <p className="rounded-lg bg-[var(--color-surface-offset)] p-4 text-sm text-[var(--color-text-muted)]">
-              目前未有開放報名的義工活動。你仍可透過電郵 info@hkscda.com 或 WhatsApp 9864 1089
-              聯絡我們。
-            </p>
+            <div className="rounded-lg bg-[var(--color-surface-offset)] p-4 text-sm text-[var(--color-text-muted)]">
+              <p>目前未有開放報名的義工活動。你仍可直接聯絡職員查詢之後的機會。</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <a href="mailto:info@hkscda.com" className="btn-secondary min-h-11">
+                  電郵聯絡職員
+                </a>
+                <a
+                  href="https://wa.me/85298641089"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-secondary min-h-11"
+                >
+                  WhatsApp 9864 1089
+                </a>
+              </div>
+            </div>
           ) : (
             activities.map((activity) => (
               <button

@@ -23,8 +23,8 @@ export function AnimalDetail({ animal, backHref, backLabel }: AnimalDetailProps)
         <span aria-hidden="true">←</span> {backLabel}
       </Link>
 
-      <div className="mt-8 grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.8fr)]">
-        <div className="overflow-hidden rounded-md bg-[var(--color-surface-offset)]">
+      <div className="mt-8 grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.8fr)] lg:gap-12">
+        <div className="public-detail-photo overflow-hidden bg-[var(--color-surface-offset)]">
           {animal.image_url ? (
             <img
               src={animal.image_url}
@@ -32,25 +32,26 @@ export function AnimalDetail({ animal, backHref, backLabel }: AnimalDetailProps)
               className="aspect-square w-full object-cover"
             />
           ) : (
-            <div className="flex aspect-square items-center justify-center">
-              <TypeIcon
-                className="h-24 w-24 text-[var(--color-primary)] opacity-35"
-                aria-hidden="true"
-              />
+            <div className="public-animal-fallback flex aspect-square items-center justify-center">
+              <span className="flex h-28 w-28 items-center justify-center rounded-full bg-white text-[var(--color-primary)] shadow-soft">
+                <TypeIcon className="h-14 w-14" aria-hidden="true" />
+              </span>
             </div>
           )}
         </div>
 
-        <div className="space-y-5">
+        <div className="public-detail-panel space-y-5 p-6 sm:p-8 lg:sticky lg:top-32">
           <div className="flex flex-wrap items-center gap-3">
             <PublicStatusBadge tone="info" icon={CheckCircle2}>
               待領養
             </PublicStatusBadge>
-            <span className="inline-flex min-h-7 items-center gap-2 bg-[var(--color-surface-offset)] px-2 py-1 text-xs text-[var(--color-text-muted)]">
+            <span className="inline-flex min-h-7 items-center gap-2 rounded-full bg-[var(--color-surface-offset)] px-2.5 py-1 text-xs text-[var(--color-text-muted)]">
               <TypeIcon className="h-3.5 w-3.5" aria-hidden="true" /> {typeLabel}
             </span>
           </div>
-          <h1 className="text-4xl font-bold text-[var(--color-text)]">{animal.name}</h1>
+          <h1 className="text-4xl font-extrabold tracking-[-0.025em] text-[var(--color-text)] sm:text-5xl">
+            {animal.name}
+          </h1>
           {animal.name_en ? (
             <p className="text-[var(--color-text-muted)]">{animal.name_en}</p>
           ) : null}

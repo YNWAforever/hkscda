@@ -21,7 +21,7 @@ import { ContextualDonationPrompt } from "../components/site/donations/Contextua
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { organizationSchema, websiteSchema } from "../lib/schema";
-import { initGA4 } from "../lib/analytics";
+import { initGA4, redactSensitivePagePath } from "../lib/analytics";
 
 function NotFoundComponent() {
   return (
@@ -83,17 +83,23 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "香港拯救貓狗協會 HKSCDA" },
       {
         property: "og:description",
-        content: "支持領養 · 拯救生命 · 不殺機構 · 每年救助超過600隻毛孩",
+        content: "支持領養 · 拯救生命 · 為流浪貓狗提供糧食、醫療、絕育及領養服務",
       },
       { property: "og:type", content: "website" },
-      { property: "og:image", content: "https://hkscda.com/brand/hkscda-logo-primary.jpg" },
+      {
+        property: "og:image",
+        content: "https://hkscda.vercel.app/brand/hkscda-logo-primary.jpg",
+      },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "香港拯救貓狗協會 HKSCDA" },
       {
         name: "twitter:description",
         content: "支持領養 · 拯救生命 · 不殺機構",
       },
-      { name: "twitter:image", content: "https://hkscda.com/brand/hkscda-logo-primary.jpg" },
+      {
+        name: "twitter:image",
+        content: "https://hkscda.vercel.app/brand/hkscda-logo-primary.jpg",
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -147,18 +153,19 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const { location } = useRouterState();
   const isAdmin = location.pathname.startsWith("/admin");
-  const analyticsPagePath = location.pathname.startsWith("/adoption/status/")
-    ? "/adoption/status/[token]"
-    : undefined;
+  const analyticsPagePath = redactSensitivePagePath(location.pathname);
 
   useEffect(() => {
-    initGA4(import.meta.env.VITE_GA_MEASUREMENT_ID ?? "G-XXXXXXXXXX", {
+    const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
+    if (!measurementId) return;
+
+    initGA4(measurementId, {
       pagePath: analyticsPagePath,
     });
   }, [analyticsPagePath]);
 
   const publicContent = (
-    <>
+    <div className="site-shell min-h-dvh">
       <Header />
       <div id="main-content" tabIndex={-1}>
         <Outlet />
@@ -167,7 +174,7 @@ function RootComponent() {
       <ShortlistTray />
       <ContextualDonationPrompt pathname={location.pathname} />
       <HelpWidget />
-    </>
+    </div>
   );
 
   return (

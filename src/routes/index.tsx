@@ -1,26 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  Heart,
-  House,
-  Check,
-  Smartphone,
-  Zap,
-  Building,
-  Globe,
-  Stethoscope,
-  Handshake,
-  ReceiptText,
-  type LucideIcon,
-} from "lucide-react";
+import { Heart, House, Globe, Stethoscope, Handshake, type LucideIcon } from "lucide-react";
 import { Hero } from "@/components/site/Hero";
 import { FeatureTrio } from "@/components/site/FeatureTrio";
-import { BestRescue } from "@/components/site/BestRescue";
 import { FundraisingCard } from "@/components/site/FundraisingCard";
 import { AdoptionSteps } from "@/components/site/AdoptionSteps";
 import { FAQ } from "@/components/site/FAQ";
-import { SocialProof } from "@/components/site/SocialProof";
-import { VolunteerCarousel } from "@/components/site/VolunteerCarousel";
-import { SocialWall } from "@/components/site/SocialWall";
 import { PhotoMarquee } from "@/components/site/PhotoMarquee";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import heroImg from "@/assets/dog-smiling.jpg";
@@ -42,7 +26,7 @@ export const Route = createFileRoute("/")({
       { property: "og:image", content: heroImg },
       { property: "og:type", content: "website" },
     ],
-    links: [{ rel: "canonical", href: "https://hkscda.com/" }],
+    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/" }],
   }),
   component: Index,
 });
@@ -55,15 +39,31 @@ const programs = [
   { title: "貓隻領域護理 CCCP", desc: "為社區貓隻提供持續餵食、健康監察及環境管理。" },
   { title: "TNR 捕捉絕育放回", desc: "透過絕育有效控制流浪動物數量，減少苦難循環。" },
   { title: "暫托安置", desc: "由義工家庭提供臨時安置，讓動物在溫暖環境中等待領養。" },
-  { title: "每月助養計劃", desc: "每月 HK$100，助養一隻貓或狗，支援日常膳食及醫療。" },
-  { title: "透明工作報告", desc: "定期發布月度領養及核數報告，對每一位支持者負責。" },
+  { title: "助養計劃", desc: "前往助養頁面了解現時安排，支援動物的日常照顧需要。" },
+  { title: "公開報告入口", desc: "前往報告頁面查看目前公開的領養及審計資料。" },
 ];
 
-const donateMethods = [
-  { Icon: Smartphone, title: "PayMe Business", desc: "WhatsApp 至 9864 1089 索取 QR Code 過數" },
-  { Icon: Zap, title: "轉數快 FPS", desc: "電話 9864 1089 · FPS ID 8727588" },
-  { Icon: Building, title: "銀行入帳", desc: "匯豐 124-511320-838 · 中銀 012-351-1-025023-2" },
-  { Icon: Globe, title: "PayPal / GIVE.asia", desc: "支持每月定額捐款，持續支援救助行動" },
+const verifiedPublicRoutes = [
+  {
+    href: "/stories",
+    title: "救援故事",
+    desc: "閱讀協會目前公開的故事內容。",
+  },
+  {
+    href: "/report/adoption",
+    title: "領養報告",
+    desc: "查看頁面現時可核實的公開資料。",
+  },
+  {
+    href: "/report/audit",
+    title: "年報及審計資料",
+    desc: "查看協會已公開的正式文件。",
+  },
+  {
+    href: "/volunteer",
+    title: "加入義工",
+    desc: "查看現時義工方式與活動資料。",
+  },
 ];
 
 const rescueCommitments: { Icon: LucideIcon; title: string; desc: string }[] = [
@@ -90,9 +90,6 @@ function Index() {
         {/* Feature trio on navy panel — NEW */}
         <FeatureTrio />
 
-        {/* Best rescue: checklist + stats — NEW */}
-        <BestRescue />
-
         {/* Community photo conveyor (reference: slow gallery marquee) */}
         <PhotoMarquee />
 
@@ -105,10 +102,7 @@ function Index() {
               description="查看目前可申請領養的貓狗，了解牠們的個性與照顧需要。"
             />
             <div className="mt-10 grid gap-4 md:grid-cols-2">
-              <a
-                href="/animals/cat"
-                className="border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-6 hover:border-[var(--color-primary)]"
-              >
+              <a href="/animals/cat" className="public-route-card">
                 <h3 className="text-xl font-bold text-[var(--color-text)]">待領養貓貓</h3>
                 <p className="mt-3 text-sm leading-relaxed text-[var(--color-text-muted)]">
                   查看目前公開的貓貓資料和領養申請流程。
@@ -117,10 +111,7 @@ function Index() {
                   查看貓貓
                 </span>
               </a>
-              <a
-                href="/animals/dog"
-                className="border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-6 hover:border-[var(--color-primary)]"
-              >
+              <a href="/animals/dog" className="public-route-card">
                 <h3 className="text-xl font-bold text-[var(--color-text)]">待領養狗狗</h3>
                 <p className="mt-3 text-sm leading-relaxed text-[var(--color-text-muted)]">
                   查看目前公開的狗狗資料和領養申請流程。
@@ -226,14 +217,31 @@ function Index() {
           </div>
         </section>
 
-        {/* Social proof — NEW */}
-        <SocialProof />
-
-        {/* Volunteer carousel — NEW */}
-        <VolunteerCarousel />
-
-        {/* Social media wall — NEW */}
-        <SocialWall />
+        <section className="bg-[var(--color-bg)] px-6 py-16 lg:py-24">
+          <div className="container-wide">
+            <SectionHeading
+              eyebrow="公開資料"
+              title="按目前公開內容了解協會工作"
+              description="故事、報告和參與方式均由相應頁面提供，請以頁面現時公開內容為準。"
+            />
+            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {verifiedPublicRoutes.map((item) => (
+                <a key={item.href} href={item.href} className="public-route-card">
+                  <h3 className="text-lg font-extrabold text-[var(--color-text)]">{item.title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-[var(--color-text-muted)]">
+                    {item.desc}
+                  </p>
+                  <span className="mt-6 inline-flex min-h-11 items-center text-sm font-bold text-[var(--color-primary)]">
+                    前往頁面{" "}
+                    <span className="ml-1" aria-hidden="true">
+                      →
+                    </span>
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
 
         {/* FAQ accordion — NEW */}
         <FAQ />
@@ -241,8 +249,8 @@ function Index() {
         {/* Donate */}
         <section id="donate" className="px-6 py-16 lg:py-24 bg-[var(--color-bg)]">
           <div className="container-wide">
-            <div className="min-w-0 rounded-[2.5rem] bg-[var(--color-panel)] shadow-panel p-8 lg:p-12 grid lg:grid-cols-5 gap-10 items-start">
-              <div className="min-w-0 lg:col-span-2">
+            <div className="grid min-w-0 items-center gap-10 rounded-[2.5rem] bg-[var(--color-panel)] p-8 shadow-panel lg:grid-cols-5 lg:p-12">
+              <div className="min-w-0 lg:col-span-3">
                 <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-secondary)] mb-3 flex items-center gap-1.5">
                   <Heart className="h-3.5 w-3.5" /> 捐助我們
                 </div>
@@ -251,31 +259,25 @@ function Index() {
                   <br />
                   都是生命的希望
                 </h2>
-                <p className="text-white/70 mb-6">
-                  本會為政府認可慈善機構（91/14493），捐款 HK$100 以上可申請退稅收條（IRD
-                  §88）。所有善款均用於小動物醫療及護理。
+                <p className="mb-6 max-w-2xl text-white/70">
+                  捐助方式、付款步驟及收據安排會在捐助頁面顯示。請以該頁現時資料為準。
                 </p>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-[var(--color-secondary-highlight)] text-xs font-bold">
-                  <Check className="h-3 w-3" /> 稅務局認可 IRD §88 免稅機構
+                <div className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-[var(--color-secondary-highlight)]">
+                  慈善檔案 91/14493 · IRD §88 免稅機構
                 </div>
               </div>
-              <div className="min-w-0 lg:col-span-3 grid sm:grid-cols-2 gap-4">
-                {donateMethods.map((d) => (
-                  <div
-                    key={d.title}
-                    className="min-w-0 bg-white/10 border border-white/10 rounded-[1.5rem] p-5 flex flex-col gap-3 hover:bg-white/15 transition-colors sm:flex-row"
-                  >
-                    <div className="h-11 w-11 rounded-full bg-[var(--color-secondary)] flex items-center justify-center shrink-0">
-                      <d.Icon className="h-5 w-5 text-[var(--color-panel)]" />
-                    </div>
-                    <div className="min-w-0">
-                      <h3 className="font-bold text-sm text-white mb-1">{d.title}</h3>
-                      <p className="text-xs text-white/60 leading-relaxed break-words">{d.desc}</p>
-                    </div>
-                  </div>
-                ))}
-                <a href="#contact" className="btn-secondary sm:col-span-2 mt-2 py-4!">
-                  <ReceiptText className="h-4 w-4" /> 申請退稅收條 / 聯絡我們
+              <div className="grid min-w-0 gap-3 lg:col-span-2">
+                <a
+                  href="/donate"
+                  className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-6 py-3 font-extrabold text-[var(--color-panel)] hover:bg-[var(--color-primary-highlight)]"
+                >
+                  查看捐助頁面
+                </a>
+                <a
+                  href="/report/audit"
+                  className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/35 px-6 py-3 font-extrabold text-white hover:bg-white/10"
+                >
+                  查看年報及審計資料
                 </a>
               </div>
             </div>

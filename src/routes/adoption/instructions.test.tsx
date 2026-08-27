@@ -171,6 +171,6 @@ describe("adoption instructions route", () => {
       <AdoptionInstructionsContent data={{ ...data, estates: [] }} />,
     );
     expect(markup).toContain("暫時未有屋苑資料");
-    expect(markup).toContain('href="/contact"');
+    expect(markup).toContain('href="/help#contact"');
   });
 });

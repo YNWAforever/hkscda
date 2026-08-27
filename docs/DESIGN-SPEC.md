@@ -1,5 +1,17 @@
 # DESIGN-SPEC — Poofyco Reference Study
 
+> **Historical reference only — superseded.** This study documents an earlier
+> third-party visual reference and must not be used as the current HKSCDA design
+> direction. The approved identity is primary blue `#05648E`, accent magenta
+> `#A61C56`, Noto Sans HK, warm neutral surfaces, a roughly 1200px/12-column
+> layout, an 8px spacing scale, and 8px/16px/pill radii. See
+> `docs/brand-guidelines.md` and `brand/design-tokens.{json,css}`.
+>
+> In particular, the Poofyco rose/navy palette, Baloo typography, 25px dominant
+> radii, dashed-card motif, and copied template compositions below are not
+> approved implementation requirements. They remain here only as provenance.
+
+
 Source: https://kitpro.site/poofyco/ (live demo behind the ThemeForest preview at
 `themeforest.net/item/...55964358`; the preview wrapper is Cloudflare-gated, so the
 vendor demo was studied directly).
@@ -188,3 +200,4 @@ existing tokens in `src/styles.css`. **No new dependencies required.**
 - SSR (TanStack Start): elements render visible by default and only get the
   pre-reveal class after hydration when JS is available — no flash-of-hidden-content,
   no SEO penalty.
+

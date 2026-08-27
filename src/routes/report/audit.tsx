@@ -20,7 +20,7 @@ export const Route = createFileRoute("/report/audit")({
       { property: "og:description", content: pageDescription },
       { property: "og:type", content: "website" },
     ],
-    links: [{ rel: "canonical", href: "https://hkscda.com/report/audit" }],
+    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/report/audit" }],
   }),
   component: AnnualReportRoute,
 });

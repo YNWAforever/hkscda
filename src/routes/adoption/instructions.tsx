@@ -10,7 +10,7 @@ const loadAdoptionInstructions = createAdoptionInstructionsLoader(() => getPubli
 export const Route = createFileRoute("/adoption/instructions")({
   loader: loadAdoptionInstructions,
   head: () => ({
-    links: [{ rel: "canonical", href: "https://hkscda.com/adoption/instructions" }],
+    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/adoption/instructions" }],
   }),
   component: InstructionsPage,
 });
@@ -258,7 +258,7 @@ function AdoptionInformationSections({ data }: { data: PublicAdoptionPageData })
         ) : (
           <p className="text-sm text-[var(--color-text-muted)]">
             暫時未有屋苑資料。如需最新資訊，請
-            <a href="/contact" className="font-bold text-[var(--color-primary)] underline">
+            <a href="/help#contact" className="font-bold text-[var(--color-primary)] underline">
               聯絡我們
             </a>
             。

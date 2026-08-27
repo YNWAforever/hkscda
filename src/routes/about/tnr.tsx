@@ -4,7 +4,7 @@ import { SectionHeading } from "../../components/site/SectionHeading";
 
 export const Route = createFileRoute("/about/tnr")({
   head: () => ({
-    links: [{ rel: "canonical", href: "https://hkscda.com/about/tnr" }],
+    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/about/tnr" }],
   }),
   component: TNRPage,
 });

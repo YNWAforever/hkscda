@@ -18,7 +18,8 @@ describe("public brand primitives", () => {
     );
     expect(markup).toContain("<h1");
     expect(markup).toContain('alt="獲救貓狗在義工照顧下休息"');
-    expect(markup).toContain("min-h-[");
+    expect(markup).toContain("public-page-hero-grid");
+    expect(markup).toContain("public-page-hero-photo");
   });
 
   test("renders status with text and icon rather than colour alone", () => {

@@ -11,7 +11,7 @@ export const Route = createFileRoute("/volunteer/group")({
         content: "本頁僅供註冊團體使用。提交團體義工工作坊、入校講座或貓狗舍教育參觀活動查詢。",
       },
     ],
-    links: [{ rel: "canonical", href: "https://hkscda.com/volunteer/group" }],
+    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/volunteer/group" }],
   }),
   component: VolunteerGroupPage,
 });

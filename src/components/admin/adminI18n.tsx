@@ -184,7 +184,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       payments: "收款",
       supporters: "支持者",
       content: "宣傳內容",
-      "adoption-information": "????",
+      "adoption-information": "領養資訊",
       knowledge: "知識庫",
       "access-management": "權限管理",
     },

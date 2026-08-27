@@ -3,7 +3,7 @@ import { SectionHeading } from "../../components/site/SectionHeading";
 
 export const Route = createFileRoute("/about/cccp")({
   head: () => ({
-    links: [{ rel: "canonical", href: "https://hkscda.com/about/cccp" }],
+    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/about/cccp" }],
   }),
   component: CCCPPage,
 });

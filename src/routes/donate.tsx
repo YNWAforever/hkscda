@@ -49,17 +49,16 @@ export const Route = createFileRoute("/donate")({
       { title: "捐助我們 · 香港拯救貓狗協會 HKSCDA" },
       {
         name: "description",
-        content:
-          "支持香港拯救貓狗協會，捐款HK$100可申請退稅。PayMe、轉數快FPS、Stripe、PayPal多種捐款方式。慈善牌照91/14493。",
+        content: "了解香港拯救貓狗協會的善款用途、收條安排，以及經職員確認的捐款下一步。",
       },
       { property: "og:title", content: "捐助我們 · HKSCDA" },
       {
         property: "og:description",
-        content: "您的每一份善意，都是生命的希望。立即捐款支持流浪貓狗。",
+        content: "了解善款用途、收條安排及經職員確認的捐款下一步。",
       },
       { property: "og:type", content: "website" },
     ],
-    links: [{ rel: "canonical", href: "https://hkscda.com/donate" }],
+    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/donate" }],
   }),
   component: DonateRoute,
 });
@@ -133,6 +132,10 @@ const copy = {
     email: "電郵",
     phone: "電話（選填）",
     verifyRequired: "請先完成人機驗證",
+    checkoutUnavailable:
+      "網上捐款尚未完成正式啟用審批。現時請先聯絡職員核實可用捐款安排；請勿使用測試或未經確認的付款資料。",
+    checkoutUnavailableButton: "網上捐款尚未啟用",
+    methodNotice: "付款服務完成正式審批後，系統才會在這裡顯示可用方式。",
   },
   en: {
     eyebrow: "Donate",
@@ -168,6 +171,10 @@ const copy = {
     email: "Email",
     phone: "Phone (optional)",
     verifyRequired: "Please complete the verification first.",
+    checkoutUnavailable:
+      "Online donations have not completed production activation approval. Please contact staff to verify an approved donation arrangement; do not use test or unconfirmed payment details.",
+    checkoutUnavailableButton: "Online donations are not active",
+    methodNotice: "Approved payment methods will appear here only after production activation.",
   },
 } satisfies Record<Language, Record<string, string>>;
 
@@ -186,6 +193,9 @@ const methods: { value: DonationMethod; zh: string; en: string; Icon: typeof Cre
   { value: "payme", zh: "PayMe", en: "PayMe", Icon: Smartphone },
   { value: "paypal", zh: "PayPal", en: "PayPal", Icon: Globe },
 ];
+
+export const publicDonationCheckoutEnabled =
+  import.meta.env.VITE_PUBLIC_DONATION_CHECKOUT_ENABLED === "true";
 
 export function createDonationRequest(
   input: Omit<DonationRequestPayload, "currency">,
@@ -243,9 +253,11 @@ function DonateRoute() {
 export function DonatePage({
   initialSlots,
   initialSearch,
+  checkoutEnabled = publicDonationCheckoutEnabled,
 }: {
   initialSlots: DocumentSlot[];
   initialSearch: DonateSearch;
+  checkoutEnabled?: boolean;
 }) {
   const search = initialSearch;
   const attribution = extractDonationAttribution(search);
@@ -309,6 +321,11 @@ export function DonatePage({
     event.preventDefault();
     setError(null);
     setManualResult(null);
+
+    if (!checkoutEnabled) {
+      setError(t.checkoutUnavailable);
+      return;
+    }
 
     if (turnstileEnabled && !turnstileToken) {
       setError(t.verifyRequired);
@@ -460,7 +477,31 @@ export function DonatePage({
               </div>
             </div>
 
-            <div className="space-y-6">
+            {!checkoutEnabled && (
+              <div className="mb-5 rounded-md border border-[var(--color-secondary)] bg-[var(--color-secondary-highlight)] p-4">
+                <p className="text-sm font-semibold leading-6 text-[var(--color-panel)]">
+                  {t.checkoutUnavailable}
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <a href="mailto:info@hkscda.com" className="btn-secondary min-h-11">
+                    info@hkscda.com
+                  </a>
+                  <a
+                    href="https://wa.me/85298641089"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-secondary min-h-11"
+                  >
+                    WhatsApp 9864 1089
+                  </a>
+                </div>
+              </div>
+            )}
+
+            <fieldset
+              disabled={!checkoutEnabled}
+              className="space-y-6 border-0 p-0 disabled:opacity-75"
+            >
               <fieldset className="space-y-3">
                 <legend className="text-sm font-bold text-[var(--color-panel)]">{t.amount}</legend>
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
@@ -586,24 +627,30 @@ export function DonatePage({
 
               <fieldset className="space-y-3">
                 <legend className="text-sm font-bold text-[var(--color-panel)]">{t.method}</legend>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {methods.map(({ value, zh, en, Icon }) => (
-                    <button
-                      key={value}
-                      type="button"
-                      aria-pressed={method === value}
-                      onClick={() => setMethod(value)}
-                      className={`flex min-h-11 items-center gap-3 rounded-md border px-4 py-3 text-left text-sm font-bold transition-colors ${
-                        method === value
-                          ? "border-[var(--color-primary)] bg-[var(--color-primary-highlight)] text-[var(--color-primary)]"
-                          : "border-[var(--color-border)] bg-white text-[var(--color-text)] hover:border-[var(--color-primary)]"
-                      }`}
-                    >
-                      <Icon className="h-4 w-4 shrink-0" />
-                      {language === "zh-HK" ? zh : en}
-                    </button>
-                  ))}
-                </div>
+                {checkoutEnabled ? (
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {methods.map(({ value, zh, en, Icon }) => (
+                      <button
+                        key={value}
+                        type="button"
+                        aria-pressed={method === value}
+                        onClick={() => setMethod(value)}
+                        className={`flex min-h-11 items-center gap-3 rounded-md border px-4 py-3 text-left text-sm font-bold transition-colors ${
+                          method === value
+                            ? "border-[var(--color-primary)] bg-[var(--color-primary-highlight)] text-[var(--color-primary)]"
+                            : "border-[var(--color-border)] bg-white text-[var(--color-text)] hover:border-[var(--color-primary)]"
+                        }`}
+                      >
+                        <Icon className="h-4 w-4 shrink-0" />
+                        {language === "zh-HK" ? zh : en}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="rounded-md bg-[var(--color-surface-offset)] p-3 text-sm text-[var(--color-text-muted)]">
+                    {t.methodNotice}
+                  </p>
+                )}
               </fieldset>
 
               <fieldset className="space-y-3 rounded-md bg-[var(--color-surface-offset)] p-4">
@@ -650,11 +697,13 @@ export function DonatePage({
                 <p className="text-xs leading-6 text-[var(--color-text-muted)]">{t.pics}</p>
               </fieldset>
 
-              <TurnstileWidget
-                onVerify={setTurnstileToken}
-                onExpire={() => setTurnstileToken(null)}
-                language={language === "en" ? "en" : "zh-tw"}
-              />
+              {checkoutEnabled && (
+                <TurnstileWidget
+                  onVerify={setTurnstileToken}
+                  onExpire={() => setTurnstileToken(null)}
+                  language={language === "en" ? "en" : "zh-tw"}
+                />
+              )}
 
               {error && (
                 <p role="alert" className="text-sm font-bold text-[var(--color-error)]">
@@ -664,7 +713,7 @@ export function DonatePage({
 
               <button
                 type="submit"
-                disabled={loading || (turnstileEnabled && !turnstileToken)}
+                disabled={!checkoutEnabled || loading || (turnstileEnabled && !turnstileToken)}
                 className="btn-primary w-full disabled:opacity-60"
               >
                 {loading ? (
@@ -672,11 +721,13 @@ export function DonatePage({
                 ) : (
                   <Heart className="h-4 w-4" />
                 )}
-                {loading
-                  ? t.processing
-                  : `${t.donate} · ${centsToHkd(Math.round(amountHkd * 100))}`}
+                {!checkoutEnabled
+                  ? t.checkoutUnavailableButton
+                  : loading
+                    ? t.processing
+                    : `${t.donate} · ${centsToHkd(Math.round(amountHkd * 100))}`}
               </button>
-            </div>
+            </fieldset>
 
             {manualResult && (
               <div className="mt-6 rounded-2xl border border-dashed border-[var(--color-primary)] bg-[var(--color-primary-highlight)] p-4 text-sm">

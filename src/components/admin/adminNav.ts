@@ -184,7 +184,7 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     id: "adoption-information",
     section: "content",
     group: "promotion",
-    label: "????",
+    label: "領養資訊",
     icon: ClipboardPenLine,
     to: "/admin/content/adoption",
     activePath: "/admin/content/adoption",

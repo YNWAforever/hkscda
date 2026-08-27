@@ -53,8 +53,12 @@ test("renders the optional purpose note and language-aware wedding forms", async
   expect(html).toContain("下載表格 / Download Form");
   expect(html).toContain('href="https://documents.example/wedding-en.pdf"');
   expect(html).toContain("English form");
-  expect(html.match(/target="_blank"/g)).toHaveLength(2);
-  expect(html.match(/rel="noopener noreferrer"/g)).toHaveLength(2);
+  // Two wedding-form PDFs, plus the WhatsApp link in the checkout-unavailable panel
+  // that renders whenever `checkoutEnabled` is false (the default for this render).
+  const externalLinks = html.match(/target="_blank"/g) ?? [];
+  expect(externalLinks).toHaveLength(3);
+  // Every new-tab link must carry the opener guard.
+  expect(html.match(/rel="noopener noreferrer"/g)).toHaveLength(externalLinks.length);
 
   const singleLanguageHtml = renderToStaticMarkup(
     <DonatePage initialSlots={[enWedding]} initialSearch={{}} />,
@@ -77,10 +81,23 @@ test("keeps the donation page available when optional documents fail to load", a
 });
 
 describe("AlipayHK donation checkout", () => {
-  test("renders Card and AlipayHK as separate payment methods", async () => {
+  test("keeps every provider hidden until the production activation gate is approved", async () => {
     const { DonatePage } = await import("./donate");
 
     const html = renderToStaticMarkup(<DonatePage initialSlots={[]} initialSearch={{}} />);
+
+    expect(html).toContain("網上捐款尚未啟用");
+    expect(html).toContain("付款服務完成正式審批後");
+    expect(html).not.toContain(">信用卡<");
+    expect(html).not.toContain(">PayPal<");
+  });
+
+  test("renders Card and AlipayHK as separate payment methods", async () => {
+    const { DonatePage } = await import("./donate");
+
+    const html = renderToStaticMarkup(
+      <DonatePage initialSlots={[]} initialSearch={{}} checkoutEnabled />,
+    );
 
     expect(html).toContain(">信用卡<");
     expect(html).not.toContain("信用卡 / Alipay");

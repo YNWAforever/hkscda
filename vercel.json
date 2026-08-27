@@ -1,4 +1,10 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "bun install",
-  "buildCommand": "bun run build"
+  "buildCommand": "bun run build",
+  "git": {
+    "deploymentEnabled": {
+      "feat/public-layout-v2": false
+    }
+  }
 }

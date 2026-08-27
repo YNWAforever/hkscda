@@ -14,7 +14,7 @@ export const Route = createFileRoute("/knowledge")({
         content: "HKSCDA adoption, pet care, insurance, and post-adoption guide resources.",
       },
     ],
-    links: [{ rel: "canonical", href: "https://hkscda.com/knowledge" }],
+    links: [{ rel: "canonical", href: "https://hkscda.vercel.app/knowledge" }],
   }),
   component: KnowledgePage,
 });

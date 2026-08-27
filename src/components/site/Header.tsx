@@ -38,7 +38,7 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <>
+    <div className="public-site-header">
       <div className="bg-[var(--color-panel)] text-[12px] text-white/85">
         <div className="container-wide flex h-9 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <div className="flex min-w-0 items-center gap-5">
@@ -81,9 +81,9 @@ export function Header() {
         </div>
       </div>
 
-      <header className="relative z-50 border-b border-[var(--color-divider)] bg-[var(--color-surface)]">
+      <header className="public-header-main relative border-b border-[var(--color-divider)]">
         <div className="container-wide flex min-h-20 items-center gap-4 px-4 sm:px-6 lg:px-8">
-          <Link to="/" aria-label="香港拯救貓狗協會首頁" className="shrink-0">
+          <Link to="/" aria-label="香港拯救貓狗協會首頁" className="public-brand-link shrink-0">
             <BrandLogo className="h-12 sm:h-14" eager />
           </Link>
 
@@ -119,7 +119,7 @@ export function Header() {
             aria-expanded={mobileOpen}
             aria-controls="mobile-nav"
             onClick={() => setMobileOpen((open) => !open)}
-            className="ml-auto flex h-11 w-11 items-center justify-center border border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-primary)] hover:bg-[var(--color-surface-offset)] lg:hidden"
+            className="ml-auto flex h-11 w-11 items-center justify-center rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-primary)] hover:bg-[var(--color-primary-highlight)] lg:hidden"
           >
             {mobileOpen ? (
               <X className="h-5 w-5" aria-hidden="true" />
@@ -133,7 +133,7 @@ export function Header() {
           <nav
             id="mobile-nav"
             aria-label="主選單"
-            className="border-t border-[var(--color-divider)] bg-[var(--color-surface)] lg:hidden"
+            className="public-mobile-nav border-t border-[var(--color-divider)] lg:hidden"
           >
             <div className="container-wide max-h-[calc(100vh-80px)] space-y-1 overflow-y-auto px-4 py-5 sm:px-6">
               <MobileSheetLink to="/" setOpen={setMobileOpen}>
@@ -169,7 +169,7 @@ export function Header() {
           </nav>
         ) : null}
       </header>
-    </>
+    </div>
   );
 }
 
@@ -179,7 +179,7 @@ function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
       <NavigationMenu.Link asChild>
         <Link
           to={to}
-          className="inline-flex min-h-11 items-center px-3 text-[13px] font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)]"
+          className="public-nav-link inline-flex min-h-11 items-center px-3 text-[13px] font-medium text-[var(--color-text-muted)]"
         >
           {children}
         </Link>
@@ -197,14 +197,14 @@ function NavDropdown({
 }) {
   return (
     <NavigationMenu.Item className="relative">
-      <NavigationMenu.Trigger className="group/trigger inline-flex min-h-11 items-center gap-1 px-3 text-[13px] font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)]">
+      <NavigationMenu.Trigger className="public-nav-trigger group/trigger inline-flex min-h-11 items-center gap-1 px-3 text-[13px] font-medium text-[var(--color-text-muted)]">
         {trigger}
         <ChevronDown
           className="h-3 w-3 opacity-50 transition-transform group-data-[state=open]/trigger:rotate-180"
           aria-hidden="true"
         />
       </NavigationMenu.Trigger>
-      <NavigationMenu.Content className="absolute left-0 top-full z-50 mt-2 w-[260px] border border-[var(--color-border)] bg-[var(--color-surface)] p-2 shadow-soft">
+      <NavigationMenu.Content className="public-nav-dropdown absolute left-0 top-full z-50 mt-2 w-[260px] border border-[var(--color-border)] bg-[var(--color-surface)] p-2">
         {links.map((link) => (
           <NavigationMenu.Link key={link.to} asChild>
             <Link

@@ -169,7 +169,7 @@ export function VolunteerCarousel() {
 
         <div className="text-center mt-10">
           <a
-            href="#volunteer-apply"
+            href="/volunteer"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[var(--color-primary)] text-white font-bold text-sm hover:bg-[var(--color-primary-hover)] transition-colors"
           >
             <UserPlus className="h-4 w-4" /> 加入義工團隊

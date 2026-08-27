@@ -49,21 +49,13 @@ class PledgeStatusPageError extends Error {
   }
 }
 
-const PAYMENT_METHODS_ZH = [
-  ["轉數快 FPS", "9864 1089"],
-  ["銀行轉帳", "匯豐銀行 012-345-678901"],
-  ["PayMe", "@hkscda"],
-  ["PayPal", "paypal@hkscda.com"],
-  ["Give.asia", "give.asia/hkscda"],
-] as const;
-
 const PLEDGE_STATUS_COPY: Record<
   SponsorshipPledgeStatus,
   { title: string; body: string; icon: ReactNode }
 > = {
   pending_payment: {
-    title: "等待您的付款",
-    body: "請使用以下其中一種方式完成首月付款，並註明您的參考編號。",
+    title: "等待確認付款安排",
+    body: "本會職員會透過你提供的聯絡資料確認正式付款安排。收到確認前請勿向未經核實的帳戶、電話號碼或電郵付款。",
     icon: <Clock3 className="h-5 w-5" aria-hidden="true" />,
   },
   provisional: {
@@ -244,18 +236,20 @@ function PledgeStatusContent({ status }: { status: PublicPledgeStatusSummary }) 
               </div>
 
               {status.status === "pending_payment" && (
-                <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  {PAYMENT_METHODS_ZH.map(([label, value]) => (
-                    <div
-                      key={label}
-                      className="rounded-lg bg-[var(--color-surface-offset)] p-3 text-sm"
-                    >
-                      <div className="text-xs font-semibold text-[var(--color-text-muted)]">
-                        {label}
-                      </div>
-                      <div>{value}</div>
-                    </div>
-                  ))}
+                <div className="mt-4 rounded-lg bg-[var(--color-surface-offset)] p-4 text-sm">
+                  <p className="leading-6 text-[var(--color-text-muted)]">
+                    為保障你的付款安全，本狀態頁不顯示或確認銀行、FPS、電子錢包或第三方平台資料。
+                    請以參考編號向職員核實安排。
+                  </p>
+                  <a
+                    href={`mailto:info@hkscda.com?subject=Sponsorship%20payment%20${encodeURIComponent(
+                      status.reference,
+                    )}`}
+                    className="btn-primary mt-4 min-h-11"
+                  >
+                    <Mail className="h-4 w-4" aria-hidden="true" />
+                    核實付款安排
+                  </a>
                 </div>
               )}
 

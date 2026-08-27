@@ -119,6 +119,14 @@ describe("admin nav active state", () => {
     expect(routeSource.slice(pageStart, childStart)).toContain("<AdminContentPlaceholder />");
   });
 
+  test("uses the approved Traditional Chinese adoption information label", () => {
+    const item = ADMIN_NAV_ITEMS.find((candidate) => candidate.id === "adoption-information");
+
+    expect(item?.label).toBe("領養資訊");
+    expect(adminCopy.zh.navItems["adoption-information"]).toBe("領養資訊");
+    expect(item?.label).not.toContain("?");
+  });
+
   test("has bilingual labels for every nav item", () => {
     for (const item of ADMIN_NAV_ITEMS) {
       expect(adminCopy.zh.navItems[item.id], `zh nav label for ${item.id}`).toBeString();
