@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useRouterState } from "@tanstack/react-router";
 import { publicUrl } from "@/lib/publicOrigin";
 import { resilientPublicLoader } from "../lib/routing/resilientLoader";
 import { PublicPageFrame } from "../components/site/PublicPageFrame";
@@ -42,7 +42,17 @@ export const Route = createFileRoute("/stories")({
   component: StoriesPage,
 });
 
-function StoriesPage() {
+export function StoriesPage() {
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+
+  if (pathname.startsWith("/stories/")) {
+    return <Outlet />;
+  }
+
+  return <StoriesPageBody />;
+}
+
+function StoriesPageBody() {
   const result = Route.useLoaderData();
   if (result.status === "error") return <StoriesLoadError />;
   return <StoriesPageContent data={result.data} />;

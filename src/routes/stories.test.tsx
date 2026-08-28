@@ -5,6 +5,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 
 import type { PublicStoriesPageData } from "../lib/content/publicStoriesPage.server";
 
+let mockPathname = "/stories";
+
 mock.module("@tanstack/react-router", () => ({
   Link: ({
     children,
@@ -21,6 +23,8 @@ mock.module("@tanstack/react-router", () => ({
     </a>
   ),
   createFileRoute: () => (options: unknown) => options,
+  useRouterState: () => mockPathname,
+  Outlet: () => <div data-testid="story-detail-outlet" />,
 }));
 
 mock.module("../lib/content/publicStoriesPage.functions", () => ({
@@ -122,5 +126,18 @@ describe("stories route", () => {
     expect(markup.match(/<h1/g) ?? []).toHaveLength(1);
     expect(markup).toContain("暫時沒有公開地圖故事。");
     expect(markup).toContain("暫時未有公開活動、義賣或報告。");
+  });
+
+  test("renders the Outlet for a nested /stories/$slug path instead of the listing", async () => {
+    mockPathname = "/stories/demo-siu-bak-recovery";
+    try {
+      const { StoriesPage } = await import("./stories");
+      const markup = renderToStaticMarkup(<StoriesPage />);
+
+      expect(markup).toContain('data-testid="story-detail-outlet"');
+      expect(markup).not.toContain("救援個案");
+    } finally {
+      mockPathname = "/stories";
+    }
   });
 });
