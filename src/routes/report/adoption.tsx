@@ -2,44 +2,51 @@ import { createFileRoute } from "@tanstack/react-router";
 import { publicUrl } from "@/lib/publicOrigin";
 
 import { PublicPageFrame } from "../../components/site/PublicPageFrame";
-import { PublicStateShell } from "../../components/site/PublicStateShell";
+import { resilientPublicLoader } from "../../lib/routing/resilientLoader";
+import { getAdoptionImpactReport } from "../../lib/adoptions/publicImpact.functions";
+import type { AdoptionImpactReport } from "../../lib/adoptions/publicImpact";
 
 export const Route = createFileRoute("/report/adoption")({
+  loader: resilientPublicLoader(() => getAdoptionImpactReport()),
+  errorComponent: AdoptionImpactReportLoadError,
   head: () => ({
     meta: [
       { title: "領養工作成效 · 香港拯救貓狗協會 HKSCDA" },
       {
         name: "description",
         content:
-          "香港拯救貓狗協會領養成效報告的統計口徑、資料截止日期與發佈安排。數據核實後於此公開。",
+          "香港拯救貓狗協會累計成功領養總數及過去12個月數字，每月更新，統計口徑與資料截止日期於本頁公開。",
       },
       { property: "og:title", content: "領養工作成效 · HKSCDA" },
-      { property: "og:description", content: "領養成效報告的統計口徑與發佈安排" },
+      { property: "og:description", content: "累計成功領養總數及過去12個月數字，每月更新。" },
       { property: "og:type", content: "website" },
     ],
     links: [{ rel: "canonical", href: publicUrl("/report/adoption") }],
   }),
-  component: AdoptionReportPage,
+  component: AdoptionReportRoute,
 });
 
-/**
- * Defect G-04 / blocker P0-05. This page read animals where status = adopted
- * directly from the browser, but the anonymous policy exposes only available
- * animals, so the query could only ever come back empty. The page then published
- * a total of 0 adoptions as though it were a measured figure - on the one page
- * whose purpose is transparency.
- *
- * Until BP-1 supplies a privacy-safe aggregate over successful_adoption, the page
- * states that the figures are not published yet and explains the methodology it
- * will publish them under. It does not show a zero, and it does not estimate.
- * The dataset JSON-LD is withheld for the same reason: there is no dataset yet.
- */
-function AdoptionReportPage() {
+function AdoptionReportRoute() {
+  const result = Route.useLoaderData();
+  if (result.status === "error") return <AdoptionImpactReportLoadError />;
+  return <AdoptionImpactReportPage report={result.data} />;
+}
+
+function formatAsOf(value: string) {
+  return new Intl.DateTimeFormat("zh-HK", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "Asia/Hong_Kong",
+  }).format(new Date(value));
+}
+
+export function AdoptionImpactReportPage({ report }: { report: AdoptionImpactReport }) {
   return (
     <PublicPageFrame
       eyebrow="透明與問責"
       title="領養工作成效"
-      description="我們公開領養成效的統計方式與資料來源。數據經核實後會連同截止日期一併發佈。"
+      description="我們公開領養成效的統計方式與資料來源。數字來自已完成的領養記錄，並以核准日期歸入相應月份。"
       chapters={[
         {
           eyebrow: "統計口徑",
@@ -68,13 +75,50 @@ function AdoptionReportPage() {
     >
       <section className="section">
         <div className="public-container">
-          <PublicStateShell
-            headingLevel={2}
-            title="暫未發佈"
-            description="領養成效數據仍在核實，因此本頁暫不顯示數字。我們不會以零值、舊數字或估算數字代替尚未核實的資料。"
-          />
+          <div className="impact-data">
+            <div>
+              <strong>{report.total}</strong>
+              <span>累計成功領養宗數</span>
+            </div>
+          </div>
+
+          <ul className="mt-8 divide-y divide-[var(--color-border)]">
+            {report.monthly.map((m) => (
+              <li key={m.month} className="flex items-center justify-between py-3">
+                <span className="text-[var(--color-text-muted)]">{m.label}</span>
+                <span className="font-bold text-[var(--color-text)]">{m.count}</span>
+              </li>
+            ))}
+          </ul>
+
+          <p className="mt-4 text-sm text-[var(--color-text-muted)]">
+            資料截至 {formatAsOf(report.asOf)}
+          </p>
         </div>
       </section>
     </PublicPageFrame>
+  );
+}
+
+export function AdoptionImpactReportLoadError() {
+  return (
+    <main className="mx-auto max-w-3xl px-4 py-12">
+      <div
+        role="alert"
+        className="border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-6"
+      >
+        <h1 className="text-lg font-bold">暫時未能載入領養成效數據</h1>
+        <p className="mt-2 text-sm text-[var(--color-text-muted)]">
+          請稍後再試，或電郵至{" "}
+          <a className="underline" href="mailto:info@hkscda.com">
+            info@hkscda.com
+          </a>
+          。
+        </p>
+        <a href="/report/adoption" className="btn-secondary mt-5 min-h-11">
+          重新載入 / Retry
+        </a>
+      </div>
+    </main>
   );
 }
