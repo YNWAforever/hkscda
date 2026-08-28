@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { PublicFormFrame } from "../../components/site/PublicFormFrame";
 import { PublicStateShell } from "../../components/site/PublicStateShell";
 import { AlertCircle, CalendarDays, CheckCircle2, Clock3, Loader2 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
@@ -25,6 +26,10 @@ export const Route = createFileRoute("/volunteer/status/$token")({
 
 function VolunteerStatusRoute() {
   const { token } = Route.useParams();
+  return <VolunteerStatusView token={token} />;
+}
+
+export function VolunteerStatusView({ token }: { token: string }) {
   const [status, setStatus] = useState<VolunteerStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -47,16 +52,16 @@ function VolunteerStatusRoute() {
       .finally(() => setLoading(false));
   }, [token]);
 
+  let content: ReactNode;
+
   if (loading) {
-    return (
+    content = (
       <StatusShell icon={<Loader2 className="h-7 w-7 animate-spin" />} title="正在載入義工登記">
         <p>請稍候，我們正在確認你的狀態連結。</p>
       </StatusShell>
     );
-  }
-
-  if (error || !status) {
-    return (
+  } else if (error || !status) {
+    content = (
       <StatusShell role="alert" icon={<AlertCircle className="h-7 w-7" />} title="找不到義工登記">
         <p>{error ?? "連結可能已過期或輸入錯誤。"}</p>
         <Link to="/volunteer" className="btn-primary min-h-11 mt-5">
@@ -64,47 +69,53 @@ function VolunteerStatusRoute() {
         </Link>
       </StatusShell>
     );
+  } else {
+    content = (
+      <main className="bg-[var(--color-bg)] py-8">
+        <div className="container-wide">
+          <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-soft">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <p className="text-sm font-bold text-[var(--color-primary)]">義工登記狀態</p>
+                <h1 className="font-display mt-2 text-3xl font-bold text-[var(--color-panel)]">
+                  {status.activityTitle}
+                </h1>
+                <p className="mt-2 text-sm text-[var(--color-text-muted)]">
+                  {status.reference} · {status.participantCount} 人
+                </p>
+              </div>
+              <span className="rounded-full bg-[var(--color-primary-highlight)] px-4 py-2 text-sm font-bold text-[var(--color-primary)]">
+                {status.status}
+              </span>
+            </div>
+
+            <div className="mt-6 grid gap-4 sm:grid-cols-3">
+              <InfoCard
+                icon={<CalendarDays className="h-5 w-5" />}
+                label="活動時間"
+                value={new Date(status.startsAt).toLocaleString("zh-HK", {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                })}
+              />
+              <InfoCard
+                icon={<Clock3 className="h-5 w-5" />}
+                label="地點"
+                value={status.location}
+              />
+              <InfoCard
+                icon={<CheckCircle2 className="h-5 w-5" />}
+                label="出席狀態"
+                value={status.attendanceStatus}
+              />
+            </div>
+          </section>
+        </div>
+      </main>
+    );
   }
 
-  return (
-    <main className="bg-[var(--color-bg)] py-8">
-      <div className="container-wide">
-        <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-soft">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <p className="text-sm font-bold text-[var(--color-primary)]">義工登記狀態</p>
-              <h1 className="font-display mt-2 text-3xl font-bold text-[var(--color-panel)]">
-                {status.activityTitle}
-              </h1>
-              <p className="mt-2 text-sm text-[var(--color-text-muted)]">
-                {status.reference} · {status.participantCount} 人
-              </p>
-            </div>
-            <span className="rounded-full bg-[var(--color-primary-highlight)] px-4 py-2 text-sm font-bold text-[var(--color-primary)]">
-              {status.status}
-            </span>
-          </div>
-
-          <div className="mt-6 grid gap-4 sm:grid-cols-3">
-            <InfoCard
-              icon={<CalendarDays className="h-5 w-5" />}
-              label="活動時間"
-              value={new Date(status.startsAt).toLocaleString("zh-HK", {
-                dateStyle: "medium",
-                timeStyle: "short",
-              })}
-            />
-            <InfoCard icon={<Clock3 className="h-5 w-5" />} label="地點" value={status.location} />
-            <InfoCard
-              icon={<CheckCircle2 className="h-5 w-5" />}
-              label="出席狀態"
-              value={status.attendanceStatus}
-            />
-          </div>
-        </section>
-      </div>
-    </main>
-  );
+  return <PublicFormFrame trustNote="此為私人查閱連結，請勿轉發。">{content}</PublicFormFrame>;
 }
 
 function StatusShell({

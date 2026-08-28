@@ -18,6 +18,8 @@ type PaymentMethod = "fps" | "bank_transfer" | "payme" | "paypal" | "give_asia";
 
 const copy = {
   "zh-HK": {
+    pledgeEyebrow: "動物助養",
+    pledgeTitle: "確認助養承諾",
     empty: "您尚未選擇任何助養動物。",
     backToSponsors: "返回助養區",
     tierTitle: "每月助養金額",
@@ -43,6 +45,8 @@ const copy = {
     successRef: "參考編號",
   },
   en: {
+    pledgeEyebrow: "Animal Sponsorship",
+    pledgeTitle: "Confirm Your Sponsorship Pledge",
     empty: "You have not selected any sponsor animals yet.",
     backToSponsors: "Back to sponsorship",
     tierTitle: "Monthly sponsorship amount",
@@ -234,6 +238,10 @@ export function PledgeWizard() {
 
   return (
     <main className="max-w-2xl mx-auto px-4 py-8">
+      <div className="mb-6">
+        <p className="text-sm font-semibold text-[var(--color-primary)]">{t.pledgeEyebrow}</p>
+        <h1 className="text-3xl font-bold text-[var(--color-panel)]">{t.pledgeTitle}</h1>
+      </div>
       <form
         onSubmit={handleSubmit}
         className="space-y-6 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-soft"

@@ -9,7 +9,7 @@ are shell and machine routes, listed separately below.
 
 ## Status at a glance
 
-- Routes reframed onto the ported design system: **14 of 27**
+- Routes reframed onto the ported design system: **27 of 27**
 - Routes still reading primary data in the browser: **0**
 - Content routes missing a canonical: **0**
 - Token routes correctly withholding a canonical: **3 of 3**
@@ -22,21 +22,21 @@ are shell and machine routes, listed separately below.
 | `/` | WP-2 | yes | loader | no | yes |
 | `/animals/cat` | WP-3 | yes | loader | yes | yes |
 | `/animals/dog` | WP-3 | yes | loader | yes | yes |
-| `/animals/cat/$id` | WP-3 | no | loader | yes | yes |
-| `/animals/dog/$id` | WP-3 | no | loader | yes | yes |
+| `/animals/cat/$id` | WP-3 | yes | loader | yes | yes |
+| `/animals/dog/$id` | WP-3 | yes | loader | yes | yes |
 | `/adoption/instructions` | WP-4 | yes | loader | yes | yes |
-| `/adoption/apply` | WP-4 | no | static | no | yes |
-| `/adoption/status/$token` | WP-4 | no | static | no | correctly absent |
+| `/adoption/apply` | WP-4 | yes | static | no | yes |
+| `/adoption/status/$token` | WP-4 | yes | static | no | correctly absent |
 | `/sponsors` | WP-5 | yes | loader | yes | yes |
-| `/sponsors/$id` | WP-5 | no | loader | yes | yes |
-| `/sponsors/pledge` | WP-5 | no | static | no | yes |
-| `/sponsors/status/$token` | WP-5 | no | static | no | correctly absent |
-| `/donate` | WP-5 | no | loader | no | yes |
-| `/volunteer` | WP-5 | no | static | no | yes |
-| `/volunteer/group` | WP-5 | no | static | no | yes |
-| `/volunteer/status/$token` | WP-5 | no | static | yes | correctly absent |
-| `/stories` | WP-6 | no | loader | yes | yes |
-| `/stories/$slug` | WP-6 | no | loader | yes | yes |
+| `/sponsors/$id` | WP-5 | yes | loader | yes | yes |
+| `/sponsors/pledge` | WP-5 | yes | static | no | yes |
+| `/sponsors/status/$token` | WP-5 | yes | static | no | correctly absent |
+| `/donate` | WP-5 | yes | loader | no | yes |
+| `/volunteer` | WP-5 | yes | static | no | yes |
+| `/volunteer/group` | WP-5 | yes | static | no | yes |
+| `/volunteer/status/$token` | WP-5 | yes | static | yes | correctly absent |
+| `/stories` | WP-6 | yes | loader | yes | yes |
+| `/stories/$slug` | WP-6 | yes | loader | yes | yes |
 | `/knowledge` | WP-6 | yes | loader | yes | yes |
 | `/help` | WP-6 | yes | static | no | yes |
 | `/report/adoption` | WP-6 | yes | static | yes | yes |
@@ -83,8 +83,6 @@ are shell and machine routes, listed separately below.
 
 Open by design; each belongs to work that has not run yet.
 
-- Routes marked `no` under Design system keep their pre-port section structure.
-- `/sponsors` and `/about` still read their primary data in the browser.
 - `/report/adoption` shows an unpublished state rather than figures: the anonymous
   policy exposes only available animals, so no adoption total can be derived
   client-side. BP-1 owns the privacy-safe aggregate.
@@ -93,3 +91,8 @@ Open by design; each belongs to work that has not run yet.
 - The brand verifier cannot pass in CI against an empty database: it discovers
   detail routes from listing pages, so with no rows it probes synthetic ids. That
   is a gate design decision, not a route defect.
+- `container-wide` (the pre-design-system container utility) is still used in
+  roughly 20 files — mostly pending/error/skeleton states that every group in
+  this port deliberately left untouched, plus a few shared components. Not
+  tracked as a per-route gap since it doesn't affect any route's `yes` status;
+  worth a dedicated sweep if full class-level consistency ever matters.

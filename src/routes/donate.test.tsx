@@ -236,3 +236,12 @@ describe("AlipayHK donation checkout", () => {
     expect(trackedEvents).toEqual([]);
   });
 });
+
+test("uses the shared public-container class, not the pre-port container-wide utility", async () => {
+  const { DonatePage } = await import("./donate");
+
+  const html = renderToStaticMarkup(<DonatePage initialSlots={[]} initialSearch={{}} />);
+
+  expect(html).toContain("public-container");
+  expect(html).not.toContain("container-wide");
+});

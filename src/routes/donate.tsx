@@ -408,7 +408,7 @@ export function DonatePage({
   return (
     <main className="bg-[var(--color-background)]">
       <section className="bg-[var(--color-surface-offset)]">
-        <div className="container-wide grid grid-cols-1 gap-8 py-10 lg:grid-cols-[0.9fr_1.1fr] lg:py-14">
+        <div className="public-container grid grid-cols-1 gap-8 py-10 lg:grid-cols-[0.9fr_1.1fr] lg:py-14">
           <div className="space-y-6">
             <div className="inline-flex items-center gap-2 rounded-full bg-[var(--color-primary-highlight)] px-3 py-1 text-xs font-bold uppercase tracking-widest text-[var(--color-primary)]">
               <Heart className="h-3.5 w-3.5" /> {t.eyebrow}
@@ -756,7 +756,7 @@ export function DonatePage({
       </section>
 
       <section className="bg-[var(--color-surface)]">
-        <div className="container-wide py-10 lg:py-14">
+        <div className="public-container py-10 lg:py-14">
           <div className="max-w-3xl">
             <h2 className="font-display text-2xl font-bold text-[var(--color-panel)] lg:text-3xl">
               💍 Share the Love – 婚宴回禮計劃
