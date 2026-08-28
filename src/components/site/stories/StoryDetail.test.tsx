@@ -62,4 +62,16 @@ describe("StoryDetail", () => {
     expect(markup).toContain("支援醫療費用 ｜ 立即捐助");
     expect(markup).toContain("救援個案");
   });
+
+  test("wraps the hero in PublicPageFrame with one h1 and a status/region eyebrow", async () => {
+    const { StoryDetail } = await import("./StoryDetail");
+    const markup = renderToStaticMarkup(<StoryDetail content={content} />);
+
+    expect(markup).toContain("public-page");
+    expect(markup.match(/<h1/g) ?? []).toHaveLength(1);
+    expect(markup).toContain("小白康復中");
+    expect(markup).toContain("醫療照護");
+    expect(markup).toContain("灣仔");
+    expect(markup).toContain("detail-breadcrumb");
+  });
 });
