@@ -112,4 +112,15 @@ describe("stories route", () => {
     expect(markup).toContain("支援醫療費用 ｜ 立即捐助");
     expect(head).toContain("救援個案");
   });
+
+  test("wraps the page content in a single PublicPageFrame hero", async () => {
+    const { StoriesPageContent } = await import("./stories");
+    const markup = renderToStaticMarkup(<StoriesPageContent data={data} />);
+
+    expect(markup).toContain("public-page");
+    expect(markup).toContain('id="page-title"');
+    expect(markup.match(/<h1/g) ?? []).toHaveLength(1);
+    expect(markup).toContain("暫時沒有公開地圖故事。");
+    expect(markup).toContain("暫時未有公開活動、義賣或報告。");
+  });
 });

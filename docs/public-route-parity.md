@@ -9,7 +9,7 @@ are shell and machine routes, listed separately below.
 
 ## Status at a glance
 
-- Routes reframed onto the ported design system: **24 of 27**
+- Routes reframed onto the ported design system: **26 of 27**
 - Routes still reading primary data in the browser: **0**
 - Content routes missing a canonical: **0**
 - Token routes correctly withholding a canonical: **3 of 3**
@@ -35,8 +35,8 @@ are shell and machine routes, listed separately below.
 | `/volunteer` | WP-5 | yes | static | no | yes |
 | `/volunteer/group` | WP-5 | yes | static | no | yes |
 | `/volunteer/status/$token` | WP-5 | yes | static | yes | correctly absent |
-| `/stories` | WP-6 | no | loader | yes | yes |
-| `/stories/$slug` | WP-6 | no | loader | yes | yes |
+| `/stories` | WP-6 | yes | loader | yes | yes |
+| `/stories/$slug` | WP-6 | yes | loader | yes | yes |
 | `/knowledge` | WP-6 | yes | loader | yes | yes |
 | `/help` | WP-6 | yes | static | no | yes |
 | `/report/adoption` | WP-6 | yes | static | yes | yes |
