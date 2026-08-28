@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { PublicFormFrame } from "../../components/site/PublicFormFrame";
 import { StatusPage } from "../../components/site/adoption/StatusPage";
 
 export const Route = createFileRoute("/adoption/status/$token")({
@@ -14,5 +15,13 @@ export const Route = createFileRoute("/adoption/status/$token")({
 
 function AdoptionStatusRoute() {
   const { token } = Route.useParams();
-  return <StatusPage token={token} />;
+  return <AdoptionStatusView token={token} />;
+}
+
+export function AdoptionStatusView({ token }: { token: string }) {
+  return (
+    <PublicFormFrame trustNote="此為私人查閱連結，請勿轉發。">
+      <StatusPage token={token} />
+    </PublicFormFrame>
+  );
 }
