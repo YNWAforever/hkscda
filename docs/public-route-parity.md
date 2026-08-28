@@ -83,7 +83,6 @@ are shell and machine routes, listed separately below.
 
 Open by design; each belongs to work that has not run yet.
 
-- Routes marked `no` under Design system keep their pre-port section structure.
 - `/report/adoption` shows an unpublished state rather than figures: the anonymous
   policy exposes only available animals, so no adoption total can be derived
   client-side. BP-1 owns the privacy-safe aggregate.
