@@ -35,6 +35,10 @@ function createBuilder(calls: unknown[], result: FakeResult) {
       calls.push({ name: "in", column, values });
       return builder;
     },
+    limit(count: number) {
+      calls.push({ name: "limit", count });
+      return builder;
+    },
     then(resolve: (value: FakeResult) => void) {
       resolve(result);
     },
@@ -78,10 +82,13 @@ describe("getAdoptionLifetimeTotal", () => {
 describe("getAdoptionSpeciesTotals", () => {
   test("joins successful_adoption to animals.type and tallies by species", async () => {
     const client = createClient({
-      successful_adoption: {
-        data: [{ animal_id: "a1" }, { animal_id: "a2" }, { animal_id: "a3" }],
-        error: null,
-      },
+      successful_adoption: [
+        { count: 3, error: null },
+        {
+          data: [{ animal_id: "a1" }, { animal_id: "a2" }, { animal_id: "a3" }],
+          error: null,
+        },
+      ],
       animals: {
         data: [
           { id: "a1", type: "cat" },
@@ -95,9 +102,45 @@ describe("getAdoptionSpeciesTotals", () => {
     await expect(getAdoptionSpeciesTotals(client)).resolves.toEqual({ cat: 2, dog: 1 });
   });
 
+  test("tallies duplicate animal_id rows as separate adoption events, not distinct animals", async () => {
+    // An animal adopted, returned, and re-homed produces two successful_adoption
+    // rows with the same animal_id - nothing in the schema prevents this. Species
+    // totals must count events (rows), not distinct animals, so that cat + dog
+    // stays equal to getAdoptionLifetimeTotal.
+    const client = createClient({
+      successful_adoption: [
+        { count: 3, error: null },
+        {
+          data: [{ animal_id: "a1" }, { animal_id: "a1" }, { animal_id: "a2" }],
+          error: null,
+        },
+      ],
+      animals: {
+        data: [
+          { id: "a1", type: "cat" },
+          { id: "a2", type: "dog" },
+        ],
+        error: null,
+      },
+    });
+
+    await expect(getAdoptionSpeciesTotals(client)).resolves.toEqual({ cat: 2, dog: 1 });
+  });
+
+  test("throws when successful_adoption row count exceeds the species-totals fetch limit", async () => {
+    const client = createClient({
+      successful_adoption: [{ count: 5001, error: null }],
+    });
+
+    await expect(getAdoptionSpeciesTotals(client)).rejects.toThrow(/5001/);
+  });
+
   test("selects only animal_id, id, and type - nothing adopter- or case-identifying", async () => {
     const client = createClient({
-      successful_adoption: { data: [{ animal_id: "a1" }], error: null },
+      successful_adoption: [
+        { count: 1, error: null },
+        { data: [{ animal_id: "a1" }], error: null },
+      ],
       animals: { data: [{ id: "a1", type: "cat" }], error: null },
     });
 
@@ -105,13 +148,19 @@ describe("getAdoptionSpeciesTotals", () => {
 
     const selects = client.calls.filter((c) => (c as { name: string }).name === "select");
     expect(selects).toEqual([
+      { name: "select", columns: "id", options: { count: "exact", head: true } },
       { name: "select", columns: "animal_id", options: undefined },
       { name: "select", columns: "id, type", options: undefined },
     ]);
   });
 
-  test("returns zero totals with no second query when there are no adoptions", async () => {
-    const client = createClient({ successful_adoption: { data: [], error: null } });
+  test("returns zero totals with no animals query when there are no adoptions", async () => {
+    const client = createClient({
+      successful_adoption: [
+        { count: 0, error: null },
+        { data: [], error: null },
+      ],
+    });
     await expect(getAdoptionSpeciesTotals(client)).resolves.toEqual({ cat: 0, dog: 0 });
   });
 });
