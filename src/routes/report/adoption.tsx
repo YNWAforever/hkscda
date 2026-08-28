@@ -5,6 +5,10 @@ import { PublicPageFrame } from "../../components/site/PublicPageFrame";
 import { resilientPublicLoader } from "../../lib/routing/resilientLoader";
 import { getAdoptionImpactReport } from "../../lib/adoptions/publicImpact.functions";
 import type { AdoptionImpactReport } from "../../lib/adoptions/publicImpact";
+import { datasetSchema, renderJsonLd } from "@/lib/schema";
+
+const pageDescription =
+  "香港拯救貓狗協會累計成功領養總數及過去12個月數字，每月更新，統計口徑與資料截止日期於本頁公開。";
 
 export const Route = createFileRoute("/report/adoption")({
   loader: resilientPublicLoader(() => getAdoptionImpactReport()),
@@ -12,21 +16,17 @@ export const Route = createFileRoute("/report/adoption")({
   head: () => ({
     meta: [
       { title: "領養工作成效 · 香港拯救貓狗協會 HKSCDA" },
-      {
-        name: "description",
-        content:
-          "香港拯救貓狗協會累計成功領養總數及過去12個月數字，每月更新，統計口徑與資料截止日期於本頁公開。",
-      },
+      { name: "description", content: pageDescription },
       { property: "og:title", content: "領養工作成效 · HKSCDA" },
       { property: "og:description", content: "累計成功領養總數及過去12個月數字，每月更新。" },
       { property: "og:type", content: "website" },
     ],
     links: [{ rel: "canonical", href: publicUrl("/report/adoption") }],
   }),
-  component: AdoptionReportRoute,
+  component: AdoptionImpactReportRoute,
 });
 
-function AdoptionReportRoute() {
+function AdoptionImpactReportRoute() {
   const result = Route.useLoaderData();
   if (result.status === "error") return <AdoptionImpactReportLoadError />;
   return <AdoptionImpactReportPage report={result.data} />;
@@ -73,16 +73,23 @@ export function AdoptionImpactReportPage({ report }: { report: AdoptionImpactRep
         action: { label: "查看年報及審計", to: "/report/audit" },
       }}
     >
+      {renderJsonLd(datasetSchema("HKSCDA 領養工作成效", pageDescription))}
+
       <section className="section">
         <div className="public-container">
-          <div className="impact-data">
-            <div>
-              <strong>{report.total}</strong>
-              <span>累計成功領養宗數</span>
-            </div>
+          <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-6 text-center">
+            <strong className="block text-4xl font-bold text-[var(--color-primary)]">
+              {report.total}
+            </strong>
+            <span className="mt-2 block text-sm text-[var(--color-text-muted)]">
+              累計成功領養宗數
+            </span>
           </div>
 
-          <ul className="mt-8 divide-y divide-[var(--color-border)]">
+          <ul
+            className="mt-8 divide-y divide-[var(--color-border)]"
+            aria-label="過去12個月領養宗數"
+          >
             {report.monthly.map((m) => (
               <li key={m.month} className="flex items-center justify-between py-3">
                 <span className="text-[var(--color-text-muted)]">{m.label}</span>
