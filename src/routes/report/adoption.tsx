@@ -63,7 +63,7 @@ export function AdoptionImpactReportPage({ report }: { report: AdoptionImpactRep
           eyebrow: "發佈安排",
           title: "資料截止日期與更新頻率",
           description:
-            "每次發佈都會標示資料截止日期與發佈日期，讓讀者知道數字對應的時間範圍；在未有核實數據前，本頁不會顯示零值或估算數字。",
+            "每次發佈都會標示資料截止日期與發佈日期，讓讀者知道數字對應的時間範圍；如遇系統故障或未能核實，本頁不會以零值、舊數字或估算數字代替，而會顯示暫時未能載入的訊息。",
         },
       ]}
       cta={{
