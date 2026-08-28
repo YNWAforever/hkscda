@@ -4,6 +4,7 @@ import { brand } from "@/lib/brand/brand";
 import { CalendarDays, Cat, Dog, Heart, House, Scissors, UserPlus, Users } from "lucide-react";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
+import { PublicFormFrame } from "../components/site/PublicFormFrame";
 import { TurnstileWidget, turnstileEnabled } from "../components/site/TurnstileWidget";
 import {
   activityAvailabilityLabel,
@@ -70,14 +71,18 @@ export const Route = createFileRoute("/volunteer")({
   component: VolunteerPage,
 });
 
-function VolunteerPage() {
+export function VolunteerPage() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
 
   if (pathname.startsWith("/volunteer/status/") || pathname.startsWith("/volunteer/group")) {
     return <Outlet />;
   }
 
-  return <VolunteerDirectoryPage />;
+  return (
+    <PublicFormFrame trustNote="你的個人資料只會用於義工登記及聯絡，不會作其他用途。">
+      <VolunteerDirectoryPage />
+    </PublicFormFrame>
+  );
 }
 
 function VolunteerDirectoryPage() {
