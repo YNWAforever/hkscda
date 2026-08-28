@@ -57,7 +57,7 @@ describe("StoryWall", () => {
     const { StoryWall } = await import("./StoryWall");
     const markup = renderToStaticMarkup(<StoryWall stories={[story]} />);
 
-    expect(markup).toContain("救援個案");
+    expect(markup).not.toContain("page-hero-grid");
     expect(markup).toContain('href="/donate?purpose=medical"');
     expect(markup).toContain("支援醫療費用 ｜ 立即捐助");
     expect(markup.match(/purpose=medical/g)).toHaveLength(1);

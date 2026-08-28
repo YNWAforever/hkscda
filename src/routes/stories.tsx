@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { publicUrl } from "@/lib/publicOrigin";
 import { resilientPublicLoader } from "../lib/routing/resilientLoader";
+import { PublicPageFrame } from "../components/site/PublicPageFrame";
 import { PublicStateShell } from "../components/site/PublicStateShell";
 
 import { RescueMap } from "../components/site/stories/RescueMap";
@@ -49,11 +50,15 @@ function StoriesPage() {
 
 export function StoriesPageContent({ data }: { data: PublicStoriesPageData }) {
   return (
-    <main>
+    <PublicPageFrame
+      eyebrow="救援個案"
+      title="正在康復、等待家庭的故事"
+      description="追蹤正在康復、等待家庭或已展開新生活的貓狗故事。位置只顯示公開安全區域。"
+    >
       <StoryWall stories={data.items} />
       <RescueMap points={data.points} />
       <StoryContentGrid items={data.items} />
-    </main>
+    </PublicPageFrame>
   );
 }
 
