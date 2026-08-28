@@ -37,7 +37,9 @@ describe("volunteer route directory wrap", () => {
       const markup = renderToStaticMarkup(<VolunteerPage />);
 
       expect(markup).toContain("trust-cue");
-      expect(markup).toContain("\u4f60\u7684\u500b\u4eba\u8cc7\u6599\u53ea\u6703\u7528\u65bc\u7fa9\u5de5\u767b\u8a18\u53ca\u806f\u7d61\uff0c\u4e0d\u6703\u4f5c\u5176\u4ed6\u7528\u9014\u3002");
+      expect(markup).toContain(
+        "\u4f60\u7684\u500b\u4eba\u8cc7\u6599\u53ea\u6703\u7528\u65bc\u7fa9\u5de5\u767b\u8a18\u53ca\u806f\u7d61\uff0c\u4e0d\u6703\u4f5c\u5176\u4ed6\u7528\u9014\u3002",
+      );
       expect(markup).not.toContain("detail-breadcrumb");
       expect(markup).toContain("\u4ed6\u5011\uff0c\u9700\u8981\u4f60\u7684\u63f4\u624b");
     } finally {
