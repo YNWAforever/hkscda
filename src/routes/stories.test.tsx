@@ -120,5 +120,7 @@ describe("stories route", () => {
     expect(markup).toContain("public-page");
     expect(markup).toContain('id="page-title"');
     expect(markup.match(/<h1/g) ?? []).toHaveLength(1);
+    expect(markup).toContain("暫時沒有公開地圖故事。");
+    expect(markup).toContain("暫時未有公開活動、義賣或報告。");
   });
 });
