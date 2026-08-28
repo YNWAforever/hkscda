@@ -28,7 +28,10 @@ export const getPublicImpactItems = createServerFn({ method: "GET" }).handler(
     const [availableCats, availableDogs, adoptedTotals] = await Promise.all([
       countAvailable("cat"),
       countAvailable("dog"),
-      loadAdoptionSpeciesTotals().catch(() => null),
+      loadAdoptionSpeciesTotals().catch((error) => {
+        console.error("Adoption species totals unavailable; omitting adopted-count cards.", error);
+        return null;
+      }),
     ]);
 
     const verified = (r: CountResult) => (r.error ? null : r.count);
