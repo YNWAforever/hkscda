@@ -9,6 +9,14 @@ type StoryDetailProps = {
   content: ContentDetail;
 };
 
+/**
+ * Uses PublicPageFrame rather than PublicDetailFrame: the original hero here
+ * puts the cover photo beside the title/summary, matching PublicPageFrame's
+ * hero shape, not PublicDetailFrame's photo-in-main-column layout. The
+ * breadcrumb reuses PublicDetailFrame's .detail-breadcrumb chrome for visual
+ * consistency with the animal/sponsor detail pages, even though the rest of
+ * the frame is PublicPageFrame's.
+ */
 export function StoryDetail({ content }: StoryDetailProps) {
   const profile = content.storyProfile;
   const publicUpdates = content.updates.filter((update) => update.visibility === "public");
