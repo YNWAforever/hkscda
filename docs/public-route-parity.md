@@ -9,7 +9,7 @@ are shell and machine routes, listed separately below.
 
 ## Status at a glance
 
-- Routes reframed onto the ported design system: **26 of 27**
+- Routes reframed onto the ported design system: **27 of 27**
 - Routes still reading primary data in the browser: **0**
 - Content routes missing a canonical: **0**
 - Token routes correctly withholding a canonical: **3 of 3**
@@ -31,7 +31,7 @@ are shell and machine routes, listed separately below.
 | `/sponsors/$id` | WP-5 | yes | loader | yes | yes |
 | `/sponsors/pledge` | WP-5 | yes | static | no | yes |
 | `/sponsors/status/$token` | WP-5 | yes | static | no | correctly absent |
-| `/donate` | WP-5 | no | loader | no | yes |
+| `/donate` | WP-5 | yes | loader | no | yes |
 | `/volunteer` | WP-5 | yes | static | no | yes |
 | `/volunteer/group` | WP-5 | yes | static | no | yes |
 | `/volunteer/status/$token` | WP-5 | yes | static | yes | correctly absent |
@@ -92,3 +92,8 @@ Open by design; each belongs to work that has not run yet.
 - The brand verifier cannot pass in CI against an empty database: it discovers
   detail routes from listing pages, so with no rows it probes synthetic ids. That
   is a gate design decision, not a route defect.
+- `container-wide` (the pre-design-system container utility) is still used in
+  roughly 20 files — mostly pending/error/skeleton states that every group in
+  this port deliberately left untouched, plus a few shared components. Not
+  tracked as a per-route gap since it doesn't affect any route's `yes` status;
+  worth a dedicated sweep if full class-level consistency ever matters.
