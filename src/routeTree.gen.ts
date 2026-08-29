@@ -63,6 +63,7 @@ import { Route as ApiAdminReceiptsRouteImport } from './routes/api/admin/receipt
 import { Route as ApiAdminPaymentsRouteImport } from './routes/api/admin/payments'
 import { Route as ApiAdminMeRouteImport } from './routes/api/admin/me'
 import { Route as ApiAdminKnowledgeRouteImport } from './routes/api/admin/knowledge'
+import { Route as ApiAdminGovernanceRouteImport } from './routes/api/admin/governance'
 import { Route as ApiAdminDocumentsRouteImport } from './routes/api/admin/documents'
 import { Route as ApiAdminContentRouteImport } from './routes/api/admin/content'
 import { Route as ApiAdminAnnualReportsRouteImport } from './routes/api/admin/annual-reports'
@@ -437,6 +438,11 @@ const ApiAdminMeRoute = ApiAdminMeRouteImport.update({
 const ApiAdminKnowledgeRoute = ApiAdminKnowledgeRouteImport.update({
   id: '/api/admin/knowledge',
   path: '/api/admin/knowledge',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminGovernanceRoute = ApiAdminGovernanceRouteImport.update({
+  id: '/api/admin/governance',
+  path: '/api/admin/governance',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAdminDocumentsRoute = ApiAdminDocumentsRouteImport.update({
@@ -1084,6 +1090,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/annual-reports': typeof ApiAdminAnnualReportsRouteWithChildren
   '/api/admin/content': typeof ApiAdminContentRouteWithChildren
   '/api/admin/documents': typeof ApiAdminDocumentsRouteWithChildren
+  '/api/admin/governance': typeof ApiAdminGovernanceRoute
   '/api/admin/knowledge': typeof ApiAdminKnowledgeRoute
   '/api/admin/me': typeof ApiAdminMeRoute
   '/api/admin/payments': typeof ApiAdminPaymentsRouteWithChildren
@@ -1242,6 +1249,7 @@ export interface FileRoutesByTo {
   '/api/admin/annual-reports': typeof ApiAdminAnnualReportsRouteWithChildren
   '/api/admin/content': typeof ApiAdminContentRouteWithChildren
   '/api/admin/documents': typeof ApiAdminDocumentsRouteWithChildren
+  '/api/admin/governance': typeof ApiAdminGovernanceRoute
   '/api/admin/knowledge': typeof ApiAdminKnowledgeRoute
   '/api/admin/me': typeof ApiAdminMeRoute
   '/api/admin/payments': typeof ApiAdminPaymentsRouteWithChildren
@@ -1402,6 +1410,7 @@ export interface FileRoutesById {
   '/api/admin/annual-reports': typeof ApiAdminAnnualReportsRouteWithChildren
   '/api/admin/content': typeof ApiAdminContentRouteWithChildren
   '/api/admin/documents': typeof ApiAdminDocumentsRouteWithChildren
+  '/api/admin/governance': typeof ApiAdminGovernanceRoute
   '/api/admin/knowledge': typeof ApiAdminKnowledgeRoute
   '/api/admin/me': typeof ApiAdminMeRoute
   '/api/admin/payments': typeof ApiAdminPaymentsRouteWithChildren
@@ -1563,6 +1572,7 @@ export interface FileRouteTypes {
     | '/api/admin/annual-reports'
     | '/api/admin/content'
     | '/api/admin/documents'
+    | '/api/admin/governance'
     | '/api/admin/knowledge'
     | '/api/admin/me'
     | '/api/admin/payments'
@@ -1721,6 +1731,7 @@ export interface FileRouteTypes {
     | '/api/admin/annual-reports'
     | '/api/admin/content'
     | '/api/admin/documents'
+    | '/api/admin/governance'
     | '/api/admin/knowledge'
     | '/api/admin/me'
     | '/api/admin/payments'
@@ -1880,6 +1891,7 @@ export interface FileRouteTypes {
     | '/api/admin/annual-reports'
     | '/api/admin/content'
     | '/api/admin/documents'
+    | '/api/admin/governance'
     | '/api/admin/knowledge'
     | '/api/admin/me'
     | '/api/admin/payments'
@@ -2029,6 +2041,7 @@ export interface RootRouteChildren {
   ApiAdminAnnualReportsRoute: typeof ApiAdminAnnualReportsRouteWithChildren
   ApiAdminContentRoute: typeof ApiAdminContentRouteWithChildren
   ApiAdminDocumentsRoute: typeof ApiAdminDocumentsRouteWithChildren
+  ApiAdminGovernanceRoute: typeof ApiAdminGovernanceRoute
   ApiAdminKnowledgeRoute: typeof ApiAdminKnowledgeRoute
   ApiAdminMeRoute: typeof ApiAdminMeRoute
   ApiAdminPaymentsRoute: typeof ApiAdminPaymentsRouteWithChildren
@@ -2456,6 +2469,13 @@ declare module '@tanstack/react-router' {
       path: '/api/admin/knowledge'
       fullPath: '/api/admin/knowledge'
       preLoaderRoute: typeof ApiAdminKnowledgeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/governance': {
+      id: '/api/admin/governance'
+      path: '/api/admin/governance'
+      fullPath: '/api/admin/governance'
+      preLoaderRoute: typeof ApiAdminGovernanceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/documents': {
@@ -3720,6 +3740,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminAnnualReportsRoute: ApiAdminAnnualReportsRouteWithChildren,
   ApiAdminContentRoute: ApiAdminContentRouteWithChildren,
   ApiAdminDocumentsRoute: ApiAdminDocumentsRouteWithChildren,
+  ApiAdminGovernanceRoute: ApiAdminGovernanceRoute,
   ApiAdminKnowledgeRoute: ApiAdminKnowledgeRoute,
   ApiAdminMeRoute: ApiAdminMeRoute,
   ApiAdminPaymentsRoute: ApiAdminPaymentsRouteWithChildren,
