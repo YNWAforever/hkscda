@@ -25,6 +25,7 @@ export type AdminAccessArea =
   | "volunteerManagement"
   | "contentManagement"
   | "governanceManagement"
+  | "sponsorshipReview"
   | "accessManagement";
 
 export type AdminIdentity = {
@@ -46,6 +47,7 @@ const ROLE_ACCESS: Record<AdminRole, ReadonlySet<AdminAccessArea>> = {
     "volunteerManagement",
     "payments",
     "contentManagement",
+    "sponsorshipReview",
   ]),
   treasurer: new Set(["payments", "supporters"]),
   admin: new Set([
@@ -61,6 +63,7 @@ const ROLE_ACCESS: Record<AdminRole, ReadonlySet<AdminAccessArea>> = {
     "supporters",
     "contentManagement",
     "governanceManagement",
+    "sponsorshipReview",
     "accessManagement",
   ]),
 };

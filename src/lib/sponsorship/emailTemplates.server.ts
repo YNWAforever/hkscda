@@ -18,6 +18,30 @@ function escapeHtml(value: string) {
     .replaceAll("'", "&#39;");
 }
 
+/**
+ * Wraps a pre-escaped HTML body in the shared HKSCDA email envelope
+ * (greeting + body + signature), matching the letterhead used across all
+ * sponsorship notification emails.
+ */
+function wrapEmailEnvelope(
+  language: "zh-HK" | "en",
+  supporterName: string,
+  bodyHtml: string,
+  subject: string,
+) {
+  if (language === "en") {
+    return {
+      subject,
+      html: [`<p>Dear ${supporterName},</p>`, bodyHtml, "<p>HKSCDA Sponsorship Team</p>"].join(""),
+    };
+  }
+
+  return {
+    subject,
+    html: [`<p>${supporterName} 您好：</p>`, bodyHtml, "<p>HKSCDA 助養團隊</p>"].join(""),
+  };
+}
+
 const PAYMENT_METHODS_ZH = [
   ["轉數快 FPS", "9864 1089"],
   ["銀行轉帳", "匯豐銀行 012-345-678901"],
@@ -55,16 +79,16 @@ export function renderPledgeConfirmationEmail(input: PledgeConfirmationEmailInpu
           ].join("")
         : "<p>We have received your payment proof and will confirm your sponsorship shortly.</p>";
 
-    return {
-      subject: `HKSCDA received your sponsorship pledge ${input.reference}`,
-      html: [
-        `<p>Dear ${supporterName},</p>`,
+    return wrapEmailEnvelope(
+      "en",
+      supporterName,
+      [
         `<p>Thank you for pledging <strong>${amount}/month</strong>. Your reference is <strong>${reference}</strong>.</p>`,
         paymentBlock,
         statusLink,
-        "<p>HKSCDA Sponsorship Team</p>",
       ].join(""),
-    };
+      `HKSCDA received your sponsorship pledge ${input.reference}`,
+    );
   }
 
   const paymentBlockZh =
@@ -79,14 +103,121 @@ export function renderPledgeConfirmationEmail(input: PledgeConfirmationEmailInpu
         ].join("")
       : "<p>我們已收到您的付款證明，將盡快為您確認助養資格。</p>";
 
-  return {
-    subject: `HKSCDA 已收到您的助養承諾 ${input.reference}`,
-    html: [
-      `<p>${supporterName} 您好：</p>`,
+  return wrapEmailEnvelope(
+    "zh-HK",
+    supporterName,
+    [
       `<p>多謝您承諾每月助養 <strong>${amount}</strong>，參考編號為 <strong>${reference}</strong>。</p>`,
       paymentBlockZh,
       statusLink,
-      "<p>HKSCDA 助養團隊</p>",
     ].join(""),
-  };
+    `HKSCDA 已收到您的助養承諾 ${input.reference}`,
+  );
+}
+
+export type PledgeStatusUpdateEvent = "proof_recorded" | "active" | "needs_followup" | "cancelled";
+
+type PledgeStatusUpdateEmailInput = {
+  event: PledgeStatusUpdateEvent;
+  language: "zh-HK" | "en";
+  supporterName: string;
+  reference: string;
+  amountCents: number;
+};
+
+const SUPPORT_EMAIL = "info@hkscda.com";
+
+function pledgeStatusUpdateBodyZh(
+  event: PledgeStatusUpdateEvent,
+  reference: string,
+  amount: string,
+) {
+  switch (event) {
+    case "proof_recorded":
+      return `<p>我們已為您的助養承諾（參考編號 <strong>${reference}</strong>）記錄付款資料，將盡快為您審核。</p>`;
+    case "active":
+      return `<p>多謝您！您每月 <strong>${amount}</strong> 的助養承諾（參考編號 <strong>${reference}</strong>）已確認生效。</p>`;
+    case "needs_followup":
+      return [
+        `<p>您的助養承諾（參考編號 <strong>${reference}</strong>）的付款資料需要跟進，未能確認。</p>`,
+        `<p>請重新提交付款證明，或電郵至 <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a> 查詢，並註明參考編號。</p>`,
+      ].join("");
+    case "cancelled":
+      return `<p>您的助養承諾（參考編號 <strong>${reference}</strong>）已取消。如有疑問歡迎聯絡我們。</p>`;
+    default: {
+      const _exhaustive: never = event;
+      throw new Error(`Unhandled pledge status update event: ${_exhaustive}`);
+    }
+  }
+}
+
+function pledgeStatusUpdateBodyEn(
+  event: PledgeStatusUpdateEvent,
+  reference: string,
+  amount: string,
+) {
+  switch (event) {
+    case "proof_recorded":
+      return `<p>We have recorded a payment for your sponsorship pledge <strong>${reference}</strong> and will review it shortly.</p>`;
+    case "active":
+      return `<p>Thank you! Your <strong>${amount}</strong>/month sponsorship pledge <strong>${reference}</strong> is now confirmed and active.</p>`;
+    case "needs_followup":
+      return [
+        `<p>We were unable to confirm the payment for your sponsorship pledge <strong>${reference}</strong>.</p>`,
+        `<p>Please resubmit your payment proof, or email <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a> quoting your reference.</p>`,
+      ].join("");
+    case "cancelled":
+      return `<p>Your sponsorship pledge <strong>${reference}</strong> has been cancelled. Please contact us if you have any questions.</p>`;
+    default: {
+      const _exhaustive: never = event;
+      throw new Error(`Unhandled pledge status update event: ${_exhaustive}`);
+    }
+  }
+}
+
+const PLEDGE_STATUS_SUBJECT_ZH: Record<PledgeStatusUpdateEvent, string> = {
+  proof_recorded: "HKSCDA 已收到您的付款記錄",
+  active: "HKSCDA 助養已確認生效",
+  needs_followup: "HKSCDA 助養付款需要跟進",
+  cancelled: "HKSCDA 助養承諾已取消",
+};
+
+const PLEDGE_STATUS_SUBJECT_EN: Record<PledgeStatusUpdateEvent, string> = {
+  proof_recorded: "HKSCDA recorded your sponsorship payment",
+  active: "HKSCDA sponsorship confirmed",
+  needs_followup: "HKSCDA sponsorship payment needs follow-up",
+  cancelled: "HKSCDA sponsorship pledge cancelled",
+};
+
+/**
+ * Renders the bilingual lifecycle-status notification sent to a sponsor
+ * whenever staff record/review a payment proof or cancel a pledge.
+ *
+ * Not yet called from a production code path: the caller
+ * (`sendPledgeStatusUpdateEmail` in `sponsorshipAdmin/notifications.server.ts`,
+ * wired into `sponsorshipAdmin/service.ts`'s recordPayment/reviewProof/
+ * cancelPledge orchestration) is a later task in the same admin-review plan
+ * (see `docs/superpowers/plans/2026-08-29-sponsorship-admin-review.md`,
+ * Task 6), not dead code left behind.
+ */
+export function renderPledgeStatusUpdateEmail(input: PledgeStatusUpdateEmailInput) {
+  const supporterName = escapeHtml(input.supporterName);
+  const reference = escapeHtml(input.reference);
+  const amount = centsToHkd(input.amountCents);
+
+  if (input.language === "en") {
+    return wrapEmailEnvelope(
+      "en",
+      supporterName,
+      pledgeStatusUpdateBodyEn(input.event, reference, amount),
+      `${PLEDGE_STATUS_SUBJECT_EN[input.event]} ${input.reference}`,
+    );
+  }
+
+  return wrapEmailEnvelope(
+    "zh-HK",
+    supporterName,
+    pledgeStatusUpdateBodyZh(input.event, reference, amount),
+    `${PLEDGE_STATUS_SUBJECT_ZH[input.event]} ${input.reference}`,
+  );
 }

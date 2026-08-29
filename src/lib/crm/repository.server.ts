@@ -498,14 +498,19 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
       if (!supporterRow) return null;
 
       const summary = (await hydrateSupporters(client, [supporterRow as SupporterRow]))[0];
-      const { data: donationData, error: donationError } = await client
-        .from("donation")
-        .select("*")
-        .eq("supporter_id", id)
-        .order("created_at", { ascending: false });
-      if (donationError) throw donationError;
-      const donationRows = (donationData ?? []) as DonationRow[];
+      const [donationResult, pledgeResult] = await Promise.all([
+        client
+          .from("donation")
+          .select("*")
+          .eq("supporter_id", id)
+          .order("created_at", { ascending: false }),
+        client.from("sponsorship_pledge").select("id").eq("supporter_id", id),
+      ]);
+      if (donationResult.error) throw donationResult.error;
+      if (pledgeResult.error) throw pledgeResult.error;
+      const donationRows = (donationResult.data ?? []) as DonationRow[];
       const donationIds = donationRows.map((row) => row.id);
+      const pledgeIds = ((pledgeResult.data ?? []) as Array<{ id: string }>).map((row) => row.id);
 
       const [paymentsResult, receiptsResult, consentsResult, messagesResult, auditResult] =
         await Promise.all([
@@ -536,7 +541,7 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
           client
             .from("audit_log")
             .select("id,actor_user_id,action,entity,entity_id,timestamp,detail")
-            .in("entity_id", [id, ...donationIds])
+            .in("entity_id", [id, ...donationIds, ...pledgeIds])
             .order("timestamp", { ascending: false }),
         ]);
 
