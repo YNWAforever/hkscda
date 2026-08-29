@@ -758,4 +758,43 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("create unique index if not exists message_pledge_status_update_unique");
     expect(sql).toContain("payload ->> 'kind' = 'sponsorship_pledge_status_update'");
   });
+
+  test("faq_entry: RLS locked down, category constrained, both audit RPCs present and locked to service_role", () => {
+    const sql = readMigrationBySuffix("_faq_entry.sql");
+
+    expect(sql).toContain("create table if not exists public.faq_entry");
+    expect(sql).toContain(
+      "category text not null check (category in\n    ('sponsorship', 'adoption', 'tax_receipt', 'donation', 'contact'))",
+    );
+    expect(sql).toContain("alter table public.faq_entry enable row level security");
+    expect(sql).toContain("grant select, insert, update, delete on public.faq_entry to service_role");
+    expect(sql).toContain("revoke all on public.faq_entry from anon, authenticated");
+    expect(sql).toContain(
+      "create trigger set_updated_at before update on public.faq_entry",
+    );
+
+    for (const fn of ["upsert_faq_entry_with_audit", "deactivate_faq_entry_with_audit"]) {
+      expect(sql).toContain(`create or replace function public.${fn}(`);
+    }
+
+    const guards = sql.match(
+      /from public\.admin_user\s*\n\s*where auth_user_id = p_actor_user_id\s*\n\s*and status = 'active'\s*\n\s*and role in \('staff', 'admin'\)/g,
+    );
+    expect(guards).toHaveLength(2);
+
+    expect(sql).toMatch(
+      /revoke all on function public\.upsert_faq_entry_with_audit\([\s\S]*?\) from public, anon, authenticated;\s*\ngrant execute on function public\.upsert_faq_entry_with_audit\([\s\S]*?\) to service_role;/,
+    );
+    expect(sql).toMatch(
+      /revoke all on function public\.deactivate_faq_entry_with_audit\([\s\S]*?\) from public, anon, authenticated;\s*\ngrant execute on function public\.deactivate_faq_entry_with_audit\([\s\S]*?\) to service_role;/,
+    );
+
+    // Both RPCs write exactly one audit_log row inside the same function body
+    // as the data mutation (atomic — never a second, separately-failable call).
+    expect((sql.match(/insert into public\.audit_log/g) ?? []).length).toBe(2);
+
+    // The 10 seeded rows preserve every existing sensitive/CTA flag exactly.
+    expect((sql.match(/insert into public\.faq_entry/g) ?? []).length).toBe(1);
+    expect((sql.match(/'tax_receipt'/g) ?? []).length).toBeGreaterThanOrEqual(2);
+  });
 });
