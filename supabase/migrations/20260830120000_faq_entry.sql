@@ -43,7 +43,8 @@ create or replace function public.upsert_faq_entry_with_audit(
   p_keywords_en text[],
   p_cta_key text,
   p_sensitive boolean,
-  p_sort_order integer
+  p_sort_order integer,
+  p_is_active boolean
 )
 returns public.faq_entry
 language plpgsql
@@ -67,11 +68,11 @@ begin
   if p_id is null then
     insert into public.faq_entry (
       category, question_zh, question_en, answer_zh, answer_en,
-      keywords_zh, keywords_en, cta_key, sensitive, sort_order,
+      keywords_zh, keywords_en, cta_key, sensitive, sort_order, is_active,
       created_by, updated_by
     ) values (
       p_category, p_question_zh, p_question_en, p_answer_zh, p_answer_en,
-      p_keywords_zh, p_keywords_en, p_cta_key, p_sensitive, p_sort_order,
+      p_keywords_zh, p_keywords_en, p_cta_key, p_sensitive, p_sort_order, p_is_active,
       actor.id, actor.id
     )
     returning * into result;
@@ -87,6 +88,7 @@ begin
       cta_key = p_cta_key,
       sensitive = p_sensitive,
       sort_order = p_sort_order,
+      is_active = p_is_active,
       updated_by = actor.id
     where id = p_id
     returning * into result;
@@ -110,10 +112,10 @@ end;
 $$;
 
 revoke all on function public.upsert_faq_entry_with_audit(
-  uuid, uuid, text, text, text, text, text, text[], text[], text, boolean, integer
+  uuid, uuid, text, text, text, text, text, text[], text[], text, boolean, integer, boolean
 ) from public, anon, authenticated;
 grant execute on function public.upsert_faq_entry_with_audit(
-  uuid, uuid, text, text, text, text, text, text[], text[], text, boolean, integer
+  uuid, uuid, text, text, text, text, text, text[], text[], text, boolean, integer, boolean
 ) to service_role;
 
 create or replace function public.deactivate_faq_entry_with_audit(
