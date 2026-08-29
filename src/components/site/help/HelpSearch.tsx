@@ -4,8 +4,8 @@ import { Search } from "lucide-react";
 import { trackHelpEvent } from "../../../lib/help/analytics";
 import {
   helpCategoryLabels,
-  helpFaqs,
   type HelpCategory,
+  type HelpFaq,
   type HelpLanguage,
 } from "../../../lib/help/faq";
 import { requiresStaffContact, searchHelpFaqs } from "../../../lib/help/search";
@@ -37,10 +37,12 @@ const topicPrompts: Record<HelpCategory, Record<HelpLanguage, string>> = {
 
 export function HelpSearch({
   language,
+  faqs,
   compact = false,
   surface,
 }: {
   language: HelpLanguage;
+  faqs: HelpFaq[];
   compact?: boolean;
   surface: "widget" | "page";
 }) {
@@ -49,16 +51,16 @@ export function HelpSearch({
   const resultLimit = compact ? 3 : 8;
 
   const response = useMemo(
-    () => searchHelpFaqs(submittedQuery, { language, limit: resultLimit }),
-    [language, resultLimit, submittedQuery],
+    () => searchHelpFaqs(submittedQuery, faqs, { language, limit: resultLimit }),
+    [faqs, language, resultLimit, submittedQuery],
   );
 
   const popularFaqs = useMemo(
     () =>
       popularFaqIds
-        .map((id) => helpFaqs.find((faq) => faq.id === id))
-        .filter((faq): faq is (typeof helpFaqs)[number] => Boolean(faq)),
-    [],
+        .map((id) => faqs.find((faq) => faq.id === id))
+        .filter((faq): faq is HelpFaq => Boolean(faq)),
+    [faqs],
   );
 
   function runSearch(nextQuery = query) {
@@ -69,7 +71,7 @@ export function HelpSearch({
       return;
     }
 
-    const nextResponse = searchHelpFaqs(nextQuery, { language, limit: resultLimit });
+    const nextResponse = searchHelpFaqs(nextQuery, faqs, { language, limit: resultLimit });
     trackHelpEvent("help_search", {
       language,
       resultCount: nextResponse.results.length,
