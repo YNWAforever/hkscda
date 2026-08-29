@@ -63,10 +63,7 @@ begin
   end if;
 
   if p_id is null then
-    -- Unqualified reference is safe and deterministic here: search_path is
-    -- pinned to public, pg_temp above, so this always resolves to
-    -- public.faq_entry regardless of the caller's own search_path.
-    insert into faq_entry (
+    insert into public.faq_entry (
       category, question_zh, question_en, answer_zh, answer_en,
       keywords_zh, keywords_en, cta_key, sensitive, sort_order,
       created_by, updated_by

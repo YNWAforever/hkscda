@@ -793,8 +793,8 @@ describe("supabase migration safety", () => {
     // as the data mutation (atomic — never a second, separately-failable call).
     expect((sql.match(/insert into public\.audit_log/g) ?? []).length).toBe(2);
 
-    // The 10 seeded rows preserve every existing sensitive/CTA flag exactly.
-    expect((sql.match(/insert into public\.faq_entry/g) ?? []).length).toBe(1);
+    // 1 inside upsert_faq_entry_with_audit's create branch, 1 in the seed bulk-insert.
+    expect((sql.match(/insert into public\.faq_entry/g) ?? []).length).toBe(2);
     expect((sql.match(/'tax_receipt'/g) ?? []).length).toBeGreaterThanOrEqual(2);
   });
 });
