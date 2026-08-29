@@ -3,9 +3,14 @@ import { publicUrl } from "@/lib/publicOrigin";
 
 import { PublicPageFrame } from "../../components/site/PublicPageFrame";
 import { PublicStateShell } from "../../components/site/PublicStateShell";
+import { resilientPublicLoader } from "../../lib/routing/resilientLoader";
+import { getPublicBoardRoster } from "../../lib/governance/publicPage.functions";
+import type { PublicBoardRoster } from "../../lib/governance/publicPage.server";
 import { brand } from "../../lib/brand/brand";
 
 export const Route = createFileRoute("/about/team")({
+  loader: resilientPublicLoader(() => getPublicBoardRoster()),
+  errorComponent: TeamLoadError,
   head: () => ({
     meta: [
       { title: "團隊與管治 · 香港拯救貓狗協會 HKSCDA" },
@@ -16,18 +21,25 @@ export const Route = createFileRoute("/about/team")({
     ],
     links: [{ rel: "canonical", href: publicUrl("/about/team") }],
   }),
-  component: TeamPage,
+  component: TeamRoute,
 });
 
-/**
- * Defect G-09. The board section named two individuals and their offices in
- * hardcoded page source. Those are real people and an accountability claim, and
- * nothing in the repository establishes who approved the list or when it was last
- * correct, so it is not published from source. BP-3 supplies governance records
- * through the CMS with a review trail; until then the page states the structure
- * without asserting unverified names.
- */
-function TeamPage() {
+function TeamRoute() {
+  const result = Route.useLoaderData();
+  if (result.status === "error") return <TeamLoadError />;
+  return <TeamPage roster={result.data} />;
+}
+
+function formatLastUpdated(value: string) {
+  return new Intl.DateTimeFormat("zh-HK", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "Asia/Hong_Kong",
+  }).format(new Date(value));
+}
+
+export function TeamPage({ roster }: { roster: PublicBoardRoster }) {
   return (
     <PublicPageFrame
       eyebrow="關於協會"
@@ -51,17 +63,54 @@ function TeamPage() {
     >
       <section className="section">
         <div className="public-container">
-          <PublicStateShell
-            headingLevel={2}
-            title="董事會名單暫未發佈"
-            description={
-              "管治名單會連同生效日期一併公開，核實前不會在此刊載。如需查詢協會管治安排，可電郵 " +
-              brand.org.email +
-              "。"
-            }
-          />
+          {roster.members.length > 0 ? (
+            <>
+              <ul className="divide-y divide-[var(--color-border)]" aria-label="董事會成員名單">
+                {roster.members.map((member) => (
+                  <li key={member.sortOrder} className="flex items-center justify-between py-3">
+                    <span className="font-bold text-[var(--color-text)]">{member.name}</span>
+                    <span className="text-[var(--color-text-muted)]">{member.roleTitle}</span>
+                  </li>
+                ))}
+              </ul>
+              {roster.lastUpdated ? (
+                <p className="mt-4 text-sm text-[var(--color-text-muted)]">
+                  資料最後更新 {formatLastUpdated(roster.lastUpdated)}
+                </p>
+              ) : null}
+            </>
+          ) : (
+            <PublicStateShell
+              headingLevel={2}
+              title="尚未有公開資料"
+              description={`管治名單會連同生效日期一併公開，核實前不會在此刊載。如需查詢協會管治安排，可電郵 ${brand.org.email}。`}
+            />
+          )}
         </div>
       </section>
     </PublicPageFrame>
+  );
+}
+
+export function TeamLoadError() {
+  return (
+    <main className="mx-auto max-w-3xl px-4 py-12">
+      <div
+        role="alert"
+        className="border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-6"
+      >
+        <h1 className="text-lg font-bold">暫時未能載入團隊與管治資料</h1>
+        <p className="mt-2 text-sm text-[var(--color-text-muted)]">
+          請稍後再試，或電郵至{" "}
+          <a className="underline" href={`mailto:${brand.org.email}`}>
+            {brand.org.email}
+          </a>
+          。
+        </p>
+        <a href="/about/team" className="btn-secondary mt-5 min-h-11">
+          重新載入 / Retry
+        </a>
+      </div>
+    </main>
   );
 }

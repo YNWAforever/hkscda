@@ -44,7 +44,7 @@ are shell and machine routes, listed separately below.
 | `/about` | WP-6 | yes | loader | no | yes |
 | `/about/cccp` | WP-6 | yes | static | no | yes |
 | `/about/tnr` | WP-6 | yes | static | no | yes |
-| `/about/team` | WP-6 | yes | static | yes | yes |
+| `/about/team` | WP-6 | yes | loader | yes | yes |
 | `/about/privacy` | WP-6 | yes | static | no | yes |
 
 ### Column meanings
@@ -83,8 +83,12 @@ are shell and machine routes, listed separately below.
 
 Open by design; each belongs to work that has not run yet.
 
-- `/about/team` shows an unpublished state rather than a board list. BP-3 owns the
-  governance records.
+- BP-3's `board_member` migration (`supabase/migrations/20260829120000_governance_board_members.sql`)
+  has not yet been applied to the live database as of this commit. Until it is, the
+  loader's query against `board_member` will fail rather than return zero rows, so
+  `/about/team` will show its temporarily-unavailable error state, not an empty
+  state. Once the migration is applied, real board data (or a genuine empty state
+  if none exists yet) will show correctly.
 - The brand verifier cannot pass in CI against an empty database: it discovers
   detail routes from listing pages, so with no rows it probes synthetic ids. That
   is a gate design decision, not a route defect.
