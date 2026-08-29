@@ -464,6 +464,29 @@ describe("createSponsorshipAdminService", () => {
     expect(call[1].reference).not.toBe(pledgeId);
   });
 
+  test("cancelPledge skips sending an email when the pledge has no supporter email", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () => baseDetail({ status: "active", supporterEmail: null })),
+    });
+    const sender = createFakeSender();
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: sender.sendPledgeStatusUpdateEmail,
+    });
+
+    await expect(
+      service.cancelPledge({ actorUserId, pledgeId, input: { note: "Sponsor left" } }),
+    ).resolves.toBeUndefined();
+
+    expect(repo.cancelPledge).toHaveBeenCalledWith({
+      pledgeId,
+      actorUserId,
+      note: "Sponsor left",
+    });
+    expect(sender.sendPledgeStatusUpdateEmail).not.toHaveBeenCalled();
+  });
+
   test("email failure does not throw or roll back the already-committed transition", async () => {
     const repo = createFakeRepo({
       getPledgeDetail: mock(async () => baseDetail({ status: "active" })),
