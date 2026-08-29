@@ -199,6 +199,15 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     activePath: "/admin/content/knowledge",
   },
   {
+    id: "governance",
+    section: "content",
+    group: "promotion",
+    label: "團隊與管治",
+    icon: Users,
+    to: "/admin/governance",
+    activePath: "/admin/governance",
+  },
+  {
     id: "access-management",
     section: "access",
     group: "system",

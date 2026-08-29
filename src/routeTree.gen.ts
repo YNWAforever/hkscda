@@ -37,6 +37,7 @@ import { Route as AdminVolunteersRouteImport } from './routes/admin/volunteers'
 import { Route as AdminSupportersRouteImport } from './routes/admin/supporters'
 import { Route as AdminResetPasswordRouteImport } from './routes/admin/reset-password'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as AdminGovernanceRouteImport } from './routes/admin/governance'
 import { Route as AdminContentRouteImport } from './routes/admin/content'
 import { Route as AdminApplicationsRouteImport } from './routes/admin/applications'
 import { Route as AdminAccessDeniedRouteImport } from './routes/admin/access-denied'
@@ -306,6 +307,11 @@ const AdminResetPasswordRoute = AdminResetPasswordRouteImport.update({
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminGovernanceRoute = AdminGovernanceRouteImport.update({
+  id: '/admin/governance',
+  path: '/admin/governance',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminContentRoute = AdminContentRouteImport.update({
@@ -1046,6 +1052,7 @@ export interface FileRoutesByFullPath {
   '/admin/access-denied': typeof AdminAccessDeniedRoute
   '/admin/applications': typeof AdminApplicationsRouteWithChildren
   '/admin/content': typeof AdminContentRouteWithChildren
+  '/admin/governance': typeof AdminGovernanceRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/reset-password': typeof AdminResetPasswordRoute
   '/admin/supporters': typeof AdminSupportersRouteWithChildren
@@ -1205,6 +1212,7 @@ export interface FileRoutesByTo {
   '/admin/access': typeof AdminAccessRoute
   '/admin/access-denied': typeof AdminAccessDeniedRoute
   '/admin/content': typeof AdminContentRouteWithChildren
+  '/admin/governance': typeof AdminGovernanceRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/reset-password': typeof AdminResetPasswordRoute
   '/admin/supporters': typeof AdminSupportersRouteWithChildren
@@ -1366,6 +1374,7 @@ export interface FileRoutesById {
   '/admin/access-denied': typeof AdminAccessDeniedRoute
   '/admin/applications': typeof AdminApplicationsRouteWithChildren
   '/admin/content': typeof AdminContentRouteWithChildren
+  '/admin/governance': typeof AdminGovernanceRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/reset-password': typeof AdminResetPasswordRoute
   '/admin/supporters': typeof AdminSupportersRouteWithChildren
@@ -1528,6 +1537,7 @@ export interface FileRouteTypes {
     | '/admin/access-denied'
     | '/admin/applications'
     | '/admin/content'
+    | '/admin/governance'
     | '/admin/login'
     | '/admin/reset-password'
     | '/admin/supporters'
@@ -1687,6 +1697,7 @@ export interface FileRouteTypes {
     | '/admin/access'
     | '/admin/access-denied'
     | '/admin/content'
+    | '/admin/governance'
     | '/admin/login'
     | '/admin/reset-password'
     | '/admin/supporters'
@@ -1847,6 +1858,7 @@ export interface FileRouteTypes {
     | '/admin/access-denied'
     | '/admin/applications'
     | '/admin/content'
+    | '/admin/governance'
     | '/admin/login'
     | '/admin/reset-password'
     | '/admin/supporters'
@@ -2008,6 +2020,7 @@ export interface RootRouteChildren {
   AdminAccessDeniedRoute: typeof AdminAccessDeniedRoute
   AdminApplicationsRoute: typeof AdminApplicationsRouteWithChildren
   AdminContentRoute: typeof AdminContentRouteWithChildren
+  AdminGovernanceRoute: typeof AdminGovernanceRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminResetPasswordRoute: typeof AdminResetPasswordRoute
   AdminSupportersRoute: typeof AdminSupportersRouteWithChildren
@@ -2287,6 +2300,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/login'
       fullPath: '/admin/login'
       preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/governance': {
+      id: '/admin/governance'
+      path: '/admin/governance'
+      fullPath: '/admin/governance'
+      preLoaderRoute: typeof AdminGovernanceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/content': {
@@ -3706,6 +3726,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAccessDeniedRoute: AdminAccessDeniedRoute,
   AdminApplicationsRoute: AdminApplicationsRouteWithChildren,
   AdminContentRoute: AdminContentRouteWithChildren,
+  AdminGovernanceRoute: AdminGovernanceRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminResetPasswordRoute: AdminResetPasswordRoute,
   AdminSupportersRoute: AdminSupportersRouteWithChildren,
