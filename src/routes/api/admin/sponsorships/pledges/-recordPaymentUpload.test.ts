@@ -1,5 +1,6 @@
 import { describe, expect, mock, test } from "bun:test";
 
+import { MAX_PROOF_BYTES } from "../../../../../lib/sponsorship/schemas";
 import { handleRecordPaymentUpload, safeFileName } from "./-recordPaymentUpload";
 
 const pledgeId = "11111111-2222-4333-8444-555555555555";
@@ -184,6 +185,58 @@ describe("handleRecordPaymentUpload", () => {
     // The final `storagePath` on the recorded file uses the path Supabase
     // storage reports back (`upload.data.path`), not the requested path.
     expect(call.input.file?.storagePath).toBe("uploaded/path.png");
+  });
+
+  test("rejects a wrong-MIME-type file with 400 and never touches storage", async () => {
+    const service = createService();
+    const { client, upload } = createClient();
+
+    const response = await handleRecordPaymentUpload({
+      request: multipartRequest({
+        payload: { paymentMethod: "fps", amountCents: 1, paymentDate: "2026-07-01" },
+        // Bun's multipart/form-data serializer infers the Content-Type of a
+        // recognized image/document extension from the file name rather than
+        // the `File.type` passed in, so a mismatched-but-still-image
+        // extension like ".png" would silently "fix itself" on the wire.
+        // Naming it like an executable keeps the wrong MIME type intact
+        // through the request/response round trip.
+        file: proofFile({ name: "receipt.exe", type: "application/x-msdownload" }),
+      }),
+      pledgeId,
+      client: client as never,
+      service: service as never,
+      requireCoordinator: requireCoordinator(),
+    });
+
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body.error).toBe("Invalid payment proof request");
+    expect(upload).not.toHaveBeenCalled();
+  });
+
+  test("rejects an oversized file with 400 and never touches storage", async () => {
+    const service = createService();
+    const { client, upload } = createClient();
+
+    const oversizedFile = new File([new Uint8Array(MAX_PROOF_BYTES + 1)], "receipt.png", {
+      type: "image/png",
+    });
+
+    const response = await handleRecordPaymentUpload({
+      request: multipartRequest({
+        payload: { paymentMethod: "fps", amountCents: 1, paymentDate: "2026-07-01" },
+        file: oversizedFile,
+      }),
+      pledgeId,
+      client: client as never,
+      service: service as never,
+      requireCoordinator: requireCoordinator(),
+    });
+
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body.error).toBe("Invalid payment proof request");
+    expect(upload).not.toHaveBeenCalled();
   });
 
   test("removes the uploaded file when recordPayment fails after a successful upload", async () => {
