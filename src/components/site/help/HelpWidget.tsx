@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { HelpCircle, MessageCircleQuestion, X } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 import { trackHelpEvent } from "../../../lib/help/analytics";
 import type { HelpLanguage } from "../../../lib/help/faq";
+import { publicFaqsQueryOptions } from "../../../lib/help/usePublicFaqs";
 import { usePublicFixedActions } from "../fixedActions/PublicFixedActions";
 import { HelpSearch } from "./HelpSearch";
 
@@ -10,6 +12,7 @@ export function HelpWidget() {
   const { helpOpen: open, setHelpOpen: setOpen } = usePublicFixedActions();
   const [language, setLanguage] = useState<HelpLanguage>("zh-HK");
   const panelRef = useRef<HTMLDivElement | null>(null);
+  const { data: faqs = [] } = useQuery(publicFaqsQueryOptions());
 
   useEffect(() => {
     if (!open) return;
@@ -105,7 +108,7 @@ export function HelpWidget() {
           </div>
 
           <div className="min-h-0 flex-1 overflow-y-auto p-4">
-            <HelpSearch language={language} compact surface="widget" />
+            <HelpSearch language={language} faqs={faqs} compact surface="widget" />
           </div>
         </div>
       )}
