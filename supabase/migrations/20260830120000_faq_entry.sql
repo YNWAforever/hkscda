@@ -51,14 +51,16 @@ security definer
 set search_path = public, pg_temp
 as $$
 declare
+  actor public.admin_user%rowtype;
   result public.faq_entry;
 begin
-  if not exists (
-    select 1 from public.admin_user
-    where auth_user_id = p_actor_user_id
-      and status = 'active'
-      and role in ('staff', 'admin')
-  ) then
+  select * into actor
+  from public.admin_user
+  where auth_user_id = p_actor_user_id
+    and status = 'active'
+    and role in ('staff', 'admin');
+
+  if not found then
     raise exception 'Active staff or admin actor required' using errcode = '42501';
   end if;
 
@@ -70,7 +72,7 @@ begin
     ) values (
       p_category, p_question_zh, p_question_en, p_answer_zh, p_answer_en,
       p_keywords_zh, p_keywords_en, p_cta_key, p_sensitive, p_sort_order,
-      p_actor_user_id, p_actor_user_id
+      actor.id, actor.id
     )
     returning * into result;
   else
@@ -85,7 +87,7 @@ begin
       cta_key = p_cta_key,
       sensitive = p_sensitive,
       sort_order = p_sort_order,
-      updated_by = p_actor_user_id
+      updated_by = actor.id
     where id = p_id
     returning * into result;
 
@@ -123,13 +125,16 @@ language plpgsql
 security definer
 set search_path = public, pg_temp
 as $$
+declare
+  actor public.admin_user%rowtype;
 begin
-  if not exists (
-    select 1 from public.admin_user
-    where auth_user_id = p_actor_user_id
-      and status = 'active'
-      and role in ('staff', 'admin')
-  ) then
+  select * into actor
+  from public.admin_user
+  where auth_user_id = p_actor_user_id
+    and status = 'active'
+    and role in ('staff', 'admin');
+
+  if not found then
     raise exception 'Active staff or admin actor required' using errcode = '42501';
   end if;
 
