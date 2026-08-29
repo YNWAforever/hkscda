@@ -10,7 +10,7 @@ export const boardMemberInputSchema = z.object({
   name: requiredText(120),
   roleTitle: requiredText(120),
   sortOrder: z.coerce.number().int().min(0).default(0),
-  effectiveDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "effectiveDate must be YYYY-MM-DD"),
+  effectiveDate: z.string().date(),
 });
 
 export const deactivateBoardMemberSchema = z.object({ id: boardMemberIdSchema });

@@ -44,6 +44,16 @@ describe("boardMemberInputSchema", () => {
     ).toThrow();
   });
 
+  test("rejects a calendar-invalid effectiveDate", () => {
+    expect(() =>
+      boardMemberInputSchema.parse({
+        name: "陳大文",
+        roleTitle: "主席",
+        effectiveDate: "2026-02-30",
+      }),
+    ).toThrow();
+  });
+
   test("rejects a negative sortOrder", () => {
     expect(() =>
       boardMemberInputSchema.parse({
