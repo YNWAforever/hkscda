@@ -85,43 +85,59 @@ export function GovernanceManagement() {
         </button>
       </div>
 
-      <table className="w-full border-collapse text-sm">
-        <thead>
-          <tr className="border-b text-left">
-            <th className="py-2">姓名</th>
-            <th className="py-2">職銜</th>
-            <th className="py-2">排序</th>
-            <th className="py-2">生效日期</th>
-            <th className="py-2">狀態</th>
-            <th className="py-2" />
-          </tr>
-        </thead>
-        <tbody>
-          {members.map((member) => (
-            <tr key={member.id} className="border-b">
-              <td className="py-2">{member.name}</td>
-              <td className="py-2">{member.roleTitle}</td>
-              <td className="py-2">{member.sortOrder}</td>
-              <td className="py-2">{member.effectiveDate}</td>
-              <td className="py-2">{member.isActive ? "在任" : "已卸任"}</td>
-              <td className="py-2">
-                <button type="button" onClick={() => setDraft(draftFromMember(member))}>
-                  編輯
-                </button>
-                {member.isActive ? (
-                  <button
-                    type="button"
-                    onClick={() => deactivateMutation.mutate(member.id)}
-                    disabled={deactivateMutation.isPending}
-                  >
-                    卸任
-                  </button>
-                ) : null}
-              </td>
+      {membersQuery.isLoading ? (
+        <p className="text-sm text-[var(--color-text-muted)]">載入中…</p>
+      ) : null}
+      {membersQuery.isError ? (
+        <p role="alert" className="text-sm text-red-600">
+          未能載入團隊名單，請重新整理頁面。
+        </p>
+      ) : null}
+
+      {!membersQuery.isLoading && !membersQuery.isError ? (
+        <table className="w-full border-collapse text-sm">
+          <thead>
+            <tr className="border-b text-left">
+              <th className="py-2">姓名</th>
+              <th className="py-2">職銜</th>
+              <th className="py-2">排序</th>
+              <th className="py-2">生效日期</th>
+              <th className="py-2">狀態</th>
+              <th className="py-2" />
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {members.map((member) => (
+              <tr key={member.id} className="border-b">
+                <td className="py-2">{member.name}</td>
+                <td className="py-2">{member.roleTitle}</td>
+                <td className="py-2">{member.sortOrder}</td>
+                <td className="py-2">{member.effectiveDate}</td>
+                <td className="py-2">{member.isActive ? "在任" : "已卸任"}</td>
+                <td className="py-2">
+                  <button type="button" onClick={() => setDraft(draftFromMember(member))}>
+                    編輯
+                  </button>
+                  {member.isActive ? (
+                    <button
+                      type="button"
+                      onClick={() => deactivateMutation.mutate(member.id)}
+                      disabled={deactivateMutation.isPending}
+                    >
+                      卸任
+                    </button>
+                  ) : null}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : null}
+      {deactivateMutation.isError ? (
+        <p role="alert" className="text-sm text-red-600">
+          卸任操作失敗，請再試一次。
+        </p>
+      ) : null}
 
       {draft ? (
         <form
@@ -168,6 +184,11 @@ export function GovernanceManagement() {
               required
             />
           </label>
+          {upsertMutation.isError ? (
+            <p role="alert" className="text-sm text-red-600">
+              儲存失敗，請檢查資料後再試一次。
+            </p>
+          ) : null}
           <div className="flex gap-3">
             <button
               type="submit"
