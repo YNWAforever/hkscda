@@ -65,12 +65,9 @@ export function TeamPage({ roster }: { roster: PublicBoardRoster }) {
         <div className="public-container">
           {roster.members.length > 0 ? (
             <>
-              <ul className="divide-y divide-[var(--color-border)]">
+              <ul className="divide-y divide-[var(--color-border)]" aria-label="董事會成員名單">
                 {roster.members.map((member) => (
-                  <li
-                    key={`${member.name}-${member.roleTitle}`}
-                    className="flex items-center justify-between py-3"
-                  >
+                  <li key={member.sortOrder} className="flex items-center justify-between py-3">
                     <span className="font-bold text-[var(--color-text)]">{member.name}</span>
                     <span className="text-[var(--color-text-muted)]">{member.roleTitle}</span>
                   </li>
