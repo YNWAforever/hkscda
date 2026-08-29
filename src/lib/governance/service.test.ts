@@ -95,10 +95,10 @@ describe("createGovernanceService", () => {
   });
 
   test("deactivate removes a member from the active roster and audits board_member.deactivate", async () => {
-    let deactivatedId: string | null = null;
+    const deactivateCalls: string[] = [];
     const { repo, auditCalls } = createFakeRepo({
       deactivate: async (id) => {
-        deactivatedId = id;
+        deactivateCalls.push(id);
       },
     });
     const service = createGovernanceService({
@@ -111,7 +111,7 @@ describe("createGovernanceService", () => {
       id: "11111111-1111-4111-8111-111111111111",
     });
 
-    expect(deactivatedId).toBe("11111111-1111-4111-8111-111111111111");
+    expect(deactivateCalls).toEqual(["11111111-1111-4111-8111-111111111111"]);
     expect(auditCalls).toEqual([
       {
         actor_user_id: "admin-1",
