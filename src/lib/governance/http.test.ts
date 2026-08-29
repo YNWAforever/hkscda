@@ -61,7 +61,10 @@ describe("createAdminGovernanceHandlers", () => {
   test("deactivate requires an id in the body", async () => {
     const handlers = createHandlers();
     const response = await handlers.deactivate({
-      request: new Request("http://x/api/admin/governance", { method: "DELETE", body: JSON.stringify({}) }),
+      request: new Request("http://x/api/admin/governance", {
+        method: "DELETE",
+        body: JSON.stringify({}),
+      }),
     });
 
     expect(response.status).toBe(400);
