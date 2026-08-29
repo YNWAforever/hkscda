@@ -14,11 +14,13 @@ describe("public pages do not publish unverified facts", () => {
   test("the adoption report does not read a status RLS forbids", () => {
     const source = read("src/routes/report/adoption.tsx");
 
-    // The anon policy exposes only available animals, so this query could only
-    // ever return empty - and the page rendered that emptiness as 0 adoptions.
+    // The anon policy exposes only available animals, so a client-visible query
+    // for status = "adopted" could only ever return empty. The report now reads
+    // real, verified figures through a resilient server-role loader instead.
     expect(source).not.toContain('"adopted"');
     expect(source).not.toContain("useQuery");
-    expect(source).toContain("暫未發佈");
+    expect(source).toContain("resilientPublicLoader");
+    expect(source).toContain("getAdoptionImpactReport");
   });
 
   test("the adoption report explains its methodology instead of estimating", () => {

@@ -39,7 +39,7 @@ are shell and machine routes, listed separately below.
 | `/stories/$slug` | WP-6 | yes | loader | yes | yes |
 | `/knowledge` | WP-6 | yes | loader | yes | yes |
 | `/help` | WP-6 | yes | static | no | yes |
-| `/report/adoption` | WP-6 | yes | static | yes | yes |
+| `/report/adoption` | WP-6 | yes | loader | yes | yes |
 | `/report/audit` | WP-6 | yes | loader | yes | yes |
 | `/about` | WP-6 | yes | loader | no | yes |
 | `/about/cccp` | WP-6 | yes | static | no | yes |
@@ -83,9 +83,6 @@ are shell and machine routes, listed separately below.
 
 Open by design; each belongs to work that has not run yet.
 
-- `/report/adoption` shows an unpublished state rather than figures: the anonymous
-  policy exposes only available animals, so no adoption total can be derived
-  client-side. BP-1 owns the privacy-safe aggregate.
 - BP-3's `board_member` migration (`supabase/migrations/20260829120000_governance_board_members.sql`)
   has not yet been applied to the live database as of this commit. Until it is, the
   loader's query against `board_member` will fail rather than return zero rows, so
