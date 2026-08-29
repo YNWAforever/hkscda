@@ -49,10 +49,11 @@ export async function getAdminAccessToken() {
 
 export async function fetchAdminJson<T>(path: string, init?: RequestInit): Promise<T> {
   const token = await getAdminAccessToken();
+  const isFormData = init?.body instanceof FormData;
   const response = await fetch(path, {
     ...init,
     headers: {
-      "content-type": "application/json",
+      ...(isFormData ? {} : { "content-type": "application/json" }),
       authorization: `Bearer ${token}`,
       ...init?.headers,
     },

@@ -69,6 +69,34 @@ describe("admin browser session", () => {
     );
   });
 
+  test("omits the JSON content type for a FormData body so the browser can set its own multipart boundary", async () => {
+    const fetchSpy = mock(async (_input: RequestInfo | URL, _init?: RequestInit) =>
+      Response.json({ ok: true }),
+    );
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+
+    const formData = new FormData();
+    formData.append("file", new Blob(["proof"]), "proof.pdf");
+
+    await fetchAdminJson("/api/admin/sponsorships/pledges/pledge-1/proof", {
+      method: "POST",
+      body: formData,
+    });
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      "/api/admin/sponsorships/pledges/pledge-1/proof",
+      expect.objectContaining({
+        method: "POST",
+        body: formData,
+        headers: expect.objectContaining({
+          authorization: "Bearer session-token",
+        }),
+      }),
+    );
+    const [, requestInit] = fetchSpy.mock.calls[0];
+    expect(requestInit?.headers).not.toHaveProperty("content-type");
+  });
+
   test("preserves structured safe errors for a conflict response", async () => {
     globalThis.fetch = mock(async () =>
       Response.json(
