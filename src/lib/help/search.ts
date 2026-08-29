@@ -1,6 +1,5 @@
 import {
   helpCategoryLabels,
-  helpFaqs,
   type HelpCategory,
   type HelpFaq,
   type HelpLanguage,
@@ -151,6 +150,7 @@ function confidenceFor(score: number): HelpSearchConfidence {
 
 export function searchHelpFaqs(
   query: string,
+  faqs: HelpFaq[],
   { language = "zh-HK", limit = 3, category }: HelpSearchOptions = {},
 ): HelpSearchResponse {
   const normalizedQuery = normalizeHelpQuery(query);
@@ -165,7 +165,7 @@ export function searchHelpFaqs(
     };
   }
 
-  const candidates = category ? helpFaqs.filter((faq) => faq.category === category) : helpFaqs;
+  const candidates = category ? faqs.filter((faq) => faq.category === category) : faqs;
 
   const results = candidates
     .map((faq) => {
