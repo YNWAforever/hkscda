@@ -34,7 +34,7 @@ describe("public pages do not publish unverified facts", () => {
     // source leaves no record of who approved the list or when.
     expect(source).not.toContain("謝曉梅");
     expect(source).not.toContain("鄧殷");
-    expect(source).toContain("暫未發佈");
+    expect(source).toContain("尚未有公開資料");
   });
 
   test("contact details on these pages come from the brand constants", () => {
