@@ -104,6 +104,17 @@ describe("createSupabaseFaqRepository", () => {
     expect(faqs[0]?.sensitive).toBe(false);
   });
 
+  test("listPublic silently drops a row that fails validation (e.g. an unrecognized category) rather than crashing the whole list", async () => {
+    const { client } = createFakeClient({
+      faqRows: [entryRow(), entryRow({ id: "bad-row", category: "not-a-real-category" })],
+    });
+    const repo = createSupabaseFaqRepository(client as never);
+    const faqs = await repo.listPublic();
+
+    expect(faqs).toHaveLength(1);
+    expect(faqs[0]?.id).toBe(entryId);
+  });
+
   test("listAdmin returns every entry (active and inactive), ordered", async () => {
     const { client } = createFakeClient({
       faqRows: [entryRow({ is_active: true }), entryRow({ id: "3", is_active: false })],

@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
-import { resolveFaqCta } from "./schemas";
+import { faqCategorySchema, resolveFaqCta } from "./schemas";
 import type { FaqEntry, FaqEntryInput, FaqRepository, HelpFaq } from "./types";
 
 const ROW_COLUMNS =
@@ -9,7 +9,7 @@ const ROW_COLUMNS =
 
 const rowSchema = z.object({
   id: z.string(),
-  category: z.enum(["sponsorship", "adoption", "tax_receipt", "donation", "contact"]),
+  category: faqCategorySchema,
   question_zh: z.string(),
   question_en: z.string(),
   answer_zh: z.string(),
