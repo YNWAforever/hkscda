@@ -16,19 +16,19 @@ export const SPONSORSHIP_TIER_AMOUNTS_CENTS: Record<"100" | "300" | "500", numbe
   "500": 50_000,
 };
 
-const trimmed = z.string().trim();
-const optionalTrimmed = z
+export const trimmed = z.string().trim();
+export const optionalTrimmed = z
   .string()
   .trim()
   .optional()
   .transform((value) => value || null);
 
-function isIsoDate(value: string) {
+export function isIsoDate(value: string) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
   const date = new Date(`${value}T00:00:00.000Z`);
   return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
-const isoDate = trimmed.refine(isIsoDate, "Invalid date");
+export const isoDate = trimmed.refine(isIsoDate, "Invalid date");
 
 export const sponsorshipLanguageSchema = z.enum(["zh-HK", "en"]);
 export const monthlyTierSchema = z.enum(["100", "300", "500", "custom"]);
