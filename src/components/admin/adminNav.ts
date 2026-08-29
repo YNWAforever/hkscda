@@ -8,6 +8,7 @@ import {
   Dog,
   FilePlus2,
   HandCoins,
+  HelpCircle,
   Heart,
   Inbox,
   ListTodo,
@@ -206,6 +207,15 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     icon: Users,
     to: "/admin/governance",
     activePath: "/admin/governance",
+  },
+  {
+    id: "faq",
+    section: "content",
+    group: "promotion",
+    label: "常見問題",
+    icon: HelpCircle,
+    to: "/admin/faq",
+    activePath: "/admin/faq",
   },
   {
     id: "access-management",
