@@ -97,4 +97,10 @@ describe("admin role access mapping", () => {
       );
     }
   });
+
+  test("faqManagement is granted to staff and admin, not treasurer", () => {
+    expect(canRoleAccessAdminArea("staff", "faqManagement")).toBe(true);
+    expect(canRoleAccessAdminArea("admin", "faqManagement")).toBe(true);
+    expect(canRoleAccessAdminArea("treasurer", "faqManagement")).toBe(false);
+  });
 });
