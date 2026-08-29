@@ -293,6 +293,11 @@ export function createSupabaseSponsorshipAdminRepository(
           .select("*")
           .eq("pledge_id", id)
           .order("rank", { ascending: true }),
+        // currentProof below = the most recent row here (newest created_at
+        // first). This ordering must match review_sponsorship_payment_proof's
+        // own `order by created_at desc limit 1 for update` in the migration,
+        // since the RPC and this query must agree on which row "provisional"
+        // review acts on.
         client
           .from("sponsorship_payment_proof")
           .select("*")

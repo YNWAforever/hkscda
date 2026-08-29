@@ -575,6 +575,36 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     expect(detail?.recentAuditLog).toHaveLength(1);
   });
 
+  test("getPledgeDetail picks the newest proof as currentProof regardless of input array order", async () => {
+    // Supplied out of chronological order (oldest, newest, middle) so that a
+    // naive "take index 0 of whatever was given" implementation — or one that
+    // silently drops the `.order("created_at", { ascending: false })` call as
+    // seemingly redundant — would fail this test. Only actually sorting by
+    // created_at desc can land on "proof-newest", matching what
+    // review_sponsorship_payment_proof's own `order by created_at desc limit
+    // 1 for update` would act on in the database.
+    const oldestProof = proofRow({ id: "proof-oldest", created_at: "2026-06-01T00:00:00.000Z" });
+    const newestProof = proofRow({ id: "proof-newest", created_at: "2026-07-15T00:00:00.000Z" });
+    const middleProof = proofRow({ id: "proof-middle", created_at: "2026-07-01T00:00:00.000Z" });
+
+    const { client } = createFakeClient({
+      proofRows: [oldestProof, newestProof, middleProof],
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const detail = await repo.getPledgeDetail(pledgeId);
+
+    expect(detail?.currentProof?.id).toBe("proof-newest");
+    // The older rows must still surface in the full history, in
+    // newest-first order — this rules out "current picks right but history
+    // silently drops rows" as a false-positive pass.
+    expect(detail?.proofHistory.map((p) => p.id)).toEqual([
+      "proof-newest",
+      "proof-middle",
+      "proof-oldest",
+    ]);
+  });
+
   test("getProofSigningInfo returns the current proof's storage location", async () => {
     const { client } = createFakeClient({ proofRows: [proofRow()] });
     const repo = createSupabaseSponsorshipAdminRepository(client);
