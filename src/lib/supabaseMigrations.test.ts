@@ -767,11 +767,11 @@ describe("supabase migration safety", () => {
       "category text not null check (category in\n    ('sponsorship', 'adoption', 'tax_receipt', 'donation', 'contact'))",
     );
     expect(sql).toContain("alter table public.faq_entry enable row level security");
-    expect(sql).toContain("grant select, insert, update, delete on public.faq_entry to service_role");
-    expect(sql).toContain("revoke all on public.faq_entry from anon, authenticated");
     expect(sql).toContain(
-      "create trigger set_updated_at before update on public.faq_entry",
+      "grant select, insert, update, delete on public.faq_entry to service_role",
     );
+    expect(sql).toContain("revoke all on public.faq_entry from anon, authenticated");
+    expect(sql).toContain("create trigger set_updated_at before update on public.faq_entry");
 
     for (const fn of ["upsert_faq_entry_with_audit", "deactivate_faq_entry_with_audit"]) {
       expect(sql).toContain(`create or replace function public.${fn}(`);
