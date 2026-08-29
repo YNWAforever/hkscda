@@ -255,6 +255,29 @@ describe("createSponsorshipAdminHandlers", () => {
     expect(response.status).toBe(409);
   });
 
+  test("reviewProof maps a no-proof-pending domain error to 409", async () => {
+    const service = createService({
+      reviewProof: mock(async () => {
+        throw new Error("Sponsorship pledge has no proof pending review");
+      }),
+    });
+    const handlers = createSponsorshipAdminHandlers({
+      requireCoordinator: requireCoordinator(),
+      service: service as never,
+    });
+
+    const response = await handlers.reviewProof({
+      request: request("http://localhost/x", {
+        method: "POST",
+        body: JSON.stringify({ decision: "approve" }),
+      }),
+      params: { id: pledgeId },
+    });
+    expect(response.status).toBe(409);
+    const body = await response.json();
+    expect(body.error).toBe("Sponsorship pledge has no proof pending review");
+  });
+
   test("recordPayment maps an ineligible-state domain error to 409", async () => {
     const service = createService({
       recordPayment: mock(async () => {
@@ -308,6 +331,26 @@ describe("createSponsorshipAdminHandlers", () => {
       params: { id: pledgeId },
     });
     expect(response.status).toBe(409);
+  });
+
+  test("cancelPledge maps a not-found domain error to 404 via domainError", async () => {
+    const service = createService({
+      cancelPledge: mock(async () => {
+        throw new Error("Sponsorship pledge not found");
+      }),
+    });
+    const handlers = createSponsorshipAdminHandlers({
+      requireCoordinator: requireCoordinator(),
+      service: service as never,
+    });
+
+    const response = await handlers.cancelPledge({
+      request: request("http://localhost/x", { method: "POST", body: JSON.stringify({}) }),
+      params: { id: pledgeId },
+    });
+    expect(response.status).toBe(404);
+    const body = await response.json();
+    expect(body.error).toBe("Sponsorship pledge not found");
   });
 
   test("requireCoordinator failure propagates its Response status", async () => {
