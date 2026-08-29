@@ -57,7 +57,7 @@ export const cancelPledgeSchema = z.object({
 
 /**
  * The roles allowed to review pledges. Must stay in lockstep with the
- * `sponsorshipReview` access area in src/lib/admin/access.ts —
- * src/lib/admin/access.test.ts asserts the two agree.
+ * `sponsorshipReview` access area in src/lib/admin/access.ts — a later
+ * task adds an assertion in src/lib/admin/access.test.ts that the two agree.
  */
 export const SPONSORSHIP_REVIEW_ROLES = ["staff", "admin"] as const satisfies readonly AdminRole[];
