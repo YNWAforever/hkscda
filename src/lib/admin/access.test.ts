@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
+import { SPONSORSHIP_REVIEW_ROLES } from "../sponsorshipAdmin/schemas";
 import {
   canRoleAccessAdminArea,
   filterAdminNavItemIdsByRole,
@@ -86,5 +87,14 @@ describe("admin role access mapping", () => {
     ]);
     expect(filterAdminNavItemIdsByRole(itemIds, "treasurer")).toEqual(["payments", "supporters"]);
     expect(filterAdminNavItemIdsByRole(itemIds, "admin")).toEqual(itemIds);
+  });
+
+  test("sponsorshipReview area agrees with the API route roles", () => {
+    const allRoles = ["staff", "treasurer", "admin"] as const;
+    for (const role of allRoles) {
+      expect(canRoleAccessAdminArea(role, "sponsorshipReview")).toBe(
+        (SPONSORSHIP_REVIEW_ROLES as readonly string[]).includes(role),
+      );
+    }
   });
 });
