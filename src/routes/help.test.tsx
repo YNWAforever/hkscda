@@ -40,6 +40,7 @@ describe("HelpFaqDirectory", () => {
 
   test("renders nothing for a category with no active entries", () => {
     const markup = renderToStaticMarkup(<HelpFaqDirectory language="zh-HK" faqs={[]} />);
-    expect(markup).toContain("0 條");
+    expect(markup.match(/0 條/g)).toHaveLength(5);
+    expect(markup).not.toContain("<article");
   });
 });

@@ -114,13 +114,7 @@ const pageCopy = {
   }
 >;
 
-export function HelpFaqDirectory({
-  language,
-  faqs,
-}: {
-  language: HelpLanguage;
-  faqs: HelpFaq[];
-}) {
+export function HelpFaqDirectory({ language, faqs }: { language: HelpLanguage; faqs: HelpFaq[] }) {
   const copy = pageCopy[language];
 
   return (

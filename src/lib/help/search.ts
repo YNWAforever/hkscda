@@ -1,9 +1,4 @@
-import {
-  helpCategoryLabels,
-  type HelpCategory,
-  type HelpFaq,
-  type HelpLanguage,
-} from "./faq";
+import { helpCategoryLabels, type HelpCategory, type HelpFaq, type HelpLanguage } from "./faq";
 
 export type HelpSearchConfidence = "high" | "medium" | "low" | "none";
 

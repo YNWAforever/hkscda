@@ -11,7 +11,10 @@ const testFaqs: HelpFaq[] = [
       "zh-HK": "我想開始助養，下一步要怎麼做？",
       en: "I want to start sponsoring. What should I do next?",
     },
-    answer: { "zh-HK": "先選擇你想支持的動物。", en: "Choose your preferred sponsor animals first." },
+    answer: {
+      "zh-HK": "先選擇你想支持的動物。",
+      en: "Choose your preferred sponsor animals first.",
+    },
     keywords: {
       "zh-HK": ["助養", "開始", "申請"],
       en: ["start sponsorship", "pledge form", "payment proof"],
@@ -27,24 +30,45 @@ const testFaqs: HelpFaq[] = [
   {
     id: "tax-receipt-eligibility",
     category: "tax_receipt",
-    question: { "zh-HK": "我可以為捐款申請報稅收據嗎？", en: "Can I request a tax receipt for my donation?" },
-    answer: { "zh-HK": "HKSCDA 是持牌慈善機構。", en: "HKSCDA is an approved charitable institution." },
-    keywords: { "zh-HK": ["報稅", "捐款", "收據", "IRD", "88條"], en: ["tax", "receipt", "IRD", "Section 88"] },
+    question: {
+      "zh-HK": "我可以為捐款申請報稅收據嗎？",
+      en: "Can I request a tax receipt for my donation?",
+    },
+    answer: {
+      "zh-HK": "HKSCDA 是持牌慈善機構。",
+      en: "HKSCDA is an approved charitable institution.",
+    },
+    keywords: {
+      "zh-HK": ["報稅", "捐款", "收據", "IRD", "88條"],
+      en: ["tax", "receipt", "IRD", "Section 88"],
+    },
     sensitive: true,
   },
   {
     id: "donation-methods",
     category: "donation",
     question: { "zh-HK": "有哪些捐款方式？", en: "What donation methods are available?" },
-    answer: { "zh-HK": "捐款頁只會顯示已啟用的方式。", en: "The donation page shows active methods." },
-    keywords: { "zh-HK": ["捐款", "FPS", "PayMe", "PayPal"], en: ["donate", "FPS", "PayMe", "PayPal"] },
+    answer: {
+      "zh-HK": "捐款頁只會顯示已啟用的方式。",
+      en: "The donation page shows active methods.",
+    },
+    keywords: {
+      "zh-HK": ["捐款", "FPS", "PayMe", "PayPal"],
+      en: ["donate", "FPS", "PayMe", "PayPal"],
+    },
   },
   {
     id: "contact-staff",
     category: "contact",
     question: { "zh-HK": "如何聯絡職員？", en: "How can I contact staff?" },
-    answer: { "zh-HK": "可透過 WhatsApp／電話聯絡。", en: "You can contact HKSCDA by WhatsApp / phone." },
-    keywords: { "zh-HK": ["聯絡職員", "WhatsApp", "電話"], en: ["contact", "WhatsApp", "phone", "staff"] },
+    answer: {
+      "zh-HK": "可透過 WhatsApp／電話聯絡。",
+      en: "You can contact HKSCDA by WhatsApp / phone.",
+    },
+    keywords: {
+      "zh-HK": ["聯絡職員", "WhatsApp", "電話"],
+      en: ["contact", "WhatsApp", "phone", "staff"],
+    },
   },
 ];
 
