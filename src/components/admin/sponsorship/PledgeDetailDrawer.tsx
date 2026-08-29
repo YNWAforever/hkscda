@@ -39,6 +39,26 @@ const PAYMENT_METHOD_OPTIONS = [
   { value: "give_asia", label: "Give.asia" },
 ] as const;
 
+const PROOF_REVIEW_STATUS_LABEL: Record<PaymentProofRecord["reviewStatus"], string> = {
+  pending: "待審核",
+  approved: "已通過",
+  rejected: "已拒絕",
+};
+
+const PROOF_REVIEW_STATUS_TONE: Record<
+  PaymentProofRecord["reviewStatus"],
+  "warning" | "success" | "danger"
+> = {
+  pending: "warning",
+  approved: "success",
+  rejected: "danger",
+};
+
+const PROOF_SOURCE_LABEL: Record<PaymentProofRecord["source"], string> = {
+  public: "支持者提交",
+  staff: "職員記錄",
+};
+
 function amountLabel(amountCents: number) {
   const dollars = Math.round(amountCents / 100).toLocaleString("en-US");
   return `HK$${dollars}/月`;
@@ -408,6 +428,51 @@ export function PledgeDetailDrawer({
                 >
                   取消助養
                 </Button>
+              </section>
+            )}
+
+            {pledge.proofHistory.length > 0 && (
+              <section className="space-y-2">
+                <h3 className="text-sm font-semibold text-[var(--color-panel)]">付款證明記錄</h3>
+                <ul className="space-y-2">
+                  {pledge.proofHistory.map((proof) => {
+                    const isCurrent = pledge.currentProof?.id === proof.id;
+                    return (
+                      <li
+                        key={proof.id}
+                        className="space-y-1 rounded-lg border border-[var(--color-border)] p-3 text-sm"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-medium text-[var(--color-panel)]">
+                            {formatDate(proof.createdAt)}
+                            {isCurrent && (
+                              <span className="ml-2 text-xs font-normal text-[var(--color-text-muted)]">
+                                （目前）
+                              </span>
+                            )}
+                          </span>
+                          <StatusPill tone={PROOF_REVIEW_STATUS_TONE[proof.reviewStatus]}>
+                            {PROOF_REVIEW_STATUS_LABEL[proof.reviewStatus]}
+                          </StatusPill>
+                        </div>
+                        <p className="text-[var(--color-text-muted)]">
+                          {proof.paymentMethod} · {formatFallback(proof.reference)} ·{" "}
+                          {amountLabel(proof.amountCents)} · {PROOF_SOURCE_LABEL[proof.source]}
+                        </p>
+                        {proof.fileName && (
+                          <p className="text-xs text-[var(--color-text-muted)]">
+                            檔案：{proof.fileName}
+                          </p>
+                        )}
+                        {proof.reviewNote && (
+                          <p className="text-xs text-[var(--color-panel)]">
+                            備註：{proof.reviewNote}
+                          </p>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
               </section>
             )}
 
