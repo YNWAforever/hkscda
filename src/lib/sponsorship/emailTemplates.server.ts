@@ -144,6 +144,10 @@ function pledgeStatusUpdateBodyZh(
       ].join("");
     case "cancelled":
       return `<p>您的助養承諾（參考編號 <strong>${reference}</strong>）已取消。如有疑問歡迎聯絡我們。</p>`;
+    default: {
+      const _exhaustive: never = event;
+      throw new Error(`Unhandled pledge status update event: ${_exhaustive}`);
+    }
   }
 }
 
@@ -164,6 +168,10 @@ function pledgeStatusUpdateBodyEn(
       ].join("");
     case "cancelled":
       return `<p>Your sponsorship pledge <strong>${reference}</strong> has been cancelled. Please contact us if you have any questions.</p>`;
+    default: {
+      const _exhaustive: never = event;
+      throw new Error(`Unhandled pledge status update event: ${_exhaustive}`);
+    }
   }
 }
 

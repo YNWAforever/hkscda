@@ -105,4 +105,13 @@ describe("renderPledgeStatusUpdateEmail", () => {
     expect(email.html).not.toContain("<script>");
     expect(email.html).toContain("&lt;script&gt;");
   });
+
+  test("throws for an event value outside the known union, in both languages", () => {
+    expect(() => renderPledgeStatusUpdateEmail(baseInput({ event: "bogus" }))).toThrow(
+      "Unhandled pledge status update event: bogus",
+    );
+    expect(() =>
+      renderPledgeStatusUpdateEmail(baseInput({ event: "bogus", language: "en" })),
+    ).toThrow("Unhandled pledge status update event: bogus");
+  });
 });
