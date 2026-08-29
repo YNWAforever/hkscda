@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, ListChecks, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { fetchCoordinatorJson } from "../adoptions/api";
+import { useAdminPageCopy } from "../adminPageCopy";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { StatusPill } from "../StatusBadge";
 import { Button } from "../../ui/button";
@@ -23,23 +24,6 @@ type PledgeListResponse = {
   total: number;
 };
 
-const PLEDGE_STATUS_OPTIONS: Array<{ value: PledgeStatus | "all"; label: string }> = [
-  { value: "all", label: "全部狀態" },
-  { value: "pending_payment", label: "待付款" },
-  { value: "provisional", label: "待審核" },
-  { value: "active", label: "已確認" },
-  { value: "needs_followup", label: "需要跟進" },
-  { value: "cancelled", label: "已取消" },
-];
-
-const PLEDGE_STATUS_LABEL: Record<PledgeStatus, string> = {
-  pending_payment: "待付款",
-  provisional: "待審核",
-  active: "已確認",
-  needs_followup: "需要跟進",
-  cancelled: "已取消",
-};
-
 const PAGE_SIZE_OPTIONS = [10, 25, 50] as const;
 
 function amountLabel(pledge: PledgeSummary) {
@@ -48,11 +32,23 @@ function amountLabel(pledge: PledgeSummary) {
 }
 
 export function PledgeReviewLane() {
+  const { pageCopy } = useAdminPageCopy();
+  const copy = pageCopy.pledgeReview;
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<PledgeStatus | "all">("all");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<(typeof PAGE_SIZE_OPTIONS)[number]>(25);
   const [selectedPledgeId, setSelectedPledgeId] = useState<string | null>(null);
+
+  const pledgeStatusOptions: Array<{ value: PledgeStatus | "all"; label: string }> = [
+    { value: "all", label: copy.allStatuses },
+    { value: "pending_payment", label: copy.statuses.pending_payment },
+    { value: "provisional", label: copy.statuses.provisional },
+    { value: "active", label: copy.statuses.active },
+    { value: "needs_followup", label: copy.statuses.needs_followup },
+    { value: "cancelled", label: copy.statuses.cancelled },
+  ];
+  const pledgeStatusLabel: Record<PledgeStatus, string> = copy.statuses;
 
   const searchParams = useMemo(
     () =>
@@ -82,7 +78,7 @@ export function PledgeReviewLane() {
   const columns: DataTableColumn<PledgeSummary>[] = [
     {
       id: "supporter",
-      header: "支持者",
+      header: copy.columns.supporter,
       className: "px-4",
       cell: (pledge) => (
         <div>
@@ -95,22 +91,22 @@ export function PledgeReviewLane() {
     },
     {
       id: "amount",
-      header: "承諾金額",
+      header: copy.columns.amount,
       cell: (pledge) => <span className="text-[var(--color-panel)]">{amountLabel(pledge)}</span>,
     },
     {
       id: "created",
-      header: "建立日期",
+      header: copy.columns.created,
       cell: (pledge) => (
         <span className="text-[var(--color-text-muted)]">{formatDate(pledge.createdAt)}</span>
       ),
     },
     {
       id: "status",
-      header: "狀態",
+      header: copy.columns.status,
       cell: (pledge) => (
         <StatusPill tone={pledgeStatusTone(pledge.status)}>
-          {PLEDGE_STATUS_LABEL[pledge.status]}
+          {pledgeStatusLabel[pledge.status]}
         </StatusPill>
       ),
     },
@@ -127,7 +123,7 @@ export function PledgeReviewLane() {
             </div>
           </div>
           <StatusPill tone={pledgeStatusTone(pledge.status)}>
-            {PLEDGE_STATUS_LABEL[pledge.status]}
+            {pledgeStatusLabel[pledge.status]}
           </StatusPill>
         </div>
         <div className="text-xs text-[var(--color-text-muted)]">
@@ -149,9 +145,9 @@ export function PledgeReviewLane() {
                 setQuery(event.target.value);
                 resetToFirstPage();
               }}
-              aria-label="搜尋支持者姓名、電郵或編號"
+              aria-label={copy.searchLabel}
               className="h-9 pl-9"
-              placeholder="搜尋支持者姓名、電郵或編號"
+              placeholder={copy.searchPlaceholder}
             />
           </label>
 
@@ -162,11 +158,11 @@ export function PledgeReviewLane() {
               resetToFirstPage();
             }}
           >
-            <SelectTrigger aria-label="狀態" className="h-9">
-              <SelectValue placeholder="狀態" />
+            <SelectTrigger aria-label={copy.statusFilterLabel} className="h-9">
+              <SelectValue placeholder={copy.statusFilterPlaceholder} />
             </SelectTrigger>
             <SelectContent>
-              {PLEDGE_STATUS_OPTIONS.map((option) => (
+              {pledgeStatusOptions.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
                   {option.label}
                 </SelectItem>
@@ -182,14 +178,14 @@ export function PledgeReviewLane() {
       >
         <div className="flex min-h-14 flex-wrap items-center justify-between gap-3 border-b border-[var(--color-border)] px-4">
           <div>
-            <h2 className="text-base font-semibold text-[var(--color-panel)]">承諾審核</h2>
+            <h2 className="text-base font-semibold text-[var(--color-panel)]">{copy.title}</h2>
             <p className="text-xs text-[var(--color-text-muted)]">
-              {isLoading ? "載入中..." : `共 ${total} 項`}
+              {isLoading ? pageCopy.common.loading : copy.totalCount(total)}
             </p>
           </div>
           <div className="flex items-center gap-2">
             <Label htmlFor="pledge-page-size" className="text-xs text-[var(--color-text-muted)]">
-              每頁
+              {copy.perPage}
             </Label>
             <Select
               value={String(pageSize)}
@@ -211,7 +207,7 @@ export function PledgeReviewLane() {
             </Select>
             <Button type="button" variant="outline" onClick={() => refetch()} disabled={isFetching}>
               <ListChecks className="h-4 w-4" />
-              重新整理
+              {pageCopy.common.refresh}
             </Button>
           </div>
         </div>
@@ -231,13 +227,13 @@ export function PledgeReviewLane() {
           getRowKey={(pledge) => pledge.id}
           loading={isLoading}
           skeletonRows={5}
-          empty="沒有承諾"
+          empty={copy.empty}
           onRowClick={(pledge) => setSelectedPledgeId(pledge.id)}
           renderMobileCard={renderCard}
         />
 
         <div className="flex min-h-12 flex-wrap items-center justify-between gap-3 border-t border-[var(--color-border)] px-4 py-2 text-xs text-[var(--color-text-muted)]">
-          <span>{`第 ${page} 頁，共 ${totalPages} 頁`}</span>
+          <span>{pageCopy.common.pageOf(page, totalPages)}</span>
           <div className="flex gap-2">
             <Button
               type="button"
@@ -247,7 +243,7 @@ export function PledgeReviewLane() {
               disabled={page <= 1 || isFetching}
             >
               <ChevronLeft className="h-4 w-4" />
-              上一頁
+              {pageCopy.common.previous}
             </Button>
             <Button
               type="button"
@@ -256,7 +252,7 @@ export function PledgeReviewLane() {
               onClick={() => setPage((currentPage) => currentPage + 1)}
               disabled={page >= totalPages || isFetching}
             >
-              下一頁
+              {pageCopy.common.next}
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>

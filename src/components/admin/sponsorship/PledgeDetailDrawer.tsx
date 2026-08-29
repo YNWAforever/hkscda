@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { fetchCoordinatorJson } from "../adoptions/api";
+import { useAdminPageCopy } from "../adminPageCopy";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
@@ -23,27 +24,7 @@ import {
 
 type PledgeDetailResponse = { pledge: PledgeDetail };
 
-const PLEDGE_STATUS_LABEL: Record<PledgeDetail["status"], string> = {
-  pending_payment: "待付款",
-  provisional: "待審核",
-  active: "已確認",
-  needs_followup: "需要跟進",
-  cancelled: "已取消",
-};
-
-const PAYMENT_METHOD_OPTIONS = [
-  { value: "fps", label: "轉數快 FPS" },
-  { value: "bank_transfer", label: "銀行轉帳" },
-  { value: "payme", label: "PayMe" },
-  { value: "paypal", label: "PayPal" },
-  { value: "give_asia", label: "Give.asia" },
-] as const;
-
-const PROOF_REVIEW_STATUS_LABEL: Record<PaymentProofRecord["reviewStatus"], string> = {
-  pending: "待審核",
-  approved: "已通過",
-  rejected: "已拒絕",
-};
+const PAYMENT_METHOD_VALUES = ["fps", "bank_transfer", "payme", "paypal", "give_asia"] as const;
 
 const PROOF_REVIEW_STATUS_TONE: Record<
   PaymentProofRecord["reviewStatus"],
@@ -54,11 +35,6 @@ const PROOF_REVIEW_STATUS_TONE: Record<
   rejected: "danger",
 };
 
-const PROOF_SOURCE_LABEL: Record<PaymentProofRecord["source"], string> = {
-  public: "支持者提交",
-  staff: "職員記錄",
-};
-
 function amountLabel(amountCents: number) {
   const dollars = Math.round(amountCents / 100).toLocaleString("en-US");
   return `HK$${dollars}/月`;
@@ -67,6 +43,8 @@ function amountLabel(amountCents: number) {
 type ProofUrlResponse = { url: string; fileName: string };
 
 function ProofPreview({ pledgeId, proof }: { pledgeId: string; proof: PaymentProofRecord }) {
+  const { pageCopy } = useAdminPageCopy();
+  const copy = pageCopy.pledgeReview.proofPreview;
   const {
     data,
     error,
@@ -80,7 +58,7 @@ function ProofPreview({ pledgeId, proof }: { pledgeId: string; proof: PaymentPro
   });
 
   if (proofHasNoFile(proof.storagePath)) {
-    return <p className="text-sm text-[var(--color-text-muted)]">未附上檔案</p>;
+    return <p className="text-sm text-[var(--color-text-muted)]">{copy.noFile}</p>;
   }
 
   return (
@@ -93,12 +71,12 @@ function ProofPreview({ pledgeId, proof }: { pledgeId: string; proof: PaymentPro
           onClick={() => fetchProofUrl()}
           disabled={isPending}
         >
-          {isPending ? "載入付款證明中..." : "載入付款證明"}
+          {isPending ? copy.loading : copy.load}
         </Button>
       )}
       {error && (
         <p role="alert" className="text-xs text-[var(--color-error)]">
-          無法載入付款證明：{error.message}
+          {copy.loadError(error.message)}
         </p>
       )}
       {data &&
@@ -117,7 +95,7 @@ function ProofPreview({ pledgeId, proof }: { pledgeId: string; proof: PaymentPro
             rel="noopener noreferrer"
             className="text-sm text-[var(--color-primary)] hover:underline"
           >
-            開啟付款證明（{data.fileName}）
+            {copy.open(data.fileName)}
           </a>
         ))}
     </div>
@@ -133,13 +111,23 @@ export function PledgeDetailDrawer({
   onClose: () => void;
   onChanged: () => void;
 }) {
+  const { pageCopy } = useAdminPageCopy();
+  const copy = pageCopy.pledgeReview;
+  const pledgeStatusLabel: Record<PledgeDetail["status"], string> = copy.statuses;
+  const paymentMethodOptions: Array<{
+    value: (typeof PAYMENT_METHOD_VALUES)[number];
+    label: string;
+  }> = PAYMENT_METHOD_VALUES.map((value) => ({ value, label: copy.paymentMethods[value] }));
+  const proofReviewStatusLabel: Record<PaymentProofRecord["reviewStatus"], string> =
+    copy.proofReviewStatuses;
+  const proofSourceLabel: Record<PaymentProofRecord["source"], string> = copy.proofSources;
+
   const queryClient = useQueryClient();
   const [submitting, setSubmitting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [reviewNote, setReviewNote] = useState("");
   const [cancelNote, setCancelNote] = useState("");
-  const [paymentMethod, setPaymentMethod] =
-    useState<(typeof PAYMENT_METHOD_OPTIONS)[number]["value"]>("fps");
+  const [paymentMethod, setPaymentMethod] = useState<(typeof PAYMENT_METHOD_VALUES)[number]>("fps");
   const [reference, setReference] = useState("");
   const [amountHkd, setAmountHkd] = useState("");
   const [paymentDate, setPaymentDate] = useState("");
@@ -172,7 +160,7 @@ export function PledgeDetailDrawer({
       setReviewNote("");
       await refreshAll();
     } catch (submitError) {
-      setActionError(submitError instanceof Error ? submitError.message : "審核失敗");
+      setActionError(submitError instanceof Error ? submitError.message : copy.errors.review);
     } finally {
       setSubmitting(false);
     }
@@ -189,7 +177,7 @@ export function PledgeDetailDrawer({
       setCancelNote("");
       await refreshAll();
     } catch (submitError) {
-      setActionError(submitError instanceof Error ? submitError.message : "取消失敗");
+      setActionError(submitError instanceof Error ? submitError.message : copy.errors.cancel);
     } finally {
       setSubmitting(false);
     }
@@ -236,7 +224,9 @@ export function PledgeDetailDrawer({
       setProofFileError(null);
       await refreshAll();
     } catch (submitError) {
-      setActionError(submitError instanceof Error ? submitError.message : "記錄付款失敗");
+      setActionError(
+        submitError instanceof Error ? submitError.message : copy.errors.recordPayment,
+      );
     } finally {
       setSubmitting(false);
     }
@@ -255,14 +245,16 @@ export function PledgeDetailDrawer({
       >
         <div className="flex items-start justify-between gap-3">
           <SheetTitle className="text-lg font-semibold text-[var(--color-panel)]">
-            承諾詳情
+            {copy.detailTitle}
           </SheetTitle>
           <Button type="button" variant="outline" size="sm" onClick={onClose}>
-            關閉
+            {copy.close}
           </Button>
         </div>
 
-        {isLoading && <p className="mt-6 text-sm text-[var(--color-text-muted)]">載入中...</p>}
+        {isLoading && (
+          <p className="mt-6 text-sm text-[var(--color-text-muted)]">{pageCopy.common.loading}</p>
+        )}
         {error && <p className="mt-6 text-sm text-[var(--color-error)]">{error.message}</p>}
 
         {pledge && (
@@ -273,7 +265,7 @@ export function PledgeDetailDrawer({
                   {pledge.supporterName}
                 </span>
                 <StatusPill tone={pledgeStatusTone(pledge.status)}>
-                  {PLEDGE_STATUS_LABEL[pledge.status]}
+                  {pledgeStatusLabel[pledge.status]}
                 </StatusPill>
               </div>
               <p className="text-sm text-[var(--color-text-muted)]">
@@ -281,15 +273,17 @@ export function PledgeDetailDrawer({
               </p>
               <p className="text-sm text-[var(--color-panel)]">
                 {amountLabel(pledge.amountCents)}（
-                {pledge.monthlyTier === "custom" ? "自訂" : pledge.monthlyTier}）
+                {pledge.monthlyTier === "custom" ? copy.customTier : pledge.monthlyTier}）
               </p>
               <p className="text-xs text-[var(--color-text-muted)]">
-                建立於 {formatDate(pledge.createdAt)}
+                {copy.createdOn(formatDate(pledge.createdAt))}
               </p>
             </section>
 
             <section className="space-y-1">
-              <h3 className="text-sm font-semibold text-[var(--color-panel)]">動物排序</h3>
+              <h3 className="text-sm font-semibold text-[var(--color-panel)]">
+                {copy.preferencesTitle}
+              </h3>
               <ul className="space-y-1 text-sm text-[var(--color-text-muted)]">
                 {pledge.preferences.map((preference) => (
                   <li key={preference.id}>
@@ -307,29 +301,31 @@ export function PledgeDetailDrawer({
 
             {canRecordPayment(pledge.status) && (
               <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
-                <h3 className="text-sm font-semibold text-[var(--color-panel)]">記錄付款</h3>
+                <h3 className="text-sm font-semibold text-[var(--color-panel)]">
+                  {copy.recordPayment.title}
+                </h3>
                 <Select
                   value={paymentMethod}
                   onValueChange={(value) => setPaymentMethod(value as typeof paymentMethod)}
                 >
-                  <SelectTrigger aria-label="付款方式" className="h-9">
+                  <SelectTrigger aria-label={copy.recordPayment.methodLabel} className="h-9">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {PAYMENT_METHOD_OPTIONS.map((option) => (
+                    {paymentMethodOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                <Label htmlFor="pledge-reference">參考編號</Label>
+                <Label htmlFor="pledge-reference">{copy.recordPayment.referenceLabel}</Label>
                 <Input
                   id="pledge-reference"
                   value={reference}
                   onChange={(event) => setReference(event.target.value)}
                 />
-                <Label htmlFor="pledge-amount">金額 (HKD)</Label>
+                <Label htmlFor="pledge-amount">{copy.recordPayment.amountLabel}</Label>
                 <Input
                   id="pledge-amount"
                   type="number"
@@ -338,20 +334,20 @@ export function PledgeDetailDrawer({
                   value={amountHkd}
                   onChange={(event) => setAmountHkd(event.target.value)}
                 />
-                <Label htmlFor="pledge-payment-date">付款日期</Label>
+                <Label htmlFor="pledge-payment-date">{copy.recordPayment.dateLabel}</Label>
                 <Input
                   id="pledge-payment-date"
                   type="date"
                   value={paymentDate}
                   onChange={(event) => setPaymentDate(event.target.value)}
                 />
-                <Label htmlFor="pledge-payment-note">備註</Label>
+                <Label htmlFor="pledge-payment-note">{copy.recordPayment.noteLabel}</Label>
                 <Input
                   id="pledge-payment-note"
                   value={paymentNote}
                   onChange={(event) => setPaymentNote(event.target.value)}
                 />
-                <Label htmlFor="pledge-payment-proof">付款證明（選填）</Label>
+                <Label htmlFor="pledge-payment-proof">{copy.recordPayment.proofLabel}</Label>
                 <Input
                   id="pledge-payment-proof"
                   type="file"
@@ -368,14 +364,16 @@ export function PledgeDetailDrawer({
                   onClick={submitPayment}
                   disabled={submitting || !amountHkd || !paymentDate || !!proofFileError}
                 >
-                  儲存付款記錄
+                  {copy.recordPayment.save}
                 </Button>
               </section>
             )}
 
             {canReviewProof(pledge.status) && (
               <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
-                <h3 className="text-sm font-semibold text-[var(--color-panel)]">審核付款證明</h3>
+                <h3 className="text-sm font-semibold text-[var(--color-panel)]">
+                  {copy.reviewProof.title}
+                </h3>
                 {pledge.currentProof && (
                   <>
                     <p className="text-sm text-[var(--color-text-muted)]">
@@ -386,7 +384,7 @@ export function PledgeDetailDrawer({
                     <ProofPreview pledgeId={pledgeId} proof={pledge.currentProof} />
                   </>
                 )}
-                <Label htmlFor="pledge-review-note">備註</Label>
+                <Label htmlFor="pledge-review-note">{copy.reviewProof.noteLabel}</Label>
                 <Input
                   id="pledge-review-note"
                   value={reviewNote}
@@ -398,7 +396,7 @@ export function PledgeDetailDrawer({
                     onClick={() => submitReview("approve")}
                     disabled={submitting}
                   >
-                    核實通過
+                    {copy.reviewProof.approve}
                   </Button>
                   <Button
                     type="button"
@@ -406,7 +404,7 @@ export function PledgeDetailDrawer({
                     onClick={() => submitReview("reject")}
                     disabled={submitting}
                   >
-                    拒絕
+                    {copy.reviewProof.reject}
                   </Button>
                 </div>
               </section>
@@ -414,7 +412,7 @@ export function PledgeDetailDrawer({
 
             {canCancelPledge(pledge.status) && (
               <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
-                <Label htmlFor="pledge-cancel-note">取消備註</Label>
+                <Label htmlFor="pledge-cancel-note">{copy.cancel.noteLabel}</Label>
                 <Input
                   id="pledge-cancel-note"
                   value={cancelNote}
@@ -426,14 +424,16 @@ export function PledgeDetailDrawer({
                   onClick={submitCancel}
                   disabled={submitting}
                 >
-                  取消助養
+                  {copy.cancel.action}
                 </Button>
               </section>
             )}
 
             {pledge.proofHistory.length > 0 && (
               <section className="space-y-2">
-                <h3 className="text-sm font-semibold text-[var(--color-panel)]">付款證明記錄</h3>
+                <h3 className="text-sm font-semibold text-[var(--color-panel)]">
+                  {copy.proofHistory.title}
+                </h3>
                 <ul className="space-y-2">
                   {pledge.proofHistory.map((proof) => {
                     const isCurrent = pledge.currentProof?.id === proof.id;
@@ -447,26 +447,26 @@ export function PledgeDetailDrawer({
                             {formatDate(proof.createdAt)}
                             {isCurrent && (
                               <span className="ml-2 text-xs font-normal text-[var(--color-text-muted)]">
-                                （目前）
+                                {copy.proofHistory.current}
                               </span>
                             )}
                           </span>
                           <StatusPill tone={PROOF_REVIEW_STATUS_TONE[proof.reviewStatus]}>
-                            {PROOF_REVIEW_STATUS_LABEL[proof.reviewStatus]}
+                            {proofReviewStatusLabel[proof.reviewStatus]}
                           </StatusPill>
                         </div>
                         <p className="text-[var(--color-text-muted)]">
                           {proof.paymentMethod} · {formatFallback(proof.reference)} ·{" "}
-                          {amountLabel(proof.amountCents)} · {PROOF_SOURCE_LABEL[proof.source]}
+                          {amountLabel(proof.amountCents)} · {proofSourceLabel[proof.source]}
                         </p>
                         {proof.fileName && (
                           <p className="text-xs text-[var(--color-text-muted)]">
-                            檔案：{proof.fileName}
+                            {copy.proofHistory.file(proof.fileName)}
                           </p>
                         )}
                         {proof.reviewNote && (
                           <p className="text-xs text-[var(--color-panel)]">
-                            備註：{proof.reviewNote}
+                            {copy.proofHistory.note(proof.reviewNote)}
                           </p>
                         )}
                       </li>
@@ -477,7 +477,9 @@ export function PledgeDetailDrawer({
             )}
 
             <section className="space-y-1">
-              <h3 className="text-sm font-semibold text-[var(--color-panel)]">近期活動</h3>
+              <h3 className="text-sm font-semibold text-[var(--color-panel)]">
+                {copy.recentActivity}
+              </h3>
               <ul className="space-y-1 text-xs text-[var(--color-text-muted)]">
                 {pledge.recentAuditLog.map((entry) => (
                   <li key={entry.id}>
@@ -489,7 +491,7 @@ export function PledgeDetailDrawer({
                 href={`/admin/supporters/${pledge.supporterId}`}
                 className="text-sm text-[var(--color-primary)] hover:underline"
               >
-                查看完整支持者時間軸
+                {copy.viewSupporterTimeline}
               </a>
             </section>
           </div>
