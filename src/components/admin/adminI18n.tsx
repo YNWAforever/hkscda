@@ -190,6 +190,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       knowledge: "知識庫",
       governance: "團隊與管治",
       "access-management": "權限管理",
+      faq: "常見問題",
     },
     layout: {
       collapseSidebar: "收合側欄",
@@ -366,6 +367,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       knowledge: "Knowledge hub",
       governance: "Team & Governance",
       "access-management": "Access Management",
+      faq: "FAQ",
     },
     layout: {
       collapseSidebar: "Collapse sidebar",
