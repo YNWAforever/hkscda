@@ -1,6 +1,11 @@
-import { describe, expect, mock, test } from "bun:test";
+import { afterAll, describe, expect, mock, test } from "bun:test";
 import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+// Captured via a destructured dynamic import (a one-time value read) rather than a static
+// `import { PledgeWizard } from "..."` binding: bun:test's mock.module overwrites the live
+// export binding in place, so a static import here would silently track the mock below too.
+const { PledgeWizard: RealPledgeWizard } =
+  await import("../components/site/sponsorship/PledgeWizard");
 
 mock.module("@tanstack/react-router", () => ({
   createFileRoute: () => (options: unknown) => options,
@@ -14,6 +19,12 @@ mock.module("@tanstack/react-router", () => ({
 mock.module("../components/site/sponsorship/PledgeWizard", () => ({
   PledgeWizard: () => <p>pledge-content</p>,
 }));
+
+afterAll(() => {
+  mock.module("../components/site/sponsorship/PledgeWizard", () => ({
+    PledgeWizard: RealPledgeWizard,
+  }));
+});
 
 describe("sponsorship pledge route", () => {
   test("wraps PledgeWizard with a breadcrumb back to sponsors and a trust note", async () => {
