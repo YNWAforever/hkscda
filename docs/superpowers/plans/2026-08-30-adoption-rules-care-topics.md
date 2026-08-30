@@ -277,7 +277,7 @@ insert into public.care_topics (animal_type, label_zh, label_en, content_zh, con
  'Clean the litter box daily and change the litter regularly. Groom your cat monthly — more often for long-haired cats. Trim nails regularly.', 3),
 ('cat', '保健', 'Health',
  '半歲或以上為成貓。每年接種疫苗及進行健康檢查。定期驅蟲（體內及體外）。留意貓咪的飲食及排便習慣，如有異常盡快求醫。',
- 'Cats six months or older are considered adults. Vaccinate and have a health check every year. Deworm regularly (internal and external parasites). Watch your cat\'s eating and toileting habits, and see a vet promptly if anything seems unusual.', 4),
+ E'Cats six months or older are considered adults. Vaccinate and have a health check every year. Deworm regularly (internal and external parasites). Watch your cat\'s eating and toileting habits, and see a vet promptly if anything seems unusual.', 4),
 ('cat', '用品', 'Supplies',
  '必備用品：貓籠/外出籠、貓砂盆及貓砂、食具及水具、抓板及玩具、梳毛工具。',
  'Essential supplies: a carrier, a litter box and litter, food and water bowls, a scratching post and toys, and grooming tools.', 5),
@@ -292,7 +292,7 @@ insert into public.care_topics (animal_type, label_zh, label_en, content_zh, con
  'Please bring your own carrier or leash on collection day. Give your dog time to adjust to its new home in a calm environment.', 1),
 ('dog', '食物', 'Food',
  '提供適合體型及年齡的優質狗糧。確保隨時有新鮮清水。避免洋蔥、大蒜、朱古力、葡萄及過鹹食物。',
- 'Provide quality dog food suited to your dog\'s size and age. Always have fresh water available. Avoid onion, garlic, chocolate, grapes, and overly salty food.', 2),
+ E'Provide quality dog food suited to your dog\'s size and age. Always have fresh water available. Avoid onion, garlic, chocolate, grapes, and overly salty food.', 2),
 ('dog', '休息', 'Rest',
  '為狗狗提供固定的休息位置。幼犬每日需要較多睡眠，勿過度打擾。',
  'Give your dog a fixed resting spot. Puppies need more sleep each day — avoid disturbing them too much.', 3),
@@ -301,10 +301,10 @@ insert into public.care_topics (animal_type, label_zh, label_en, content_zh, con
  'Bathe and groom regularly. Clean ears and trim nails regularly. Train your dog to relieve itself in a designated spot.', 4),
 ('dog', '保健', 'Health',
  '每年接種疫苗及驅蟲。定期獸醫檢查。注意狗狗的飲食及行為變化。',
- 'Vaccinate and deworm every year. Have regular veterinary checks. Watch for changes in your dog\'s eating and behaviour.', 5),
+ E'Vaccinate and deworm every year. Have regular veterinary checks. Watch for changes in your dog\'s eating and behaviour.', 5),
 ('dog', '溜狗', 'Walk',
  '每日帶狗狗外出散步，提供適量運動。外出時必須使用牽引繩及佩戴狗牌。在允許的地方才可讓狗狗放開繩子。',
- 'Walk your dog daily to provide adequate exercise. Always use a leash and dog tag outdoors. Only let your dog off-leash where it\'s permitted.', 6),
+ E'Walk your dog daily to provide adequate exercise. Always use a leash and dog tag outdoors. Only let your dog off-leash where it\'s permitted.', 6),
 ('dog', '教育', 'Training',
  '盡早開始基本服從訓練，如坐下、等待、召回等。使用正向強化方法，避免體罰。如有行為問題，可尋求專業訓練師協助。',
  'Start basic obedience training early — sit, stay, recall, etc. Use positive reinforcement and avoid physical punishment. Seek help from a professional trainer for behavioural issues.', 7)
@@ -364,7 +364,9 @@ In `src/lib/supabaseMigrations.test.ts`, add (following the existing `faq_entry`
     expect((sql.match(/insert into public\.adoption_rules/g) ?? []).length).toBe(2);
     expect((sql.match(/insert into public\.care_topics/g) ?? []).length).toBe(2);
     expect((sql.match(/'cat', '/g) ?? []).length).toBe(7);
-    expect((sql.match(/'dog', '/g) ?? []).length).toBe(8);
+    // 8 dog seed rows + 1 incidental match from the
+    // "animal_type in ('dog', 'cat')" check constraint's own text.
+    expect((sql.match(/'dog', '/g) ?? []).length).toBe(9);
   });
 ```
 
