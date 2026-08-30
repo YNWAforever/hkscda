@@ -90,6 +90,7 @@ import { Route as AdminContentDocumentsRouteImport } from './routes/admin/conten
 import { Route as AdminContentAnnualReportsRouteImport } from './routes/admin/content/annual-reports'
 import { Route as AdminContentAdoptionGuidesRouteImport } from './routes/admin/content/adoption-guides'
 import { Route as AdminContentAdoptionRouteImport } from './routes/admin/content/adoption'
+import { Route as AdminContentAboutRouteImport } from './routes/admin/content/about'
 import { Route as AdminContentIdRouteImport } from './routes/admin/content/$id'
 import { Route as AdminApplicationsIdRouteImport } from './routes/admin/applications/$id'
 import { Route as AdminAnimalsNewRouteImport } from './routes/admin/animals/new'
@@ -590,6 +591,11 @@ const AdminContentAdoptionGuidesRoute =
 const AdminContentAdoptionRoute = AdminContentAdoptionRouteImport.update({
   id: '/adoption',
   path: '/adoption',
+  getParentRoute: () => AdminContentRoute,
+} as any)
+const AdminContentAboutRoute = AdminContentAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => AdminContentRoute,
 } as any)
 const AdminContentIdRoute = AdminContentIdRouteImport.update({
@@ -1136,6 +1142,7 @@ export interface FileRoutesByFullPath {
   '/admin/animals/new': typeof AdminAnimalsNewRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
   '/admin/content/$id': typeof AdminContentIdRoute
+  '/admin/content/about': typeof AdminContentAboutRoute
   '/admin/content/adoption': typeof AdminContentAdoptionRoute
   '/admin/content/adoption-guides': typeof AdminContentAdoptionGuidesRoute
   '/admin/content/annual-reports': typeof AdminContentAnnualReportsRoute
@@ -1305,6 +1312,7 @@ export interface FileRoutesByTo {
   '/admin/animals/new': typeof AdminAnimalsNewRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
   '/admin/content/$id': typeof AdminContentIdRoute
+  '/admin/content/about': typeof AdminContentAboutRoute
   '/admin/content/adoption': typeof AdminContentAdoptionRoute
   '/admin/content/adoption-guides': typeof AdminContentAdoptionGuidesRoute
   '/admin/content/annual-reports': typeof AdminContentAnnualReportsRoute
@@ -1476,6 +1484,7 @@ export interface FileRoutesById {
   '/admin/animals/new': typeof AdminAnimalsNewRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
   '/admin/content/$id': typeof AdminContentIdRoute
+  '/admin/content/about': typeof AdminContentAboutRoute
   '/admin/content/adoption': typeof AdminContentAdoptionRoute
   '/admin/content/adoption-guides': typeof AdminContentAdoptionGuidesRoute
   '/admin/content/annual-reports': typeof AdminContentAnnualReportsRoute
@@ -1648,6 +1657,7 @@ export interface FileRouteTypes {
     | '/admin/animals/new'
     | '/admin/applications/$id'
     | '/admin/content/$id'
+    | '/admin/content/about'
     | '/admin/content/adoption'
     | '/admin/content/adoption-guides'
     | '/admin/content/annual-reports'
@@ -1817,6 +1827,7 @@ export interface FileRouteTypes {
     | '/admin/animals/new'
     | '/admin/applications/$id'
     | '/admin/content/$id'
+    | '/admin/content/about'
     | '/admin/content/adoption'
     | '/admin/content/adoption-guides'
     | '/admin/content/annual-reports'
@@ -1987,6 +1998,7 @@ export interface FileRouteTypes {
     | '/admin/animals/new'
     | '/admin/applications/$id'
     | '/admin/content/$id'
+    | '/admin/content/about'
     | '/admin/content/adoption'
     | '/admin/content/adoption-guides'
     | '/admin/content/annual-reports'
@@ -2791,6 +2803,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminContentAdoptionRouteImport
       parentRoute: typeof AdminContentRoute
     }
+    '/admin/content/about': {
+      id: '/admin/content/about'
+      path: '/about'
+      fullPath: '/admin/content/about'
+      preLoaderRoute: typeof AdminContentAboutRouteImport
+      parentRoute: typeof AdminContentRoute
+    }
     '/admin/content/$id': {
       id: '/admin/content/$id'
       path: '/$id'
@@ -3443,6 +3462,7 @@ const AdminApplicationsRouteWithChildren =
 
 interface AdminContentRouteChildren {
   AdminContentIdRoute: typeof AdminContentIdRoute
+  AdminContentAboutRoute: typeof AdminContentAboutRoute
   AdminContentAdoptionRoute: typeof AdminContentAdoptionRoute
   AdminContentAdoptionGuidesRoute: typeof AdminContentAdoptionGuidesRoute
   AdminContentAnnualReportsRoute: typeof AdminContentAnnualReportsRoute
@@ -3452,6 +3472,7 @@ interface AdminContentRouteChildren {
 
 const AdminContentRouteChildren: AdminContentRouteChildren = {
   AdminContentIdRoute: AdminContentIdRoute,
+  AdminContentAboutRoute: AdminContentAboutRoute,
   AdminContentAdoptionRoute: AdminContentAdoptionRoute,
   AdminContentAdoptionGuidesRoute: AdminContentAdoptionGuidesRoute,
   AdminContentAnnualReportsRoute: AdminContentAnnualReportsRoute,
