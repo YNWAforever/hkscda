@@ -862,8 +862,21 @@ describe("supabase migration safety", () => {
     );
     expect(sql).toContain("security definer");
     expect(sql).toContain("set search_path = public, pg_temp");
-    expect(sql).toContain("where auth_user_id = p_actor_user_id");
+
+    const guards = sql.match(
+      /from public\.admin_user\s*\n\s*where auth_user_id = p_actor_user_id\s*\n\s*and status = 'active'\s*\n\s*and role in \('staff', 'admin'\)/g,
+    );
+    expect(guards).toHaveLength(1);
+
+    // Both the RPC's upsert and the seed insert must go through the same
+    // conflict target — if either one drops it, re-running the seed or
+    // calling the RPC twice would duplicate rows instead of updating in place.
+    expect(sql.match(/on conflict \(page_slug\) do update set/g)).toHaveLength(2);
+
     expect(sql).toContain("insert into public.audit_log");
+    // Only one RPC in this migration, so exactly one audit_log write.
+    expect((sql.match(/insert into public\.audit_log/g) ?? []).length).toBe(1);
+
     expect(sql).toContain(
       "revoke all on function public.upsert_about_page_content_with_audit(uuid, text, jsonb)",
     );

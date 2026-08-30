@@ -5,6 +5,8 @@ create table if not exists public.about_page_content (
   updated_at timestamptz not null default now()
 );
 
+-- No set_updated_at trigger here (unlike the 3 most recent sibling migrations):
+-- updated_at is always set explicitly by the RPC below, and there is no other write path.
 alter table public.about_page_content enable row level security;
 
 grant select, insert, update, delete on public.about_page_content to service_role;
@@ -34,6 +36,8 @@ begin
     raise exception 'Active staff or admin actor required' using errcode = '42501';
   end if;
 
+  -- Not redundant with the table's check constraint: this gives callers a friendlier,
+  -- distinct errcode ('22023') instead of the raw check-violation errcode ('23514').
   if p_page_slug not in ('about', 'tnr', 'cccp') then
     raise exception 'Unknown about page slug' using errcode = '22023';
   end if;
