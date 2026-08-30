@@ -50,7 +50,10 @@ export function createAdminFaqHandlers({ requireFaqAdmin, service }: CreateAdmin
       return withFaqErrors(async () => {
         const admin = await requireFaqAdmin(request);
         return jsonNoStore({
-          entry: await service.upsert({ actorUserId: admin.id, input: await jsonBody(request) }),
+          entry: await service.upsert({
+            actorUserId: admin.authUserId,
+            input: await jsonBody(request),
+          }),
         });
       });
     },
@@ -60,7 +63,7 @@ export function createAdminFaqHandlers({ requireFaqAdmin, service }: CreateAdmin
         const admin = await requireFaqAdmin(request);
         const body = (await jsonBody(request)) as { id?: string };
         if (!body.id) return jsonNoStore({ error: "Missing FAQ entry id" }, { status: 400 });
-        await service.deactivate({ actorUserId: admin.id, id: body.id });
+        await service.deactivate({ actorUserId: admin.authUserId, id: body.id });
         return jsonNoStore({ ok: true });
       });
     },
