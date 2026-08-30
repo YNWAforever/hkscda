@@ -72,6 +72,7 @@ import { Route as ApiAdminContentRouteImport } from './routes/api/admin/content'
 import { Route as ApiAdminAnnualReportsRouteImport } from './routes/api/admin/annual-reports'
 import { Route as ApiAdminAdoptionInformationRouteImport } from './routes/api/admin/adoption-information'
 import { Route as ApiAdminAdoptionGuideReleasesRouteImport } from './routes/api/admin/adoption-guide-releases'
+import { Route as ApiAdminAboutPagesRouteImport } from './routes/api/admin/about-pages'
 import { Route as AnimalsDogIdRouteImport } from './routes/animals/dog_.$id'
 import { Route as AnimalsCatIdRouteImport } from './routes/animals/cat_.$id'
 import { Route as AdoptionStatusTokenRouteImport } from './routes/adoption/status.$token'
@@ -89,6 +90,7 @@ import { Route as AdminContentDocumentsRouteImport } from './routes/admin/conten
 import { Route as AdminContentAnnualReportsRouteImport } from './routes/admin/content/annual-reports'
 import { Route as AdminContentAdoptionGuidesRouteImport } from './routes/admin/content/adoption-guides'
 import { Route as AdminContentAdoptionRouteImport } from './routes/admin/content/adoption'
+import { Route as AdminContentAboutRouteImport } from './routes/admin/content/about'
 import { Route as AdminContentIdRouteImport } from './routes/admin/content/$id'
 import { Route as AdminApplicationsIdRouteImport } from './routes/admin/applications/$id'
 import { Route as AdminAnimalsNewRouteImport } from './routes/admin/animals/new'
@@ -496,6 +498,11 @@ const ApiAdminAdoptionGuideReleasesRoute =
     path: '/api/admin/adoption-guide-releases',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiAdminAboutPagesRoute = ApiAdminAboutPagesRouteImport.update({
+  id: '/api/admin/about-pages',
+  path: '/api/admin/about-pages',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AnimalsDogIdRoute = AnimalsDogIdRouteImport.update({
   id: '/animals/dog_/$id',
   path: '/animals/dog/$id',
@@ -584,6 +591,11 @@ const AdminContentAdoptionGuidesRoute =
 const AdminContentAdoptionRoute = AdminContentAdoptionRouteImport.update({
   id: '/adoption',
   path: '/adoption',
+  getParentRoute: () => AdminContentRoute,
+} as any)
+const AdminContentAboutRoute = AdminContentAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => AdminContentRoute,
 } as any)
 const AdminContentIdRoute = AdminContentIdRouteImport.update({
@@ -1130,6 +1142,7 @@ export interface FileRoutesByFullPath {
   '/admin/animals/new': typeof AdminAnimalsNewRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
   '/admin/content/$id': typeof AdminContentIdRoute
+  '/admin/content/about': typeof AdminContentAboutRoute
   '/admin/content/adoption': typeof AdminContentAdoptionRoute
   '/admin/content/adoption-guides': typeof AdminContentAdoptionGuidesRoute
   '/admin/content/annual-reports': typeof AdminContentAnnualReportsRoute
@@ -1147,6 +1160,7 @@ export interface FileRoutesByFullPath {
   '/adoption/status/$token': typeof AdoptionStatusTokenRoute
   '/animals/cat/$id': typeof AnimalsCatIdRoute
   '/animals/dog/$id': typeof AnimalsDogIdRoute
+  '/api/admin/about-pages': typeof ApiAdminAboutPagesRoute
   '/api/admin/adoption-guide-releases': typeof ApiAdminAdoptionGuideReleasesRouteWithChildren
   '/api/admin/adoption-information': typeof ApiAdminAdoptionInformationRoute
   '/api/admin/annual-reports': typeof ApiAdminAnnualReportsRouteWithChildren
@@ -1298,6 +1312,7 @@ export interface FileRoutesByTo {
   '/admin/animals/new': typeof AdminAnimalsNewRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
   '/admin/content/$id': typeof AdminContentIdRoute
+  '/admin/content/about': typeof AdminContentAboutRoute
   '/admin/content/adoption': typeof AdminContentAdoptionRoute
   '/admin/content/adoption-guides': typeof AdminContentAdoptionGuidesRoute
   '/admin/content/annual-reports': typeof AdminContentAnnualReportsRoute
@@ -1315,6 +1330,7 @@ export interface FileRoutesByTo {
   '/adoption/status/$token': typeof AdoptionStatusTokenRoute
   '/animals/cat/$id': typeof AnimalsCatIdRoute
   '/animals/dog/$id': typeof AnimalsDogIdRoute
+  '/api/admin/about-pages': typeof ApiAdminAboutPagesRoute
   '/api/admin/adoption-guide-releases': typeof ApiAdminAdoptionGuideReleasesRouteWithChildren
   '/api/admin/adoption-information': typeof ApiAdminAdoptionInformationRoute
   '/api/admin/annual-reports': typeof ApiAdminAnnualReportsRouteWithChildren
@@ -1468,6 +1484,7 @@ export interface FileRoutesById {
   '/admin/animals/new': typeof AdminAnimalsNewRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
   '/admin/content/$id': typeof AdminContentIdRoute
+  '/admin/content/about': typeof AdminContentAboutRoute
   '/admin/content/adoption': typeof AdminContentAdoptionRoute
   '/admin/content/adoption-guides': typeof AdminContentAdoptionGuidesRoute
   '/admin/content/annual-reports': typeof AdminContentAnnualReportsRoute
@@ -1485,6 +1502,7 @@ export interface FileRoutesById {
   '/adoption/status/$token': typeof AdoptionStatusTokenRoute
   '/animals/cat_/$id': typeof AnimalsCatIdRoute
   '/animals/dog_/$id': typeof AnimalsDogIdRoute
+  '/api/admin/about-pages': typeof ApiAdminAboutPagesRoute
   '/api/admin/adoption-guide-releases': typeof ApiAdminAdoptionGuideReleasesRouteWithChildren
   '/api/admin/adoption-information': typeof ApiAdminAdoptionInformationRoute
   '/api/admin/annual-reports': typeof ApiAdminAnnualReportsRouteWithChildren
@@ -1639,6 +1657,7 @@ export interface FileRouteTypes {
     | '/admin/animals/new'
     | '/admin/applications/$id'
     | '/admin/content/$id'
+    | '/admin/content/about'
     | '/admin/content/adoption'
     | '/admin/content/adoption-guides'
     | '/admin/content/annual-reports'
@@ -1656,6 +1675,7 @@ export interface FileRouteTypes {
     | '/adoption/status/$token'
     | '/animals/cat/$id'
     | '/animals/dog/$id'
+    | '/api/admin/about-pages'
     | '/api/admin/adoption-guide-releases'
     | '/api/admin/adoption-information'
     | '/api/admin/annual-reports'
@@ -1807,6 +1827,7 @@ export interface FileRouteTypes {
     | '/admin/animals/new'
     | '/admin/applications/$id'
     | '/admin/content/$id'
+    | '/admin/content/about'
     | '/admin/content/adoption'
     | '/admin/content/adoption-guides'
     | '/admin/content/annual-reports'
@@ -1824,6 +1845,7 @@ export interface FileRouteTypes {
     | '/adoption/status/$token'
     | '/animals/cat/$id'
     | '/animals/dog/$id'
+    | '/api/admin/about-pages'
     | '/api/admin/adoption-guide-releases'
     | '/api/admin/adoption-information'
     | '/api/admin/annual-reports'
@@ -1976,6 +1998,7 @@ export interface FileRouteTypes {
     | '/admin/animals/new'
     | '/admin/applications/$id'
     | '/admin/content/$id'
+    | '/admin/content/about'
     | '/admin/content/adoption'
     | '/admin/content/adoption-guides'
     | '/admin/content/annual-reports'
@@ -1993,6 +2016,7 @@ export interface FileRouteTypes {
     | '/adoption/status/$token'
     | '/animals/cat_/$id'
     | '/animals/dog_/$id'
+    | '/api/admin/about-pages'
     | '/api/admin/adoption-guide-releases'
     | '/api/admin/adoption-information'
     | '/api/admin/annual-reports'
@@ -2152,6 +2176,7 @@ export interface RootRouteChildren {
   AdoptionStatusTokenRoute: typeof AdoptionStatusTokenRoute
   AnimalsCatIdRoute: typeof AnimalsCatIdRoute
   AnimalsDogIdRoute: typeof AnimalsDogIdRoute
+  ApiAdminAboutPagesRoute: typeof ApiAdminAboutPagesRoute
   ApiAdminAdoptionGuideReleasesRoute: typeof ApiAdminAdoptionGuideReleasesRouteWithChildren
   ApiAdminAdoptionInformationRoute: typeof ApiAdminAdoptionInformationRoute
   ApiAdminAnnualReportsRoute: typeof ApiAdminAnnualReportsRouteWithChildren
@@ -2652,6 +2677,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminAdoptionGuideReleasesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/about-pages': {
+      id: '/api/admin/about-pages'
+      path: '/api/admin/about-pages'
+      fullPath: '/api/admin/about-pages'
+      preLoaderRoute: typeof ApiAdminAboutPagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/animals/dog_/$id': {
       id: '/animals/dog_/$id'
       path: '/animals/dog/$id'
@@ -2769,6 +2801,13 @@ declare module '@tanstack/react-router' {
       path: '/adoption'
       fullPath: '/admin/content/adoption'
       preLoaderRoute: typeof AdminContentAdoptionRouteImport
+      parentRoute: typeof AdminContentRoute
+    }
+    '/admin/content/about': {
+      id: '/admin/content/about'
+      path: '/about'
+      fullPath: '/admin/content/about'
+      preLoaderRoute: typeof AdminContentAboutRouteImport
       parentRoute: typeof AdminContentRoute
     }
     '/admin/content/$id': {
@@ -3423,6 +3462,7 @@ const AdminApplicationsRouteWithChildren =
 
 interface AdminContentRouteChildren {
   AdminContentIdRoute: typeof AdminContentIdRoute
+  AdminContentAboutRoute: typeof AdminContentAboutRoute
   AdminContentAdoptionRoute: typeof AdminContentAdoptionRoute
   AdminContentAdoptionGuidesRoute: typeof AdminContentAdoptionGuidesRoute
   AdminContentAnnualReportsRoute: typeof AdminContentAnnualReportsRoute
@@ -3432,6 +3472,7 @@ interface AdminContentRouteChildren {
 
 const AdminContentRouteChildren: AdminContentRouteChildren = {
   AdminContentIdRoute: AdminContentIdRoute,
+  AdminContentAboutRoute: AdminContentAboutRoute,
   AdminContentAdoptionRoute: AdminContentAdoptionRoute,
   AdminContentAdoptionGuidesRoute: AdminContentAdoptionGuidesRoute,
   AdminContentAnnualReportsRoute: AdminContentAnnualReportsRoute,
@@ -3956,6 +3997,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdoptionStatusTokenRoute: AdoptionStatusTokenRoute,
   AnimalsCatIdRoute: AnimalsCatIdRoute,
   AnimalsDogIdRoute: AnimalsDogIdRoute,
+  ApiAdminAboutPagesRoute: ApiAdminAboutPagesRoute,
   ApiAdminAdoptionGuideReleasesRoute:
     ApiAdminAdoptionGuideReleasesRouteWithChildren,
   ApiAdminAdoptionInformationRoute: ApiAdminAdoptionInformationRoute,

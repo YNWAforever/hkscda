@@ -844,4 +844,48 @@ describe("supabase migration safety", () => {
     // right before 'cat' — unlike 'cat', ' which the constraint never spells).
     expect((sql.match(/'dog', '/g) ?? []).length).toBe(9);
   });
+
+  test("adds about_page_content with a shared upsert RPC and seeds all three pages", () => {
+    const sql = readMigrationBySuffix("_about_page_content.sql");
+
+    expect(sql).toContain("create table if not exists public.about_page_content");
+    expect(sql).toContain(
+      "page_slug text primary key check (page_slug in ('about', 'tnr', 'cccp'))",
+    );
+    expect(sql).toContain("alter table public.about_page_content enable row level security");
+    expect(sql).toContain(
+      "grant select, insert, update, delete on public.about_page_content to service_role",
+    );
+    expect(sql).toContain("revoke all on public.about_page_content from anon, authenticated");
+    expect(sql).toContain(
+      "create or replace function public.upsert_about_page_content_with_audit(",
+    );
+    expect(sql).toContain("security definer");
+    expect(sql).toContain("set search_path = public, pg_temp");
+
+    const guards = sql.match(
+      /from public\.admin_user\s*\n\s*where auth_user_id = p_actor_user_id\s*\n\s*and status = 'active'\s*\n\s*and role in \('staff', 'admin'\)/g,
+    );
+    expect(guards).toHaveLength(1);
+
+    // Both the RPC's upsert and the seed insert must go through the same
+    // conflict target — if either one drops it, re-running the seed or
+    // calling the RPC twice would duplicate rows instead of updating in place.
+    expect(sql.match(/on conflict \(page_slug\) do update set/g)).toHaveLength(2);
+
+    expect(sql).toContain("insert into public.audit_log");
+    // Only one RPC in this migration, so exactly one audit_log write.
+    expect((sql.match(/insert into public\.audit_log/g) ?? []).length).toBe(1);
+
+    expect(sql).toContain(
+      "revoke all on function public.upsert_about_page_content_with_audit(uuid, text, jsonb)",
+    );
+    expect(sql).toContain(
+      "grant execute on function public.upsert_about_page_content_with_audit(uuid, text, jsonb)",
+    );
+
+    for (const slug of ["'about'", "'tnr'", "'cccp'"]) {
+      expect(sql).toContain(`(${slug}, '{`);
+    }
+  });
 });
