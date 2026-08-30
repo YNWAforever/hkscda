@@ -1,6 +1,6 @@
 import { afterAll, describe, expect, mock, test } from "bun:test";
 
-import type { AnyAboutPageContent } from "./types";
+import type { AboutPageContent } from "./types";
 
 // `mock.module` mocks are process-global in Bun's test runner and outlive this
 // file: they aren't undone by `mock.restore()`, so an unmocked-back specifier
@@ -40,7 +40,7 @@ describe("loadAboutPageContent", () => {
     // schema-valid page. Cast past the real (much larger) union type.
     const content = {
       hero: { eyebrow: "e", title: "t", description: "d" },
-    } as unknown as AnyAboutPageContent;
+    } as unknown as AboutPageContent;
     getContent.mockResolvedValueOnce(content);
 
     await expect(loadAboutPageContent("about")).resolves.toEqual(content);
