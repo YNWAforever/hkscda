@@ -797,4 +797,51 @@ describe("supabase migration safety", () => {
     expect((sql.match(/insert into public\.faq_entry/g) ?? []).length).toBe(2);
     expect((sql.match(/'tax_receipt'/g) ?? []).length).toBeGreaterThanOrEqual(2);
   });
+
+  test("adoption_rules/care_topics: RLS locked down, animal_type constrained, both audit RPCs present and locked to service_role", () => {
+    const sql = readMigrationBySuffix("_adoption_rules_care_topics.sql");
+
+    expect(sql).toContain("create table if not exists public.adoption_rules");
+    expect(sql).toContain("create table if not exists public.care_topics");
+    expect(sql).toContain("animal_type text not null check (animal_type in ('dog', 'cat'))");
+    expect(sql).toContain("alter table public.adoption_rules enable row level security");
+    expect(sql).toContain("alter table public.care_topics enable row level security");
+    expect(sql).toContain(
+      "grant select, insert, update, delete on public.adoption_rules to service_role",
+    );
+    expect(sql).toContain(
+      "grant select, insert, update, delete on public.care_topics to service_role",
+    );
+    expect(sql).toContain("revoke all on public.adoption_rules from anon, authenticated");
+    expect(sql).toContain("revoke all on public.care_topics from anon, authenticated");
+
+    for (const fn of ["upsert_adoption_rule_with_audit", "upsert_care_topic_with_audit"]) {
+      expect(sql).toContain(`create or replace function public.${fn}(`);
+    }
+
+    const guards = sql.match(
+      /from public\.admin_user\s*\n\s*where auth_user_id = p_actor_user_id\s*\n\s*and status = 'active'\s*\n\s*and role in \('staff', 'admin'\)/g,
+    );
+    expect(guards).toHaveLength(2);
+
+    expect(sql).toMatch(
+      /revoke all on function public\.upsert_adoption_rule_with_audit\([\s\S]*?\) from public, anon, authenticated;\s*\ngrant execute on function public\.upsert_adoption_rule_with_audit\([\s\S]*?\) to service_role;/,
+    );
+    expect(sql).toMatch(
+      /revoke all on function public\.upsert_care_topic_with_audit\([\s\S]*?\) from public, anon, authenticated;\s*\ngrant execute on function public\.upsert_care_topic_with_audit\([\s\S]*?\) to service_role;/,
+    );
+
+    // Both RPCs write exactly one audit_log row inside the same function body
+    // as the data mutation (atomic — never a second, separately-failable call).
+    expect((sql.match(/insert into public\.audit_log/g) ?? []).length).toBe(2);
+
+    // 1 inside each RPC's create branch, plus the seed bulk-inserts.
+    expect((sql.match(/insert into public\.adoption_rules/g) ?? []).length).toBe(2);
+    expect((sql.match(/insert into public\.care_topics/g) ?? []).length).toBe(2);
+    expect((sql.match(/'cat', '/g) ?? []).length).toBe(7);
+    // 8 seed rows plus 1 incidental match inside the check constraint itself
+    // (`animal_type in ('dog', 'cat')` contains the literal substring "'dog', '"
+    // right before 'cat' — unlike 'cat', ' which the constraint never spells).
+    expect((sql.match(/'dog', '/g) ?? []).length).toBe(9);
+  });
 });
