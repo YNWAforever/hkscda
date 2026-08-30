@@ -22,7 +22,8 @@ export type ExpectedUploadedObject = {
 export type VerifyUploadResult = { ok: true } | { ok: false; missing: string[] };
 
 function safeFileName(fileName: string) {
-  const baseName = fileName.split(/[\\/]/).pop()?.trim() || "file";
+  let baseName = fileName.split(/[\\/]/).pop()?.trim() || "file";
+  if (/^\.+$/.test(baseName)) baseName = "file";
   return baseName.replace(/[^A-Za-z0-9._-]/g, "_");
 }
 
@@ -32,9 +33,19 @@ export async function createSignedUploadUrls(
   draftId: string,
   descriptors: SignedUploadDescriptor[],
 ): Promise<SignedUploadResult[]> {
+  const paths = descriptors.map(
+    (descriptor) => `${draftId}/${descriptor.category}/${safeFileName(descriptor.fileName)}`,
+  );
+  const seenPaths = new Set<string>();
+  for (const path of paths) {
+    if (seenPaths.has(path)) throw new Error(`Duplicate upload path: ${path}`);
+    seenPaths.add(path);
+  }
+
   const results: SignedUploadResult[] = [];
-  for (const descriptor of descriptors) {
-    const path = `${draftId}/${descriptor.category}/${safeFileName(descriptor.fileName)}`;
+  for (let i = 0; i < descriptors.length; i++) {
+    const descriptor = descriptors[i];
+    const path = paths[i];
     const { data, error } = await client.storage.from(bucket).createSignedUploadUrl(path);
     if (error) throw error;
     if (!data) throw new Error(`Missing signed upload data for ${path}`);
