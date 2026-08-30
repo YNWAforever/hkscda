@@ -56,6 +56,8 @@ describe("public adoption information page reader", () => {
               },
             ],
             estates: [],
+            rules: [],
+            careTopics: [],
           };
         },
       },
@@ -93,7 +95,7 @@ describe("public adoption information page reader", () => {
     const read = createPublicAdoptionPageReader({
       adoptionRepository: {
         async listPublic() {
-          return { fees: [], estates: [] };
+          return { fees: [], estates: [], rules: [], careTopics: [] };
         },
       },
       async loadGuides() {
@@ -116,7 +118,7 @@ describe("public adoption information page reader", () => {
     const read = createPublicAdoptionPageReader({
       adoptionRepository: {
         async listPublic() {
-          return { fees: [], estates: [] };
+          return { fees: [], estates: [], rules: [], careTopics: [] };
         },
       },
       async loadGuides() {
@@ -125,5 +127,81 @@ describe("public adoption information page reader", () => {
     });
 
     expect((await read()).guideGroups).toEqual([]);
+  });
+
+  test("includes only published rules and care topics, sorted by sortOrder and grouped by species", async () => {
+    const read = createPublicAdoptionPageReader({
+      adoptionRepository: {
+        async listPublic() {
+          return {
+            fees: [],
+            estates: [],
+            rules: [
+              {
+                id: "rule-2",
+                content: { "zh-HK": "規則二", en: "Rule two" },
+                sortOrder: 1,
+                isPublished: true,
+              },
+              {
+                id: "rule-unpublished",
+                content: { "zh-HK": "未發佈規則", en: "Unpublished rule" },
+                sortOrder: 0,
+                isPublished: false,
+              },
+              {
+                id: "rule-1",
+                content: { "zh-HK": "規則一", en: "Rule one" },
+                sortOrder: 0,
+                isPublished: true,
+              },
+            ],
+            careTopics: [
+              {
+                id: "topic-dog-2",
+                animalType: "dog" as const,
+                label: { "zh-HK": "運動", en: "Exercise" },
+                content: { "zh-HK": "運動指引", en: "Exercise guidance" },
+                sortOrder: 1,
+                isPublished: true,
+              },
+              {
+                id: "topic-dog-1",
+                animalType: "dog" as const,
+                label: { "zh-HK": "餵食", en: "Feeding" },
+                content: { "zh-HK": "餵食指引", en: "Feeding guidance" },
+                sortOrder: 0,
+                isPublished: true,
+              },
+              {
+                id: "topic-cat-1",
+                animalType: "cat" as const,
+                label: { "zh-HK": "梳毛", en: "Grooming" },
+                content: { "zh-HK": "梳毛指引", en: "Grooming guidance" },
+                sortOrder: 0,
+                isPublished: true,
+              },
+              {
+                id: "topic-cat-unpublished",
+                animalType: "cat" as const,
+                label: { "zh-HK": "未發佈", en: "Unpublished" },
+                content: { "zh-HK": "未發佈內容", en: "Unpublished content" },
+                sortOrder: 1,
+                isPublished: false,
+              },
+            ],
+          };
+        },
+      },
+      async loadGuides() {
+        return [];
+      },
+    });
+
+    const result = await read();
+
+    expect(result.rules.map((rule) => rule.id)).toEqual(["rule-1", "rule-2"]);
+    expect(result.careTopics.dog.map((topic) => topic.id)).toEqual(["topic-dog-1", "topic-dog-2"]);
+    expect(result.careTopics.cat.map((topic) => topic.id)).toEqual(["topic-cat-1"]);
   });
 });

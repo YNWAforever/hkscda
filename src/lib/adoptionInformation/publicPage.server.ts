@@ -8,7 +8,7 @@ import type { DocumentSlot } from "../documents/types";
 import { createSupabaseServiceClient } from "../donations/supabase.server";
 import { createSupabaseAdoptionInformationRepository } from "./repository.server";
 import type { AdoptionInformationRepository } from "./service";
-import type { AdoptionFee, DogFriendlyEstate } from "./types";
+import type { AdoptionFee, AdoptionRuleContent, CareTopic, DogFriendlyEstate } from "./types";
 
 export const POST_ADOPTION_GUIDE_SLOT_KEY = "post_adoption_guide";
 export const POST_ADOPTION_GUIDE_SLOT_KEYS = [
@@ -34,6 +34,8 @@ export type PublicAdoptionPageData = {
   feesBySpecies: { dog: AdoptionFee[]; cat: AdoptionFee[] };
   estates: DogFriendlyEstate[];
   guideGroups: PublicAdoptionGuideGroup[];
+  rules: AdoptionRuleContent[];
+  careTopics: { cat: CareTopic[]; dog: CareTopic[] };
 };
 
 type PublicRepository = Pick<AdoptionInformationRepository, "listPublic">;
@@ -83,6 +85,13 @@ export function createPublicAdoptionPageReader({
       POST_ADOPTION_GUIDE_SLOT_KEY,
     );
 
+    const rules = information.rules
+      .filter((rule) => rule.isPublished)
+      .sort((left, right) => left.sortOrder - right.sortOrder);
+    const careTopics = information.careTopics
+      .filter((topic) => topic.isPublished)
+      .sort((left, right) => left.sortOrder - right.sortOrder);
+
     return {
       feesBySpecies: {
         dog: fees.filter((fee) => fee.animalType === "dog"),
@@ -96,6 +105,11 @@ export function createPublicAdoptionPageReader({
             left.estateName.localeCompare(right.estateName, "zh-HK"),
         ),
       guideGroups: guideGroups.length ? guideGroups : legacyGuideGroup ? [legacyGuideGroup] : [],
+      rules,
+      careTopics: {
+        cat: careTopics.filter((topic) => topic.animalType === "cat"),
+        dog: careTopics.filter((topic) => topic.animalType === "dog"),
+      },
     };
   };
 }

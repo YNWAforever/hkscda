@@ -37,7 +37,7 @@ function setup() {
   const repo: AdoptionInformationRepository = {
     async listPublic() {
       calls.push({ name: "listPublic" });
-      return { fees: [fee], estates: [] };
+      return { fees: [fee], estates: [], rules: [rule], careTopics: [careTopic] };
     },
     async listAdmin(input) {
       calls.push({ name: "listAdmin", payload: input });
