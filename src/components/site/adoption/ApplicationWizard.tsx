@@ -109,7 +109,7 @@ async function submitAdoptionApplication(
       ? (payload as Record<string, unknown>)
       : {};
 
-  const { applicationId, uploaded } = await uploadAllPhotos(photos, turnstileToken);
+  const { applicationId, uploaded } = await uploadAllPhotos(photos);
 
   const response = await fetch("/api/adoption/applications", {
     method: "POST",

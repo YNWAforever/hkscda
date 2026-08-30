@@ -756,6 +756,25 @@ git commit -m "feat: upload adoption photos directly to storage instead of relay
 
 ### Task 5: Sponsorship — upload-URL endpoint
 
+> **Why this endpoint does not verify Turnstile:** an earlier version of this
+> plan's Task 2 (the adoption equivalent, `photo-upload-urls.ts`) had the
+> client send the *same* Turnstile token to both the upload-URL endpoint and
+> the final submission endpoint. Cloudflare Turnstile tokens are single-use,
+> so the second `siteverify` call fails with `timeout-or-duplicate` once
+> `TURNSTILE_SECRET_KEY` is actually configured — turning a payload-size bug
+> fix into a worse bug that breaks every real submission. That was caught and
+> fixed post-merge (see the `fix: verify Turnstile only at final submission,
+> not at the upload-URL step, to avoid double-consuming a single-use token`
+> commit). This upload-URL endpoint mints a signed URL and nothing else — it
+> creates no database row and sends no email, and a real pledge can't
+> complete without later passing through `POST /api/sponsorships/pledges`
+> (which verifies Turnstile) and `verifyUploadedObjects` (which confirms a
+> genuinely-uploaded file exists) — so rate limiting alone (already below) is
+> the correct control here. Do **not** add a `turnstileToken` field or a
+> `verifyTurnstile` call to this route; keep Turnstile verification solely at
+> the final `POST /api/sponsorships/pledges` submission step (Task 6), which
+> already covers both the with-proof and no-proof pledge paths uniformly.
+
 **Files:**
 - Create: `src/routes/api/sponsorships/pledges/proof-upload-url.ts`
 - Create: `src/routes/api/sponsorships/pledges/proof-upload-url.test.ts`
@@ -774,12 +793,10 @@ import {
   getClientIp,
   retryAfterSeconds,
 } from "../../../../lib/security/rate-limit.server";
-import { verifyTurnstile } from "../../../../lib/security/turnstile.server";
 
 export const SPONSORSHIP_PROOF_BUCKET = "sponsorship-payment-proof";
 
 const requestSchema = z.object({
-  turnstileToken: z.string().optional(),
   proof: z.object({
     fileName: z.unknown(),
     mimeType: z.unknown(),
@@ -819,9 +836,6 @@ export const Route = createFileRoute("/api/sponsorships/pledges/proof-upload-url
 
         try {
           const parsed = requestSchema.parse(body);
-          if (!(await verifyTurnstile(parsed.turnstileToken, ip))) {
-            return jsonNoStore({ error: "Verification failed" }, { status: 403 });
-          }
 
           const descriptor = validateProofDescriptor(parsed.proof);
           const pledgeId = crypto.randomUUID();
@@ -1060,13 +1074,11 @@ git commit -m "feat: switch sponsorship pledge submission to JSON with pre-uploa
 ```ts
 async function uploadProofDirectly(
   proofFile: File,
-  turnstileToken: string | null,
 ): Promise<{ pledgeId: string; storagePath: string }> {
   const urlResponse = await fetch("/api/sponsorships/pledges/proof-upload-url", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
-      turnstileToken: turnstileToken ?? undefined,
       proof: { fileName: proofFile.name, mimeType: proofFile.type, sizeBytes: proofFile.size },
     }),
   });
@@ -1098,7 +1110,7 @@ Replace the block from `const formData = new FormData();` through the `fetch("/a
       let pledgeId: string | undefined;
       let proofReference_: { storagePath: string } | undefined;
       if (includeProof && proofFile) {
-        const uploadResult = await uploadProofDirectly(proofFile, turnstileToken);
+        const uploadResult = await uploadProofDirectly(proofFile);
         pledgeId = uploadResult.pledgeId;
         proofReference_ = { storagePath: uploadResult.storagePath };
       }

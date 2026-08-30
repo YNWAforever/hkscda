@@ -66,13 +66,11 @@ export type PhotoUploadUrlsResponse = {
 
 export async function requestPhotoUploadUrls(
   photos: SelectedPhoto[],
-  turnstileToken: string | null,
 ): Promise<PhotoUploadUrlsResponse> {
   const response = await fetch("/api/adoption/applications/photo-upload-urls", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
-      turnstileToken: turnstileToken ?? undefined,
       photos: photos.map((photo) => ({
         category: photo.category,
         fileName: photo.file.name,
@@ -88,10 +86,7 @@ export async function requestPhotoUploadUrls(
   return result as PhotoUploadUrlsResponse;
 }
 
-export async function uploadAllPhotos(
-  photos: SelectedPhoto[],
-  turnstileToken: string | null,
-): Promise<{
+export async function uploadAllPhotos(photos: SelectedPhoto[]): Promise<{
   applicationId: string;
   uploaded: Array<{
     category: AdoptionPhotoCategory;
@@ -101,7 +96,7 @@ export async function uploadAllPhotos(
     storagePath: string;
   }>;
 }> {
-  const { applicationId, uploads } = await requestPhotoUploadUrls(photos, turnstileToken);
+  const { applicationId, uploads } = await requestPhotoUploadUrls(photos);
 
   const uploaded: Array<{
     category: AdoptionPhotoCategory;

@@ -107,7 +107,7 @@ describe("requestPhotoUploadUrls", () => {
     globalThis.fetch = fetchSpy as unknown as typeof fetch;
     const photos = [makePhoto("home", "a.jpg")];
 
-    const result = await requestPhotoUploadUrls(photos, "turnstile-token");
+    const result = await requestPhotoUploadUrls(photos);
 
     expect(fetchSpy).toHaveBeenCalledWith(
       "/api/adoption/applications/photo-upload-urls",
@@ -115,7 +115,6 @@ describe("requestPhotoUploadUrls", () => {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          turnstileToken: "turnstile-token",
           photos: [{ category: "home", fileName: "a.jpg", mimeType: "image/jpeg", sizeBytes: 5 }],
         }),
       }),
@@ -132,16 +131,14 @@ describe("requestPhotoUploadUrls", () => {
     const fetchSpy = mock(async () => Response.json({ error: "驗證已過期" }, { status: 403 }));
     globalThis.fetch = fetchSpy as unknown as typeof fetch;
 
-    await expect(requestPhotoUploadUrls([makePhoto("home")], null)).rejects.toThrow("驗證已過期");
+    await expect(requestPhotoUploadUrls([makePhoto("home")])).rejects.toThrow("驗證已過期");
   });
 
   test("falls back to a generic message when the error response has no usable body", async () => {
     const fetchSpy = mock(async () => new Response("not json", { status: 500 }));
     globalThis.fetch = fetchSpy as unknown as typeof fetch;
 
-    await expect(requestPhotoUploadUrls([makePhoto("home")], null)).rejects.toThrow(
-      "無法準備相片上傳。",
-    );
+    await expect(requestPhotoUploadUrls([makePhoto("home")])).rejects.toThrow("無法準備相片上傳。");
   });
 });
 
@@ -183,7 +180,7 @@ describe("uploadAllPhotos", () => {
     globalThis.fetch = fetchSpy as unknown as typeof fetch;
 
     const photos = [makePhoto("home", "a.jpg"), makePhoto("window", "b.jpg")];
-    const result = await uploadAllPhotos(photos, "turnstile-token");
+    const result = await uploadAllPhotos(photos);
 
     expect(fetchSpy).toHaveBeenCalledTimes(1);
     expect(uploadToSignedUrl).toHaveBeenCalledTimes(2);
@@ -228,7 +225,7 @@ describe("uploadAllPhotos", () => {
     );
     globalThis.fetch = fetchSpy as unknown as typeof fetch;
 
-    await expect(uploadAllPhotos([makePhoto("living")], null)).rejects.toThrow(
+    await expect(uploadAllPhotos([makePhoto("living")])).rejects.toThrow(
       "Missing signed upload URL for living",
     );
     expect(uploadToSignedUrl).not.toHaveBeenCalled();
@@ -262,7 +259,7 @@ describe("uploadAllPhotos", () => {
 
     const photos = [makePhoto("home", "a.jpg"), makePhoto("window", "b.jpg")];
 
-    await expect(uploadAllPhotos(photos, null)).rejects.toThrow("上傳失敗，請重試。");
+    await expect(uploadAllPhotos(photos)).rejects.toThrow("上傳失敗，請重試。");
     expect(uploadToSignedUrl).toHaveBeenCalledTimes(1);
   });
 });

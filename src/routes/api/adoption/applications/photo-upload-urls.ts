@@ -9,13 +9,11 @@ import {
   getClientIp,
   retryAfterSeconds,
 } from "../../../../lib/security/rate-limit.server";
-import { verifyTurnstile } from "../../../../lib/security/turnstile.server";
 
 export const ADOPTION_PHOTO_BUCKET = "adoption-application-photos";
 const MAX_PHOTOS_PER_REQUEST = 6;
 
 const requestSchema = z.object({
-  turnstileToken: z.string().optional(),
   photos: z
     .array(
       z.object({
@@ -61,9 +59,6 @@ export const Route = createFileRoute("/api/adoption/applications/photo-upload-ur
 
         try {
           const parsed = requestSchema.parse(body);
-          if (!(await verifyTurnstile(parsed.turnstileToken, ip))) {
-            return jsonNoStore({ error: "Verification failed" }, { status: 403 });
-          }
 
           const descriptors = parsed.photos.map((photo) =>
             validatePhotoDescriptor({
