@@ -118,7 +118,9 @@ export function AdoptionRulesManagement({
                 </button>
               </li>
             ))}
-          {rules.length === 0 ? <p className="text-sm text-[var(--color-text-muted)]">沒有領養規則資料</p> : null}
+          {rules.length === 0 ? (
+            <p className="text-sm text-[var(--color-text-muted)]">沒有領養規則資料</p>
+          ) : null}
         </ol>
       ) : null}
 

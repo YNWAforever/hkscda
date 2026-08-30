@@ -141,9 +141,7 @@ describe("careTopicInputSchema", () => {
 
 describe("adminAdoptionInformationQuerySchema with the new resources", () => {
   test("accepts resource=rules", () => {
-    expect(adminAdoptionInformationQuerySchema.parse({ resource: "rules" }).resource).toBe(
-      "rules",
-    );
+    expect(adminAdoptionInformationQuerySchema.parse({ resource: "rules" }).resource).toBe("rules");
   });
 
   test("accepts resource=careTopics", () => {
