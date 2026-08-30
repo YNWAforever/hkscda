@@ -81,7 +81,7 @@ const data = {
   careTopics: {
     cat: [
       {
-        id: "cat-topic-home",
+        id: "33333333-3333-4333-8333-333333333333",
         animalType: "cat",
         label: { "zh-HK": "家居", en: "Home" },
         content: {
@@ -94,7 +94,7 @@ const data = {
     ],
     dog: [
       {
-        id: "dog-topic-home",
+        id: "44444444-4444-4444-8444-444444444444",
         animalType: "dog",
         label: { "zh-HK": "家居", en: "Home" },
         content: { "zh-HK": "為狗狗提供安全的空間。", en: "Provide a safe space for your dog." },
