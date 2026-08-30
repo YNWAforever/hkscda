@@ -238,6 +238,10 @@ export async function persistPublicAdoptionJourney({
     })),
   );
   if (!verification.ok) {
+    logger.error("Adoption photo upload verification failed", {
+      applicationId: parsed.applicationId,
+      missing: verification.missing,
+    });
     throw new SubmissionValidationError(
       `Uploaded photo not found: ${verification.missing.join(", ")}`,
     );
