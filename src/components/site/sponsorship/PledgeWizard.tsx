@@ -11,6 +11,7 @@ import {
 import { SPONSORSHIP_TIER_AMOUNTS_CENTS } from "../../../lib/sponsorship/schemas";
 import { TurnstileWidget, turnstileEnabled } from "../TurnstileWidget";
 import { useShortlist } from "../ShortlistContext";
+import { resolvePledgeSubmissionIds } from "./pledgeProofUpload";
 
 type Language = "zh-HK" | "en";
 type MonthlyTier = "100" | "300" | "500" | "custom";
@@ -184,13 +185,20 @@ export function PledgeWizard() {
         };
       }
 
-      const formData = new FormData();
-      formData.set("payload", JSON.stringify(payload));
-      if (includeProof && proofFile) formData.set("proof", proofFile);
+      const { pledgeId, proof: uploadedProofReference } = await resolvePledgeSubmissionIds(
+        includeProof,
+        proofFile,
+      );
 
       const response = await fetch("/api/sponsorships/pledges", {
         method: "POST",
-        body: formData,
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          payload,
+          pledgeId,
+          proof: uploadedProofReference,
+          turnstileToken,
+        }),
       });
       if (!response.ok) throw new Error("Sponsorship pledge request failed");
       const data = (await response.json()) as SubmitResult;
