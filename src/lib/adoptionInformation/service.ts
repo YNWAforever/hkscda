@@ -2,14 +2,20 @@ import {
   adminAdoptionInformationQuerySchema,
   adoptionFeeInputSchema,
   adoptionInformationIdSchema,
+  adoptionRuleInputSchema,
+  careTopicInputSchema,
   estateInputSchema,
   type AdoptionFeeInput,
+  type AdoptionRuleInput,
+  type CareTopicInput,
   type EstateInput,
 } from "./schemas";
 import type {
   AdminAdoptionInformationPage,
   AdminAdoptionInformationQuery,
   AdoptionFee,
+  AdoptionRuleContent,
+  CareTopic,
   DogFriendlyEstate,
   PublicAdoptionInformation,
 } from "./types";
@@ -42,6 +48,8 @@ export interface AdoptionInformationRepository {
   upsertFee(input: AdoptionFeeInput): Promise<AdoptionFee>;
   upsertEstate(input: EstateInput): Promise<DogFriendlyEstate>;
   deleteEstate(id: string): Promise<void>;
+  upsertRule(input: AdoptionRuleInput, actorUserId: string): Promise<AdoptionRuleContent>;
+  upsertCareTopic(input: CareTopicInput, actorUserId: string): Promise<CareTopic>;
   insertAuditLog(input: AdoptionInformationAuditLog): Promise<void>;
 }
 
@@ -117,6 +125,23 @@ export function createAdoptionInformationService({
         entity_id: id,
         detail: {},
       });
+    },
+
+    // upsertRule/upsertCareTopic don't call audit() themselves — unlike
+    // upsertFee/upsertEstate above, their underlying RPCs
+    // (upsert_adoption_rule_with_audit, upsert_care_topic_with_audit) already
+    // insert their audit_log row atomically inside the same transaction as
+    // the data change. A second, separate insertAuditLog call here would
+    // duplicate that row and reintroduce the exact non-atomic-audit gap this
+    // repo's CLAUDE.md warns against for new work.
+    async upsertRule({ actorUserId, input }: { actorUserId: string; input: unknown }) {
+      const parsed = adoptionRuleInputSchema.parse(input);
+      return repo.upsertRule(parsed, actorUserId);
+    },
+
+    async upsertCareTopic({ actorUserId, input }: { actorUserId: string; input: unknown }) {
+      const parsed = careTopicInputSchema.parse(input);
+      return repo.upsertCareTopic(parsed, actorUserId);
     },
   };
 }
