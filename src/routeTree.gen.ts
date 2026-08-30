@@ -96,6 +96,7 @@ import { Route as AdminApplicationsIdRouteImport } from './routes/admin/applicat
 import { Route as AdminAnimalsNewRouteImport } from './routes/admin/animals/new'
 import { Route as ApiVolunteerStatusTokenRouteImport } from './routes/api/volunteer/status/$token'
 import { Route as ApiSponsorshipsStatusTokenRouteImport } from './routes/api/sponsorships/status/$token'
+import { Route as ApiSponsorshipsPledgesProofUploadUrlRouteImport } from './routes/api/sponsorships/pledges/proof-upload-url'
 import { Route as ApiDonationsDonationIdStatusRouteImport } from './routes/api/donations/$donationId/status'
 import { Route as ApiAdoptionStatusTokenRouteImport } from './routes/api/adoption/status/$token'
 import { Route as ApiAdoptionApplicationsPhotoUploadUrlsRouteImport } from './routes/api/adoption/applications/photo-upload-urls'
@@ -624,6 +625,12 @@ const ApiSponsorshipsStatusTokenRoute =
     id: '/api/sponsorships/status/$token',
     path: '/api/sponsorships/status/$token',
     getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiSponsorshipsPledgesProofUploadUrlRoute =
+  ApiSponsorshipsPledgesProofUploadUrlRouteImport.update({
+    id: '/proof-upload-url',
+    path: '/proof-upload-url',
+    getParentRoute: () => ApiSponsorshipsPledgesRoute,
   } as any)
 const ApiDonationsDonationIdStatusRoute =
   ApiDonationsDonationIdStatusRouteImport.update({
@@ -1181,7 +1188,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/receipts': typeof ApiAdminReceiptsRouteWithChildren
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
   '/api/adoption/applications': typeof ApiAdoptionApplicationsRouteWithChildren
-  '/api/sponsorships/pledges': typeof ApiSponsorshipsPledgesRoute
+  '/api/sponsorships/pledges': typeof ApiSponsorshipsPledgesRouteWithChildren
   '/api/stories/$slug': typeof ApiStoriesSlugRoute
   '/api/stories/map': typeof ApiStoriesMapRoute
   '/api/volunteer/activities': typeof ApiVolunteerActivitiesRoute
@@ -1221,6 +1228,7 @@ export interface FileRoutesByFullPath {
   '/api/adoption/applications/photo-upload-urls': typeof ApiAdoptionApplicationsPhotoUploadUrlsRoute
   '/api/adoption/status/$token': typeof ApiAdoptionStatusTokenRoute
   '/api/donations/$donationId/status': typeof ApiDonationsDonationIdStatusRoute
+  '/api/sponsorships/pledges/proof-upload-url': typeof ApiSponsorshipsPledgesProofUploadUrlRoute
   '/api/sponsorships/status/$token': typeof ApiSponsorshipsStatusTokenRoute
   '/api/volunteer/status/$token': typeof ApiVolunteerStatusTokenRoute
   '/api/admin/access/users/$id': typeof ApiAdminAccessUsersIdRoute
@@ -1352,7 +1360,7 @@ export interface FileRoutesByTo {
   '/api/admin/receipts': typeof ApiAdminReceiptsRouteWithChildren
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
   '/api/adoption/applications': typeof ApiAdoptionApplicationsRouteWithChildren
-  '/api/sponsorships/pledges': typeof ApiSponsorshipsPledgesRoute
+  '/api/sponsorships/pledges': typeof ApiSponsorshipsPledgesRouteWithChildren
   '/api/stories/$slug': typeof ApiStoriesSlugRoute
   '/api/stories/map': typeof ApiStoriesMapRoute
   '/api/volunteer/activities': typeof ApiVolunteerActivitiesRoute
@@ -1392,6 +1400,7 @@ export interface FileRoutesByTo {
   '/api/adoption/applications/photo-upload-urls': typeof ApiAdoptionApplicationsPhotoUploadUrlsRoute
   '/api/adoption/status/$token': typeof ApiAdoptionStatusTokenRoute
   '/api/donations/$donationId/status': typeof ApiDonationsDonationIdStatusRoute
+  '/api/sponsorships/pledges/proof-upload-url': typeof ApiSponsorshipsPledgesProofUploadUrlRoute
   '/api/sponsorships/status/$token': typeof ApiSponsorshipsStatusTokenRoute
   '/api/volunteer/status/$token': typeof ApiVolunteerStatusTokenRoute
   '/api/admin/access/users/$id': typeof ApiAdminAccessUsersIdRoute
@@ -1525,7 +1534,7 @@ export interface FileRoutesById {
   '/api/admin/receipts': typeof ApiAdminReceiptsRouteWithChildren
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
   '/api/adoption/applications': typeof ApiAdoptionApplicationsRouteWithChildren
-  '/api/sponsorships/pledges': typeof ApiSponsorshipsPledgesRoute
+  '/api/sponsorships/pledges': typeof ApiSponsorshipsPledgesRouteWithChildren
   '/api/stories/$slug': typeof ApiStoriesSlugRoute
   '/api/stories/map': typeof ApiStoriesMapRoute
   '/api/volunteer/activities': typeof ApiVolunteerActivitiesRoute
@@ -1565,6 +1574,7 @@ export interface FileRoutesById {
   '/api/adoption/applications/photo-upload-urls': typeof ApiAdoptionApplicationsPhotoUploadUrlsRoute
   '/api/adoption/status/$token': typeof ApiAdoptionStatusTokenRoute
   '/api/donations/$donationId/status': typeof ApiDonationsDonationIdStatusRoute
+  '/api/sponsorships/pledges/proof-upload-url': typeof ApiSponsorshipsPledgesProofUploadUrlRoute
   '/api/sponsorships/status/$token': typeof ApiSponsorshipsStatusTokenRoute
   '/api/volunteer/status/$token': typeof ApiVolunteerStatusTokenRoute
   '/api/admin/access/users/$id': typeof ApiAdminAccessUsersIdRoute
@@ -1739,6 +1749,7 @@ export interface FileRouteTypes {
     | '/api/adoption/applications/photo-upload-urls'
     | '/api/adoption/status/$token'
     | '/api/donations/$donationId/status'
+    | '/api/sponsorships/pledges/proof-upload-url'
     | '/api/sponsorships/status/$token'
     | '/api/volunteer/status/$token'
     | '/api/admin/access/users/$id'
@@ -1910,6 +1921,7 @@ export interface FileRouteTypes {
     | '/api/adoption/applications/photo-upload-urls'
     | '/api/adoption/status/$token'
     | '/api/donations/$donationId/status'
+    | '/api/sponsorships/pledges/proof-upload-url'
     | '/api/sponsorships/status/$token'
     | '/api/volunteer/status/$token'
     | '/api/admin/access/users/$id'
@@ -2082,6 +2094,7 @@ export interface FileRouteTypes {
     | '/api/adoption/applications/photo-upload-urls'
     | '/api/adoption/status/$token'
     | '/api/donations/$donationId/status'
+    | '/api/sponsorships/pledges/proof-upload-url'
     | '/api/sponsorships/status/$token'
     | '/api/volunteer/status/$token'
     | '/api/admin/access/users/$id'
@@ -2203,7 +2216,7 @@ export interface RootRouteChildren {
   ApiAdminReceiptsRoute: typeof ApiAdminReceiptsRouteWithChildren
   ApiAdminSupportersRoute: typeof ApiAdminSupportersRouteWithChildren
   ApiAdoptionApplicationsRoute: typeof ApiAdoptionApplicationsRouteWithChildren
-  ApiSponsorshipsPledgesRoute: typeof ApiSponsorshipsPledgesRoute
+  ApiSponsorshipsPledgesRoute: typeof ApiSponsorshipsPledgesRouteWithChildren
   ApiVolunteerActivitiesRoute: typeof ApiVolunteerActivitiesRoute
   ApiVolunteerGroupEnquiriesRoute: typeof ApiVolunteerGroupEnquiriesRoute
   ApiVolunteerRegistrationsRoute: typeof ApiVolunteerRegistrationsRoute
@@ -2857,6 +2870,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/sponsorships/status/$token'
       preLoaderRoute: typeof ApiSponsorshipsStatusTokenRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/api/sponsorships/pledges/proof-upload-url': {
+      id: '/api/sponsorships/pledges/proof-upload-url'
+      path: '/proof-upload-url'
+      fullPath: '/api/sponsorships/pledges/proof-upload-url'
+      preLoaderRoute: typeof ApiSponsorshipsPledgesProofUploadUrlRouteImport
+      parentRoute: typeof ApiSponsorshipsPledgesRoute
     }
     '/api/donations/$donationId/status': {
       id: '/api/donations/$donationId/status'
@@ -3765,6 +3785,21 @@ const ApiAdoptionApplicationsRouteWithChildren =
     ApiAdoptionApplicationsRouteChildren,
   )
 
+interface ApiSponsorshipsPledgesRouteChildren {
+  ApiSponsorshipsPledgesProofUploadUrlRoute: typeof ApiSponsorshipsPledgesProofUploadUrlRoute
+}
+
+const ApiSponsorshipsPledgesRouteChildren: ApiSponsorshipsPledgesRouteChildren =
+  {
+    ApiSponsorshipsPledgesProofUploadUrlRoute:
+      ApiSponsorshipsPledgesProofUploadUrlRoute,
+  }
+
+const ApiSponsorshipsPledgesRouteWithChildren =
+  ApiSponsorshipsPledgesRoute._addFileChildren(
+    ApiSponsorshipsPledgesRouteChildren,
+  )
+
 interface ApiAdminAccessInvitesRouteChildren {
   ApiAdminAccessInvitesIdResendRoute: typeof ApiAdminAccessInvitesIdResendRoute
 }
@@ -4047,7 +4082,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminReceiptsRoute: ApiAdminReceiptsRouteWithChildren,
   ApiAdminSupportersRoute: ApiAdminSupportersRouteWithChildren,
   ApiAdoptionApplicationsRoute: ApiAdoptionApplicationsRouteWithChildren,
-  ApiSponsorshipsPledgesRoute: ApiSponsorshipsPledgesRoute,
+  ApiSponsorshipsPledgesRoute: ApiSponsorshipsPledgesRouteWithChildren,
   ApiVolunteerActivitiesRoute: ApiVolunteerActivitiesRoute,
   ApiVolunteerGroupEnquiriesRoute: ApiVolunteerGroupEnquiriesRoute,
   ApiVolunteerRegistrationsRoute: ApiVolunteerRegistrationsRoute,
