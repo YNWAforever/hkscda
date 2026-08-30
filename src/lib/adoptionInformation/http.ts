@@ -10,6 +10,8 @@ type HandlerService = {
   upsertFee(input: { actorUserId: string; input: unknown }): Promise<unknown>;
   upsertEstate(input: { actorUserId: string; input: unknown }): Promise<unknown>;
   deleteEstate(input: { actorUserId: string; estateId: string }): Promise<void>;
+  upsertRule(input: { actorUserId: string; input: unknown }): Promise<unknown>;
+  upsertCareTopic(input: { actorUserId: string; input: unknown }): Promise<unknown>;
 };
 
 function requestId(request: Request) {
@@ -111,9 +113,33 @@ export function createAdoptionInformationHandlers({
             { status: 201 },
           );
         }
+        if (mutation.resource === "estate") {
+          return jsonResponse(
+            {
+              estate: await service.upsertEstate({
+                actorUserId: admin.authUserId,
+                input: mutation.input,
+              }),
+            },
+            id,
+            { status: 201 },
+          );
+        }
+        if (mutation.resource === "rule") {
+          return jsonResponse(
+            {
+              rule: await service.upsertRule({
+                actorUserId: admin.authUserId,
+                input: mutation.input,
+              }),
+            },
+            id,
+            { status: 201 },
+          );
+        }
         return jsonResponse(
           {
-            estate: await service.upsertEstate({
+            careTopic: await service.upsertCareTopic({
               actorUserId: admin.authUserId,
               input: mutation.input,
             }),
