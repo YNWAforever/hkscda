@@ -14,45 +14,51 @@ mock.module("@tanstack/react-router", () => ({
 }));
 
 const DEFAULT_ABOUT_CONTENT_FOR_TEST: AboutPageContent = {
-  hero: { eyebrow: "e", title: "領養代替購買", description: "d" },
-  mission: { eyebrow: "e", title: "t", body: "b", sideBadge: "s", sideBody: "s" },
-  impact: { eyebrow: "e", title: "t", description: "d" },
+  hero: { eyebrow: "自訂Hero眉題", title: "自訂Hero標題", description: "自訂Hero描述" },
+  mission: {
+    eyebrow: "自訂使命眉題",
+    title: "自訂使命標題",
+    body: "自訂使命內文",
+    sideBadge: "自訂使命側欄徽章",
+    sideBody: "自訂使命側欄內文",
+  },
+  impact: { eyebrow: "自訂成效眉題", title: "自訂成效標題", description: "自訂成效描述" },
   journey: {
-    eyebrow: "e",
-    title: "t",
+    eyebrow: "自訂旅程眉題",
+    title: "自訂旅程標題",
     steps: [
-      { title: "1", description: "d" },
-      { title: "2", description: "d" },
-      { title: "3", description: "d" },
-      { title: "4", description: "d" },
+      { title: "自訂步驟一標題", description: "自訂步驟一描述" },
+      { title: "自訂步驟二標題", description: "自訂步驟二描述" },
+      { title: "自訂步驟三標題", description: "自訂步驟三描述" },
+      { title: "自訂步驟四標題", description: "自訂步驟四描述" },
     ],
   },
   communityBand: {
-    eyebrow: "e",
-    title: "t",
-    description: "d",
-    cccpCard: { title: "t", description: "d" },
-    tnrCard: { title: "t", description: "d" },
+    eyebrow: "自訂社區眉題",
+    title: "自訂社區標題",
+    description: "自訂社區描述",
+    cccpCard: { title: "自訂CCCP標題", description: "自訂CCCP描述" },
+    tnrCard: { title: "自訂TNR標題", description: "自訂TNR描述" },
   },
   responsibleAdoption: {
-    eyebrow: "e",
-    title: "t",
-    body: "b",
-    linkLabel: "l",
-    sideTitle: "s",
-    principles: ["1", "2", "3"],
+    eyebrow: "自訂領養眉題",
+    title: "自訂領養標題",
+    body: "自訂領養內文",
+    linkLabel: "自訂領養連結文字",
+    sideTitle: "自訂領養側欄標題",
+    principles: ["自訂原則一", "自訂原則二", "自訂原則三"],
   },
   helpPaths: {
-    eyebrow: "e",
-    title: "t",
+    eyebrow: "自訂途徑眉題",
+    title: "自訂途徑標題",
     items: [
-      { title: "1", description: "d", label: "l" },
-      { title: "2", description: "d", label: "l" },
-      { title: "3", description: "d", label: "l" },
-      { title: "4", description: "d", label: "l" },
+      { title: "自訂途徑一標題", description: "自訂途徑一描述", label: "自訂途徑一按鈕" },
+      { title: "自訂途徑二標題", description: "自訂途徑二描述", label: "自訂途徑二按鈕" },
+      { title: "自訂途徑三標題", description: "自訂途徑三描述", label: "自訂途徑三按鈕" },
+      { title: "自訂途徑四標題", description: "自訂途徑四描述", label: "自訂途徑四按鈕" },
     ],
   },
-  closing: { title: "t", description: "d", buttonLabel: "b" },
+  closing: { title: "自訂結尾標題", description: "自訂結尾描述", buttonLabel: "自訂結尾按鈕" },
 };
 
 describe("AboutContent", () => {
@@ -81,5 +87,21 @@ describe("AboutContent", () => {
     const markup = renderToStaticMarkup(<AboutContent impact={[]} content={custom} />);
     expect(markup).toContain("自訂標題");
     expect(markup).not.toContain("領養代替購買");
+
+    // Distinct, per-field fixture values (rather than shared placeholders) so a
+    // swapped cccpCard/tnrCard assignment, a shifted icon/href index, or a field
+    // transposition in the component would actually fail this test.
+    expect(markup).toContain("自訂CCCP標題");
+    expect(markup).toContain("自訂CCCP描述");
+    expect(markup).toContain("自訂TNR標題");
+    expect(markup).toContain("自訂TNR描述");
+    expect(markup).toContain("自訂步驟一標題");
+    expect(markup).toContain("自訂步驟一描述");
+    expect(markup).toContain("自訂步驟二標題");
+    expect(markup).toContain("自訂步驟二描述");
+    expect(markup).toContain("自訂途徑一標題");
+    expect(markup).toContain("自訂途徑一按鈕");
+    // Catches an index-shift bug in the HELP_PATH_HREFS zip.
+    expect(markup).toContain('href="/animals/cat"');
   });
 });

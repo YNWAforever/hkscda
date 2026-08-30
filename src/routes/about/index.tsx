@@ -106,6 +106,10 @@ export function AboutPage() {
   return <AboutContent impact={impact.items} content={content} />;
 }
 
+// Two fallback mechanisms are intentional here: the `content = DEFAULT_ABOUT_CONTENT`
+// default parameter only kicks in when the `content` prop is omitted entirely (as in
+// the `<AboutContent impact={[]} />` test call below), while the `page = content ?? DEFAULT_ABOUT_CONTENT`
+// check inside the function body also covers the loader explicitly returning `null`.
 export function AboutContent({
   impact,
   content = DEFAULT_ABOUT_CONTENT,
@@ -272,7 +276,7 @@ export function AboutContent({
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {page.helpPaths.items.map((path, index) => (
               <a
-                key={path.title}
+                key={HELP_PATH_HREFS[index]}
                 href={HELP_PATH_HREFS[index]}
                 className="border border-[var(--color-border)] bg-[var(--color-surface)] p-5 hover:border-[var(--color-primary)]"
               >
