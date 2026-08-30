@@ -38,6 +38,7 @@ import { Route as AdminSupportersRouteImport } from './routes/admin/supporters'
 import { Route as AdminResetPasswordRouteImport } from './routes/admin/reset-password'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminGovernanceRouteImport } from './routes/admin/governance'
+import { Route as AdminFaqRouteImport } from './routes/admin/faq'
 import { Route as AdminContentRouteImport } from './routes/admin/content'
 import { Route as AdminApplicationsRouteImport } from './routes/admin/applications'
 import { Route as AdminAccessDeniedRouteImport } from './routes/admin/access-denied'
@@ -65,6 +66,7 @@ import { Route as ApiAdminPaymentsRouteImport } from './routes/api/admin/payment
 import { Route as ApiAdminMeRouteImport } from './routes/api/admin/me'
 import { Route as ApiAdminKnowledgeRouteImport } from './routes/api/admin/knowledge'
 import { Route as ApiAdminGovernanceRouteImport } from './routes/api/admin/governance'
+import { Route as ApiAdminFaqRouteImport } from './routes/api/admin/faq'
 import { Route as ApiAdminDocumentsRouteImport } from './routes/api/admin/documents'
 import { Route as ApiAdminContentRouteImport } from './routes/api/admin/content'
 import { Route as ApiAdminAnnualReportsRouteImport } from './routes/api/admin/annual-reports'
@@ -320,6 +322,11 @@ const AdminGovernanceRoute = AdminGovernanceRouteImport.update({
   path: '/admin/governance',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminFaqRoute = AdminFaqRouteImport.update({
+  id: '/admin/faq',
+  path: '/admin/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminContentRoute = AdminContentRouteImport.update({
   id: '/admin/content',
   path: '/admin/content',
@@ -455,6 +462,11 @@ const ApiAdminKnowledgeRoute = ApiAdminKnowledgeRouteImport.update({
 const ApiAdminGovernanceRoute = ApiAdminGovernanceRouteImport.update({
   id: '/api/admin/governance',
   path: '/api/admin/governance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminFaqRoute = ApiAdminFaqRouteImport.update({
+  id: '/api/admin/faq',
+  path: '/api/admin/faq',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAdminDocumentsRoute = ApiAdminDocumentsRouteImport.update({
@@ -1094,6 +1106,7 @@ export interface FileRoutesByFullPath {
   '/admin/access-denied': typeof AdminAccessDeniedRoute
   '/admin/applications': typeof AdminApplicationsRouteWithChildren
   '/admin/content': typeof AdminContentRouteWithChildren
+  '/admin/faq': typeof AdminFaqRoute
   '/admin/governance': typeof AdminGovernanceRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/reset-password': typeof AdminResetPasswordRoute
@@ -1139,6 +1152,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/annual-reports': typeof ApiAdminAnnualReportsRouteWithChildren
   '/api/admin/content': typeof ApiAdminContentRouteWithChildren
   '/api/admin/documents': typeof ApiAdminDocumentsRouteWithChildren
+  '/api/admin/faq': typeof ApiAdminFaqRoute
   '/api/admin/governance': typeof ApiAdminGovernanceRoute
   '/api/admin/knowledge': typeof ApiAdminKnowledgeRoute
   '/api/admin/me': typeof ApiAdminMeRoute
@@ -1260,6 +1274,7 @@ export interface FileRoutesByTo {
   '/admin/access': typeof AdminAccessRoute
   '/admin/access-denied': typeof AdminAccessDeniedRoute
   '/admin/content': typeof AdminContentRouteWithChildren
+  '/admin/faq': typeof AdminFaqRoute
   '/admin/governance': typeof AdminGovernanceRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/reset-password': typeof AdminResetPasswordRoute
@@ -1305,6 +1320,7 @@ export interface FileRoutesByTo {
   '/api/admin/annual-reports': typeof ApiAdminAnnualReportsRouteWithChildren
   '/api/admin/content': typeof ApiAdminContentRouteWithChildren
   '/api/admin/documents': typeof ApiAdminDocumentsRouteWithChildren
+  '/api/admin/faq': typeof ApiAdminFaqRoute
   '/api/admin/governance': typeof ApiAdminGovernanceRoute
   '/api/admin/knowledge': typeof ApiAdminKnowledgeRoute
   '/api/admin/me': typeof ApiAdminMeRoute
@@ -1428,6 +1444,7 @@ export interface FileRoutesById {
   '/admin/access-denied': typeof AdminAccessDeniedRoute
   '/admin/applications': typeof AdminApplicationsRouteWithChildren
   '/admin/content': typeof AdminContentRouteWithChildren
+  '/admin/faq': typeof AdminFaqRoute
   '/admin/governance': typeof AdminGovernanceRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/reset-password': typeof AdminResetPasswordRoute
@@ -1473,6 +1490,7 @@ export interface FileRoutesById {
   '/api/admin/annual-reports': typeof ApiAdminAnnualReportsRouteWithChildren
   '/api/admin/content': typeof ApiAdminContentRouteWithChildren
   '/api/admin/documents': typeof ApiAdminDocumentsRouteWithChildren
+  '/api/admin/faq': typeof ApiAdminFaqRoute
   '/api/admin/governance': typeof ApiAdminGovernanceRoute
   '/api/admin/knowledge': typeof ApiAdminKnowledgeRoute
   '/api/admin/me': typeof ApiAdminMeRoute
@@ -1597,6 +1615,7 @@ export interface FileRouteTypes {
     | '/admin/access-denied'
     | '/admin/applications'
     | '/admin/content'
+    | '/admin/faq'
     | '/admin/governance'
     | '/admin/login'
     | '/admin/reset-password'
@@ -1642,6 +1661,7 @@ export interface FileRouteTypes {
     | '/api/admin/annual-reports'
     | '/api/admin/content'
     | '/api/admin/documents'
+    | '/api/admin/faq'
     | '/api/admin/governance'
     | '/api/admin/knowledge'
     | '/api/admin/me'
@@ -1763,6 +1783,7 @@ export interface FileRouteTypes {
     | '/admin/access'
     | '/admin/access-denied'
     | '/admin/content'
+    | '/admin/faq'
     | '/admin/governance'
     | '/admin/login'
     | '/admin/reset-password'
@@ -1808,6 +1829,7 @@ export interface FileRouteTypes {
     | '/api/admin/annual-reports'
     | '/api/admin/content'
     | '/api/admin/documents'
+    | '/api/admin/faq'
     | '/api/admin/governance'
     | '/api/admin/knowledge'
     | '/api/admin/me'
@@ -1930,6 +1952,7 @@ export interface FileRouteTypes {
     | '/admin/access-denied'
     | '/admin/applications'
     | '/admin/content'
+    | '/admin/faq'
     | '/admin/governance'
     | '/admin/login'
     | '/admin/reset-password'
@@ -1975,6 +1998,7 @@ export interface FileRouteTypes {
     | '/api/admin/annual-reports'
     | '/api/admin/content'
     | '/api/admin/documents'
+    | '/api/admin/faq'
     | '/api/admin/governance'
     | '/api/admin/knowledge'
     | '/api/admin/me'
@@ -2098,6 +2122,7 @@ export interface RootRouteChildren {
   AdminAccessDeniedRoute: typeof AdminAccessDeniedRoute
   AdminApplicationsRoute: typeof AdminApplicationsRouteWithChildren
   AdminContentRoute: typeof AdminContentRouteWithChildren
+  AdminFaqRoute: typeof AdminFaqRoute
   AdminGovernanceRoute: typeof AdminGovernanceRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminResetPasswordRoute: typeof AdminResetPasswordRoute
@@ -2132,6 +2157,7 @@ export interface RootRouteChildren {
   ApiAdminAnnualReportsRoute: typeof ApiAdminAnnualReportsRouteWithChildren
   ApiAdminContentRoute: typeof ApiAdminContentRouteWithChildren
   ApiAdminDocumentsRoute: typeof ApiAdminDocumentsRouteWithChildren
+  ApiAdminFaqRoute: typeof ApiAdminFaqRoute
   ApiAdminGovernanceRoute: typeof ApiAdminGovernanceRoute
   ApiAdminKnowledgeRoute: typeof ApiAdminKnowledgeRoute
   ApiAdminMeRoute: typeof ApiAdminMeRoute
@@ -2388,6 +2414,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminGovernanceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/faq': {
+      id: '/admin/faq'
+      path: '/admin/faq'
+      fullPath: '/admin/faq'
+      preLoaderRoute: typeof AdminFaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/content': {
       id: '/admin/content'
       path: '/admin/content'
@@ -2575,6 +2608,13 @@ declare module '@tanstack/react-router' {
       path: '/api/admin/governance'
       fullPath: '/api/admin/governance'
       preLoaderRoute: typeof ApiAdminGovernanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/faq': {
+      id: '/api/admin/faq'
+      path: '/api/admin/faq'
+      fullPath: '/api/admin/faq'
+      preLoaderRoute: typeof ApiAdminFaqRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/documents': {
@@ -3886,6 +3926,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAccessDeniedRoute: AdminAccessDeniedRoute,
   AdminApplicationsRoute: AdminApplicationsRouteWithChildren,
   AdminContentRoute: AdminContentRouteWithChildren,
+  AdminFaqRoute: AdminFaqRoute,
   AdminGovernanceRoute: AdminGovernanceRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminResetPasswordRoute: AdminResetPasswordRoute,
@@ -3921,6 +3962,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminAnnualReportsRoute: ApiAdminAnnualReportsRouteWithChildren,
   ApiAdminContentRoute: ApiAdminContentRouteWithChildren,
   ApiAdminDocumentsRoute: ApiAdminDocumentsRouteWithChildren,
+  ApiAdminFaqRoute: ApiAdminFaqRoute,
   ApiAdminGovernanceRoute: ApiAdminGovernanceRoute,
   ApiAdminKnowledgeRoute: ApiAdminKnowledgeRoute,
   ApiAdminMeRoute: ApiAdminMeRoute,

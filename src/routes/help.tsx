@@ -3,18 +3,20 @@ import { PublicPageFrame } from "../components/site/PublicPageFrame";
 import { publicUrl } from "@/lib/publicOrigin";
 import { ArrowRight, Mail, MessageCircle } from "lucide-react";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 import { FaqResultCard } from "../components/site/help/FaqResultCard";
 import { HelpSearch } from "../components/site/help/HelpSearch";
 import {
-  getFaqsByCategory,
   helpCategoryLabels,
-  helpFaqs,
   type HelpCategory,
+  type HelpFaq,
   type HelpLanguage,
 } from "../lib/help/faq";
+import { publicFaqsQueryOptions } from "../lib/help/usePublicFaqs";
 
 export const Route = createFileRoute("/help")({
+  loader: ({ context }) => context.queryClient.ensureQueryData(publicFaqsQueryOptions()),
   head: () => ({
     meta: [
       { title: "常見問題與客服 | HKSCDA" },
@@ -112,13 +114,13 @@ const pageCopy = {
   }
 >;
 
-export function HelpFaqDirectory({ language }: { language: HelpLanguage }) {
+export function HelpFaqDirectory({ language, faqs }: { language: HelpLanguage; faqs: HelpFaq[] }) {
   const copy = pageCopy[language];
 
   return (
     <div className="min-w-0 space-y-8">
       {categories.map((category) => {
-        const faqs = getFaqsByCategory(category);
+        const categoryFaqs = faqs.filter((faq) => faq.category === category);
         const label = helpCategoryLabels[category][language];
 
         return (
@@ -139,12 +141,12 @@ export function HelpFaqDirectory({ language }: { language: HelpLanguage }) {
                 </p>
               </div>
               <span className="rounded-full bg-[var(--color-primary-highlight)] px-2.5 py-1 text-xs font-bold text-[var(--color-primary)]">
-                {language === "zh-HK" ? `${faqs.length} 條` : `${faqs.length} FAQs`}
+                {language === "zh-HK" ? `${categoryFaqs.length} 條` : `${categoryFaqs.length} FAQs`}
               </span>
             </div>
 
             <div className="grid gap-3">
-              {faqs.map((faq) => (
+              {categoryFaqs.map((faq) => (
                 <FaqResultCard key={faq.id} faq={faq} language={language} />
               ))}
             </div>
@@ -158,6 +160,7 @@ export function HelpFaqDirectory({ language }: { language: HelpLanguage }) {
 function HelpPage() {
   const [language, setLanguage] = useState<HelpLanguage>("zh-HK");
   const copy = pageCopy[language];
+  const { data: faqs = [] } = useQuery(publicFaqsQueryOptions());
 
   return (
     <PublicPageFrame
@@ -171,7 +174,7 @@ function HelpPage() {
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-3xl space-y-4">
               <p className="text-xs font-bold uppercase tracking-wide text-[var(--color-text-muted)]">
-                {copy.summary(helpFaqs.length)}
+                {copy.summary(faqs.length)}
               </p>
             </div>
 
@@ -224,7 +227,7 @@ function HelpPage() {
                   <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
                 </a>
               </div>
-              <HelpSearch language={language} surface="page" />
+              <HelpSearch language={language} faqs={faqs} surface="page" />
             </section>
 
             <section id="topics" className="space-y-4" aria-labelledby="help-topics-heading">
@@ -240,7 +243,7 @@ function HelpPage() {
                 </p>
               </div>
 
-              <HelpFaqDirectory language={language} />
+              <HelpFaqDirectory language={language} faqs={faqs} />
             </section>
           </div>
 

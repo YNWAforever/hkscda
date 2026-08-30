@@ -124,6 +124,18 @@ jobs:
           OUTPUT_DIR: artifacts/brand-ci
           BRAND_VERIFY_TIMEOUT: 15000
           MODE: brand
+          # bun run preview spawns the actual SSR server process here, which
+          # now needs live Supabase config at request time: /help's route
+          # loader (added for the FAQ CMS) is the first public route whose
+          # SSR path reads through createSupabaseServiceClient(). Without
+          # these, getSupabaseServerConfig() throws "Missing required
+          # environment variable" and /help 500s under this job specifically
+          # (the earlier "Build against the fixture" step's env: does not
+          # carry over to this separate step).
+          VITE_SUPABASE_URL: http://127.0.0.1:54329
+          VITE_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+          SUPABASE_URL: http://127.0.0.1:54329
+          SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-service-role-key
 
       - name: Upload brand artefacts
         if: failure()
