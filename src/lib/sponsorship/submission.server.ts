@@ -8,7 +8,6 @@ import {
   type SponsorshipPledgeStatus,
   type SponsorshipPledgeSubmission,
   type SponsorshipProofDescriptor,
-  MAX_PROOF_BYTES,
   sponsorshipPledgeSubmissionSchema,
   toPaymentProofInsert,
   toPledgeInsert,
@@ -18,9 +17,9 @@ import {
 import { pledgeReference } from "./statusSummary";
 import { buildConsentRows } from "../donations/domain";
 import { getAppUrl, getEmailConfig } from "../donations/config.server";
+import { verifyUploadedObjects } from "../publicUploads/signedUpload.server";
 
 export const SPONSORSHIP_PROOF_BUCKET = "sponsorship-payment-proof";
-export const SPONSORSHIP_MULTIPART_MAX_BYTES = MAX_PROOF_BYTES + 2 * 1024 * 1024;
 
 export class SubmissionValidationError extends Error {
   constructor(message: string) {
@@ -34,7 +33,7 @@ export type ParsedSponsorshipPayload = SponsorshipPledgeSubmission & {
 };
 
 export type ParsedSponsorshipProof = SponsorshipProofDescriptor & {
-  file: File;
+  storagePath: string;
   metadata: SponsorshipPaymentProofMetadata;
 };
 
@@ -61,105 +60,80 @@ type QueryResult<T = unknown> = {
 
 export type PublicSponsorshipSupabaseClient = SupabaseClient;
 
-export type SponsorshipSubmissionHeaderValidation =
-  | { ok: true }
-  | { ok: false; status: 400 | 413 | 415; error: string };
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
 function requireNoError<T>(result: QueryResult<T>, message: string): T | null {
   if (result.error) throw result.error;
   return result.data ?? null;
-}
-
-function isFile(value: FormDataEntryValue | null): value is File {
-  return typeof File !== "undefined" && value instanceof File;
-}
-
-function safeFileName(fileName: string) {
-  const baseName = fileName.split(/[\\/]/).pop()?.trim() || "proof";
-  return baseName.replace(/[^A-Za-z0-9._-]/g, "_");
 }
 
 function buildStatusUrl(appUrl: string, rawToken: string) {
   return `${appUrl.replace(/\/+$/, "")}/sponsors/status/${encodeURIComponent(rawToken)}`;
 }
 
-export function validateSponsorshipSubmissionRequestHeaders(
-  request: Request,
-): SponsorshipSubmissionHeaderValidation {
-  const contentType = request.headers.get("content-type");
-  if (!contentType) {
-    return { ok: false, status: 400, error: "Missing content-type" };
-  }
-  if (!/^multipart\/form-data\b/i.test(contentType)) {
-    return { ok: false, status: 415, error: "Expected multipart/form-data" };
-  }
+export type UploadedProofReference = {
+  fileName: string;
+  mimeType: string;
+  sizeBytes: number;
+  storagePath: string;
+};
 
-  const contentLength = request.headers.get("content-length");
-  if (contentLength) {
-    const bytes = Number(contentLength);
-    if (Number.isFinite(bytes) && bytes > SPONSORSHIP_MULTIPART_MAX_BYTES) {
-      return { ok: false, status: 413, error: "Sponsorship pledge upload is too large" };
-    }
+export type SponsorshipSubmissionRequestBody = {
+  payload: unknown;
+  pledgeId: string;
+  proof?: UploadedProofReference;
+  turnstileToken?: string;
+};
+
+export function parseSponsorshipSubmission(
+  body: unknown,
+): ParsedSponsorshipMultipart & { pledgeId: string } {
+  if (typeof body !== "object" || body === null) {
+    throw new SubmissionValidationError("Invalid sponsorship pledge request body");
   }
+  const raw = body as Record<string, unknown>;
 
-  return { ok: true };
-}
-
-export async function parseSponsorshipMultipart(
-  request: Request,
-): Promise<ParsedSponsorshipMultipart> {
-  const formData = await request.formData();
-  const payloadValue = formData.get("payload");
-  if (typeof payloadValue !== "string") {
-    throw new SubmissionValidationError("Missing sponsorship pledge payload");
+  if (typeof raw.pledgeId !== "string" || !raw.pledgeId) {
+    throw new SubmissionValidationError("Missing sponsorship pledge id");
   }
 
-  let rawPayload: unknown;
-  try {
-    rawPayload = JSON.parse(payloadValue);
-  } catch (error) {
-    throw new SyntaxError("Invalid sponsorship pledge payload JSON", { cause: error });
+  const parsed = sponsorshipPledgeSubmissionSchema.parse(raw.payload);
+  const turnstileToken = typeof raw.turnstileToken === "string" ? raw.turnstileToken : undefined;
+
+  const rawProof = raw.proof;
+  if (parsed.proofMetadata && !rawProof) {
+    throw new SubmissionValidationError(
+      "Payment proof metadata was provided without a file reference",
+    );
   }
-
-  const parsed = sponsorshipPledgeSubmissionSchema.parse(rawPayload);
-  const turnstileToken =
-    isRecord(rawPayload) && typeof rawPayload.turnstileToken === "string"
-      ? rawPayload.turnstileToken
-      : undefined;
-
-  const proofValue = formData.get("proof");
-  const hasProofFile = isFile(proofValue);
-
-  if (parsed.proofMetadata && !hasProofFile) {
-    throw new SubmissionValidationError("Payment proof metadata was provided without a file");
-  }
-  if (!parsed.proofMetadata && hasProofFile) {
-    throw new SubmissionValidationError("Payment proof file was provided without metadata");
+  if (!parsed.proofMetadata && rawProof) {
+    throw new SubmissionValidationError(
+      "Payment proof file reference was provided without metadata",
+    );
   }
 
   let proof: ParsedSponsorshipProof | undefined;
-  if (hasProofFile && parsed.proofMetadata) {
+  if (rawProof && parsed.proofMetadata) {
+    const entry = rawProof as Record<string, unknown>;
     const descriptor = validateProofDescriptor({
-      fileName: proofValue.name,
-      mimeType: proofValue.type,
-      sizeBytes: proofValue.size,
+      fileName: entry.fileName,
+      mimeType: entry.mimeType,
+      sizeBytes: entry.sizeBytes,
     });
-    proof = { ...descriptor, file: proofValue, metadata: parsed.proofMetadata };
+    if (typeof entry.storagePath !== "string" || !entry.storagePath) {
+      throw new SubmissionValidationError("Missing storage path for the payment proof");
+    }
+    proof = { ...descriptor, storagePath: entry.storagePath, metadata: parsed.proofMetadata };
   }
 
   return {
     payload: turnstileToken ? { ...parsed, turnstileToken } : parsed,
     proof,
+    pledgeId: raw.pledgeId,
   };
 }
 
 type PersistSponsorshipPledgeInput = {
   client: PublicSponsorshipSupabaseClient;
-  parsed: ParsedSponsorshipMultipart;
+  parsed: ParsedSponsorshipMultipart & { pledgeId: string };
   now?: () => Date;
   createStatusTokenPair?: typeof createStatusTokenPair;
   appUrl?: string;
@@ -215,6 +189,36 @@ export async function persistSponsorshipPledge({
   appUrl = getAppUrl(),
   logger = console,
 }: PersistSponsorshipPledgeInput): Promise<SponsorshipPledgePersistResult> {
+  // Payment proof is optional for a sponsorship pledge -- a pledge with no
+  // proof needs no verification at all. But when a proof reference *is*
+  // given, verify it exists in Storage *before* touching the database, and
+  // outside the try/catch below: that catch wraps every subsequent failure
+  // into a generic "Failed to save sponsorship pledge" Error for cleanup
+  // purposes, which would otherwise swallow this SubmissionValidationError
+  // and prevent the route from mapping it to 400. Gating pledge creation
+  // itself (not just the payment_proof row) on this check also avoids ever
+  // creating a "provisional" pledge whose provisional status implies proof
+  // was received when it in fact was not.
+  if (parsed.proof) {
+    const verification = await verifyUploadedObjects(client, SPONSORSHIP_PROOF_BUCKET, [
+      {
+        category: "proof",
+        path: parsed.proof.storagePath,
+        sizeBytes: parsed.proof.sizeBytes,
+        mimeType: parsed.proof.mimeType,
+      },
+    ]);
+    if (!verification.ok) {
+      logger.error("Sponsorship payment proof upload verification failed", {
+        pledgeId: parsed.pledgeId,
+        missing: verification.missing,
+      });
+      throw new SubmissionValidationError(
+        `Uploaded payment proof not found: ${verification.missing.join(", ")}`,
+      );
+    }
+  }
+
   let pledgeId: string | null = null;
   const uploadedPaths: string[] = [];
 
@@ -253,16 +257,15 @@ export async function persistSponsorshipPledge({
 
     const status: SponsorshipPledgeStatus = parsed.proof ? "provisional" : "pending_payment";
 
-    const pledge = requireNoError(
+    requireNoError(
       await client
         .from("sponsorship_pledge")
-        .insert(toPledgeInsert(supporterId, status, parsed.payload))
+        .insert({ id: parsed.pledgeId, ...toPledgeInsert(supporterId, status, parsed.payload) })
         .select("id")
         .single(),
       "Failed to save sponsorship pledge",
-    ) as { id: string } | null;
-    if (!pledge?.id) throw new Error("Missing sponsorship pledge id");
-    pledgeId = pledge.id;
+    );
+    pledgeId = parsed.pledgeId;
 
     requireNoError(
       await client
@@ -272,23 +275,13 @@ export async function persistSponsorshipPledge({
     );
 
     if (parsed.proof) {
-      const storagePath = `${pledgeId}/${safeFileName(parsed.proof.fileName)}`;
-      const upload = await client.storage
-        .from(SPONSORSHIP_PROOF_BUCKET)
-        .upload(storagePath, parsed.proof.file, {
-          contentType: parsed.proof.mimeType,
-          upsert: false,
-        });
-      if (upload.error) throw upload.error;
-      uploadedPaths.push(upload.data?.path ?? storagePath);
-
       requireNoError(
         await client
           .from("sponsorship_payment_proof")
           .insert(
             toPaymentProofInsert(
               pledgeId,
-              upload.data?.path ?? storagePath,
+              parsed.proof.storagePath,
               parsed.proof,
               parsed.proof.metadata,
             ),
