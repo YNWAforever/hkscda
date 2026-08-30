@@ -47,6 +47,38 @@ export function AdoptionInformationManagement({ initialData }: { initialData?: I
   return <AdoptionInformationManagementRuntime />;
 }
 
+export function AdoptionContentTabs({
+  activeTab,
+  onTabChange,
+}: {
+  activeTab: AdoptionInformationResource;
+  onTabChange: (tab: AdoptionInformationResource) => void;
+}) {
+  return (
+    <div className="flex gap-2 border-b border-[var(--color-border)]" role="tablist">
+      {(
+        [
+          ["fees", "領養費用"],
+          ["estates", "可養狗屋苑"],
+          ["rules", "領養規則"],
+          ["careTopics", "動物照顧須知"],
+        ] as const
+      ).map(([value, label]) => (
+        <button
+          key={value}
+          type="button"
+          role="tab"
+          aria-selected={activeTab === value}
+          onClick={() => onTabChange(value)}
+          className="px-4 py-3 text-sm font-semibold aria-selected:border-b-2 aria-selected:border-[var(--color-primary)] aria-selected:text-[var(--color-primary)]"
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 type MutationInput =
   | { action: "fee"; input: AdoptionFee }
   | { action: "estate"; input: DogFriendlyEstate }
@@ -212,25 +244,7 @@ export function AdoptionInformationManagementView({
         </a>
       </div>
 
-      <div className="flex gap-2 border-b border-[var(--color-border)]" role="tablist">
-        {(
-          [
-            ["fees", "領養費用"],
-            ["estates", "可養狗屋苑"],
-          ] as const
-        ).map(([value, label]) => (
-          <button
-            key={value}
-            type="button"
-            role="tab"
-            aria-selected={activeTab === value}
-            onClick={() => onTabChange?.(value)}
-            className="px-4 py-3 text-sm font-semibold aria-selected:border-b-2 aria-selected:border-[var(--color-primary)] aria-selected:text-[var(--color-primary)]"
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+      <AdoptionContentTabs activeTab={activeTab} onTabChange={(tab) => onTabChange?.(tab)} />
 
       {activeTab === "estates" ? (
         <label className="block max-w-xl space-y-1 text-sm font-semibold">
