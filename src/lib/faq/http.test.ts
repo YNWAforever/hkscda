@@ -3,8 +3,13 @@ import { describe, expect, mock, test } from "bun:test";
 import { createAdminFaqHandlers } from "./http";
 import type { createFaqService } from "./service";
 
-const actorId = "11111111-1111-4111-8111-111111111111";
-const admin = { id: actorId, role: "admin" } as never;
+const adminUserId = "11111111-1111-4111-8111-111111111111";
+const actorId = "22222222-2222-4222-8222-222222222222";
+// admin_user.id and admin_user.auth_user_id are distinct UUIDs (see CLAUDE.md's
+// "critical distinction"). This fixture keeps them different on purpose: the RPCs
+// behind upsert/deactivate check auth_user_id, so a handler that reads the wrong
+// field must fail this test rather than passing by coincidence.
+const admin = { id: adminUserId, authUserId: actorId, role: "admin" } as never;
 
 function createService(overrides: Partial<ReturnType<typeof createFaqService>> = {}) {
   return {
