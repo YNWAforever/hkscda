@@ -16,7 +16,6 @@ function createService(overrides: Record<string, unknown> = {}) {
     listPledges: mock(async () => ({ pledges: [], total: 0 })),
     getPledgeDetail: mock(async () => null),
     getProofSigningInfo: mock(async () => null),
-    recordPayment: mock(async () => ({ id: "proof-1" })),
     reviewProof: mock(async () => {}),
     cancelPledge: mock(async () => {}),
     ...overrides,
@@ -130,110 +129,6 @@ describe("createSponsorshipAdminHandlers", () => {
     expect(response.status).toBe(400);
   });
 
-  test("recordPayment returns 400 for an invalid JSON body", async () => {
-    const service = createService();
-    const handlers = createSponsorshipAdminHandlers({
-      requireCoordinator: requireCoordinator(),
-      service: service as never,
-    });
-
-    const response = await handlers.recordPayment({
-      request: request("http://localhost/x", {
-        method: "POST",
-        body: "{not-json",
-      }),
-      params: { id: pledgeId },
-    });
-    expect(response.status).toBe(400);
-    const body = await response.json();
-    expect(body.error).toBe("Invalid JSON body");
-  });
-
-  test("recordPayment returns 201 without a file (manual proof entry is optional)", async () => {
-    const service = createService({
-      recordPayment: mock(async () => ({ id: "proof-1" })),
-    });
-    const handlers = createSponsorshipAdminHandlers({
-      requireCoordinator: requireCoordinator(),
-      service: service as never,
-    });
-
-    const response = await handlers.recordPayment({
-      request: request("http://localhost/x", {
-        method: "POST",
-        body: JSON.stringify({ paymentMethod: "fps", amountCents: 1, paymentDate: "2026-07-01" }),
-      }),
-      params: { id: pledgeId },
-    });
-    expect(response.status).toBe(201);
-    const body = await response.json();
-    expect(body.proof.id).toBe("proof-1");
-  });
-
-  test("recordPayment returns 201 with the proof payload on success", async () => {
-    const service = createService({
-      recordPayment: mock(async () => ({ id: "proof-1" })),
-    });
-    const handlers = createSponsorshipAdminHandlers({
-      requireCoordinator: requireCoordinator(),
-      service: service as never,
-    });
-
-    const response = await handlers.recordPayment({
-      request: request("http://localhost/x", {
-        method: "POST",
-        body: JSON.stringify({
-          paymentMethod: "fps",
-          amountCents: 1,
-          paymentDate: "2026-07-01",
-          file: {
-            storagePath: "proofs/1.png",
-            fileName: "receipt.png",
-            fileType: "image/png",
-            fileSize: 100,
-          },
-        }),
-      }),
-      params: { id: pledgeId },
-    });
-    expect(response.status).toBe(201);
-    const body = await response.json();
-    expect(body.proof.id).toBe("proof-1");
-  });
-
-  test("an unmapped domain error falls through to a generic 500", async () => {
-    const originalConsoleError = console.error;
-    console.error = () => {};
-    try {
-      const service = createService({
-        recordPayment: mock(async () => {
-          throw new Error("Some unmapped domain failure");
-        }),
-      });
-      const handlers = createSponsorshipAdminHandlers({
-        requireCoordinator: requireCoordinator(),
-        service: service as never,
-      });
-
-      const response = await handlers.recordPayment({
-        request: request("http://localhost/x", {
-          method: "POST",
-          body: JSON.stringify({
-            paymentMethod: "fps",
-            amountCents: 1,
-            paymentDate: "2026-07-01",
-          }),
-        }),
-        params: { id: pledgeId },
-      });
-      expect(response.status).toBe(500);
-      const body = await response.json();
-      expect(body.error).toBe("Could not process sponsorship review request");
-    } finally {
-      console.error = originalConsoleError;
-    }
-  });
-
   test("reviewProof maps a conflict domain error to 409", async () => {
     const service = createService({
       reviewProof: mock(async () => {
@@ -278,10 +173,10 @@ describe("createSponsorshipAdminHandlers", () => {
     expect(body.error).toBe("Sponsorship pledge has no proof pending review");
   });
 
-  test("recordPayment maps an ineligible-state domain error to 409", async () => {
+  test("reviewProof maps the normalized 42501 forbidden domain error to 403", async () => {
     const service = createService({
-      recordPayment: mock(async () => {
-        throw new Error("Sponsorship pledge is not eligible for a recorded payment");
+      reviewProof: mock(async () => {
+        throw new Error("Actor is not authorized to review sponsorship pledges");
       }),
     });
     const handlers = createSponsorshipAdminHandlers({
@@ -289,14 +184,16 @@ describe("createSponsorshipAdminHandlers", () => {
       service: service as never,
     });
 
-    const response = await handlers.recordPayment({
+    const response = await handlers.reviewProof({
       request: request("http://localhost/x", {
         method: "POST",
-        body: JSON.stringify({ paymentMethod: "fps", amountCents: 1, paymentDate: "2026-07-01" }),
+        body: JSON.stringify({ decision: "approve" }),
       }),
       params: { id: pledgeId },
     });
-    expect(response.status).toBe(409);
+    expect(response.status).toBe(403);
+    const body = await response.json();
+    expect(body.error).toBe("Actor is not authorized to review sponsorship pledges");
   });
 
   test("cancelPledge returns 200 ok on success", async () => {

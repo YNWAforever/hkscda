@@ -27,19 +27,12 @@ export function createHandlers() {
 }
 
 /**
- * Exposes the raw service/client alongside the HTTP handlers for routes that
- * need to do request-specific pre-processing (e.g. the multipart proof
- * upload route, which must check payment eligibility and upload a file to
- * storage before delegating to `recordPayment`) without re-wiring the
+ * Exposes the raw service/client/auth check for routes that need to do
+ * request-specific pre-processing (e.g. the multipart proof upload route,
+ * which must check payment eligibility and upload a file to storage before
+ * delegating to `service.recordPayment`) without re-wiring the
  * repository/service/notifications dependencies from scratch.
  */
 export function createHandlersWithContext() {
-  const context = createContext();
-  return {
-    ...context,
-    handlers: createSponsorshipAdminHandlers({
-      requireCoordinator: context.requireCoordinator,
-      service: context.service,
-    }),
-  };
+  return createContext();
 }

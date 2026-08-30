@@ -46,6 +46,8 @@ const conflictDomainErrors = new Set([
   "Sponsorship pledge is already cancelled",
 ]);
 
+const forbiddenDomainErrors = new Set(["Actor is not authorized to review sponsorship pledges"]);
+
 export async function responseError(error: Response) {
   const status = error.status;
   const contentType = error.headers.get("content-type") ?? "";
@@ -75,6 +77,9 @@ export function domainError(error: Error) {
   }
   if (conflictDomainErrors.has(error.message)) {
     return jsonResponse({ error: error.message }, { status: 409 });
+  }
+  if (forbiddenDomainErrors.has(error.message)) {
+    return jsonResponse({ error: error.message }, { status: 403 });
   }
   return null;
 }
@@ -134,19 +139,6 @@ export function createSponsorshipAdminHandlers({
           return jsonResponse({ error: "Payment proof not found" }, { status: 404 });
         }
         return jsonResponse(url);
-      });
-    },
-
-    recordPayment({ request, params }: HandlerContext) {
-      return withErrors(async () => {
-        const pledgeId = requiredUuid(params, "id");
-        const admin = await requireCoordinator(request);
-        const result = await service.recordPayment({
-          actorUserId: admin.authUserId,
-          pledgeId,
-          input: await jsonBody(request),
-        });
-        return jsonResponse({ proof: result }, { status: 201 });
       });
     },
 
