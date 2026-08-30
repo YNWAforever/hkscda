@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { publicUrl } from "@/lib/publicOrigin";
 import { resilientPublicLoader } from "../../lib/routing/resilientLoader";
@@ -8,7 +9,7 @@ import { PublicPageFrame } from "../../components/site/PublicPageFrame";
 import { getPublicAdoptionPage } from "../../lib/adoptionInformation/publicPage.functions";
 import type { PublicAdoptionPageData } from "../../lib/adoptionInformation/publicPage.server";
 import { createAdoptionInstructionsLoader } from "../../lib/adoptionInformation/publicPage.loader";
-import type { AdoptionFee } from "../../lib/adoptionInformation/types";
+import type { AdoptionFee, AdoptionLanguage } from "../../lib/adoptionInformation/types";
 
 const loadAdoptionInstructions = createAdoptionInstructionsLoader(() => getPublicAdoptionPage());
 export const Route = createFileRoute("/adoption/instructions")({
@@ -19,109 +20,79 @@ export const Route = createFileRoute("/adoption/instructions")({
   component: InstructionsPage,
 });
 
-const adoptionRules = [
-  "申請人須年滿18歲，並持有香港居留權或工作證。",
-  "申請人須提供真實個人資料及住址，以便協會進行家訪。",
-  "領養前須按本頁最新領養費用表繳付相關費用。",
-  "領養後不得遺棄、轉讓或出售動物，如無法繼續飼養須通知協會安排。",
-  "須確保動物生活在安全、舒適的室內環境。",
-  "須定期帶動物進行健康檢查及接種疫苗。",
-  "如住所為租住單位，須提供業主同意飼養寵物的書面証明。",
-  "申請人須同意協會進行跟進家訪，以確保動物受到妥善照顧。",
-  "每個家庭最多可領養兩隻動物（特殊情況除外，需協會批准）。",
-  "申請人須了解並接受動物的生理及行為特性，有耐心照顧。",
-  "領養後如動物出現健康問題，須立即尋求獸醫協助。",
-  "協會保留拒絕不合適申請的權利，並無需解釋原因。",
-];
-
-const catCareTopics = [
+const pageCopy: Record<
+  AdoptionLanguage,
   {
-    value: "home",
-    label: "家居",
-    content:
-      "為貓貓提供安全的室內環境。安裝防護網防止貓咪跌出窗外或逃跑。移除家中有毒植物及危險物品。提供足夠的躲藏空間及高處休息位置。",
+    rulesHeading: string;
+    catCareHeading: string;
+    dogCareHeading: string;
+    feesHeading: string;
+    feesNote: string;
+    dogFeeTitle: string;
+    catFeeTitle: string;
+    estatesHeading: string;
+    estatesNote: string;
+    estateNameHeader: string;
+    districtHeader: string;
+    notesHeader: string;
+    estatesEmpty: string;
+    contactLink: string;
+    guidesHeading: string;
+    catGuideTitle: string;
+    dogGuideTitle: string;
+    generalGuideTitle: string;
+    zhVersion: string;
+    enVersion: string;
+    languageToggleLabel: string;
+  }
+> = {
+  "zh-HK": {
+    rulesHeading: "領養規則",
+    catCareHeading: "養貓需知",
+    dogCareHeading: "養狗需知",
+    feesHeading: "領養費用",
+    feesNote: "以上費用如有調整，恕不另行通知；香港拯救貓狗協會保留最終決定權。",
+    dogFeeTitle: "狗隻領養費用",
+    catFeeTitle: "貓隻領養費用",
+    estatesHeading: "可養狗屋苑參考名單",
+    estatesNote: "以下名單僅供參考，請向屋苑管理處查詢最新規定。",
+    estateNameHeader: "屋苑",
+    districtHeader: "地區",
+    notesHeader: "備註",
+    estatesEmpty: "暫時未有屋苑資料。如需最新資訊，請",
+    contactLink: "聯絡我們",
+    guidesHeading: "領養後指南",
+    catGuideTitle: "貓隻領養後指南",
+    dogGuideTitle: "狗隻領養後指南",
+    generalGuideTitle: "領養後指南",
+    zhVersion: "中文版",
+    enVersion: "English",
+    languageToggleLabel: "語言",
   },
-  {
-    value: "collection",
-    label: "領取",
-    content:
-      "領取當日請自備貓籠。建議準備毛巾蓋住貓籠，減少貓咪緊張情緒。回家後讓貓咪在安靜的房間慢慢適應新環境，不要急於介紹給家中其他寵物。",
+  en: {
+    rulesHeading: "Adoption Rules",
+    catCareHeading: "Caring for Your Cat",
+    dogCareHeading: "Caring for Your Dog",
+    feesHeading: "Adoption Fees",
+    feesNote: "Fees may change without prior notice; HKSCDA reserves the final right of decision.",
+    dogFeeTitle: "Dog Adoption Fees",
+    catFeeTitle: "Cat Adoption Fees",
+    estatesHeading: "Dog-Friendly Estates (Reference List)",
+    estatesNote: "For reference only — please check with estate management for current rules.",
+    estateNameHeader: "Estate",
+    districtHeader: "District",
+    notesHeader: "Notes",
+    estatesEmpty: "No estate data available yet. For the latest information, please",
+    contactLink: "contact us",
+    guidesHeading: "Post-Adoption Guides",
+    catGuideTitle: "Post-Adoption Guide (Cats)",
+    dogGuideTitle: "Post-Adoption Guide (Dogs)",
+    generalGuideTitle: "Post-Adoption Guide",
+    zhVersion: "中文版",
+    enVersion: "English",
+    languageToggleLabel: "Language",
   },
-  {
-    value: "food",
-    label: "糧食",
-    content:
-      "提供高質素的貓糧，可混合乾糧及濕糧。確保隨時有新鮮清水。避免餵食人類食物，特別是洋蔥、大蒜、朱古力及葡萄。",
-  },
-  {
-    value: "cleaning",
-    label: "清潔",
-    content: "每日清潔貓砂盆，定期更換貓砂。每月為貓咪梳毛，長毛貓需更頻繁。定期修剪指甲。",
-  },
-  {
-    value: "health",
-    label: "保健",
-    content:
-      "半歲或以上為成貓。每年接種疫苗及進行健康檢查。定期驅蟲（體內及體外）。留意貓咪的飲食及排便習慣，如有異常盡快求醫。",
-  },
-  {
-    value: "supplies",
-    label: "用品",
-    content: "必備用品：貓籠/外出籠、貓砂盆及貓砂、食具及水具、抓板及玩具、梳毛工具。",
-  },
-  {
-    value: "window",
-    label: "安窗",
-    content:
-      "必須安裝貓網或防護網，防止貓咪從高處墜落或走失。市面上有多款適合不同窗型的貓網，請在貓咪到來前安裝妥當。",
-  },
-];
-
-const dogCareTopics = [
-  {
-    value: "home",
-    label: "家居",
-    content: "為狗狗提供安全的空間，移除危險物品。準備舒適的狗床或睡墊。確保門窗關閉防止逃跑。",
-  },
-  {
-    value: "collection",
-    label: "領取",
-    content: "領取當日請自備狗籠或牽引繩。讓狗狗有時間適應新家，保持安靜環境。",
-  },
-  {
-    value: "food",
-    label: "食物",
-    content:
-      "提供適合體型及年齡的優質狗糧。確保隨時有新鮮清水。避免洋蔥、大蒜、朱古力、葡萄及過鹹食物。",
-  },
-  {
-    value: "rest",
-    label: "休息",
-    content: "為狗狗提供固定的休息位置。幼犬每日需要較多睡眠，勿過度打擾。",
-  },
-  {
-    value: "cleaning",
-    label: "清潔",
-    content: "定期洗澡及梳毛。定期清潔耳朵及修剪指甲。訓練狗狗在指定地點排便。",
-  },
-  {
-    value: "health",
-    label: "保健",
-    content: "每年接種疫苗及驅蟲。定期獸醫檢查。注意狗狗的飲食及行為變化。",
-  },
-  {
-    value: "walk",
-    label: "溜狗",
-    content:
-      "每日帶狗狗外出散步，提供適量運動。外出時必須使用牽引繩及佩戴狗牌。在允許的地方才可讓狗狗放開繩子。",
-  },
-  {
-    value: "training",
-    label: "教育",
-    content:
-      "盡早開始基本服從訓練，如坐下、等待、召回等。使用正向強化方法，避免體罰。如有行為問題，可尋求專業訓練師協助。",
-  },
-];
+};
 
 function InstructionsPage() {
   const result = Route.useLoaderData();
@@ -143,76 +114,96 @@ function InstructionsPage() {
 }
 
 export function AdoptionInstructionsContent({ data }: { data: PublicAdoptionPageData }) {
+  const [language, setLanguage] = useState<AdoptionLanguage>("zh-HK");
+  const copy = pageCopy[language];
+
   return (
     <PublicPageFrame
       eyebrow="領養準備"
       title="領養需知"
       description="了解申請、家訪和日常照護，為你和動物做好長期準備。"
     >
-      <div className="public-container space-y-12 py-4">
-        <AdoptionInformationSections data={data} />
+      <div
+        className="public-container space-y-12 py-4"
+        lang={language === "en" ? "en" : "zh-Hant-HK"}
+      >
+        <div className="flex justify-end gap-2" role="group" aria-label={copy.languageToggleLabel}>
+          {(["zh-HK", "en"] as const).map((value) => (
+            <button
+              key={value}
+              type="button"
+              aria-pressed={language === value}
+              onClick={() => setLanguage(value)}
+              className="rounded-full border border-[var(--color-border)] px-3 py-1 text-sm font-semibold aria-pressed:border-[var(--color-primary)] aria-pressed:text-[var(--color-primary)]"
+            >
+              {value === "zh-HK" ? "中文" : "English"}
+            </button>
+          ))}
+        </div>
+
+        <AdoptionInformationSections data={data} language={language} copy={copy} />
 
         <section className="space-y-4">
-          <h2 className="font-display text-xl font-bold">領養規則</h2>
+          <h2 className="font-display text-xl font-bold">{copy.rulesHeading}</h2>
           <ol className="space-y-3">
-            {adoptionRules.map((rule, i) => (
-              <li key={i} className="flex gap-3 text-[var(--color-text-muted)]">
+            {data.rules.map((rule, i) => (
+              <li key={rule.id} className="flex gap-3 text-[var(--color-text-muted)]">
                 <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--color-primary)] text-white text-xs flex items-center justify-center font-bold">
                   {i + 1}
                 </span>
-                <span className="leading-relaxed">{rule}</span>
+                <span className="leading-relaxed">{rule.content[language]}</span>
               </li>
             ))}
           </ol>
         </section>
 
         <section className="space-y-4">
-          <h2 className="font-display text-xl font-bold">養貓需知</h2>
-          <Tabs.Root defaultValue="home">
+          <h2 className="font-display text-xl font-bold">{copy.catCareHeading}</h2>
+          <Tabs.Root defaultValue={data.careTopics.cat[0]?.id}>
             <Tabs.List className="flex flex-wrap gap-1 border-b border-[var(--color-border)] mb-4">
-              {catCareTopics.map((t) => (
+              {data.careTopics.cat.map((topic) => (
                 <Tabs.Trigger
-                  key={t.value}
-                  value={t.value}
+                  key={topic.id}
+                  value={topic.id}
                   className="min-h-11 px-3 py-2 text-sm rounded-t data-[state=active]:border-b-2 data-[state=active]:border-[var(--color-primary)] data-[state=active]:text-[var(--color-primary)] text-[var(--color-text-muted)]"
                 >
-                  {t.label}
+                  {topic.label[language]}
                 </Tabs.Trigger>
               ))}
             </Tabs.List>
-            {catCareTopics.map((t) => (
+            {data.careTopics.cat.map((topic) => (
               <Tabs.Content
-                key={t.value}
-                value={t.value}
+                key={topic.id}
+                value={topic.id}
                 className="text-[var(--color-text-muted)] leading-relaxed"
               >
-                {t.content}
+                {topic.content[language]}
               </Tabs.Content>
             ))}
           </Tabs.Root>
         </section>
 
         <section className="space-y-4">
-          <h2 className="font-display text-xl font-bold">養狗需知</h2>
-          <Tabs.Root defaultValue="home">
+          <h2 className="font-display text-xl font-bold">{copy.dogCareHeading}</h2>
+          <Tabs.Root defaultValue={data.careTopics.dog[0]?.id}>
             <Tabs.List className="flex flex-wrap gap-1 border-b border-[var(--color-border)] mb-4">
-              {dogCareTopics.map((t) => (
+              {data.careTopics.dog.map((topic) => (
                 <Tabs.Trigger
-                  key={t.value}
-                  value={t.value}
+                  key={topic.id}
+                  value={topic.id}
                   className="min-h-11 px-3 py-2 text-sm rounded-t data-[state=active]:border-b-2 data-[state=active]:border-[var(--color-secondary)] data-[state=active]:text-[var(--color-secondary)] text-[var(--color-text-muted)]"
                 >
-                  {t.label}
+                  {topic.label[language]}
                 </Tabs.Trigger>
               ))}
             </Tabs.List>
-            {dogCareTopics.map((t) => (
+            {data.careTopics.dog.map((topic) => (
               <Tabs.Content
-                key={t.value}
-                value={t.value}
+                key={topic.id}
+                value={topic.id}
                 className="text-[var(--color-text-muted)] leading-relaxed"
               >
-                {t.content}
+                {topic.content[language]}
               </Tabs.Content>
             ))}
           </Tabs.Root>
@@ -221,42 +212,46 @@ export function AdoptionInstructionsContent({ data }: { data: PublicAdoptionPage
     </PublicPageFrame>
   );
 }
-function AdoptionInformationSections({ data }: { data: PublicAdoptionPageData }) {
+function AdoptionInformationSections({
+  data,
+  language,
+  copy,
+}: {
+  data: PublicAdoptionPageData;
+  language: AdoptionLanguage;
+  copy: (typeof pageCopy)[AdoptionLanguage];
+}) {
   return (
     <>
       <section className="space-y-5" aria-labelledby="adoption-fees-title">
         <h2 id="adoption-fees-title" className="font-display text-2xl font-bold">
-          領養費用
+          {copy.feesHeading}
         </h2>
         <div className="grid gap-6 lg:grid-cols-2">
-          <FeeTable title="狗隻領養費用" fees={data.feesBySpecies.dog} />
-          <FeeTable title="貓隻領養費用" fees={data.feesBySpecies.cat} />
+          <FeeTable title={copy.dogFeeTitle} fees={data.feesBySpecies.dog} />
+          <FeeTable title={copy.catFeeTitle} fees={data.feesBySpecies.cat} />
         </div>
-        <p className="text-sm text-[var(--color-text-muted)]">
-          以上費用如有調整，恕不另行通知；香港拯救貓狗協會保留最終決定權。
-        </p>
+        <p className="text-sm text-[var(--color-text-muted)]">{copy.feesNote}</p>
       </section>
 
       <section className="space-y-4" aria-labelledby="dog-estates-title">
         <h2 id="dog-estates-title" className="font-display text-2xl font-bold">
-          可養狗屋苑參考名單
+          {copy.estatesHeading}
         </h2>
-        <p className="text-sm text-[var(--color-text-muted)]">
-          以下名單僅供參考，請向屋苑管理處查詢最新規定。
-        </p>
+        <p className="text-sm text-[var(--color-text-muted)]">{copy.estatesNote}</p>
         {data.estates.length ? (
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left text-sm">
               <thead>
                 <tr className="border-b border-[var(--color-border)]">
                   <th scope="col" className="px-3 py-3 font-bold">
-                    屋苑
+                    {copy.estateNameHeader}
                   </th>
                   <th scope="col" className="px-3 py-3 font-bold">
-                    地區
+                    {copy.districtHeader}
                   </th>
                   <th scope="col" className="px-3 py-3 font-bold">
-                    備註
+                    {copy.notesHeader}
                   </th>
                 </tr>
               </thead>
@@ -275,28 +270,28 @@ function AdoptionInformationSections({ data }: { data: PublicAdoptionPageData })
           </div>
         ) : (
           <p className="text-sm text-[var(--color-text-muted)]">
-            暫時未有屋苑資料。如需最新資訊，請
+            {copy.estatesEmpty}
             <a href="/help#contact" className="font-bold text-[var(--color-primary)] underline">
-              聯絡我們
+              {copy.contactLink}
             </a>
-            。
+            {language === "zh-HK" ? "。" : "."}
           </p>
         )}
       </section>
 
       <section className="space-y-4" aria-labelledby="post-adoption-guides-title">
         <h2 id="post-adoption-guides-title" className="font-display text-2xl font-bold">
-          領養後指南
+          {copy.guidesHeading}
         </h2>
         <div className="space-y-4">
           {data.guideGroups.map((group) => (
             <article key={group.species} className="space-y-2">
               <h3 className="font-display text-xl font-bold">
                 {group.species === "cat"
-                  ? "貓隻領養後指南"
+                  ? copy.catGuideTitle
                   : group.species === "dog"
-                    ? "狗隻領養後指南"
-                    : "領養後指南"}
+                    ? copy.dogGuideTitle
+                    : copy.generalGuideTitle}
               </h3>
               <div className="flex flex-wrap gap-3">
                 <a
@@ -306,7 +301,7 @@ function AdoptionInformationSections({ data }: { data: PublicAdoptionPageData })
                   rel="noreferrer"
                   className="btn-secondary min-h-11"
                 >
-                  中文版
+                  {copy.zhVersion}
                 </a>
                 <a
                   key={group.en.id}
@@ -315,7 +310,7 @@ function AdoptionInformationSections({ data }: { data: PublicAdoptionPageData })
                   rel="noreferrer"
                   className="btn-secondary min-h-11"
                 >
-                  English
+                  {copy.enVersion}
                 </a>
               </div>
             </article>

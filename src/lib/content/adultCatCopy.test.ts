@@ -24,13 +24,18 @@ describe("adult cat copy audit", () => {
   });
 
   test("uses the canonical sentence publicly and narrowly repairs CMS bodies", () => {
-    const instructions = readFileSync(
-      join(process.cwd(), "src/routes/adoption/instructions.tsx"),
+    // This sentence used to be hardcoded directly in
+    // src/routes/adoption/instructions.tsx. It now lives in the
+    // adoption_rules_care_topics migration's seed data instead (the cat
+    // "Health" care topic), which is what actually reaches the public page
+    // at runtime since the route was migrated off static content.
+    const careTopicsMigration = readFileSync(
+      join(process.cwd(), "supabase/migrations/20260830130000_adoption_rules_care_topics.sql"),
       "utf8",
     );
     const sql = readFileSync(join(process.cwd(), correctiveMigration), "utf8");
 
-    expect(instructions).toContain(canonicalSentence);
+    expect(careTopicsMigration).toContain(canonicalSentence);
     expect(sql).toContain("update public.content_item");
     expect(sql).toContain("replace(body, '半歲以下仍屬幼貓', '半歲或以上為成貓')");
     expect(sql).toContain("where body like '%半歲以下仍屬幼貓%'");

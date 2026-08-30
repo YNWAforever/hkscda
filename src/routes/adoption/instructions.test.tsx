@@ -61,6 +61,48 @@ const data = {
     },
   ],
   guideGroups: [],
+  rules: [
+    {
+      id: "11111111-1111-4111-8111-111111111111",
+      content: { "zh-HK": "申請人須年滿18歲。", en: "Applicants must be 18 years or older." },
+      sortOrder: 0,
+      isPublished: true,
+    },
+    {
+      id: "22222222-2222-4222-8222-222222222222",
+      content: {
+        "zh-HK": "須確保動物生活在安全、舒適的室內環境。",
+        en: "Animals must live in a safe, comfortable indoor environment.",
+      },
+      sortOrder: 1,
+      isPublished: true,
+    },
+  ],
+  careTopics: {
+    cat: [
+      {
+        id: "33333333-3333-4333-8333-333333333333",
+        animalType: "cat",
+        label: { "zh-HK": "家居", en: "Home" },
+        content: {
+          "zh-HK": "為貓貓提供安全的室內環境。",
+          en: "Provide a safe indoor space for your cat.",
+        },
+        sortOrder: 0,
+        isPublished: true,
+      },
+    ],
+    dog: [
+      {
+        id: "44444444-4444-4444-8444-444444444444",
+        animalType: "dog",
+        label: { "zh-HK": "家居", en: "Home" },
+        content: { "zh-HK": "為狗狗提供安全的空間。", en: "Provide a safe space for your dog." },
+        sortOrder: 0,
+        isPublished: true,
+      },
+    ],
+  },
   guides: [
     {
       id: "slot-zh",
@@ -177,5 +219,21 @@ describe("adoption instructions route", () => {
     );
     expect(markup).toContain("暫時未有屋苑資料");
     expect(markup).toContain('href="/help#contact"');
+  });
+
+  test("renders zh-HK bilingual rule and care topic content by default", async () => {
+    const { AdoptionInstructionsContent } = await import("./instructions");
+    const markup = renderToStaticMarkup(<AdoptionInstructionsContent data={data} />);
+
+    expect(markup).toContain("申請人須年滿18歲。");
+    expect(markup).not.toContain("Applicants must be 18 years or older.");
+    expect(markup).toContain("為貓貓提供安全的室內環境。");
+    expect(markup).not.toContain("Provide a safe indoor space for your cat.");
+    expect(markup).toContain("為狗狗提供安全的空間。");
+    expect(markup).not.toContain("Provide a safe space for your dog.");
+    // Static section headings default to zh-HK too.
+    expect(markup).toContain("領養規則");
+    expect(markup).toContain("養貓需知");
+    expect(markup).toContain("養狗需知");
   });
 });

@@ -114,6 +114,14 @@ describe("AdoptionInformationManagement", () => {
     });
   });
 
+  test("renders all four content tabs, including rules and care topics", () => {
+    const markup = renderToStaticMarkup(
+      <AdoptionInformationManagement initialData={{ fees, estates }} />,
+    );
+    expect(markup).toContain("領養規則");
+    expect(markup).toContain("動物照顧須知");
+  });
+
   test("moves fees through a temporary sort order to avoid unique-key conflicts", () => {
     const current: AdoptionFee = { ...(fees.items[0] as AdoptionFee), sortOrder: 1 };
     const target: AdoptionFee = {

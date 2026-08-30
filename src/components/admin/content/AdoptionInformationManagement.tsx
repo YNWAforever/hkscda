@@ -7,8 +7,12 @@ import type {
   AdminAdoptionInformationPage,
   AdoptionFee,
   AdoptionInformationResource,
+  AdoptionRuleContent,
+  CareTopic,
   DogFriendlyEstate,
 } from "../../../lib/adoptionInformation/types";
+import { AdoptionRulesManagement } from "./AdoptionRulesManagement";
+import { CareTopicsManagement } from "./CareTopicsManagement";
 
 export const ADOPTION_INFORMATION_QUERY_KEY = ["admin-adoption-information"] as const;
 
@@ -45,6 +49,38 @@ export function AdoptionInformationManagement({ initialData }: { initialData?: I
     return <AdoptionInformationManagementView activeTab="fees" data={initialData.fees} query="" />;
   }
   return <AdoptionInformationManagementRuntime />;
+}
+
+export function AdoptionContentTabs({
+  activeTab,
+  onTabChange,
+}: {
+  activeTab: AdoptionInformationResource;
+  onTabChange: (tab: AdoptionInformationResource) => void;
+}) {
+  return (
+    <div className="flex gap-2 border-b border-[var(--color-border)]" role="tablist">
+      {(
+        [
+          ["fees", "領養費用"],
+          ["estates", "可養狗屋苑"],
+          ["rules", "領養規則"],
+          ["careTopics", "動物照顧須知"],
+        ] as const
+      ).map(([value, label]) => (
+        <button
+          key={value}
+          type="button"
+          role="tab"
+          aria-selected={activeTab === value}
+          onClick={() => onTabChange(value)}
+          className="px-4 py-3 text-sm font-semibold aria-selected:border-b-2 aria-selected:border-[var(--color-primary)] aria-selected:text-[var(--color-primary)]"
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
 }
 
 type MutationInput =
@@ -104,6 +140,19 @@ function AdoptionInformationManagementRuntime() {
     onSuccess: () => invalidateAdoptionInformationQueries(queryClient),
   });
 
+  const handleTabChange = (tab: AdoptionInformationResource) => {
+    setActiveTab(tab);
+    setQuery("");
+    setPage(1);
+  };
+
+  if (activeTab === "rules") {
+    return <AdoptionRulesManagement activeTab={activeTab} onTabChange={handleTabChange} />;
+  }
+  if (activeTab === "careTopics") {
+    return <CareTopicsManagement activeTab={activeTab} onTabChange={handleTabChange} />;
+  }
+
   return (
     <AdoptionInformationManagementView
       activeTab={activeTab}
@@ -116,11 +165,7 @@ function AdoptionInformationManagementRuntime() {
       query={query}
       page={page}
       pending={mutation.isPending}
-      onTabChange={(tab) => {
-        setActiveTab(tab);
-        setQuery("");
-        setPage(1);
-      }}
+      onTabChange={handleTabChange}
       onQueryChange={(value) => {
         setQuery(value);
         setPage(1);
@@ -212,25 +257,7 @@ export function AdoptionInformationManagementView({
         </a>
       </div>
 
-      <div className="flex gap-2 border-b border-[var(--color-border)]" role="tablist">
-        {(
-          [
-            ["fees", "領養費用"],
-            ["estates", "可養狗屋苑"],
-          ] as const
-        ).map(([value, label]) => (
-          <button
-            key={value}
-            type="button"
-            role="tab"
-            aria-selected={activeTab === value}
-            onClick={() => onTabChange?.(value)}
-            className="px-4 py-3 text-sm font-semibold aria-selected:border-b-2 aria-selected:border-[var(--color-primary)] aria-selected:text-[var(--color-primary)]"
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+      <AdoptionContentTabs activeTab={activeTab} onTabChange={(tab) => onTabChange?.(tab)} />
 
       {activeTab === "estates" ? (
         <label className="block max-w-xl space-y-1 text-sm font-semibold">
@@ -440,16 +467,20 @@ function EstateEditor({
   );
 }
 
-function isFee(item: AdoptionFee | DogFriendlyEstate): item is AdoptionFee {
-  return "animalType" in item;
+function isFee(
+  item: AdoptionFee | DogFriendlyEstate | AdoptionRuleContent | CareTopic,
+): item is AdoptionFee {
+  return "itemName" in item;
 }
 
-function isEstate(item: AdoptionFee | DogFriendlyEstate): item is DogFriendlyEstate {
+function isEstate(
+  item: AdoptionFee | DogFriendlyEstate | AdoptionRuleContent | CareTopic,
+): item is DogFriendlyEstate {
   return "estateName" in item;
 }
 
 export function moveFeeWithinSpecies(
-  items: Array<AdoptionFee | DogFriendlyEstate>,
+  items: Array<AdoptionFee | DogFriendlyEstate | AdoptionRuleContent | CareTopic>,
   id: string,
   direction: -1 | 1,
 ) {

@@ -17,6 +17,12 @@ function setup(options: { unauthorized?: boolean; conflict?: boolean } = {}) {
       return { id: "estate-1" };
     },
     async deleteEstate() {},
+    async upsertRule() {
+      return { id: "rule-1" };
+    },
+    async upsertCareTopic() {
+      return { id: "care-topic-1" };
+    },
   };
   return {
     authCalls,
