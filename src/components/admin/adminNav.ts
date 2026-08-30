@@ -7,6 +7,7 @@ import {
   ClipboardList,
   Dog,
   FilePlus2,
+  FileText,
   HandCoins,
   HelpCircle,
   Heart,
@@ -216,6 +217,15 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     icon: HelpCircle,
     to: "/admin/faq",
     activePath: "/admin/faq",
+  },
+  {
+    id: "about-pages",
+    section: "content",
+    group: "promotion",
+    label: "關於頁面",
+    icon: FileText,
+    to: "/admin/content/about",
+    activePath: "/admin/content/about",
   },
   {
     id: "access-management",

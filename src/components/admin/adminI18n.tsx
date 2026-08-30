@@ -191,6 +191,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       governance: "團隊與管治",
       "access-management": "權限管理",
       faq: "常見問題",
+      "about-pages": "關於頁面",
     },
     layout: {
       collapseSidebar: "收合側欄",
@@ -368,6 +369,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       governance: "Team & Governance",
       "access-management": "Access Management",
       faq: "FAQ",
+      "about-pages": "About Pages",
     },
     layout: {
       collapseSidebar: "Collapse sidebar",

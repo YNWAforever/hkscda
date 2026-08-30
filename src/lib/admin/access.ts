@@ -90,6 +90,7 @@ const NAV_ITEM_AREAS: Record<string, AdminAccessArea> = {
   knowledge: "contentManagement",
   governance: "governanceManagement",
   faq: "faqManagement",
+  "about-pages": "contentManagement",
   supporters: "supporters",
   "access-management": "accessManagement",
 };
