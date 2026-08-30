@@ -844,4 +844,35 @@ describe("supabase migration safety", () => {
     // right before 'cat' — unlike 'cat', ' which the constraint never spells).
     expect((sql.match(/'dog', '/g) ?? []).length).toBe(9);
   });
+
+  test("adds about_page_content with a shared upsert RPC and seeds all three pages", () => {
+    const sql = readMigrationBySuffix("_about_page_content.sql");
+
+    expect(sql).toContain("create table if not exists public.about_page_content");
+    expect(sql).toContain(
+      "page_slug text primary key check (page_slug in ('about', 'tnr', 'cccp'))",
+    );
+    expect(sql).toContain("alter table public.about_page_content enable row level security");
+    expect(sql).toContain(
+      "grant select, insert, update, delete on public.about_page_content to service_role",
+    );
+    expect(sql).toContain("revoke all on public.about_page_content from anon, authenticated");
+    expect(sql).toContain(
+      "create or replace function public.upsert_about_page_content_with_audit(",
+    );
+    expect(sql).toContain("security definer");
+    expect(sql).toContain("set search_path = public, pg_temp");
+    expect(sql).toContain("where auth_user_id = p_actor_user_id");
+    expect(sql).toContain("insert into public.audit_log");
+    expect(sql).toContain(
+      "revoke all on function public.upsert_about_page_content_with_audit(uuid, text, jsonb)",
+    );
+    expect(sql).toContain(
+      "grant execute on function public.upsert_about_page_content_with_audit(uuid, text, jsonb)",
+    );
+
+    for (const slug of ["'about'", "'tnr'", "'cccp'"]) {
+      expect(sql).toContain(`(${slug}, '{`);
+    }
+  });
 });
