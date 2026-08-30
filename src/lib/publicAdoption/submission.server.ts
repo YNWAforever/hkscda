@@ -6,7 +6,6 @@ import { renderAdoptionConfirmationEmail } from "./emailTemplates.server";
 import {
   type AdoptionPhotoDescriptor,
   type ExpandedAdoptionApplication,
-  MAX_PHOTO_BYTES,
   expandedAdoptionApplicationSchema,
   toAdoptionApplicationSummaryInsert,
   toDetailInsert,
@@ -15,10 +14,10 @@ import {
   validatePhotoDescriptor,
 } from "./schemas";
 import { getAppUrl, getEmailConfig } from "../donations/config.server";
+import { verifyUploadedObjects } from "../publicUploads/signedUpload.server";
 
 export const ADOPTION_PHOTO_BUCKET = "adoption-application-photos";
 export const MAX_ADOPTION_PHOTOS = 6;
-export const ADOPTION_MULTIPART_MAX_BYTES = MAX_ADOPTION_PHOTOS * MAX_PHOTO_BYTES + 8 * 1024 * 1024;
 
 export class SubmissionValidationError extends Error {
   constructor(message: string) {
@@ -32,7 +31,7 @@ export type ParsedAdoptionPayload = ExpandedAdoptionApplication & {
 };
 
 export type ParsedAdoptionPhoto = AdoptionPhotoDescriptor & {
-  file: File;
+  storagePath: string;
 };
 
 export type ParsedAdoptionMultipart = {
@@ -67,7 +66,7 @@ type CoordinatorCaseService = {
 
 type PersistPublicAdoptionJourneyInput = {
   client: PublicAdoptionSupabaseClient;
-  parsed: ParsedAdoptionMultipart;
+  parsed: ParsedAdoptionMultipart & { applicationId: string };
   coordinatorService: CoordinatorCaseService;
   now?: () => Date;
   createStatusTokenPair?: typeof createStatusTokenPair;
@@ -95,26 +94,9 @@ type SendAdoptionConfirmationEmailDeps = {
 
 export type AdoptionConfirmationEmailResult = "queued" | "sent" | "failed";
 
-export type AdoptionSubmissionHeaderValidation =
-  | { ok: true }
-  | { ok: false; status: 400 | 413 | 415; error: string };
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
 function requireNoError<T>(result: QueryResult<T>, message: string): T | null {
   if (result.error) throw result.error;
   return result.data ?? null;
-}
-
-function isFile(value: FormDataEntryValue): value is File {
-  return typeof File !== "undefined" && value instanceof File;
-}
-
-function safeFileName(fileName: string) {
-  const baseName = fileName.split(/[\\/]/).pop()?.trim() || "photo";
-  return baseName.replace(/[^A-Za-z0-9._-]/g, "_");
 }
 
 function referenceForApplication(applicationId: string) {
@@ -135,28 +117,6 @@ function coordinatorPreferences(input: ExpandedAdoptionApplication) {
     rankedAnimals: input.animalPreferences,
     visit: input.visit,
   };
-}
-
-export function validateAdoptionSubmissionRequestHeaders(
-  request: Request,
-): AdoptionSubmissionHeaderValidation {
-  const contentType = request.headers.get("content-type");
-  if (!contentType) {
-    return { ok: false, status: 400, error: "Missing content-type" };
-  }
-  if (!/^multipart\/form-data\b/i.test(contentType)) {
-    return { ok: false, status: 415, error: "Expected multipart/form-data" };
-  }
-
-  const contentLength = request.headers.get("content-length");
-  if (contentLength) {
-    const bytes = Number(contentLength);
-    if (Number.isFinite(bytes) && bytes > ADOPTION_MULTIPART_MAX_BYTES) {
-      return { ok: false, status: 413, error: "Adoption application upload is too large" };
-    }
-  }
-
-  return { ok: true };
 }
 
 async function cleanupFailedPersistence(input: {
@@ -200,50 +160,56 @@ async function cleanupFailedPersistence(input: {
   }
 }
 
-export async function parseAdoptionMultipart(request: Request): Promise<ParsedAdoptionMultipart> {
-  const formData = await request.formData();
-  const payloadValue = formData.get("payload");
-  if (typeof payloadValue !== "string") {
-    throw new SubmissionValidationError("Missing adoption application payload");
+export type UploadedPhotoReference = {
+  category: string;
+  fileName: string;
+  mimeType: string;
+  sizeBytes: number;
+  storagePath: string;
+};
+
+export type AdoptionSubmissionRequestBody = {
+  payload: unknown;
+  applicationId: string;
+  photos: UploadedPhotoReference[];
+  turnstileToken?: string;
+};
+
+export function parseAdoptionSubmission(
+  body: unknown,
+): ParsedAdoptionMultipart & { applicationId: string } {
+  if (typeof body !== "object" || body === null) {
+    throw new SubmissionValidationError("Invalid adoption application request body");
+  }
+  const raw = body as Record<string, unknown>;
+
+  if (typeof raw.applicationId !== "string" || !raw.applicationId) {
+    throw new SubmissionValidationError("Missing adoption application id");
   }
 
-  let rawPayload: unknown;
-  try {
-    rawPayload = JSON.parse(payloadValue);
-  } catch (error) {
-    throw new SyntaxError("Invalid adoption application payload JSON", { cause: error });
-  }
+  const parsed = expandedAdoptionApplicationSchema.parse(raw.payload);
+  const turnstileToken = typeof raw.turnstileToken === "string" ? raw.turnstileToken : undefined;
 
-  const parsed = expandedAdoptionApplicationSchema.parse(rawPayload);
-  const turnstileToken =
-    isRecord(rawPayload) && typeof rawPayload.turnstileToken === "string"
-      ? rawPayload.turnstileToken
-      : undefined;
-
-  const photos: ParsedAdoptionPhoto[] = [];
-  for (const [key, value] of formData.entries()) {
-    if (!key.startsWith("photo:")) continue;
-    if (!isFile(value)) continue;
-
-    const descriptor = validatePhotoDescriptor({
-      category: key.slice("photo:".length),
-      fileName: value.name,
-      mimeType: value.type,
-      sizeBytes: value.size,
-    });
-    photos.push({ ...descriptor, file: value });
-  }
-
-  if (photos.length === 0) {
+  if (!Array.isArray(raw.photos) || raw.photos.length === 0) {
     throw new SubmissionValidationError("At least one adoption photo is required");
   }
-  if (photos.length > MAX_ADOPTION_PHOTOS) {
+  if (raw.photos.length > MAX_ADOPTION_PHOTOS) {
     throw new SubmissionValidationError("No more than 6 adoption photos can be uploaded");
   }
+
+  const photos: ParsedAdoptionPhoto[] = raw.photos.map((entry) => {
+    const descriptor = validatePhotoDescriptor(entry as never);
+    const storagePath = (entry as { storagePath?: unknown }).storagePath;
+    if (typeof storagePath !== "string" || !storagePath) {
+      throw new SubmissionValidationError("Missing storage path for an adoption photo");
+    }
+    return { ...descriptor, storagePath };
+  });
 
   return {
     payload: turnstileToken ? { ...parsed, turnstileToken } : parsed,
     photos,
+    applicationId: raw.applicationId,
   };
 }
 
@@ -256,39 +222,50 @@ export async function persistPublicAdoptionJourney({
   appUrl = getAppUrl(),
   logger = console,
 }: PersistPublicAdoptionJourneyInput): Promise<PublicAdoptionPersistResult> {
+  // Verify every referenced upload exists in Storage *before* touching the
+  // database, and outside the try/catch below: that catch wraps every
+  // subsequent failure into a generic "Failed to save adoption application"
+  // Error for cleanup purposes, which would otherwise swallow this
+  // SubmissionValidationError and prevent the route from mapping it to 400.
+  const verification = await verifyUploadedObjects(
+    client,
+    ADOPTION_PHOTO_BUCKET,
+    parsed.photos.map((photo) => ({
+      category: photo.category,
+      path: photo.storagePath,
+      sizeBytes: photo.sizeBytes,
+      mimeType: photo.mimeType,
+    })),
+  );
+  if (!verification.ok) {
+    throw new SubmissionValidationError(
+      `Uploaded photo not found: ${verification.missing.join(", ")}`,
+    );
+  }
+
   let applicationId: string | null = null;
   const uploadedPaths: string[] = [];
 
   try {
-    const summaryInsert = toAdoptionApplicationSummaryInsert(parsed.payload);
-    const application = requireNoError(
+    const summaryInsert = {
+      id: parsed.applicationId,
+      ...toAdoptionApplicationSummaryInsert(parsed.payload),
+    };
+    requireNoError(
       await client.from("adoption_applications").insert(summaryInsert).select("id").single(),
       "Failed to save adoption application",
-    ) as { id: string } | null;
-    if (!application?.id) throw new Error("Missing adoption application id");
-    applicationId = application.id;
+    );
+    applicationId = parsed.applicationId;
 
-    const photoRows = [];
-    for (const photo of parsed.photos) {
-      const storagePath = `${applicationId}/${photo.category}/${safeFileName(photo.fileName)}`;
-      const upload = await client.storage
-        .from(ADOPTION_PHOTO_BUCKET)
-        .upload(storagePath, photo.file, {
-          contentType: photo.mimeType,
-          upsert: false,
-        });
-      if (upload.error) throw upload.error;
-      uploadedPaths.push(upload.data?.path ?? storagePath);
-      photoRows.push({
-        public_application_id: applicationId,
-        storage_bucket: ADOPTION_PHOTO_BUCKET,
-        storage_path: upload.data?.path ?? storagePath,
-        file_name: photo.fileName,
-        mime_type: photo.mimeType,
-        size_bytes: photo.sizeBytes,
-        photo_category: photo.category,
-      });
-    }
+    const photoRows = parsed.photos.map((photo) => ({
+      public_application_id: applicationId,
+      storage_bucket: ADOPTION_PHOTO_BUCKET,
+      storage_path: photo.storagePath,
+      file_name: photo.fileName,
+      mime_type: photo.mimeType,
+      size_bytes: photo.sizeBytes,
+      photo_category: photo.category,
+    }));
 
     requireNoError(
       await client.from("adoption_application_photo").insert(photoRows),
