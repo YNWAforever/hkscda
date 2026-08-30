@@ -7,8 +7,12 @@ import type {
   AdminAdoptionInformationPage,
   AdoptionFee,
   AdoptionInformationResource,
+  AdoptionRuleContent,
+  CareTopic,
   DogFriendlyEstate,
 } from "../../../lib/adoptionInformation/types";
+import { AdoptionRulesManagement } from "./AdoptionRulesManagement";
+import { CareTopicsManagement } from "./CareTopicsManagement";
 
 export const ADOPTION_INFORMATION_QUERY_KEY = ["admin-adoption-information"] as const;
 
@@ -136,6 +140,19 @@ function AdoptionInformationManagementRuntime() {
     onSuccess: () => invalidateAdoptionInformationQueries(queryClient),
   });
 
+  const handleTabChange = (tab: AdoptionInformationResource) => {
+    setActiveTab(tab);
+    setQuery("");
+    setPage(1);
+  };
+
+  if (activeTab === "rules") {
+    return <AdoptionRulesManagement activeTab={activeTab} onTabChange={handleTabChange} />;
+  }
+  if (activeTab === "careTopics") {
+    return <CareTopicsManagement activeTab={activeTab} onTabChange={handleTabChange} />;
+  }
+
   return (
     <AdoptionInformationManagementView
       activeTab={activeTab}
@@ -148,11 +165,7 @@ function AdoptionInformationManagementRuntime() {
       query={query}
       page={page}
       pending={mutation.isPending}
-      onTabChange={(tab) => {
-        setActiveTab(tab);
-        setQuery("");
-        setPage(1);
-      }}
+      onTabChange={handleTabChange}
       onQueryChange={(value) => {
         setQuery(value);
         setPage(1);
@@ -454,16 +467,20 @@ function EstateEditor({
   );
 }
 
-function isFee(item: AdoptionFee | DogFriendlyEstate): item is AdoptionFee {
-  return "animalType" in item;
+function isFee(
+  item: AdoptionFee | DogFriendlyEstate | AdoptionRuleContent | CareTopic,
+): item is AdoptionFee {
+  return "itemName" in item;
 }
 
-function isEstate(item: AdoptionFee | DogFriendlyEstate): item is DogFriendlyEstate {
+function isEstate(
+  item: AdoptionFee | DogFriendlyEstate | AdoptionRuleContent | CareTopic,
+): item is DogFriendlyEstate {
   return "estateName" in item;
 }
 
 export function moveFeeWithinSpecies(
-  items: Array<AdoptionFee | DogFriendlyEstate>,
+  items: Array<AdoptionFee | DogFriendlyEstate | AdoptionRuleContent | CareTopic>,
   id: string,
   direction: -1 | 1,
 ) {
