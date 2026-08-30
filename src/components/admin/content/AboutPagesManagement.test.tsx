@@ -109,13 +109,20 @@ const cccpContent: CccpPageContent = {
 
 const allPages = { about: aboutContent, tnr: tnrContent, cccp: cccpContent };
 
+const noopDraftHandlers = {
+  onAboutDraftChange: () => {},
+  onTnrDraftChange: () => {},
+  onCccpDraftChange: () => {},
+};
+
 describe("AboutPagesManagementView", () => {
   test("renders the about tab's fields, including every journey step and help path", () => {
     const markup = renderToStaticMarkup(
       <AboutPagesManagementView
         activeTab="about"
         onTabChange={() => {}}
-        data={allPages}
+        drafts={allPages}
+        {...noopDraftHandlers}
         onSave={() => {}}
         isSaving={false}
         isSaveError={false}
@@ -150,7 +157,8 @@ describe("AboutPagesManagementView", () => {
       <AboutPagesManagementView
         activeTab="tnr"
         onTabChange={() => {}}
-        data={allPages}
+        drafts={allPages}
+        {...noopDraftHandlers}
         onSave={() => {}}
         isSaving={false}
         isSaveError={false}
@@ -177,7 +185,8 @@ describe("AboutPagesManagementView", () => {
       <AboutPagesManagementView
         activeTab="cccp"
         onTabChange={() => {}}
-        data={allPages}
+        drafts={allPages}
+        {...noopDraftHandlers}
         onSave={() => {}}
         isSaving={false}
         isSaveError={false}
@@ -207,7 +216,8 @@ describe("AboutPagesManagementView", () => {
       <AboutPagesManagementView
         activeTab="about"
         onTabChange={() => {}}
-        data={allPages}
+        drafts={allPages}
+        {...noopDraftHandlers}
         onSave={() => {}}
         isSaving={false}
         isSaveError={true}
@@ -220,7 +230,8 @@ describe("AboutPagesManagementView", () => {
       <AboutPagesManagementView
         activeTab="about"
         onTabChange={() => {}}
-        data={allPages}
+        drafts={allPages}
+        {...noopDraftHandlers}
         onSave={() => {}}
         isSaving={false}
         isSaveError={false}
@@ -233,5 +244,60 @@ describe("AboutPagesManagementView", () => {
     const invalidateQueries = mock(async () => undefined);
     await invalidateAboutPagesQueries({ invalidateQueries });
     expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ABOUT_PAGES_QUERY_KEY });
+  });
+
+  // Regression test for the tab-switch data-loss bug: each tab form used to own
+  // an internal `useState(content)` draft, resynced from props via a
+  // `useEffect`. Because only the active tab's form was mounted, switching
+  // tabs unmounted the inactive one and any unsaved edit inside it vanished —
+  // switching back showed the original loaded content, not what was typed.
+  //
+  // The fix lifts each page's draft out of the (now unmounted-and-remounted)
+  // tab forms and into state the caller of this view owns, passed down as the
+  // `drafts` prop plus a setter per page. This view has no `@testing-library`
+  // equivalent available to literally type into a field and click a tab (see
+  // package.json — only bun:test + renderToStaticMarkup are wired up, and SSR
+  // markup can't simulate onChange/onClick), so this test instead proves the
+  // property that actually matters at this component boundary: once an edit
+  // exists in `drafts`, rendering with a different `activeTab` and then
+  // switching back reflects that edit rather than the original content. Under
+  // the pre-fix design this exact scenario was inexpressible as a prop-driven
+  // test, because the edit lived only inside the unmounted child's local state
+  // and there was no `drafts`/onDraftChange surface to inject it through.
+  test("a page's edited draft survives switching to another tab and back", () => {
+    const editedAbout: AboutPageContent = {
+      ...aboutContent,
+      hero: { ...aboutContent.hero, title: "Edited While Admin Was Mid-Typing" },
+    };
+    const draftsWithUnsavedEdit = { ...allPages, about: editedAbout };
+
+    const tnrMarkup = renderToStaticMarkup(
+      <AboutPagesManagementView
+        activeTab="tnr"
+        onTabChange={() => {}}
+        drafts={draftsWithUnsavedEdit}
+        {...noopDraftHandlers}
+        onSave={() => {}}
+        isSaving={false}
+        isSaveError={false}
+      />,
+    );
+    // The about tab isn't mounted while viewing tnr, but its edit must still
+    // live in `drafts` rather than being discarded the moment it's not shown.
+    expect(tnrMarkup).not.toContain("Edited While Admin Was Mid-Typing");
+
+    const aboutMarkupAfterSwitchingBack = renderToStaticMarkup(
+      <AboutPagesManagementView
+        activeTab="about"
+        onTabChange={() => {}}
+        drafts={draftsWithUnsavedEdit}
+        {...noopDraftHandlers}
+        onSave={() => {}}
+        isSaving={false}
+        isSaveError={false}
+      />,
+    );
+    expect(aboutMarkupAfterSwitchingBack).toContain("Edited While Admin Was Mid-Typing");
+    expect(aboutMarkupAfterSwitchingBack).not.toContain(aboutContent.hero.title);
   });
 });

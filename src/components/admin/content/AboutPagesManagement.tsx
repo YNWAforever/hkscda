@@ -5,13 +5,8 @@ import { fetchAdminJson } from "../../../lib/admin/http";
 import type {
   AboutPageContent,
   AboutPageSlug,
-  CccpChapter,
   CccpPageContent,
-  HelpPathItem,
-  JourneyStep,
   TnrPageContent,
-  TnrStage,
-  WorkRow,
 } from "../../../lib/aboutPages/types";
 
 export const ABOUT_PAGES_QUERY_KEY = ["admin-about-pages"] as const;
@@ -21,6 +16,15 @@ type PagesData = {
   tnr: TnrPageContent | null;
   cccp: CccpPageContent | null;
 };
+
+// The server always echoes back content of the same shape it was asked to
+// persist for a given pageSlug; declaring that correlation as a discriminated
+// union (rather than the looser AnyAboutPageContent) lets a `pageSlug`
+// equality check narrow `content` for us, with no cast needed at the call site.
+type AboutPagesUpsertResult =
+  | { pageSlug: "about"; content: AboutPageContent }
+  | { pageSlug: "tnr"; content: TnrPageContent }
+  | { pageSlug: "cccp"; content: CccpPageContent };
 
 const TABS: readonly [AboutPageSlug, string][] = [
   ["about", "關於我們"],
@@ -40,6 +44,13 @@ export function AboutPagesManagement() {
 
 function AboutPagesManagementRuntime() {
   const [activeTab, setActiveTab] = useState<AboutPageSlug>("about");
+  // Drafts are lifted up here (rather than living inside each tab form) so that
+  // switching tabs — which unmounts the inactive form — does not discard
+  // whatever the admin was mid-typing. Once initialized from the first
+  // successful load, a draft is only ever replaced by a successful save of
+  // that same page; it must never be silently overwritten by a background
+  // refetch or by navigating away from and back to a tab.
+  const [drafts, setDrafts] = useState<PagesData | null>(null);
   const queryClient = useQueryClient();
 
   const pagesQuery = useQuery({
@@ -47,10 +58,29 @@ function AboutPagesManagementRuntime() {
     queryFn: () => fetchAdminJson<PagesData>("/api/admin/about-pages"),
   });
 
+  useEffect(() => {
+    if (pagesQuery.data && drafts === null) {
+      setDrafts(pagesQuery.data);
+    }
+  }, [pagesQuery.data, drafts]);
+
   const upsertMutation = useMutation({
     mutationFn: (input: { pageSlug: AboutPageSlug; content: unknown }) =>
-      fetchAdminJson("/api/admin/about-pages", { method: "PUT", body: JSON.stringify(input) }),
-    onSuccess: () => invalidateAboutPagesQueries(queryClient),
+      fetchAdminJson<AboutPagesUpsertResult>("/api/admin/about-pages", {
+        method: "PUT",
+        body: JSON.stringify(input),
+      }),
+    onSuccess: (result) => {
+      // Reset only the page that was just saved to the confirmed-saved value;
+      // the other two drafts (and any in-progress edits they hold) are untouched.
+      setDrafts((current) => {
+        if (!current) return current;
+        if (result.pageSlug === "about") return { ...current, about: result.content };
+        if (result.pageSlug === "tnr") return { ...current, tnr: result.content };
+        return { ...current, cccp: result.content };
+      });
+      void invalidateAboutPagesQueries(queryClient);
+    },
   });
 
   if (pagesQuery.isLoading) return <p aria-live="polite">載入頁面內容中…</p>;
@@ -61,12 +91,22 @@ function AboutPagesManagementRuntime() {
       </p>
     );
   }
+  if (!drafts) return <p aria-live="polite">載入頁面內容中…</p>;
 
   return (
     <AboutPagesManagementView
       activeTab={activeTab}
       onTabChange={setActiveTab}
-      data={pagesQuery.data}
+      drafts={drafts}
+      onAboutDraftChange={(content) =>
+        setDrafts((current) => (current ? { ...current, about: content } : current))
+      }
+      onTnrDraftChange={(content) =>
+        setDrafts((current) => (current ? { ...current, tnr: content } : current))
+      }
+      onCccpDraftChange={(content) =>
+        setDrafts((current) => (current ? { ...current, cccp: content } : current))
+      }
       onSave={(pageSlug, content) => upsertMutation.mutate({ pageSlug, content })}
       isSaving={upsertMutation.isPending}
       isSaveError={upsertMutation.isError}
@@ -77,14 +117,20 @@ function AboutPagesManagementRuntime() {
 export function AboutPagesManagementView({
   activeTab,
   onTabChange,
-  data,
+  drafts,
+  onAboutDraftChange,
+  onTnrDraftChange,
+  onCccpDraftChange,
   onSave,
   isSaving,
   isSaveError,
 }: {
   activeTab: AboutPageSlug;
   onTabChange: (tab: AboutPageSlug) => void;
-  data: PagesData;
+  drafts: PagesData;
+  onAboutDraftChange: (content: AboutPageContent) => void;
+  onTnrDraftChange: (content: TnrPageContent) => void;
+  onCccpDraftChange: (content: CccpPageContent) => void;
   onSave: (pageSlug: AboutPageSlug, content: unknown) => void;
   isSaving: boolean;
   isSaveError: boolean;
@@ -114,25 +160,28 @@ export function AboutPagesManagementView({
         ))}
       </div>
 
-      {activeTab === "about" && data.about ? (
+      {activeTab === "about" && drafts.about ? (
         <AboutTabForm
-          content={data.about}
+          draft={drafts.about}
+          onDraftChange={onAboutDraftChange}
           onSave={(c) => onSave("about", c)}
           isSaving={isSaving}
           isSaveError={isSaveError}
         />
       ) : null}
-      {activeTab === "tnr" && data.tnr ? (
+      {activeTab === "tnr" && drafts.tnr ? (
         <TnrTabForm
-          content={data.tnr}
+          draft={drafts.tnr}
+          onDraftChange={onTnrDraftChange}
           onSave={(c) => onSave("tnr", c)}
           isSaving={isSaving}
           isSaveError={isSaveError}
         />
       ) : null}
-      {activeTab === "cccp" && data.cccp ? (
+      {activeTab === "cccp" && drafts.cccp ? (
         <CccpTabForm
-          content={data.cccp}
+          draft={drafts.cccp}
+          onDraftChange={onCccpDraftChange}
           onSave={(c) => onSave("cccp", c)}
           isSaving={isSaving}
           isSaveError={isSaveError}
@@ -192,19 +241,18 @@ function TextField({
 }
 
 function AboutTabForm({
-  content,
+  draft,
+  onDraftChange,
   onSave,
   isSaving,
   isSaveError,
 }: {
-  content: AboutPageContent;
+  draft: AboutPageContent;
+  onDraftChange: (content: AboutPageContent) => void;
   onSave: (content: AboutPageContent) => void;
   isSaving: boolean;
   isSaveError: boolean;
 }) {
-  const [draft, setDraft] = useState(content);
-  useEffect(() => setDraft(content), [content]);
-
   return (
     <form
       className="space-y-6"
@@ -218,17 +266,17 @@ function AboutTabForm({
         <TextField
           label="引言"
           value={draft.hero.eyebrow}
-          onChange={(v) => setDraft({ ...draft, hero: { ...draft.hero, eyebrow: v } })}
+          onChange={(v) => onDraftChange({ ...draft, hero: { ...draft.hero, eyebrow: v } })}
         />
         <TextField
           label="標題"
           value={draft.hero.title}
-          onChange={(v) => setDraft({ ...draft, hero: { ...draft.hero, title: v } })}
+          onChange={(v) => onDraftChange({ ...draft, hero: { ...draft.hero, title: v } })}
         />
         <TextField
           label="描述"
           value={draft.hero.description}
-          onChange={(v) => setDraft({ ...draft, hero: { ...draft.hero, description: v } })}
+          onChange={(v) => onDraftChange({ ...draft, hero: { ...draft.hero, description: v } })}
           multiline
         />
       </fieldset>
@@ -238,28 +286,28 @@ function AboutTabForm({
         <TextField
           label="引言"
           value={draft.mission.eyebrow}
-          onChange={(v) => setDraft({ ...draft, mission: { ...draft.mission, eyebrow: v } })}
+          onChange={(v) => onDraftChange({ ...draft, mission: { ...draft.mission, eyebrow: v } })}
         />
         <TextField
           label="標題"
           value={draft.mission.title}
-          onChange={(v) => setDraft({ ...draft, mission: { ...draft.mission, title: v } })}
+          onChange={(v) => onDraftChange({ ...draft, mission: { ...draft.mission, title: v } })}
         />
         <TextField
           label="內文"
           value={draft.mission.body}
-          onChange={(v) => setDraft({ ...draft, mission: { ...draft.mission, body: v } })}
+          onChange={(v) => onDraftChange({ ...draft, mission: { ...draft.mission, body: v } })}
           multiline
         />
         <TextField
           label="側欄標籤"
           value={draft.mission.sideBadge}
-          onChange={(v) => setDraft({ ...draft, mission: { ...draft.mission, sideBadge: v } })}
+          onChange={(v) => onDraftChange({ ...draft, mission: { ...draft.mission, sideBadge: v } })}
         />
         <TextField
           label="側欄內文"
           value={draft.mission.sideBody}
-          onChange={(v) => setDraft({ ...draft, mission: { ...draft.mission, sideBody: v } })}
+          onChange={(v) => onDraftChange({ ...draft, mission: { ...draft.mission, sideBody: v } })}
           multiline
         />
       </fieldset>
@@ -269,17 +317,17 @@ function AboutTabForm({
         <TextField
           label="引言"
           value={draft.impact.eyebrow}
-          onChange={(v) => setDraft({ ...draft, impact: { ...draft.impact, eyebrow: v } })}
+          onChange={(v) => onDraftChange({ ...draft, impact: { ...draft.impact, eyebrow: v } })}
         />
         <TextField
           label="標題"
           value={draft.impact.title}
-          onChange={(v) => setDraft({ ...draft, impact: { ...draft.impact, title: v } })}
+          onChange={(v) => onDraftChange({ ...draft, impact: { ...draft.impact, title: v } })}
         />
         <TextField
           label="描述"
           value={draft.impact.description}
-          onChange={(v) => setDraft({ ...draft, impact: { ...draft.impact, description: v } })}
+          onChange={(v) => onDraftChange({ ...draft, impact: { ...draft.impact, description: v } })}
           multiline
         />
       </fieldset>
@@ -289,12 +337,12 @@ function AboutTabForm({
         <TextField
           label="引言"
           value={draft.journey.eyebrow}
-          onChange={(v) => setDraft({ ...draft, journey: { ...draft.journey, eyebrow: v } })}
+          onChange={(v) => onDraftChange({ ...draft, journey: { ...draft.journey, eyebrow: v } })}
         />
         <TextField
           label="標題"
           value={draft.journey.title}
-          onChange={(v) => setDraft({ ...draft, journey: { ...draft.journey, title: v } })}
+          onChange={(v) => onDraftChange({ ...draft, journey: { ...draft.journey, title: v } })}
         />
         {draft.journey.steps.map((step, index) => (
           <div key={index} className="space-y-2 border border-[var(--color-border)] p-3">
@@ -303,8 +351,8 @@ function AboutTabForm({
               value={step.title}
               onChange={(v) => {
                 const steps = [...draft.journey.steps] as typeof draft.journey.steps;
-                steps[index] = { ...steps[index], title: v } as JourneyStep;
-                setDraft({ ...draft, journey: { ...draft.journey, steps } });
+                steps[index] = { ...steps[index], title: v };
+                onDraftChange({ ...draft, journey: { ...draft.journey, steps } });
               }}
             />
             <TextField
@@ -312,8 +360,8 @@ function AboutTabForm({
               value={step.description}
               onChange={(v) => {
                 const steps = [...draft.journey.steps] as typeof draft.journey.steps;
-                steps[index] = { ...steps[index], description: v } as JourneyStep;
-                setDraft({ ...draft, journey: { ...draft.journey, steps } });
+                steps[index] = { ...steps[index], description: v };
+                onDraftChange({ ...draft, journey: { ...draft.journey, steps } });
               }}
               multiline
             />
@@ -327,21 +375,21 @@ function AboutTabForm({
           label="引言"
           value={draft.communityBand.eyebrow}
           onChange={(v) =>
-            setDraft({ ...draft, communityBand: { ...draft.communityBand, eyebrow: v } })
+            onDraftChange({ ...draft, communityBand: { ...draft.communityBand, eyebrow: v } })
           }
         />
         <TextField
           label="標題"
           value={draft.communityBand.title}
           onChange={(v) =>
-            setDraft({ ...draft, communityBand: { ...draft.communityBand, title: v } })
+            onDraftChange({ ...draft, communityBand: { ...draft.communityBand, title: v } })
           }
         />
         <TextField
           label="描述"
           value={draft.communityBand.description}
           onChange={(v) =>
-            setDraft({ ...draft, communityBand: { ...draft.communityBand, description: v } })
+            onDraftChange({ ...draft, communityBand: { ...draft.communityBand, description: v } })
           }
           multiline
         />
@@ -351,7 +399,7 @@ function AboutTabForm({
             label="標題"
             value={draft.communityBand.cccpCard.title}
             onChange={(v) =>
-              setDraft({
+              onDraftChange({
                 ...draft,
                 communityBand: {
                   ...draft.communityBand,
@@ -364,7 +412,7 @@ function AboutTabForm({
             label="描述"
             value={draft.communityBand.cccpCard.description}
             onChange={(v) =>
-              setDraft({
+              onDraftChange({
                 ...draft,
                 communityBand: {
                   ...draft.communityBand,
@@ -381,7 +429,7 @@ function AboutTabForm({
             label="標題"
             value={draft.communityBand.tnrCard.title}
             onChange={(v) =>
-              setDraft({
+              onDraftChange({
                 ...draft,
                 communityBand: {
                   ...draft.communityBand,
@@ -394,7 +442,7 @@ function AboutTabForm({
             label="描述"
             value={draft.communityBand.tnrCard.description}
             onChange={(v) =>
-              setDraft({
+              onDraftChange({
                 ...draft,
                 communityBand: {
                   ...draft.communityBand,
@@ -413,7 +461,7 @@ function AboutTabForm({
           label="引言"
           value={draft.responsibleAdoption.eyebrow}
           onChange={(v) =>
-            setDraft({
+            onDraftChange({
               ...draft,
               responsibleAdoption: { ...draft.responsibleAdoption, eyebrow: v },
             })
@@ -423,14 +471,20 @@ function AboutTabForm({
           label="標題"
           value={draft.responsibleAdoption.title}
           onChange={(v) =>
-            setDraft({ ...draft, responsibleAdoption: { ...draft.responsibleAdoption, title: v } })
+            onDraftChange({
+              ...draft,
+              responsibleAdoption: { ...draft.responsibleAdoption, title: v },
+            })
           }
         />
         <TextField
           label="內文"
           value={draft.responsibleAdoption.body}
           onChange={(v) =>
-            setDraft({ ...draft, responsibleAdoption: { ...draft.responsibleAdoption, body: v } })
+            onDraftChange({
+              ...draft,
+              responsibleAdoption: { ...draft.responsibleAdoption, body: v },
+            })
           }
           multiline
         />
@@ -438,7 +492,7 @@ function AboutTabForm({
           label="連結文字"
           value={draft.responsibleAdoption.linkLabel}
           onChange={(v) =>
-            setDraft({
+            onDraftChange({
               ...draft,
               responsibleAdoption: { ...draft.responsibleAdoption, linkLabel: v },
             })
@@ -448,7 +502,7 @@ function AboutTabForm({
           label="側欄標題"
           value={draft.responsibleAdoption.sideTitle}
           onChange={(v) =>
-            setDraft({
+            onDraftChange({
               ...draft,
               responsibleAdoption: { ...draft.responsibleAdoption, sideTitle: v },
             })
@@ -464,7 +518,7 @@ function AboutTabForm({
                 ...draft.responsibleAdoption.principles,
               ] as typeof draft.responsibleAdoption.principles;
               principles[index] = v;
-              setDraft({
+              onDraftChange({
                 ...draft,
                 responsibleAdoption: { ...draft.responsibleAdoption, principles },
               });
@@ -479,12 +533,14 @@ function AboutTabForm({
         <TextField
           label="引言"
           value={draft.helpPaths.eyebrow}
-          onChange={(v) => setDraft({ ...draft, helpPaths: { ...draft.helpPaths, eyebrow: v } })}
+          onChange={(v) =>
+            onDraftChange({ ...draft, helpPaths: { ...draft.helpPaths, eyebrow: v } })
+          }
         />
         <TextField
           label="標題"
           value={draft.helpPaths.title}
-          onChange={(v) => setDraft({ ...draft, helpPaths: { ...draft.helpPaths, title: v } })}
+          onChange={(v) => onDraftChange({ ...draft, helpPaths: { ...draft.helpPaths, title: v } })}
         />
         {draft.helpPaths.items.map((item, index) => (
           <div key={index} className="space-y-2 border border-[var(--color-border)] p-3">
@@ -493,8 +549,8 @@ function AboutTabForm({
               value={item.title}
               onChange={(v) => {
                 const items = [...draft.helpPaths.items] as typeof draft.helpPaths.items;
-                items[index] = { ...items[index], title: v } as HelpPathItem;
-                setDraft({ ...draft, helpPaths: { ...draft.helpPaths, items } });
+                items[index] = { ...items[index], title: v };
+                onDraftChange({ ...draft, helpPaths: { ...draft.helpPaths, items } });
               }}
             />
             <TextField
@@ -502,8 +558,8 @@ function AboutTabForm({
               value={item.description}
               onChange={(v) => {
                 const items = [...draft.helpPaths.items] as typeof draft.helpPaths.items;
-                items[index] = { ...items[index], description: v } as HelpPathItem;
-                setDraft({ ...draft, helpPaths: { ...draft.helpPaths, items } });
+                items[index] = { ...items[index], description: v };
+                onDraftChange({ ...draft, helpPaths: { ...draft.helpPaths, items } });
               }}
               multiline
             />
@@ -512,8 +568,8 @@ function AboutTabForm({
               value={item.label}
               onChange={(v) => {
                 const items = [...draft.helpPaths.items] as typeof draft.helpPaths.items;
-                items[index] = { ...items[index], label: v } as HelpPathItem;
-                setDraft({ ...draft, helpPaths: { ...draft.helpPaths, items } });
+                items[index] = { ...items[index], label: v };
+                onDraftChange({ ...draft, helpPaths: { ...draft.helpPaths, items } });
               }}
             />
           </div>
@@ -525,18 +581,22 @@ function AboutTabForm({
         <TextField
           label="標題"
           value={draft.closing.title}
-          onChange={(v) => setDraft({ ...draft, closing: { ...draft.closing, title: v } })}
+          onChange={(v) => onDraftChange({ ...draft, closing: { ...draft.closing, title: v } })}
         />
         <TextField
           label="描述"
           value={draft.closing.description}
-          onChange={(v) => setDraft({ ...draft, closing: { ...draft.closing, description: v } })}
+          onChange={(v) =>
+            onDraftChange({ ...draft, closing: { ...draft.closing, description: v } })
+          }
           multiline
         />
         <TextField
           label="按鈕文字"
           value={draft.closing.buttonLabel}
-          onChange={(v) => setDraft({ ...draft, closing: { ...draft.closing, buttonLabel: v } })}
+          onChange={(v) =>
+            onDraftChange({ ...draft, closing: { ...draft.closing, buttonLabel: v } })
+          }
         />
       </fieldset>
 
@@ -546,19 +606,18 @@ function AboutTabForm({
 }
 
 function TnrTabForm({
-  content,
+  draft,
+  onDraftChange,
   onSave,
   isSaving,
   isSaveError,
 }: {
-  content: TnrPageContent;
+  draft: TnrPageContent;
+  onDraftChange: (content: TnrPageContent) => void;
   onSave: (content: TnrPageContent) => void;
   isSaving: boolean;
   isSaveError: boolean;
 }) {
-  const [draft, setDraft] = useState(content);
-  useEffect(() => setDraft(content), [content]);
-
   return (
     <form
       className="space-y-6"
@@ -572,17 +631,17 @@ function TnrTabForm({
         <TextField
           label="引言"
           value={draft.hero.eyebrow}
-          onChange={(v) => setDraft({ ...draft, hero: { ...draft.hero, eyebrow: v } })}
+          onChange={(v) => onDraftChange({ ...draft, hero: { ...draft.hero, eyebrow: v } })}
         />
         <TextField
           label="標題"
           value={draft.hero.title}
-          onChange={(v) => setDraft({ ...draft, hero: { ...draft.hero, title: v } })}
+          onChange={(v) => onDraftChange({ ...draft, hero: { ...draft.hero, title: v } })}
         />
         <TextField
           label="描述"
           value={draft.hero.description}
-          onChange={(v) => setDraft({ ...draft, hero: { ...draft.hero, description: v } })}
+          onChange={(v) => onDraftChange({ ...draft, hero: { ...draft.hero, description: v } })}
           multiline
         />
       </fieldset>
@@ -596,8 +655,8 @@ function TnrTabForm({
               value={stage.title}
               onChange={(v) => {
                 const stages = [...draft.stages] as typeof draft.stages;
-                stages[index] = { ...stages[index], title: v } as TnrStage;
-                setDraft({ ...draft, stages });
+                stages[index] = { ...stages[index], title: v };
+                onDraftChange({ ...draft, stages });
               }}
             />
             <TextField
@@ -605,8 +664,8 @@ function TnrTabForm({
               value={stage.description}
               onChange={(v) => {
                 const stages = [...draft.stages] as typeof draft.stages;
-                stages[index] = { ...stages[index], description: v } as TnrStage;
-                setDraft({ ...draft, stages });
+                stages[index] = { ...stages[index], description: v };
+                onDraftChange({ ...draft, stages });
               }}
               multiline
             />
@@ -619,12 +678,14 @@ function TnrTabForm({
         <TextField
           label="標題"
           value={draft.chapter.title}
-          onChange={(v) => setDraft({ ...draft, chapter: { ...draft.chapter, title: v } })}
+          onChange={(v) => onDraftChange({ ...draft, chapter: { ...draft.chapter, title: v } })}
         />
         <TextField
           label="描述"
           value={draft.chapter.description}
-          onChange={(v) => setDraft({ ...draft, chapter: { ...draft.chapter, description: v } })}
+          onChange={(v) =>
+            onDraftChange({ ...draft, chapter: { ...draft.chapter, description: v } })
+          }
           multiline
         />
         {draft.chapter.bullets.map((bullet, index) => (
@@ -635,7 +696,7 @@ function TnrTabForm({
             onChange={(v) => {
               const bullets = [...draft.chapter.bullets] as typeof draft.chapter.bullets;
               bullets[index] = v;
-              setDraft({ ...draft, chapter: { ...draft.chapter, bullets } });
+              onDraftChange({ ...draft, chapter: { ...draft.chapter, bullets } });
             }}
             multiline
           />
@@ -647,17 +708,17 @@ function TnrTabForm({
         <TextField
           label="引言"
           value={draft.cta.eyebrow}
-          onChange={(v) => setDraft({ ...draft, cta: { ...draft.cta, eyebrow: v } })}
+          onChange={(v) => onDraftChange({ ...draft, cta: { ...draft.cta, eyebrow: v } })}
         />
         <TextField
           label="標題"
           value={draft.cta.title}
-          onChange={(v) => setDraft({ ...draft, cta: { ...draft.cta, title: v } })}
+          onChange={(v) => onDraftChange({ ...draft, cta: { ...draft.cta, title: v } })}
         />
         <TextField
           label="描述前綴"
           value={draft.cta.descriptionPrefix}
-          onChange={(v) => setDraft({ ...draft, cta: { ...draft.cta, descriptionPrefix: v } })}
+          onChange={(v) => onDraftChange({ ...draft, cta: { ...draft.cta, descriptionPrefix: v } })}
           multiline
         />
       </fieldset>
@@ -668,19 +729,18 @@ function TnrTabForm({
 }
 
 function CccpTabForm({
-  content,
+  draft,
+  onDraftChange,
   onSave,
   isSaving,
   isSaveError,
 }: {
-  content: CccpPageContent;
+  draft: CccpPageContent;
+  onDraftChange: (content: CccpPageContent) => void;
   onSave: (content: CccpPageContent) => void;
   isSaving: boolean;
   isSaveError: boolean;
 }) {
-  const [draft, setDraft] = useState(content);
-  useEffect(() => setDraft(content), [content]);
-
   return (
     <form
       className="space-y-6"
@@ -694,17 +754,17 @@ function CccpTabForm({
         <TextField
           label="引言"
           value={draft.hero.eyebrow}
-          onChange={(v) => setDraft({ ...draft, hero: { ...draft.hero, eyebrow: v } })}
+          onChange={(v) => onDraftChange({ ...draft, hero: { ...draft.hero, eyebrow: v } })}
         />
         <TextField
           label="標題"
           value={draft.hero.title}
-          onChange={(v) => setDraft({ ...draft, hero: { ...draft.hero, title: v } })}
+          onChange={(v) => onDraftChange({ ...draft, hero: { ...draft.hero, title: v } })}
         />
         <TextField
           label="描述"
           value={draft.hero.description}
-          onChange={(v) => setDraft({ ...draft, hero: { ...draft.hero, description: v } })}
+          onChange={(v) => onDraftChange({ ...draft, hero: { ...draft.hero, description: v } })}
           multiline
         />
       </fieldset>
@@ -718,8 +778,8 @@ function CccpTabForm({
               value={chapter.title}
               onChange={(v) => {
                 const chapters = [...draft.chapters] as typeof draft.chapters;
-                chapters[index] = { ...chapters[index], title: v } as CccpChapter;
-                setDraft({ ...draft, chapters });
+                chapters[index] = { ...chapters[index], title: v };
+                onDraftChange({ ...draft, chapters });
               }}
             />
             <TextField
@@ -727,8 +787,8 @@ function CccpTabForm({
               value={chapter.description}
               onChange={(v) => {
                 const chapters = [...draft.chapters] as typeof draft.chapters;
-                chapters[index] = { ...chapters[index], description: v } as CccpChapter;
-                setDraft({ ...draft, chapters });
+                chapters[index] = { ...chapters[index], description: v };
+                onDraftChange({ ...draft, chapters });
               }}
               multiline
             />
@@ -741,7 +801,7 @@ function CccpTabForm({
         <TextField
           label="表格標題"
           value={draft.workSectionTitle}
-          onChange={(v) => setDraft({ ...draft, workSectionTitle: v })}
+          onChange={(v) => onDraftChange({ ...draft, workSectionTitle: v })}
         />
         {draft.workRows.map((row, index) => (
           <div key={index} className="space-y-2 border border-[var(--color-border)] p-3">
@@ -750,8 +810,8 @@ function CccpTabForm({
               value={row.scope}
               onChange={(v) => {
                 const workRows = [...draft.workRows] as typeof draft.workRows;
-                workRows[index] = { ...workRows[index], scope: v } as WorkRow;
-                setDraft({ ...draft, workRows });
+                workRows[index] = { ...workRows[index], scope: v };
+                onDraftChange({ ...draft, workRows });
               }}
             />
             <TextField
@@ -759,8 +819,8 @@ function CccpTabForm({
               value={row.method}
               onChange={(v) => {
                 const workRows = [...draft.workRows] as typeof draft.workRows;
-                workRows[index] = { ...workRows[index], method: v } as WorkRow;
-                setDraft({ ...draft, workRows });
+                workRows[index] = { ...workRows[index], method: v };
+                onDraftChange({ ...draft, workRows });
               }}
             />
             <TextField
@@ -768,8 +828,8 @@ function CccpTabForm({
               value={row.result}
               onChange={(v) => {
                 const workRows = [...draft.workRows] as typeof draft.workRows;
-                workRows[index] = { ...workRows[index], result: v } as WorkRow;
-                setDraft({ ...draft, workRows });
+                workRows[index] = { ...workRows[index], result: v };
+                onDraftChange({ ...draft, workRows });
               }}
             />
           </div>
@@ -781,17 +841,17 @@ function CccpTabForm({
         <TextField
           label="引言"
           value={draft.cta.eyebrow}
-          onChange={(v) => setDraft({ ...draft, cta: { ...draft.cta, eyebrow: v } })}
+          onChange={(v) => onDraftChange({ ...draft, cta: { ...draft.cta, eyebrow: v } })}
         />
         <TextField
           label="標題"
           value={draft.cta.title}
-          onChange={(v) => setDraft({ ...draft, cta: { ...draft.cta, title: v } })}
+          onChange={(v) => onDraftChange({ ...draft, cta: { ...draft.cta, title: v } })}
         />
         <TextField
           label="描述"
           value={draft.cta.description}
-          onChange={(v) => setDraft({ ...draft, cta: { ...draft.cta, description: v } })}
+          onChange={(v) => onDraftChange({ ...draft, cta: { ...draft.cta, description: v } })}
           multiline
         />
         {draft.cta.points.map((point, index) => (
@@ -802,7 +862,7 @@ function CccpTabForm({
             onChange={(v) => {
               const points = [...draft.cta.points] as typeof draft.cta.points;
               points[index] = v;
-              setDraft({ ...draft, cta: { ...draft.cta, points } });
+              onDraftChange({ ...draft, cta: { ...draft.cta, points } });
             }}
             multiline
           />
