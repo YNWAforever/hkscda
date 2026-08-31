@@ -1,14 +1,12 @@
 import { z } from "zod";
 
+import { donationMethods } from "../donations/contracts";
+
 export const paymentPublicConfigIdSchema = z.string().uuid();
 export const paymentPublicConfigVersionSchema = z.coerce.number().int().positive();
-export const paymentPublicConfigMethodSchema = z.enum([
-  "stripe",
-  "payme",
-  "fps",
-  "paypal",
-  "alipayhk",
-]);
+// Derived from donationMethods (not re-listed) so this validator can never
+// drift from the set of methods /donate actually knows how to render.
+export const paymentPublicConfigMethodSchema = z.enum(donationMethods);
 export const paymentPublicConfigStateSchema = z.enum([
   "draft",
   "in_review",
