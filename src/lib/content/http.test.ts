@@ -421,4 +421,64 @@ describe("createContentHandlers", () => {
       "createContentLink",
     ]);
   });
+
+  test("routes the upload-target request behind admin auth", async () => {
+    const service = createService();
+    const handlers = createContentHandlers({
+      requireContentAdmin: async () => admin,
+      service,
+    });
+    const contentParams = { id: "99999999-aaaa-4333-8444-555555555555" };
+
+    const response = await handlers.createUploadTarget({
+      request: new Request(
+        "https://example.test/api/admin/content/99999999-aaaa-4333-8444-555555555555/media-upload-target",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            objectPath: "99999999-aaaa-4333-8444-555555555555/checkup.jpg",
+            mimeType: "image/jpeg",
+            byteSize: 1024,
+          }),
+        },
+      ),
+      params: contentParams,
+    });
+
+    expect(response.status).toBe(201);
+    expect(await response.json()).toEqual({ token: "upload-token", path: "content-1/checkup.jpg" });
+    expect(service.calls).toEqual(["createUploadTarget"]);
+  });
+
+  test("maps a spoofed upload path to a 400, not a 500", async () => {
+    const service = createService({
+      async createUploadTarget() {
+        throw new Error("Upload path does not belong to this content item");
+      },
+    });
+    const handlers = createContentHandlers({
+      requireContentAdmin: async () => admin,
+      service,
+    });
+
+    const response = await handlers.createUploadTarget({
+      request: new Request(
+        "https://example.test/api/admin/content/99999999-aaaa-4333-8444-555555555555/media-upload-target",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            objectPath: "some-other-content-item/checkup.jpg",
+            mimeType: "image/jpeg",
+            byteSize: 1024,
+          }),
+        },
+      ),
+      params: { id: "99999999-aaaa-4333-8444-555555555555" },
+    });
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({
+      error: "Upload path does not belong to this content item",
+    });
+  });
 });

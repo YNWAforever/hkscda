@@ -136,6 +136,7 @@ import { Route as ApiAdminContentIdUpdatesRouteImport } from './routes/api/admin
 import { Route as ApiAdminContentIdStoryProfileRouteImport } from './routes/api/admin/content/$id/story-profile'
 import { Route as ApiAdminContentIdSocialCopyRouteImport } from './routes/api/admin/content/$id/social-copy'
 import { Route as ApiAdminContentIdPublishRouteImport } from './routes/api/admin/content/$id/publish'
+import { Route as ApiAdminContentIdMediaUploadTargetRouteImport } from './routes/api/admin/content/$id/media-upload-target'
 import { Route as ApiAdminContentIdMediaRouteImport } from './routes/api/admin/content/$id/media'
 import { Route as ApiAdminContentIdLinksRouteImport } from './routes/api/admin/content/$id/links'
 import { Route as ApiAdminContentIdArchiveRouteImport } from './routes/api/admin/content/$id/archive'
@@ -850,6 +851,12 @@ const ApiAdminContentIdPublishRoute =
     path: '/publish',
     getParentRoute: () => ApiAdminContentIdRoute,
   } as any)
+const ApiAdminContentIdMediaUploadTargetRoute =
+  ApiAdminContentIdMediaUploadTargetRouteImport.update({
+    id: '/media-upload-target',
+    path: '/media-upload-target',
+    getParentRoute: () => ApiAdminContentIdRoute,
+  } as any)
 const ApiAdminContentIdMediaRoute = ApiAdminContentIdMediaRouteImport.update({
   id: '/media',
   path: '/media',
@@ -1240,6 +1247,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/content/$id/archive': typeof ApiAdminContentIdArchiveRoute
   '/api/admin/content/$id/links': typeof ApiAdminContentIdLinksRoute
   '/api/admin/content/$id/media': typeof ApiAdminContentIdMediaRoute
+  '/api/admin/content/$id/media-upload-target': typeof ApiAdminContentIdMediaUploadTargetRoute
   '/api/admin/content/$id/publish': typeof ApiAdminContentIdPublishRoute
   '/api/admin/content/$id/social-copy': typeof ApiAdminContentIdSocialCopyRoute
   '/api/admin/content/$id/story-profile': typeof ApiAdminContentIdStoryProfileRoute
@@ -1410,6 +1418,7 @@ export interface FileRoutesByTo {
   '/api/admin/content/$id/archive': typeof ApiAdminContentIdArchiveRoute
   '/api/admin/content/$id/links': typeof ApiAdminContentIdLinksRoute
   '/api/admin/content/$id/media': typeof ApiAdminContentIdMediaRoute
+  '/api/admin/content/$id/media-upload-target': typeof ApiAdminContentIdMediaUploadTargetRoute
   '/api/admin/content/$id/publish': typeof ApiAdminContentIdPublishRoute
   '/api/admin/content/$id/social-copy': typeof ApiAdminContentIdSocialCopyRoute
   '/api/admin/content/$id/story-profile': typeof ApiAdminContentIdStoryProfileRoute
@@ -1582,6 +1591,7 @@ export interface FileRoutesById {
   '/api/admin/content/$id/archive': typeof ApiAdminContentIdArchiveRoute
   '/api/admin/content/$id/links': typeof ApiAdminContentIdLinksRoute
   '/api/admin/content/$id/media': typeof ApiAdminContentIdMediaRoute
+  '/api/admin/content/$id/media-upload-target': typeof ApiAdminContentIdMediaUploadTargetRoute
   '/api/admin/content/$id/publish': typeof ApiAdminContentIdPublishRoute
   '/api/admin/content/$id/social-copy': typeof ApiAdminContentIdSocialCopyRoute
   '/api/admin/content/$id/story-profile': typeof ApiAdminContentIdStoryProfileRoute
@@ -1755,6 +1765,7 @@ export interface FileRouteTypes {
     | '/api/admin/content/$id/archive'
     | '/api/admin/content/$id/links'
     | '/api/admin/content/$id/media'
+    | '/api/admin/content/$id/media-upload-target'
     | '/api/admin/content/$id/publish'
     | '/api/admin/content/$id/social-copy'
     | '/api/admin/content/$id/story-profile'
@@ -1925,6 +1936,7 @@ export interface FileRouteTypes {
     | '/api/admin/content/$id/archive'
     | '/api/admin/content/$id/links'
     | '/api/admin/content/$id/media'
+    | '/api/admin/content/$id/media-upload-target'
     | '/api/admin/content/$id/publish'
     | '/api/admin/content/$id/social-copy'
     | '/api/admin/content/$id/story-profile'
@@ -2096,6 +2108,7 @@ export interface FileRouteTypes {
     | '/api/admin/content/$id/archive'
     | '/api/admin/content/$id/links'
     | '/api/admin/content/$id/media'
+    | '/api/admin/content/$id/media-upload-target'
     | '/api/admin/content/$id/publish'
     | '/api/admin/content/$id/social-copy'
     | '/api/admin/content/$id/story-profile'
@@ -3125,6 +3138,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminContentIdPublishRouteImport
       parentRoute: typeof ApiAdminContentIdRoute
     }
+    '/api/admin/content/$id/media-upload-target': {
+      id: '/api/admin/content/$id/media-upload-target'
+      path: '/media-upload-target'
+      fullPath: '/api/admin/content/$id/media-upload-target'
+      preLoaderRoute: typeof ApiAdminContentIdMediaUploadTargetRouteImport
+      parentRoute: typeof ApiAdminContentIdRoute
+    }
     '/api/admin/content/$id/media': {
       id: '/api/admin/content/$id/media'
       path: '/media'
@@ -3623,6 +3643,7 @@ interface ApiAdminContentIdRouteChildren {
   ApiAdminContentIdArchiveRoute: typeof ApiAdminContentIdArchiveRoute
   ApiAdminContentIdLinksRoute: typeof ApiAdminContentIdLinksRoute
   ApiAdminContentIdMediaRoute: typeof ApiAdminContentIdMediaRoute
+  ApiAdminContentIdMediaUploadTargetRoute: typeof ApiAdminContentIdMediaUploadTargetRoute
   ApiAdminContentIdPublishRoute: typeof ApiAdminContentIdPublishRoute
   ApiAdminContentIdSocialCopyRoute: typeof ApiAdminContentIdSocialCopyRoute
   ApiAdminContentIdStoryProfileRoute: typeof ApiAdminContentIdStoryProfileRoute
@@ -3633,6 +3654,8 @@ const ApiAdminContentIdRouteChildren: ApiAdminContentIdRouteChildren = {
   ApiAdminContentIdArchiveRoute: ApiAdminContentIdArchiveRoute,
   ApiAdminContentIdLinksRoute: ApiAdminContentIdLinksRoute,
   ApiAdminContentIdMediaRoute: ApiAdminContentIdMediaRoute,
+  ApiAdminContentIdMediaUploadTargetRoute:
+    ApiAdminContentIdMediaUploadTargetRoute,
   ApiAdminContentIdPublishRoute: ApiAdminContentIdPublishRoute,
   ApiAdminContentIdSocialCopyRoute: ApiAdminContentIdSocialCopyRoute,
   ApiAdminContentIdStoryProfileRoute: ApiAdminContentIdStoryProfileRoute,
