@@ -5,10 +5,9 @@ import { createAdoptionCoordinatorService } from "../../../lib/adoptions/service
 import { createSupabaseServiceClient } from "../../../lib/donations/supabase.server";
 import {
   isSubmissionValidationError,
-  parseAdoptionMultipart,
+  parseAdoptionSubmission,
   persistPublicAdoptionJourney,
   sendAdoptionConfirmationEmail,
-  validateAdoptionSubmissionRequestHeaders,
 } from "../../../lib/publicAdoption/submission.server";
 import {
   enforceRateLimit,
@@ -40,16 +39,15 @@ export const Route = createFileRoute("/api/adoption/applications")({
           );
         }
 
-        const headerValidation = validateAdoptionSubmissionRequestHeaders(request);
-        if (!headerValidation.ok) {
-          return jsonNoStore(
-            { error: headerValidation.error },
-            { status: headerValidation.status },
-          );
+        let body: unknown;
+        try {
+          body = await request.json();
+        } catch {
+          return jsonNoStore({ error: "Invalid JSON body" }, { status: 400 });
         }
 
         try {
-          const parsed = await parseAdoptionMultipart(request);
+          const parsed = parseAdoptionSubmission(body);
           if (!(await verifyTurnstile(parsed.payload.turnstileToken, ip))) {
             return jsonNoStore({ error: "Verification failed" }, { status: 403 });
           }
