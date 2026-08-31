@@ -118,6 +118,16 @@ describe("canPublish", () => {
     ).toBe(true);
   });
 
+  test("is true for a different admin on an in_review row", () => {
+    expect(
+      canPublish({
+        config: { state: "in_review", submittedBy: "other" },
+        currentActorAdminUserId: "me",
+        currentActorRole: "admin",
+      }),
+    ).toBe(true);
+  });
+
   test("is false when the row is not in_review", () => {
     expect(
       canPublish({
