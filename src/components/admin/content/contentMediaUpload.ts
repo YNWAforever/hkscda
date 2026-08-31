@@ -11,14 +11,13 @@ type UploadContentMediaImageArgs = {
   uploadToSignedUrl(path: string, token: string, file: File): Promise<void>;
 };
 
-// Mirrors the safeFileName() helper duplicated in
-// src/lib/sponsorship/submission.server.ts and
-// src/lib/publicAdoption/submission.server.ts, kept as a separate copy here
-// rather than imported: both are .server.ts files and this helper runs in
-// the browser, so it cannot be imported from client code (this repo's
-// *.server.ts files never reach the client bundle).
+// Mirrors src/lib/publicUploads/signedUpload.server.ts's safeFileName(), kept
+// as a separate copy here rather than imported: that module is a .server.ts
+// file and this helper runs in the browser, so it cannot be imported from
+// client code (this repo's *.server.ts files never reach the client bundle).
 function safeFileName(fileName: string) {
-  const baseName = fileName.split(/[\\/]/).pop()?.trim() || "file";
+  let baseName = fileName.split(/[\\/]/).pop()?.trim() || "file";
+  if (/^\.+$/.test(baseName)) baseName = "file";
   return baseName.replace(/[^A-Za-z0-9._-]/g, "_");
 }
 
