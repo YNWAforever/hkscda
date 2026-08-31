@@ -34,12 +34,10 @@ describe("createSupabaseContentRepository createSignedUploadUrl", () => {
     }));
     const repository = createSupabaseContentRepository(fake.client);
 
-    await expect(repository.createSignedUploadUrl("stories/siu-bak/checkup.jpg")).resolves.toEqual(
-      {
-        token: "signed-token",
-        path: "stories/siu-bak/checkup.jpg",
-      },
-    );
+    await expect(repository.createSignedUploadUrl("stories/siu-bak/checkup.jpg")).resolves.toEqual({
+      token: "signed-token",
+      path: "stories/siu-bak/checkup.jpg",
+    });
     expect(fake.storageCalls).toEqual(["content-media:stories/siu-bak/checkup.jpg"]);
   });
 
