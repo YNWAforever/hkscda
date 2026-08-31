@@ -36,6 +36,7 @@ import { Route as AdoptionApplyRouteImport } from './routes/adoption/apply'
 import { Route as AdminVolunteersRouteImport } from './routes/admin/volunteers'
 import { Route as AdminSupportersRouteImport } from './routes/admin/supporters'
 import { Route as AdminResetPasswordRouteImport } from './routes/admin/reset-password'
+import { Route as AdminPaymentMethodsRouteImport } from './routes/admin/payment-methods'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminGovernanceRouteImport } from './routes/admin/governance'
 import { Route as AdminFaqRouteImport } from './routes/admin/faq'
@@ -318,6 +319,11 @@ const AdminSupportersRoute = AdminSupportersRouteImport.update({
 const AdminResetPasswordRoute = AdminResetPasswordRouteImport.update({
   id: '/admin/reset-password',
   path: '/admin/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPaymentMethodsRoute = AdminPaymentMethodsRouteImport.update({
+  id: '/admin/payment-methods',
+  path: '/admin/payment-methods',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
@@ -1162,6 +1168,7 @@ export interface FileRoutesByFullPath {
   '/admin/faq': typeof AdminFaqRoute
   '/admin/governance': typeof AdminGovernanceRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/payment-methods': typeof AdminPaymentMethodsRoute
   '/admin/reset-password': typeof AdminResetPasswordRoute
   '/admin/supporters': typeof AdminSupportersRouteWithChildren
   '/admin/volunteers': typeof AdminVolunteersRouteWithChildren
@@ -1338,6 +1345,7 @@ export interface FileRoutesByTo {
   '/admin/faq': typeof AdminFaqRoute
   '/admin/governance': typeof AdminGovernanceRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/payment-methods': typeof AdminPaymentMethodsRoute
   '/admin/reset-password': typeof AdminResetPasswordRoute
   '/admin/supporters': typeof AdminSupportersRouteWithChildren
   '/admin/volunteers': typeof AdminVolunteersRouteWithChildren
@@ -1516,6 +1524,7 @@ export interface FileRoutesById {
   '/admin/faq': typeof AdminFaqRoute
   '/admin/governance': typeof AdminGovernanceRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/payment-methods': typeof AdminPaymentMethodsRoute
   '/admin/reset-password': typeof AdminResetPasswordRoute
   '/admin/supporters': typeof AdminSupportersRouteWithChildren
   '/admin/volunteers': typeof AdminVolunteersRouteWithChildren
@@ -1695,6 +1704,7 @@ export interface FileRouteTypes {
     | '/admin/faq'
     | '/admin/governance'
     | '/admin/login'
+    | '/admin/payment-methods'
     | '/admin/reset-password'
     | '/admin/supporters'
     | '/admin/volunteers'
@@ -1871,6 +1881,7 @@ export interface FileRouteTypes {
     | '/admin/faq'
     | '/admin/governance'
     | '/admin/login'
+    | '/admin/payment-methods'
     | '/admin/reset-password'
     | '/admin/supporters'
     | '/admin/volunteers'
@@ -2048,6 +2059,7 @@ export interface FileRouteTypes {
     | '/admin/faq'
     | '/admin/governance'
     | '/admin/login'
+    | '/admin/payment-methods'
     | '/admin/reset-password'
     | '/admin/supporters'
     | '/admin/volunteers'
@@ -2226,6 +2238,7 @@ export interface RootRouteChildren {
   AdminFaqRoute: typeof AdminFaqRoute
   AdminGovernanceRoute: typeof AdminGovernanceRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminPaymentMethodsRoute: typeof AdminPaymentMethodsRoute
   AdminResetPasswordRoute: typeof AdminResetPasswordRoute
   AdminSupportersRoute: typeof AdminSupportersRouteWithChildren
   AdminVolunteersRoute: typeof AdminVolunteersRouteWithChildren
@@ -2501,6 +2514,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/reset-password'
       fullPath: '/admin/reset-password'
       preLoaderRoute: typeof AdminResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/payment-methods': {
+      id: '/admin/payment-methods'
+      path: '/admin/payment-methods'
+      fullPath: '/admin/payment-methods'
+      preLoaderRoute: typeof AdminPaymentMethodsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/login': {
@@ -4126,6 +4146,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminFaqRoute: AdminFaqRoute,
   AdminGovernanceRoute: AdminGovernanceRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminPaymentMethodsRoute: AdminPaymentMethodsRoute,
   AdminResetPasswordRoute: AdminResetPasswordRoute,
   AdminSupportersRoute: AdminSupportersRouteWithChildren,
   AdminVolunteersRoute: AdminVolunteersRouteWithChildren,
