@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Archive, ArrowLeft, Plus, RefreshCw, Save, Send } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -177,28 +177,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
   });
 
   const createContentMedia = useMutation({
-    mutationFn: async (body: ContentMediaFormState) => {
-      if (!body.file) throw new Error("請選擇圖片");
-      const storagePath = await uploadContentMediaImage({
-        file: body.file,
-        contentId,
-        requestUploadTarget: (input) =>
-          fetchAdminJson(`/api/admin/content/${contentId}/media-upload-target`, {
-            method: "POST",
-            body: JSON.stringify(input),
-          }),
-        uploadToSignedUrl: async (path, token, uploadedFile) => {
-          const { error } = await getSupabaseClient()
-            .storage.from("content-media")
-            .uploadToSignedUrl(path, token, uploadedFile, { contentType: uploadedFile.type });
-          if (error) throw error;
-        },
-      });
-      return fetchAdminJson<{ id: string }>(`/api/admin/content/${contentId}/media`, {
-        method: "POST",
-        body: JSON.stringify(normalizeContentMediaForm({ ...body, storagePath })),
-      });
-    },
+    mutationFn: (body: ContentMediaFormState) => createContentMediaWithUpload(contentId, body),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] });
       void queryClient.invalidateQueries({ queryKey: ["admin-content"] });
@@ -1145,6 +1124,7 @@ function ContentMediaPanel({
     sortOrder: "0",
     isCover: false,
   });
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   return (
     <section className="space-y-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
@@ -1167,6 +1147,7 @@ function ContentMediaPanel({
             sortOrder: "0",
             isCover: false,
           });
+          if (fileInputRef.current) fileInputRef.current.value = "";
         }}
       >
         <Field label="圖片檔案">
@@ -1174,6 +1155,7 @@ function ContentMediaPanel({
             required
             type="file"
             accept="image/*"
+            ref={fileInputRef}
             onChange={(event) =>
               setForm((current) => ({ ...current, file: event.target.files?.[0] ?? null }))
             }
@@ -1389,6 +1371,33 @@ function normalizeStoryUpdateForm(form: StoryUpdateFormState) {
     body: emptyToNull(form.body),
     occurredAt: parseDatetimeLocalToIso(form.occurredAt),
   };
+}
+
+// Extracted from createContentMedia's mutationFn so the real fetchAdminJson/
+// getSupabaseClient wiring (not just uploadContentMediaImage's injected fakes)
+// has a unit test to exercise directly, without needing a DOM to drive the
+// form's submit event.
+export async function createContentMediaWithUpload(contentId: string, body: ContentMediaFormState) {
+  if (!body.file) throw new Error("請選擇圖片");
+  const storagePath = await uploadContentMediaImage({
+    file: body.file,
+    contentId,
+    requestUploadTarget: (input) =>
+      fetchAdminJson(`/api/admin/content/${contentId}/media-upload-target`, {
+        method: "POST",
+        body: JSON.stringify(input),
+      }),
+    uploadToSignedUrl: async (path, token, uploadedFile) => {
+      const { error } = await getSupabaseClient()
+        .storage.from("content-media")
+        .uploadToSignedUrl(path, token, uploadedFile, { contentType: uploadedFile.type });
+      if (error) throw error;
+    },
+  });
+  return fetchAdminJson<{ id: string }>(`/api/admin/content/${contentId}/media`, {
+    method: "POST",
+    body: JSON.stringify(normalizeContentMediaForm({ ...body, storagePath })),
+  });
 }
 
 function normalizeContentMediaForm(form: ContentMediaFormState & { storagePath: string }) {
