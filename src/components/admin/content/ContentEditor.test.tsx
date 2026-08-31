@@ -1,4 +1,4 @@
-import { describe, expect, mock, test } from "bun:test";
+import { afterAll, describe, expect, mock, test } from "bun:test";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderToStaticMarkup } from "react-dom/server";
 import type { ReactNode } from "react";
@@ -27,6 +27,20 @@ mock.module("@tanstack/react-router", () => ({
 // time, so these mocks are in effect before any test's dynamic
 // `await import("./ContentEditor")` first resolves that module (matching the
 // react-router mock above).
+//
+// `mock.module` mocks are process-global in Bun's test runner and outlive this
+// file: they aren't undone by `mock.restore()`, so an unmocked-back specifier
+// here would leak into every other test file (in the same `bun test` run)
+// that imports these modules after this one. Capture the real modules first
+// so `afterAll` can put them back (see
+// src/components/site/sponsorship/pledgeProofUpload.test.ts for the same
+// pattern).
+// Spread into a plain object: `mock.module` mutates the shared
+// module-registry exports object in place, so a bare reference captured here
+// would be mutated out from under us the moment the mock below is installed.
+const realAdminHttpModule = { ...(await import("../../../lib/admin/http")) };
+const realSupabaseModule = { ...(await import("../../../lib/supabase")) };
+
 const uploadCalls: string[] = [];
 const uploadFromBucketCalls: string[] = [];
 let uploadToSignedUrlError: Error | null = null;
@@ -66,6 +80,11 @@ mock.module("../../../lib/supabase", () => ({
   }),
   supabase: {},
 }));
+
+afterAll(() => {
+  mock.module("../../../lib/admin/http", () => realAdminHttpModule);
+  mock.module("../../../lib/supabase", () => realSupabaseModule);
+});
 
 const content: ContentDetail = {
   id: "content-1",
