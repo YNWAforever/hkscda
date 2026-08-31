@@ -120,7 +120,7 @@ export function createPaymentPublicConfigService(repository: PaymentPublicConfig
       const parsed = paymentPublicConfigMutationSchema.parse(input);
       const config = await getConfig(actor, id);
       assertVersion(config, parsed.expectedVersion);
-      assertState(config, "draft", "Only draft config rows can be edited.");
+      assertState(config, "draft", "Only draft payment public config rows can be edited.");
       return repository.update(id, parsed, actor.authUserId);
     },
 
@@ -140,7 +140,7 @@ export function createPaymentPublicConfigService(repository: PaymentPublicConfig
       });
       const config = await getConfig(actor, id);
       assertVersion(config, expectedVersion);
-      assertState(config, "draft", "Only draft config rows can be submitted.");
+      assertState(config, "draft", "Only draft payment public config rows can be submitted.");
       return repository.transition({
         id,
         expectedVersion,
@@ -165,7 +165,11 @@ export function createPaymentPublicConfigService(repository: PaymentPublicConfig
       });
       const config = await getConfig(actor, id);
       assertVersion(config, expectedVersion);
-      assertState(config, "in_review", "Only in-review config rows can be withdrawn.");
+      assertState(
+        config,
+        "in_review",
+        "Only in-review payment public config rows can be withdrawn.",
+      );
       return repository.transition({
         id,
         expectedVersion,
@@ -190,7 +194,11 @@ export function createPaymentPublicConfigService(repository: PaymentPublicConfig
       });
       const config = await getConfig(actor, id);
       assertVersion(config, expectedVersion);
-      assertState(config, "in_review", "Only in-review config rows can be returned.");
+      assertState(
+        config,
+        "in_review",
+        "Only in-review payment public config rows can be returned.",
+      );
       return repository.transition({
         id,
         expectedVersion,

@@ -109,9 +109,14 @@ describe("createPaymentPublicConfigService", () => {
   test("submit rejects a version mismatch before calling the repository transition", async () => {
     const repository = fakeRepository();
     const service = createPaymentPublicConfigService(repository);
-    await expect(
-      service.submit({ actor: STAFF_ACTOR, id: DRAFT_CONFIG.id, expectedVersion: 99 }),
-    ).rejects.toThrow(PaymentPublicConfigError);
+    try {
+      await service.submit({ actor: STAFF_ACTOR, id: DRAFT_CONFIG.id, expectedVersion: 99 });
+      throw new Error("expected rejection");
+    } catch (error) {
+      expect(error).toBeInstanceOf(PaymentPublicConfigError);
+      expect((error as PaymentPublicConfigError).code).toBe("conflict");
+      expect((error as PaymentPublicConfigError).status).toBe(409);
+    }
     expect(repository.transition).not.toHaveBeenCalled();
   });
 
@@ -120,8 +125,13 @@ describe("createPaymentPublicConfigService", () => {
       getById: mock(async () => ({ ...DRAFT_CONFIG, state: "in_review" as const })),
     });
     const service = createPaymentPublicConfigService(repository);
-    await expect(
-      service.submit({ actor: STAFF_ACTOR, id: DRAFT_CONFIG.id, expectedVersion: 1 }),
-    ).rejects.toThrow(PaymentPublicConfigError);
+    try {
+      await service.submit({ actor: STAFF_ACTOR, id: DRAFT_CONFIG.id, expectedVersion: 1 });
+      throw new Error("expected rejection");
+    } catch (error) {
+      expect(error).toBeInstanceOf(PaymentPublicConfigError);
+      expect((error as PaymentPublicConfigError).code).toBe("conflict");
+      expect((error as PaymentPublicConfigError).status).toBe(409);
+    }
   });
 });
