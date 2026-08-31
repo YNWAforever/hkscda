@@ -62,6 +62,13 @@ describe("supabase migration safety", () => {
     expect(sql).not.toMatch(/foreach table_name in array\s*\[/);
   });
 
+  test("provisions the public content-media bucket for CMS image uploads", () => {
+    const sql = readMigration("20260831160000_content_media_storage_bucket.sql");
+    expect(sql).toContain("values (\n  'content-media',\n  'content-media',\n  true,\n  8388608,");
+    expect(sql).toContain("array['image/jpeg', 'image/png', 'image/webp']");
+    expect(sql).toContain("on conflict (id) do update set");
+  });
+
   test("allows anonymous reads only for published public documents", () => {
     const sql = readMigration("20260719223000_public_document_read_policies.sql");
 
