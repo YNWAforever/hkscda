@@ -21,7 +21,10 @@ export async function loadPublicPaymentMethods(
     .eq("is_publicly_visible", true)
     .order("sort_order", { ascending: true });
 
-  if (error) return [];
+  if (error) {
+    console.error("Failed to load public payment methods", error);
+    return [];
+  }
 
   const rows: PublicPaymentMethod[] = [];
   for (const raw of data ?? []) {
