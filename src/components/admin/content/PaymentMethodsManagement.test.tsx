@@ -58,6 +58,10 @@ describe("PaymentMethodsManagementView", () => {
     );
     expect(html).toContain("核准並發佈");
     expect(html).toContain('disabled=""');
+    // The explanation must be reachable without a mouse hover: associated via
+    // aria-describedby and rendered as always-visible text, not a title attribute.
+    expect(html).toContain(`aria-describedby="publish-hint-${BASE_CONFIG.id}"`);
+    expect(html).toContain("需要由另一位財務或管理員核准");
   });
 
   test("enables Publish for a different treasurer than the submitter", () => {
@@ -73,6 +77,103 @@ describe("PaymentMethodsManagementView", () => {
     );
     expect(html).toContain("核准並發佈");
     expect(html).not.toContain('disabled=""');
+    expect(html).not.toContain("aria-describedby");
+    expect(html).not.toContain("需要由另一位財務或管理員核准");
+  });
+
+  test("shows an empty-state message when there are no configured payment methods", () => {
+    const html = renderToStaticMarkup(
+      <PaymentMethodsManagementView
+        identity={TREASURER_1}
+        configs={[]}
+        pending={false}
+        onSubmit={noop}
+        onWithdraw={noop}
+        onPublish={noop}
+      />,
+    );
+    expect(html).toContain("尚未建立任何付款方式設定");
+  });
+
+  test("hides withdraw and publish actions when there is no signed-in identity", () => {
+    const html = renderToStaticMarkup(
+      <PaymentMethodsManagementView
+        identity={undefined}
+        configs={[BASE_CONFIG]}
+        pending={false}
+        onSubmit={noop}
+        onWithdraw={noop}
+        onPublish={noop}
+      />,
+    );
+    expect(html).not.toContain("撤回");
+    expect(html).not.toContain("核准並發佈");
+  });
+
+  test("shows only the submit button, with a translated state label, for a draft config", () => {
+    const html = renderToStaticMarkup(
+      <PaymentMethodsManagementView
+        identity={TREASURER_1}
+        configs={[{ ...BASE_CONFIG, state: "draft" }]}
+        pending={false}
+        onSubmit={noop}
+        onWithdraw={noop}
+        onPublish={noop}
+      />,
+    );
+    expect(html).toContain("提交審批");
+    expect(html).not.toContain("撤回");
+    expect(html).not.toContain("核准並發佈");
+    expect(html).toContain("草稿");
+  });
+
+  test("shows withdraw and publish, not submit, with a translated state label, for an in_review config", () => {
+    const html = renderToStaticMarkup(
+      <PaymentMethodsManagementView
+        identity={TREASURER_2}
+        configs={[BASE_CONFIG]}
+        pending={false}
+        onSubmit={noop}
+        onWithdraw={noop}
+        onPublish={noop}
+      />,
+    );
+    expect(html).toContain("撤回");
+    expect(html).toContain("核准並發佈");
+    expect(html).not.toContain("提交審批");
+    expect(html).toContain("審閱中");
+  });
+
+  test("renders published and archived states read-only, with no action buttons", () => {
+    for (const state of ["published", "archived"] as const) {
+      const html = renderToStaticMarkup(
+        <PaymentMethodsManagementView
+          identity={TREASURER_1}
+          configs={[{ ...BASE_CONFIG, state }]}
+          pending={false}
+          onSubmit={noop}
+          onWithdraw={noop}
+          onPublish={noop}
+        />,
+      );
+      expect(html).not.toContain("提交審批");
+      expect(html).not.toContain("撤回");
+      expect(html).not.toContain("核准並發佈");
+    }
+  });
+
+  test("shows the not-publicly-visible indicator when isPubliclyVisible is false", () => {
+    const html = renderToStaticMarkup(
+      <PaymentMethodsManagementView
+        identity={TREASURER_1}
+        configs={[{ ...BASE_CONFIG, isPubliclyVisible: false }]}
+        pending={false}
+        onSubmit={noop}
+        onWithdraw={noop}
+        onPublish={noop}
+      />,
+    );
+    expect(html).toContain("未公開");
   });
 
   test("renders the error message when present", () => {

@@ -2,9 +2,10 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { Button } from "../../ui/button";
-import { adminIdentityQueryOptions } from "../../../lib/admin/identity";
+import { adminIdentityQueryOptions } from "../../../lib/admin/pageAccess";
 import type { AdminIdentity } from "../../../lib/admin/access";
 import type { PaymentPublicConfig } from "../../../lib/paymentPublicConfig/types";
+import { CMS_STATE_LABELS } from "./cmsStateLabels";
 import {
   canPublish,
   createPaymentMethodPublishAttempt,
@@ -41,59 +42,70 @@ export function PaymentMethodsManagementView({
         </p>
       ) : null}
 
+      {configs.length === 0 ? (
+        <p className="p-3 text-sm text-[var(--color-text-muted)]">尚未建立任何付款方式設定</p>
+      ) : null}
       <ul className="divide-y divide-[var(--color-border)] rounded-md border border-[var(--color-border)]">
-        {configs.map((config) => (
-          <li key={config.id} className="flex items-center justify-between gap-4 p-3">
-            <div>
-              <span className="font-bold">{config.displayLabelZh}</span>{" "}
-              <span className="text-[var(--color-text-muted)]">({config.method})</span>{" "}
-              <span className="text-xs uppercase text-[var(--color-text-muted)]">
-                {config.state}
-              </span>
-              {config.isPubliclyVisible ? null : (
-                <span className="ml-2 text-xs text-[var(--color-text-muted)]">未公開</span>
-              )}
-            </div>
-            <div className="flex gap-2">
-              {config.state === "draft" ? (
-                <Button type="button" onClick={() => onSubmit(config)} disabled={pending}>
-                  提交審批
-                </Button>
-              ) : null}
-              {config.state === "in_review" && identity ? (
-                <>
-                  <Button
-                    type="button"
-                    onClick={() => onWithdraw(config)}
-                    variant="outline"
-                    disabled={pending}
-                  >
-                    撤回
+        {configs.map((config) => {
+          const blockedBySameActor =
+            config.state === "in_review" && identity != null && config.submittedBy === identity.id;
+          const publishHintId = `publish-hint-${config.id}`;
+          return (
+            <li key={config.id} className="flex items-center justify-between gap-4 p-3">
+              <div>
+                <span className="font-bold">{config.displayLabelZh}</span>{" "}
+                <span className="text-[var(--color-text-muted)]">({config.method})</span>{" "}
+                <span className="text-xs text-[var(--color-text-muted)]">
+                  {CMS_STATE_LABELS[config.state]}
+                </span>
+                {config.isPubliclyVisible ? null : (
+                  <span className="ml-2 text-xs text-[var(--color-text-muted)]">未公開</span>
+                )}
+              </div>
+              <div className="flex items-start gap-2">
+                {config.state === "draft" ? (
+                  <Button type="button" onClick={() => onSubmit(config)} disabled={pending}>
+                    提交審批
                   </Button>
-                  <Button
-                    type="button"
-                    onClick={() => onPublish(config)}
-                    disabled={
-                      pending ||
-                      !canPublish({
-                        config,
-                        currentActorAdminUserId: identity.id,
-                        currentActorRole: identity.role,
-                      })
-                    }
-                    title={
-                      config.submittedBy === identity.id
-                        ? "需要由另一位財務或管理員核准"
-                        : undefined
-                    }
-                  >
-                    核准並發佈
-                  </Button>
-                </>
-              ) : null}
-            </div>
-          </li>
-        ))}
+                ) : null}
+                {config.state === "in_review" && identity ? (
+                  <>
+                    <Button
+                      type="button"
+                      onClick={() => onWithdraw(config)}
+                      variant="outline"
+                      disabled={pending}
+                    >
+                      撤回
+                    </Button>
+                    <div className="flex flex-col items-end gap-1">
+                      <Button
+                        type="button"
+                        onClick={() => onPublish(config)}
+                        disabled={
+                          pending ||
+                          !canPublish({
+                            config,
+                            currentActorAdminUserId: identity.id,
+                            currentActorRole: identity.role,
+                          })
+                        }
+                        aria-describedby={blockedBySameActor ? publishHintId : undefined}
+                      >
+                        核准並發佈
+                      </Button>
+                      {blockedBySameActor ? (
+                        <p id={publishHintId} className="text-xs text-[var(--color-text-muted)]">
+                          需要由另一位財務或管理員核准
+                        </p>
+                      ) : null}
+                    </div>
+                  </>
+                ) : null}
+              </div>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
