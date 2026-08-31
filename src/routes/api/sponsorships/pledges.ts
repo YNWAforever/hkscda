@@ -3,10 +3,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createSupabaseServiceClient } from "../../../lib/donations/supabase.server";
 import {
   isSubmissionValidationError,
-  parseSponsorshipMultipart,
+  parseSponsorshipSubmission,
   persistSponsorshipPledge,
   sendPledgeConfirmationEmail,
-  validateSponsorshipSubmissionRequestHeaders,
 } from "../../../lib/sponsorship/submission.server";
 import {
   enforceRateLimit,
@@ -38,16 +37,15 @@ export const Route = createFileRoute("/api/sponsorships/pledges")({
           );
         }
 
-        const headerValidation = validateSponsorshipSubmissionRequestHeaders(request);
-        if (!headerValidation.ok) {
-          return jsonNoStore(
-            { error: headerValidation.error },
-            { status: headerValidation.status },
-          );
+        let body: unknown;
+        try {
+          body = await request.json();
+        } catch {
+          return jsonNoStore({ error: "Invalid JSON body" }, { status: 400 });
         }
 
         try {
-          const parsed = await parseSponsorshipMultipart(request);
+          const parsed = parseSponsorshipSubmission(body);
           if (!(await verifyTurnstile(parsed.payload.turnstileToken, ip))) {
             return jsonNoStore({ error: "Verification failed" }, { status: 403 });
           }

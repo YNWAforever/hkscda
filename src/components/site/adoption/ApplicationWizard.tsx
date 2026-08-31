@@ -31,7 +31,7 @@ import {
 import { cn } from "../../../lib/utils";
 import { GuidancePanel } from "./GuidancePanel";
 import { PhotoUploader } from "./PhotoUploader";
-import type { SelectedPhoto } from "./photoUploaderLogic";
+import { uploadAllPhotos, type SelectedPhoto } from "./photoUploaderLogic";
 import {
   AnimalRankingFields,
   ContactFields,
@@ -108,18 +108,18 @@ async function submitAdoptionApplication(
     payload && typeof payload === "object" && !Array.isArray(payload)
       ? (payload as Record<string, unknown>)
       : {};
-  const body = new FormData();
-  body.set(
-    "payload",
-    JSON.stringify({ ...payloadObject, turnstileToken: turnstileToken ?? undefined }),
-  );
-  for (const photo of photos) {
-    body.append(`photo:${photo.category}`, photo.file, photo.file.name);
-  }
+
+  const { applicationId, uploaded } = await uploadAllPhotos(photos);
 
   const response = await fetch("/api/adoption/applications", {
     method: "POST",
-    body,
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      payload: payloadObject,
+      applicationId,
+      photos: uploaded,
+      turnstileToken: turnstileToken ?? undefined,
+    }),
   });
   const result = await response.json().catch(() => ({}));
   if (!response.ok) {
