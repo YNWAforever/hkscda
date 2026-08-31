@@ -1,11 +1,10 @@
 import { describe, expect, test } from "bun:test";
 
 import {
-  ADOPTION_MULTIPART_MAX_BYTES,
-  parseAdoptionMultipart,
+  SubmissionValidationError,
+  parseAdoptionSubmission,
   persistPublicAdoptionJourney,
   sendAdoptionConfirmationEmail,
-  validateAdoptionSubmissionRequestHeaders,
   type ParsedAdoptionMultipart,
   type PublicAdoptionSupabaseClient,
 } from "./submission.server";
@@ -34,6 +33,7 @@ type FakeClientOptions = {
   failInsertTable?: string;
   failUpdateTable?: string;
   supporterId?: string | null;
+  storageObjects?: Array<{ fileName: string; sizeBytes: number; mimeType: string }>;
 };
 
 class FakeQuery {
@@ -117,6 +117,8 @@ class FakeQuery {
   }
 }
 
+const DEFAULT_STORAGE_OBJECTS = [{ fileName: "home.jpg", sizeBytes: 10, mimeType: "image/jpeg" }];
+
 function createFakeClient(options: FakeClientOptions = {}) {
   const state = {
     calls: [] as QueryCall[],
@@ -124,6 +126,7 @@ function createFakeClient(options: FakeClientOptions = {}) {
     failInsertTable: options.failInsertTable,
     failUpdateTable: options.failUpdateTable,
     supporterId: options.supporterId === undefined ? "supporter-1" : options.supporterId,
+    storageObjects: options.storageObjects ?? DEFAULT_STORAGE_OBJECTS,
   };
 
   const client = {
@@ -133,9 +136,20 @@ function createFakeClient(options: FakeClientOptions = {}) {
     storage: {
       from(bucket: string) {
         return {
-          async upload(path: string, _file: File, options?: unknown) {
-            state.storageCalls.push({ bucket, method: "upload", path, options });
-            return { data: { path }, error: null };
+          async list(folder: string, opts?: { search?: string }) {
+            state.storageCalls.push({ bucket, method: "list", path: folder, options: opts });
+            const match = state.storageObjects.find((object) => object.fileName === opts?.search);
+            return {
+              data: match
+                ? [
+                    {
+                      name: match.fileName,
+                      metadata: { size: match.sizeBytes, mimetype: match.mimeType },
+                    },
+                  ]
+                : [],
+              error: null,
+            };
           },
           async remove(paths: string[]) {
             state.storageCalls.push({ bucket, method: "remove", paths });
@@ -212,25 +226,43 @@ function validPayload(overrides: Record<string, unknown> = {}) {
   };
 }
 
-function multipartRequest(payload = validPayload(), photos: File[] = [photo("home.jpg")]) {
-  const formData = new FormData();
-  formData.set("payload", JSON.stringify(payload));
-  photos.forEach((file, index) => {
-    const category = index % 2 === 0 ? "home" : "window";
-    formData.append(`photo:${category}`, file);
-  });
-  return new Request("https://example.test/api/adoption/applications", {
-    method: "POST",
-    body: formData,
-  });
+function photoRef(
+  category: string,
+  fileName: string,
+  overrides: Partial<{ mimeType: string; sizeBytes: number; storagePath: string | undefined }> = {},
+) {
+  const descriptor: Record<string, unknown> = {
+    category,
+    fileName,
+    mimeType: overrides.mimeType ?? "image/jpeg",
+    sizeBytes: overrides.sizeBytes ?? 10,
+  };
+  if (!("storagePath" in overrides) || overrides.storagePath !== undefined) {
+    descriptor.storagePath = overrides.storagePath ?? `${applicationId}/${category}/${fileName}`;
+  }
+  return descriptor;
 }
 
-function photo(name: string, type = "image/jpeg") {
-  return new File(["fake-image"], name, { type });
+function submissionBody(
+  payload: Record<string, unknown> = validPayload(),
+  photos: Record<string, unknown>[] = [photoRef("home", "home.jpg")],
+  overrides: Record<string, unknown> = {},
+) {
+  // The real request body carries `turnstileToken` as a top-level sibling of
+  // `payload` (see `parseAdoptionSubmission`, which reads `raw.turnstileToken`
+  // rather than `raw.payload.turnstileToken`) — hoist it out of the test
+  // payload builder's convenience field so submissionBody() matches that shape.
+  return {
+    payload,
+    applicationId,
+    photos,
+    turnstileToken: typeof payload.turnstileToken === "string" ? payload.turnstileToken : undefined,
+    ...overrides,
+  };
 }
 
-async function parsedMultipart(): Promise<ParsedAdoptionMultipart> {
-  return parseAdoptionMultipart(multipartRequest());
+function parsedSubmission(): ParsedAdoptionMultipart & { applicationId: string } {
+  return parseAdoptionSubmission(submissionBody());
 }
 
 function coordinatorService(queryCalls?: QueryCall[]) {
@@ -259,10 +291,11 @@ function callIndex(calls: QueryCall[], table: string, method: string) {
   return calls.findIndex((call) => call.table === table && call.method === method);
 }
 
-describe("parseAdoptionMultipart", () => {
-  test("parses expanded payload, turnstile token, and photo descriptors", async () => {
-    const parsed = await parseAdoptionMultipart(multipartRequest());
+describe("parseAdoptionSubmission", () => {
+  test("parses expanded payload, turnstile token, applicationId, and photo descriptors", () => {
+    const parsed = parseAdoptionSubmission(submissionBody());
 
+    expect(parsed.applicationId).toBe(applicationId);
     expect(parsed.payload.turnstileToken).toBe("turnstile-token");
     expect(parsed.payload.animalPreferences.map((animal) => animal.animalName)).toEqual([
       "Mochi",
@@ -274,61 +307,64 @@ describe("parseAdoptionMultipart", () => {
         fileName: "home.jpg",
         mimeType: "image/jpeg",
         sizeBytes: 10,
+        storagePath: `${applicationId}/home/home.jpg`,
       }),
     ]);
   });
 
-  test("requires one to six photos", async () => {
-    await expect(parseAdoptionMultipart(multipartRequest(validPayload(), []))).rejects.toThrow(
+  test("requires one to six photos", () => {
+    expect(() => parseAdoptionSubmission(submissionBody(validPayload(), []))).toThrow(
       "At least one adoption photo is required",
     );
 
-    await expect(
-      parseAdoptionMultipart(
-        multipartRequest(validPayload(), [
-          photo("1.jpg"),
-          photo("2.jpg"),
-          photo("3.jpg"),
-          photo("4.jpg"),
-          photo("5.jpg"),
-          photo("6.jpg"),
-          photo("7.jpg"),
+    expect(() =>
+      parseAdoptionSubmission(
+        submissionBody(validPayload(), [
+          photoRef("home", "1.jpg"),
+          photoRef("home", "2.jpg"),
+          photoRef("home", "3.jpg"),
+          photoRef("home", "4.jpg"),
+          photoRef("home", "5.jpg"),
+          photoRef("home", "6.jpg"),
+          photoRef("home", "7.jpg"),
         ]),
       ),
-    ).rejects.toThrow("No more than 6 adoption photos can be uploaded");
-  });
-});
-
-describe("validateAdoptionSubmissionRequestHeaders", () => {
-  test("rejects non-multipart requests before body parsing", () => {
-    expect(
-      validateAdoptionSubmissionRequestHeaders(
-        new Request("https://example.test/api/adoption/applications", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-        }),
-      ),
-    ).toEqual({ ok: false, status: 415, error: "Expected multipart/form-data" });
-
-    expect(
-      validateAdoptionSubmissionRequestHeaders(
-        new Request("https://example.test/api/adoption/applications", { method: "POST" }),
-      ),
-    ).toEqual({ ok: false, status: 400, error: "Missing content-type" });
+    ).toThrow("No more than 6 adoption photos can be uploaded");
   });
 
-  test("rejects obviously oversized multipart requests before body parsing", () => {
-    expect(
-      validateAdoptionSubmissionRequestHeaders(
-        new Request("https://example.test/api/adoption/applications", {
-          method: "POST",
-          headers: {
-            "content-type": "multipart/form-data; boundary=abc",
-            "content-length": String(ADOPTION_MULTIPART_MAX_BYTES + 1),
-          },
-        }),
-      ),
-    ).toEqual({ ok: false, status: 413, error: "Adoption application upload is too large" });
+  test("rejects a body missing applicationId", () => {
+    const body = submissionBody();
+    delete (body as { applicationId?: unknown }).applicationId;
+
+    expect(() => parseAdoptionSubmission(body)).toThrow("Missing adoption application id");
+  });
+
+  test("rejects a photo entry missing storagePath", () => {
+    const body = submissionBody(validPayload(), [
+      photoRef("home", "home.jpg", { storagePath: undefined }),
+    ]);
+
+    expect(() => parseAdoptionSubmission(body)).toThrow(
+      "Missing storage path for an adoption photo",
+    );
+  });
+
+  test("accepts a valid body and returns the expected shape", () => {
+    const parsed = parseAdoptionSubmission(submissionBody());
+
+    expect(parsed).toEqual({
+      applicationId,
+      payload: expect.objectContaining({ turnstileToken: "turnstile-token" }),
+      photos: [
+        {
+          category: "home",
+          fileName: "home.jpg",
+          mimeType: "image/jpeg",
+          sizeBytes: 10,
+          storagePath: `${applicationId}/home/home.jpg`,
+        },
+      ],
+    });
   });
 });
 
@@ -339,7 +375,7 @@ describe("persistPublicAdoptionJourney", () => {
 
     const result = await persistPublicAdoptionJourney({
       client,
-      parsed: await parsedMultipart(),
+      parsed: parsedSubmission(),
       coordinatorService: coordinator.service,
       now: () => new Date("2026-07-02T00:00:00.000Z"),
       createStatusTokenPair: () => ({
@@ -360,10 +396,17 @@ describe("persistPublicAdoptionJourney", () => {
     expect(state.storageCalls).toContainEqual(
       expect.objectContaining({
         bucket: "adoption-application-photos",
-        method: "upload",
-        path: `${applicationId}/home/home.jpg`,
+        method: "list",
+        path: `${applicationId}/home`,
+        options: { search: "home.jpg" },
       }),
     );
+    expect(state.calls).toContainEqual({
+      table: "adoption_applications",
+      method: "insert",
+      payload: expect.objectContaining({ id: applicationId }),
+      options: undefined,
+    });
     expect(state.calls).toContainEqual({
       table: "adoption_application_photo",
       method: "insert",
@@ -441,7 +484,30 @@ describe("persistPublicAdoptionJourney", () => {
     });
   });
 
-  test("removes uploaded files and compatibility row when a later insert fails", async () => {
+  test("throws SubmissionValidationError and never inserts the application when an uploaded photo is missing from storage", async () => {
+    const { client, state } = createFakeClient({ storageObjects: [] });
+    const coordinator = coordinatorService();
+
+    await expect(
+      persistPublicAdoptionJourney({
+        client,
+        parsed: parsedSubmission(),
+        coordinatorService: coordinator.service,
+        now: () => new Date("2026-07-02T00:00:00.000Z"),
+        createStatusTokenPair: () => ({
+          rawToken: "raw-status-token",
+          tokenHash: "hashed-status-token",
+        }),
+        appUrl: "https://example.test",
+        logger: { error() {} },
+      }),
+    ).rejects.toThrow(SubmissionValidationError);
+
+    expect(callsFor(state.calls, "adoption_applications", "insert")).toHaveLength(0);
+    expect(coordinator.calls).toHaveLength(0);
+  });
+
+  test("removes the compatibility row when a later insert fails", async () => {
     const { client, state } = createFakeClient({
       failInsertTable: "adoption_application_detail",
     });
@@ -450,7 +516,7 @@ describe("persistPublicAdoptionJourney", () => {
     await expect(
       persistPublicAdoptionJourney({
         client,
-        parsed: await parsedMultipart(),
+        parsed: parsedSubmission(),
         coordinatorService: coordinator.service,
         now: () => new Date("2026-07-02T00:00:00.000Z"),
         createStatusTokenPair: () => ({
@@ -462,11 +528,7 @@ describe("persistPublicAdoptionJourney", () => {
       }),
     ).rejects.toThrow("Failed to save adoption application");
 
-    expect(state.storageCalls).toContainEqual({
-      bucket: "adoption-application-photos",
-      method: "remove",
-      paths: [`${applicationId}/home/home.jpg`],
-    });
+    expect(state.storageCalls.filter((call) => call.method === "remove")).toHaveLength(0);
     expect(state.calls).toContainEqual({
       table: "adoption_applications",
       method: "delete",
@@ -487,7 +549,7 @@ describe("persistPublicAdoptionJourney", () => {
     await expect(
       persistPublicAdoptionJourney({
         client,
-        parsed: await parsedMultipart(),
+        parsed: parsedSubmission(),
         coordinatorService: coordinator.service,
         now: () => new Date("2026-07-02T00:00:00.000Z"),
         createStatusTokenPair: () => ({
@@ -517,7 +579,7 @@ describe("persistPublicAdoptionJourney", () => {
     await expect(
       persistPublicAdoptionJourney({
         client,
-        parsed: await parsedMultipart(),
+        parsed: parsedSubmission(),
         coordinatorService: coordinator.service,
         now: () => new Date("2026-07-02T00:00:00.000Z"),
         createStatusTokenPair: () => ({
@@ -547,7 +609,7 @@ describe("persistPublicAdoptionJourney", () => {
 describe("sendAdoptionConfirmationEmail", () => {
   test("queues a confirmation message and leaves it queued when Resend has no API key", async () => {
     const { client, state } = createFakeClient();
-    const parsed = await parsedMultipart();
+    const parsed = parsedSubmission();
 
     await expect(
       sendAdoptionConfirmationEmail(
