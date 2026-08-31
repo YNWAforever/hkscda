@@ -112,14 +112,35 @@ export const storyUpdateInputSchema = z.object({
   shouldGenerateAdopterDrafts: z.boolean().default(false),
 });
 
+export const CONTENT_MEDIA_BUCKET = "content-media";
+export const MAX_CONTENT_MEDIA_BYTES = 8 * 1024 * 1024;
+export const CONTENT_MEDIA_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
+
+const contentMediaPathSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(400)
+  .refine((path) => !path.startsWith("/"), "Storage paths cannot start with a slash")
+  .refine((path) => !path.includes(".."), "Storage paths cannot include parent traversal")
+  .refine(
+    (path) => /\.(jpe?g|png|webp)$/i.test(path),
+    "Storage paths must end in .jpg, .jpeg, .png, or .webp",
+  );
+
 export const contentMediaInputSchema = z.object({
   storyUpdateId: z.string().uuid().nullable().optional().default(null),
-  storageBucket: trimmed.min(1).max(120).default("content-media"),
-  storagePath: trimmed.min(1).max(400),
+  storagePath: contentMediaPathSchema,
   altText: trimmed.min(1).max(180),
   caption: optionalTrimmed,
   sortOrder: numberFromInput(z.number().int().min(0)).optional().default(0),
   isCover: z.boolean().default(false),
+});
+
+export const contentMediaUploadTargetSchema = z.object({
+  objectPath: contentMediaPathSchema,
+  mimeType: z.enum(CONTENT_MEDIA_MIME_TYPES),
+  byteSize: z.coerce.number().int().min(1).max(MAX_CONTENT_MEDIA_BYTES),
 });
 
 export const contentLinkInputSchema = z.object({
@@ -147,6 +168,7 @@ export type ContentInput = z.infer<typeof contentInputSchema>;
 export type StoryProfileInput = z.infer<typeof storyProfileInputSchema>;
 export type StoryUpdateInput = z.infer<typeof storyUpdateInputSchema>;
 export type ContentMediaInput = z.infer<typeof contentMediaInputSchema>;
+export type ContentMediaUploadTargetInput = z.infer<typeof contentMediaUploadTargetSchema>;
 export type ContentLinkInput = z.infer<typeof contentLinkInputSchema>;
 export type SocialCopyStatusInput = z.infer<typeof socialCopyStatusSchema>;
 export type NotificationDraftStatusInput = z.infer<typeof notificationDraftStatusSchema>;

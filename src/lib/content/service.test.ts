@@ -520,7 +520,6 @@ describe("createContentService", () => {
         contentId: "content-1",
         input: {
           storyUpdateId,
-          storageBucket: "content-media",
           storagePath: "stories/siu-bak/checkup.jpg",
           altText: "小白覆診照片",
           caption: "覆診完成",
