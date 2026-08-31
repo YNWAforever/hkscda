@@ -9,13 +9,16 @@ create table if not exists public.payment_public_config (
   state text not null default 'draft'
     check (state in ('draft', 'in_review', 'published', 'archived')),
   version integer not null default 1 check (version > 0),
-  created_by uuid references public.admin_user(id) on delete set null,
-  updated_by uuid references public.admin_user(id) on delete set null,
-  submitted_by uuid references public.admin_user(id) on delete set null,
+  -- Nullable (unlike adoption_guide_releases) only so the seed insert below can
+  -- create already-published rows with no real actor in context; restrict (not
+  -- set null) on delete to still preserve the approval audit trail.
+  created_by uuid references public.admin_user(id) on delete restrict,
+  updated_by uuid references public.admin_user(id) on delete restrict,
+  submitted_by uuid references public.admin_user(id) on delete restrict,
   submitted_at timestamptz,
-  published_by uuid references public.admin_user(id) on delete set null,
+  published_by uuid references public.admin_user(id) on delete restrict,
   published_at timestamptz,
-  archived_by uuid references public.admin_user(id) on delete set null,
+  archived_by uuid references public.admin_user(id) on delete restrict,
   archived_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -351,7 +354,7 @@ begin
   if config_to_publish.submitted_by is not null
     and config_to_publish.submitted_by = actor.id
   then
-    raise exception 'A different admin must publish this change' using errcode = '42501';
+    raise exception 'A different treasurer or admin must publish this change' using errcode = '42501';
   end if;
 
   select * into previous_config
