@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, mock, test } from "bun:test";
 
 import { createPaymentPublicConfigHandlers } from "./http.server";
 import { createPaymentPublicConfigService, type PaymentPublicConfigActor } from "./service";
@@ -17,7 +17,9 @@ const STAFF: PaymentPublicConfigActor = {
 
 function fakeRepository(): PaymentPublicConfigRepository {
   return {
-    list: async () => ({ items: [], total: 0, page: 1, pageSize: 20 }),
+    list: async () => {
+      throw new Error("not used");
+    },
     getById: async () => null,
     create: async () => {
       throw new Error("not used");
@@ -37,9 +39,44 @@ function buildHandlers(actor: PaymentPublicConfigActor) {
   return createPaymentPublicConfigHandlers({ requireActor: async () => actor, service });
 }
 
+// A mock service object, distinct from the real service wired to fakeRepository()
+// above: this lets a test assert that the HTTP layer's own defense-in-depth check
+// short-circuits before the service is ever reached, rather than merely observing
+// the same response the service layer's own equivalent check would also produce.
+function createService() {
+  return {
+    list: mock(async () => {
+      throw new Error("not used");
+    }),
+    get: mock(async () => {
+      throw new Error("not used");
+    }),
+    createDraft: mock(async () => {
+      throw new Error("not used");
+    }),
+    updateDraft: mock(async () => {
+      throw new Error("not used");
+    }),
+    submit: mock(async () => {
+      throw new Error("not used");
+    }),
+    withdraw: mock(async () => {
+      throw new Error("not used");
+    }),
+    returnToDraft: mock(async () => {
+      throw new Error("not used");
+    }),
+    publish: mock(async () => ({ configId: "id", configVersion: 2, method: "fps" as const })),
+  };
+}
+
 describe("createPaymentPublicConfigHandlers", () => {
   test("publish returns 403 for a staff actor", async () => {
-    const handlers = buildHandlers(STAFF);
+    const service = createService();
+    const handlers = createPaymentPublicConfigHandlers({
+      requireActor: async () => STAFF,
+      service: service as unknown as ReturnType<typeof createPaymentPublicConfigService>,
+    });
     const response = await handlers.publish(
       new Request("http://x/publish", {
         method: "POST",
@@ -56,6 +93,7 @@ describe("createPaymentPublicConfigHandlers", () => {
         message: "You do not have permission to perform this action.",
       },
     });
+    expect(service.publish).not.toHaveBeenCalled();
   });
 
   test("publish succeeds for a treasurer actor", async () => {
@@ -84,6 +122,7 @@ describe("createPaymentPublicConfigHandlers", () => {
     });
 
     expect(response.status).toBe(404);
+    expect(response.headers.get("cache-control")).toBe("no-store");
     expect(await response.json()).toEqual({
       error: {
         code: "not_found",
@@ -102,6 +141,7 @@ describe("createPaymentPublicConfigHandlers", () => {
     );
 
     expect(response.status).toBe(400);
+    expect(response.headers.get("cache-control")).toBe("no-store");
     expect(await response.json()).toMatchObject({
       error: {
         code: "validation_error",
