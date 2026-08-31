@@ -118,6 +118,10 @@ function createService(overrides: Record<string, unknown> = {}) {
       calls.push("createContentMedia");
       return { id: "media-1" };
     },
+    async createUploadTarget() {
+      calls.push("createUploadTarget");
+      return { token: "upload-token", path: "content-1/checkup.jpg" };
+    },
     async createContentLink() {
       calls.push("createContentLink");
       return { id: "link-1" };

@@ -80,6 +80,7 @@ function createRepo(overrides: Partial<ContentRepository> = {}) {
     upsertStoryProfile: async () => detail,
     createStoryUpdate: async () => storyUpdateId,
     createContentMedia: async () => "media-2",
+    createSignedUploadUrl: async (objectPath) => ({ token: "upload-token", path: objectPath }),
     createContentLink: async () => "link-1",
     insertSocialCopies: async (rows) => {
       socialCopies.push(...rows);
@@ -547,5 +548,87 @@ describe("createContentService", () => {
         "content.link.create",
       ]),
     );
+  });
+});
+
+describe("createContentService createUploadTarget", () => {
+  test("requests a signed upload target for a path under the content item", async () => {
+    const { repo } = createRepo();
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await expect(
+      service.createUploadTarget({
+        actorUserId: "admin-user",
+        contentId: "content-1",
+        input: {
+          objectPath: "content-1/checkup.jpg",
+          mimeType: "image/jpeg",
+          byteSize: 1024,
+        },
+      }),
+    ).resolves.toEqual({ token: "upload-token", path: "content-1/checkup.jpg" });
+  });
+
+  test("rejects an upload path that does not belong to the content item", async () => {
+    const { repo } = createRepo();
+    let calledCreateSignedUploadUrl = false;
+    const spyRepo: ContentRepository = {
+      ...repo,
+      createSignedUploadUrl: async (objectPath) => {
+        calledCreateSignedUploadUrl = true;
+        return { token: "upload-token", path: objectPath };
+      },
+    };
+    const spyService = createContentService({
+      repo: spyRepo,
+      publicBaseUrl: "https://example.test",
+    });
+
+    await expect(
+      spyService.createUploadTarget({
+        actorUserId: "admin-user",
+        contentId: "content-1",
+        input: {
+          objectPath: "some-other-content-item/checkup.jpg",
+          mimeType: "image/jpeg",
+          byteSize: 1024,
+        },
+      }),
+    ).rejects.toThrow("Upload path does not belong to this content item");
+    expect(calledCreateSignedUploadUrl).toBe(false);
+  });
+
+  test("rejects a disallowed mime type", async () => {
+    const { repo } = createRepo();
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await expect(
+      service.createUploadTarget({
+        actorUserId: "admin-user",
+        contentId: "content-1",
+        input: {
+          objectPath: "content-1/checkup.gif",
+          mimeType: "image/gif",
+          byteSize: 1024,
+        },
+      }),
+    ).rejects.toThrow();
+  });
+
+  test("rejects an oversized file", async () => {
+    const { repo } = createRepo();
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await expect(
+      service.createUploadTarget({
+        actorUserId: "admin-user",
+        contentId: "content-1",
+        input: {
+          objectPath: "content-1/checkup.jpg",
+          mimeType: "image/jpeg",
+          byteSize: 9 * 1024 * 1024,
+        },
+      }),
+    ).rejects.toThrow();
   });
 });

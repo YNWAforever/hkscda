@@ -5,8 +5,10 @@ import {
 } from "./notificationDrafts";
 import { validatePublishableContent } from "./rules";
 import {
+  CONTENT_MEDIA_BUCKET,
   contentLinkInputSchema,
   contentMediaInputSchema,
+  contentMediaUploadTargetSchema,
   contentInputSchema,
   contentSearchSchema,
   notificationDraftStatusSchema,
@@ -132,6 +134,11 @@ type CreateStoryUpdateArgs = ActorInput & {
 };
 
 type CreateContentMediaArgs = ActorInput & {
+  contentId: string;
+  input: unknown;
+};
+
+type CreateUploadTargetArgs = ActorInput & {
   contentId: string;
   input: unknown;
 };
@@ -303,13 +310,21 @@ export function createContentService({
         detail: {
           contentId,
           storyUpdateId: parsed.storyUpdateId,
-          storageBucket: parsed.storageBucket,
+          storageBucket: CONTENT_MEDIA_BUCKET,
           storagePath: parsed.storagePath,
           isCover: parsed.isCover,
         },
       });
 
       return { id };
+    },
+
+    async createUploadTarget({ contentId, input }: CreateUploadTargetArgs) {
+      const parsed = contentMediaUploadTargetSchema.parse(input);
+      if (!parsed.objectPath.startsWith(`${contentId}/`)) {
+        throw new Error("Upload path does not belong to this content item");
+      }
+      return repo.createSignedUploadUrl(parsed.objectPath);
     },
 
     async createContentLink({ actorUserId, contentId, input }: CreateContentLinkArgs) {
