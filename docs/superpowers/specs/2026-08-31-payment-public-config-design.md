@@ -22,7 +22,7 @@ An earlier framing of this work assumed AlipayHK/COD was unreachable from the pu
 ## Approved decisions
 
 - **Ship disabled by default.** New config rows for methods not already live today default to `is_publicly_visible: false`. A migration seeds the five currently-live methods as already-`published`, `is_publicly_visible: true` rows carrying today's exact copy, so deploying this feature changes nothing a visitor sees until a staff member explicitly changes something.
-- **Real maker-checker, enforced server-side.** A different admin than the one who submitted a change must publish it. This is stricter than the existing `adoption_guide_release` precedent (which only checks `role = 'admin'`, allowing a single admin to submit and publish their own change) — justified because incorrect payment-routing content has direct financial/trust consequences that CMS copy mistakes don't.
+- **Real maker-checker, enforced server-side, using the existing `treasurer` role.** This codebase already has a third admin role (`AdminRole = "staff" | "treasurer" | "admin"`, `src/lib/admin/access.ts:1`) used throughout the payments/donations/supporters domain (e.g. `requireAdmin(request, ["staff", "treasurer", "admin"], client)` in `src/routes/api/admin/payments.ts`). `payment_public_config` uses it directly: `staff`, `treasurer`, or `admin` can draft/edit/submit a change, but only `treasurer` or `admin` — never a plain `staff` member — can publish it, and the publisher must still differ from the submitter. This is stricter than the `adoption_guide_release` precedent (which only checks `role = 'admin'`, allowing a single admin to submit and publish their own change) and directly satisfies the master plan's "treasurer sign-off" requirement (D-2) with a role that already exists for exactly this purpose.
 - **One unified table**, not a two-table split between "simple toggle" methods (Stripe/PayPal) and "disclosure" methods (FPS/PayMe/bank/AlipayHK). Every method row goes through the same review step; `details` is simply empty JSON for methods that don't need disclosed account info. Chosen over the split for simplicity — one schema, one RPC pair, one admin screen.
 - **Amounts stay hardcoded.** Suggested donation amounts are out of scope for BP-2 per the master plan's own wording ("payment_public_config typed projection ... COD/AlipayHK enum alignment ... `/donate` methods API" — no amounts). Can be folded in later without changing this design's contracts.
 - **Read via a server function, not a new `/api/*` route.** Matches this repo's established pattern for CMS-shaped public content (`src/lib/content/publicStory.functions.ts`): a server-only dynamic import using the service-role client, not the anon client. The `animals`-table anon+RLS pattern does not apply here — this table carries no anon grant at all, matching the C-5 rule already documented in the master plan.
@@ -62,7 +62,7 @@ New migration, new table `payment_public_config`:
 
 Unique index: `on payment_public_config (method) where state = 'published'` — mirrors `adoption_guide_one_published_idx`. Editing a live method means creating a new draft row for that `method`, not mutating the published one; publishing the new row archives the old published row for the same method (same swap semantics as `publish_adoption_guide_release`).
 
-RLS: enabled, `service_role` only for all of `insert/update/delete`, `authenticated` staff/admin `select` (mirroring the `adoption_guide_releases` policy shape exactly — see `20260731120000_adoption_guide_release_cms.sql:70-116`). No `anon` grant at all.
+RLS: enabled, `service_role` only for all of `insert/update/delete`, `authenticated` staff/treasurer/admin `select` (mirroring the `adoption_guide_releases` policy shape, extended with the `treasurer` role — see `20260731120000_adoption_guide_release_cms.sql:70-116`). No `anon` grant at all.
 
 ## RPCs
 
@@ -71,6 +71,10 @@ RLS: enabled, `service_role` only for all of `insert/update/delete`, `authentica
 `publish_payment_public_config(p_config_id, p_expected_version, p_actor_user_id, p_idempotency_key)` — same idempotency-key/advisory-lock/version-check structure as `publish_adoption_guide_release`, with one addition: after loading the row `for update`, it must also verify
 
 ```sql
+if actor.role not in ('treasurer', 'admin') then
+  raise exception 'Treasurer or admin approval is required' using errcode = '42501';
+end if;
+
 if release_to_publish.submitted_by is not null
   and release_to_publish.submitted_by = actor.id
 then
@@ -78,7 +82,7 @@ then
 end if;
 ```
 
-before proceeding. On success it archives the currently-published row for the same `method` (if any) and marks the new row `published`, exactly like the topic/species swap in `publish_adoption_guide_release`. Both RPCs are `security invoker`, `search_path = public, pg_temp`, granted to `service_role` only, revoked from `public/anon/authenticated` — matching the existing functions byte-for-byte in structure.
+before proceeding. (`mutate_payment_public_config_with_audit`'s `create`/`update`/`submit` operations accept `staff`, `treasurer`, or `admin`, matching `requireAdmin(request, ["staff", "treasurer", "admin"], client)` already used in `src/routes/api/admin/payments.ts`.) On success it archives the currently-published row for the same `method` (if any) and marks the new row `published`, exactly like the topic/species swap in `publish_adoption_guide_release`. Both RPCs are `security invoker`, `search_path = public, pg_temp`, granted to `service_role` only, revoked from `public/anon/authenticated` — matching the existing functions byte-for-byte in structure.
 
 ## Public read path
 
@@ -101,7 +105,7 @@ New `src/components/admin/content/PaymentMethodsManagement.tsx`, following the e
 
 ## Testing
 
-- **Real Postgres container** (this repo's established standard for RLS/migration verification): `anon` has zero access to `payment_public_config`; a `staff`-role admin can create/edit/submit a draft but cannot publish; an `admin`-role actor **cannot** publish a row they themselves submitted (`errcode 42501`); a different admin publishing correctly archives the prior published row for that `method` and inserts the expected `audit_log` rows; `create/update/submit/withdraw/return_to_draft/delete` all behave per the state checks above.
+- **Real Postgres container** (this repo's established standard for RLS/migration verification): `anon` has zero access to `payment_public_config`; a `staff`-role admin can create/edit/submit a draft but cannot publish (`errcode 42501`, wrong role); a `treasurer` or `admin` actor **cannot** publish a row they themselves submitted (`errcode 42501`, same-actor); a different treasurer or admin publishing correctly archives the prior published row for that `method` and inserts the expected `audit_log` rows; `create/update/submit/withdraw/return_to_draft/delete` all behave per the state checks above.
 - **Service/repository unit tests** with dependency-injected fakes, mirroring the existing `donations` domain test style.
 - **`donate.tsx` component tests**: renders methods from loader data (not the old hardcoded array), renders the E! state when the loader reports `status: "error"`, renders the empty state on an empty list.
 - **Admin UI tests**: list/create/edit/submit flow; the same-actor-blocked case (Publish disabled and, separately, a direct RPC-call test proving the server-side rejection independent of the UI).
