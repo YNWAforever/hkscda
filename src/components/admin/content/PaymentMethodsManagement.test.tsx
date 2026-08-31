@@ -50,6 +50,7 @@ describe("PaymentMethodsManagementView", () => {
       <PaymentMethodsManagementView
         identity={TREASURER_1}
         configs={[BASE_CONFIG]}
+        pending={false}
         onSubmit={noop}
         onWithdraw={noop}
         onPublish={noop}
@@ -64,6 +65,7 @@ describe("PaymentMethodsManagementView", () => {
       <PaymentMethodsManagementView
         identity={TREASURER_2}
         configs={[BASE_CONFIG]}
+        pending={false}
         onSubmit={noop}
         onWithdraw={noop}
         onPublish={noop}
@@ -79,11 +81,34 @@ describe("PaymentMethodsManagementView", () => {
         identity={TREASURER_1}
         configs={[]}
         errorMessage="This configuration changed elsewhere. Reload before saving again."
+        pending={false}
         onSubmit={noop}
         onWithdraw={noop}
         onPublish={noop}
       />,
     );
     expect(html).toContain("This configuration changed elsewhere");
+  });
+
+  test("disables submit, withdraw, and publish buttons while a mutation is pending, regardless of canPublish", () => {
+    const html = renderToStaticMarkup(
+      <PaymentMethodsManagementView
+        identity={TREASURER_2}
+        configs={[
+          BASE_CONFIG,
+          { ...BASE_CONFIG, id: "22222222-2222-2222-2222-222222222222", state: "draft" },
+        ]}
+        pending
+        onSubmit={noop}
+        onWithdraw={noop}
+        onPublish={noop}
+      />,
+    );
+    expect(html).toContain("核准並發佈");
+    expect(html).toContain("撤回");
+    expect(html).toContain("提交審批");
+    // Every action button (submit, withdraw, publish) must be disabled while pending,
+    // even though TREASURER_2 would otherwise be allowed to publish this row.
+    expect((html.match(/disabled=""/g) ?? []).length).toBe(3);
   });
 });
