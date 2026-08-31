@@ -69,6 +69,12 @@ describe("ContentEditor", () => {
     expect(markup).toContain("新增故事更新");
     expect(markup).toContain("新增媒體");
     expect(markup).toContain("新增關聯紀錄");
+    // The manual bucket/path text-entry fields must be gone, replaced by a
+    // real file picker.
+    expect(markup).toContain('type="file"');
+    expect(markup).toContain('accept="image/*"');
+    expect(markup).not.toContain("Storage bucket");
+    expect(markup).not.toContain("Storage path");
   });
 
   test("uses a router link for returning to the content list", async () => {

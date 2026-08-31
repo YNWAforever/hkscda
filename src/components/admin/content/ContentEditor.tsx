@@ -19,6 +19,8 @@ import type {
   StoryUpdateVisibility,
 } from "../../../lib/content/types";
 import { fetchAdminJson, getAdminAccessToken } from "../../../lib/admin/http";
+import { getSupabaseClient } from "../../../lib/supabase";
+import { uploadContentMediaImage } from "./contentMediaUpload";
 import { StatusPill, type StatusTone } from "../StatusBadge";
 import {
   contentStatusTone,
@@ -175,11 +177,28 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
   });
 
   const createContentMedia = useMutation({
-    mutationFn: (body: ContentMediaFormState) =>
-      fetchAdminJson<{ id: string }>(`/api/admin/content/${contentId}/media`, {
+    mutationFn: async (body: ContentMediaFormState) => {
+      if (!body.file) throw new Error("請選擇圖片");
+      const storagePath = await uploadContentMediaImage({
+        file: body.file,
+        contentId,
+        requestUploadTarget: (input) =>
+          fetchAdminJson(`/api/admin/content/${contentId}/media-upload-target`, {
+            method: "POST",
+            body: JSON.stringify(input),
+          }),
+        uploadToSignedUrl: async (path, token, uploadedFile) => {
+          const { error } = await getSupabaseClient()
+            .storage.from("content-media")
+            .uploadToSignedUrl(path, token, uploadedFile, { contentType: uploadedFile.type });
+          if (error) throw error;
+        },
+      });
+      return fetchAdminJson<{ id: string }>(`/api/admin/content/${contentId}/media`, {
         method: "POST",
-        body: JSON.stringify(normalizeContentMediaForm(body)),
-      }),
+        body: JSON.stringify(normalizeContentMediaForm({ ...body, storagePath })),
+      });
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] });
       void queryClient.invalidateQueries({ queryKey: ["admin-content"] });
@@ -433,9 +452,8 @@ type StoryUpdateFormState = {
 };
 
 type ContentMediaFormState = {
+  file: File | null;
   storyUpdateId: string;
-  storageBucket: string;
-  storagePath: string;
   altText: string;
   caption: string;
   sortOrder: string;
@@ -1120,9 +1138,8 @@ function ContentMediaPanel({
   onCreate: (form: ContentMediaFormState) => Promise<void>;
 }) {
   const [form, setForm] = useState<ContentMediaFormState>({
+    file: null,
     storyUpdateId: "",
-    storageBucket: "content-media",
-    storagePath: "",
     altText: "",
     caption: "",
     sortOrder: "0",
@@ -1134,7 +1151,7 @@ function ContentMediaPanel({
       <div>
         <h2 className="text-lg font-bold text-[var(--color-panel)]">媒體與相片</h2>
         <p className="text-sm text-[var(--color-text-muted)]">
-          使用 Supabase Storage 路徑新增封面或故事更新相片。
+          上傳圖片作為封面或故事更新相片（JPG、PNG 或 WEBP，8 MiB 以內）。
         </p>
       </div>
       <form
@@ -1143,9 +1160,8 @@ function ContentMediaPanel({
           event.preventDefault();
           await onCreate(form);
           setForm({
+            file: null,
             storyUpdateId: "",
-            storageBucket: "content-media",
-            storagePath: "",
             altText: "",
             caption: "",
             sortOrder: "0",
@@ -1153,22 +1169,13 @@ function ContentMediaPanel({
           });
         }}
       >
-        <Field label="Storage bucket">
+        <Field label="圖片檔案">
           <input
             required
-            value={form.storageBucket}
+            type="file"
+            accept="image/*"
             onChange={(event) =>
-              setForm((current) => ({ ...current, storageBucket: event.target.value }))
-            }
-            className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
-          />
-        </Field>
-        <Field label="Storage path">
-          <input
-            required
-            value={form.storagePath}
-            onChange={(event) =>
-              setForm((current) => ({ ...current, storagePath: event.target.value }))
+              setForm((current) => ({ ...current, file: event.target.files?.[0] ?? null }))
             }
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           />
@@ -1230,7 +1237,7 @@ function ContentMediaPanel({
         </label>
         <button
           type="submit"
-          disabled={pending}
+          disabled={pending || !form.file}
           className="inline-flex items-center justify-center gap-2 rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-bold text-[var(--color-primary-foreground)] disabled:opacity-60"
         >
           <Plus className="h-4 w-4" />
@@ -1384,12 +1391,14 @@ function normalizeStoryUpdateForm(form: StoryUpdateFormState) {
   };
 }
 
-function normalizeContentMediaForm(form: ContentMediaFormState) {
+function normalizeContentMediaForm(form: ContentMediaFormState & { storagePath: string }) {
   return {
-    ...form,
     storyUpdateId: emptyToNull(form.storyUpdateId),
+    storagePath: form.storagePath,
+    altText: form.altText,
     caption: emptyToNull(form.caption),
     sortOrder: Number(form.sortOrder || 0),
+    isCover: form.isCover,
   };
 }
 
