@@ -78,6 +78,7 @@ export type ContentRepository = {
   upsertStoryProfile(contentId: string, input: StoryProfileInput): Promise<ContentDetail>;
   createStoryUpdate(contentId: string, input: StoryUpdateInput): Promise<string>;
   createContentMedia(contentId: string, input: ContentMediaInput): Promise<string>;
+  createSignedUploadUrl(objectPath: string): Promise<{ token: string; path: string }>;
   createContentLink(contentId: string, input: ContentLinkInput): Promise<string>;
   publishContent(id: string): Promise<ContentDetail>;
   archiveContent(id: string): Promise<ContentDetail>;
