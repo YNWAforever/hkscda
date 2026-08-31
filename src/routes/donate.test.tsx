@@ -1,6 +1,15 @@
 import { describe, expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 import type { DocumentSlot } from "@/lib/documents/types";
+import type { PublicPaymentMethod } from "@/lib/paymentPublicConfig/types";
+
+const ALL_METHODS: PublicPaymentMethod[] = [
+  { method: "stripe", displayLabelZh: "信用卡", displayLabelEn: "Card", details: {} },
+  { method: "alipayhk", displayLabelZh: "AlipayHK", displayLabelEn: "AlipayHK", details: {} },
+  { method: "fps", displayLabelZh: "轉數快 FPS", displayLabelEn: "FPS", details: {} },
+  { method: "payme", displayLabelZh: "PayMe", displayLabelEn: "PayMe", details: {} },
+  { method: "paypal", displayLabelZh: "PayPal", displayLabelEn: "PayPal", details: {} },
+];
 
 function weddingSlot(language: "zh-HK" | "en", fileUrl: string): DocumentSlot {
   return {
@@ -39,7 +48,11 @@ test("renders the optional purpose note and language-aware wedding forms", async
   const enWedding = weddingSlot("en", "https://documents.example/wedding-en.pdf");
 
   const html = renderToStaticMarkup(
-    <DonatePage initialSlots={[zhWedding, enWedding]} initialSearch={{ purpose: "medical" }} />,
+    <DonatePage
+      initialSlots={[zhWedding, enWedding]}
+      initialMethods={ALL_METHODS}
+      initialSearch={{ purpose: "medical" }}
+    />,
   );
 
   expect(html).toContain("其他捐款用途（婚宴／活動／粉絲籌款 等）");
@@ -70,7 +83,7 @@ test("renders the optional purpose note and language-aware wedding forms", async
   expect(html.match(/rel="noopener noreferrer"/g)).toHaveLength(externalLinks.length);
 
   const singleLanguageHtml = renderToStaticMarkup(
-    <DonatePage initialSlots={[enWedding]} initialSearch={{}} />,
+    <DonatePage initialSlots={[enWedding]} initialMethods={ALL_METHODS} initialSearch={{}} />,
   );
   expect(singleLanguageHtml).toContain('href="https://documents.example/wedding-en.pdf"');
   expect(singleLanguageHtml).not.toContain("表格暫時未能提供。");
@@ -93,7 +106,9 @@ describe("AlipayHK donation checkout", () => {
   test("keeps every provider hidden until the production activation gate is approved", async () => {
     const { DonatePage } = await import("./donate");
 
-    const html = renderToStaticMarkup(<DonatePage initialSlots={[]} initialSearch={{}} />);
+    const html = renderToStaticMarkup(
+      <DonatePage initialSlots={[]} initialMethods={ALL_METHODS} initialSearch={{}} />,
+    );
 
     expect(html).toContain("網上捐款尚未啟用");
     expect(html).toContain("付款服務完成正式審批後");
@@ -105,7 +120,12 @@ describe("AlipayHK donation checkout", () => {
     const { DonatePage } = await import("./donate");
 
     const html = renderToStaticMarkup(
-      <DonatePage initialSlots={[]} initialSearch={{}} checkoutEnabled />,
+      <DonatePage
+        initialSlots={[]}
+        initialMethods={ALL_METHODS}
+        initialSearch={{}}
+        checkoutEnabled
+      />,
     );
 
     expect(html).toContain(">信用卡<");
@@ -114,6 +134,46 @@ describe("AlipayHK donation checkout", () => {
     expect(html).toContain("轉數快 FPS");
     expect(html).toContain("PayMe");
     expect(html).toContain("PayPal");
+  });
+
+  test("renders no method buttons when the config-driven list is empty", async () => {
+    const { DonatePage } = await import("./donate");
+
+    // checkoutEnabled is true here so this exercises the "checkout is on but
+    // no methods are published yet" branch, not the checkout-disabled notice.
+    const html = renderToStaticMarkup(
+      <DonatePage initialSlots={[]} initialMethods={[]} initialSearch={{}} checkoutEnabled />,
+    );
+
+    expect(html).toContain("付款服務完成正式審批後");
+    expect(html).not.toContain(">信用卡<");
+    expect(html).not.toContain(">AlipayHK<");
+    expect(html).not.toContain(">轉數快 FPS<");
+    expect(html).not.toContain(">PayMe<");
+    expect(html).not.toContain(">PayPal<");
+  });
+
+  test("renders a method button per configured method, in the given order", async () => {
+    const { DonatePage } = await import("./donate");
+
+    const html = renderToStaticMarkup(
+      <DonatePage
+        initialSlots={[]}
+        initialMethods={[
+          { method: "fps", displayLabelZh: "轉數快 FPS", displayLabelEn: "FPS", details: {} },
+          { method: "stripe", displayLabelZh: "信用卡", displayLabelEn: "Card", details: {} },
+        ]}
+        initialSearch={{}}
+        checkoutEnabled
+      />,
+    );
+
+    expect(html).toContain(">轉數快 FPS<");
+    expect(html).toContain(">信用卡<");
+    expect(html.indexOf("轉數快 FPS")).toBeLessThan(html.indexOf("信用卡"));
+    expect(html).not.toContain("AlipayHK");
+    expect(html).not.toContain("PayMe");
+    expect(html).not.toContain("PayPal");
   });
 
   test("builds an AlipayHK request with the checkout experience", async () => {
@@ -148,6 +208,7 @@ describe("AlipayHK donation checkout", () => {
     const html = renderToStaticMarkup(
       <DonatePage
         initialSlots={[]}
+        initialMethods={ALL_METHODS}
         initialSearch={{ donation: "11111111-1111-4111-8111-111111111111", status: "pending" }}
       />,
     );
@@ -240,7 +301,9 @@ describe("AlipayHK donation checkout", () => {
 test("uses the shared public-container class, not the pre-port container-wide utility", async () => {
   const { DonatePage } = await import("./donate");
 
-  const html = renderToStaticMarkup(<DonatePage initialSlots={[]} initialSearch={{}} />);
+  const html = renderToStaticMarkup(
+    <DonatePage initialSlots={[]} initialMethods={ALL_METHODS} initialSearch={{}} />,
+  );
 
   expect(html).toContain("public-container");
   expect(html).not.toContain("container-wide");
