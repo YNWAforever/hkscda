@@ -46,27 +46,32 @@ function fakeClient({
   getError?: unknown;
 } = {}) {
   const rpc = mock(async () => ({ data: rpcData ?? null, error: rpcError ?? null }));
+  const listResult = { data: listData ?? [], count: listCount ?? 0, error: listError ?? null };
   const listBuilder: Record<string, unknown> = {
     order: () => listBuilder,
-    range: () => Promise.resolve({ data: listData ?? [], count: listCount ?? 0, error: listError ?? null }),
-    eq: () => listBuilder,
+    range: () => listBuilder,
+    then: (resolve: (value: typeof listResult) => unknown, reject: (reason: unknown) => unknown) =>
+      Promise.resolve(listResult).then(resolve, reject),
   };
+  const eq = mock(() => listBuilder);
+  listBuilder.eq = eq;
   const getBuilder = {
     eq: () => getBuilder,
     maybeSingle: () => Promise.resolve({ data: getData ?? null, error: getError ?? null }),
   };
-  return {
+  const client = {
     rpc,
     from: () => ({
       select: (_columns: string, options?: { count?: string }) =>
         options?.count ? listBuilder : getBuilder,
     }),
   } as unknown as SupabaseClient;
+  return { client, eq };
 }
 
 describe("createSupabasePaymentPublicConfigRepository", () => {
   test("create() calls the mutation RPC and maps the returned row", async () => {
-    const client = fakeClient({ rpcData: BASE_ROW });
+    const { client } = fakeClient({ rpcData: BASE_ROW });
     const repository = createSupabasePaymentPublicConfigRepository(client);
     const result = await repository.create(
       {
@@ -86,26 +91,33 @@ describe("createSupabasePaymentPublicConfigRepository", () => {
     );
   });
 
-  test("publish() maps a same-actor rejection (42501) to a conflict-shaped forbidden error", async () => {
-    const client = fakeClient({
+  test("publish() maps a same-actor rejection (42501) to a forbidden error", async () => {
+    const { client } = fakeClient({
       rpcError: {
         code: "42501",
         message: "A different treasurer or admin must publish this change",
       },
     });
     const repository = createSupabasePaymentPublicConfigRepository(client);
-    await expect(
-      repository.publish({
+    try {
+      await repository.publish({
         id: BASE_ROW.id,
         expectedVersion: 1,
         actorUserId: "same-actor",
         idempotencyKey: "a".repeat(32),
-      }),
-    ).rejects.toThrow(PaymentPublicConfigError);
+      });
+      throw new Error("expected rejection");
+    } catch (error) {
+      expect(error).toBeInstanceOf(PaymentPublicConfigError);
+      expect((error as PaymentPublicConfigError).code).toBe("forbidden");
+      expect((error as PaymentPublicConfigError).status).toBe(403);
+    }
   });
 
   test("publish() maps a stale-version error (40001) to a conflict", async () => {
-    const client = fakeClient({ rpcError: { code: "40001", message: "Stale payment public config version" } });
+    const { client } = fakeClient({
+      rpcError: { code: "40001", message: "Stale payment public config version" },
+    });
     const repository = createSupabasePaymentPublicConfigRepository(client);
     try {
       await repository.publish({
@@ -122,17 +134,25 @@ describe("createSupabasePaymentPublicConfigRepository", () => {
   });
 
   test("getById() returns null when no row matches", async () => {
-    const client = fakeClient({ getData: null });
+    const { client } = fakeClient({ getData: null });
     const repository = createSupabasePaymentPublicConfigRepository(client);
     expect(await repository.getById(BASE_ROW.id)).toBeNull();
   });
 
   test("list() returns mapped items with pagination metadata", async () => {
-    const client = fakeClient({ listData: [BASE_ROW], listCount: 1 });
+    const { client } = fakeClient({ listData: [BASE_ROW], listCount: 1 });
     const repository = createSupabasePaymentPublicConfigRepository(client);
     const result = await repository.list({ page: 1, pageSize: 20 });
     expect(result.items).toHaveLength(1);
     expect(result.total).toBe(1);
     expect(result.items[0]?.method).toBe("fps");
+  });
+
+  test("list() applies method and state filters via eq()", async () => {
+    const { client, eq } = fakeClient({ listData: [BASE_ROW], listCount: 1 });
+    const repository = createSupabasePaymentPublicConfigRepository(client);
+    await repository.list({ page: 1, pageSize: 20, method: "fps", state: "draft" });
+    expect(eq).toHaveBeenCalledWith("method", "fps");
+    expect(eq).toHaveBeenCalledWith("state", "draft");
   });
 });

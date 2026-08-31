@@ -155,11 +155,7 @@ function throwRepositoryError(error: unknown): never {
   if (code === "42501") {
     throw new PaymentPublicConfigError("forbidden", 403);
   }
-  if (
-    code === "23514" ||
-    code === "22023" ||
-    normalized.includes("labels are incomplete")
-  ) {
+  if (code === "23514" || code === "22023" || normalized.includes("labels are incomplete")) {
     throw new PaymentPublicConfigError("invalid", 422);
   }
   throw new PaymentPublicConfigError("internal", 500);
