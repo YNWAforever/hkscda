@@ -172,7 +172,6 @@ describe("content repository mapping", () => {
     expect(
       toContentMediaInsert("content-1", {
         storyUpdateId: "22222222-2222-4333-8444-555555555555",
-        storageBucket: "content-media",
         storagePath: "stories/siu-bak/checkup.jpg",
         altText: "小白覆診照片",
         caption: "覆診完成",
@@ -182,6 +181,7 @@ describe("content repository mapping", () => {
     ).toMatchObject({
       content_item_id: "content-1",
       story_update_id: "22222222-2222-4333-8444-555555555555",
+      storage_bucket: "content-media",
       storage_path: "stories/siu-bak/checkup.jpg",
       alt_text: "小白覆診照片",
       is_cover: true,
