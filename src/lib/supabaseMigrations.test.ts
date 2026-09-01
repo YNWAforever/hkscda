@@ -639,6 +639,21 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("returning id into zh_asset_id");
     expect(sql).toContain("returning id into en_asset_id");
 
+    // The placeholder must never be live-servable: RLS only grants anon/
+    // authenticated read access where is_published = true (see
+    // 20260719223000_public_document_read_policies.sql), so both the
+    // document_assets row and the site_document_slots row it's linked from
+    // are seeded unpublished. This is a regression guard on the boolean
+    // literal itself, not just the surrounding insert shape.
+    expect(sql).toContain(
+      "'placeholder/post-adoption-guide-zh-hk.pdf',\n      1,\n      false\n    )\n    returning id into zh_asset_id;",
+    );
+    expect(sql).toContain(
+      "'placeholder/post-adoption-guide-en.pdf',\n      1,\n      false\n    )\n    returning id into en_asset_id;",
+    );
+    expect(sql).toContain("'post_adoption_guide', 'zh-HK', zh_asset_id, false");
+    expect(sql).toContain("'post_adoption_guide', 'en', en_asset_id, false");
+
     // The final knowledge_posts insert/upsert is unchanged.
     expect(sql).toContain("insert into public.knowledge_posts (");
     expect(sql).toContain(

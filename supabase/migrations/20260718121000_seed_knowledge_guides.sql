@@ -22,11 +22,25 @@ begin
   -- that only happens through the admin CMS release workflow added later
   -- (20260731120000_adoption_guide_release_cms.sql). Rather than aborting
   -- migration replay entirely, create a placeholder document + slot so a
-  -- fresh database ends up with a real (if placeholder) published guide,
+  -- fresh database ends up with a real (if placeholder) guide row,
   -- matching the schema's own invariants. Staging/production already have
   -- this migration recorded as applied against a real published document,
   -- so this branch never runs there -- Supabase never re-applies a
   -- migration that has already succeeded.
+  --
+  -- The placeholder is inserted with is_published = false in both tables:
+  -- it must never become live-servable to a real visitor if a fresh
+  -- database were ever mistakenly exposed to traffic (RLS only grants
+  -- anon/authenticated read access where is_published = true -- see
+  -- 20260719223000_public_document_read_policies.sql -- and the public
+  -- knowledge listing filters on document_assets.is_published = true, so an
+  -- unpublished placeholder never appears on /knowledge either). This
+  -- doesn't block the real publish flow later: publish_adoption_guide_release
+  -- (20260731120000_adoption_guide_release_cms.sql) reads the slot's
+  -- document_asset_id unconditionally, with no is_published filter, when
+  -- looking for a prior asset to supersede, so it will still find and
+  -- correctly replace this unpublished placeholder once staff publish a
+  -- real guide through the admin CMS.
   if zh_asset_id is null then
     insert into public.document_assets (
       kind, title, language, object_path, byte_size, is_published
@@ -37,7 +51,7 @@ begin
       'zh-HK',
       'placeholder/post-adoption-guide-zh-hk.pdf',
       1,
-      true
+      false
     )
     returning id into zh_asset_id;
 
@@ -45,10 +59,12 @@ begin
       slot_key, language, document_asset_id, is_published
     )
     values (
-      'post_adoption_guide', 'zh-HK', zh_asset_id, true
+      'post_adoption_guide', 'zh-HK', zh_asset_id, false
     );
   end if;
 
+  -- en branch: same placeholder pattern and is_published = false rationale
+  -- as the zh-HK branch above.
   if en_asset_id is null then
     insert into public.document_assets (
       kind, title, language, object_path, byte_size, is_published
@@ -59,7 +75,7 @@ begin
       'en',
       'placeholder/post-adoption-guide-en.pdf',
       1,
-      true
+      false
     )
     returning id into en_asset_id;
 
@@ -67,7 +83,7 @@ begin
       slot_key, language, document_asset_id, is_published
     )
     values (
-      'post_adoption_guide', 'en', en_asset_id, true
+      'post_adoption_guide', 'en', en_asset_id, false
     );
   end if;
 
