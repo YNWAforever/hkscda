@@ -57,7 +57,7 @@ describe("COD AlipayHK provider adapter", () => {
       orderRef: createCodOrderReference(input.paymentId),
       amount: 123.45,
       subject: "HKSCDA Donation 香港拯救貓狗協會捐款",
-      returnUrl: "http://localhost:3000/donate?status=pending&donation=donation-123",
+      returnUrl: "http://localhost:5173/donate?status=pending&donation=donation-123",
       paymentSolution: "WAP",
     });
     expect(result).toEqual({

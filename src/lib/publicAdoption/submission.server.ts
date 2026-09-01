@@ -13,7 +13,8 @@ import {
   toVisitPreferenceInsert,
   validatePhotoDescriptor,
 } from "./schemas";
-import { getAppUrl, getEmailConfig } from "../donations/config.server";
+import { getAppUrl } from "../appUrl.server";
+import { getEmailConfig } from "../donations/config.server";
 import { verifyUploadedObjects } from "../publicUploads/signedUpload.server";
 
 export const ADOPTION_PHOTO_BUCKET = "adoption-application-photos";

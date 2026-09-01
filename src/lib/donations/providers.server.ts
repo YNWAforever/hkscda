@@ -1,7 +1,8 @@
 import Stripe from "stripe";
 
 import { createCodAlipayHkCheckout } from "./cod-provider.server";
-import { getAppUrl, getPayPalConfig, getStripeConfig } from "./config.server";
+import { getAppUrl } from "../appUrl.server";
+import { getPayPalConfig, getStripeConfig } from "./config.server";
 import type { CheckoutProviderInput, CheckoutProviderResult } from "./service";
 
 const purposeLabels: Record<string, string> = {

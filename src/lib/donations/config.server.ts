@@ -14,10 +14,6 @@ function required(name: string) {
   return value;
 }
 
-export function getAppUrl() {
-  return process.env.APP_URL ?? "http://localhost:3000";
-}
-
 // The receipt bucket name is not a secret. Keep it separate so callers that
 // only need the bucket (PDF upload/remove) don't have to load the service-role
 // key — which keeps that code path testable without production secrets.
