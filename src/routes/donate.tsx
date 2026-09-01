@@ -24,6 +24,8 @@ import {
 import { loadDonationDocumentSlots } from "../lib/documents/donation.server";
 import { asContextFreeRouteLoader } from "../lib/documents/routeLoaders.server";
 import type { DocumentSlot } from "../lib/documents/types";
+import { getPublicPaymentMethods } from "../lib/paymentPublicConfig/public.functions";
+import type { PublicPaymentMethod } from "../lib/paymentPublicConfig/types";
 import {
   markDonationEventOnce,
   readCheckoutSnapshot,
@@ -44,7 +46,13 @@ import { TurnstileWidget, turnstileEnabled } from "../components/site/TurnstileW
 
 export const Route = createFileRoute("/donate")({
   validateSearch: donateSearchSchema,
-  loader: asContextFreeRouteLoader(loadDonationDocumentSlots),
+  loader: asContextFreeRouteLoader(async () => {
+    const [slots, paymentMethods] = await Promise.all([
+      loadDonationDocumentSlots(),
+      getPublicPaymentMethods().catch(() => []),
+    ]);
+    return { slots, paymentMethods };
+  }),
   head: () => ({
     meta: [
       { title: "捐助我們 · 香港拯救貓狗協會 HKSCDA" },
@@ -187,13 +195,22 @@ const purposes: { value: DonationPurpose; zh: string; en: string }[] = [
   { value: "sponsor", zh: "助養動物", en: "Sponsor" },
 ];
 
-const methods: { value: DonationMethod; zh: string; en: string; Icon: typeof CreditCard }[] = [
-  { value: "stripe", zh: "信用卡", en: "Card", Icon: CreditCard },
-  { value: "alipayhk", zh: "AlipayHK", en: "AlipayHK", Icon: Smartphone },
-  { value: "fps", zh: "轉數快 FPS", en: "FPS", Icon: Zap },
-  { value: "payme", zh: "PayMe", en: "PayMe", Icon: Smartphone },
-  { value: "paypal", zh: "PayPal", en: "PayPal", Icon: Globe },
-];
+const METHOD_ICONS: Record<DonationMethod, typeof CreditCard> = {
+  stripe: CreditCard,
+  alipayhk: Smartphone,
+  fps: Zap,
+  payme: Smartphone,
+  paypal: Globe,
+};
+
+function methodsFromConfig(configured: PublicPaymentMethod[]) {
+  return configured.map((entry) => ({
+    value: entry.method,
+    zh: entry.displayLabelZh,
+    en: entry.displayLabelEn,
+    Icon: METHOD_ICONS[entry.method],
+  }));
+}
 
 export const publicDonationCheckoutEnabled =
   import.meta.env.VITE_PUBLIC_DONATION_CHECKOUT_ENABLED === "true";
@@ -248,15 +265,24 @@ export async function resolveDonationReturn(
 }
 
 function DonateRoute() {
-  return <DonatePage initialSlots={Route.useLoaderData()} initialSearch={Route.useSearch()} />;
+  const loaderData = Route.useLoaderData();
+  return (
+    <DonatePage
+      initialSlots={loaderData.slots}
+      initialMethods={loaderData.paymentMethods}
+      initialSearch={Route.useSearch()}
+    />
+  );
 }
 
 export function DonatePage({
   initialSlots,
+  initialMethods,
   initialSearch,
   checkoutEnabled = publicDonationCheckoutEnabled,
 }: {
   initialSlots: DocumentSlot[];
+  initialMethods: PublicPaymentMethod[];
   initialSearch: DonateSearch;
   checkoutEnabled?: boolean;
 }) {
@@ -280,6 +306,7 @@ export function DonatePage({
   const [manualResult, setManualResult] = useState<ManualResult | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [returnState, setReturnState] = useState<DonationReturnState | null>(null);
+  const methods = useMemo(() => methodsFromConfig(initialMethods), [initialMethods]);
 
   useEffect(() => {
     if (!attribution) return;
@@ -628,7 +655,7 @@ export function DonatePage({
 
               <fieldset className="space-y-3">
                 <legend className="text-sm font-bold text-[var(--color-panel)]">{t.method}</legend>
-                {checkoutEnabled ? (
+                {checkoutEnabled && methods.length > 0 ? (
                   <div className="grid gap-2 sm:grid-cols-2">
                     {methods.map(({ value, zh, en, Icon }) => (
                       <button

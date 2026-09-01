@@ -36,6 +36,7 @@ import { Route as AdoptionApplyRouteImport } from './routes/adoption/apply'
 import { Route as AdminVolunteersRouteImport } from './routes/admin/volunteers'
 import { Route as AdminSupportersRouteImport } from './routes/admin/supporters'
 import { Route as AdminResetPasswordRouteImport } from './routes/admin/reset-password'
+import { Route as AdminPaymentMethodsRouteImport } from './routes/admin/payment-methods'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminGovernanceRouteImport } from './routes/admin/governance'
 import { Route as AdminFaqRouteImport } from './routes/admin/faq'
@@ -63,6 +64,7 @@ import { Route as ApiAdoptionApplicationsRouteImport } from './routes/api/adopti
 import { Route as ApiAdminSupportersRouteImport } from './routes/api/admin/supporters'
 import { Route as ApiAdminReceiptsRouteImport } from './routes/api/admin/receipts'
 import { Route as ApiAdminPaymentsRouteImport } from './routes/api/admin/payments'
+import { Route as ApiAdminPaymentMethodsRouteImport } from './routes/api/admin/payment-methods'
 import { Route as ApiAdminMeRouteImport } from './routes/api/admin/me'
 import { Route as ApiAdminKnowledgeRouteImport } from './routes/api/admin/knowledge'
 import { Route as ApiAdminGovernanceRouteImport } from './routes/api/admin/governance'
@@ -105,6 +107,7 @@ import { Route as ApiAdminVolunteersGroupEnquiriesRouteImport } from './routes/a
 import { Route as ApiAdminVolunteersActivitiesRouteImport } from './routes/api/admin/volunteers/activities'
 import { Route as ApiAdminSupportersIdRouteImport } from './routes/api/admin/supporters/$id'
 import { Route as ApiAdminSponsorshipsPledgesRouteImport } from './routes/api/admin/sponsorships/pledges'
+import { Route as ApiAdminPaymentMethodsIdRouteImport } from './routes/api/admin/payment-methods/$id'
 import { Route as ApiAdminFinanceActivityRouteImport } from './routes/api/admin/finance/activity'
 import { Route as ApiAdminExportsSupportersDotcsvRouteImport } from './routes/api/admin/exports/supporters[.]csv'
 import { Route as ApiAdminExportsPaymentsDotcsvRouteImport } from './routes/api/admin/exports/payments[.]csv'
@@ -131,6 +134,10 @@ import { Route as ApiAdminSupportersIdConsentsRouteImport } from './routes/api/a
 import { Route as ApiAdminSponsorshipsPledgesIdRouteImport } from './routes/api/admin/sponsorships/pledges/$id'
 import { Route as ApiAdminReceiptsIdVoidRouteImport } from './routes/api/admin/receipts/$id/void'
 import { Route as ApiAdminPaymentsIdReconcileRouteImport } from './routes/api/admin/payments/$id/reconcile'
+import { Route as ApiAdminPaymentMethodsIdWithdrawRouteImport } from './routes/api/admin/payment-methods/$id/withdraw'
+import { Route as ApiAdminPaymentMethodsIdSubmitRouteImport } from './routes/api/admin/payment-methods/$id/submit'
+import { Route as ApiAdminPaymentMethodsIdReturnToDraftRouteImport } from './routes/api/admin/payment-methods/$id/return-to-draft'
+import { Route as ApiAdminPaymentMethodsIdPublishRouteImport } from './routes/api/admin/payment-methods/$id/publish'
 import { Route as ApiAdminDocumentsIdPublishRouteImport } from './routes/api/admin/documents/$id/publish'
 import { Route as ApiAdminContentSocialCopyIdRouteImport } from './routes/api/admin/content/social-copy/$id'
 import { Route as ApiAdminContentNotificationDraftsIdRouteImport } from './routes/api/admin/content/notification-drafts/$id'
@@ -316,6 +323,11 @@ const AdminResetPasswordRoute = AdminResetPasswordRouteImport.update({
   path: '/admin/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminPaymentMethodsRoute = AdminPaymentMethodsRouteImport.update({
+  id: '/admin/payment-methods',
+  path: '/admin/payment-methods',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
@@ -451,6 +463,11 @@ const ApiAdminReceiptsRoute = ApiAdminReceiptsRouteImport.update({
 const ApiAdminPaymentsRoute = ApiAdminPaymentsRouteImport.update({
   id: '/api/admin/payments',
   path: '/api/admin/payments',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminPaymentMethodsRoute = ApiAdminPaymentMethodsRouteImport.update({
+  id: '/api/admin/payment-methods',
+  path: '/api/admin/payment-methods',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAdminMeRoute = ApiAdminMeRouteImport.update({
@@ -678,6 +695,12 @@ const ApiAdminSponsorshipsPledgesRoute =
     path: '/api/admin/sponsorships/pledges',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiAdminPaymentMethodsIdRoute =
+  ApiAdminPaymentMethodsIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => ApiAdminPaymentMethodsRoute,
+  } as any)
 const ApiAdminFinanceActivityRoute = ApiAdminFinanceActivityRouteImport.update({
   id: '/api/admin/finance/activity',
   path: '/api/admin/finance/activity',
@@ -821,6 +844,30 @@ const ApiAdminPaymentsIdReconcileRoute =
     id: '/$id/reconcile',
     path: '/$id/reconcile',
     getParentRoute: () => ApiAdminPaymentsRoute,
+  } as any)
+const ApiAdminPaymentMethodsIdWithdrawRoute =
+  ApiAdminPaymentMethodsIdWithdrawRouteImport.update({
+    id: '/withdraw',
+    path: '/withdraw',
+    getParentRoute: () => ApiAdminPaymentMethodsIdRoute,
+  } as any)
+const ApiAdminPaymentMethodsIdSubmitRoute =
+  ApiAdminPaymentMethodsIdSubmitRouteImport.update({
+    id: '/submit',
+    path: '/submit',
+    getParentRoute: () => ApiAdminPaymentMethodsIdRoute,
+  } as any)
+const ApiAdminPaymentMethodsIdReturnToDraftRoute =
+  ApiAdminPaymentMethodsIdReturnToDraftRouteImport.update({
+    id: '/return-to-draft',
+    path: '/return-to-draft',
+    getParentRoute: () => ApiAdminPaymentMethodsIdRoute,
+  } as any)
+const ApiAdminPaymentMethodsIdPublishRoute =
+  ApiAdminPaymentMethodsIdPublishRouteImport.update({
+    id: '/publish',
+    path: '/publish',
+    getParentRoute: () => ApiAdminPaymentMethodsIdRoute,
   } as any)
 const ApiAdminDocumentsIdPublishRoute =
   ApiAdminDocumentsIdPublishRouteImport.update({
@@ -1135,6 +1182,7 @@ export interface FileRoutesByFullPath {
   '/admin/faq': typeof AdminFaqRoute
   '/admin/governance': typeof AdminGovernanceRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/payment-methods': typeof AdminPaymentMethodsRoute
   '/admin/reset-password': typeof AdminResetPasswordRoute
   '/admin/supporters': typeof AdminSupportersRouteWithChildren
   '/admin/volunteers': typeof AdminVolunteersRouteWithChildren
@@ -1184,6 +1232,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/governance': typeof ApiAdminGovernanceRoute
   '/api/admin/knowledge': typeof ApiAdminKnowledgeRoute
   '/api/admin/me': typeof ApiAdminMeRoute
+  '/api/admin/payment-methods': typeof ApiAdminPaymentMethodsRouteWithChildren
   '/api/admin/payments': typeof ApiAdminPaymentsRouteWithChildren
   '/api/admin/receipts': typeof ApiAdminReceiptsRouteWithChildren
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
@@ -1220,6 +1269,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/exports/payments.csv': typeof ApiAdminExportsPaymentsDotcsvRoute
   '/api/admin/exports/supporters.csv': typeof ApiAdminExportsSupportersDotcsvRoute
   '/api/admin/finance/activity': typeof ApiAdminFinanceActivityRoute
+  '/api/admin/payment-methods/$id': typeof ApiAdminPaymentMethodsIdRouteWithChildren
   '/api/admin/sponsorships/pledges': typeof ApiAdminSponsorshipsPledgesRouteWithChildren
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
   '/api/admin/volunteers/activities': typeof ApiAdminVolunteersActivitiesRouteWithChildren
@@ -1263,6 +1313,10 @@ export interface FileRoutesByFullPath {
   '/api/admin/content/notification-drafts/$id': typeof ApiAdminContentNotificationDraftsIdRoute
   '/api/admin/content/social-copy/$id': typeof ApiAdminContentSocialCopyIdRoute
   '/api/admin/documents/$id/publish': typeof ApiAdminDocumentsIdPublishRoute
+  '/api/admin/payment-methods/$id/publish': typeof ApiAdminPaymentMethodsIdPublishRoute
+  '/api/admin/payment-methods/$id/return-to-draft': typeof ApiAdminPaymentMethodsIdReturnToDraftRoute
+  '/api/admin/payment-methods/$id/submit': typeof ApiAdminPaymentMethodsIdSubmitRoute
+  '/api/admin/payment-methods/$id/withdraw': typeof ApiAdminPaymentMethodsIdWithdrawRoute
   '/api/admin/payments/$id/reconcile': typeof ApiAdminPaymentsIdReconcileRoute
   '/api/admin/receipts/$id/void': typeof ApiAdminReceiptsIdVoidRoute
   '/api/admin/sponsorships/pledges/$id': typeof ApiAdminSponsorshipsPledgesIdRouteWithChildren
@@ -1307,6 +1361,7 @@ export interface FileRoutesByTo {
   '/admin/faq': typeof AdminFaqRoute
   '/admin/governance': typeof AdminGovernanceRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/payment-methods': typeof AdminPaymentMethodsRoute
   '/admin/reset-password': typeof AdminResetPasswordRoute
   '/admin/supporters': typeof AdminSupportersRouteWithChildren
   '/admin/volunteers': typeof AdminVolunteersRouteWithChildren
@@ -1356,6 +1411,7 @@ export interface FileRoutesByTo {
   '/api/admin/governance': typeof ApiAdminGovernanceRoute
   '/api/admin/knowledge': typeof ApiAdminKnowledgeRoute
   '/api/admin/me': typeof ApiAdminMeRoute
+  '/api/admin/payment-methods': typeof ApiAdminPaymentMethodsRouteWithChildren
   '/api/admin/payments': typeof ApiAdminPaymentsRouteWithChildren
   '/api/admin/receipts': typeof ApiAdminReceiptsRouteWithChildren
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
@@ -1392,6 +1448,7 @@ export interface FileRoutesByTo {
   '/api/admin/exports/payments.csv': typeof ApiAdminExportsPaymentsDotcsvRoute
   '/api/admin/exports/supporters.csv': typeof ApiAdminExportsSupportersDotcsvRoute
   '/api/admin/finance/activity': typeof ApiAdminFinanceActivityRoute
+  '/api/admin/payment-methods/$id': typeof ApiAdminPaymentMethodsIdRouteWithChildren
   '/api/admin/sponsorships/pledges': typeof ApiAdminSponsorshipsPledgesRouteWithChildren
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
   '/api/admin/volunteers/activities': typeof ApiAdminVolunteersActivitiesRouteWithChildren
@@ -1435,6 +1492,10 @@ export interface FileRoutesByTo {
   '/api/admin/content/notification-drafts/$id': typeof ApiAdminContentNotificationDraftsIdRoute
   '/api/admin/content/social-copy/$id': typeof ApiAdminContentSocialCopyIdRoute
   '/api/admin/documents/$id/publish': typeof ApiAdminDocumentsIdPublishRoute
+  '/api/admin/payment-methods/$id/publish': typeof ApiAdminPaymentMethodsIdPublishRoute
+  '/api/admin/payment-methods/$id/return-to-draft': typeof ApiAdminPaymentMethodsIdReturnToDraftRoute
+  '/api/admin/payment-methods/$id/submit': typeof ApiAdminPaymentMethodsIdSubmitRoute
+  '/api/admin/payment-methods/$id/withdraw': typeof ApiAdminPaymentMethodsIdWithdrawRoute
   '/api/admin/payments/$id/reconcile': typeof ApiAdminPaymentsIdReconcileRoute
   '/api/admin/receipts/$id/void': typeof ApiAdminReceiptsIdVoidRoute
   '/api/admin/sponsorships/pledges/$id': typeof ApiAdminSponsorshipsPledgesIdRouteWithChildren
@@ -1481,6 +1542,7 @@ export interface FileRoutesById {
   '/admin/faq': typeof AdminFaqRoute
   '/admin/governance': typeof AdminGovernanceRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/payment-methods': typeof AdminPaymentMethodsRoute
   '/admin/reset-password': typeof AdminResetPasswordRoute
   '/admin/supporters': typeof AdminSupportersRouteWithChildren
   '/admin/volunteers': typeof AdminVolunteersRouteWithChildren
@@ -1530,6 +1592,7 @@ export interface FileRoutesById {
   '/api/admin/governance': typeof ApiAdminGovernanceRoute
   '/api/admin/knowledge': typeof ApiAdminKnowledgeRoute
   '/api/admin/me': typeof ApiAdminMeRoute
+  '/api/admin/payment-methods': typeof ApiAdminPaymentMethodsRouteWithChildren
   '/api/admin/payments': typeof ApiAdminPaymentsRouteWithChildren
   '/api/admin/receipts': typeof ApiAdminReceiptsRouteWithChildren
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
@@ -1566,6 +1629,7 @@ export interface FileRoutesById {
   '/api/admin/exports/payments.csv': typeof ApiAdminExportsPaymentsDotcsvRoute
   '/api/admin/exports/supporters.csv': typeof ApiAdminExportsSupportersDotcsvRoute
   '/api/admin/finance/activity': typeof ApiAdminFinanceActivityRoute
+  '/api/admin/payment-methods/$id': typeof ApiAdminPaymentMethodsIdRouteWithChildren
   '/api/admin/sponsorships/pledges': typeof ApiAdminSponsorshipsPledgesRouteWithChildren
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
   '/api/admin/volunteers/activities': typeof ApiAdminVolunteersActivitiesRouteWithChildren
@@ -1609,6 +1673,10 @@ export interface FileRoutesById {
   '/api/admin/content/notification-drafts/$id': typeof ApiAdminContentNotificationDraftsIdRoute
   '/api/admin/content/social-copy/$id': typeof ApiAdminContentSocialCopyIdRoute
   '/api/admin/documents/$id/publish': typeof ApiAdminDocumentsIdPublishRoute
+  '/api/admin/payment-methods/$id/publish': typeof ApiAdminPaymentMethodsIdPublishRoute
+  '/api/admin/payment-methods/$id/return-to-draft': typeof ApiAdminPaymentMethodsIdReturnToDraftRoute
+  '/api/admin/payment-methods/$id/submit': typeof ApiAdminPaymentMethodsIdSubmitRoute
+  '/api/admin/payment-methods/$id/withdraw': typeof ApiAdminPaymentMethodsIdWithdrawRoute
   '/api/admin/payments/$id/reconcile': typeof ApiAdminPaymentsIdReconcileRoute
   '/api/admin/receipts/$id/void': typeof ApiAdminReceiptsIdVoidRoute
   '/api/admin/sponsorships/pledges/$id': typeof ApiAdminSponsorshipsPledgesIdRouteWithChildren
@@ -1656,6 +1724,7 @@ export interface FileRouteTypes {
     | '/admin/faq'
     | '/admin/governance'
     | '/admin/login'
+    | '/admin/payment-methods'
     | '/admin/reset-password'
     | '/admin/supporters'
     | '/admin/volunteers'
@@ -1705,6 +1774,7 @@ export interface FileRouteTypes {
     | '/api/admin/governance'
     | '/api/admin/knowledge'
     | '/api/admin/me'
+    | '/api/admin/payment-methods'
     | '/api/admin/payments'
     | '/api/admin/receipts'
     | '/api/admin/supporters'
@@ -1741,6 +1811,7 @@ export interface FileRouteTypes {
     | '/api/admin/exports/payments.csv'
     | '/api/admin/exports/supporters.csv'
     | '/api/admin/finance/activity'
+    | '/api/admin/payment-methods/$id'
     | '/api/admin/sponsorships/pledges'
     | '/api/admin/supporters/$id'
     | '/api/admin/volunteers/activities'
@@ -1784,6 +1855,10 @@ export interface FileRouteTypes {
     | '/api/admin/content/notification-drafts/$id'
     | '/api/admin/content/social-copy/$id'
     | '/api/admin/documents/$id/publish'
+    | '/api/admin/payment-methods/$id/publish'
+    | '/api/admin/payment-methods/$id/return-to-draft'
+    | '/api/admin/payment-methods/$id/submit'
+    | '/api/admin/payment-methods/$id/withdraw'
     | '/api/admin/payments/$id/reconcile'
     | '/api/admin/receipts/$id/void'
     | '/api/admin/sponsorships/pledges/$id'
@@ -1828,6 +1903,7 @@ export interface FileRouteTypes {
     | '/admin/faq'
     | '/admin/governance'
     | '/admin/login'
+    | '/admin/payment-methods'
     | '/admin/reset-password'
     | '/admin/supporters'
     | '/admin/volunteers'
@@ -1877,6 +1953,7 @@ export interface FileRouteTypes {
     | '/api/admin/governance'
     | '/api/admin/knowledge'
     | '/api/admin/me'
+    | '/api/admin/payment-methods'
     | '/api/admin/payments'
     | '/api/admin/receipts'
     | '/api/admin/supporters'
@@ -1913,6 +1990,7 @@ export interface FileRouteTypes {
     | '/api/admin/exports/payments.csv'
     | '/api/admin/exports/supporters.csv'
     | '/api/admin/finance/activity'
+    | '/api/admin/payment-methods/$id'
     | '/api/admin/sponsorships/pledges'
     | '/api/admin/supporters/$id'
     | '/api/admin/volunteers/activities'
@@ -1956,6 +2034,10 @@ export interface FileRouteTypes {
     | '/api/admin/content/notification-drafts/$id'
     | '/api/admin/content/social-copy/$id'
     | '/api/admin/documents/$id/publish'
+    | '/api/admin/payment-methods/$id/publish'
+    | '/api/admin/payment-methods/$id/return-to-draft'
+    | '/api/admin/payment-methods/$id/submit'
+    | '/api/admin/payment-methods/$id/withdraw'
     | '/api/admin/payments/$id/reconcile'
     | '/api/admin/receipts/$id/void'
     | '/api/admin/sponsorships/pledges/$id'
@@ -2001,6 +2083,7 @@ export interface FileRouteTypes {
     | '/admin/faq'
     | '/admin/governance'
     | '/admin/login'
+    | '/admin/payment-methods'
     | '/admin/reset-password'
     | '/admin/supporters'
     | '/admin/volunteers'
@@ -2050,6 +2133,7 @@ export interface FileRouteTypes {
     | '/api/admin/governance'
     | '/api/admin/knowledge'
     | '/api/admin/me'
+    | '/api/admin/payment-methods'
     | '/api/admin/payments'
     | '/api/admin/receipts'
     | '/api/admin/supporters'
@@ -2086,6 +2170,7 @@ export interface FileRouteTypes {
     | '/api/admin/exports/payments.csv'
     | '/api/admin/exports/supporters.csv'
     | '/api/admin/finance/activity'
+    | '/api/admin/payment-methods/$id'
     | '/api/admin/sponsorships/pledges'
     | '/api/admin/supporters/$id'
     | '/api/admin/volunteers/activities'
@@ -2129,6 +2214,10 @@ export interface FileRouteTypes {
     | '/api/admin/content/notification-drafts/$id'
     | '/api/admin/content/social-copy/$id'
     | '/api/admin/documents/$id/publish'
+    | '/api/admin/payment-methods/$id/publish'
+    | '/api/admin/payment-methods/$id/return-to-draft'
+    | '/api/admin/payment-methods/$id/submit'
+    | '/api/admin/payment-methods/$id/withdraw'
     | '/api/admin/payments/$id/reconcile'
     | '/api/admin/receipts/$id/void'
     | '/api/admin/sponsorships/pledges/$id'
@@ -2175,6 +2264,7 @@ export interface RootRouteChildren {
   AdminFaqRoute: typeof AdminFaqRoute
   AdminGovernanceRoute: typeof AdminGovernanceRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminPaymentMethodsRoute: typeof AdminPaymentMethodsRoute
   AdminResetPasswordRoute: typeof AdminResetPasswordRoute
   AdminSupportersRoute: typeof AdminSupportersRouteWithChildren
   AdminVolunteersRoute: typeof AdminVolunteersRouteWithChildren
@@ -2212,6 +2302,7 @@ export interface RootRouteChildren {
   ApiAdminGovernanceRoute: typeof ApiAdminGovernanceRoute
   ApiAdminKnowledgeRoute: typeof ApiAdminKnowledgeRoute
   ApiAdminMeRoute: typeof ApiAdminMeRoute
+  ApiAdminPaymentMethodsRoute: typeof ApiAdminPaymentMethodsRouteWithChildren
   ApiAdminPaymentsRoute: typeof ApiAdminPaymentsRouteWithChildren
   ApiAdminReceiptsRoute: typeof ApiAdminReceiptsRouteWithChildren
   ApiAdminSupportersRoute: typeof ApiAdminSupportersRouteWithChildren
@@ -2451,6 +2542,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/payment-methods': {
+      id: '/admin/payment-methods'
+      path: '/admin/payment-methods'
+      fullPath: '/admin/payment-methods'
+      preLoaderRoute: typeof AdminPaymentMethodsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/admin/login'
@@ -2638,6 +2736,13 @@ declare module '@tanstack/react-router' {
       path: '/api/admin/payments'
       fullPath: '/api/admin/payments'
       preLoaderRoute: typeof ApiAdminPaymentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/payment-methods': {
+      id: '/api/admin/payment-methods'
+      path: '/api/admin/payment-methods'
+      fullPath: '/api/admin/payment-methods'
+      preLoaderRoute: typeof ApiAdminPaymentMethodsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/me': {
@@ -2934,6 +3039,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminSponsorshipsPledgesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/payment-methods/$id': {
+      id: '/api/admin/payment-methods/$id'
+      path: '/$id'
+      fullPath: '/api/admin/payment-methods/$id'
+      preLoaderRoute: typeof ApiAdminPaymentMethodsIdRouteImport
+      parentRoute: typeof ApiAdminPaymentMethodsRoute
+    }
     '/api/admin/finance/activity': {
       id: '/api/admin/finance/activity'
       path: '/api/admin/finance/activity'
@@ -3115,6 +3227,34 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/admin/payments/$id/reconcile'
       preLoaderRoute: typeof ApiAdminPaymentsIdReconcileRouteImport
       parentRoute: typeof ApiAdminPaymentsRoute
+    }
+    '/api/admin/payment-methods/$id/withdraw': {
+      id: '/api/admin/payment-methods/$id/withdraw'
+      path: '/withdraw'
+      fullPath: '/api/admin/payment-methods/$id/withdraw'
+      preLoaderRoute: typeof ApiAdminPaymentMethodsIdWithdrawRouteImport
+      parentRoute: typeof ApiAdminPaymentMethodsIdRoute
+    }
+    '/api/admin/payment-methods/$id/submit': {
+      id: '/api/admin/payment-methods/$id/submit'
+      path: '/submit'
+      fullPath: '/api/admin/payment-methods/$id/submit'
+      preLoaderRoute: typeof ApiAdminPaymentMethodsIdSubmitRouteImport
+      parentRoute: typeof ApiAdminPaymentMethodsIdRoute
+    }
+    '/api/admin/payment-methods/$id/return-to-draft': {
+      id: '/api/admin/payment-methods/$id/return-to-draft'
+      path: '/return-to-draft'
+      fullPath: '/api/admin/payment-methods/$id/return-to-draft'
+      preLoaderRoute: typeof ApiAdminPaymentMethodsIdReturnToDraftRouteImport
+      parentRoute: typeof ApiAdminPaymentMethodsIdRoute
+    }
+    '/api/admin/payment-methods/$id/publish': {
+      id: '/api/admin/payment-methods/$id/publish'
+      path: '/publish'
+      fullPath: '/api/admin/payment-methods/$id/publish'
+      preLoaderRoute: typeof ApiAdminPaymentMethodsIdPublishRouteImport
+      parentRoute: typeof ApiAdminPaymentMethodsIdRoute
     }
     '/api/admin/documents/$id/publish': {
       id: '/api/admin/documents/$id/publish'
@@ -3726,6 +3866,42 @@ const ApiAdminDocumentsRouteChildren: ApiAdminDocumentsRouteChildren = {
 const ApiAdminDocumentsRouteWithChildren =
   ApiAdminDocumentsRoute._addFileChildren(ApiAdminDocumentsRouteChildren)
 
+interface ApiAdminPaymentMethodsIdRouteChildren {
+  ApiAdminPaymentMethodsIdPublishRoute: typeof ApiAdminPaymentMethodsIdPublishRoute
+  ApiAdminPaymentMethodsIdReturnToDraftRoute: typeof ApiAdminPaymentMethodsIdReturnToDraftRoute
+  ApiAdminPaymentMethodsIdSubmitRoute: typeof ApiAdminPaymentMethodsIdSubmitRoute
+  ApiAdminPaymentMethodsIdWithdrawRoute: typeof ApiAdminPaymentMethodsIdWithdrawRoute
+}
+
+const ApiAdminPaymentMethodsIdRouteChildren: ApiAdminPaymentMethodsIdRouteChildren =
+  {
+    ApiAdminPaymentMethodsIdPublishRoute: ApiAdminPaymentMethodsIdPublishRoute,
+    ApiAdminPaymentMethodsIdReturnToDraftRoute:
+      ApiAdminPaymentMethodsIdReturnToDraftRoute,
+    ApiAdminPaymentMethodsIdSubmitRoute: ApiAdminPaymentMethodsIdSubmitRoute,
+    ApiAdminPaymentMethodsIdWithdrawRoute:
+      ApiAdminPaymentMethodsIdWithdrawRoute,
+  }
+
+const ApiAdminPaymentMethodsIdRouteWithChildren =
+  ApiAdminPaymentMethodsIdRoute._addFileChildren(
+    ApiAdminPaymentMethodsIdRouteChildren,
+  )
+
+interface ApiAdminPaymentMethodsRouteChildren {
+  ApiAdminPaymentMethodsIdRoute: typeof ApiAdminPaymentMethodsIdRouteWithChildren
+}
+
+const ApiAdminPaymentMethodsRouteChildren: ApiAdminPaymentMethodsRouteChildren =
+  {
+    ApiAdminPaymentMethodsIdRoute: ApiAdminPaymentMethodsIdRouteWithChildren,
+  }
+
+const ApiAdminPaymentMethodsRouteWithChildren =
+  ApiAdminPaymentMethodsRoute._addFileChildren(
+    ApiAdminPaymentMethodsRouteChildren,
+  )
+
 interface ApiAdminPaymentsRouteChildren {
   ApiAdminPaymentsIdReconcileRoute: typeof ApiAdminPaymentsIdReconcileRoute
 }
@@ -4040,6 +4216,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminFaqRoute: AdminFaqRoute,
   AdminGovernanceRoute: AdminGovernanceRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminPaymentMethodsRoute: AdminPaymentMethodsRoute,
   AdminResetPasswordRoute: AdminResetPasswordRoute,
   AdminSupportersRoute: AdminSupportersRouteWithChildren,
   AdminVolunteersRoute: AdminVolunteersRouteWithChildren,
@@ -4078,6 +4255,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminGovernanceRoute: ApiAdminGovernanceRoute,
   ApiAdminKnowledgeRoute: ApiAdminKnowledgeRoute,
   ApiAdminMeRoute: ApiAdminMeRoute,
+  ApiAdminPaymentMethodsRoute: ApiAdminPaymentMethodsRouteWithChildren,
   ApiAdminPaymentsRoute: ApiAdminPaymentsRouteWithChildren,
   ApiAdminReceiptsRoute: ApiAdminReceiptsRouteWithChildren,
   ApiAdminSupportersRoute: ApiAdminSupportersRouteWithChildren,

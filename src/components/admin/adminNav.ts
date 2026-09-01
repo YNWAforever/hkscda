@@ -167,6 +167,15 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     to: "/admin?section=payments",
   },
   {
+    id: "payment-methods",
+    section: "payments",
+    group: "donations",
+    label: "付款方式設定",
+    icon: Settings2,
+    to: "/admin/payment-methods",
+    activePath: "/admin/payment-methods",
+  },
+  {
     id: "supporters",
     section: "supporters",
     group: "donations",
