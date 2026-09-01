@@ -85,6 +85,7 @@ const NAV_ITEM_AREAS: Record<string, AdminAccessArea> = {
   volunteers: "volunteerManagement",
   "volunteer-group-enquiries": "volunteerManagement",
   payments: "payments",
+  "payment-methods": "payments",
   content: "contentManagement",
   "adoption-information": "contentManagement",
   knowledge: "contentManagement",
