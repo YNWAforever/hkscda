@@ -3,6 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createSupabaseContentListRead } from "./contentListRead.server";
 import type { AdopterNotificationRecipient } from "./notificationDrafts";
 import {
+  CONTENT_MEDIA_BUCKET,
   isSafePublicHref,
   type ContentInput,
   type ContentLinkInput,
@@ -383,7 +384,7 @@ export function toContentMediaInsert(contentId: string, input: ContentMediaInput
   return {
     content_item_id: contentId,
     story_update_id: input.storyUpdateId,
-    storage_bucket: input.storageBucket,
+    storage_bucket: CONTENT_MEDIA_BUCKET,
     storage_path: input.storagePath,
     alt_text: input.altText,
     caption: input.caption,
@@ -725,6 +726,15 @@ export function createSupabaseContentRepository(client: SupabaseClient): Content
       }
 
       return mediaId;
+    },
+
+    async createSignedUploadUrl(objectPath: string) {
+      const { data, error } = await client.storage
+        .from(CONTENT_MEDIA_BUCKET)
+        .createSignedUploadUrl(objectPath);
+      if (error) throw error;
+      if (!data?.token || !data.path) throw new Error("Storage did not return an upload target");
+      return { token: data.token, path: data.path };
     },
 
     async createContentLink(contentId, input) {
