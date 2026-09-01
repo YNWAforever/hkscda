@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
 import {
+  assertUpstashConfig,
   clientIpFromHeaders,
   enforceRateLimit,
   getClientIp,
@@ -130,5 +131,51 @@ describe("retryAfterSeconds", () => {
 
   test("never returns less than 1", () => {
     expect(retryAfterSeconds({ ok: false, reset: 1_000 }, 5_000)).toBe(1);
+  });
+});
+
+describe("assertUpstashConfig", () => {
+  test("does nothing outside production, even when inconsistent", () => {
+    expect(() =>
+      assertUpstashConfig({
+        url: "https://example.upstash.io",
+        token: undefined,
+        isProduction: false,
+      }),
+    ).not.toThrow();
+  });
+
+  test("passes in production when both url and token are set", () => {
+    expect(() =>
+      assertUpstashConfig({ url: "https://example.upstash.io", token: "tok", isProduction: true }),
+    ).not.toThrow();
+  });
+
+  test("passes in production when neither is set (rate limiting intentionally off)", () => {
+    expect(() =>
+      assertUpstashConfig({ url: undefined, token: undefined, isProduction: true }),
+    ).not.toThrow();
+  });
+
+  test("throws in production when only the url is set", () => {
+    expect(() =>
+      assertUpstashConfig({
+        url: "https://example.upstash.io",
+        token: undefined,
+        isProduction: true,
+      }),
+    ).toThrow(/Upstash misconfiguration/);
+  });
+
+  test("throws in production when only the token is set", () => {
+    expect(() => assertUpstashConfig({ url: undefined, token: "tok", isProduction: true })).toThrow(
+      /Upstash misconfiguration/,
+    );
+  });
+
+  test("throws in production when the token is an empty string (counts as not set)", () => {
+    expect(() =>
+      assertUpstashConfig({ url: "https://example.upstash.io", token: "", isProduction: true }),
+    ).toThrow(/Upstash misconfiguration/);
   });
 });

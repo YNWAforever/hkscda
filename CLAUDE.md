@@ -75,7 +75,10 @@ enforces the pairing.
   the `private` schema is not exposed to PostgREST.
 - Public POST endpoints accepting a **user-submitted form** are rate limited
   (`enforceRateLimit`) and Turnstile-verified. Both fail _open_ when unconfigured;
-  `assertTurnstileConfigFromEnv()` boot-fails on an inconsistent production pair.
+  `assertTurnstileConfigFromEnv()`/`assertUpstashConfigFromEnv()` boot-fail on an
+  inconsistent production pair (one of the two required env vars set, one missing).
+  A fully-absent Upstash pair doesn't boot-fail (may be an intentional, deferred
+  rollout) but logs once via `warnUpstashDisabledOnce()`.
   Endpoints that receive a **browser-native automated payload** instead (e.g.
   `/api/csp-report`, populated by the browser's own CSP reporting machinery, not
   by page JS or a user action) have no Turnstile widget to obtain a token from —
