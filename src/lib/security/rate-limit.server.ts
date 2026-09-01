@@ -1,8 +1,47 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
+import { isProductionRuntime } from "./turnstile.server";
+
 // A sliding-window duration string accepted by @upstash/ratelimit, e.g. "1 m".
 export type RateLimitWindow = `${number} ${"ms" | "s" | "m" | "h" | "d"}`;
+
+/**
+ * Fail loudly at startup when only one of the two required Upstash env vars
+ * is set in production.
+ *
+ * `getRedis()` below already treats "one set, one missing" the same as
+ * "neither set" (rate limiting silently disabled) — that's the right
+ * fail-open behavior for a genuinely unconfigured deployment, but a partial
+ * pair has no legitimate cause; it's almost always a typo in one of the two
+ * variable names. Turning that into an obvious boot failure (mirroring
+ * {@link import("./turnstile.server").assertTurnstileConfig}) catches the
+ * mistake immediately instead of silently running with rate limiting off.
+ */
+export function assertUpstashConfig(config: {
+  url?: string | null;
+  token?: string | null;
+  isProduction: boolean;
+}): void {
+  if (!config.isProduction) return;
+  const hasUrl = Boolean(config.url);
+  const hasToken = Boolean(config.token);
+  if (hasUrl === hasToken) return;
+  throw new Error(
+    "Upstash misconfiguration: set BOTH UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN, " +
+      `or neither. Got URL ${hasUrl ? "set" : "MISSING"}, token ${hasToken ? "set" : "MISSING"}. ` +
+      "A partial pair almost always means a typo in one of the two variable names.",
+  );
+}
+
+/** Run {@link assertUpstashConfig} against the live environment at startup. */
+export function assertUpstashConfigFromEnv(env: NodeJS.ProcessEnv = process.env): void {
+  assertUpstashConfig({
+    url: env.UPSTASH_REDIS_REST_URL,
+    token: env.UPSTASH_REDIS_REST_TOKEN,
+    isProduction: isProductionRuntime(env),
+  });
+}
 
 export type RateLimitOptions = {
   /** Namespace so different endpoints keep independent counters. */
