@@ -289,10 +289,12 @@ if (invokedPath === fileURLToPath(import.meta.url)) {
 
 This preserves every existing message and behavior exactly — the only functional addition is the `isProductionProjectRef(SUPABASE_URL)` check (placed immediately after the existing `SUPABASE_URL` presence check, before any other validation) and the three new exports. Everything else is the same logic, just moved inside `main()`.
 
+**Outcome (2026-09-01):** Code quality review of the initial implementation (commit `23f1082`) found and confirmed a real bug: the `extractProjectRef` regex above (`/^https:\/\/([a-z0-9]+)\.supabase\.co/`) is case-sensitive, so a case-varied production URL (e.g. `https://IIHQJZILGAWHFDHDEVAM.supabase.co`) failed to match and the guard silently failed open. Fixed in commit `77d9a7b` by lowercasing the input URL before the regex match (`supabaseUrl.toLowerCase().match(...)`). Two regression tests were added covering upper- and mixed-case production URLs — the shipped `scripts/seed-admin.test.ts` has **9 tests**, not the 7 shown in Step 1's listing above (which predates the fix). The code listing in Step 3 above is the pre-fix version; see `scripts/seed-admin.js` at HEAD for the as-built, case-insensitive version.
+
 - [ ] **Step 4: Run the tests to verify they pass**
 
 Run: `bun test scripts/seed-admin.test.ts`
-Expected: PASS, 7 tests.
+Expected: PASS, 7 tests (9 as shipped — see Outcome note above).
 
 - [ ] **Step 5: Manually verify the script still runs correctly end to end**
 
