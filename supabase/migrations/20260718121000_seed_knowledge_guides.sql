@@ -17,11 +17,58 @@ begin
     and language = 'en'
     and is_published = true;
 
+  -- On a genuinely fresh database (local dev, CI, a disaster-recovery
+  -- restore drill) no document has ever been published into this slot --
+  -- that only happens through the admin CMS release workflow added later
+  -- (20260731120000_adoption_guide_release_cms.sql). Rather than aborting
+  -- migration replay entirely, create a placeholder document + slot so a
+  -- fresh database ends up with a real (if placeholder) published guide,
+  -- matching the schema's own invariants. Staging/production already have
+  -- this migration recorded as applied against a real published document,
+  -- so this branch never runs there -- Supabase never re-applies a
+  -- migration that has already succeeded.
   if zh_asset_id is null then
-    raise exception 'Missing published zh-HK post_adoption_guide document slot';
+    insert into public.document_assets (
+      kind, title, language, object_path, byte_size, is_published
+    )
+    values (
+      'adoption_guide',
+      '領養後須知（預設佔位文件）',
+      'zh-HK',
+      'placeholder/post-adoption-guide-zh-hk.pdf',
+      1,
+      true
+    )
+    returning id into zh_asset_id;
+
+    insert into public.site_document_slots (
+      slot_key, language, document_asset_id, is_published
+    )
+    values (
+      'post_adoption_guide', 'zh-HK', zh_asset_id, true
+    );
   end if;
+
   if en_asset_id is null then
-    raise exception 'Missing published en post_adoption_guide document slot';
+    insert into public.document_assets (
+      kind, title, language, object_path, byte_size, is_published
+    )
+    values (
+      'adoption_guide',
+      'Post-adoption guide (placeholder)',
+      'en',
+      'placeholder/post-adoption-guide-en.pdf',
+      1,
+      true
+    )
+    returning id into en_asset_id;
+
+    insert into public.site_document_slots (
+      slot_key, language, document_asset_id, is_published
+    )
+    values (
+      'post_adoption_guide', 'en', en_asset_id, true
+    );
   end if;
 
   insert into public.knowledge_posts (
