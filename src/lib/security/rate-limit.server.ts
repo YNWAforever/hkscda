@@ -124,11 +124,25 @@ function firstHeaderEntry(value: string | null | undefined): string | undefined 
   return first && first.length > 0 ? first : undefined;
 }
 
+let warnedUpstashDisabled = false;
+function warnUpstashDisabledOnce(): void {
+  if (warnedUpstashDisabled) return;
+  warnedUpstashDisabled = true;
+  if (isProductionRuntime()) {
+    console.error(
+      "UPSTASH_REDIS_REST_URL/UPSTASH_REDIS_REST_TOKEN not set in production: rate limiting is " +
+        "DISABLED (failing open). This should only happen when rate limiting is intentionally " +
+        "turned off.",
+    );
+  }
+}
+
 let cachedRedis: Redis | null | undefined;
 function getRedis(): Redis | null {
   if (cachedRedis !== undefined) return cachedRedis;
   const url = process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!(url && token)) warnUpstashDisabledOnce();
   cachedRedis = url && token ? new Redis({ url, token }) : null;
   return cachedRedis;
 }
