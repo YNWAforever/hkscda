@@ -172,4 +172,10 @@ describe("assertUpstashConfig", () => {
       /Upstash misconfiguration/,
     );
   });
+
+  test("throws in production when the token is an empty string (counts as not set)", () => {
+    expect(() =>
+      assertUpstashConfig({ url: "https://example.upstash.io", token: "", isProduction: true }),
+    ).toThrow(/Upstash misconfiguration/);
+  });
 });
