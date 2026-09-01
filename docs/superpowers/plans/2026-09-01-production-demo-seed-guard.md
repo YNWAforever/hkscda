@@ -393,6 +393,12 @@ git commit -m "feat: require explicit confirmation to run supabase/seed.sql"
 
 **Files:** none (manual verification only).
 
+**Outcome (2026-09-01):** Docker Desktop's daemon was not running in this environment (`docker info` succeeded — the CLI/client is installed — but `docker ps` failed: `failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine ... the daemon is running`). Consistent with prior precedent in this environment, no attempt was made to relaunch the Docker Desktop daemon. As a result, **Steps 1–3 and 5 below (the `supabase/seed.sql` guard verification against a real Postgres container) were not performed** — this is a disclosed, undone gap, not a silent skip. A human with a working Docker daemon (or a real Supabase project) should run Steps 1–3 and 5 before treating the `seed.sql` guard as empirically verified end-to-end; the SQL was independently reviewed for correctness by a code quality reviewer (custom GUC semantics, `IS DISTINCT FROM` NULL handling, `DO $$...$$` validity all checked and confirmed sound), but that is static review, not a live-database run.
+
+**Steps 4 and 6 (below) do not require Docker and were completed and verified directly:**
+- Step 4: `VITE_SUPABASE_URL=https://iihqjzilgawhfdhdevam.supabase.co node scripts/seed-admin.js` → printed the expected 4-line refusal message and exited with status 1, confirming the production guard fires for the real production URL shape when the script is actually invoked (not just under the unit tests).
+- Step 6: `bun test` → 1739 pass, 0 fail, across 274 files; `bunx tsc --noEmit` → clean; `bun run lint` → 0 errors, 37 pre-existing unrelated warnings. Confirms Task 1's refactor and Task 2's SQL change together haven't broken anything else in the repo.
+
 `supabase/seed.sql`'s guard reads/writes only a session-level Postgres setting (`current_setting`/`set local`) — it needs no tables, no schema, and no migrations applied to verify, so this can be checked against a bare `postgres:16-alpine` container in isolation, without replaying this repo's full migration history (which would fail immediately on an unrelated pre-existing migration's assumptions about schemas that a vanilla container doesn't have — the same limitation documented in the content-media-upload plan's Task 8).
 
 - [ ] **Step 1: Start a disposable Postgres container**
