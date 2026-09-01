@@ -242,6 +242,8 @@ begin
 end $$;
 ```
 
+**Outcome (2026-09-02):** Code quality review of the initial implementation (commit `33be212`) found that inserting the placeholder rows with `is_published = true` (as shown in the code block above) was genuinely servable to a real visitor if a fresh database were ever hit by real traffic, and that `false` closes that exposure with zero functional cost (the real publish RPC finds the slot unconditionally regardless of `is_published`, and the public listing already filters on it). Fixed in commit `e1807d3` — the shipped migration uses `is_published = false` in all 4 places (both `document_assets` and `site_document_slots` inserts, both languages), not `true` as shown above.
+
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `bun test src/lib/supabaseMigrations.test.ts`
