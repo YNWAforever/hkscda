@@ -23,6 +23,8 @@
 
 import { createClient } from "@supabase/supabase-js";
 import { readFileSync, existsSync } from "node:fs";
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 // ── Env loading ──────────────────────────────────────────────────────────────
 
@@ -38,52 +40,83 @@ function readEnv() {
   return { ...merged, ...process.env };
 }
 
-const env = readEnv();
+// ── Production guard ─────────────────────────────────────────────────────────
+//
+// This script is a local development tool only (see docstring above) -- there
+// is no legitimate reason to run it against the live production Supabase
+// project. These are pure, exported functions with no side effects, so they
+// can be unit-tested without reading real env files or making real Supabase
+// Auth calls (see scripts/seed-admin.test.ts).
 
-const SUPABASE_URL = env.VITE_SUPABASE_URL || env.SUPABASE_URL;
-const SERVICE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
-const ADMIN_EMAIL = env.ADMIN_EMAIL;
-const ADMIN_PASSWORD = env.ADMIN_PASSWORD;
-const ADMIN_NAME = env.ADMIN_NAME || "Admin";
-const ADMIN_ROLE = env.ADMIN_ROLE || "admin";
+export const PRODUCTION_PROJECT_REF = "iihqjzilgawhfdhdevam";
 
-// ── Validation ───────────────────────────────────────────────────────────────
-
-if (!SUPABASE_URL) {
-  console.error("✗ VITE_SUPABASE_URL not set.");
-  process.exit(1);
-}
-if (!SERVICE_KEY) {
-  console.error("✗ SUPABASE_SERVICE_ROLE_KEY not set.");
-  console.error("  Get it: Supabase Dashboard → Project Settings → API → service_role");
-  console.error("  Add to .env: SUPABASE_SERVICE_ROLE_KEY=eyJ...");
-  process.exit(1);
-}
-if (!ADMIN_EMAIL) {
-  console.error("✗ ADMIN_EMAIL not set.");
-  console.error("  Example: ADMIN_EMAIL=admin@example.com npm run seed:admin");
-  process.exit(1);
-}
-if (!ADMIN_PASSWORD) {
-  console.error("✗ ADMIN_PASSWORD not set.");
-  process.exit(1);
-}
-if (ADMIN_PASSWORD.length < 8) {
-  console.error("✗ ADMIN_PASSWORD must be at least 8 characters.");
-  process.exit(1);
-}
-if (!["staff", "treasurer", "admin"].includes(ADMIN_ROLE)) {
-  console.error("✗ ADMIN_ROLE must be one of: staff, treasurer, admin.");
-  process.exit(1);
+export function extractProjectRef(supabaseUrl) {
+  if (typeof supabaseUrl !== "string") return null;
+  // Hostnames are case-insensitive, so normalize before matching -- otherwise
+  // a re-typed or auto-capitalized VITE_SUPABASE_URL (e.g. an all-caps project
+  // ref) would silently fail to match PRODUCTION_PROJECT_REF below and let the
+  // guard fail open.
+  const match = supabaseUrl.toLowerCase().match(/^https:\/\/([a-z0-9]+)\.supabase\.co/);
+  return match ? match[1] : null;
 }
 
-const supabase = createClient(SUPABASE_URL, SERVICE_KEY, {
-  auth: { autoRefreshToken: false, persistSession: false },
-});
+export function isProductionProjectRef(supabaseUrl) {
+  return extractProjectRef(supabaseUrl) === PRODUCTION_PROJECT_REF;
+}
 
 // ── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
+  const env = readEnv();
+
+  const SUPABASE_URL = env.VITE_SUPABASE_URL || env.SUPABASE_URL;
+  const SERVICE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
+  const ADMIN_EMAIL = env.ADMIN_EMAIL;
+  const ADMIN_PASSWORD = env.ADMIN_PASSWORD;
+  const ADMIN_NAME = env.ADMIN_NAME || "Admin";
+  const ADMIN_ROLE = env.ADMIN_ROLE || "admin";
+
+  // ── Validation ───────────────────────────────────────────────────────────
+
+  if (!SUPABASE_URL) {
+    console.error("✗ VITE_SUPABASE_URL not set.");
+    process.exit(1);
+  }
+  if (isProductionProjectRef(SUPABASE_URL)) {
+    console.error("✗ Refusing to run against the production Supabase project.");
+    console.error(`  Detected project ref: ${PRODUCTION_PROJECT_REF}`);
+    console.error("  This script is a local development tool only. To manage a production");
+    console.error("  admin account, use the Supabase Dashboard directly.");
+    process.exit(1);
+  }
+  if (!SERVICE_KEY) {
+    console.error("✗ SUPABASE_SERVICE_ROLE_KEY not set.");
+    console.error("  Get it: Supabase Dashboard → Project Settings → API → service_role");
+    console.error("  Add to .env: SUPABASE_SERVICE_ROLE_KEY=eyJ...");
+    process.exit(1);
+  }
+  if (!ADMIN_EMAIL) {
+    console.error("✗ ADMIN_EMAIL not set.");
+    console.error("  Example: ADMIN_EMAIL=admin@example.com npm run seed:admin");
+    process.exit(1);
+  }
+  if (!ADMIN_PASSWORD) {
+    console.error("✗ ADMIN_PASSWORD not set.");
+    process.exit(1);
+  }
+  if (ADMIN_PASSWORD.length < 8) {
+    console.error("✗ ADMIN_PASSWORD must be at least 8 characters.");
+    process.exit(1);
+  }
+  if (!["staff", "treasurer", "admin"].includes(ADMIN_ROLE)) {
+    console.error("✗ ADMIN_ROLE must be one of: staff, treasurer, admin.");
+    process.exit(1);
+  }
+
+  const supabase = createClient(SUPABASE_URL, SERVICE_KEY, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+
   console.log(`Admin seeder — target: ${ADMIN_EMAIL}\n`);
 
   const {
@@ -158,7 +191,10 @@ async function main() {
   console.log(`  Role      : ${ADMIN_ROLE}`);
 }
 
-main().catch((e) => {
-  console.error("Fatal:", e);
-  process.exit(1);
-});
+const invokedPath = process.argv[1] ? resolve(process.argv[1]) : "";
+if (invokedPath === fileURLToPath(import.meta.url)) {
+  main().catch((e) => {
+    console.error("Fatal:", e);
+    process.exit(1);
+  });
+}

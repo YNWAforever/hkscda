@@ -2,6 +2,33 @@ begin;
 
 set local timezone to 'Asia/Hong_Kong';
 
+-- Requires an explicit -v confirm=yes on every invocation, so an accidental
+-- run (wrong connection string, muscle memory, pasting into the wrong
+-- Supabase Dashboard SQL editor tab) requires a deliberate extra step
+-- instead of "just working". This does not detect which project is
+-- connected -- supabase/seed.sql has no programmatic way to know that -- it
+-- only prevents a silent, unintentional run.
+--
+-- Run as: psql <connection-string> -v confirm=yes -f supabase/seed.sql
+--
+-- If pasting into the Supabase Dashboard SQL editor instead (which does not
+-- support psql variable substitution), replace :'confirm' below with the
+-- literal 'yes' before running, or this file will fail with a syntax error
+-- at the `set local myvars.confirm` line -- which still prevents a silent
+-- accidental run, just with a less friendly error message.
+set local myvars.confirm = :'confirm';
+
+do $$
+begin
+  if current_setting('myvars.confirm', true) is distinct from 'yes' then
+    raise exception
+      'Refusing to run supabase/seed.sql without explicit confirmation. '
+      'Re-run as: psql <connection-string> -v confirm=yes -f supabase/seed.sql '
+      '(or set myvars.confirm = ''yes'' before running this file in the Supabase '
+      'Dashboard SQL editor).';
+  end if;
+end $$;
+
 -- HKSCDA demo seed data.
 -- Safe to rerun: every row uses fixed demo IDs and ON CONFLICT upserts.
 -- Domain data only: this file must not create Supabase Auth users or admin_user rows.
