@@ -22,6 +22,15 @@ describe("extractProjectRef", () => {
     expect(extractProjectRef(undefined)).toBeNull();
     expect(extractProjectRef("")).toBeNull();
   });
+
+  test("normalizes case so an upper-case or mixed-case host still extracts the ref", () => {
+    expect(extractProjectRef("https://IIHQJZILGAWHFDHDEVAM.supabase.co")).toBe(
+      "iihqjzilgawhfdhdevam",
+    );
+    expect(extractProjectRef("https://IiHqJzIlGaWhFdHdEvAm.supabase.co")).toBe(
+      "iihqjzilgawhfdhdevam",
+    );
+  });
 });
 
 describe("isProductionProjectRef", () => {
@@ -35,5 +44,11 @@ describe("isProductionProjectRef", () => {
 
   test("returns false for a malformed URL", () => {
     expect(isProductionProjectRef("not-a-url")).toBe(false);
+  });
+
+  test("returns true for the production Supabase URL with an upper-case project ref", () => {
+    expect(
+      isProductionProjectRef(`https://${PRODUCTION_PROJECT_REF.toUpperCase()}.supabase.co`),
+    ).toBe(true);
   });
 });

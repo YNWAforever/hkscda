@@ -52,7 +52,11 @@ export const PRODUCTION_PROJECT_REF = "iihqjzilgawhfdhdevam";
 
 export function extractProjectRef(supabaseUrl) {
   if (typeof supabaseUrl !== "string") return null;
-  const match = supabaseUrl.match(/^https:\/\/([a-z0-9]+)\.supabase\.co/);
+  // Hostnames are case-insensitive, so normalize before matching -- otherwise
+  // a re-typed or auto-capitalized VITE_SUPABASE_URL (e.g. an all-caps project
+  // ref) would silently fail to match PRODUCTION_PROJECT_REF below and let the
+  // guard fail open.
+  const match = supabaseUrl.toLowerCase().match(/^https:\/\/([a-z0-9]+)\.supabase\.co/);
   return match ? match[1] : null;
 }
 
