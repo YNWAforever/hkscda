@@ -2,7 +2,8 @@ import fontkit from "@pdf-lib/fontkit";
 import { PDFDocument, rgb } from "pdf-lib";
 
 import fontUrl from "../../assets/fonts/NotoSansHK-Regular.ttf?url";
-import { getAppUrl, getReceiptConfig } from "./config.server";
+import { getAppUrl } from "../appUrl.server";
+import { getReceiptConfig } from "./config.server";
 import { centsToHkd } from "./domain";
 
 type ReceiptPdfInput = {

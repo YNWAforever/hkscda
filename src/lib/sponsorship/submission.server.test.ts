@@ -413,7 +413,7 @@ describe("sendPledgeConfirmationEmail", () => {
       status: "pending_payment" as const,
       amountCents: 30000,
       statusToken: "token",
-      statusUrl: "http://localhost:3000/sponsors/status/token",
+      statusUrl: "http://localhost:5173/sponsors/status/token",
       expiresAt: "2026-08-01T00:00:00.000Z",
       ...overrides,
     };

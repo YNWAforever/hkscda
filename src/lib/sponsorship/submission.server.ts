@@ -16,7 +16,8 @@ import {
 } from "./schemas";
 import { pledgeReference } from "./statusSummary";
 import { buildConsentRows } from "../donations/domain";
-import { getAppUrl, getEmailConfig } from "../donations/config.server";
+import { getAppUrl } from "../appUrl.server";
+import { getEmailConfig } from "../donations/config.server";
 import { verifyUploadedObjects } from "../publicUploads/signedUpload.server";
 
 export const SPONSORSHIP_PROOF_BUCKET = "sponsorship-payment-proof";
