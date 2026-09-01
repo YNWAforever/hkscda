@@ -166,6 +166,8 @@ export function assertUpstashConfigFromEnv(env: NodeJS.ProcessEnv = process.env)
 Run: `bun test src/lib/security/rate-limit.server.test.ts`
 Expected: PASS, all tests (5 new `assertUpstashConfig` tests plus the existing ones in this file).
 
+**Outcome (2026-09-01):** Code quality review of the initial implementation (commit `c006bf6`) found the 5 tests above didn't cover an empty-string env value, unlike the Turnstile precedent's own test suite (which explicitly tests `secret: ""`). Fixed in commit `259b1a1` by adding a 6th test (`token: ""`). The shipped `rate-limit.server.test.ts` has **6** `assertUpstashConfig` tests, not 5.
+
 - [ ] **Step 5: Run the full test suite, typecheck, and lint**
 
 Run: `bun test && bunx tsc --noEmit && bun run lint`
