@@ -1,3 +1,4 @@
+import { getAppUrl } from "../../../../lib/appUrl.server";
 import { createContentHandlers } from "../../../../lib/content/http.server";
 import { createSupabaseContentRepository } from "../../../../lib/content/repository.server";
 import { createContentService } from "../../../../lib/content/service";
@@ -8,7 +9,7 @@ import {
 
 export function createHandlers() {
   const client = createSupabaseServiceClient();
-  const publicBaseUrl = process.env.APP_URL ?? "http://localhost:5173";
+  const publicBaseUrl = getAppUrl();
   return createContentHandlers({
     requireContentAdmin: (request) => requireAdmin(request, ["staff", "admin"], client),
     service: createContentService({ repo: createSupabaseContentRepository(client), publicBaseUrl }),

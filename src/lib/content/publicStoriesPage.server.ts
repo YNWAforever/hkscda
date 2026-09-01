@@ -1,3 +1,4 @@
+import { getAppUrl } from "../appUrl.server";
 import { createSupabaseServiceClient } from "../donations/supabase.server";
 import { createSupabaseContentRepository } from "./repository.server";
 import { createContentService } from "./service";
@@ -63,7 +64,7 @@ function createPublicStoriesPageService() {
   const client = createSupabaseServiceClient();
   return createContentService({
     repo: createSupabaseContentRepository(client),
-    publicBaseUrl: process.env.APP_URL ?? "http://localhost:5173",
+    publicBaseUrl: getAppUrl(),
   });
 }
 
