@@ -77,6 +77,7 @@ const createdAdminUserIds: string[] = [];
 let fixtureSupporterId: string | undefined;
 let fixtureDonationId: string | undefined;
 let fixturePaymentId: string | undefined;
+let fixtureConsentId: string | undefined;
 
 async function createRoleUser(
   service: SupabaseClient,
@@ -190,6 +191,21 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
     }
     fixturePaymentId = paymentRow.id as string;
 
+    const { data: consentRow, error: consentError } = await svc
+      .from("consent")
+      .insert({
+        supporter_id: fixtureSupporterId,
+        channel: "email",
+        status: "opt_in",
+        source: "rls-test-fixture",
+      })
+      .select("id")
+      .single();
+    if (consentError || !consentRow) {
+      throw new Error(`Failed to seed fixture consent: ${consentError?.message}`);
+    }
+    fixtureConsentId = consentRow.id as string;
+
     clients = {
       anon,
       noRow: noRowClient,
@@ -233,6 +249,13 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
         await svc.from("donation").delete().eq("id", fixtureDonationId);
       } catch (err) {
         console.error(`Failed to clean up fixture donation ${fixtureDonationId}:`, err);
+      }
+    }
+    if (fixtureConsentId) {
+      try {
+        await svc.from("consent").delete().eq("id", fixtureConsentId);
+      } catch (err) {
+        console.error(`Failed to clean up fixture consent ${fixtureConsentId}:`, err);
       }
     }
     if (fixtureSupporterId) {
@@ -627,6 +650,110 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
       } finally {
         await clients.service.from("receipt").delete().eq("id", createdReceiptId);
       }
+    });
+  });
+
+  describe("consent", () => {
+    test("anon cannot select or insert", async () => {
+      const selectResult = await clients.anon.from("consent").select("id");
+      if (!selectResult.error) expect(selectResult.data).toEqual([]);
+
+      const insertResult = await clients.anon.from("consent").insert({
+        supporter_id: fixtureSupporterId,
+        channel: "email",
+        status: "opt_out",
+        source: "sneaky",
+      });
+      expect(insertResult.error).not.toBeNull();
+    });
+
+    test("authenticated with no admin_user row cannot select", async () => {
+      const { data, error } = await clients.noRow.from("consent").select("id");
+      if (!error) expect(data).toEqual([]);
+    });
+
+    test("staff can select and update (unlike donation/payment, staff has update access here)", async () => {
+      const selectResult = await clients.staff
+        .from("consent")
+        .select("id")
+        .eq("id", fixtureConsentId!);
+      expect(selectResult.error).toBeNull();
+      expect(selectResult.data).toHaveLength(1);
+
+      // Restore runs in `finally` (not as a trailing statement): unlike the
+      // treasurer/donation-style coupled pairs elsewhere in this file, this
+      // single test both mutates and restores the fixture's state with no
+      // cross-test ordering dependency -- but that's only true if the restore
+      // genuinely always runs. The `expect` on `updateResult.error` below can
+      // throw if the update itself regresses, which without `finally` would
+      // skip the restore and leave the fixture as "opt_out" for whatever test
+      // runs next -- so cleanup belongs in `finally`, matching the rigor
+      // established for `receipt` in the previous task.
+      try {
+        const updateResult = await clients.staff
+          .from("consent")
+          .update({ status: "opt_out" })
+          .eq("id", fixtureConsentId!);
+        expect(updateResult.error).toBeNull();
+      } finally {
+        await clients.service
+          .from("consent")
+          .update({ status: "opt_in" })
+          .eq("id", fixtureConsentId!);
+      }
+    });
+
+    test("treasurer can update", async () => {
+      const { error } = await clients.treasurer
+        .from("consent")
+        .update({ status: "opt_in" })
+        .eq("id", fixtureConsentId!);
+      expect(error).toBeNull();
+    });
+
+    test("admin can update", async () => {
+      const { error } = await clients.admin
+        .from("consent")
+        .update({ status: "opt_in" })
+        .eq("id", fixtureConsentId!);
+      expect(error).toBeNull();
+    });
+
+    test("no authenticated role can insert a consent row directly", async () => {
+      const { error } = await clients.admin.from("consent").insert({
+        supporter_id: fixtureSupporterId,
+        channel: "whatsapp",
+        status: "opt_in",
+        source: "rls-test-insert-attempt",
+      });
+      expect(error).not.toBeNull();
+    });
+  });
+
+  describe("recurring_mandate", () => {
+    test("every non-service-role caller is blocked from selecting, regardless of admin status", async () => {
+      for (const [roleName, client] of [
+        ["anon", clients.anon],
+        ["authenticated with no admin_user row", clients.noRow],
+        ["staff", clients.staff],
+        ["treasurer", clients.treasurer],
+        ["admin", clients.admin],
+      ] as const) {
+        const { data, error } = await client.from("recurring_mandate").select("id");
+        if (!error) {
+          expect(data, `${roleName} should see zero recurring_mandate rows`).toEqual([]);
+        }
+      }
+    });
+
+    test("even admin cannot insert a recurring_mandate row directly", async () => {
+      const { error } = await clients.admin.from("recurring_mandate").insert({
+        supporter_id: fixtureSupporterId,
+        amount_cents: 5000,
+        provider: "stripe",
+        provider_ref: "rls-test-should-fail",
+      });
+      expect(error).not.toBeNull();
     });
   });
 });
