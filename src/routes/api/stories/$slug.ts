@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { getAppUrl } from "../../../lib/appUrl.server";
 import { createContentHandlers } from "../../../lib/content/http.server";
 import { createSupabaseContentRepository } from "../../../lib/content/repository.server";
 import { createContentService } from "../../../lib/content/service";
@@ -7,7 +8,7 @@ import { createSupabaseServiceClient } from "../../../lib/donations/supabase.ser
 
 function createHandlers() {
   const client = createSupabaseServiceClient();
-  const publicBaseUrl = process.env.APP_URL ?? "http://localhost:5173";
+  const publicBaseUrl = getAppUrl();
   return createContentHandlers({
     requireContentAdmin: async () => {
       throw new Response("Forbidden", { status: 403 });

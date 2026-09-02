@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 
-import { getAppUrl, getCodConfig, type CodConfig } from "./config.server";
+import { getAppUrl } from "../appUrl.server";
+import { getCodConfig, type CodConfig } from "./config.server";
 import { createCodClient, type CodCreateOrderInput } from "./cod-client.server";
 import type { CheckoutProviderInput, CheckoutProviderResult } from "./service";
 

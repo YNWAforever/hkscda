@@ -1,3 +1,4 @@
+import { getAppUrl } from "../appUrl.server";
 import { buildConsentRows } from "../donations/domain";
 import {
   createStatusTokenPair,
@@ -99,10 +100,6 @@ type VolunteerServiceArgs = {
   logger?: Pick<Console, "error">;
 };
 
-function defaultAppUrl() {
-  return process.env.APP_URL ?? "http://localhost:5173";
-}
-
 function statusUrl(appUrl: string, token: string) {
   return `${appUrl.replace(/\/+$/, "")}/volunteer/status/${encodeURIComponent(token)}`;
 }
@@ -128,7 +125,7 @@ export function createVolunteerService({
   repo,
   now = () => new Date(),
   createStatusTokenPair: makeStatusToken = createStatusTokenPair,
-  appUrl = defaultAppUrl(),
+  appUrl = getAppUrl(),
   sendRegistrationEmail = async () => undefined,
   notifyAdmins = async () => undefined,
   logger = console,

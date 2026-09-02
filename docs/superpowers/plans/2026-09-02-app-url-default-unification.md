@@ -93,6 +93,8 @@ export function getAppUrl(): string {
 }
 ```
 
+**Outcome (2026-09-02):** Code quality review of Task 3 found that migrating the content/stories files removed a per-call-site comment (`publicStory.functions.ts`'s "A deployment hostname here would silently outlive decision D-1") without preserving its caution anywhere in the new shared function. Fixed in commit `fcdc45a` by adding a paragraph to `getAppUrl()`'s docblock warning against ever hardcoding a real deployment hostname as the default. The shipped `src/lib/appUrl.server.ts` docblock has 5 more lines than the listing above.
+
 - [ ] **Step 4: Run the tests to verify they pass**
 
 Run: `bun test src/lib/appUrl.server.test.ts`

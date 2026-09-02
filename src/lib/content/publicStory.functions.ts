@@ -8,16 +8,16 @@ export const getPublicStory = createServerFn({ method: "GET" })
       { createSupabaseContentRepository },
       { createContentService },
       { createSupabaseServiceClient },
+      { getAppUrl },
     ] = await Promise.all([
       import("./repository.server"),
       import("./service"),
       import("../donations/supabase.server"),
+      import("../appUrl.server"),
     ]);
     const service = createContentService({
       repo: createSupabaseContentRepository(createSupabaseServiceClient()),
-      // Same default as the rest of the content module. A deployment hostname
-      // here would silently outlive decision D-1.
-      publicBaseUrl: process.env.APP_URL ?? "http://localhost:5173",
+      publicBaseUrl: getAppUrl(),
     });
     return service.getPublicContentBySlug(data.slug);
   });
