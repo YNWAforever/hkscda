@@ -617,9 +617,48 @@ describe("supabase migration safety", () => {
     expect(sql).toContain(
       "on conflict (document_asset_id) where document_asset_id is not null do update",
     );
-    expect(sql).toContain("raise exception");
-    expect(sql).not.toContain("insert into public.document_assets");
+    // The self-healing fresh-database branch (see the dedicated test below)
+    // only inserts a document_asset when the slot lookup came back null --
+    // it never touches Supabase Storage directly.
     expect(sql).not.toContain("storage.objects");
+  });
+  test("seeds a placeholder post-adoption-guide document on a fresh database instead of raising", () => {
+    const sql = readMigration("20260718121000_seed_knowledge_guides.sql");
+
+    // The unconditional raise is gone -- both languages now get a
+    // self-healing branch instead.
+    expect(sql).not.toContain("raise exception 'Missing published zh-HK");
+    expect(sql).not.toContain("raise exception 'Missing published en");
+
+    expect(sql).toContain("if zh_asset_id is null then");
+    expect(sql).toContain("if en_asset_id is null then");
+    expect(sql).toContain("insert into public.document_assets (");
+    expect(sql).toContain("insert into public.site_document_slots (");
+    expect(sql).toContain("'placeholder/post-adoption-guide-zh-hk.pdf'");
+    expect(sql).toContain("'placeholder/post-adoption-guide-en.pdf'");
+    expect(sql).toContain("returning id into zh_asset_id");
+    expect(sql).toContain("returning id into en_asset_id");
+
+    // The placeholder must never be live-servable: RLS only grants anon/
+    // authenticated read access where is_published = true (see
+    // 20260719223000_public_document_read_policies.sql), so both the
+    // document_assets row and the site_document_slots row it's linked from
+    // are seeded unpublished. This is a regression guard on the boolean
+    // literal itself, not just the surrounding insert shape.
+    expect(sql).toContain(
+      "'placeholder/post-adoption-guide-zh-hk.pdf',\n      1,\n      false\n    )\n    returning id into zh_asset_id;",
+    );
+    expect(sql).toContain(
+      "'placeholder/post-adoption-guide-en.pdf',\n      1,\n      false\n    )\n    returning id into en_asset_id;",
+    );
+    expect(sql).toContain("'post_adoption_guide', 'zh-HK', zh_asset_id, false");
+    expect(sql).toContain("'post_adoption_guide', 'en', en_asset_id, false");
+
+    // The final knowledge_posts insert/upsert is unchanged.
+    expect(sql).toContain("insert into public.knowledge_posts (");
+    expect(sql).toContain(
+      "on conflict (document_asset_id) where document_asset_id is not null do update set",
+    );
   });
   test("adds bilingual adoption guide releases with atomic admin publication", () => {
     const sql = readMigration("20260731120000_adoption_guide_release_cms.sql");
