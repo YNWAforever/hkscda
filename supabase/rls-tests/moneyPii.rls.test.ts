@@ -70,6 +70,7 @@ const createdAuthUserIds: string[] = [];
 const createdAdminUserIds: string[] = [];
 let fixtureSupporterId: string | undefined;
 let fixtureDonationId: string | undefined;
+let fixturePaymentId: string | undefined;
 
 async function createRoleUser(
   service: SupabaseClient,
@@ -173,6 +174,16 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
     }
     fixtureDonationId = donationRow.id as string;
 
+    const { data: paymentRow, error: paymentError } = await svc
+      .from("payment")
+      .insert({ donation_id: fixtureDonationId, provider: "manual", amount_cents: 10000 })
+      .select("id")
+      .single();
+    if (paymentError || !paymentRow) {
+      throw new Error(`Failed to seed fixture payment: ${paymentError?.message}`);
+    }
+    fixturePaymentId = paymentRow.id as string;
+
     clients = {
       anon,
       noRow: noRowClient,
@@ -202,6 +213,13 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
         await svc.from("admin_user").delete().eq("id", id);
       } catch (err) {
         console.error(`Failed to clean up admin_user row ${id}:`, err);
+      }
+    }
+    if (fixturePaymentId) {
+      try {
+        await svc.from("payment").delete().eq("id", fixturePaymentId);
+      } catch (err) {
+        console.error(`Failed to clean up fixture payment ${fixturePaymentId}:`, err);
       }
     }
     if (fixtureDonationId) {
@@ -406,6 +424,146 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
         method: "manual",
       });
       expect(error).not.toBeNull();
+    });
+  });
+
+  describe("payment", () => {
+    test("anon cannot select", async () => {
+      const { data, error } = await clients.anon.from("payment").select("id");
+      if (!error) expect(data).toEqual([]);
+    });
+
+    test("authenticated with no admin_user row cannot select", async () => {
+      const { data, error } = await clients.noRow.from("payment").select("id");
+      if (!error) expect(data).toEqual([]);
+    });
+
+    test("staff can select but cannot reconcile (update)", async () => {
+      const selectResult = await clients.staff
+        .from("payment")
+        .select("id")
+        .eq("id", fixturePaymentId);
+      expect(selectResult.error).toBeNull();
+      expect(selectResult.data).toHaveLength(1);
+
+      await clients.staff
+        .from("payment")
+        .update({ status: "succeeded" })
+        .eq("id", fixturePaymentId);
+      const check = await clients.service
+        .from("payment")
+        .select("status")
+        .eq("id", fixturePaymentId)
+        .single();
+      expect(check.data?.status).not.toBe("succeeded");
+    });
+
+    // These two tests are intentionally coupled, the same way the "treasurer
+    // can select and update" / "admin can select and update" pair above is
+    // for `donation`: this one leaves the fixture payment's status as
+    // "succeeded", and the next one ("admin can reconcile") depends on
+    // running afterward to revert it back to "pending" -- bun:test runs
+    // tests within a describe block in source order, so that ordering is
+    // guaranteed here. This is safe only because nothing else in this file
+    // reads fixturePaymentId's status between the two. If this "admin" test
+    // is ever changed to stop reverting the status, update this comment (and
+    // any downstream assumption) accordingly.
+    test("treasurer can reconcile (update)", async () => {
+      const { error } = await clients.treasurer
+        .from("payment")
+        .update({ status: "succeeded" })
+        .eq("id", fixturePaymentId);
+      expect(error).toBeNull();
+
+      const check = await clients.service
+        .from("payment")
+        .select("status")
+        .eq("id", fixturePaymentId)
+        .single();
+      expect(check.data?.status).toBe("succeeded");
+    });
+
+    // Reverts the status the previous test ("treasurer can reconcile") set to
+    // "succeeded", back to the fixture's original "pending" -- see the
+    // comment above that test for why this ordering dependency exists and is
+    // safe.
+    test("admin can reconcile (update)", async () => {
+      const { error } = await clients.admin
+        .from("payment")
+        .update({ status: "pending" })
+        .eq("id", fixturePaymentId);
+      expect(error).toBeNull();
+    });
+  });
+
+  describe("receipt", () => {
+    test("anon cannot select", async () => {
+      const { data, error } = await clients.anon.from("receipt").select("id");
+      if (!error) expect(data).toEqual([]);
+    });
+
+    test("staff has no access at all -- cannot select, insert, or update", async () => {
+      const selectResult = await clients.staff.from("receipt").select("id");
+      if (!selectResult.error) expect(selectResult.data).toEqual([]);
+
+      const insertResult = await clients.staff.from("receipt").insert({
+        supporter_id: fixtureSupporterId,
+        receipt_no: "RLS-TEST-STAFF-SHOULD-FAIL",
+        donation_ids: [fixtureDonationId],
+        total_amount_cents: 100,
+        tax_year: 2026,
+      });
+      expect(insertResult.error).not.toBeNull();
+    });
+
+    test("treasurer can insert, select, and update a receipt", async () => {
+      const insertResult = await clients.treasurer
+        .from("receipt")
+        .insert({
+          supporter_id: fixtureSupporterId,
+          receipt_no: "RLS-TEST-TREASURER-0001",
+          donation_ids: [fixtureDonationId],
+          total_amount_cents: 10000,
+          tax_year: 2026,
+        })
+        .select("id")
+        .single();
+      expect(insertResult.error).toBeNull();
+      expect(insertResult.data?.id).toBeDefined();
+      const createdReceiptId = insertResult.data?.id as string;
+
+      const selectResult = await clients.treasurer
+        .from("receipt")
+        .select("id")
+        .eq("id", createdReceiptId);
+      expect(selectResult.error).toBeNull();
+      expect(selectResult.data).toHaveLength(1);
+
+      const updateResult = await clients.treasurer
+        .from("receipt")
+        .update({ status: "void", voided_at: new Date().toISOString() })
+        .eq("id", createdReceiptId);
+      expect(updateResult.error).toBeNull();
+
+      // Clean up this test's own receipt (not part of the shared fixture set).
+      await clients.service.from("receipt").delete().eq("id", createdReceiptId);
+    });
+
+    test("admin can manage receipts too", async () => {
+      const insertResult = await clients.admin
+        .from("receipt")
+        .insert({
+          supporter_id: fixtureSupporterId,
+          receipt_no: "RLS-TEST-ADMIN-0001",
+          donation_ids: [fixtureDonationId],
+          total_amount_cents: 10000,
+          tax_year: 2026,
+        })
+        .select("id")
+        .single();
+      expect(insertResult.error).toBeNull();
+      const createdReceiptId = insertResult.data?.id as string;
+      await clients.service.from("receipt").delete().eq("id", createdReceiptId);
     });
   });
 });
