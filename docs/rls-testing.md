@@ -11,21 +11,24 @@ Supabase stack is reachable.
 
 ## Running locally
 
-1. Install the Supabase CLI (no global install needed -- `bunx supabase` fetches it
+1. Docker must be installed and running (e.g. Docker Desktop) -- `bunx supabase start`
+   launches Postgres, GoTrue, PostgREST, Storage, and Studio as Docker containers, and
+   fails immediately if the Docker daemon isn't reachable.
+2. Install the Supabase CLI (no global install needed -- `bunx supabase` fetches it
    on demand).
-2. `supabase/config.toml` is already checked into this repo with ports pre-configured
+3. `supabase/config.toml` is already checked into this repo with ports pre-configured
    (API `55321`, DB `55322`/shadow `55320`, Studio `55323`, Inbucket `55324`,
    analytics `55327`) -- a normal checkout needs no setup here. (`bunx supabase init
    --workdir .` is only relevant when bootstrapping a brand-new project from scratch;
    skip it in this repo.)
-3. Check for port conflicts: `docker ps --format "{{.Ports}}"`. If this machine runs
+4. Check for port conflicts: `docker ps --format "{{.Ports}}"`. If this machine runs
    other local Supabase/Postgres stacks, remap `supabase/config.toml`'s port fields
    (`[api] port`, `[db] port` + `shadow_port`, `[db.pooler] port`, `[studio] port`,
    `[local_smtp] port`, the analytics `port`) to a free 10-port block before starting.
-4. `bunx supabase start` -- applies every migration to a fresh local Postgres and
+5. `bunx supabase start` -- applies every migration to a fresh local Postgres and
    starts the full local stack (Postgres, GoTrue, PostgREST, Storage, Studio).
-5. `bun run test:rls` -- runs the RLS behavioral suite against that stack.
-6. `bunx supabase stop` when done.
+6. `bun run test:rls` -- runs the RLS behavioral suite against that stack.
+7. `bunx supabase stop` when done.
 
 ## Troubleshooting
 
