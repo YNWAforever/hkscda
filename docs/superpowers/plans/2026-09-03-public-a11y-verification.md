@@ -49,8 +49,10 @@ Expected: `package.json`'s `devDependencies` gains `"@axe-core/playwright": "^4.
 In `package.json`'s `"scripts"` block, add (right after `"verify:brand"`):
 
 ```json
-    "verify:a11y": "node scripts/verify-public-brand.mjs",
+    "verify:a11y": "MODE=a11y node scripts/verify-public-brand.mjs",
 ```
+
+(Corrected during code review of this task: the original draft here was byte-identical to `verify:brand`'s command, which meant `bun run verify:a11y` would silently default to `mode = "brand"` and do nothing a11y-specific. Bun's script runner uses its own cross-platform shell, so this `VAR=value cmd` syntax works on Windows too.)
 
 - [ ] **Step 3: Import `AxeBuilder` and add the assertion function**
 
