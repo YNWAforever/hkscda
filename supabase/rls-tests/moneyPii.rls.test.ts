@@ -20,7 +20,13 @@ async function isLocalStackReachable(): Promise<boolean> {
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/`, {
       headers: { apikey: ANON_KEY },
-      signal: AbortSignal.timeout(1500),
+      // A genuinely-down stack fails fast on connection-refused, not on
+      // timeout expiry, so a generous timeout costs ~nothing in that common
+      // case while absorbing "stack is up but slow under load" -- e.g. this
+      // check racing against the rest of a large `bun test` run competing
+      // for CPU/network at module-load time, which has been observed to
+      // produce a false "unreachable" and skip this entire file's coverage.
+      signal: AbortSignal.timeout(5000),
     });
     // PostgREST's root route responds even with no matching route configured;
     // any HTTP response (not a network error) means the stack is up.
@@ -508,12 +514,51 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
 
       const insertResult = await clients.staff.from("receipt").insert({
         supporter_id: fixtureSupporterId,
-        receipt_no: "RLS-TEST-STAFF-SHOULD-FAIL",
+        receipt_no: `RLS-TEST-STAFF-SHOULD-FAIL-${Date.now()}`,
         donation_ids: [fixtureDonationId],
         total_amount_cents: 100,
         tax_year: 2026,
       });
       expect(insertResult.error).not.toBeNull();
+
+      // Seed a receipt via the service client (bypassing RLS) purely so this
+      // test has something to attempt an update against -- it must not
+      // depend on the treasurer/admin tests below having already run and
+      // left a row behind, since describe-block test order is an
+      // implementation detail this test shouldn't rely on. Cleaned up in the
+      // `finally` regardless of what the assertions below do, so a failed
+      // assertion here can never leak a row and poison a later run via the
+      // `receipt_no` unique constraint or the one-issued-receipt-per-donation
+      // index.
+      const { data: seededReceipt, error: seedError } = await clients.service
+        .from("receipt")
+        .insert({
+          supporter_id: fixtureSupporterId,
+          receipt_no: `RLS-TEST-STAFF-UPDATE-SEED-${Date.now()}`,
+          donation_ids: [fixtureDonationId],
+          total_amount_cents: 100,
+          tax_year: 2026,
+        })
+        .select("id")
+        .single();
+      if (seedError || !seededReceipt) {
+        throw new Error(`Failed to seed receipt for staff-update test: ${seedError?.message}`);
+      }
+      const seededReceiptId = seededReceipt.id as string;
+      try {
+        await clients.staff
+          .from("receipt")
+          .update({ status: "void", voided_at: new Date().toISOString() })
+          .eq("id", seededReceiptId);
+        const check = await clients.service
+          .from("receipt")
+          .select("status")
+          .eq("id", seededReceiptId)
+          .single();
+        expect(check.data?.status).not.toBe("void");
+      } finally {
+        await clients.service.from("receipt").delete().eq("id", seededReceiptId);
+      }
     });
 
     test("treasurer can insert, select, and update a receipt", async () => {
@@ -521,7 +566,7 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
         .from("receipt")
         .insert({
           supporter_id: fixtureSupporterId,
-          receipt_no: "RLS-TEST-TREASURER-0001",
+          receipt_no: `RLS-TEST-TREASURER-${Date.now()}`,
           donation_ids: [fixtureDonationId],
           total_amount_cents: 10000,
           tax_year: 2026,
@@ -532,21 +577,29 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
       expect(insertResult.data?.id).toBeDefined();
       const createdReceiptId = insertResult.data?.id as string;
 
-      const selectResult = await clients.treasurer
-        .from("receipt")
-        .select("id")
-        .eq("id", createdReceiptId);
-      expect(selectResult.error).toBeNull();
-      expect(selectResult.data).toHaveLength(1);
+      // Cleanup runs in `finally` (not as a trailing statement) so a genuine
+      // RLS regression that throws out of an assertion above it can never
+      // leave this receipt behind -- `receipt_no` is `unique` and this
+      // fixture's value has no randomization safety net beyond the
+      // timestamp suffix above, so a leaked row would otherwise break every
+      // subsequent run's insert with a unique-constraint violation, masking
+      // the original failure until someone manually deletes the row.
+      try {
+        const selectResult = await clients.treasurer
+          .from("receipt")
+          .select("id")
+          .eq("id", createdReceiptId);
+        expect(selectResult.error).toBeNull();
+        expect(selectResult.data).toHaveLength(1);
 
-      const updateResult = await clients.treasurer
-        .from("receipt")
-        .update({ status: "void", voided_at: new Date().toISOString() })
-        .eq("id", createdReceiptId);
-      expect(updateResult.error).toBeNull();
-
-      // Clean up this test's own receipt (not part of the shared fixture set).
-      await clients.service.from("receipt").delete().eq("id", createdReceiptId);
+        const updateResult = await clients.treasurer
+          .from("receipt")
+          .update({ status: "void", voided_at: new Date().toISOString() })
+          .eq("id", createdReceiptId);
+        expect(updateResult.error).toBeNull();
+      } finally {
+        await clients.service.from("receipt").delete().eq("id", createdReceiptId);
+      }
     });
 
     test("admin can manage receipts too", async () => {
@@ -554,7 +607,7 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
         .from("receipt")
         .insert({
           supporter_id: fixtureSupporterId,
-          receipt_no: "RLS-TEST-ADMIN-0001",
+          receipt_no: `RLS-TEST-ADMIN-${Date.now()}`,
           donation_ids: [fixtureDonationId],
           total_amount_cents: 10000,
           tax_year: 2026,
@@ -563,7 +616,17 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
         .single();
       expect(insertResult.error).toBeNull();
       const createdReceiptId = insertResult.data?.id as string;
-      await clients.service.from("receipt").delete().eq("id", createdReceiptId);
+      // The id-defined assertion runs inside `try` (not before it, unlike
+      // the error-is-null check above -- a thrown error there means the
+      // insert itself failed and left no row to clean up) so that cleanup
+      // in `finally` still fires even if that assertion is ever the one
+      // that fails. See the comment in the treasurer test above for the
+      // full rationale on why cleanup belongs in `finally`.
+      try {
+        expect(insertResult.data?.id).toBeDefined();
+      } finally {
+        await clients.service.from("receipt").delete().eq("id", createdReceiptId);
+      }
     });
   });
 });
