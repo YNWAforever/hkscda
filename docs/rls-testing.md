@@ -17,7 +17,7 @@ Supabase stack is reachable.
 2. Install the Supabase CLI (no global install needed -- `bunx supabase` fetches it
    on demand).
 3. `supabase/config.toml` is already checked into this repo with ports pre-configured
-   (API `55321`, DB `55322`/shadow `55320`, Studio `55323`, Inbucket `55324`,
+   (API `55321`, DB `55322`/shadow `55320`, Studio `55323`, local_smtp `55324`,
    analytics `55327`) -- a normal checkout needs no setup here. (`bunx supabase init
    --workdir .` is only relevant when bootstrapping a brand-new project from scratch;
    skip it in this repo.)

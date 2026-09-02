@@ -333,7 +333,8 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
 
     test("authenticated with no admin_user row cannot select", async () => {
       const { data, error } = await clients.noRow.from("supporter").select("id");
-      if (!error) expect(data).toEqual([]);
+      expect(error).toBeNull();
+      expect(data).toEqual([]);
     });
 
     test("staff can select", async () => {
@@ -387,7 +388,8 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
 
     test("authenticated with no admin_user row cannot select", async () => {
       const { data, error } = await clients.noRow.from("donation").select("id");
-      if (!error) expect(data).toEqual([]);
+      expect(error).toBeNull();
+      expect(data).toEqual([]);
     });
 
     test("staff can select but cannot update", async () => {
@@ -472,7 +474,8 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
 
     test("authenticated with no admin_user row cannot select", async () => {
       const { data, error } = await clients.noRow.from("payment").select("id");
-      if (!error) expect(data).toEqual([]);
+      expect(error).toBeNull();
+      expect(data).toEqual([]);
     });
 
     test("staff can select but cannot reconcile (update)", async () => {
@@ -531,12 +534,27 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
         .eq("id", fixturePaymentId);
       expect(error).toBeNull();
     });
+
+    test("no authenticated role can insert a payment directly", async () => {
+      const { error } = await clients.admin.from("payment").insert({
+        donation_id: fixtureDonationId,
+        provider: "manual",
+        amount_cents: 500,
+      });
+      expect(error).not.toBeNull();
+    });
   });
 
   describe("receipt", () => {
     test("anon cannot select", async () => {
       const { data, error } = await clients.anon.from("receipt").select("id");
       if (!error) expect(data).toEqual([]);
+    });
+
+    test("authenticated with no admin_user row cannot select", async () => {
+      const { data, error } = await clients.noRow.from("receipt").select("id");
+      expect(error).toBeNull();
+      expect(data).toEqual([]);
     });
 
     test("staff has no access at all -- cannot select, insert, or update", async () => {
@@ -677,7 +695,8 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
 
     test("authenticated with no admin_user row cannot select", async () => {
       const { data, error } = await clients.noRow.from("consent").select("id");
-      if (!error) expect(data).toEqual([]);
+      expect(error).toBeNull();
+      expect(data).toEqual([]);
     });
 
     test("staff can select and update (unlike donation/payment, staff has update access here)", async () => {
