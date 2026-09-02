@@ -15,7 +15,9 @@ type UploadContentMediaImageArgs = {
 // as a separate copy here rather than imported: that module is a .server.ts
 // file and this helper runs in the browser, so it cannot be imported from
 // client code (this repo's *.server.ts files never reach the client bundle).
-function safeFileName(fileName: string) {
+// Exported (not just used internally) so safeFileName.parity.test.ts can
+// import both copies directly and assert they stay in sync.
+export function safeFileName(fileName: string) {
   let baseName = fileName.split(/[\\/]/).pop()?.trim() || "file";
   if (/^\.+$/.test(baseName)) baseName = "file";
   return baseName.replace(/[^A-Za-z0-9._-]/g, "_");

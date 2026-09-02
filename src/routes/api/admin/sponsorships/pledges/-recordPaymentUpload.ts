@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
+import { safeFileName as sanitizeFileName } from "../../../../../lib/publicUploads/signedUpload.server";
 import { validateProofDescriptor } from "../../../../../lib/sponsorship/schemas";
 import { SPONSORSHIP_PROOF_BUCKET } from "../../../../../lib/sponsorship/submission.server";
 import { jsonResponse, withErrors } from "../../../../../lib/sponsorshipAdmin/http.server";
@@ -17,9 +18,12 @@ export type RecordPaymentUploadContext = {
   requireCoordinator: (request: Request) => Promise<AdminUser>;
 };
 
+// Delegates to the canonical implementation in signedUpload.server.ts so this
+// route's sanitization logic can't drift out of sync with it again (it did:
+// this copy was missing the dot-only-name guard until this fix). "proof" is
+// this route's own domain-appropriate fallback for an empty/whitespace name.
 export function safeFileName(fileName: string) {
-  const baseName = fileName.split(/[\\/]/).pop()?.trim() || "proof";
-  return baseName.replace(/[^A-Za-z0-9._-]/g, "_");
+  return sanitizeFileName(fileName, "proof");
 }
 
 /**
