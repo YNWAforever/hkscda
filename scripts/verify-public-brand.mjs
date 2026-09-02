@@ -1,4 +1,5 @@
 import { chromium } from "playwright";
+import AxeBuilder from "@axe-core/playwright";
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -162,6 +163,38 @@ async function assertOneHeading(page, label, response, route) {
   const headingCount = await page.locator("h1").count();
   if (headingCount !== 1) {
     recordFailure(label + " has " + headingCount + " h1 elements");
+  }
+}
+
+const A11Y_MINOR_MODERATE_FINDINGS = [];
+
+async function assertNoSeriousA11yViolations(page, label) {
+  const results = await new AxeBuilder({ page }).analyze();
+  for (const violation of results.violations) {
+    if (violation.impact === "serious" || violation.impact === "critical") {
+      recordFailure(
+        label +
+          " has a " +
+          violation.impact +
+          " a11y violation (" +
+          violation.id +
+          "): " +
+          violation.help +
+          " -- " +
+          violation.nodes.map((node) => node.target.join(" ")).join(", "),
+      );
+    } else {
+      A11Y_MINOR_MODERATE_FINDINGS.push(
+        label +
+          ": " +
+          violation.impact +
+          " " +
+          violation.id +
+          " (" +
+          violation.nodes.length +
+          " nodes)",
+      );
+    }
   }
 }
 
@@ -424,6 +457,10 @@ try {
   const routes = [...staticRoutes, ...detailRoutes, ...stateRoutes];
 
   for (const viewport of viewports) {
+    if (mode === "a11y" && viewport.name !== "1440x900") {
+      continue;
+    }
+
     const context = await browser.newContext({ viewport });
     const page = await context.newPage();
     let currentRoute = "initial";
@@ -474,6 +511,9 @@ try {
           if (mode === "brand") {
             await assertBrandLogo(page, label);
           }
+          if (mode === "a11y") {
+            await assertNoSeriousA11yViolations(page, label);
+          }
           await assertOneHeading(page, label, response, route);
           await assertRecoveryCopy(page, route);
           await page.screenshot({ path: screenshotName(route, viewport.name), fullPage: true });
@@ -496,12 +536,21 @@ try {
       await context.close();
     }
 
-    await runReflowCheck(browser, viewport);
-    await runReducedMotionCheck(browser, viewport);
+    if (mode === "brand") {
+      await runReflowCheck(browser, viewport);
+      await runReducedMotionCheck(browser, viewport);
+    }
   }
 
   if (asset404s.length > 0) {
     failures.push(...asset404s.map((asset) => "404 asset: " + asset));
+  }
+
+  if (A11Y_MINOR_MODERATE_FINDINGS.length > 0) {
+    console.log(
+      "Minor/moderate a11y findings (not gating this check):\n" +
+        A11Y_MINOR_MODERATE_FINDINGS.join("\n"),
+    );
   }
 
   if (failures.length > 0) {
