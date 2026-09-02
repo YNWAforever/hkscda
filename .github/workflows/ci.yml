@@ -55,13 +55,15 @@ jobs:
         run: git diff --exit-code -- src/routeTree.gen.ts
 
   # Separate job so the fast gate stays fast, and a browser sweep can never block
-  # a typecheck fix. Non-blocking until it has been green on main twice; then it
-  # becomes required (P0-12, tech lead).
+  # a typecheck fix while it's non-blocking. Was green on main 5+ runs in a row
+  # (2026-08-30 through 2026-09-01), well past the "twice" bar, so it is now a
+  # required branch-protection check on main (P0-12) -- continue-on-error is
+  # removed so a real failure here is reported as a real failure, not masked
+  # as success.
   brand-verify:
     runs-on: ubuntu-latest
     needs: verify
     timeout-minutes: 20
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
 
