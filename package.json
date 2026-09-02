@@ -17,7 +17,7 @@
     "import:adoption-guides": "node scripts/import-adoption-guide-drafts.mjs",
     "seed:admin": "node scripts/seed-admin.js",
     "verify:brand": "node scripts/verify-public-brand.mjs",
-    "verify:a11y": "node scripts/verify-public-brand.mjs",
+    "verify:a11y": "MODE=a11y node scripts/verify-public-brand.mjs",
     "verify:brand:install": "playwright install chromium"
   },
   "dependencies": {

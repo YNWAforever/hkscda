@@ -52,7 +52,7 @@ const viewports = [
   { name: "390x844", width: 390, height: 844 },
   { name: "768x1024", width: 768, height: 1024 },
   { name: "1024x768", width: 1024, height: 768 },
-  { name: "1440x900", width: 1440, height: 900 },
+  { name: "1440x900", width: 1440, height: 900, isDesktop: true },
 ];
 
 const failures = [];
@@ -457,7 +457,7 @@ try {
   const routes = [...staticRoutes, ...detailRoutes, ...stateRoutes];
 
   for (const viewport of viewports) {
-    if (mode === "a11y" && viewport.name !== "1440x900") {
+    if (mode === "a11y" && !viewport.isDesktop) {
       continue;
     }
 
