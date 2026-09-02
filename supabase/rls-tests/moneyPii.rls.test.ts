@@ -79,6 +79,14 @@ let fixtureDonationId: string | undefined;
 let fixturePaymentId: string | undefined;
 let fixtureConsentId: string | undefined;
 
+// These role-user emails (below, in beforeAll) are hardcoded and reused on
+// every run; afterAll is what makes that safe by deleting the auth users it
+// created. If a prior run's afterAll was skipped entirely -- e.g. it timed
+// out, which has been observed in practice under a cold-started local
+// stack -- the next run's `auth.admin.createUser` call here hard-fails
+// outright with "already registered" rather than degrading gracefully.
+// Recovery: `bunx supabase db reset` to wipe the local stack back to a clean
+// migrated state.
 async function createRoleUser(
   service: SupabaseClient,
   email: string,
@@ -703,20 +711,53 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
       }
     });
 
+    // These two tests are intentionally coupled, the same way the "treasurer
+    // can select and update" / "admin can select and update" pair is for
+    // `donation` and the "treasurer can reconcile" / "admin can reconcile"
+    // pair is for `payment`: this one leaves the fixture consent's status as
+    // "opt_out", and the next one ("admin can update") depends on running
+    // afterward to revert it back to "opt_in" -- bun:test runs tests within a
+    // describe block in source order, so that ordering is guaranteed here.
+    // The read-back below (not just `error).toBeNull()`) matters here for the
+    // same reason it does for donation/payment: a blocked UPDATE under RLS
+    // can return `error: null` with 0 rows silently affected, so asserting on
+    // the error alone can't distinguish "update succeeded" from "update was a
+    // silent no-op" -- only actually changing the value and reading it back
+    // can. This is safe only because nothing else in this file reads
+    // fixtureConsentId's status between the two tests. If this "admin" test
+    // is ever changed to stop reverting the status, update this comment (and
+    // any downstream assumption) accordingly.
     test("treasurer can update", async () => {
       const { error } = await clients.treasurer
         .from("consent")
-        .update({ status: "opt_in" })
+        .update({ status: "opt_out" })
         .eq("id", fixtureConsentId!);
       expect(error).toBeNull();
+
+      const check = await clients.service
+        .from("consent")
+        .select("status")
+        .eq("id", fixtureConsentId!)
+        .single();
+      expect(check.data?.status).toBe("opt_out");
     });
 
+    // Reverts the status the previous test ("treasurer can update") set to
+    // "opt_out", back to the fixture's original "opt_in" -- see the comment
+    // above that test for why this ordering dependency exists and is safe.
     test("admin can update", async () => {
       const { error } = await clients.admin
         .from("consent")
         .update({ status: "opt_in" })
         .eq("id", fixtureConsentId!);
       expect(error).toBeNull();
+
+      const check = await clients.service
+        .from("consent")
+        .select("status")
+        .eq("id", fixtureConsentId!)
+        .single();
+      expect(check.data?.status).toBe("opt_in");
     });
 
     test("no authenticated role can insert a consent row directly", async () => {
@@ -739,9 +780,18 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
         ["treasurer", clients.treasurer],
         ["admin", clients.admin],
       ] as const) {
-        const { data, error } = await client.from("recurring_mandate").select("id");
-        if (!error) {
-          expect(data, `${roleName} should see zero recurring_mandate rows`).toEqual([]);
+        try {
+          const { data, error } = await client.from("recurring_mandate").select("id");
+          if (!error) {
+            expect(data, `${roleName} should see zero recurring_mandate rows`).toEqual([]);
+          }
+        } catch (err) {
+          // Without this, an unexpected throw here (a genuine network error --
+          // not the normal "blocked" outcome, which resolves with `{error}`
+          // rather than throwing) collapses all 5 independent per-role checks
+          // into one bare stack trace with no indication of which role was
+          // mid-check when it happened.
+          throw new Error(`recurring_mandate select failed for role ${roleName}: ${err}`);
         }
       }
     });
