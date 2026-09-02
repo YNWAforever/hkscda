@@ -852,6 +852,30 @@ describe("supabase migration safety", () => {
     expect((sql.match(/'dog', '/g) ?? []).length).toBe(9);
   });
 
+  test("uses standard-quoted string literals, not E-prefixed escape strings, in adoption rules and care topics", () => {
+    const sql = readMigration("20260830130000_adoption_rules_care_topics.sql");
+
+    // E'...' escape-string literals with a backslash-escaped apostrophe
+    // confuse the Supabase CLI's migration statement splitter, merging
+    // this file's two top-level insert statements into one chunk and
+    // causing "cannot insert multiple commands into a prepared statement"
+    // on a fresh database replay. Standard '...' literals with doubled
+    // apostrophes ('') avoid the ambiguity entirely.
+    expect(sql).not.toMatch(/E'/);
+
+    // The actual English content must be unchanged (apostrophes now
+    // doubled instead of backslash-escaped).
+    expect(sql).toContain("this page''s latest adoption fee table");
+    expect(sql).toContain("the association''s approval");
+    expect(sql).toContain("the animal''s physical and behavioural traits");
+    expect(sql).toContain("the cat''s anxiety");
+    expect(sql).toContain("don''t rush introductions");
+    expect(sql).toContain("your cat''s eating and toileting habits");
+    expect(sql).toContain("your dog''s size and age");
+    expect(sql).toContain("your dog''s eating and behaviour");
+    expect(sql).toContain("where it''s permitted");
+  });
+
   test("adds about_page_content with a shared upsert RPC and seeds all three pages", () => {
     const sql = readMigrationBySuffix("_about_page_content.sql");
 
