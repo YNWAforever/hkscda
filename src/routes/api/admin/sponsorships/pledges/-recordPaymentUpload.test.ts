@@ -70,6 +70,11 @@ describe("safeFileName", () => {
   test("falls back to 'proof' for an empty name", () => {
     expect(safeFileName("   ")).toBe("proof");
   });
+
+  test("falls back to 'proof' for a dot-only name", () => {
+    expect(safeFileName(".")).toBe("proof");
+    expect(safeFileName("..")).toBe("proof");
+  });
 });
 
 describe("handleRecordPaymentUpload", () => {

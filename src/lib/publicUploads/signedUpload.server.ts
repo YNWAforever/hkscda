@@ -21,9 +21,21 @@ export type ExpectedUploadedObject = {
 
 export type VerifyUploadResult = { ok: true } | { ok: false; missing: string[] };
 
-function safeFileName(fileName: string) {
-  let baseName = fileName.split(/[\\/]/).pop()?.trim() || "file";
-  if (/^\.+$/.test(baseName)) baseName = "file";
+/**
+ * Sanitizes a user-supplied file name into a safe Storage path segment:
+ * strips any directory components, collapses a dot-only name (e.g. "..")
+ * or an empty/whitespace-only name to `fallback`, then escapes every
+ * character outside `[A-Za-z0-9._-]`.
+ *
+ * The canonical implementation — `-recordPaymentUpload.ts` imports this
+ * directly (bound to its own `fallback`) rather than keeping its own copy,
+ * and `contentMediaUpload.ts` mirrors it as a separate copy only because
+ * that file runs in the browser and cannot import a `.server.ts` module;
+ * `safeFileName.parity.test.ts` asserts the two copies agree.
+ */
+export function safeFileName(fileName: string, fallback = "file") {
+  let baseName = fileName.split(/[\\/]/).pop()?.trim() || fallback;
+  if (/^\.+$/.test(baseName)) baseName = fallback;
   return baseName.replace(/[^A-Za-z0-9._-]/g, "_");
 }
 
