@@ -214,3 +214,11 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ci-placeholder-anon-key
           SUPABASE_URL: http://127.0.0.1:54329
           SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-service-role-key
+
+      - name: Upload a11y artefacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a11y-ci
+          path: artifacts/a11y-ci
+          if-no-files-found: ignore
