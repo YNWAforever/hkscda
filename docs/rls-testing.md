@@ -21,7 +21,7 @@ Supabase stack is reachable.
 3. Check for port conflicts: `docker ps --format "{{.Ports}}"`. If this machine runs
    other local Supabase/Postgres stacks, remap `supabase/config.toml`'s port fields
    (`[api] port`, `[db] port` + `shadow_port`, `[db.pooler] port`, `[studio] port`,
-   `[inbucket] port`, the analytics `port`) to a free 10-port block before starting.
+   `[local_smtp] port`, the analytics `port`) to a free 10-port block before starting.
 4. `bunx supabase start` -- applies every migration to a fresh local Postgres and
    starts the full local stack (Postgres, GoTrue, PostgREST, Storage, Studio).
 5. `bun run test:rls` -- runs the RLS behavioral suite against that stack.
@@ -32,8 +32,7 @@ Supabase stack is reachable.
 **`test:rls` fails immediately inside `beforeAll` with an "already registered" error
 from `auth.admin.createUser`.** This means a previous run's cleanup (`afterAll`) was
 skipped -- for example, a timeout under a cold-started stack -- and left the
-hardcoded test-role auth users (`rls-test-staff@example.test`,
-`rls-test-treasurer@example.test`, `rls-test-admin@example.test`) behind.
+hardcoded test-role auth users behind.
 
 Recovery: `bunx supabase db reset` to wipe the local stack back to a clean migrated
 state, then re-run `bun run test:rls`.
