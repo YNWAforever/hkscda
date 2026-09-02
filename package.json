@@ -11,7 +11,7 @@
     "test": "bun test",
     "test:rls": "bun test supabase/rls-tests",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src eslint.config.js vite.config.ts",
+    "lint": "eslint src eslint.config.js vite.config.ts supabase/rls-tests",
     "format": "prettier --write .",
     "scrape:hkscda": "node scripts/scrape-hkscda-animals.js",
     "import:hkscda": "node scripts/import-hkscda-animals.js",

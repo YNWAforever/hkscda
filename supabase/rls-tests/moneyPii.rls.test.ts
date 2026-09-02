@@ -57,10 +57,18 @@ type RoleClients = {
   service: SupabaseClient;
 };
 
+// Hoisted to describe scope (not assigned inside `clients` until beforeAll's
+// final statement) so afterAll can find and clean up whatever was actually
+// created even if beforeAll throws partway through -- e.g. a duplicate-email
+// collision from a prior failed run, or a transient network error midway
+// through seeding. Cleanup gates on `service` being set, not on the full
+// `clients` object, since `service` is assigned first, before anything that
+// can fail.
+let service: SupabaseClient | undefined;
 let clients: RoleClients;
 const createdAuthUserIds: string[] = [];
 const createdAdminUserIds: string[] = [];
-let fixtureSupporterId: string;
+let fixtureSupporterId: string | undefined;
 
 async function createRoleUser(
   service: SupabaseClient,
@@ -72,41 +80,53 @@ async function createRoleUser(
     password,
     email_confirm: true,
   });
-  if (error || !data.user) throw new Error(`Failed to create test user ${email}: ${error?.message}`);
+  if (error || !data.user) {
+    throw new Error(`Failed to create test user ${email}: ${error?.message}`);
+  }
   createdAuthUserIds.push(data.user.id);
 
   const client = createClient(SUPABASE_URL, ANON_KEY);
   const { error: signInError } = await client.auth.signInWithPassword({ email, password });
-  if (signInError) throw new Error(`Failed to sign in test user ${email}: ${signInError.message}`);
+  if (signInError) {
+    throw new Error(`Failed to sign in test user ${email}: ${signInError.message}`);
+  }
 
   return { userId: data.user.id, client };
 }
 
 describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
   beforeAll(async () => {
-    const service = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
+    // Assigned to the describe-scoped `service` first, before anything that
+    // can throw, so afterAll can always reach it to clean up -- even if a
+    // later step in this function fails partway through (a bad insert, a
+    // transient network error, a duplicate-email collision from a prior
+    // failed run). `svc` is a local alias of the same client, used for the
+    // rest of this function purely so TypeScript doesn't need to re-narrow
+    // the outer `SupabaseClient | undefined` on every reference.
+    const svc = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
       auth: { autoRefreshToken: false, persistSession: false },
     });
+    service = svc;
 
     const anon = createClient(SUPABASE_URL, ANON_KEY);
 
     const { client: noRowClient } = await createRoleUser(
-      service,
+      svc,
       "rls-test-no-row@example.test",
       "test-password-12345",
     );
     const { userId: staffAuthId, client: staffClient } = await createRoleUser(
-      service,
+      svc,
       "rls-test-staff@example.test",
       "test-password-12345",
     );
     const { userId: treasurerAuthId, client: treasurerClient } = await createRoleUser(
-      service,
+      svc,
       "rls-test-treasurer@example.test",
       "test-password-12345",
     );
     const { userId: adminAuthId, client: adminClient } = await createRoleUser(
-      service,
+      svc,
       "rls-test-admin@example.test",
       "test-password-12345",
     );
@@ -116,16 +136,18 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
       [treasurerAuthId, "rls-test-treasurer@example.test", "treasurer"],
       [adminAuthId, "rls-test-admin@example.test", "admin"],
     ] as const) {
-      const { data, error } = await service
+      const { data, error } = await svc
         .from("admin_user")
         .insert({ auth_user_id: authUserId, email, role, status: "active" })
         .select("id")
         .single();
-      if (error || !data) throw new Error(`Failed to seed admin_user for ${email}: ${error?.message}`);
+      if (error || !data) {
+        throw new Error(`Failed to seed admin_user for ${email}: ${error?.message}`);
+      }
       createdAdminUserIds.push(data.id as string);
     }
 
-    const { data: supporterRow, error: supporterError } = await service
+    const { data: supporterRow, error: supporterError } = await svc
       .from("supporter")
       .insert({ name: "RLS Test Supporter", email: "rls-test-supporter@example.test" })
       .select("id")
@@ -141,20 +163,44 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
       staff: staffClient,
       treasurer: treasurerClient,
       admin: adminClient,
-      service,
+      service: svc,
     };
   });
 
   afterAll(async () => {
-    if (!clients) return;
+    // Gated on `service` (assigned as beforeAll's first statement), not on
+    // the full `clients` object (assigned last) -- so a beforeAll failure
+    // partway through still triggers cleanup of whatever was created before
+    // the throw, instead of leaking every auth user / admin_user row created
+    // so far (which would otherwise cause duplicate-email failures on the
+    // next run).
+    if (!service) return;
+    const svc = service;
+
+    // Each loop iteration is isolated in its own try/catch: one failed
+    // delete/deleteUser call must not abort the loop and leak every
+    // subsequent id in it -- cleanup is best-effort per resource, not
+    // all-or-nothing.
     for (const id of createdAdminUserIds) {
-      await clients.service.from("admin_user").delete().eq("id", id);
+      try {
+        await svc.from("admin_user").delete().eq("id", id);
+      } catch (err) {
+        console.error(`Failed to clean up admin_user row ${id}:`, err);
+      }
     }
     if (fixtureSupporterId) {
-      await clients.service.from("supporter").delete().eq("id", fixtureSupporterId);
+      try {
+        await svc.from("supporter").delete().eq("id", fixtureSupporterId);
+      } catch (err) {
+        console.error(`Failed to clean up fixture supporter ${fixtureSupporterId}:`, err);
+      }
     }
     for (const authUserId of createdAuthUserIds) {
-      await clients.service.auth.admin.deleteUser(authUserId);
+      try {
+        await svc.auth.admin.deleteUser(authUserId);
+      } catch (err) {
+        console.error(`Failed to clean up auth user ${authUserId}:`, err);
+      }
     }
   });
 
