@@ -305,7 +305,7 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
       expect(error).not.toBeNull();
     });
 
-    test("treasurer can select and update", async () => {
+    test("treasurer can select", async () => {
       const { data, error } = await clients.treasurer
         .from("supporter")
         .select("id")
@@ -314,7 +314,7 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
       expect(data).toHaveLength(1);
     });
 
-    test("admin can select and update", async () => {
+    test("admin can select", async () => {
       const { data, error } = await clients.admin
         .from("supporter")
         .select("id")
@@ -360,6 +360,17 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
       }
     });
 
+    // These two tests are intentionally coupled: this one leaves the fixture
+    // donation's status as "succeeded", and the next one ("admin can select
+    // and update") depends on running afterward to revert it back to
+    // "pending" -- bun:test runs tests within a describe block in source
+    // order, so that ordering is guaranteed here. This is safe only because
+    // nothing else in this file reads fixtureDonationId's status between the
+    // two. If a later task's fixture (e.g. a `payment` row keyed off this
+    // same donation) needs a specific status, seed/assert it explicitly
+    // there rather than relying on this pair leaving "pending" behind --
+    // and if this "admin" test is ever changed to stop reverting the status,
+    // update this comment (and any downstream assumption) accordingly.
     test("treasurer can select and update", async () => {
       const { error } = await clients.treasurer
         .from("donation")
@@ -375,6 +386,10 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
       expect(check.data?.status).toBe("succeeded");
     });
 
+    // Reverts the status the previous test ("treasurer can select and
+    // update") set to "succeeded", back to the fixture's original "pending"
+    // -- see the comment above that test for why this ordering dependency
+    // exists and is safe.
     test("admin can select and update", async () => {
       const { error } = await clients.admin
         .from("donation")
