@@ -9,6 +9,7 @@
     "build:dev": "vite build --mode development",
     "preview": "nitro preview",
     "test": "bun test",
+    "test:rls": "bun test supabase/rls-tests",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src eslint.config.js vite.config.ts",
     "format": "prettier --write .",
