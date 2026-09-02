@@ -63,9 +63,18 @@ This spec's own deliverable is a verification tool, so "testing" means confirmin
 - Manually verify `bun run verify:brand` (existing brand mode) is completely unaffected — same routes, same assertions, same pass/fail outcome as before this change.
 - CI run: confirm the new `a11y-verify` job actually starts the fixture + preview server and runs axe-core successfully in GitHub Actions' `ubuntu-latest` runner, before considering this shippable (even though the job itself is non-blocking).
 
-## Known findings from the first real scan (filled in during plan-writing)
+## Known findings from the first real scan
 
-*To be filled in once the axe-core check is actually run against the live app, before the implementation plan's concrete remediation tasks are written — matching this session's established practice of investigating real state before writing plan content rather than assuming it. This section will list every `serious`/`critical` violation found (to be fixed by the plan) and every `minor`/`moderate` violation found (logged here as an explicit follow-up, not fixed in this pass).*
+Scanned against a real preview build (fixture-backed Supabase, matching `brand-verify`'s exact setup — plain `bun run dev` with no backend was tried first but is inadequate: `/help` and `/about` 500 and `/animals/cat` redirects empty without a real Supabase config reachable at request time, not just build time). All 26 routes from `verify-public-brand.mjs`'s existing route list (`staticRoutes` + 4 discovered `detailRoutes` + 4 synthetic `stateRoutes`) scanned successfully; none skipped. 17/26 routes had zero violations of any severity.
+
+**Serious/critical (1 unique finding — fixed by this plan):**
+
+- **`definition-list`**, impact `serious`, on `/about` only. `src/routes/about/index.tsx` (~line 160-172): the impact-stats `<dl>` wraps each stat in a `<div>` containing `<dt>`, `<dd>`, **and** a sibling `<p>資料截至 {item.asOf}</p>` caption — axe's `definition-list` rule requires each such wrapper to contain *only* the dt/dd pair. Independently confirmed by reading the file directly. No `critical`-impact findings anywhere.
+
+**Minor/moderate (2 unique findings — logged here as follow-up, not fixed in this pass):**
+
+1. **`region`**, impact `moderate`, "All page content should be contained by landmarks" — 6/26 routes (`/adoption/apply`, `/sponsors/pledge`, `/volunteer`, and the three synthetic `.../status/__brand-verification__` state routes), 8 affected-node instances. Root cause: `src/components/site/PublicFormFrame.tsx`'s `.trust-cue` paragraph and `.detail-breadcrumb` chrome render outside `<main>` — this is **documented as deliberate** in the component's own comment ("Deliberately does not own a `<main>` or a heading: every page it wraps already has its own `<main>` and `<h1>` ... a frame that supplied a second copy of either would produce a duplicate `<main>` landmark or a duplicate `<h1>`"), independently confirmed by reading the file. Worth weighing as an intentional tradeoff if ever revisited, not a blind oversight to "just fix."
+2. **`landmark-one-main`**, impact `moderate`, "Document should have one main landmark" — 2/26 routes: `/stories/__brand-verification__` and `/__brand-verification-missing__`, the site's synthetic story-not-found and missing-route recovery states. Real users reach equivalent states too (e.g., an invalid `/stories/<id>`), so this isn't a purely synthetic-route artifact, but it's still moderate-impact and out of scope for this pass per the Approved decisions above.
 
 ## Out of scope
 
