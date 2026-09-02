@@ -69,6 +69,7 @@ let clients: RoleClients;
 const createdAuthUserIds: string[] = [];
 const createdAdminUserIds: string[] = [];
 let fixtureSupporterId: string | undefined;
+let fixtureDonationId: string | undefined;
 
 async function createRoleUser(
   service: SupabaseClient,
@@ -157,6 +158,21 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
     }
     fixtureSupporterId = supporterRow.id as string;
 
+    const { data: donationRow, error: donationError } = await svc
+      .from("donation")
+      .insert({
+        supporter_id: fixtureSupporterId,
+        amount_cents: 10000,
+        purpose: "general",
+        method: "manual",
+      })
+      .select("id")
+      .single();
+    if (donationError || !donationRow) {
+      throw new Error(`Failed to seed fixture donation: ${donationError?.message}`);
+    }
+    fixtureDonationId = donationRow.id as string;
+
     clients = {
       anon,
       noRow: noRowClient,
@@ -186,6 +202,13 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
         await svc.from("admin_user").delete().eq("id", id);
       } catch (err) {
         console.error(`Failed to clean up admin_user row ${id}:`, err);
+      }
+    }
+    if (fixtureDonationId) {
+      try {
+        await svc.from("donation").delete().eq("id", fixtureDonationId);
+      } catch (err) {
+        console.error(`Failed to clean up fixture donation ${fixtureDonationId}:`, err);
       }
     }
     if (fixtureSupporterId) {
@@ -237,6 +260,137 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
       expect(emails).toContain("rls-test-staff@example.test");
       expect(emails).toContain("rls-test-treasurer@example.test");
       expect(emails).toContain("rls-test-admin@example.test");
+    });
+  });
+
+  describe("supporter", () => {
+    test("anon cannot select", async () => {
+      const { data, error } = await clients.anon.from("supporter").select("id");
+      if (!error) expect(data).toEqual([]);
+    });
+
+    test("anon cannot insert", async () => {
+      const { error } = await clients.anon
+        .from("supporter")
+        .insert({ name: "Sneaky", email: "sneaky-supporter@example.test" });
+      expect(error).not.toBeNull();
+    });
+
+    test("authenticated with no admin_user row cannot select", async () => {
+      const { data, error } = await clients.noRow.from("supporter").select("id");
+      if (!error) expect(data).toEqual([]);
+    });
+
+    test("staff can select", async () => {
+      const { data, error } = await clients.staff
+        .from("supporter")
+        .select("id")
+        .eq("id", fixtureSupporterId!);
+      expect(error).toBeNull();
+      expect(data).toHaveLength(1);
+    });
+
+    test("staff can update", async () => {
+      const { error } = await clients.staff
+        .from("supporter")
+        .update({ language: "en" })
+        .eq("id", fixtureSupporterId!);
+      expect(error).toBeNull();
+    });
+
+    test("staff cannot insert (no insert policy exists for any authenticated role)", async () => {
+      const { error } = await clients.staff
+        .from("supporter")
+        .insert({ name: "Sneaky Staff Insert", email: "sneaky-staff-insert@example.test" });
+      expect(error).not.toBeNull();
+    });
+
+    test("treasurer can select and update", async () => {
+      const { data, error } = await clients.treasurer
+        .from("supporter")
+        .select("id")
+        .eq("id", fixtureSupporterId!);
+      expect(error).toBeNull();
+      expect(data).toHaveLength(1);
+    });
+
+    test("admin can select and update", async () => {
+      const { data, error } = await clients.admin
+        .from("supporter")
+        .select("id")
+        .eq("id", fixtureSupporterId!);
+      expect(error).toBeNull();
+      expect(data).toHaveLength(1);
+    });
+  });
+
+  describe("donation", () => {
+    test("anon cannot select", async () => {
+      const { data, error } = await clients.anon.from("donation").select("id");
+      if (!error) expect(data).toEqual([]);
+    });
+
+    test("authenticated with no admin_user row cannot select", async () => {
+      const { data, error } = await clients.noRow.from("donation").select("id");
+      if (!error) expect(data).toEqual([]);
+    });
+
+    test("staff can select but cannot update", async () => {
+      const selectResult = await clients.staff
+        .from("donation")
+        .select("id")
+        .eq("id", fixtureDonationId!);
+      expect(selectResult.error).toBeNull();
+      expect(selectResult.data).toHaveLength(1);
+
+      const updateResult = await clients.staff
+        .from("donation")
+        .update({ status: "succeeded" })
+        .eq("id", fixtureDonationId!);
+      // A blocked UPDATE under RLS either errors, or silently affects 0 rows
+      // (PostgREST reports 0 affected rows as success with empty data, not
+      // an error, when no row matches the USING clause for that operation).
+      if (!updateResult.error) {
+        const check = await clients.service
+          .from("donation")
+          .select("status")
+          .eq("id", fixtureDonationId!)
+          .single();
+        expect(check.data?.status).not.toBe("succeeded");
+      }
+    });
+
+    test("treasurer can select and update", async () => {
+      const { error } = await clients.treasurer
+        .from("donation")
+        .update({ status: "succeeded" })
+        .eq("id", fixtureDonationId!);
+      expect(error).toBeNull();
+
+      const check = await clients.service
+        .from("donation")
+        .select("status")
+        .eq("id", fixtureDonationId!)
+        .single();
+      expect(check.data?.status).toBe("succeeded");
+    });
+
+    test("admin can select and update", async () => {
+      const { error } = await clients.admin
+        .from("donation")
+        .update({ status: "pending" })
+        .eq("id", fixtureDonationId!);
+      expect(error).toBeNull();
+    });
+
+    test("no authenticated role can insert a donation directly", async () => {
+      const { error } = await clients.admin.from("donation").insert({
+        supporter_id: fixtureSupporterId!,
+        amount_cents: 500,
+        purpose: "general",
+        method: "manual",
+      });
+      expect(error).not.toBeNull();
     });
   });
 });
