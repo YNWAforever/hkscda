@@ -203,6 +203,7 @@ v3 §8 stands, with these amendments:
 | P0-05 | Also covers `/about` counts (C-10). |
 | P0-06 | Scope is one branch to re-implement (C-8). |
 | P0-09 | Unchanged; the analytics helper is `redactSensitivePagePath` from PR #60 `src/lib/analytics.ts`. |
+| **BP-5 log token redaction (2026-09-02)** | Investigated twice (targeted grep across `src/` for `console.(error\|log\|warn)` calls near status tokens/URLs, plus a manual read of `adoption/status/$token.ts` and `sponsorships/status/$token.ts`): no raw status-page token, session token, or API key is ever passed to a log call anywhere in application code today. The status routes' `catch`/error-handling blocks only log Supabase error objects, never the token itself. The one theoretical remaining risk — Vercel's own platform-level request logs capturing the full URL path (including an embedded token) for every serverless invocation — is outside application code's control entirely; no code change can address it. **Closed as no action needed** rather than built as a feature. |
 | P0-14 | Parity evidence uses `docs/public-route-parity.md` from PR #60 (already audited against `8d717f5`). |
 | **P0-16 (new)** | SSR resilience (G-17): no public route may return 500 when a data source is unavailable; each renders its E! state with the shell, logo, one `h1`, and a retry action. Acceptance: `verify:brand` passes against a build with no reachable Supabase (fixture off) and with the fixture on. |
 | **P0-17 (new)** | `routeTree.gen.ts` parity: CI typecheck must pass on the committed tree; add a CI step that fails if `bun run build` leaves `src/routeTree.gen.ts` modified (`git diff --exit-code -- src/routeTree.gen.ts`). |
@@ -441,6 +442,7 @@ Rollback triggers and method as v3 §14.
 | D-11 | Capability matrix and four-eyes approvers | existing `lib/admin/access.ts` | |
 | D-12 | Report definitions, cut-off, approver | "Not yet published" until BP-1 | Also governs `/about` counts (C-10) |
 | **D-13 (new)** | Make the `brand-verify` CI job a required check (adds ~8 min per PR on the Hobby plan's GitHub minutes) | Required once green twice | Runtime measured locally: 7–9 min |
+| **D-14 (new, 2026-09-02)** | Phase 4's "bilingual" release-gate item — what does it require? | Full bilingual: one shared, persisted i18n mechanism, backfilled across a defined minimum set of public routes | Owner decision recorded after a 7-area Phase 4 scoping investigation found ~25 of 28 public routes are 100% zh-HK only today, with 5 unshared/unpersisted per-page toggles; resolves the ambiguity this decision log previously had no entry for |
 
 ---
 
