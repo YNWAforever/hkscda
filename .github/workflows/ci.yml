@@ -146,3 +146,30 @@ jobs:
           name: brand-ci
           path: artifacts/brand-ci
           if-no-files-found: ignore
+
+  # Separate job so the fast gate stays fast. Non-blocking until proven green
+  # repeatedly on main, then promote via branch protection (matching the
+  # process already used for brand-verify).
+  rls-matrix:
+    runs-on: ubuntu-latest
+    needs: verify
+    timeout-minutes: 15
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - run: bun install --frozen-lockfile
+
+      - name: Start local Supabase stack
+        run: bunx supabase start
+
+      - name: Run RLS behavioral tests
+        run: bun run test:rls
+
+      - name: Stop local Supabase stack
+        if: always()
+        run: bunx supabase stop
