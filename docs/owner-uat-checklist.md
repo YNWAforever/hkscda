@@ -21,7 +21,9 @@ Routes: `/adoption/apply` -> `/adoption/status/<token>`
 1. Go to `/adoption/apply`. Expected: the form loads, headed by one clear `<h1>`,
    with the site header/footer around it. **(known)** the trust-cue text near the
    form sits outside the page's main content landmark by design — a screen-reader
-   quirk, not a visual one; see PR #103. Pass/fail: ___
+   quirk, not a visual one; see PR #103. **(known)** this route was also part of
+   the Lighthouse performance baseline scan (scored 89, below the ideal 90+
+   benchmark like the other three sampled routes); see PR #104. Pass/fail: ___
 2. Try submitting the form with required fields empty. Expected: clear validation
    messages, in the language you're currently viewing in, no silent failure. Pass/fail: ___
 3. Fill in the form with realistic (but fake/test) applicant details and submit.
@@ -120,7 +122,8 @@ does clicking through from the main navigation actually land here?
 - `/` — the homepage. **(known)** currently the lowest-scoring route on Lighthouse
   performance (71-72 in the last baseline scan, versus 85-89 on the other three
   sampled routes); see PR #104. Pass/fail: ___
-- `/animals/cat` — cat listing. Pass/fail: ___
+- `/animals/cat` — cat listing. **(known)** this route was also part of the
+  Lighthouse performance baseline scan (scored 85); see PR #104. Pass/fail: ___
 - `/animals/dog` — dog listing. Pass/fail: ___
 - `/animals/cat/<id>` — click into a real cat from the listing above, don't guess
   an ID. Pass/fail: ___
@@ -142,6 +145,10 @@ does clicking through from the main navigation actually land here?
 
 - `/stories` — story listing. Pass/fail: ___
 - `/stories/<slug>` — click into a real story from the listing. Pass/fail: ___
+- Try an invalid story link (e.g. change the URL to a slug that doesn't exist).
+  Expected: a clear "not found" message. **(known)** this state has a
+  moderate-impact accessibility landmark issue (not a functional bug) that also
+  affects the site's other synthetic recovery states; see PR #103. Pass/fail: ___
 - `/knowledge` — knowledge base listing. Pass/fail: ___
 - `/help` — FAQ/help page; try the FAQ search box specifically. Pass/fail: ___
 - `/report/adoption` — public adoption stats report. Pass/fail: ___
@@ -160,5 +167,8 @@ Once every item above has a pass/fail note (or an explicit, written reason a
 particular item was skipped), this checklist is complete. Any "fail" should be
 triaged before cutover — file it the same way any other bug would be filed, and
 decide together whether it's a release blocker or acceptable to fix after cutover.
+
+**Summary:** Total items checked: ___ / 40. Items marked fail: ___. If any item
+failed, list them here with a one-line note on what happened: ___
 
 Checklist completed by: ___________________  Date: ___________________
