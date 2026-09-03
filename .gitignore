@@ -55,3 +55,5 @@ artifacts/brand-redesign/*
 artifacts/brand-ci*/
 # verify:a11y writes here in CI (OUTPUT_DIR=artifacts/a11y-ci)
 artifacts/a11y-ci*/
+# verify:performance writes here in CI (OUTPUT_DIR=artifacts/performance-ci)
+artifacts/performance-ci*/

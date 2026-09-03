@@ -251,3 +251,84 @@ jobs:
       - name: Stop local Supabase stack
         if: always()
         run: bunx supabase stop
+
+  # Separate job so brand-verify (required) never fails on a Lighthouse score.
+  # Non-blocking until proven consistently green (Lighthouse's own CI-noise
+  # profile means "consistently green" may take longer to establish than it
+  # did for brand-verify/a11y-verify) -- promote via branch protection only
+  # once that's actually observed, not on the same "green 5 times" timeline
+  # used for the deterministic checks.
+  performance-verify:
+    runs-on: ubuntu-latest
+    needs: verify
+    timeout-minutes: 20
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - run: bun install --frozen-lockfile
+
+      - name: Build against the fixture
+        run: bun run build
+        env:
+          VITE_SUPABASE_URL: http://127.0.0.1:54329
+          VITE_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+          SUPABASE_URL: http://127.0.0.1:54329
+          SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-service-role-key
+
+      - name: Install performance verifier browser
+        run: bunx playwright install --with-deps chromium
+
+      - name: Verify public performance
+        shell: bash
+        run: |
+          node scripts/ci/supabase-fixture.mjs > /tmp/hkscda-fixture.log 2>&1 &
+          fixture_pid=$!
+          HOST=127.0.0.1 PORT=4173 NITRO_HOST=127.0.0.1 NITRO_PORT=4173             bun run preview > /tmp/hkscda-performance-preview.log 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid" "$fixture_pid" 2>/dev/null || true' EXIT
+
+          ready=false
+          for attempt in {1..120}; do
+            if curl --fail --silent http://127.0.0.1:4173/ >/dev/null; then
+              ready=true
+              break
+            fi
+            if ! kill -0 "$preview_pid" 2>/dev/null; then
+              cat /tmp/hkscda-performance-preview.log
+              exit 1
+            fi
+            sleep 1
+          done
+
+          if [ "$ready" != "true" ]; then
+            cat /tmp/hkscda-performance-preview.log
+            exit 1
+          fi
+
+          curl --fail --silent "http://127.0.0.1:54329/rest/v1/animals?select=id&limit=1" >/dev/null || {
+            echo "fixture did not answer"
+            cat /tmp/hkscda-fixture.log
+            exit 1
+          }
+
+          bun run verify:performance
+        env:
+          BASE_URL: http://127.0.0.1:4173
+          OUTPUT_DIR: artifacts/performance-ci
+          VITE_SUPABASE_URL: http://127.0.0.1:54329
+          VITE_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+          SUPABASE_URL: http://127.0.0.1:54329
+          SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-service-role-key
+
+      - name: Upload performance artefacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-ci
+          path: artifacts/performance-ci
+          if-no-files-found: ignore
