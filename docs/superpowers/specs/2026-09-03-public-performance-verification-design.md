@@ -63,13 +63,30 @@ This spec's own deliverable is a verification tool, so "testing" means confirmin
 - Manually verify `bun run verify:brand` and `bun run verify:a11y` are both completely unaffected — same routes, same assertions, same pass/fail outcome as before this change.
 - CI run: confirm the new `performance-verify` job actually starts the fixture + preview server and runs a real Lighthouse audit successfully in GitHub Actions' `ubuntu-latest` runner, before considering this shippable (even though the job itself is non-blocking).
 
-## Known baseline (filled in during plan-writing)
+## Known baseline
 
-*To be filled in once `playwright-lighthouse` is actually run against the live app for the 4 target routes, before the implementation plan's concrete floor value and any remediation tasks are written — matching this session's established practice of investigating real state before writing plan content rather than assuming it. This section will list each route's actual measured performance score, and either confirm no remediation is needed (floor set comfortably below the real scores) or list specific, real performance issues Lighthouse's audit details surface (e.g., unoptimized images, render-blocking resources, oversized JS bundles) if any route scores low enough to warrant fixing as part of this work.*
+Measured against a real preview build (fixture-backed Supabase, matching `brand-verify`'s exact setup — this branch predates the `a11y-verify` job merging into `main`, so `brand-verify` is the current reference template), desktop viewport (1440×900), two independent runs per route for stability:
+
+| Route | Run 1 | Run 2 |
+|---|---|---|
+| `/` | 71 | 72 |
+| `/animals/cat` | 85 | 85 |
+| `/adoption/apply` | 89 | 89 |
+| `/donate` | 85 | 86 |
+
+All four routes score below 90; `/` is notably lower than the other three (~15 points behind).
+
+**Root cause (consistent across all 4 routes):** Total Blocking Time and Cumulative Layout Shift — the two heaviest-weighted metrics — score near-perfect everywhere (0.93-1.0). The entire deficit comes from paint/network-timing metrics (`largest-contentful-paint`, `first-contentful-paint`, `speed-index`), driven by:
+- **No cache-control headers on static assets** (`cache-insight`, score 0): 1.39-1.74 MiB/route of avoidable re-fetching, worst on `/` (1,744 KiB).
+- **Unoptimized image delivery** (`image-delivery-insight`, score 0): 49-386 KiB/route; `/`'s homepage hero imagery is by far the worst offender (386 KiB vs ~50-56 KiB on other routes) — directly explains why `/`'s LCP (0.24, 3.5s) is so much worse than the other three routes' (0.69-0.80, 1.5-1.8s).
+- **Render-blocking resources** (`render-blocking-insight`, score 0): 300-460ms of avoidable delay before LCP, every route.
+- **Oversized JS shipped regardless of whether the page needs it** (`unused-javascript`, score 0.5): 145-155 KiB/route of unused JS. The `bun run build` output during this scan showed several large vendor chunks (`pdf-lib__fontkit.mjs` 1.14 MB, `router-*.mjs` 1.07 MB, `stripe.mjs` 655 KB) that are almost certainly not needed on every public page that currently pulls them in.
+
+**Decision on remediation scope (2026-09-03):** given these are systemic, cross-cutting issues (server/CDN cache configuration, code-splitting the JS bundle graph, image pipeline changes) rather than a single isolated bug, and given the remaining Phase 4 time budget covers several more items, this pass adds ONLY the CI gate — none of the above is fixed as part of this work. The floor is set to **50**, comfortably below the current lowest real score (71), so it catches a genuine future regression (e.g., a broken build shipping drastically more unoptimized assets) without generating false-positive noise from normal CI-environment score variance or from these already-known, not-yet-fixed issues. All four findings above (cache headers, image delivery, render-blocking resources, oversized JS bundles) are explicit, itemized follow-up work — not part of this spec's deliverable.
 
 ## Out of scope
 
-- Bundle-size budgets, image-optimization pipelines, or other deep performance engineering beyond what a baseline Lighthouse floor check and its surfaced audit details call for — this spec's scope is a regression-catching CI gate plus fixing whatever the first real scan finds, not a comprehensive performance re-architecture.
+- **All remediation of the real findings in "Known baseline" above** — cache-control headers, image delivery optimization, eliminating render-blocking resources, and splitting oversized JS bundles (Stripe/pdf-lib/fontkit) out of routes that don't need them. Each is real, itemized follow-up work, explicitly deferred per the 2026-09-03 remediation-scope decision — this spec's deliverable is the CI gate only.
 - Promoting `performance-verify` to a required branch-protection check — follow-up once proven green (i.e., not flaky) repeatedly, matching the `brand-verify`/`rls-matrix`/`a11y-verify` precedent.
 - Full-route Lighthouse coverage (all 26+ public routes) — an explicit, separate follow-up if the 4-route sample proves valuable and CI duration/noise allows expanding it later.
 - The other remaining Phase 4 items (backup drill, owner UAT) — each is an independent follow-up. Payment sandbox remains explicitly deferred pending credentials.
