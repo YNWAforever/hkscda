@@ -163,10 +163,10 @@ export function AboutContent({
                   <dt className="text-sm font-bold text-[var(--color-text-muted)]">{item.label}</dt>
                   <dd className="mt-2 text-4xl font-bold text-[var(--color-primary)]">
                     {item.value.toLocaleString("zh-HK")}
+                    <span className="mt-2 block text-xs font-normal text-[var(--color-text-muted)]">
+                      資料截至 {item.asOf}
+                    </span>
                   </dd>
-                  <p className="mt-2 text-xs text-[var(--color-text-muted)]">
-                    資料截至 {item.asOf}
-                  </p>
                 </div>
               ))}
             </dl>
