@@ -17,7 +17,9 @@
     "import:adoption-guides": "node scripts/import-adoption-guide-drafts.mjs",
     "seed:admin": "node scripts/seed-admin.js",
     "verify:brand": "node scripts/verify-public-brand.mjs",
-    "verify:brand:install": "playwright install chromium"
+    "verify:brand:install": "playwright install chromium",
+    "backup:db": "bun scripts/backup-database.mjs",
+    "restore:db": "bun scripts/restore-database.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

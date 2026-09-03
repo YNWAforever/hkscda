@@ -53,3 +53,6 @@ artifacts/brand-redesign/*
 !artifacts/brand-redesign/.gitkeep
 # verify:brand writes here in CI (OUTPUT_DIR=artifacts/brand-ci)
 artifacts/brand-ci*/
+
+# Local database backups -- never commit; may contain real production data
+backups/
