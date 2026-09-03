@@ -8,6 +8,10 @@ const outputDir = path.resolve(process.env.OUTPUT_DIR ?? "artifacts/brand-redesi
 const mode = process.env.MODE ?? "brand";
 const timeout = Number(process.env.BRAND_VERIFY_TIMEOUT ?? 45000);
 const LIGHTHOUSE_DEBUG_PORT = 9222;
+// Comfortably below the measured baseline low of 71 (see
+// docs/superpowers/specs/2026-09-03-public-performance-verification-design.md's
+// "Known baseline") -- wide enough to absorb Lighthouse's well-documented
+// CI-environment score noise without masking a genuine regression.
 const PERFORMANCE_FLOOR = 50;
 
 const staticRoutes = [
