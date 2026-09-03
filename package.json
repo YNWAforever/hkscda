@@ -17,6 +17,7 @@
     "import:adoption-guides": "node scripts/import-adoption-guide-drafts.mjs",
     "seed:admin": "node scripts/seed-admin.js",
     "verify:brand": "node scripts/verify-public-brand.mjs",
+    "verify:performance": "MODE=performance node scripts/verify-public-brand.mjs",
     "verify:brand:install": "playwright install chromium"
   },
   "dependencies": {
@@ -96,6 +97,7 @@
     "globals": "^15.15.0",
     "nitro": "3.0.260603-beta",
     "playwright": "^1.60.0",
+    "playwright-lighthouse": "^4.0.0",
     "prettier": "^3.7.3",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.56.1",
