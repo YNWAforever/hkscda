@@ -53,3 +53,5 @@ artifacts/brand-redesign/*
 !artifacts/brand-redesign/.gitkeep
 # verify:brand writes here in CI (OUTPUT_DIR=artifacts/brand-ci)
 artifacts/brand-ci*/
+# verify:a11y writes here in CI (OUTPUT_DIR=artifacts/a11y-ci)
+artifacts/a11y-ci*/
