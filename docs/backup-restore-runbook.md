@@ -28,6 +28,12 @@ Get the real connection string from the Supabase dashboard (Project Settings -> 
 characters. **Never commit this value or paste it into a shared chat/ticket** -- treat it
 like any other production credential.
 
+The dashboard offers both a **Direct connection** and a **Pooler (transaction/session
+mode)** connection string -- it's easy to grab the pooler one by habit, since that's the
+one the app uses at runtime, but `pg_dump`-based tooling (what this script wraps) generally
+needs the **direct** connection string instead. Double-check you're on the dashboard's
+"Direct connection" tab before copying.
+
 There is a residual exposure you should know about: the Supabase CLI has no env-only way
 to accept a connection string, so `backup-database.mjs` passes `SUPABASE_DB_URL` to it as
 a `--db-url` command-line argument. That means the real connection string briefly appears
@@ -64,6 +70,11 @@ container could happen to exist on that remote host too, and a check that only l
 a matching container name would "successfully" find it and restore into it by accident.
 The script refuses to proceed at all unless it can positively confirm the resolved Docker
 endpoint is local, rather than just assuming so because a same-named container turned up.
+Like the argv-exposure risk above, this check has a disclosed limit: it inspects the shape
+of the endpoint string, not what it actually connects to, so a deliberately tunnelled
+socket (SSH-forwarded or `socat`-proxied) or a poisoned hosts file remapping `localhost`
+away from loopback could still slip past it -- that's inherent to a client-side string
+check and isn't something to try to patch further here.
 
 To restore into a **real** remote target (recovering the actual production database after
 a real incident), do this yourself, deliberately, using your own Postgres client tools and
@@ -71,6 +82,15 @@ credentials:
 
 ```bash
 psql "$YOUR_REAL_TARGET_CONNECTION_STRING" < backups/hkscda-<timestamp>.sql
+```
+
+If you don't have `psql` installed locally (this repo doesn't assume any contributor's
+machine has Postgres client tools -- it's why the local restore script above uses
+`docker exec` into a container instead of a local `psql` binary), the same disposable-container
+approach works here too, with no local install required:
+
+```bash
+docker run --rm -i postgres:17 psql "$YOUR_REAL_TARGET_CONNECTION_STRING" < backups/hkscda-<timestamp>.sql
 ```
 
 Some `ERROR: duplicate key value violates unique constraint` lines are expected if the

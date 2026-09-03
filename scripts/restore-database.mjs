@@ -22,8 +22,19 @@ if (!existsSync(dumpFile)) {
 // there, the checks below would otherwise pass and this script would restore
 // into that remote target with no warning. Refuse to proceed unless we can
 // positively confirm the resolved Docker endpoint is local.
+//
+// This is a string-shape check on the endpoint value, not a live probe of
+// where it actually connects -- that's a deliberate, disclosed limitation
+// (see the runbook), not something further string-matching can fix. An
+// SSH-forwarded or socat-proxied Unix/named-pipe socket, or a poisoned hosts
+// file remapping `localhost`/127.0.0.1 away from loopback, would both pass
+// this check while genuinely reaching a non-local daemon.
+//
+// Only pass a value here that you already know how to interpret when it's
+// missing -- callers decide what "no value" means for their own source
+// (see the two call sites below, which have different semantics for that).
 function isLocalDockerHost(host) {
-  if (!host) return true; // empty/unset means the platform default local socket
+  if (!host) return false;
   return (
     host.startsWith("unix://") ||
     host.startsWith("npipe://") ||
@@ -32,6 +43,10 @@ function isLocalDockerHost(host) {
 }
 
 const dockerHostEnv = process.env.DOCKER_HOST;
+// Unlike the context-inspect result below, an unset DOCKER_HOST genuinely
+// means "use the platform default local socket" -- that's handled here,
+// not inside isLocalDockerHost, so it isn't conflated with "couldn't
+// determine the host" from a different source.
 if (dockerHostEnv && !isLocalDockerHost(dockerHostEnv)) {
   console.error(
     `DOCKER_HOST is set to a non-local address (${dockerHostEnv}). This script only ` +
@@ -59,6 +74,19 @@ try {
   console.error(
     "Could not parse `docker context inspect` output; refusing to proceed without " +
       "confirming the active Docker daemon is local.",
+  );
+  process.exit(1);
+}
+
+// Here, unlike DOCKER_HOST above, a missing/undefined value does NOT mean
+// "use the local default" -- it means the JSON shape didn't match what we
+// expected (a future Docker CLI version, a non-default context type, a
+// missing `docker` endpoint), i.e. we couldn't determine anything. Treat
+// "couldn't determine" as "not confirmed local", never as "confirmed local".
+if (dockerHost === undefined) {
+  console.error(
+    "Could not determine the active Docker context's endpoint from `docker context inspect` " +
+      "output (unexpected shape); refusing to proceed without confirming the active Docker daemon is local.",
   );
   process.exit(1);
 }
