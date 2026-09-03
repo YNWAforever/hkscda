@@ -29,7 +29,8 @@ Routes: `/adoption/apply` -> `/adoption/status/<token>`
    status link/token for tracking this application later. Pass/fail: ___
 4. Open the status link/token you just got, in a fresh/incognito browser tab (to
    confirm it doesn't require being logged in). Expected: it shows your just-submitted
-   application's real status, not a generic page. Pass/fail: ___
+   application's real status, not a generic page. **(known)** this status page
+   carries the same outside-`<main>` trust-cue quirk as the apply form; see PR #103. Pass/fail: ___
 5. Visit `/adoption/status/this-is-not-a-real-token`. Expected: a clear "not found"
    message in the current language, no raw error, no stack trace, no leaked internal
    detail. Pass/fail: ___
@@ -53,7 +54,8 @@ Routes: `/sponsors/pledge` -> `/sponsors/status/<token>`
    text on this page has the same outside-`<main>` quirk as the adoption form; see
    PR #103. Pass/fail: ___
 4. Open the resulting status link in a fresh tab. Expected: shows the real pledge
-   status. Pass/fail: ___
+   status. **(known)** this status page carries the same outside-`<main>`
+   trust-cue quirk as the pledge form; see PR #103. Pass/fail: ___
 5. Visit `/sponsors/status/this-is-not-a-real-token`. Expected: same clean
    "not found" behavior as the adoption journey's equivalent. Pass/fail: ___
 
@@ -67,11 +69,16 @@ Routes: `/volunteer`, `/volunteer/group` -> `/volunteer/status/<token>`
 2. Separately, go to `/volunteer/group` (for group/organized volunteering
    enquiries — a distinct form from the individual one above). Confirm it's clearly
    a different, appropriate form, not a duplicate of `/volunteer`. Pass/fail: ___
-3. Submit the individual volunteer form (Step 1's) with realistic fake details.
+3. Try submitting the individual volunteer form (`/volunteer`) with required fields
+   empty. Expected: clear validation messages, in the current language, no silent
+   failure. Pass/fail: ___
+4. Submit the individual volunteer form (Step 1's) with realistic fake details.
    Expected: confirmation + status link/token. Pass/fail: ___
-4. Open the resulting status link in a fresh tab, and separately check
-   `/volunteer/status/this-is-not-a-real-token` for the same clean "not found"
-   behavior as the other two journeys. Pass/fail: ___
+5. Open the resulting status link in a fresh tab. Expected: shows the real
+   volunteer registration status. **(known)** this status page carries the same
+   outside-`<main>` trust-cue quirk as the volunteer form; see PR #103. Pass/fail: ___
+6. Separately, visit `/volunteer/status/this-is-not-a-real-token`. Expected: the
+   same clean "not found" behavior as the other two journeys. Pass/fail: ___
 
 ### Journey 4 — Donation
 
