@@ -1,4 +1,6 @@
 import { chromium } from "playwright";
+import { playAudit } from "playwright-lighthouse";
+import AxeBuilder from "@axe-core/playwright";
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -6,6 +8,12 @@ const baseURL = process.env.BASE_URL ?? "http://127.0.0.1:4173";
 const outputDir = path.resolve(process.env.OUTPUT_DIR ?? "artifacts/brand-redesign/after");
 const mode = process.env.MODE ?? "brand";
 const timeout = Number(process.env.BRAND_VERIFY_TIMEOUT ?? 45000);
+const LIGHTHOUSE_DEBUG_PORT = 9222;
+// Comfortably below the measured baseline low of 71 (see
+// docs/superpowers/specs/2026-09-03-public-performance-verification-design.md's
+// "Known baseline") -- wide enough to absorb Lighthouse's well-documented
+// CI-environment score noise without masking a genuine regression.
+const PERFORMANCE_FLOOR = 50;
 
 const staticRoutes = [
   "/",
@@ -27,6 +35,14 @@ const staticRoutes = [
   "/report/audit",
   "/help",
 ];
+
+// Small, representative sample -- Lighthouse audits are far heavier per-page
+// than the brand/a11y checks (each involves multiple simulated page loads
+// under throttling), so this mode intentionally does NOT use the full
+// staticRoutes/detailRoutes/stateRoutes list. Home, the animals listing, the
+// adoption form, and donate are the highest-traffic, highest-stakes public
+// pages.
+const performanceRoutes = ["/", "/animals/cat", "/adoption/apply", "/donate"];
 
 const stateRoutes = [
   "/adoption/status/__brand-verification__",
@@ -51,7 +67,7 @@ const viewports = [
   { name: "390x844", width: 390, height: 844 },
   { name: "768x1024", width: 768, height: 1024 },
   { name: "1024x768", width: 1024, height: 768 },
-  { name: "1440x900", width: 1440, height: 900 },
+  { name: "1440x900", width: 1440, height: 900, isDesktop: true },
 ];
 
 const failures = [];
@@ -162,6 +178,64 @@ async function assertOneHeading(page, label, response, route) {
   const headingCount = await page.locator("h1").count();
   if (headingCount !== 1) {
     recordFailure(label + " has " + headingCount + " h1 elements");
+  }
+}
+
+const A11Y_MINOR_MODERATE_FINDINGS = [];
+
+async function assertNoSeriousA11yViolations(page, label) {
+  const results = await new AxeBuilder({ page }).analyze();
+  for (const violation of results.violations) {
+    if (violation.impact === "serious" || violation.impact === "critical") {
+      recordFailure(
+        label +
+          " has a " +
+          violation.impact +
+          " a11y violation (" +
+          violation.id +
+          "): " +
+          violation.help +
+          " -- " +
+          violation.nodes.map((node) => node.target.join(" ")).join(", "),
+      );
+    } else {
+      A11Y_MINOR_MODERATE_FINDINGS.push(
+        label +
+          ": " +
+          violation.impact +
+          " " +
+          violation.id +
+          " (" +
+          violation.nodes.length +
+          " nodes)",
+      );
+    }
+  }
+}
+
+async function assertPerformanceFloor(page, label) {
+  const { lhr } = await playAudit({
+    page,
+    port: LIGHTHOUSE_DEBUG_PORT,
+    disableLogs: true,
+    // playwright-lighthouse@4.0.0 has two issues if `thresholds` is omitted:
+    // (1) its own "no thresholds set" warning tries to log via
+    // chalk.yellow.italic(...), but disableLogs:true swaps in a stub that
+    // only supports one level of property access, so the chained call
+    // throws; (2) it silently defaults to requiring a perfect 100 across
+    // all 5 Lighthouse categories, which would make playAudit itself throw
+    // on virtually any real page. Passing only `performance` here sidesteps
+    // both (it also narrows Lighthouse's `onlyCategories` to just
+    // performance, skipping the other, unneeded audits) -- the floor check
+    // below is what actually gates this script, via recordFailure.
+    thresholds: { performance: 0 },
+  });
+  const score = Math.round((lhr.categories.performance.score ?? 0) * 100);
+  console.log(label + ": Lighthouse performance score " + score);
+  if (score < PERFORMANCE_FLOOR) {
+    recordFailure(
+      label + " scored " + score + " on Lighthouse performance (floor: " + PERFORMANCE_FLOOR + ")",
+    );
   }
 }
 
@@ -390,7 +464,15 @@ await fs.mkdir(outputDir, { recursive: true });
 // Lets a developer run the verifier against an already-installed Chromium
 // instead of downloading one. Unset in CI, where playwright install provides it.
 const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined;
-const browser = await chromium.launch(executablePath ? { executablePath } : {});
+const launchOptions = {
+  ...(executablePath ? { executablePath } : {}),
+  // playwright-lighthouse drives Lighthouse over the Chrome DevTools
+  // Protocol against a debugging port, not through Playwright's own API --
+  // only exposed for `performance` mode since it's an extra attack/conflict
+  // surface other modes don't need.
+  ...(mode === "performance" ? { args: [`--remote-debugging-port=${LIGHTHOUSE_DEBUG_PORT}`] } : {}),
+};
+const browser = await chromium.launch(launchOptions);
 try {
   const discoveryPage = await browser.newPage();
   const detailRoutes = [
@@ -422,8 +504,13 @@ try {
   await discoveryPage.close();
 
   const routes = [...staticRoutes, ...detailRoutes, ...stateRoutes];
+  const routesForMode = mode === "performance" ? performanceRoutes : routes;
 
   for (const viewport of viewports) {
+    if ((mode === "a11y" || mode === "performance") && !viewport.isDesktop) {
+      continue;
+    }
+
     const context = await browser.newContext({ viewport });
     const page = await context.newPage();
     let currentRoute = "initial";
@@ -457,7 +544,7 @@ try {
     });
 
     try {
-      for (const route of routes) {
+      for (const route of routesForMode) {
         currentRoute = route;
         const label = viewport.name + " " + route;
         let response;
@@ -473,6 +560,12 @@ try {
           await assertNoOverflow(page, label);
           if (mode === "brand") {
             await assertBrandLogo(page, label);
+          }
+          if (mode === "a11y") {
+            await assertNoSeriousA11yViolations(page, label);
+          }
+          if (mode === "performance") {
+            await assertPerformanceFloor(page, label);
           }
           await assertOneHeading(page, label, response, route);
           await assertRecoveryCopy(page, route);
@@ -496,12 +589,21 @@ try {
       await context.close();
     }
 
-    await runReflowCheck(browser, viewport);
-    await runReducedMotionCheck(browser, viewport);
+    if (mode === "brand") {
+      await runReflowCheck(browser, viewport);
+      await runReducedMotionCheck(browser, viewport);
+    }
   }
 
   if (asset404s.length > 0) {
     failures.push(...asset404s.map((asset) => "404 asset: " + asset));
+  }
+
+  if (A11Y_MINOR_MODERATE_FINDINGS.length > 0) {
+    console.log(
+      "Minor/moderate a11y findings (not gating this check):\n" +
+        A11Y_MINOR_MODERATE_FINDINGS.join("\n"),
+    );
   }
 
   if (failures.length > 0) {
@@ -510,7 +612,7 @@ try {
   } else {
     console.log(
       "Verified " +
-        (staticRoutes.length + 4 + stateRoutes.length) +
+        routesForMode.length +
         " routes across " +
         viewports.length +
         " viewports in " +
