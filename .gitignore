@@ -57,3 +57,6 @@ artifacts/brand-ci*/
 artifacts/a11y-ci*/
 # verify:performance writes here in CI (OUTPUT_DIR=artifacts/performance-ci)
 artifacts/performance-ci*/
+
+# Local database backups -- never commit; may contain real production data
+backups/
