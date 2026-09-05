@@ -13,6 +13,7 @@ describe("uploadContentMediaImage", () => {
       uploadContentMediaImage({
         file: fakeFile("notes.pdf", "application/pdf", 1024),
         contentId: "content-1",
+        storyUpdateId: null,
         requestUploadTarget: async (input) => {
           calls.push("requestUploadTarget");
           return { token: "t", path: input.objectPath };
@@ -31,6 +32,7 @@ describe("uploadContentMediaImage", () => {
       uploadContentMediaImage({
         file: fakeFile("big.jpg", "image/jpeg", 9 * 1024 * 1024),
         contentId: "content-1",
+        storyUpdateId: null,
         requestUploadTarget: async (input) => {
           calls.push("requestUploadTarget");
           return { token: "t", path: input.objectPath };
@@ -48,6 +50,7 @@ describe("uploadContentMediaImage", () => {
     const path = await uploadContentMediaImage({
       file: fakeFile("Checkup Photo.jpg", "image/jpeg", 2048),
       contentId: "content-1",
+      storyUpdateId: "22222222-2222-4333-8444-555555555555",
       requestUploadTarget: async (input) => {
         calls.push({ step: "requestUploadTarget", arg: input });
         return { token: "upload-token", path: input.objectPath };
@@ -59,11 +62,17 @@ describe("uploadContentMediaImage", () => {
 
     expect(calls).toHaveLength(2);
     expect(calls[0].step).toBe("requestUploadTarget");
-    const requestArg = calls[0].arg as { objectPath: string; mimeType: string; byteSize: number };
+    const requestArg = calls[0].arg as {
+      objectPath: string;
+      mimeType: string;
+      byteSize: number;
+      storyUpdateId: string | null;
+    };
     expect(requestArg.objectPath.startsWith("content-1/")).toBe(true);
     expect(requestArg.objectPath.endsWith("-Checkup_Photo.jpg")).toBe(true);
     expect(requestArg.mimeType).toBe("image/jpeg");
     expect(requestArg.byteSize).toBe(2048);
+    expect(requestArg.storyUpdateId).toBe("22222222-2222-4333-8444-555555555555");
     expect(calls[1].step).toBe("uploadToSignedUrl");
     expect(path).toBe(requestArg.objectPath);
   });

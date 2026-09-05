@@ -1133,6 +1133,9 @@ function ContentMediaPanel({
         <p className="text-sm text-[var(--color-text-muted)]">
           上傳圖片作為封面或故事更新相片（JPG、PNG 或 WEBP，8 MiB 以內）。
         </p>
+        <p className="text-sm text-[var(--color-text-muted)]">
+          內部更新目前不能附加圖片；私密媒體功能推出前，請勿透過公開媒體上傳。
+        </p>
       </div>
       <form
         className="grid gap-3 md:grid-cols-3"
@@ -1172,8 +1175,9 @@ function ContentMediaPanel({
           >
             <option value="">整篇內容</option>
             {content.updates.map((update) => (
-              <option key={update.id} value={update.id}>
+              <option key={update.id} value={update.id} disabled={update.visibility === "internal"}>
                 {update.title}
+                {update.visibility === "internal" ? "（內部）" : ""}
               </option>
             ))}
           </select>
@@ -1382,6 +1386,7 @@ export async function createContentMediaWithUpload(contentId: string, body: Cont
   const storagePath = await uploadContentMediaImage({
     file: body.file,
     contentId,
+    storyUpdateId: emptyToNull(body.storyUpdateId),
     requestUploadTarget: (input) =>
       fetchAdminJson(`/api/admin/content/${contentId}/media-upload-target`, {
         method: "POST",

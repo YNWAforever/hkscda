@@ -181,6 +181,23 @@ function assertPublicOutboundStoryUpdate(storyUpdate: StoryUpdate) {
   }
 }
 
+async function assertPublicMediaTarget(
+  repo: ContentRepository,
+  contentId: string,
+  storyUpdateId: string | null,
+) {
+  if (!storyUpdateId) return;
+
+  const storyUpdate = await repo.getStoryUpdate(storyUpdateId);
+  if (!storyUpdate) throw new Error("Story update not found");
+  if (storyUpdate.contentItemId !== contentId) {
+    throw new Error("Story update does not belong to this content item");
+  }
+  if (storyUpdate.visibility === "internal") {
+    throw new Error("Internal story updates cannot use public content media");
+  }
+}
+
 export function createContentService({
   repo,
   now = () => new Date(),
@@ -217,6 +234,9 @@ export function createContentService({
 
     async createContent({ actorUserId, input }: CreateContentArgs) {
       const parsed = contentInputSchema.parse(input);
+      if (parsed.status !== "draft") {
+        throw new Error("Content items must be created as drafts");
+      }
       const id = await repo.createContent(parsed);
       await audit({
         actor_user_id: actorUserId,
@@ -301,6 +321,7 @@ export function createContentService({
 
     async createContentMedia({ actorUserId, contentId, input }: CreateContentMediaArgs) {
       const parsed = contentMediaInputSchema.parse(input);
+      await assertPublicMediaTarget(repo, contentId, parsed.storyUpdateId);
       const id = await repo.createContentMedia(contentId, parsed);
       await audit({
         actor_user_id: actorUserId,
@@ -324,6 +345,7 @@ export function createContentService({
       if (!parsed.objectPath.startsWith(`${contentId}/`)) {
         throw new Error("Upload path does not belong to this content item");
       }
+      await assertPublicMediaTarget(repo, contentId, parsed.storyUpdateId);
       return repo.createSignedUploadUrl(parsed.objectPath);
     },
 

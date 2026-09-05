@@ -3,10 +3,12 @@ import { CONTENT_MEDIA_MIME_TYPES, MAX_CONTENT_MEDIA_BYTES } from "../../../lib/
 type UploadContentMediaImageArgs = {
   file: File;
   contentId: string;
+  storyUpdateId: string | null;
   requestUploadTarget(input: {
     objectPath: string;
     mimeType: string;
     byteSize: number;
+    storyUpdateId: string | null;
   }): Promise<{ token: string; path: string }>;
   uploadToSignedUrl(path: string, token: string, file: File): Promise<void>;
 };
@@ -26,6 +28,7 @@ export function safeFileName(fileName: string) {
 export async function uploadContentMediaImage({
   file,
   contentId,
+  storyUpdateId,
   requestUploadTarget,
   uploadToSignedUrl,
 }: UploadContentMediaImageArgs): Promise<string> {
@@ -46,6 +49,7 @@ export async function uploadContentMediaImage({
     objectPath,
     mimeType: file.type,
     byteSize: file.size,
+    storyUpdateId,
   });
   await uploadToSignedUrl(target.path, target.token, file);
   return target.path;

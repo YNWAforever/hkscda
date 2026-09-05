@@ -110,6 +110,55 @@ function createRepo(overrides: Partial<ContentRepository> = {}) {
 }
 
 describe("createContentService", () => {
+  test("rejects an explicit published status before creating content", async () => {
+    let createCalled = false;
+    const { repo } = createRepo({
+      createContent: async () => {
+        createCalled = true;
+        return "content-1";
+      },
+    });
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await expect(
+      service.createContent({
+        actorUserId: "admin-user",
+        input: {
+          type: "rescue_story",
+          slug: "missing-publish-prerequisites",
+          title: "Missing prerequisites",
+          summary: "No cover image or story profile exists.",
+          status: "published",
+        },
+      }),
+    ).rejects.toThrow("Content items must be created as drafts");
+    expect(createCalled).toBe(false);
+  });
+
+  test("creates draft content when status is omitted", async () => {
+    let persistedStatus: string | undefined;
+    const { repo } = createRepo({
+      createContent: async (input) => {
+        persistedStatus = input.status;
+        return "content-1";
+      },
+    });
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await expect(
+      service.createContent({
+        actorUserId: "admin-user",
+        input: {
+          type: "rescue_story",
+          slug: "new-rescue-story",
+          title: "New rescue story",
+          summary: "Draft story summary.",
+        },
+      }),
+    ).resolves.toEqual({ id: "content-1" });
+    expect(persistedStatus).toBe("draft");
+  });
+
   test("blocks publishing invalid content with field-level issues", async () => {
     const { repo } = createRepo({
       getAdminContent: async () => ({ ...detail, coverMediaId: null, coverImageUrl: null }),
@@ -549,6 +598,31 @@ describe("createContentService", () => {
       ]),
     );
   });
+
+  test("rejects media registration for an internal story update", async () => {
+    let createMediaCalled = false;
+    const { repo } = createRepo({
+      getStoryUpdate: async () => ({ ...publicStoryUpdate, visibility: "internal" }),
+      createContentMedia: async () => {
+        createMediaCalled = true;
+        return "media-2";
+      },
+    });
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await expect(
+      service.createContentMedia({
+        actorUserId: "admin-user",
+        contentId: "content-1",
+        input: {
+          storyUpdateId,
+          storagePath: "content-1/internal.jpg",
+          altText: "Internal note attachment",
+        },
+      }),
+    ).rejects.toThrow("Internal story updates cannot use public content media");
+    expect(createMediaCalled).toBe(false);
+  });
 });
 
 describe("createContentService createUploadTarget", () => {
@@ -564,9 +638,56 @@ describe("createContentService createUploadTarget", () => {
           objectPath: "content-1/checkup.jpg",
           mimeType: "image/jpeg",
           byteSize: 1024,
+          storyUpdateId: null,
         },
       }),
     ).resolves.toEqual({ token: "upload-token", path: "content-1/checkup.jpg" });
+  });
+
+  test("rejects an internal story update before requesting a signed upload target", async () => {
+    let calledCreateSignedUploadUrl = false;
+    const { repo } = createRepo({
+      getStoryUpdate: async () => ({ ...publicStoryUpdate, visibility: "internal" }),
+      createSignedUploadUrl: async (objectPath) => {
+        calledCreateSignedUploadUrl = true;
+        return { token: "upload-token", path: objectPath };
+      },
+    });
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await expect(
+      service.createUploadTarget({
+        actorUserId: "admin-user",
+        contentId: "content-1",
+        input: {
+          objectPath: "content-1/internal.jpg",
+          mimeType: "image/jpeg",
+          byteSize: 1024,
+          storyUpdateId,
+        },
+      }),
+    ).rejects.toThrow("Internal story updates cannot use public content media");
+    expect(calledCreateSignedUploadUrl).toBe(false);
+  });
+
+  test("rejects an upload target for another content item's story update", async () => {
+    const { repo } = createRepo({
+      getStoryUpdate: async () => ({ ...publicStoryUpdate, contentItemId: "content-2" }),
+    });
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await expect(
+      service.createUploadTarget({
+        actorUserId: "admin-user",
+        contentId: "content-1",
+        input: {
+          objectPath: "content-1/foreign.jpg",
+          mimeType: "image/jpeg",
+          byteSize: 1024,
+          storyUpdateId,
+        },
+      }),
+    ).rejects.toThrow("Story update does not belong to this content item");
   });
 
   test("rejects an upload path that does not belong to the content item", async () => {

@@ -108,6 +108,12 @@ async function withContentErrors(operation: () => Promise<Response>, publicReque
       if (message === "Upload path does not belong to this content item") {
         return jsonResponse({ error: message }, { status: 400 });
       }
+      if (message === "Content items must be created as drafts") {
+        return jsonResponse({ error: message }, { status: 400 });
+      }
+      if (message === "Internal story updates cannot use public content media") {
+        return jsonResponse({ error: message }, { status: 400 });
+      }
       if (message === "Internal story updates cannot generate outbound content") {
         return jsonResponse({ error: message }, { status: 400 });
       }

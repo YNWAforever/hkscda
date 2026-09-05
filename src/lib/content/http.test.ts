@@ -269,6 +269,53 @@ describe("createContentHandlers", () => {
     expect(await response.json()).toEqual({ error: "Invalid content management request" });
   });
 
+  test("maps draft-only creation errors to 400 responses", async () => {
+    const service = createService({
+      async createContent() {
+        throw new Error("Content items must be created as drafts");
+      },
+    });
+    const handlers = createContentHandlers({
+      requireContentAdmin: async () => admin,
+      service,
+    });
+
+    const response = await handlers.createContent({
+      request: new Request("https://example.test/api/admin/content", {
+        method: "POST",
+        body: JSON.stringify({ status: "published" }),
+      }),
+    });
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({ error: "Content items must be created as drafts" });
+  });
+
+  test("maps internal public-media errors to 400 responses", async () => {
+    const service = createService({
+      async createUploadTarget() {
+        throw new Error("Internal story updates cannot use public content media");
+      },
+    });
+    const handlers = createContentHandlers({
+      requireContentAdmin: async () => admin,
+      service,
+    });
+
+    const response = await handlers.createUploadTarget({
+      request: new Request(
+        "https://example.test/api/admin/content/99999999-aaaa-4333-8444-555555555555/media-upload-target",
+        { method: "POST", body: JSON.stringify({}) },
+      ),
+      params: { id: "99999999-aaaa-4333-8444-555555555555" },
+    });
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({
+      error: "Internal story updates cannot use public content media",
+    });
+  });
+
   test("rejects malformed optional admin JSON bodies before service work", async () => {
     const service = createService();
     const handlers = createContentHandlers({

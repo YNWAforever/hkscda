@@ -141,6 +141,43 @@ describe("ContentEditor", () => {
     expect(markup).not.toContain("Storage path");
   });
 
+  test("shows that internal updates cannot receive public-bucket attachments", async () => {
+    const { ContentAuthoringPanels } = await import("./ContentEditor");
+    const contentWithInternalUpdate: ContentDetail = {
+      ...content,
+      updates: [
+        {
+          id: "22222222-2222-4333-8444-555555555555",
+          contentItemId: content.id,
+          kind: "medical",
+          title: "Internal medical note",
+          body: null,
+          occurredAt: "2026-09-05T00:00:00.000Z",
+          visibility: "internal",
+          shouldGenerateAdopterDrafts: false,
+          media: [],
+          createdAt: "2026-09-05T00:00:00.000Z",
+          updatedAt: "2026-09-05T00:00:00.000Z",
+        },
+      ],
+    };
+    const markup = renderToStaticMarkup(
+      <ContentAuthoringPanels
+        content={contentWithInternalUpdate}
+        pending={false}
+        onCreateLink={async () => undefined}
+        onSaveStoryProfile={async () => undefined}
+        onCreateStoryUpdate={async () => undefined}
+        onCreateMedia={async () => undefined}
+      />,
+    );
+
+    expect(markup).toContain("內部更新目前不能附加圖片");
+    expect(markup).toContain(
+      '<option value="22222222-2222-4333-8444-555555555555" disabled="">Internal medical note（內部）</option>',
+    );
+  });
+
   test("uses a router link for returning to the content list", async () => {
     const { ContentEditor } = await import("./ContentEditor");
     const queryClient = new QueryClient();
@@ -188,6 +225,7 @@ describe("createContentMediaWithUpload", () => {
     const targetCall = fetchAdminJsonMock.mock.calls[0];
     expect(targetCall[0]).toBe("/api/admin/content/content-1/media-upload-target");
     expect(targetCall[1]).toMatchObject({ method: "POST" });
+    expect(JSON.parse(targetCall[1]?.body ?? "{}")).toMatchObject({ storyUpdateId: null });
 
     expect(uploadToSignedUrlMock.mock.calls[0]).toEqual([
       "content-1/generated-path.jpg",
