@@ -3,7 +3,10 @@ import type { ConsentChannel, ConsentHistoryRow, ConsentStatus } from "./types";
 
 export function latestConsentByChannel(rows: ConsentHistoryRow[]) {
   const sorted = [...rows].sort(
-    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+    (a, b) =>
+      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime() ||
+      Number(b.status === "opt_out") - Number(a.status === "opt_out") ||
+      b.id.localeCompare(a.id),
   );
 
   return {

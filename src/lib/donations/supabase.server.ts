@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createSupabaseServiceClient } from "../supabase.server";
+import { createPublicIdentityRepository } from "../supporters/publicIdentity.server";
 import { publicDonationStatuses, type PublicDonationStatus } from "./publicStatus";
 import type { PublicDonationStatusRepository } from "./publicStatus.server";
 import type { DonationRepository } from "./service";
@@ -10,25 +11,10 @@ export type { AdminUser } from "../admin/session.server";
 export { getAdminUserFromRequest, requireAdmin } from "../admin/session.server";
 
 export function createSupabaseDonationRepository(client: SupabaseClient): DonationRepository {
+  const publicIdentity = createPublicIdentityRepository(client);
   return {
-    async upsertSupporter(input) {
-      const { data, error } = await client
-        .from("supporter")
-        .upsert(
-          {
-            name: input.name,
-            email: input.email,
-            phone: input.phone ?? null,
-            language: input.language,
-            source: "donation_form",
-          },
-          { onConflict: "email" },
-        )
-        .select("id,email")
-        .single();
-
-      if (error) throw error;
-      return data;
+    resolvePublicIdentity(contact) {
+      return publicIdentity.resolve(contact);
     },
     async ensureSupporterRole(input) {
       const { error } = await client.from("supporter_role").upsert({
@@ -38,6 +24,7 @@ export function createSupabaseDonationRepository(client: SupabaseClient): Donati
       if (error) throw error;
     },
     async replaceConsents(rows) {
+      if (rows.length === 0) return;
       const { error } = await client.from("consent").insert(rows);
       if (error) throw error;
     },

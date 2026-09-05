@@ -41,6 +41,10 @@ type PaymentWithDonation = {
     receipt_requested: boolean;
     status: string;
     supporter_id: string;
+    contact_name: string | null;
+    contact_email: string | null;
+    contact_phone: string | null;
+    contact_language: "zh-HK" | "en" | null;
     supporter: {
       id: string;
       name: string;
@@ -177,7 +181,7 @@ async function releaseWebhookEventReservation(
 }
 
 const PAYMENT_WITH_DONATION_SELECT =
-  "id,provider,provider_ref,amount_cents,status,donation:donation_id(id,amount_cents,receipt_requested,status,supporter_id,supporter:supporter_id(id,name,email,language))";
+  "id,provider,provider_ref,amount_cents,status,donation:donation_id(id,amount_cents,receipt_requested,status,supporter_id,contact_name,contact_email,contact_phone,contact_language,supporter:supporter_id(id,name,email,language))";
 
 async function findPaymentByProvider(
   client: SupabaseClient,
@@ -269,7 +273,7 @@ export async function issueReceiptIfNeeded(
     const path = `${receipt.tax_year}/${receipt.receipt_no}.pdf`;
     const pdf = await generatePdf({
       receiptNo: receipt.receipt_no,
-      donorName: donation.supporter.name,
+      donorName: donation.contact_name ?? donation.supporter.name,
       amountCents: donation.amount_cents,
       issuedAt: receipt.issued_at ?? issuedAt,
     });
@@ -308,10 +312,10 @@ export async function completeDonationSideEffects(
   const acknowledgement = await (deps.sendAcknowledgement ?? sendDonationAcknowledgement)(client, {
     supporterId: donation.supporter_id,
     donationId: donation.id,
-    to: donation.supporter.email,
-    donorName: donation.supporter.name,
+    to: donation.contact_email ?? donation.supporter.email,
+    donorName: donation.contact_name ?? donation.supporter.name,
     amountCents: donation.amount_cents,
-    language: donation.supporter.language,
+    language: donation.contact_language ?? donation.supporter.language,
     receiptNo,
   });
   if (acknowledgement === "failed") {

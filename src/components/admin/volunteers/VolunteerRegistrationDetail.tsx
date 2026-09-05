@@ -25,9 +25,12 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
     mutationFn: (status: string) =>
       fetchAdminJson(`/api/admin/volunteers/registrations/${registrationId}/status`, {
         method: "PATCH",
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({ status, expectedUpdatedAt: data?.registration.updatedAt }),
       }),
-    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ["volunteer-registration"] }),
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: ["volunteer-registration"] });
+      void queryClient.invalidateQueries({ queryKey: ["volunteer-activities"] });
+    },
   });
 
   const updateAttendance = useMutation({
@@ -36,7 +39,10 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
         method: "PATCH",
         body: JSON.stringify({ attendanceStatus }),
       }),
-    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ["volunteer-registration"] }),
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: ["volunteer-registration"] });
+      void queryClient.invalidateQueries({ queryKey: ["volunteer-activities"] });
+    },
   });
 
   if (isLoading) return <div className="p-6 text-sm text-[var(--color-text-muted)]">載入中...</div>;
@@ -92,11 +98,18 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
           <DetailItem label="備註" value={registration.notes ?? "-"} />
         </div>
 
+        {updateStatus.error && (
+          <p role="alert" className="mt-4 text-sm text-[var(--color-error)]">
+            {updateStatus.error.message}
+          </p>
+        )}
+        <DetailItem label="剩餘名額" value={String(registration.activity.remainingCapacity)} />
         <div className="mt-5 flex flex-wrap gap-2">
           {["approved", "waitlisted", "rejected", "cancelled"].map((status) => (
             <button
               key={status}
               type="button"
+              disabled={updateStatus.isPending}
               onClick={() => updateStatus.mutate(status)}
               className="rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-medium"
             >

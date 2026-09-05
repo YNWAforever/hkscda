@@ -243,7 +243,7 @@ export function VolunteerManagement() {
         method: "PATCH",
         body: JSON.stringify(body),
       }),
-    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ["volunteer-activities"] }),
+    onSettled: () => void queryClient.invalidateQueries({ queryKey: ["volunteer-activities"] }),
   });
 
   const cloneActivity = useMutation({
@@ -252,16 +252,24 @@ export function VolunteerManagement() {
         method: "POST",
         body: JSON.stringify({}),
       }),
-    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ["volunteer-activities"] }),
+    onSettled: () => void queryClient.invalidateQueries({ queryKey: ["volunteer-activities"] }),
   });
 
   const updateRegistration = useMutation({
-    mutationFn: ({ id, status }: { id: string; status: VolunteerRegistrationStatus }) =>
+    mutationFn: ({
+      id,
+      status,
+      expectedUpdatedAt,
+    }: {
+      id: string;
+      status: VolunteerRegistrationStatus;
+      expectedUpdatedAt: string;
+    }) =>
       fetchAdminJson(`/api/admin/volunteers/registrations/${id}/status`, {
         method: "PATCH",
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({ status, expectedUpdatedAt }),
       }),
-    onSuccess: refreshAll,
+    onSettled: refreshAll,
   });
 
   const completeAttendance = useMutation({
@@ -361,7 +369,10 @@ export function VolunteerManagement() {
               onClick={() =>
                 patchActivity.mutate({
                   id: activity.id,
-                  body: { status: activity.status === "published" ? "closed" : "published" },
+                  body: {
+                    status: activity.status === "published" ? "closed" : "published",
+                    expectedUpdatedAt: activity.updatedAt,
+                  },
                 })
               }
               className={`${buttonBase} border border-[var(--color-border)] hover:bg-[var(--color-surface-offset)]`}
@@ -505,7 +516,11 @@ export function VolunteerManagement() {
                   ) {
                     return;
                   }
-                  updateRegistration.mutate({ id: registration.id, status });
+                  updateRegistration.mutate({
+                    id: registration.id,
+                    status,
+                    expectedUpdatedAt: registration.updatedAt,
+                  });
                 }}
                 className={`${buttonBase} ${
                   primary
@@ -663,6 +678,11 @@ export function VolunteerManagement() {
       {/* Creating an activity is occasional; keeping the 9-field form open on
           every visit pushed the tables the operator actually came for below
           the fold. */}
+      {(patchActivity.error || updateRegistration.error) && (
+        <p role="alert" className="text-sm text-[var(--color-error)]">
+          {patchActivity.error?.message ?? updateRegistration.error?.message}
+        </p>
+      )}
       {showCreate ? (
         <form
           onSubmit={(event) => {

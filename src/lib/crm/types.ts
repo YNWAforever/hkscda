@@ -48,6 +48,10 @@ export type SupporterDetail = SupporterSummary & {
 };
 
 export type DonationHistoryRow = {
+  deliveryJob?: {
+    id: string;
+    status: "pending" | "processing" | "retryable" | "attention_required" | "complete";
+  } | null;
   id: string;
   amountCents: number;
   currency: "HKD";

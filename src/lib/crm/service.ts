@@ -12,6 +12,7 @@ import {
   type SupporterInput,
   type SupporterSearch,
 } from "./schemas";
+import type { ManualGiftCommand, ManualGiftResult } from "./manualGift.server";
 import type { SupporterDetail, SupporterRole, SupporterSummary } from "./types";
 
 type ConsentInsertRows = ReturnType<typeof buildConsentRowsForUpdate>;
@@ -44,6 +45,7 @@ export type CrmRepository = {
   ensureSupporterRole(input: { supporterId: string; role: "donor" }): Promise<void>;
   setSupporterRoles(input: { supporterId: string; roles: SupporterRole[] }): Promise<void>;
   insertConsentRows(rows: ConsentInsertRows): Promise<void>;
+  recordManualGift(command: ManualGiftCommand): Promise<ManualGiftResult>;
   insertManualDonation(
     records: ManualDonationRecords,
   ): Promise<{ donationId: string; paymentId: string }>;
@@ -62,10 +64,6 @@ type CreateCrmServiceArgs = {
 
 function timestamp(now: () => Date) {
   return now().toISOString();
-}
-
-function hasProvidedConsents(consents: { email?: boolean; whatsapp?: boolean } | undefined) {
-  return consents?.email !== undefined || consents?.whatsapp !== undefined;
 }
 
 export function createCrmService({ repo, now = () => new Date() }: CreateCrmServiceArgs) {
@@ -143,45 +141,13 @@ export function createCrmService({ repo, now = () => new Date() }: CreateCrmServ
     },
 
     async createManualDonation(args: { actorUserId: string; input: unknown }) {
-      const input = manualDonationSchema.parse(args.input);
-      const supporterId = input.supporter
-        ? (await repo.upsertSupporter(input.supporter)).id
-        : input.supporterId!;
-
-      await repo.ensureSupporterRole({ supporterId, role: "donor" });
-
-      const records = buildManualDonationRecords({
-        supporterId,
-        donationIdSeed: crypto.randomUUID(),
-        input,
+      const { requestId, ...input } = manualDonationSchema.parse(args.input);
+      const result = await repo.recordManualGift({
+        requestId,
         actorUserId: args.actorUserId,
-        now,
+        input,
       });
-
-      if (hasProvidedConsents(input.consents)) {
-        await repo.insertConsentRows(
-          buildConsentRowsForUpdate({
-            supporterId,
-            update: {
-              source: "admin_manual",
-              email: input.consents?.email,
-              whatsapp: input.consents?.whatsapp,
-              timestamp: timestamp(now),
-            },
-          }),
-        );
-      }
-
-      const ids = await repo.insertManualDonation(records);
-
-      // A manual gift recorded as already-succeeded must get the same receipt +
-      // acknowledgement as a reconciled online gift; otherwise a receipt-eligible
-      // donor silently never gets their IRD tax receipt.
-      if (input.paymentStatus === "succeeded") {
-        await repo.completeManualDonationSideEffects(ids.paymentId);
-      }
-
-      return ids;
+      return result;
     },
 
     async exportSupporters(args: { actorUserId: string | null; rawSearch: unknown }) {

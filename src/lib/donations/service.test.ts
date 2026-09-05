@@ -7,19 +7,23 @@ function createFakeRepository(): DonationRepository & {
   supporterConsents: unknown[];
   donations: unknown[];
   payments: unknown[];
+  resolvedContacts: unknown[];
 } {
   const supporter = { id: "supporter-1", email: "donor@example.com" };
   const donation = { id: "f8dce8fa-83f4-4d5f-b0b0-fbc3348efb7a", amount_cents: 30000 };
   const payments: unknown[] = [];
   const donations: unknown[] = [];
   const supporterConsents: unknown[] = [];
+  const resolvedContacts: unknown[] = [];
 
   return {
     supporterConsents,
     donations,
     payments,
-    async upsertSupporter() {
-      return supporter;
+    resolvedContacts,
+    async resolvePublicIdentity(contact) {
+      resolvedContacts.push(contact);
+      return { supporterId: supporter.id, kind: "existing" };
     },
     async ensureSupporterRole() {},
     async replaceConsents(rows) {
@@ -103,8 +107,25 @@ describe("createDonation", () => {
       amount_cents: 30000,
       status: "pending",
     });
-    expect(repository.supporterConsents).toHaveLength(2);
+    expect(repository.resolvedContacts).toEqual([
+      {
+        name: "Ada",
+        email: "donor@example.com",
+        phone: "9123 4567",
+        language: "zh-HK",
+        source: "donation_form",
+      },
+    ]);
+    expect(repository.supporterConsents).toEqual([
+      expect.objectContaining({ channel: "whatsapp", status: "opt_out" }),
+    ]);
     expect(repository.donations[0]).toMatchObject({
+      contact_name: "Ada",
+      contact_email: "donor@example.com",
+      contact_phone: "9123 4567",
+      contact_language: "zh-HK",
+      consent_email_requested: true,
+      consent_whatsapp_requested: false,
       acquisition_source: null,
       acquisition_context: null,
       acquisition_placement: null,

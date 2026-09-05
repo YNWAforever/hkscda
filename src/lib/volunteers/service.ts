@@ -1,5 +1,6 @@
 import { getAppUrl } from "../appUrl.server";
 import { buildConsentRows } from "../donations/domain";
+import type { IdentityResolution, PublicContact } from "../supporters/publicIdentity.server";
 import {
   createStatusTokenPair,
   hashStatusToken,
@@ -51,15 +52,14 @@ export type VolunteerRepository = {
   getActivityForRegistration(id: string): Promise<VolunteerActivityDetail | null>;
   getActivityDetail(id: string): Promise<VolunteerActivityDetail | null>;
   createActivity(input: AdminActivityInput): Promise<string>;
-  updateActivity(id: string, input: Partial<AdminActivityInput>): Promise<void>;
+  updateActivity(
+    id: string,
+    input: Partial<AdminActivityInput>,
+    actorUserId: string,
+    expectedUpdatedAt: string,
+  ): Promise<void>;
   cloneActivity(input: { activityId: string; startsAt?: string | null }): Promise<string>;
-  upsertSupporter(input: {
-    name: string;
-    email: string;
-    phone: string;
-    language: "zh-HK" | "en";
-    source: string;
-  }): Promise<{ id: string; email: string }>;
+  resolvePublicIdentity(contact: PublicContact): Promise<IdentityResolution>;
   ensureSupporterRole(input: { supporterId: string; role: "volunteer" }): Promise<void>;
   insertConsentRows(rows: ConsentRows): Promise<void>;
   createRegistration(input: VolunteerRegistrationCreateInput): Promise<VolunteerRegistrationDetail>;
@@ -70,6 +70,8 @@ export type VolunteerRepository = {
   getRegistrationDetail(id: string): Promise<VolunteerRegistrationDetail | null>;
   getRegistrationByStatusToken(tokenHash: string): Promise<VolunteerRegistrationDetail | null>;
   updateRegistrationStatus(input: {
+    actorUserId: string;
+    expectedUpdatedAt: string;
     registrationId: string;
     status: VolunteerRegistrationSummary["status"];
     internalNotes?: string | null;
@@ -154,16 +156,8 @@ export function createVolunteerService({
     },
 
     async updateActivity(args: { actorUserId: string; activityId: string; input: unknown }) {
-      const input = adminActivityUpdateSchema.parse(args.input);
-      await repo.updateActivity(args.activityId, input);
-      await repo.insertAuditLog({
-        actor_user_id: args.actorUserId,
-        action: "volunteer_activity.update",
-        entity: "volunteer_activity",
-        entity_id: args.activityId,
-        timestamp: timestamp(now),
-        detail: input,
-      });
+      const { expectedUpdatedAt, ...input } = adminActivityUpdateSchema.parse(args.input);
+      await repo.updateActivity(args.activityId, input, args.actorUserId, expectedUpdatedAt);
       return { ok: true };
     },
 
@@ -206,24 +200,24 @@ export function createVolunteerService({
         throw new Error("Volunteer activity not found");
       }
 
-      const supporter = await repo.upsertSupporter({
+      const supporter = await repo.resolvePublicIdentity({
         name: input.contact.name,
         email: input.contact.email,
         phone: input.contact.phone,
         language: input.contact.language,
         source: "volunteer_registration_form",
       });
-      await repo.ensureSupporterRole({ supporterId: supporter.id, role: "volunteer" });
+      await repo.ensureSupporterRole({ supporterId: supporter.supporterId, role: "volunteer" });
       await repo.insertConsentRows(
         buildConsentRows({
-          supporterId: supporter.id,
+          supporterId: supporter.supporterId,
           source: "volunteer_registration_form",
           timestamp: timestamp(now),
           consents: {
             email: input.consents.email,
             whatsapp: input.consents.whatsapp,
           },
-        }),
+        }).filter((row) => row.status === "opt_out"),
       );
 
       const decision = decideVolunteerRegistrationStatus({
@@ -234,7 +228,7 @@ export function createVolunteerService({
       const token = makeStatusToken();
       const registration = await repo.createRegistration({
         activityId: input.activityId,
-        supporterId: supporter.id,
+        supporterId: supporter.supporterId,
         registrationType: input.registrationType,
         status: decision.status,
         statusReason: decision.reason,
@@ -249,6 +243,8 @@ export function createVolunteerService({
         guardianName: input.guardianName,
         guardianPhone: input.guardianPhone,
         notes: input.notes,
+        consentEmailRequested: input.consents.email,
+        consentWhatsappRequested: input.consents.whatsapp,
         statusTokenHash: token.tokenHash,
         statusTokenExpiresAt: statusTokenExpiry(now),
       });
@@ -290,16 +286,10 @@ export function createVolunteerService({
       const input = adminRegistrationStatusSchema.parse(args.input);
       const registration = await repo.updateRegistrationStatus({
         registrationId: args.registrationId,
+        actorUserId: args.actorUserId,
+        expectedUpdatedAt: input.expectedUpdatedAt,
         status: input.status,
         internalNotes: input.internalNotes,
-      });
-      await repo.insertAuditLog({
-        actor_user_id: args.actorUserId,
-        action: "volunteer_registration.status_update",
-        entity: "volunteer_registration",
-        entity_id: args.registrationId,
-        timestamp: timestamp(now),
-        detail: input,
       });
       return registration;
     },

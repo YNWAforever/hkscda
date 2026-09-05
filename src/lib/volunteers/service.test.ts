@@ -9,6 +9,7 @@ function createRepo(overrides: Partial<VolunteerRepository> = {}) {
   const auditLogs: unknown[] = [];
   const supporterRoles: unknown[] = [];
   const consents: unknown[] = [];
+  const resolvedContacts: unknown[] = [];
   const repo: VolunteerRepository = {
     listPublishedActivities: async () => [],
     listActivities: async () => ({ activities: [], total: 0 }),
@@ -17,7 +18,10 @@ function createRepo(overrides: Partial<VolunteerRepository> = {}) {
     createActivity: async () => "activity-new",
     updateActivity: async () => undefined,
     cloneActivity: async () => "activity-clone",
-    upsertSupporter: async () => ({ id: "supporter-1", email: "ada@example.com" }),
+    resolvePublicIdentity: async (contact) => {
+      resolvedContacts.push(contact);
+      return { supporterId: "supporter-1", kind: "existing" };
+    },
     ensureSupporterRole: async (input) => {
       supporterRoles.push(input);
     },
@@ -38,7 +42,7 @@ function createRepo(overrides: Partial<VolunteerRepository> = {}) {
     },
     ...overrides,
   };
-  return { repo, registrations, auditLogs, supporterRoles, consents };
+  return { repo, registrations, auditLogs, supporterRoles, consents, resolvedContacts };
 }
 
 const activity: VolunteerActivityDetail = {
@@ -93,7 +97,7 @@ const registration: VolunteerRegistrationDetail = {
 
 describe("volunteer service", () => {
   test("submits a public registration, links a supporter, role, consent, and status token", async () => {
-    const { repo, registrations, supporterRoles, consents } = createRepo();
+    const { repo, registrations, supporterRoles, consents, resolvedContacts } = createRepo();
     const service = createVolunteerService({
       repo,
       now: () => new Date("2026-07-02T00:00:00.000Z"),
@@ -124,12 +128,23 @@ describe("volunteer service", () => {
       statusUrl: "https://hkscda.test/volunteer/status/raw-token",
     });
     expect(supporterRoles).toEqual([{ supporterId: "supporter-1", role: "volunteer" }]);
-    expect(consents).toHaveLength(2);
+    expect(resolvedContacts).toEqual([
+      {
+        name: "Ada",
+        email: "ada@example.com",
+        phone: "91234567",
+        language: "zh-HK",
+        source: "volunteer_registration_form",
+      },
+    ]);
+    expect(consents).toEqual([expect.objectContaining({ channel: "whatsapp", status: "opt_out" })]);
     expect(registrations[0]).toMatchObject({
       supporterId: "supporter-1",
       status: "approved",
       statusReason: "auto_approved",
       statusTokenHash: "hash-token",
+      consentEmailRequested: true,
+      consentWhatsappRequested: false,
     });
   });
 
@@ -162,7 +177,7 @@ describe("volunteer service", () => {
     expect(registrations).toHaveLength(1);
   });
 
-  test("audits admin registration and attendance changes", async () => {
+  test("delegates status audit atomically and separately audits attendance", async () => {
     const { repo, auditLogs } = createRepo();
     const service = createVolunteerService({
       repo,
@@ -172,7 +187,11 @@ describe("volunteer service", () => {
     await service.updateRegistrationStatus({
       actorUserId: "admin-user",
       registrationId: "registration-1",
-      input: { status: "waitlisted", internalNotes: "Capacity shifted" },
+      input: {
+        status: "waitlisted",
+        internalNotes: "Capacity shifted",
+        expectedUpdatedAt: "2026-07-03T00:00:00.000Z",
+      },
     });
     await service.updateAttendance({
       actorUserId: "admin-user",
@@ -181,12 +200,6 @@ describe("volunteer service", () => {
     });
 
     expect(auditLogs).toMatchObject([
-      {
-        actor_user_id: "admin-user",
-        action: "volunteer_registration.status_update",
-        entity: "volunteer_registration",
-        entity_id: "registration-1",
-      },
       {
         actor_user_id: "admin-user",
         action: "volunteer_registration.attendance_update",
@@ -211,4 +224,33 @@ describe("volunteer service", () => {
     ).rejects.toThrow(/21/);
     expect(registrations).toHaveLength(0);
   });
+});
+
+test("staff status command carries actor and version into one repository mutation", async () => {
+  const commands: unknown[] = [];
+  const { repo, auditLogs } = createRepo({
+    updateRegistrationStatus: async (command) => {
+      commands.push(command);
+      return registration;
+    },
+  });
+  await createVolunteerService({ repo }).updateRegistrationStatus({
+    actorUserId: "actor-1",
+    registrationId: registration.id,
+    input: {
+      status: "approved",
+      expectedUpdatedAt: registration.updatedAt,
+      internalNotes: "Reviewed",
+    },
+  });
+  expect(commands).toEqual([
+    {
+      registrationId: registration.id,
+      actorUserId: "actor-1",
+      expectedUpdatedAt: registration.updatedAt,
+      status: "approved",
+      internalNotes: "Reviewed",
+    },
+  ]);
+  expect(auditLogs).toEqual([]);
 });

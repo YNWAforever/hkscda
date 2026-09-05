@@ -12,6 +12,7 @@ import { useAdminPageCopy } from "../adminPageCopy";
 import { ConsentEditor } from "./ConsentEditor";
 import { fetchAdminJson } from "./api";
 import { ManualDonationDialog } from "./ManualDonationDialog";
+import { DonationDeliveryAction } from "./DonationDeliveryAction";
 import { SupporterActivitySummary } from "./SupporterActivitySummary";
 import { SupporterFormDialog } from "./SupporterFormDialog";
 import { SupporterProfileSidebar } from "./SupporterProfileSidebar";
@@ -295,6 +296,13 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
                       {donation.receiptRequested ? ` · ${copy.receiptRequested}` : ""}
                     </div>
                   </div>
+                  {donation.deliveryJob && (
+                    <DonationDeliveryAction
+                      supporterId={supporterId}
+                      language={language}
+                      job={donation.deliveryJob}
+                    />
+                  )}
                   {canIssueReceipt(data, donation) && (
                     <Button
                       type="button"

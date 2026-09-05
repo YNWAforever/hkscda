@@ -68,10 +68,17 @@ function registration(
 let registrationRows = [registration()];
 let registrationTotal = 1;
 
+let mutationError: Error | null = null;
 mock.module("@tanstack/react-query", () => ({
   ...realReactQuery,
   useQueryClient: () => ({ invalidateQueries: () => {} }),
-  useMutation: () => ({ mutate: () => {}, isPending: false, isError: false, reset: () => {} }),
+  useMutation: () => ({
+    mutate: () => {},
+    isPending: false,
+    isError: false,
+    error: mutationError,
+    reset: () => {},
+  }),
   useQuery: ({ queryKey }: { queryKey: unknown[] }) => {
     const key = String(queryKey[0]);
     if (key === "volunteer-activities") {
@@ -164,4 +171,13 @@ describe("VolunteerManagement", () => {
     expect(render("pending", 1)).not.toContain("下一頁");
     expect(render("pending", 90)).toContain("下一頁");
   });
+});
+
+test("approval conflicts remain visible while the create form is closed", () => {
+  mutationError = new Error("活動名額不足");
+  try {
+    expect(render()).toContain("活動名額不足");
+  } finally {
+    mutationError = null;
+  }
 });

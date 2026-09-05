@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { createPublicIdentityRepository } from "../supporters/publicIdentity.server";
 import type {
   SupporterVolunteerContext,
   VolunteerActivityDetail,
@@ -176,25 +177,22 @@ async function loadActivityCounts(client: SupabaseClient, activityIds: string[])
   const counts = new Map<string, ActivityCounts>();
   if (activityIds.length === 0) return counts;
 
-  const { data, error } = await client
-    .from("volunteer_registration")
-    .select("activity_id,status,participant_count")
-    .in("activity_id", activityIds)
-    .in("status", ["pending", "approved", "waitlisted"]);
+  const { data, error } = await client.rpc("volunteer_activity_counts", {
+    p_activity_ids: activityIds,
+  });
   if (error) throw error;
-
   for (const row of (data ?? []) as Array<{
     activity_id: string;
-    status: VolunteerRegistrationStatus;
-    participant_count: number;
+    approved_participants: number;
+    pending_participants: number;
+    waitlisted_participants: number;
   }>) {
-    const current = counts.get(row.activity_id) ?? { ...emptyCounts };
-    if (row.status === "approved") current.approvedParticipants += row.participant_count;
-    if (row.status === "pending") current.pendingParticipants += row.participant_count;
-    if (row.status === "waitlisted") current.waitlistedParticipants += row.participant_count;
-    counts.set(row.activity_id, current);
+    counts.set(row.activity_id, {
+      approvedParticipants: row.approved_participants,
+      pendingParticipants: row.pending_participants,
+      waitlistedParticipants: row.waitlisted_participants,
+    });
   }
-
   return counts;
 }
 
@@ -244,7 +242,24 @@ function shiftCloneDates(source: ActivityRow, nextStartsAt: string | null | unde
   };
 }
 
+function requireUpdated(result: { kind: string }) {
+  if (result.kind === "updated") return;
+  const status = result.kind === "not_found" ? 404 : 409;
+  throw Response.json(
+    {
+      error: {
+        code: result.kind,
+        message:
+          result.kind === "capacity_full"
+            ? "活動名額不足，請重新檢查剩餘名額。"
+            : "資料已更新，請重新檢查後再試。",
+      },
+    },
+    { status, headers: { "cache-control": "no-store" } },
+  );
+}
 export function createSupabaseVolunteerRepository(client: SupabaseClient): VolunteerRepository {
+  const publicIdentity = createPublicIdentityRepository(client);
   return {
     async listPublishedActivities() {
       const { data, error } = await client
@@ -294,14 +309,16 @@ export function createSupabaseVolunteerRepository(client: SupabaseClient): Volun
       return data.id as string;
     },
 
-    async updateActivity(id, input) {
-      const { error } = await client
-        .from("volunteer_activity")
-        .update(toActivityUpdate(input))
-        .eq("id", id);
+    async updateActivity(id, input, actorUserId, expectedUpdatedAt) {
+      const { data, error } = await client.rpc("update_volunteer_activity_with_audit", {
+        p_activity_id: id,
+        p_actor_user_id: actorUserId,
+        p_expected_updated_at: expectedUpdatedAt,
+        p_input: toActivityUpdate(input),
+      });
       if (error) throw error;
+      requireUpdated(data);
     },
-
     async cloneActivity(input) {
       const { data: source, error: sourceError } = await client
         .from("volunteer_activity")
@@ -333,24 +350,8 @@ export function createSupabaseVolunteerRepository(client: SupabaseClient): Volun
       return data.id as string;
     },
 
-    async upsertSupporter(input) {
-      const { data, error } = await client
-        .from("supporter")
-        .upsert(
-          {
-            name: input.name,
-            email: input.email,
-            phone: input.phone,
-            language: input.language,
-            source: input.source,
-            deleted_at: null,
-          },
-          { onConflict: "email" },
-        )
-        .select("id,email")
-        .single();
-      if (error) throw error;
-      return { id: data.id as string, email: data.email as string };
+    resolvePublicIdentity(contact) {
+      return publicIdentity.resolve(contact);
     },
 
     async ensureSupporterRole(input) {
@@ -387,6 +388,8 @@ export function createSupabaseVolunteerRepository(client: SupabaseClient): Volun
           p_guardian_name: input.guardianName,
           p_guardian_phone: input.guardianPhone,
           p_notes: input.notes,
+          p_consent_email_requested: input.consentEmailRequested,
+          p_consent_whatsapp_requested: input.consentWhatsappRequested,
           p_status_token_hash: input.statusTokenHash,
           p_status_token_expires_at: input.statusTokenExpiresAt,
         })
@@ -449,20 +452,21 @@ export function createSupabaseVolunteerRepository(client: SupabaseClient): Volun
     },
 
     async updateRegistrationStatus(input) {
-      const { data, error } = await client
-        .from("volunteer_registration")
-        .update({
-          status: input.status,
-          internal_notes: input.internalNotes,
-        })
-        .eq("id", input.registrationId)
-        .select("*")
-        .single();
+      const { data, error } = await client.rpc("set_volunteer_registration_status_with_audit", {
+        p_registration_id: input.registrationId,
+        p_actor_user_id: input.actorUserId,
+        p_expected_updated_at: input.expectedUpdatedAt,
+        p_status: input.status,
+        p_internal_notes: input.internalNotes ?? null,
+        p_update_internal_notes: input.internalNotes !== undefined,
+      });
       if (error) throw error;
-      const [registration] = await hydrateRegistrations(client, [data as RegistrationRow]);
+      requireUpdated(data);
+      const [registration] = await hydrateRegistrations(client, [
+        data.registration as RegistrationRow,
+      ]);
       return registration as VolunteerRegistrationDetail;
     },
-
     async updateAttendance(input) {
       const { data, error } = await client
         .from("volunteer_registration")

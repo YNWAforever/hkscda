@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { HandCoins } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { FormEvent } from "react";
 
 import type {
@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Switch } from "../../ui/switch";
 import { useAdminPageCopy } from "../adminPageCopy";
 import { fetchAdminJson } from "./api";
+import { ManualGiftOutcome, type GiftDeliveryStatus } from "./ManualGiftOutcome";
 
 type ManualDonationDialogProps = {
   supporterId: string;
@@ -92,7 +93,13 @@ export function ManualDonationDialog({ supporterId }: ManualDonationDialogProps)
   const { language } = useAdminPageCopy();
   const copy = MANUAL_DONATION_COPY[language];
   const queryClient = useQueryClient();
+  const requestId = useRef(crypto.randomUUID());
   const [open, setOpen] = useState(false);
+  const [recorded, setRecorded] = useState<{
+    donationId: string;
+    deliveryJobId: string | null;
+    deliveryStatus: GiftDeliveryStatus;
+  } | null>(null);
   const [amountHkd, setAmountHkd] = useState("");
   const [purpose, setPurpose] = useState<DonationPurpose>("general");
   const [method, setMethod] = useState<ManualDonationMethod>("manual");
@@ -112,13 +119,19 @@ export function ManualDonationDialog({ supporterId }: ManualDonationDialogProps)
     setPaymentStatus("pending");
     setBankReference("");
     setReceiptRequested(true);
+    requestId.current = crypto.randomUUID();
   }
 
   const mutation = useMutation({
     mutationFn: () =>
-      fetchAdminJson("/api/admin/donations/manual", {
+      fetchAdminJson<{
+        donationId: string;
+        deliveryJobId: string | null;
+        deliveryStatus: GiftDeliveryStatus;
+      }>("/api/admin/donations/manual", {
         method: "POST",
         body: JSON.stringify({
+          requestId: requestId.current,
           supporterId,
           amountCents,
           currency: "HKD",
@@ -129,10 +142,25 @@ export function ManualDonationDialog({ supporterId }: ManualDonationDialogProps)
           receiptRequested,
         }),
       }),
-    onSuccess: () => {
+    onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ["crm-supporter", supporterId] });
-      resetForm();
-      setOpen(false);
+      setRecorded(result);
+    },
+  });
+
+  const retry = useMutation({
+    mutationFn: () => {
+      if (!recorded?.deliveryJobId) throw new Error("No delivery job");
+      return fetchAdminJson<{ deliveryStatus: GiftDeliveryStatus }>(
+        `/api/admin/donations/delivery/${recorded.deliveryJobId}/retry`,
+        { method: "POST" },
+      );
+    },
+    onSuccess: (result) => {
+      setRecorded((current) =>
+        current ? { ...current, deliveryStatus: result.deliveryStatus } : current,
+      );
+      queryClient.invalidateQueries({ queryKey: ["crm-supporter", supporterId] });
     },
   });
 
@@ -160,94 +188,111 @@ export function ManualDonationDialog({ supporterId }: ManualDonationDialogProps)
         <DialogHeader>
           <DialogTitle>{copy.title}</DialogTitle>
         </DialogHeader>
-        <form className="grid gap-4" onSubmit={handleSubmit}>
-          <div className="grid gap-2">
-            <Label htmlFor="manual-donation-amount">{copy.amount}</Label>
-            <Input
-              id="manual-donation-amount"
-              value={amountHkd}
-              onChange={(event) => setAmountHkd(event.target.value)}
-              inputMode="decimal"
-              placeholder="100.00"
-            />
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
+        {recorded ? (
+          <ManualGiftOutcome
+            language={language}
+            {...recorded}
+            retrying={retry.isPending}
+            error={retry.error?.message}
+            onRetry={() => retry.mutate()}
+            onDone={() => {
+              setRecorded(null);
+              resetForm();
+              mutation.reset();
+              retry.reset();
+              setOpen(false);
+            }}
+          />
+        ) : (
+          <form className="grid gap-4" onSubmit={handleSubmit}>
             <div className="grid gap-2">
-              <Label htmlFor="manual-donation-purpose">{copy.purpose}</Label>
-              <Select
-                value={purpose}
-                onValueChange={(value) => setPurpose(value as DonationPurpose)}
-              >
-                <SelectTrigger id="manual-donation-purpose" aria-label={copy.purposeAria}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="general">{copy.purposes.general}</SelectItem>
-                  <SelectItem value="medical">{copy.purposes.medical}</SelectItem>
-                  <SelectItem value="sponsor">{copy.purposes.sponsor}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="manual-donation-method">{copy.method}</Label>
-              <Select
-                value={method}
-                onValueChange={(value) => setMethod(value as ManualDonationMethod)}
-              >
-                <SelectTrigger id="manual-donation-method" aria-label={copy.methodAria}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="manual">{copy.methods.manual}</SelectItem>
-                  <SelectItem value="fps">{copy.methods.fps}</SelectItem>
-                  <SelectItem value="payme">PayMe</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="grid gap-2">
-              <Label htmlFor="manual-donation-status">{copy.paymentStatus}</Label>
-              <Select
-                value={paymentStatus}
-                onValueChange={(value) => setPaymentStatus(value as ManualPaymentStatus)}
-              >
-                <SelectTrigger id="manual-donation-status" aria-label={copy.paymentStatusAria}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pending">{copy.statuses.pending}</SelectItem>
-                  <SelectItem value="succeeded">{copy.statuses.succeeded}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="manual-donation-reference">{copy.bankReference}</Label>
+              <Label htmlFor="manual-donation-amount">{copy.amount}</Label>
               <Input
-                id="manual-donation-reference"
-                value={bankReference}
-                onChange={(event) => setBankReference(event.target.value)}
-                placeholder={needsReference ? copy.required : copy.optional}
+                id="manual-donation-amount"
+                value={amountHkd}
+                onChange={(event) => setAmountHkd(event.target.value)}
+                inputMode="decimal"
+                placeholder="100.00"
               />
             </div>
-          </div>
-          <label className="flex items-center justify-between gap-4 rounded-md border border-[var(--color-border)] p-3">
-            <span className="text-sm font-medium text-[var(--color-panel)]">
-              {copy.receiptRequested}
-            </span>
-            <Switch
-              checked={receiptRequested}
-              onCheckedChange={setReceiptRequested}
-              aria-label={copy.receiptAria}
-            />
-          </label>
-          {mutation.error && (
-            <p className="text-sm text-[var(--color-destructive)]">{mutation.error.message}</p>
-          )}
-          <Button type="submit" disabled={!canSubmit || mutation.isPending}>
-            {copy.save}
-          </Button>
-        </form>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-2">
+                <Label htmlFor="manual-donation-purpose">{copy.purpose}</Label>
+                <Select
+                  value={purpose}
+                  onValueChange={(value) => setPurpose(value as DonationPurpose)}
+                >
+                  <SelectTrigger id="manual-donation-purpose" aria-label={copy.purposeAria}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="general">{copy.purposes.general}</SelectItem>
+                    <SelectItem value="medical">{copy.purposes.medical}</SelectItem>
+                    <SelectItem value="sponsor">{copy.purposes.sponsor}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="manual-donation-method">{copy.method}</Label>
+                <Select
+                  value={method}
+                  onValueChange={(value) => setMethod(value as ManualDonationMethod)}
+                >
+                  <SelectTrigger id="manual-donation-method" aria-label={copy.methodAria}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="manual">{copy.methods.manual}</SelectItem>
+                    <SelectItem value="fps">{copy.methods.fps}</SelectItem>
+                    <SelectItem value="payme">PayMe</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-2">
+                <Label htmlFor="manual-donation-status">{copy.paymentStatus}</Label>
+                <Select
+                  value={paymentStatus}
+                  onValueChange={(value) => setPaymentStatus(value as ManualPaymentStatus)}
+                >
+                  <SelectTrigger id="manual-donation-status" aria-label={copy.paymentStatusAria}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pending">{copy.statuses.pending}</SelectItem>
+                    <SelectItem value="succeeded">{copy.statuses.succeeded}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="manual-donation-reference">{copy.bankReference}</Label>
+                <Input
+                  id="manual-donation-reference"
+                  value={bankReference}
+                  onChange={(event) => setBankReference(event.target.value)}
+                  placeholder={needsReference ? copy.required : copy.optional}
+                />
+              </div>
+            </div>
+            <label className="flex items-center justify-between gap-4 rounded-md border border-[var(--color-border)] p-3">
+              <span className="text-sm font-medium text-[var(--color-panel)]">
+                {copy.receiptRequested}
+              </span>
+              <Switch
+                checked={receiptRequested}
+                onCheckedChange={setReceiptRequested}
+                aria-label={copy.receiptAria}
+              />
+            </label>
+            {mutation.error && (
+              <p className="text-sm text-[var(--color-destructive)]">{mutation.error.message}</p>
+            )}
+            <Button type="submit" disabled={!canSubmit || mutation.isPending}>
+              {copy.save}
+            </Button>
+          </form>
+        )}
       </DialogContent>
     </Dialog>
   );

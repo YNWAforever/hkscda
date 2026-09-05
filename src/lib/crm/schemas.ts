@@ -156,6 +156,7 @@ export const consentUpdateSchema = z
 
 export const manualDonationSchema = z
   .object({
+    requestId: z.string().uuid(),
     supporterId: z.string().uuid().optional(),
     supporter: supporterInputSchema.optional(),
     amountCents: z.number().int().min(1000).max(1_000_000),

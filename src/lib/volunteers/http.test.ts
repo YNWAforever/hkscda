@@ -212,3 +212,24 @@ describe("createVolunteerHandlers", () => {
     expect(service.calls).toEqual([]);
   });
 });
+
+test("staff status conflict preserves409 and never becomes a successful update", async () => {
+  const service = createService();
+  service.updateRegistrationStatus = async () => {
+    throw Response.json(
+      { error: "Capacity full", code: "capacity_full" },
+      { status: 409, headers: { "cache-control": "no-store" } },
+    );
+  };
+  const handlers = createVolunteerHandlers({ requireVolunteerAdmin: async () => admin, service });
+  const response = await handlers.updateRegistrationStatus({
+    request: new Request("https://example.invalid/status", {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ status: "approved", expectedUpdatedAt: "2026-09-05T00:00:00Z" }),
+    }),
+    params: { id: "11111111-2222-4333-8444-555555555555" },
+  });
+  expect(response.status).toBe(409);
+  expect(response.headers.get("cache-control")).toBe("no-store");
+});
