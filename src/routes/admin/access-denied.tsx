@@ -23,6 +23,7 @@ const deniedCopy = {
 } as const;
 
 export const Route = createFileRoute("/admin/access-denied")({
+  ssr: false,
   beforeLoad: async ({ context }) => {
     await requireSignedInAdminIdentity(context.queryClient);
   },

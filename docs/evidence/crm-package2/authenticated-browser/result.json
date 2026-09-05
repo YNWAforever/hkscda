@@ -1,0 +1,14 @@
+{
+  "adaptation": "Origin55430 local-network-access permission; document CSP only appends exact local API55321 to connect-src/img-src; all auth/API/DB responses real",
+  "checks": [
+    "Actual treasurer browser password login",
+    "Actual treasurer UI creates and edits supporter identity, roles and tags",
+    "Consent write survives actual backend reload",
+    "Committed gift remains single after dialog and persistent-history retries; no message sent",
+    "Filtered supporter and donation CSV downloads contain exactly one synthetic data row",
+    "Actual staff session cannot open CRM page or create manual gifts",
+    "Actual mutation audit rows persisted"
+  ],
+  "errors": [],
+  "cleanup": "Exact synthetic fixtures removed"
+}

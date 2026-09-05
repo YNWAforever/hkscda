@@ -73,9 +73,12 @@ export const adminActivityInputSchema = z.object({
   registrationModes: z.array(z.enum(volunteerRegistrationTypes)).min(1),
 });
 
-export const adminActivityUpdateSchema = adminActivityInputSchema.partial();
+export const adminActivityUpdateSchema = adminActivityInputSchema
+  .partial()
+  .extend({ expectedUpdatedAt: z.string().datetime({ offset: true }) });
 
 export const adminRegistrationStatusSchema = z.object({
+  expectedUpdatedAt: z.string().datetime({ offset: true }),
   status: z.enum(volunteerRegistrationStatuses),
   internalNotes: optionalTrimmed.optional(),
 });

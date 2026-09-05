@@ -5,11 +5,13 @@ import { AnimalDetail } from "../../components/site/AnimalDetail";
 import { PublicStateShell } from "../../components/site/PublicStateShell";
 import { Skeleton } from "../../components/ui/skeleton";
 import { getPublicAnimal } from "../../lib/animals/publicAnimal.functions";
+import { loadPublicDetailOrNotFound } from "../../lib/animals/publicDetailLoader";
 
 const ORIGIN = PUBLIC_SITE_ORIGIN;
 
 export const Route = createFileRoute("/animals/cat_/$id")({
-  loader: ({ params }) => getPublicAnimal({ data: { id: params.id, type: "cat" } }),
+  loader: ({ params }) =>
+    loadPublicDetailOrNotFound(() => getPublicAnimal({ data: { id: params.id, type: "cat" } })),
   head: ({ loaderData, params }) => {
     const title = loaderData
       ? `${loaderData.name} · 待領養貓貓 · 香港拯救貓狗協會 HKSCDA`
@@ -36,6 +38,7 @@ export const Route = createFileRoute("/animals/cat_/$id")({
     };
   },
   pendingComponent: CatDetailPending,
+  notFoundComponent: CatDetailNotFound,
   errorComponent: CatDetailError,
   component: CatDetailPage,
 });
@@ -43,21 +46,23 @@ export const Route = createFileRoute("/animals/cat_/$id")({
 function CatDetailPage() {
   const animal = Route.useLoaderData();
 
-  if (!animal) {
-    return (
-      <PublicStateShell
-        title="這隻動物目前不在公開領養名單"
-        description="公開名單會隨照護和領養進度更新，請查看其他正在等待家庭的貓貓。"
-        action={
-          <Link to="/animals/cat" className="btn-secondary min-h-11 px-5">
-            查看貓貓列表
-          </Link>
-        }
-      />
-    );
-  }
+  if (!animal) return <CatDetailError />;
 
   return <AnimalDetail animal={animal} backHref="/animals/cat" backLabel="返回貓貓列表" />;
+}
+
+function CatDetailNotFound() {
+  return (
+    <PublicStateShell
+      title="這隻動物目前不在公開領養名單"
+      description="公開名單會隨照護和領養進度更新，請查看其他正在等待家庭的貓貓。"
+      action={
+        <Link to="/animals/cat" className="btn-secondary min-h-11 px-5">
+          查看貓貓列表
+        </Link>
+      }
+    />
+  );
 }
 
 function CatDetailPending() {

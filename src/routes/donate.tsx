@@ -203,6 +203,21 @@ const METHOD_ICONS: Record<DonationMethod, typeof CreditCard> = {
   paypal: Globe,
 };
 
+export function reconcileDonationMethod(
+  selected: DonationMethod | null,
+  configured: PublicPaymentMethod[],
+): DonationMethod | null {
+  if (selected && configured.some((entry) => entry.method === selected)) return selected;
+  return configured[0]?.method ?? null;
+}
+
+export function isDonationMethodAvailable(
+  selected: DonationMethod | null,
+  configured: PublicPaymentMethod[],
+): selected is DonationMethod {
+  return selected !== null && configured.some((entry) => entry.method === selected);
+}
+
 function methodsFromConfig(configured: PublicPaymentMethod[]) {
   return configured.map((entry) => ({
     value: entry.method,
@@ -294,7 +309,9 @@ export function DonatePage({
   const [customAmount, setCustomAmount] = useState("");
   const [purpose, setPurpose] = useState<DonationPurpose>(search.purpose ?? "general");
   const [customPurpose, setCustomPurpose] = useState("");
-  const [method, setMethod] = useState<DonationMethod>("stripe");
+  const [method, setMethod] = useState<DonationMethod | null>(() =>
+    reconcileDonationMethod(null, initialMethods),
+  );
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -305,8 +322,13 @@ export function DonatePage({
   const [error, setError] = useState<string | null>(null);
   const [manualResult, setManualResult] = useState<ManualResult | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const [returnState, setReturnState] = useState<DonationReturnState | null>(null);
   const methods = useMemo(() => methodsFromConfig(initialMethods), [initialMethods]);
+
+  useEffect(() => {
+    setMethod((selected) => reconcileDonationMethod(selected, initialMethods));
+  }, [initialMethods]);
 
   useEffect(() => {
     if (!attribution) return;
@@ -355,12 +377,18 @@ export function DonatePage({
       return;
     }
 
+    if (!isDonationMethodAvailable(method, initialMethods)) {
+      setError(t.methodNotice);
+      return;
+    }
+
     if (turnstileEnabled && !turnstileToken) {
       setError(t.verifyRequired);
       return;
     }
 
     setLoading(true);
+    setTurnstileToken(null);
 
     try {
       const checkoutExperience = checkoutExperienceFromViewport(window.innerWidth);
@@ -410,6 +438,7 @@ export function DonatePage({
       }
       setManualResult(data);
     } catch {
+      if (turnstileEnabled) setTurnstileResetKey((key) => key + 1);
       setError(t.submitError);
     } finally {
       setLoading(false);
@@ -727,6 +756,7 @@ export function DonatePage({
 
               {checkoutEnabled && (
                 <TurnstileWidget
+                  resetKey={turnstileResetKey}
                   onVerify={setTurnstileToken}
                   onExpire={() => setTurnstileToken(null)}
                   language={language === "en" ? "en" : "zh-tw"}
@@ -741,7 +771,12 @@ export function DonatePage({
 
               <button
                 type="submit"
-                disabled={!checkoutEnabled || loading || (turnstileEnabled && !turnstileToken)}
+                disabled={
+                  !checkoutEnabled ||
+                  !isDonationMethodAvailable(method, initialMethods) ||
+                  loading ||
+                  (turnstileEnabled && !turnstileToken)
+                }
                 className="btn-primary w-full disabled:opacity-60"
               >
                 {loading ? (

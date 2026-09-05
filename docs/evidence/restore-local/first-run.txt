@@ -1,0 +1,12 @@
+ 7 | const sourceName = "supabase_db_hkscda-completion-20260905",
+ 8 |   targetName = "supabase_db_hkscda-completion-restore-20260905";
+ 9 | function command(args: string[], stdin?: Uint8Array) {
+10 |   const r = Bun.spawnSync(args, { stdin: stdin ?? "ignore", stdout: "pipe", stderr: "pipe" });
+11 |   if (r.exitCode !== 0)
+12 |     throw new Error(
+                   ^
+error: Local rehearsal command docker exec failed; inspect the isolated command before retrying
+      at command (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\scripts\verify-local-restore.ts:12:15)
+      at C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\scripts\verify-local-restore.ts:124:3
+
+Bun v1.3.14 (Windows x64)

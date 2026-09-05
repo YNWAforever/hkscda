@@ -14,6 +14,10 @@ const pendingPayment = {
     receipt_requested: false,
     status: "pending",
     supporter_id: "supporter-1",
+    contact_name: "Ada Snapshot",
+    contact_email: "snapshot@example.test",
+    contact_phone: "91234567",
+    contact_language: "en" as const,
     supporter: {
       id: "supporter-1",
       name: "Ada Donor",

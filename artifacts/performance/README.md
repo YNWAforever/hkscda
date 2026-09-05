@@ -1,0 +1,11 @@
+# Admin performance evidence v1
+
+`node scripts/verify-admin-performance.mjs <manifest.json>` measures a disposable local API or an explicitly named staging origin. It never seeds records. Set `ADMIN_PERF_TOKEN` to an authorized synthetic staff token. Remote runs require `ADMIN_PERF_ALLOWED_ORIGIN`; production alias `hkscda.vercel.app` is rejected. No remote run is authorized merely by this README.
+
+A manifest supplies `baseURL`, `fixtureId`, `supporterCount` (1000/10000/50000), and `scenarios` with `name`, `path`, `kind`, and an optional privacy-safe `routeTemplate`. The deterministic supporter generator is `scripts/fixtures/admin-performance.ts`; it creates inputs only, with `.invalid` addresses. Long donation histories, CMS revisions, role fixtures and actual isolated seeding remain required before representative benchmarks can be claimed.
+
+Each scenario records the first observed request separately from 30 subsequent warm requests, nearest-rank p50/p95, decoded bytes, and locally computed gzip bytes. The first observation does not prove empty server/database caches. Gzip bytes are a comparable payload proxy, not a wire-transfer measurement. Responses are consumed but never saved. Query count and SQL EXPLAIN are null until independently collected from the authorized database; HTTP timing cannot establish them.
+
+Mutation scenarios require `ADMIN_PERF_ALLOW_MUTATIONS=true` and 31 distinct prepared request bodies. Supply independent synthetic records/versions/request IDs so the test measures commits rather than replays. Never run live payment or delivery provider side effects. A failed HTTP response stops the run; retained output remains `status: incomplete`. Configure `ADMIN_PERF_OUTPUT` to keep runs separate. The v1 JSON schema records the output contract.
+
+Current verification: a local synthetic HTTP server demonstrated separate first/warm samples, 30 warm requests, payload accounting, no response-body retention and unsafe-path/mutation refusal. This is harness verification, not an authenticated HKSCDA benchmark or production latency result. Representative API runs, query plans, mutation commit timing excluding delivery, and owner-approved target revisions remain gates.

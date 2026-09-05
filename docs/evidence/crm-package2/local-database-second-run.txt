@@ -1,0 +1,24 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\crm\manualGift.database.test.ts:
+(pass) local database fixture rejects routing overrides and requires explicit connection fields [0.43ms]
+(pass) manual gift real database transaction and leases > concurrent identical commands produce one finance/audit/job/consent and stable IDs [57.41ms]
+(fail) manual gift real database transaction and leases > changed payload conflicts without a second financial write [30008.66ms]
+  ^ this test timed out after 30000ms.
+(pass) manual gift real database transaction and leases > pending gifts persist finance without a delivery job [201.22ms]
+(pass) manual gift real database transaction and leases > concurrent claims and expired lease recovery fence the stale worker [206.61ms]
+(pass) manual gift real database transaction and leases > forced payment insert failure leaves no request, finance, role, consent or job [105.47ms]
+(pass) manual gift real database transaction and leases > forced audit_log insert failure leaves no request, finance, role, consent or job [78.60ms]
+(pass) manual gift real database transaction and leases > anon and authenticated cannot execute finance, claim or retry RPCs [4.48ms]
+(pass) manual gift real database transaction and leases > real SQL list/filter/export sees all 1001 matches before output bound [2071.48ms]
+{"fixture":"crm-read-v1","rows":5000,"supporterEnvelopeBytes":2177832,"donationEnvelopeBytes":1977831}
+(pass) manual gift real database transaction and leases > real SQL list/filter/export sees all 5000 matches before output bound [4015.35ms]
+(pass) manual gift real database transaction and leases > real SQL list/filter/export sees all 5001 matches before output bound [2506.54ms]
+(pass) manual gift real database transaction and leases > real summary totals include 1001 gifts and retain receipt association [84.47ms]
+(pass) manual gift real database transaction and leases > real concurrent staff approvals serialize for one remaining place; cancellation frees capacity [29.22ms]
+(pass) manual gift real database transaction and leases > real public and staff approvals share the same activity lock [12.04ms]
+(pass) manual gift real database transaction and leases > real group capacity, approved edits and activity reduction respect current occupants [13.98ms]
+(pass) manual gift real database transaction and leases > real capacity reduction racing approval cannot overbook [11.96ms]
+(pass) manual gift real database transaction and leases > real approval audit failure rolls back registration status [18.03ms]
+(fail) manual gift real database transaction and leases > (unnamed) [30013.43ms]
+  ^ a beforeEach/afterEach hook timed out for this test.

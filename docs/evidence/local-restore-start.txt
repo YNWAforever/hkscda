@@ -1,0 +1,6 @@
+{
+  "project": "hkscda-completion-restore-20260905",
+  "apiURL": "http://127.0.0.1:55621",
+  "dbPort": 55622,
+  "status": "running"
+}

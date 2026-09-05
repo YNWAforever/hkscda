@@ -72,3 +72,19 @@ export function findCurrentNavigation(pathname: string) {
   });
   return current as { groupIndex: number; to: string } | null;
 }
+export function getMobileDrawerActions(onNavigate: () => void) {
+  return [
+    {
+      to: "/animals/cat" as const,
+      label: "查看待領養動物",
+      className: "button button-primary drawer-adopt",
+      onClick: onNavigate,
+    },
+    {
+      to: "/donate" as const,
+      label: "立即捐助",
+      className: "button button-accent drawer-donate",
+      onClick: onNavigate,
+    },
+  ];
+}

@@ -1,0 +1,2 @@
+$ MODE=a11y node scripts/verify-public-brand.mjs
+Verified 26 routes across 1 viewports in a11y mode

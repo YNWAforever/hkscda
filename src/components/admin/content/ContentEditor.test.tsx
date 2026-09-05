@@ -15,6 +15,7 @@ type MockLinkProps = {
 
 mock.module("@tanstack/react-router", () => ({
   ...realReactRouter,
+  useBlocker: () => undefined,
   Link: ({ children, className, to }: MockLinkProps) => (
     <a data-router-link="true" href={to} className={className}>
       {children}
@@ -44,14 +45,23 @@ const realSupabaseModule = { ...(await import("../../../lib/supabase")) };
 const uploadCalls: string[] = [];
 const uploadFromBucketCalls: string[] = [];
 let uploadToSignedUrlError: Error | null = null;
+let metadataError: Error | null = null;
+const metadataErrorQueue: Error[] = [];
 
 const fetchAdminJsonMock = mock(async (path: string, init?: { method?: string; body?: string }) => {
   if (path.endsWith("/media-upload-target")) {
     uploadCalls.push("target");
-    return { token: "signed-token", path: "content-1/generated-path.jpg" };
+    return {
+      token: "signed-token",
+      path: "content-1/generated-path.jpg",
+      bucket: "content-media-private",
+      uploadSessionId: "session-1",
+    };
   }
   if (path.endsWith("/media")) {
     uploadCalls.push("metadata");
+    if (metadataErrorQueue.length) throw metadataErrorQueue.shift();
+    if (metadataError) throw metadataError;
     return { id: "media-1" };
   }
   throw new Error(`unexpected fetchAdminJson call: ${init?.method ?? "GET"} ${path}`);
@@ -141,6 +151,43 @@ describe("ContentEditor", () => {
     expect(markup).not.toContain("Storage path");
   });
 
+  test("allows internal attachments through private uploads", async () => {
+    const { ContentAuthoringPanels } = await import("./ContentEditor");
+    const contentWithInternalUpdate: ContentDetail = {
+      ...content,
+      updates: [
+        {
+          id: "22222222-2222-4333-8444-555555555555",
+          contentItemId: content.id,
+          kind: "medical",
+          title: "Internal medical note",
+          body: null,
+          occurredAt: "2026-09-05T00:00:00.000Z",
+          visibility: "internal",
+          shouldGenerateAdopterDrafts: false,
+          media: [],
+          createdAt: "2026-09-05T00:00:00.000Z",
+          updatedAt: "2026-09-05T00:00:00.000Z",
+        },
+      ],
+    };
+    const markup = renderToStaticMarkup(
+      <ContentAuthoringPanels
+        content={contentWithInternalUpdate}
+        pending={false}
+        onCreateLink={async () => undefined}
+        onSaveStoryProfile={async () => undefined}
+        onCreateStoryUpdate={async () => undefined}
+        onCreateMedia={async () => undefined}
+      />,
+    );
+
+    expect(markup).toContain("圖片先儲存為私密媒體");
+    expect(markup).toContain(
+      '<option value="22222222-2222-4333-8444-555555555555">Internal medical note（內部）</option>',
+    );
+  });
+
   test("uses a router link for returning to the content list", async () => {
     const { ContentEditor } = await import("./ContentEditor");
     const queryClient = new QueryClient();
@@ -179,15 +226,16 @@ describe("createContentMediaWithUpload", () => {
     const { createContentMediaWithUpload } = await import("./ContentEditor");
     const file = new File([new Uint8Array(8)], "photo.jpg", { type: "image/jpeg" });
 
-    const result = await createContentMediaWithUpload("content-1", mediaForm(file));
+    const result = await createContentMediaWithUpload("content-1", mediaForm(file), 7);
 
     expect(result).toEqual({ id: "media-1" });
     expect(uploadCalls).toEqual(["target", "upload", "metadata"]);
-    expect(uploadFromBucketCalls).toEqual(["content-media"]);
+    expect(uploadFromBucketCalls).toEqual(["content-media-private"]);
 
     const targetCall = fetchAdminJsonMock.mock.calls[0];
     expect(targetCall[0]).toBe("/api/admin/content/content-1/media-upload-target");
     expect(targetCall[1]).toMatchObject({ method: "POST" });
+    expect(JSON.parse(targetCall[1]?.body ?? "{}")).toMatchObject({ storyUpdateId: null });
 
     expect(uploadToSignedUrlMock.mock.calls[0]).toEqual([
       "content-1/generated-path.jpg",
@@ -200,7 +248,8 @@ describe("createContentMediaWithUpload", () => {
     expect(metadataCall[0]).toBe("/api/admin/content/content-1/media");
     expect(metadataCall[1]).toMatchObject({ method: "POST" });
     const finalBody = JSON.parse(metadataCall[1]?.body ?? "{}");
-    expect(finalBody.storagePath).toBe("content-1/generated-path.jpg");
+    expect(finalBody.uploadSessionId).toBe("session-1");
+    expect(finalBody.expectedVersion).toBe(7);
     expect(finalBody.altText).toBe("小白在花園");
   });
 
@@ -213,11 +262,113 @@ describe("createContentMediaWithUpload", () => {
     const { createContentMediaWithUpload } = await import("./ContentEditor");
     const file = new File([new Uint8Array(8)], "photo.jpg", { type: "image/jpeg" });
 
-    await expect(createContentMediaWithUpload("content-1", mediaForm(file))).rejects.toThrow(
+    await expect(createContentMediaWithUpload("content-1", mediaForm(file), 7)).rejects.toThrow(
       "network down",
     );
 
     expect(uploadCalls).toEqual(["target", "upload"]);
     expect(fetchAdminJsonMock).toHaveBeenCalledTimes(1);
   });
+});
+
+test("metadata failure retries the same uploaded session without another upload", async () => {
+  uploadCalls.length = 0;
+  uploadToSignedUrlError = null;
+  metadataError = new Error("Synthetic metadata failure");
+  const { createContentMediaWithUpload } = await import("./ContentEditor");
+  const file = new File([new Uint8Array(8)], "retry.jpg", { type: "image/jpeg" });
+  try {
+    await expect(
+      createContentMediaWithUpload(
+        "content-1",
+        {
+          file,
+          storyUpdateId: "",
+          altText: "Synthetic",
+          caption: "",
+          sortOrder: "0",
+          isCover: false,
+        },
+        7,
+      ),
+    ).rejects.toThrow("metadata failure");
+    metadataError = null;
+    await createContentMediaWithUpload(
+      "content-1",
+      {
+        file,
+        storyUpdateId: "",
+        altText: "Synthetic",
+        caption: "",
+        sortOrder: "0",
+        isCover: false,
+      },
+      7,
+    );
+    expect(uploadCalls).toEqual(["target", "upload", "metadata", "metadata"]);
+  } finally {
+    metadataError = null;
+    uploadToSignedUrlError = null;
+  }
+});
+
+test("uncertain successful upload retries verified finalization before uploading again", async () => {
+  uploadCalls.length = 0;
+  metadataError = null;
+  uploadToSignedUrlError = new Error("Synthetic lost upload response");
+  const { createContentMediaWithUpload } = await import("./ContentEditor");
+  const file = new File([new Uint8Array(8)], "uncertain.jpg", { type: "image/jpeg" });
+  const form = {
+    file,
+    storyUpdateId: "",
+    altText: "Synthetic",
+    caption: "",
+    sortOrder: "0",
+    isCover: false,
+  };
+  try {
+    await expect(createContentMediaWithUpload("content-1", form, 7)).rejects.toThrow(
+      "lost upload response",
+    );
+    await expect(createContentMediaWithUpload("content-1", form, 7)).resolves.toEqual({
+      id: "media-1",
+    });
+    expect(uploadCalls).toEqual(["target", "upload", "metadata"]);
+  } finally {
+    uploadToSignedUrlError = null;
+  }
+});
+
+test("missing object after uncertain upload retries the same private target then finalizes", async () => {
+  uploadCalls.length = 0;
+  uploadFromBucketCalls.length = 0;
+  metadataError = null;
+  uploadToSignedUrlError = new Error("Synthetic failed upload");
+  const { createContentMediaWithUpload } = await import("./ContentEditor");
+  const file = new File([new Uint8Array(8)], "missing-object.jpg", { type: "image/jpeg" });
+  const form = {
+    file,
+    storyUpdateId: "",
+    altText: "Synthetic",
+    caption: "",
+    sortOrder: "0",
+    isCover: false,
+  };
+  try {
+    await expect(createContentMediaWithUpload("content-1", form, 7)).rejects.toThrow(
+      "failed upload",
+    );
+    uploadToSignedUrlError = null;
+    metadataErrorQueue.push(Object.assign(new Error("Uploaded object not found"), { status: 404 }));
+    await expect(createContentMediaWithUpload("content-1", form, 7)).resolves.toEqual({
+      id: "media-1",
+    });
+    expect(uploadCalls).toEqual(["target", "upload", "metadata", "upload", "metadata"]);
+    expect(uploadFromBucketCalls).toEqual(["content-media-private", "content-media-private"]);
+    expect(metadataErrorQueue).toHaveLength(0);
+  } finally {
+    metadataErrorQueue.length = 0;
+    metadataError = null;
+    uploadToSignedUrlError = null;
+  }
 });

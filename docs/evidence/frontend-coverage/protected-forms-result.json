@@ -1,0 +1,47 @@
+[
+  {
+    "form": "group",
+    "fieldsPreserved": true,
+    "freshTokenRetry": true,
+    "finalAttempts": 2,
+    "partialUploadFailure": false,
+    "uploadFiles": []
+  },
+  {
+    "form": "volunteer",
+    "fieldsPreserved": true,
+    "freshTokenRetry": true,
+    "finalAttempts": 2,
+    "partialUploadFailure": false,
+    "uploadFiles": []
+  },
+  {
+    "form": "sponsorship",
+    "fieldsPreserved": true,
+    "freshTokenRetry": true,
+    "finalAttempts": 2,
+    "partialUploadFailure": true,
+    "uploadFiles": [
+      "synthetic-home.jpg",
+      "synthetic-home.jpg",
+      "synthetic-home.jpg"
+    ]
+  },
+  {
+    "form": "adoption",
+    "fieldsPreserved": true,
+    "photoNamesPreserved": true,
+    "wizardStepRemount": true,
+    "partialUploadFailure": true,
+    "freshTokenRetry": true,
+    "finalAttempts": 2,
+    "uploadedFiles": [
+      "synthetic-home.jpg",
+      "synthetic-window.jpg",
+      "synthetic-home.jpg",
+      "synthetic-window.jpg",
+      "synthetic-home.jpg",
+      "synthetic-window.jpg"
+    ]
+  }
+]

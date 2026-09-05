@@ -1,0 +1,3 @@
+import {chromium} from 'playwright';
+const browser=await chromium.launch();
+for(const width of [375,390,768]){const page=await browser.newPage({viewport:{width,height:844}});let errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded'});await page.waitForLoadState('networkidle',{timeout:1500}).catch(()=>{});for(let attempt=0;attempt<3;attempt++){await page.getByRole('button',{name:'開啟選單'}).first().click();await page.waitForTimeout(1000);const expanded=await page.locator('[aria-controls="mobile-drawer"]').getAttribute('aria-expanded');console.log(JSON.stringify({width,attempt,expanded,errors}));if(expanded==='true')break;}await page.close();}await browser.close();

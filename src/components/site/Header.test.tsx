@@ -2,7 +2,7 @@ import { describe, expect, mock, test } from "bun:test";
 import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import { findCurrentNavigation, navGroups } from "./navigation";
+import { findCurrentNavigation, getMobileDrawerActions, navGroups } from "./navigation";
 
 let pathname = "/";
 
@@ -89,6 +89,16 @@ describe("Header rendering", () => {
     expect(markup).toContain("is-current");
   });
 
+  test("closes the drawer through both footer calls to action", () => {
+    let closeCount = 0;
+    const actions = getMobileDrawerActions(() => {
+      closeCount += 1;
+    });
+
+    expect(actions.map((action) => action.to)).toEqual(["/animals/cat", "/donate"]);
+    for (const action of actions) action.onClick();
+    expect(closeCount).toBe(2);
+  });
   test("routes the donate call to action same-origin", async () => {
     const markup = await render();
     expect(markup).toContain('href="/donate"');

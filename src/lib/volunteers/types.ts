@@ -125,6 +125,8 @@ export type VolunteerRegistrationCreateInput = {
   guardianName: string | null;
   guardianPhone: string | null;
   notes: string | null;
+  consentEmailRequested: boolean;
+  consentWhatsappRequested: boolean;
   statusTokenHash: string;
   statusTokenExpiresAt: string;
 };

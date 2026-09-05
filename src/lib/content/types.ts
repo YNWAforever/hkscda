@@ -76,6 +76,7 @@ export type RescueStoryProfile = {
 };
 
 export type StoryUpdate = {
+  bodyLoaded?: boolean;
   id: string;
   contentItemId: string;
   kind: StoryUpdateKind;
@@ -153,6 +154,9 @@ export type ContentSummary = {
 };
 
 export type ContentDetail = ContentSummary & {
+  history?: { page: number; hasMore: boolean };
+  version?: number;
+  revisionId?: string | null;
   body: string | null;
   seoTitle: string | null;
   seoDescription: string | null;

@@ -2,6 +2,9 @@ import { Link } from "@tanstack/react-router";
 
 import { brand } from "../../../lib/brand/brand";
 import heroImg from "@/assets/dog-smiling.jpg";
+import heroImg480 from "@/assets/dog-smiling-480.jpg";
+import heroImg768 from "@/assets/dog-smiling-768.jpg";
+import heroImg1024 from "@/assets/dog-smiling-1024.jpg";
 
 /** Ported from hkscdagpt app/page.tsx (home-hero), with same-origin links. */
 export function HomeHero() {
@@ -27,7 +30,15 @@ export function HomeHero() {
           </p>
         </div>
         <figure className="hero-photo">
-          <img src={heroImg} alt="在協會犬舍外開心迎接訪客的獲救唐狗" fetchPriority="high" />
+          <img
+            src={heroImg1024}
+            srcSet={`${heroImg480} 480w, ${heroImg768} 768w, ${heroImg1024} 1024w, ${heroImg} 1500w`}
+            sizes="(max-width: 767px) calc(100vw - 32px), (max-width: 1200px) 45vw, 540px"
+            width={1500}
+            height={2000}
+            alt="在協會犬舍外開心迎接訪客的獲救唐狗"
+            fetchPriority="high"
+          />
           <figcaption>真實 HKSCDA 救援相片</figcaption>
         </figure>
       </div>

@@ -100,7 +100,7 @@ describe("the policy covers what the app actually loads", () => {
     // Report-Only hid this: Turnstile was never in the policy, and there was no
     // frame-src at all. Enforcing without these breaks every gated public form.
     const widget = readFileSync(
-      join(process.cwd(), "src/components/site/TurnstileWidget.tsx"),
+      join(process.cwd(), "src/components/site/turnstileScript.ts"),
       "utf8",
     );
     expect(widget).toContain("https://challenges.cloudflare.com");

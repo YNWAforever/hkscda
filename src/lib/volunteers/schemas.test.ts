@@ -110,3 +110,17 @@ describe("volunteer schemas", () => {
     ).toBe(21);
   });
 });
+
+import { adminActivityUpdateSchema, adminRegistrationStatusSchema } from "./schemas";
+test("staff capacity and status edits require the version that was reviewed", () => {
+  expect(() => adminRegistrationStatusSchema.parse({ status: "approved" })).toThrow(
+    "expectedUpdatedAt",
+  );
+  expect(() => adminActivityUpdateSchema.parse({ capacity: 1 })).toThrow("expectedUpdatedAt");
+  expect(
+    adminRegistrationStatusSchema.parse({
+      status: "approved",
+      expectedUpdatedAt: "2026-09-05T00:00:00.123456+00:00",
+    }).expectedUpdatedAt,
+  ).toBe("2026-09-05T00:00:00.123456+00:00");
+});

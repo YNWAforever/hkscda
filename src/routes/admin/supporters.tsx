@@ -6,6 +6,7 @@ import { requireAdminPageAccess } from "../../lib/admin/pageAccess";
 import { isSupportersListPath } from "./-supportersRouteLogic";
 
 export const Route = createFileRoute("/admin/supporters")({
+  ssr: false,
   beforeLoad: async ({ context }) => {
     await requireAdminPageAccess("supporters", context.queryClient);
   },

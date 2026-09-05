@@ -1,0 +1,2 @@
+$ node scripts/verify-public-brand.mjs
+Verified 26 routes across 5 viewports in brand mode

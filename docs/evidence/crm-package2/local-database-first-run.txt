@@ -1,0 +1,138 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\crm\manualGift.database.test.ts:
+(pass) local database fixture rejects routing overrides and requires explicit connection fields [2.01ms]
+PostgresError: invalid_manual_gift
+    errno: "22023",
+ severity: "ERROR",
+    where: "PL/pgSQL function record_manual_gift_with_audit(uuid,uuid,jsonb) line 24 at RAISE",
+     file: "pl_exec.c",
+  routine: "exec_stmt_raise",
+     code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) manual gift real database transaction and leases > concurrent identical commands produce one finance/audit/job/consent and stable IDs [94.12ms]
+PostgresError: invalid_manual_gift
+    errno: "22023",
+ severity: "ERROR",
+    where: "PL/pgSQL function record_manual_gift_with_audit(uuid,uuid,jsonb) line 24 at RAISE",
+     file: "pl_exec.c",
+  routine: "exec_stmt_raise",
+     code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) manual gift real database transaction and leases > changed payload conflicts without a second financial write [2.27ms]
+PostgresError: invalid_manual_gift
+    errno: "22023",
+ severity: "ERROR",
+    where: "PL/pgSQL function record_manual_gift_with_audit(uuid,uuid,jsonb) line 24 at RAISE",
+     file: "pl_exec.c",
+  routine: "exec_stmt_raise",
+     code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) manual gift real database transaction and leases > pending gifts persist finance without a delivery job [3.10ms]
+PostgresError: invalid_manual_gift
+    errno: "22023",
+ severity: "ERROR",
+    where: "PL/pgSQL function record_manual_gift_with_audit(uuid,uuid,jsonb) line 24 at RAISE",
+     file: "pl_exec.c",
+  routine: "exec_stmt_raise",
+     code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+(fail) manual gift real database transaction and leases > concurrent claims and expired lease recovery fence the stale worker [6.20ms]
+(fail) manual gift real database transaction and leases > forced payment insert failure leaves no request, finance, role, consent or job [30025.74ms]
+  ^ this test timed out after 30000ms.
+168 |           await tx`select count(*)::int total from public.consent where supporter_id=${supporter}::uuid`;
+169 |         await expect(
+170 |           tx.savepoint(async (sp) => {
+171 |             await sp`select public.record_manual_gift_with_audit(${key}::uuid,${actor}::uuid,${JSON.stringify(input)}::jsonb)`;
+172 |           }),
+173 |         ).rejects.toThrow("forced fixture insert failure");
+                        ^
+error: expect(received).toThrow(expected)
+
+Expected substring: "forced fixture insert failure"
+Received message: "invalid_manual_gift"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\lib\crm\manualGift.database.test.ts:173:19)
+      at async onTransactionConnected (bun:sql:359:46)
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\lib\crm\manualGift.database.test.ts:173:19)
+(fail) manual gift real database transaction and leases > forced audit_log insert failure leaves no request, finance, role, consent or job [112.21ms]
+(pass) manual gift real database transaction and leases > anon and authenticated cannot execute finance, claim or retry RPCs [7.41ms]
+212 |             q: "%_",
+213 |             includeDeleted: false,
+214 |           };
+215 |           const [page] =
+216 |             await tx`select public.crm_read_supporters(${JSON.stringify(filters)}::jsonb,1000,100,false) result`;
+217 |           expect(page.result.total).toBe(count);
+                                          ^
+error: expect(received).toBe(expected)
+
+Expected: 1001
+Received: 1002
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\lib\crm\manualGift.database.test.ts:217:37)
+      at async onTransactionConnected (bun:sql:359:46)
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\lib\crm\manualGift.database.test.ts:173:19)
+(fail) manual gift real database transaction and leases > real SQL list/filter/export sees all 1001 matches before output bound [318.42ms]
+212 |             q: "%_",
+213 |             includeDeleted: false,
+214 |           };
+215 |           const [page] =
+216 |             await tx`select public.crm_read_supporters(${JSON.stringify(filters)}::jsonb,1000,100,false) result`;
+217 |           expect(page.result.total).toBe(count);
+                                          ^
+error: expect(received).toBe(expected)
+
+Expected: 5000
+Received: 5001
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\lib\crm\manualGift.database.test.ts:217:37)
+      at async onTransactionConnected (bun:sql:359:46)
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\lib\crm\manualGift.database.test.ts:173:19)
+(fail) manual gift real database transaction and leases > real SQL list/filter/export sees all 5000 matches before output bound [1341.36ms]
+212 |             q: "%_",
+213 |             includeDeleted: false,
+214 |           };
+215 |           const [page] =
+216 |             await tx`select public.crm_read_supporters(${JSON.stringify(filters)}::jsonb,1000,100,false) result`;
+217 |           expect(page.result.total).toBe(count);
+                                          ^
+error: expect(received).toBe(expected)
+
+Expected: 5001
+Received: 5002
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\lib\crm\manualGift.database.test.ts:217:37)
+      at async onTransactionConnected (bun:sql:359:46)
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\lib\crm\manualGift.database.test.ts:173:19)
+(fail) manual gift real database transaction and leases > real SQL list/filter/export sees all 5001 matches before output bound [2117.75ms]
+(pass) manual gift real database transaction and leases > real summary totals include 1001 gifts and retain receipt association [215.49ms]
+(pass) manual gift real database transaction and leases > real concurrent staff approvals serialize for one remaining place; cancellation frees capacity [130.65ms]
+(pass) manual gift real database transaction and leases > real public and staff approvals share the same activity lock [106.77ms]
+(pass) manual gift real database transaction and leases > real group capacity, approved edits and activity reduction respect current occupants [63.83ms]
+(pass) manual gift real database transaction and leases > real capacity reduction racing approval cannot overbook [39.70ms]
+(pass) manual gift real database transaction and leases > real approval audit failure rolls back registration status [42.59ms]
+PostgresError: cannot cast type json[] to uuid[]
+    errno: "42846",
+ severity: "ERROR",
+ position: "74",
+     file: "parse_expr.c",
+  routine: "transformTypeCast",
+     code: "ERR_POSTGRES_SERVER_ERROR"
+
+      at wrapPostgresError (internal:sql/postgres:171:27)
+      at onRejectPostgresQuery (internal:sql/postgres:199:33)
+      at toThrow (unknown:1:1)
+      at C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\lib\crm\manualGift.database.test.ts:239:23
+      at onTransactionConnected (unknown:1:1)
+(fail) manual gift real database transaction and leases > (unnamed) [5.27ms]
+
+exit=null
+spawnSync bun ETIMEDOUT

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "commit": "413d964e935fbaf107e91003ecf0ea1b7a61b8b0",
+  "worktreeDirty": true,
+  "fixtureId": "completion-final-public",
+  "fixtureSha256": "b8d3f37824e784708465af97cf5113242c22631d56c7b462e7a688c566b6a0e2",
+  "fixtureSource": "scripts/ci/supabase-fixture.mjs",
+  "baseURL": "http://127.0.0.1:4173",
+  "mode": "brand",
+  "startedAt": "2026-09-05T18:37:11.412Z",
+  "browser": "148.0.7778.96",
+  "measuredViewports": [
+    "375x812",
+    "390x844",
+    "768x1024",
+    "1024x768",
+    "1440x900"
+  ],
+  "failures": [],
+  "completedAt": "2026-09-05T18:46:46.760Z"
+}

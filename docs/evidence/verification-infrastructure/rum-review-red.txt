@@ -1,0 +1,26 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\publicMetrics.test.ts:
+(pass) templates capability and detail paths and excludes unknown/private routes [1.37ms]
+(pass) does not load observers without explicit activation and current consent [0.66ms]
+(pass) emits only numeric metrics and templates; revocation/navigation/stop suppress callbacks [2.15ms]
+(pass) consent revoked while importing prevents observer registration [0.29ms]
+105 |   });
+106 |   expect(registrations).toBe(0);
+107 | });
+108 |
+109 | test("route inventory matches real listing and privacy routes", () => {
+110 |   for (const path of ["/animals/cat", "/animals/dog", "/about/privacy", "/adoption/instructions", "/volunteer/group", "/knowledge"]) expect(publicMetricRoute(path)).toBe(path);
+                                                                                                                                                                           ^
+error: expect(received).toBe(expected)
+
+Expected: "/animals/cat"
+Received: null
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\lib\publicMetrics.test.ts:110:166)
+(fail) route inventory matches real listing and privacy routes [1.47ms]
+
+ 4 pass
+ 1 fail
+ 22 expect() calls
+Ran 5 tests across 1 file. [133.00ms]

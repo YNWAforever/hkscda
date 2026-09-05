@@ -1,0 +1,3 @@
+Browser ready
+{"financialPosts":2,"stableRequestId":true,"retryPosts":1,"remainingSaveButtons":0,"remainingRetryButtons":0}
+{"financialPosts":2,"totalRetryPosts":2,"historyRetryCompleted":true}

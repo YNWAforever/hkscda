@@ -1,0 +1,6 @@
+{"width":375,"attempt":0,"expanded":"false","errors":[]}
+{"width":375,"attempt":1,"expanded":"true","errors":[]}
+{"width":390,"attempt":0,"expanded":"false","errors":[]}
+{"width":390,"attempt":1,"expanded":"true","errors":[]}
+{"width":768,"attempt":0,"expanded":"false","errors":[]}
+{"width":768,"attempt":1,"expanded":"true","errors":[]}

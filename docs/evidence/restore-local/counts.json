@@ -1,0 +1,451 @@
+{
+  "tables": [
+    {
+      "table": "\"auth\".\"users\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"about_page_content\"",
+      "source": 3,
+      "restored": 3,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"admin_user\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"adopter_profile\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"adoption_application_animal_preference\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"adoption_application_detail\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"adoption_application_photo\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"adoption_application_visit_preference\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"adoption_applications\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"adoption_attachment\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"adoption_case\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"adoption_fee\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"adoption_fees\"",
+      "source": 14,
+      "restored": 14,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"adoption_followup\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"adoption_guide_publish_requests\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"adoption_guide_releases\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"adoption_intake_item\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"adoption_rules\"",
+      "source": 12,
+      "restored": 12,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"animal_match\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"animal_position\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"animal_profile_internal\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"animals\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"annual_reports\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"arrival_source\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"audit_log\"",
+      "source": 22,
+      "restored": 22,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"board_member\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"care_topics\"",
+      "source": 15,
+      "restored": 15,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"consent\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"content_item\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"content_link\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"content_media\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"content_media_session\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"content_public_asset\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"content_publication_prepare\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"content_publish_request\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"content_revision\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"coordinator_status\"",
+      "source": 29,
+      "restored": 29,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"coordinator_status_history\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"document_assets\"",
+      "source": 2,
+      "restored": 2,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"dog_friendly_estates\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"donation\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"donation_delivery_job\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"faq_entry\"",
+      "source": 10,
+      "restored": 10,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"group_enquiries\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"knowledge_posts\"",
+      "source": 4,
+      "restored": 4,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"living_area\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"manual_gift_request\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"message\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"message_template\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"payment\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"payment_public_config\"",
+      "source": 5,
+      "restored": 5,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"payment_public_config_publish_requests\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"public_status_token\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"receipt\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"receipt_sequence\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"recipient_notification_draft\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"recurring_mandate\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"rescue_story_profile\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"site_config\"",
+      "source": 1,
+      "restored": 1,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"site_document_slots\"",
+      "source": 2,
+      "restored": 2,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"social_copy_variant\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"sponsorship_payment_proof\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"sponsorship_pledge\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"sponsorship_preference\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"story_update\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"successful_adoption\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"supporter\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"supporter_consent_intent\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"supporter_role\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"volunteer_activity\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"volunteer_registration\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"public\".\"webhook_event\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    },
+    {
+      "table": "\"storage\".\"buckets\"",
+      "source": 7,
+      "restored": 7,
+      "equal": true
+    },
+    {
+      "table": "\"storage\".\"objects\"",
+      "source": 0,
+      "restored": 0,
+      "equal": true
+    }
+  ],
+  "migrationVersionsEqual": true,
+  "migrationCount": 52,
+  "allCountsEqual": true
+}

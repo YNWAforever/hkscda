@@ -3,6 +3,9 @@ import { playAudit } from "playwright-lighthouse";
 import AxeBuilder from "@axe-core/playwright";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
+import desktopLighthouseConfig from "lighthouse/core/config/desktop-config.js";
 
 const baseURL = process.env.BASE_URL ?? "http://127.0.0.1:4173";
 const outputDir = path.resolve(process.env.OUTPUT_DIR ?? "artifacts/brand-redesign/after");
@@ -42,7 +45,14 @@ const staticRoutes = [
 // staticRoutes/detailRoutes/stateRoutes list. Home, the animals listing, the
 // adoption form, and donate are the highest-traffic, highest-stakes public
 // pages.
-const performanceRoutes = ["/", "/animals/cat", "/adoption/apply", "/donate"];
+const allPerformanceRoutes = ["/", "/animals/cat", "/adoption/apply", "/donate"];
+const requestedPerformanceRoute = process.env.PERFORMANCE_ROUTE;
+if (requestedPerformanceRoute && !allPerformanceRoutes.includes(requestedPerformanceRoute)) {
+  throw new Error("PERFORMANCE_ROUTE must be one of the standard public measurement routes");
+}
+const performanceRoutes = requestedPerformanceRoute
+  ? [requestedPerformanceRoute]
+  : allPerformanceRoutes;
 
 const stateRoutes = [
   "/adoption/status/__brand-verification__",
@@ -69,6 +79,43 @@ const viewports = [
   { name: "1024x768", width: 1024, height: 768 },
   { name: "1440x900", width: 1440, height: 900, isDesktop: true },
 ];
+
+const measuredViewports = [];
+const measurementContext = {
+  schemaVersion: 1,
+  commit: execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim(),
+  worktreeDirty: Boolean(
+    execFileSync("git", ["status", "--porcelain"], { encoding: "utf8" }).trim(),
+  ),
+  fixtureId: process.env.FIXTURE_ID ?? "unverified",
+  fixtureSha256: createHash("sha256")
+    .update(await fs.readFile(new URL("./ci/supabase-fixture.mjs", import.meta.url)))
+    .digest("hex"),
+  fixtureSource: "scripts/ci/supabase-fixture.mjs",
+  baseURL,
+  mode,
+  startedAt: new Date().toISOString(),
+};
+
+async function retainAudit(page, label, kind, result) {
+  const filename = `${kind}-${label.replace(/[^a-zA-Z0-9_-]/g, "_")}.json`;
+  await fs.writeFile(
+    path.join(outputDir, filename),
+    JSON.stringify(
+      {
+        ...measurementContext,
+        label,
+        route: new URL(page.url()).pathname,
+        viewport: page.viewportSize(),
+        browser: page.context().browser()?.version() ?? null,
+        capturedAt: new Date().toISOString(),
+        result,
+      },
+      null,
+      2,
+    ) + "\n",
+  );
+}
 
 const failures = [];
 const routesWithErrors = new Set();
@@ -185,6 +232,7 @@ const A11Y_MINOR_MODERATE_FINDINGS = [];
 
 async function assertNoSeriousA11yViolations(page, label) {
   const results = await new AxeBuilder({ page }).analyze();
+  await retainAudit(page, label, "axe", results);
   for (const violation of results.violations) {
     if (violation.impact === "serious" || violation.impact === "critical") {
       recordFailure(
@@ -213,29 +261,40 @@ async function assertNoSeriousA11yViolations(page, label) {
   }
 }
 
-async function assertPerformanceFloor(page, label) {
-  const { lhr } = await playAudit({
-    page,
-    port: LIGHTHOUSE_DEBUG_PORT,
-    disableLogs: true,
-    // playwright-lighthouse@4.0.0 has two issues if `thresholds` is omitted:
-    // (1) its own "no thresholds set" warning tries to log via
-    // chalk.yellow.italic(...), but disableLogs:true swaps in a stub that
-    // only supports one level of property access, so the chained call
-    // throws; (2) it silently defaults to requiring a perfect 100 across
-    // all 5 Lighthouse categories, which would make playAudit itself throw
-    // on virtually any real page. Passing only `performance` here sidesteps
-    // both (it also narrows Lighthouse's `onlyCategories` to just
-    // performance, skipping the other, unneeded audits) -- the floor check
-    // below is what actually gates this script, via recordFailure.
-    thresholds: { performance: 0 },
-  });
-  const score = Math.round((lhr.categories.performance.score ?? 0) * 100);
-  console.log(label + ": Lighthouse performance score " + score);
-  if (score < PERFORMANCE_FLOOR) {
-    recordFailure(
-      label + " scored " + score + " on Lighthouse performance (floor: " + PERFORMANCE_FLOOR + ")",
-    );
+async function assertPerformanceFloor(page, label, viewport) {
+  for (let run = 1; run <= 3; run++) {
+    const runLabel = `${label} ${viewport.isDesktop ? "desktop" : "mobile"} cold-${run}`;
+    const { lhr } = await playAudit({
+      page,
+      port: LIGHTHOUSE_DEBUG_PORT,
+      disableLogs: true,
+      opts: { disableStorageReset: false },
+      ...(viewport.isDesktop ? { config: desktopLighthouseConfig } : {}),
+      // playwright-lighthouse@4.0.0 has two issues if `thresholds` is omitted:
+      // (1) its own "no thresholds set" warning tries to log via
+      // chalk.yellow.italic(...), but disableLogs:true swaps in a stub that
+      // only supports one level of property access, so the chained call
+      // throws; (2) it silently defaults to requiring a perfect 100 across
+      // all 5 Lighthouse categories, which would make playAudit itself throw
+      // on virtually any real page. Passing only `performance` here sidesteps
+      // both (it also narrows Lighthouse's `onlyCategories` to just
+      // performance, skipping the other, unneeded audits) -- the floor check
+      // below is what actually gates this script, via recordFailure.
+      thresholds: { performance: 0 },
+    });
+    await retainAudit(page, runLabel, "lighthouse", lhr);
+    const score = Math.round((lhr.categories.performance.score ?? 0) * 100);
+    console.log(runLabel + ": Lighthouse performance score " + score);
+    if (score < PERFORMANCE_FLOOR) {
+      recordFailure(
+        runLabel +
+          " scored " +
+          score +
+          " on Lighthouse performance (floor: " +
+          PERFORMANCE_FLOOR +
+          ")",
+      );
+    }
   }
 }
 
@@ -507,10 +566,14 @@ try {
   const routesForMode = mode === "performance" ? performanceRoutes : routes;
 
   for (const viewport of viewports) {
-    if ((mode === "a11y" || mode === "performance") && !viewport.isDesktop) {
+    if (
+      (mode === "a11y" && !viewport.isDesktop) ||
+      (mode === "performance" && !viewport.isDesktop && viewport.name !== "390x844")
+    ) {
       continue;
     }
 
+    measuredViewports.push(viewport.name);
     const context = await browser.newContext({ viewport });
     const page = await context.newPage();
     let currentRoute = "initial";
@@ -565,7 +628,7 @@ try {
             await assertNoSeriousA11yViolations(page, label);
           }
           if (mode === "performance") {
-            await assertPerformanceFloor(page, label);
+            await assertPerformanceFloor(page, label, viewport);
           }
           await assertOneHeading(page, label, response, route);
           await assertRecoveryCopy(page, route);
@@ -614,12 +677,29 @@ try {
       "Verified " +
         routesForMode.length +
         " routes across " +
-        viewports.length +
+        measuredViewports.length +
         " viewports in " +
         mode +
         " mode",
     );
   }
 } finally {
-  await browser.close();
+  try {
+    await fs.writeFile(
+      path.join(outputDir, "run-context.json"),
+      JSON.stringify(
+        {
+          ...measurementContext,
+          browser: browser.version(),
+          measuredViewports,
+          failures,
+          completedAt: new Date().toISOString(),
+        },
+        null,
+        2,
+      ) + "\n",
+    );
+  } finally {
+    await browser.close();
+  }
 }

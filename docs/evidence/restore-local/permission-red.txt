@@ -1,0 +1,3 @@
+ERROR:  permission denied for table schema_migrations
+CONTEXT:  SQL statement "TRUNCATE TABLE auth.schema_migrations CASCADE"
+PL/pgSQL function inline_code_block line 1 at EXECUTE

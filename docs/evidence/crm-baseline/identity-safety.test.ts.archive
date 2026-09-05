@@ -1,0 +1,49 @@
+import { expect, test } from "bun:test";
+import { createSupabaseDonationRepository } from "../../../src/lib/donations/supabase.server";
+import { createSupabaseVolunteerRepository } from "../../../src/lib/volunteers/repository.server";
+
+function supporterUpsertFake() {
+  let payload: Record<string, unknown> | undefined;
+  const client = {
+    from(table: string) {
+      expect(table).toBe("supporter");
+      return {
+        upsert(next: Record<string, unknown>) {
+          payload = next;
+          return {
+            select: () => ({
+              single: async () => ({ data: { id: "existing-1", email: next.email }, error: null }),
+            }),
+          };
+        },
+      };
+    },
+  };
+  return { client, payload: () => payload };
+}
+
+test("volunteer collision preserves the canonical profile and deletion state", async () => {
+  const fake = supporterUpsertFake();
+  await createSupabaseVolunteerRepository(fake.client as never).upsertSupporter({
+    name: "Unverified Volunteer",
+    email: "existing@example.test",
+    phone: "99999999",
+    language: "en",
+    source: "volunteer_form",
+  });
+
+  expect(fake.payload()).toEqual({ email: "existing@example.test" });
+  expect(fake.payload()).not.toHaveProperty("deleted_at");
+});
+
+test("donation collision preserves the canonical profile", async () => {
+  const fake = supporterUpsertFake();
+  await createSupabaseDonationRepository(fake.client as never).upsertSupporter({
+    name: "Unverified Donor",
+    email: "existing@example.test",
+    phone: "88888888",
+    language: "en",
+  });
+
+  expect(fake.payload()).toEqual({ email: "existing@example.test" });
+});

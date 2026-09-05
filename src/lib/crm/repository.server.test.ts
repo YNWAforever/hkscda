@@ -126,6 +126,29 @@ function createFakeClient(overrides: Partial<FakeState> = {}) {
   };
 
   const client = {
+    async rpc(name: string) {
+      if (name !== "crm_supporter_summary") throw new Error("Unexpected RPC");
+      return {
+        data: {
+          id: supporterId,
+          name: "Fixture",
+          email: "fixture@example.invalid",
+          phone: null,
+          language: "en",
+          tags: [],
+          roles: [],
+          deletedAt: null,
+          lastGiftAt: null,
+          lastGiftAmountCents: null,
+          lifetimeAmountCents: 0,
+          donationCount: 0,
+          receiptNeeded: false,
+          emailConsent: null,
+          whatsappConsent: null,
+        },
+        error: null,
+      };
+    },
     from(table: string) {
       return new FakeQuery(state, table);
     },
@@ -218,4 +241,87 @@ describe("getSupporterDetail", () => {
     const detail = await repo.getSupporterDetail(supporterId);
     expect(detail?.auditLogs.some((row) => row.entityId === otherPledgeId)).toBe(false);
   });
+});
+
+describe("recordManualGift", () => {
+  const command = {
+    requestId: "22222222-3333-4444-8555-666666666666",
+    actorUserId: "11111111-2222-4333-8444-555555555555",
+    input: {
+      supporterId,
+      amountCents: 20000,
+      currency: "HKD" as const,
+      purpose: "general" as const,
+      method: "manual" as const,
+      paymentStatus: "succeeded" as const,
+      bankReference: "LOCAL-FIXTURE",
+      receiptRequested: true,
+    },
+  };
+  test("uses one atomic RPC and preserves stable replay result", async () => {
+    const result = {
+      donationId: "donation-1",
+      paymentId: "payment-1",
+      deliveryJobId: "job-1",
+      replayed: true,
+    };
+    const calls: unknown[] = [];
+    const client = {
+      rpc: async (name: string, args: unknown) => {
+        calls.push({ name, args });
+        return { data: result, error: null };
+      },
+      from: () => {
+        throw new Error("Non-atomic table call");
+      },
+    } as unknown as SupabaseClient;
+    expect(await createSupabaseCrmRepository(client).recordManualGift(command)).toEqual(result);
+    expect(calls).toEqual([
+      {
+        name: "record_manual_gift_with_audit",
+        args: {
+          p_request_id: command.requestId,
+          p_actor_user_id: command.actorUserId,
+          p_input: command.input,
+        },
+      },
+    ]);
+  });
+  test("payload conflicts become HTTP 409 while other database failures remain failures", async () => {
+    const client = {
+      rpc: async () => ({
+        data: null,
+        error: { message: "manual_gift_payload_conflict", code: "23505" },
+      }),
+    } as unknown as SupabaseClient;
+    try {
+      await createSupabaseCrmRepository(client).recordManualGift(command);
+      throw new Error("Expected conflict");
+    } catch (error) {
+      expect(error).toBeInstanceOf(Response);
+      expect((error as Response).status).toBe(409);
+    }
+  });
+});
+
+test("supporter detail retains a persisted delivery job for retry after page refresh", async () => {
+  const { client } = createFakeClient({
+    donationRows: [
+      {
+        id: "donation-1",
+        supporter_id: supporterId,
+        amount_cents: 10000,
+        currency: "HKD",
+        purpose: "general",
+        custom_purpose: null,
+        status: "succeeded",
+        method: "manual",
+        receipt_requested: true,
+        created_at: "2026-09-05T00:00:00Z",
+        donation_delivery_job: { id: "job-1", status: "attention_required" },
+      },
+    ],
+  });
+  const detail = await createSupabaseCrmRepository(client).getSupporterDetail(supporterId);
+  expect(detail?.donations[0].deliveryJob).toEqual({ id: "job-1", status: "attention_required" });
 });

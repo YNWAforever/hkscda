@@ -5,6 +5,7 @@ import { AdoptionInformationManagement } from "../../../components/admin/content
 import { requireAdminPageAccess } from "../../../lib/admin/pageAccess";
 
 export const Route = createFileRoute("/admin/content/adoption")({
+  ssr: false,
   beforeLoad: async ({ context }) => {
     await requireAdminPageAccess("contentManagement", context.queryClient);
   },

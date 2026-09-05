@@ -1,0 +1,59 @@
+{
+  "baseURL": "http://127.0.0.1:4173",
+  "results": [
+    {
+      "scenario": "public-detail",
+      "label": "valid cat",
+      "route": "/animals/cat/00000000-0000-4000-8000-000000000001",
+      "status": 200,
+      "textPresent": true,
+      "pageErrors": []
+    },
+    {
+      "scenario": "public-detail",
+      "label": "malformed cat",
+      "route": "/animals/cat/not-a-uuid",
+      "status": 404,
+      "textPresent": true,
+      "pageErrors": []
+    },
+    {
+      "scenario": "public-detail",
+      "label": "unknown dog",
+      "route": "/animals/dog/ffffffff-ffff-4fff-8fff-ffffffffffff",
+      "status": 404,
+      "textPresent": true,
+      "pageErrors": []
+    },
+    {
+      "scenario": "public-detail",
+      "label": "removed cat",
+      "route": "/animals/cat/00000000-0000-4000-8000-000000000031",
+      "status": 404,
+      "textPresent": true,
+      "pageErrors": []
+    },
+    {
+      "scenario": "public-detail",
+      "label": "malformed sponsor",
+      "route": "/sponsors/not-a-uuid",
+      "status": 404,
+      "textPresent": true,
+      "pageErrors": []
+    },
+    {
+      "scenario": "turnstile-donation-retry",
+      "scriptRequests": 2,
+      "submittedTokens": [
+        "token-A",
+        "token-B"
+      ],
+      "submittedMethods": [
+        "paypal",
+        "paypal"
+      ],
+      "disabledAfterFailure": true
+    }
+  ],
+  "failures": []
+}

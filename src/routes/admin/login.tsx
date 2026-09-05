@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { useState, useSyncExternalStore, type FormEvent } from "react";
 import {
   AdminLanguageProvider,
   AdminLanguageToggle,
@@ -7,6 +7,10 @@ import {
 } from "../../components/admin/adminI18n";
 import { requestAdminPasswordReset } from "../../lib/admin/passwordRecovery";
 import { supabase } from "../../lib/supabase";
+
+const subscribeToHydration = () => () => {};
+const clientReady = () => true;
+const serverNotReady = () => false;
 
 type AdminLoginSearch = {
   passwordReset?: "success";
@@ -41,6 +45,7 @@ export function AdminLoginContent({
   onSignedIn: () => void | Promise<void>;
 }) {
   const { copy } = useAdminLanguage();
+  const ready = useSyncExternalStore(subscribeToHydration, clientReady, serverNotReady);
   const [mode, setMode] = useState<"sign-in" | "request-reset">("sign-in");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -152,7 +157,7 @@ export function AdminLoginContent({
               )}
               <button
                 type="submit"
-                disabled={loading}
+                disabled={!ready || loading}
                 className="w-full py-2.5 bg-slate-800 text-white rounded-lg font-medium hover:bg-slate-700 transition-colors disabled:opacity-60"
               >
                 {loading ? copy.login.sendingResetLink : copy.login.sendResetLink}
@@ -160,7 +165,7 @@ export function AdminLoginContent({
               <button
                 type="button"
                 onClick={showSignIn}
-                disabled={loading}
+                disabled={!ready || loading}
                 className="w-full py-2 text-sm font-medium text-[var(--color-primary)] hover:underline disabled:opacity-60"
               >
                 {copy.login.backToLogin}
@@ -213,7 +218,7 @@ export function AdminLoginContent({
             )}
             <button
               type="submit"
-              disabled={loading}
+              disabled={!ready || loading}
               className="w-full py-2.5 bg-slate-800 text-white rounded-lg font-medium hover:bg-slate-700 transition-colors disabled:opacity-60"
             >
               {loading ? copy.login.loading : copy.login.submit}

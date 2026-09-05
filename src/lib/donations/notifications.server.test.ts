@@ -63,8 +63,8 @@ function createMessageFake({
               filters.push([column, value]);
               return builder;
             },
-            lt(column: string, value: unknown) {
-              filters.push([column, value]);
+            lte(column: string, value: unknown) {
+              filters.push([column + "_lte", value]);
               return builder;
             },
             contains(column: string, value: unknown) {
@@ -167,4 +167,63 @@ describe("sendDonationAcknowledgement", () => {
     expect(retry?.filters).toContainEqual(["status", "failed"]);
     expect(retry?.filters).toContainEqual(["id", "message-1"]);
   });
+
+  test("records a resolved provider rejection as failed and never marks it sent", async () => {
+    const { client, ops } = createMessageFake();
+    const result = await sendDonationAcknowledgement(client as never, input, {
+      getEmailConfig: () => ({
+        resendApiKey: "test-key",
+        from: "HKSCDA <noreply@example.test>",
+        replyTo: "hello@example.test",
+        notificationEmail: "admin@example.invalid",
+      }),
+      createMailProvider: async () => ({
+        send: async () => ({ kind: "rejected", code: "rate_limit_exceeded", retryable: true }),
+      }),
+      logger: { error() {} },
+    });
+
+    expect(result).toBe("failed");
+    const updates = ops.filter((operation) => operation.action === "update");
+    expect(updates).toHaveLength(1);
+    expect(updates[0].payload).toMatchObject({
+      status: "failed",
+      payload: { providerErrorCode: "rate_limit_exceeded", retryable: true },
+    });
+    expect(
+      updates.some((operation) => (operation.payload as { status?: string }).status === "sent"),
+    ).toBe(false);
+  });
+});
+
+test.each([
+  [299999, "failed"],
+  [300000, "queued"],
+  [300001, "queued"],
+] as const)("uses injected clock for acknowledgement lease age %i", async (age, expected) => {
+  const fixedNow = new Date("2040-01-01T00:05:00.000Z");
+  const { client, ops } = createMessageFake({
+    conflict: true,
+    existingStatus: "queued",
+    existingUpdatedAt: new Date(fixedNow.getTime() - age).toISOString(),
+  });
+  let clockReads = 0;
+  const result = await sendDonationAcknowledgement(client as never, input, {
+    now: () => {
+      clockReads++;
+      return fixedNow;
+    },
+    getEmailConfig: () => ({
+      resendApiKey: undefined,
+      from: "fixture@example.invalid",
+      replyTo: "fixture@example.invalid",
+      notificationEmail: "fixture@example.invalid",
+    }),
+  });
+  expect(result).toBe(expected);
+  expect(clockReads).toBe(1);
+  const updates = ops.filter((operation) => operation.action === "update");
+  expect(updates).toHaveLength(age < 300000 ? 0 : 1);
+  if (age >= 300000)
+    expect(updates[0].filters).toContainEqual(["updated_at_lte", "2040-01-01T00:00:00.000Z"]);
 });

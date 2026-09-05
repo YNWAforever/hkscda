@@ -1,0 +1,23 @@
+bun test v1.3.14 (0d9b296a)
+
+scripts\content-media-reconciliation-local.test.ts:
+(pass) apply requires the exact disposable loopback stack and both opt-ins [30.49ms]
+21 | const LOCAL_DB = "postgresql://postgres:postgres@127.0.0.1:55322/postgres";
+22 | const BUCKETS = new Set(["content-media", "content-media-private"]);
+23 |
+24 | export function validateLocalMaintenanceTarget(target: LocalMaintenanceTarget) {
+25 |   if (!target.apply || !target.localMaintenance)
+26 |     throw new Error("Apply requires --apply and --local-maintenance explicit opt-ins");
+                   ^
+error: Apply requires --apply and --local-maintenance explicit opt-ins
+      at validateLocalMaintenanceTarget (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\scripts\content-media-reconciliation-local.ts:26:15)
+      at runLocalContentMediaReconciliation (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\scripts\content-media-reconciliation-local.ts:36:3)
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\scripts\content-media-reconciliation-local.test.ts:30:24)
+(fail) fresh local dry-run reports counts without removing objects [0.60ms]
+(pass) fresh locked reconciliation removes only old unreferenced objects [22.77ms]
+(pass) refuses more than 100 candidates before calling Storage remove [3.12ms]
+
+ 3 pass
+ 1 fail
+ 9 expect() calls
+Ran 4 tests across 1 file. [281.00ms]

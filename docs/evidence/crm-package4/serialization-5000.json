@@ -1,0 +1,29 @@
+{
+  "fixture": "crm-local-serialization-v1",
+  "runtime": "1.3.14",
+  "scope": "Local synthetic JSON encode/decode and CSV serialization only; not database latency, PostgREST transport, staging memory, or representative admin benchmark.",
+  "results": [
+    {
+      "kind": "supporters",
+      "rows": 5000,
+      "decodedJsonBytes": 1822826,
+      "generatedCsvBytes": 732941,
+      "serializerElapsedMs": 29.341200000000015,
+      "observedHeapDeltaBytes": 2617360,
+      "observedJscHeapDeltaBytes": 2617360,
+      "observedJscExtraMemoryDeltaBytes": 2573648,
+      "uniqueIdsVerified": 5000
+    },
+    {
+      "kind": "donations",
+      "rows": 5000,
+      "decodedJsonBytes": 1661715,
+      "generatedCsvBytes": 741811,
+      "serializerElapsedMs": 19.70320000000001,
+      "observedHeapDeltaBytes": 3611441,
+      "observedJscHeapDeltaBytes": 3181536,
+      "observedJscExtraMemoryDeltaBytes": 3152048,
+      "uniqueIdsVerified": 5000
+    }
+  ]
+}

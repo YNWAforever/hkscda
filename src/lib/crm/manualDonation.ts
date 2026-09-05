@@ -4,7 +4,7 @@ import type { ManualDonationInput } from "./schemas";
 export function buildManualDonationRecords(input: {
   supporterId: string;
   donationIdSeed: string;
-  input: ManualDonationInput;
+  input: Omit<ManualDonationInput, "requestId">;
   actorUserId: string;
   now?: () => Date;
 }) {

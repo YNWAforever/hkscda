@@ -1,0 +1,28 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\security-headers.test.ts:
+(pass) applySecurityHeaders > sets the baseline security headers on a response [7.73ms]
+(pass) applySecurityHeaders > preserves status, body, and existing headers [1.74ms]
+(pass) applySecurityHeaders > does not overwrite a header the handler already set [0.14ms]
+(pass) applySecurityHeaders > ships CSP enforcing [0.20ms]
+(pass) applySecurityHeaders > routes violations to a collector so an enforced block is visible [0.09ms]
+(pass) applySecurityHeaders > declares the report-to group via Reporting-Endpoints [0.07ms]
+(pass) applySecurityHeaders > CSP_REPORT_PATH matches the actual collector route's URL [5.19ms]
+(pass) the policy covers what the app actually loads > allows the Turnstile script and its iframe [0.77ms]
+(pass) the policy covers what the app actually loads > allows the Google Maps loader [0.31ms]
+(pass) the policy covers what the app actually loads > no longer allows third-party fonts or styles [0.08ms]
+
+src\components\site\turnstileCallerRecovery.test.ts:
+(pass) donation failed submission preserves entered fields and requests fresh verification [212.30ms]
+(pass) volunteer failed submission preserves entered fields and requests fresh verification [47.57ms]
+(pass) group enquiry failed submission preserves entered fields and requests fresh verification [38.65ms]
+(pass) sponsorship failed submission preserves entered fields and requests fresh verification [86.90ms]
+(pass) adoption failed submission preserves entered fields and requests fresh verification [71.30ms]
+
+src\components\site\turnstileScript.test.ts:
+(pass) Turnstile script recovery > removes a failed cached script and succeeds on retry without duplicates [4.52ms]
+
+ 16 pass
+ 0 fail
+ 74 expect() calls
+Ran 16 tests across 3 files. [1459.00ms]

@@ -85,3 +85,16 @@ describe("crm consent helpers", () => {
     ]);
   });
 });
+
+test("equal timestamp consent always prefers opt-out independent of input order", () => {
+  const base = {
+    supporterId: "fixture",
+    channel: "email" as const,
+    source: "admin_manual",
+    timestamp: "2026-09-05T00:00:00Z",
+  };
+  const optIn = { ...base, id: "in", status: "opt_in" as const };
+  const optOut = { ...base, id: "out", status: "opt_out" as const };
+  expect(latestConsentByChannel([optIn, optOut]).email?.status).toBe("opt_out");
+  expect(latestConsentByChannel([optOut, optIn]).email?.status).toBe("opt_out");
+});

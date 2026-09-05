@@ -26,15 +26,17 @@ import { initGA4, redactSensitivePagePath } from "../lib/analytics";
 
 function NotFoundComponent() {
   return (
-    <PublicStateShell
-      title="找不到頁面"
-      description="您要找的頁面不存在或已移動。"
-      action={
-        <Link to="/" className="btn-primary min-h-11 px-5">
-          返回主頁
-        </Link>
-      }
-    />
+    <main>
+      <PublicStateShell
+        title="找不到頁面"
+        description="您要找的頁面不存在或已移動。"
+        action={
+          <Link to="/" className="btn-primary min-h-11 px-5">
+            返回主頁
+          </Link>
+        }
+      />
+    </main>
   );
 }
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {

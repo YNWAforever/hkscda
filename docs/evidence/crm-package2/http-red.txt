@@ -1,0 +1,74 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\crm\manualGiftDelivery.http.server.test.ts:
+15 | }
+16 | const request = () => new Request("http://localhost/api/admin/donations/manual", { method: "POST", body: "{}" });
+17 | test("committed gift remains success when delivery fails", async () => {
+18 |   const { deps, calls } = fixture({ run: async () => { throw new Error("provider unavailable"); } });
+19 |   const response = await createManualGiftDeliveryHandlers(deps).create(request());
+20 |   expect(response.status).toBe(201);
+                               ^
+error: expect(received).toBe(expected)
+
+Expected: 201
+Received: 500
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\lib\crm\manualGiftDelivery.http.server.test.ts:20:27)
+(fail) committed gift remains success when delivery fails [1.08ms]
+22 |   expect(calls).toEqual(["auth", "commit"]);
+23 | });
+24 | test("denied requests cannot commit or retry", async () => {
+25 |   const { deps, calls } = fixture({ requireTreasurer: async () => { throw new Response(null, { status: 403 }); } });
+26 |   const handlers = createManualGiftDeliveryHandlers(deps);
+27 |   expect((await handlers.create(request())).status).toBe(403);
+                                                         ^
+error: expect(received).toBe(expected)
+
+Expected: 403
+Received: 500
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\lib\crm\manualGiftDelivery.http.server.test.ts:27:53)
+(fail) denied requests cannot commit or retry [0.37ms]
+29 |   expect(calls).toEqual([]);
+30 | });
+31 | test("complete job retry returns complete without another delivery", async () => {
+32 |   const { deps, calls } = fixture({ status: async () => "complete" as const });
+33 |   const response = await createManualGiftDeliveryHandlers(deps).retry(request(), jobId);
+34 |   expect(await response.json()).toEqual({ deliveryStatus: "complete" });
+                             ^
+SyntaxError: Unexpected end of JSON input
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\lib\crm\manualGiftDelivery.http.server.test.ts:34:25)
+(fail) complete job retry returns complete without another delivery [0.39ms]
+36 |   expect(response.headers.get("cache-control")).toBe("no-store");
+37 | });
+38 | test("missing job and malformed id never call retry", async () => {
+39 |   const { deps, calls } = fixture({ status: async () => null });
+40 |   const handlers = createManualGiftDeliveryHandlers(deps);
+41 |   expect((await handlers.retry(request(), jobId)).status).toBe(404);
+                                                               ^
+error: expect(received).toBe(expected)
+
+Expected: 404
+Received: 500
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\lib\crm\manualGiftDelivery.http.server.test.ts:41:59)
+(fail) missing job and malformed id never call retry [0.30ms]
+42 |   expect((await handlers.retry(request(), "invalid")).status).toBe(400);
+43 |   expect(calls).toEqual(["auth", "auth"]);
+44 | });
+45 | test("changed gift payload conflict does not attempt delivery", async () => {
+46 |   const { deps, calls } = fixture({ createGift: async () => { throw Response.json({ error: "Conflict" }, { status: 409 }); } });
+47 |   expect((await createManualGiftDeliveryHandlers(deps).create(request())).status).toBe(409);
+                                                                                       ^
+error: expect(received).toBe(expected)
+
+Expected: 409
+Received: 500
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\lib\crm\manualGiftDelivery.http.server.test.ts:47:83)
+(fail) changed gift payload conflict does not attempt delivery [0.26ms]
+
+ 0 pass
+ 5 fail
+ 4 expect() calls
+Ran 5 tests across 1 file. [140.00ms]

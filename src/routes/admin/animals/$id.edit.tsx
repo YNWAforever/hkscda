@@ -8,6 +8,7 @@ import { requireAdminPageAccess } from "../../../lib/admin/pageAccess";
 import type { Animal } from "../../../types/animal";
 
 export const Route = createFileRoute("/admin/animals/$id/edit")({
+  ssr: false,
   beforeLoad: async ({ context }) => {
     await requireAdminPageAccess("animals", context.queryClient);
   },

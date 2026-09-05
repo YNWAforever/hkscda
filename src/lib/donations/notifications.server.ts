@@ -1,6 +1,6 @@
-import { Resend } from "resend";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { createResendMailProvider, type MailProvider } from "../notifications/provider.server";
 import { getEmailConfig } from "./config.server";
 import { centsToHkd } from "./domain";
 
@@ -24,6 +24,33 @@ type ExistingAcknowledgement = {
   updated_at: string | null;
 };
 
+type DonationNotificationDependencies = {
+  getEmailConfig?: typeof getEmailConfig;
+  createMailProvider?: (apiKey: string) => Promise<MailProvider>;
+  now?: () => Date;
+  logger?: Pick<Console, "error">;
+};
+
+async function defaultCreateMailProvider(apiKey: string): Promise<MailProvider> {
+  const { Resend } = await import("resend");
+  const resend = new Resend(apiKey);
+  return createResendMailProvider(async ({ idempotencyKey, ...email }) => {
+    const result = await resend.emails.send(email, { idempotencyKey });
+    return {
+      data: result.data ? { id: result.data.id } : null,
+      error: result.error ? { name: result.error.name } : null,
+    };
+  });
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
 async function findAcknowledgement(
   client: SupabaseClient,
   input: Pick<EmailInput, "supporterId" | "donationId">,
@@ -42,8 +69,14 @@ async function findAcknowledgement(
 export async function sendDonationAcknowledgement(
   client: SupabaseClient,
   input: EmailInput,
+  {
+    getEmailConfig: loadEmailConfig = getEmailConfig,
+    createMailProvider = defaultCreateMailProvider,
+    now = () => new Date(),
+    logger = console,
+  }: DonationNotificationDependencies = {},
 ): Promise<AcknowledgementResult> {
-  const config = getEmailConfig();
+  const config = loadEmailConfig();
   const payload = {
     kind: "donation_acknowledgement",
     donationId: input.donationId,
@@ -79,17 +112,18 @@ export async function sendDonationAcknowledgement(
 
     if (existing.status === "queued") {
       const updatedAt = existing.updated_at ? Date.parse(existing.updated_at) : Number.NaN;
+      const currentTime = now().getTime();
       const leaseExpired =
-        Number.isFinite(updatedAt) && Date.now() - updatedAt >= ACKNOWLEDGEMENT_RETRY_LEASE_MS;
+        Number.isFinite(updatedAt) && currentTime - updatedAt >= ACKNOWLEDGEMENT_RETRY_LEASE_MS;
       if (!leaseExpired) return "failed";
 
-      const staleBefore = new Date(Date.now() - ACKNOWLEDGEMENT_RETRY_LEASE_MS).toISOString();
+      const staleBefore = new Date(currentTime - ACKNOWLEDGEMENT_RETRY_LEASE_MS).toISOString();
       const { data: reclaimed, error: reclaimError } = await client
         .from("message")
         .update({ status: "queued" })
         .eq("id", existing.id)
         .eq("status", "queued")
-        .lt("updated_at", staleBefore)
+        .lte("updated_at", staleBefore)
         .select("id")
         .maybeSingle();
       if (reclaimError) throw reclaimError;
@@ -127,25 +161,37 @@ export async function sendDonationAcknowledgement(
     : "";
 
   try {
-    const resend = new Resend(config.resendApiKey);
-    await resend.emails.send(
-      {
-        from: config.from,
-        to: input.to,
-        replyTo: config.replyTo,
-        subject,
-        html:
-          input.language === "en"
-            ? `<p>Dear ${input.donorName},</p><p>Thank you for your donation of ${centsToHkd(input.amountCents)}.</p>${receiptLine}<p>Every gift helps rescued cats and dogs receive food, medical care, and a safe path to adoption.</p>`
-            : `<p>${input.donorName} 您好：</p><p>多謝您捐出 ${centsToHkd(input.amountCents)} 支持本會。</p>${receiptLine}<p>每一份善意都會用於流浪貓狗的糧食、醫療及領養工作。</p>`,
-      },
-      { idempotencyKey: `donation-acknowledgement-${input.donationId}` },
-    );
+    const provider = await createMailProvider(config.resendApiKey);
+    const result = await provider.send({
+      from: config.from,
+      to: input.to,
+      replyTo: config.replyTo,
+      subject,
+      html:
+        input.language === "en"
+          ? `<p>Dear ${escapeHtml(input.donorName)},</p><p>Thank you for your donation of ${centsToHkd(input.amountCents)}.</p>${receiptLine}<p>Every gift helps rescued cats and dogs receive food, medical care, and a safe path to adoption.</p>`
+          : `<p>${escapeHtml(input.donorName)} 您好：</p><p>多謝您捐出 ${centsToHkd(input.amountCents)} 支持本會。</p>${receiptLine}<p>每一份善意都會用於流浪貓狗的糧食、醫療及領養工作。</p>`,
+      idempotencyKey: `donation-acknowledgement-${input.donationId}`,
+    });
+    if (result.kind === "rejected") {
+      logger.error("Donation acknowledgement provider rejected message", result);
+      const { error } = await client
+        .from("message")
+        .update({
+          status: "failed",
+          payload: { ...payload, providerErrorCode: result.code, retryable: result.retryable },
+        })
+        .eq("id", messageId)
+        .eq("status", "queued");
+      if (error) throw error;
+      return "failed";
+    }
+    Object.assign(payload, { providerMessageId: result.providerMessageId });
   } catch (sendError) {
     // Best-effort: an email-provider outage must never roll back an
     // already-committed payment + receipt. Leave the claim row as 'failed' for
     // an outbox/retry and surface the error in logs.
-    console.error("Failed to send donation acknowledgement email", sendError);
+    logger.error("Failed to send donation acknowledgement email", sendError);
     const { error: statusError } = await client
       .from("message")
       .update({ status: "failed" })
@@ -157,7 +203,7 @@ export async function sendDonationAcknowledgement(
 
   const { data: sent, error: statusError } = await client
     .from("message")
-    .update({ status: "sent", sent_at: new Date().toISOString() })
+    .update({ status: "sent", sent_at: now().toISOString(), payload })
     .eq("id", messageId)
     .eq("status", "queued")
     .select("id")

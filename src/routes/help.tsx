@@ -160,7 +160,11 @@ export function HelpFaqDirectory({ language, faqs }: { language: HelpLanguage; f
 function HelpPage() {
   const [language, setLanguage] = useState<HelpLanguage>("zh-HK");
   const copy = pageCopy[language];
-  const { data: faqs = [] } = useQuery(publicFaqsQueryOptions());
+  const initialFaqs = Route.useLoaderData();
+  const { data: faqs = initialFaqs } = useQuery({
+    ...publicFaqsQueryOptions(),
+    initialData: initialFaqs,
+  });
 
   return (
     <PublicPageFrame

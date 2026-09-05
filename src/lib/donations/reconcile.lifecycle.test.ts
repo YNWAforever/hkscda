@@ -24,6 +24,10 @@ type FakePayment = {
     receipt_requested: boolean;
     status: string;
     supporter_id: string;
+    contact_name: string | null;
+    contact_email: string | null;
+    contact_phone: string | null;
+    contact_language: "zh-HK" | "en" | null;
     supporter: { id: string; name: string; email: string; language: "zh-HK" | "en" };
   };
 };
@@ -40,6 +44,10 @@ const basePayment: FakePayment = {
     receipt_requested: true,
     status: "succeeded",
     supporter_id: "supporter-1",
+    contact_name: "Ada Snapshot",
+    contact_email: "snapshot@example.test",
+    contact_phone: "91234567",
+    contact_language: "en",
     supporter: {
       id: "supporter-1",
       name: "Ada Donor",

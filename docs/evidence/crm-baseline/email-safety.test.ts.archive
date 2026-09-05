@@ -1,0 +1,72 @@
+import { expect, mock, test } from "bun:test";
+import { sendVolunteerRegistrationEmail } from "../../../src/lib/volunteers/notifications.server";
+
+test("resolved provider rejection is never persisted or returned as sent", async () => {
+  const updates: Array<Record<string, unknown>> = [];
+  const client = {
+    from() {
+      return {
+        insert() {
+          return {
+            select: () => ({ single: async () => ({ data: { id: "message-1" }, error: null }) }),
+          };
+        },
+        update(payload: Record<string, unknown>) {
+          updates.push(payload);
+          const builder = {
+            eq() {
+              return builder;
+            },
+            then(resolve: (value: { error: null }) => unknown) {
+              return Promise.resolve({ error: null }).then(resolve);
+            },
+          };
+          return builder;
+        },
+      };
+    },
+  };
+  const send = mock(async () => ({
+    data: null,
+    error: { name: "rate_limit_exceeded", message: "fake 429" },
+  }));
+
+  const result = await sendVolunteerRegistrationEmail(
+    client as never,
+    {
+      registration: {
+        id: "registration-1",
+        activityId: "activity-1",
+        supporterId: "supporter-1",
+        contactEmail: "fake@example.invalid",
+        contactName: "Fake",
+        language: "en",
+        status: "pending",
+        activity: { title: "Fake activity" },
+      } as never,
+      statusUrl: "https://example.invalid/status/fake",
+    },
+    {
+      getEmailConfig: () => ({
+        resendApiKey: "fake-key",
+        from: "fake@example.invalid",
+        replyTo: "fake@example.invalid",
+        notificationEmail: "fake@example.invalid",
+      }),
+      createMailProvider: async () => ({
+        send: async (input) =>
+          send(input).then((response) => ({
+            kind: "rejected" as const,
+            code: response.error.name,
+            retryable: true,
+          })),
+      }),
+      logger: { error: mock(() => undefined) },
+    },
+  );
+
+  expect(send).toHaveBeenCalledTimes(1);
+  expect(result).toBe("failed");
+  expect(updates).toContainEqual(expect.objectContaining({ status: "failed" }));
+  expect(updates).not.toContainEqual(expect.objectContaining({ status: "sent" }));
+});

@@ -12,7 +12,7 @@ export function HelpWidget() {
   const { helpOpen: open, setHelpOpen: setOpen } = usePublicFixedActions();
   const [language, setLanguage] = useState<HelpLanguage>("zh-HK");
   const panelRef = useRef<HTMLDivElement | null>(null);
-  const { data: faqs = [] } = useQuery(publicFaqsQueryOptions());
+  const { data: faqs = [] } = useQuery({ ...publicFaqsQueryOptions(), enabled: open });
 
   useEffect(() => {
     if (!open) return;

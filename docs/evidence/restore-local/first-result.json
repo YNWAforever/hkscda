@@ -1,0 +1,12 @@
+{
+  "fixtureId": "restore-ba30fbe6-48b6-4831-ab55-10c404af41b1",
+  "source": "hkscda-completion-20260905",
+  "target": "hkscda-completion-restore-20260905",
+  "startedAt": "2026-09-05T19:21:34.193Z",
+  "scope": "Synthetic local schema/data/auth/password sign-in/Storage bytes rehearsal; no production backup or owner RPO/RTO acceptance",
+  "existingDataBackupExit": 0,
+  "backupBytes": 127339,
+  "backupSha256": "bbd4a66d7d7ffa2fa336154a8348ee13ce54882cc37e91c0798b803430224d0c",
+  "cleanupErrors": [],
+  "completedAt": "2026-09-05T19:21:40.402Z"
+}

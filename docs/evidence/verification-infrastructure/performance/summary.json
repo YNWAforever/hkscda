@@ -1,0 +1,351 @@
+{
+  "scope": "local synthetic fixture lab; not field CWV",
+  "rows": [
+    {
+      "route": "/adoption/apply",
+      "device": "desktop",
+      "score": 97,
+      "lcpMs": 616.808,
+      "cls": 0.078478,
+      "tbtMs": 0,
+      "scriptBytes": 245483,
+      "storageReset": true
+    },
+    {
+      "route": "/adoption/apply",
+      "device": "desktop",
+      "score": 92,
+      "lcpMs": 1209.842,
+      "cls": 0.078478,
+      "tbtMs": 0,
+      "scriptBytes": 245483,
+      "storageReset": true
+    },
+    {
+      "route": "/adoption/apply",
+      "device": "desktop",
+      "score": 94,
+      "lcpMs": 1002.0680000000002,
+      "cls": 0.078478,
+      "tbtMs": 0,
+      "scriptBytes": 245483,
+      "storageReset": true
+    },
+    {
+      "route": "/animals/cat",
+      "device": "desktop",
+      "score": 99,
+      "lcpMs": 608.3340000000001,
+      "cls": 0.000142,
+      "tbtMs": 0,
+      "scriptBytes": 246222,
+      "storageReset": true
+    },
+    {
+      "route": "/animals/cat",
+      "device": "desktop",
+      "score": 99,
+      "lcpMs": 722.11,
+      "cls": 0.000142,
+      "tbtMs": 0,
+      "scriptBytes": 246222,
+      "storageReset": true
+    },
+    {
+      "route": "/animals/cat",
+      "device": "desktop",
+      "score": 100,
+      "lcpMs": 629.408,
+      "cls": 0.000142,
+      "tbtMs": 0,
+      "scriptBytes": 246222,
+      "storageReset": true
+    },
+    {
+      "route": "/donate",
+      "device": "desktop",
+      "score": 99,
+      "lcpMs": 591.8389999999999,
+      "cls": 0.000413,
+      "tbtMs": 0,
+      "scriptBytes": 252460,
+      "storageReset": true
+    },
+    {
+      "route": "/donate",
+      "device": "desktop",
+      "score": 99,
+      "lcpMs": 646.8330000000001,
+      "cls": 0.000413,
+      "tbtMs": 0,
+      "scriptBytes": 252460,
+      "storageReset": true
+    },
+    {
+      "route": "/donate",
+      "device": "desktop",
+      "score": 99,
+      "lcpMs": 717.181,
+      "cls": 0.000413,
+      "tbtMs": 0,
+      "scriptBytes": 252460,
+      "storageReset": true
+    },
+    {
+      "route": "/",
+      "device": "desktop",
+      "score": 93,
+      "lcpMs": 1279.7040000000002,
+      "cls": 0.00028,
+      "tbtMs": 0,
+      "scriptBytes": 248379,
+      "storageReset": true
+    },
+    {
+      "route": "/",
+      "device": "desktop",
+      "score": 98,
+      "lcpMs": 948.3420000000001,
+      "cls": 0.00028,
+      "tbtMs": 0,
+      "scriptBytes": 248379,
+      "storageReset": true
+    },
+    {
+      "route": "/",
+      "device": "desktop",
+      "score": 97,
+      "lcpMs": 1040.172,
+      "cls": 0.00028,
+      "tbtMs": 0,
+      "scriptBytes": 248379,
+      "storageReset": true
+    },
+    {
+      "route": "/adoption/apply",
+      "device": "mobile",
+      "score": 94,
+      "lcpMs": 1619.8799999999999,
+      "cls": 0.121523,
+      "tbtMs": 106.5,
+      "scriptBytes": 245483,
+      "storageReset": true
+    },
+    {
+      "route": "/adoption/apply",
+      "device": "mobile",
+      "score": 96,
+      "lcpMs": 1537.7779,
+      "cls": 0.121523,
+      "tbtMs": 62,
+      "scriptBytes": 245483,
+      "storageReset": true
+    },
+    {
+      "route": "/adoption/apply",
+      "device": "mobile",
+      "score": 93,
+      "lcpMs": 1978.33,
+      "cls": 0.121523,
+      "tbtMs": 78.5,
+      "scriptBytes": 245483,
+      "storageReset": true
+    },
+    {
+      "route": "/animals/cat",
+      "device": "mobile",
+      "score": 99,
+      "lcpMs": 1865.944,
+      "cls": 0.000282,
+      "tbtMs": 80.99999999999909,
+      "scriptBytes": 246222,
+      "storageReset": true
+    },
+    {
+      "route": "/animals/cat",
+      "device": "mobile",
+      "score": 98,
+      "lcpMs": 1858.074,
+      "cls": 0.000282,
+      "tbtMs": 110.00000000000091,
+      "scriptBytes": 246222,
+      "storageReset": true
+    },
+    {
+      "route": "/animals/cat",
+      "device": "mobile",
+      "score": 98,
+      "lcpMs": 1856.37,
+      "cls": 0.000282,
+      "tbtMs": 115.49999999999909,
+      "scriptBytes": 246222,
+      "storageReset": true
+    },
+    {
+      "route": "/donate",
+      "device": "mobile",
+      "score": 98,
+      "lcpMs": 1930.0900000000001,
+      "cls": 0.01179,
+      "tbtMs": 72,
+      "scriptBytes": 252460,
+      "storageReset": true
+    },
+    {
+      "route": "/donate",
+      "device": "mobile",
+      "score": 99,
+      "lcpMs": 1867.538,
+      "cls": 0.01179,
+      "tbtMs": 65.5,
+      "scriptBytes": 252460,
+      "storageReset": true
+    },
+    {
+      "route": "/donate",
+      "device": "mobile",
+      "score": 95,
+      "lcpMs": 2273.761,
+      "cls": 0.01179,
+      "tbtMs": 131,
+      "scriptBytes": 252460,
+      "storageReset": true
+    },
+    {
+      "route": "/",
+      "device": "mobile",
+      "score": 89,
+      "lcpMs": 3585.7619999999997,
+      "cls": 0.00078,
+      "tbtMs": 60.5,
+      "scriptBytes": 248379,
+      "storageReset": true
+    },
+    {
+      "route": "/",
+      "device": "mobile",
+      "score": 90,
+      "lcpMs": 3513.314,
+      "cls": 0.00078,
+      "tbtMs": 79,
+      "scriptBytes": 248379,
+      "storageReset": true
+    },
+    {
+      "route": "/",
+      "device": "mobile",
+      "score": 89,
+      "lcpMs": 3482.033,
+      "cls": 0.00078,
+      "tbtMs": 151.98350000000005,
+      "scriptBytes": 248379,
+      "storageReset": true
+    }
+  ],
+  "summary": [
+    {
+      "scenario": "desktop /adoption/apply",
+      "runs": 3,
+      "scoreRange": [
+        92,
+        97
+      ],
+      "medianLcpMs": 1002.0680000000002,
+      "maxCls": 0.078478,
+      "medianTbtMs": 0,
+      "maxScriptBytes": 245483,
+      "cacheResetEveryRun": true
+    },
+    {
+      "scenario": "desktop /animals/cat",
+      "runs": 3,
+      "scoreRange": [
+        99,
+        100
+      ],
+      "medianLcpMs": 629.408,
+      "maxCls": 0.000142,
+      "medianTbtMs": 0,
+      "maxScriptBytes": 246222,
+      "cacheResetEveryRun": true
+    },
+    {
+      "scenario": "desktop /donate",
+      "runs": 3,
+      "scoreRange": [
+        99,
+        99
+      ],
+      "medianLcpMs": 646.8330000000001,
+      "maxCls": 0.000413,
+      "medianTbtMs": 0,
+      "maxScriptBytes": 252460,
+      "cacheResetEveryRun": true
+    },
+    {
+      "scenario": "desktop /",
+      "runs": 3,
+      "scoreRange": [
+        93,
+        98
+      ],
+      "medianLcpMs": 1040.172,
+      "maxCls": 0.00028,
+      "medianTbtMs": 0,
+      "maxScriptBytes": 248379,
+      "cacheResetEveryRun": true
+    },
+    {
+      "scenario": "mobile /adoption/apply",
+      "runs": 3,
+      "scoreRange": [
+        93,
+        96
+      ],
+      "medianLcpMs": 1619.8799999999999,
+      "maxCls": 0.121523,
+      "medianTbtMs": 78.5,
+      "maxScriptBytes": 245483,
+      "cacheResetEveryRun": true
+    },
+    {
+      "scenario": "mobile /animals/cat",
+      "runs": 3,
+      "scoreRange": [
+        98,
+        99
+      ],
+      "medianLcpMs": 1858.074,
+      "maxCls": 0.000282,
+      "medianTbtMs": 110.00000000000091,
+      "maxScriptBytes": 246222,
+      "cacheResetEveryRun": true
+    },
+    {
+      "scenario": "mobile /donate",
+      "runs": 3,
+      "scoreRange": [
+        95,
+        99
+      ],
+      "medianLcpMs": 1930.0900000000001,
+      "maxCls": 0.01179,
+      "medianTbtMs": 72,
+      "maxScriptBytes": 252460,
+      "cacheResetEveryRun": true
+    },
+    {
+      "scenario": "mobile /",
+      "runs": 3,
+      "scoreRange": [
+        89,
+        90
+      ],
+      "medianLcpMs": 3513.314,
+      "maxCls": 0.00078,
+      "medianTbtMs": 79,
+      "maxScriptBytes": 248379,
+      "cacheResetEveryRun": true
+    }
+  ]
+}

@@ -144,8 +144,11 @@ import { Route as ApiAdminContentNotificationDraftsIdRouteImport } from './route
 import { Route as ApiAdminContentIdUpdatesRouteImport } from './routes/api/admin/content/$id/updates'
 import { Route as ApiAdminContentIdStoryProfileRouteImport } from './routes/api/admin/content/$id/story-profile'
 import { Route as ApiAdminContentIdSocialCopyRouteImport } from './routes/api/admin/content/$id/social-copy'
+import { Route as ApiAdminContentIdRevisionsRouteImport } from './routes/api/admin/content/$id/revisions'
 import { Route as ApiAdminContentIdPublishRouteImport } from './routes/api/admin/content/$id/publish'
 import { Route as ApiAdminContentIdMediaUploadTargetRouteImport } from './routes/api/admin/content/$id/media-upload-target'
+import { Route as ApiAdminContentIdMediaPreviewRouteImport } from './routes/api/admin/content/$id/media-preview'
+import { Route as ApiAdminContentIdMediaFinalizeRouteImport } from './routes/api/admin/content/$id/media-finalize'
 import { Route as ApiAdminContentIdMediaRouteImport } from './routes/api/admin/content/$id/media'
 import { Route as ApiAdminContentIdLinksRouteImport } from './routes/api/admin/content/$id/links'
 import { Route as ApiAdminContentIdArchiveRouteImport } from './routes/api/admin/content/$id/archive'
@@ -178,6 +181,7 @@ import { Route as ApiAdminSponsorshipsPledgesIdReviewRouteImport } from './route
 import { Route as ApiAdminSponsorshipsPledgesIdProofUrlRouteImport } from './routes/api/admin/sponsorships/pledges/$id/proof-url'
 import { Route as ApiAdminSponsorshipsPledgesIdProofRouteImport } from './routes/api/admin/sponsorships/pledges/$id/proof'
 import { Route as ApiAdminSponsorshipsPledgesIdCancelRouteImport } from './routes/api/admin/sponsorships/pledges/$id/cancel'
+import { Route as ApiAdminDonationsDeliveryJobIdRetryRouteImport } from './routes/api/admin/donations/delivery/$jobId/retry'
 import { Route as ApiAdminContentUpdatesUpdateIdNotificationDraftsRouteImport } from './routes/api/admin/content/updates/$updateId/notification-drafts'
 import { Route as ApiAdminAdoptionsCasesIdStatusRouteImport } from './routes/api/admin/adoptions/cases/$id/status'
 import { Route as ApiAdminAdoptionsCasesIdMatchesRouteImport } from './routes/api/admin/adoptions/cases/$id/matches'
@@ -186,6 +190,7 @@ import { Route as ApiAdminAdoptionsCasesIdFinalizeRouteImport } from './routes/a
 import { Route as ApiAdminAdoptionsAnimalsIdStatusRouteImport } from './routes/api/admin/adoptions/animals/$id/status'
 import { Route as ApiAdminAdoptionsAnimalsIdInternalRouteImport } from './routes/api/admin/adoptions/animals/$id/internal'
 import { Route as ApiAdminAccessInvitesIdResendRouteImport } from './routes/api/admin/access/invites/$id/resend'
+import { Route as ApiAdminContentIdRevisionsRevisionIdRestoreRouteImport } from './routes/api/admin/content/$id/revisions/$revisionId/restore'
 import { Route as ApiAdminAdoptionsReportsExportsIdDownloadRouteImport } from './routes/api/admin/adoptions/reports/exports/$id/download'
 import { Route as ApiAdminAdoptionsApplicationsApplicationIdPhotosPhotoIdRouteImport } from './routes/api/admin/adoptions/applications/$applicationId/photos/$photoId'
 
@@ -906,6 +911,12 @@ const ApiAdminContentIdSocialCopyRoute =
     path: '/social-copy',
     getParentRoute: () => ApiAdminContentIdRoute,
   } as any)
+const ApiAdminContentIdRevisionsRoute =
+  ApiAdminContentIdRevisionsRouteImport.update({
+    id: '/revisions',
+    path: '/revisions',
+    getParentRoute: () => ApiAdminContentIdRoute,
+  } as any)
 const ApiAdminContentIdPublishRoute =
   ApiAdminContentIdPublishRouteImport.update({
     id: '/publish',
@@ -916,6 +927,18 @@ const ApiAdminContentIdMediaUploadTargetRoute =
   ApiAdminContentIdMediaUploadTargetRouteImport.update({
     id: '/media-upload-target',
     path: '/media-upload-target',
+    getParentRoute: () => ApiAdminContentIdRoute,
+  } as any)
+const ApiAdminContentIdMediaPreviewRoute =
+  ApiAdminContentIdMediaPreviewRouteImport.update({
+    id: '/media-preview',
+    path: '/media-preview',
+    getParentRoute: () => ApiAdminContentIdRoute,
+  } as any)
+const ApiAdminContentIdMediaFinalizeRoute =
+  ApiAdminContentIdMediaFinalizeRouteImport.update({
+    id: '/media-finalize',
+    path: '/media-finalize',
     getParentRoute: () => ApiAdminContentIdRoute,
   } as any)
 const ApiAdminContentIdMediaRoute = ApiAdminContentIdMediaRouteImport.update({
@@ -1107,6 +1130,12 @@ const ApiAdminSponsorshipsPledgesIdCancelRoute =
     path: '/cancel',
     getParentRoute: () => ApiAdminSponsorshipsPledgesIdRoute,
   } as any)
+const ApiAdminDonationsDeliveryJobIdRetryRoute =
+  ApiAdminDonationsDeliveryJobIdRetryRouteImport.update({
+    id: '/api/admin/donations/delivery/$jobId/retry',
+    path: '/api/admin/donations/delivery/$jobId/retry',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdminContentUpdatesUpdateIdNotificationDraftsRoute =
   ApiAdminContentUpdatesUpdateIdNotificationDraftsRouteImport.update({
     id: '/updates/$updateId/notification-drafts',
@@ -1154,6 +1183,12 @@ const ApiAdminAccessInvitesIdResendRoute =
     id: '/$id/resend',
     path: '/$id/resend',
     getParentRoute: () => ApiAdminAccessInvitesRoute,
+  } as any)
+const ApiAdminContentIdRevisionsRevisionIdRestoreRoute =
+  ApiAdminContentIdRevisionsRevisionIdRestoreRouteImport.update({
+    id: '/$revisionId/restore',
+    path: '/$revisionId/restore',
+    getParentRoute: () => ApiAdminContentIdRevisionsRoute,
   } as any)
 const ApiAdminAdoptionsReportsExportsIdDownloadRoute =
   ApiAdminAdoptionsReportsExportsIdDownloadRouteImport.update({
@@ -1313,8 +1348,11 @@ export interface FileRoutesByFullPath {
   '/api/admin/content/$id/archive': typeof ApiAdminContentIdArchiveRoute
   '/api/admin/content/$id/links': typeof ApiAdminContentIdLinksRoute
   '/api/admin/content/$id/media': typeof ApiAdminContentIdMediaRoute
+  '/api/admin/content/$id/media-finalize': typeof ApiAdminContentIdMediaFinalizeRoute
+  '/api/admin/content/$id/media-preview': typeof ApiAdminContentIdMediaPreviewRoute
   '/api/admin/content/$id/media-upload-target': typeof ApiAdminContentIdMediaUploadTargetRoute
   '/api/admin/content/$id/publish': typeof ApiAdminContentIdPublishRoute
+  '/api/admin/content/$id/revisions': typeof ApiAdminContentIdRevisionsRouteWithChildren
   '/api/admin/content/$id/social-copy': typeof ApiAdminContentIdSocialCopyRoute
   '/api/admin/content/$id/story-profile': typeof ApiAdminContentIdStoryProfileRoute
   '/api/admin/content/$id/updates': typeof ApiAdminContentIdUpdatesRoute
@@ -1339,6 +1377,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/adoptions/cases/$id/matches': typeof ApiAdminAdoptionsCasesIdMatchesRoute
   '/api/admin/adoptions/cases/$id/status': typeof ApiAdminAdoptionsCasesIdStatusRoute
   '/api/admin/content/updates/$updateId/notification-drafts': typeof ApiAdminContentUpdatesUpdateIdNotificationDraftsRoute
+  '/api/admin/donations/delivery/$jobId/retry': typeof ApiAdminDonationsDeliveryJobIdRetryRoute
   '/api/admin/sponsorships/pledges/$id/cancel': typeof ApiAdminSponsorshipsPledgesIdCancelRoute
   '/api/admin/sponsorships/pledges/$id/proof': typeof ApiAdminSponsorshipsPledgesIdProofRoute
   '/api/admin/sponsorships/pledges/$id/proof-url': typeof ApiAdminSponsorshipsPledgesIdProofUrlRoute
@@ -1348,6 +1387,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/volunteers/registrations/$id/status': typeof ApiAdminVolunteersRegistrationsIdStatusRoute
   '/api/admin/adoptions/applications/$applicationId/photos/$photoId': typeof ApiAdminAdoptionsApplicationsApplicationIdPhotosPhotoIdRoute
   '/api/admin/adoptions/reports/exports/$id/download': typeof ApiAdminAdoptionsReportsExportsIdDownloadRoute
+  '/api/admin/content/$id/revisions/$revisionId/restore': typeof ApiAdminContentIdRevisionsRevisionIdRestoreRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -1493,8 +1533,11 @@ export interface FileRoutesByTo {
   '/api/admin/content/$id/archive': typeof ApiAdminContentIdArchiveRoute
   '/api/admin/content/$id/links': typeof ApiAdminContentIdLinksRoute
   '/api/admin/content/$id/media': typeof ApiAdminContentIdMediaRoute
+  '/api/admin/content/$id/media-finalize': typeof ApiAdminContentIdMediaFinalizeRoute
+  '/api/admin/content/$id/media-preview': typeof ApiAdminContentIdMediaPreviewRoute
   '/api/admin/content/$id/media-upload-target': typeof ApiAdminContentIdMediaUploadTargetRoute
   '/api/admin/content/$id/publish': typeof ApiAdminContentIdPublishRoute
+  '/api/admin/content/$id/revisions': typeof ApiAdminContentIdRevisionsRouteWithChildren
   '/api/admin/content/$id/social-copy': typeof ApiAdminContentIdSocialCopyRoute
   '/api/admin/content/$id/story-profile': typeof ApiAdminContentIdStoryProfileRoute
   '/api/admin/content/$id/updates': typeof ApiAdminContentIdUpdatesRoute
@@ -1519,6 +1562,7 @@ export interface FileRoutesByTo {
   '/api/admin/adoptions/cases/$id/matches': typeof ApiAdminAdoptionsCasesIdMatchesRoute
   '/api/admin/adoptions/cases/$id/status': typeof ApiAdminAdoptionsCasesIdStatusRoute
   '/api/admin/content/updates/$updateId/notification-drafts': typeof ApiAdminContentUpdatesUpdateIdNotificationDraftsRoute
+  '/api/admin/donations/delivery/$jobId/retry': typeof ApiAdminDonationsDeliveryJobIdRetryRoute
   '/api/admin/sponsorships/pledges/$id/cancel': typeof ApiAdminSponsorshipsPledgesIdCancelRoute
   '/api/admin/sponsorships/pledges/$id/proof': typeof ApiAdminSponsorshipsPledgesIdProofRoute
   '/api/admin/sponsorships/pledges/$id/proof-url': typeof ApiAdminSponsorshipsPledgesIdProofUrlRoute
@@ -1528,6 +1572,7 @@ export interface FileRoutesByTo {
   '/api/admin/volunteers/registrations/$id/status': typeof ApiAdminVolunteersRegistrationsIdStatusRoute
   '/api/admin/adoptions/applications/$applicationId/photos/$photoId': typeof ApiAdminAdoptionsApplicationsApplicationIdPhotosPhotoIdRoute
   '/api/admin/adoptions/reports/exports/$id/download': typeof ApiAdminAdoptionsReportsExportsIdDownloadRoute
+  '/api/admin/content/$id/revisions/$revisionId/restore': typeof ApiAdminContentIdRevisionsRevisionIdRestoreRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -1675,8 +1720,11 @@ export interface FileRoutesById {
   '/api/admin/content/$id/archive': typeof ApiAdminContentIdArchiveRoute
   '/api/admin/content/$id/links': typeof ApiAdminContentIdLinksRoute
   '/api/admin/content/$id/media': typeof ApiAdminContentIdMediaRoute
+  '/api/admin/content/$id/media-finalize': typeof ApiAdminContentIdMediaFinalizeRoute
+  '/api/admin/content/$id/media-preview': typeof ApiAdminContentIdMediaPreviewRoute
   '/api/admin/content/$id/media-upload-target': typeof ApiAdminContentIdMediaUploadTargetRoute
   '/api/admin/content/$id/publish': typeof ApiAdminContentIdPublishRoute
+  '/api/admin/content/$id/revisions': typeof ApiAdminContentIdRevisionsRouteWithChildren
   '/api/admin/content/$id/social-copy': typeof ApiAdminContentIdSocialCopyRoute
   '/api/admin/content/$id/story-profile': typeof ApiAdminContentIdStoryProfileRoute
   '/api/admin/content/$id/updates': typeof ApiAdminContentIdUpdatesRoute
@@ -1701,6 +1749,7 @@ export interface FileRoutesById {
   '/api/admin/adoptions/cases/$id/matches': typeof ApiAdminAdoptionsCasesIdMatchesRoute
   '/api/admin/adoptions/cases/$id/status': typeof ApiAdminAdoptionsCasesIdStatusRoute
   '/api/admin/content/updates/$updateId/notification-drafts': typeof ApiAdminContentUpdatesUpdateIdNotificationDraftsRoute
+  '/api/admin/donations/delivery/$jobId/retry': typeof ApiAdminDonationsDeliveryJobIdRetryRoute
   '/api/admin/sponsorships/pledges/$id/cancel': typeof ApiAdminSponsorshipsPledgesIdCancelRoute
   '/api/admin/sponsorships/pledges/$id/proof': typeof ApiAdminSponsorshipsPledgesIdProofRoute
   '/api/admin/sponsorships/pledges/$id/proof-url': typeof ApiAdminSponsorshipsPledgesIdProofUrlRoute
@@ -1710,6 +1759,7 @@ export interface FileRoutesById {
   '/api/admin/volunteers/registrations/$id/status': typeof ApiAdminVolunteersRegistrationsIdStatusRoute
   '/api/admin/adoptions/applications/$applicationId/photos/$photoId': typeof ApiAdminAdoptionsApplicationsApplicationIdPhotosPhotoIdRoute
   '/api/admin/adoptions/reports/exports/$id/download': typeof ApiAdminAdoptionsReportsExportsIdDownloadRoute
+  '/api/admin/content/$id/revisions/$revisionId/restore': typeof ApiAdminContentIdRevisionsRevisionIdRestoreRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -1858,8 +1908,11 @@ export interface FileRouteTypes {
     | '/api/admin/content/$id/archive'
     | '/api/admin/content/$id/links'
     | '/api/admin/content/$id/media'
+    | '/api/admin/content/$id/media-finalize'
+    | '/api/admin/content/$id/media-preview'
     | '/api/admin/content/$id/media-upload-target'
     | '/api/admin/content/$id/publish'
+    | '/api/admin/content/$id/revisions'
     | '/api/admin/content/$id/social-copy'
     | '/api/admin/content/$id/story-profile'
     | '/api/admin/content/$id/updates'
@@ -1884,6 +1937,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/cases/$id/matches'
     | '/api/admin/adoptions/cases/$id/status'
     | '/api/admin/content/updates/$updateId/notification-drafts'
+    | '/api/admin/donations/delivery/$jobId/retry'
     | '/api/admin/sponsorships/pledges/$id/cancel'
     | '/api/admin/sponsorships/pledges/$id/proof'
     | '/api/admin/sponsorships/pledges/$id/proof-url'
@@ -1893,6 +1947,7 @@ export interface FileRouteTypes {
     | '/api/admin/volunteers/registrations/$id/status'
     | '/api/admin/adoptions/applications/$applicationId/photos/$photoId'
     | '/api/admin/adoptions/reports/exports/$id/download'
+    | '/api/admin/content/$id/revisions/$revisionId/restore'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -2038,8 +2093,11 @@ export interface FileRouteTypes {
     | '/api/admin/content/$id/archive'
     | '/api/admin/content/$id/links'
     | '/api/admin/content/$id/media'
+    | '/api/admin/content/$id/media-finalize'
+    | '/api/admin/content/$id/media-preview'
     | '/api/admin/content/$id/media-upload-target'
     | '/api/admin/content/$id/publish'
+    | '/api/admin/content/$id/revisions'
     | '/api/admin/content/$id/social-copy'
     | '/api/admin/content/$id/story-profile'
     | '/api/admin/content/$id/updates'
@@ -2064,6 +2122,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/cases/$id/matches'
     | '/api/admin/adoptions/cases/$id/status'
     | '/api/admin/content/updates/$updateId/notification-drafts'
+    | '/api/admin/donations/delivery/$jobId/retry'
     | '/api/admin/sponsorships/pledges/$id/cancel'
     | '/api/admin/sponsorships/pledges/$id/proof'
     | '/api/admin/sponsorships/pledges/$id/proof-url'
@@ -2073,6 +2132,7 @@ export interface FileRouteTypes {
     | '/api/admin/volunteers/registrations/$id/status'
     | '/api/admin/adoptions/applications/$applicationId/photos/$photoId'
     | '/api/admin/adoptions/reports/exports/$id/download'
+    | '/api/admin/content/$id/revisions/$revisionId/restore'
   id:
     | '__root__'
     | '/'
@@ -2219,8 +2279,11 @@ export interface FileRouteTypes {
     | '/api/admin/content/$id/archive'
     | '/api/admin/content/$id/links'
     | '/api/admin/content/$id/media'
+    | '/api/admin/content/$id/media-finalize'
+    | '/api/admin/content/$id/media-preview'
     | '/api/admin/content/$id/media-upload-target'
     | '/api/admin/content/$id/publish'
+    | '/api/admin/content/$id/revisions'
     | '/api/admin/content/$id/social-copy'
     | '/api/admin/content/$id/story-profile'
     | '/api/admin/content/$id/updates'
@@ -2245,6 +2308,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/cases/$id/matches'
     | '/api/admin/adoptions/cases/$id/status'
     | '/api/admin/content/updates/$updateId/notification-drafts'
+    | '/api/admin/donations/delivery/$jobId/retry'
     | '/api/admin/sponsorships/pledges/$id/cancel'
     | '/api/admin/sponsorships/pledges/$id/proof'
     | '/api/admin/sponsorships/pledges/$id/proof-url'
@@ -2254,6 +2318,7 @@ export interface FileRouteTypes {
     | '/api/admin/volunteers/registrations/$id/status'
     | '/api/admin/adoptions/applications/$applicationId/photos/$photoId'
     | '/api/admin/adoptions/reports/exports/$id/download'
+    | '/api/admin/content/$id/revisions/$revisionId/restore'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -2361,6 +2426,7 @@ export interface RootRouteChildren {
   ApiAdminAdoptionsReportsSummaryRoute: typeof ApiAdminAdoptionsReportsSummaryRoute
   ApiAdminAdoptionsAnimalsIdInternalRoute: typeof ApiAdminAdoptionsAnimalsIdInternalRoute
   ApiAdminAdoptionsAnimalsIdStatusRoute: typeof ApiAdminAdoptionsAnimalsIdStatusRoute
+  ApiAdminDonationsDeliveryJobIdRetryRoute: typeof ApiAdminDonationsDeliveryJobIdRetryRoute
   ApiAdminAdoptionsApplicationsApplicationIdPhotosPhotoIdRoute: typeof ApiAdminAdoptionsApplicationsApplicationIdPhotosPhotoIdRoute
 }
 
@@ -3311,6 +3377,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminContentIdSocialCopyRouteImport
       parentRoute: typeof ApiAdminContentIdRoute
     }
+    '/api/admin/content/$id/revisions': {
+      id: '/api/admin/content/$id/revisions'
+      path: '/revisions'
+      fullPath: '/api/admin/content/$id/revisions'
+      preLoaderRoute: typeof ApiAdminContentIdRevisionsRouteImport
+      parentRoute: typeof ApiAdminContentIdRoute
+    }
     '/api/admin/content/$id/publish': {
       id: '/api/admin/content/$id/publish'
       path: '/publish'
@@ -3323,6 +3396,20 @@ declare module '@tanstack/react-router' {
       path: '/media-upload-target'
       fullPath: '/api/admin/content/$id/media-upload-target'
       preLoaderRoute: typeof ApiAdminContentIdMediaUploadTargetRouteImport
+      parentRoute: typeof ApiAdminContentIdRoute
+    }
+    '/api/admin/content/$id/media-preview': {
+      id: '/api/admin/content/$id/media-preview'
+      path: '/media-preview'
+      fullPath: '/api/admin/content/$id/media-preview'
+      preLoaderRoute: typeof ApiAdminContentIdMediaPreviewRouteImport
+      parentRoute: typeof ApiAdminContentIdRoute
+    }
+    '/api/admin/content/$id/media-finalize': {
+      id: '/api/admin/content/$id/media-finalize'
+      path: '/media-finalize'
+      fullPath: '/api/admin/content/$id/media-finalize'
+      preLoaderRoute: typeof ApiAdminContentIdMediaFinalizeRouteImport
       parentRoute: typeof ApiAdminContentIdRoute
     }
     '/api/admin/content/$id/media': {
@@ -3549,6 +3636,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminSponsorshipsPledgesIdCancelRouteImport
       parentRoute: typeof ApiAdminSponsorshipsPledgesIdRoute
     }
+    '/api/admin/donations/delivery/$jobId/retry': {
+      id: '/api/admin/donations/delivery/$jobId/retry'
+      path: '/api/admin/donations/delivery/$jobId/retry'
+      fullPath: '/api/admin/donations/delivery/$jobId/retry'
+      preLoaderRoute: typeof ApiAdminDonationsDeliveryJobIdRetryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/content/updates/$updateId/notification-drafts': {
       id: '/api/admin/content/updates/$updateId/notification-drafts'
       path: '/updates/$updateId/notification-drafts'
@@ -3604,6 +3698,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/admin/access/invites/$id/resend'
       preLoaderRoute: typeof ApiAdminAccessInvitesIdResendRouteImport
       parentRoute: typeof ApiAdminAccessInvitesRoute
+    }
+    '/api/admin/content/$id/revisions/$revisionId/restore': {
+      id: '/api/admin/content/$id/revisions/$revisionId/restore'
+      path: '/$revisionId/restore'
+      fullPath: '/api/admin/content/$id/revisions/$revisionId/restore'
+      preLoaderRoute: typeof ApiAdminContentIdRevisionsRevisionIdRestoreRouteImport
+      parentRoute: typeof ApiAdminContentIdRevisionsRoute
     }
     '/api/admin/adoptions/reports/exports/$id/download': {
       id: '/api/admin/adoptions/reports/exports/$id/download'
@@ -3819,12 +3920,30 @@ const ApiAdminAnnualReportsRouteWithChildren =
     ApiAdminAnnualReportsRouteChildren,
   )
 
+interface ApiAdminContentIdRevisionsRouteChildren {
+  ApiAdminContentIdRevisionsRevisionIdRestoreRoute: typeof ApiAdminContentIdRevisionsRevisionIdRestoreRoute
+}
+
+const ApiAdminContentIdRevisionsRouteChildren: ApiAdminContentIdRevisionsRouteChildren =
+  {
+    ApiAdminContentIdRevisionsRevisionIdRestoreRoute:
+      ApiAdminContentIdRevisionsRevisionIdRestoreRoute,
+  }
+
+const ApiAdminContentIdRevisionsRouteWithChildren =
+  ApiAdminContentIdRevisionsRoute._addFileChildren(
+    ApiAdminContentIdRevisionsRouteChildren,
+  )
+
 interface ApiAdminContentIdRouteChildren {
   ApiAdminContentIdArchiveRoute: typeof ApiAdminContentIdArchiveRoute
   ApiAdminContentIdLinksRoute: typeof ApiAdminContentIdLinksRoute
   ApiAdminContentIdMediaRoute: typeof ApiAdminContentIdMediaRoute
+  ApiAdminContentIdMediaFinalizeRoute: typeof ApiAdminContentIdMediaFinalizeRoute
+  ApiAdminContentIdMediaPreviewRoute: typeof ApiAdminContentIdMediaPreviewRoute
   ApiAdminContentIdMediaUploadTargetRoute: typeof ApiAdminContentIdMediaUploadTargetRoute
   ApiAdminContentIdPublishRoute: typeof ApiAdminContentIdPublishRoute
+  ApiAdminContentIdRevisionsRoute: typeof ApiAdminContentIdRevisionsRouteWithChildren
   ApiAdminContentIdSocialCopyRoute: typeof ApiAdminContentIdSocialCopyRoute
   ApiAdminContentIdStoryProfileRoute: typeof ApiAdminContentIdStoryProfileRoute
   ApiAdminContentIdUpdatesRoute: typeof ApiAdminContentIdUpdatesRoute
@@ -3834,9 +3953,12 @@ const ApiAdminContentIdRouteChildren: ApiAdminContentIdRouteChildren = {
   ApiAdminContentIdArchiveRoute: ApiAdminContentIdArchiveRoute,
   ApiAdminContentIdLinksRoute: ApiAdminContentIdLinksRoute,
   ApiAdminContentIdMediaRoute: ApiAdminContentIdMediaRoute,
+  ApiAdminContentIdMediaFinalizeRoute: ApiAdminContentIdMediaFinalizeRoute,
+  ApiAdminContentIdMediaPreviewRoute: ApiAdminContentIdMediaPreviewRoute,
   ApiAdminContentIdMediaUploadTargetRoute:
     ApiAdminContentIdMediaUploadTargetRoute,
   ApiAdminContentIdPublishRoute: ApiAdminContentIdPublishRoute,
+  ApiAdminContentIdRevisionsRoute: ApiAdminContentIdRevisionsRouteWithChildren,
   ApiAdminContentIdSocialCopyRoute: ApiAdminContentIdSocialCopyRoute,
   ApiAdminContentIdStoryProfileRoute: ApiAdminContentIdStoryProfileRoute,
   ApiAdminContentIdUpdatesRoute: ApiAdminContentIdUpdatesRoute,
@@ -4335,6 +4457,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminAdoptionsAnimalsIdInternalRoute:
     ApiAdminAdoptionsAnimalsIdInternalRoute,
   ApiAdminAdoptionsAnimalsIdStatusRoute: ApiAdminAdoptionsAnimalsIdStatusRoute,
+  ApiAdminDonationsDeliveryJobIdRetryRoute:
+    ApiAdminDonationsDeliveryJobIdRetryRoute,
   ApiAdminAdoptionsApplicationsApplicationIdPhotosPhotoIdRoute:
     ApiAdminAdoptionsApplicationsApplicationIdPhotosPhotoIdRoute,
 }

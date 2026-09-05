@@ -47,6 +47,7 @@ describe("crm schemas", () => {
   test("rejects unsupported manual donation method", () => {
     expect(() =>
       manualDonationSchema.parse({
+        requestId: "22222222-3333-4444-8555-666666666666",
         supporter: { name: "Ada", email: "ada@example.com", language: "zh-HK" },
         amountCents: 10000,
         currency: "HKD",
@@ -63,6 +64,7 @@ describe("crm schemas", () => {
   test("requires bank reference when manual donation is immediately succeeded", () => {
     expect(() =>
       manualDonationSchema.parse({
+        requestId: "22222222-3333-4444-8555-666666666666",
         supporter: { name: "Ada", email: "ada@example.com", language: "zh-HK" },
         amountCents: 10000,
         currency: "HKD",
@@ -78,6 +80,7 @@ describe("crm schemas", () => {
   test("requires exactly one manual donation supporter identity", () => {
     expect(() =>
       manualDonationSchema.parse({
+        requestId: "22222222-3333-4444-8555-666666666666",
         supporterId: "8ddfd279-4ba7-4c2b-9e3c-1dbf17bb5ead",
         supporter: { name: "Ada", email: "ada@example.com", language: "zh-HK" },
         amountCents: 10000,
@@ -91,6 +94,7 @@ describe("crm schemas", () => {
 
     expect(() =>
       manualDonationSchema.parse({
+        requestId: "22222222-3333-4444-8555-666666666666",
         amountCents: 10000,
         currency: "HKD",
         purpose: "general",

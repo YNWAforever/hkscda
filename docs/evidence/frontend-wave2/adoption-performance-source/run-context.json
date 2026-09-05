@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "commit": "b14ddf2e394110aced8b2c10292311f7069f5abf",
+  "worktreeDirty": true,
+  "fixtureId": "frontend-task6-source",
+  "fixtureSha256": "b8d3f37824e784708465af97cf5113242c22631d56c7b462e7a688c566b6a0e2",
+  "fixtureSource": "scripts/ci/supabase-fixture.mjs",
+  "baseURL": "http://127.0.0.1:4173",
+  "mode": "performance",
+  "startedAt": "2026-09-05T16:47:52.797Z",
+  "browser": "148.0.7778.96",
+  "measuredViewports": [
+    "390x844",
+    "1440x900"
+  ],
+  "failures": [],
+  "completedAt": "2026-09-05T16:49:42.349Z"
+}

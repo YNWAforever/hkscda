@@ -1,0 +1,14 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\publicMetrics.test.ts:
+(pass) templates capability and detail paths and excludes unknown/private routes [1.18ms]
+(pass) does not load observers without explicit activation and current consent [0.50ms]
+(pass) emits only numeric metrics and templates; revocation/navigation/stop suppress callbacks [0.71ms]
+(pass) consent revoked while importing prevents observer registration [0.27ms]
+(pass) route inventory matches real listing and privacy routes [1.68ms]
+(pass) opaque ID generation failure cannot escape the metrics callback [0.51ms]
+
+ 6 pass
+ 0 fail
+ 34 expect() calls
+Ran 6 tests across 1 file. [60.00ms]

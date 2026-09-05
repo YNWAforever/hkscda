@@ -1,0 +1,13 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\crm\manualGiftDelivery.http.server.test.ts:
+(pass) committed gift remains success when delivery fails [1.33ms]
+(pass) denied requests cannot commit or retry [0.61ms]
+(pass) complete job retry returns complete without another delivery [1.63ms]
+(pass) missing job and malformed id never call retry [1.04ms]
+(pass) changed gift payload conflict does not attempt delivery [0.69ms]
+
+ 5 pass
+ 0 fail
+ 14 expect() calls
+Ran 5 tests across 1 file. [181.00ms]

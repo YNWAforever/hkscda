@@ -1,7 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+
+import { clearTurnstileScriptFailure, loadTurnstileScript } from "./turnstileScript";
 
 const SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined;
-const SCRIPT_SRC = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
 
 type TurnstileRenderOptions = {
   sitekey: string;
@@ -22,29 +23,6 @@ declare global {
   }
 }
 
-let scriptPromise: Promise<void> | null = null;
-function loadTurnstileScript(): Promise<void> {
-  if (typeof window === "undefined") return Promise.resolve();
-  if (window.turnstile) return Promise.resolve();
-  if (scriptPromise) return scriptPromise;
-  scriptPromise = new Promise<void>((resolve, reject) => {
-    const existing = document.querySelector<HTMLScriptElement>(`script[src="${SCRIPT_SRC}"]`);
-    if (existing) {
-      existing.addEventListener("load", () => resolve());
-      existing.addEventListener("error", () => reject(new Error("Failed to load Turnstile")));
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = SCRIPT_SRC;
-    script.async = true;
-    script.defer = true;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error("Failed to load Turnstile"));
-    document.head.appendChild(script);
-  });
-  return scriptPromise;
-}
-
 /** True when a Turnstile site key is configured; lets forms skip gating in dev. */
 export const turnstileEnabled = Boolean(SITE_KEY);
 
@@ -53,22 +31,36 @@ type TurnstileWidgetProps = {
   onExpire?: () => void;
   language?: string;
   className?: string;
+  resetKey?: number;
 };
 
 /**
  * Client-only Cloudflare Turnstile widget. Renders nothing when no site key is
  * configured (dev/preview), so forms remain usable without Turnstile set up.
- * The widget is injected inside an effect to avoid SSR/hydration mismatches and
- * is removed on unmount to avoid duplicate widgets across React StrictMode
- * double-invokes and route remounts.
+ * The widget is injected inside an effect to avoid SSR/hydration mismatches.
  */
-export function TurnstileWidget({ onVerify, onExpire, language, className }: TurnstileWidgetProps) {
+export function TurnstileWidget({
+  onVerify,
+  onExpire,
+  language,
+  className,
+  resetKey = 0,
+}: TurnstileWidgetProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
+  const previousResetKeyRef = useRef(resetKey);
   const onVerifyRef = useRef(onVerify);
   const onExpireRef = useRef(onExpire);
+  const [scriptAttempt, setScriptAttempt] = useState(0);
+  const [scriptFailed, setScriptFailed] = useState(false);
   onVerifyRef.current = onVerify;
   onExpireRef.current = onExpire;
+
+  useEffect(() => {
+    if (previousResetKeyRef.current === resetKey) return;
+    previousResetKeyRef.current = resetKey;
+    onExpireRef.current?.();
+  }, [resetKey]);
 
   useEffect(() => {
     if (!SITE_KEY) return;
@@ -80,17 +72,26 @@ export function TurnstileWidget({ onVerify, onExpire, language, className }: Tur
         widgetIdRef.current = window.turnstile.render(containerRef.current, {
           sitekey: SITE_KEY,
           language,
-          callback: (token: string) => onVerifyRef.current(token),
-          "expired-callback": () => onExpireRef.current?.(),
-          "error-callback": () => onExpireRef.current?.(),
+          callback: (token: string) => {
+            if (!cancelled) onVerifyRef.current(token);
+          },
+          "expired-callback": () => {
+            if (!cancelled) onExpireRef.current?.();
+          },
+          "error-callback": () => {
+            if (!cancelled) onExpireRef.current?.();
+          },
         });
+        setScriptFailed(false);
       })
       .catch((error) => {
         console.error(error);
+        if (!cancelled) setScriptFailed(true);
       });
 
     return () => {
       cancelled = true;
+      onExpireRef.current?.();
       if (widgetIdRef.current && window.turnstile) {
         try {
           window.turnstile.remove(widgetIdRef.current);
@@ -100,8 +101,28 @@ export function TurnstileWidget({ onVerify, onExpire, language, className }: Tur
         widgetIdRef.current = null;
       }
     };
-  }, [language]);
+  }, [language, resetKey, scriptAttempt]);
 
   if (!SITE_KEY) return null;
-  return <div ref={containerRef} className={className} aria-label="人機驗證" />;
+  return (
+    <div className={className}>
+      <div ref={containerRef} role="group" aria-label="人機驗證" />
+      {scriptFailed && (
+        <div role="alert" className="space-y-2 text-sm text-[var(--color-error)]">
+          <p>人機驗證暫時未能載入，請重試。</p>
+          <button
+            type="button"
+            className="btn-secondary min-h-11 px-4"
+            onClick={() => {
+              clearTurnstileScriptFailure();
+              setScriptFailed(false);
+              setScriptAttempt((attempt) => attempt + 1);
+            }}
+          >
+            重新載入人機驗證
+          </button>
+        </div>
+      )}
+    </div>
+  );
 }

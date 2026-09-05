@@ -11,6 +11,7 @@ const paramsSchema = z.object({
 
 export const Route = createFileRoute("/admin/coordinator/adopters/$id")({
   parseParams: paramsSchema.parse,
+  ssr: false,
   beforeLoad: async ({ context }) => {
     await requireAdminPageAccess("adopters", context.queryClient);
   },

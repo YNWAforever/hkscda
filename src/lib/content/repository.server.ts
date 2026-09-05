@@ -1,6 +1,6 @@
+import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { createSupabaseContentListRead } from "./contentListRead.server";
 import type { AdopterNotificationRecipient } from "./notificationDrafts";
 import {
   CONTENT_MEDIA_BUCKET,
@@ -20,6 +20,7 @@ import type {
   ContentStatus,
   ContentSummary,
   ContentType,
+  PublicStoryMapPoint,
   NotificationDraftStatus,
   RecipientNotificationDraft,
   RescuePublicStatus,
@@ -33,6 +34,8 @@ import type {
 } from "./types";
 
 type ContentRow = {
+  version?: number;
+  draft_revision_id?: string | null;
   id: string;
   slug: string;
   type: ContentType;
@@ -306,6 +309,32 @@ function toRecipientNotificationDraft(
   };
 }
 
+async function adminMediaUrl(client: SupabaseClient, row: MediaRow): Promise<string | null> {
+  if (row.storage_bucket !== "content-media-private") return mediaPublicUrl(client, row);
+  const { data, error } = await client.storage
+    .from(row.storage_bucket)
+    .createSignedUrl(row.storage_path, 300);
+  if (error) throw error;
+  return data?.signedUrl ?? null;
+}
+
+async function adminMediaUrls(client: SupabaseClient, rows: MediaRow[]) {
+  const urls = new Map<string, string | null>();
+  const privateRows = rows.filter((row) => row.storage_bucket === "content-media-private");
+  if (privateRows.length) {
+    const { data, error } = await client.storage
+      .from("content-media-private")
+      .createSignedUrls([...new Set(privateRows.map((row) => row.storage_path))], 300);
+    if (error) throw error;
+    for (const row of data ?? [])
+      if (row.path) urls.set(`content-media-private/${row.path}`, row.signedUrl ?? null);
+  }
+  for (const row of rows)
+    if (row.storage_bucket !== "content-media-private")
+      urls.set(`${row.storage_bucket}/${row.storage_path}`, mediaPublicUrl(client, row));
+  return urls;
+}
+
 function mediaPublicUrl(client: SupabaseClient, row: MediaRow) {
   const { data } = client.storage.from(row.storage_bucket).getPublicUrl(row.storage_path);
   return data?.publicUrl || null;
@@ -424,6 +453,8 @@ function buildContentDetail(
 
   return {
     ...summary,
+    version: row.version,
+    revisionId: row.draft_revision_id,
     coverImageUrl: coverMedia?.url ?? null,
     storyProfile,
     latestPublicUpdate: latestPublicUpdate(updates),
@@ -443,70 +474,69 @@ function buildContentDetail(
 async function hydrateContentDetail(
   client: SupabaseClient,
   row: ContentRow,
+  historyPage = 1,
 ): Promise<ContentDetail> {
-  const { data: profileRow, error: profileError } = await client
-    .from("rescue_story_profile")
-    .select("*")
-    .eq("content_item_id", row.id)
-    .maybeSingle();
-  if (profileError) throw profileError;
-
-  const { data: linkRows, error: linkError } = await client
-    .from("content_link")
-    .select("*")
-    .eq("content_item_id", row.id)
-    .order("created_at", { ascending: true });
-  if (linkError) throw linkError;
-
-  const { data: mediaRows, error: mediaError } = await client
-    .from("content_media")
-    .select("*")
-    .eq("content_item_id", row.id)
-    .order("sort_order", { ascending: true })
-    .order("created_at", { ascending: true });
-  if (mediaError) throw mediaError;
-
-  const media = ((mediaRows ?? []) as MediaRow[]).map((mediaRow) =>
-    toContentMedia(mediaRow, mediaPublicUrl(client, mediaRow)),
+  const { data, error } = await client.rpc("read_content_authoring_detail", {
+    p_content_id: row.id,
+    p_history_page: historyPage,
+  });
+  if (error) throw error;
+  if (!data) throw new Error("Content item not found");
+  const snapshot = z
+    .object({
+      content: z.record(z.string(), z.unknown()),
+      profile: z.record(z.string(), z.unknown()).nullable(),
+      cover: z.record(z.string(), z.unknown()).nullable(),
+      latest: z.record(z.string(), z.unknown()).nullable(),
+      links: z.array(z.record(z.string(), z.unknown())),
+      media: z.array(z.record(z.string(), z.unknown())),
+      updates: z.array(z.record(z.string(), z.unknown())),
+      socialCopies: z.array(z.record(z.string(), z.unknown())),
+      notificationDrafts: z.array(z.record(z.string(), z.unknown())),
+    })
+    .parse(data);
+  const pageMedia = snapshot.media.slice(0, 20) as MediaRow[];
+  const cover = snapshot.cover as MediaRow | null;
+  const signedUrls = await adminMediaUrls(client, [...pageMedia, ...(cover ? [cover] : [])]);
+  const media = pageMedia.map((row) =>
+    toContentMedia(row, signedUrls.get(`${row.storage_bucket}/${row.storage_path}`) ?? null),
   );
-
-  const { data: updateRows, error: updateError } = await client
-    .from("story_update")
-    .select("*")
-    .eq("content_item_id", row.id)
-    .order("occurred_at", { ascending: false });
-  if (updateError) throw updateError;
-
-  const updates = ((updateRows ?? []) as StoryUpdateRow[]).map((updateRow) =>
-    toStoryUpdate(
-      updateRow,
-      media.filter((item) => item.storyUpdateId === updateRow.id),
+  const updates = (snapshot.updates.slice(0, 20) as StoryUpdateRow[]).map((update) => ({
+    ...toStoryUpdate(
+      { ...update, body: null },
+      media.filter((item) => item.storyUpdateId === update.id),
     ),
-  );
-
-  const { data: socialRows, error: socialError } = await client
-    .from("social_copy_variant")
-    .select("*")
-    .eq("content_item_id", row.id)
-    .order("created_at", { ascending: false });
-  if (socialError) throw socialError;
-
-  const { data: notificationRows, error: notificationError } = await client
-    .from("recipient_notification_draft")
-    .select("*")
-    .eq("content_item_id", row.id)
-    .order("created_at", { ascending: false });
-  if (notificationError) throw notificationError;
-
-  return buildContentDetail(
-    row,
-    profileRow ? toRescueStoryProfile(profileRow as RescueStoryProfileRow) : null,
-    ((linkRows ?? []) as ContentLinkRow[]).map(toContentLink),
-    media,
-    updates,
-    ((socialRows ?? []) as SocialCopyVariantRow[]).map(toSocialCopyVariant),
-    ((notificationRows ?? []) as RecipientNotificationDraftRow[]).map(toRecipientNotificationDraft),
-  );
+    bodyLoaded: false,
+  }));
+  return {
+    ...buildContentDetail(
+      snapshot.content as ContentRow,
+      snapshot.profile ? toRescueStoryProfile(snapshot.profile as RescueStoryProfileRow) : null,
+      (snapshot.links.slice(0, 20) as ContentLinkRow[]).map(toContentLink),
+      media,
+      updates,
+      (snapshot.socialCopies.slice(0, 20) as SocialCopyVariantRow[]).map(toSocialCopyVariant),
+      (snapshot.notificationDrafts.slice(0, 20) as RecipientNotificationDraftRow[]).map(
+        toRecipientNotificationDraft,
+      ),
+    ),
+    coverImageUrl: cover
+      ? (signedUrls.get(`${cover.storage_bucket}/${cover.storage_path}`) ?? null)
+      : null,
+    latestPublicUpdate: snapshot.latest
+      ? toStoryUpdate({ ...snapshot.latest, body: null } as StoryUpdateRow, [])
+      : null,
+    history: {
+      page: historyPage,
+      hasMore: [
+        snapshot.links,
+        snapshot.media,
+        snapshot.updates,
+        snapshot.socialCopies,
+        snapshot.notificationDrafts,
+      ].some((rows) => rows.length > 20),
+    },
+  };
 }
 
 export function toPublicContentDetail(detail: ContentDetail): ContentDetail {
@@ -539,11 +569,11 @@ export function toPublicContentDetail(detail: ContentDetail): ContentDetail {
   };
 }
 
-async function getContentDetailById(client: SupabaseClient, id: string) {
+async function getContentDetailById(client: SupabaseClient, id: string, historyPage = 1) {
   const { data, error } = await client.from("content_item").select("*").eq("id", id).maybeSingle();
   if (error) throw error;
   if (!data) return null;
-  return hydrateContentDetail(client, data as ContentRow);
+  return hydrateContentDetail(client, data as ContentRow, historyPage);
 }
 
 async function getContentDetailByIdOrThrow(client: SupabaseClient, id: string) {
@@ -624,41 +654,193 @@ async function loadSupporters(client: SupabaseClient, ids: string[]) {
   return rows;
 }
 
+const publishedEnvelopeSchema = z.object({
+  total: z.number().int().nonnegative(),
+  rows: z.array(
+    z.object({
+      published_at: z.string().nullable(),
+      snapshot: z.object({
+        content: z.record(z.unknown()),
+        profile: z.record(z.unknown()).nullable(),
+        updates: z.array(z.record(z.unknown())),
+        media: z.array(z.record(z.unknown())),
+      }),
+    }),
+  ),
+});
+function snapshotSummary(item: ContentDetail): ContentSummary {
+  return {
+    id: item.id,
+    slug: item.slug,
+    type: item.type,
+    title: item.title,
+    subtitle: item.subtitle,
+    summary: item.summary,
+    coverMediaId: item.coverMediaId,
+    coverImageUrl: item.coverImageUrl,
+    status: item.status,
+    publishedAt: item.publishedAt,
+    ctaLabel: item.ctaLabel,
+    ctaUrl: item.ctaUrl,
+    storyProfile: item.storyProfile,
+    latestPublicUpdate: item.latestPublicUpdate,
+    createdAt: item.createdAt,
+    updatedAt: item.updatedAt,
+  };
+}
+function snapshotMapPoint(content: ContentSummary): PublicStoryMapPoint | null {
+  const profile = content.storyProfile;
+  if (
+    content.type !== "rescue_story" ||
+    !profile?.showOnMap ||
+    !profile.publicMapLabel ||
+    profile.publicLat === null ||
+    profile.publicLng === null
+  )
+    return null;
+  return {
+    id: content.id,
+    slug: content.slug,
+    title: content.title,
+    animalType: profile.animalType,
+    publicStatus: profile.publicStatus,
+    rescueRegion: profile.rescueRegion,
+    publicMapLabel: profile.publicMapLabel,
+    lat: profile.publicLat,
+    lng: profile.publicLng,
+    latestUpdateTitle: content.latestPublicUpdate?.title ?? null,
+  };
+}
+
 export function createSupabaseContentRepository(client: SupabaseClient): ContentRepository {
-  const contentListRead = createSupabaseContentListRead(client);
+  async function readPublished(filters: Record<string, unknown>) {
+    const { data, error } = await client.rpc("read_published_content_snapshots", {
+      p_filters: filters,
+    });
+    if (error) throw error;
+    const envelope = publishedEnvelopeSchema.parse(data);
+    const items = envelope.rows.map(({ snapshot, published_at }) => {
+      const media = (snapshot.media as MediaRow[]).map((row) =>
+        toContentMedia(row, mediaPublicUrl(client, row)),
+      );
+      const updates = (snapshot.updates as StoryUpdateRow[]).map((row) =>
+        toStoryUpdate(
+          row,
+          media.filter((item) => item.storyUpdateId === row.id),
+        ),
+      );
+      const content = { ...snapshot.content, status: "published", published_at } as ContentRow;
+      return toPublicContentDetail(
+        buildContentDetail(
+          content,
+          snapshot.profile ? toRescueStoryProfile(snapshot.profile as RescueStoryProfileRow) : null,
+          [],
+          media,
+          updates,
+          [],
+          [],
+        ),
+      );
+    });
+    return { items, total: envelope.total };
+  }
 
   return {
-    listPublicContent(input) {
-      return contentListRead.listPublicContent(input);
+    async listPublicContent(input) {
+      const result = await readPublished(input);
+      return { ...result, items: result.items.map(snapshotSummary) };
     },
 
-    listPublicStoriesPage(input) {
-      return contentListRead.listPublicStoriesPage(input);
+    async listPublicStoriesPage(input) {
+      const result = await readPublished(input);
+      return {
+        ...result,
+        items: result.items.map(snapshotSummary),
+        points: result.items
+          .map(snapshotMapPoint)
+          .filter((point): point is PublicStoryMapPoint => point !== null),
+      };
     },
 
     async getPublicContentBySlug(slug) {
+      const { items } = await readPublished({ slug, page: 1, pageSize: 1, detail: true });
+      return items[0] ?? null;
+    },
+    async listPublicMapStories(input) {
+      if (input.type && input.type !== "rescue_story") return [];
+      const { items } = await readPublished({ ...input, type: "rescue_story" });
+      return items
+        .map(snapshotMapPoint)
+        .filter((point): point is PublicStoryMapPoint => point !== null);
+    },
+
+    async listAdminContent(input) {
+      const { data, error } = await client.rpc("read_content_admin_summaries", {
+        p_filters: input,
+      });
+      if (error) throw error;
+      const result = z
+        .object({
+          total: z.number().nonnegative(),
+          rows: z.array(
+            z.object({
+              content: z.record(z.string(), z.unknown()),
+              profile: z.record(z.string(), z.unknown()).nullable(),
+              media: z.array(z.record(z.string(), z.unknown())),
+              updates: z.array(z.record(z.string(), z.unknown())),
+            }),
+          ),
+        })
+        .parse(data);
+      const signedUrls = await adminMediaUrls(
+        client,
+        result.rows.flatMap((snapshot) => snapshot.media) as MediaRow[],
+      );
+      const items = await Promise.all(
+        result.rows.map(async (snapshot) => {
+          const media = await Promise.all(
+            (snapshot.media as MediaRow[]).map(async (row) =>
+              toContentMedia(
+                row,
+                signedUrls.get(`${row.storage_bucket}/${row.storage_path}`) ?? null,
+              ),
+            ),
+          );
+          const updates = (snapshot.updates as StoryUpdateRow[]).map((row) =>
+            toStoryUpdate({ ...row, body: null }, []),
+          );
+          return snapshotSummary(
+            buildContentDetail(
+              snapshot.content as ContentRow,
+              snapshot.profile
+                ? toRescueStoryProfile(snapshot.profile as RescueStoryProfileRow)
+                : null,
+              [],
+              media,
+              updates,
+              [],
+              [],
+            ),
+          );
+        }),
+      );
+      return { items, total: result.total };
+    },
+
+    async getAdminUpdateBody(contentId, updateId) {
       const { data, error } = await client
-        .from("content_item")
-        .select("*")
-        .eq("slug", slug)
-        .eq("status", "published")
+        .from("story_update")
+        .select("body")
+        .eq("content_item_id", contentId)
+        .eq("id", updateId)
+        .eq("is_authoring_active", true)
         .maybeSingle();
       if (error) throw error;
-      if (!data) return null;
-
-      return toPublicContentDetail(await hydrateContentDetail(client, data as ContentRow));
+      if (!data) throw new Error("Story update not found");
+      return data.body as string | null;
     },
-
-    listPublicMapStories(input) {
-      return contentListRead.listPublicMapStories(input);
-    },
-
-    listAdminContent(input) {
-      return contentListRead.listAdminContent(input);
-    },
-
-    getAdminContent(id) {
-      return getContentDetailById(client, id);
+    getAdminContent(id, historyPage) {
+      return getContentDetailById(client, id, historyPage);
     },
 
     async createContent(input) {
@@ -790,6 +972,7 @@ export function createSupabaseContentRepository(client: SupabaseClient): Content
         .from("story_update")
         .select("*")
         .eq("id", id)
+        .eq("is_authoring_active", true)
         .maybeSingle();
       if (error) throw error;
       if (!data) return null;
@@ -802,8 +985,10 @@ export function createSupabaseContentRepository(client: SupabaseClient): Content
         .order("created_at", { ascending: true });
       if (mediaError) throw mediaError;
 
-      const media = ((mediaRows ?? []) as MediaRow[]).map((row) =>
-        toContentMedia(row, mediaPublicUrl(client, row)),
+      const media = await Promise.all(
+        ((mediaRows ?? []) as MediaRow[]).map(async (row) =>
+          toContentMedia(row, await adminMediaUrl(client, row)),
+        ),
       );
       return toStoryUpdate(data as StoryUpdateRow, media);
     },

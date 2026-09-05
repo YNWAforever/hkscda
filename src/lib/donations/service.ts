@@ -7,6 +7,7 @@ import {
   type OnlinePaymentProvider,
   type PaymentProvider,
 } from "./domain";
+import type { IdentityResolution, PublicContact } from "../supporters/publicIdentity.server";
 
 type SupporterRow = {
   id: string;
@@ -31,7 +32,7 @@ type PaymentRow = PaymentInsert & {
 };
 
 export type DonationRepository = {
-  upsertSupporter(input: DonationRequest["donor"]): Promise<SupporterRow>;
+  resolvePublicIdentity(contact: PublicContact): Promise<IdentityResolution>;
   ensureSupporterRole(input: { supporterId: string; role: "donor" }): Promise<void>;
   replaceConsents(rows: ReturnType<typeof buildConsentRows>): Promise<void>;
   createDonation(input: {
@@ -48,6 +49,12 @@ export type DonationRepository = {
     acquisition_context: NonNullable<DonationRequest["attribution"]>["context"] | null;
     acquisition_placement: NonNullable<DonationRequest["attribution"]>["placement"] | null;
     acquisition_trigger: NonNullable<DonationRequest["attribution"]>["trigger"] | null;
+    contact_name: string;
+    contact_email: string;
+    contact_phone: string | null;
+    contact_language: "zh-HK" | "en";
+    consent_email_requested: boolean;
+    consent_whatsapp_requested: boolean;
   }): Promise<DonationRow>;
   createPayment(input: PaymentInsert): Promise<PaymentRow>;
   updatePaymentProviderRef(
@@ -132,20 +139,24 @@ export async function createDonation({
   now = () => new Date(),
 }: CreateDonationArgs): Promise<CreateDonationResult> {
   const donationInput = donationRequestSchema.parse(input);
-  const supporter = await repository.upsertSupporter(donationInput.donor);
+  const supporter = await repository.resolvePublicIdentity({
+    ...donationInput.donor,
+    phone: donationInput.donor.phone ?? null,
+    source: "donation_form",
+  });
 
-  await repository.ensureSupporterRole({ supporterId: supporter.id, role: "donor" });
+  await repository.ensureSupporterRole({ supporterId: supporter.supporterId, role: "donor" });
   await repository.replaceConsents(
     buildConsentRows({
-      supporterId: supporter.id,
+      supporterId: supporter.supporterId,
       source: "donation_form",
       timestamp: now().toISOString(),
       consents: donationInput.consents,
-    }),
+    }).filter((row) => row.status === "opt_out"),
   );
 
   const donation = await repository.createDonation({
-    supporter_id: supporter.id,
+    supporter_id: supporter.supporterId,
     amount_cents: donationInput.amountCents,
     currency: donationInput.currency,
     purpose: donationInput.purpose,
@@ -158,6 +169,12 @@ export async function createDonation({
     acquisition_context: donationInput.attribution?.context ?? null,
     acquisition_placement: donationInput.attribution?.placement ?? null,
     acquisition_trigger: donationInput.attribution?.trigger ?? null,
+    contact_name: donationInput.donor.name,
+    contact_email: donationInput.donor.email,
+    contact_phone: donationInput.donor.phone ?? null,
+    contact_language: donationInput.donor.language,
+    consent_email_requested: donationInput.consents.email,
+    consent_whatsapp_requested: donationInput.consents.whatsapp,
   });
 
   if (donationInput.method === "fps" || donationInput.method === "payme") {

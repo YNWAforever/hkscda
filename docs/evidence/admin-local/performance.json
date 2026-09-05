@@ -1,0 +1,3381 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "hkscda-admin-local-v2",
+  "commit": "6dd266c96c0c605f79d4983b3e23cd88d429f1cc",
+  "origin": "http://127.0.0.1:55430",
+  "environment": "Vite development server and isolated local Supabase; not production latency",
+  "startedAt": "2026-09-05T19:05:28.835Z",
+  "sizes": [
+    {
+      "supporterCount": 1000,
+      "contentCount": 1000,
+      "donationsPerSupporter": 3,
+      "updatesPerContent": 3,
+      "scenarios": [
+        {
+          "name": "supporter-list-first-50",
+          "kind": "list",
+          "routeTemplate": "/api/admin/supporters",
+          "method": "GET",
+          "cold": {
+            "durationMs": 108.42950000000019,
+            "status": 200,
+            "decodedBytes": 24469,
+            "gzipBytes": 1880
+          },
+          "coldDefinition": "First observed request; does not assert cleared server or database caches",
+          "warmSamples": [
+            {
+              "durationMs": 114.0589,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 103.15830000000005,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 99.23509999999987,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 86.05150000000003,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 107.49440000000004,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 88.1572000000001,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 94.72399999999993,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 151.67169999999987,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 108.06590000000006,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 98.7217999999998,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 110.83919999999989,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 107.45399999999972,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 88.61299999999983,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 65.25780000000032,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 81.57469999999967,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 90.44299999999976,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 90.63079999999991,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 91.31780000000026,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 103.41400000000021,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 154.02140000000009,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 112.30600000000004,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 123.57870000000003,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 73.90029999999979,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 87.86459999999988,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 75.93370000000004,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 93.79590000000007,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 110.33959999999979,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 111.09679999999935,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 109.45719999999983,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            },
+            {
+              "durationMs": 77.13540000000012,
+              "status": 200,
+              "decodedBytes": 24469,
+              "gzipBytes": 1880
+            }
+          ],
+          "p50Ms": 98.7217999999998,
+          "p95Ms": 151.67169999999987,
+          "targetMs": 750,
+          "targetMet": true,
+          "maxGzipBytes": 1880,
+          "gzipDefinition": "Local gzip of decoded response, not observed wire transfer",
+          "queryCount": null,
+          "sqlExplain": null,
+          "observedDatabaseStatementCalls": 284,
+          "queryCountDefinition": "pg_stat_statements call delta for31 HTTP requests; includes authentication and possible local background work, not an exact per-request trace"
+        },
+        {
+          "name": "supporter-detail",
+          "kind": "detail",
+          "routeTemplate": "/api/admin/supporters/:id",
+          "method": "GET",
+          "cold": {
+            "durationMs": 343.78790000000026,
+            "status": 200,
+            "decodedBytes": 2732,
+            "gzipBytes": 757
+          },
+          "coldDefinition": "First observed request; does not assert cleared server or database caches",
+          "warmSamples": [
+            {
+              "durationMs": 303.26740000000063,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 290.3140000000003,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 293.59500000000025,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 191.47230000000036,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 164.09649999999965,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 161.76230000000032,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 150.64550000000054,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 187.95780000000013,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 190.08789999999954,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 199.5033999999996,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 170.76000000000022,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 179.64360000000033,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 327.9312,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 184.5609999999997,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 247.4443000000001,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 173.3032000000003,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 170.79829999999947,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 134.0588000000007,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 234.5702000000001,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 292.6812000000009,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 291.4243000000006,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 328.6931000000004,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 839.4562999999998,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 505.0774999999994,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 267.7618000000002,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 167.02239999999983,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 216.98129999999946,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 233.5560999999998,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 348.5542999999998,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 236.39719999999943,
+              "status": 200,
+              "decodedBytes": 2732,
+              "gzipBytes": 757
+            }
+          ],
+          "p50Ms": 216.98129999999946,
+          "p95Ms": 505.0774999999994,
+          "targetMs": 750,
+          "targetMet": true,
+          "maxGzipBytes": 757,
+          "gzipDefinition": "Local gzip of decoded response, not observed wire transfer",
+          "queryCount": null,
+          "sqlExplain": null,
+          "observedDatabaseStatementCalls": 1041,
+          "queryCountDefinition": "pg_stat_statements call delta for31 HTTP requests; includes authentication and possible local background work, not an exact per-request trace"
+        },
+        {
+          "name": "content-list-first-50",
+          "kind": "list",
+          "routeTemplate": "/api/admin/content",
+          "method": "GET",
+          "cold": {
+            "durationMs": 113.64149999999972,
+            "status": 200,
+            "decodedBytes": 58564,
+            "gzipBytes": 3990
+          },
+          "coldDefinition": "First observed request; does not assert cleared server or database caches",
+          "warmSamples": [
+            {
+              "durationMs": 114.22119999999995,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 109.39799999999923,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 107.27000000000044,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 109.84049999999843,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 89.53429999999935,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 92.39429999999993,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 88.99739999999838,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 109.61279999999897,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 95.25400000000081,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 133.24139999999898,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 176.73580000000038,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 104.41790000000037,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 162.22250000000167,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 123.48079999999936,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 94.17409999999836,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 123.99519999999939,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 112.23489999999947,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 550.9215999999997,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 361.009,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 760.9998999999989,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 914.1864999999998,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 219.97879999999714,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 244.66149999999834,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 181.4928,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 193.48329999999987,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 179.08689999999842,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 173.03080000000045,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 251.69810000000143,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 205.9344999999994,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            },
+            {
+              "durationMs": 142.57410000000164,
+              "status": 200,
+              "decodedBytes": 58564,
+              "gzipBytes": 3990
+            }
+          ],
+          "p50Ms": 133.24139999999898,
+          "p95Ms": 760.9998999999989,
+          "targetMs": 750,
+          "targetMet": false,
+          "maxGzipBytes": 3990,
+          "gzipDefinition": "Local gzip of decoded response, not observed wire transfer",
+          "queryCount": null,
+          "sqlExplain": null,
+          "observedDatabaseStatementCalls": 280,
+          "queryCountDefinition": "pg_stat_statements call delta for31 HTTP requests; includes authentication and possible local background work, not an exact per-request trace"
+        },
+        {
+          "name": "content-detail",
+          "kind": "detail",
+          "routeTemplate": "/api/admin/content/:id",
+          "method": "GET",
+          "cold": {
+            "durationMs": 127.21910000000207,
+            "status": 200,
+            "decodedBytes": 2554,
+            "gzipBytes": 685
+          },
+          "coldDefinition": "First observed request; does not assert cleared server or database caches",
+          "warmSamples": [
+            {
+              "durationMs": 94.77130000000034,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 119.46960000000036,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 94.38420000000042,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 91.45539999999892,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 90.17030000000159,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 91.97990000000209,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 89.93099999999686,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 95.50569999999789,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 67.27709999999934,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 117.68329999999696,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 146.82570000000123,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 91.02460000000065,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 98.69410000000062,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 121.70319999999992,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 79.38130000000092,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 109.65330000000176,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 93.38349999999991,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 98.6864999999998,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 88.73470000000088,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 102.27079999999842,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 76.31419999999707,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 90.0010000000002,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 91.8650000000016,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 101.46359999999913,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 209.45939999999973,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 140.3790999999983,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 135.84759999999733,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 220.53089999999793,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 260.77189999999973,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            },
+            {
+              "durationMs": 149.7666999999965,
+              "status": 200,
+              "decodedBytes": 2554,
+              "gzipBytes": 685
+            }
+          ],
+          "p50Ms": 95.50569999999789,
+          "p95Ms": 220.53089999999793,
+          "targetMs": 750,
+          "targetMet": true,
+          "maxGzipBytes": 685,
+          "gzipDefinition": "Local gzip of decoded response, not observed wire transfer",
+          "queryCount": null,
+          "sqlExplain": null,
+          "observedDatabaseStatementCalls": 342,
+          "queryCountDefinition": "pg_stat_statements call delta for31 HTTP requests; includes authentication and possible local background work, not an exact per-request trace"
+        },
+        {
+          "name": "content-save-atomic-audit",
+          "kind": "mutation",
+          "routeTemplate": "/api/admin/content/:id",
+          "method": "PATCH",
+          "cold": {
+            "durationMs": 141.87290000000212,
+            "status": 200,
+            "decodedBytes": 2593,
+            "gzipBytes": 720
+          },
+          "coldDefinition": "First observed request; does not assert cleared server or database caches",
+          "warmSamples": [
+            {
+              "durationMs": 138.56749999999738,
+              "status": 200,
+              "decodedBytes": 2592,
+              "gzipBytes": 723
+            },
+            {
+              "durationMs": 105.90270000000237,
+              "status": 200,
+              "decodedBytes": 2592,
+              "gzipBytes": 723
+            },
+            {
+              "durationMs": 110.47990000000209,
+              "status": 200,
+              "decodedBytes": 2593,
+              "gzipBytes": 724
+            },
+            {
+              "durationMs": 92.994200000001,
+              "status": 200,
+              "decodedBytes": 2593,
+              "gzipBytes": 724
+            },
+            {
+              "durationMs": 122.74789999999848,
+              "status": 200,
+              "decodedBytes": 2593,
+              "gzipBytes": 723
+            },
+            {
+              "durationMs": 137.0676999999996,
+              "status": 200,
+              "decodedBytes": 2593,
+              "gzipBytes": 723
+            },
+            {
+              "durationMs": 115.74800000000323,
+              "status": 200,
+              "decodedBytes": 2593,
+              "gzipBytes": 723
+            },
+            {
+              "durationMs": 90.87879999999859,
+              "status": 200,
+              "decodedBytes": 2593,
+              "gzipBytes": 724
+            },
+            {
+              "durationMs": 108.8582000000024,
+              "status": 200,
+              "decodedBytes": 2594,
+              "gzipBytes": 724
+            },
+            {
+              "durationMs": 97.10649999999805,
+              "status": 200,
+              "decodedBytes": 2595,
+              "gzipBytes": 725
+            },
+            {
+              "durationMs": 80.9971000000005,
+              "status": 200,
+              "decodedBytes": 2595,
+              "gzipBytes": 725
+            },
+            {
+              "durationMs": 104.48180000000139,
+              "status": 200,
+              "decodedBytes": 2595,
+              "gzipBytes": 724
+            },
+            {
+              "durationMs": 123.78849999999875,
+              "status": 200,
+              "decodedBytes": 2595,
+              "gzipBytes": 725
+            },
+            {
+              "durationMs": 113.53229999999894,
+              "status": 200,
+              "decodedBytes": 2595,
+              "gzipBytes": 725
+            },
+            {
+              "durationMs": 109.93009999999776,
+              "status": 200,
+              "decodedBytes": 2595,
+              "gzipBytes": 726
+            },
+            {
+              "durationMs": 122.78789999999935,
+              "status": 200,
+              "decodedBytes": 2595,
+              "gzipBytes": 726
+            },
+            {
+              "durationMs": 219.89680000000226,
+              "status": 200,
+              "decodedBytes": 2595,
+              "gzipBytes": 725
+            },
+            {
+              "durationMs": 313.83820000000196,
+              "status": 200,
+              "decodedBytes": 2595,
+              "gzipBytes": 724
+            },
+            {
+              "durationMs": 154.7428,
+              "status": 200,
+              "decodedBytes": 2595,
+              "gzipBytes": 725
+            },
+            {
+              "durationMs": 107.48990000000049,
+              "status": 200,
+              "decodedBytes": 2595,
+              "gzipBytes": 724
+            },
+            {
+              "durationMs": 131.98459999999977,
+              "status": 200,
+              "decodedBytes": 2595,
+              "gzipBytes": 725
+            },
+            {
+              "durationMs": 203.65230000000156,
+              "status": 200,
+              "decodedBytes": 2595,
+              "gzipBytes": 725
+            },
+            {
+              "durationMs": 107.67710000000079,
+              "status": 200,
+              "decodedBytes": 2595,
+              "gzipBytes": 725
+            },
+            {
+              "durationMs": 110.25309999999808,
+              "status": 200,
+              "decodedBytes": 2592,
+              "gzipBytes": 723
+            },
+            {
+              "durationMs": 103.95060000000012,
+              "status": 200,
+              "decodedBytes": 2594,
+              "gzipBytes": 725
+            },
+            {
+              "durationMs": 122.37299999999959,
+              "status": 200,
+              "decodedBytes": 2595,
+              "gzipBytes": 726
+            },
+            {
+              "durationMs": 202.22099999999773,
+              "status": 200,
+              "decodedBytes": 2595,
+              "gzipBytes": 726
+            },
+            {
+              "durationMs": 220.2914000000019,
+              "status": 200,
+              "decodedBytes": 2595,
+              "gzipBytes": 725
+            },
+            {
+              "durationMs": 90.24309999999969,
+              "status": 200,
+              "decodedBytes": 2595,
+              "gzipBytes": 725
+            },
+            {
+              "durationMs": 187.01210000000356,
+              "status": 200,
+              "decodedBytes": 2595,
+              "gzipBytes": 723
+            }
+          ],
+          "p50Ms": 113.53229999999894,
+          "p95Ms": 220.2914000000019,
+          "targetMs": 1000,
+          "targetMet": true,
+          "maxGzipBytes": 726,
+          "gzipDefinition": "Local gzip of decoded response, not observed wire transfer",
+          "queryCount": null,
+          "sqlExplain": null,
+          "observedDatabaseStatementCalls": 409,
+          "queryCountDefinition": "pg_stat_statements call delta for31 HTTP requests; includes authentication and possible local background work, not an exact per-request trace"
+        }
+      ],
+      "sqlPlans": {
+        "crm": {
+          "QUERY PLAN": [
+            {
+              "Plan": {
+                "Node Type": "Result",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Startup Cost": 0,
+                "Total Cost": 0.26,
+                "Plan Rows": 1,
+                "Plan Width": 32,
+                "Actual Startup Time": 12.471,
+                "Actual Total Time": 12.471,
+                "Actual Rows": 1,
+                "Actual Loops": 1,
+                "Shared Hit Blocks": 1970,
+                "Shared Read Blocks": 0,
+                "Shared Dirtied Blocks": 0,
+                "Shared Written Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Dirtied Blocks": 0,
+                "Local Written Blocks": 0,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0
+              },
+              "Planning": {
+                "Shared Hit Blocks": 0,
+                "Shared Read Blocks": 0,
+                "Shared Dirtied Blocks": 0,
+                "Shared Written Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Dirtied Blocks": 0,
+                "Local Written Blocks": 0,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0
+              },
+              "Planning Time": 0.037,
+              "Triggers": [],
+              "Execution Time": 12.503
+            }
+          ]
+        },
+        "cms": {
+          "QUERY PLAN": [
+            {
+              "Plan": {
+                "Node Type": "Result",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Startup Cost": 0,
+                "Total Cost": 0.26,
+                "Plan Rows": 1,
+                "Plan Width": 32,
+                "Actual Startup Time": 7.902,
+                "Actual Total Time": 7.902,
+                "Actual Rows": 1,
+                "Actual Loops": 1,
+                "Shared Hit Blocks": 997,
+                "Shared Read Blocks": 0,
+                "Shared Dirtied Blocks": 0,
+                "Shared Written Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Dirtied Blocks": 0,
+                "Local Written Blocks": 0,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0
+              },
+              "Planning": {
+                "Shared Hit Blocks": 0,
+                "Shared Read Blocks": 0,
+                "Shared Dirtied Blocks": 0,
+                "Shared Written Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Dirtied Blocks": 0,
+                "Local Written Blocks": 0,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0
+              },
+              "Planning Time": 0.023,
+              "Triggers": [],
+              "Execution Time": 7.927
+            }
+          ]
+        }
+      }
+    },
+    {
+      "supporterCount": 10000,
+      "contentCount": 10000,
+      "donationsPerSupporter": 3,
+      "updatesPerContent": 3,
+      "scenarios": [
+        {
+          "name": "supporter-list-first-50",
+          "kind": "list",
+          "routeTemplate": "/api/admin/supporters",
+          "method": "GET",
+          "cold": {
+            "durationMs": 272.3935999999958,
+            "status": 200,
+            "decodedBytes": 24672,
+            "gzipBytes": 1912
+          },
+          "coldDefinition": "First observed request; does not assert cleared server or database caches",
+          "warmSamples": [
+            {
+              "durationMs": 212.1521999999968,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 163.72639999999956,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 199.95520000000397,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 193.52380000000267,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 143.4276000000027,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 121.02729999999428,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 99.14170000000013,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 108.5289000000048,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 120.23709999999846,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 108.21499999999651,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 92.62659999999596,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 115.69630000000325,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 97.42009999999573,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 103.05109999999695,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 110.56880000000092,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 86.1498999999967,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 113.31710000000021,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 125.29099999999744,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 90.86579999999958,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 92.32260000000679,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 82.14910000000236,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 88.76720000000205,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 98.46149999999761,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 87.64769999999407,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 108.66040000000066,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 102.23229999999603,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 102.26019999999698,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 102.68970000000263,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 337.5369000000064,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            },
+            {
+              "durationMs": 253.94640000000072,
+              "status": 200,
+              "decodedBytes": 24672,
+              "gzipBytes": 1912
+            }
+          ],
+          "p50Ms": 108.21499999999651,
+          "p95Ms": 253.94640000000072,
+          "targetMs": 750,
+          "targetMet": true,
+          "maxGzipBytes": 1912,
+          "gzipDefinition": "Local gzip of decoded response, not observed wire transfer",
+          "queryCount": null,
+          "sqlExplain": null,
+          "observedDatabaseStatementCalls": 280,
+          "queryCountDefinition": "pg_stat_statements call delta for31 HTTP requests; includes authentication and possible local background work, not an exact per-request trace"
+        },
+        {
+          "name": "supporter-detail",
+          "kind": "detail",
+          "routeTemplate": "/api/admin/supporters/:id",
+          "method": "GET",
+          "cold": {
+            "durationMs": 344.8027000000002,
+            "status": 200,
+            "decodedBytes": 2756,
+            "gzipBytes": 757
+          },
+          "coldDefinition": "First observed request; does not assert cleared server or database caches",
+          "warmSamples": [
+            {
+              "durationMs": 278.08320000000094,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 349.97759999999835,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 240.66399999999703,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 186.89199999999983,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 184.19979999999487,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 214.1284999999989,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 249.25559999999678,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 277.9225000000006,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 224.6669000000038,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 171.56150000000343,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 249.82489999999962,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 321.07210000000487,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 205.0688999999984,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 174.11049999999523,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 199.60610000000452,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 179.9702000000034,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 200.9146000000037,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 169.97060000000056,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 244.79650000000402,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 242.02870000000257,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 538.3614999999991,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 677.9818000000014,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 430.05970000000525,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 302.3367999999973,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 185.6172000000006,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 2679.353099999993,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 354.2056999999986,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 373.00270000000455,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 296.13469999999506,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            },
+            {
+              "durationMs": 213.27129999999306,
+              "status": 200,
+              "decodedBytes": 2756,
+              "gzipBytes": 757
+            }
+          ],
+          "p50Ms": 242.02870000000257,
+          "p95Ms": 677.9818000000014,
+          "targetMs": 750,
+          "targetMet": true,
+          "maxGzipBytes": 757,
+          "gzipDefinition": "Local gzip of decoded response, not observed wire transfer",
+          "queryCount": null,
+          "sqlExplain": null,
+          "observedDatabaseStatementCalls": 1025,
+          "queryCountDefinition": "pg_stat_statements call delta for31 HTTP requests; includes authentication and possible local background work, not an exact per-request trace"
+        },
+        {
+          "name": "content-list-first-50",
+          "kind": "list",
+          "routeTemplate": "/api/admin/content",
+          "method": "GET",
+          "cold": {
+            "durationMs": 147.55539999999746,
+            "status": 200,
+            "decodedBytes": 59161,
+            "gzipBytes": 4010
+          },
+          "coldDefinition": "First observed request; does not assert cleared server or database caches",
+          "warmSamples": [
+            {
+              "durationMs": 111.76230000000214,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 116.50990000000456,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 96.63770000000659,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 105.01590000000579,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 89.6218000000008,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 94.37280000000464,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 116.48829999999725,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 170.9693999999945,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 103.45620000000054,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 114.5448000000033,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 147.5269000000044,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 115.25510000000213,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 117.04530000000523,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 119.36150000000634,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 83.49910000000091,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 424.0168000000049,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 196.4377999999997,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 144.24079999999958,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 198.17869999999675,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 114.43059999999969,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 132.0587000000014,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 163.73760000000038,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 149.60190000000148,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 125.52210000000196,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 109.7748999999967,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 95.50690000000031,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 101.78249999999389,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 107.18440000000555,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 89.58559999999852,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            },
+            {
+              "durationMs": 94.54069999999774,
+              "status": 200,
+              "decodedBytes": 59161,
+              "gzipBytes": 4010
+            }
+          ],
+          "p50Ms": 114.5448000000033,
+          "p95Ms": 198.17869999999675,
+          "targetMs": 750,
+          "targetMet": true,
+          "maxGzipBytes": 4010,
+          "gzipDefinition": "Local gzip of decoded response, not observed wire transfer",
+          "queryCount": null,
+          "sqlExplain": null,
+          "observedDatabaseStatementCalls": 280,
+          "queryCountDefinition": "pg_stat_statements call delta for31 HTTP requests; includes authentication and possible local background work, not an exact per-request trace"
+        },
+        {
+          "name": "content-detail",
+          "kind": "detail",
+          "routeTemplate": "/api/admin/content/:id",
+          "method": "GET",
+          "cold": {
+            "durationMs": 98.66859999999724,
+            "status": 200,
+            "decodedBytes": 2584,
+            "gzipBytes": 688
+          },
+          "coldDefinition": "First observed request; does not assert cleared server or database caches",
+          "warmSamples": [
+            {
+              "durationMs": 91.71680000000197,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 91.89400000000023,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 92.96770000000106,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 97.49790000000212,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 95.26370000000315,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 92.2068999999974,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 93.63810000000376,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 77.85030000000552,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 139.8932999999961,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 128.9849000000031,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 111.46899999999732,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 96.89229999999952,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 94.95889999999781,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 87.588800000005,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 105.75669999999809,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 106.17710000000079,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 93.48450000000594,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 95.229499999994,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 93.96429999999964,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 279.1603999999934,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 329.23139999999694,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 110.4343000000008,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 173.54559999999765,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 99.67459999999846,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 121.49139999999898,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 102.48020000000542,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 110.8686000000016,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 125.5622000000003,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 108.1675000000032,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            },
+            {
+              "durationMs": 93.52480000000651,
+              "status": 200,
+              "decodedBytes": 2584,
+              "gzipBytes": 688
+            }
+          ],
+          "p50Ms": 97.49790000000212,
+          "p95Ms": 279.1603999999934,
+          "targetMs": 750,
+          "targetMet": true,
+          "maxGzipBytes": 688,
+          "gzipDefinition": "Local gzip of decoded response, not observed wire transfer",
+          "queryCount": null,
+          "sqlExplain": null,
+          "observedDatabaseStatementCalls": 342,
+          "queryCountDefinition": "pg_stat_statements call delta for31 HTTP requests; includes authentication and possible local background work, not an exact per-request trace"
+        },
+        {
+          "name": "content-save-atomic-audit",
+          "kind": "mutation",
+          "routeTemplate": "/api/admin/content/:id",
+          "method": "PATCH",
+          "cold": {
+            "durationMs": 117.39689999999973,
+            "status": 200,
+            "decodedBytes": 2621,
+            "gzipBytes": 727
+          },
+          "coldDefinition": "First observed request; does not assert cleared server or database caches",
+          "warmSamples": [
+            {
+              "durationMs": 110.09189999999944,
+              "status": 200,
+              "decodedBytes": 2621,
+              "gzipBytes": 725
+            },
+            {
+              "durationMs": 130.69700000000012,
+              "status": 200,
+              "decodedBytes": 2621,
+              "gzipBytes": 725
+            },
+            {
+              "durationMs": 207.81780000000435,
+              "status": 200,
+              "decodedBytes": 2621,
+              "gzipBytes": 726
+            },
+            {
+              "durationMs": 185.65670000000682,
+              "status": 200,
+              "decodedBytes": 2621,
+              "gzipBytes": 728
+            },
+            {
+              "durationMs": 168.61030000000028,
+              "status": 200,
+              "decodedBytes": 2621,
+              "gzipBytes": 725
+            },
+            {
+              "durationMs": 150.05489999999554,
+              "status": 200,
+              "decodedBytes": 2621,
+              "gzipBytes": 727
+            },
+            {
+              "durationMs": 109.6169000000009,
+              "status": 200,
+              "decodedBytes": 2621,
+              "gzipBytes": 728
+            },
+            {
+              "durationMs": 179.23450000000594,
+              "status": 200,
+              "decodedBytes": 2621,
+              "gzipBytes": 728
+            },
+            {
+              "durationMs": 137.62099999999919,
+              "status": 200,
+              "decodedBytes": 2622,
+              "gzipBytes": 726
+            },
+            {
+              "durationMs": 130.40729999999894,
+              "status": 200,
+              "decodedBytes": 2622,
+              "gzipBytes": 728
+            },
+            {
+              "durationMs": 93.41510000000562,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 725
+            },
+            {
+              "durationMs": 111.32140000000072,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 727
+            },
+            {
+              "durationMs": 142.67459999999846,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 727
+            },
+            {
+              "durationMs": 108.05939999999828,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 726
+            },
+            {
+              "durationMs": 124.60030000000552,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 727
+            },
+            {
+              "durationMs": 114.05710000000545,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 727
+            },
+            {
+              "durationMs": 123.81470000000263,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 726
+            },
+            {
+              "durationMs": 108.32800000000134,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 727
+            },
+            {
+              "durationMs": 108.28070000000298,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 730
+            },
+            {
+              "durationMs": 127.51239999999962,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 725
+            },
+            {
+              "durationMs": 110.98019999999815,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 729
+            },
+            {
+              "durationMs": 164.8614000000016,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 729
+            },
+            {
+              "durationMs": 106.56690000000526,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 731
+            },
+            {
+              "durationMs": 121.17029999999795,
+              "status": 200,
+              "decodedBytes": 2622,
+              "gzipBytes": 729
+            },
+            {
+              "durationMs": 118.15409999999974,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 725
+            },
+            {
+              "durationMs": 133.51079999999638,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 727
+            },
+            {
+              "durationMs": 146.39510000000155,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 730
+            },
+            {
+              "durationMs": 121.54110000000219,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 727
+            },
+            {
+              "durationMs": 349.497000000003,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 729
+            },
+            {
+              "durationMs": 135.93509999999515,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 725
+            }
+          ],
+          "p50Ms": 124.60030000000552,
+          "p95Ms": 207.81780000000435,
+          "targetMs": 1000,
+          "targetMet": true,
+          "maxGzipBytes": 731,
+          "gzipDefinition": "Local gzip of decoded response, not observed wire transfer",
+          "queryCount": null,
+          "sqlExplain": null,
+          "observedDatabaseStatementCalls": 404,
+          "queryCountDefinition": "pg_stat_statements call delta for31 HTTP requests; includes authentication and possible local background work, not an exact per-request trace"
+        }
+      ],
+      "sqlPlans": {
+        "crm": {
+          "QUERY PLAN": [
+            {
+              "Plan": {
+                "Node Type": "Result",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Startup Cost": 0,
+                "Total Cost": 0.26,
+                "Plan Rows": 1,
+                "Plan Width": 32,
+                "Actual Startup Time": 94.147,
+                "Actual Total Time": 94.148,
+                "Actual Rows": 1,
+                "Actual Loops": 1,
+                "Shared Hit Blocks": 2396,
+                "Shared Read Blocks": 8,
+                "Shared Dirtied Blocks": 0,
+                "Shared Written Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Dirtied Blocks": 0,
+                "Local Written Blocks": 0,
+                "Temp Read Blocks": 354,
+                "Temp Written Blocks": 354
+              },
+              "Planning": {
+                "Shared Hit Blocks": 0,
+                "Shared Read Blocks": 0,
+                "Shared Dirtied Blocks": 0,
+                "Shared Written Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Dirtied Blocks": 0,
+                "Local Written Blocks": 0,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0
+              },
+              "Planning Time": 0.027,
+              "Triggers": [],
+              "Execution Time": 94.178
+            }
+          ]
+        },
+        "cms": {
+          "QUERY PLAN": [
+            {
+              "Plan": {
+                "Node Type": "Result",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Startup Cost": 0,
+                "Total Cost": 0.26,
+                "Plan Rows": 1,
+                "Plan Width": 32,
+                "Actual Startup Time": 37.501,
+                "Actual Total Time": 37.502,
+                "Actual Rows": 1,
+                "Actual Loops": 1,
+                "Shared Hit Blocks": 1500,
+                "Shared Read Blocks": 3,
+                "Shared Dirtied Blocks": 0,
+                "Shared Written Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Dirtied Blocks": 0,
+                "Local Written Blocks": 0,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0
+              },
+              "Planning": {
+                "Shared Hit Blocks": 0,
+                "Shared Read Blocks": 0,
+                "Shared Dirtied Blocks": 0,
+                "Shared Written Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Dirtied Blocks": 0,
+                "Local Written Blocks": 0,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0
+              },
+              "Planning Time": 0.025,
+              "Triggers": [],
+              "Execution Time": 37.527
+            }
+          ]
+        }
+      }
+    },
+    {
+      "supporterCount": 50000,
+      "contentCount": 50000,
+      "donationsPerSupporter": 3,
+      "updatesPerContent": 3,
+      "scenarios": [
+        {
+          "name": "supporter-list-first-50",
+          "kind": "list",
+          "routeTemplate": "/api/admin/supporters",
+          "method": "GET",
+          "cold": {
+            "durationMs": 276.2485999999917,
+            "status": 200,
+            "decodedBytes": 24764,
+            "gzipBytes": 1904
+          },
+          "coldDefinition": "First observed request; does not assert cleared server or database caches",
+          "warmSamples": [
+            {
+              "durationMs": 304.697800000009,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 215.19530000000668,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 315.071100000001,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 561.4504999999917,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 272.4759999999951,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 206.33879999999772,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 272.1503999999986,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 207.6009000000049,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 173.25440000000526,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 162.05809999999474,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 323.8671000000031,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 203.86540000000969,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 230.2514999999985,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 229.5957000000053,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 207.95900000000256,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 262.7693999999901,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 522.7896000000037,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 1046.2144000000117,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 519.7221000000136,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 384.4956999999995,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 371.3295999999973,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 274.20269999999437,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 215.96540000000095,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 221.9262000000017,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 208.84649999999965,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 216.00890000000072,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 239.8753999999899,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 217.4137000000046,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 161.6125999999931,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            },
+            {
+              "durationMs": 167.5569000000105,
+              "status": 200,
+              "decodedBytes": 24764,
+              "gzipBytes": 1904
+            }
+          ],
+          "p50Ms": 229.5957000000053,
+          "p95Ms": 561.4504999999917,
+          "targetMs": 750,
+          "targetMet": true,
+          "maxGzipBytes": 1904,
+          "gzipDefinition": "Local gzip of decoded response, not observed wire transfer",
+          "queryCount": null,
+          "sqlExplain": null,
+          "observedDatabaseStatementCalls": 301,
+          "queryCountDefinition": "pg_stat_statements call delta for31 HTTP requests; includes authentication and possible local background work, not an exact per-request trace"
+        },
+        {
+          "name": "supporter-detail",
+          "kind": "detail",
+          "routeTemplate": "/api/admin/supporters/:id",
+          "method": "GET",
+          "cold": {
+            "durationMs": 160.4143999999942,
+            "status": 200,
+            "decodedBytes": 2758,
+            "gzipBytes": 761
+          },
+          "coldDefinition": "First observed request; does not assert cleared server or database caches",
+          "warmSamples": [
+            {
+              "durationMs": 177.6472000000067,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 171.83899999999267,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 165.59219999999914,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 171.0911000000051,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 193.68619999999646,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 217.99289999999746,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 166.07859999999346,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 332.10689999999886,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 516.8044999999984,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 201.10050000000047,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 305.5673000000097,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 250.25440000000526,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 227.10619999999471,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 167.67410000000382,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 187.11040000000503,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 154.43499999999767,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 217.8738999999914,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 155.4091999999946,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 203.88200000001234,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 215.74199999999837,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 195.1247999999905,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 230.189200000008,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 186.6588000000047,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 198.46600000000035,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 193.35540000000037,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 171.57660000000033,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 422.7871000000014,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 1055.135300000009,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 378.1345000000001,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            },
+            {
+              "durationMs": 257.7036999999982,
+              "status": 200,
+              "decodedBytes": 2758,
+              "gzipBytes": 761
+            }
+          ],
+          "p50Ms": 198.46600000000035,
+          "p95Ms": 516.8044999999984,
+          "targetMs": 750,
+          "targetMet": true,
+          "maxGzipBytes": 761,
+          "gzipDefinition": "Local gzip of decoded response, not observed wire transfer",
+          "queryCount": null,
+          "sqlExplain": null,
+          "observedDatabaseStatementCalls": 1024,
+          "queryCountDefinition": "pg_stat_statements call delta for31 HTTP requests; includes authentication and possible local background work, not an exact per-request trace"
+        },
+        {
+          "name": "content-list-first-50",
+          "kind": "list",
+          "routeTemplate": "/api/admin/content",
+          "method": "GET",
+          "cold": {
+            "durationMs": 276.3889999999956,
+            "status": 200,
+            "decodedBytes": 59261,
+            "gzipBytes": 4015
+          },
+          "coldDefinition": "First observed request; does not assert cleared server or database caches",
+          "warmSamples": [
+            {
+              "durationMs": 278.8289999999979,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 301.15290000000095,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 231.04359999998996,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 216.00070000000414,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 205.31230000000505,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 657.0461000000068,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 447.5826000000088,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 366.0936999999976,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 422.4915000000037,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 587.9412000000011,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 491.6174000000028,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 206.6597000000038,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 235.0414000000019,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 294.93919999999343,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 276.4780000000028,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 327.2189000000071,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 212.67009999998845,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 182.0127000000066,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 165.11549999999988,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 162.9198999999935,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 163.59960000000137,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 233.0124000000069,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 482.2265999999945,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 461.64730000001146,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 297.4238999999943,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 184.04000000000815,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 399.9056000000128,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 968.7897999999986,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 641.5023999999976,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            },
+            {
+              "durationMs": 365.3435000000027,
+              "status": 200,
+              "decodedBytes": 59261,
+              "gzipBytes": 4015
+            }
+          ],
+          "p50Ms": 294.93919999999343,
+          "p95Ms": 657.0461000000068,
+          "targetMs": 750,
+          "targetMet": true,
+          "maxGzipBytes": 4015,
+          "gzipDefinition": "Local gzip of decoded response, not observed wire transfer",
+          "queryCount": null,
+          "sqlExplain": null,
+          "observedDatabaseStatementCalls": 280,
+          "queryCountDefinition": "pg_stat_statements call delta for31 HTTP requests; includes authentication and possible local background work, not an exact per-request trace"
+        },
+        {
+          "name": "content-detail",
+          "kind": "detail",
+          "routeTemplate": "/api/admin/content/:id",
+          "method": "GET",
+          "cold": {
+            "durationMs": 146.5155999999988,
+            "status": 200,
+            "decodedBytes": 2586,
+            "gzipBytes": 693
+          },
+          "coldDefinition": "First observed request; does not assert cleared server or database caches",
+          "warmSamples": [
+            {
+              "durationMs": 126.57420000000275,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 148.96789999998873,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 153.64749999999185,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 87.66079999999783,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 102.42489999999816,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 113.37860000001092,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 117.64599999999336,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 105.14330000001064,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 125.27579999998852,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 121.8518999999942,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 843.3744999999908,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 226.14939999999478,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 108.02169999999751,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 92.8070999999909,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 90.15030000000843,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 120.94419999999809,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 124.80130000000645,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 137.03519999999844,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 97.82719999999972,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 141.25160000000324,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 137.90140000000247,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 108.75530000000435,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 81.5731999999989,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 105.85999999998603,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 95.25189999998838,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 135.38899999999558,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 95.12489999999525,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 113.04170000000158,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 100.9999000000098,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            },
+            {
+              "durationMs": 81.85329999998794,
+              "status": 200,
+              "decodedBytes": 2586,
+              "gzipBytes": 693
+            }
+          ],
+          "p50Ms": 113.04170000000158,
+          "p95Ms": 226.14939999999478,
+          "targetMs": 750,
+          "targetMet": true,
+          "maxGzipBytes": 693,
+          "gzipDefinition": "Local gzip of decoded response, not observed wire transfer",
+          "queryCount": null,
+          "sqlExplain": null,
+          "observedDatabaseStatementCalls": 342,
+          "queryCountDefinition": "pg_stat_statements call delta for31 HTTP requests; includes authentication and possible local background work, not an exact per-request trace"
+        },
+        {
+          "name": "content-save-atomic-audit",
+          "kind": "mutation",
+          "routeTemplate": "/api/admin/content/:id",
+          "method": "PATCH",
+          "cold": {
+            "durationMs": 134.2488999999914,
+            "status": 200,
+            "decodedBytes": 2623,
+            "gzipBytes": 728
+          },
+          "coldDefinition": "First observed request; does not assert cleared server or database caches",
+          "warmSamples": [
+            {
+              "durationMs": 120.8290999999881,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 729
+            },
+            {
+              "durationMs": 110.16600000001199,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 730
+            },
+            {
+              "durationMs": 363.20230000000447,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 729
+            },
+            {
+              "durationMs": 270.2103000000061,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 729
+            },
+            {
+              "durationMs": 155.79619999999704,
+              "status": 200,
+              "decodedBytes": 2622,
+              "gzipBytes": 727
+            },
+            {
+              "durationMs": 162.5332000000053,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 731
+            },
+            {
+              "durationMs": 101.36799999998766,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 729
+            },
+            {
+              "durationMs": 111.10319999999774,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 729
+            },
+            {
+              "durationMs": 96.87039999999979,
+              "status": 200,
+              "decodedBytes": 2624,
+              "gzipBytes": 730
+            },
+            {
+              "durationMs": 485.9456999999966,
+              "status": 200,
+              "decodedBytes": 2625,
+              "gzipBytes": 731
+            },
+            {
+              "durationMs": 205.23659999998927,
+              "status": 200,
+              "decodedBytes": 2625,
+              "gzipBytes": 729
+            },
+            {
+              "durationMs": 104.9936000000016,
+              "status": 200,
+              "decodedBytes": 2625,
+              "gzipBytes": 731
+            },
+            {
+              "durationMs": 110.16240000000107,
+              "status": 200,
+              "decodedBytes": 2625,
+              "gzipBytes": 729
+            },
+            {
+              "durationMs": 114.12820000000647,
+              "status": 200,
+              "decodedBytes": 2625,
+              "gzipBytes": 730
+            },
+            {
+              "durationMs": 126.76170000000275,
+              "status": 200,
+              "decodedBytes": 2625,
+              "gzipBytes": 730
+            },
+            {
+              "durationMs": 122.48619999999937,
+              "status": 200,
+              "decodedBytes": 2625,
+              "gzipBytes": 730
+            },
+            {
+              "durationMs": 117.95279999999912,
+              "status": 200,
+              "decodedBytes": 2625,
+              "gzipBytes": 730
+            },
+            {
+              "durationMs": 107.96199999999953,
+              "status": 200,
+              "decodedBytes": 2625,
+              "gzipBytes": 730
+            },
+            {
+              "durationMs": 121.73480000000563,
+              "status": 200,
+              "decodedBytes": 2625,
+              "gzipBytes": 729
+            },
+            {
+              "durationMs": 143.52069999999367,
+              "status": 200,
+              "decodedBytes": 2625,
+              "gzipBytes": 729
+            },
+            {
+              "durationMs": 111.87319999998726,
+              "status": 200,
+              "decodedBytes": 2625,
+              "gzipBytes": 729
+            },
+            {
+              "durationMs": 180.85620000000927,
+              "status": 200,
+              "decodedBytes": 2625,
+              "gzipBytes": 730
+            },
+            {
+              "durationMs": 114.74589999999444,
+              "status": 200,
+              "decodedBytes": 2625,
+              "gzipBytes": 731
+            },
+            {
+              "durationMs": 173.40679999999702,
+              "status": 200,
+              "decodedBytes": 2625,
+              "gzipBytes": 729
+            },
+            {
+              "durationMs": 122.12329999999201,
+              "status": 200,
+              "decodedBytes": 2625,
+              "gzipBytes": 730
+            },
+            {
+              "durationMs": 114.79099999999744,
+              "status": 200,
+              "decodedBytes": 2625,
+              "gzipBytes": 731
+            },
+            {
+              "durationMs": 319.51239999999234,
+              "status": 200,
+              "decodedBytes": 2625,
+              "gzipBytes": 730
+            },
+            {
+              "durationMs": 289.7140000000072,
+              "status": 200,
+              "decodedBytes": 2625,
+              "gzipBytes": 732
+            },
+            {
+              "durationMs": 125.70579999999609,
+              "status": 200,
+              "decodedBytes": 2623,
+              "gzipBytes": 729
+            },
+            {
+              "durationMs": 111.77529999999388,
+              "status": 200,
+              "decodedBytes": 2625,
+              "gzipBytes": 732
+            }
+          ],
+          "p50Ms": 121.73480000000563,
+          "p95Ms": 363.20230000000447,
+          "targetMs": 1000,
+          "targetMet": true,
+          "maxGzipBytes": 732,
+          "gzipDefinition": "Local gzip of decoded response, not observed wire transfer",
+          "queryCount": null,
+          "sqlExplain": null,
+          "observedDatabaseStatementCalls": 409,
+          "queryCountDefinition": "pg_stat_statements call delta for31 HTTP requests; includes authentication and possible local background work, not an exact per-request trace"
+        }
+      ],
+      "sqlPlans": {
+        "crm": {
+          "QUERY PLAN": [
+            {
+              "Plan": {
+                "Node Type": "Result",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Startup Cost": 0,
+                "Total Cost": 0.26,
+                "Plan Rows": 1,
+                "Plan Width": 32,
+                "Actual Startup Time": 196.089,
+                "Actual Total Time": 196.09,
+                "Actual Rows": 1,
+                "Actual Loops": 1,
+                "Shared Hit Blocks": 4566,
+                "Shared Read Blocks": 0,
+                "Shared Dirtied Blocks": 0,
+                "Shared Written Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Dirtied Blocks": 0,
+                "Local Written Blocks": 0,
+                "Temp Read Blocks": 1771,
+                "Temp Written Blocks": 1771
+              },
+              "Planning": {
+                "Shared Hit Blocks": 0,
+                "Shared Read Blocks": 0,
+                "Shared Dirtied Blocks": 0,
+                "Shared Written Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Dirtied Blocks": 0,
+                "Local Written Blocks": 0,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0
+              },
+              "Planning Time": 0.024,
+              "Triggers": [],
+              "Execution Time": 196.124
+            }
+          ]
+        },
+        "cms": {
+          "QUERY PLAN": [
+            {
+              "Plan": {
+                "Node Type": "Result",
+                "Parallel Aware": false,
+                "Async Capable": false,
+                "Startup Cost": 0,
+                "Total Cost": 0.26,
+                "Plan Rows": 1,
+                "Plan Width": 32,
+                "Actual Startup Time": 175.691,
+                "Actual Total Time": 175.693,
+                "Actual Rows": 1,
+                "Actual Loops": 1,
+                "Shared Hit Blocks": 3746,
+                "Shared Read Blocks": 0,
+                "Shared Dirtied Blocks": 0,
+                "Shared Written Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Dirtied Blocks": 0,
+                "Local Written Blocks": 0,
+                "Temp Read Blocks": 1306,
+                "Temp Written Blocks": 1306
+              },
+              "Planning": {
+                "Shared Hit Blocks": 0,
+                "Shared Read Blocks": 0,
+                "Shared Dirtied Blocks": 0,
+                "Shared Written Blocks": 0,
+                "Local Hit Blocks": 0,
+                "Local Read Blocks": 0,
+                "Local Dirtied Blocks": 0,
+                "Local Written Blocks": 0,
+                "Temp Read Blocks": 0,
+                "Temp Written Blocks": 0
+              },
+              "Planning Time": 0.028,
+              "Triggers": [],
+              "Execution Time": 175.754
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "status": "complete",
+  "completedAt": "2026-09-05T19:08:08.209Z"
+}

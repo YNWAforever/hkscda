@@ -37,7 +37,12 @@ function createService(overrides: Record<string, unknown> = {}) {
     },
     async createManualDonation() {
       calls.push("createManualDonation");
-      return { donationId: "donation-1", paymentId: "payment-1" };
+      return {
+        donationId: "donation-1",
+        paymentId: "payment-1",
+        deliveryJobId: null,
+        replayed: false,
+      };
     },
     async exportSupporters() {
       calls.push("exportSupporters");

@@ -1,0 +1,33 @@
+{
+  "results": [
+    {
+      "scenario": "drawer-escape",
+      "inert": false,
+      "overflow": "",
+      "focus": "開啟選單"
+    },
+    {
+      "scenario": "drawer-desktop-breakpoint",
+      "inert": false,
+      "overflow": "",
+      "focus": "香港拯救貓狗協會首頁"
+    },
+    {
+      "scenario": "drawer-submenu",
+      "inert": false,
+      "overflow": "",
+      "focus": "開啟選單"
+    },
+    {
+      "scenario": "drawer-history-back",
+      "inert": false,
+      "overflow": "",
+      "focus": "開啟選單"
+    },
+    {
+      "scenario": "help-SPA-language-widget-before-and-after",
+      "answers": 2
+    }
+  ],
+  "errors": []
+}

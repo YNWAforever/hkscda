@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { fetchAdminJson } from "../../../lib/admin/http";
 import { Clock, Eye, EyeOff } from "lucide-react";
 
 import type { StoryUpdate } from "../../../lib/content/types";
@@ -56,11 +58,7 @@ export function ContentTimeline({
                 </span>
               </div>
               <h3 className="mt-2 text-base font-bold text-[var(--color-panel)]">{update.title}</h3>
-              {update.body ? (
-                <p className="mt-1 line-clamp-2 text-sm text-[var(--color-text-muted)]">
-                  {update.body}
-                </p>
-              ) : null}
+              <UpdateBody update={update} />
             </div>
             <div className="flex shrink-0 flex-col items-end gap-2 text-xs text-[var(--color-text-muted)]">
               <span className="inline-flex items-center gap-1">
@@ -87,4 +85,44 @@ export function ContentTimeline({
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("zh-HK", { dateStyle: "medium" }).format(new Date(value));
+}
+
+function UpdateBody({ update }: { update: StoryUpdate }) {
+  const [body, setBody] = useState(update.body);
+  const [loaded, setLoaded] = useState(update.bodyLoaded !== false);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState(false);
+  if (loaded)
+    return body ? (
+      <p className="mt-1 whitespace-pre-wrap text-sm text-[var(--color-text-muted)]">{body}</p>
+    ) : (
+      <p className="text-sm">沒有正文</p>
+    );
+  return (
+    <div>
+      <button
+        type="button"
+        disabled={pending}
+        onClick={async () => {
+          setPending(true);
+          setError(false);
+          try {
+            const data = await fetchAdminJson<{ body: string | null }>(
+              `/api/admin/content/${update.contentItemId}?updateId=${update.id}`,
+            );
+            setBody(data.body);
+            setLoaded(true);
+          } catch {
+            setError(true);
+          } finally {
+            setPending(false);
+          }
+        }}
+        className="mt-2 text-sm underline"
+      >
+        {pending ? "載入中" : "閱讀更新正文"}
+      </button>
+      {error ? <p role="alert">未能載入正文，請重試。</p> : null}
+    </div>
+  );
 }

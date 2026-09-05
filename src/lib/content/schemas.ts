@@ -141,6 +141,7 @@ export const contentMediaUploadTargetSchema = z.object({
   objectPath: contentMediaPathSchema,
   mimeType: z.enum(CONTENT_MEDIA_MIME_TYPES),
   byteSize: z.coerce.number().int().min(1).max(MAX_CONTENT_MEDIA_BYTES),
+  storyUpdateId: z.string().uuid().nullable().optional().default(null),
 });
 
 export const contentLinkInputSchema = z.object({

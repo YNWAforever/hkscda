@@ -1,0 +1,94 @@
+import { chromium } from "playwright";
+import fs from "node:fs/promises";
+const baseURL = "http://127.0.0.1:4173",
+  out = [];
+const browser = await chromium.launch();
+const state = (page) =>
+  page.evaluate(() => ({
+    path: location.pathname,
+    dialog: !!document.querySelector('#mobile-drawer[role="dialog"]'),
+    inert: !!document.querySelector("[data-site-content][inert]"),
+    overflow: document.body.style.overflow,
+    active:
+      document.activeElement?.getAttribute("aria-label") ||
+      document.activeElement?.textContent?.trim(),
+  }));
+async function open(page) {
+  const b = page.getByRole("button", { name: "開啟選單" });
+  await b.click();
+  await page.locator("#mobile-drawer").waitFor();
+  return b;
+}
+try {
+  {
+    const c = await browser.newContext({ viewport: { width: 390, height: 844 } }),
+      p = await c.newPage();
+    await p.goto(baseURL + "/", { waitUntil: "networkidle" });
+    await p.getByRole("button", { name: "開啟 HKSCDA 小幫手" }).click();
+    const before = await p.getByRole("dialog", { name: "HKSCDA 小幫手" }).isVisible();
+    await p.keyboard.press("Escape");
+    await p.getByRole("link", { name: "求助及常見問題" }).last().click();
+    await p.waitForURL("**/help");
+    await p.getByRole("button", { name: "English" }).click();
+    const english = (await p.locator("main").innerText()).includes("approved answers");
+    await p.getByRole("button", { name: "開啟 HKSCDA 小幫手" }).click();
+    const after = await p.getByRole("dialog", { name: "HKSCDA 小幫手" }).isVisible();
+    out.push({
+      scenario: "help-spa-language-widget",
+      before,
+      after,
+      english,
+      summary: await p
+        .locator("main p")
+        .filter({ hasText: /approved answers/ })
+        .first()
+        .textContent(),
+    });
+    await c.close();
+  }
+  {
+    const c = await browser.newContext({ viewport: { width: 390, height: 844 } }),
+      p = await c.newPage();
+    await p.goto(baseURL + "/", { waitUntil: "networkidle" });
+    const trigger = await open(p);
+    await p.keyboard.press("Escape");
+    await p.locator("#mobile-drawer").waitFor({ state: "detached" });
+    out.push({
+      scenario: "drawer-escape",
+      state: await state(p),
+      focus: await trigger.evaluate((e) => document.activeElement === e),
+    });
+    await open(p);
+    await p.locator("#mobile-drawer").getByRole("link", { name: "領養流程", exact: true }).click();
+    await p.waitForURL("**/adoption/instructions");
+    out.push({ scenario: "drawer-submenu", state: await state(p) });
+    await p.goto(baseURL + "/about");
+    await p.goto(baseURL + "/");
+    await open(p);
+    await p.goBack();
+    await p.waitForURL("**/about");
+    out.push({ scenario: "drawer-back", state: await state(p) });
+    await p.goto(baseURL + "/");
+    await open(p);
+    await p.setViewportSize({ width: 1440, height: 900 });
+    await p.waitForTimeout(300);
+    out.push({ scenario: "drawer-breakpoint", state: await state(p) });
+    await c.close();
+  }
+} finally {
+  await browser.close();
+}
+for (const r of out) {
+  if (
+    Object.values(r).some((v) => v === false) ||
+    r.state?.dialog ||
+    r.state?.inert ||
+    r.state?.overflow === "hidden"
+  )
+    throw new Error(JSON.stringify(r));
+}
+await fs.writeFile(
+  "docs/evidence/frontend-coverage/help-drawer-lifecycle.json",
+  JSON.stringify(out, null, 2) + "\n",
+);
+console.log(JSON.stringify(out, null, 2));

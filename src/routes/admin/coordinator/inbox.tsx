@@ -5,6 +5,7 @@ import { IntakeInbox } from "../../../components/admin/adoptions/IntakeInbox";
 import { requireAdminPageAccess } from "../../../lib/admin/pageAccess";
 
 export const Route = createFileRoute("/admin/coordinator/inbox")({
+  ssr: false,
   beforeLoad: async ({ context }) => {
     // manualIntake, matching the sibling /admin/coordinator/intake route: this
     // page reads /api/admin/adoptions/intake/items, which the server gates with

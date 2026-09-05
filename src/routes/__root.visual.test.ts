@@ -13,4 +13,9 @@ describe("public visual token boundary", () => {
       root.indexOf("<Header />"),
     );
   });
+
+  test("places the root not-found state inside the page main landmark", () => {
+    const root = readFileSync(join(process.cwd(), "src/routes/__root.tsx"), "utf8");
+    expect(root).toMatch(/function NotFoundComponent[\s\S]*return \(\s*<main>/);
+  });
 });

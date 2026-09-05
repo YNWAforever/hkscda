@@ -1,0 +1,2838 @@
+{
+  "description": "Raw local evidence retained on disk, excluded from Git; paths relative to docs/evidence. No private runtime or backup directories included.",
+  "codeCandidate": "1b9265fd6d570c72af3eb8c670e96d58c1007cd2",
+  "files": 566,
+  "totalBytes": 175430288.0,
+  "artifacts": [
+    {
+      "path": "baseline-build.log",
+      "bytes": 83591,
+      "sha256": "fb94cf6f77610d3af7c6d86eb4821767c0508f2d4877556a83906487dda527b8"
+    },
+    {
+      "path": "baseline-copy-focused.log",
+      "bytes": 364,
+      "sha256": "0a47d5207ccac140ab2de330a8a7a32914157e0ca73828a60a5715048fc3b9f9"
+    },
+    {
+      "path": "baseline-lint.log",
+      "bytes": 10000,
+      "sha256": "9530cd247d98cb3c4fc2be0c1417b819b0ef5896772dea6b7acb2dec7e5f8ea9"
+    },
+    {
+      "path": "baseline-tests-idle.log",
+      "bytes": 210081,
+      "sha256": "d23440b7a138c5f129fbc9ae403bc2e68e3598d29ceefb4ee8a3c0d858abf72b"
+    },
+    {
+      "path": "baseline-tests.log",
+      "bytes": 210528,
+      "sha256": "f6e06f93a87df54b039a336510add2ef5543d5ba92238e64efb7fe507ccffd62"
+    },
+    {
+      "path": "baseline-typecheck.log",
+      "bytes": 16,
+      "sha256": "5a3973f79ed9becd5f23c4feff467513814de7ea381d75a4d2e339aa8b8edca9"
+    },
+    {
+      "path": "cms-wave1/browser/published-story.png",
+      "bytes": 326926,
+      "sha256": "74442aacfac1f997a47ffb135856af8b5797430d205315dc0656b84ea7e07e87"
+    },
+    {
+      "path": "cms-wave1/browser/restored-draft.png",
+      "bytes": 328285,
+      "sha256": "36ac2267684ddc2caa1cbbf4a14790750222a709a2ee1da23b760a9f73bd7179"
+    },
+    {
+      "path": "crm-package2/authenticated-browser/first-login-red.log",
+      "bytes": 607,
+      "sha256": "736ee8806e5e3c6a476377641f7d0d57f05fdd30192de59bf7728a1e71dc2644"
+    },
+    {
+      "path": "crm-package2/authenticated-browser/fourth-hydration-red.log",
+      "bytes": 20758,
+      "sha256": "9205e338078261eec02b7ecf64190bff147c8fc40da9f13eb6cc91af19683a70"
+    },
+    {
+      "path": "crm-package2/authenticated-browser/gift-pending.png",
+      "bytes": 248374,
+      "sha256": "d4a99208aa5c4238bff7328f72b7e548f82827dbe1fc077328675901a88f17a1"
+    },
+    {
+      "path": "crm-package2/authenticated-browser/run.log",
+      "bytes": 652,
+      "sha256": "4f997e4b80eabcb81832de49625132b0a4a3dd458f066dba40a96b558aa144c8"
+    },
+    {
+      "path": "crm-package2/authenticated-browser/second-csp-red.log",
+      "bytes": 778,
+      "sha256": "49beca5bb2f6549c708580bc066fde2180e071605f690e4c95317851eb8419fe"
+    },
+    {
+      "path": "crm-package2/authenticated-browser/ssr-contract-green.log",
+      "bytes": 328,
+      "sha256": "f43074b16e692183adbbb0156a87d7d3badd053d8f44f5e2dc0c2127aa541d61"
+    },
+    {
+      "path": "crm-package2/authenticated-browser/ssr-contract-red.log",
+      "bytes": 2073,
+      "sha256": "4453e224f5abf3494caa0f2efd4b9127f47eee80c31b6bfda839ed0eb85897f9"
+    },
+    {
+      "path": "crm-package2/authenticated-browser/third-loopback-red.log",
+      "bytes": 778,
+      "sha256": "b2c11396f0fa55b9480ce3b12a893423e4e808a6d497cd46b388fbaf88b759fc"
+    },
+    {
+      "path": "crm-package2/browser/complete.png",
+      "bytes": 17271,
+      "sha256": "345e105b878fe7152f9d50dc96959157c36784a8f739096e9e01a24daf509c59"
+    },
+    {
+      "path": "crm-package2/browser/fixture.js",
+      "bytes": 1371317,
+      "sha256": "323446fb99e13807b9764aae598ed476d53558fd1f95de31a3b541300b4d9e91"
+    },
+    {
+      "path": "final-public/a11y/__brand-verification-missing__-1440x900.png",
+      "bytes": 119942,
+      "sha256": "b860324a14d5f5c68e78bbf8c0d949ec4ad0a0ba764197d8307f25db3c5ea640"
+    },
+    {
+      "path": "final-public/a11y/about-1440x900.png",
+      "bytes": 1027881,
+      "sha256": "19be66940ff12ea0c2b2392d4706c50d2c76947d39ee557d90a7ff7f789fce01"
+    },
+    {
+      "path": "final-public/a11y/about-cccp-1440x900.png",
+      "bytes": 461157,
+      "sha256": "26163467ae6dae74fd24afdbbef2f07e34a5db38e44e998052369d9fce5953e1"
+    },
+    {
+      "path": "final-public/a11y/about-privacy-1440x900.png",
+      "bytes": 415524,
+      "sha256": "e7bd250900b65ddd290da6668b035ce4181540841da94454fae491d959d26180"
+    },
+    {
+      "path": "final-public/a11y/about-team-1440x900.png",
+      "bytes": 387966,
+      "sha256": "27532cd7ff56fdd9bf6b69c1e85ba05369a57b7d48d3294428aa300a71322643"
+    },
+    {
+      "path": "final-public/a11y/about-tnr-1440x900.png",
+      "bytes": 416387,
+      "sha256": "c8b84cbfab4eea0963be44b08a043916d3cd2caece010c7c200e043c09fa9b9d"
+    },
+    {
+      "path": "final-public/a11y/adoption-apply-1440x900.png",
+      "bytes": 133564,
+      "sha256": "faaeaee88ebf6aa3c04be258797c28e389ca51ec845304bdb8d182e6bcda39ab"
+    },
+    {
+      "path": "final-public/a11y/adoption-instructions-1440x900.png",
+      "bytes": 316566,
+      "sha256": "37648125aa495ba6f3f6d83a1c3303ef997e862ab8740f1a13b372aa8c711bbd"
+    },
+    {
+      "path": "final-public/a11y/adoption-status-__brand-verification__-1440x900.png",
+      "bytes": 148764,
+      "sha256": "1f83550a9b0fb905010952d853bd7f0ef4f37f76629e7fe5a91d51930b68ea09"
+    },
+    {
+      "path": "final-public/a11y/animals-cat-00000000-0000-4000-8000-000000000001-1440x900.png",
+      "bytes": 400833,
+      "sha256": "a70717d838d66e642fc5f02d03a27a5e0cbfa857967ad0f61c97d8b59400a1db"
+    },
+    {
+      "path": "final-public/a11y/animals-cat-1440x900.png",
+      "bytes": 398481,
+      "sha256": "ef5482ab30b7fea6dbc55d871e572dced3a3591eb18e47b8c285cd27f31bb05d"
+    },
+    {
+      "path": "final-public/a11y/animals-dog-00000000-0000-4000-8000-000000000011-1440x900.png",
+      "bytes": 399532,
+      "sha256": "79d6227436b592a33069c260d1edb62abb81d79b5e9584bfb9d972cd589b88bc"
+    },
+    {
+      "path": "final-public/a11y/animals-dog-1440x900.png",
+      "bytes": 396110,
+      "sha256": "6f9fa7e77a7241f7ff73aef76194d1b94bf8565953d26aed170bf585d37ae38e"
+    },
+    {
+      "path": "final-public/a11y/axe-1440x900____brand-verification-missing__.json",
+      "bytes": 227915,
+      "sha256": "a7235c2d338710f88545d2c7ea5bc1a316314de543157e7b777fcb1d07522871"
+    },
+    {
+      "path": "final-public/a11y/axe-1440x900__.json",
+      "bytes": 573913,
+      "sha256": "4db9fb5fba5c04f58b95a3f65044e47d5d8f975285dfb1f440b98b593d357417"
+    },
+    {
+      "path": "final-public/a11y/axe-1440x900__about_cccp.json",
+      "bytes": 357439,
+      "sha256": "2d7fd4bac8663b8b31869475c20d2c0ca75965b97bbfcb463a43e30f9f999142"
+    },
+    {
+      "path": "final-public/a11y/axe-1440x900__about_privacy.json",
+      "bytes": 296392,
+      "sha256": "6421ac709294b1d35496e2cb2b69bd98090b1bd7b89410f4fe9e7e49d80fb188"
+    },
+    {
+      "path": "final-public/a11y/axe-1440x900__about_team.json",
+      "bytes": 327762,
+      "sha256": "894b42b69304d04742d3a7d30bfafd3af5611c5b3cd231a5a17acf0c941aa165"
+    },
+    {
+      "path": "final-public/a11y/axe-1440x900__about_tnr.json",
+      "bytes": 337147,
+      "sha256": "6bf7229c3ce777b1868767fe3581218bea8c5a0f5d8d84ceb11f5668d3aa8c31"
+    },
+    {
+      "path": "final-public/a11y/axe-1440x900__about.json",
+      "bytes": 448854,
+      "sha256": "da4aab075f2c679e0056d4f6bbd193105eba4e5ab1aeaee4cb6e085af7159f3c"
+    },
+    {
+      "path": "final-public/a11y/axe-1440x900__adoption_apply.json",
+      "bytes": 236676,
+      "sha256": "c88a866ceaf0b0e1782508cc1ca3608b0281cf9cf8ce58002f9cce5dacd158eb"
+    },
+    {
+      "path": "final-public/a11y/axe-1440x900__adoption_instructions.json",
+      "bytes": 391689,
+      "sha256": "46dd185350384e158993f40ca17c0fc33fb788cd7afb3732a37eff184807652e"
+    },
+    {
+      "path": "final-public/a11y/axe-1440x900__adoption_status___brand-verification__.json",
+      "bytes": 235820,
+      "sha256": "fe5f341212a6ea9771f2b03a22035245fa56b94df28211fe19a98eb310423e7a"
+    },
+    {
+      "path": "final-public/a11y/axe-1440x900__animals_cat_00000000-0000-4000-8000-000000000001.json",
+      "bytes": 288221,
+      "sha256": "0594a367256fa728b85ba7677d3c4cdd4e6f6169e1c0fce2cda80ce7c7813b21"
+    },
+    {
+      "path": "final-public/a11y/axe-1440x900__animals_cat.json",
+      "bytes": 527705,
+      "sha256": "5c97fd9aeaa313ccbb0120c7a05cfc848ea125a8de609ee9435da8ed900a074f"
+    },
+    {
+      "path": "final-public/a11y/axe-1440x900__animals_dog_00000000-0000-4000-8000-000000000011.json",
+      "bytes": 283685,
+      "sha256": "d350cc8adc4f1b0817385bca39446299958eb02e67066200c4b3c1d148e921e2"
+    },
+    {
+      "path": "final-public/a11y/axe-1440x900__animals_dog.json",
+      "bytes": 523115,
+      "sha256": "def2a0d84972106730a6e41cead6a27806e30df467e810032920379994b60d6c"
+    },
+    {
+      "path": "final-public/a11y/axe-1440x900__donate.json",
+      "bytes": 462264,
+      "sha256": "3a2ec56420a83fcbd70dc0b2adb44fea8952c6831059c4da536dbe460e43080d"
+    },
+    {
+      "path": "final-public/a11y/axe-1440x900__help.json",
+      "bytes": 478516,
+      "sha256": "b2706380737a98994ffef2c894b46d43996c1b9f7bea88f057163c997e6ad03d"
+    },
+    {
+      "path": "final-public/a11y/axe-1440x900__report_adoption.json",
+      "bytes": 390739,
+      "sha256": "5a7f70a6a4f061f2809e8dced5720bb35eb5b9a365bbdda11abfc22d9342fcf2"
+    },
+    {
+      "path": "final-public/a11y/axe-1440x900__report_audit.json",
+      "bytes": 275880,
+      "sha256": "a546b0b4ef8de872c00397d98d9a6427e5a07842995a3c173dec216d4baee3e0"
+    },
+    {
+      "path": "final-public/a11y/axe-1440x900__sponsors_00000000-0000-4000-8000-000000000021.json",
+      "bytes": 278260,
+      "sha256": "ca1089929a906cecbd5b81fc8b04dcb289089c956254524529bb4c5bef5feb6f"
+    },
+    {
+      "path": "final-public/a11y/axe-1440x900__sponsors_pledge.json",
+      "bytes": 246169,
+      "sha256": "430db23ca7e0366c95e4339bf6e471ef9aeaaa530b769953bd242f3d5b554581"
+    },
+    {
+      "path": "final-public/a11y/axe-1440x900__sponsors_status___brand-verification__.json",
+      "bytes": 235817,
+      "sha256": "222129adfdd6f5a374bc093b74ffdad5f13b3e0639860d9d2f2d251327cc638a"
+    },
+    {
+      "path": "final-public/a11y/axe-1440x900__sponsors.json",
+      "bytes": 408545,
+      "sha256": "3b86bf8a78d2fa3074bd9963f1f07db5b97666b011486a5828793102876f68a6"
+    },
+    {
+      "path": "final-public/a11y/axe-1440x900__stories___brand-verification__.json",
+      "bytes": 227912,
+      "sha256": "c758c73ab57524dbaf2c7f347e5e573dadcdfb5a42dbd58fd2512315a2028fd8"
+    },
+    {
+      "path": "final-public/a11y/axe-1440x900__stories.json",
+      "bytes": 318075,
+      "sha256": "2e8899fe2649fd9a20a6063b4c9c8316c3ad96dbf514c80e5185c6e89c330eb9"
+    },
+    {
+      "path": "final-public/a11y/axe-1440x900__volunteer_status___brand-verification__.json",
+      "bytes": 240185,
+      "sha256": "5f89ef42de2714545601746b8123f18f095b8774313fcd55a2b13de28d08f74d"
+    },
+    {
+      "path": "final-public/a11y/axe-1440x900__volunteer.json",
+      "bytes": 421290,
+      "sha256": "f5f777917be97b540eaef2a9c7ea4b454e33b2003bb2baf7acb1fac13b5dab1a"
+    },
+    {
+      "path": "final-public/a11y/donate-1440x900.png",
+      "bytes": 290835,
+      "sha256": "3cd11d646e7885ae5350484a29ff08abc5cddcf8ceecf4cc6742ef8ed4a1e5e5"
+    },
+    {
+      "path": "final-public/a11y/help-1440x900.png",
+      "bytes": 446331,
+      "sha256": "421b709e6ec9207ffa6cb439e5985288766bba19f83fd1aeaf1dcd7b5406ba17"
+    },
+    {
+      "path": "final-public/a11y/home-1440x900.png",
+      "bytes": 1354718,
+      "sha256": "e8689e16a5d005bd3f4e16dea06f6b6a07aba2ae628e36ee4456ec84370c595c"
+    },
+    {
+      "path": "final-public/a11y/report-adoption-1440x900.png",
+      "bytes": 464665,
+      "sha256": "973b94ac4a4035cb67aec56047ff3b3b81a31095ed08f35ad6067406fd5a0e4a"
+    },
+    {
+      "path": "final-public/a11y/report-audit-1440x900.png",
+      "bytes": 282089,
+      "sha256": "1ec88fe51780d16c27ce5f7f16abcbc1f3467e801b3cadc9311da8015caf8b42"
+    },
+    {
+      "path": "final-public/a11y/sponsors-00000000-0000-4000-8000-000000000021-1440x900.png",
+      "bytes": 401965,
+      "sha256": "97c03c02552afda21a51c18e93323ed5389478be97bb328766e90d1f16404f5c"
+    },
+    {
+      "path": "final-public/a11y/sponsors-1440x900.png",
+      "bytes": 385604,
+      "sha256": "b3578343564e8aeaaee36369ad262097f83312ee8a366b64cf4613686907d6e2"
+    },
+    {
+      "path": "final-public/a11y/sponsors-pledge-1440x900.png",
+      "bytes": 142998,
+      "sha256": "f7c31ed8ec8e6b7bed2614250ec2b616a4425b0b28e6b8434c3c8ed2d0858fdd"
+    },
+    {
+      "path": "final-public/a11y/sponsors-status-__brand-verification__-1440x900.png",
+      "bytes": 142807,
+      "sha256": "90e3ff897d1c9d49c0ef5828d731e0fada4afca1ef41f5aa400c0c3d713cd541"
+    },
+    {
+      "path": "final-public/a11y/stories-__brand-verification__-1440x900.png",
+      "bytes": 120510,
+      "sha256": "f87e2afb0cae1d28bb60020fd0edf8339ddc867a2622d6013fb57fed1e24f4e4"
+    },
+    {
+      "path": "final-public/a11y/stories-1440x900.png",
+      "bytes": 330034,
+      "sha256": "e63f10a817fe1ce9f218fe8ecbddad2d2862d05b18919da1988cc3c4b04e730d"
+    },
+    {
+      "path": "final-public/a11y/volunteer-1440x900.png",
+      "bytes": 340516,
+      "sha256": "36c6c5f242637a465ffecf9428711c18e95fa1040cd2b4701bcf2d424e027f5d"
+    },
+    {
+      "path": "final-public/a11y/volunteer-status-__brand-verification__-1440x900.png",
+      "bytes": 136226,
+      "sha256": "000f662c5a72e7d916aed7c343044c6589ed146ff18ccb7340599079f1be6108"
+    },
+    {
+      "path": "final-public/brand/__brand-verification-missing__-1024x768.png",
+      "bytes": 104329,
+      "sha256": "5b6bfd9fde9019bb9595698366881e59c13981cdbee8f75fd81ced5816f491e4"
+    },
+    {
+      "path": "final-public/brand/__brand-verification-missing__-1440x900.png",
+      "bytes": 119942,
+      "sha256": "b860324a14d5f5c68e78bbf8c0d949ec4ad0a0ba764197d8307f25db3c5ea640"
+    },
+    {
+      "path": "final-public/brand/__brand-verification-missing__-375x812.png",
+      "bytes": 99227,
+      "sha256": "2c7da7714d7071d61d455a924bca0186755ad422cf935d0905e1999f45dea95d"
+    },
+    {
+      "path": "final-public/brand/__brand-verification-missing__-390x844.png",
+      "bytes": 99489,
+      "sha256": "a40d5143556f096a37452fa11accf994093553503999e617b99f6ffd5e6a86c8"
+    },
+    {
+      "path": "final-public/brand/__brand-verification-missing__-768x1024.png",
+      "bytes": 101547,
+      "sha256": "33230c93692f90314353e8f5869985462b40fd805b759431fe0902cc7a975ebb"
+    },
+    {
+      "path": "final-public/brand/about-1024x768.png",
+      "bytes": 870866,
+      "sha256": "c1ac8474bb30e8b63cc4fd239cf4831730a98f0b4cbbbeefa6b92626571bc093"
+    },
+    {
+      "path": "final-public/brand/about-1440x900.png",
+      "bytes": 1027881,
+      "sha256": "19be66940ff12ea0c2b2392d4706c50d2c76947d39ee557d90a7ff7f789fce01"
+    },
+    {
+      "path": "final-public/brand/about-375x812.png",
+      "bytes": 672617,
+      "sha256": "4047691cf2acbfb6841e65d227f5eee3e0f3466da7ee889212a659999947c0d4"
+    },
+    {
+      "path": "final-public/brand/about-390x844.png",
+      "bytes": 687838,
+      "sha256": "39bed77a88c14060abcf0e490d08c006acb86127b92ef7aa290bfeb405e4d67b"
+    },
+    {
+      "path": "final-public/brand/about-768x1024.png",
+      "bytes": 882341,
+      "sha256": "89563568d261285ae00cc5f63bbb618bf42fe373ee8d7ab90af07957b0c39856"
+    },
+    {
+      "path": "final-public/brand/about-cccp-1024x768.png",
+      "bytes": 391578,
+      "sha256": "e721eef5966db16052cd94f8af802be3417c4ed151dc467920e405b2c4d054c5"
+    },
+    {
+      "path": "final-public/brand/about-cccp-1440x900.png",
+      "bytes": 461157,
+      "sha256": "26163467ae6dae74fd24afdbbef2f07e34a5db38e44e998052369d9fce5953e1"
+    },
+    {
+      "path": "final-public/brand/about-cccp-375x812.png",
+      "bytes": 344320,
+      "sha256": "648fcd920d31e73096221828b83e0782270838583f21dbd34a6eaac193d41e0a"
+    },
+    {
+      "path": "final-public/brand/about-cccp-390x844.png",
+      "bytes": 345496,
+      "sha256": "7503337fc6c7ed52f8f20b2ce6a854517d45ad7ffe7f0e194075e7f0e133041d"
+    },
+    {
+      "path": "final-public/brand/about-cccp-768x1024.png",
+      "bytes": 372123,
+      "sha256": "79e87519748e359ddfdfd4459735e46fb350d6de91a2519fd8489d66440b43e5"
+    },
+    {
+      "path": "final-public/brand/about-privacy-1024x768.png",
+      "bytes": 342302,
+      "sha256": "0028a91c9030cd99ee12011bcfa962e648964b238c82599f2a8647086db2632d"
+    },
+    {
+      "path": "final-public/brand/about-privacy-1440x900.png",
+      "bytes": 415524,
+      "sha256": "e7bd250900b65ddd290da6668b035ce4181540841da94454fae491d959d26180"
+    },
+    {
+      "path": "final-public/brand/about-privacy-375x812.png",
+      "bytes": 290940,
+      "sha256": "74a43672ce5587fabbd383a1914c01d9cbc5b5e34e69a2e2c6504954dfb4103f"
+    },
+    {
+      "path": "final-public/brand/about-privacy-390x844.png",
+      "bytes": 290333,
+      "sha256": "ef9ab95e5b30d6f41c01dc421e7a692d09f5db250e3e87b0b5209d7f85a9d638"
+    },
+    {
+      "path": "final-public/brand/about-privacy-768x1024.png",
+      "bytes": 320180,
+      "sha256": "5c35ae527e9a2fd1bd0d57cf3960ea203467dd62c3e74fd53a772704303c34f9"
+    },
+    {
+      "path": "final-public/brand/about-team-1024x768.png",
+      "bytes": 332516,
+      "sha256": "b5b332e3dc254ceea14212b0e1fa51aa7670bde73663d98e93c48d4f92665b87"
+    },
+    {
+      "path": "final-public/brand/about-team-1440x900.png",
+      "bytes": 387966,
+      "sha256": "27532cd7ff56fdd9bf6b69c1e85ba05369a57b7d48d3294428aa300a71322643"
+    },
+    {
+      "path": "final-public/brand/about-team-375x812.png",
+      "bytes": 276276,
+      "sha256": "0ab576b388993db0329eede18c346579bc33c4255a8faf999e7180720208a2dd"
+    },
+    {
+      "path": "final-public/brand/about-team-390x844.png",
+      "bytes": 275879,
+      "sha256": "de8d35b841a6a2acd8fdc2b0a4c99d3f9613db0a64e2745ffb1a5cafb5e72bdf"
+    },
+    {
+      "path": "final-public/brand/about-team-768x1024.png",
+      "bytes": 306254,
+      "sha256": "6877e6cb9ee2f6c646871ea2b668fa49ce583e38cfc40734f523c63cb0efd858"
+    },
+    {
+      "path": "final-public/brand/about-tnr-1024x768.png",
+      "bytes": 366379,
+      "sha256": "6bb21ca142aabbbde073ffbdd766f4832b09b26ecdb803ef219e44993a092b37"
+    },
+    {
+      "path": "final-public/brand/about-tnr-1440x900.png",
+      "bytes": 416387,
+      "sha256": "c8b84cbfab4eea0963be44b08a043916d3cd2caece010c7c200e043c09fa9b9d"
+    },
+    {
+      "path": "final-public/brand/about-tnr-375x812.png",
+      "bytes": 316468,
+      "sha256": "c9d7653c8bf698b21d6673065ee1a3c80ca631449d4fbd73fcbd398b19e7e058"
+    },
+    {
+      "path": "final-public/brand/about-tnr-390x844.png",
+      "bytes": 318265,
+      "sha256": "a4a93c516541916439224941cf0c13bf4e2f976cdc4ca4d2ce6de7b9245c2ae9"
+    },
+    {
+      "path": "final-public/brand/about-tnr-768x1024.png",
+      "bytes": 344987,
+      "sha256": "44b9e046aa1fc0b9fad862324b25adb1f69294941777e7185123a5a0175e3602"
+    },
+    {
+      "path": "final-public/brand/adoption-apply-1024x768.png",
+      "bytes": 116434,
+      "sha256": "acf591e5e3fafe1df7fa20f9a564ca592964ec5d86166b58e2a6b93c8e1fe7b3"
+    },
+    {
+      "path": "final-public/brand/adoption-apply-1440x900.png",
+      "bytes": 133573,
+      "sha256": "10cf367da3a64c942da86e166a26484a91079f6a6f8001d26216f33756ddda16"
+    },
+    {
+      "path": "final-public/brand/adoption-apply-375x812.png",
+      "bytes": 111892,
+      "sha256": "00b50981fc55e37ac38d139195263dcf3e1c30f1cf7226d4f2abc83bf5ebb743"
+    },
+    {
+      "path": "final-public/brand/adoption-apply-390x844.png",
+      "bytes": 112082,
+      "sha256": "a864f2627967dc978813e7372bf4672d056d80f8e734b92d8fc0c9f88e13d3f4"
+    },
+    {
+      "path": "final-public/brand/adoption-apply-768x1024.png",
+      "bytes": 114380,
+      "sha256": "5adc189c72fdde54713dae862628b64f2b8f60999eb1599c666f97feb8eb49e8"
+    },
+    {
+      "path": "final-public/brand/adoption-instructions-1024x768.png",
+      "bytes": 253846,
+      "sha256": "c388073b45558d80db2d535cf69f36c911c4c09285d89639f085b0eb6dc32afb"
+    },
+    {
+      "path": "final-public/brand/adoption-instructions-1440x900.png",
+      "bytes": 316566,
+      "sha256": "37648125aa495ba6f3f6d83a1c3303ef997e862ab8740f1a13b372aa8c711bbd"
+    },
+    {
+      "path": "final-public/brand/adoption-instructions-375x812.png",
+      "bytes": 208890,
+      "sha256": "2932834067ae276e16f616b9b19361c31c0a93edc037147acf96cc8cb53a8937"
+    },
+    {
+      "path": "final-public/brand/adoption-instructions-390x844.png",
+      "bytes": 209594,
+      "sha256": "d767d1b1bd38b02e25d41233e8ffb6d5b8fc35bb12d7ccc6fc1faf3cce0aae7a"
+    },
+    {
+      "path": "final-public/brand/adoption-instructions-768x1024.png",
+      "bytes": 238967,
+      "sha256": "2af2a47b71fdf7ae9568c47876395fa43004add36f304d0e1a4e3b45264def42"
+    },
+    {
+      "path": "final-public/brand/adoption-status-__brand-verification__-1024x768.png",
+      "bytes": 129752,
+      "sha256": "03859e5ad85b32e6dbf87a7c4c627a3807c0a7fb3fff39fca4c3056b6dfa847b"
+    },
+    {
+      "path": "final-public/brand/adoption-status-__brand-verification__-1440x900.png",
+      "bytes": 148764,
+      "sha256": "1f83550a9b0fb905010952d853bd7f0ef4f37f76629e7fe5a91d51930b68ea09"
+    },
+    {
+      "path": "final-public/brand/adoption-status-__brand-verification__-375x812.png",
+      "bytes": 123234,
+      "sha256": "10157c11da1eb45528e304cac7dc82b606c2e6cc87259f3f2e559564810ed7b1"
+    },
+    {
+      "path": "final-public/brand/adoption-status-__brand-verification__-390x844.png",
+      "bytes": 123190,
+      "sha256": "acb49761e8e9524da3c0ced9d44d2fcbeb1c4a2ee9cc0e32fc5e540a4b4c3952"
+    },
+    {
+      "path": "final-public/brand/adoption-status-__brand-verification__-768x1024.png",
+      "bytes": 124913,
+      "sha256": "3d8061292b9879ed9dc652c6ae477ec5ce85cf3ddf32b789e516798251d8b623"
+    },
+    {
+      "path": "final-public/brand/animals-cat-00000000-0000-4000-8000-000000000001-1024x768.png",
+      "bytes": 316961,
+      "sha256": "11d8ab364a7be180962538fd8d03ba6f3c569e0d9b501098c2e4ac214ac5c67b"
+    },
+    {
+      "path": "final-public/brand/animals-cat-00000000-0000-4000-8000-000000000001-1440x900.png",
+      "bytes": 400833,
+      "sha256": "a70717d838d66e642fc5f02d03a27a5e0cbfa857967ad0f61c97d8b59400a1db"
+    },
+    {
+      "path": "final-public/brand/animals-cat-00000000-0000-4000-8000-000000000001-375x812.png",
+      "bytes": 244274,
+      "sha256": "4609714856d5a1fbd5c28932a7a8bbcc04d9510b790ff52a935c7361c81b4c3b"
+    },
+    {
+      "path": "final-public/brand/animals-cat-00000000-0000-4000-8000-000000000001-390x844.png",
+      "bytes": 249648,
+      "sha256": "88ac19980e7b9676f519dec34b28397a7d283d3979b7ac08307eb1ddbecd8089"
+    },
+    {
+      "path": "final-public/brand/animals-cat-00000000-0000-4000-8000-000000000001-768x1024.png",
+      "bytes": 393230,
+      "sha256": "73f4b64ae773301ca9fd355be41fba483d4850b66802e5be7d284aa94219695f"
+    },
+    {
+      "path": "final-public/brand/animals-cat-1024x768.png",
+      "bytes": 371002,
+      "sha256": "2ddd9522f28c5627fc6237b2b9ae2f42c0abe5b9ab0440e82eab0f6db456ba7b"
+    },
+    {
+      "path": "final-public/brand/animals-cat-1440x900.png",
+      "bytes": 398481,
+      "sha256": "ef5482ab30b7fea6dbc55d871e572dced3a3591eb18e47b8c285cd27f31bb05d"
+    },
+    {
+      "path": "final-public/brand/animals-cat-375x812.png",
+      "bytes": 651951,
+      "sha256": "2d3559b3ed740ea3afc51d4dd53c51237d10f3f4894b4243670e3e1de995fcb9"
+    },
+    {
+      "path": "final-public/brand/animals-cat-390x844.png",
+      "bytes": 683341,
+      "sha256": "91b434ee4c88080e1b7d17a3f6169813b400c9a3cae43397a098e84afb0cdd79"
+    },
+    {
+      "path": "final-public/brand/animals-cat-768x1024.png",
+      "bytes": 395462,
+      "sha256": "16580a19a0342241784df6275ec96f9fc3b2143c454d046f036d7e096542b09c"
+    },
+    {
+      "path": "final-public/brand/animals-dog-00000000-0000-4000-8000-000000000011-1024x768.png",
+      "bytes": 315885,
+      "sha256": "96c58b0e61a6aba1531de6c315e9783366a86ae819cb6aa3374980f764b0c9d9"
+    },
+    {
+      "path": "final-public/brand/animals-dog-00000000-0000-4000-8000-000000000011-1440x900.png",
+      "bytes": 399532,
+      "sha256": "79d6227436b592a33069c260d1edb62abb81d79b5e9584bfb9d972cd589b88bc"
+    },
+    {
+      "path": "final-public/brand/animals-dog-00000000-0000-4000-8000-000000000011-375x812.png",
+      "bytes": 243462,
+      "sha256": "b6b344f56b6eefa3d21115bc6265d2007ed9e647b3a9658ec965d1652dcd8687"
+    },
+    {
+      "path": "final-public/brand/animals-dog-00000000-0000-4000-8000-000000000011-390x844.png",
+      "bytes": 248876,
+      "sha256": "d7d05fff0ad2c4847ec00d7251088d0f52d79ec2835dfe54fb7d46d3d869422e"
+    },
+    {
+      "path": "final-public/brand/animals-dog-00000000-0000-4000-8000-000000000011-768x1024.png",
+      "bytes": 392401,
+      "sha256": "6480668d63dc9833cdb5d362b9eacfb120458add99309ebc3dcde0e0b3e8e656"
+    },
+    {
+      "path": "final-public/brand/animals-dog-1024x768.png",
+      "bytes": 369403,
+      "sha256": "05102fce0856bc0f60376a176220a25c208569bb84c0645c955c6c9e557b63c2"
+    },
+    {
+      "path": "final-public/brand/animals-dog-1440x900.png",
+      "bytes": 396110,
+      "sha256": "6f9fa7e77a7241f7ff73aef76194d1b94bf8565953d26aed170bf585d37ae38e"
+    },
+    {
+      "path": "final-public/brand/animals-dog-375x812.png",
+      "bytes": 647366,
+      "sha256": "ae505bee5370d53d82511a2ccc4bd8f0cd55d93b446dad33c0dfc43e9ec56564"
+    },
+    {
+      "path": "final-public/brand/animals-dog-390x844.png",
+      "bytes": 678782,
+      "sha256": "5ddaa4d3b3594bd1d63f561735507caf403b7d53b8eefed69fcd2ea255320bf6"
+    },
+    {
+      "path": "final-public/brand/animals-dog-768x1024.png",
+      "bytes": 391630,
+      "sha256": "084f080d2ab61fe6dc5796d829f136e4a2efcf4fb00ca09daf4045e15a1dc5c2"
+    },
+    {
+      "path": "final-public/brand/donate-1024x768.png",
+      "bytes": 261487,
+      "sha256": "d9201a3800fee40e9a6ad690b743d7c8aabc9cc27a0f923cd5033cdc13486491"
+    },
+    {
+      "path": "final-public/brand/donate-1440x900.png",
+      "bytes": 290835,
+      "sha256": "3cd11d646e7885ae5350484a29ff08abc5cddcf8ceecf4cc6742ef8ed4a1e5e5"
+    },
+    {
+      "path": "final-public/brand/donate-375x812.png",
+      "bytes": 247447,
+      "sha256": "4ee25db62c525f5aaeb7aa54c3adea74dea1598b1cf0c9b8a64268accb07e19b"
+    },
+    {
+      "path": "final-public/brand/donate-390x844.png",
+      "bytes": 247390,
+      "sha256": "fdf53792b31ad256422929ffcdb409d97c509a0049b1a3d47ee568ce8e5dacea"
+    },
+    {
+      "path": "final-public/brand/donate-768x1024.png",
+      "bytes": 250071,
+      "sha256": "9dcf80c32e061996ea244487270e6f354f6c19b8ed87e33cb5d74a58d0763f5e"
+    },
+    {
+      "path": "final-public/brand/help-1024x768.png",
+      "bytes": 368167,
+      "sha256": "059ee84ec445239ef77f08b089f29fbba43d8527e2b0463ad221028019b421fd"
+    },
+    {
+      "path": "final-public/brand/help-1440x900.png",
+      "bytes": 446331,
+      "sha256": "421b709e6ec9207ffa6cb439e5985288766bba19f83fd1aeaf1dcd7b5406ba17"
+    },
+    {
+      "path": "final-public/brand/help-375x812.png",
+      "bytes": 314500,
+      "sha256": "0bb0a1efc992cbc66c3d15b424a0841033ad02395d05a19c51fb1b49996e48dd"
+    },
+    {
+      "path": "final-public/brand/help-390x844.png",
+      "bytes": 316043,
+      "sha256": "ad7bd1f4a9ce06c95abc0d446d804d2b0ab51d1d94af6f4c6d12b3302303f6ad"
+    },
+    {
+      "path": "final-public/brand/help-768x1024.png",
+      "bytes": 347142,
+      "sha256": "51794356ca5ead3225e8fc744f63b85451dbb323f8c6e566fe5b78ce44d0930d"
+    },
+    {
+      "path": "final-public/brand/home-1024x768.png",
+      "bytes": 1210277,
+      "sha256": "0a7d1826c0c3f7cf50b2daa590e70e2f5688cc6bcd4fdb3fd945cf3d31a590f7"
+    },
+    {
+      "path": "final-public/brand/home-1440x900.png",
+      "bytes": 1354718,
+      "sha256": "e8689e16a5d005bd3f4e16dea06f6b6a07aba2ae628e36ee4456ec84370c595c"
+    },
+    {
+      "path": "final-public/brand/home-375x812.png",
+      "bytes": 969931,
+      "sha256": "958162f9091aa8314309900ee4f8f3420f43d5072f2276035aa1c0dea795fdb7"
+    },
+    {
+      "path": "final-public/brand/home-390x844.png",
+      "bytes": 999807,
+      "sha256": "19dfb74bcc63be503ab90823d649016fdda87f8c59011006e9a1c776a3106e03"
+    },
+    {
+      "path": "final-public/brand/home-768x1024.png",
+      "bytes": 1337484,
+      "sha256": "e4f4e9b6b9bfaf55aa5547f077ce3a516f1b3d0525d5e0cc5a1694b350f73d99"
+    },
+    {
+      "path": "final-public/brand/report-adoption-1024x768.png",
+      "bytes": 401872,
+      "sha256": "af22f71ac6e53fe2bf4ed7e9060125f8d53a712cf0ac78dabaeec2dd37f0a0f2"
+    },
+    {
+      "path": "final-public/brand/report-adoption-1440x900.png",
+      "bytes": 464665,
+      "sha256": "973b94ac4a4035cb67aec56047ff3b3b81a31095ed08f35ad6067406fd5a0e4a"
+    },
+    {
+      "path": "final-public/brand/report-adoption-375x812.png",
+      "bytes": 349502,
+      "sha256": "ec7fa0c3e536e48ea20cd2df4baec8f59e59e7835a4e0a802d88a718010c5678"
+    },
+    {
+      "path": "final-public/brand/report-adoption-390x844.png",
+      "bytes": 350415,
+      "sha256": "d3bb3b5dfae4c1ec74bd06c441a90aac4125812f9006407772f34faeb9d0d6f5"
+    },
+    {
+      "path": "final-public/brand/report-adoption-768x1024.png",
+      "bytes": 379778,
+      "sha256": "5374b5bd0bb823171d143c512827632ca6a30a3a96c301e537632c58d83bf084"
+    },
+    {
+      "path": "final-public/brand/report-audit-1024x768.png",
+      "bytes": 214844,
+      "sha256": "8c9713f38004eb71bf7739c87212285ef2270d0db575c1e0786a5f4e088c398f"
+    },
+    {
+      "path": "final-public/brand/report-audit-1440x900.png",
+      "bytes": 282089,
+      "sha256": "1ec88fe51780d16c27ce5f7f16abcbc1f3467e801b3cadc9311da8015caf8b42"
+    },
+    {
+      "path": "final-public/brand/report-audit-375x812.png",
+      "bytes": 170709,
+      "sha256": "951b8577fb5040f9f0150c8187f6fbbaaae6fa6389beb9cb1eadddf4c7011936"
+    },
+    {
+      "path": "final-public/brand/report-audit-390x844.png",
+      "bytes": 172427,
+      "sha256": "f20cecaa58a0fb44da2ee1e2dce05b61f30e51d7c1f41474d5d230aa1ab5dec4"
+    },
+    {
+      "path": "final-public/brand/report-audit-768x1024.png",
+      "bytes": 191573,
+      "sha256": "58e84a36f185c40d0a4e7def77680eaa087c3df336924e9f639d76ac2b3b078b"
+    },
+    {
+      "path": "final-public/brand/sponsors-00000000-0000-4000-8000-000000000021-1024x768.png",
+      "bytes": 317502,
+      "sha256": "c38cfcde8d9d65e612e81883b227296eefb68656cf5074b7ce8ea9e992d415ac"
+    },
+    {
+      "path": "final-public/brand/sponsors-00000000-0000-4000-8000-000000000021-1440x900.png",
+      "bytes": 401965,
+      "sha256": "97c03c02552afda21a51c18e93323ed5389478be97bb328766e90d1f16404f5c"
+    },
+    {
+      "path": "final-public/brand/sponsors-00000000-0000-4000-8000-000000000021-375x812.png",
+      "bytes": 244642,
+      "sha256": "666626a7dbf140212398b967f513bc770a0fc2b0e641b16008ae5df5035f7736"
+    },
+    {
+      "path": "final-public/brand/sponsors-00000000-0000-4000-8000-000000000021-390x844.png",
+      "bytes": 250036,
+      "sha256": "1515b765b854d771cdb7dc4e02bf951df1d36b0f66844ed2ba4e641bd0ff0dc9"
+    },
+    {
+      "path": "final-public/brand/sponsors-00000000-0000-4000-8000-000000000021-768x1024.png",
+      "bytes": 393814,
+      "sha256": "a157e0c73d2b725147a36425e0a5c9ea51b8d47cdf4bdbefdfab170dc82df719"
+    },
+    {
+      "path": "final-public/brand/sponsors-1024x768.png",
+      "bytes": 338804,
+      "sha256": "30d8dfdc7d58ad07dc483f6b3e524cbb47f08905eec2fcc59404a0c0fdf26513"
+    },
+    {
+      "path": "final-public/brand/sponsors-1440x900.png",
+      "bytes": 385604,
+      "sha256": "b3578343564e8aeaaee36369ad262097f83312ee8a366b64cf4613686907d6e2"
+    },
+    {
+      "path": "final-public/brand/sponsors-375x812.png",
+      "bytes": 452873,
+      "sha256": "06b64140adf74dd4edf387c5d870e8ead312be9483ac0ba7188e35218cce91f0"
+    },
+    {
+      "path": "final-public/brand/sponsors-390x844.png",
+      "bytes": 465650,
+      "sha256": "ef04f033aa3919d924bd3d8a959561c940fc319765df6cbd34ff7196e70f968e"
+    },
+    {
+      "path": "final-public/brand/sponsors-768x1024.png",
+      "bytes": 337880,
+      "sha256": "9f300bdb0a982b242440185c9cccc0ddf5f1c761f971ee4eaca8dfa3d3caf7b7"
+    },
+    {
+      "path": "final-public/brand/sponsors-pledge-1024x768.png",
+      "bytes": 120337,
+      "sha256": "6c3db86fa021cef600d85ff6edef8989eb8413bc79dd9c6612a5edc8eb618594"
+    },
+    {
+      "path": "final-public/brand/sponsors-pledge-1440x900.png",
+      "bytes": 142998,
+      "sha256": "f7c31ed8ec8e6b7bed2614250ec2b616a4425b0b28e6b8434c3c8ed2d0858fdd"
+    },
+    {
+      "path": "final-public/brand/sponsors-pledge-375x812.png",
+      "bytes": 113280,
+      "sha256": "d697ce45545f1b310ab2707cb0b2ddeca082a98a9e785abdf84690d3034056f6"
+    },
+    {
+      "path": "final-public/brand/sponsors-pledge-390x844.png",
+      "bytes": 113362,
+      "sha256": "1a74c5c3d4e2dd07cbddba8f7eda2e7f9cae4642daf812cb5ea6a5fcbd3d395d"
+    },
+    {
+      "path": "final-public/brand/sponsors-pledge-768x1024.png",
+      "bytes": 113692,
+      "sha256": "bbac0a8c3016dbbf8391f14764211fe75ed630191038cd27d530b57392872f2f"
+    },
+    {
+      "path": "final-public/brand/sponsors-status-__brand-verification__-1024x768.png",
+      "bytes": 125280,
+      "sha256": "a2d18f70caef4aa0a8cdfb8b9edf967b5dffc98b7d3f88e3aca3c3264c386364"
+    },
+    {
+      "path": "final-public/brand/sponsors-status-__brand-verification__-1440x900.png",
+      "bytes": 142807,
+      "sha256": "90e3ff897d1c9d49c0ef5828d731e0fada4afca1ef41f5aa400c0c3d713cd541"
+    },
+    {
+      "path": "final-public/brand/sponsors-status-__brand-verification__-375x812.png",
+      "bytes": 117481,
+      "sha256": "945155df3c178b9cf496aba071b71dce709f30f841b17ae40de7de78419c1d6a"
+    },
+    {
+      "path": "final-public/brand/sponsors-status-__brand-verification__-390x844.png",
+      "bytes": 117732,
+      "sha256": "daf0411c1b28a874de06170a8a15371777ff41a3fc393f1dcd324262af66c1ba"
+    },
+    {
+      "path": "final-public/brand/sponsors-status-__brand-verification__-768x1024.png",
+      "bytes": 120665,
+      "sha256": "c59f234ef74b0ae088ab407d3a126ca2e6e1b325956e26edb5595337977cd379"
+    },
+    {
+      "path": "final-public/brand/stories-__brand-verification__-1024x768.png",
+      "bytes": 104329,
+      "sha256": "5b6bfd9fde9019bb9595698366881e59c13981cdbee8f75fd81ced5816f491e4"
+    },
+    {
+      "path": "final-public/brand/stories-__brand-verification__-1440x900.png",
+      "bytes": 120510,
+      "sha256": "f87e2afb0cae1d28bb60020fd0edf8339ddc867a2622d6013fb57fed1e24f4e4"
+    },
+    {
+      "path": "final-public/brand/stories-__brand-verification__-375x812.png",
+      "bytes": 99227,
+      "sha256": "2c7da7714d7071d61d455a924bca0186755ad422cf935d0905e1999f45dea95d"
+    },
+    {
+      "path": "final-public/brand/stories-__brand-verification__-390x844.png",
+      "bytes": 99489,
+      "sha256": "a40d5143556f096a37452fa11accf994093553503999e617b99f6ffd5e6a86c8"
+    },
+    {
+      "path": "final-public/brand/stories-__brand-verification__-768x1024.png",
+      "bytes": 101547,
+      "sha256": "33230c93692f90314353e8f5869985462b40fd805b759431fe0902cc7a975ebb"
+    },
+    {
+      "path": "final-public/brand/stories-1024x768.png",
+      "bytes": 271005,
+      "sha256": "0bdb2eae13d390b99ebf5cd50e174122df6e37db83275a15a030bca2a13ab6c1"
+    },
+    {
+      "path": "final-public/brand/stories-1440x900.png",
+      "bytes": 330034,
+      "sha256": "e63f10a817fe1ce9f218fe8ecbddad2d2862d05b18919da1988cc3c4b04e730d"
+    },
+    {
+      "path": "final-public/brand/stories-375x812.png",
+      "bytes": 213706,
+      "sha256": "096d37334b003971a78917ffa67047348bc766605cfab5c2698f5f06a4bc4fe6"
+    },
+    {
+      "path": "final-public/brand/stories-390x844.png",
+      "bytes": 215527,
+      "sha256": "2e2de1d3e7db49dc8f54e596e51d226406164dea76ce486e8fad0126253a7771"
+    },
+    {
+      "path": "final-public/brand/stories-768x1024.png",
+      "bytes": 234154,
+      "sha256": "25e0666d1d037ec44e7d6f5a91603c0eff0be0eefe0f67d8aa1acdca29c99fcb"
+    },
+    {
+      "path": "final-public/brand/volunteer-1024x768.png",
+      "bytes": 301775,
+      "sha256": "c8e242b46c4ad3d2380403fb703d9bd3c604daf287ba99b2ff3d0db0ab8b4a89"
+    },
+    {
+      "path": "final-public/brand/volunteer-1440x900.png",
+      "bytes": 340516,
+      "sha256": "36c6c5f242637a465ffecf9428711c18e95fa1040cd2b4701bcf2d424e027f5d"
+    },
+    {
+      "path": "final-public/brand/volunteer-375x812.png",
+      "bytes": 296758,
+      "sha256": "9a0181e990a007d4a23331c0f73e72a1d56fdbd8a6cd3365058adfd5726dbe27"
+    },
+    {
+      "path": "final-public/brand/volunteer-390x844.png",
+      "bytes": 295025,
+      "sha256": "8b2723ca2ea78ad6e44059fd16e579d3949ddea1e50549146e06fcaad275a3c6"
+    },
+    {
+      "path": "final-public/brand/volunteer-768x1024.png",
+      "bytes": 289407,
+      "sha256": "79c503075be81891d43b219f57203027e922d33169495f4523308f8e5e86ed87"
+    },
+    {
+      "path": "final-public/brand/volunteer-status-__brand-verification__-1024x768.png",
+      "bytes": 117030,
+      "sha256": "4d9b81d06cd5475118b684f3f4b6281938982c12f719dcdc50218d7399e8f94d"
+    },
+    {
+      "path": "final-public/brand/volunteer-status-__brand-verification__-1440x900.png",
+      "bytes": 136226,
+      "sha256": "000f662c5a72e7d916aed7c343044c6589ed146ff18ccb7340599079f1be6108"
+    },
+    {
+      "path": "final-public/brand/volunteer-status-__brand-verification__-375x812.png",
+      "bytes": 109882,
+      "sha256": "c4fb1abf2905fdcee7ac9e1889be2e9df7984b788e222f1a989778681607d5d2"
+    },
+    {
+      "path": "final-public/brand/volunteer-status-__brand-verification__-390x844.png",
+      "bytes": 110095,
+      "sha256": "cdb22c2c26c84040574297f87bd3f094a3a54fd0c8e9d3830b57820b90511ec1"
+    },
+    {
+      "path": "final-public/brand/volunteer-status-__brand-verification__-768x1024.png",
+      "bytes": 112258,
+      "sha256": "586a231f9fa3415c39b64cdfa103bf073c55d9a1b563cf6e1738a4a2b984c4e6"
+    },
+    {
+      "path": "final-public/menu-probe.png",
+      "bytes": 970428,
+      "sha256": "b4793627202d22693f8fcd64aaf68c56769ae20c298ecdda5ad7aad7c2d614a2"
+    },
+    {
+      "path": "final-public/performance/adoption-apply-1440x900.png",
+      "bytes": 161510,
+      "sha256": "6d703566f7dbbdb966fc6dea8ca222f4081627dccaab0cbf38267e3172fdff51"
+    },
+    {
+      "path": "final-public/performance/adoption-apply-390x844.png",
+      "bytes": 130760,
+      "sha256": "33886be225466aecff3362bcb0890a78134af5dfdeeee6c1e13affe8b4a3138f"
+    },
+    {
+      "path": "final-public/performance/animals-cat-1440x900.png",
+      "bytes": 443187,
+      "sha256": "aff8d57c4c33d49cc2f5911fe34c0f52b7a8cdb623ad2bcd2fa848a352059a5a"
+    },
+    {
+      "path": "final-public/performance/animals-cat-390x844.png",
+      "bytes": 689210,
+      "sha256": "7431a499f6a2d4623a512eba57e9b38f5663b43fa6881ded9703fbbb1460ada4"
+    },
+    {
+      "path": "final-public/performance/donate-1440x900.png",
+      "bytes": 291910,
+      "sha256": "b02174e12879fe66eaac7f4f15bb302b8c9a93ec5adfb8e2d688ceaff89d7d5f"
+    },
+    {
+      "path": "final-public/performance/donate-390x844.png",
+      "bytes": 248020,
+      "sha256": "d915363e53aff7472826df14db537857081a0636ff2823340e4b2470a7186e69"
+    },
+    {
+      "path": "final-public/performance/home-1440x900.png",
+      "bytes": 1373418,
+      "sha256": "a9968468e7cccf33bd0218ee04221ea78262f598029c039e6bd3052459040ec9"
+    },
+    {
+      "path": "final-public/performance/home-390x844.png",
+      "bytes": 980480,
+      "sha256": "6c0d10140e837e347a24125b3f0e07b9ddd0415659bcf966cf1e90f6542fda4f"
+    },
+    {
+      "path": "final-public/performance/lighthouse-1440x900___desktop_cold-1.json",
+      "bytes": 499113,
+      "sha256": "f0ed33995127e9491fc397ded6c50f0c4378f80f97ac91b1b79cd698c43a6a61"
+    },
+    {
+      "path": "final-public/performance/lighthouse-1440x900___desktop_cold-2.json",
+      "bytes": 502363,
+      "sha256": "e6430e25438850d0b77540f5915904c67338a339fed79ee99b1423a39be114bd"
+    },
+    {
+      "path": "final-public/performance/lighthouse-1440x900___desktop_cold-3.json",
+      "bytes": 502469,
+      "sha256": "824b5930d7f831677c9929af4db726d43b9979621e7a3cfe5eb4aa039067b0a4"
+    },
+    {
+      "path": "final-public/performance/lighthouse-1440x900__adoption_apply_desktop_cold-1.json",
+      "bytes": 245126,
+      "sha256": "432dcbb69a5a8328133cce0e2d6d29c39d5fd3bb27e3170b108d2e33c476eb26"
+    },
+    {
+      "path": "final-public/performance/lighthouse-1440x900__adoption_apply_desktop_cold-2.json",
+      "bytes": 242292,
+      "sha256": "03e5431e820fc7dde99c750561584b2360e386a2ddee7a42a5b84efaad951923"
+    },
+    {
+      "path": "final-public/performance/lighthouse-1440x900__adoption_apply_desktop_cold-3.json",
+      "bytes": 242153,
+      "sha256": "69f74b1e13f5e343a21f2adc9d84b391386cc2f856aadef5c0e033eb970357b1"
+    },
+    {
+      "path": "final-public/performance/lighthouse-1440x900__animals_cat_desktop_cold-1.json",
+      "bytes": 382232,
+      "sha256": "e56d27be8d4ca20fa1f70607fcff152cce8b7debe4cca7710311846ad29aac9c"
+    },
+    {
+      "path": "final-public/performance/lighthouse-1440x900__animals_cat_desktop_cold-2.json",
+      "bytes": 380411,
+      "sha256": "fb2cd38e4dad3fca8f7c65aa3c662b728c96af59cf8a21db8ddaf4f8f70b402f"
+    },
+    {
+      "path": "final-public/performance/lighthouse-1440x900__animals_cat_desktop_cold-3.json",
+      "bytes": 350613,
+      "sha256": "a50ee8d7f61d2306a4b906868adbeee0ddf0d65ae4ed33b969a692744f3a8adb"
+    },
+    {
+      "path": "final-public/performance/lighthouse-1440x900__donate_desktop_cold-1.json",
+      "bytes": 331376,
+      "sha256": "2459ded7f1ce5a5712af42b7ea2a441801cd9efb29fea48ec131c6cb78ecee5f"
+    },
+    {
+      "path": "final-public/performance/lighthouse-1440x900__donate_desktop_cold-2.json",
+      "bytes": 343633,
+      "sha256": "c436cbab3ddc916bad318ab96fe7fefb3a51a06317e3f8f96dcf60c0b9857d2a"
+    },
+    {
+      "path": "final-public/performance/lighthouse-1440x900__donate_desktop_cold-3.json",
+      "bytes": 329024,
+      "sha256": "daf8afe2eabc1374e85f2d96c60e6788df4be0a852a822462aba78f83be7a606"
+    },
+    {
+      "path": "final-public/performance/lighthouse-390x844___mobile_cold-1.json",
+      "bytes": 465812,
+      "sha256": "21fb31562f5fbf4995b0417ee154adbd6306e1cb39a333caf0ebf65356891a50"
+    },
+    {
+      "path": "final-public/performance/lighthouse-390x844___mobile_cold-2.json",
+      "bytes": 467774,
+      "sha256": "90ab69a47e00586bc9c5a1457fd75443ccce4537f72caaec9460cdf0e0f743ad"
+    },
+    {
+      "path": "final-public/performance/lighthouse-390x844___mobile_cold-3.json",
+      "bytes": 457251,
+      "sha256": "fa8ad162e68dae15955613ef6c5ece027918989a1eb27302fd43f433c3024354"
+    },
+    {
+      "path": "final-public/performance/lighthouse-390x844__adoption_apply_mobile_cold-1.json",
+      "bytes": 234941,
+      "sha256": "4b26f959a0da1767fd307513a5c51ec93a3274d7e38a931592256112eb7cb797"
+    },
+    {
+      "path": "final-public/performance/lighthouse-390x844__adoption_apply_mobile_cold-2.json",
+      "bytes": 237170,
+      "sha256": "e4853344afe286f38c550e9889b29c2c3376433ee57b4798b25eb2b1e0cc55a7"
+    },
+    {
+      "path": "final-public/performance/lighthouse-390x844__adoption_apply_mobile_cold-3.json",
+      "bytes": 239345,
+      "sha256": "9576ae95531eda361688b19b5651f7c1ae846ee4d887147c0a01a2802fa5270c"
+    },
+    {
+      "path": "final-public/performance/lighthouse-390x844__animals_cat_mobile_cold-1.json",
+      "bytes": 357813,
+      "sha256": "95f3afebbd77517768d9e42f3b7e770b249598bc2c1ca2072224d0f941ab8cd4"
+    },
+    {
+      "path": "final-public/performance/lighthouse-390x844__animals_cat_mobile_cold-2.json",
+      "bytes": 358965,
+      "sha256": "6a27a3de3cd7ec593ec87afd3ea2d7c067eccb38f8ed2b1178582c8b7b934db4"
+    },
+    {
+      "path": "final-public/performance/lighthouse-390x844__animals_cat_mobile_cold-3.json",
+      "bytes": 351790,
+      "sha256": "0273548983aad769d5fef3f3ae6a7b71e8524cda6e88f5eeffd5a34a32207629"
+    },
+    {
+      "path": "final-public/performance/lighthouse-390x844__donate_mobile_cold-1.json",
+      "bytes": 328814,
+      "sha256": "5c71e0eab6d8115838fbaf94018f9630ea0d0cdabf77575452fa0bed5c4e2f84"
+    },
+    {
+      "path": "final-public/performance/lighthouse-390x844__donate_mobile_cold-2.json",
+      "bytes": 329599,
+      "sha256": "1740170e51680fefe105f7a91bf5a30e8ae74a0236c721342fd739814c40dfba"
+    },
+    {
+      "path": "final-public/performance/lighthouse-390x844__donate_mobile_cold-3.json",
+      "bytes": 320991,
+      "sha256": "710436f09716e5323400b31097dc41664281943b03724086daf4ec36422911be"
+    },
+    {
+      "path": "final-public/preview-4173.log",
+      "bytes": 539590,
+      "sha256": "0ac207d7ed07843157121d08e8496bf11ab30f7dcd0dc9f7dbbf8bc2c89df246"
+    },
+    {
+      "path": "final-public/preview-4174.log",
+      "bytes": 15551,
+      "sha256": "8eb3f05a6a26c1c717c73b8bb5b0b57e418f91525a3f29580b4762a231134368"
+    },
+    {
+      "path": "final-public/release-preview.log",
+      "bytes": 12024,
+      "sha256": "bba2d16548e1985dfb0a5ef92810d5bdd6da2f3458960fdfd27da5240acc6cf4"
+    },
+    {
+      "path": "frontend-baseline/artifacts/help-mobile.png",
+      "bytes": 297569,
+      "sha256": "02bb27fd06c49acd318f02d16e37a21f37bc06d55912cae5c88bf0d357746d8b"
+    },
+    {
+      "path": "frontend-baseline/brand-verifier/about-375x812.png",
+      "bytes": 681830,
+      "sha256": "026d2716916f0a78a19927ad348d65c18e327f404b33f9fa8560ec555fb1abfc"
+    },
+    {
+      "path": "frontend-baseline/brand-verifier/about-cccp-375x812.png",
+      "bytes": 344325,
+      "sha256": "efed62ec01b708248a424ef5263fecf587290cc045aa0260862ef92105ccf5d8"
+    },
+    {
+      "path": "frontend-baseline/brand-verifier/about-privacy-375x812.png",
+      "bytes": 290942,
+      "sha256": "c6a0fe050a5d1adb154c5707587f0986933860a829ef7689c3e8e46230d1b9b3"
+    },
+    {
+      "path": "frontend-baseline/brand-verifier/about-team-375x812.png",
+      "bytes": 276285,
+      "sha256": "ed60afa2195d86ee0436661519bdaa86cf24d747b84c27383e10bdfe09fb19c1"
+    },
+    {
+      "path": "frontend-baseline/brand-verifier/about-tnr-375x812.png",
+      "bytes": 316474,
+      "sha256": "e4b0628a16743e886376883dac208786808eb10cea87c5d1d61db0df7672fff4"
+    },
+    {
+      "path": "frontend-baseline/brand-verifier/adoption-apply-375x812.png",
+      "bytes": 109765,
+      "sha256": "3320a12dcdf48f968a1e3164d8621eeb7c1a3084668b28cb68a72a44a33ea9a3"
+    },
+    {
+      "path": "frontend-baseline/brand-verifier/adoption-instructions-375x812.png",
+      "bytes": 208896,
+      "sha256": "2998a4526017a198d8dae31fa9742f624a234254be1890ee94e5b580d0e1875a"
+    },
+    {
+      "path": "frontend-baseline/brand-verifier/animals-cat-375x812.png",
+      "bytes": 651958,
+      "sha256": "a48bf2cb815b1e74d3a9604d7360e4305a4d94a0866cab990442ccaec53983a5"
+    },
+    {
+      "path": "frontend-baseline/brand-verifier/animals-dog-375x812.png",
+      "bytes": 647365,
+      "sha256": "345c661041104f65934665d857cecf39d0d9ece3b1ee7c250ccf6bf73477a2ce"
+    },
+    {
+      "path": "frontend-baseline/brand-verifier/home-375x812.png",
+      "bytes": 970176,
+      "sha256": "bfe287624f5de05b6cc3ea7b71527e808b476fae3031f6afac12a6dd98b2c36c"
+    },
+    {
+      "path": "frontend-baseline/brand-verifier/sponsors-375x812.png",
+      "bytes": 452877,
+      "sha256": "9ebf43bf84fad597aa1eb46bea7cb7cdbf9da8f9afd952461bca2413e100689c"
+    },
+    {
+      "path": "frontend-baseline/brand-verifier/sponsors-pledge-375x812.png",
+      "bytes": 113280,
+      "sha256": "288466710e2d4ee1918ecc87c1dfd924e2adc897e36d2817e5dc979f8a90c175"
+    },
+    {
+      "path": "frontend-baseline/brand-verifier/stories-375x812.png",
+      "bytes": 213713,
+      "sha256": "d123152f3464b7440b1183d706b383e9d2c28accd6ec5ba90d57c866e9fc3c60"
+    },
+    {
+      "path": "frontend-baseline/fixture.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "frontend-baseline/fixture.stdout.log",
+      "bytes": 66,
+      "sha256": "f01629bd2d563e04285e1679c92685fa16d7c4781ef3b9aa6117e64def8f12e0"
+    },
+    {
+      "path": "frontend-baseline/preview.stderr.log",
+      "bytes": 16,
+      "sha256": "3ccb8e5b8173808cdb5eef7fbf8a85f0db8e50c666cb89969339ab1bad100966"
+    },
+    {
+      "path": "frontend-baseline/preview.stdout.log",
+      "bytes": 44652,
+      "sha256": "f799b04e2add3943bfc638c574dbc8e8949bb3183bfe034975198b2bd9d5e7bc"
+    },
+    {
+      "path": "frontend-coverage/fixture.err.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "frontend-coverage/fixture.out.log",
+      "bytes": 66,
+      "sha256": "bef3500ea12cc4c863af267e9174a245e6f7c92b8daadd899781a9e629295177"
+    },
+    {
+      "path": "frontend-coverage/pids.json",
+      "bytes": 47,
+      "sha256": "34e8b692e904f028b076acb0dcc8cdb06d2a206760add6aac9611b946b844629"
+    },
+    {
+      "path": "frontend-coverage/preview.err.log",
+      "bytes": 61,
+      "sha256": "0fb1f36b38268298c9678109740ac1aca4fdb87b1a25efd8616d811eacf8554e"
+    },
+    {
+      "path": "frontend-coverage/preview.out.log",
+      "bytes": 25703,
+      "sha256": "0fbf9fe6728d660373613642f4c0a985e79f0f045cc5afdfa47d01a0e1da5b36"
+    },
+    {
+      "path": "frontend-coverage/protected-adoption.png",
+      "bytes": 79990,
+      "sha256": "c831be646bbfcb173d1793108739352e4fede458607c1e3b95b5de4bb77f3d47"
+    },
+    {
+      "path": "frontend-coverage/protected-forms/protected-forms.js",
+      "bytes": 1419405,
+      "sha256": "b9e3419feab9c3db611ea361f22f328657f5a99736fc76c0fe4793154dfd720c"
+    },
+    {
+      "path": "frontend-coverage/protected-group.png",
+      "bytes": 18383,
+      "sha256": "bdf6039310887bd58fe3d83dd80056ab0d027fc8d12b3d3342958530e42f4e63"
+    },
+    {
+      "path": "frontend-coverage/protected-sponsorship.png",
+      "bytes": 41357,
+      "sha256": "7d79a7b53fb8e83584702b048fb283d5153e14128d09a00d518daa0665a0639b"
+    },
+    {
+      "path": "frontend-coverage/protected-volunteer.png",
+      "bytes": 104217,
+      "sha256": "83672af424720af7bdd27f3a1e0b17255f6444d339e144f73bde78e5990be559"
+    },
+    {
+      "path": "frontend-coverage/turnstile-fixture.js",
+      "bytes": 980043,
+      "sha256": "36df0c19273f2d64930822049ff2d05950a22565f6041e126ba94ae3d3aa8db6"
+    },
+    {
+      "path": "frontend-wave1/browser-green/drawer-animals-cat.png",
+      "bytes": 683360,
+      "sha256": "1afee3be92c1c77a63b95d3969341d99882bc6731368c04f69bebe538850ffb2"
+    },
+    {
+      "path": "frontend-wave1/browser-green/drawer-donate.png",
+      "bytes": 1001218,
+      "sha256": "f05dedc6b81f786eb68120f9a1b0372f46154e19599cb68737f9dadf05a57184"
+    },
+    {
+      "path": "frontend-wave1/browser-red-nonempty/drawer-animals-cat.png",
+      "bytes": 625610,
+      "sha256": "479793dec93521fbaa1c9e4645dfd4bd02c604558928c43720112606fd817f6b"
+    },
+    {
+      "path": "frontend-wave1/browser-red-nonempty/drawer-donate.png",
+      "bytes": 874332,
+      "sha256": "56bef8ff0e16dbfa3a77c5aa966a496730244aa1fd2d483989646e0b60e0ad68"
+    },
+    {
+      "path": "frontend-wave1/browser-red/drawer-animals-cat.png",
+      "bytes": 625610,
+      "sha256": "479793dec93521fbaa1c9e4645dfd4bd02c604558928c43720112606fd817f6b"
+    },
+    {
+      "path": "frontend-wave1/browser-red/drawer-donate.png",
+      "bytes": 874332,
+      "sha256": "56bef8ff0e16dbfa3a77c5aa966a496730244aa1fd2d483989646e0b60e0ad68"
+    },
+    {
+      "path": "frontend-wave1/build-green.log",
+      "bytes": 83589,
+      "sha256": "e2df3372f2d60a3ee7be320715cab84bc9ebf8d95265a63d8a7dc986874b1145"
+    },
+    {
+      "path": "frontend-wave1/fixture-nonempty.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "frontend-wave1/fixture-nonempty.stdout.log",
+      "bytes": 66,
+      "sha256": "f01629bd2d563e04285e1679c92685fa16d7c4781ef3b9aa6117e64def8f12e0"
+    },
+    {
+      "path": "frontend-wave1/fixture-red.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "frontend-wave1/fixture-red.stdout.log",
+      "bytes": 66,
+      "sha256": "f01629bd2d563e04285e1679c92685fa16d7c4781ef3b9aa6117e64def8f12e0"
+    },
+    {
+      "path": "frontend-wave1/preview-green.stderr.log",
+      "bytes": 16,
+      "sha256": "3ccb8e5b8173808cdb5eef7fbf8a85f0db8e50c666cb89969339ab1bad100966"
+    },
+    {
+      "path": "frontend-wave1/preview-green.stdout.log",
+      "bytes": 10502,
+      "sha256": "53b44a552fab8c225c93ff78a231011c0bf64ace14167dc01e81727800d55b63"
+    },
+    {
+      "path": "frontend-wave1/preview-red.stderr.log",
+      "bytes": 16,
+      "sha256": "3ccb8e5b8173808cdb5eef7fbf8a85f0db8e50c666cb89969339ab1bad100966"
+    },
+    {
+      "path": "frontend-wave1/preview-red.stdout.log",
+      "bytes": 20265,
+      "sha256": "279e354f9dbaf76f1774c7798a59d04e82304448c94ed8da1584137b670fdcd1"
+    },
+    {
+      "path": "frontend-wave2-build.log",
+      "bytes": 84848,
+      "sha256": "96fb1792bf598bbf51609b8867926b4b5278a7dbe8876592b78f007aaf474ba8"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/__brand-verification-missing__-1440x900.png",
+      "bytes": 119942,
+      "sha256": "b860324a14d5f5c68e78bbf8c0d949ec4ad0a0ba764197d8307f25db3c5ea640"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/about-1440x900.png",
+      "bytes": 1031767,
+      "sha256": "b46a7849caa87bd3884b4d5d89573705f87a938c30556d8a2827284db8cbc817"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/about-cccp-1440x900.png",
+      "bytes": 461157,
+      "sha256": "26163467ae6dae74fd24afdbbef2f07e34a5db38e44e998052369d9fce5953e1"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/about-privacy-1440x900.png",
+      "bytes": 415524,
+      "sha256": "e7bd250900b65ddd290da6668b035ce4181540841da94454fae491d959d26180"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/about-team-1440x900.png",
+      "bytes": 387966,
+      "sha256": "27532cd7ff56fdd9bf6b69c1e85ba05369a57b7d48d3294428aa300a71322643"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/about-tnr-1440x900.png",
+      "bytes": 416387,
+      "sha256": "c8b84cbfab4eea0963be44b08a043916d3cd2caece010c7c200e043c09fa9b9d"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/adoption-apply-1440x900.png",
+      "bytes": 159109,
+      "sha256": "ed948a9bfee28801e047eff14ec11e52fcacc5d7b9127aabec8c983993dc5e6b"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/adoption-instructions-1440x900.png",
+      "bytes": 316566,
+      "sha256": "37648125aa495ba6f3f6d83a1c3303ef997e862ab8740f1a13b372aa8c711bbd"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/adoption-status-__brand-verification__-1440x900.png",
+      "bytes": 148764,
+      "sha256": "1f83550a9b0fb905010952d853bd7f0ef4f37f76629e7fe5a91d51930b68ea09"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/animals-cat-00000000-0000-4000-8000-000000000001-1440x900.png",
+      "bytes": 400833,
+      "sha256": "a70717d838d66e642fc5f02d03a27a5e0cbfa857967ad0f61c97d8b59400a1db"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/animals-cat-1440x900.png",
+      "bytes": 398481,
+      "sha256": "ef5482ab30b7fea6dbc55d871e572dced3a3591eb18e47b8c285cd27f31bb05d"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/animals-dog-00000000-0000-4000-8000-000000000011-1440x900.png",
+      "bytes": 399532,
+      "sha256": "79d6227436b592a33069c260d1edb62abb81d79b5e9584bfb9d972cd589b88bc"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/animals-dog-1440x900.png",
+      "bytes": 396110,
+      "sha256": "6f9fa7e77a7241f7ff73aef76194d1b94bf8565953d26aed170bf585d37ae38e"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/axe-1440x900____brand-verification-missing__.json",
+      "bytes": 227920,
+      "sha256": "0c8b0fdce2d3ae9541b228ff49eba17e684e5947c469f139f32a83ca9b31464f"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/axe-1440x900__.json",
+      "bytes": 579109,
+      "sha256": "e3461d5f9834337d8d1c2dc987770126448a2ebf99bec21c9bd296f4c3c2a7c2"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/axe-1440x900__about_cccp.json",
+      "bytes": 357444,
+      "sha256": "75d35125e61412d58b8cab1154a39af2c6f57d92b9204e52b0c4c49192ceb508"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/axe-1440x900__about_privacy.json",
+      "bytes": 296397,
+      "sha256": "56ada20625357f0998b509a1c982aae07eafb618957d3627f5f2aca71c212820"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/axe-1440x900__about_team.json",
+      "bytes": 327767,
+      "sha256": "9c15b74320d532be9451547d076116faacc8cd3115b5a1cc3b091194327cdcc8"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/axe-1440x900__about_tnr.json",
+      "bytes": 337152,
+      "sha256": "2a514d34b287d4dff8fdcf3aa54116ca9b58e1c52a0f9100952bc18d1770ab7f"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/axe-1440x900__about.json",
+      "bytes": 460668,
+      "sha256": "47b03391a991f6f02067722a8112c355390e506c1d6664e3a686d99498073a0e"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/axe-1440x900__adoption_apply.json",
+      "bytes": 235354,
+      "sha256": "0dfce5f33ff579028f1f0bb135f2daf508a8b5c3ff0cadf0fc2aa4ce002f6761"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/axe-1440x900__adoption_instructions.json",
+      "bytes": 391694,
+      "sha256": "59101967880fccfefa2d63232744b2b86bd268086d8a5ec460f08099cee70f1c"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/axe-1440x900__adoption_status___brand-verification__.json",
+      "bytes": 235825,
+      "sha256": "c4bece3b0846ea63e1c37f67fb8c034e4d1adce491733980e9d59ad27f4c0cfe"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/axe-1440x900__animals_cat_00000000-0000-4000-8000-000000000001.json",
+      "bytes": 288226,
+      "sha256": "991b2de4641e12e6f8525933f7f5175584ed8cb98c8a7a595a8a458d9cfe0745"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/axe-1440x900__animals_cat.json",
+      "bytes": 527710,
+      "sha256": "1c9ede507a1ac43e13d93979df9577242771bd58773898816a7d6ce228e120df"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/axe-1440x900__animals_dog_00000000-0000-4000-8000-000000000011.json",
+      "bytes": 283690,
+      "sha256": "fac90a6fbf52f276183c48f5aaf780c1bf7485993466b284dfac5583050e567e"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/axe-1440x900__animals_dog.json",
+      "bytes": 523120,
+      "sha256": "a61734c3fbeb3b01d990fb678a3a3b44aeb1090dac2fbf6a4ebb657b439bf23f"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/axe-1440x900__donate.json",
+      "bytes": 453857,
+      "sha256": "ed864ec014de5b87a6234b7bceb55ca28f2ec3e321290b7d61d2c8e25080dc48"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/axe-1440x900__help.json",
+      "bytes": 478521,
+      "sha256": "6b7e8b44b9aeb6c1f2e360a989c1fc9f1a075a62656362e30d0ec2d0bc35ae8f"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/axe-1440x900__report_adoption.json",
+      "bytes": 390744,
+      "sha256": "e6fa925e4de2a839f07a9651c9350661ac655e5f9d0a97cb29ed3431e0d593b9"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/axe-1440x900__report_audit.json",
+      "bytes": 275885,
+      "sha256": "7f00e69742149f5699c253ca1907f114d3058350db5f805083230737b364104c"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/axe-1440x900__sponsors_00000000-0000-4000-8000-000000000021.json",
+      "bytes": 278265,
+      "sha256": "9942a59b3ba80e239d9983f4b501d9663e0cb2cb2f02bb79afcf433ec3fcafc0"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/axe-1440x900__sponsors_pledge.json",
+      "bytes": 246174,
+      "sha256": "8d71f22e33a7eeb75efdf7f78ccbae7ca970dcb7a0666c0125c37398f6d6e958"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/axe-1440x900__sponsors_status___brand-verification__.json",
+      "bytes": 235822,
+      "sha256": "dd04cf682fbbcbd8b2404f29a9d22b6b84ba7529f277a6ec500551d6a1e6d08b"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/axe-1440x900__sponsors.json",
+      "bytes": 408550,
+      "sha256": "8bb1a6893719dd3267b9c97f54d18dc2efa255cd86534db1f03d4d2966152d26"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/axe-1440x900__stories___brand-verification__.json",
+      "bytes": 227917,
+      "sha256": "042fc259fde4d738d4374172391f951add910632ae77f8f13a6ff90785425486"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/axe-1440x900__stories.json",
+      "bytes": 318080,
+      "sha256": "c377aa30a69c1747d2942fea7cd3e0e9678638d3fc9e1ceaa11ea11d1e73ef63"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/axe-1440x900__volunteer_status___brand-verification__.json",
+      "bytes": 240190,
+      "sha256": "15eb20f7828f55e7b0d52ad4c7f5d48a8e2b9ed2f46799823e7c63a442d34acb"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/axe-1440x900__volunteer.json",
+      "bytes": 421295,
+      "sha256": "4aaa8ddcbb14fa2bae76ddd8bc97add2cd320263dec9a8435472734d26bc3ffa"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/donate-1440x900.png",
+      "bytes": 296503,
+      "sha256": "35c54741c28b7200325a2dbc813d82ce351daba2e9c3c41538fd25ecfec70b65"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/help-1440x900.png",
+      "bytes": 446331,
+      "sha256": "421b709e6ec9207ffa6cb439e5985288766bba19f83fd1aeaf1dcd7b5406ba17"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/home-1440x900.png",
+      "bytes": 1377171,
+      "sha256": "bc16dccf73f38c78e2445e51252011a83cfa8adeb4e16712d96ac78cff8aba3d"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/report-adoption-1440x900.png",
+      "bytes": 464604,
+      "sha256": "02cb4d82254821dacb21f535077ecf90056bfb0e5cc6aa497f58a9ad8f096a98"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/report-audit-1440x900.png",
+      "bytes": 282089,
+      "sha256": "1ec88fe51780d16c27ce5f7f16abcbc1f3467e801b3cadc9311da8015caf8b42"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/sponsors-00000000-0000-4000-8000-000000000021-1440x900.png",
+      "bytes": 401965,
+      "sha256": "97c03c02552afda21a51c18e93323ed5389478be97bb328766e90d1f16404f5c"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/sponsors-1440x900.png",
+      "bytes": 385604,
+      "sha256": "b3578343564e8aeaaee36369ad262097f83312ee8a366b64cf4613686907d6e2"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/sponsors-pledge-1440x900.png",
+      "bytes": 142998,
+      "sha256": "f7c31ed8ec8e6b7bed2614250ec2b616a4425b0b28e6b8434c3c8ed2d0858fdd"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/sponsors-status-__brand-verification__-1440x900.png",
+      "bytes": 142807,
+      "sha256": "90e3ff897d1c9d49c0ef5828d731e0fada4afca1ef41f5aa400c0c3d713cd541"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/stories-__brand-verification__-1440x900.png",
+      "bytes": 120510,
+      "sha256": "f87e2afb0cae1d28bb60020fd0edf8339ddc867a2622d6013fb57fed1e24f4e4"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/stories-1440x900.png",
+      "bytes": 330034,
+      "sha256": "e63f10a817fe1ce9f218fe8ecbddad2d2862d05b18919da1988cc3c4b04e730d"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/volunteer-1440x900.png",
+      "bytes": 340516,
+      "sha256": "36c6c5f242637a465ffecf9428711c18e95fa1040cd2b4701bcf2d424e027f5d"
+    },
+    {
+      "path": "frontend-wave2/a11y-final/volunteer-status-__brand-verification__-1440x900.png",
+      "bytes": 136226,
+      "sha256": "000f662c5a72e7d916aed7c343044c6589ed146ff18ccb7340599079f1be6108"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/__brand-verification-missing__-1440x900.png",
+      "bytes": 119942,
+      "sha256": "b860324a14d5f5c68e78bbf8c0d949ec4ad0a0ba764197d8307f25db3c5ea640"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/about-1440x900.png",
+      "bytes": 1031767,
+      "sha256": "b46a7849caa87bd3884b4d5d89573705f87a938c30556d8a2827284db8cbc817"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/about-cccp-1440x900.png",
+      "bytes": 461157,
+      "sha256": "26163467ae6dae74fd24afdbbef2f07e34a5db38e44e998052369d9fce5953e1"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/about-privacy-1440x900.png",
+      "bytes": 415524,
+      "sha256": "e7bd250900b65ddd290da6668b035ce4181540841da94454fae491d959d26180"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/about-team-1440x900.png",
+      "bytes": 387966,
+      "sha256": "27532cd7ff56fdd9bf6b69c1e85ba05369a57b7d48d3294428aa300a71322643"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/about-tnr-1440x900.png",
+      "bytes": 416387,
+      "sha256": "c8b84cbfab4eea0963be44b08a043916d3cd2caece010c7c200e043c09fa9b9d"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/adoption-apply-1440x900.png",
+      "bytes": 159109,
+      "sha256": "ed948a9bfee28801e047eff14ec11e52fcacc5d7b9127aabec8c983993dc5e6b"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/adoption-instructions-1440x900.png",
+      "bytes": 316566,
+      "sha256": "37648125aa495ba6f3f6d83a1c3303ef997e862ab8740f1a13b372aa8c711bbd"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/adoption-status-__brand-verification__-1440x900.png",
+      "bytes": 148764,
+      "sha256": "1f83550a9b0fb905010952d853bd7f0ef4f37f76629e7fe5a91d51930b68ea09"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/animals-cat-00000000-0000-4000-8000-000000000001-1440x900.png",
+      "bytes": 400833,
+      "sha256": "a70717d838d66e642fc5f02d03a27a5e0cbfa857967ad0f61c97d8b59400a1db"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/animals-cat-1440x900.png",
+      "bytes": 398481,
+      "sha256": "ef5482ab30b7fea6dbc55d871e572dced3a3591eb18e47b8c285cd27f31bb05d"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/animals-dog-00000000-0000-4000-8000-000000000011-1440x900.png",
+      "bytes": 399532,
+      "sha256": "79d6227436b592a33069c260d1edb62abb81d79b5e9584bfb9d972cd589b88bc"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/animals-dog-1440x900.png",
+      "bytes": 396110,
+      "sha256": "6f9fa7e77a7241f7ff73aef76194d1b94bf8565953d26aed170bf585d37ae38e"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/axe-1440x900____brand-verification-missing__.json",
+      "bytes": 227920,
+      "sha256": "6abe87997bfb7fa258e00b25b1910bdd44551374124de35f75371f642e3cab6d"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/axe-1440x900__.json",
+      "bytes": 579109,
+      "sha256": "faec7955cdf40c77ca70f1afd85944c347a0336177083826fd486f1171a41f0d"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/axe-1440x900__about_cccp.json",
+      "bytes": 357444,
+      "sha256": "e4c6c1d08b1d21db581430d046b9435b4864e4936aa4e07e52af65b0e5ec1df0"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/axe-1440x900__about_privacy.json",
+      "bytes": 296397,
+      "sha256": "7008c409c5cec7f8aadf9f40e2f8e78deb9f9f2f1035305f287c89c00cce08c5"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/axe-1440x900__about_team.json",
+      "bytes": 327767,
+      "sha256": "8aca2ed99005761648625e729551fe23bdcf7fa218130be3aa0d4764798c9b59"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/axe-1440x900__about_tnr.json",
+      "bytes": 337152,
+      "sha256": "7605479b54db0f1f6710ba4311609cbbe35efcca29d53834af720d63966f7c80"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/axe-1440x900__about.json",
+      "bytes": 460668,
+      "sha256": "51c10f3e64af934eff5bf4e8443387f2a312a88e93b2add390863f9a21ff84d0"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/axe-1440x900__adoption_apply.json",
+      "bytes": 235354,
+      "sha256": "439b126b93926c3c3ac7a5372cbe232629bc364a974b424bfad3e264f8356740"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/axe-1440x900__adoption_instructions.json",
+      "bytes": 391694,
+      "sha256": "6f350ff0801287f1b946c6a2cb4d64e0a0ddc9ab7cb9da4b0527ddbd3c4e0e9f"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/axe-1440x900__adoption_status___brand-verification__.json",
+      "bytes": 235825,
+      "sha256": "527aa64f60d2ba1fdeaf700f7a782ae4c161dc1272dc8e5587a42a8cb9ba4f8d"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/axe-1440x900__animals_cat_00000000-0000-4000-8000-000000000001.json",
+      "bytes": 288226,
+      "sha256": "02a718c68ce840be2251bc11a43fa4984cc5e10c5acd047615658338b0080ad1"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/axe-1440x900__animals_cat.json",
+      "bytes": 527710,
+      "sha256": "a0f483e40ae7202241df342606905b7a514ed6bbca598fd31ef145861ca6ebec"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/axe-1440x900__animals_dog_00000000-0000-4000-8000-000000000011.json",
+      "bytes": 283690,
+      "sha256": "3b10bc33e9561128f6ccc5fa54b9ea996c3dab3c49256730237cc0f08df28cfe"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/axe-1440x900__animals_dog.json",
+      "bytes": 523120,
+      "sha256": "594c883f2253b811bc5aa979742fbfcc9acddcf52b894106f6182d3ad9bf6e5b"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/axe-1440x900__donate.json",
+      "bytes": 452222,
+      "sha256": "4c735ea2ff04fb31c67b57d7cea149b601e8440148fe87195582d32c5459bc12"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/axe-1440x900__help.json",
+      "bytes": 478521,
+      "sha256": "7cd91ee4239752d100ca1c84154b1a36931deb6c5c3026c41d8e998d9e467931"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/axe-1440x900__report_adoption.json",
+      "bytes": 390744,
+      "sha256": "b948f6f797efcfd2a0d9671f99936186f125505f3710d45d3bd09790760b007d"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/axe-1440x900__report_audit.json",
+      "bytes": 275885,
+      "sha256": "1fad1e4701cba6688a5d54d8fbf3b1c22521b293bbfe013aa105e5c4e86fd80b"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/axe-1440x900__sponsors_00000000-0000-4000-8000-000000000021.json",
+      "bytes": 278265,
+      "sha256": "2dc0d73d509b44ca04c272f4830e87096b1fe92d265dc001ac4ad5e941508af7"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/axe-1440x900__sponsors_pledge.json",
+      "bytes": 246174,
+      "sha256": "1ee588e76229b03fa53a1ac1b814b02c6d4c57333a94067eb348c32d92949c07"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/axe-1440x900__sponsors_status___brand-verification__.json",
+      "bytes": 235822,
+      "sha256": "1f345de7b5264ca573efc1a3c7aaf5d91b7df226f42918441d8d5f7aecbba3c0"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/axe-1440x900__sponsors.json",
+      "bytes": 408550,
+      "sha256": "da4bf4b2df02b39356f15ac07558d4c3750b6d74c80296e6e856d5584af34d9c"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/axe-1440x900__stories___brand-verification__.json",
+      "bytes": 227917,
+      "sha256": "0b1c1d5d21ae60f8fcb2605aade9aa8b7855e3a017120b7c54de613f2b705e50"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/axe-1440x900__stories.json",
+      "bytes": 318080,
+      "sha256": "c67fb0805b6fb0161d7552cce0d8bc5a995b2f0c92d1c9037fae7c31650e7d2f"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/axe-1440x900__volunteer_status___brand-verification__.json",
+      "bytes": 240190,
+      "sha256": "ac9220e994b6153bbce6ddfe0ffd31f31fdcb84a018cc5bc6367af18fe59d33f"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/axe-1440x900__volunteer.json",
+      "bytes": 419660,
+      "sha256": "89b58aad691a5a2f9d9f3994e3ef2936c95f4c03c3838525ed5b87f7f2ef9f82"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/donate-1440x900.png",
+      "bytes": 296503,
+      "sha256": "35c54741c28b7200325a2dbc813d82ce351daba2e9c3c41538fd25ecfec70b65"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/help-1440x900.png",
+      "bytes": 446331,
+      "sha256": "421b709e6ec9207ffa6cb439e5985288766bba19f83fd1aeaf1dcd7b5406ba17"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/home-1440x900.png",
+      "bytes": 1377171,
+      "sha256": "bc16dccf73f38c78e2445e51252011a83cfa8adeb4e16712d96ac78cff8aba3d"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/report-adoption-1440x900.png",
+      "bytes": 464604,
+      "sha256": "02cb4d82254821dacb21f535077ecf90056bfb0e5cc6aa497f58a9ad8f096a98"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/report-audit-1440x900.png",
+      "bytes": 282089,
+      "sha256": "1ec88fe51780d16c27ce5f7f16abcbc1f3467e801b3cadc9311da8015caf8b42"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/sponsors-00000000-0000-4000-8000-000000000021-1440x900.png",
+      "bytes": 401965,
+      "sha256": "97c03c02552afda21a51c18e93323ed5389478be97bb328766e90d1f16404f5c"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/sponsors-1440x900.png",
+      "bytes": 385604,
+      "sha256": "b3578343564e8aeaaee36369ad262097f83312ee8a366b64cf4613686907d6e2"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/sponsors-pledge-1440x900.png",
+      "bytes": 142998,
+      "sha256": "f7c31ed8ec8e6b7bed2614250ec2b616a4425b0b28e6b8434c3c8ed2d0858fdd"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/sponsors-status-__brand-verification__-1440x900.png",
+      "bytes": 142807,
+      "sha256": "90e3ff897d1c9d49c0ef5828d731e0fada4afca1ef41f5aa400c0c3d713cd541"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/stories-__brand-verification__-1440x900.png",
+      "bytes": 120510,
+      "sha256": "f87e2afb0cae1d28bb60020fd0edf8339ddc867a2622d6013fb57fed1e24f4e4"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/stories-1440x900.png",
+      "bytes": 330034,
+      "sha256": "e63f10a817fe1ce9f218fe8ecbddad2d2862d05b18919da1988cc3c4b04e730d"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/volunteer-1440x900.png",
+      "bytes": 340516,
+      "sha256": "36c6c5f242637a465ffecf9428711c18e95fa1040cd2b4701bcf2d424e027f5d"
+    },
+    {
+      "path": "frontend-wave2/a11y-green/volunteer-status-__brand-verification__-1440x900.png",
+      "bytes": 136226,
+      "sha256": "000f662c5a72e7d916aed7c343044c6589ed146ff18ccb7340599079f1be6108"
+    },
+    {
+      "path": "frontend-wave2/adoption-cls-source-acceptance.log",
+      "bytes": 7235,
+      "sha256": "12d84d580d54c745a7b9e4c97b690f362d3ccd8febf53c044199cb58c62a197d"
+    },
+    {
+      "path": "frontend-wave2/adoption-cls-storage-cases-summary.log",
+      "bytes": 7224,
+      "sha256": "e87b70ed196fec4f74ad3a12ba375e6d85e179d3b1f9bd501836b1b416efdf9a"
+    },
+    {
+      "path": "frontend-wave2/adoption-performance-source-summary.log",
+      "bytes": 688,
+      "sha256": "c7f234072a4adae9a07ba8e8f9d5d639371a7a5443b00982b6a0f4880c8acde9"
+    },
+    {
+      "path": "frontend-wave2/adoption-performance-source.log",
+      "bytes": 500,
+      "sha256": "2eddb43ae1653aff1cf912d6b30d6a0da0dfcffc2ad539ce20378580a23e9636"
+    },
+    {
+      "path": "frontend-wave2/adoption-performance-source/adoption-apply-1440x900.png",
+      "bytes": 161510,
+      "sha256": "6d703566f7dbbdb966fc6dea8ca222f4081627dccaab0cbf38267e3172fdff51"
+    },
+    {
+      "path": "frontend-wave2/adoption-performance-source/adoption-apply-390x844.png",
+      "bytes": 130760,
+      "sha256": "33886be225466aecff3362bcb0890a78134af5dfdeeee6c1e13affe8b4a3138f"
+    },
+    {
+      "path": "frontend-wave2/adoption-performance-source/lighthouse-1440x900__adoption_apply_desktop_cold-1.json",
+      "bytes": 243373,
+      "sha256": "c98b994c2483a644350fa46b593125ba5a5316136c8d29d2ead7adc8c0ab82ed"
+    },
+    {
+      "path": "frontend-wave2/adoption-performance-source/lighthouse-1440x900__adoption_apply_desktop_cold-2.json",
+      "bytes": 246706,
+      "sha256": "d178db732cdddbd3cf213bdc15f0f5387991fc0d07a0d4dcb8564c5120042bb2"
+    },
+    {
+      "path": "frontend-wave2/adoption-performance-source/lighthouse-1440x900__adoption_apply_desktop_cold-3.json",
+      "bytes": 248087,
+      "sha256": "71c08686a4312ffb1355af8179d411be83e16387b4eaba7627b4337d1930f668"
+    },
+    {
+      "path": "frontend-wave2/adoption-performance-source/lighthouse-390x844__adoption_apply_mobile_cold-1.json",
+      "bytes": 236574,
+      "sha256": "b052c7474d0c5ad981b93c259d9ae8fba0ad466007f810db5eed7deb5ab55821"
+    },
+    {
+      "path": "frontend-wave2/adoption-performance-source/lighthouse-390x844__adoption_apply_mobile_cold-2.json",
+      "bytes": 241420,
+      "sha256": "eb7ccb0da6f249674cf78640c5b965093f4fcbf166f4b599f3539d88b5dcddc0"
+    },
+    {
+      "path": "frontend-wave2/adoption-performance-source/lighthouse-390x844__adoption_apply_mobile_cold-3.json",
+      "bytes": 237871,
+      "sha256": "1f5191e24496d09343753f158d974b92026e3bf0c7b0e14c4cf7a9f6a1e9153c"
+    },
+    {
+      "path": "frontend-wave2/browser-diagnostic/malformed-cat.png",
+      "bytes": 114538,
+      "sha256": "cbe87bc82cb1a70180029e84b899a938ee24bb7a67c33a6950bf4cbe085b3691"
+    },
+    {
+      "path": "frontend-wave2/browser-diagnostic/malformed-sponsor.png",
+      "bytes": 111730,
+      "sha256": "1ffab92cf29acb591b5a5a1bb1fc09c34eccfcba21e60ba0934a9568478a93ad"
+    },
+    {
+      "path": "frontend-wave2/browser-diagnostic/removed-cat.png",
+      "bytes": 114538,
+      "sha256": "cbe87bc82cb1a70180029e84b899a938ee24bb7a67c33a6950bf4cbe085b3691"
+    },
+    {
+      "path": "frontend-wave2/browser-diagnostic/unknown-dog.png",
+      "bytes": 114341,
+      "sha256": "974b3827917df43981539d34cceba3c87866c2778e168f4d4da04b18cd374ee7"
+    },
+    {
+      "path": "frontend-wave2/browser-diagnostic/valid-cat.png",
+      "bytes": 249672,
+      "sha256": "db1921c9ded0afeb2adbd00ba6a7d471be425d9e1b60cf094de8269ac21f8f41"
+    },
+    {
+      "path": "frontend-wave2/browser/malformed-cat.png",
+      "bytes": 114538,
+      "sha256": "cbe87bc82cb1a70180029e84b899a938ee24bb7a67c33a6950bf4cbe085b3691"
+    },
+    {
+      "path": "frontend-wave2/browser/malformed-sponsor.png",
+      "bytes": 111730,
+      "sha256": "1ffab92cf29acb591b5a5a1bb1fc09c34eccfcba21e60ba0934a9568478a93ad"
+    },
+    {
+      "path": "frontend-wave2/browser/removed-cat.png",
+      "bytes": 114538,
+      "sha256": "cbe87bc82cb1a70180029e84b899a938ee24bb7a67c33a6950bf4cbe085b3691"
+    },
+    {
+      "path": "frontend-wave2/browser/turnstile-donation-retry.png",
+      "bytes": 266968,
+      "sha256": "01edc360410ee0d722cdec23302d9ec73f4ce9df5e953d97c9e05f6069c41df6"
+    },
+    {
+      "path": "frontend-wave2/browser/unknown-dog.png",
+      "bytes": 114341,
+      "sha256": "974b3827917df43981539d34cceba3c87866c2778e168f4d4da04b18cd374ee7"
+    },
+    {
+      "path": "frontend-wave2/browser/valid-cat.png",
+      "bytes": 249672,
+      "sha256": "db1921c9ded0afeb2adbd00ba6a7d471be425d9e1b60cf094de8269ac21f8f41"
+    },
+    {
+      "path": "frontend-wave2/cls-build-final.log",
+      "bytes": 85401,
+      "sha256": "924ea8efcf90e55e71c28fabd1b5f3d7efa5b411f8712917f398462beba6b3f9"
+    },
+    {
+      "path": "frontend-wave2/cls-build.log",
+      "bytes": 85402,
+      "sha256": "afc08ed1c1ddbe61393061bfd247dd1c65013d3a65e187ee2a9690e07aae0889"
+    },
+    {
+      "path": "frontend-wave2/cls-fixture.err.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "frontend-wave2/cls-fixture.out.log",
+      "bytes": 66,
+      "sha256": "bef3500ea12cc4c863af267e9174a245e6f7c92b8daadd899781a9e629295177"
+    },
+    {
+      "path": "frontend-wave2/cls-lh-preview.err.log",
+      "bytes": 16,
+      "sha256": "3ccb8e5b8173808cdb5eef7fbf8a85f0db8e50c666cb89969339ab1bad100966"
+    },
+    {
+      "path": "frontend-wave2/cls-lh-preview.out.log",
+      "bytes": 488,
+      "sha256": "bf3ac928beca7f74319cf69bc683f83cc79a630f7ad270ec143e818396f49e0b"
+    },
+    {
+      "path": "frontend-wave2/cls-lh-preview.pid",
+      "bytes": 7,
+      "sha256": "d0600546d691679f544256091aa3c4b92a1e1614f52d5ab9805d934d1132ef89"
+    },
+    {
+      "path": "frontend-wave2/cls-pids.json",
+      "bytes": 47,
+      "sha256": "13551fbe07294afea82b91a01da8bb4e6fc5d9e80b22c6636161719079639753"
+    },
+    {
+      "path": "frontend-wave2/cls-preview-final.err.log",
+      "bytes": 16,
+      "sha256": "3ccb8e5b8173808cdb5eef7fbf8a85f0db8e50c666cb89969339ab1bad100966"
+    },
+    {
+      "path": "frontend-wave2/cls-preview-final.out.log",
+      "bytes": 12749,
+      "sha256": "da65a545ac7d52338c97d83ca70b18fe80530466f172ff990833cb543a4f2615"
+    },
+    {
+      "path": "frontend-wave2/cls-preview.err.log",
+      "bytes": 16,
+      "sha256": "3ccb8e5b8173808cdb5eef7fbf8a85f0db8e50c666cb89969339ab1bad100966"
+    },
+    {
+      "path": "frontend-wave2/cls-preview.out.log",
+      "bytes": 4616,
+      "sha256": "f1e28ec0b9c11d4abf34676f05f7ecb3c5322adaebac45f4c48d306f40625dca"
+    },
+    {
+      "path": "frontend-wave2/cls-source-build.log",
+      "bytes": 85402,
+      "sha256": "e391ba9182c3f64a7c988e391d735a41a39ad75197ef3edbfa8bbc18a6a225db"
+    },
+    {
+      "path": "frontend-wave2/cls-source-fixture.err.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "frontend-wave2/cls-source-fixture.out.log",
+      "bytes": 66,
+      "sha256": "bef3500ea12cc4c863af267e9174a245e6f7c92b8daadd899781a9e629295177"
+    },
+    {
+      "path": "frontend-wave2/cls-source-pids.json",
+      "bytes": 47,
+      "sha256": "98dec23585be9364388ae350e4c3d883f8f67db673a3548c16743c761d34ae11"
+    },
+    {
+      "path": "frontend-wave2/cls-source-preview.err.log",
+      "bytes": 914,
+      "sha256": "7d19e9765e8f72865661107d5b11ae2cccdec14f694632282090889f50dfc8f7"
+    },
+    {
+      "path": "frontend-wave2/cls-source-preview.out.log",
+      "bytes": 58,
+      "sha256": "be1cf55e70baae51982256c6614d7a05b0f6a11ea3e126115746e2273a74bb7f"
+    },
+    {
+      "path": "frontend-wave2/cls-source-preview2.err.log",
+      "bytes": 16,
+      "sha256": "3ccb8e5b8173808cdb5eef7fbf8a85f0db8e50c666cb89969339ab1bad100966"
+    },
+    {
+      "path": "frontend-wave2/cls-source-preview2.out.log",
+      "bytes": 29841,
+      "sha256": "451c8413b29e585faaa33cbf7422f3d07c1e19b8a782eba27cd008f8e5c4523f"
+    },
+    {
+      "path": "frontend-wave2/fixture-empty.err.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "frontend-wave2/fixture-empty.log",
+      "bytes": 66,
+      "sha256": "bef3500ea12cc4c863af267e9174a245e6f7c92b8daadd899781a9e629295177"
+    },
+    {
+      "path": "frontend-wave2/fixture-final.err.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "frontend-wave2/fixture-final.log",
+      "bytes": 66,
+      "sha256": "bef3500ea12cc4c863af267e9174a245e6f7c92b8daadd899781a9e629295177"
+    },
+    {
+      "path": "frontend-wave2/fixture-mode.json",
+      "bytes": 2,
+      "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "path": "frontend-wave2/fixture.err.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "frontend-wave2/fixture.log",
+      "bytes": 66,
+      "sha256": "bef3500ea12cc4c863af267e9174a245e6f7c92b8daadd899781a9e629295177"
+    },
+    {
+      "path": "frontend-wave2/performance-build-final.log",
+      "bytes": 85403,
+      "sha256": "382abdfb5655045b8b370c59cec9819705e5ee460386463476a6d0d119fd061e"
+    },
+    {
+      "path": "frontend-wave2/performance-build.log",
+      "bytes": 85403,
+      "sha256": "7ff6ecf5dc412379d139f5aa2184ea161ebd796dc1560ababc9a70f0ae74d432"
+    },
+    {
+      "path": "frontend-wave2/performance-fixture.err.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "frontend-wave2/performance-fixture.out.log",
+      "bytes": 66,
+      "sha256": "bef3500ea12cc4c863af267e9174a245e6f7c92b8daadd899781a9e629295177"
+    },
+    {
+      "path": "frontend-wave2/performance-preview-final.err.log",
+      "bytes": 16,
+      "sha256": "3ccb8e5b8173808cdb5eef7fbf8a85f0db8e50c666cb89969339ab1bad100966"
+    },
+    {
+      "path": "frontend-wave2/performance-preview-final.out.log",
+      "bytes": 9143,
+      "sha256": "ab9efaba419a8c5d7d43a45369f1de343dc14df536892f6d970426267a07a429"
+    },
+    {
+      "path": "frontend-wave2/performance-preview.err.log",
+      "bytes": 16,
+      "sha256": "3ccb8e5b8173808cdb5eef7fbf8a85f0db8e50c666cb89969339ab1bad100966"
+    },
+    {
+      "path": "frontend-wave2/performance-preview.out.log",
+      "bytes": 46128,
+      "sha256": "0dc17a2bcd2db346c2f3fae5e8427ca6caf9bb63b3353bbd2b451b0baae108bc"
+    },
+    {
+      "path": "frontend-wave2/performance-server-pids.json",
+      "bytes": 47,
+      "sha256": "d8e11442235702168be42913f9794f0638e3499609e2863c3ff5224cfd6606e4"
+    },
+    {
+      "path": "frontend-wave2/preview-final.err.log",
+      "bytes": 49,
+      "sha256": "fdac81be9cde465525f7230b1a50e755d4753225f7244fc4dbdbd2bc50b2c74c"
+    },
+    {
+      "path": "frontend-wave2/preview-final.log",
+      "bytes": 67069,
+      "sha256": "614838d81915ef75b0231ea9624b567593b783157f43504881075ce39906ebb4"
+    },
+    {
+      "path": "frontend-wave2/preview.err.log",
+      "bytes": 49,
+      "sha256": "fdac81be9cde465525f7230b1a50e755d4753225f7244fc4dbdbd2bc50b2c74c"
+    },
+    {
+      "path": "frontend-wave2/preview.log",
+      "bytes": 125067,
+      "sha256": "a9bc8799bc73d3649ce0f83332a4846779f63d9279361298119f36b044596e26"
+    },
+    {
+      "path": "frontend-wave2/repro/green-source-contract.log",
+      "bytes": 1061,
+      "sha256": "47220e52fdf072effe00cccbe5f14f1d02643b34a9f6e247ca6fff89a2f529b9"
+    },
+    {
+      "path": "frontend-wave2/repro/red-source-contract.log",
+      "bytes": 1061,
+      "sha256": "26a8e987400e7792ec233de4638c97e398f1eb731a282a8b0454d4972b104758"
+    },
+    {
+      "path": "frontend-wave2/server-pids.json",
+      "bytes": 46,
+      "sha256": "5fb22bc94665f0cc1e15821e521ff5cfb5f136c665c2bea108e74b770414d3ae"
+    },
+    {
+      "path": "frontend-wave2/task6-a11y-desktop.png",
+      "bytes": 1351393,
+      "sha256": "ee703b5be73c6ea488b1d347154704bc06a45098cbe70eb117eac34e8cb680db"
+    },
+    {
+      "path": "frontend-wave2/task6-a11y-mobile.png",
+      "bytes": 872428,
+      "sha256": "e380b497e05e250a60cb1ad2633c3d5fee1a9ad93828a6d553a72cd6d51a19e4"
+    },
+    {
+      "path": "frontend-wave2/task6-performance-after.log",
+      "bytes": 850,
+      "sha256": "1e823699eceede0b2414e15c6a5d9df671adcf194222247f2e8d5d7b02c5a518"
+    },
+    {
+      "path": "frontend-wave2/task6-performance-after/adoption-apply-1440x900.png",
+      "bytes": 159109,
+      "sha256": "ed948a9bfee28801e047eff14ec11e52fcacc5d7b9127aabec8c983993dc5e6b"
+    },
+    {
+      "path": "frontend-wave2/task6-performance-after/adoption-apply-390x844.png",
+      "bytes": 128901,
+      "sha256": "c77d177fd0d79b742778135b4da87b448ea130c861da46a439a92434895c86e0"
+    },
+    {
+      "path": "frontend-wave2/task6-performance-after/home-1440x900.png",
+      "bytes": 1353662,
+      "sha256": "fa37a24608e60672751c508b673f4ff220f9431556c5c4b67fc12f61947c7b2c"
+    },
+    {
+      "path": "frontend-wave2/task6-performance-after/home-390x844.png",
+      "bytes": 979904,
+      "sha256": "81e8a26294913734012e504a62f9eadcb8177ac97a4be126b23b85385e7a7ced"
+    },
+    {
+      "path": "frontend-wave2/task6-performance-after/lighthouse-1440x900___desktop_cold-1.json",
+      "bytes": 481751,
+      "sha256": "074e0109f1a455b2e2a1589890d9b665695e35fe72bfd48eb04fee3d1eab9962"
+    },
+    {
+      "path": "frontend-wave2/task6-performance-after/lighthouse-1440x900___desktop_cold-2.json",
+      "bytes": 491495,
+      "sha256": "5076af0ecb5b6ec2c3ac1b6189685bf0479fc39932273eff7c078360007dc335"
+    },
+    {
+      "path": "frontend-wave2/task6-performance-after/lighthouse-1440x900___desktop_cold-3.json",
+      "bytes": 491145,
+      "sha256": "3689a602464c4cb386ba98a50d3e093ee0ab6a711448640a98b3c74801f560d7"
+    },
+    {
+      "path": "frontend-wave2/task6-performance-after/lighthouse-1440x900__adoption_apply_desktop_cold-1.json",
+      "bytes": 272330,
+      "sha256": "5b4b337dbe3c4ad0f88c051310e3c6179adde1d9805e9c695a81d0f534ea027f"
+    },
+    {
+      "path": "frontend-wave2/task6-performance-after/lighthouse-1440x900__adoption_apply_desktop_cold-2.json",
+      "bytes": 271877,
+      "sha256": "ff56f791eeee064421b485732e28ab7bfb6562d440a5a8e43014e09cfb81c912"
+    },
+    {
+      "path": "frontend-wave2/task6-performance-after/lighthouse-1440x900__adoption_apply_desktop_cold-3.json",
+      "bytes": 267965,
+      "sha256": "5c41ffad36cedd4ac163b302489b6cf2a096508ab1c95533ba4deee336d3612d"
+    },
+    {
+      "path": "frontend-wave2/task6-performance-after/lighthouse-390x844___mobile_cold-1.json",
+      "bytes": 447241,
+      "sha256": "7066323489c69c91493a54185e88359cfdd1aa140f829d675ee3fe7f75796a0f"
+    },
+    {
+      "path": "frontend-wave2/task6-performance-after/lighthouse-390x844___mobile_cold-2.json",
+      "bytes": 466624,
+      "sha256": "b3fd5f6e9cb1f5009b39d221ee96e31057cf34603c6e3497d297e3a369b24f00"
+    },
+    {
+      "path": "frontend-wave2/task6-performance-after/lighthouse-390x844___mobile_cold-3.json",
+      "bytes": 458282,
+      "sha256": "b84a942e99f121adb7fb6baf1b2209eef4cfd1cc33b9e4242bc5ef327a9d827c"
+    },
+    {
+      "path": "frontend-wave2/task6-performance-after/lighthouse-390x844__adoption_apply_mobile_cold-1.json",
+      "bytes": 266888,
+      "sha256": "66e0a80e50a52338dd91d18367e6703839e55ea84a1275700c8a45095b3d4d4b"
+    },
+    {
+      "path": "frontend-wave2/task6-performance-after/lighthouse-390x844__adoption_apply_mobile_cold-2.json",
+      "bytes": 264200,
+      "sha256": "f2050eba751a7ffdedae47c70a87ef45282311497415cb439f6d1afdb8eb033e"
+    },
+    {
+      "path": "frontend-wave2/task6-performance-after/lighthouse-390x844__adoption_apply_mobile_cold-3.json",
+      "bytes": 268249,
+      "sha256": "e6610fee47778eea1d8d219265c3c4d182f463d62959ef12b04cbcc511431794"
+    },
+    {
+      "path": "verification-infrastructure/a11y-run.log",
+      "bytes": 654,
+      "sha256": "694ace3f544dfdad6d5afddd45fc8273b2cb2e9aef3d0c8f6d5a3f977a940f9c"
+    },
+    {
+      "path": "verification-infrastructure/a11y/__brand-verification-missing__-1440x900.png",
+      "bytes": 119942,
+      "sha256": "b860324a14d5f5c68e78bbf8c0d949ec4ad0a0ba764197d8307f25db3c5ea640"
+    },
+    {
+      "path": "verification-infrastructure/a11y/about-1440x900.png",
+      "bytes": 1031767,
+      "sha256": "b46a7849caa87bd3884b4d5d89573705f87a938c30556d8a2827284db8cbc817"
+    },
+    {
+      "path": "verification-infrastructure/a11y/about-cccp-1440x900.png",
+      "bytes": 461157,
+      "sha256": "26163467ae6dae74fd24afdbbef2f07e34a5db38e44e998052369d9fce5953e1"
+    },
+    {
+      "path": "verification-infrastructure/a11y/about-privacy-1440x900.png",
+      "bytes": 415524,
+      "sha256": "e7bd250900b65ddd290da6668b035ce4181540841da94454fae491d959d26180"
+    },
+    {
+      "path": "verification-infrastructure/a11y/about-team-1440x900.png",
+      "bytes": 387966,
+      "sha256": "27532cd7ff56fdd9bf6b69c1e85ba05369a57b7d48d3294428aa300a71322643"
+    },
+    {
+      "path": "verification-infrastructure/a11y/about-tnr-1440x900.png",
+      "bytes": 416387,
+      "sha256": "c8b84cbfab4eea0963be44b08a043916d3cd2caece010c7c200e043c09fa9b9d"
+    },
+    {
+      "path": "verification-infrastructure/a11y/adoption-apply-1440x900.png",
+      "bytes": 159109,
+      "sha256": "ed948a9bfee28801e047eff14ec11e52fcacc5d7b9127aabec8c983993dc5e6b"
+    },
+    {
+      "path": "verification-infrastructure/a11y/adoption-instructions-1440x900.png",
+      "bytes": 316566,
+      "sha256": "37648125aa495ba6f3f6d83a1c3303ef997e862ab8740f1a13b372aa8c711bbd"
+    },
+    {
+      "path": "verification-infrastructure/a11y/adoption-status-__brand-verification__-1440x900.png",
+      "bytes": 148764,
+      "sha256": "1f83550a9b0fb905010952d853bd7f0ef4f37f76629e7fe5a91d51930b68ea09"
+    },
+    {
+      "path": "verification-infrastructure/a11y/animals-cat-00000000-0000-4000-8000-000000000001-1440x900.png",
+      "bytes": 400833,
+      "sha256": "a70717d838d66e642fc5f02d03a27a5e0cbfa857967ad0f61c97d8b59400a1db"
+    },
+    {
+      "path": "verification-infrastructure/a11y/animals-cat-1440x900.png",
+      "bytes": 398481,
+      "sha256": "ef5482ab30b7fea6dbc55d871e572dced3a3591eb18e47b8c285cd27f31bb05d"
+    },
+    {
+      "path": "verification-infrastructure/a11y/animals-dog-00000000-0000-4000-8000-000000000011-1440x900.png",
+      "bytes": 399532,
+      "sha256": "79d6227436b592a33069c260d1edb62abb81d79b5e9584bfb9d972cd589b88bc"
+    },
+    {
+      "path": "verification-infrastructure/a11y/animals-dog-1440x900.png",
+      "bytes": 396110,
+      "sha256": "6f9fa7e77a7241f7ff73aef76194d1b94bf8565953d26aed170bf585d37ae38e"
+    },
+    {
+      "path": "verification-infrastructure/a11y/axe-1440x900____brand-verification-missing__.json",
+      "bytes": 225275,
+      "sha256": "c544f24c63b59983413059cdf9d1c1d17ae12d108bd2b4fc7ee18556bae89274"
+    },
+    {
+      "path": "verification-infrastructure/a11y/axe-1440x900__.json",
+      "bytes": 579095,
+      "sha256": "c1aee544a45aca30279c92a6931a26729d69023740ae1328cbce4065246d5784"
+    },
+    {
+      "path": "verification-infrastructure/a11y/axe-1440x900__about_cccp.json",
+      "bytes": 357430,
+      "sha256": "bfd6d5c592384cdd3717375a4b5cd1d86758714ce4cba5b3c2f43a36be8747ce"
+    },
+    {
+      "path": "verification-infrastructure/a11y/axe-1440x900__about_privacy.json",
+      "bytes": 296383,
+      "sha256": "49232b5343f54154e985cd12338fe572faca6b53cc4d727678ddd42c7ee8e53b"
+    },
+    {
+      "path": "verification-infrastructure/a11y/axe-1440x900__about_team.json",
+      "bytes": 327753,
+      "sha256": "a22c195e60a69ea0b428335e1fa27983b7f503f72e875bd97109972ae182cd0b"
+    },
+    {
+      "path": "verification-infrastructure/a11y/axe-1440x900__about_tnr.json",
+      "bytes": 337138,
+      "sha256": "a466c365cc07bcd1c49df0e4807235e66cbb29ee635276bfe8094b01fa3ca0b8"
+    },
+    {
+      "path": "verification-infrastructure/a11y/axe-1440x900__about.json",
+      "bytes": 460654,
+      "sha256": "de64aad6293524448a4b0ed63428943e425b49dcdbb137adf070dc1587e64399"
+    },
+    {
+      "path": "verification-infrastructure/a11y/axe-1440x900__adoption_apply.json",
+      "bytes": 225369,
+      "sha256": "cc8672cbab57f2f5105c69924ed240dcfc08784843fb8bb5a6e2d821a9662ff0"
+    },
+    {
+      "path": "verification-infrastructure/a11y/axe-1440x900__adoption_instructions.json",
+      "bytes": 391680,
+      "sha256": "57e0e32bf6e503b1bd859de24a27b4d551e8001292de309cf8a4d38d67d72572"
+    },
+    {
+      "path": "verification-infrastructure/a11y/axe-1440x900__adoption_status___brand-verification__.json",
+      "bytes": 231297,
+      "sha256": "591b8fff2a803bf97a7b17563d634a69d0ebc5fdad95c66e683a139fa979b6e5"
+    },
+    {
+      "path": "verification-infrastructure/a11y/axe-1440x900__animals_cat_00000000-0000-4000-8000-000000000001.json",
+      "bytes": 288212,
+      "sha256": "2220bcc922c43afc04f3ee01743505f8a766d2379953d76fd6d7d6ef4148a5ee"
+    },
+    {
+      "path": "verification-infrastructure/a11y/axe-1440x900__animals_cat.json",
+      "bytes": 527696,
+      "sha256": "db6745ee56f1e131f9a7db6548ab779da564c35fa3c4b436dc4e6b406ada215b"
+    },
+    {
+      "path": "verification-infrastructure/a11y/axe-1440x900__animals_dog_00000000-0000-4000-8000-000000000011.json",
+      "bytes": 283676,
+      "sha256": "a890099f591747b329d3f96fb757f5fa94b311729f52021bdd03bc44c560f6f4"
+    },
+    {
+      "path": "verification-infrastructure/a11y/axe-1440x900__animals_dog.json",
+      "bytes": 523106,
+      "sha256": "ffb647f378e22b3493c47e86702919d5c79bbdf475828360f398efebe6b8f058"
+    },
+    {
+      "path": "verification-infrastructure/a11y/axe-1440x900__donate.json",
+      "bytes": 428818,
+      "sha256": "3d25652547f40276f3e8312010a5bfa25280c8831fa4f6c4b89f2e4bc3435096"
+    },
+    {
+      "path": "verification-infrastructure/a11y/axe-1440x900__help.json",
+      "bytes": 478507,
+      "sha256": "87dc44a26305dc968b62f4f12de050e991eb1472469db59d803f7aa98a699fae"
+    },
+    {
+      "path": "verification-infrastructure/a11y/axe-1440x900__report_adoption.json",
+      "bytes": 390730,
+      "sha256": "6a0e9a9daf348655d0aa4c14a9d0a1aa975b5e3364553593e803d84abbb7743f"
+    },
+    {
+      "path": "verification-infrastructure/a11y/axe-1440x900__report_audit.json",
+      "bytes": 275871,
+      "sha256": "541f0a448f66d13a23c62cc3d9694410228c83d1f68854aea716ef928b96bac6"
+    },
+    {
+      "path": "verification-infrastructure/a11y/axe-1440x900__sponsors_00000000-0000-4000-8000-000000000021.json",
+      "bytes": 278251,
+      "sha256": "d5c5381dcde18fae93aadd1d1ff94fb6c80997802ff8d0a2a6bf504b2c147535"
+    },
+    {
+      "path": "verification-infrastructure/a11y/axe-1440x900__sponsors_pledge.json",
+      "bytes": 235913,
+      "sha256": "2341058abb70ad8e6dcf730f316a426ea3646fd58f36d46bc6b18d889206d359"
+    },
+    {
+      "path": "verification-infrastructure/a11y/axe-1440x900__sponsors_status___brand-verification__.json",
+      "bytes": 231294,
+      "sha256": "ceccb75a6c6f80bbe8e600f250330a4a58d01e92a8e3d9071390f8db1336782b"
+    },
+    {
+      "path": "verification-infrastructure/a11y/axe-1440x900__sponsors.json",
+      "bytes": 408536,
+      "sha256": "4461cdc0a96ecc6714fa06abdfb80638b74ea6cdce3e1a3269a930b537bb9a29"
+    },
+    {
+      "path": "verification-infrastructure/a11y/axe-1440x900__stories___brand-verification__.json",
+      "bytes": 225272,
+      "sha256": "db3d71e1e1be9642d8a38e4bf4905c876c411b5748d0479360fe98cbf9757243"
+    },
+    {
+      "path": "verification-infrastructure/a11y/axe-1440x900__stories.json",
+      "bytes": 318066,
+      "sha256": "6eac8cef5526dde18212023b0fb0819ebeebd3a1108b8592b71be2c56cec7b0f"
+    },
+    {
+      "path": "verification-infrastructure/a11y/axe-1440x900__volunteer_status___brand-verification__.json",
+      "bytes": 235662,
+      "sha256": "b4ad17022efae636e3e7ed113613bd6c1f7dc396945b3314f5c7c2a75d2a30f1"
+    },
+    {
+      "path": "verification-infrastructure/a11y/axe-1440x900__volunteer.json",
+      "bytes": 408803,
+      "sha256": "939891f8e121b40f28d005205d8130816038f1703bb681914161584846782817"
+    },
+    {
+      "path": "verification-infrastructure/a11y/donate-1440x900.png",
+      "bytes": 323055,
+      "sha256": "9eb0ea43abf65b19d1ae17a412cdc82a2939933d27a7518483ffd6f4e643361a"
+    },
+    {
+      "path": "verification-infrastructure/a11y/help-1440x900.png",
+      "bytes": 446331,
+      "sha256": "421b709e6ec9207ffa6cb439e5985288766bba19f83fd1aeaf1dcd7b5406ba17"
+    },
+    {
+      "path": "verification-infrastructure/a11y/home-1440x900.png",
+      "bytes": 1377171,
+      "sha256": "bc16dccf73f38c78e2445e51252011a83cfa8adeb4e16712d96ac78cff8aba3d"
+    },
+    {
+      "path": "verification-infrastructure/a11y/report-adoption-1440x900.png",
+      "bytes": 464604,
+      "sha256": "02cb4d82254821dacb21f535077ecf90056bfb0e5cc6aa497f58a9ad8f096a98"
+    },
+    {
+      "path": "verification-infrastructure/a11y/report-audit-1440x900.png",
+      "bytes": 282089,
+      "sha256": "1ec88fe51780d16c27ce5f7f16abcbc1f3467e801b3cadc9311da8015caf8b42"
+    },
+    {
+      "path": "verification-infrastructure/a11y/sponsors-00000000-0000-4000-8000-000000000021-1440x900.png",
+      "bytes": 401965,
+      "sha256": "97c03c02552afda21a51c18e93323ed5389478be97bb328766e90d1f16404f5c"
+    },
+    {
+      "path": "verification-infrastructure/a11y/sponsors-1440x900.png",
+      "bytes": 385604,
+      "sha256": "b3578343564e8aeaaee36369ad262097f83312ee8a366b64cf4613686907d6e2"
+    },
+    {
+      "path": "verification-infrastructure/a11y/sponsors-pledge-1440x900.png",
+      "bytes": 142998,
+      "sha256": "f7c31ed8ec8e6b7bed2614250ec2b616a4425b0b28e6b8434c3c8ed2d0858fdd"
+    },
+    {
+      "path": "verification-infrastructure/a11y/sponsors-status-__brand-verification__-1440x900.png",
+      "bytes": 142807,
+      "sha256": "90e3ff897d1c9d49c0ef5828d731e0fada4afca1ef41f5aa400c0c3d713cd541"
+    },
+    {
+      "path": "verification-infrastructure/a11y/stories-__brand-verification__-1440x900.png",
+      "bytes": 120510,
+      "sha256": "f87e2afb0cae1d28bb60020fd0edf8339ddc867a2622d6013fb57fed1e24f4e4"
+    },
+    {
+      "path": "verification-infrastructure/a11y/stories-1440x900.png",
+      "bytes": 330034,
+      "sha256": "e63f10a817fe1ce9f218fe8ecbddad2d2862d05b18919da1988cc3c4b04e730d"
+    },
+    {
+      "path": "verification-infrastructure/a11y/volunteer-1440x900.png",
+      "bytes": 340516,
+      "sha256": "36c6c5f242637a465ffecf9428711c18e95fa1040cd2b4701bcf2d424e027f5d"
+    },
+    {
+      "path": "verification-infrastructure/a11y/volunteer-status-__brand-verification__-1440x900.png",
+      "bytes": 136226,
+      "sha256": "000f662c5a72e7d916aed7c343044c6589ed146ff18ccb7340599079f1be6108"
+    },
+    {
+      "path": "verification-infrastructure/admin-harness-green.log",
+      "bytes": 357,
+      "sha256": "a2885d0f0f50fc9e1f8852d141a0aeb571ffd3e448d163d85a4c49696e10bd9e"
+    },
+    {
+      "path": "verification-infrastructure/admin-harness-red.log",
+      "bytes": 1703,
+      "sha256": "9c313f7f65c2e9da75e5f2baf806b5746ed6b84818477f52cadf2e6b4a8d6e3b"
+    },
+    {
+      "path": "verification-infrastructure/performance-run.log",
+      "bytes": 1661,
+      "sha256": "b650d2fc269c9557f310539fe546c4fbae30ccd6ac219474335ee71fea8c33da"
+    },
+    {
+      "path": "verification-infrastructure/performance/adoption-apply-1440x900.png",
+      "bytes": 159109,
+      "sha256": "ed948a9bfee28801e047eff14ec11e52fcacc5d7b9127aabec8c983993dc5e6b"
+    },
+    {
+      "path": "verification-infrastructure/performance/adoption-apply-390x844.png",
+      "bytes": 128901,
+      "sha256": "c77d177fd0d79b742778135b4da87b448ea130c861da46a439a92434895c86e0"
+    },
+    {
+      "path": "verification-infrastructure/performance/animals-cat-1440x900.png",
+      "bytes": 443262,
+      "sha256": "a595f6f1f2b75b759ea653c7a9ff5c841f123906b935002bf0c66983f29f5f5c"
+    },
+    {
+      "path": "verification-infrastructure/performance/animals-cat-390x844.png",
+      "bytes": 689210,
+      "sha256": "7431a499f6a2d4623a512eba57e9b38f5663b43fa6881ded9703fbbb1460ada4"
+    },
+    {
+      "path": "verification-infrastructure/performance/donate-1440x900.png",
+      "bytes": 323038,
+      "sha256": "97a77d6bfa97e5c2407616d785205178f3b860182911dc892a6a35ec29de3dca"
+    },
+    {
+      "path": "verification-infrastructure/performance/donate-390x844.png",
+      "bytes": 276988,
+      "sha256": "9684a61cf538fb802066db653dcd93816c48c433f81c16822e477f292489e2e5"
+    },
+    {
+      "path": "verification-infrastructure/performance/home-1440x900.png",
+      "bytes": 1395946,
+      "sha256": "b46fbfc9efc25e2e98e10288bf0505c3253183f57735cd3e749561e3e4577956"
+    },
+    {
+      "path": "verification-infrastructure/performance/home-390x844.png",
+      "bytes": 981910,
+      "sha256": "7dbd33d6bb23041d38c97ce4cd3fbd3cb2e39a7c020485ddd9572e295283d688"
+    },
+    {
+      "path": "verification-infrastructure/performance/lighthouse-1440x900___desktop_cold-1.json",
+      "bytes": 480981,
+      "sha256": "73eb42e605929230d5a003e0e762b7cb22c564c73b96319fa8c8694f770ed93a"
+    },
+    {
+      "path": "verification-infrastructure/performance/lighthouse-1440x900___desktop_cold-2.json",
+      "bytes": 496347,
+      "sha256": "e8c2807a7dabe1776704f1097c9e8f6bb8b54a209f6ac9e5c945375d9cbc5f7e"
+    },
+    {
+      "path": "verification-infrastructure/performance/lighthouse-1440x900___desktop_cold-3.json",
+      "bytes": 480828,
+      "sha256": "1d7d7d8f35506e3725a5ac832e40109cbafec1d24933a150b471bc9a384985b2"
+    },
+    {
+      "path": "verification-infrastructure/performance/lighthouse-1440x900__adoption_apply_desktop_cold-1.json",
+      "bytes": 268597,
+      "sha256": "2d7466743670bb450e4ca36bc368594e4b85e93960d7f85dd2de14d0db010ca7"
+    },
+    {
+      "path": "verification-infrastructure/performance/lighthouse-1440x900__adoption_apply_desktop_cold-2.json",
+      "bytes": 267128,
+      "sha256": "b9a6d8bb17e20ea0cf0e0775ae36c03d299a60e5614ec03a7e8fd7d0ec63f755"
+    },
+    {
+      "path": "verification-infrastructure/performance/lighthouse-1440x900__adoption_apply_desktop_cold-3.json",
+      "bytes": 268058,
+      "sha256": "206fa171921787c90a50aedc3937be8a9ec0ae7f3fce0a0d5ce0e560a23f95a0"
+    },
+    {
+      "path": "verification-infrastructure/performance/lighthouse-1440x900__animals_cat_desktop_cold-1.json",
+      "bytes": 366435,
+      "sha256": "cbbec6d4305930c2f6f9317d7ce09b1d828e19e3472cb094ae8007819f40c7be"
+    },
+    {
+      "path": "verification-infrastructure/performance/lighthouse-1440x900__animals_cat_desktop_cold-2.json",
+      "bytes": 366286,
+      "sha256": "9fb756ddc658bf1998ea6e7b1cfb929baf882da800c51ece07c2a257a1bf5254"
+    },
+    {
+      "path": "verification-infrastructure/performance/lighthouse-1440x900__animals_cat_desktop_cold-3.json",
+      "bytes": 375165,
+      "sha256": "b513bba10d2a1b3d66912d5abc9c7e4372afa4c29a6c5fae8a7a1dfa3a0400d2"
+    },
+    {
+      "path": "verification-infrastructure/performance/lighthouse-1440x900__donate_desktop_cold-1.json",
+      "bytes": 327186,
+      "sha256": "030ff646226c183b6959079533dfddafeff080d1a5596f52659387e858979683"
+    },
+    {
+      "path": "verification-infrastructure/performance/lighthouse-1440x900__donate_desktop_cold-2.json",
+      "bytes": 340328,
+      "sha256": "54284db6fc9c17f29c3d5a42bfbeef719250c311cdfca9b949611109198ef6ba"
+    },
+    {
+      "path": "verification-infrastructure/performance/lighthouse-1440x900__donate_desktop_cold-3.json",
+      "bytes": 332185,
+      "sha256": "62c9710ff4c44fc8d99cb4942baa12756cf104be61903d59f99e38b68c1123cd"
+    },
+    {
+      "path": "verification-infrastructure/performance/lighthouse-390x844___mobile_cold-1.json",
+      "bytes": 458640,
+      "sha256": "efdd0d5bef0976208d80e28b1c284b3f4f468d8e49ff26ae7445b7c9509df6a3"
+    },
+    {
+      "path": "verification-infrastructure/performance/lighthouse-390x844___mobile_cold-2.json",
+      "bytes": 465891,
+      "sha256": "550975694d6bc344a4a6c3827732897bbeee0afe06a623fd84b031e3484aed43"
+    },
+    {
+      "path": "verification-infrastructure/performance/lighthouse-390x844___mobile_cold-3.json",
+      "bytes": 465187,
+      "sha256": "4061352170ce66434357567ad15a009e9db9c9e89dabf06fb1d6a0a6b5a04028"
+    },
+    {
+      "path": "verification-infrastructure/performance/lighthouse-390x844__adoption_apply_mobile_cold-1.json",
+      "bytes": 265067,
+      "sha256": "28fc897babd4d3db0d84df2a455ac67e2b88a4c092a57f8e713b361e8a501365"
+    },
+    {
+      "path": "verification-infrastructure/performance/lighthouse-390x844__adoption_apply_mobile_cold-2.json",
+      "bytes": 264297,
+      "sha256": "5797dfcbe937b82aac992ad37dbcb1b4e55df48e5617d23e5efeebf1760a85ee"
+    },
+    {
+      "path": "verification-infrastructure/performance/lighthouse-390x844__adoption_apply_mobile_cold-3.json",
+      "bytes": 264263,
+      "sha256": "2e36739530df9f4f65dc4da620f30d305e1a2a460279b1309e1ef5f63bee77d4"
+    },
+    {
+      "path": "verification-infrastructure/performance/lighthouse-390x844__animals_cat_mobile_cold-1.json",
+      "bytes": 347297,
+      "sha256": "284f73b0d097c5d52ea2621d29950b2e3ae53341453437c261b7767280b44ddd"
+    },
+    {
+      "path": "verification-infrastructure/performance/lighthouse-390x844__animals_cat_mobile_cold-2.json",
+      "bytes": 347267,
+      "sha256": "5978ecb3a9ac15f47798b0f8b966ab9bad969747ef8d58c8d4594f1d6290e2ac"
+    },
+    {
+      "path": "verification-infrastructure/performance/lighthouse-390x844__animals_cat_mobile_cold-3.json",
+      "bytes": 353866,
+      "sha256": "f3ae072d250afd1c8fb954d878c45c2a3e6e273989cbacc8d363ec16da6fcdb3"
+    },
+    {
+      "path": "verification-infrastructure/performance/lighthouse-390x844__donate_mobile_cold-1.json",
+      "bytes": 316743,
+      "sha256": "42f69f5178f10cbd4853f7de89017287d4a2a3824dd5a20749b2d016f39e4358"
+    },
+    {
+      "path": "verification-infrastructure/performance/lighthouse-390x844__donate_mobile_cold-2.json",
+      "bytes": 332260,
+      "sha256": "e9d69fe12e4114c07c2fc13f0e961fc359652962cd6949e84c7037638cdc7f08"
+    },
+    {
+      "path": "verification-infrastructure/performance/lighthouse-390x844__donate_mobile_cold-3.json",
+      "bytes": 315710,
+      "sha256": "db94ec3715592e6f8c1c4e73f681b3c9b9433c07d7876353a9caeb1c340417e2"
+    },
+    {
+      "path": "reviews/cms-lifecycle-checkpoint.diff",
+      "bytes": 34362,
+      "sha256": "d8eb25b1b6b63c84bf78a1268e60722364b62855ae17b1e04d013f3f8d8244b0"
+    },
+    {
+      "path": "reviews/cms-lifecycle-remedies.diff",
+      "bytes": 30549,
+      "sha256": "253228c8a1a07c5171887968555701395266031bf40d36628bc1d7c44d9296cc"
+    },
+    {
+      "path": "reviews/cms-wave1.diff",
+      "bytes": 28372,
+      "sha256": "5953149a393f4057e3e6993b680d7bfd99eb5eab7a3b2629e97a421d5ead37fb"
+    },
+    {
+      "path": "reviews/crm-wave1-final.diff",
+      "bytes": 72818,
+      "sha256": "a2202e64a9a285438dde30d8009111a6fa4e2f7a70768d655bc04324ea52763d"
+    },
+    {
+      "path": "reviews/crm-wave1.diff",
+      "bytes": 35809,
+      "sha256": "84c9a54ab64591298b7910a8bf5527d871e612a63e679ee107ac44dcc453844f"
+    },
+    {
+      "path": "reviews/frontend-wave1.diff",
+      "bytes": 19931,
+      "sha256": "e831b8be429ee0c4e98044b24278d66dbd568eb316a1e00fbad055634f41fa90"
+    },
+    {
+      "path": "reviews/verification-retention-final.diff",
+      "bytes": 10428,
+      "sha256": "e11c648507bc70f55351be61a8af4824320cb3f19654c5ff9ce20efe7c6b2cea"
+    },
+    {
+      "path": "reviews/verification-retention.diff",
+      "bytes": 10521,
+      "sha256": "32ea321549692306bfe4dff55dab14a1f9a6ba5e8f06a4039069f8644290e3d3"
+    }
+  ]
+}

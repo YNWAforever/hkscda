@@ -56,6 +56,15 @@ function createFakeRepository(): CrmRepository & {
     async insertConsentRows(rows) {
       calls.push({ name: "insertConsentRows", payload: rows });
     },
+    async recordManualGift(command) {
+      calls.push({ name: "recordManualGift", payload: command });
+      return {
+        donationId: "donation-1",
+        paymentId: "payment-1",
+        deliveryJobId: "job-1",
+        replayed: false,
+      };
+    },
     async insertManualDonation(records) {
       calls.push({ name: "insertManualDonation", payload: records });
       return { donationId: records.donation.id, paymentId: "payment-1" };
@@ -242,6 +251,7 @@ describe("createCrmService", () => {
     const result = await service.createManualDonation({
       actorUserId: "11111111-2222-4333-8444-555555555555",
       input: {
+        requestId: "22222222-3333-4444-8555-666666666666",
         supporter: {
           name: "Ada",
           email: "ADA@EXAMPLE.COM",
@@ -258,42 +268,13 @@ describe("createCrmService", () => {
       },
     });
 
-    expect(result.paymentId).toBe("payment-1");
-    expect(result.donationId).toMatch(
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
-    );
-    expect(repo.calls.map((call) => call.name)).toEqual([
-      "upsertSupporter",
-      "ensureSupporterRole",
-      "insertConsentRows",
-      "insertManualDonation",
-      // succeeded manual gift triggers receipt + acknowledgement side effects
-      "completeManualDonationSideEffects",
-    ]);
-    expect(repo.calls[2].payload).toMatchObject([
-      {
-        channel: "whatsapp",
-        status: "opt_in",
-        source: "admin_manual",
-      },
-    ]);
-    expect(repo.calls[3].payload).toMatchObject({
-      donation: {
-        supporter_id: "8bda8e40-cf39-4659-8be8-f2d74f9d2046",
-        amount_cents: 30000,
-        status: "succeeded",
-        method: "manual",
-      },
-      payment: {
-        status: "succeeded",
-        bank_reference: "CASH-2026-001",
-        reconciled_by: "11111111-2222-4333-8444-555555555555",
-      },
-      audit: {
-        action: "donation.manual_create",
-        entity: "donation",
-      },
+    expect(result).toEqual({
+      donationId: "donation-1",
+      paymentId: "payment-1",
+      deliveryJobId: "job-1",
+      replayed: false,
     });
+    expect(repo.calls).toEqual([expect.objectContaining({ name: "recordManualGift" })]);
   });
 
   test("audits supporter export row count and returns CSV", async () => {

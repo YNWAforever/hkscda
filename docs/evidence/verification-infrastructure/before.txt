@@ -1,0 +1,5 @@
+Baseline source checks at 20c168459a90c5c92093659a18b139a994451470:
+- scripts/verify-public-brand.mjs discards axe results after console summaries and Lighthouse lhr after extracting the score.
+- .github/workflows/ci.yml a11y/performance artifact uploads use if: failure(), so successful results are not retained.
+- Runner reports viewports.length (5) even when a11y/performance executes only isDesktop (1).
+Acceptance: preserve raw axe/Lighthouse JSON plus exact SHA, fixture hash, browser and measured viewport/settings; upload on success/failure; report actual measured viewports. No measured performance or a11y improvement claimed by retention alone.

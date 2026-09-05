@@ -1,0 +1,20 @@
+{
+  "result": "passed",
+  "checks": [
+    "real staff UI login and authenticated draft editor",
+    "nested profile dirty guard and versioned save",
+    "private cover upload survives finalization failure without duplicate upload",
+    "explicit saved revision publication is the first public output",
+    "anonymous public page renders the published saved title",
+    "draft save leaves existing public revision unchanged",
+    "two editors produce real409 with retained local text and nondestructive comparison",
+    "failed reload and cancelled discard preserve work; explicit successful reload recovers",
+    "signed private preview denied after actual expiration",
+    "internal update/media remain private through publish; historical public copy remains valid",
+    "revision comparison and restore create a draft without changing public output"
+  ],
+  "browserErrors": 0,
+  "baseURL": "http://127.0.0.1:55430",
+  "apiURL": "http://127.0.0.1:55321",
+  "timestamp": "2026-09-05T19:20:39.440Z"
+}

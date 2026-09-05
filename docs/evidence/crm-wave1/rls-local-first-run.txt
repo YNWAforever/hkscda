@@ -1,0 +1,48 @@
+bun test v1.3.14 (0d9b296a)
+
+supabase\rls-tests\moneyPii.rls.test.ts:
+(pass) RLS behavioral matrix: money/PII tables > admin_user > anon cannot select any row [7.80ms]
+(pass) RLS behavioral matrix: money/PII tables > admin_user > authenticated with no admin_user row sees zero rows, including others' [71.02ms]
+(pass) RLS behavioral matrix: money/PII tables > admin_user > staff sees exactly their own row, not others' [64.53ms]
+(pass) RLS behavioral matrix: money/PII tables > admin_user > staff cannot insert a new admin_user row [63.75ms]
+(pass) RLS behavioral matrix: money/PII tables > admin_user > admin sees all admin_user rows, including staff's and treasurer's [41.10ms]
+(pass) RLS behavioral matrix: money/PII tables > supporter > anon cannot select [28.42ms]
+(pass) RLS behavioral matrix: money/PII tables > supporter > anon cannot insert [21.58ms]
+(pass) RLS behavioral matrix: money/PII tables > supporter > authenticated with no admin_user row cannot select [25.02ms]
+(pass) RLS behavioral matrix: money/PII tables > supporter > staff can select [35.65ms]
+(pass) RLS behavioral matrix: money/PII tables > supporter > staff can update [31.06ms]
+(pass) RLS behavioral matrix: money/PII tables > supporter > staff cannot insert (no insert policy exists for any authenticated role) [4.46ms]
+(pass) RLS behavioral matrix: money/PII tables > supporter > treasurer can select [19.04ms]
+(pass) RLS behavioral matrix: money/PII tables > supporter > admin can select [3.61ms]
+(pass) RLS behavioral matrix: money/PII tables > donation > anon cannot select [3.50ms]
+(pass) RLS behavioral matrix: money/PII tables > donation > authenticated with no admin_user row cannot select [3.33ms]
+(pass) RLS behavioral matrix: money/PII tables > donation > staff can select but cannot update [12.07ms]
+(pass) RLS behavioral matrix: money/PII tables > donation > treasurer can select and update [10.06ms]
+(pass) RLS behavioral matrix: money/PII tables > donation > admin can select and update [5.53ms]
+(pass) RLS behavioral matrix: money/PII tables > donation > no authenticated role can insert a donation directly [3.98ms]
+(pass) RLS behavioral matrix: money/PII tables > payment > anon cannot select [3.56ms]
+(pass) RLS behavioral matrix: money/PII tables > payment > authenticated with no admin_user row cannot select [4.15ms]
+(pass) RLS behavioral matrix: money/PII tables > payment > staff can select but cannot reconcile (update) [9.77ms]
+(pass) RLS behavioral matrix: money/PII tables > payment > treasurer can reconcile (update) [9.24ms]
+(pass) RLS behavioral matrix: money/PII tables > payment > admin can reconcile (update) [4.53ms]
+(pass) RLS behavioral matrix: money/PII tables > payment > no authenticated role can insert a payment directly [3.97ms]
+(pass) RLS behavioral matrix: money/PII tables > receipt > anon cannot select [3.20ms]
+(pass) RLS behavioral matrix: money/PII tables > receipt > authenticated with no admin_user row cannot select [4.03ms]
+(pass) RLS behavioral matrix: money/PII tables > receipt > staff has no access at all -- cannot select, insert, or update [28.10ms]
+(pass) RLS behavioral matrix: money/PII tables > receipt > treasurer can insert, select, and update a receipt [20.46ms]
+(pass) RLS behavioral matrix: money/PII tables > receipt > admin can manage receipts too [9.70ms]
+(pass) RLS behavioral matrix: money/PII tables > consent > anon cannot select or insert [9.68ms]
+(pass) RLS behavioral matrix: money/PII tables > consent > authenticated with no admin_user row cannot select [3.09ms]
+(pass) RLS behavioral matrix: money/PII tables > consent > staff can select and update (unlike donation/payment, staff has update access here) [14.47ms]
+(pass) RLS behavioral matrix: money/PII tables > consent > treasurer can update [9.12ms]
+(pass) RLS behavioral matrix: money/PII tables > consent > admin can update [8.63ms]
+(pass) RLS behavioral matrix: money/PII tables > consent > no authenticated role can insert a consent row directly [4.13ms]
+(pass) RLS behavioral matrix: money/PII tables > recurring_mandate > every non-service-role caller is blocked from selecting, regardless of admin status [14.64ms]
+(pass) RLS behavioral matrix: money/PII tables > recurring_mandate > even admin cannot insert a recurring_mandate row directly [3.99ms]
+
+ 38 pass
+ 0 fail
+ 66 expect() calls
+Ran 38 tests across 1 file. [2.37s]
+
+exit=0
