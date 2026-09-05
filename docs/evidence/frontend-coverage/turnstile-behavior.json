@@ -1,0 +1,39 @@
+[
+  {
+    "scenario": "expiry",
+    "token": "",
+    "expected": ""
+  },
+  {
+    "scenario": "reset",
+    "token": "",
+    "expected": ""
+  },
+  {
+    "scenario": "language",
+    "token": "",
+    "expected": "",
+    "language": "zh-HK"
+  },
+  {
+    "scenario": "removed-callback",
+    "token": "",
+    "expected": ""
+  },
+  {
+    "scenario": "unmount",
+    "token": "",
+    "expected": "",
+    "removed": 3
+  },
+  {
+    "scenario": "remount",
+    "token": "",
+    "expected": ""
+  },
+  {
+    "scenario": "removed-expiry-error-cannot-clear-new-token",
+    "token": "synthetic-token",
+    "expected": "synthetic-token"
+  }
+]

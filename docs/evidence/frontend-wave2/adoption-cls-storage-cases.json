@@ -1,0 +1,3655 @@
+[
+  {
+    "name": "empty",
+    "shifts": [
+      {
+        "value": 0.014141874095428318,
+        "sources": [
+          {
+            "node": "undefined.undefined",
+            "previousRect": {
+              "x": 49,
+              "y": 241,
+              "width": 292,
+              "height": 102.25,
+              "top": 241,
+              "right": 341,
+              "bottom": 343.25,
+              "left": 49
+            },
+            "currentRect": {
+              "x": 49,
+              "y": 257,
+              "width": 292,
+              "height": 102.25,
+              "top": 257,
+              "right": 341,
+              "bottom": 359.25,
+              "left": 49
+            }
+          },
+          {
+            "node": "undefined.undefined",
+            "previousRect": {
+              "x": 49,
+              "y": 304.25,
+              "width": 292,
+              "height": 40,
+              "top": 304.25,
+              "right": 341,
+              "bottom": 344.25,
+              "left": 49
+            },
+            "currentRect": {
+              "x": 49,
+              "y": 362.5,
+              "width": 292,
+              "height": 40,
+              "top": 362.5,
+              "right": 341,
+              "bottom": 402.5,
+              "left": 49
+            }
+          }
+        ]
+      }
+    ],
+    "mutations": [
+      [
+        {
+          "type": "childList",
+          "added": [
+            null
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會 HKSCDA · 領養代替購買{\"@context\":\"https://schema.org\",\"@t"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會 HKSCDA · 領養代替購買{\"@context\":\"https://schema.org\",\"@t"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會 HKSCDA · 領養代替購買"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會 HKSCDA · 領養代替購買"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "{\"@context\":\"https://schema.org\",\"@type\":\"Organization\",\"nam"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "{\"@context\":\"https://schema.org\",\"@type\":\"Organization\",\"nam"
+          ],
+          "removed": []
+        }
+      ],
+      [
+        {
+          "type": "childList",
+          "added": [
+            "{\"@context\":\"https://schema.org\",\"@type\":\"WebSite\",\"url\":\"ht"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "{\"@context\":\"https://schema.org\",\"@type\":\"WebSite\",\"url\":\"ht"
+          ],
+          "removed": []
+        }
+      ],
+      [
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        }
+      ],
+      [
+        {
+          "type": "childList",
+          "added": [
+            "跳至主要內容"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會HKSCDA領養支持救援我們的工作故事與資源關於協會查看待領養動物立即捐助← 返回領養須知領養申請正在準"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會HKSCDA領養支持救援我們的工作故事與資源關於協會查看待領養動物立即捐助← 返回領養須知領養申請正在準"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會HKSCDA領養支持救援我們的工作故事與資源關於協會查看待領養動物立即捐助"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會HKSCDA領養支持救援我們的工作故事與資源關於協會查看待領養動物立即捐助"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會HKSCDA"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會HKSCDA"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "HKSCDA"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "HKSCDA"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "領養支持救援我們的工作故事與資源關於協會"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "領養"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "領養"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "領養"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "支持救援"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "支持救援"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "支持救援"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "我們的工作"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "我們的工作"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "我們的工作"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "故事與資源"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "故事與資源"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "故事與資源"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "關於協會"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "關於協會"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "關於協會"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "查看待領養動物立即捐助"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "查看待領養動物"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "查看待領養動物"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "立即捐助"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "立即捐助"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "← 返回領養須知領養申請正在準備申請表...你的個人資料只會用於處理領養申請及聯絡，不會作其他用途。(function("
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "$"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "← 返回領養須知"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "← 返回領養須知"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "← "
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            " "
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "返回領養須知"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "領養申請正在準備申請表..."
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "領養申請正在準備申請表..."
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "領養申請"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "領養申請"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "正在準備申請表..."
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "正在準備申請表..."
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "你的個人資料只會用於處理領養申請及聯絡，不會作其他用途。"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "你的個人資料只會用於處理領養申請及聯絡，不會作其他用途。"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "你的個人資料只會用於處理領養申請及聯絡，不會作其他用途。"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "(function(t){let s;try{s=JSON.parse(sessionStorage.getItem(t"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "(function(t){let s;try{s=JSON.parse(sessionStorage.getItem(t"
+          ],
+          "removed": []
+        }
+      ],
+      [
+        {
+          "type": "childList",
+          "added": [],
+          "removed": [
+            "(function(t){let s;try{s=JSON.parse(sessionStorage.getItem(t"
+          ]
+        }
+      ],
+      [
+        {
+          "type": "childList",
+          "added": [
+            "/$"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會以救援、醫療、絕育與負責任領養，守護香港流浪貓狗。立即行動待領養貓隻待領養狗隻領養流程安全捐助成為義工企"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會以救援、醫療、絕育與負責任領養，守護香港流浪貓狗。立即行動待領養貓隻待領養狗隻領養流程安全捐助成為義工企"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會以救援、醫療、絕育與負責任領養，守護香港流浪貓狗。"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會以救援、醫療、絕育與負責任領養，守護香港流浪貓狗。"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "以救援、醫療、絕育與負責任領養，守護香港流浪貓狗。"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "以救援、醫療、絕育與負責任領養，守護香港流浪貓狗。"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "立即行動待領養貓隻待領養狗隻領養流程安全捐助成為義工企業及團體參與"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "立即行動"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "立即行動"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "待領養貓隻"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "待領養貓隻"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "待領養狗隻"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "待領養狗隻"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "領養流程"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "領養流程"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "安全捐助"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "安全捐助"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "成為義工"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "成為義工"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "企業及團體參與"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "企業及團體參與"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "資料與聯絡每月領養報告年報及審計報告飼養知識求助及常見問題info@hkscda.com9864 1089私隱政策"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "資料與聯絡"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "資料與聯絡"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "每月領養報告"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "每月領養報告"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "年報及審計報告"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "年報及審計報告"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "飼養知識"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "飼養知識"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "求助及常見問題"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "求助及常見問題"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "info@hkscda.com"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "info@hkscda.com"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "9864 1089"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "9864 1089"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "私隱政策"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "私隱政策"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "追蹤我們FacebookInstagram"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "追蹤我們"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "追蹤我們"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "Facebook"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "Facebook"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "Instagram"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "Instagram"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港註冊慈善機構 · 檔案 91/14493 · 漁農署 ORG-00041© 2026 HKSCDA"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港註冊慈善機構 · 檔案 91/14493 · 漁農署 ORG-00041"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港註冊慈善機構 · 檔案 "
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            " "
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "91/14493"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            " "
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            " · 漁農署"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            " "
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            " "
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            " "
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "ORG-00041"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "© 2026 HKSCDA"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "© "
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            " "
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "2026"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            " "
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            " "
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            " "
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "HKSCDA"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "(self.$R=self.$R||{})[\"tsr\"]=[];self.$_TSR={h(){this.hydrate"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "(self.$R=self.$R||{})[\"tsr\"]=[];self.$_TSR={h(){this.hydrate"
+          ],
+          "removed": []
+        }
+      ],
+      [
+        {
+          "type": "childList",
+          "added": [],
+          "removed": [
+            "(self.$R=self.$R||{})[\"tsr\"]=[];self.$_TSR={h(){this.hydrate"
+          ]
+        }
+      ],
+      [
+        {
+          "type": "childList",
+          "added": [
+            "import(\"/assets/index-BY5DcaY1.js\")"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "import(\"/assets/index-BY5DcaY1.js\")"
+          ],
+          "removed": []
+        }
+      ],
+      [
+        {
+          "type": "childList",
+          "added": [
+            "{\"@context\":\"https://schema.org\",\"@type\":\"Organization\",\"nam"
+          ],
+          "removed": [
+            "{\"@context\":\"https://schema.org\",\"@type\":\"Organization\",\"nam"
+          ]
+        },
+        {
+          "type": "childList",
+          "added": [
+            "{\"@context\":\"https://schema.org\",\"@type\":\"WebSite\",\"url\":\"ht"
+          ],
+          "removed": [
+            "{\"@context\":\"https://schema.org\",\"@type\":\"WebSite\",\"url\":\"ht"
+          ]
+        },
+        {
+          "type": "childList",
+          "added": [],
+          "removed": [
+            "import(\"/assets/index-BY5DcaY1.js\")"
+          ]
+        }
+      ],
+      [
+        {
+          "type": "childList",
+          "added": [],
+          "removed": [
+            ""
+          ]
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "瀏覽可領養貓隻"
+          ],
+          "removed": []
+        }
+      ]
+    ],
+    "frames": [
+      {
+        "t": 1467.3999999910593,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1594,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1599.199999988079,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1641.5999999940395,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1657,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1674.0999999940395,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1690.2999999970198,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1707.5,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1724.2999999970198,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1740.8999999910593,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1758.5999999940395,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1775,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1791.0999999940395,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1807.7999999970198,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1824.0999999940395,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1841,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1857.199999988079,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1874.2999999970198,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1891.3999999910593,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1907.199999988079,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1924.7999999970198,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1940.5,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1957.5,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1974.0999999940395,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1991.8999999910593,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 2007.0999999940395,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 2024.8999999910593,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 2049.2999999970198,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 2062.699999988079,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 2074.699999988079,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      }
+    ],
+    "finalValue": 0.014141874095428318,
+    "savedName": null
+  },
+  {
+    "name": "saved",
+    "shifts": [
+      {
+        "value": 0.010519668332835153,
+        "sources": [
+          {
+            "node": "DIV.fixed right-4 z-50 sm:right-6",
+            "previousRect": {
+              "x": 228,
+              "y": 706,
+              "width": 162,
+              "height": 138,
+              "top": 706,
+              "right": 390,
+              "bottom": 844,
+              "left": 228
+            },
+            "currentRect": {
+              "x": 228,
+              "y": 624,
+              "width": 162,
+              "height": 220,
+              "top": 624,
+              "right": 390,
+              "bottom": 844,
+              "left": 228
+            }
+          }
+        ]
+      }
+    ],
+    "mutations": [
+      [
+        {
+          "type": "childList",
+          "added": [
+            null
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會 HKSCDA · 領養代替購買{\"@context\":\"https://schema.org\",\"@t"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會 HKSCDA · 領養代替購買{\"@context\":\"https://schema.org\",\"@t"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會 HKSCDA · 領養代替購買"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會 HKSCDA · 領養代替購買"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "{\"@context\":\"https://schema.org\",\"@type\":\"Organization\",\"nam"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "{\"@context\":\"https://schema.org\",\"@type\":\"Organization\",\"nam"
+          ],
+          "removed": []
+        }
+      ],
+      [
+        {
+          "type": "childList",
+          "added": [
+            "{\"@context\":\"https://schema.org\",\"@type\":\"WebSite\",\"url\":\"ht"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "{\"@context\":\"https://schema.org\",\"@type\":\"WebSite\",\"url\":\"ht"
+          ],
+          "removed": []
+        }
+      ],
+      [
+        {
+          "type": "childList",
+          "added": [
+            "跳至主要內容香港拯救貓狗協會HKSCDA領養支持救援我們的工作故事與資源關於協會查看待領養動物立即捐助← 返回領養須知領"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "跳至主要內容"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "跳至主要內容"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會HKSCDA領養支持救援我們的工作故事與資源關於協會查看待領養動物立即捐助← 返回領養須知領養申請正在準"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會HKSCDA領養支持救援我們的工作故事與資源關於協會查看待領養動物立即捐助← 返回領養須知領養申請正在準"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會HKSCDA領養支持救援我們的工作故事與資源關於協會查看待領養動物立即捐助"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會HKSCDA領養支持救援我們的工作故事與資源關於協會查看待領養動物立即捐助"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會HKSCDA"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會HKSCDA"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "HKSCDA"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "HKSCDA"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "領養支持救援我們的工作故事與資源關於協會"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "領養"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "領養"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "領養"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "支持救援"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "支持救援"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "支持救援"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "我們的工作"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "我們的工作"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "我們的工作"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "故事與資源"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "故事與資源"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "故事與資源"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "關於協會"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "關於協會"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "關於協會"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "查看待領養動物立即捐助"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "查看待領養動物"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "查看待領養動物"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "立即捐助"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "立即捐助"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "← 返回領養須知領養申請正在準備申請表...你的個人資料只會用於處理領養申請及聯絡，不會作其他用途。(function("
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "$"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "← 返回領養須知"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "← 返回領養須知"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "← "
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            " "
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "返回領養須知"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "領養申請正在準備申請表..."
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "領養申請正在準備申請表..."
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "領養申請"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "領養申請"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "正在準備申請表..."
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "正在準備申請表..."
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "你的個人資料只會用於處理領養申請及聯絡，不會作其他用途。"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "你的個人資料只會用於處理領養申請及聯絡，不會作其他用途。"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "你的個人資料只會用於處理領養申請及聯絡，不會作其他用途。"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "(function(t){let s;try{s=JSON.parse(sessionStorage.getItem(t"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "(function(t){let s;try{s=JSON.parse(sessionStorage.getItem(t"
+          ],
+          "removed": []
+        }
+      ],
+      [
+        {
+          "type": "childList",
+          "added": [],
+          "removed": [
+            "(function(t){let s;try{s=JSON.parse(sessionStorage.getItem(t"
+          ]
+        }
+      ],
+      [
+        {
+          "type": "childList",
+          "added": [
+            "/$"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會以救援、醫療、絕育與負責任領養，守護香港流浪貓狗。立即行動待領養貓隻待領養狗隻領養流程安全捐助成為義工企"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會以救援、醫療、絕育與負責任領養，守護香港流浪貓狗。立即行動待領養貓隻待領養狗隻領養流程安全捐助成為義工企"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會以救援、醫療、絕育與負責任領養，守護香港流浪貓狗。"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會以救援、醫療、絕育與負責任領養，守護香港流浪貓狗。"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港拯救貓狗協會"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "以救援、醫療、絕育與負責任領養，守護香港流浪貓狗。"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "以救援、醫療、絕育與負責任領養，守護香港流浪貓狗。"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "立即行動待領養貓隻待領養狗隻領養流程安全捐助成為義工企業及團體參與"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "立即行動"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "立即行動"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "待領養貓隻"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "待領養貓隻"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "待領養狗隻"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "待領養狗隻"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "領養流程"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "領養流程"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "安全捐助"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "安全捐助"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "成為義工"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "成為義工"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "企業及團體參與"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "企業及團體參與"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "資料與聯絡每月領養報告年報及審計報告飼養知識求助及常見問題info@hkscda.com9864 1089私隱政策"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "資料與聯絡"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "資料與聯絡"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "每月領養報告"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "每月領養報告"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "年報及審計報告"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "年報及審計報告"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "飼養知識"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "飼養知識"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "求助及常見問題"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "求助及常見問題"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "info@hkscda.com"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "info@hkscda.com"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "9864 1089"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "9864 1089"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "私隱政策"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "私隱政策"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "追蹤我們FacebookInstagram"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "追蹤我們"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "追蹤我們"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "Facebook"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "Facebook"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "Instagram"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "Instagram"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港註冊慈善機構 · 檔案 91/14493 · 漁農署 ORG-00041© 2026 HKSCDA"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港註冊慈善機構 · 檔案 91/14493 · 漁農署 ORG-00041"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "香港註冊慈善機構 · 檔案 "
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            " "
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "91/14493"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            " "
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            " · 漁農署"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            " "
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            " "
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            " "
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "ORG-00041"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "© 2026 HKSCDA"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "© "
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            " "
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "2026"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            " "
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            " "
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            " "
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "HKSCDA"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            ""
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "(self.$R=self.$R||{})[\"tsr\"]=[];self.$_TSR={h(){this.hydrate"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "(self.$R=self.$R||{})[\"tsr\"]=[];self.$_TSR={h(){this.hydrate"
+          ],
+          "removed": []
+        }
+      ],
+      [
+        {
+          "type": "childList",
+          "added": [],
+          "removed": [
+            "(self.$R=self.$R||{})[\"tsr\"]=[];self.$_TSR={h(){this.hydrate"
+          ]
+        }
+      ],
+      [
+        {
+          "type": "childList",
+          "added": [
+            "import(\"/assets/index-BY5DcaY1.js\")"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [
+            "import(\"/assets/index-BY5DcaY1.js\")"
+          ],
+          "removed": []
+        }
+      ],
+      [
+        {
+          "type": "childList",
+          "added": [
+            "{\"@context\":\"https://schema.org\",\"@type\":\"Organization\",\"nam"
+          ],
+          "removed": [
+            "{\"@context\":\"https://schema.org\",\"@type\":\"Organization\",\"nam"
+          ]
+        },
+        {
+          "type": "childList",
+          "added": [
+            "{\"@context\":\"https://schema.org\",\"@type\":\"WebSite\",\"url\":\"ht"
+          ],
+          "removed": [
+            "{\"@context\":\"https://schema.org\",\"@type\":\"WebSite\",\"url\":\"ht"
+          ]
+        },
+        {
+          "type": "childList",
+          "added": [
+            "已選 1 隻：領養 1，助養 01. Fixture Cat申請領養"
+          ],
+          "removed": []
+        },
+        {
+          "type": "childList",
+          "added": [],
+          "removed": [
+            "import(\"/assets/index-BY5DcaY1.js\")"
+          ]
+        }
+      ],
+      [
+        {
+          "type": "childList",
+          "added": [],
+          "removed": [
+            "領養申請正在準備申請表..."
+          ]
+        },
+        {
+          "type": "childList",
+          "added": [
+            "Public adoption領養申請草稿會自動儲存在本機瀏覽器；環境相片不會被草稿保存，提交前請保持分頁開啟。已載入本"
+          ],
+          "removed": []
+        }
+      ],
+      [
+        {
+          "type": "childList",
+          "added": [],
+          "removed": [
+            "你可以調整最多三隻領養動物的優先次序。第一位會成為主要跟進配對。1Fixture Cat貓隻 Cat"
+          ]
+        },
+        {
+          "type": "childList",
+          "added": [
+            "申請語言Application language繁體中文English申請人姓名Applicant name聯絡電話Ph"
+          ],
+          "removed": []
+        }
+      ]
+    ],
+    "frames": [
+      {
+        "t": 854.2999999970198,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 910.5,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 924.2999999970198,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 957.8999999910593,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 973.8999999910593,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 991.8999999910593,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1007.7999999970198,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1025,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1041.3999999910593,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1058.7999999970198,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1076.7999999970198,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1091.7000000029802,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1107.7999999970198,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1123.8999999910593,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1141.5999999940395,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1158.5999999940395,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1174.5999999940395,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1191,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1207.7000000029802,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1224.5,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1240.5999999940395,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1257.5,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1274.7000000029802,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1291.0999999940395,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1307.7000000029802,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1324.2000000029802,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1340.7000000029802,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1357.2000000029802,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1375.2000000029802,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      },
+      {
+        "t": 1390.7999999970198,
+        "mainText": "領養申請\n\n正在準備申請表...",
+        "mainRect": {
+          "x": 0,
+          "y": 149,
+          "width": 390,
+          "height": 717.390625,
+          "top": 149,
+          "right": 390,
+          "bottom": 866.390625,
+          "left": 0
+        },
+        "footerTop": 960.234375,
+        "style": "min-height:85vh"
+      }
+    ],
+    "finalValue": 0.010519668332835153,
+    "savedName": "Saved Applicant"
+  }
+]

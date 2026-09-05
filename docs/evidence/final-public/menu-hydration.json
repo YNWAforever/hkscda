@@ -1,0 +1,19 @@
+{
+  "results": [
+    {
+      "width": 375,
+      "disabledBeforeHydration": true,
+      "firstAvailableClickOpened": true
+    },
+    {
+      "width": 390,
+      "disabledBeforeHydration": true,
+      "firstAvailableClickOpened": true
+    },
+    {
+      "width": 768,
+      "disabledBeforeHydration": true,
+      "firstAvailableClickOpened": true
+    }
+  ]
+}

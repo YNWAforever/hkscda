@@ -1,0 +1,44 @@
+{
+  "results": [
+    {
+      "scenario": "help-empty",
+      "status": 200,
+      "expected": "0 條已審批答案",
+      "elapsedMs": 5304,
+      "upstreamDelayObservedMs": null,
+      "errors": []
+    },
+    {
+      "scenario": "help-slow",
+      "status": 200,
+      "expected": "2 條已審批答案",
+      "elapsedMs": 4157,
+      "upstreamDelayObservedMs": 1219.7377000000006,
+      "errors": []
+    },
+    {
+      "scenario": "donation-config-error",
+      "status": 200,
+      "disabled": true,
+      "posts": 0,
+      "errors": []
+    },
+    {
+      "scenario": "detail-source-outage",
+      "status": 200,
+      "brandedState": true,
+      "providerErrorHidden": true,
+      "errors": []
+    },
+    {
+      "scenario": "removed-animal-private-record-absent",
+      "status": 404,
+      "privateNameAbsent": true
+    },
+    {
+      "scenario": "published-payment-choice-both-languages",
+      "method": "paypal",
+      "selectedAcrossLanguageChange": true
+    }
+  ]
+}

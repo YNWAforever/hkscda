@@ -536,7 +536,7 @@ export function ApplicationWizard() {
 
   if (!storageReady) {
     return (
-      <main className="container-wide py-10" style={{ minHeight: "70vh" }}>
+      <main className="container-wide py-10" style={{ minHeight: "85vh" }}>
         <section className="mx-auto max-w-2xl rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-6 text-center shadow-soft">
           <Loader2 className="mx-auto h-8 w-8 animate-spin text-[var(--color-primary)]" />
           <h1 className="mt-4 text-2xl font-bold text-[var(--color-panel)]">領養申請</h1>
@@ -548,7 +548,7 @@ export function ApplicationWizard() {
 
   if (rankedAnimals.length === 0) {
     return (
-      <main className="container-wide py-10">
+      <main className="container-wide py-10" style={{ minHeight: "85vh" }}>
         <section className="mx-auto max-w-2xl rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-6 text-center shadow-soft">
           <PawPrint className="mx-auto h-12 w-12 text-[var(--color-primary)]" />
           <h1 className="mt-4 text-2xl font-bold text-[var(--color-panel)]">

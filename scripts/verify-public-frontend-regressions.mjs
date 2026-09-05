@@ -3,6 +3,10 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 const baseURL = process.env.BASE_URL ?? "http://127.0.0.1:4173";
+const target = new URL(baseURL);
+if (!["127.0.0.1", "localhost", "[::1]"].includes(target.hostname)) {
+  throw new Error("Frontend regression verifier accepts local fixture previews only");
+}
 const outputDir = path.resolve(process.env.OUTPUT_DIR ?? "docs/evidence/frontend-wave1/browser");
 const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined;
 const failures = [];
@@ -79,6 +83,12 @@ async function verifyHelp(browser, viewport) {
 async function verifyDrawerCta(browser, { label, destination }) {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await context.newPage();
+  const consoleErrors = [];
+  const pageErrors = [];
+  page.on("console", (message) => {
+    if (message.type() === "error") consoleErrors.push(message.text());
+  });
+  page.on("pageerror", (error) => pageErrors.push(error.message));
   await page.goto(new URL("/", baseURL).href, { waitUntil: "domcontentloaded" });
   await waitForHydratedDrawer(page);
   await page.locator("#mobile-drawer").getByRole("link", { name: label, exact: true }).click();
@@ -98,7 +108,8 @@ async function verifyDrawerCta(browser, { label, destination }) {
   if (state.dialogPresent) fail(`${label} left the mobile drawer mounted`);
   if (state.mainInert) fail(`${label} left the destination content inert`);
   if (state.bodyOverflow === "hidden") fail(`${label} left body scrolling locked`);
-  results.push({ scenario: "drawer-cta", label, destination, state });
+  if (consoleErrors.length || pageErrors.length) fail(`${label} emitted console/page errors`);
+  results.push({ scenario: "drawer-cta", label, destination, state, consoleErrors, pageErrors });
   await page.screenshot({
     path: path.join(outputDir, `drawer-${destination.slice(1).replaceAll("/", "-")}.png`),
     fullPage: true,

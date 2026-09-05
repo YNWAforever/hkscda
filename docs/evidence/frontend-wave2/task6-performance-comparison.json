@@ -1,0 +1,42 @@
+{
+  "beforeMobile": {
+    "scores": [
+      89,
+      90,
+      89
+    ],
+    "medianLcp": 3513.314,
+    "maxCls": 0.00078,
+    "medianTbt": 79
+  },
+  "afterMobile": {
+    "scores": [
+      93,
+      95,
+      95
+    ],
+    "medianLcp": 2557.901,
+    "maxCls": 0.00078,
+    "medianTbt": 111
+  },
+  "beforeDesktop": {
+    "scores": [
+      93,
+      98,
+      97
+    ],
+    "medianLcp": 1040.172,
+    "maxCls": 0.00028,
+    "medianTbt": 0
+  },
+  "afterDesktop": {
+    "scores": [
+      99,
+      98,
+      99
+    ],
+    "medianLcp": 791.76,
+    "maxCls": 0.00028,
+    "medianTbt": 0
+  }
+}

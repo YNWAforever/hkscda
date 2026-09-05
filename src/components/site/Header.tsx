@@ -34,6 +34,8 @@ export function Header() {
   const currentNavigation = findCurrentNavigation(pathname);
   const currentGroupIndex = currentNavigation?.groupIndex ?? -1;
 
+  const [interactive, setInteractive] = useState(false);
+  useEffect(() => setInteractive(true), []);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [desktopMenu, setDesktopMenu] = useState<number | null>(null);
   const [mobileGroup, setMobileGroup] = useState(currentGroupIndex >= 0 ? currentGroupIndex : 0);
@@ -237,6 +239,7 @@ export function Header() {
             <button
               ref={triggerRef}
               className="menu-trigger"
+              disabled={!interactive}
               type="button"
               aria-expanded={drawerOpen}
               aria-controls="mobile-drawer"

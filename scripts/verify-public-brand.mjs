@@ -45,7 +45,14 @@ const staticRoutes = [
 // staticRoutes/detailRoutes/stateRoutes list. Home, the animals listing, the
 // adoption form, and donate are the highest-traffic, highest-stakes public
 // pages.
-const performanceRoutes = ["/", "/animals/cat", "/adoption/apply", "/donate"];
+const allPerformanceRoutes = ["/", "/animals/cat", "/adoption/apply", "/donate"];
+const requestedPerformanceRoute = process.env.PERFORMANCE_ROUTE;
+if (requestedPerformanceRoute && !allPerformanceRoutes.includes(requestedPerformanceRoute)) {
+  throw new Error("PERFORMANCE_ROUTE must be one of the standard public measurement routes");
+}
+const performanceRoutes = requestedPerformanceRoute
+  ? [requestedPerformanceRoute]
+  : allPerformanceRoutes;
 
 const stateRoutes = [
   "/adoption/status/__brand-verification__",

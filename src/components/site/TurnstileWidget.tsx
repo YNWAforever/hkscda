@@ -72,9 +72,15 @@ export function TurnstileWidget({
         widgetIdRef.current = window.turnstile.render(containerRef.current, {
           sitekey: SITE_KEY,
           language,
-          callback: (token: string) => onVerifyRef.current(token),
-          "expired-callback": () => onExpireRef.current?.(),
-          "error-callback": () => onExpireRef.current?.(),
+          callback: (token: string) => {
+            if (!cancelled) onVerifyRef.current(token);
+          },
+          "expired-callback": () => {
+            if (!cancelled) onExpireRef.current?.();
+          },
+          "error-callback": () => {
+            if (!cancelled) onExpireRef.current?.();
+          },
         });
         setScriptFailed(false);
       })
@@ -85,6 +91,7 @@ export function TurnstileWidget({
 
     return () => {
       cancelled = true;
+      onExpireRef.current?.();
       if (widgetIdRef.current && window.turnstile) {
         try {
           window.turnstile.remove(widgetIdRef.current);
