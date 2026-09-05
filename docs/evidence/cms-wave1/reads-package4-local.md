@@ -27,3 +27,7 @@ No SQL was applied and no database query plan, latency, or response-size measure
 - Broad CMS/editor/reconcile run (excluding earlier adultCatCopy scan timeout):157pass22gatedskips1failure. The remaining failure was existing serviceSloganCopy tracked-file scan timeout13.6s against5s; no CMS behavioral assertion failed.
 - Latest tsc reports only concurrent `src/lib/donations/deliveryJobs.server.test.ts:310` mock type mismatch; no CMS errors. Focused final lint0errors.
 - Added concurrent historical-slug publication acceptance source. Automatic approval review rejected the initial combined source-edit/test command as possible DB mutation. Read-only inspection then verified loopback/protocol/no-routing guards and absence of both DB URL and fixture opt-in. A subsequent source-only edit/format was approved; the new concurrent test was not executed. No DB operations ran.
+
+## Superseding local acceptance
+
+Actual disposable database+Storage results now recorded in `database-storage-acceptance-local.md`:19pass0fail across lifecycle/read/media. Detail preview signing additionally changed from up to21 individual calls to one deduplicated batch for the20-row page plus its independentcover; regression red5pass1fail ->green6pass. Timeline bodyLoaded:false verified read-only with explicit expansion/no form; metadata retry and uncertain-success upload recovery unit regressions passed. Earlier unavailable-DB statements above describe the earlier checkpoint and are superseded only by the precisely scoped local evidence.

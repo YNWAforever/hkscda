@@ -1,0 +1,14 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\supporters\publicIdentity.database.test.ts:
+(pass) public identity actual local database > existing identity SQL acceptance preserves deleted canonical data and rejects invalid claims [31.46ms]
+(pass) public identity actual local database > concurrent first submissions converge on one unmixed canonical identity [28.57ms]
+(pass) public identity actual local database > public donation and volunteer snapshots preserve canonical opt-out and store only pending opt-ins [131.57ms]
+(pass) public identity actual local database > untrusted roles cannot resolve identities or read pending intent evidence [6.38ms]
+
+ 4 pass
+ 0 fail
+ 17 expect() calls
+Ran 4 tests across 1 file. [361.00ms]
+
+exit=0

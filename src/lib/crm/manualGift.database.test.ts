@@ -63,13 +63,25 @@ function database() {
 }
 async function gift(requestId: string, payload: unknown = input) {
   const rows =
-    await database()`select public.record_manual_gift_with_audit(${requestId}::uuid,${actor}::uuid,${JSON.stringify(payload)}::jsonb) result`;
+    await database()`select public.record_manual_gift_with_audit(${requestId}::uuid,${actor}::uuid,${payload}::jsonb) result`;
   return rows[0].result as {
     donationId: string;
     paymentId: string;
     deliveryJobId: string | null;
     replayed: boolean;
   };
+}
+// Await rejected Bun SQL promises directly. Bun 1.3.14's rejects.toThrow
+// matcher stalls these driver promises on Windows until the test timeout.
+async function expectDatabaseRejection(operation: Promise<unknown>, message: string) {
+  let rejection: unknown;
+  try {
+    await operation;
+  } catch (error) {
+    rejection = error;
+  }
+  expect(rejection).toBeDefined();
+  expect(String((rejection as Error).message)).toContain(message);
 }
 function requestId() {
   const id = randomUUID();
@@ -88,9 +100,11 @@ describe.skipIf(!url)("manual gift real database transaction and leases", () => 
   });
   afterAll(async () => {
     if (!sql) return;
-    await sql`delete from public.manual_gift_request where request_id = any(${sql.array(requests)}::uuid[])`;
+    for (const id of requests)
+      await sql`delete from public.manual_gift_request where request_id=${id}::uuid`;
     await sql`delete from public.audit_log where actor_user_id in (${actor}::uuid,${staffActor}::uuid)`;
-    await sql`delete from public.volunteer_activity where id=any(${sql.array(volunteerActivities)}::uuid[])`;
+    for (const id of volunteerActivities)
+      await sql`delete from public.volunteer_activity where id=${id}::uuid`;
     await sql`delete from public.admin_user where auth_user_id=${staffActor}::uuid`;
     await sql`delete from public.donation where supporter_id=${supporter}::uuid`;
     await sql`delete from public.supporter where id=${supporter}::uuid`;
@@ -123,9 +137,14 @@ describe.skipIf(!url)("manual gift real database transaction and leases", () => 
   test("changed payload conflicts without a second financial write", async () => {
     const key = requestId();
     await gift(key);
-    await expect(gift(key, { ...input, amountCents: 30000 })).rejects.toThrow(
-      "manual_gift_payload_conflict",
-    );
+    let rejection: unknown;
+    try {
+      await gift(key, { ...input, amountCents: 30000 });
+    } catch (error) {
+      rejection = error;
+    }
+    expect(rejection).toBeDefined();
+    expect(String((rejection as Error).message)).toContain("manual_gift_payload_conflict");
   });
   test("pending gifts persist finance without a delivery job", async () => {
     const result = await gift(requestId(), {
@@ -166,11 +185,12 @@ describe.skipIf(!url)("manual gift real database transaction and leases", () => 
         );
         const [before] =
           await tx`select count(*)::int total from public.consent where supporter_id=${supporter}::uuid`;
-        await expect(
+        await expectDatabaseRejection(
           tx.savepoint(async (sp) => {
-            await sp`select public.record_manual_gift_with_audit(${key}::uuid,${actor}::uuid,${JSON.stringify(input)}::jsonb)`;
+            await sp`select public.record_manual_gift_with_audit(${key}::uuid,${actor}::uuid,${input}::jsonb)`;
           }),
-        ).rejects.toThrow("forced fixture insert failure");
+          "forced fixture insert failure",
+        );
         const [request] =
           await tx`select count(*)::int total from public.manual_gift_request where request_id=${key}::uuid`;
         expect(request.total).toBe(0);
@@ -213,19 +233,19 @@ describe.skipIf(!url)("manual gift real database transaction and leases", () => 
             includeDeleted: false,
           };
           const [page] =
-            await tx`select public.crm_read_supporters(${JSON.stringify(filters)}::jsonb,1000,100,false) result`;
+            await tx`select public.crm_read_supporters(${filters}::jsonb,1000,100,false) result`;
           expect(page.result.total).toBe(count);
           expect(page.result.supporters.length).toBe(Math.min(100, count - 1000));
           const [optIn] =
-            await tx`select public.crm_read_supporters(${JSON.stringify({ ...filters, consentStatus: "opt_in" })}::jsonb,0,25,false) result`;
+            await tx`select public.crm_read_supporters(${{ ...filters, consentStatus: "opt_in" }}::jsonb,0,25,false) result`;
           expect(optIn.result.total).toBe(0);
           const [whatsapp] =
-            await tx`select public.crm_read_supporters(${JSON.stringify({ ...filters, consentChannel: "whatsapp", consentStatus: "opt_in" })}::jsonb,0,25,false) result`;
+            await tx`select public.crm_read_supporters(${{ ...filters, consentChannel: "whatsapp", consentStatus: "opt_in" }}::jsonb,0,25,false) result`;
           expect(whatsapp.result.total).toBe(count);
           const [supporters] =
-            await tx`select public.crm_read_supporters(${JSON.stringify(filters)}::jsonb,0,5000,true) result`;
+            await tx`select public.crm_read_supporters(${filters}::jsonb,0,5000,true) result`;
           const [donations] =
-            await tx`select public.crm_export_donations(${JSON.stringify(filters)}::jsonb) result`;
+            await tx`select public.crm_export_donations(${filters}::jsonb) result`;
           expect(supporters.result.total).toBe(count);
           expect(donations.result.total).toBe(count);
           expect(supporters.result.overflow).toBe(count > 5000);
@@ -245,7 +265,7 @@ describe.skipIf(!url)("manual gift real database transaction and leases", () => 
             const ids = new Set<string>();
             for (let offset = 0; offset < count; offset += 100) {
               const [batch] =
-                await tx`select public.crm_read_supporters(${JSON.stringify(filters)}::jsonb,${offset},100,false) result`;
+                await tx`select public.crm_read_supporters(${filters}::jsonb,${offset},100,false) result`;
               for (const row of batch.result.supporters) ids.add(row.id);
             }
             expect(ids.size).toBe(1001);
@@ -253,10 +273,10 @@ describe.skipIf(!url)("manual gift real database transaction and leases", () => 
           const [deleted] =
             await tx`update public.supporter set deleted_at=now() where id=(select id from public.supporter where source=${marker} order by id limit 1) returning id`;
           const [hidden] =
-            await tx`select public.crm_read_supporters(${JSON.stringify(filters)}::jsonb,0,25,false) result`;
+            await tx`select public.crm_read_supporters(${filters}::jsonb,0,25,false) result`;
           expect(hidden.result.total).toBe(count - 1);
           const [visible] =
-            await tx`select public.crm_read_supporters(${JSON.stringify({ ...filters, includeDeleted: true })}::jsonb,0,25,false) result`;
+            await tx`select public.crm_read_supporters(${{ ...filters, includeDeleted: true }}::jsonb,0,25,false) result`;
           expect(visible.result.total).toBe(count);
           expect(deleted.id).toBeDefined();
           throw rollback;
@@ -282,7 +302,7 @@ describe.skipIf(!url)("manual gift real database transaction and leases", () => 
           await tx`select id from public.donation where supporter_id=${id}::uuid order by id limit 1`;
         await tx`insert into public.receipt(supporter_id,receipt_no,donation_ids,total_amount_cents,tax_year,status) values(${id}::uuid,${"LOCAL-" + id},array[${gift.id}::uuid],10000,2026,'issued')`;
         const [exported] =
-          await tx`select public.crm_export_donations(${JSON.stringify({ tag: id })}::jsonb) result`;
+          await tx`select public.crm_export_donations(${{ tag: id }}::jsonb) result`;
         expect(
           exported.result.donations.find((d: { donationId: string }) => d.donationId === gift.id)
             .receiptNo,
@@ -370,11 +390,12 @@ describe.skipIf(!url)("manual gift real database transaction and leases", () => 
       await tx.unsafe(
         `create trigger fixture_fail_${suffix} before insert on public.audit_log for each row execute function public.fixture_fail_${suffix}()`,
       );
-      await expect(
+      await expectDatabaseRejection(
         tx.savepoint(async (sp) => {
           await sp`select public.set_volunteer_registration_status_with_audit(${registration.id}::uuid,${staffActor}::uuid,${registration.version}::timestamptz,'approved',null)`;
         }),
-      ).rejects.toThrow("forced approval audit failure");
+        "forced approval audit failure",
+      );
       const [row] =
         await tx`select status from public.volunteer_registration where id=${registration.id}::uuid`;
       expect(row.status).toBe("pending");

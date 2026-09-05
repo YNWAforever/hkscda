@@ -29,3 +29,17 @@ Follow-up: root browser fixture verified dialog outcome/retry reachability and s
 
 Stale acknowledgement reclaim now reads the injected clock once and uses that same instant for the age decision and database cutoff. The guarded update uses inclusive lte to match the five-minute expiry decision exactly. New cases at lease age 299999/300000/300001 ms with a synthetic 2040 clock failed before the fix (3 failures), then passed; they assert no early reclaim and the exact inclusive cutoff. Combined provider, donation/volunteer notification, delivery worker and HTTP conflict regression selection: 35 pass, 0 fail, 79 assertions. No real provider called. Targeted ESLint exited 0.
 Final full typecheck after clock and conflict-envelope changes: exit 0.
+
+## Disposable database execution (2026-09-06)
+
+Root bootstrapped the seven candidate migrations into isolated container `supabase_db_hkscda-completion-20260905`, database port 55322. CRM execution was explicitly sequenced before CMS/RLS. Only `postgresql://postgres:postgres@127.0.0.1:55322/postgres` was used, with `--no-env-file`, explicit fixture opt-in and an allowlisted child environment. No production database or provider involved.
+
+Initial real run failed because Bun SQL automatically serializes values inferred as jsonb: passing JSON.stringify(object) sent a JSON string, not an object. A read-only driver probe confirmed string_parameter=string versus object_parameter=object. Tests now bind objects directly; cleanup uses individual UUID parameters instead of Bun's default json[] array encoding. These were test harness defects, not migration changes.
+
+Expected SQL rejection matchers also stalled on this Bun 1.3.14 Windows host. Replacing them with explicit awaited try/catch and exact error-message assertions resolved the stalls. A trial timer workaround did not resolve them and was removed. Full red/intermediate logs are retained as local-database-first/second/third/fourth-run.txt; interrupted synthetic fixture IDs were captured and cleaned after stopping owned child processes, and no idle transaction remained before rerun.
+
+Final command: `bun --no-env-file test --isolate --timeout 30000 src/lib/crm/manualGift.database.test.ts` with explicit local fixture environment. Result: **17 pass, 0 fail, 90 assertions, 13.82 seconds** (one URL guard plus sixteen database scenarios). Evidence: `local-database-fifth-run.txt`.
+
+This executed real manual-gift replay/concurrency/conflict, finance/audit rollback, delivery claim/lease fencing, RPC grant denial, complete read-model predicates and 1001/5000/5001 export bounds, receipt association and totals, staff/staff and public/staff capacity races, cancellation, group capacity, capacity-reduction race and audit rollback. At 5000 rows actual decoded database JSON envelopes were 2,177,832 bytes for supporters and 1,977,831 bytes for donations; this is database function output through Bun SQL, not a PostgREST latency benchmark.
+
+Post-run read-only cleanup check: 0 CRM fixture supporters, 0 fixture actors, 0 fixture activities, 0 idle transactions and 0 fixture failure triggers. Database handed back to root for CMS/RLS. No candidate migration was changed during CRM execution. Provider/storage end-to-end delivery and production parity are separate gates; the grant check does not substitute for JWT/PostgREST RLS behavior.

@@ -28,7 +28,7 @@ test.skipIf(!enabled)(
         await tx`insert into public.content_media(content_item_id,storage_path,alt_text,is_cover) select item.id,item.id::text||'/'||n||'.jpg','Synthetic image',n=1 from public.content_item item cross join generate_series(1,100) n where item.title=${marker}`;
         const filters = { rescueRegion: marker, animalType: "cat", page: 25, pageSize: 50 };
         const [page] =
-          await tx`select public.read_content_admin_summaries(${JSON.stringify(filters)}::jsonb) as result`;
+          await tx`select public.read_content_admin_summaries(${filters}::jsonb) as result`;
         expect(page.result.total).toBe(1201);
         expect(page.result.rows).toHaveLength(1);
         expect(page.result.rows[0].updates).toHaveLength(1);
@@ -47,7 +47,7 @@ test.skipIf(!enabled)(
           await tx`select public.read_content_authoring_detail(${contentId}::uuid,5) as result`;
         expect(last.result.updates).toHaveLength(20);
         const [plan] =
-          await tx`explain (analyze,buffers,format json) select public.read_content_admin_summaries(${JSON.stringify(filters)}::jsonb)`;
+          await tx`explain (analyze,buffers,format json) select public.read_content_admin_summaries(${filters}::jsonb)`;
         expect(plan).toBeDefined();
         for (const role of ["anon", "authenticated"]) {
           const [access] =

@@ -3,6 +3,15 @@ import { SQL } from "bun";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { createContentMediaLifecycle } from "./mediaLifecycle.server";
 import { createSupabaseContentMediaPorts } from "./mediaLifecycle.repository.server";
+async function expectRejection(query: PromiseLike<unknown>) {
+  let rejected = false;
+  try {
+    await query;
+  } catch {
+    rejected = true;
+  }
+  expect(rejected).toBe(true);
+}
 const databaseUrl = process.env.CMS_LIFECYCLE_TEST_DATABASE_URL;
 const storageUrl = process.env.CMS_MEDIA_TEST_URL;
 const storageKey = process.env.CMS_MEDIA_TEST_SERVICE_ROLE_KEY;
@@ -35,7 +44,7 @@ const png = Uint8Array.from(
 type Created = { content_id: string; version: number; revision_id: string };
 async function createFixture() {
   const [row] =
-    await db`select public.create_content_revision_with_audit(${actor}::uuid,${JSON.stringify({ slug: `cms-media-${crypto.randomUUID()}`, type: "event", title: "Synthetic media fixture", summary: "Disposable private media acceptance" })}::jsonb) as result`;
+    await db`select public.create_content_revision_with_audit(${actor}::uuid,${{ slug: `cms-media-${crypto.randomUUID()}`, type: "event", title: "Synthetic media fixture", summary: "Disposable private media acceptance" }}::jsonb) as result`;
   const result = row.result as Created;
   ids.push(result.content_id);
   return result;
@@ -62,7 +71,7 @@ describe.skipIf(!enabled)("CMS private media isolated SQL and storage acceptance
       await db`delete from public.content_publication_prepare where content_item_id=${id}::uuid`;
       await db`delete from public.content_public_asset where content_item_id=${id}::uuid`;
       await db`delete from public.content_publish_request where content_item_id=${id}::uuid`;
-      await db`update public.content_item set draft_revision_id=null,published_revision_id=null where id=${id}::uuid`;
+      await db`update public.content_item set status='draft',published_slug=null,draft_revision_id=null,published_revision_id=null where id=${id}::uuid`;
       await db`delete from public.content_item where id=${id}::uuid`;
     }
     await db`delete from public.audit_log where actor_user_id=${actor}::uuid`;
@@ -95,9 +104,9 @@ describe.skipIf(!enabled)("CMS private media isolated SQL and storage acceptance
     };
     const first = await lifecycle.finalize(command);
     expect(await lifecycle.finalize(command)).toEqual(first);
-    await expect(
+    await expectRejection(
       lifecycle.finalize({ ...command, input: { ...command.input, altText: "Changed payload" } }),
-    ).rejects.toThrow();
+    );
     const preview = await lifecycle.preview({
       actorUserId: actor,
       contentId: item.content_id,
@@ -121,9 +130,9 @@ describe.skipIf(!enabled)("CMS private media isolated SQL and storage acceptance
   });
   test("invalid preparation leaves no public asset or preparation rows", async () => {
     const item = await createFixture();
-    await expect(
+    await expectRejection(
       db`select public.prepare_content_public_assets(${actor}::uuid,${item.content_id}::uuid,${item.revision_id}::uuid,${item.version},${crypto.randomUUID()})`,
-    ).rejects.toThrow();
+    );
     const [counts] =
       await db`select (select count(*)::int from public.content_public_asset where content_item_id=${item.content_id}::uuid) as assets,(select count(*)::int from public.content_publication_prepare where content_item_id=${item.content_id}::uuid) as preparations`;
     expect(counts.assets).toBe(0);
@@ -151,9 +160,9 @@ describe.skipIf(!enabled)("CMS private media isolated SQL and storage acceptance
         isCover: true,
       },
     });
-    await expect(
+    await expectRejection(
       db`select public.publish_content_revision(${actor}::uuid,${item.content_id}::uuid,${saved.revisionId}::uuid,${saved.version},${crypto.randomUUID()})`,
-    ).rejects.toThrow();
+    );
     const [pointer] =
       await db`select published_revision_id from public.content_item where id=${item.content_id}::uuid`;
     expect(pointer.published_revision_id).toBeNull();
