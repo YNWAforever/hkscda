@@ -25,3 +25,6 @@ Implementation checkpoint, not database/storage execution proof. No migration ap
 Image verification is length, signature and immutable hash; it does not fully decode/re-encode pixels. Public object creation is an explicitly requested valid selected-revision publication step; a later copy/readiness failure retains the old database pointer. Prepared successful copies may remain publicly reachable and are retained by reconciliation. No cleanup applies automatically.
 
 Independent backend review is required before Package 3. Generated routes remain root-owned. Exact Package 2 additions: mediaLifecycle.server.ts, mediaLifecycle.repository.server.ts, mediaLifecycle.test.ts, mediaLifecycle.sql.test.ts, mediaLifecycle.integration.test.ts, reconcile-content-media.ts/.test.ts, private-media migration, two media routes, this evidence file. Shared CMS file changes are listed above and lifecycle.sql.test.ts was adjusted to inspect the shared validator.
+
+
+Actual integrated browser acceptance completed on 2026-09-05T19:20:39Z:11 scenarios passed, zero pageerrors, synthetic fixtures cleaned. See `browser-acceptance-local.md` for executed coverage, prior red/green findings, and explicitly scoped local CSP/network transport accommodations.

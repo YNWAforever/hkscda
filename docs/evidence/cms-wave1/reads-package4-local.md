@@ -31,3 +31,6 @@ No SQL was applied and no database query plan, latency, or response-size measure
 ## Superseding local acceptance
 
 Actual disposable database+Storage results now recorded in `database-storage-acceptance-local.md`:19pass0fail across lifecycle/read/media. Detail preview signing additionally changed from up to21 individual calls to one deduplicated batch for the20-row page plus its independentcover; regression red5pass1fail ->green6pass. Timeline bodyLoaded:false verified read-only with explicit expansion/no form; metadata retry and uncertain-success upload recovery unit regressions passed. Earlier unavailable-DB statements above describe the earlier checkpoint and are superseded only by the precisely scoped local evidence.
+
+
+Actual integrated browser acceptance completed on 2026-09-05T19:20:39Z:11 scenarios passed, zero pageerrors, synthetic fixtures cleaned. See `browser-acceptance-local.md` for executed coverage, prior red/green findings, and explicitly scoped local CSP/network transport accommodations.

@@ -26,3 +26,6 @@ Actual database/storage/seeded editor acceptance, including live draft/public is
 ## Independent review corrections
 
 Root identified and corrections applied: structured lifecycle HTTP errors preserve AdminApiError409 through the real browser client; failed refetch with stale cached data cannot clear local form state; operation gate coalesces only the same panel/action and rejects another pending panel; revision children use labeled summaries instead of raw JSON. HTTP-client regression reproduced missing status before fix. Focused14pass0fail including retained-cache reload and different-panel gate tests. Final typecheck exit0. Lint before these surgical corrections had0errors and one existing FastRefresh export warning.
+
+
+Actual integrated browser acceptance completed on 2026-09-05T19:20:39Z:11 scenarios passed, zero pageerrors, synthetic fixtures cleaned. See `browser-acceptance-local.md` for executed coverage, prior red/green findings, and explicitly scoped local CSP/network transport accommodations.

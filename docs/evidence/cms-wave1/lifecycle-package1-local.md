@@ -79,3 +79,6 @@ Focused current results:
 Real SQL acceptance wrappers are in `src/lib/content/lifecycle.integration.test.ts`. Require `CMS_LIFECYCLE_TEST_DATABASE_URL` with an explicit loopback Postgres URI and no query-routing overrides, plus `CMS_LIFECYCLE_TEST_ALLOW_LOCAL_FIXTURES=1`. They do not apply migrations. They seed synthetic actors/content and clean up exact fixture IDs, testing audit-constraint rollback, two-writer conflict, idempotency replay/mismatch, profile-free restore and direct-role privileges. They have not executed because no isolated database is available.
 
 Still open: independent integrated-backend review, generated route tree/typecheck, private media Package2, editor version/review UI Package3, bounded admin histories Package4, and database/storage acceptance. Legacy operational social-copy/recipient notification mutation auditing remains outside the newly wired content authoring operations. No production SQL, data, objects, or deployments changed.
+
+
+Actual integrated browser acceptance completed on 2026-09-05T19:20:39Z:11 scenarios passed, zero pageerrors, synthetic fixtures cleaned. See `browser-acceptance-local.md` for executed coverage, prior red/green findings, and explicitly scoped local CSP/network transport accommodations.

@@ -4,7 +4,7 @@ scripts\content-media-reconciliation-local.test.ts:
 (pass) apply requires the exact disposable loopback stack and both opt-ins [30.49ms]
 21 | const LOCAL_DB = "postgresql://postgres:postgres@127.0.0.1:55322/postgres";
 22 | const BUCKETS = new Set(["content-media", "content-media-private"]);
-23 | 
+23 |
 24 | export function validateLocalMaintenanceTarget(target: LocalMaintenanceTarget) {
 25 |   if (!target.apply || !target.localMaintenance)
 26 |     throw new Error("Apply requires --apply and --local-maintenance explicit opt-ins");
