@@ -1,0 +1,116 @@
+ M bun.lock
+ M package.json
+ M scripts/verify-public-frontend-regressions.mjs
+ M src/components/admin/content/ContentEditor.test.tsx
+ M src/components/admin/content/ContentEditor.tsx
+ M src/components/admin/crm/ManualDonationDialog.tsx
+ M src/components/admin/crm/SupporterDetail.tsx
+ M src/components/site/adoption/ApplicationWizard.tsx
+ M src/components/site/home/HomeHero.tsx
+ M src/lib/content/contentListRead.server.test.ts
+ M src/lib/content/contentListRead.server.ts
+ M src/lib/content/http.server.ts
+ M src/lib/content/http.test.ts
+ A src/lib/content/lifecycle.repository.server.test.ts
+ A src/lib/content/lifecycle.repository.server.ts
+ A src/lib/content/lifecycle.sql.test.ts
+ A src/lib/content/lifecycle.test.ts
+ A src/lib/content/lifecycle.ts
+ M src/lib/content/repository.server.ts
+ M src/lib/content/service.ts
+ M src/lib/content/types.ts
+ M src/lib/crm/consent.test.ts
+ M src/lib/crm/consent.ts
+ M src/lib/crm/http.test.ts
+ M src/lib/crm/manualDonation.ts
+ M src/lib/crm/repository.server.test.ts
+ M src/lib/crm/repository.server.ts
+ M src/lib/crm/schemas.test.ts
+ M src/lib/crm/schemas.ts
+ M src/lib/crm/service.test.ts
+ M src/lib/crm/service.ts
+ M src/lib/crm/types.ts
+ M src/lib/donations/notifications.server.test.ts
+ M src/lib/donations/notifications.server.ts
+ M src/lib/donations/reconcile.lifecycle.test.ts
+ M src/lib/donations/reconcile.server.test.ts
+ M src/lib/donations/reconcile.server.ts
+ M src/lib/donations/service.test.ts
+ M src/lib/donations/service.ts
+ A src/lib/donations/supabase.server.test.ts
+ M src/lib/donations/supabase.server.ts
+ A src/lib/notifications/provider.server.test.ts
+ A src/lib/notifications/provider.server.ts
+ A src/lib/supporters/publicIdentity.server.test.ts
+ A src/lib/supporters/publicIdentity.server.ts
+ A src/lib/volunteers/notifications.server.test.ts
+ M src/lib/volunteers/notifications.server.ts
+ A src/lib/volunteers/repository.server.test.ts
+ M src/lib/volunteers/repository.server.ts
+ M src/lib/volunteers/service.test.ts
+ M src/lib/volunteers/service.ts
+ M src/lib/volunteers/types.ts
+ M src/routeTree.gen.ts
+ M src/routes/api/admin/content/-handlers.ts
+ M src/routes/api/admin/donations/manual.ts
+ A supabase/migrations/20260905144848_public_supporter_identity_claims.sql
+ A supabase/migrations/20260905150012_content_revision_lifecycle.sql
+ A supabase/tests/crm_public_identity.sql
+ A supabase/tests/crm_public_identity_concurrency.ps1
+?? docs/development-completion-evidence.md
+?? docs/development-public-copy-review.md
+?? docs/development-release-proposal.md
+?? docs/evidence/
+?? docs/superpowers/audits/
+?? docs/superpowers/plans/2026-09-05-hkscda-astra-completion.md
+?? docs/superpowers/plans/2026-09-05-hkscda-cms-completion.md
+?? docs/superpowers/plans/2026-09-05-hkscda-crm-completion.md
+?? docs/superpowers/plans/2026-09-05-hkscda-frontend-completion.md
+?? scripts/fixtures/manual-gift-ui.tsx
+?? scripts/reconcile-content-media.test.ts
+?? scripts/reconcile-content-media.ts
+?? scripts/verify-adoption-cls.mjs
+?? scripts/verify-content-publishing.mjs
+?? scripts/verify-manual-gift-ui.mjs
+?? scripts/verify-public-task6-a11y.mjs
+?? scripts/verify-public-task6.mjs
+?? src/assets/dog-smiling-1024.jpg
+?? src/assets/dog-smiling-480.jpg
+?? src/assets/dog-smiling-768.jpg
+?? src/components/admin/content/ContentRevisionPanel.tsx
+?? src/components/admin/content/editorState.test.ts
+?? src/components/admin/content/editorState.ts
+?? src/components/admin/crm/DonationDeliveryAction.tsx
+?? src/components/admin/crm/ManualGiftOutcome.test.tsx
+?? src/components/admin/crm/ManualGiftOutcome.tsx
+?? src/lib/content/lifecycle.integration.test.ts
+?? src/lib/content/lifecycle.service.test.ts
+?? src/lib/content/lifecycle.service.ts
+?? src/lib/content/mediaLifecycle.integration.test.ts
+?? src/lib/content/mediaLifecycle.repository.server.ts
+?? src/lib/content/mediaLifecycle.server.ts
+?? src/lib/content/mediaLifecycle.sql.test.ts
+?? src/lib/content/mediaLifecycle.test.ts
+?? src/lib/content/publishedSnapshot.repository.test.ts
+?? src/lib/crm/manualGift.database.test.ts
+?? src/lib/crm/manualGift.server.ts
+?? src/lib/crm/manualGiftDelivery.composition.server.ts
+?? src/lib/crm/manualGiftDelivery.http.server.test.ts
+?? src/lib/crm/manualGiftDelivery.http.server.ts
+?? src/lib/crm/readModel.server.test.ts
+?? src/lib/crm/readModel.server.ts
+?? src/lib/donations/deliveryJobs.repository.server.test.ts
+?? src/lib/donations/deliveryJobs.server.test.ts
+?? src/lib/donations/deliveryJobs.server.ts
+?? src/lib/publicMetrics.test.ts
+?? src/lib/publicMetrics.ts
+?? src/routes/api/admin/content/$id/media-finalize.ts
+?? src/routes/api/admin/content/$id/media-preview.ts
+?? src/routes/api/admin/content/$id/revisions.ts
+?? src/routes/api/admin/content/$id/revisions/
+?? src/routes/api/admin/donations/delivery/
+?? supabase/migrations/20260905155357_crm_manual_gift_delivery_jobs.sql
+?? supabase/migrations/20260905155426_content_private_media_sessions.sql
+?? supabase/migrations/20260905162615_crm_complete_read_models.sql
+?? supabase/migrations/20260905163559_content_bounded_authoring_reads.sql
+?? supabase/migrations/20260905163900_volunteer_atomic_approval.sql

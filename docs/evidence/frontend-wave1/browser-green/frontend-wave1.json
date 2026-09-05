@@ -1,0 +1,54 @@
+{
+  "baseURL": "http://127.0.0.1:4173",
+  "results": [
+    {
+      "scenario": "help",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "initialSummary": "2 條已審批答案",
+      "hydratedSummary": "2 條已審批答案",
+      "hydrationErrors": [],
+      "pageErrors": []
+    },
+    {
+      "scenario": "help",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "initialSummary": "2 條已審批答案",
+      "hydratedSummary": "2 條已審批答案",
+      "hydrationErrors": [],
+      "pageErrors": []
+    },
+    {
+      "scenario": "drawer-cta",
+      "label": "查看待領養動物",
+      "destination": "/animals/cat",
+      "state": {
+        "pathname": "/animals/cat",
+        "dialogPresent": false,
+        "mainInert": false,
+        "bodyOverflow": "",
+        "activeElement": "開啟選單"
+      }
+    },
+    {
+      "scenario": "drawer-cta",
+      "label": "立即捐助",
+      "destination": "/donate",
+      "state": {
+        "pathname": "/donate",
+        "dialogPresent": false,
+        "mainInert": false,
+        "bodyOverflow": "",
+        "activeElement": "開啟選單"
+      }
+    }
+  ],
+  "failures": []
+}

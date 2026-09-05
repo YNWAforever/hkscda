@@ -1,0 +1,97 @@
+[
+  {
+    "value": 0.11956934603822801,
+    "sources": [
+      {
+        "node": "<footer class=\"site-footer\" data-site-footer=\"true\"><div class=\"public-container footer-grid\"><div class=\"footer-brand\"><img src=\"/brand/hkscda-logo-primary.jpg\" alt=\"香港拯救貓狗協會 HKSCDA\" width=\"960\" height=\"960\" loading=\"lazy\" fetchpriority=\"auto\" class=\"h-auto w-auto object-contain\"><div><strong>香港拯救貓",
+        "previousRect": {
+          "x": 0,
+          "y": 483.09375,
+          "width": 390,
+          "height": 360.90625,
+          "top": 483.09375,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        },
+        "currentRect": {
+          "x": 0,
+          "y": 636.53125,
+          "width": 390,
+          "height": 207.46875,
+          "top": 636.53125,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        }
+      },
+      {
+        "node": "<aside aria-label=\"私隱提示\" class=\"public-container\"><p class=\"trust-cue\">你的個人資料只會用於處理領養申請及聯絡，不會作其他用途。</p></aside>",
+        "previousRect": {
+          "x": 16,
+          "y": 389.25,
+          "width": 358,
+          "height": 93.84375,
+          "top": 389.25,
+          "right": 374,
+          "bottom": 483.09375,
+          "left": 16
+        },
+        "currentRect": {
+          "x": 16,
+          "y": 542.6875,
+          "width": 358,
+          "height": 93.84375,
+          "top": 542.6875,
+          "right": 374,
+          "bottom": 636.53125,
+          "left": 16
+        }
+      },
+      {
+        "previousRect": {
+          "x": 49,
+          "y": 241,
+          "width": 292,
+          "height": 102.25,
+          "top": 241,
+          "right": 341,
+          "bottom": 343.25,
+          "left": 49
+        },
+        "currentRect": {
+          "x": 49,
+          "y": 257,
+          "width": 292,
+          "height": 102.25,
+          "top": 257,
+          "right": 341,
+          "bottom": 359.25,
+          "left": 49
+        }
+      },
+      {
+        "previousRect": {
+          "x": 49,
+          "y": 304.25,
+          "width": 292,
+          "height": 40,
+          "top": 304.25,
+          "right": 341,
+          "bottom": 344.25,
+          "left": 49
+        },
+        "currentRect": {
+          "x": 49,
+          "y": 362.5,
+          "width": 292,
+          "height": 40,
+          "top": 362.5,
+          "right": 341,
+          "bottom": 402.5,
+          "left": 49
+        }
+      }
+    ]
+  }
+]

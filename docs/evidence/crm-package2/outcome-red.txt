@@ -1,0 +1,36 @@
+bun test v1.3.14 (0d9b296a)
+
+src\components\admin\crm\ManualGiftOutcome.test.tsx:
+2 | import { renderToStaticMarkup } from "react-dom/server";
+3 | import { ManualGiftOutcome } from "./ManualGiftOutcome";
+4 | const common = { language: "zh" as const, donationId: "synthetic-gift", onRetry: () => {}, onDone: () => {}, retrying: false };
+5 | test("committed pending gift displays saved state and delivery-only retry", () => {
+6 |  const html = renderToStaticMarkup(<ManualGiftOutcome {...common} deliveryStatus="retryable" />);
+7 |  expect(html).toContain("捐款已儲存"); expect(html).toContain("重試收據及確認電郵");
+                  ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "捐款已儲存"
+Received: ""
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\components\admin\crm\ManualGiftOutcome.test.tsx:7:15)
+(fail) committed pending gift displays saved state and delivery-only retry [106.23ms]
+ 7 |  expect(html).toContain("捐款已儲存"); expect(html).toContain("重試收據及確認電郵");
+ 8 |  expect(html).not.toContain("儲存手動捐款");
+ 9 | });
+10 | test("completed gift cannot be resent from outcome", () => {
+11 |  const html = renderToStaticMarkup(<ManualGiftOutcome {...common} deliveryStatus="complete" />);
+12 |  expect(html).toContain("電郵服務已接納"); expect(html).not.toContain("重試收據及確認電郵");
+                   ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "電郵服務已接納"
+Received: ""
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\components\admin\crm\ManualGiftOutcome.test.tsx:12:15)
+(fail) completed gift cannot be resent from outcome [0.45ms]
+
+ 0 pass
+ 2 fail
+ 2 expect() calls
+Ran 2 tests across 1 file. [685.00ms]

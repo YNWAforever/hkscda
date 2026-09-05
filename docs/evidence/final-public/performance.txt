@@ -1,0 +1,26 @@
+$ MODE=performance node scripts/verify-public-brand.mjs
+390x844 / mobile cold-1: Lighthouse performance score 94
+390x844 / mobile cold-2: Lighthouse performance score 94
+390x844 / mobile cold-3: Lighthouse performance score 95
+390x844 /animals/cat mobile cold-1: Lighthouse performance score 98
+390x844 /animals/cat mobile cold-2: Lighthouse performance score 99
+390x844 /animals/cat mobile cold-3: Lighthouse performance score 99
+390x844 /adoption/apply mobile cold-1: Lighthouse performance score 99
+390x844 /adoption/apply mobile cold-2: Lighthouse performance score 99
+390x844 /adoption/apply mobile cold-3: Lighthouse performance score 99
+390x844 /donate mobile cold-1: Lighthouse performance score 98
+390x844 /donate mobile cold-2: Lighthouse performance score 99
+390x844 /donate mobile cold-3: Lighthouse performance score 98
+1440x900 / desktop cold-1: Lighthouse performance score 98
+1440x900 / desktop cold-2: Lighthouse performance score 99
+1440x900 / desktop cold-3: Lighthouse performance score 95
+1440x900 /animals/cat desktop cold-1: Lighthouse performance score 100
+1440x900 /animals/cat desktop cold-2: Lighthouse performance score 100
+1440x900 /animals/cat desktop cold-3: Lighthouse performance score 98
+1440x900 /adoption/apply desktop cold-1: Lighthouse performance score 99
+1440x900 /adoption/apply desktop cold-2: Lighthouse performance score 100
+1440x900 /adoption/apply desktop cold-3: Lighthouse performance score 99
+1440x900 /donate desktop cold-1: Lighthouse performance score 99
+1440x900 /donate desktop cold-2: Lighthouse performance score 100
+1440x900 /donate desktop cold-3: Lighthouse performance score 95
+Verified 4 routes across 2 viewports in performance mode

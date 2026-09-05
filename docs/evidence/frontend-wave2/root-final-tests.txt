@@ -1,0 +1,38 @@
+bun test v1.3.14 (0d9b296a)
+
+src\routes\donate.test.tsx:
+(pass) renders the optional purpose note and language-aware wedding forms [5069.78ms]
+(pass) keeps the donation page available when optional documents fail to load [0.47ms]
+(pass) AlipayHK donation checkout > reconciles checkout selection to the first published payment method [0.29ms]
+(pass) AlipayHK donation checkout > keeps every provider hidden until the production activation gate is approved [3.14ms]
+(pass) AlipayHK donation checkout > selects PayPal when it is the only published method [6.64ms]
+(pass) AlipayHK donation checkout > renders Card and AlipayHK as separate payment methods [3.51ms]
+(pass) AlipayHK donation checkout > renders no method buttons when the config-driven list is empty [2.71ms]
+(pass) AlipayHK donation checkout > renders a method button per configured method, in the given order [2.80ms]
+(pass) AlipayHK donation checkout > builds an AlipayHK request with the checkout experience [0.45ms]
+(pass) AlipayHK donation checkout > treats a COD pending return as waiting, not as a confirmed donation [2.29ms]
+(pass) AlipayHK donation checkout > records success only after a COD pending return is confirmed by the status poll [0.80ms]
+(pass) AlipayHK donation checkout > forwards cancellation to the donation status poll [0.38ms]
+(pass) AlipayHK donation checkout > does not record success when a COD pending return remains pending after polling [0.25ms]
+(pass) uses the shared public-container class, not the pre-port container-wide utility [4.22ms]
+
+src\routes\__root.visual.test.ts:
+(pass) public visual token boundary > wraps public routes without changing the admin shell [108.94ms]
+(pass) public visual token boundary > places the root not-found state inside the page main landmark [0.85ms]
+
+src\components\site\PublicFormFrame.test.tsx:
+(pass) PublicFormFrame > omits the breadcrumb when no href/label is given, and renders the trust note [79.62ms]
+(pass) PublicFormFrame > renders the breadcrumb when both href and label are given [0.71ms]
+
+src\components\site\turnstileScript.test.ts:
+(pass) Turnstile script recovery > removes a failed cached script and succeeds on retry without duplicates [15.33ms]
+
+src\lib\animals\publicDetailLoader.test.ts:
+(pass) loadPublicDetailOrNotFound > returns a public animal [0.23ms]
+(pass) loadPublicDetailOrNotFound > throws a router not-found result for genuine absence [0.13ms]
+(pass) loadPublicDetailOrNotFound > returns the outage sentinel when the data source throws [0.28ms]
+
+ 22 pass
+ 0 fail
+ 87 expect() calls
+Ran 22 tests across 5 files. [7.35s]

@@ -1,0 +1,46 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\security-headers.test.ts:
+(pass) applySecurityHeaders > sets the baseline security headers on a response [1.32ms]
+(pass) applySecurityHeaders > preserves status, body, and existing headers [0.36ms]
+(pass) applySecurityHeaders > does not overwrite a header the handler already set [0.06ms]
+(pass) applySecurityHeaders > ships CSP enforcing [0.08ms]
+(pass) applySecurityHeaders > routes violations to a collector so an enforced block is visible [0.09ms]
+(pass) applySecurityHeaders > declares the report-to group via Reporting-Endpoints [0.08ms]
+(pass) applySecurityHeaders > CSP_REPORT_PATH matches the actual collector route's URL [1.33ms]
+(pass) the policy covers what the app actually loads > allows the Turnstile script and its iframe [1.07ms]
+(pass) the policy covers what the app actually loads > allows the Google Maps loader [1.29ms]
+(pass) the policy covers what the app actually loads > no longer allows third-party fonts or styles [0.12ms]
+
+src\lib\content\mediaLifecycle.test.ts:
+(pass) allocates a private server-owned upload target [5.52ms]
+(pass) rejects invalid image bytes before finalization [2.35ms]
+(pass) a failed public copy leaves the previous publication untouched [1.50ms]
+(pass) publishes only after approved public copies are ready [0.50ms]
+(pass) rejects an expired upload session before downloading [0.76ms]
+(pass) rejects a foreign-content session before reading bytes [0.45ms]
+(pass) finalization replay asks the database to compare the original payload without redownloading [0.92ms]
+(pass) readiness persistence failure prevents publication after copying [0.62ms]
+(pass) invalid preparation never copies private media or advances publication [0.36ms]
+
+src\lib\content\repository.server.test.ts:
+(pass) createSupabaseContentRepository createSignedUploadUrl > resolves to the token and path Supabase's Storage API returns, against the content-media bucket [0.65ms]
+(pass) createSupabaseContentRepository createSignedUploadUrl > throws when Supabase Storage returns an error [0.17ms]
+(pass) createSupabaseContentRepository createSignedUploadUrl > throws a descriptive error when Storage responds without a token or path [0.16ms]
+(pass) one or fifty private admin covers use one projection and one signing batch [11.99ms]
+(pass) detail pages stay bounded while cover and latest summary remain independent [3.72ms]
+(pass) detail page and its separate private cover share one signing batch [1.52ms]
+
+src\components\admin\content\ContentEditor.test.tsx:
+(pass) ContentEditor > renders authoring controls for story profile, updates, media, and links [140.08ms]
+(pass) ContentEditor > allows internal attachments through private uploads [17.53ms]
+(pass) ContentEditor > uses a router link for returning to the content list [16.55ms]
+(pass) createContentMediaWithUpload > requests a signed upload target, uploads to it, then posts media metadata, in that order [2.36ms]
+(pass) createContentMediaWithUpload > never posts media metadata when the signed upload fails [0.76ms]
+(pass) metadata failure retries the same uploaded session without another upload [0.43ms]
+(pass) uncertain successful upload retries verified finalization before uploading again [0.33ms]
+
+ 32 pass
+ 0 fail
+ 111 expect() calls
+Ran 32 tests across 4 files. [1005.00ms]

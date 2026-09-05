@@ -1,0 +1,111 @@
+bun test v1.3.14 (0d9b296a)
+
+docs\evidence\crm-baseline\email-safety.test.ts:
+(pass) resolved provider rejection is never persisted or returned as sent [3.21ms]
+
+src\lib\donations\notifications.server.test.ts:
+(pass) sendDonationAcknowledgement > claims a queued message row up front when no email provider is configured [1.61ms]
+(pass) sendDonationAcknowledgement > skips without double-sending when the acknowledgement is already claimed (23505) [0.49ms]
+(pass) sendDonationAcknowledgement > keeps a fresh queued acknowledgement retryable while another sender owns it [0.20ms]
+(pass) sendDonationAcknowledgement > atomically reclaims a failed acknowledgement for retry [0.48ms]
+(pass) sendDonationAcknowledgement > records a resolved provider rejection as failed and never marks it sent [3.47ms]
+
+src\lib\donations\reconcile.lifecycle.test.ts:
+(pass) issueReceiptIfNeeded > allocates + stores a new receipt atomically and uploads the PDF once [1.06ms]
+(pass) issueReceiptIfNeeded > is idempotent: an already-issued receipt with a PDF is returned without re-allocating or re-uploading [0.27ms]
+(pass) issueReceiptIfNeeded > regenerates the PDF when a prior attempt committed the row but left no PDF [0.24ms]
+(pass) completeDonationSideEffects > surfaces a failed acknowledgement so the provider event stays retryable [0.34ms]
+(pass) issueReceiptForDonation > rejects ineligible donations before calling the receipt RPC [0.82ms]
+(pass) failProviderPayment > marks the payment and donation failed, guarded on the pending status [1.84ms]
+(pass) refundProviderPayment > makes a verified refund terminal even when it arrives before the paid notification [1.75ms]
+(pass) refundProviderPayment > marks refunded (guarded on succeeded), voids the receipt, and removes its PDF [0.54ms]
+(pass) flagProviderWebhookForReview > audits and acknowledges a mapped payment without changing payment state [0.52ms]
+(pass) refundProviderPayment guard outcomes > does not report refunded when guarded state transitions affect no rows [0.23ms]
+(pass) reconcileProviderPayment unknown payments > acknowledges (not_found) without resurrecting state when no payment matches [0.43ms]
+(pass) reconcileProviderPayment terminal-state guard > skips a refunded donation instead of flipping it back to succeeded [0.23ms]
+(pass) reconcileProviderPayment success path > keeps a mixed succeeded payment and pending donation retryable after a guard miss [0.73ms]
+(pass) reconcileProviderPayment success path > does not run receipt or acknowledgement side effects when a concurrent refund wins [0.24ms]
+(pass) reconcileProviderPayment success path > applies pending->succeeded guarded on the pending status [0.32ms]
+(pass) reconcileProviderPayment success path > quarantines an amount mismatch terminally: audits, acknowledges, does not credit [0.28ms]
+(pass) reconcileProviderPayment metadata fallback > reconciles via fallbackPaymentId and backfills provider_ref when the provider_ref lookup misses [0.25ms]
+(pass) reconcileManualPayment > marks a manual payment received, records actor + bank reference, and audits [0.49ms]
+(pass) reconcileManualPayment > rejects (409) reconciling a payment that is not pending, without auditing [0.18ms]
+(pass) voidReceipt > removes the stored PDF when voiding so it is no longer downloadable [0.46ms]
+
+src\lib\donations\reconcile.server.test.ts:
+(pass) reconcileProviderPayment webhook event processing > releases its reservation after a transient failure so immediate redelivery reprocesses [1.06ms]
+Failed to release webhook reservation after processing error
+(pass) reconcileProviderPayment webhook event processing > keeps immediate redelivery retryable when reservation cleanup itself fails [0.64ms]
+(pass) reconcileProviderPayment webhook event processing > marks provider events processed only after payment and donation updates succeed [1.06ms]
+(pass) reconcileProviderPayment webhook event processing > retries duplicate webhook events that were reserved but not processed [0.37ms]
+(pass) reconcileProviderPayment webhook event processing > reclaims expired webhook leases with a compare-and-claim predicate [0.32ms]
+(pass) reconcileProviderPayment webhook event processing > keeps a lost expired-lease reclaim retryable instead of acknowledging it [0.25ms]
+(pass) reconcileProviderPayment webhook event processing > keeps an actively leased event retryable instead of acknowledging it as duplicate [0.19ms]
+(pass) reconcileProviderPayment webhook event processing > still acknowledges an event whose processed_at timestamp is committed [0.16ms]
+(pass) reconcileProviderPayment webhook event processing > continues acknowledgement completion for already-succeeded payment retries [0.29ms]
+(pass) reconcileProviderPayment webhook event processing > finishes pending donation status before processing a retry after payment update succeeded [0.38ms]
+
+src\lib\donations\service.test.ts:
+(pass) createDonation > creates pending manual FPS donations with a unique reference [3.95ms]
+(pass) createDonation > stores a custom purpose without exposing it to checkout providers [0.95ms]
+(pass) createDonation > compensates by deleting the donation and payment when checkout fails [0.71ms]
+(pass) createDonation > creates Stripe checkout donations and stores the checkout session id [0.32ms]
+(pass) createDonation > maps AlipayHK to COD and passes the validated checkout experience only to COD [0.35ms]
+
+src\lib\donations\supabase.server.test.ts:
+(pass) public donation identity resolution uses the preserving RPC [0.42ms]
+(pass) empty active consent rows do not issue an insert [0.15ms]
+
+src\lib\notifications\provider.server.test.ts:
+(pass) Resend mail provider > resolved Resend rejection never becomes accepted [0.38ms]
+(pass) Resend mail provider > transport failures remain retryable rejections [0.18ms]
+(pass) Resend mail provider > missing acceptance id is rejected [0.14ms]
+(pass) Resend mail provider > returns only the accepted provider id [0.10ms]
+
+src\lib\supporters\publicIdentity.server.test.ts:
+(pass) public supporter identity > normalizes contact before resolving identity through the atomic RPC [0.29ms]
+(pass) public supporter identity > rejects an invalid RPC result [0.17ms]
+
+src\lib\volunteers\notifications.server.test.ts:
+(pass) sendVolunteerRegistrationEmail > records resolved rejection as failed and never sent [0.59ms]
+(pass) sendVolunteerRegistrationEmail > records thrown transport as failed and never sent [0.22ms]
+(pass) sendVolunteerRegistrationEmail > records missing provider id as failed and never sent [0.06ms]
+(pass) sendVolunteerRegistrationEmail > persists accepted provider id before returning sent [0.33ms]
+(pass) sendVolunteerRegistrationEmail > throws when accepted delivery status cannot be persisted [0.20ms]
+(pass) sendVolunteerRegistrationEmail > skips an already sent claim without calling the provider [0.39ms]
+(pass) sendVolunteerRegistrationEmail > does not send while another fresh queued claim owns the lease [0.21ms]
+
+src\lib\volunteers\repository.server.test.ts:
+(pass) public volunteer identity resolution uses the preserving RPC [0.31ms]
+
+src\lib\volunteers\service.test.ts:
+(pass) volunteer service > submits a public registration, links a supporter, role, consent, and status token [1.28ms]
+(pass) volunteer service > does not roll back when volunteer notifications fail [0.49ms]
+(pass) volunteer service > audits admin registration and attendance changes [0.51ms]
+(pass) volunteer service > rejects public individual registrations below the public age floor [0.64ms]
+
+ 61 pass
+ 0 fail
+ 176 expect() calls
+Ran 61 tests across 11 files. [652.00ms]
+
+$ tsc --noEmit
+src/lib/content/http.test.ts(155,7): error TS2739: Type '{ calls: string[]; listPublicContent(): Promise<{ items: ContentSummary[]; total: number; }>; listPublicStoriesPage(): Promise<{ items: never[]; total: number; points: never[]; }>; ... 16 more ...; updateSocialCopyStatus(): Promise<...>; }' is missing the following properties from type '{ listRevisions(contentId: string): Promise<ContentRevisionSummary[]>; restoreRevision({ actorUserId, contentId, input }: UpdateContentArgs): Promise<ContentLifecycleResult>; ... 18 more ...; updateNotificationDraftStatus({ actorUserId, draftId, input, }: UpdateNotificationDraftStatusArgs): Promise<...>; }': listRevisions, restoreRevision
+src/lib/content/http.test.ts(174,7): error TS2739: Type '{ calls: string[]; listPublicContent(): Promise<{ items: ContentSummary[]; total: number; }>; listPublicStoriesPage(): Promise<{ items: never[]; total: number; points: never[]; }>; ... 16 more ...; updateSocialCopyStatus(): Promise<...>; }' is missing the following properties from type '{ listRevisions(contentId: string): Promise<ContentRevisionSummary[]>; restoreRevision({ actorUserId, contentId, input }: UpdateContentArgs): Promise<ContentLifecycleResult>; ... 18 more ...; updateNotificationDraftStatus({ actorUserId, draftId, input, }: UpdateNotificationDraftStatusArgs): Promise<...>; }': listRevisions, restoreRevision
+src/lib/content/http.test.ts(193,7): error TS2739: Type '{ calls: string[]; listPublicContent(): Promise<{ items: ContentSummary[]; total: number; }>; listPublicStoriesPage(): Promise<{ items: never[]; total: number; points: never[]; }>; ... 16 more ...; updateSocialCopyStatus(): Promise<...>; }' is missing the following properties from type '{ listRevisions(contentId: string): Promise<ContentRevisionSummary[]>; restoreRevision({ actorUserId, contentId, input }: UpdateContentArgs): Promise<ContentLifecycleResult>; ... 18 more ...; updateNotificationDraftStatus({ actorUserId, draftId, input, }: UpdateNotificationDraftStatusArgs): Promise<...>; }': listRevisions, restoreRevision
+src/lib/content/http.test.ts(208,7): error TS2739: Type '{ calls: string[]; listPublicContent(): Promise<{ items: ContentSummary[]; total: number; }>; listPublicStoriesPage(): Promise<{ items: never[]; total: number; points: never[]; }>; ... 16 more ...; updateSocialCopyStatus(): Promise<...>; }' is missing the following properties from type '{ listRevisions(contentId: string): Promise<ContentRevisionSummary[]>; restoreRevision({ actorUserId, contentId, input }: UpdateContentArgs): Promise<ContentLifecycleResult>; ... 18 more ...; updateNotificationDraftStatus({ actorUserId, draftId, input, }: UpdateNotificationDraftStatusArgs): Promise<...>; }': listRevisions, restoreRevision
+src/lib/content/http.test.ts(230,7): error TS2739: Type '{ calls: string[]; listPublicContent(): Promise<{ items: ContentSummary[]; total: number; }>; listPublicStoriesPage(): Promise<{ items: never[]; total: number; points: never[]; }>; ... 16 more ...; updateSocialCopyStatus(): Promise<...>; }' is missing the following properties from type '{ listRevisions(contentId: string): Promise<ContentRevisionSummary[]>; restoreRevision({ actorUserId, contentId, input }: UpdateContentArgs): Promise<ContentLifecycleResult>; ... 18 more ...; updateNotificationDraftStatus({ actorUserId, draftId, input, }: UpdateNotificationDraftStatusArgs): Promise<...>; }': listRevisions, restoreRevision
+src/lib/content/http.test.ts(258,7): error TS2739: Type '{ calls: string[]; listPublicContent(): Promise<{ items: ContentSummary[]; total: number; }>; listPublicStoriesPage(): Promise<{ items: never[]; total: number; points: never[]; }>; ... 16 more ...; updateSocialCopyStatus(): Promise<...>; }' is missing the following properties from type '{ listRevisions(contentId: string): Promise<ContentRevisionSummary[]>; restoreRevision({ actorUserId, contentId, input }: UpdateContentArgs): Promise<ContentLifecycleResult>; ... 18 more ...; updateNotificationDraftStatus({ actorUserId, draftId, input, }: UpdateNotificationDraftStatusArgs): Promise<...>; }': listRevisions, restoreRevision
+src/lib/content/http.test.ts(280,7): error TS2739: Type '{ calls: string[]; listPublicContent(): Promise<{ items: ContentSummary[]; total: number; }>; listPublicStoriesPage(): Promise<{ items: never[]; total: number; points: never[]; }>; ... 16 more ...; updateSocialCopyStatus(): Promise<...>; }' is missing the following properties from type '{ listRevisions(contentId: string): Promise<ContentRevisionSummary[]>; restoreRevision({ actorUserId, contentId, input }: UpdateContentArgs): Promise<ContentLifecycleResult>; ... 18 more ...; updateNotificationDraftStatus({ actorUserId, draftId, input, }: UpdateNotificationDraftStatusArgs): Promise<...>; }': listRevisions, restoreRevision
+src/lib/content/http.test.ts(302,7): error TS2739: Type '{ calls: string[]; listPublicContent(): Promise<{ items: ContentSummary[]; total: number; }>; listPublicStoriesPage(): Promise<{ items: never[]; total: number; points: never[]; }>; ... 16 more ...; updateSocialCopyStatus(): Promise<...>; }' is missing the following properties from type '{ listRevisions(contentId: string): Promise<ContentRevisionSummary[]>; restoreRevision({ actorUserId, contentId, input }: UpdateContentArgs): Promise<ContentLifecycleResult>; ... 18 more ...; updateNotificationDraftStatus({ actorUserId, draftId, input, }: UpdateNotificationDraftStatusArgs): Promise<...>; }': listRevisions, restoreRevision
+src/lib/content/http.test.ts(323,7): error TS2739: Type '{ calls: string[]; listPublicContent(): Promise<{ items: ContentSummary[]; total: number; }>; listPublicStoriesPage(): Promise<{ items: never[]; total: number; points: never[]; }>; ... 16 more ...; updateSocialCopyStatus(): Promise<...>; }' is missing the following properties from type '{ listRevisions(contentId: string): Promise<ContentRevisionSummary[]>; restoreRevision({ actorUserId, contentId, input }: UpdateContentArgs): Promise<ContentLifecycleResult>; ... 18 more ...; updateNotificationDraftStatus({ actorUserId, draftId, input, }: UpdateNotificationDraftStatusArgs): Promise<...>; }': listRevisions, restoreRevision
+src/lib/content/http.test.ts(350,7): error TS2739: Type '{ calls: string[]; listPublicContent(): Promise<{ items: ContentSummary[]; total: number; }>; listPublicStoriesPage(): Promise<{ items: never[]; total: number; points: never[]; }>; ... 16 more ...; updateSocialCopyStatus(): Promise<...>; }' is missing the following properties from type '{ listRevisions(contentId: string): Promise<ContentRevisionSummary[]>; restoreRevision({ actorUserId, contentId, input }: UpdateContentArgs): Promise<ContentLifecycleResult>; ... 18 more ...; updateNotificationDraftStatus({ actorUserId, draftId, input, }: UpdateNotificationDraftStatusArgs): Promise<...>; }': listRevisions, restoreRevision
+src/lib/content/http.test.ts(378,7): error TS2739: Type '{ calls: string[]; listPublicContent(): Promise<{ items: ContentSummary[]; total: number; }>; listPublicStoriesPage(): Promise<{ items: never[]; total: number; points: never[]; }>; ... 16 more ...; updateSocialCopyStatus(): Promise<...>; }' is missing the following properties from type '{ listRevisions(contentId: string): Promise<ContentRevisionSummary[]>; restoreRevision({ actorUserId, contentId, input }: UpdateContentArgs): Promise<ContentLifecycleResult>; ... 18 more ...; updateNotificationDraftStatus({ actorUserId, draftId, input, }: UpdateNotificationDraftStatusArgs): Promise<...>; }': listRevisions, restoreRevision
+src/lib/content/http.test.ts(400,7): error TS2739: Type '{ calls: string[]; listPublicContent(): Promise<{ items: ContentSummary[]; total: number; }>; listPublicStoriesPage(): Promise<{ items: never[]; total: number; points: never[]; }>; ... 16 more ...; updateSocialCopyStatus(): Promise<...>; }' is missing the following properties from type '{ listRevisions(contentId: string): Promise<ContentRevisionSummary[]>; restoreRevision({ actorUserId, contentId, input }: UpdateContentArgs): Promise<ContentLifecycleResult>; ... 18 more ...; updateNotificationDraftStatus({ actorUserId, draftId, input, }: UpdateNotificationDraftStatusArgs): Promise<...>; }': listRevisions, restoreRevision
+src/lib/content/http.test.ts(476,7): error TS2739: Type '{ calls: string[]; listPublicContent(): Promise<{ items: ContentSummary[]; total: number; }>; listPublicStoriesPage(): Promise<{ items: never[]; total: number; points: never[]; }>; ... 16 more ...; updateSocialCopyStatus(): Promise<...>; }' is missing the following properties from type '{ listRevisions(contentId: string): Promise<ContentRevisionSummary[]>; restoreRevision({ actorUserId, contentId, input }: UpdateContentArgs): Promise<ContentLifecycleResult>; ... 18 more ...; updateNotificationDraftStatus({ actorUserId, draftId, input, }: UpdateNotificationDraftStatusArgs): Promise<...>; }': listRevisions, restoreRevision
+src/lib/content/http.test.ts(508,7): error TS2739: Type '{ calls: string[]; listPublicContent(): Promise<{ items: ContentSummary[]; total: number; }>; listPublicStoriesPage(): Promise<{ items: never[]; total: number; points: never[]; }>; ... 16 more ...; updateSocialCopyStatus(): Promise<...>; }' is missing the following properties from type '{ listRevisions(contentId: string): Promise<ContentRevisionSummary[]>; restoreRevision({ actorUserId, contentId, input }: UpdateContentArgs): Promise<ContentLifecycleResult>; ... 18 more ...; updateNotificationDraftStatus({ actorUserId, draftId, input, }: UpdateNotificationDraftStatusArgs): Promise<...>; }': listRevisions, restoreRevision
+src/lib/content/lifecycle.service.test.ts(13,22): error TS2352: Conversion of type '{ mutate: Mock<() => Promise<{ contentId: string; version: number; revisionId: string; }>>; publish: Mock<() => Promise<{ contentId: string; version: number; revisionId: string; }>>; restore: Mock<...>; listRevisions: Mock<...>; }' to type 'ContentLifecycleRepository' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Property 'create' is missing in type '{ mutate: Mock<() => Promise<{ contentId: string; version: number; revisionId: string; }>>; publish: Mock<() => Promise<{ contentId: string; version: number; revisionId: string; }>>; restore: Mock<...>; listRevisions: Mock<...>; }' but required in type 'ContentLifecycleRepository'.
+src/lib/donations/notifications.server.test.ts(174,7): error TS2322: Type '() => { resendApiKey: string; from: string; replyTo: string; }' is not assignable to type '() => { resendApiKey: string | undefined; from: string; replyTo: string; notificationEmail: string; }'.
+  Property 'notificationEmail' is missing in type '{ resendApiKey: string; from: string; replyTo: string; }' but required in type '{ resendApiKey: string | undefined; from: string; replyTo: string; notificationEmail: string; }'.
+src/lib/volunteers/notifications.server.test.ts(108,7): error TS2740: Type '{ error(): void; }' is missing the following properties from type 'Console': assert, clear, count, countReset, and 20 more.

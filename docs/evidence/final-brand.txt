@@ -1,0 +1,5 @@
+$ node scripts/verify-public-brand.mjs
+375x812 / menu did not expose the named navigation
+390x844 / menu did not expose the named navigation
+768x1024 / menu did not expose the named navigation
+error: script "verify:brand" exited with code 1

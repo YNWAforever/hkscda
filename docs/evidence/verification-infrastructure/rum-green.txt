@@ -1,0 +1,12 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\publicMetrics.test.ts:
+(pass) templates capability and detail paths and excludes unknown/private routes [1.50ms]
+(pass) does not load observers without explicit activation and current consent [0.50ms]
+(pass) emits only numeric metrics and templates; revocation/navigation/stop suppress callbacks [0.76ms]
+(pass) consent revoked while importing prevents observer registration [0.22ms]
+
+ 4 pass
+ 0 fail
+ 21 expect() calls
+Ran 4 tests across 1 file. [223.00ms]

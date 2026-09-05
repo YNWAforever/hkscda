@@ -1,0 +1,15 @@
+{"count":1000,"name":"supporter-list-first-50","p95Ms":151.67169999999987,"maxGzipBytes":1880,"targetMet":true}
+{"count":1000,"name":"supporter-detail","p95Ms":505.0774999999994,"maxGzipBytes":757,"targetMet":true}
+{"count":1000,"name":"content-list-first-50","p95Ms":760.9998999999989,"maxGzipBytes":3990,"targetMet":false}
+{"count":1000,"name":"content-detail","p95Ms":220.53089999999793,"maxGzipBytes":685,"targetMet":true}
+{"count":1000,"name":"content-save-atomic-audit","p95Ms":220.2914000000019,"maxGzipBytes":726,"targetMet":true}
+{"count":10000,"name":"supporter-list-first-50","p95Ms":253.94640000000072,"maxGzipBytes":1912,"targetMet":true}
+{"count":10000,"name":"supporter-detail","p95Ms":677.9818000000014,"maxGzipBytes":757,"targetMet":true}
+{"count":10000,"name":"content-list-first-50","p95Ms":198.17869999999675,"maxGzipBytes":4010,"targetMet":true}
+{"count":10000,"name":"content-detail","p95Ms":279.1603999999934,"maxGzipBytes":688,"targetMet":true}
+{"count":10000,"name":"content-save-atomic-audit","p95Ms":207.81780000000435,"maxGzipBytes":731,"targetMet":true}
+{"count":50000,"name":"supporter-list-first-50","p95Ms":561.4504999999917,"maxGzipBytes":1904,"targetMet":true}
+{"count":50000,"name":"supporter-detail","p95Ms":516.8044999999984,"maxGzipBytes":761,"targetMet":true}
+{"count":50000,"name":"content-list-first-50","p95Ms":657.0461000000068,"maxGzipBytes":4015,"targetMet":true}
+{"count":50000,"name":"content-detail","p95Ms":226.14939999999478,"maxGzipBytes":693,"targetMet":true}
+{"count":50000,"name":"content-save-atomic-audit","p95Ms":363.20230000000447,"maxGzipBytes":732,"targetMet":true}

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "commit": "efc301b47d1af53caf9050fb05779c01c767a559",
+  "worktreeDirty": true,
+  "fixtureId": "supabase-ci-v1-empty-payment",
+  "fixtureSha256": "fd32a705e2c9825b7329429c8225e87f4c9590f9f0dc683dd13d0ac0f70b821b",
+  "fixtureSource": "scripts/ci/supabase-fixture.mjs",
+  "baseURL": "http://127.0.0.1:4173",
+  "mode": "a11y",
+  "startedAt": "2026-09-05T15:45:11.708Z",
+  "browser": "148.0.7778.96",
+  "measuredViewports": [
+    "1440x900"
+  ],
+  "failures": [
+    "1440x900 /volunteer has a serious a11y violation (aria-prohibited-attr): Elements must only use permitted ARIA attributes -- div[aria-label=\"人機驗證\"]",
+    "1440x900 /donate has a serious a11y violation (aria-prohibited-attr): Elements must only use permitted ARIA attributes -- div[aria-label=\"人機驗證\"]"
+  ],
+  "completedAt": "2026-09-05T15:46:59.448Z"
+}

@@ -1,0 +1,67 @@
+{
+  "baseURL": "http://127.0.0.1:4173",
+  "results": [
+    {
+      "scenario": "help",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "initialSummary": "2 條已審批答案",
+      "hydratedSummary": "2 條已審批答案",
+      "hydrationErrors": [],
+      "pageErrors": [
+        "Minified React error #418; visit https://react.dev/errors/418?args[]=text&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings."
+      ]
+    },
+    {
+      "scenario": "help",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "initialSummary": "2 條已審批答案",
+      "hydratedSummary": "2 條已審批答案",
+      "hydrationErrors": [],
+      "pageErrors": [
+        "Minified React error #418; visit https://react.dev/errors/418?args[]=text&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings."
+      ]
+    },
+    {
+      "scenario": "drawer-cta",
+      "label": "查看待領養動物",
+      "destination": "/animals/cat",
+      "state": {
+        "pathname": "/animals/cat",
+        "dialogPresent": true,
+        "mainInert": true,
+        "bodyOverflow": "hidden",
+        "activeElement": "查看待領養動物"
+      }
+    },
+    {
+      "scenario": "drawer-cta",
+      "label": "立即捐助",
+      "destination": "/donate",
+      "state": {
+        "pathname": "/donate",
+        "dialogPresent": true,
+        "mainInert": true,
+        "bodyOverflow": "hidden",
+        "activeElement": "立即捐助"
+      }
+    }
+  ],
+  "failures": [
+    "help 390px emitted hydration/page errors",
+    "help 1440px emitted hydration/page errors",
+    "查看待領養動物 left the mobile drawer mounted",
+    "查看待領養動物 left the destination content inert",
+    "查看待領養動物 left body scrolling locked",
+    "立即捐助 left the mobile drawer mounted",
+    "立即捐助 left the destination content inert",
+    "立即捐助 left body scrolling locked"
+  ]
+}

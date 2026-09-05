@@ -1,0 +1,56 @@
+[
+  {
+    "route": "/__brand-verification-missing__",
+    "id": "landmark-one-main",
+    "impact": "moderate",
+    "targets": "html"
+  },
+  {
+    "route": "/adoption/apply",
+    "id": "region",
+    "impact": "moderate",
+    "targets": [
+      ".detail-breadcrumb",
+      ".public-container:nth-child(3)"
+    ]
+  },
+  {
+    "route": "/adoption/status/__brand-verification__",
+    "id": "region",
+    "impact": "moderate",
+    "targets": "#main-content > .public-container"
+  },
+  {
+    "route": "/sponsors/pledge",
+    "id": "region",
+    "impact": "moderate",
+    "targets": [
+      ".detail-breadcrumb",
+      ".public-container:nth-child(3)"
+    ]
+  },
+  {
+    "route": "/sponsors/status/__brand-verification__",
+    "id": "region",
+    "impact": "moderate",
+    "targets": "#main-content > .public-container"
+  },
+  {
+    "route": "/stories/__brand-verification__",
+    "id": "landmark-one-main",
+    "impact": "moderate",
+    "targets": "html"
+  },
+  {
+    "route": "/volunteer/status/__brand-verification__",
+    "id": "region",
+    "impact": "moderate",
+    "targets": "#main-content > .public-container"
+  },
+  {
+    "route": "/volunteer",
+    "id": "region",
+    "impact": "moderate",
+    "targets": "#main-content > .public-container"
+  }
+]

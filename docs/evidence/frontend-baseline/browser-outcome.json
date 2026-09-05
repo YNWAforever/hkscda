@@ -1,0 +1,29 @@
+{
+  "date": "2026-09-05",
+  "baselineCommit": "20c168459a90c5c92093659a18b139a994451470",
+  "fixture": {
+    "url": "http://127.0.0.1:54329",
+    "httpStatus": 200,
+    "syntheticOnly": true
+  },
+  "preview": {
+    "url": "http://127.0.0.1:4173",
+    "helpHttpStatus": 200
+  },
+  "help": {
+    "screenshot": "artifacts/help-mobile.png",
+    "exactHydrationConsoleProofCaptured": false
+  },
+  "mobileDrawer": {
+    "result": "incomplete",
+    "observedFailure": "Timed out after 30000ms waiting for #mobile-drawer to become visible after clicking the visible menu trigger",
+    "reproducedOnRetry": true,
+    "ctaAssertionsReached": false,
+    "postNavigationInertFocusStateCaptured": false
+  },
+  "cleanup": {
+    "fixtureStopped": true,
+    "previewStopped": true,
+    "portsReleased": [4173, 54329]
+  }
+}

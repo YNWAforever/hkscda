@@ -1,0 +1,80 @@
+import { describe, expect, test } from "bun:test";
+import { createContentService, type ContentRepository } from "../../src/lib/content/service";
+
+function baselineRepo(overrides: Partial<ContentRepository> = {}): ContentRepository {
+  return {
+    createContent: async () => "content-1",
+    createStoryUpdate: async () => "22222222-2222-4333-8444-555555555555",
+    createSignedUploadUrl: async (objectPath) => ({ token: "fake-token", path: objectPath }),
+    insertAuditLog: async () => undefined,
+    ...overrides,
+  } as ContentRepository;
+}
+
+describe("Wave 1C CMS containment baseline", () => {
+  test("create-time published status should be rejected", async () => {
+    let createCalled = false;
+    const service = createContentService({
+      repo: baselineRepo({
+        createContent: async () => {
+          createCalled = true;
+          return "content-1";
+        },
+      }),
+      publicBaseUrl: "https://example.test",
+    });
+
+    await expect(
+      service.createContent({
+        actorUserId: "fake-admin",
+        input: {
+          type: "rescue_story",
+          slug: "missing-publish-prerequisites",
+          title: "Missing prerequisites",
+          summary: "No cover image or story profile exists.",
+          status: "published",
+        },
+      }),
+    ).rejects.toThrow("Content items must be created as drafts");
+    expect(createCalled).toBe(false);
+  });
+
+  test("internal story update should not receive a public-bucket upload target", async () => {
+    let signedPath: string | undefined;
+    const service = createContentService({
+      repo: baselineRepo({
+        createSignedUploadUrl: async (objectPath) => {
+          signedPath = objectPath;
+          return { token: "fake-token", path: objectPath };
+        },
+      }),
+      publicBaseUrl: "https://example.test",
+    });
+
+    await service.createStoryUpdate({
+      actorUserId: "fake-admin",
+      contentId: "content-1",
+      input: {
+        kind: "medical",
+        title: "Internal medical note",
+        occurredAt: "2026-09-05T00:00:00.000Z",
+        visibility: "internal",
+        shouldGenerateAdopterDrafts: false,
+      },
+    });
+
+    await expect(
+      service.createUploadTarget({
+        actorUserId: "fake-admin",
+        contentId: "content-1",
+        input: {
+          objectPath: "content-1/internal-medical-note.jpg",
+          mimeType: "image/jpeg",
+          byteSize: 1024,
+          storyUpdateId: "22222222-2222-4333-8444-555555555555",
+        },
+      }),
+    ).rejects.toThrow();
+    expect(signedPath).toBeUndefined();
+  });
+});

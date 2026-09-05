@@ -1,0 +1,37 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\publicMetrics.test.ts:
+1 | import { expect, test } from "bun:test";
+2 | import { publicMetricRoute, startPublicMetrics } from "./publicMetrics";
+3 |
+4 | test("templates capability and detail paths and excludes unknown/private routes", () => {
+5 |   expect(publicMetricRoute("/adoption/status/secret?email=private#name")).toBe("/adoption/status/[token]");
+                                                                              ^
+error: expect(received).toBe(expected)
+
+Expected: "/adoption/status/[token]"
+Received: null
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\lib\publicMetrics.test.ts:5:75)
+(fail) templates capability and detail paths and excludes unknown/private routes [0.68ms]
+(pass) does not load observers without explicit activation and current consent [0.49ms]
+22 |   let path = "/adoption/status/private-token";
+23 |   const callbacks: Array<(metric: any) => void> = [];
+24 |   const sent: unknown[] = [];
+25 |   const register = (callback: (metric: any) => void) => { callbacks.push(callback); };
+26 |   const stop = await startPublicMetrics({ enabled: true, getConsent: () => consent, getPathname: () => path, device: "mobile", send: (value: unknown) => sent.push(value), load: async () => ({ onCLS: register, onLCP: register, onINP: register }) });
+27 |   expect(callbacks).toHaveLength(3);
+                         ^
+error: expect(received).toHaveLength(expected)
+
+Expected length: 3
+Received length: 0
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\lib\publicMetrics.test.ts:27:21)
+(fail) emits only numeric metrics and templates; revocation/navigation/stop suppress callbacks [0.63ms]
+(pass) consent revoked while importing prevents observer registration [0.18ms]
+
+ 2 pass
+ 2 fail
+ 4 expect() calls
+Ran 4 tests across 1 file. [238.00ms]

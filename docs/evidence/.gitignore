@@ -1,0 +1,12 @@
+# Bulky raw local evidence is retained on disk and hashed in raw-artifact-manifest.json.
+# CI retains equivalent reports using upload-artifact(always).
+*.png
+axe-*.json
+lighthouse-*.json
+*.js
+*.pid
+fixture-mode.json
+# Transient process records are retained locally, not release artifacts.
+pids.json
+*-pids.json
+*.diff

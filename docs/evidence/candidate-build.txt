@@ -1,0 +1,880 @@
+$ vite build
+[nitro:vercel] i Using nodejs24.x runtime.
+[nitro:vercel] i Using web entry format.
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/help.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\-help.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/knowledge.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\-knowledge.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/donate.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\-donate.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/publicTruth.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\-publicTruth.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/seoSurfaces.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\-seoSurfaces.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/stories.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\-stories.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/volunteer.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\-volunteer.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/about/cccp.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\about\-cccp.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/about/tnr.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\about\-tnr.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/about/team.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\about\-team.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/__root.visual.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\-__root.visual.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/admin/login.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\admin\-login.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/adoption/instructions.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\adoption\-instructions.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/admin/reset-password.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\admin\-reset-password.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/adoption/apply.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\adoption\-apply.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/animals/listingSsr.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\animals\-listingSsr.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/index.visual.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\-index.visual.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/sponsors_.pledge.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\-sponsors_.pledge.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/report/audit.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\report\-audit.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/volunteer/group.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\volunteer\-group.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/about/index.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\about\-index.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/admin/content/adoption.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\admin\content\-adoption.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/admin/volunteers/group-enquiries.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\admin\volunteers\-group-enquiries.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/admin/content/knowledge.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\admin\content\-knowledge.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/report/adoption.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\report\-adoption.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/api/admin/adoption-information.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\api\admin\-adoption-information.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/adoption/status.$token.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\adoption\-status.$token.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/api/admin/knowledge.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\api\admin\-knowledge.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/volunteer/status.$token.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\volunteer\-status.$token.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/api/volunteer/group-enquiries.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\api\volunteer\-group-enquiries.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/sponsors_.status.$token.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\-sponsors_.status.$token.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/api/admin/volunteers/group-enquiries.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\api\admin\volunteers\-group-enquiries.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/api/adoption/applications/photo-upload-urls.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\api\adoption\applications\-photo-upload-urls.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/api/sponsorships/pledges/proof-upload-url.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\api\sponsorships\pledges\-proof-upload-url.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+vite v7.3.2 building client environment for production...
+transforming...
+[tanstack-router] These exports from "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/stories.tsx" will not be code-split and will increase your bundle size:
+- StoriesLoadError
+For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[tanstack-router] These exports from "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/report/audit.tsx" will not be code-split and will increase your bundle size:
+- AnnualReportLoadError
+For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[tanstack-router] These exports from "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/report/adoption.tsx" will not be code-split and will increase your bundle size:
+- AdoptionImpactReportLoadError
+For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[tanstack-router] These exports from "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/about/team.tsx" will not be code-split and will increase your bundle size:
+- TeamLoadError
+For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+✓ 2445 modules transformed.
+rendering chunks...
+computing gzip size...
+.vercel/output/static/assets/dog-smiling-480-6fqpAZW2.jpg            46.02 kB
+.vercel/output/static/assets/dog-smiling-768-BZd4Dj1C.jpg            92.46 kB
+.vercel/output/static/assets/dog-recovering-e6pf9Ekn.jpg            113.09 kB
+.vercel/output/static/assets/dog-smiling-1024-DZg1fOfE.jpg          143.66 kB
+.vercel/output/static/assets/dog-smiling-BtKTrXtF.jpg               317.40 kB
+.vercel/output/static/assets/styles-Z-8v-l76.css                    326.45 kB │ gzip:  76.55 kB
+.vercel/output/static/assets/applications-CSQL1mVB.js                 0.16 kB │ gzip:   0.15 kB
+.vercel/output/static/assets/dog-B779lkIQ.js                          0.17 kB │ gzip:   0.16 kB
+.vercel/output/static/assets/cat-DSCy1uAm.js                          0.17 kB │ gzip:   0.16 kB
+.vercel/output/static/assets/circle-x-SFGSWvA2.js                     0.21 kB │ gzip:   0.18 kB
+.vercel/output/static/assets/download-DdEbw_ph.js                     0.23 kB │ gzip:   0.19 kB
+.vercel/output/static/assets/copy-DW-uGTmA.js                         0.24 kB │ gzip:   0.21 kB
+.vercel/output/static/assets/message-circle-BRRh6W3Y.js               0.24 kB │ gzip:   0.21 kB
+.vercel/output/static/assets/external-link-4RDk8QTG.js                0.25 kB │ gzip:   0.20 kB
+.vercel/output/static/assets/funnel-GmZCvs8q.js                       0.26 kB │ gzip:   0.21 kB
+.vercel/output/static/assets/dog-D7B99pud.js                          0.27 kB │ gzip:   0.21 kB
+.vercel/output/static/assets/cat-BHqt6YbT.js                          0.27 kB │ gzip:   0.21 kB
+.vercel/output/static/assets/pen-line-Ci36scNr.js                     0.28 kB │ gzip:   0.23 kB
+.vercel/output/static/assets/list-checks-BUb5OlEr.js                  0.28 kB │ gzip:   0.19 kB
+.vercel/output/static/assets/send-BPLDosdM.js                         0.29 kB │ gzip:   0.23 kB
+.vercel/output/static/assets/sponsors_._id-CuChCrCP.js                0.31 kB │ gzip:   0.26 kB
+.vercel/output/static/assets/dog_._id-WtfHp0HO.js                     0.31 kB │ gzip:   0.26 kB
+.vercel/output/static/assets/cat_._id-BPuFh4H5.js                     0.31 kB │ gzip:   0.26 kB
+.vercel/output/static/assets/documentManagementLogic-CA0QKotB.js      0.32 kB │ gzip:   0.24 kB
+.vercel/output/static/assets/refresh-cw-D9-cYp0P.js                   0.32 kB │ gzip:   0.23 kB
+.vercel/output/static/assets/save-DyHtWGSQ.js                         0.33 kB │ gzip:   0.23 kB
+.vercel/output/static/assets/_slug-CqH-G0cq.js                        0.34 kB │ gzip:   0.32 kB
+.vercel/output/static/assets/sponsors_._id-Byx3qXJP.js                0.35 kB │ gzip:   0.32 kB
+.vercel/output/static/assets/dog_._id-DuKEarwW.js                     0.35 kB │ gzip:   0.32 kB
+.vercel/output/static/assets/cat_._id-NdkabEag.js                     0.35 kB │ gzip:   0.32 kB
+.vercel/output/static/assets/new-C5Qu5DKh.js                          0.37 kB │ gzip:   0.27 kB
+.vercel/output/static/assets/sponsors_._id-B9eYB08v.js                0.37 kB │ gzip:   0.33 kB
+.vercel/output/static/assets/clock-3-DSj0kfjF.js                      0.37 kB │ gzip:   0.23 kB
+.vercel/output/static/assets/dog_._id-BVi32w46.js                     0.38 kB │ gzip:   0.35 kB
+.vercel/output/static/assets/cat_._id-D62n_KGQ.js                     0.38 kB │ gzip:   0.35 kB
+.vercel/output/static/assets/sponsors-CGjzFzOA.js                     0.39 kB │ gzip:   0.28 kB
+.vercel/output/static/assets/sponsors-BYHESmqi.js                     0.41 kB │ gzip:   0.36 kB
+.vercel/output/static/assets/documentUpload-DS-lMCWp.js               0.55 kB │ gzip:   0.40 kB
+.vercel/output/static/assets/storyPublicLogic-B64RgeMf.js             0.56 kB │ gzip:   0.36 kB
+.vercel/output/static/assets/passwordRecovery-BXra5XFb.js             0.58 kB │ gzip:   0.33 kB
+.vercel/output/static/assets/file-x-CBAumtLR.js                       0.63 kB │ gzip:   0.28 kB
+.vercel/output/static/assets/index-CA6sPshz.js                        0.70 kB │ gzip:   0.41 kB
+.vercel/output/static/assets/badge-DoDa1JzU.js                        0.72 kB │ gzip:   0.38 kB
+.vercel/output/static/assets/_id.edit-DQysKoqz.js                     0.81 kB │ gzip:   0.47 kB
+.vercel/output/static/assets/adopterWorkflowLogic-C2wfb7fB.js         0.81 kB │ gzip:   0.44 kB
+.vercel/output/static/assets/label-CBOOxg0l.js                        0.88 kB │ gzip:   0.55 kB
+.vercel/output/static/assets/access-denied-D5ALIl7e.js                1.06 kB │ gzip:   0.64 kB
+.vercel/output/static/assets/tabs-XCjUYZcj.js                         1.13 kB │ gzip:   0.47 kB
+.vercel/output/static/assets/StatusBadge-DqGn-qRO.js                  1.30 kB │ gzip:   0.53 kB
+.vercel/output/static/assets/ExportButton-DeQlDL37.js                 1.33 kB │ gzip:   0.79 kB
+.vercel/output/static/assets/contentAdminLogic-5laeP95-.js            1.35 kB │ gzip:   0.72 kB
+.vercel/output/static/assets/caseWorkflowLogic-B1YCjB7p.js            1.55 kB │ gzip:   0.78 kB
+.vercel/output/static/assets/table-D6Stj5St.js                        1.56 kB │ gzip:   0.54 kB
+.vercel/output/static/assets/volunteerAdminLogic-D-lK9orK.js          1.87 kB │ gzip:   0.89 kB
+.vercel/output/static/assets/team-DC3mvgOV.js                         1.97 kB │ gzip:   1.20 kB
+.vercel/output/static/assets/dialog-BVbT_FRb.js                       1.99 kB │ gzip:   0.80 kB
+.vercel/output/static/assets/DataTable-CEovg9So.js                    2.05 kB │ gzip:   0.81 kB
+.vercel/output/static/assets/privacy-BbeyergX.js                      2.19 kB │ gzip:   1.22 kB
+.vercel/output/static/assets/switch-BgVoijw6.js                       2.49 kB │ gzip:   1.24 kB
+.vercel/output/static/assets/adoption-BWCjuLaI.js                     2.59 kB │ gzip:   1.44 kB
+.vercel/output/static/assets/index-uTESP4JF.js                        2.63 kB │ gzip:   1.19 kB
+.vercel/output/static/assets/audit-Bs2sZrM2.js                        2.65 kB │ gzip:   1.29 kB
+.vercel/output/static/assets/status._token-xcR-v9lb.js                3.15 kB │ gzip:   1.43 kB
+.vercel/output/static/assets/knowledge-DlpPc2X4.js                    3.17 kB │ gzip:   1.36 kB
+.vercel/output/static/assets/AnimalDetail-qVUvCcMT.js                 3.29 kB │ gzip:   1.52 kB
+.vercel/output/static/assets/reset-password-DRNiqXlA.js               3.72 kB │ gzip:   1.40 kB
+.vercel/output/static/assets/_id-CDCAVOOv.js                          3.79 kB │ gzip:   1.43 kB
+.vercel/output/static/assets/checkbox-FY0zYJyE.js                     3.84 kB │ gzip:   1.69 kB
+.vercel/output/static/assets/SupporterFormDialog-CZcI_Fpk.js          4.10 kB │ gzip:   1.70 kB
+.vercel/output/static/assets/_slug-UyZvUbSm.js                        4.23 kB │ gzip:   1.55 kB
+.vercel/output/static/assets/login-DPO8meLT.js                        4.83 kB │ gzip:   1.33 kB
+.vercel/output/static/assets/index-m8nnan0r.js                        5.62 kB │ gzip:   2.32 kB
+.vercel/output/static/assets/inbox-BzfkrM3r.js                        5.84 kB │ gzip:   2.06 kB
+.vercel/output/static/assets/supporters-CfhL_Y-u.js                   6.43 kB │ gzip:   2.20 kB
+.vercel/output/static/assets/tasks-CkaMlPRc.js                        6.47 kB │ gzip:   2.44 kB
+.vercel/output/static/assets/AnimalForm-DrUIaUyT.js                   6.94 kB │ gzip:   1.88 kB
+.vercel/output/static/assets/annual-reports-Di1-4Xse.js               7.21 kB │ gzip:   2.39 kB
+.vercel/output/static/assets/index-CozrXZyY.js                        7.26 kB │ gzip:   2.35 kB
+.vercel/output/static/assets/content-DynYaXXp.js                      7.60 kB │ gzip:   2.50 kB
+.vercel/output/static/assets/help-DsFNGmg1.js                         8.09 kB │ gzip:   2.91 kB
+.vercel/output/static/assets/instructions-BTQnn3N9.js                 8.49 kB │ gzip:   2.66 kB
+.vercel/output/static/assets/group-enquiries-DUBo1r7b.js              8.68 kB │ gzip:   2.90 kB
+.vercel/output/static/assets/access-C8l1hkLe.js                       9.05 kB │ gzip:   3.26 kB
+.vercel/output/static/assets/sponsors_.status._token-BftSIH8-.js      9.34 kB │ gzip:   3.19 kB
+.vercel/output/static/assets/adopters-C3HowQ2D.js                     9.39 kB │ gzip:   2.62 kB
+.vercel/output/static/assets/index-Bef6JGfu.js                        9.48 kB │ gzip:   3.50 kB
+.vercel/output/static/assets/documents-CGQtoYAf.js                    9.98 kB │ gzip:   3.34 kB
+.vercel/output/static/assets/reports-DyZ8JTZn.js                     10.75 kB │ gzip:   3.37 kB
+.vercel/output/static/assets/status._token-DaTDI79D.js               10.80 kB │ gzip:   3.45 kB
+.vercel/output/static/assets/TaskPanel-bE2DWP2t.js                   13.49 kB │ gzip:   3.69 kB
+.vercel/output/static/assets/stories-Blts_vOb.js                     14.05 kB │ gzip:   4.76 kB
+.vercel/output/static/assets/statuses-BISnDgTa.js                    14.23 kB │ gzip:   4.07 kB
+.vercel/output/static/assets/_id-CjDnbE7S.js                         14.74 kB │ gzip:   4.30 kB
+.vercel/output/static/assets/adoption-guides-LxrQN9W5.js             16.02 kB │ gzip:   4.50 kB
+.vercel/output/static/assets/volunteers-DNo27XY_.js                  19.24 kB │ gzip:   5.14 kB
+.vercel/output/static/assets/intake-DFufqPF_.js                      19.58 kB │ gzip:   5.02 kB
+.vercel/output/static/assets/donate-zxF6UvET.js                      22.45 kB │ gzip:   7.83 kB
+.vercel/output/static/assets/adminPageCopy-C1RpOf30.js               25.79 kB │ gzip:   8.24 kB
+.vercel/output/static/assets/animals-Bmvz58UK.js                     28.28 kB │ gzip:   6.84 kB
+.vercel/output/static/assets/_id-V1ixEyDv.js                         31.04 kB │ gzip:   8.13 kB
+.vercel/output/static/assets/_id-C88oGfxv.js                         31.84 kB │ gzip:   8.59 kB
+.vercel/output/static/assets/index-DN0y-BK0.js                       33.21 kB │ gzip:   9.14 kB
+.vercel/output/static/assets/select-C7FMUkkQ.js                      49.31 kB │ gzip:  17.59 kB
+.vercel/output/static/assets/_id-IL17WNTJ.js                         53.36 kB │ gzip:  13.56 kB
+.vercel/output/static/assets/index-BcynO4wZ.js                    1,024.49 kB │ gzip: 301.91 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 56.38s
+vite v7.3.2 building ssr environment for production...
+transforming...
+[tanstack-router] These exports from "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/stories.tsx" will not be code-split and will increase your bundle size:
+- StoriesLoadError
+For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[tanstack-router] These exports from "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/report/audit.tsx" will not be code-split and will increase your bundle size:
+- AnnualReportLoadError
+For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[tanstack-router] These exports from "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/report/adoption.tsx" will not be code-split and will increase your bundle size:
+- AdoptionImpactReportLoadError
+For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[tanstack-router] These exports from "C:/Users/laich/Documents/HKCSDA/HKCSDA/hkscda/.worktrees/completion-20260905/src/routes/about/team.tsx" will not be code-split and will increase your bundle size:
+- TeamLoadError
+For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+"createRequestHandler", "defineHandlerCallback", "transformPipeableStreamWithRouter" and "transformReadableStreamWithRouter" are imported from external module "@tanstack/router-core/ssr/server" but never used in "node_modules/@tanstack/start-server-core/dist/esm/index.js".
+"RawStream" is imported from external module "@tanstack/router-core" but never used in "node_modules/@tanstack/start-client-core/dist/esm/index.js".
+"hydrate" and "json" are imported from external module "@tanstack/router-core/ssr/client" but never used in "node_modules/@tanstack/start-client-core/dist/esm/index.js".
+✓ 681 modules transformed.
+rendering chunks...
+node_modules/.nitro/vite/services/ssr/assets/dog-smiling-480-6fqpAZW2.jpg                       46.02 kB
+node_modules/.nitro/vite/services/ssr/assets/dog-smiling-768-BZd4Dj1C.jpg                       92.46 kB
+node_modules/.nitro/vite/services/ssr/assets/dog-recovering-e6pf9Ekn.jpg                       113.09 kB
+node_modules/.nitro/vite/services/ssr/assets/dog-smiling-1024-DZg1fOfE.jpg                     143.66 kB
+node_modules/.nitro/vite/services/ssr/assets/dog-smiling-BtKTrXtF.jpg                          317.40 kB
+node_modules/.nitro/vite/services/ssr/assets/NotoSansHK-Regular-DtlzxZzw.ttf                 7,071.44 kB
+node_modules/.nitro/vite/services/ssr/assets/styles-Z-8v-l76.css                               326.45 kB
+node_modules/.nitro/vite/services/ssr/assets/appUrl.server-KzUxci4E.js                           0.11 kB
+node_modules/.nitro/vite/services/ssr/assets/__23tanstack-start-plugin-adapters-Cwee5PKy.js      0.14 kB
+node_modules/.nitro/vite/services/ssr/assets/createServerRpc-BVPUPcFe.js                         0.31 kB
+node_modules/.nitro/vite/services/ssr/assets/animal-D0bXTcjq.js                                  0.43 kB
+node_modules/.nitro/vite/services/ssr/assets/publicPage.server-BUklPi9L.js                       0.43 kB
+node_modules/.nitro/vite/services/ssr/assets/publicPage.server-0IejYcx9.js                       0.47 kB
+node_modules/.nitro/vite/services/ssr/assets/publicPage.server-BxhCP6SW.js                       0.51 kB
+node_modules/.nitro/vite/services/ssr/assets/dog_._id-DHgt7HXc.js                                0.53 kB
+node_modules/.nitro/vite/services/ssr/assets/cat_._id-D9mz_Kjv.js                                0.53 kB
+node_modules/.nitro/vite/services/ssr/assets/_slug-owEK1NH0.js                                   0.53 kB
+node_modules/.nitro/vite/services/ssr/assets/sponsors_._id-D46j2RvL.js                           0.54 kB
+node_modules/.nitro/vite/services/ssr/assets/label-DSUbz4Q4.js                                   0.60 kB
+node_modules/.nitro/vite/services/ssr/assets/documentManagementLogic-JHAcByZS.js                 0.67 kB
+node_modules/.nitro/vite/services/ssr/assets/publicListing.server-MW0rSLKk.js                    0.81 kB
+node_modules/.nitro/vite/services/ssr/assets/documentUpload-zsHqdcng.js                          0.87 kB
+node_modules/.nitro/vite/services/ssr/assets/publicPage.server-Cadx34yc.js                       0.95 kB
+node_modules/.nitro/vite/services/ssr/assets/badge-Cppa5qh0.js                                   0.99 kB
+node_modules/.nitro/vite/services/ssr/assets/checkbox-Bq7JMzze.js                                1.00 kB
+node_modules/.nitro/vite/services/ssr/assets/publicPage.functions-BfucgtIX.js                    1.01 kB
+node_modules/.nitro/vite/services/ssr/assets/storyPublicLogic-bB9FazgZ.js                        1.02 kB
+node_modules/.nitro/vite/services/ssr/assets/public.server-BQM7obG4.js                           1.07 kB
+node_modules/.nitro/vite/services/ssr/assets/publicPage.functions-BskO1lLf.js                    1.07 kB
+node_modules/.nitro/vite/services/ssr/assets/publicStoriesPage.functions-BT8va8pD.js             1.08 kB
+node_modules/.nitro/vite/services/ssr/assets/publicPage.functions-CuamIy2z.js                    1.08 kB
+node_modules/.nitro/vite/services/ssr/assets/publicPage.functions-BJPJl1DA.js                    1.09 kB
+node_modules/.nitro/vite/services/ssr/assets/publicImpact.functions-BDMXBWqG.js                  1.12 kB
+node_modules/.nitro/vite/services/ssr/assets/switch-CGAWlXs0.js                                  1.14 kB
+node_modules/.nitro/vite/services/ssr/assets/passwordRecovery-Dz6_EYlc.js                        1.17 kB
+node_modules/.nitro/vite/services/ssr/assets/public.functions-BPL3eQYU.js                        1.23 kB
+node_modules/.nitro/vite/services/ssr/assets/supabase-YmpZjHRa.js                                1.27 kB
+node_modules/.nitro/vite/services/ssr/assets/_slug-Dj6xtZVI.js                                   1.51 kB
+node_modules/.nitro/vite/services/ssr/assets/dog_._id-Cd7HzkQR.js                                1.52 kB
+node_modules/.nitro/vite/services/ssr/assets/cat_._id-DnKWw9q0.js                                1.52 kB
+node_modules/.nitro/vite/services/ssr/assets/sponsors_._id-DC1pTQqq.js                           1.52 kB
+node_modules/.nitro/vite/services/ssr/assets/schemas-BWus-CNw.js                                 1.55 kB
+node_modules/.nitro/vite/services/ssr/assets/publicStory.functions-DeSt2Iey.js                   1.56 kB
+node_modules/.nitro/vite/services/ssr/assets/tabs-ldNqgWwu.js                                    1.64 kB
+node_modules/.nitro/vite/services/ssr/assets/adopterWorkflowLogic-Cpe2Smmf.js                    1.66 kB
+node_modules/.nitro/vite/services/ssr/assets/publicAnimal.functions-Bf7NeEys.js                  1.66 kB
+node_modules/.nitro/vite/services/ssr/assets/applications-D9z1Chpk.js                            1.70 kB
+node_modules/.nitro/vite/services/ssr/assets/dog-CKaddh6I.js                                     1.71 kB
+node_modules/.nitro/vite/services/ssr/assets/cat-Cv2Ibtkf.js                                     1.71 kB
+node_modules/.nitro/vite/services/ssr/assets/dog-8_l76Twq.js                                     1.88 kB
+node_modules/.nitro/vite/services/ssr/assets/cat-C5w6XSiN.js                                     1.88 kB
+node_modules/.nitro/vite/services/ssr/assets/dog_._id-Udk1ee1b.js                                1.92 kB
+node_modules/.nitro/vite/services/ssr/assets/cat_._id-DvnndzPm.js                                1.92 kB
+node_modules/.nitro/vite/services/ssr/assets/sponsors_._id-f-mnGpB2.js                           1.93 kB
+node_modules/.nitro/vite/services/ssr/assets/StatusBadge-BnjWJzhv.js                             1.93 kB
+node_modules/.nitro/vite/services/ssr/assets/dog_._id-Cp7AYT-t.js                                1.93 kB
+node_modules/.nitro/vite/services/ssr/assets/cat_._id-RPCEsSHx.js                                1.93 kB
+node_modules/.nitro/vite/services/ssr/assets/sponsors_._id-CuwZmAqP.js                           1.93 kB
+node_modules/.nitro/vite/services/ssr/assets/sponsors-BKcwzqFd.js                                2.02 kB
+node_modules/.nitro/vite/services/ssr/assets/sponsors-CzKb7f4_.js                                2.05 kB
+node_modules/.nitro/vite/services/ssr/assets/start-esWPqL8q.js                                   2.06 kB
+node_modules/.nitro/vite/services/ssr/assets/new-BNl8ZplQ.js                                     2.06 kB
+node_modules/.nitro/vite/services/ssr/assets/publicStoriesPage.server-CmO__6ky.js                2.17 kB
+node_modules/.nitro/vite/services/ssr/assets/publicPage.functions-DxfDPYHd.js                    2.24 kB
+node_modules/.nitro/vite/services/ssr/assets/table-DTgj1paF.js                                   2.42 kB
+node_modules/.nitro/vite/services/ssr/assets/contentAdminLogic-CSAX1jvN.js                       2.47 kB
+node_modules/.nitro/vite/services/ssr/assets/ExportButton-DG82bKGh.js                            2.49 kB
+node_modules/.nitro/vite/services/ssr/assets/publicImpact.functions-DuecHX6X.js                  2.70 kB
+node_modules/.nitro/vite/services/ssr/assets/_id.edit-zAz62-Oh.js                                2.80 kB
+node_modules/.nitro/vite/services/ssr/assets/repository.server-BGxcnckT.js                       2.89 kB
+node_modules/.nitro/vite/services/ssr/assets/access-denied-BKDxTtTw.js                           3.07 kB
+node_modules/.nitro/vite/services/ssr/assets/dialog-IzpwtXRP.js                                  3.27 kB
+node_modules/.nitro/vite/services/ssr/assets/caseWorkflowLogic-kIXpZPEZ.js                       3.33 kB
+node_modules/.nitro/vite/services/ssr/assets/DataTable-CZlzIadj.js                               3.67 kB
+node_modules/.nitro/vite/services/ssr/assets/publicPage.server-BLwHOTw1.js                       3.69 kB
+node_modules/.nitro/vite/services/ssr/assets/volunteerAdminLogic-CBAKDFcK.js                     3.69 kB
+node_modules/.nitro/vite/services/ssr/assets/publicImpact.server-BZC4qrjq.js                     3.72 kB
+node_modules/.nitro/vite/services/ssr/assets/publicListing.functions-BNaTw1sh.js                 3.88 kB
+node_modules/.nitro/vite/services/ssr/assets/team-C-euObKa.js                                    4.09 kB
+node_modules/.nitro/vite/services/ssr/assets/privacy-D_r199wb.js                                 4.11 kB
+node_modules/.nitro/vite/services/ssr/assets/repository.server-CPIWIi4x.js                       4.64 kB
+node_modules/.nitro/vite/services/ssr/assets/adoption-CRoFQEZf.js                                4.90 kB
+node_modules/.nitro/vite/services/ssr/assets/select-DlYmPSJ8.js                                  4.97 kB
+node_modules/.nitro/vite/services/ssr/assets/AnimalDetail-BjXrQcfm.js                            5.28 kB
+node_modules/.nitro/vite/services/ssr/assets/audit-B105-t-1.js                                   5.51 kB
+node_modules/.nitro/vite/services/ssr/assets/status._token-D-ZK38wq.js                           6.21 kB
+node_modules/.nitro/vite/services/ssr/assets/supabase.server-BD03DX6x.js                         6.23 kB
+node_modules/.nitro/vite/services/ssr/assets/schemas-D-EgDdxO.js                                 6.34 kB
+node_modules/.nitro/vite/services/ssr/assets/knowledge-C4fqtIJt.js                               6.35 kB
+node_modules/.nitro/vite/services/ssr/assets/repository.server-H_edKF5a.js                       6.38 kB
+node_modules/.nitro/vite/services/ssr/assets/reset-password-ZI7Tsj4l.js                          7.30 kB
+node_modules/.nitro/vite/services/ssr/assets/_id-CSRfJLnq.js                                     7.93 kB
+node_modules/.nitro/vite/services/ssr/assets/repository.server-CVWobz7E.js                       8.37 kB
+node_modules/.nitro/vite/services/ssr/assets/_slug-CwjblP0L.js                                   8.44 kB
+node_modules/.nitro/vite/services/ssr/assets/SupporterFormDialog-94IVx0qR.js                     8.45 kB
+node_modules/.nitro/vite/services/ssr/assets/login-BDDVZjIE.js                                   8.48 kB
+node_modules/.nitro/vite/services/ssr/assets/supabase.server-BJbB438Y.js                        11.04 kB
+node_modules/.nitro/vite/services/ssr/assets/inbox-BwyaY65m.js                                  11.24 kB
+node_modules/.nitro/vite/services/ssr/index.js                                                  11.25 kB
+node_modules/.nitro/vite/services/ssr/assets/AnimalForm-B3zbihuZ.js                             12.19 kB
+node_modules/.nitro/vite/services/ssr/assets/help-b01b-SiS.js                                   12.28 kB
+node_modules/.nitro/vite/services/ssr/assets/supporters-BXyjRZGD.js                             12.49 kB
+node_modules/.nitro/vite/services/ssr/assets/tasks-BpTFt28P.js                                  12.96 kB
+node_modules/.nitro/vite/services/ssr/assets/instructions-By1RQjMA.js                           12.99 kB
+node_modules/.nitro/vite/services/ssr/assets/content-Drngsp52.js                                14.35 kB
+node_modules/.nitro/vite/services/ssr/assets/annual-reports-CDCT9q9l.js                         14.56 kB
+node_modules/.nitro/vite/services/ssr/assets/group-enquiries-B4TB1pZL.js                        15.40 kB
+node_modules/.nitro/vite/services/ssr/assets/index-edjxsSd3.js                                  15.50 kB
+node_modules/.nitro/vite/services/ssr/assets/index-CSST0imp.js                                  15.75 kB
+node_modules/.nitro/vite/services/ssr/assets/sponsors_.status._token-C_m-dDFx.js                15.81 kB
+node_modules/.nitro/vite/services/ssr/assets/access-B_-j5Ud1.js                                 16.40 kB
+node_modules/.nitro/vite/services/ssr/assets/status._token-GFtk62iv.js                          17.84 kB
+node_modules/.nitro/vite/services/ssr/assets/documents-BzWFFscX.js                              18.80 kB
+node_modules/.nitro/vite/services/ssr/assets/adopters-DjC0ifjk.js                               19.16 kB
+node_modules/.nitro/vite/services/ssr/assets/service-J5Y0WofC.js                                20.93 kB
+node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-BsgfUspZ.js             21.04 kB
+node_modules/.nitro/vite/services/ssr/assets/reports-DESC2jwa.js                                21.05 kB
+node_modules/.nitro/vite/services/ssr/assets/stories-CxGOoCDO.js                                22.98 kB
+node_modules/.nitro/vite/services/ssr/assets/_id-2kFlCg8P.js                                    25.67 kB
+node_modules/.nitro/vite/services/ssr/assets/TaskPanel-BkYVFqGP.js                              25.93 kB
+node_modules/.nitro/vite/services/ssr/assets/repository.server-4de-27_r.js                      27.67 kB
+node_modules/.nitro/vite/services/ssr/assets/statuses-BYSZC1PQ.js                               29.08 kB
+node_modules/.nitro/vite/services/ssr/assets/donate-BZvdQ90i.js                                 31.09 kB
+node_modules/.nitro/vite/services/ssr/assets/adoption-guides-Cc7eEpCg.js                        32.96 kB
+node_modules/.nitro/vite/services/ssr/assets/adminPageCopy-Cc2VMuBv.js                          36.40 kB
+node_modules/.nitro/vite/services/ssr/assets/volunteers-DsbfDXKM.js                             37.08 kB
+node_modules/.nitro/vite/services/ssr/assets/intake-COlHFYSC.js                                 39.96 kB
+node_modules/.nitro/vite/services/ssr/assets/repository.server-BvNu0c1G.js                      43.17 kB
+node_modules/.nitro/vite/services/ssr/assets/server-BN6ami2k.js                                 48.60 kB
+node_modules/.nitro/vite/services/ssr/assets/_id-hOHKrY9g.js                                    52.30 kB
+node_modules/.nitro/vite/services/ssr/assets/_id-D7h5CJsK.js                                    56.43 kB
+node_modules/.nitro/vite/services/ssr/assets/animals-CBEg6Lrl.js                                58.24 kB
+node_modules/.nitro/vite/services/ssr/assets/index-GzpHKOS4.js                                  62.01 kB
+node_modules/.nitro/vite/services/ssr/assets/_id-BX13l1Y-.js                                    85.49 kB
+node_modules/.nitro/vite/services/ssr/assets/router-CZpfFsCC.js                              1,063.80 kB
+✓ built in 45.07s
+
+[nitro] o Building [Nitro] (preset: vercel, compatibility: 2026-09-06)
+[nitro] √ Generated public .vercel/output/static
+vite v7.3.2 building nitro environment for production...
+transforming...
+node_modules/@tanstack/react-router/dist/esm/index.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/index.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/ClientOnly.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/ClientOnly.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/useNavigate.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/useNavigate.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/useBlocker.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/useBlocker.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/useRouterState.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/useRouterState.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/useLocation.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/useLocation.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/RouterProvider.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/RouterProvider.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/HeadContent.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/HeadContent.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/Asset.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/Asset.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/Matches.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/Matches.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/useRouter.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/useRouter.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/CatchBoundary.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/CatchBoundary.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/useMatch.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/useMatch.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/Match.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/Match.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/link.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/link.js" was ignored.
+node_modules/@radix-ui/react-dialog/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dialog/dist/index.mjs" was ignored.
+node_modules/@tanstack/react-router/dist/esm/utils.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/utils.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/routerContext.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/routerContext.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/Transitioner.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/Transitioner.js" was ignored.
+node_modules/@tanstack/react-router/dist/esm/matchContext.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-router/dist/esm/matchContext.js" was ignored.
+node_modules/@radix-ui/react-label/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-label/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-select/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-select/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-tabs/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-tabs/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-checkbox/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-checkbox/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-switch/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-switch/dist/index.mjs" was ignored.
+node_modules/@tanstack/react-query/build/modern/useQuery.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useQuery.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useQueries.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useQueries.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/QueryErrorResetBoundary.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/QueryErrorResetBoundary.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/HydrationBoundary.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/HydrationBoundary.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useIsFetching.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useIsFetching.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useMutation.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useMutation.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useMutationState.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useMutationState.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/IsRestoringProvider.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/IsRestoringProvider.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useInfiniteQuery.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useInfiniteQuery.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useSuspenseQueries.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useSuspenseQueries.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useSuspenseQuery.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useSuspenseQuery.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useSuspenseInfiniteQuery.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useSuspenseInfiniteQuery.js" was ignored.
+node_modules/@radix-ui/react-focus-scope/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-focus-scope/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-portal/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-portal/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-presence/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-presence/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-focus-guards/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-focus-guards/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-collection/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-collection/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-popper/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-popper/dist/index.mjs" was ignored.
+node_modules/@radix-ui/react-roving-focus/dist/index.mjs (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@radix-ui/react-roving-focus/dist/index.mjs" was ignored.
+node_modules/@tanstack/react-query/build/modern/errorBoundaryUtils.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/errorBoundaryUtils.js" was ignored.
+node_modules/@tanstack/react-query/build/modern/useBaseQuery.js (1:0): Module level directives cause errors when bundled, "use client" in "node_modules/@tanstack/react-query/build/modern/useBaseQuery.js" was ignored.
+✓ 2646 modules transformed.
+i Tracing dependencies:
+- tslib (1.14.1, 2.8.1)
+√ Traced 1 dependencies (20 files) in 351ms.
+i Ensure your production environment matches the builder OS and architecture (win32-x64) to avoid native module issues.
+rendering chunks...
+.vercel/output/functions/__server.func/_libs/hookable.mjs                                          0.00 kB
+.vercel/output/functions/__server.func/_libs/ufo.mjs                                               0.00 kB
+.vercel/output/functions/__server.func/_libs/ohash.mjs                                             0.00 kB
+.vercel/output/functions/__server.func/_libs/ocache.mjs                                            0.00 kB
+.vercel/output/functions/__server.func/_libs/unstorage.mjs                                         0.00 kB
+.vercel/output/functions/__server.func/_libs/tanstack__store.mjs                                   0.00 kB
+.vercel/output/functions/__server.func/_libs/use-sync-external-store.mjs                           0.00 kB
+.vercel/output/functions/__server.func/_libs/detect-node-es.mjs                                    0.00 kB
+.vercel/output/functions/__server.func/_libs/tslib.mjs                                             0.00 kB
+.vercel/output/functions/__server.func/_libs/tanstack__react-store.mjs                             0.02 kB
+.vercel/output/functions/__server.func/_libs/@radix-ui/react-use-effect-event+[...].mjs            0.02 kB
+.vercel/output/functions/__server.func/_ssr/appUrl.server-KzUxci4E.mjs                             0.11 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__number.mjs                                  0.11 kB
+.vercel/output/functions/__server.func/_libs/uncrypto.mjs                                          0.12 kB
+.vercel/output/functions/__server.func/__23tanstack-start-plugin-adapters-Cwee5PKy.mjs             0.14 kB
+.vercel/output/functions/__server.func/_chunks/render_resend_false.mjs                             0.16 kB
+.vercel/output/functions/__server.func/_libs/get-nonce.mjs                                         0.16 kB
+.vercel/output/functions/__server.func/_libs/@radix-ui/react-use-layout-effect+[...].mjs           0.17 kB
+.vercel/output/functions/__server.func/_libs/rou3.mjs                                              0.21 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-direction.mjs                         0.28 kB
+.vercel/output/functions/__server.func/_ssr/createServerRpc-BVPUPcFe.mjs                           0.31 kB
+.vercel/output/functions/__server.func/_libs/@radix-ui/react-use-callback-ref+[...].mjs            0.34 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__primitive.mjs                               0.35 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-use-previous.mjs                      0.39 kB
+.vercel/output/functions/__server.func/_ssr/animal-D0bXTcjq.mjs                                    0.43 kB
+.vercel/output/functions/__server.func/_libs/clsx.mjs                                              0.51 kB
+.vercel/output/functions/__server.func/_chunks/ssr-renderer.mjs                                    0.51 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-id.mjs                                0.51 kB
+.vercel/output/functions/__server.func/_ssr/label-DSUbz4Q4.mjs                                     0.63 kB
+.vercel/output/functions/__server.func/_ssr/documentManagementLogic-JHAcByZS.mjs                   0.67 kB
+.vercel/output/functions/__server.func/_libs/@radix-ui/react-use-escape-keydown+[...].mjs          0.69 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-label.mjs                             0.69 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-arrow.mjs                             0.71 kB
+.vercel/output/functions/__server.func/_ssr/publicPage.server-BUklPi9L.mjs                         0.77 kB
+.vercel/output/functions/__server.func/_ssr/publicPage.server-0IejYcx9.mjs                         0.81 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-portal.mjs                            0.83 kB
+.vercel/output/functions/__server.func/_libs/@radix-ui/react-visually-hidden+[...].mjs             0.85 kB
+.vercel/output/functions/__server.func/_ssr/publicPage.server-BxhCP6SW.mjs                         0.86 kB
+.vercel/output/functions/__server.func/_ssr/documentUpload-zsHqdcng.mjs                            0.87 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-focus-guards.mjs                      0.93 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-compose-refs.mjs                      0.96 kB
+.vercel/output/functions/__server.func/_ssr/storyPublicLogic-bB9FazgZ.mjs                          1.02 kB
+.vercel/output/functions/__server.func/_ssr/badge-Cppa5qh0.mjs                                     1.04 kB
+.vercel/output/functions/__server.func/_ssr/checkbox-Bq7JMzze.mjs                                  1.09 kB
+.vercel/output/functions/__server.func/_ssr/publicListing.server-MW0rSLKk.mjs                      1.13 kB
+.vercel/output/functions/__server.func/_ssr/public.server-BQM7obG4.mjs                             1.14 kB
+.vercel/output/functions/__server.func/_ssr/switch-CGAWlXs0.mjs                                    1.16 kB
+.vercel/output/functions/__server.func/_ssr/passwordRecovery-Dz6_EYlc.mjs                          1.17 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-use-size.mjs                          1.26 kB
+.vercel/output/functions/__server.func/_ssr/publicPage.functions-BfucgtIX.mjs                      1.28 kB
+.vercel/output/functions/__server.func/_ssr/publicPage.server-Cadx34yc.mjs                         1.29 kB
+.vercel/output/functions/__server.func/_ssr/publicPage.functions-BskO1lLf.mjs                      1.35 kB
+.vercel/output/functions/__server.func/_ssr/publicStoriesPage.functions-BT8va8pD.mjs               1.36 kB
+.vercel/output/functions/__server.func/_ssr/publicPage.functions-CuamIy2z.mjs                      1.36 kB
+.vercel/output/functions/__server.func/_ssr/publicPage.functions-BJPJl1DA.mjs                      1.36 kB
+.vercel/output/functions/__server.func/_ssr/publicImpact.functions-BDMXBWqG.mjs                    1.40 kB
+.vercel/output/functions/__server.func/_libs/cookie-es.mjs                                         1.46 kB
+.vercel/output/functions/__server.func/_libs/seroval-plugins.mjs                                   1.47 kB
+.vercel/output/functions/__server.func/_ssr/public.functions-BPL3eQYU.mjs                          1.51 kB
+.vercel/output/functions/__server.func/_ssr/supabase-YmpZjHRa.mjs                                  1.60 kB
+.vercel/output/functions/__server.func/_ssr/adopterWorkflowLogic-Cpe2Smmf.mjs                      1.66 kB
+.vercel/output/functions/__server.func/_libs/react-style-singleton.mjs                             1.67 kB
+.vercel/output/functions/__server.func/_ssr/schemas-BWus-CNw.mjs                                   1.68 kB
+.vercel/output/functions/__server.func/_ssr/tabs-ldNqgWwu.mjs                                      1.73 kB
+.vercel/output/functions/__server.func/_libs/use-callback-ref.mjs                                  1.75 kB
+.vercel/output/functions/__server.func/_ssr/publicStory.functions-DeSt2Iey.mjs                     1.89 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-primitive.mjs                         1.90 kB
+.vercel/output/functions/__server.func/_ssr/publicAnimal.functions-Bf7NeEys.mjs                    2.00 kB
+.vercel/output/functions/__server.func/_ssr/StatusBadge-BnjWJzhv.mjs                               2.05 kB
+.vercel/output/functions/__server.func/_libs/class-variance-authority.mjs                          2.14 kB
+.vercel/output/functions/__server.func/_ssr/start-esWPqL8q.mjs                                     2.18 kB
+.vercel/output/functions/__server.func/_libs/@radix-ui/react-use-controllable-state+[...].mjs      2.29 kB
+.vercel/output/functions/__server.func/_ssr/contentAdminLogic-CSAX1jvN.mjs                         2.47 kB
+.vercel/output/functions/__server.func/_ssr/publicStoriesPage.server-CmO__6ky.mjs                  2.51 kB
+.vercel/output/functions/__server.func/_ssr/publicPage.functions-DxfDPYHd.mjs                      2.52 kB
+.vercel/output/functions/__server.func/_libs/isbot.mjs                                             2.56 kB
+.vercel/output/functions/__server.func/_ssr/ExportButton-DG82bKGh.mjs                              2.61 kB
+.vercel/output/functions/__server.func/_libs/use-sidecar.mjs                                       2.65 kB
+.vercel/output/functions/__server.func/_ssr/table-DTgj1paF.mjs                                     2.65 kB
+.vercel/output/functions/__server.func/_ssr/publicImpact.functions-DuecHX6X.mjs                    2.98 kB
+.vercel/output/functions/__server.func/_ssr/repository.server-BGxcnckT.mjs                         2.99 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-collection.mjs                        3.23 kB
+.vercel/output/functions/__server.func/_ssr/caseWorkflowLogic-kIXpZPEZ.mjs                         3.33 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-context.mjs                           3.36 kB
+.vercel/output/functions/__server.func/_ssr/dialog-IzpwtXRP.mjs                                    3.44 kB
+.vercel/output/functions/__server.func/_ssr/volunteerAdminLogic-CBAKDFcK.mjs                       3.69 kB
+.vercel/output/functions/__server.func/_libs/react-remove-scroll-bar.mjs                           3.96 kB
+.vercel/output/functions/__server.func/_ssr/dog-CKaddh6I.mjs                                       4.00 kB
+.vercel/output/functions/__server.func/_ssr/cat-Cv2Ibtkf.mjs                                       4.00 kB
+.vercel/output/functions/__server.func/_ssr/applications-D9z1Chpk.mjs                              4.01 kB
+.vercel/output/functions/__server.func/_ssr/DataTable-CZlzIadj.mjs                                 4.02 kB
+.vercel/output/functions/__server.func/_ssr/publicPage.server-BLwHOTw1.mjs                         4.03 kB
+.vercel/output/functions/__server.func/_ssr/publicImpact.server-BZC4qrjq.mjs                       4.05 kB
+.vercel/output/functions/__server.func/_libs/aria-hidden.mjs                                       4.06 kB
+.vercel/output/functions/__server.func/_libs/hookform__resolvers.mjs                               4.15 kB
+.vercel/output/functions/__server.func/_ssr/cat-C5w6XSiN.mjs                                       4.17 kB
+.vercel/output/functions/__server.func/_ssr/dog-8_l76Twq.mjs                                       4.18 kB
+.vercel/output/functions/__server.func/_ssr/dog_._id-Cd7HzkQR.mjs                                  4.20 kB
+.vercel/output/functions/__server.func/_ssr/cat_._id-DnKWw9q0.mjs                                  4.20 kB
+.vercel/output/functions/__server.func/_ssr/sponsors_._id-DC1pTQqq.mjs                             4.21 kB
+.vercel/output/functions/__server.func/_slug-Dj6xtZVI.mjs                                          4.22 kB
+.vercel/output/functions/__server.func/_ssr/sponsors_._id-f-mnGpB2.mjs                             4.24 kB
+.vercel/output/functions/__server.func/_ssr/publicListing.functions-BNaTw1sh.mjs                   4.24 kB
+.vercel/output/functions/__server.func/_ssr/dog_._id-Cp7AYT-t.mjs                                  4.24 kB
+.vercel/output/functions/__server.func/_ssr/cat_._id-RPCEsSHx.mjs                                  4.24 kB
+.vercel/output/functions/__server.func/_ssr/dog_._id-Udk1ee1b.mjs                                  4.24 kB
+.vercel/output/functions/__server.func/_ssr/cat_._id-DvnndzPm.mjs                                  4.24 kB
+.vercel/output/functions/__server.func/_ssr/sponsors_._id-CuwZmAqP.mjs                             4.26 kB
+.vercel/output/functions/__server.func/_ssr/sponsors-BKcwzqFd.mjs                                  4.35 kB
+.vercel/output/functions/__server.func/_ssr/sponsors-CzKb7f4_.mjs                                  4.41 kB
+.vercel/output/functions/__server.func/_ssr/new-BNl8ZplQ.mjs                                       4.41 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-presence.mjs                          4.86 kB
+.vercel/output/functions/__server.func/_ssr/repository.server-CPIWIi4x.mjs                         4.87 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-switch.mjs                            4.91 kB
+.vercel/output/functions/__server.func/_id.edit-zAz62-Oh.mjs                                       5.23 kB
+.vercel/output/functions/__server.func/_ssr/select-DlYmPSJ8.mjs                                    5.26 kB
+.vercel/output/functions/__server.func/_libs/standardwebhooks.mjs                                  5.34 kB
+.vercel/output/functions/__server.func/_ssr/access-denied-BKDxTtTw.mjs                             5.47 kB
+.vercel/output/functions/__server.func/_libs/tanstack__history.mjs                                 5.99 kB
+.vercel/output/functions/__server.func/_ssr/AnimalDetail-BjXrQcfm.mjs                              6.13 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-tabs.mjs                              6.49 kB
+.vercel/output/functions/__server.func/_ssr/privacy-D_r199wb.mjs                                   6.54 kB
+.vercel/output/functions/__server.func/_ssr/repository.server-H_edKF5a.mjs                         6.55 kB
+.vercel/output/functions/__server.func/_ssr/supabase.server-BD03DX6x.mjs                           6.56 kB
+.vercel/output/functions/__server.func/_ssr/schemas-D-EgDdxO.mjs                                   6.58 kB
+.vercel/output/functions/__server.func/_ssr/team-C-euObKa.mjs                                      6.59 kB
+.vercel/output/functions/__server.func/_libs/tanstack__react-query.mjs                             7.03 kB
+.vercel/output/functions/__server.func/index.mjs                                                   7.34 kB
+.vercel/output/functions/__server.func/_ssr/adoption-CRoFQEZf.mjs                                  7.40 kB
+.vercel/output/functions/__server.func/_libs/@upstash/core-analytics.mjs                           7.53 kB
+.vercel/output/functions/__server.func/_libs/stablelib__base64.mjs                                 7.56 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-focus-scope.mjs                       8.07 kB
+.vercel/output/functions/__server.func/_ssr/audit-B105-t-1.mjs                                     8.18 kB
+.vercel/output/functions/__server.func/_libs/floating-ui__react-dom.mjs                            8.42 kB
+.vercel/output/functions/__server.func/_ssr/repository.server-CVWobz7E.mjs                         8.48 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-checkbox.mjs                          8.65 kB
+.vercel/output/functions/__server.func/_libs/@radix-ui/react-dismissable-layer+[...].mjs           8.97 kB
+.vercel/output/functions/__server.func/_ssr/knowledge-C4fqtIJt.mjs                                 9.06 kB
+.vercel/output/functions/__server.func/_ssr/status._token-D-ZK38wq.mjs                             9.14 kB
+.vercel/output/functions/__server.func/_ssr/SupporterFormDialog-94IVx0qR.mjs                       9.26 kB
+.vercel/output/functions/__server.func/_libs/floating-ui__utils.mjs                                9.47 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-roving-focus.mjs                      9.53 kB
+.vercel/output/functions/__server.func/_libs/h3-v2.mjs                                             9.98 kB
+.vercel/output/functions/__server.func/_ssr/reset-password-ZI7Tsj4l.mjs                           10.05 kB
+.vercel/output/functions/__server.func/_id-CSRfJLnq.mjs                                           10.82 kB
+.vercel/output/functions/__server.func/_ssr/login-BDDVZjIE.mjs                                    11.41 kB
+.vercel/output/functions/__server.func/_ssr/index.mjs                                             11.41 kB
+.vercel/output/functions/__server.func/_ssr/supabase.server-BJbB438Y.mjs                          11.44 kB
+.vercel/output/functions/__server.func/_slug-CwjblP0L.mjs                                         11.52 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-popper.mjs                           11.68 kB
+.vercel/output/functions/__server.func/_libs/supabase__functions-js.mjs                           11.91 kB
+.vercel/output/functions/__server.func/_ssr/AnimalForm-B3zbihuZ.mjs                               13.35 kB
+.vercel/output/functions/__server.func/_libs/fast-sha256.mjs                                      13.35 kB
+.vercel/output/functions/__server.func/_libs/react-remove-scroll.mjs                              13.37 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-dialog.mjs                           13.51 kB
+.vercel/output/functions/__server.func/_libs/h3.mjs                                               14.32 kB
+.vercel/output/functions/__server.func/_ssr/inbox-BwyaY65m.mjs                                    14.48 kB
+.vercel/output/functions/__server.func/_ssr/help-b01b-SiS.mjs                                     15.46 kB
+.vercel/output/functions/__server.func/_libs/iceberg-js.mjs                                       15.70 kB
+.vercel/output/functions/__server.func/_ssr/supporters-BXyjRZGD.mjs                               16.29 kB
+.vercel/output/functions/__server.func/_ssr/instructions-By1RQjMA.mjs                             16.69 kB
+.vercel/output/functions/__server.func/_ssr/tasks-BpTFt28P.mjs                                    16.80 kB
+.vercel/output/functions/__server.func/_libs/srvx.mjs                                             17.43 kB
+.vercel/output/functions/__server.func/_ssr/content-Drngsp52.mjs                                  17.71 kB
+.vercel/output/functions/__server.func/_ssr/annual-reports-CDCT9q9l.mjs                           17.90 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-slot.mjs                             18.75 kB
+.vercel/output/functions/__server.func/_ssr/group-enquiries-B4TB1pZL.mjs                          18.84 kB
+.vercel/output/functions/__server.func/_ssr/sponsors_.status._token-C_m-dDFx.mjs                  19.62 kB
+.vercel/output/functions/__server.func/_ssr/index-edjxsSd3.mjs                                    19.73 kB
+.vercel/output/functions/__server.func/_libs/react.mjs                                            19.83 kB
+.vercel/output/functions/__server.func/_ssr/index-CSST0imp.mjs                                    20.17 kB
+.vercel/output/functions/__server.func/_ssr/access-B_-j5Ud1.mjs                                   20.33 kB
+.vercel/output/functions/__server.func/_ssr/service-J5Y0WofC.mjs                                  20.94 kB
+.vercel/output/functions/__server.func/_tanstack-start-manifest_v-BsgfUspZ.mjs                    21.04 kB
+.vercel/output/functions/__server.func/_libs/floating-ui__dom.mjs                                 21.28 kB
+.vercel/output/functions/__server.func/_ssr/status._token-GFtk62iv.mjs                            21.92 kB
+.vercel/output/functions/__server.func/_ssr/documents-BzWFFscX.mjs                                22.52 kB
+.vercel/output/functions/__server.func/_ssr/adopters-DjC0ifjk.mjs                                 23.58 kB
+.vercel/output/functions/__server.func/_libs/floating-ui__core.mjs                                24.06 kB
+.vercel/output/functions/__server.func/_ssr/reports-DESC2jwa.mjs                                  25.54 kB
+.vercel/output/functions/__server.func/_ssr/stories-CxGOoCDO.mjs                                  26.88 kB
+.vercel/output/functions/__server.func/_ssr/repository.server-4de-27_r.mjs                        27.92 kB
+.vercel/output/functions/__server.func/_ssr/TaskPanel-BkYVFqGP.mjs                                28.07 kB
+.vercel/output/functions/__server.func/_id-2kFlCg8P.mjs                                           30.29 kB
+.vercel/output/functions/__server.func/_libs/supabase__supabase-js.mjs                            31.47 kB
+.vercel/output/functions/__server.func/_libs/lucide-react.mjs                                     34.20 kB
+.vercel/output/functions/__server.func/_ssr/statuses-BYSZC1PQ.mjs                                 34.34 kB
+.vercel/output/functions/__server.func/_ssr/donate-BZvdQ90i.mjs                                   35.37 kB
+.vercel/output/functions/__server.func/_libs/resend.mjs                                           35.76 kB
+.vercel/output/functions/__server.func/_ssr/adminPageCopy-Cc2VMuBv.mjs                            36.40 kB
+.vercel/output/functions/__server.func/_ssr/adoption-guides-Cc7eEpCg.mjs                          37.29 kB
+.vercel/output/functions/__server.func/_ssr/volunteers-DsbfDXKM.mjs                               42.24 kB
+.vercel/output/functions/__server.func/_ssr/repository.server-BvNu0c1G.mjs                        43.51 kB
+.vercel/output/functions/__server.func/_libs/tanstack__react-router.mjs                           43.82 kB
+.vercel/output/functions/__server.func/_ssr/intake-COlHFYSC.mjs                                   45.70 kB
+.vercel/output/functions/__server.func/_libs/pdf-lib__upng.mjs                                    47.26 kB
+.vercel/output/functions/__server.func/_libs/seroval.mjs                                          48.06 kB
+.vercel/output/functions/__server.func/_ssr/server-BN6ami2k.mjs                                   48.98 kB
+.vercel/output/functions/__server.func/_libs/radix-ui__react-select.mjs                           50.64 kB
+.vercel/output/functions/__server.func/_libs/supabase__phoenix.mjs                                53.95 kB
+.vercel/output/functions/__server.func/_id-hOHKrY9g.mjs                                           59.18 kB
+.vercel/output/functions/__server.func/_id-D7h5CJsK.mjs                                           63.57 kB
+.vercel/output/functions/__server.func/_libs/upstash__ratelimit.mjs                               64.18 kB
+.vercel/output/functions/__server.func/_libs/react-hook-form.mjs                                  65.14 kB
+.vercel/output/functions/__server.func/_ssr/animals-CBEg6Lrl.mjs                                  65.60 kB
+.vercel/output/functions/__server.func/_ssr/index-GzpHKOS4.mjs                                    69.80 kB
+.vercel/output/functions/__server.func/_libs/supabase__realtime-js.mjs                            73.92 kB
+.vercel/output/functions/__server.func/_libs/tanstack__query-core.mjs                             75.01 kB
+.vercel/output/functions/__server.func/_id-BX13l1Y-.mjs                                           94.02 kB
+.vercel/output/functions/__server.func/_libs/tailwind-merge.mjs                                   96.41 kB
+.vercel/output/functions/__server.func/_libs/supabase__storage-js.mjs                             97.77 kB
+.vercel/output/functions/__server.func/_libs/postal-mime.mjs                                      98.81 kB
+.vercel/output/functions/__server.func/_libs/zod.mjs                                             116.22 kB
+.vercel/output/functions/__server.func/_libs/pako.mjs                                            121.06 kB
+.vercel/output/functions/__server.func/_libs/pdf-lib__standard-fonts.mjs                         133.51 kB
+.vercel/output/functions/__server.func/_libs/supabase__postgrest-js.mjs                          137.95 kB
+.vercel/output/functions/__server.func/_libs/upstash__redis.mjs                                  157.30 kB
+.vercel/output/functions/__server.func/_libs/tanstack__router-core.mjs                           159.31 kB
+.vercel/output/functions/__server.func/_libs/supabase__auth-js.mjs                               301.06 kB
+.vercel/output/functions/__server.func/_libs/pdf-lib.mjs                                         480.57 kB
+.vercel/output/functions/__server.func/_libs/react-dom.mjs                                       509.23 kB
+.vercel/output/functions/__server.func/_libs/stripe.mjs                                          654.92 kB
+.vercel/output/functions/__server.func/_ssr/router-CZpfFsCC.mjs                                1,096.36 kB
+.vercel/output/functions/__server.func/_libs/pdf-lib__fontkit.mjs                              1,138.35 kB
+✓ built in 44.83s
+i Generated .vercel/output/nitro.json
+
+[nitro] √ You can preview this build using npx vite preview
+[nitro] √ You can deploy this build using npx nitro deploy --prebuilt

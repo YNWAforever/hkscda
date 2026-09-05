@@ -1,0 +1,70 @@
+bun test v1.3.14 (0d9b296a)
+
+docs\evidence\crm-baseline\identity-safety.test.ts:
+30 |     phone: "99999999",
+31 |     language: "en",
+32 |     source: "volunteer_form",
+33 |   });
+34 |
+35 |   expect(fake.payload()).toEqual({ email: "existing@example.test" });
+                              ^
+error: expect(received).toEqual(expected)
+
+  {
++   "deleted_at": null,
+    "email": "existing@example.test",
++   "language": "en",
++   "name": "Unverified Volunteer",
++   "phone": "99999999",
++   "source": "volunteer_form",
+  }
+
+- Expected  - 0
++ Received  + 5
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\docs\evidence\crm-baseline\identity-safety.test.ts:35:26)
+(fail) volunteer collision preserves the canonical profile and deletion state [9.43ms]
+43 |     email: "existing@example.test",
+44 |     phone: "88888888",
+45 |     language: "en",
+46 |   });
+47 |
+48 |   expect(fake.payload()).toEqual({ email: "existing@example.test" });
+                              ^
+error: expect(received).toEqual(expected)
+
+  {
+    "email": "existing@example.test",
++   "language": "en",
++   "name": "Unverified Donor",
++   "phone": "88888888",
++   "source": "donation_form",
+  }
+
+- Expected  - 0
++ Received  + 4
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\docs\evidence\crm-baseline\identity-safety.test.ts:48:26)
+(fail) donation collision preserves the canonical profile [0.64ms]
+
+docs\evidence\crm-baseline\email-safety.test.ts:
+39 |       logger: { error: mock(() => undefined) },
+40 |     },
+41 |   );
+42 |
+43 |   expect(send).toHaveBeenCalledTimes(1);
+44 |   expect(result).toBe("failed");
+                      ^
+error: expect(received).toBe(expected)
+
+Expected: "failed"
+Received: "sent"
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\docs\evidence\crm-baseline\email-safety.test.ts:44:18)
+(fail) resolved provider rejection is never persisted or returned as sent [2.63ms]
+
+ 0 pass
+ 3 fail
+ 6 expect() calls
+Ran 3 tests across 2 files. [328.00ms]
+EXIT 1
