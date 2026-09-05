@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/hkscda/admin-performance-v1.schema.json",
+  "title": "HKSCDA admin performance observations v1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "commit",
+    "fixtureId",
+    "supporterCount",
+    "origin",
+    "measuredAt",
+    "runtime",
+    "status",
+    "scenarios"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "commit": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+    "fixtureId": { "type": "string", "minLength": 1 },
+    "supporterCount": { "enum": [1000, 10000, 50000] },
+    "origin": { "type": "string", "format": "uri" },
+    "measuredAt": { "type": "string", "format": "date-time" },
+    "runtime": { "type": "string" },
+    "status": { "enum": ["incomplete", "complete"] },
+    "scenarios": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "method",
+          "cold",
+          "warmSamples",
+          "p50Ms",
+          "p95Ms",
+          "queryCount",
+          "sqlExplain",
+          "targetMet"
+        ],
+        "properties": {
+          "name": { "type": "string" },
+          "method": { "enum": ["GET", "POST", "PUT", "PATCH", "DELETE"] },
+          "cold": { "$ref": "#/$defs/sample" },
+          "warmSamples": {
+            "type": "array",
+            "minItems": 30,
+            "maxItems": 30,
+            "items": { "$ref": "#/$defs/sample" }
+          },
+          "p50Ms": { "type": "number", "minimum": 0 },
+          "p95Ms": { "type": "number", "minimum": 0 },
+          "queryCount": { "type": ["null", "integer"], "minimum": 0 },
+          "sqlExplain": { "type": ["null", "object", "array"] },
+          "targetMet": { "type": "boolean" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sample": {
+      "type": "object",
+      "required": ["durationMs", "status", "decodedBytes", "gzipBytes"],
+      "properties": {
+        "durationMs": { "type": "number", "minimum": 0 },
+        "status": { "type": "integer", "minimum": 200, "maximum": 299 },
+        "decodedBytes": { "type": "integer", "minimum": 0 },
+        "gzipBytes": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}
