@@ -1,0 +1,9 @@
+bun test v1.3.14 (0d9b296a)
+
+scripts\content-media-reconciliation-local.integration.test.ts:
+(pass) local apply deletes the orphan and preserves every current, historical, session and recent reference [453.24ms]
+
+ 1 pass
+ 0 fail
+ 17 expect() calls
+Ran 1 test across 1 file. [880.00ms]

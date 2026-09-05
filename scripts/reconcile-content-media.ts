@@ -3,27 +3,35 @@ import { z } from "zod";
 const objectRef = z.object({ bucket: z.string().min(1), path: z.string().min(1) });
 const inventorySchema = z.object({
   objects: z.array(objectRef.extend({ createdAt: z.string().datetime() })),
+  mediaObjects: z.array(objectRef).default([]),
   revisionObjects: z.array(objectRef),
   publicationObjects: z.array(objectRef),
   sessions: z.array(objectRef.extend({ expiresAt: z.string().datetime(), finalized: z.boolean() })),
   legacyInternalPublicCount: z.number().int().nonnegative(),
 });
-export function summarizeContentMediaReconciliation(raw: unknown, now = new Date()) {
+export type ContentMediaInventory = z.input<typeof inventorySchema>;
+
+export function selectContentMediaReconciliationCandidates(raw: unknown, now = new Date()) {
   const inventory = inventorySchema.parse(raw);
   const cutoff = now.getTime() - 24 * 60 * 60 * 1000;
   const key = (ref: { bucket: string; path: string }) => JSON.stringify([ref.bucket, ref.path]);
   const protectedPaths = new Set(
     [
       ...inventory.revisionObjects,
+      ...inventory.mediaObjects,
       ...inventory.publicationObjects,
       ...inventory.sessions.filter(
-        (session) => !session.finalized && Date.parse(session.expiresAt) > now.getTime(),
+        (session) => session.finalized || Date.parse(session.expiresAt) > now.getTime(),
       ),
     ].map(key),
   );
   const candidates = inventory.objects.filter(
     (object) => Date.parse(object.createdAt) < cutoff && !protectedPaths.has(key(object)),
   );
+  return { inventory, candidates, cutoff };
+}
+export function summarizeContentMediaReconciliation(raw: unknown, now = new Date()) {
+  const { inventory, candidates, cutoff } = selectContentMediaReconciliationCandidates(raw, now);
   return {
     mode: "dry-run",
     objectsInspected: inventory.objects.length,

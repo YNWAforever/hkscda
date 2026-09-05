@@ -25,3 +25,22 @@ test("reconciliation retains revision references, active sessions, public copies
   expect(counts.legacyInternalPublicCount).toBe(3);
   expect(JSON.stringify(counts)).not.toContain("revision");
 });
+
+test("finalized sessions and current authoring references remain protected", () => {
+  const old = "2026-09-01T00:00:00Z";
+  const result = summarizeContentMediaReconciliation(
+    {
+      objects: [
+        { bucket: "private", path: "finalized", createdAt: old },
+        { bucket: "private", path: "authoring", createdAt: old },
+      ],
+      revisionObjects: [],
+      publicationObjects: [],
+      mediaObjects: [{ bucket: "private", path: "authoring" }],
+      sessions: [{ bucket: "private", path: "finalized", expiresAt: old, finalized: true }],
+      legacyInternalPublicCount: 0,
+    },
+    new Date("2026-09-06T00:00:00Z"),
+  );
+  expect(result.orphanCandidates).toBe(0);
+});

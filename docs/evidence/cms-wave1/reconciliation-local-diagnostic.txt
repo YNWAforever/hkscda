@@ -1,0 +1,25 @@
+bun test v1.3.14 (0d9b296a)
+
+scripts\content-media-reconciliation-local.integration.test.ts:
+115 |     const revisionRefs = await db`
+116 |       select media->>'storage_bucket' as bucket, media->>'storage_path' as path
+117 |       from public.content_revision revision
+118 |       cross join lateral jsonb_array_elements(coalesce(revision.authoring_snapshot->'media','[]'::jsonb) || coalesce(revision.public_snapshot->'media','[]'::jsonb)) media
+119 |       where revision.content_item_id=${contentId}::uuid`;
+120 |     expect(revisionRefs.map((row) => ({ ...row }))).toContainEqual({
+                                                          ^
+error: expect(received).toContainEqual(expected)
+
+Expected to contain: {
+  bucket: "content-media-private",
+  path: "reconcile-20f83f97-ef62-40ad-93ab-7767a078dadd/revision.png",
+}
+Received: []
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\scripts\content-media-reconciliation-local.integration.test.ts:120:53)
+(fail) local apply deletes the orphan and preserves every current, historical, session and recent reference [5.35ms]
+
+ 0 pass
+ 1 fail
+ 1 expect() calls
+Ran 1 test across 1 file. [668.00ms]

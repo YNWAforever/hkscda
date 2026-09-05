@@ -1,0 +1,23 @@
+bun test v1.3.14 (0d9b296a)
+
+scripts\reconcile-content-media.test.ts:
+(pass) reconciliation retains revision references, active sessions, public copies and recent objects [4.41ms]
+27 | });
+28 | 
+29 | test('finalized sessions and current authoring references remain protected', () => {
+30 |  const old='2026-09-01T00:00:00Z';
+31 |  const result=summarizeContentMediaReconciliation({objects:[{bucket:'private',path:'finalized',createdAt:old},{bucket:'private',path:'authoring',createdAt:old}],revisionObjects:[],publicationObjects:[],mediaObjects:[{bucket:'private',path:'authoring'}],sessions:[{bucket:'private',path:'finalized',expiresAt:old,finalized:true}],legacyInternalPublicCount:0},new Date('2026-09-06T00:00:00Z'));
+32 |  expect(result.orphanCandidates).toBe(0);
+                                      ^
+error: expect(received).toBe(expected)
+
+Expected: 0
+Received: 2
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\scripts\reconcile-content-media.test.ts:32:34)
+(fail) finalized sessions and current authoring references remain protected [7.92ms]
+
+ 1 pass
+ 1 fail
+ 5 expect() calls
+Ran 2 tests across 1 file. [391.00ms]
