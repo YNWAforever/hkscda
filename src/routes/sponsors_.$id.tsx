@@ -5,11 +5,13 @@ import { AnimalDetail } from "../components/site/AnimalDetail";
 import { PublicStateShell } from "../components/site/PublicStateShell";
 import { Skeleton } from "../components/ui/skeleton";
 import { getPublicAnimal } from "../lib/animals/publicAnimal.functions";
+import { loadPublicDetailOrNotFound } from "../lib/animals/publicDetailLoader";
 
 const ORIGIN = PUBLIC_SITE_ORIGIN;
 
 export const Route = createFileRoute("/sponsors_/$id")({
-  loader: ({ params }) => getPublicAnimal({ data: { id: params.id } }),
+  loader: ({ params }) =>
+    loadPublicDetailOrNotFound(() => getPublicAnimal({ data: { id: params.id } })),
   head: ({ loaderData, params }) => {
     const title = loaderData
       ? `助養 ${loaderData.name} · 香港拯救貓狗協會 HKSCDA`
@@ -36,6 +38,7 @@ export const Route = createFileRoute("/sponsors_/$id")({
     };
   },
   pendingComponent: SponsorDetailPending,
+  notFoundComponent: SponsorDetailNotFound,
   errorComponent: SponsorDetailError,
   component: SponsorDetailPage,
 });
@@ -43,21 +46,23 @@ export const Route = createFileRoute("/sponsors_/$id")({
 function SponsorDetailPage() {
   const animal = Route.useLoaderData();
 
-  if (!animal) {
-    return (
-      <PublicStateShell
-        title="此動物目前不在公開助養名單"
-        description="助養名單會隨照護安排更新，請返回助養區查看目前可選擇的動物。"
-        action={
-          <Link to="/sponsors" className="btn-secondary min-h-11 px-5">
-            返回助養區
-          </Link>
-        }
-      />
-    );
-  }
+  if (!animal) return <SponsorDetailError />;
 
   return <AnimalDetail animal={animal} backHref="/sponsors" backLabel="返回助養區" />;
+}
+
+function SponsorDetailNotFound() {
+  return (
+    <PublicStateShell
+      title="此動物目前不在公開助養名單"
+      description="助養名單會隨照護安排更新，請返回助養區查看目前可選擇的動物。"
+      action={
+        <Link to="/sponsors" className="btn-secondary min-h-11 px-5">
+          返回助養區
+        </Link>
+      }
+    />
+  );
 }
 
 function SponsorDetailPending() {

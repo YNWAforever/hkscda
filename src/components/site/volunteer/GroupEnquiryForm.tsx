@@ -70,6 +70,7 @@ export function GroupEnquiryForm() {
   const [message, setMessage] = useState("");
   const [idempotencyKey, setIdempotencyKey] = useState(() => newIdempotencyKey());
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -80,6 +81,7 @@ export function GroupEnquiryForm() {
     event.preventDefault();
     setSubmitting(true);
     setSubmitError(null);
+    setTurnstileToken(null);
     setSuccess(false);
     try {
       const response = await fetch("/api/volunteer/group-enquiries", {
@@ -108,6 +110,7 @@ export function GroupEnquiryForm() {
       setIdempotencyKey(newIdempotencyKey());
       setTurnstileToken(null);
     } catch (error) {
+      if (turnstileEnabled) setTurnstileResetKey((key) => key + 1);
       setSubmitError(error instanceof Error ? error.message : "查詢未能送出，請稍後再試。");
     } finally {
       setSubmitting(false);
@@ -227,6 +230,7 @@ export function GroupEnquiryForm() {
 
       <TurnstileWidget
         language="zh-HK"
+        resetKey={turnstileResetKey}
         onVerify={setTurnstileToken}
         onExpire={() => setTurnstileToken(null)}
       />

@@ -103,6 +103,18 @@ test("keeps the donation page available when optional documents fail to load", a
 });
 
 describe("AlipayHK donation checkout", () => {
+  test("reconciles checkout selection to the first published payment method", async () => {
+    const { isDonationMethodAvailable, reconcileDonationMethod } = await import("./donate");
+    const paypalOnly = ALL_METHODS.filter((entry) => entry.method === "paypal");
+
+    expect(reconcileDonationMethod("stripe", paypalOnly)).toBe("paypal");
+    expect(reconcileDonationMethod("paypal", paypalOnly)).toBe("paypal");
+    expect(reconcileDonationMethod("stripe", [])).toBeNull();
+    expect(isDonationMethodAvailable("stripe", paypalOnly)).toBe(false);
+    expect(isDonationMethodAvailable("paypal", paypalOnly)).toBe(true);
+    expect(isDonationMethodAvailable(null, paypalOnly)).toBe(false);
+  });
+
   test("keeps every provider hidden until the production activation gate is approved", async () => {
     const { DonatePage } = await import("./donate");
 
@@ -114,6 +126,22 @@ describe("AlipayHK donation checkout", () => {
     expect(html).toContain("付款服務完成正式審批後");
     expect(html).not.toContain(">信用卡<");
     expect(html).not.toContain(">PayPal<");
+    expect(html).toMatch(/<button[^>]*type="submit"[^>]*disabled=""/);
+  });
+
+  test("selects PayPal when it is the only published method", async () => {
+    const { DonatePage } = await import("./donate");
+    const html = renderToStaticMarkup(
+      <DonatePage
+        initialSlots={[]}
+        initialMethods={ALL_METHODS.filter((entry) => entry.method === "paypal")}
+        initialSearch={{}}
+        checkoutEnabled
+      />,
+    );
+
+    expect(html).toMatch(/aria-pressed="true"[^>]*>.*PayPal/s);
+    expect(html).not.toContain(">信用卡<");
   });
 
   test("renders Card and AlipayHK as separate payment methods", async () => {
@@ -151,6 +179,7 @@ describe("AlipayHK donation checkout", () => {
     expect(html).not.toContain(">轉數快 FPS<");
     expect(html).not.toContain(">PayMe<");
     expect(html).not.toContain(">PayPal<");
+    expect(html).toMatch(/<button[^>]*type="submit"[^>]*disabled=""/);
   });
 
   test("renders a method button per configured method, in the given order", async () => {

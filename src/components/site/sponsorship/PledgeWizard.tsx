@@ -128,6 +128,7 @@ export function PledgeWizard() {
   const [proofDate, setProofDate] = useState("");
   const [termsAgreed, setTermsAgreed] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<SubmitResult | null>(null);
@@ -159,6 +160,7 @@ export function PledgeWizard() {
     }
 
     setLoading(true);
+    setTurnstileToken(null);
     try {
       const payload: Record<string, unknown> = {
         language,
@@ -211,6 +213,7 @@ export function PledgeWizard() {
       clearIntent("sponsorship");
       setResult(data);
     } catch (submitError) {
+      if (turnstileEnabled) setTurnstileResetKey((key) => key + 1);
       console.error(submitError);
       setError(t.submitError);
     } finally {
@@ -516,6 +519,7 @@ export function PledgeWizard() {
         </fieldset>
 
         <TurnstileWidget
+          resetKey={turnstileResetKey}
           onVerify={setTurnstileToken}
           onExpire={() => setTurnstileToken(null)}
           language={language === "en" ? "en" : "zh-tw"}

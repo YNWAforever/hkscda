@@ -22,6 +22,7 @@ describe("PublicFormFrame", () => {
     expect(markup).not.toContain("detail-breadcrumb");
     expect(markup).toContain("status-content");
     expect(markup).toContain("trust-cue");
+    expect(markup).toContain('<aside aria-label="私隱提示"');
     expect(markup).toContain("此為私人查閱連結，請勿轉發。");
   });
 
@@ -36,5 +37,6 @@ describe("PublicFormFrame", () => {
     expect(markup).toContain('href="/volunteer"');
     expect(markup).toContain("返回個人義工報名");
     expect(markup).toContain("detail-breadcrumb");
+    expect(markup).toContain('<nav aria-label="頁面路徑"');
   });
 });

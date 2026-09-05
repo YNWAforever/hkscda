@@ -253,6 +253,7 @@ export function ApplicationWizard() {
   const [photos, setPhotos] = useState<SelectedPhoto[]>([]);
   const [serverError, setServerError] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const [submission, setSubmission] = useState<SubmissionResult | null>(null);
   const [storageReady, setStorageReady] = useState(false);
   const [draftStatus, setDraftStatus] = useState<"idle" | "restored" | "saved" | "unavailable">(
@@ -450,11 +451,13 @@ export function ApplicationWizard() {
     let result: SubmissionResult;
     try {
       const payload: ExpandedAdoptionApplication = expandedAdoptionApplicationSchema.parse(values);
+      setTurnstileToken(null);
       result = await submitAdoptionApplication(payload, photos, turnstileToken);
       if (!hasExpectedSubmissionResult(result)) {
         throw new Error("提交回覆不完整，請稍後再試。");
       }
     } catch (error) {
+      if (turnstileEnabled) setTurnstileResetKey((key) => key + 1);
       setServerError(error instanceof Error ? error.message : "提交失敗，請稍後再試。");
       return;
     }
@@ -494,6 +497,7 @@ export function ApplicationWizard() {
             errors={errors}
             turnstileSlot={
               <TurnstileWidget
+                resetKey={turnstileResetKey}
                 onVerify={setTurnstileToken}
                 onExpire={() => setTurnstileToken(null)}
                 language={language === "en" ? "en" : "zh-tw"}
@@ -532,7 +536,7 @@ export function ApplicationWizard() {
 
   if (!storageReady) {
     return (
-      <main className="container-wide py-10">
+      <main className="container-wide py-10" style={{ minHeight: "70vh" }}>
         <section className="mx-auto max-w-2xl rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-6 text-center shadow-soft">
           <Loader2 className="mx-auto h-8 w-8 animate-spin text-[var(--color-primary)]" />
           <h1 className="mt-4 text-2xl font-bold text-[var(--color-panel)]">領養申請</h1>

@@ -102,6 +102,7 @@ function VolunteerDirectoryPage() {
   const [emailConsent, setEmailConsent] = useState(true);
   const [whatsappConsent, setWhatsappConsent] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [successUrl, setSuccessUrl] = useState<string | null>(null);
@@ -134,6 +135,7 @@ function VolunteerDirectoryPage() {
     if (!selectedActivity) return;
     setSubmitting(true);
     setSubmitError(null);
+    setTurnstileToken(null);
     setSuccessUrl(null);
     try {
       const response = await fetch("/api/volunteer/registrations", {
@@ -166,6 +168,7 @@ function VolunteerDirectoryPage() {
       if (!response.ok) throw new Error(body.error ?? "登記未能送出");
       setSuccessUrl(body.statusUrl ?? null);
     } catch (error) {
+      if (turnstileEnabled) setTurnstileResetKey((key) => key + 1);
       setSubmitError(error instanceof Error ? error.message : "登記未能送出");
     } finally {
       setSubmitting(false);
@@ -452,6 +455,7 @@ function VolunteerDirectoryPage() {
 
           <TurnstileWidget
             language="zh-HK"
+            resetKey={turnstileResetKey}
             onVerify={setTurnstileToken}
             onExpire={() => setTurnstileToken(null)}
           />

@@ -20,6 +20,7 @@ const PORT = Number(process.env.FIXTURE_PORT ?? 54329);
 const HOST = process.env.FIXTURE_HOST ?? "127.0.0.1";
 const IMAGE = "/brand/hkscda-logo-primary.jpg";
 const STAMP = "2026-08-01T00:00:00.000Z";
+const PAYMENT_FIXTURE_MODE = process.env.PAYMENT_FIXTURE_MODE ?? "paypal";
 
 function animal(index, type, gender, age) {
   const n = String(index).padStart(2, "0");
@@ -53,7 +54,27 @@ const ANIMALS = [
   ...Array.from({ length: 3 }, (_, i) =>
     animal(i + 21, "sponsor", i % 2 ? "male" : "female", AGES[i % 3]),
   ),
+  {
+    ...animal(31, "cat", "female", "約 4 歲"),
+    status: "adopted",
+    name: "已移除測試貓",
+  },
 ];
+
+const PAYMENT_METHODS =
+  PAYMENT_FIXTURE_MODE === "empty"
+    ? []
+    : [
+        {
+          method: "paypal",
+          display_label_zh: "PayPal",
+          display_label_en: "PayPal",
+          details: {},
+          state: "published",
+          is_publicly_visible: true,
+          sort_order: 1,
+        },
+      ];
 
 const FAQ_ENTRIES = [
   {
@@ -154,8 +175,22 @@ const server = createServer((req, res) => {
     return;
   }
 
+  if (req.method === "POST" && path === "/rest/v1/rpc/read_published_content_snapshots") {
+    json(res, 200, { total: 0, rows: [] });
+    return;
+  }
+
   if (req.method === "POST" && path.startsWith("/rest/v1/rpc/")) {
     json(res, 200, []);
+    return;
+  }
+
+  if (path === "/rest/v1/payment_public_config") {
+    const filtered = applyOrder(
+      applyFilters(PAYMENT_METHODS, url.searchParams),
+      url.searchParams.get("order"),
+    );
+    json(res, 200, filtered);
     return;
   }
 
