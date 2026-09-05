@@ -1,6 +1,15 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { Archive, ArrowLeft, Plus, RefreshCw, Save, Send } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Link, useBlocker } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import type {
@@ -28,6 +37,14 @@ import {
   formatIsoForDatetimeLocal,
   parseDatetimeLocalToIso,
 } from "./contentAdminLogic";
+import {
+  createEditorState,
+  editorTransition,
+  canPublish,
+  createEditorOperationGate,
+  canAcceptEditorReload,
+} from "./editorState";
+import { ContentRevisionPanel } from "./ContentRevisionPanel";
 import { ContentTimeline } from "./ContentTimeline";
 import { NotificationDraftPanel } from "./NotificationDraftPanel";
 import { SocialCopyPanel } from "./SocialCopyPanel";
@@ -100,37 +117,130 @@ const toneMap: Record<ReturnType<typeof contentStatusTone>, StatusTone> = {
   muted: "neutral",
 };
 
+const DirtyContext = createContext<(panel: string, dirty: boolean) => void>(() => undefined);
+function useDirtyPanel(panel: string) {
+  const report = useContext(DirtyContext);
+  const [dirty, setDirty] = useState(false);
+  return {
+    dirty,
+    mark: () => {
+      setDirty(true);
+      report(panel, true);
+    },
+    clear: () => {
+      setDirty(false);
+      report(panel, false);
+    },
+  };
+}
+
 export function ContentEditor({ contentId, initialContent }: ContentEditorProps) {
   const queryClient = useQueryClient();
+  const [editor, setEditor] = useState(() =>
+    createEditorState(initialContent?.version, initialContent?.revisionId ?? undefined),
+  );
+  const [historyPage, setHistoryPage] = useState(1);
+  const [resetKey, setResetKey] = useState(0);
+  const runOperation = useRef(createEditorOperationGate()).current;
+  const dirtyVersions = useRef<Record<string, number | undefined>>({});
+  const currentVersion = useRef(initialContent?.version);
+  const expectedFor = (panel: string) =>
+    Object.hasOwn(dirtyVersions.current, panel)
+      ? dirtyVersions.current[panel]
+      : currentVersion.current;
+  const hasDirty = Object.values(editor.dirty).some(Boolean);
+  const reportDirty = useCallback((panel: string, dirty: boolean) => {
+    if (dirty && !Object.hasOwn(dirtyVersions.current, panel))
+      dirtyVersions.current[panel] = currentVersion.current;
+    if (!dirty) delete dirtyVersions.current[panel];
+    setEditor((current) => editorTransition(current, { type: dirty ? "edit" : "saved", panel }));
+  }, []);
+  useBlocker({
+    shouldBlockFn: () => hasDirty && !window.confirm("離開會捨棄未儲存的內容，確定離開？"),
+    enableBeforeUnload: hasDirty,
+  });
+
   const [validationIssues, setValidationIssues] = useState<PublishValidationIssue[]>([]);
   const [pendingCopyId, setPendingCopyId] = useState<string | null>(null);
   const [pendingDraftId, setPendingDraftId] = useState<string | null>(null);
   const [generatingUpdateId, setGeneratingUpdateId] = useState<string | null>(null);
 
   const contentQuery = useQuery({
-    queryKey: ["admin-content-detail", contentId],
-    queryFn: () => fetchAdminJson<ContentDetailResponse>(`/api/admin/content/${contentId}`),
-    initialData: initialContent ? { content: initialContent } : undefined,
+    queryKey: ["admin-content-detail", contentId, historyPage],
+    queryFn: () =>
+      fetchAdminJson<ContentDetailResponse>(
+        `/api/admin/content/${contentId}?historyPage=${historyPage}`,
+      ),
+    refetchOnWindowFocus: false,
+    staleTime: Infinity,
+    initialData: initialContent && historyPage === 1 ? { content: initialContent } : undefined,
   });
 
   const content = contentQuery.data?.content;
+  currentVersion.current = content?.version;
+  useEffect(() => {
+    if (content)
+      setEditor((current) => ({
+        ...current,
+        version: content.version,
+        revisionId: content.revisionId ?? undefined,
+      }));
+  }, [content]);
+  const [reloadError, setReloadError] = useState<string>();
+  const reload = async () => {
+    if (hasDirty && !window.confirm("重新載入會捨棄所有未儲存內容，確定繼續？")) return;
+    const data = await contentQuery.refetch();
+    if (!canAcceptEditorReload(data) || !data.data) {
+      setReloadError("未能重新載入，未儲存內容已保留，請重試。");
+      return;
+    }
+    setReloadError(undefined);
+    if (data.data) {
+      setEditor(
+        createEditorState(data.data.content.version, data.data.content.revisionId ?? undefined),
+      );
+      dirtyVersions.current = {};
+      setResetKey((value) => value + 1);
+      setComparison(undefined);
+      updateContent.reset();
+      publishContent.reset();
+      archiveContent.reset();
+      upsertStoryProfile.reset();
+      createStoryUpdate.reset();
+      createContentMedia.reset();
+      createContentLink.reset();
+      restoreContent.reset();
+    }
+  };
+  const [comparison, setComparison] = useState<ContentDetail>();
+  const restoreContent = useMutation({
+    mutationFn: (revisionId: string) =>
+      fetchAdminJson(`/api/admin/content/${contentId}/revisions/${revisionId}/restore`, {
+        method: "POST",
+        body: JSON.stringify({ expectedVersion: content?.version }),
+      }),
+    onSuccess: async () => {
+      await reload();
+      void queryClient.invalidateQueries({ queryKey: ["admin-content-revisions", contentId] });
+    },
+  });
 
   const updateContent = useMutation({
     mutationFn: (body: ContentFormState) =>
       fetchAdminJson<ContentDetailResponse>(`/api/admin/content/${contentId}`, {
         method: "PATCH",
-        body: JSON.stringify(normalizeForm(body)),
+        body: JSON.stringify({ ...normalizeForm(body), expectedVersion: expectedFor("content") }),
       }),
     onSuccess: (data) => {
       setValidationIssues([]);
-      queryClient.setQueryData(["admin-content-detail", contentId], data);
+      queryClient.setQueryData(["admin-content-detail", contentId, historyPage], data);
       void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] });
       void queryClient.invalidateQueries({ queryKey: ["admin-content"] });
     },
   });
 
   const publishContent = useMutation({
-    mutationFn: () => publishWithValidation(contentId),
+    mutationFn: () => publishWithValidation(contentId, content?.version, content?.revisionId),
     onSuccess: () => {
       setValidationIssues([]);
       void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] });
@@ -145,7 +255,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
     mutationFn: () =>
       fetchAdminJson<ContentDetailResponse>(`/api/admin/content/${contentId}/archive`, {
         method: "POST",
-        body: JSON.stringify({}),
+        body: JSON.stringify({ expectedVersion: content?.version }),
       }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] });
@@ -157,10 +267,13 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
     mutationFn: (body: StoryProfileFormState) =>
       fetchAdminJson<ContentDetailResponse>(`/api/admin/content/${contentId}/story-profile`, {
         method: "PUT",
-        body: JSON.stringify(normalizeStoryProfileForm(body)),
+        body: JSON.stringify({
+          ...normalizeStoryProfileForm(body),
+          expectedVersion: expectedFor("profile"),
+        }),
       }),
     onSuccess: (data) => {
-      queryClient.setQueryData(["admin-content-detail", contentId], data);
+      queryClient.setQueryData(["admin-content-detail", contentId, historyPage], data);
       void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] });
       void queryClient.invalidateQueries({ queryKey: ["admin-content"] });
     },
@@ -170,14 +283,18 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
     mutationFn: (body: StoryUpdateFormState) =>
       fetchAdminJson<{ id: string }>(`/api/admin/content/${contentId}/updates`, {
         method: "POST",
-        body: JSON.stringify(normalizeStoryUpdateForm(body)),
+        body: JSON.stringify({
+          ...normalizeStoryUpdateForm(body),
+          expectedVersion: expectedFor("update"),
+        }),
       }),
     onSuccess: () =>
       void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] }),
   });
 
   const createContentMedia = useMutation({
-    mutationFn: (body: ContentMediaFormState) => createContentMediaWithUpload(contentId, body),
+    mutationFn: (body: ContentMediaFormState) =>
+      createContentMediaWithUpload(contentId, body, expectedFor("media")),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] });
       void queryClient.invalidateQueries({ queryKey: ["admin-content"] });
@@ -188,7 +305,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
     mutationFn: (body: ContentLinkFormState) =>
       fetchAdminJson<{ id: string }>(`/api/admin/content/${contentId}/links`, {
         method: "POST",
-        body: JSON.stringify(body),
+        body: JSON.stringify({ ...body, expectedVersion: expectedFor("link") }),
       }),
     onSuccess: () =>
       void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] }),
@@ -244,6 +361,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
   });
 
   const editorActionPending =
+    restoreContent.isPending ||
     updateContent.isPending ||
     publishContent.isPending ||
     archiveContent.isPending ||
@@ -256,6 +374,19 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
     generateNotificationDrafts.isPending ||
     updateDraftStatus.isPending;
 
+  const conflict = [
+    updateContent.error,
+    publishContent.error,
+    archiveContent.error,
+    upsertStoryProfile.error,
+    createStoryUpdate.error,
+    createContentMedia.error,
+    createContentLink.error,
+    restoreContent.error,
+  ].some((error) =>
+    Boolean(error && typeof error === "object" && "status" in error && error.status === 409),
+  );
+  const publishAllowed = canPublish({ ...editor, pending: editorActionPending, conflict });
   if (contentQuery.isLoading) {
     return <div className="p-6 text-sm text-[var(--color-text-muted)]">載入宣傳內容...</div>;
   }
@@ -302,7 +433,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
           <button
             type="button"
             disabled={editorActionPending || contentQuery.isFetching}
-            onClick={() => void contentQuery.refetch()}
+            onClick={() => void reload()}
             className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)] disabled:opacity-60"
           >
             <RefreshCw className="h-4 w-4" />
@@ -310,8 +441,13 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
           </button>
           <button
             type="button"
-            disabled={editorActionPending}
-            onClick={() => publishContent.mutate()}
+            disabled={!publishAllowed}
+            onClick={() => {
+              if (publishAllowed)
+                void runOperation("publish", () => publishContent.mutateAsync()).catch(
+                  () => undefined,
+                );
+            }}
             className="inline-flex items-center gap-2 rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-bold text-[var(--color-primary-foreground)] disabled:opacity-60"
           >
             <Send className="h-4 w-4" />
@@ -321,13 +457,12 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
             type="button"
             disabled={editorActionPending}
             onClick={() => {
-              // Sits immediately beside 發布 and takes one click to pull a live
-              // item off the public site. Reversible from the status select
-              // below, but only if the operator notices it happened.
               if (!window.confirm(`確定封存「${content.title}」？封存後將不再於公開頁面顯示。`)) {
                 return;
               }
-              archiveContent.mutate();
+              void runOperation("archive", () => archiveContent.mutateAsync()).catch(
+                () => undefined,
+              );
             }}
             className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)] disabled:opacity-60"
           >
@@ -337,6 +472,63 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
         </div>
       </div>
 
+      {reloadError ? <p role="alert">{reloadError}</p> : null}
+      <p role="status">
+        {hasDirty
+          ? "尚有未儲存變更，請先儲存各面板後發布。"
+          : `已儲存草稿 · 版本 ${content.version ?? "—"}`}
+      </p>
+      {conflict ? (
+        <div role="alert" className="rounded border border-amber-500 p-3">
+          <p>
+            內容已有較新版本或發布網址衝突。你的輸入已保留，請比較最新內容；重新載入前請先複製要保留的文字。
+          </p>
+          <button
+            type="button"
+            onClick={async () =>
+              setComparison(
+                (await fetchAdminJson<ContentDetailResponse>(`/api/admin/content/${contentId}`))
+                  .content,
+              )
+            }
+          >
+            比較最新內容
+          </button>
+          <button type="button" onClick={() => void reload()}>
+            重新載入最新版本
+          </button>
+        </div>
+      ) : null}
+      {comparison ? (
+        <details open>
+          <summary>伺服器最新版本 {comparison.version}（本機輸入保留於下方）</summary>
+          <p>{comparison.title}</p>
+          <p>{comparison.summary}</p>
+          <pre className="whitespace-pre-wrap">{comparison.body}</pre>
+        </details>
+      ) : null}
+      <nav aria-label="內容歷史分頁" className="flex items-center gap-3">
+        <button
+          type="button"
+          disabled={historyPage === 1 || hasDirty || editorActionPending}
+          onClick={() => setHistoryPage((page) => page - 1)}
+        >
+          上一頁紀錄
+        </button>
+        <span>紀錄第 {content.history?.page ?? historyPage} 頁 · 每類最多 20 筆</span>
+        <button
+          type="button"
+          disabled={!content.history?.hasMore || hasDirty || editorActionPending}
+          onClick={() => setHistoryPage((page) => page + 1)}
+        >
+          下一頁紀錄
+        </button>
+      </nav>
+      <ContentRevisionPanel
+        content={content}
+        disabled={editorActionPending || hasDirty || conflict}
+        onRestore={(id) => restoreContent.mutateAsync(id).then(() => undefined)}
+      />
       {validationIssues.length > 0 ? <PublishValidationPanel issues={validationIssues} /> : null}
       <ActionErrors
         errors={[
@@ -354,22 +546,36 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
         ]}
       />
 
-      <ContentEditorForm
-        content={content}
-        pending={editorActionPending}
-        onSave={(form) => updateContent.mutateAsync(form).then(() => undefined)}
-      />
+      <DirtyContext.Provider value={reportDirty}>
+        <fieldset
+          key={`${contentId}-${resetKey}`}
+          disabled={editorActionPending}
+          className="space-y-6"
+        >
+          <ContentEditorForm
+            content={content}
+            pending={editorActionPending}
+            onSave={(form) => runOperation("content", () => updateContent.mutateAsync(form))}
+          />
 
-      <ContentAuthoringPanels
-        content={content}
-        pending={editorActionPending}
-        generatingUpdateId={generatingUpdateId}
-        onCreateLink={(form) => createContentLink.mutateAsync(form).then(() => undefined)}
-        onSaveStoryProfile={(form) => upsertStoryProfile.mutateAsync(form).then(() => undefined)}
-        onCreateStoryUpdate={(form) => createStoryUpdate.mutateAsync(form).then(() => undefined)}
-        onGenerateDrafts={(updateId) => generateNotificationDrafts.mutate(updateId)}
-        onCreateMedia={(form) => createContentMedia.mutateAsync(form).then(() => undefined)}
-      />
+          <ContentAuthoringPanels
+            content={content}
+            pending={editorActionPending}
+            generatingUpdateId={generatingUpdateId}
+            onCreateLink={(form) => runOperation("link", () => createContentLink.mutateAsync(form))}
+            onSaveStoryProfile={(form) =>
+              runOperation("profile", () => upsertStoryProfile.mutateAsync(form))
+            }
+            onCreateStoryUpdate={(form) =>
+              runOperation("update", () => createStoryUpdate.mutateAsync(form))
+            }
+            onGenerateDrafts={(updateId) => generateNotificationDrafts.mutate(updateId)}
+            onCreateMedia={(form) =>
+              runOperation("media", () => createContentMedia.mutateAsync(form))
+            }
+          />
+        </fieldset>
+      </DirtyContext.Provider>
 
       <SocialCopyPanel
         copies={content.socialCopies}
@@ -397,8 +603,6 @@ type ContentFormState = {
   subtitle: string;
   summary: string;
   body: string;
-  status: ContentStatus;
-  publishedAt: string;
   ctaLabel: string;
   ctaUrl: string;
   seoTitle: string;
@@ -498,6 +702,7 @@ function ContentEditorForm({
   pending: boolean;
   onSave: (form: ContentFormState) => Promise<void>;
 }) {
+  const panelState = useDirtyPanel("content");
   const initialForm = useMemo(() => formFromContent(content), [content]);
   const [form, setForm] = useState(initialForm);
   const [dirty, setDirty] = useState(false);
@@ -524,11 +729,13 @@ function ContentEditorForm({
 
   return (
     <form
+      onChangeCapture={panelState.mark}
       onSubmit={async (event) => {
         event.preventDefault();
         try {
           await onSave(form);
           setDirty(false);
+          panelState.clear();
         } catch {
           // Mutation errors are rendered by the parent; keep the dirty form intact.
         }
@@ -546,7 +753,7 @@ function ContentEditorForm({
           className="inline-flex items-center gap-2 rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-bold text-[var(--color-primary-foreground)] disabled:opacity-60"
         >
           <Save className="h-4 w-4" />
-          {pending ? "儲存中" : "儲存"}
+          {pending ? "儲存中" : "儲存草稿"}
         </button>
       </div>
 
@@ -586,27 +793,6 @@ function ContentEditorForm({
           <input
             value={form.subtitle}
             onChange={(event) => updateField("subtitle", event.target.value)}
-            className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
-          />
-        </Field>
-        <Field label="狀態">
-          <select
-            value={form.status}
-            onChange={(event) => updateField("status", event.target.value as ContentStatus)}
-            className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
-          >
-            {(["draft", "published", "archived"] as ContentStatus[]).map((status) => (
-              <option key={status} value={status}>
-                {statusLabels[status]}
-              </option>
-            ))}
-          </select>
-        </Field>
-        <Field label="發布時間">
-          <input
-            type="datetime-local"
-            value={form.publishedAt}
-            onChange={(event) => updateField("publishedAt", event.target.value)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           />
         </Field>
@@ -687,6 +873,7 @@ function LinkedRecords({
   pending: boolean;
   onCreate: (form: ContentLinkFormState) => Promise<void>;
 }) {
+  const panelState = useDirtyPanel("link");
   const [form, setForm] = useState<ContentLinkFormState>({
     linkedType: "adoption_case",
     linkedId: "",
@@ -697,10 +884,16 @@ function LinkedRecords({
     <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
       <h2 className="text-lg font-bold text-[var(--color-panel)]">關聯紀錄</h2>
       <form
+        onChangeCapture={panelState.mark}
         className="mt-3 grid gap-3 md:grid-cols-[1fr_1.2fr_1fr_auto]"
         onSubmit={async (event) => {
           event.preventDefault();
-          await onCreate(form);
+          try {
+            await onCreate(form);
+          } catch {
+            return;
+          }
+          panelState.clear();
           setForm({ linkedType: "adoption_case", linkedId: "", relationship: "adopter" });
         }}
       >
@@ -807,12 +1000,13 @@ function StoryWallSettings({
   pending: boolean;
   onSave: (form: StoryProfileFormState) => Promise<void>;
 }) {
+  const panelState = useDirtyPanel("profile");
   const initialForm = useMemo(() => storyProfileFormFromContent(content), [content]);
   const [form, setForm] = useState(initialForm);
 
   useEffect(() => {
-    setForm(initialForm);
-  }, [initialForm]);
+    if (!panelState.dirty) setForm(initialForm);
+  }, [initialForm, panelState.dirty]);
 
   if (content.type !== "rescue_story") {
     return (
@@ -827,10 +1021,16 @@ function StoryWallSettings({
     <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
       <h2 className="text-lg font-bold text-[var(--color-panel)]">故事牆設定</h2>
       <form
+        onChangeCapture={panelState.mark}
         className="mt-3 space-y-3"
         onSubmit={async (event) => {
           event.preventDefault();
-          await onSave(form);
+          try {
+            await onSave(form);
+            panelState.clear();
+          } catch {
+            /* Preserve unsaved profile; parent renders error. */
+          }
         }}
       >
         <div className="grid gap-3 sm:grid-cols-2">
@@ -991,6 +1191,7 @@ function StoryUpdateCreateForm({
   pending: boolean;
   onCreate: (form: StoryUpdateFormState) => Promise<void>;
 }) {
+  const panelState = useDirtyPanel("update");
   const [form, setForm] = useState<StoryUpdateFormState>({
     kind: "general",
     title: "",
@@ -1002,10 +1203,16 @@ function StoryUpdateCreateForm({
 
   return (
     <form
+      onChangeCapture={panelState.mark}
       className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4"
       onSubmit={async (event) => {
         event.preventDefault();
-        await onCreate(form);
+        try {
+          await onCreate(form);
+        } catch {
+          return;
+        }
+        panelState.clear();
         setForm({
           kind: "general",
           title: "",
@@ -1116,6 +1323,7 @@ function ContentMediaPanel({
   pending: boolean;
   onCreate: (form: ContentMediaFormState) => Promise<void>;
 }) {
+  const panelState = useDirtyPanel("media");
   const [form, setForm] = useState<ContentMediaFormState>({
     file: null,
     storyUpdateId: "",
@@ -1134,14 +1342,20 @@ function ContentMediaPanel({
           上傳圖片作為封面或故事更新相片（JPG、PNG 或 WEBP，8 MiB 以內）。
         </p>
         <p className="text-sm text-[var(--color-text-muted)]">
-          內部更新目前不能附加圖片；私密媒體功能推出前，請勿透過公開媒體上傳。
+          圖片先儲存為私密媒體；內部更新的圖片不會公開。
         </p>
       </div>
       <form
+        onChangeCapture={panelState.mark}
         className="grid gap-3 md:grid-cols-3"
         onSubmit={async (event) => {
           event.preventDefault();
-          await onCreate(form);
+          try {
+            await onCreate(form);
+          } catch {
+            return;
+          }
+          panelState.clear();
           setForm({
             file: null,
             storyUpdateId: "",
@@ -1175,7 +1389,7 @@ function ContentMediaPanel({
           >
             <option value="">整篇內容</option>
             {content.updates.map((update) => (
-              <option key={update.id} value={update.id} disabled={update.visibility === "internal"}>
+              <option key={update.id} value={update.id}>
                 {update.title}
                 {update.visibility === "internal" ? "（內部）" : ""}
               </option>
@@ -1308,8 +1522,6 @@ function formFromContent(content: ContentDetail): ContentFormState {
     subtitle: content.subtitle ?? "",
     summary: content.summary,
     body: content.body ?? "",
-    status: content.status,
-    publishedAt: content.publishedAt ? formatIsoForDatetimeLocal(content.publishedAt) : "",
     ctaLabel: content.ctaLabel ?? "",
     ctaUrl: content.ctaUrl ?? "",
     seoTitle: content.seoTitle ?? "",
@@ -1320,11 +1532,11 @@ function formFromContent(content: ContentDetail): ContentFormState {
 }
 
 function normalizeForm(form: ContentFormState) {
+  const draft = form;
   return {
-    ...form,
+    ...draft,
     subtitle: emptyToNull(form.subtitle),
     body: emptyToNull(form.body),
-    publishedAt: parseDatetimeLocalToIso(form.publishedAt),
     ctaLabel: emptyToNull(form.ctaLabel),
     ctaUrl: emptyToNull(form.ctaUrl),
     seoTitle: emptyToNull(form.seoTitle),
@@ -1381,28 +1593,75 @@ function normalizeStoryUpdateForm(form: StoryUpdateFormState) {
 // getSupabaseClient wiring (not just uploadContentMediaImage's injected fakes)
 // has a unit test to exercise directly, without needing a DOM to drive the
 // form's submit event.
-export async function createContentMediaWithUpload(contentId: string, body: ContentMediaFormState) {
+type CachedMediaUpload = {
+  token: string;
+  path: string;
+  bucket: string;
+  uploadSessionId: string;
+  uploaded: boolean;
+};
+const pendingMediaUploads = new WeakMap<File, Map<string, CachedMediaUpload>>();
+export async function createContentMediaWithUpload(
+  contentId: string,
+  body: ContentMediaFormState,
+  expectedVersion?: number,
+) {
   if (!body.file) throw new Error("請選擇圖片");
+  if (expectedVersion === undefined) throw new Error("請重新載入內容後再上傳圖片");
+  const cacheKey = `${contentId}:${expectedVersion}:${body.storyUpdateId}`;
+  const sessions = pendingMediaUploads.get(body.file) ?? new Map<string, CachedMediaUpload>();
+  pendingMediaUploads.set(body.file, sessions);
+  let target = sessions.get(cacheKey);
+  const finalize = async (path: string, sessionId: string) =>
+    fetchAdminJson<{ id: string }>(`/api/admin/content/${contentId}/media`, {
+      method: "POST",
+      body: JSON.stringify({
+        ...normalizeContentMediaForm({ ...body, storagePath: path }),
+        uploadSessionId: sessionId,
+        expectedVersion,
+      }),
+    });
+  if (target && !target.uploaded) {
+    try {
+      const recovered = await finalize(target.path, target.uploadSessionId);
+      sessions.delete(cacheKey);
+      return recovered;
+    } catch (error) {
+      if (!error || typeof error !== "object" || !("status" in error) || error.status !== 404)
+        throw error;
+    }
+  }
+
   const storagePath = await uploadContentMediaImage({
     file: body.file,
     contentId,
     storyUpdateId: emptyToNull(body.storyUpdateId),
-    requestUploadTarget: (input) =>
-      fetchAdminJson(`/api/admin/content/${contentId}/media-upload-target`, {
-        method: "POST",
-        body: JSON.stringify(input),
-      }),
-    uploadToSignedUrl: async (path, token, uploadedFile) => {
+    requestUploadTarget: async (input) => {
+      if (!target) {
+        const allocated = await fetchAdminJson<Omit<CachedMediaUpload, "uploaded">>(
+          `/api/admin/content/${contentId}/media-upload-target`,
+          { method: "POST", body: JSON.stringify({ ...input, expectedVersion }) },
+        );
+        if (allocated.bucket !== "content-media-private" || !allocated.uploadSessionId)
+          throw new Error("無法取得私密媒體上傳位置");
+        target = { ...allocated, uploaded: false };
+        sessions.set(cacheKey, target);
+      }
+      return target;
+    },
+    uploadToSignedUrl: async (path, token, file) => {
+      if (!target || target.uploaded) return;
       const { error } = await getSupabaseClient()
-        .storage.from("content-media")
-        .uploadToSignedUrl(path, token, uploadedFile, { contentType: uploadedFile.type });
+        .storage.from(target.bucket)
+        .uploadToSignedUrl(path, token, file, { contentType: file.type });
       if (error) throw error;
+      target.uploaded = true;
     },
   });
-  return fetchAdminJson<{ id: string }>(`/api/admin/content/${contentId}/media`, {
-    method: "POST",
-    body: JSON.stringify(normalizeContentMediaForm({ ...body, storagePath })),
-  });
+  if (!target) throw new Error("Missing upload session");
+  const result = await finalize(storagePath, target.uploadSessionId);
+  sessions.delete(cacheKey);
+  return result;
 }
 
 function normalizeContentMediaForm(form: ContentMediaFormState & { storagePath: string }) {
@@ -1432,7 +1691,13 @@ class PublishValidationError extends Error {
   }
 }
 
-async function publishWithValidation(contentId: string) {
+async function publishWithValidation(
+  contentId: string,
+  expectedVersion?: number,
+  revisionId?: string | null,
+) {
+  if (expectedVersion === undefined || !revisionId)
+    throw new Error("請先儲存內容並重新載入後再發布");
   const token = await getAdminAccessToken();
   const response = await fetch(`/api/admin/content/${contentId}/publish`, {
     method: "POST",
@@ -1440,14 +1705,25 @@ async function publishWithValidation(contentId: string) {
       "content-type": "application/json",
       authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({}),
+    body: JSON.stringify({
+      expectedVersion,
+      revisionId,
+      idempotencyKey: `content-publish-${contentId}-${expectedVersion}-${revisionId}`,
+    }),
   });
 
   const body = await response.json().catch(() => ({}));
   if (!response.ok) {
     const issues = Array.isArray(body.issues) ? body.issues : [];
     if (issues.length > 0) throw new PublishValidationError(issues);
-    throw new Error(typeof body.error === "string" ? body.error : "API request failed");
+    const error = new Error(
+      typeof body.error === "string"
+        ? body.error
+        : typeof body.error?.message === "string"
+          ? body.error.message
+          : "API request failed",
+    );
+    throw Object.assign(error, { status: response.status });
   }
 
   return body as ContentDetailResponse;

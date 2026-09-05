@@ -1,3 +1,5 @@
+import type { createContentMediaLifecycle } from "./mediaLifecycle.server";
+import type { createContentLifecycleService } from "./lifecycle.service";
 import { z } from "zod";
 import {
   buildAdopterNotificationDrafts,
@@ -74,7 +76,8 @@ export type ContentRepository = {
   getPublicContentBySlug(slug: string): Promise<ContentDetail | null>;
   listPublicMapStories(input: PublicContentSearch): Promise<PublicStoryMapPoint[]>;
   listAdminContent(input: ContentSearch): Promise<{ items: ContentSummary[]; total: number }>;
-  getAdminContent(id: string): Promise<ContentDetail | null>;
+  getAdminUpdateBody?(contentId: string, updateId: string): Promise<string | null>;
+  getAdminContent(id: string, historyPage?: number): Promise<ContentDetail | null>;
   createContent(input: ContentInput): Promise<string>;
   updateContent(id: string, input: Partial<ContentInput>): Promise<ContentDetail>;
   upsertStoryProfile(contentId: string, input: StoryProfileInput): Promise<ContentDetail>;
@@ -101,6 +104,8 @@ export type ContentRepository = {
 };
 
 type CreateContentServiceOptions = {
+  mediaLifecycle?: ReturnType<typeof createContentMediaLifecycle>;
+  lifecycle?: ReturnType<typeof createContentLifecycleService>;
   repo: ContentRepository;
   now?: () => Date;
   publicBaseUrl: string;
@@ -121,6 +126,7 @@ type UpdateContentArgs = ActorInput & {
 
 type ContentActionArgs = ActorInput & {
   contentId: string;
+  input?: unknown;
 };
 
 type UpsertStoryProfileArgs = ActorInput & {
@@ -200,6 +206,8 @@ async function assertPublicMediaTarget(
 
 export function createContentService({
   repo,
+  lifecycle,
+  mediaLifecycle,
   now = () => new Date(),
   publicBaseUrl,
 }: CreateContentServiceOptions) {
@@ -208,6 +216,18 @@ export function createContentService({
   }
 
   return {
+    async getRevision(contentId: string, revisionId: string) {
+      if (!lifecycle) throw new Error("Content lifecycle is unavailable");
+      return lifecycle.getRevision(contentId, revisionId);
+    },
+    async listRevisions(contentId: string, beforeVersion?: number) {
+      if (!lifecycle) throw new Error("Content lifecycle is unavailable");
+      return lifecycle.listRevisions(contentId, beforeVersion);
+    },
+    async restoreRevision({ actorUserId, contentId, input }: UpdateContentArgs) {
+      if (!lifecycle) throw new Error("Content lifecycle is unavailable");
+      return lifecycle.restore({ actorUserId, contentId, input });
+    },
     async listPublicContent(raw: unknown) {
       return repo.listPublicContent(publicContentSearchSchema.parse(raw));
     },
@@ -228,14 +248,22 @@ export function createContentService({
       return repo.listAdminContent(contentSearchSchema.parse(raw));
     },
 
-    async getAdminContent(id: string) {
-      return repo.getAdminContent(id);
+    async getAdminUpdateBody(contentId: string, updateId: string) {
+      if (!repo.getAdminUpdateBody) throw new Error("Content history unavailable");
+      return repo.getAdminUpdateBody(contentId, updateId);
+    },
+    async getAdminContent(id: string, historyPage = 1) {
+      return repo.getAdminContent(id, historyPage);
     },
 
     async createContent({ actorUserId, input }: CreateContentArgs) {
       const parsed = contentInputSchema.parse(input);
       if (parsed.status !== "draft") {
         throw new Error("Content items must be created as drafts");
+      }
+      if (lifecycle) {
+        const result = await lifecycle.create({ actorUserId, input });
+        return { id: result.contentId, ...result };
       }
       const id = await repo.createContent(parsed);
       await audit({
@@ -250,6 +278,12 @@ export function createContentService({
     },
 
     async updateContent({ actorUserId, contentId, input }: UpdateContentArgs) {
+      if (lifecycle) {
+        const result = await lifecycle.save({ actorUserId, contentId, input });
+        const content = await repo.getAdminContent(contentId);
+        if (!content) throw new Error("Content item not found");
+        return { ...content, version: result.version, revisionId: result.revisionId };
+      }
       const parsed = contentInputSchema.partial().parse(input);
       const current = await repo.getAdminContent(contentId);
       if (!current) throw new Error("Content item not found");
@@ -282,6 +316,12 @@ export function createContentService({
     },
 
     async upsertStoryProfile({ actorUserId, contentId, input }: UpsertStoryProfileArgs) {
+      if (lifecycle) {
+        const result = await lifecycle.profile({ actorUserId, contentId, input });
+        const content = await repo.getAdminContent(contentId);
+        if (!content) throw new Error("Content item not found");
+        return { ...content, version: result.version, revisionId: result.revisionId };
+      }
       const parsed = storyProfileInputSchema.parse(input);
       const content = await repo.upsertStoryProfile(contentId, parsed);
       await audit({
@@ -301,6 +341,11 @@ export function createContentService({
     },
 
     async createStoryUpdate({ actorUserId, contentId, input }: CreateStoryUpdateArgs) {
+      if (lifecycle) {
+        const result = await lifecycle.update({ actorUserId, contentId, input });
+        if (!result.childId) throw new Error("Content lifecycle did not return a child id");
+        return { id: result.childId, ...result };
+      }
       const parsed = storyUpdateInputSchema.parse(input);
       const id = await repo.createStoryUpdate(contentId, parsed);
       await audit({
@@ -320,6 +365,18 @@ export function createContentService({
     },
 
     async createContentMedia({ actorUserId, contentId, input }: CreateContentMediaArgs) {
+      if (mediaLifecycle) {
+        const result = await mediaLifecycle.finalize({ actorUserId, contentId, input });
+        if (!result.childId) throw new Error("Media finalization did not return a media id");
+        return { id: result.childId, ...result };
+      }
+      if (lifecycle) {
+        const parsed = contentMediaInputSchema.parse(input);
+        await assertPublicMediaTarget(repo, contentId, parsed.storyUpdateId);
+        const result = await lifecycle.media({ actorUserId, contentId, input });
+        if (!result.childId) throw new Error("Content lifecycle did not return a child id");
+        return { id: result.childId, ...result };
+      }
       const parsed = contentMediaInputSchema.parse(input);
       await assertPublicMediaTarget(repo, contentId, parsed.storyUpdateId);
       const id = await repo.createContentMedia(contentId, parsed);
@@ -340,7 +397,12 @@ export function createContentService({
       return { id };
     },
 
-    async createUploadTarget({ contentId, input }: CreateUploadTargetArgs) {
+    async previewMedia({ actorUserId, contentId, input }: CreateContentMediaArgs) {
+      if (!mediaLifecycle) throw new Error("Private media is unavailable");
+      return mediaLifecycle.preview({ actorUserId, contentId, input });
+    },
+    async createUploadTarget({ actorUserId, contentId, input }: CreateUploadTargetArgs) {
+      if (mediaLifecycle) return mediaLifecycle.allocate({ actorUserId, contentId, input });
       const parsed = contentMediaUploadTargetSchema.parse(input);
       if (!parsed.objectPath.startsWith(`${contentId}/`)) {
         throw new Error("Upload path does not belong to this content item");
@@ -350,6 +412,11 @@ export function createContentService({
     },
 
     async createContentLink({ actorUserId, contentId, input }: CreateContentLinkArgs) {
+      if (lifecycle) {
+        const result = await lifecycle.link({ actorUserId, contentId, input });
+        if (!result.childId) throw new Error("Content lifecycle did not return a child id");
+        return { id: result.childId, ...result };
+      }
       const parsed = contentLinkInputSchema.parse(input);
       const id = await repo.createContentLink(contentId, parsed);
       await audit({
@@ -363,7 +430,19 @@ export function createContentService({
       return { id };
     },
 
-    async publishContent({ actorUserId, contentId }: ContentActionArgs) {
+    async publishContent({ actorUserId, contentId, input }: ContentActionArgs) {
+      if (mediaLifecycle) {
+        const result = await mediaLifecycle.publish({ actorUserId, contentId, input });
+        const content = await repo.getAdminContent(contentId);
+        if (!content) throw new Error("Content item not found");
+        return { ...content, version: result.version, revisionId: result.revisionId };
+      }
+      if (lifecycle) {
+        const result = await lifecycle.publish({ actorUserId, contentId, input });
+        const content = await repo.getAdminContent(contentId);
+        if (!content) throw new Error("Content item not found");
+        return { ...content, version: result.version, revisionId: result.revisionId };
+      }
       const content = await repo.getAdminContent(contentId);
       if (!content) throw new Error("Content item not found");
 
@@ -382,7 +461,13 @@ export function createContentService({
       return published;
     },
 
-    async archiveContent({ actorUserId, contentId }: ContentActionArgs) {
+    async archiveContent({ actorUserId, contentId, input }: ContentActionArgs) {
+      if (lifecycle) {
+        const result = await lifecycle.archive({ actorUserId, contentId, input });
+        const content = await repo.getAdminContent(contentId);
+        if (!content) throw new Error("Content item not found");
+        return { ...content, version: result.version, revisionId: result.revisionId };
+      }
       const archived = await repo.archiveContent(contentId);
       await audit({
         actor_user_id: actorUserId,

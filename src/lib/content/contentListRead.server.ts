@@ -205,6 +205,7 @@ async function loadRelations(client: SupabaseClient, contentIds: string[]) {
       .select(updateColumns)
       .in("content_item_id", contentIds)
       .eq("visibility", "public")
+      .eq("is_authoring_active", true)
       .order("occurred_at", { ascending: false }),
   ]);
 

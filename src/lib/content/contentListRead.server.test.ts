@@ -204,18 +204,26 @@ function expectRelationContentIds(calls: QueryTrace[], contentIds: string[]) {
 }
 
 describe("createSupabaseContentListRead", () => {
-  test("content repository delegates admin lists to the fixed-count reader", async () => {
-    const { client, calls } = createFakeClient([contentRow("1")]);
-    const repository = createSupabaseContentRepository(client);
-
-    const result = await repository.listAdminContent({ page: 1, pageSize: 25 });
-
-    expect(result.items).toHaveLength(1);
-    expect(calls.map((call) => call.table)).toEqual([
-      "content_item",
-      "rescue_story_profile",
-      "content_media",
-      "story_update",
+  test("production admin lists use the bounded database projection", async () => {
+    const rpcCalls: unknown[] = [];
+    const client = {
+      rpc: async (name: string, input: unknown) => {
+        rpcCalls.push([name, input]);
+        return { data: { total: 1201, rows: [] }, error: null };
+      },
+    } as unknown as SupabaseClient;
+    const result = await createSupabaseContentRepository(client).listAdminContent({
+      page: 25,
+      pageSize: 50,
+      animalType: "cat",
+    });
+    expect(result.total).toBe(1201);
+    expect(result.items).toEqual([]);
+    expect(rpcCalls).toEqual([
+      [
+        "read_content_admin_summaries",
+        { p_filters: { page: 25, pageSize: 50, animalType: "cat" } },
+      ],
     ]);
   });
 
@@ -374,6 +382,7 @@ describe("createSupabaseContentListRead", () => {
       filters: [
         { method: "in", column: "content_item_id", value: ["11", "12"] },
         { method: "eq", column: "visibility", value: "public" },
+        { method: "eq", column: "is_authoring_active", value: true },
       ],
       orders: [{ column: "occurred_at", options: { ascending: false } }],
     });

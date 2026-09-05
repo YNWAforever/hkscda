@@ -1,3 +1,4 @@
+import { ContentLifecycleError } from "./lifecycle";
 import { z } from "zod";
 
 import type { AdminUser } from "../donations/supabase.server";
@@ -80,6 +81,11 @@ async function withContentErrors(operation: () => Promise<Response>, publicReque
     return await operation();
   } catch (error) {
     if (error instanceof Response) return error;
+    if (error instanceof ContentLifecycleError)
+      return jsonResponse(
+        { error: { message: error.message, code: error.code } },
+        { status: error.status },
+      );
     if (error instanceof z.ZodError) {
       return jsonResponse(
         {
@@ -165,6 +171,42 @@ export function createContentHandlers({ requireContentAdmin, service }: CreateCo
       }, true);
     },
 
+    listRevisions({ request, params }: HandlerContext) {
+      return withContentErrors(async () => {
+        await requireContentAdmin(request);
+        const query = new URL(request.url).searchParams;
+        if (query.has("revisionId"))
+          return jsonResponse({
+            revision: await service.getRevision(
+              requiredId(params),
+              z.string().uuid().parse(query.get("revisionId")),
+            ),
+          });
+        const beforeVersion = query.has("beforeVersion")
+          ? z.coerce.number().int().nonnegative().parse(query.get("beforeVersion"))
+          : undefined;
+        const revisions = await service.listRevisions(requiredId(params), beforeVersion);
+        return jsonResponse({
+          revisions,
+          nextBeforeVersion: revisions.length === 20 ? revisions.at(-1)?.version : null,
+        });
+      });
+    },
+    restoreRevision({ request, params }: HandlerContext) {
+      return withContentErrors(async () => {
+        const admin = await requireContentAdmin(request);
+        const input = z
+          .object({ expectedVersion: z.number().int().nonnegative() })
+          .parse(await jsonBody(request));
+        return jsonResponse(
+          await service.restoreRevision({
+            actorUserId: admin.authUserId,
+            contentId: requiredId(params),
+            input: { ...input, revisionId: requiredId(params, "revisionId") },
+          }),
+        );
+      });
+    },
     listAdminContent({ request }: HandlerContext) {
       return withContentErrors(async () => {
         await requireContentAdmin(request);
@@ -188,7 +230,21 @@ export function createContentHandlers({ requireContentAdmin, service }: CreateCo
     getContent({ request, params }: HandlerContext) {
       return withContentErrors(async () => {
         await requireContentAdmin(request);
-        const content = await service.getAdminContent(requiredId(params));
+        const query = new URL(request.url).searchParams;
+        if (query.has("updateId"))
+          return jsonResponse({
+            body: await service.getAdminUpdateBody(
+              requiredId(params),
+              z.string().uuid().parse(query.get("updateId")),
+            ),
+          });
+        const historyPage = z.coerce
+          .number()
+          .int()
+          .min(1)
+          .max(100000)
+          .parse(query.get("historyPage") ?? 1);
+        const content = await service.getAdminContent(requiredId(params), historyPage);
         if (!content) return jsonResponse({ error: "Content item not found" }, { status: 404 });
 
         return jsonResponse({ content });
@@ -249,6 +305,18 @@ export function createContentHandlers({ requireContentAdmin, service }: CreateCo
       });
     },
 
+    previewMedia({ request, params }: HandlerContext) {
+      return withContentErrors(async () => {
+        const admin = await requireContentAdmin(request);
+        return jsonResponse(
+          await service.previewMedia({
+            actorUserId: admin.authUserId,
+            contentId: requiredId(params),
+            input: await jsonBody(request),
+          }),
+        );
+      });
+    },
     createUploadTarget({ request, params }: HandlerContext) {
       return withContentErrors(async () => {
         const admin = await requireContentAdmin(request);
@@ -284,6 +352,7 @@ export function createContentHandlers({ requireContentAdmin, service }: CreateCo
           content: await service.publishContent({
             actorUserId: admin.authUserId,
             contentId: requiredId(params),
+            input: await optionalJsonBody(request),
           }),
         });
       });
@@ -296,6 +365,7 @@ export function createContentHandlers({ requireContentAdmin, service }: CreateCo
           content: await service.archiveContent({
             actorUserId: admin.authUserId,
             contentId: requiredId(params),
+            input: await optionalJsonBody(request),
           }),
         });
       });

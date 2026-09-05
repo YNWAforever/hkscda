@@ -66,6 +66,23 @@ function createService(overrides: Record<string, unknown> = {}) {
   const calls: string[] = [];
   const service = {
     calls,
+    async previewMedia() {
+      return { url: "https://example.test/preview", expiresIn: 300 };
+    },
+    async getAdminUpdateBody() {
+      return null;
+    },
+    async getRevision() {
+      return { id: "revision", version: 1, snapshot: {} };
+    },
+    async listRevisions() {
+      calls.push("listRevisions");
+      return [];
+    },
+    async restoreRevision() {
+      calls.push("restoreRevision");
+      return { contentId: "content-1", version: 2, revisionId: "revision-2" };
+    },
     async listPublicContent() {
       calls.push("listPublicContent");
       return { items: [publicContent], total: 1 };
