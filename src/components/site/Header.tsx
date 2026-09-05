@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { BrandLogo } from "./BrandLogo";
 import { brand } from "../../lib/brand/brand";
-import { findCurrentNavigation, navGroups } from "./navigation";
+import { findCurrentNavigation, getMobileDrawerActions, navGroups } from "./navigation";
 
 const DESKTOP_QUERY = "(min-width: 1120px)";
 
@@ -72,6 +72,12 @@ export function Header() {
     return () => desktopViewport.removeEventListener("change", handleViewportChange);
   }, [currentGroupIndex]);
 
+  // The header persists across client navigation. Close an open drawer after any
+  // committed pathname change so Back and non-drawer navigation cannot retain
+  // the modal, scroll lock, or inert background.
+  useEffect(() => {
+    setDrawerOpen(false);
+  }, [pathname]);
   // Desktop popover: dismiss on outside pointer or Escape, returning focus to
   // the trigger that opened it.
   useEffect(() => {
@@ -326,12 +332,16 @@ export function Header() {
               })}
             </nav>
             <div className="drawer-footer">
-              <Link className="button button-primary drawer-adopt" to="/animals/cat">
-                查看待領養動物
-              </Link>
-              <Link className="button button-accent drawer-donate" to="/donate">
-                立即捐助
-              </Link>
+              {getMobileDrawerActions(() => setDrawerOpen(false)).map((action) => (
+                <Link
+                  key={action.to}
+                  className={action.className}
+                  to={action.to}
+                  onClick={action.onClick}
+                >
+                  {action.label}
+                </Link>
+              ))}
             </div>
           </div>
         </div>

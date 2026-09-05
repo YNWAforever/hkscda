@@ -44,11 +44,51 @@ function animal(index, type, gender, age) {
 
 const AGES = ["約 3 個月", "約 2 歲", "約 8 歲"];
 const ANIMALS = [
-  ...Array.from({ length: 6 }, (_, i) => animal(i + 1, "cat", i % 2 ? "male" : "female", AGES[i % 3])),
-  ...Array.from({ length: 6 }, (_, i) => animal(i + 11, "dog", i % 2 ? "male" : "female", AGES[i % 3])),
-  ...Array.from({ length: 3 }, (_, i) => animal(i + 21, "sponsor", i % 2 ? "male" : "female", AGES[i % 3])),
+  ...Array.from({ length: 6 }, (_, i) =>
+    animal(i + 1, "cat", i % 2 ? "male" : "female", AGES[i % 3]),
+  ),
+  ...Array.from({ length: 6 }, (_, i) =>
+    animal(i + 11, "dog", i % 2 ? "male" : "female", AGES[i % 3]),
+  ),
+  ...Array.from({ length: 3 }, (_, i) =>
+    animal(i + 21, "sponsor", i % 2 ? "male" : "female", AGES[i % 3]),
+  ),
 ];
 
+const FAQ_ENTRIES = [
+  {
+    id: "fixture-sponsorship",
+    category: "sponsorship",
+    question_zh: "助養如何運作？",
+    question_en: "How does sponsorship work?",
+    answer_zh: "此為本機驗證用固定答案。",
+    answer_en: "This is a fixed local verification answer.",
+    keywords_zh: ["助養"],
+    keywords_en: ["sponsorship"],
+    cta_key: null,
+    sensitive: false,
+    sort_order: 1,
+    is_active: true,
+    created_at: STAMP,
+    updated_at: STAMP,
+  },
+  {
+    id: "fixture-adoption",
+    category: "adoption",
+    question_zh: "如何申請領養？",
+    question_en: "How do I apply to adopt?",
+    answer_zh: "此為本機驗證用固定答案。",
+    answer_en: "This is a fixed local verification answer.",
+    keywords_zh: ["領養"],
+    keywords_en: ["adoption"],
+    cta_key: null,
+    sensitive: false,
+    sort_order: 2,
+    is_active: true,
+    created_at: STAMP,
+    updated_at: STAMP,
+  },
+];
 /** PostgREST encodes filters as column=op.value, e.g. type=eq.cat */
 function applyFilters(rows, params) {
   let out = rows;
@@ -120,7 +160,10 @@ const server = createServer((req, res) => {
   }
 
   if (path === "/rest/v1/animals") {
-    const filtered = applyOrder(applyFilters(ANIMALS, url.searchParams), url.searchParams.get("order"));
+    const filtered = applyOrder(
+      applyFilters(ANIMALS, url.searchParams),
+      url.searchParams.get("order"),
+    );
     const offset = Number(url.searchParams.get("offset") ?? 0);
     const limit = url.searchParams.get("limit");
 
@@ -142,6 +185,14 @@ const server = createServer((req, res) => {
     return;
   }
 
+  if (path === "/rest/v1/faq_entry") {
+    const rows = applyOrder(
+      applyFilters(FAQ_ENTRIES, url.searchParams),
+      url.searchParams.get("order"),
+    );
+    json(res, 200, rows);
+    return;
+  }
   if (path.startsWith("/rest/v1/")) {
     json(res, 200, []);
     return;
