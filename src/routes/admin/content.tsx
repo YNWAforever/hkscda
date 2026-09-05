@@ -5,6 +5,7 @@ import { ContentManagement } from "../../components/admin/content/ContentManagem
 import { requireAdminPageAccess } from "../../lib/admin/pageAccess";
 
 export const Route = createFileRoute("/admin/content")({
+  ssr: false,
   beforeLoad: async ({ context }) => {
     await requireAdminPageAccess("contentManagement", context.queryClient);
   },

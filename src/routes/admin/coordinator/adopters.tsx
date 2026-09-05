@@ -5,6 +5,7 @@ import { AdopterList } from "../../../components/admin/adoptions/AdopterList";
 import { requireAdminPageAccess } from "../../../lib/admin/pageAccess";
 
 export const Route = createFileRoute("/admin/coordinator/adopters")({
+  ssr: false,
   beforeLoad: async ({ context }) => {
     await requireAdminPageAccess("adopters", context.queryClient);
   },

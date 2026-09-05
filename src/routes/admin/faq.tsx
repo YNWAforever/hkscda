@@ -5,6 +5,7 @@ import { FaqManagement } from "../../components/admin/content/FaqManagement";
 import { requireAdminPageAccess } from "../../lib/admin/pageAccess";
 
 export const Route = createFileRoute("/admin/faq")({
+  ssr: false,
   beforeLoad: async ({ context }) => {
     await requireAdminPageAccess("faqManagement", context.queryClient);
   },

@@ -22,6 +22,7 @@ type DashboardSection = Exclude<AdminSection, "supporters" | "access">;
 
 export const Route = createFileRoute("/admin/")({
   validateSearch: searchSchema,
+  ssr: false,
   beforeLoad: async ({ context, search }) => {
     await requireAdminPageAccess(
       getAdminAreaForLocation({ pathname: "/admin", section: search.section }),

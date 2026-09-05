@@ -5,6 +5,7 @@ import { AdminLayout } from "../../components/admin/AdminLayout";
 import { requireAdminPageAccess } from "../../lib/admin/pageAccess";
 
 export const Route = createFileRoute("/admin/access")({
+  ssr: false,
   beforeLoad: async ({ context }) => {
     await requireAdminPageAccess("accessManagement", context.queryClient);
   },

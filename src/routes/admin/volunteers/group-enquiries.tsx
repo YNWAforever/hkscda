@@ -5,6 +5,7 @@ import { GroupEnquiryManagement } from "../../../components/admin/volunteers/Gro
 import { requireAdminPageAccess } from "../../../lib/admin/pageAccess";
 
 export const Route = createFileRoute("/admin/volunteers/group-enquiries")({
+  ssr: false,
   beforeLoad: async ({ context }) => {
     await requireAdminPageAccess("volunteerManagement", context.queryClient);
   },

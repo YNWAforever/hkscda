@@ -5,6 +5,7 @@ import { SupporterDetail } from "../../../components/admin/crm/SupporterDetail";
 import { requireAdminPageAccess } from "../../../lib/admin/pageAccess";
 
 export const Route = createFileRoute("/admin/supporters/$id")({
+  ssr: false,
   beforeLoad: async ({ context }) => {
     await requireAdminPageAccess("supporters", context.queryClient);
   },

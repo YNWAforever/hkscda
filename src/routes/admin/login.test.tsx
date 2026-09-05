@@ -12,6 +12,7 @@ describe("AdminLoginContent", () => {
     );
     expect(markup).toContain("忘記密碼？");
     expect(markup).toContain('type="password"');
+    expect(markup).toMatch(/<button[^>]*type="submit"[^>]*disabled=""/);
   });
 
   test("contains complete English recovery copy", () => {

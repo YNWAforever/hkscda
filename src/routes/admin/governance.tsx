@@ -5,6 +5,7 @@ import { GovernanceManagement } from "../../components/admin/content/GovernanceM
 import { requireAdminPageAccess } from "../../lib/admin/pageAccess";
 
 export const Route = createFileRoute("/admin/governance")({
+  ssr: false,
   beforeLoad: async ({ context }) => {
     await requireAdminPageAccess("governanceManagement", context.queryClient);
   },
