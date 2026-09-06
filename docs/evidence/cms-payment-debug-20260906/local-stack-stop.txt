@@ -1,0 +1,1 @@
+{"project_id_filter":"hkscda-completion-20260905","backup":true,"message":"Stopped supabase local development setup."}
