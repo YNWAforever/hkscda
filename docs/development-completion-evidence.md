@@ -116,3 +116,10 @@ Implemented independent adoption/sponsorship eligibility and soft retirement, pr
 Reviewed fixes have failing-before/passing-after evidence for reader filtering, species correction, sponsorship snapshot constraint, empty replacement input, and concurrent rollback history loss. Full application suite: 1,954 pass / 86 skip / 0 fail / 5,954 assertions. Python: 34 pass. Typecheck and build: exit 0. Lint: exit 0, zero errors and 40 warnings. Final replacement and rollback rehearsal passed against the complete candidate migration. No production migration, deployment, data change or photo publication occurred.
 
 [Concrete release and guarded rollback proposal](evidence/legacy-import-20260906/animal-replacement-release-proposal.md). Acceptance is LOCAL ONLY: actual production-shaped trigger/auth parity, owner membership/photo review, hosted UAT, backup/live fingerprint and explicit production authorization remain gates. Separate read/write eligibility checks require submissions and edits to be paused and drained during cutover. Existing production payment/provider gates are unchanged.
+
+
+## PR #109 / CI run #149 correction — 2026-09-07
+
+Run 34046979490 failed brand, accessibility and performance verification on the same homepage assertion: two h1 elements (all five brand viewports and both performance viewports). The eligibility filter exposed stale CI animal rows without membership fields, producing an empty featured section. That section used the page-level default heading of PublicStateShell.
+
+Reproduced locally before editing: fixture query returned 0 instead of 6 cats; empty home render produced 2 instead of 1 h1. Fixed fixture membership/retirement fields and explicitly selected headingLevel=2 for the embedded empty section. Both regressions now pass; full CI-style isolated suite: 1,956 pass, 86 skip, 0 fail, 5,956 assertions. Browser checks are rerun remotely for the updated commit; no assertion or threshold was weakened. Production data and migration state are unchanged.

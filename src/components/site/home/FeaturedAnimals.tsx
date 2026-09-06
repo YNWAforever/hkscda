@@ -33,6 +33,7 @@ export function FeaturedAnimals({ animals }: { animals: Animal[] }) {
           </div>
         ) : (
           <PublicStateShell
+            headingLevel={2}
             title="暫未有可顯示的領養資料"
             description="公開名單會隨照護與領養進度更新。我們不會以舊資料或估算內容代替。"
             action={

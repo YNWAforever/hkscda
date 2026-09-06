@@ -60,3 +60,15 @@ test("sponsorship card preserves cat identity and routes canonical id to sponsor
   expect(markup).toContain("貓貓");
   expect(markup).not.toContain("待領養");
 });
+
+test("empty home animal section preserves the single page heading", async () => {
+  const { FeaturedAnimals } = await import("./home/FeaturedAnimals");
+  const markup = renderToStaticMarkup(
+    <main>
+      <h1>Home</h1>
+      <FeaturedAnimals animals={[]} />
+    </main>,
+  );
+  expect(markup.match(/<h1(?:\s|>)/g) ?? []).toHaveLength(1);
+  expect(markup).toContain("暫未有可顯示的領養資料</h2>");
+});
