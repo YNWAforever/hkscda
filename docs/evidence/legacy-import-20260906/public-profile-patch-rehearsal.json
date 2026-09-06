@@ -1,0 +1,17 @@
+{
+  "database": "profile_patch_007a0ce72d",
+  "candidate_sha256": "80d5e153e56975f0abfec44ec7db46e67bf130d3fc126fd7d9e0a5d64c90891f",
+  "animals": 292,
+  "profiles_applied": 248,
+  "retired_unchanged": 44,
+  "photos_preserved": 14,
+  "missing_column_reproduced": true,
+  "forced_failure_atomic": true,
+  "apply_audit": 248,
+  "replay_added": 0,
+  "changed_row_apply_and_rollback_blocked": true,
+  "rollback_exact": true,
+  "rollback_audit": 248,
+  "production_writes": 0,
+  "scope": "Offline reconstructed production animal schema, constraints and triggers; no fresh production parity claim. Full linked-table recovery covered separately."
+}

@@ -1,0 +1,12 @@
+{
+  "profiles": 248,
+  "all_reviewed_fields_survive_runtime_validation": true,
+  "notes_removed": true,
+  "identities_and_photos_preserved": true,
+  "age_groups_as_of_20260907": {
+    "senior": 61,
+    "adult": 140,
+    "bb": 46,
+    "unknown": 1
+  }
+}

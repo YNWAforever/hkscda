@@ -4,8 +4,22 @@ export type AgeFilter = "all" | "bb" | "adult" | "senior";
 export type GenderFilter = "all" | "male" | "female";
 export type HousingType = "私人樓宇" | "居屋" | "公屋" | "村屋" | "其他";
 
+export interface AnimalPublicProfile {
+  code: string | null;
+  birthday: string | null;
+  neutered: boolean | null;
+  suitability: "newbie" | "experienced" | null;
+  personality: string | null;
+  health: string | null;
+  story: string | null;
+  recordDate: string | null;
+}
+export type NeuteredFilter = "all" | "yes" | "no" | "unknown";
+export type SuitabilityFilter = "all" | "newbie" | "experienced" | "unknown";
+
 export interface Animal {
   id: string;
+  public_profile?: AnimalPublicProfile | null;
   type: AnimalType;
   name: string;
   name_en: string | null;
@@ -43,15 +57,15 @@ export interface AdoptionApplication {
   created_at: string;
 }
 
-export function parseAgeFilter(age: string): AgeFilter {
+export function parseAgeFilter(age: string): AgeFilter | "unknown" {
   const normalized = age.trim().toLocaleLowerCase("en");
   if (/個月|months?/.test(normalized)) return "bb";
 
   const match = normalized.match(/(\d+(?:\.\d+)?)/);
-  if (!match) return "adult";
+  if (!match) return "unknown";
 
   const years = Number(match[1]);
-  if (!Number.isFinite(years)) return "adult";
+  if (!Number.isFinite(years)) return "unknown";
   if (years < 1) return "bb";
   if (years <= 7) return "adult";
   return "senior";

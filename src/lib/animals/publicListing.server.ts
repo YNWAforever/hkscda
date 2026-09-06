@@ -1,3 +1,4 @@
+import { projectPublicAnimal } from "./publicProfile";
 import { supabase } from "../supabase";
 import type { Animal, GenderFilter } from "../../types/animal";
 import type { PublicAnimalType } from "./publicListing";
@@ -30,7 +31,7 @@ export async function readPublicAnimals(input: {
     if (error) throw error;
 
     const batch = (data ?? []) as Animal[];
-    animals.push(...batch);
+    animals.push(...batch.map((animal) => projectPublicAnimal(animal)));
     if (batch.length < PUBLIC_QUERY_BATCH_SIZE) break;
   }
 

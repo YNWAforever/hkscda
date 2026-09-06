@@ -49,7 +49,9 @@ describe("AnimalDetail", () => {
     expect(markup).toContain("成年");
     expect(markup).toContain("加入領養清單");
     expect(markup).toContain("親人，喜歡曬太陽");
-    expect(markup).toContain("需要安靜家庭");
+    expect(markup).not.toContain("需要安靜家庭");
+    expect(markup).toContain("絕育");
+    expect(markup).toContain("未有記錄");
   });
 
   test("shows the icon fallback instead of an <img> when the animal has no photo", async () => {
@@ -63,4 +65,57 @@ describe("AnimalDetail", () => {
     expect(markup).toContain("detail-image-fallback");
     expect(markup).not.toContain("<img");
   });
+});
+
+test("shows reviewed profile sections and dated care facts without exposing notes", async () => {
+  const { AnimalDetail } = await import("./AnimalDetail");
+  const profile = {
+    code: "C017",
+    birthday: "2020-01-01",
+    neutered: true,
+    suitability: "newbie" as const,
+    personality: "安靜",
+    health: "需定期覆診",
+    story: "已完成評估 <script>unsafe</script>",
+    recordDate: "2026-01-01",
+  };
+  const markup = renderToStaticMarkup(
+    <ShortlistProvider>
+      <AnimalDetail
+        animal={{ ...animal, public_profile: profile }}
+        intent="sponsorship"
+        backHref="/sponsors"
+        backLabel="返回助養列表"
+      />
+    </ShortlistProvider>,
+  );
+  for (const value of [
+    "C017",
+    "已絕育",
+    "適合新手",
+    "安靜",
+    "需定期覆診",
+    "原始記錄日期",
+    "2026-01-01",
+    "加入助養清單",
+  ])
+    expect(markup).toContain(value);
+  expect(markup).not.toContain(animal.notes);
+  expect(markup).not.toContain("<script>");
+  expect(markup.match(/<h1(?:\s|>)/g)).toHaveLength(1);
+});
+
+test("labels an unrecorded age group as unknown", async () => {
+  const { AnimalDetail } = await import("./AnimalDetail");
+  const markup = renderToStaticMarkup(
+    <ShortlistProvider>
+      <AnimalDetail
+        animal={{ ...animal, age: "不詳" }}
+        backHref="/animals/cat"
+        backLabel="返回列表"
+      />
+    </ShortlistProvider>,
+  );
+  expect(markup).toContain("年齡組別</dt><dd>未有記錄");
+  expect(markup).not.toContain("成年");
 });

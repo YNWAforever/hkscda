@@ -2,7 +2,13 @@ import { useNavigate } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
 import { AnimalCard } from "./AnimalCard";
-import type { AgeFilter, Animal, GenderFilter } from "../../types/animal";
+import type {
+  AgeFilter,
+  Animal,
+  GenderFilter,
+  NeuteredFilter,
+  SuitabilityFilter,
+} from "../../types/animal";
 
 interface AnimalGridProps {
   animals: Animal[];
@@ -11,6 +17,9 @@ interface AnimalGridProps {
   page: number;
   ageFilter: AgeFilter;
   genderFilter?: GenderFilter;
+  q?: string;
+  neutered?: NeuteredFilter;
+  suitability?: SuitabilityFilter;
   pageSize?: number;
   animalLabel?: string;
   isRefreshing?: boolean;
@@ -58,6 +67,9 @@ export function AnimalGrid({
   page,
   ageFilter,
   genderFilter,
+  q,
+  neutered = "all",
+  suitability = "all",
   pageSize = 16,
   animalLabel = "動物",
   isRefreshing = false,
@@ -68,9 +80,22 @@ export function AnimalGrid({
   // omit the prop (e.g. /sponsors) get no gender controls and no gender in the URL.
   const genderFilterEnabled = genderFilter !== undefined;
   const activeGender: GenderFilter = genderFilter ?? "all";
-  const hasFilters = ageFilter !== "all" || activeGender !== "all";
+  const profileFiltersEnabled = q !== undefined;
+  const hasFilters =
+    ageFilter !== "all" ||
+    activeGender !== "all" ||
+    Boolean(q) ||
+    neutered !== "all" ||
+    suitability !== "all";
 
-  function updateSearch(next: { filter?: AgeFilter; gender?: GenderFilter; page?: number }) {
+  function updateSearch(next: {
+    filter?: AgeFilter;
+    gender?: GenderFilter;
+    page?: number;
+    q?: string;
+    neutered?: NeuteredFilter;
+    suitability?: SuitabilityFilter;
+  }) {
     // @ts-expect-error search params are shared by the species listing routes
     navigate({ search: (previous: Record<string, unknown>) => ({ ...previous, ...next }) });
   }
@@ -84,9 +109,14 @@ export function AnimalGrid({
   }
 
   function clearFilters() {
-    updateSearch(
-      genderFilterEnabled ? { filter: "all", gender: "all", page: 1 } : { filter: "all", page: 1 },
-    );
+    updateSearch({
+      filter: "all",
+      page: 1,
+      ...(genderFilterEnabled ? { gender: "all" as const } : {}),
+      ...(profileFiltersEnabled
+        ? { q: "", neutered: "all" as const, suitability: "all" as const }
+        : {}),
+    });
   }
 
   function setPage(nextPage: number) {
@@ -109,11 +139,93 @@ export function AnimalGrid({
     });
   }
 
+  if (q)
+    activeFilters.push({
+      id: "q",
+      label: "搜尋：" + q,
+      clear: () => updateSearch({ q: "", page: 1 }),
+    });
+  if (neutered !== "all")
+    activeFilters.push({
+      id: "neutered",
+      label: "絕育：" + { yes: "已絕育", no: "未絕育", unknown: "未有記錄" }[neutered],
+      clear: () => updateSearch({ neutered: "all", page: 1 }),
+    });
+  if (suitability !== "all")
+    activeFilters.push({
+      id: "suitability",
+      label:
+        "領養經驗：" +
+        { newbie: "適合新手", experienced: "適合有經驗人士", unknown: "未有記錄" }[suitability],
+      clear: () => updateSearch({ suitability: "all", page: 1 }),
+    });
+
   return (
     <div className="space-y-7">
       <div
         className={`public-filter-shell grid gap-5 p-5 ${genderFilterEnabled ? "md:grid-cols-2" : ""}`}
       >
+        {profileFiltersEnabled ? (
+          <>
+            <form
+              className="animal-profile-search md:col-span-2"
+              onSubmit={(event) => {
+                event.preventDefault();
+                const data = new FormData(event.currentTarget);
+                updateSearch({
+                  q: String(data.get("q") ?? "")
+                    .trim()
+                    .slice(0, 80),
+                  page: 1,
+                });
+              }}
+            >
+              <label htmlFor="animal-name-search">名字或編號</label>
+              <div className="flex gap-2">
+                <input
+                  key={q}
+                  id="animal-name-search"
+                  type="search"
+                  name="q"
+                  maxLength={80}
+                  defaultValue={q}
+                  placeholder="搜尋名字或編號"
+                />
+                <button type="submit" className="btn-primary min-h-11 px-5">
+                  搜尋
+                </button>
+              </div>
+            </form>
+            <label className="animal-profile-select">
+              絕育記錄
+              <select
+                value={neutered}
+                onChange={(event) =>
+                  updateSearch({ neutered: event.target.value as NeuteredFilter, page: 1 })
+                }
+              >
+                <option value="all">全部絕育記錄</option>
+                <option value="yes">已絕育</option>
+                <option value="no">未絕育</option>
+                <option value="unknown">未有記錄</option>
+              </select>
+            </label>
+            <label className="animal-profile-select">
+              領養經驗
+              <select
+                value={suitability}
+                onChange={(event) =>
+                  updateSearch({ suitability: event.target.value as SuitabilityFilter, page: 1 })
+                }
+              >
+                <option value="all">全部領養經驗</option>
+                <option value="newbie">適合新手</option>
+                <option value="experienced">適合有經驗人士</option>
+                <option value="unknown">未有記錄</option>
+              </select>
+            </label>
+          </>
+        ) : null}
         <fieldset className="min-w-0">
           <legend className="mb-3 text-sm font-bold text-[var(--color-text)]">年齡</legend>
           <div className="flex flex-wrap gap-2">
@@ -221,7 +333,7 @@ export function AnimalGrid({
           />
         )
       ) : (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+        <div className="animal-profile-grid">
           {animals.map((animal) => (
             <AnimalCard intent={intent} key={animal.id} animal={animal} />
           ))}

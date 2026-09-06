@@ -1,0 +1,90 @@
+{
+  "scope": "Generated browser screenshots retained locally per repository ignore rules; no raw legacy images included",
+  "files": [
+    {
+      "bytes": 338757,
+      "sha256": "63823c89439f11a24be76917c7c1ad7f17e3f932d5bd165132401a51d36854c8",
+      "path": "docs/evidence/legacy-import-20260906/profile-browser/adoption-detail.png"
+    },
+    {
+      "bytes": 358204,
+      "sha256": "839274db53abd08d91ef9b4b9d520b4d1767ab89fcac51316590cb5482e475d4",
+      "path": "docs/evidence/legacy-import-20260906/profile-browser/broken-image.png"
+    },
+    {
+      "bytes": 358335,
+      "sha256": "82b524c19555ab6b49e2f5f7256e2fa03e22d50d76819de9a00ac4eba63f09a0",
+      "path": "docs/evidence/legacy-import-20260906/profile-browser/cat-1440.png"
+    },
+    {
+      "bytes": 374279,
+      "sha256": "27bf0d122965b995a6af76a122dc86f93167ee13e85f1fdba85942cc357a6124",
+      "path": "docs/evidence/legacy-import-20260906/profile-browser/cat-390.png"
+    },
+    {
+      "bytes": 339391,
+      "sha256": "dc16cd6629f125a00619d65d0353c3b419932cfe4522bd26fe25796a1dd6fd44",
+      "path": "docs/evidence/legacy-import-20260906/profile-browser/cat-768.png"
+    },
+    {
+      "bytes": 358563,
+      "sha256": "43fd9506e12da720184e1a9c1c52f65fd51b9181bc11138d3493cfd4e12cf3b5",
+      "path": "docs/evidence/legacy-import-20260906/profile-browser/dog-1440.png"
+    },
+    {
+      "bytes": 370498,
+      "sha256": "4a4e9ef2637d31c3731ebebf8a800b4d016431932f3702216c6f0eba03e01610",
+      "path": "docs/evidence/legacy-import-20260906/profile-browser/dog-390.png"
+    },
+    {
+      "bytes": 334811,
+      "sha256": "f83edd910af69a6ec6d35d54e3394bb5695bf88b8ae67e77504451fbc8fa3e82",
+      "path": "docs/evidence/legacy-import-20260906/profile-browser/dog-768.png"
+    },
+    {
+      "bytes": 365514,
+      "sha256": "62e49c9d1b83a9b9394ba1cd66926abbf08041913aa972768af627d664f39d77",
+      "path": "docs/evidence/legacy-import-20260906/profile-browser/header-320-menu.png"
+    },
+    {
+      "bytes": 285469,
+      "sha256": "6ad20c623d158e18ef2d34103ffc0e625799628c591ce220d80f8c11b52aa7f8",
+      "path": "docs/evidence/legacy-import-20260906/profile-browser/sponsorship-detail.png"
+    },
+    {
+      "bytes": 465524,
+      "sha256": "4bf8413ee91e688846dcaf96f682e85bce02183ef583149a369841d286189f3f",
+      "path": "docs/evidence/legacy-import-20260906/profile-real-preview/cat-1440.png"
+    },
+    {
+      "bytes": 576457,
+      "sha256": "f27f3687ef99448e14e9b3fc4dccd0b09ec75cf824905ebfbd562f06fd346342",
+      "path": "docs/evidence/legacy-import-20260906/profile-real-preview/cat-390.png"
+    },
+    {
+      "bytes": 264037,
+      "sha256": "4090771c24fd7711babc0c987a222117c9dacda5bd565259be4fce8b38a97640",
+      "path": "docs/evidence/legacy-import-20260906/profile-real-preview/detail-1440.png"
+    },
+    {
+      "bytes": 216914,
+      "sha256": "615598b3e6bd910303216a9f89e072f71d211f355f8f3d4388391cd6b627bed1",
+      "path": "docs/evidence/legacy-import-20260906/profile-real-preview/detail-390.png"
+    },
+    {
+      "bytes": 483735,
+      "sha256": "4fa0e38a4255036a43c9f3b329215d844f00ed95589e83744a2eca5acdefc18b",
+      "path": "docs/evidence/legacy-import-20260906/profile-real-preview/dog-1440.png"
+    },
+    {
+      "bytes": 594639,
+      "sha256": "9746c8a0c1b7ff5e73ef2141060e1e79b55339787e5d37cc52b6066a2a5f4595",
+      "path": "docs/evidence/legacy-import-20260906/profile-real-preview/dog-390.png"
+    },
+    {
+      "bytes": 470464,
+      "sha256": "06e58112e5a8a6f1669623e66a2ef5348b1e10b2658e52901530702232a88be6",
+      "path": "docs/evidence/legacy-import-20260906/profile-real-preview/reviewed-story-detail.png"
+    }
+  ]
+}

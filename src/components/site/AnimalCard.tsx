@@ -1,8 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { Cat, CheckCircle2, Dog } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import type { Animal } from "../../types/animal";
 import { PublicStatusBadge } from "./PublicStatusBadge";
 import { ShortlistActionButton } from "./ShortlistActionButton";
+import { AnimalPhoto } from "./AnimalPhoto";
 
 interface AnimalCardProps {
   animal: Animal;
@@ -17,60 +18,76 @@ export function AnimalCard({
     intent === "sponsorship"
       ? "/sponsors/" + animal.id
       : "/animals/" + animal.type + "/" + animal.id;
-  const TypeIcon = animal.type === "dog" ? Dog : Cat;
-  const typeLabel = animal.type === "dog" ? "狗狗" : animal.type === "cat" ? "貓貓" : "助養動物";
-
+  const profile = animal.public_profile;
   return (
-    <article className="public-animal-card overflow-hidden border border-[var(--color-border)] bg-[var(--color-surface)]">
+    <article className="public-animal-card animal-profile-card">
       <Link
         to={detailHref}
-        className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-inset"
+        className="animal-profile-card-link focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-inset"
       >
-        <div className="public-animal-media flex items-center justify-center overflow-hidden bg-[var(--color-surface-offset)]">
-          {animal.image_url ? (
-            <img
-              src={animal.image_url}
-              alt={
-                (intent === "sponsorship" ? "待助養" : "待領養") + typeLabel + "：" + animal.name
-              }
-              loading="lazy"
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="public-animal-fallback flex h-full w-full items-center justify-center">
-              <span className="flex h-20 w-20 items-center justify-center rounded-full bg-white text-[var(--color-primary)] shadow-soft">
-                <TypeIcon className="h-10 w-10" aria-hidden="true" />
-              </span>
-            </div>
-          )}
-        </div>
-        <div className="flex min-h-[220px] flex-col gap-3 p-5">
-          <div className="flex flex-wrap items-center gap-2">
-            <PublicStatusBadge tone="info" icon={CheckCircle2}>
-              {intent === "sponsorship" ? "待助養" : "待領養"}
-            </PublicStatusBadge>
-            <span className="inline-flex min-h-7 items-center gap-1 rounded-full bg-[var(--color-surface-offset)] px-2.5 py-1 text-xs text-[var(--color-text-muted)]">
-              <TypeIcon className="h-3.5 w-3.5" aria-hidden="true" /> {typeLabel}
-            </span>
-          </div>
-          <h2 className="text-xl font-extrabold text-[var(--color-text)]">{animal.name}</h2>
-          <div className="flex flex-wrap gap-2 text-sm text-[var(--color-text-muted)]">
-            <span>{animal.gender === "male" ? "公" : "母"}</span>
-            <span aria-hidden="true">·</span>
-            <span>{animal.age}</span>
-          </div>
-          {animal.notes ? (
-            <p className="line-clamp-2 text-sm leading-relaxed text-[var(--color-text-muted)]">
-              {animal.notes}
+        <div className="animal-profile-identity">
+          <AnimalPhoto animal={animal} />
+          <div className="min-w-0">
+            <p className="animal-profile-code">編號 {profile?.code || "未有記錄"}</p>
+            <h2>{animal.name}</h2>
+            <p className="text-sm text-[var(--color-text-muted)]">
+              {animal.type === "dog" ? "狗狗" : animal.type === "cat" ? "貓貓" : "助養動物"}
             </p>
-          ) : null}
-          <span className="mt-auto inline-flex min-h-11 items-center text-sm font-bold text-[var(--color-primary)]">
-            查看資料{" "}
-            <span className="ml-1" aria-hidden="true">
-              →
-            </span>
-          </span>
+          </div>
         </div>
+        <div className="flex flex-wrap gap-2">
+          <PublicStatusBadge tone="info" icon={CheckCircle2}>
+            {intent === "sponsorship" ? "待助養" : "待領養"}
+          </PublicStatusBadge>
+          {intent === "adoption" && animal.sponsorship_eligible ? (
+            <PublicStatusBadge tone="info">可助養</PublicStatusBadge>
+          ) : null}
+          {intent === "sponsorship" && animal.adoption_eligible ? (
+            <PublicStatusBadge tone="info">可領養</PublicStatusBadge>
+          ) : null}
+        </div>
+        <dl className="animal-profile-facts">
+          <div>
+            <dt>性別</dt>
+            <dd>
+              {animal.gender === "male" ? "公" : animal.gender === "female" ? "母" : "未有記錄"}
+            </dd>
+          </div>
+          <div>
+            <dt>年齡</dt>
+            <dd>{animal.age || "未有記錄"}</dd>
+          </div>
+          <div>
+            <dt>絕育</dt>
+            <dd>
+              {profile?.neutered === true
+                ? "已絕育"
+                : profile?.neutered === false
+                  ? "未絕育"
+                  : "未有記錄"}
+            </dd>
+          </div>
+          <div>
+            <dt>領養經驗</dt>
+            <dd>
+              {profile?.suitability === "newbie"
+                ? "適合新手"
+                : profile?.suitability === "experienced"
+                  ? "適合有經驗人士"
+                  : "未有記錄"}
+            </dd>
+          </div>
+        </dl>
+        <p className="animal-profile-summary">
+          <span className="font-bold">性格：</span>
+          {profile?.personality || "未有記錄"}
+        </p>
+        <span className="mt-auto inline-flex min-h-11 items-center text-sm font-bold text-[var(--color-primary)]">
+          查看詳細資料{" "}
+          <span className="ml-1" aria-hidden="true">
+            →
+          </span>
+        </span>
       </Link>
       <div className="px-5 pb-5">
         <ShortlistActionButton intent={intent} animal={animal} compact />

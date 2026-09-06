@@ -1,0 +1,123 @@
+{
+  "files": [
+    {
+      "path": "scripts/ci/profile-browser-acceptance.mjs",
+      "sha256": "abc1dd8545fab1e5dbf5ef1c440b95ad2eb67bf98904cd3a1c4b486a6ae97717"
+    },
+    {
+      "path": "scripts/ci/supabase-fixture.mjs",
+      "sha256": "786e9812043b12e3823338be29b7cde1aff48abc6f98a114ed42ebc387cfd20f"
+    },
+    {
+      "path": "scripts/ci/supabase-fixture.test.mjs",
+      "sha256": "1f1316c2c5ef21ba63672c50c31c54194d9c03318c5f29977d336bc07087bbfe"
+    },
+    {
+      "path": "scripts/legacy-import/profile_transaction.sql",
+      "sha256": "f8cd33d007a508e64d93c0b987b3d9791ed36a196f103043865257abe87bfb2b"
+    },
+    {
+      "path": "scripts/legacy-import/public_profiles.py",
+      "sha256": "bc5396e990bb982cd7778c096137e180f8d51badc06b2097c30976a164adcc4c"
+    },
+    {
+      "path": "scripts/legacy-import/rehearse_public_profile_schema.py",
+      "sha256": "0fba457cd55dd2cf0ed68f5a6942362cc5cc308d83a337cb1bd03cbb7798057b"
+    },
+    {
+      "path": "scripts/legacy-import/rehearse_public_profiles.py",
+      "sha256": "decca0169b961329bfadac85086196a5289200323c9ac94553279b55e3f0d95f"
+    },
+    {
+      "path": "scripts/legacy-import/test_public_profiles.py",
+      "sha256": "53c7ac91e7913621fce556ab82e55bbfcf64f6ccd6f0d77ea89781417f311061"
+    },
+    {
+      "path": "src/components/site/AnimalCard.test.tsx",
+      "sha256": "83a522cee51a0ecdcf038131785392bb7ea9abd613745000fa0a3e33e23253c7"
+    },
+    {
+      "path": "src/components/site/AnimalCard.tsx",
+      "sha256": "4cbe9e4d2f0e44bc4456240258c7ab6a1ccb01e692197ba32499bb081c8caf0c"
+    },
+    {
+      "path": "src/components/site/AnimalDetail.test.tsx",
+      "sha256": "5704b1abf354acdfa2e813d4e91fcb507d94f439d963f679b5168b0d3ab1709b"
+    },
+    {
+      "path": "src/components/site/AnimalDetail.tsx",
+      "sha256": "cc83f2119434a4544e7674ee7b05b85fd04c86a03c43962b74af4ba6adeb3946"
+    },
+    {
+      "path": "src/components/site/AnimalGrid.test.tsx",
+      "sha256": "76be87c6ba168203de6916173b1ccca1088aec42db7de8c79a29aa3cf019132f"
+    },
+    {
+      "path": "src/components/site/AnimalGrid.tsx",
+      "sha256": "519089c7f846b33ca3b462586f9c2e9b9dfc585e873eb92f30d26af57beea9cf"
+    },
+    {
+      "path": "src/components/site/AnimalListingPage.test.tsx",
+      "sha256": "c4e41f03aedccd5b87285be5730d1dc8f73eaeb7ed01f7c158f363835a912327"
+    },
+    {
+      "path": "src/components/site/AnimalListingPage.tsx",
+      "sha256": "e232fc21b1e990bf4af5be4431f12364bc250e091801e44c28960d7a4a60f7d7"
+    },
+    {
+      "path": "src/components/site/AnimalPhoto.tsx",
+      "sha256": "62cb0f76cb9f22c6fc7bf244958a2d8d27a3b730186a4e0a4a5459373791caf8"
+    },
+    {
+      "path": "src/lib/animals/publicAnimal.functions.ts",
+      "sha256": "0b0cbaa3caa30ebb2393a524fa589802b02e3cbb561d16178d38bb0d94a75559"
+    },
+    {
+      "path": "src/lib/animals/publicListing.functions.ts",
+      "sha256": "d93091de7ea9e961a7ac0009bb92325dc92d6c322b3d831e6bc3aa901a54313c"
+    },
+    {
+      "path": "src/lib/animals/publicListing.server.ts",
+      "sha256": "82d7a742cc0fb6acbd1d88c20072a59e682a6799edbf23dd5382d1cac99b4e75"
+    },
+    {
+      "path": "src/lib/animals/publicListing.test.ts",
+      "sha256": "dded73117adfbbe34f690f6452ecf0a55d3aeb254d3f280a4b439971aba9ffc0"
+    },
+    {
+      "path": "src/lib/animals/publicListing.ts",
+      "sha256": "2462e15feeeaa3caeb64080a4d85d1b3ea891f72171d5e35d405a1ecaac121fc"
+    },
+    {
+      "path": "src/lib/animals/publicProfile.test.ts",
+      "sha256": "40193dbca25ef06354af79853af13cc9710f5033c5688be42b4a51d5427895f4"
+    },
+    {
+      "path": "src/lib/animals/publicProfile.ts",
+      "sha256": "95c0c7f5b1584fd56c6e487cad2d06c192897a04e8ca3ea4c306957939689838"
+    },
+    {
+      "path": "src/routes/animals/cat.tsx",
+      "sha256": "5ca84ad2ba7b102a7635efda288cb1df567fd8f8ce7f96e0797d0640ae209dbf"
+    },
+    {
+      "path": "src/routes/animals/dog.tsx",
+      "sha256": "3711d19a35c7afab7f0e4322475c459bcab48b80d6b3f213a36a730b2e086cb1"
+    },
+    {
+      "path": "src/styles.css",
+      "sha256": "42aaa08d584c74f2792f19a0bcb56d5c62fb51af6a46ffd1d469b63944ebda66"
+    },
+    {
+      "path": "src/types/animal.ts",
+      "sha256": "2194aeba501863d4b0323baad60cace2c8237fc45a51f85edc3f5609e0e20f6c"
+    },
+    {
+      "path": "supabase/migrations/20260906181657_animal_public_profile.sql",
+      "sha256": "94fba6f5034bc1d47224efc19c3fe557a1ed199c700f00be519b55960b7feec0"
+    }
+  ],
+  "base": "df7b4261eab4e646f91a83e76a3a912ea3cfafb1",
+  "scope": "Reviewed staged source at final test and fixture-build acceptance; file hashes are local bytes",
+  "branch": "codex/legacy-animal-profiles-20260907"
+}

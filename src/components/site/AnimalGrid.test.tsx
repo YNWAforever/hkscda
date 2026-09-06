@@ -34,3 +34,30 @@ describe("AnimalGrid", () => {
     expect(markup).toContain("min-h-11");
   });
 });
+
+test("exposes labelled profile controls, active filters and empty recovery", async () => {
+  const { AnimalGrid } = await import("./AnimalGrid");
+  const markup = renderToStaticMarkup(
+    <AnimalGrid
+      animals={[]}
+      total={0}
+      page={1}
+      ageFilter="all"
+      genderFilter="all"
+      q="C017"
+      neutered="unknown"
+      suitability="experienced"
+    />,
+  );
+  for (const value of [
+    'maxLength="80"',
+    'value="C017"',
+    "名字或編號",
+    "絕育記錄",
+    "領養經驗",
+    "移除篩選：搜尋：C017",
+    "清除全部",
+    "清除篩選",
+  ])
+    expect(markup).toContain(value);
+});

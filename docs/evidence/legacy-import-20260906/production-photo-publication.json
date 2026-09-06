@@ -1,0 +1,14 @@
+{
+  "published_photos": 14,
+  "adoption_animals_with_photo": 1,
+  "sponsorship_animals_with_photo": 14,
+  "gps_metadata_removed_from_sources": 3,
+  "visual_review": "All 14 matched photos inspected; no identifying documents/faces found",
+  "encoded_pixels_unchanged": true,
+  "public_object_hashes_verified": 14,
+  "uploaded_bytes": 3984400,
+  "audit_action": "legacy_animal_photo_publish",
+  "publication_batch": "legacy-photos-20260907",
+  "excluded": "Historical-only, unmatched, attachment-overlap and held files remain private",
+  "source_files_unchanged": true
+}

@@ -1,3 +1,4 @@
+import { projectPublicAnimal } from "./publicProfile";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
@@ -28,5 +29,5 @@ export const getPublicAnimal = createServerFn({ method: "GET" })
 
     const { data: animal, error } = await query.maybeSingle();
     if (error) throw new Error("Could not load public animal");
-    return (animal as Animal | null) ?? null;
+    return animal ? projectPublicAnimal(animal as Animal) : null;
   });

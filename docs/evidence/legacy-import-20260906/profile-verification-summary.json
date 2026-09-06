@@ -1,0 +1,208 @@
+{
+  "source_manifest": "profile-source-manifest.json",
+  "tests": {
+    "application_pass": 1969,
+    "application_skip": 86,
+    "application_fail": 0,
+    "assertions": 6020,
+    "python_pass": 43
+  },
+  "typecheck": "pass",
+  "lint": {
+    "errors": 0,
+    "warnings": 40
+  },
+  "fixture_build": "pass; placeholder credentials only; not a production artifact",
+  "browser": {
+    "synthetic": "profile-browser/acceptance.json",
+    "actual_legacy": "profile-real-preview/result.json"
+  },
+  "brand": {
+    "routes": 26,
+    "viewports": 5,
+    "failures": 0
+  },
+  "a11y": {
+    "routes": 26,
+    "viewports": 1,
+    "failures": 0
+  },
+  "performance": {
+    "routes": 4,
+    "viewports": 2,
+    "cold_samples": 24,
+    "minimum_score": 90,
+    "maximum_score": 100,
+    "samples": [
+      {
+        "file": "lighthouse-1440x900___desktop_cold-1.json",
+        "sha256": "73d393abe90b6546fdb794afff5daf0cd62c67907a58abdfa745bbf811523b81",
+        "score": 100,
+        "lcp_ms": 712.841,
+        "cls": 0.00028
+      },
+      {
+        "file": "lighthouse-1440x900___desktop_cold-2.json",
+        "sha256": "c0af8bda1d70cc25ba966a7b8b994cb9dedf60bde5fb335a113b7f8e3c2e3990",
+        "score": 100,
+        "lcp_ms": 697.4380000000001,
+        "cls": 0.00028
+      },
+      {
+        "file": "lighthouse-1440x900___desktop_cold-3.json",
+        "sha256": "60d0c5cce1ae62780fd5d9e67ba71e47eb3e8076f9f90d213466ae43d7d1a82a",
+        "score": 99,
+        "lcp_ms": 740.543,
+        "cls": 0.00028
+      },
+      {
+        "file": "lighthouse-1440x900__adoption_apply_desktop_cold-1.json",
+        "sha256": "3de894f167fe1e38067ebdc7a41b309e00fc0962b4bcf92f2ced349fdbb826b4",
+        "score": 100,
+        "lcp_ms": 508.40999999999997,
+        "cls": 0.010157
+      },
+      {
+        "file": "lighthouse-1440x900__adoption_apply_desktop_cold-2.json",
+        "sha256": "b2ad3511938136bc2e56f5c640ffad2a4c74b2a56c5ea8c22c61951f7a88bb95",
+        "score": 99,
+        "lcp_ms": 612.3734,
+        "cls": 0.010157
+      },
+      {
+        "file": "lighthouse-1440x900__adoption_apply_desktop_cold-3.json",
+        "sha256": "9584221bd0d7e9d52704ea4b7a210e74a7a643adf520ef1c4a6b29934a5fb431",
+        "score": 100,
+        "lcp_ms": 537.1983,
+        "cls": 0.010157
+      },
+      {
+        "file": "lighthouse-1440x900__animals_cat_desktop_cold-1.json",
+        "sha256": "c26dc6c496e541abeb69504bd091eff5b32f8876bab045f6cafc140139f10b53",
+        "score": 100,
+        "lcp_ms": 667.061,
+        "cls": 0.000115
+      },
+      {
+        "file": "lighthouse-1440x900__animals_cat_desktop_cold-2.json",
+        "sha256": "35959a1f1dc3380dce08cb5ef6360d8952c8bf3e845906b3cc640aed161a0aa6",
+        "score": 100,
+        "lcp_ms": 636.6970583912266,
+        "cls": 0.000115
+      },
+      {
+        "file": "lighthouse-1440x900__animals_cat_desktop_cold-3.json",
+        "sha256": "56e26922edeb0e3037ccb513ceb6648bc7d0a12a1bb7f8b9b6201f739890928a",
+        "score": 100,
+        "lcp_ms": 599.8933136755666,
+        "cls": 0.000115
+      },
+      {
+        "file": "lighthouse-1440x900__donate_desktop_cold-1.json",
+        "sha256": "fc945a4dc87c0f562e3ee6f8f231d444a25395ffce9f289509ae757ba36932cd",
+        "score": 100,
+        "lcp_ms": 608.4960000000001,
+        "cls": 0.000413
+      },
+      {
+        "file": "lighthouse-1440x900__donate_desktop_cold-2.json",
+        "sha256": "0604325c20361cf49861f6184a872e28bc446d1f3253fde71ce2c51cd7f9ea70",
+        "score": 99,
+        "lcp_ms": 663.4879999999999,
+        "cls": 0.000413
+      },
+      {
+        "file": "lighthouse-1440x900__donate_desktop_cold-3.json",
+        "sha256": "42401f7d3d1a65c72b3e75ff6c5c97a1a5a9565f9ccc3c47498a828870902f48",
+        "score": 100,
+        "lcp_ms": 649.277,
+        "cls": 0.000413
+      },
+      {
+        "file": "lighthouse-390x844___mobile_cold-1.json",
+        "sha256": "63cefb15b627c520c6ff232341d600ccb98599ec03893db4e0ab1ecd7b87f3bc",
+        "score": 95,
+        "lcp_ms": 2508.524,
+        "cls": 0.00078
+      },
+      {
+        "file": "lighthouse-390x844___mobile_cold-2.json",
+        "sha256": "3153291b5eaddd203d17785022b5ba31eb03559f37ae65bd6dec94a08b329bff",
+        "score": 95,
+        "lcp_ms": 2463.726,
+        "cls": 0.00078
+      },
+      {
+        "file": "lighthouse-390x844___mobile_cold-3.json",
+        "sha256": "92b485f932c87529effbada8cdb3515f4bf58391179c58f4e60d2eba87659a3b",
+        "score": 90,
+        "lcp_ms": 2657.308,
+        "cls": 0.00078
+      },
+      {
+        "file": "lighthouse-390x844__adoption_apply_mobile_cold-1.json",
+        "sha256": "b81328ab1369999b9b0c54c60e4f62ee5cabebecac92e03f400aa0f1ef995df6",
+        "score": 99,
+        "lcp_ms": 1699.256,
+        "cls": 0.017628
+      },
+      {
+        "file": "lighthouse-390x844__adoption_apply_mobile_cold-2.json",
+        "sha256": "aaa393127cbc8daf379d45161adb482ff3f6274fdbc6cde37a35d51a208f463c",
+        "score": 99,
+        "lcp_ms": 1780.0894,
+        "cls": 0.017628
+      },
+      {
+        "file": "lighthouse-390x844__adoption_apply_mobile_cold-3.json",
+        "sha256": "5a7ce9568f733b82288e208e1ef56c5a8d7263cb63a49498aec5ede5cc3117b7",
+        "score": 99,
+        "lcp_ms": 1564.713,
+        "cls": 0.017628
+      },
+      {
+        "file": "lighthouse-390x844__animals_cat_mobile_cold-1.json",
+        "sha256": "8c83e874eb9037cab1d556f71e129c8c6b1b65dc9b788bdef3f2982b1546011e",
+        "score": 99,
+        "lcp_ms": 1834.9499999999998,
+        "cls": 0
+      },
+      {
+        "file": "lighthouse-390x844__animals_cat_mobile_cold-2.json",
+        "sha256": "7a70c43fab6238b0ff8ca14cbee831e06b1d3834a3c302ca46fb2711ce14dac3",
+        "score": 98,
+        "lcp_ms": 1839.8743377457322,
+        "cls": 0
+      },
+      {
+        "file": "lighthouse-390x844__animals_cat_mobile_cold-3.json",
+        "sha256": "7fb9cc9dd30c2e5d28679a1c9aa4f8fcb571c033faba7b6a6f0453ab7de67440",
+        "score": 98,
+        "lcp_ms": 1887.4560000000001,
+        "cls": 0
+      },
+      {
+        "file": "lighthouse-390x844__donate_mobile_cold-1.json",
+        "sha256": "a67065b0de5398569b23aca4e2b09b0a86c772a78b110e322635c545c6db8b82",
+        "score": 99,
+        "lcp_ms": 1834.1019999999999,
+        "cls": 0.01179
+      },
+      {
+        "file": "lighthouse-390x844__donate_mobile_cold-2.json",
+        "sha256": "d5ea97a51f9ebc3149384caf83c08003bdc9b38828506b2c7058b02666786463",
+        "score": 99,
+        "lcp_ms": 1857.6715999999997,
+        "cls": 0.01179
+      },
+      {
+        "file": "lighthouse-390x844__donate_mobile_cold-3.json",
+        "sha256": "6535418282ac9e55f94e3ace207b52f1b8858d36cc4edad668bc4f8e773d6ece",
+        "score": 98,
+        "lcp_ms": 1850.3841000000002,
+        "cls": 0.01179
+      }
+    ]
+  },
+  "production_profile_writes": 0
+}

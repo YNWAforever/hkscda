@@ -11,5 +11,5 @@
   "full_migration_applied_locally": true,
   "production_writes": 0,
   "fixture": "synthetic minimal tables and simulated role helper",
-  "database": "catalog_membership_a434cb794fea"
+  "database": "catalog_membership_54bc3b0fd580"
 }

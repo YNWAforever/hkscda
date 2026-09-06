@@ -1,0 +1,43 @@
+{
+  "passed": true,
+  "source": "private allowlisted248 profile candidate, read-only published photoURLs",
+  "productionWrites": 0,
+  "results": [
+    {
+      "species": "cat",
+      "width": 390,
+      "total": 100,
+      "rendered": 15,
+      "overflow": false
+    },
+    {
+      "species": "dog",
+      "width": 390,
+      "total": 108,
+      "rendered": 15,
+      "overflow": false
+    },
+    {
+      "species": "cat",
+      "width": 1440,
+      "total": 100,
+      "rendered": 15,
+      "overflow": false
+    },
+    {
+      "species": "cat",
+      "pagination": "page2 disjoint and late-record search before pagination resets page1"
+    },
+    {
+      "species": "dog",
+      "width": 1440,
+      "total": 108,
+      "rendered": 15,
+      "overflow": false
+    },
+    {
+      "species": "dog",
+      "pagination": "page2 disjoint and late-record search before pagination resets page1"
+    }
+  ]
+}

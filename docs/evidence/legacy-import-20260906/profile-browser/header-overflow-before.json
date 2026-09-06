@@ -1,0 +1,17 @@
+{
+  "viewport": 390,
+  "documentScrollWidth": 390,
+  "bodyScrollWidth": 409,
+  "headerActions": {
+    "x": 200.96875,
+    "width": 208,
+    "right": 408.96875
+  },
+  "menuTrigger": {
+    "x": 364.96875,
+    "width": 44,
+    "right": 408.96875
+  },
+  "regressionTest": "assert.ok(layout.bodyScroll <= layout.width)",
+  "result": "failed on built source before header correction"
+}

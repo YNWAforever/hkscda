@@ -7,6 +7,9 @@ const publicAnimalListingInput = z.object({
   type: z.enum(["cat", "dog"]),
   ageFilter: z.enum(["all", "bb", "adult", "senior"]),
   genderFilter: z.enum(["all", "male", "female"]),
+  q: z.string().trim().max(80).default(""),
+  neutered: z.enum(["all", "yes", "no", "unknown"]).default("all"),
+  suitability: z.enum(["all", "newbie", "experienced", "unknown"]).default("all"),
   page: z.number().int().positive(),
   pageSize: z.number().int().positive().max(48),
 });
@@ -27,6 +30,9 @@ export const getPublicAnimalListing = createServerFn({ method: "GET" })
     });
     return buildPublicAnimalListing({
       animals,
+      q: data.q,
+      neutered: data.neutered,
+      suitability: data.suitability,
       type: data.type,
       ageFilter: data.ageFilter,
       genderFilter: data.genderFilter,
