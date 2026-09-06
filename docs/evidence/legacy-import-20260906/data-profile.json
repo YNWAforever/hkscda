@@ -1,0 +1,312 @@
+{
+  "inserted": 150918,
+  "unchanged": 0,
+  "excluded": 74,
+  "source_counts": {
+    "adoptions": 19254,
+    "adoption_advertising_source": 21364,
+    "adoption_fees": 11,
+    "adoption_file": 20634,
+    "adoption_followups": 294,
+    "adoption_reports": 37,
+    "adoption_statuses": 8,
+    "advertising_sources": 7,
+    "animals": 5144,
+    "animal_age_choices": 7,
+    "animal_character_choices": 5,
+    "animal_coat_choices": 3,
+    "arrival_sources": 14,
+    "audit_reports": 3,
+    "blacklists": 2,
+    "donations": 7,
+    "events": 18,
+    "files": 25853,
+    "global_options": 15,
+    "living_areas": 19,
+    "medicals": 686,
+    "medical_types": 3,
+    "members": 1513,
+    "migrations": 17,
+    "news": 5,
+    "password_resets": 2,
+    "payment_method": 7,
+    "positions": 72,
+    "rescues": 1,
+    "rescue_images": 25,
+    "roles": 3,
+    "sliders": 8,
+    "sponsorships": 6,
+    "users": 37,
+    "volunteers": 6632,
+    "volunteers_volunteer_dows": 18857,
+    "volunteers_volunteer_positions": 17230,
+    "volunteers_volunteer_timeslots": 13162,
+    "volunteer_dows": 8,
+    "volunteer_positions": 16,
+    "volunteer_timeslots": 3
+  },
+  "source_sha256": "7a9454278c84c797a7a75bd56bfd416db852c2758483dc999f0e344a06a64225",
+  "source_bytes": 28086302,
+  "repeat_run": {
+    "inserted": 0,
+    "unchanged": 150918,
+    "excluded": 74,
+    "source_counts": {
+      "adoptions": 19254,
+      "adoption_advertising_source": 21364,
+      "adoption_fees": 11,
+      "adoption_file": 20634,
+      "adoption_followups": 294,
+      "adoption_reports": 37,
+      "adoption_statuses": 8,
+      "advertising_sources": 7,
+      "animals": 5144,
+      "animal_age_choices": 7,
+      "animal_character_choices": 5,
+      "animal_coat_choices": 3,
+      "arrival_sources": 14,
+      "audit_reports": 3,
+      "blacklists": 2,
+      "donations": 7,
+      "events": 18,
+      "files": 25853,
+      "global_options": 15,
+      "living_areas": 19,
+      "medicals": 686,
+      "medical_types": 3,
+      "members": 1513,
+      "migrations": 17,
+      "news": 5,
+      "password_resets": 2,
+      "payment_method": 7,
+      "positions": 72,
+      "rescues": 1,
+      "rescue_images": 25,
+      "roles": 3,
+      "sliders": 8,
+      "sponsorships": 6,
+      "users": 37,
+      "volunteers": 6632,
+      "volunteers_volunteer_dows": 18857,
+      "volunteers_volunteer_positions": 17230,
+      "volunteers_volunteer_timeslots": 13162,
+      "volunteer_dows": 8,
+      "volunteer_positions": 16,
+      "volunteer_timeslots": 3
+    }
+  },
+  "inspection": {
+    "staged_counts": {
+      "adoptions": 19254,
+      "adoption_advertising_source": 21364,
+      "adoption_fees": 11,
+      "adoption_file": 20634,
+      "adoption_followups": 294,
+      "adoption_reports": 37,
+      "adoption_statuses": 8,
+      "advertising_sources": 7,
+      "animals": 5144,
+      "animal_age_choices": 7,
+      "animal_character_choices": 5,
+      "animal_coat_choices": 3,
+      "arrival_sources": 14,
+      "audit_reports": 3,
+      "blacklists": 2,
+      "donations": 7,
+      "events": 18,
+      "files": 25853,
+      "living_areas": 19,
+      "medicals": 686,
+      "medical_types": 3,
+      "members": 1513,
+      "news": 5,
+      "payment_method": 7,
+      "positions": 72,
+      "rescues": 1,
+      "rescue_images": 25,
+      "sliders": 8,
+      "sponsorships": 6,
+      "volunteers": 6632,
+      "volunteers_volunteer_dows": 18857,
+      "volunteers_volunteer_positions": 17230,
+      "volunteers_volunteer_timeslots": 13162,
+      "volunteer_dows": 8,
+      "volunteer_positions": 16,
+      "volunteer_timeslots": 3
+    },
+    "relationships": {
+      "adoptions.animal_id": {
+        "non_null": 19236,
+        "unresolved": 0
+      },
+      "adoptions.approved_animal_id": {
+        "non_null": 1580,
+        "unresolved": 0
+      },
+      "adoptions.member_id": {
+        "non_null": 1581,
+        "unresolved": 0
+      },
+      "adoptions.adoption_status_id": {
+        "non_null": 19254,
+        "unresolved": 0
+      },
+      "adoption_file.adoption_id": {
+        "non_null": 20634,
+        "unresolved": 3
+      },
+      "adoption_file.file_id": {
+        "non_null": 20634,
+        "unresolved": 1
+      },
+      "adoption_followups.adoption_id": {
+        "non_null": 294,
+        "unresolved": 0
+      },
+      "adoption_advertising_source.adoption_id": {
+        "non_null": 21364,
+        "unresolved": 17
+      },
+      "adoption_advertising_source.advertising_source_id": {
+        "non_null": 21364,
+        "unresolved": 0
+      },
+      "animals.profile_pic_id": {
+        "non_null": 4852,
+        "unresolved": 0
+      },
+      "animals.arrival_source_id": {
+        "non_null": 4568,
+        "unresolved": 0
+      },
+      "animals.current_position_id": {
+        "non_null": 5143,
+        "unresolved": 0
+      },
+      "medicals.animal_id": {
+        "non_null": 686,
+        "unresolved": 0
+      },
+      "medicals.medical_type_id": {
+        "non_null": 0,
+        "unresolved": 0
+      },
+      "medicals.volunteer_id": {
+        "non_null": 0,
+        "unresolved": 0
+      },
+      "donations.payment_ID": {
+        "non_null": 2,
+        "unresolved": 0
+      },
+      "sponsorships.animal_id": {
+        "non_null": 6,
+        "unresolved": 0
+      },
+      "rescue_images.rescue_id": {
+        "non_null": 25,
+        "unresolved": 5
+      },
+      "audit_reports.file_id": {
+        "non_null": 3,
+        "unresolved": 0
+      },
+      "members.living_area_id": {
+        "non_null": 1513,
+        "unresolved": 0
+      },
+      "volunteers.living_area_id": {
+        "non_null": 6631,
+        "unresolved": 0
+      },
+      "volunteers_volunteer_dows.volunteer_id": {
+        "non_null": 18857,
+        "unresolved": 3315
+      },
+      "volunteers_volunteer_dows.volunteer_dow_id": {
+        "non_null": 18857,
+        "unresolved": 0
+      },
+      "volunteers_volunteer_positions.volunteer_id": {
+        "non_null": 17230,
+        "unresolved": 3222
+      },
+      "volunteers_volunteer_positions.volunteer_position_id": {
+        "non_null": 17230,
+        "unresolved": 0
+      },
+      "volunteers_volunteer_timeslots.volunteer_id": {
+        "non_null": 13162,
+        "unresolved": 3234
+      },
+      "volunteers_volunteer_timeslots.volunteer_timeslot_id": {
+        "non_null": 13162,
+        "unresolved": 0
+      }
+    },
+    "relationship_checks_are_exhaustive": false,
+    "quarantined_rows_selected_relationships": 9797,
+    "quarantined_by_table": {
+      "adoption_file": 4,
+      "adoption_advertising_source": 17,
+      "rescue_images": 5,
+      "volunteers_volunteer_dows": 3315,
+      "volunteers_volunteer_positions": 3222,
+      "volunteers_volunteer_timeslots": 3234
+    },
+    "identity": {
+      "members": {
+        "missing_email": 0,
+        "repeated_email_groups": 21,
+        "rows_in_repeated_groups": 42
+      },
+      "adoptions": {
+        "missing_email": 0,
+        "repeated_email_groups": 3552,
+        "rows_in_repeated_groups": 11433
+      },
+      "volunteers": {
+        "missing_email": 2,
+        "repeated_email_groups": 445,
+        "rows_in_repeated_groups": 4492
+      },
+      "donations": {
+        "missing_email": 0,
+        "repeated_email_groups": 1,
+        "rows_in_repeated_groups": 2
+      }
+    },
+    "money": {
+      "donations": {
+        "valid_amount_total_cents": 410300,
+        "invalid_amount_rows": 0,
+        "missing_amount_rows": 0,
+        "currency_verified": false
+      },
+      "sponsorships": {
+        "valid_amount_total_cents": 40600,
+        "invalid_amount_rows": 0,
+        "missing_amount_rows": 0,
+        "currency_verified": false
+      },
+      "adoption_fees": {
+        "valid_amount_total_cents": 490000,
+        "invalid_amount_rows": 0,
+        "missing_amount_rows": 0,
+        "currency_verified": false
+      },
+      "medicals": {
+        "valid_amount_total_cents": 20203200,
+        "invalid_amount_rows": 0,
+        "missing_amount_rows": 0,
+        "currency_verified": false
+      }
+    },
+    "files": {
+      "metadata_rows": 25853,
+      "asset_bytes_verified": 0
+    }
+  },
+  "production_writes": 0,
+  "target_schema_imported": false
+}

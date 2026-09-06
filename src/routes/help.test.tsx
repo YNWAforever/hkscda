@@ -1,11 +1,12 @@
-import { describe, expect, mock, test } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import type { ReactNode } from "react";
+import {
+  createMemoryHistory,
+  createRootRoute,
+  createRouter,
+  RouterContextProvider,
+} from "@tanstack/react-router";
 import { renderToStaticMarkup } from "react-dom/server";
-
-mock.module("../components/site/PublicPageFrame", () => ({
-  PublicPageFrame: ({ children }: { children: ReactNode }) => <>{children}</>,
-}));
 
 import type { HelpFaq } from "../lib/help/faq";
 import { HelpFaqDirectory, Route } from "./help";
@@ -75,12 +76,20 @@ describe("Help route data boundary", () => {
 
       const Component = Route.options.component;
       if (!Component) throw new Error("Help route component is required");
+      const router = createRouter({
+        routeTree: createRootRoute(),
+        history: createMemoryHistory({ initialEntries: ["/help"] }),
+      });
       const markup = renderToStaticMarkup(
-        <QueryClientProvider client={browserQueryClient}>
-          <Component />
-        </QueryClientProvider>,
+        <RouterContextProvider router={router}>
+          <QueryClientProvider client={browserQueryClient}>
+            <Component />
+          </QueryClientProvider>
+        </RouterContextProvider>,
       );
 
+      expect(markup.match(/<h1/g)).toHaveLength(1);
+      expect(markup).toContain("有問題？先在這裡找答案");
       expect(markup).toContain("2 條已審批答案");
       expect(markup).toContain(testFaqs[0].question["zh-HK"]);
       expect(markup).toContain(testFaqs[1].question["zh-HK"]);

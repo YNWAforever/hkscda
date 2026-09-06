@@ -91,3 +91,19 @@ The build profile used loopback fixture54330, CI placeholder credentials, public
 - Production backup/schema/Storage/Auth recovery coverage and owner-approved RPO/RTO, field metrics, deployment window/operator and cutover approval.
 
 No main merge/push, deployment, production migration/data/object mutation, real-person message, payment activation or cutover occurred. The concrete proposal is ready for review; production approval is not requested while these gates remain unresolved. Bulky raw evidence is retained locally and hashed in `evidence/raw-artifact-manifest.json`; reviewable summaries and source tests are committed.
+
+## Legacy data import assessment — 2026-09-06
+
+Inspected supplied MariaDB schema: 49 tables, zero data statements. Compared current Supabase public column metadata read-only. Mapping, exclusions, validation gates and rollback proposal: [assessment](evidence/legacy-import-20260906/assessment.md). No records imported or production writes performed. Actual record export and linked assets are required before a dry-run can establish acceptance.
+
+## Legacy record export staging — 2026-09-06
+
+PASS local staging: 150,918 business records; 74 excluded; repeat import added zero rows. Selected reference checks flag 9,797 rows for review. Thirteen synthetic parser/privacy/atomicity tests pass after review fixes. [Measured results and remaining gates](evidence/legacy-import-20260906/data-staging-results.md). No application-table or production import performed; source completeness and asset files remain unresolved.
+
+## Confirmed legacy export / lookup rehearsal — 2026-09-06
+
+User confirmed export completeness. PASS: 44 inactive reference records in offline PostgreSQL; atomic failure rollback, repeat idempotency, conflict rejection and anonymous denial measured. 18 synthetic tests pass. [Details and remaining target gates](evidence/legacy-import-20260906/confirmed-source-and-lookup-rehearsal.md). Animal status meanings, assets, canonical identity and live animal-policy drift remain unresolved. No production changes.
+
+## Animal photo staging — 2026-09-06
+
+PASS private local preparation: 1,142 animal-photo links, 1,108 distinct unchanged objects; repeat created zero objects. 97 unmatched and 17 held (7 decode/read errors, 10 unsupported MPO multi-image files). Six attachment-overlap photos remain private. 27 synthetic tests pass; two filesystem review findings fixed and rechecked. [Photo evidence](evidence/legacy-import-20260906/animal-photo-results.md). Unknown legacy statuses retained; no production uploads or publication.

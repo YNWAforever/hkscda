@@ -1,0 +1,24 @@
+{
+  "counts": {
+    "local_images": 1256,
+    "valid_images": 1239,
+    "unique_metadata_matches": 1142,
+    "objects_created": 1108,
+    "staged_photo_links": 1142,
+    "unmatched": 97,
+    "invalid_images": 17,
+    "objects_reused": 34,
+    "staged_also_attachment": 6,
+    "animals_with_staged_profile_photo": 1142,
+    "animals_without_staged_profile_photo": 4002,
+    "total_animals": 5144,
+    "metadata_paths_rejected": 0,
+    "filesystem_links_skipped": 0,
+    "duplicate_content_groups": 41,
+    "production_uploads": 0
+  },
+  "matching": "exact case-sensitive basename, unique in both source metadata and local folder; recorded nonzero byte sizes must match",
+  "privacy": "all objects private; no status mapping or public URL assigned",
+  "image_validation": "Pillow verify plus full decode, JPEG/PNG signature, extension and pixel/size limits",
+  "private_manifest_sha256": "ef0dfacd4e4b769f5f4e2085c38b8c264f8091887287454cacd30b14d0e31f7d"
+}

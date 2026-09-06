@@ -1,0 +1,2010 @@
+{
+  "source_file": "hkscda_data_structure.sql",
+  "sha256": "d6ae164b2a9c1923ff8e94fab59af26c988f42dbc2a83c79be527576bf3d8e13",
+  "bytes": 42589,
+  "table_count": 49,
+  "data_statement_count": 0,
+  "tables": [
+    {
+      "name": "adoptions",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "animal_id",
+          "definition": "int(11) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "adoption_status_id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "applicant_name_english",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "applicant_name_chinese",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "applicant_gender",
+          "definition": "varchar(1) DEFAULT NULL"
+        },
+        {
+          "name": "applicant_hkid",
+          "definition": "varchar(30) DEFAULT NULL"
+        },
+        {
+          "name": "applicant_phone",
+          "definition": "varchar(50) DEFAULT NULL"
+        },
+        {
+          "name": "applicant_birthday",
+          "definition": "date DEFAULT NULL"
+        },
+        {
+          "name": "applicant_occupation",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "applicant_email",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "applicant_facebook",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "applicant_household_size",
+          "definition": "varchar(1024) DEFAULT NULL"
+        },
+        {
+          "name": "applicant_monthly_household_income",
+          "definition": "varchar(1024) DEFAULT NULL"
+        },
+        {
+          "name": "applicant_living_area_id",
+          "definition": "int(10) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "applicant_address",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "applicant_floor_area",
+          "definition": "varchar(1024) DEFAULT NULL"
+        },
+        {
+          "name": "advertising_source_remarks",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "assessment_experience",
+          "definition": "tinyint(1) DEFAULT NULL"
+        },
+        {
+          "name": "assessment_has_existing_animals",
+          "definition": "tinyint(1) DEFAULT NULL"
+        },
+        {
+          "name": "assessment_cat_has_window_net",
+          "definition": "tinyint(1) DEFAULT NULL"
+        },
+        {
+          "name": "assessment_knowledge",
+          "definition": "mediumtext DEFAULT NULL"
+        },
+        {
+          "name": "assessment_cat_clinic",
+          "definition": "mediumtext DEFAULT NULL"
+        },
+        {
+          "name": "assessment_dog_think",
+          "definition": "mediumtext DEFAULT NULL"
+        },
+        {
+          "name": "assessment_dog_walk",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "assessment_smoke",
+          "definition": "tinyint(1) DEFAULT NULL"
+        },
+        {
+          "name": "assessment_family_allergy",
+          "definition": "tinyint(1) DEFAULT NULL"
+        },
+        {
+          "name": "assessment_family_allergy_remarks",
+          "definition": "mediumtext DEFAULT NULL"
+        },
+        {
+          "name": "assessment_include_animal_in_marriage",
+          "definition": "int(10) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "assessment_inlcude_animal_in_abroad",
+          "definition": "int(10) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "animal_is_na_quantity",
+          "definition": "tinyint(1) DEFAULT NULL"
+        },
+        {
+          "name": "animal_quantity",
+          "definition": "int(11) DEFAULT NULL"
+        },
+        {
+          "name": "animal_is_na_gender",
+          "definition": "tinyint(1) DEFAULT NULL"
+        },
+        {
+          "name": "animal_gender",
+          "definition": "varchar(1) DEFAULT NULL"
+        },
+        {
+          "name": "animal_age_choice_id",
+          "definition": "int(10) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "animal_name",
+          "definition": "varchar(100) DEFAULT NULL"
+        },
+        {
+          "name": "animal_color",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "animal_character_choice_id",
+          "definition": "int(11) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "animal_coat_choice_id",
+          "definition": "int(11) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "has_ensure_no_fault",
+          "definition": "tinyint(1) DEFAULT NULL"
+        },
+        {
+          "name": "has_agree_terms_and_conditions",
+          "definition": "tinyint(1) DEFAULT NULL"
+        },
+        {
+          "name": "animal_type",
+          "definition": "varchar(20) NOT NULL DEFAULT ''"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "approved_animal_id",
+          "definition": "int(11) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "member_id",
+          "definition": "int(11) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "processed",
+          "definition": "tinyint(1) NOT NULL DEFAULT 0"
+        }
+      ]
+    },
+    {
+      "name": "adoption_advertising_source",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "adoption_id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "advertising_source_id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        }
+      ]
+    },
+    {
+      "name": "adoption_fees",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "description",
+          "definition": "varchar(255) NOT NULL DEFAULT ''"
+        },
+        {
+          "name": "amount",
+          "definition": "float NOT NULL"
+        }
+      ]
+    },
+    {
+      "name": "adoption_file",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "adoption_id",
+          "definition": "int(10) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "file_id",
+          "definition": "int(10) UNSIGNED DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "adoption_followups",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(10) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "adoption_id",
+          "definition": "int(10) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "has_window_net",
+          "definition": "tinyint(1) DEFAULT NULL"
+        },
+        {
+          "name": "environment",
+          "definition": "text DEFAULT NULL"
+        },
+        {
+          "name": "score",
+          "definition": "text DEFAULT NULL"
+        },
+        {
+          "name": "volunteer",
+          "definition": "text DEFAULT NULL"
+        },
+        {
+          "name": "remarks",
+          "definition": "text DEFAULT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "adoption_reports",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "year",
+          "definition": "int(11) NOT NULL"
+        },
+        {
+          "name": "month",
+          "definition": "int(11) NOT NULL"
+        },
+        {
+          "name": "adopted_cat",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "adopted_dog",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "waiting_cat",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "waiting_dog",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "support_cat",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "support_dog",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "created_by",
+          "definition": "int(11) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "updated_by",
+          "definition": "int(11) UNSIGNED DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "adoption_statuses",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "name",
+          "definition": "varchar(30) NOT NULL DEFAULT ''"
+        },
+        {
+          "name": "name_chinese",
+          "definition": "varchar(30) DEFAULT NULL"
+        },
+        {
+          "name": "name_english",
+          "definition": "varchar(30) DEFAULT NULL"
+        },
+        {
+          "name": "case_close_flag",
+          "definition": "tinyint(1) NOT NULL"
+        }
+      ]
+    },
+    {
+      "name": "advertising_sources",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "name",
+          "definition": "varchar(50) NOT NULL DEFAULT ''"
+        },
+        {
+          "name": "name_en",
+          "definition": "varchar(50) DEFAULT NULL"
+        },
+        {
+          "name": "name_zh",
+          "definition": "varchar(50) DEFAULT NULL"
+        },
+        {
+          "name": "remarks",
+          "definition": "varchar(255) DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "albums",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "name",
+          "definition": "varchar(255) DEFAULT ''"
+        }
+      ]
+    },
+    {
+      "name": "albums_files",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "album_id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "file_id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        }
+      ]
+    },
+    {
+      "name": "animals",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "name",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "type",
+          "definition": "varchar(20) NOT NULL DEFAULT ''"
+        },
+        {
+          "name": "seq",
+          "definition": "int(11) DEFAULT NULL"
+        },
+        {
+          "name": "code",
+          "definition": "varchar(50) DEFAULT NULL"
+        },
+        {
+          "name": "gender",
+          "definition": "varchar(1) DEFAULT NULL"
+        },
+        {
+          "name": "birthday",
+          "definition": "date DEFAULT NULL"
+        },
+        {
+          "name": "arrival_date",
+          "definition": "date DEFAULT NULL"
+        },
+        {
+          "name": "intro",
+          "definition": "mediumtext DEFAULT NULL"
+        },
+        {
+          "name": "personality_description",
+          "definition": "mediumtext DEFAULT NULL"
+        },
+        {
+          "name": "health_description",
+          "definition": "mediumtext DEFAULT NULL"
+        },
+        {
+          "name": "suitable_for",
+          "definition": "varchar(30) DEFAULT NULL"
+        },
+        {
+          "name": "arrival_source_id",
+          "definition": "int(11) DEFAULT NULL"
+        },
+        {
+          "name": "has_chip",
+          "definition": "tinyint(1) DEFAULT NULL"
+        },
+        {
+          "name": "current_position_id",
+          "definition": "int(11) DEFAULT NULL"
+        },
+        {
+          "name": "cage",
+          "definition": "mediumtext DEFAULT NULL"
+        },
+        {
+          "name": "status",
+          "definition": "varchar(1) DEFAULT NULL"
+        },
+        {
+          "name": "is_inside_support_pool",
+          "definition": "tinyint(1) DEFAULT NULL"
+        },
+        {
+          "name": "is_castrated",
+          "definition": "tinyint(1) DEFAULT NULL"
+        },
+        {
+          "name": "castration_date",
+          "definition": "date DEFAULT NULL"
+        },
+        {
+          "name": "castration_position",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "castration_fee",
+          "definition": "float DEFAULT NULL"
+        },
+        {
+          "name": "castration_volunteer_name",
+          "definition": "varchar(30) DEFAULT NULL"
+        },
+        {
+          "name": "remarks",
+          "definition": "mediumtext DEFAULT NULL"
+        },
+        {
+          "name": "is_adoptable",
+          "definition": "tinyint(1) DEFAULT NULL"
+        },
+        {
+          "name": "profile_pic_id",
+          "definition": "int(11) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "description",
+          "definition": "mediumtext DEFAULT NULL"
+        },
+        {
+          "name": "afc_license",
+          "definition": "varchar(30) DEFAULT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "created_by",
+          "definition": "int(11) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "deleted_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "died_at",
+          "definition": "date DEFAULT NULL"
+        },
+        {
+          "name": "adopted_at",
+          "definition": "date DEFAULT NULL"
+        },
+        {
+          "name": "chip_remarks",
+          "definition": "mediumtext DEFAULT NULL"
+        },
+        {
+          "name": "story",
+          "definition": "longtext DEFAULT NULL"
+        },
+        {
+          "name": "sponsor_date",
+          "definition": "date DEFAULT NULL"
+        },
+        {
+          "name": "fblink",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "cccpdate",
+          "definition": "date DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "animals_adoption_fees",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "animal_id",
+          "definition": "int(11) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "adoption_fee_id",
+          "definition": "int(11) UNSIGNED DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "animal_age_choices",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "name",
+          "definition": "varchar(50) NOT NULL DEFAULT ''"
+        },
+        {
+          "name": "name_en",
+          "definition": "varchar(50) DEFAULT NULL"
+        },
+        {
+          "name": "name_zh",
+          "definition": "varchar(50) DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "animal_character_choices",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "name",
+          "definition": "varchar(50) DEFAULT ''"
+        },
+        {
+          "name": "name_en",
+          "definition": "varchar(50) DEFAULT ''"
+        },
+        {
+          "name": "name_zh",
+          "definition": "varchar(50) DEFAULT ''"
+        }
+      ]
+    },
+    {
+      "name": "animal_coat_choices",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "name",
+          "definition": "varchar(20) DEFAULT NULL"
+        },
+        {
+          "name": "name_en",
+          "definition": "varchar(20) DEFAULT NULL"
+        },
+        {
+          "name": "name_zh",
+          "definition": "varchar(20) DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "applicant_existing_animals",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "application_id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "gender",
+          "definition": "varchar(1) DEFAULT NULL"
+        },
+        {
+          "name": "breed",
+          "definition": "varchar(50) DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "arrival_sources",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "name",
+          "definition": "varchar(50) NOT NULL DEFAULT ''"
+        },
+        {
+          "name": "name_en",
+          "definition": "varchar(50) DEFAULT NULL"
+        },
+        {
+          "name": "name_zh",
+          "definition": "varchar(50) DEFAULT NULL"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "audit_reports",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "year",
+          "definition": "int(11) DEFAULT NULL"
+        },
+        {
+          "name": "file_id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "blacklists",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "hkid",
+          "definition": "varchar(20) NOT NULL DEFAULT ''"
+        },
+        {
+          "name": "name_english",
+          "definition": "varchar(50) DEFAULT NULL"
+        },
+        {
+          "name": "name_chinese",
+          "definition": "varchar(50) DEFAULT NULL"
+        },
+        {
+          "name": "facebook",
+          "definition": "varchar(50) DEFAULT ''"
+        },
+        {
+          "name": "email",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "phone",
+          "definition": "varchar(30) DEFAULT NULL"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "donations",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "payment_ID",
+          "definition": "int(11) DEFAULT NULL"
+        },
+        {
+          "name": "receipt_number",
+          "definition": "varchar(30) DEFAULT NULL"
+        },
+        {
+          "name": "donor_name",
+          "definition": "varchar(50) DEFAULT ''"
+        },
+        {
+          "name": "donor_address",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "donor_email",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "donor_phone",
+          "definition": "varchar(30) DEFAULT NULL"
+        },
+        {
+          "name": "donation_date",
+          "definition": "date DEFAULT NULL"
+        },
+        {
+          "name": "amount",
+          "definition": "float DEFAULT NULL"
+        },
+        {
+          "name": "need_receipt",
+          "definition": "tinyint(1) DEFAULT NULL"
+        },
+        {
+          "name": "type",
+          "definition": "varchar(30) DEFAULT NULL"
+        },
+        {
+          "name": "purpose_routine_operation_amount",
+          "definition": "float DEFAULT NULL"
+        },
+        {
+          "name": "purpose_rescue_case_amount",
+          "definition": "float DEFAULT NULL"
+        },
+        {
+          "name": "purpose_other_amount",
+          "definition": "float DEFAULT NULL"
+        },
+        {
+          "name": "purpose_routine_operation_remarks",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "purpose_rescue_case_remarks",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "purpose_other_remarks",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT current_timestamp()"
+        },
+        {
+          "name": "is_type_monthly",
+          "definition": "tinyint(1) DEFAULT NULL"
+        },
+        {
+          "name": "is_type_case",
+          "definition": "tinyint(1) DEFAULT NULL"
+        },
+        {
+          "name": "is_type_sponsorship",
+          "definition": "tinyint(1) DEFAULT NULL"
+        },
+        {
+          "name": "is_type_general",
+          "definition": "tinyint(1) DEFAULT NULL"
+        },
+        {
+          "name": "is_type_adoption_fee",
+          "definition": "tinyint(1) DEFAULT NULL"
+        },
+        {
+          "name": "type_monthly_remarks",
+          "definition": "varchar(1000) DEFAULT NULL"
+        },
+        {
+          "name": "type_case_remarks",
+          "definition": "varchar(1000) DEFAULT NULL"
+        },
+        {
+          "name": "type_sponsorship_remarks",
+          "definition": "varchar(1000) DEFAULT NULL"
+        },
+        {
+          "name": "type_general_remarks",
+          "definition": "varchar(1000) DEFAULT NULL"
+        },
+        {
+          "name": "type_adoption_fee_remarks",
+          "definition": "varchar(1000) DEFAULT NULL"
+        },
+        {
+          "name": "receipt_type",
+          "definition": "varchar(10) DEFAULT NULL"
+        },
+        {
+          "name": "adoption_fee",
+          "definition": "float(10,2) DEFAULT NULL"
+        },
+        {
+          "name": "injection_fee",
+          "definition": "float(10,2) DEFAULT NULL"
+        },
+        {
+          "name": "private_clinic_desex_fee",
+          "definition": "float(10,2) DEFAULT NULL"
+        },
+        {
+          "name": "cccp_transportation_fee",
+          "definition": "float(10,2) DEFAULT NULL"
+        },
+        {
+          "name": "other_transportation_fee",
+          "definition": "float(10,2) DEFAULT NULL"
+        },
+        {
+          "name": "other_fee",
+          "definition": "float(10,2) DEFAULT NULL"
+        },
+        {
+          "name": "adoption_animal_name",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "adoption_animal_species",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "uploaded_receipt",
+          "definition": "varchar(255) DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "events",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(10) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "status",
+          "definition": "enum('public','private','draft') NOT NULL"
+        },
+        {
+          "name": "type",
+          "definition": "enum('upcoming','past') NOT NULL"
+        },
+        {
+          "name": "title",
+          "definition": "varchar(255) NOT NULL"
+        },
+        {
+          "name": "publish_date",
+          "definition": "date NOT NULL"
+        },
+        {
+          "name": "date",
+          "definition": "date DEFAULT NULL"
+        },
+        {
+          "name": "time",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "address",
+          "definition": "varchar(1024) DEFAULT NULL"
+        },
+        {
+          "name": "featured_image",
+          "definition": "text DEFAULT NULL"
+        },
+        {
+          "name": "content",
+          "definition": "longtext DEFAULT NULL"
+        },
+        {
+          "name": "excerpt",
+          "definition": "text DEFAULT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "deleted_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "files",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "name",
+          "definition": "varchar(500) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT ''"
+        },
+        {
+          "name": "type",
+          "definition": "varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT ''"
+        },
+        {
+          "name": "path",
+          "definition": "varchar(500) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT ''"
+        },
+        {
+          "name": "token",
+          "definition": "varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT ''"
+        },
+        {
+          "name": "size",
+          "definition": "int(11) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "is_public",
+          "definition": "tinyint(1) DEFAULT 0"
+        }
+      ]
+    },
+    {
+      "name": "global_options",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "name",
+          "definition": "varchar(1024) NOT NULL DEFAULT ''"
+        },
+        {
+          "name": "value",
+          "definition": "longtext NOT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "created_by",
+          "definition": "int(11) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "updated_by",
+          "definition": "int(11) UNSIGNED DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "living_areas",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "name",
+          "definition": "varchar(50) NOT NULL DEFAULT ''"
+        },
+        {
+          "name": "name_en",
+          "definition": "varchar(50) DEFAULT NULL"
+        },
+        {
+          "name": "name_zh",
+          "definition": "varchar(50) DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "matches",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "animal_id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "adoption_id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "updated_by",
+          "definition": "int(11) DEFAULT NULL"
+        },
+        {
+          "name": "created_by",
+          "definition": "int(11) DEFAULT NULL"
+        },
+        {
+          "name": "is_approved",
+          "definition": "tinyint(1) NOT NULL DEFAULT 0"
+        }
+      ]
+    },
+    {
+      "name": "medicals",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "animal_id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "volunteer_id",
+          "definition": "int(11) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "vet_name",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "date",
+          "definition": "date DEFAULT NULL"
+        },
+        {
+          "name": "fee",
+          "definition": "float DEFAULT NULL"
+        },
+        {
+          "name": "medical_type_id",
+          "definition": "int(11) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "remarks",
+          "definition": "text DEFAULT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "is_vaccination",
+          "definition": "tinyint(1) NOT NULL"
+        },
+        {
+          "name": "volunteer_name",
+          "definition": "varchar(255) DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "medical_types",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "name",
+          "definition": "varchar(50) NOT NULL DEFAULT ''"
+        }
+      ]
+    },
+    {
+      "name": "members",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "name_english",
+          "definition": "varchar(30) DEFAULT NULL"
+        },
+        {
+          "name": "name_chinese",
+          "definition": "varchar(30) DEFAULT NULL"
+        },
+        {
+          "name": "gender",
+          "definition": "varchar(1) DEFAULT NULL"
+        },
+        {
+          "name": "hkid",
+          "definition": "varchar(15) NOT NULL DEFAULT ''"
+        },
+        {
+          "name": "phone",
+          "definition": "varchar(50) DEFAULT NULL"
+        },
+        {
+          "name": "birthday",
+          "definition": "date DEFAULT NULL"
+        },
+        {
+          "name": "occupation",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "email",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "facebook",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "household_size",
+          "definition": "varchar(1024) DEFAULT NULL"
+        },
+        {
+          "name": "monthly_household_income",
+          "definition": "varchar(1024) DEFAULT NULL"
+        },
+        {
+          "name": "living_area_id",
+          "definition": "int(11) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "address",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "floor_area",
+          "definition": "varchar(1024) DEFAULT NULL"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "is_blacklisted",
+          "definition": "int(11) DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "migrations",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(10) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "migration",
+          "definition": "varchar(255) NOT NULL"
+        },
+        {
+          "name": "batch",
+          "definition": "int(11) NOT NULL"
+        }
+      ]
+    },
+    {
+      "name": "news",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(10) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "status",
+          "definition": "enum('public','private','draft') NOT NULL"
+        },
+        {
+          "name": "type",
+          "definition": "varchar(255) NOT NULL"
+        },
+        {
+          "name": "title",
+          "definition": "varchar(255) NOT NULL"
+        },
+        {
+          "name": "source_name",
+          "definition": "varchar(255) NOT NULL"
+        },
+        {
+          "name": "source_url",
+          "definition": "text DEFAULT NULL"
+        },
+        {
+          "name": "date",
+          "definition": "date NOT NULL"
+        },
+        {
+          "name": "featured_image_id",
+          "definition": "int(10) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "content",
+          "definition": "longtext DEFAULT NULL"
+        },
+        {
+          "name": "excerpt",
+          "definition": "text DEFAULT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "deleted_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "password_resets",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "email",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "token",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "past_events",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(10) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "status",
+          "definition": "enum('public','private','draft') NOT NULL"
+        },
+        {
+          "name": "title",
+          "definition": "varchar(255) NOT NULL"
+        },
+        {
+          "name": "publish_date",
+          "definition": "date NOT NULL"
+        },
+        {
+          "name": "date",
+          "definition": "date DEFAULT NULL"
+        },
+        {
+          "name": "time",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "address",
+          "definition": "varchar(1024) DEFAULT NULL"
+        },
+        {
+          "name": "featured_image_desktop_id",
+          "definition": "int(10) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "featured_image_mobile_id",
+          "definition": "int(10) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "content",
+          "definition": "longtext DEFAULT NULL"
+        },
+        {
+          "name": "excerpt",
+          "definition": "text DEFAULT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "deleted_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "payment_method",
+      "columns": [
+        {
+          "name": "ID",
+          "definition": "int(11) NOT NULL"
+        },
+        {
+          "name": "MethodName",
+          "definition": "varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL"
+        }
+      ]
+    },
+    {
+      "name": "positions",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "name",
+          "definition": "varchar(50) NOT NULL DEFAULT ''"
+        },
+        {
+          "name": "type",
+          "definition": "varchar(30) DEFAULT ''"
+        },
+        {
+          "name": "for_cat",
+          "definition": "tinyint(1) DEFAULT NULL"
+        },
+        {
+          "name": "district_id",
+          "definition": "int(11) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "address",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "contact_person",
+          "definition": "varchar(30) DEFAULT NULL"
+        },
+        {
+          "name": "mobile",
+          "definition": "varchar(20) DEFAULT NULL"
+        },
+        {
+          "name": "email",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "for_dog",
+          "definition": "tinyint(1) DEFAULT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "rescues",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(10) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "status",
+          "definition": "enum('public','private','draft') NOT NULL"
+        },
+        {
+          "name": "title",
+          "definition": "varchar(255) NOT NULL"
+        },
+        {
+          "name": "date",
+          "definition": "date NOT NULL"
+        },
+        {
+          "name": "content",
+          "definition": "longtext DEFAULT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "deleted_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "rescue_images",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(10) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "rescue_id",
+          "definition": "int(10) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "image",
+          "definition": "text NOT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "roles",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "name",
+          "definition": "varchar(30) DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "sliders",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(10) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "status",
+          "definition": "enum('public','draft','private') NOT NULL"
+        },
+        {
+          "name": "date",
+          "definition": "date NOT NULL"
+        },
+        {
+          "name": "url",
+          "definition": "text DEFAULT NULL"
+        },
+        {
+          "name": "image_desktop",
+          "definition": "text DEFAULT NULL"
+        },
+        {
+          "name": "image_mobile",
+          "definition": "text DEFAULT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "sponsorships",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "animal_id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "year_month",
+          "definition": "date NOT NULL"
+        },
+        {
+          "name": "amount",
+          "definition": "float NOT NULL"
+        },
+        {
+          "name": "remarks",
+          "definition": "text DEFAULT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "donor_name",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "donation_date",
+          "definition": "date DEFAULT NULL"
+        },
+        {
+          "name": "donor_email",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "need_receipt",
+          "definition": "tinyint(1) DEFAULT 0"
+        },
+        {
+          "name": "is_old_data",
+          "definition": "tinyint(1) DEFAULT 0"
+        }
+      ]
+    },
+    {
+      "name": "success_applications",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "application_record_id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "case_number",
+          "definition": "varchar(50) DEFAULT NULL"
+        },
+        {
+          "name": "animal_id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "member_id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "adoption_fee",
+          "definition": "float DEFAULT NULL"
+        },
+        {
+          "name": "approval_date",
+          "definition": "date DEFAULT NULL"
+        },
+        {
+          "name": "approved_by",
+          "definition": "int(11) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "pickup_date",
+          "definition": "int(11) DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "upcoming_events",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(10) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "title",
+          "definition": "varchar(255) NOT NULL"
+        },
+        {
+          "name": "date",
+          "definition": "date NOT NULL"
+        },
+        {
+          "name": "time",
+          "definition": "varchar(255) NOT NULL"
+        },
+        {
+          "name": "address",
+          "definition": "varchar(1024) NOT NULL"
+        },
+        {
+          "name": "featured_image_desktop_id",
+          "definition": "int(10) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "featured_image_mobile_id",
+          "definition": "int(10) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "content",
+          "definition": "longtext DEFAULT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "deleted_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "users",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "name",
+          "definition": "varchar(30) NOT NULL DEFAULT ''"
+        },
+        {
+          "name": "email",
+          "definition": "varchar(255) NOT NULL DEFAULT ''"
+        },
+        {
+          "name": "password",
+          "definition": "varchar(255) NOT NULL DEFAULT ''"
+        },
+        {
+          "name": "role_id",
+          "definition": "int(11) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "display_name",
+          "definition": "varchar(30) DEFAULT NULL"
+        },
+        {
+          "name": "remember_token",
+          "definition": "varchar(100) DEFAULT NULL"
+        },
+        {
+          "name": "active",
+          "definition": "tinyint(1) NOT NULL DEFAULT 1"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "volunteers",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "name_english",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "name_chinese",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "gender",
+          "definition": "varchar(1) DEFAULT ''"
+        },
+        {
+          "name": "hkid",
+          "definition": "varchar(11) DEFAULT NULL"
+        },
+        {
+          "name": "phone",
+          "definition": "varchar(50) DEFAULT NULL"
+        },
+        {
+          "name": "occupation",
+          "definition": "varchar(50) DEFAULT NULL"
+        },
+        {
+          "name": "email",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "living_area_id",
+          "definition": "int(11) UNSIGNED DEFAULT NULL"
+        },
+        {
+          "name": "has_driving_license",
+          "definition": "tinyint(1) DEFAULT NULL"
+        },
+        {
+          "name": "has_cat_experience",
+          "definition": "tinyint(1) DEFAULT NULL"
+        },
+        {
+          "name": "has_dog_experience",
+          "definition": "tinyint(1) DEFAULT NULL"
+        },
+        {
+          "name": "has_animal_experience",
+          "definition": "varchar(255) DEFAULT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "birthday_year",
+          "definition": "year(4) DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "volunteers_volunteer_dows",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "volunteer_id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "volunteer_dow_id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "volunteers_volunteer_positions",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "volunteer_id",
+          "definition": "int(10) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "volunteer_position_id",
+          "definition": "int(10) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "volunteers_volunteer_timeslots",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "volunteer_id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "volunteer_timeslot_id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamp NULL DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "volunteer_dows",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "name",
+          "definition": "varchar(50) NOT NULL DEFAULT ''"
+        },
+        {
+          "name": "name_en",
+          "definition": "varchar(50) DEFAULT NULL"
+        },
+        {
+          "name": "name_zh",
+          "definition": "varchar(50) DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "volunteer_positions",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "name",
+          "definition": "varchar(50) NOT NULL DEFAULT ''"
+        },
+        {
+          "name": "name_en",
+          "definition": "varchar(50) DEFAULT NULL"
+        },
+        {
+          "name": "name_zh",
+          "definition": "varchar(50) DEFAULT NULL"
+        }
+      ]
+    },
+    {
+      "name": "volunteer_timeslots",
+      "columns": [
+        {
+          "name": "id",
+          "definition": "int(11) UNSIGNED NOT NULL"
+        },
+        {
+          "name": "name",
+          "definition": "varchar(30) DEFAULT NULL"
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { getCodConfig } from "../../../lib/donations/config.server";
+import { getCodConfig, getCodConfigurationErrorField } from "../../../lib/donations/config.server";
 import {
   CodNotificationError,
   processCodNotification,
@@ -58,7 +58,9 @@ export async function handleCodWebhookRequest(
     if (error instanceof CodNotificationError) {
       return new Response("Invalid COD notification", { status: 400 });
     }
-    console.error("COD notification processing failed");
+    console.error("COD notification processing failed", {
+      configurationField: getCodConfigurationErrorField(error),
+    });
     return new Response("COD notification processing failed", { status: 500 });
   }
 }

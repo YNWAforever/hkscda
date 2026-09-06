@@ -1,0 +1,6 @@
+SET
+DO
+NOTICE:  PASS: CMS=7, public=7, CRM=1, internal retained and excluded, dates preserved, five draft methods, zero published methods, anon denied
+RESET
+NOTICE:  PASS: private bucket and seven immutable published revisions
+DO

@@ -1,0 +1,74 @@
+bun test v1.3.14 (0d9b296a)
+
+src\lib\donations\cod-client.server.test.ts:
+(pass) COD encrypted client > encrypts the exact create_order protocol request [5.09ms]
+(pass) COD encrypted client > maps the paid transaction status [1.63ms]
+(pass) COD encrypted client > maps the not_exists transaction status [0.96ms]
+(pass) COD encrypted client > maps the new transaction status [1.02ms]
+(pass) COD encrypted client > maps the expired transaction status [1.53ms]
+(pass) COD encrypted client > maps the canceled transaction status [1.43ms]
+(pass) COD encrypted client > maps the failed transaction status [1.04ms]
+(pass) COD encrypted client > loads typed order details through COD's supported order_ref lookup [1.69ms]
+(pass) COD encrypted client > rejects incomplete order details [1.94ms]
+(pass) COD encrypted client > rejects malformed, failed, and incomplete responses without a retry [2.30ms]
+(pass) COD encrypted client > categorizes non-2xx, invalid envelopes, invalid JSON, and an aborted request safely [8.59ms]
+(pass) COD encrypted client > rejects a request identifier that is not RFC-4122-shaped [0.30ms]
+
+src\lib\donations\cod-crypto.server.test.ts:
+(pass) COD configuration > strictly decodes base64 AES material and accepts 16-byte and 32-byte keys [0.51ms]
+(pass) COD configuration > rejects malformed base64 and unsupported AES key lengths [0.34ms]
+(pass) COD configuration > reads COD configuration lazily and derives the sandbox API base [1.01ms]
+(pass) COD configuration > rejects malformed PEM key material [0.43ms]
+(pass) COD configuration > rejects a private PEM supplied as the notification public key [0.71ms]
+(pass) COD configuration > rejects unsupported COD environments [0.28ms]
+(pass) COD request cryptography > round-trips AES-128 AES-CBC PKCS#7 payloads [0.27ms]
+(pass) COD request cryptography > round-trips AES-256 AES-CBC PKCS#7 payloads [0.10ms]
+(pass) COD request cryptography > uses a fresh random IV for each encryption [0.15ms]
+(pass) COD request cryptography > rejects IVs that are not exactly 16 bytes [0.15ms]
+(pass) COD request cryptography > signs and verifies the exact nonce and ciphertext byte sequence [2.24ms]
+(pass) COD request cryptography > builds an envelope with a signature over raw nonce and ciphertext bytes [1.35ms]
+(pass) COD request cryptography > verifies notification signatures against the original data string bytes [1.43ms]
+
+src\lib\donations\cod-webhook.server.test.ts:
+(pass) COD notification verification > verifies the exact original data bytes before parsing [1.70ms]
+(pass) COD notification verification > rejects invalid algorithm [0.68ms]
+(pass) COD notification verification > rejects invalid base64 [0.71ms]
+(pass) COD notification verification > rejects wrong notification key [0.78ms]
+(pass) COD notification verification > rejects malformed JSON and missing required fields after signature verification [2.68ms]
+(pass) COD notification verification > classifies merchant_mismatch as permanent manual review [0.95ms]
+(pass) COD notification verification > classifies segment_mismatch as permanent manual review [0.76ms]
+(pass) COD notification verification > classifies currency_mismatch as permanent manual review [0.73ms]
+(pass) COD notification verification > classifies wallet_mismatch as permanent manual review [0.52ms]
+(pass) COD notification verification > classifies type_mismatch as permanent manual review [0.63ms]
+(pass) COD notification verification > classifies status_mismatch as permanent manual review [0.54ms]
+(pass) COD notification verification > classifies amount_sign_mismatch as permanent manual review [0.52ms]
+(pass) COD notification verification > parses a documented negative full-refund amount and requires out_return_no [1.39ms]
+(pass) COD notification lifecycle routing > routes a matching payment through existing COD reconciliation with a stable event id [1.45ms]
+(pass) COD notification lifecycle routing > flags unmapped and amount-mismatched payments without crediting [2.01ms]
+(pass) COD notification lifecycle routing > routes full refunds through reversal and partial refunds to manual review [1.31ms]
+(pass) COD notification lifecycle routing > propagates database lookup failures for provider retry [0.97ms]
+
+src\routes\api\webhooks\-cod.test.ts:
+(pass) COD webhook response contract > is registered in the generated server route tree [4.05ms]
+(pass) COD webhook response contract > acknowledges applied as exact plain success [0.99ms]
+(pass) COD webhook response contract > acknowledges duplicate as exact plain success [0.05ms]
+(pass) COD webhook response contract > acknowledges not_found as exact plain success [0.02ms]
+(pass) COD webhook response contract > acknowledges manual_review as exact plain success [0.01ms]
+(pass) COD webhook response contract > returns non-success for malformed or unauthenticated envelopes [0.32ms]
+COD notification processing failed {
+  configurationField: null,
+}
+(pass) COD webhook response contract > returns 500 for transient database or internal failures [0.51ms]
+(pass) COD configuration diagnostics > reports only the configuration field for Missing required environment variable: COD_ENV [0.34ms]
+(pass) COD configuration diagnostics > reports only the configuration field for COD_ENV must be sandbox or production [0.05ms]
+(pass) COD configuration diagnostics > reports only the configuration field for Missing required environment variable: COD_MERCHANT_ID [0.04ms]
+(pass) COD configuration diagnostics > reports only the configuration field for Missing required environment variable: COD_SEGMENT_ID [0.05ms]
+(pass) COD configuration diagnostics > reports only the configuration field for COD AES key must be exactly 16 or 32 bytes [0.05ms]
+(pass) COD configuration diagnostics > reports only the configuration field for COD private key must be a valid RSA PEM [0.04ms]
+(pass) COD configuration diagnostics > reports only the configuration field for COD notification public key must be a valid RSA PEM [0.10ms]
+(pass) COD configuration diagnostics > reports only the configuration field for unexpected secret=DO_NOT_LOG_THIS [0.06ms]
+
+ 57 pass
+ 0 fail
+ 153 expect() calls
+Ran 57 tests across 4 files. [1060.00ms]

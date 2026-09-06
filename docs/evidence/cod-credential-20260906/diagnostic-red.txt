@@ -1,0 +1,200 @@
+bun test v1.3.14 (0d9b296a)
+
+src\routes\api\webhooks\-cod.test.ts:
+(pass) COD webhook response contract > is registered in the generated server route tree [25.32ms]
+(pass) COD webhook response contract > acknowledges applied as exact plain success [3.08ms]
+(pass) COD webhook response contract > acknowledges duplicate as exact plain success [0.08ms]
+(pass) COD webhook response contract > acknowledges not_found as exact plain success [0.10ms]
+(pass) COD webhook response contract > acknowledges manual_review as exact plain success [0.03ms]
+(pass) COD webhook response contract > returns non-success for malformed or unauthenticated envelopes [0.38ms]
+COD notification processing failed
+(pass) COD webhook response contract > returns 500 for transient database or internal failures [1.39ms]
+71 |         getConfig: () => { throw new Error(message!); },
+72 |         createClient: () => { databaseCreated = true; throw new Error("must not run"); },
+73 |       });
+74 |       expect(response.status).toBe(500);
+75 |       expect(await response.text()).toBe("COD notification processing failed");
+76 |       expect(log.mock.calls).toEqual([["COD notification processing failed", { configurationField: field }]]);
+                                  ^
+error: expect(received).toEqual(expected)
+
+  [
+    [
+      "COD notification processing failed",
+-     {
+-       "configurationField": "COD_ENV",
+-     },
+    ],
+  ]
+
+- Expected  - 3
++ Received  + 0
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\api\webhooks\-cod.test.ts:76:30)
+(fail) COD configuration diagnostics > reports only the configuration field for Missing required environment variable: COD_ENV [6.87ms]
+71 |         getConfig: () => { throw new Error(message!); },
+72 |         createClient: () => { databaseCreated = true; throw new Error("must not run"); },
+73 |       });
+74 |       expect(response.status).toBe(500);
+75 |       expect(await response.text()).toBe("COD notification processing failed");
+76 |       expect(log.mock.calls).toEqual([["COD notification processing failed", { configurationField: field }]]);
+                                  ^
+error: expect(received).toEqual(expected)
+
+  [
+    [
+      "COD notification processing failed",
+-     {
+-       "configurationField": "COD_ENV",
+-     },
+    ],
+  ]
+
+- Expected  - 3
++ Received  + 0
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\api\webhooks\-cod.test.ts:76:30)
+(fail) COD configuration diagnostics > reports only the configuration field for COD_ENV must be sandbox or production [0.28ms]
+71 |         getConfig: () => { throw new Error(message!); },
+72 |         createClient: () => { databaseCreated = true; throw new Error("must not run"); },
+73 |       });
+74 |       expect(response.status).toBe(500);
+75 |       expect(await response.text()).toBe("COD notification processing failed");
+76 |       expect(log.mock.calls).toEqual([["COD notification processing failed", { configurationField: field }]]);
+                                  ^
+error: expect(received).toEqual(expected)
+
+  [
+    [
+      "COD notification processing failed",
+-     {
+-       "configurationField": "COD_MERCHANT_ID",
+-     },
+    ],
+  ]
+
+- Expected  - 3
++ Received  + 0
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\api\webhooks\-cod.test.ts:76:30)
+(fail) COD configuration diagnostics > reports only the configuration field for Missing required environment variable: COD_MERCHANT_ID [0.17ms]
+71 |         getConfig: () => { throw new Error(message!); },
+72 |         createClient: () => { databaseCreated = true; throw new Error("must not run"); },
+73 |       });
+74 |       expect(response.status).toBe(500);
+75 |       expect(await response.text()).toBe("COD notification processing failed");
+76 |       expect(log.mock.calls).toEqual([["COD notification processing failed", { configurationField: field }]]);
+                                  ^
+error: expect(received).toEqual(expected)
+
+  [
+    [
+      "COD notification processing failed",
+-     {
+-       "configurationField": "COD_SEGMENT_ID",
+-     },
+    ],
+  ]
+
+- Expected  - 3
++ Received  + 0
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\api\webhooks\-cod.test.ts:76:30)
+(fail) COD configuration diagnostics > reports only the configuration field for Missing required environment variable: COD_SEGMENT_ID [0.14ms]
+71 |         getConfig: () => { throw new Error(message!); },
+72 |         createClient: () => { databaseCreated = true; throw new Error("must not run"); },
+73 |       });
+74 |       expect(response.status).toBe(500);
+75 |       expect(await response.text()).toBe("COD notification processing failed");
+76 |       expect(log.mock.calls).toEqual([["COD notification processing failed", { configurationField: field }]]);
+                                  ^
+error: expect(received).toEqual(expected)
+
+  [
+    [
+      "COD notification processing failed",
+-     {
+-       "configurationField": "COD_AES_SECRET_BASE64",
+-     },
+    ],
+  ]
+
+- Expected  - 3
++ Received  + 0
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\api\webhooks\-cod.test.ts:76:30)
+(fail) COD configuration diagnostics > reports only the configuration field for COD AES key must be exactly 16 or 32 bytes [0.19ms]
+71 |         getConfig: () => { throw new Error(message!); },
+72 |         createClient: () => { databaseCreated = true; throw new Error("must not run"); },
+73 |       });
+74 |       expect(response.status).toBe(500);
+75 |       expect(await response.text()).toBe("COD notification processing failed");
+76 |       expect(log.mock.calls).toEqual([["COD notification processing failed", { configurationField: field }]]);
+                                  ^
+error: expect(received).toEqual(expected)
+
+  [
+    [
+      "COD notification processing failed",
+-     {
+-       "configurationField": "COD_PRIVATE_KEY_BASE64",
+-     },
+    ],
+  ]
+
+- Expected  - 3
++ Received  + 0
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\api\webhooks\-cod.test.ts:76:30)
+(fail) COD configuration diagnostics > reports only the configuration field for COD private key must be a valid RSA PEM [0.48ms]
+71 |         getConfig: () => { throw new Error(message!); },
+72 |         createClient: () => { databaseCreated = true; throw new Error("must not run"); },
+73 |       });
+74 |       expect(response.status).toBe(500);
+75 |       expect(await response.text()).toBe("COD notification processing failed");
+76 |       expect(log.mock.calls).toEqual([["COD notification processing failed", { configurationField: field }]]);
+                                  ^
+error: expect(received).toEqual(expected)
+
+  [
+    [
+      "COD notification processing failed",
+-     {
+-       "configurationField": "COD_NOTIFICATION_PUBLIC_KEY_BASE64",
+-     },
+    ],
+  ]
+
+- Expected  - 3
++ Received  + 0
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\api\webhooks\-cod.test.ts:76:30)
+(fail) COD configuration diagnostics > reports only the configuration field for COD notification public key must be a valid RSA PEM [0.19ms]
+71 |         getConfig: () => { throw new Error(message!); },
+72 |         createClient: () => { databaseCreated = true; throw new Error("must not run"); },
+73 |       });
+74 |       expect(response.status).toBe(500);
+75 |       expect(await response.text()).toBe("COD notification processing failed");
+76 |       expect(log.mock.calls).toEqual([["COD notification processing failed", { configurationField: field }]]);
+                                  ^
+error: expect(received).toEqual(expected)
+
+  [
+    [
+      "COD notification processing failed",
+-     {
+-       "configurationField": null,
+-     },
+    ],
+  ]
+
+- Expected  - 3
++ Received  + 0
+
+      at <anonymous> (C:\Users\laich\Documents\HKCSDA\HKCSDA\hkscda\.worktrees\completion-20260905\src\routes\api\webhooks\-cod.test.ts:76:30)
+(fail) COD configuration diagnostics > reports only the configuration field for unexpected secret=DO_NOT_LOG_THIS [0.34ms]
+
+ 7 pass
+ 8 fail
+ 38 expect() calls
+Ran 15 tests across 1 file. [1473.00ms]

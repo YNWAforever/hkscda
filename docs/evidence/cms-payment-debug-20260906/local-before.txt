@@ -1,0 +1,11 @@
+ERROR:  relation "public.payment_public_config" does not exist
+LINE 1: select * from public.payment_public_config;
+                      ^
+ERROR:  function public.read_content_admin_summaries(jsonb) does not exist
+LINE 1: select public.read_content_admin_summaries('{}'::jsonb);
+               ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+ERROR:  function public.crm_read_supporters(jsonb, integer, integer, boolean) does not exist
+LINE 1: select public.crm_read_supporters('{}'::jsonb,0,25,false);
+               ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
