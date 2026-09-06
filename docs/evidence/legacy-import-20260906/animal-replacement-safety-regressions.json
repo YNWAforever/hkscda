@@ -1,0 +1,12 @@
+{
+  "database": "replacement_safety_261b60c38dcc",
+  "network": "none",
+  "synthetic_only": true,
+  "before_sql_null_retired_placeholder": true,
+  "after_sql_null_rejected_without_writes": true,
+  "json_null_object_and_empty_array_rejected": true,
+  "before_concurrent_committed_history_was_cascade_deleted": true,
+  "after_concurrent_history_insert_blocked_then_fk_rejected": true,
+  "production_writes": 0,
+  "note": "Before variants reconstruct the two reviewed defects; test-only advisory gate pauses rollback after FK checks. Fresh disposable database retained."
+}

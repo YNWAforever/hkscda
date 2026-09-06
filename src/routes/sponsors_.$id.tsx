@@ -11,7 +11,7 @@ const ORIGIN = PUBLIC_SITE_ORIGIN;
 
 export const Route = createFileRoute("/sponsors_/$id")({
   loader: ({ params }) =>
-    loadPublicDetailOrNotFound(() => getPublicAnimal({ data: { id: params.id } })),
+    loadPublicDetailOrNotFound(() => getPublicAnimal({ data: { id: params.id, type: "sponsor" } })),
   head: ({ loaderData, params }) => {
     const title = loaderData
       ? `助養 ${loaderData.name} · 香港拯救貓狗協會 HKSCDA`
@@ -48,7 +48,14 @@ function SponsorDetailPage() {
 
   if (!animal) return <SponsorDetailError />;
 
-  return <AnimalDetail animal={animal} backHref="/sponsors" backLabel="返回助養區" />;
+  return (
+    <AnimalDetail
+      intent="sponsorship"
+      animal={animal}
+      backHref="/sponsors"
+      backLabel="返回助養區"
+    />
+  );
 }
 
 function SponsorDetailNotFound() {

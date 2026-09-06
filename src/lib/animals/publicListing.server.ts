@@ -14,10 +14,13 @@ export async function readPublicAnimals(input: {
     let query = supabase
       .from("animals")
       .select("*")
-      .eq("type", input.type)
       .eq("status", "available")
+      .is("retired_at", null)
+      .eq(input.type === "sponsor" ? "sponsorship_eligible" : "adoption_eligible", true)
       .order("created_at", { ascending: false })
       .order("id", { ascending: true });
+
+    if (input.type !== "sponsor") query = query.eq("type", input.type);
 
     if (input.genderFilter !== "all") {
       query = query.eq("gender", input.genderFilter);

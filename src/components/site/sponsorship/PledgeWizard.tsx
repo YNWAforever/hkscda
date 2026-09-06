@@ -169,7 +169,7 @@ export function PledgeWizard() {
           rank: item.rank,
           animalId: item.id,
           animalName: item.name,
-          animalType: "sponsor",
+          animalType: item.animalType,
         })),
         contact: { supporterName, email, phone: phone || undefined },
         consents: { email: emailConsent, whatsapp: whatsappConsent },

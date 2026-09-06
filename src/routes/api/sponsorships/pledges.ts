@@ -1,3 +1,4 @@
+import { readEligibleAnimals } from "../../../lib/animals/eligibility.server";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { createSupabaseServiceClient } from "../../../lib/donations/supabase.server";
@@ -51,6 +52,22 @@ export const Route = createFileRoute("/api/sponsorships/pledges")({
           }
 
           const client = createSupabaseServiceClient();
+          const eligible = await readEligibleAnimals(
+            client,
+            parsed.payload.animalPreferences.map((item) => item.animalId),
+            "sponsorship",
+          );
+          if (eligible.length !== parsed.payload.animalPreferences.length) {
+            return jsonNoStore(
+              { error: "Selected animals are no longer available for sponsorship" },
+              { status: 400 },
+            );
+          }
+          for (const preference of parsed.payload.animalPreferences) {
+            preference.animalType = eligible.find(
+              (animal) => animal.id === preference.animalId,
+            )!.type;
+          }
           const result = await persistSponsorshipPledge({ client, parsed });
           await sendPledgeConfirmationEmail(client, parsed.payload, result);
 

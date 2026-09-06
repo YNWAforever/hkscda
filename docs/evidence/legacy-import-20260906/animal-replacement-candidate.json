@@ -1,0 +1,34 @@
+{
+  "candidate_sha256": "9a45496e21a9cf264e56e8c64774825cd0ea593a783e09f048ee91181773dffa",
+  "as_of": "2026-09-07",
+  "source_animals": 5144,
+  "public_candidates": {
+    "adoption": {
+      "total": 208,
+      "by_species": {
+        "dog": 108,
+        "cat": 100
+      },
+      "with_photo": 1,
+      "without_photo": 207
+    },
+    "sponsorship": {
+      "total": 115,
+      "by_species": {
+        "cat": 38,
+        "dog": 77
+      },
+      "with_photo": 14,
+      "without_photo": 101
+    }
+  },
+  "production_writes": 0,
+  "publication_approved": false,
+  "shared_adoption_and_sponsor": 75,
+  "distinct_public_candidates": 248,
+  "private_history_only": 4896,
+  "holds": {
+    "photo_also_adoption_attachment": 6,
+    "missing_or_unsupported_gender": 1
+  }
+}

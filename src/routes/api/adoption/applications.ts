@@ -1,3 +1,4 @@
+import { readEligibleAnimals } from "../../../lib/animals/eligibility.server";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { createSupabaseAdoptionCoordinatorRepository } from "../../../lib/adoptions/repository.server";
@@ -53,6 +54,26 @@ export const Route = createFileRoute("/api/adoption/applications")({
           }
 
           const client = createSupabaseServiceClient();
+          const eligible = await readEligibleAnimals(
+            client,
+            parsed.payload.animalPreferences.map((item) => item.animalId),
+            "adoption",
+          );
+          if (
+            eligible.length !== parsed.payload.animalPreferences.length ||
+            parsed.payload.animalPreferences.some(
+              (preference) =>
+                !eligible.some(
+                  (animal) =>
+                    animal.id === preference.animalId && animal.type === preference.animalType,
+                ),
+            )
+          ) {
+            return jsonNoStore(
+              { error: "Selected animals are no longer available for adoption" },
+              { status: 400 },
+            );
+          }
           const coordinatorRepo = createSupabaseAdoptionCoordinatorRepository(client);
           const coordinatorService = createAdoptionCoordinatorService({ repo: coordinatorRepo });
           const result = await persistPublicAdoptionJourney({

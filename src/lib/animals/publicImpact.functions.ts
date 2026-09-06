@@ -21,7 +21,9 @@ export const getPublicImpactItems = createServerFn({ method: "GET" }).handler(
         .from("animals")
         .select("id", { count: "exact", head: true })
         .eq("type", type)
-        .eq("status", "available");
+        .eq("status", "available")
+        .eq("adoption_eligible", true)
+        .is("retired_at", null);
       return { count: count ?? null, error: error ? { message: error.message } : null };
     }
 

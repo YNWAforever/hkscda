@@ -38,7 +38,7 @@ export const sponsorshipAnimalPreferenceSchema = z.object({
   rank: z.number().int().min(1).max(MAX_SPONSORSHIP_PREFERENCES),
   animalId: z.string().uuid(),
   animalName: trimmed.min(1),
-  animalType: z.literal("sponsor"),
+  animalType: z.enum(["cat", "dog", "sponsor"]),
 });
 
 export const sponsorshipPaymentProofMetadataSchema = z.object({

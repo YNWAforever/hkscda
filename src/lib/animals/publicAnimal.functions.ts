@@ -6,7 +6,7 @@ import { isPublicAnimalId } from "./publicAnimal";
 
 const publicAnimalInput = z.object({
   id: z.string(),
-  type: z.enum(["cat", "dog"]).optional(),
+  type: z.enum(["cat", "dog", "sponsor"]).optional(),
 });
 
 export const getPublicAnimal = createServerFn({ method: "GET" })
@@ -18,7 +18,13 @@ export const getPublicAnimal = createServerFn({ method: "GET" })
 
     const { supabase } = await import("../supabase");
     let query = supabase.from("animals").select("*").eq("id", data.id).eq("status", "available");
-    if (data.type) query = query.eq("type", data.type);
+    query = query
+      .is("retired_at", null)
+      .eq(
+        data.type === "sponsor" || !data.type ? "sponsorship_eligible" : "adoption_eligible",
+        true,
+      );
+    if (data.type && data.type !== "sponsor") query = query.eq("type", data.type);
 
     const { data: animal, error } = await query.maybeSingle();
     if (error) throw new Error("Could not load public animal");

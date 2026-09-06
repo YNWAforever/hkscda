@@ -43,17 +43,23 @@ function escapeXml(value: string) {
 
 async function publicDetailPaths() {
   const [animalsResult, storiesResult] = await Promise.allSettled([
-    supabase.from("animals").select("id,type").eq("status", "available"),
+    supabase
+      .from("animals")
+      .select("id,type,adoption_eligible,sponsorship_eligible")
+      .eq("status", "available")
+      .is("retired_at", null),
     loadPublicStoriesPage(),
   ]);
 
   const animalPaths =
     animalsResult.status === "fulfilled" && !animalsResult.value.error
       ? (animalsResult.value.data ?? []).flatMap((animal) => {
-          if (animal.type === "cat" || animal.type === "dog") {
-            return [`/animals/${animal.type}/${encodeURIComponent(animal.id)}`];
+          const paths: string[] = [];
+          if (animal.adoption_eligible && (animal.type === "cat" || animal.type === "dog")) {
+            paths.push(`/animals/${animal.type}/${encodeURIComponent(animal.id)}`);
           }
-          return [];
+          if (animal.sponsorship_eligible) paths.push(`/sponsors/${encodeURIComponent(animal.id)}`);
+          return paths;
         })
       : [];
 

@@ -25,11 +25,17 @@ function formatUpdatedAt(value: string) {
 
 interface AnimalDetailProps {
   animal: Animal;
+  intent?: "adoption" | "sponsorship";
   backHref: string;
   backLabel: string;
 }
 
-export function AnimalDetail({ animal, backHref, backLabel }: AnimalDetailProps) {
+export function AnimalDetail({
+  animal,
+  backHref,
+  backLabel,
+  intent = "adoption",
+}: AnimalDetailProps) {
   const TypeIcon = animal.type === "dog" ? Dog : Cat;
   const typeLabel = animal.type === "dog" ? "狗狗" : "貓貓";
   const updatedAt = formatUpdatedAt(animal.updated_at);
@@ -42,7 +48,7 @@ export function AnimalDetail({ animal, backHref, backLabel }: AnimalDetailProps)
         <>
           <div className="detail-status">
             <PublicStatusBadge tone="info" icon={CheckCircle2}>
-              待領養
+              {intent === "sponsorship" ? "待助養" : "待領養"}
             </PublicStatusBadge>
             <span className="inline-flex items-center gap-1 text-sm text-[var(--color-text-muted)]">
               <TypeIcon className="h-4 w-4" aria-hidden="true" /> {typeLabel}
@@ -70,13 +76,16 @@ export function AnimalDetail({ animal, backHref, backLabel }: AnimalDetailProps)
               </div>
             ) : null}
           </dl>
-          <ShortlistActionButton animal={animal} />
+          <ShortlistActionButton intent={intent} animal={animal} />
         </>
       }
     >
       <div className="detail-gallery" aria-label={typeLabel + "相片：" + animal.name}>
         {animal.image_url ? (
-          <img src={animal.image_url} alt={"待領養" + typeLabel + "：" + animal.name} />
+          <img
+            src={animal.image_url}
+            alt={(intent === "sponsorship" ? "待助養" : "待領養") + typeLabel + "：" + animal.name}
+          />
         ) : (
           <div className="detail-image-fallback flex flex-col items-center justify-center gap-3 p-8 text-center">
             <span className="flex h-28 w-28 items-center justify-center rounded-full bg-white text-[var(--color-primary)] shadow-soft">
