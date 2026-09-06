@@ -1,0 +1,13 @@
+# Supplied credentials verified; production action approval pending
+
+User-supplied folder: C:/Users/laich/Downloads/2088831950966386 HK Saving Cat and Dog Association Limited. Private/public RSA PEM parsed successfully and match (RSA2048). Merchant public SPKI SHA256:422e424e24a372d69aa69f875ac0e9d5991f3639067bb4b6da69809f14d7b0f4. aes128.txt contains16raw bytes; aes256.txt contains32raw bytes. Both passed offline AES-CBC round-trip and RSA-SHA256 signing/verification with the real merchant key. No private/AES bytes were written to repository or logs. Notification key is the separate production public key extracted from the supplied2024PDF, fingerprint8a26a541d788648b9fb24bec53a2cd43b9dcbd195d32c275d7be5e0196f8d6dc.
+
+Planned order_details read-only tests against https://aqs-api.codpayment.com/v1/service were rejected by automatic approval review before execution: production credential-derived requests require explicit destination/API-call authorization. Do not retry through another tool until authorization arrives. No provider response, authentication acceptance, merchant registration or AES preference has been verified.
+
+Concrete requested next steps:
+1. Authorize two non-creating order_details requests to the above production endpoint, one per AES file, each with a unique nonexistent order reference. Retain only HTTP/status/error code and decryption success; no transaction payloads.
+2. If accepted, update the six COD production environment entries in Vercel hkscda with COD_ENV=production, merchant2088831950966386, segment2470305571, chosen validated AES bytes encoded once as Base64, full merchant private PEM encoded once as Base64, and production COD notification public PEM encoded once as Base64. Keep all sensitive and avoid unintended preview-scope changes. Do not publish the AlipayHK method or enable checkout.
+3. Redeploy the currently approved production application with refreshed environment values, after verifying its current source/deployment identity; no speculative branch merge. Verify the invalid-signature webhook probe yields400 rather than500. This is not proof of COD callback delivery.
+4. User/provider registers https://hkscda.vercel.app/api/webhooks/cod for COD AQS notifications. No real-person message is sent by the agent.
+
+An actual create_order/payment/settlement test and payment-method activation remain separately unauthorized. Existing broader production write-schema gaps must be reconciled before enabling donations. Local diagnostic implementation remains committed as879a0ac and has not been pushed or deployed.
