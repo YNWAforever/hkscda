@@ -1,0 +1,12 @@
+{
+  "source_sha256": "7a9454278c84c797a7a75bd56bfd416db852c2758483dc999f0e344a06a64225",
+  "proposed_local_inserts": {
+    "arrival_source": 14,
+    "living_area": 19,
+    "adoption_fee": 11
+  },
+  "all_inactive": true,
+  "production_collision_checks_run": false,
+  "source_timestamps_preserved": false,
+  "timestamp_note": "Target timestamps represent local import time; original source timestamps stay in private staging."
+}

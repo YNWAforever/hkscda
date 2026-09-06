@@ -1,0 +1,28 @@
+{
+  "counts": {
+    "objects_created": 0,
+    "objects_reused": 1142,
+    "local_images": 1256,
+    "valid_images": 1239,
+    "unique_metadata_matches": 1142,
+    "staged_photo_links": 1142,
+    "unmatched": 97,
+    "invalid_images": 17,
+    "staged_also_attachment": 6,
+    "animals_with_staged_profile_photo": 1142,
+    "animals_without_staged_profile_photo": 4002,
+    "total_animals": 5144,
+    "metadata_paths_rejected": 0,
+    "filesystem_links_skipped": 0,
+    "duplicate_content_groups": 41,
+    "production_uploads": 0
+  },
+  "image_rejections": {
+    "OSError": 7,
+    "Unsupported image format": 10
+  },
+  "matching": "exact case-sensitive basename, unique in both source metadata and local folder; recorded nonzero byte sizes must match",
+  "privacy": "all objects private; no status mapping or public URL assigned",
+  "image_validation": "Pillow verify plus full decode, JPEG/PNG signature, extension and pixel/size limits",
+  "private_manifest_sha256": "3366dc8242168ba85641a785f2755c2a66862bb3ae57b7b8be94df76e9d9aa32"
+}

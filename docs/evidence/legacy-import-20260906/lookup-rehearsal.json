@@ -1,0 +1,29 @@
+{
+  "container": "hkscda-legacy-lookups-20260906",
+  "network": "none",
+  "published_ports": 0,
+  "baseline": {
+    "arrival_source": 0,
+    "living_area": 0,
+    "adoption_fee": 0,
+    "manifest": 0,
+    "audit": 0,
+    "active": 0
+  },
+  "after_import": {
+    "arrival_source": 14,
+    "living_area": 19,
+    "adoption_fee": 11,
+    "manifest": 44,
+    "audit": 44,
+    "active": 0
+  },
+  "repeat_added": 0,
+  "forced_failure_rolled_back": true,
+  "changed_target_retry_rejected": true,
+  "rollback_preserved_rows": true,
+  "anonymous_visible_rows": 0,
+  "anonymous_manifest_access_denied": true,
+  "parity_scope": "three table column/default/check shapes only; local restrictive RLS, not full deployed auth/policy parity",
+  "production_writes": 0
+}
