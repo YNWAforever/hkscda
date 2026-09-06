@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, spyOn, test } from "bun:test";
 
 import { CodNotificationError } from "../../../lib/donations/cod-webhook.server";
 import { handleCodWebhookRequest } from "./cod";
@@ -49,5 +49,42 @@ describe("COD webhook response contract", () => {
     });
     expect(response.status).toBe(500);
     expect(await response.text()).not.toBe("success");
+  });
+});
+
+describe("COD configuration diagnostics", () => {
+  test.each([
+    ["Missing required environment variable: COD_ENV", "COD_ENV"],
+    ["COD_ENV must be sandbox or production", "COD_ENV"],
+    ["Missing required environment variable: COD_MERCHANT_ID", "COD_MERCHANT_ID"],
+    ["Missing required environment variable: COD_SEGMENT_ID", "COD_SEGMENT_ID"],
+    ["COD AES key must be exactly 16 or 32 bytes", "COD_AES_SECRET_BASE64"],
+    ["COD private key must be a valid RSA PEM", "COD_PRIVATE_KEY_BASE64"],
+    ["COD notification public key must be a valid RSA PEM", "COD_NOTIFICATION_PUBLIC_KEY_BASE64"],
+    ["unexpected secret=DO_NOT_LOG_THIS", null],
+  ])("reports only the configuration field for %s", async (message, field) => {
+    const log = spyOn(console, "error").mockImplementation(() => {});
+    let databaseCreated = false;
+    try {
+      const response = await handleCodWebhookRequest(request(), {
+        enforce: async () => ({ ok: true }) as never,
+        getConfig: () => {
+          throw new Error(message!);
+        },
+        createClient: () => {
+          databaseCreated = true;
+          throw new Error("must not run");
+        },
+      });
+      expect(response.status).toBe(500);
+      expect(await response.text()).toBe("COD notification processing failed");
+      expect(log.mock.calls).toEqual([
+        ["COD notification processing failed", { configurationField: field }],
+      ]);
+      expect(JSON.stringify(log.mock.calls)).not.toContain("DO_NOT_LOG_THIS");
+      expect(databaseCreated).toBe(false);
+    } finally {
+      log.mockRestore();
+    }
   });
 });

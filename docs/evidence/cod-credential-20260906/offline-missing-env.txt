@@ -1,0 +1,1 @@
+{"passed":false,"configurationField":"COD_ENV","error":"Offline COD credential validation failed"}

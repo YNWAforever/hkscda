@@ -103,3 +103,41 @@ export function getReceiptConfig() {
     signatoryName: process.env.RECEIPT_SIGNATORY_NAME ?? "HKSCDA",
   };
 }
+
+/** Only allowlisted field names may leave a failed configuration check. */
+export function getCodConfigurationErrorField(error: unknown): string | null {
+  if (!(error instanceof Error)) return null;
+  const message = error.message;
+  const fields = [
+    "COD_ENV",
+    "COD_MERCHANT_ID",
+    "COD_SEGMENT_ID",
+    "COD_AES_SECRET_BASE64",
+    "COD_PRIVATE_KEY_BASE64",
+    "COD_NOTIFICATION_PUBLIC_KEY_BASE64",
+  ];
+  for (const field of fields) {
+    if (message === `Missing required environment variable: ${field}`) return field;
+  }
+  if (message === "COD_ENV must be sandbox or production") return "COD_ENV";
+  const knownErrors: Record<string, string[]> = {
+    COD_AES_SECRET_BASE64: [
+      "COD AES secret must be valid base64",
+      "COD AES secret must be canonical base64",
+      "COD AES key must be exactly 16 or 32 bytes",
+    ],
+    COD_PRIVATE_KEY_BASE64: [
+      "COD private key must be valid base64",
+      "COD private key must be canonical base64",
+      "COD private key must be a valid RSA PEM",
+    ],
+    COD_NOTIFICATION_PUBLIC_KEY_BASE64: [
+      "COD notification public key must be valid base64",
+      "COD notification public key must be canonical base64",
+      "COD notification public key must be a valid RSA PEM",
+    ],
+  };
+  return (
+    Object.entries(knownErrors).find(([, messages]) => messages.includes(message))?.[0] ?? null
+  );
+}
