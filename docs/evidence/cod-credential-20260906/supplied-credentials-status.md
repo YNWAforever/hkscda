@@ -11,3 +11,5 @@ Concrete requested next steps:
 4. User/provider registers https://hkscda.vercel.app/api/webhooks/cod for COD AQS notifications. No real-person message is sent by the agent.
 
 An actual create_order/payment/settlement test and payment-method activation remain separately unauthorized. Existing broader production write-schema gaps must be reconciled before enabling donations. Local diagnostic implementation remains committed as879a0ac and has not been pushed or deployed.
+## Approved read-only tests executed
+The user approved the two production lookups and conditional credential update/redeployment. Both AES128 andAES256 returnedHTTP500/internal_server_error instead of documented404/order_not_found. Credential acceptance is unverified, so the conditional Vercel update/redeployment did not proceed. No charges/orders created. A proposed additional lookup to capture a provider reference ID was rejected by automatic approval review as exceeding the two authorized calls; it did not run. See provider-readonly-test.txt and provider-support-draft.md. The draft has not been sent.
