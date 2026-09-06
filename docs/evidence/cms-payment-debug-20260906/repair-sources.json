@@ -1,0 +1,26 @@
+[
+  {
+    "file": "20260831120000_payment_public_config.sql",
+    "sha256": "66dc9acabdd6911127fa9827a7c56361a066ccbd1bea431970fb0adb0f645a15"
+  },
+  {
+    "file": "20260831160000_content_media_storage_bucket.sql",
+    "sha256": "9a30633b9106d5cb285b07b36406a9a8fb394100b1c50800a277c94bb255c923"
+  },
+  {
+    "file": "20260905150012_content_revision_lifecycle.sql",
+    "sha256": "223a5aa2502228a525d7188c5328739a9ec9aeb7fbe02b0ade58fecb1a2082b6"
+  },
+  {
+    "file": "20260905155426_content_private_media_sessions.sql",
+    "sha256": "2a87bb021ba3e6bb006130f258eb403ccd61b21237e990a9c196fbeb84cd6b04"
+  },
+  {
+    "file": "20260905162615_crm_complete_read_models.sql",
+    "sha256": "130ddd4c5e5aba75b3ce140904df26a4e512122bb0f9665bd35d4535ab40fbfc"
+  },
+  {
+    "file": "20260905163559_content_bounded_authoring_reads.sql",
+    "sha256": "2f565767f5ba2d5a643847361a50128e06c627e48255d1661453e9146642d25b"
+  }
+]

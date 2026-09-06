@@ -1,0 +1,272 @@
+[
+  {
+    "preflight": {
+      "functions": [
+        {
+          "exists": false,
+          "signature": "public.read_content_admin_summaries(jsonb)",
+          "service_role_execute": null
+        },
+        {
+          "exists": false,
+          "signature": "public.crm_read_supporters(jsonb,integer,integer,boolean)",
+          "service_role_execute": null
+        },
+        {
+          "exists": false,
+          "signature": "public.read_published_content_snapshots(jsonb)",
+          "service_role_execute": null
+        },
+        {
+          "exists": false,
+          "signature": "public.mutate_payment_public_config_with_audit(uuid,text,uuid,integer,jsonb)",
+          "service_role_execute": null
+        },
+        {
+          "exists": false,
+          "signature": "public.publish_payment_public_config(uuid,integer,uuid,text)",
+          "service_role_execute": null
+        }
+      ],
+      "migrations": [
+        {
+          "applied": true,
+          "version": "20260611162942"
+        },
+        {
+          "applied": true,
+          "version": "20260611162956"
+        },
+        {
+          "applied": true,
+          "version": "20260623160506"
+        },
+        {
+          "applied": true,
+          "version": "20260623183933"
+        },
+        {
+          "applied": false,
+          "version": "20260626140914"
+        },
+        {
+          "applied": false,
+          "version": "20260626144836"
+        },
+        {
+          "applied": false,
+          "version": "20260626201620"
+        },
+        {
+          "applied": false,
+          "version": "20260626202523"
+        },
+        {
+          "applied": false,
+          "version": "20260627091500"
+        },
+        {
+          "applied": true,
+          "version": "20260627110000"
+        },
+        {
+          "applied": false,
+          "version": "20260628120000"
+        },
+        {
+          "applied": false,
+          "version": "20260628130000"
+        },
+        {
+          "applied": false,
+          "version": "20260628140000"
+        },
+        {
+          "applied": false,
+          "version": "20260628143000"
+        },
+        {
+          "applied": false,
+          "version": "20260628150000"
+        },
+        {
+          "applied": false,
+          "version": "20260628160000"
+        },
+        {
+          "applied": false,
+          "version": "20260630120000"
+        },
+        {
+          "applied": true,
+          "version": "20260630154259"
+        },
+        {
+          "applied": false,
+          "version": "20260701105726"
+        },
+        {
+          "applied": false,
+          "version": "20260701185227"
+        },
+        {
+          "applied": false,
+          "version": "20260702130000"
+        },
+        {
+          "applied": false,
+          "version": "20260704165600"
+        },
+        {
+          "applied": false,
+          "version": "20260705120000"
+        },
+        {
+          "applied": false,
+          "version": "20260716120000"
+        },
+        {
+          "applied": true,
+          "version": "20260718100000"
+        },
+        {
+          "applied": true,
+          "version": "20260718110000"
+        },
+        {
+          "applied": true,
+          "version": "20260718111000"
+        },
+        {
+          "applied": false,
+          "version": "20260718120000"
+        },
+        {
+          "applied": false,
+          "version": "20260718121000"
+        },
+        {
+          "applied": false,
+          "version": "20260718122000"
+        },
+        {
+          "applied": true,
+          "version": "20260719120000"
+        },
+        {
+          "applied": true,
+          "version": "20260719223000"
+        },
+        {
+          "applied": false,
+          "version": "20260720100000"
+        },
+        {
+          "applied": false,
+          "version": "20260731120000"
+        },
+        {
+          "applied": false,
+          "version": "20260801180000"
+        },
+        {
+          "applied": true,
+          "version": "20260803120000"
+        },
+        {
+          "applied": false,
+          "version": "20260805120000"
+        },
+        {
+          "applied": false,
+          "version": "20260816120000"
+        },
+        {
+          "applied": false,
+          "version": "20260829120000"
+        },
+        {
+          "applied": false,
+          "version": "20260829180000"
+        },
+        {
+          "applied": false,
+          "version": "20260830120000"
+        },
+        {
+          "applied": false,
+          "version": "20260830130000"
+        },
+        {
+          "applied": false,
+          "version": "20260830140000"
+        },
+        {
+          "applied": false,
+          "version": "20260831120000"
+        },
+        {
+          "applied": false,
+          "version": "20260831160000"
+        },
+        {
+          "applied": false,
+          "version": "20260905144848"
+        },
+        {
+          "applied": false,
+          "version": "20260905150012"
+        },
+        {
+          "applied": false,
+          "version": "20260905155357"
+        },
+        {
+          "applied": false,
+          "version": "20260905155426"
+        },
+        {
+          "applied": false,
+          "version": "20260905162615"
+        },
+        {
+          "applied": false,
+          "version": "20260905163559"
+        },
+        {
+          "applied": false,
+          "version": "20260905163900"
+        }
+      ],
+      "payment_columns": null,
+      "remote_only_migrations": [
+        {
+          "name": "story_promotion_center",
+          "version": "20260707094012"
+        },
+        {
+          "name": "group_enquiries_and_knowledge",
+          "version": "20260724023312"
+        },
+        {
+          "name": "seed_knowledge_guides",
+          "version": "20260724023618"
+        },
+        {
+          "name": "correct_service_slogan",
+          "version": "20260726170246"
+        },
+        {
+          "name": "adoption_guide_release_cms",
+          "version": "20260731164635"
+        },
+        {
+          "name": "adoption_guide_release_cms_advisor_fixes",
+          "version": "20260731171123"
+        }
+      ],
+      "payment_config_table_exists": false,
+      "payment_publish_ledger_exists": false
+    }
+  }
+]
