@@ -34,3 +34,6 @@ After authorized repair: repeat metadata checks, then authenticated GET content/
 No application code, production schema/data/assets, provider settings or deployments changed during this investigation. Debug branch has not been pushed.
 ## Follow-up after reconnection
 Access restored; missing schema confirmed. See repair-proposal.md and production-schema-preflight.json for the executed read-only findings and locally verified repair proposal. No production repair executed.
+
+## Approved production repair completed
+Migration 20260906062155 applied after explicit approval. See production-repair-result.md and production-after.json. Earlier no-production-change statements above describe the pre-approval investigation.
