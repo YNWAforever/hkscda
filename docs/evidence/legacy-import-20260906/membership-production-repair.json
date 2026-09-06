@@ -1,0 +1,36 @@
+{
+  "migration_name": "animal_catalog_membership",
+  "production_version": "20260906173545",
+  "repository_migration": "20260906162436_animal_catalog_membership.sql",
+  "authorization": "User confirmed applying production membership migration only",
+  "public_counts": {
+    "cats": 26,
+    "dogs": 13,
+    "sponsors": 2
+  },
+  "total_animals": 44,
+  "retired": 0,
+  "replacement_batches": 0,
+  "anonymous_private_schema_access": "denied",
+  "live_routes": {
+    "/": {
+      "status": 200,
+      "empty_message": false,
+      "detail_links": 4
+    },
+    "/animals/cat": {
+      "status": 200,
+      "detail_links": 16
+    },
+    "/animals/dog": {
+      "status": 200,
+      "detail_links": 13
+    },
+    "/sponsors": {
+      "status": 200,
+      "detail_links": 2
+    }
+  },
+  "verification_scope": "Live HTTP server-rendered responses and anonymous-role SQL; no browser hydration or owner UAT claim",
+  "legacy_import_executed": false
+}

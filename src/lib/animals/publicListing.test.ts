@@ -95,3 +95,71 @@ describe("buildPublicAnimalListing", () => {
     expect(beyondLastPage.totalPages).toBe(2);
   });
 });
+
+test("searches codes and nullable profile facts before pagination", () => {
+  const animals = Array.from({ length: 40 }, (_, index) => ({
+    ...animal(String(index).padStart(2, "0")),
+    public_profile: {
+      code: `CAT-${index}`,
+      birthday: null,
+      neutered: index % 2 === 0 ? true : null,
+      suitability: "newbie" as const,
+      personality: null,
+      health: null,
+      story: null,
+      recordDate: null,
+    },
+  }));
+  const input = {
+    animals,
+    type: "cat" as const,
+    ageFilter: "all" as const,
+    genderFilter: "all" as const,
+    page: 2,
+    pageSize: 5,
+    q: " cat- ",
+    neutered: "unknown" as const,
+    suitability: "newbie" as const,
+  };
+  const result = buildPublicAnimalListing(input);
+  expect(result.total).toBe(20);
+  expect(result.animals.map(({ id }) => id)).toEqual(["11", "13", "15", "17", "19"]);
+  expect(
+    buildPublicAnimalListing({ ...input, q: "CAT-39", page: 1 }).animals.map(({ id }) => id),
+  ).toEqual(["39"]);
+  expect(buildPublicAnimalListing({ ...input, neutered: "no" }).total).toBe(0);
+});
+
+test("keeps absent profiles unknown, trims search, and combines facts with membership", () => {
+  const animals = [
+    animal("a"),
+    { ...animal("b"), name_en: "Snowy", retired_at: "2026-01-01" },
+    animal("c", { type: "dog" }),
+  ];
+  const input = {
+    animals,
+    type: "cat" as const,
+    ageFilter: "all" as const,
+    genderFilter: "all" as const,
+    page: 1,
+    pageSize: 1,
+    q: "  ",
+    neutered: "unknown" as const,
+    suitability: "unknown" as const,
+  };
+  expect(buildPublicAnimalListing(input).animals.map(({ id }) => id)).toEqual(["a"]);
+  expect(buildPublicAnimalListing({ ...input, q: "sNoWy" }).total).toBe(0);
+  expect(buildPublicAnimalListing({ ...input, neutered: "no" }).total).toBe(0);
+});
+
+test("does not invent adult age for an unknown birthday and age", () => {
+  const result = buildPublicAnimalListing({
+    animals: [animal("unknown", { age: "不詳" }), animal("adult")],
+    type: "cat",
+    ageFilter: "adult",
+    genderFilter: "all",
+    page: 1,
+    pageSize: 15,
+  });
+  expect(result.animals.map(({ id }) => id)).toEqual(["adult"]);
+});

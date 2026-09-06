@@ -43,6 +43,9 @@ describe("AnimalCard", () => {
     expect(markup).toContain("小白");
     expect(markup).toContain("public-animal-card");
     expect(markup).toContain("public-animal-media");
+    expect(markup).toContain("暫未有相片");
+    expect(markup).toContain("未有記錄");
+    expect(markup).not.toContain(animal.notes);
     expect(markup).not.toContain("--color-cat");
     expect(markup).not.toContain("--color-dog");
   });
@@ -71,4 +74,35 @@ test("empty home animal section preserves the single page heading", async () => 
   );
   expect(markup.match(/<h1(?:\s|>)/g) ?? []).toHaveLength(1);
   expect(markup).toContain("暫未有可顯示的領養資料</h2>");
+});
+
+test("renders only approved public facts and escapes profile text", async () => {
+  const { AnimalCard } = await import("./AnimalCard");
+  const profile = {
+    code: "C017",
+    birthday: "2020-01-01",
+    neutered: false,
+    suitability: "experienced" as const,
+    personality: "安靜 <b>親人</b>",
+    health: null,
+    story: null,
+    recordDate: "2026-01-01",
+  };
+  const markup = renderToStaticMarkup(
+    <ShortlistProvider>
+      <AnimalCard animal={{ ...animal, public_profile: profile, sponsorship_eligible: true }} />
+    </ShortlistProvider>,
+  );
+  for (const value of [
+    "C017",
+    "未絕育",
+    "適合有經驗人士",
+    "安靜 &lt;b&gt;親人&lt;/b&gt;",
+    "可助養",
+    "加入領養清單",
+    "/animals/cat/animal-1",
+  ])
+    expect(markup).toContain(value);
+  expect(markup).not.toContain(animal.notes);
+  expect(markup).not.toContain("<b>");
 });

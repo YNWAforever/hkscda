@@ -2,7 +2,13 @@ import { Link } from "@tanstack/react-router";
 
 import { AnimalGrid } from "./AnimalGrid";
 import { PublicStateShell } from "./PublicStateShell";
-import type { AgeFilter, Animal, GenderFilter } from "../../types/animal";
+import type {
+  AgeFilter,
+  Animal,
+  GenderFilter,
+  NeuteredFilter,
+  SuitabilityFilter,
+} from "../../types/animal";
 
 export type AnimalListingSpecies = "cat" | "dog";
 
@@ -10,12 +16,12 @@ const COPY: Record<AnimalListingSpecies, { title: string; label: string; lead: s
   cat: {
     title: "待領養貓貓",
     label: "貓",
-    lead: "查看目前可申請領養的貓貓，按年齡及性別縮窄結果，再了解牠們的需要。",
+    lead: "查看目前可申請領養的貓貓，搜尋名字或編號，按生活需要縮窄結果，再了解牠們的需要。",
   },
   dog: {
     title: "待領養狗狗",
     label: "狗",
-    lead: "查看目前可申請領養的狗狗，按年齡及性別縮窄結果，再了解牠們的需要。",
+    lead: "查看目前可申請領養的狗狗，搜尋名字或編號，按生活需要縮窄結果，再了解牠們的需要。",
   },
 };
 
@@ -35,7 +41,7 @@ function SpeciesNav({ current }: { current: AnimalListingSpecies }) {
 function ListingHero({ species }: { species: AnimalListingSpecies }) {
   const copy = COPY[species];
   return (
-    <section className="page-hero">
+    <section className="page-hero animal-listing-hero">
       <div className="public-container page-hero-grid">
         <div className="page-hero-copy">
           <p className="eyebrow">領養動物</p>
@@ -61,6 +67,9 @@ export function AnimalListingPage({
   pageSize,
   ageFilter,
   genderFilter,
+  q = "",
+  neutered = "all",
+  suitability = "all",
 }: {
   species: AnimalListingSpecies;
   animals: Animal[];
@@ -69,6 +78,9 @@ export function AnimalListingPage({
   pageSize: number;
   ageFilter: AgeFilter;
   genderFilter: GenderFilter;
+  q?: string;
+  neutered?: NeuteredFilter;
+  suitability?: SuitabilityFilter;
 }) {
   return (
     <main>
@@ -81,6 +93,9 @@ export function AnimalListingPage({
             page={page}
             ageFilter={ageFilter}
             genderFilter={genderFilter}
+            q={q}
+            neutered={neutered}
+            suitability={suitability}
             pageSize={pageSize}
             animalLabel={COPY[species].label}
           />
@@ -125,6 +140,7 @@ export function AnimalListingError({
     <main>
       <ListingHero species={species} />
       <PublicStateShell
+        headingLevel={2}
         role="alert"
         title={"暫時未能載入" + COPY[species].title}
         description="系統未能取得目前的領養資料，請稍後再試。"

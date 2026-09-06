@@ -1,0 +1,107 @@
+{
+  "passed": true,
+  "findings": [
+    {
+      "species": "cat",
+      "width": 390,
+      "layout": {
+        "width": 390,
+        "scroll": 390,
+        "bodyScroll": 390,
+        "menuRight": 374,
+        "columns": "358px"
+      },
+      "cards": 6,
+      "noPhoto": 2,
+      "h1": 1
+    },
+    {
+      "species": "dog",
+      "width": 390,
+      "layout": {
+        "width": 390,
+        "scroll": 390,
+        "bodyScroll": 390,
+        "menuRight": 374,
+        "columns": "358px"
+      },
+      "cards": 6,
+      "noPhoto": 2,
+      "h1": 1
+    },
+    {
+      "species": "cat",
+      "width": 768,
+      "layout": {
+        "width": 768,
+        "scroll": 768,
+        "bodyScroll": 768,
+        "menuRight": 748,
+        "columns": "348px 348px"
+      },
+      "cards": 6,
+      "noPhoto": 2,
+      "h1": 1
+    },
+    {
+      "species": "dog",
+      "width": 768,
+      "layout": {
+        "width": 768,
+        "scroll": 768,
+        "bodyScroll": 768,
+        "menuRight": 748,
+        "columns": "348px 348px"
+      },
+      "cards": 6,
+      "noPhoto": 2,
+      "h1": 1
+    },
+    {
+      "species": "cat",
+      "width": 1440,
+      "layout": {
+        "width": 1440,
+        "scroll": 1440,
+        "bodyScroll": 1440,
+        "menuRight": 0,
+        "columns": "384px 384px 384px"
+      },
+      "cards": 6,
+      "noPhoto": 2,
+      "h1": 1
+    },
+    {
+      "species": "dog",
+      "width": 1440,
+      "layout": {
+        "width": 1440,
+        "scroll": 1440,
+        "bodyScroll": 1440,
+        "menuRight": 0,
+        "columns": "384px 384px 384px"
+      },
+      "cards": 6,
+      "noPhoto": 2,
+      "h1": 1
+    },
+    {
+      "filters": "name/code case-insensitive search, clear, browser back, unknown neutering, suitability intersection and empty recovery passed"
+    },
+    {
+      "intent": "加入領養清單",
+      "detail": "http://127.0.0.1:4173/animals/cat/00000000-0000-4000-8000-000000000001",
+      "shortlist": "add persists into detail; remove passed"
+    },
+    {
+      "intent": "加入助養清單",
+      "detail": "http://127.0.0.1:4173/sponsors/00000000-0000-4000-8000-000000000021",
+      "shortlist": "add persists into detail; remove passed"
+    },
+    {
+      "brokenImage": "labelled fallback with unchanged dimensions",
+      "keyboard": "search field Tab reaches submit"
+    }
+  ],
+  "pageErrors": []
+}

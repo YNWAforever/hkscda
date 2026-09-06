@@ -1,0 +1,13 @@
+{
+  "checked_on_hong_kong_date": "2026-09-07",
+  "project_id": "iihqjzilgawhfdhdevam",
+  "read_only": true,
+  "stored_animals": 292,
+  "retired_placeholders": 44,
+  "adoption_cats": 100,
+  "adoption_dogs": 108,
+  "sponsors": 115,
+  "public_photo_links": 14,
+  "public_profile_column_exists": false,
+  "scope": "Aggregate catalogue counts and profile-column existence only; not full production parity, object-byte or owner UAT verification"
+}

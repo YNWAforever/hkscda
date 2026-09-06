@@ -1,0 +1,18 @@
+{
+  "database": "replacement_production_shape_e6ccd3f6d8",
+  "backup_sha256": "f03956ec41b5c2c9e64ccd2a8922c8ab4ed05609845dc115c872b11ce4da52a5",
+  "candidate_sha256": "9a45496e21a9cf264e56e8c64774825cd0ea593a783e09f048ee91181773dffa",
+  "batch_id": "9847d544-cafb-5670-bfd3-5194df959cd3",
+  "restored_animals": 44,
+  "restored_linked_records": 30,
+  "actual_animal_audit_columns_constraints_triggers": true,
+  "all_animal_foreign_keys_reproduced": true,
+  "forced_failure_atomic": true,
+  "imported": 248,
+  "retired": 44,
+  "replay_added": 0,
+  "audit_apply": 292,
+  "rollback_original_rows_exact": true,
+  "linked_snapshots_preserved": true,
+  "scope": "Scoped animal/history restore; linked tables retain snapshot payloads plus actual animal FK definitions; not full platform recovery"
+}

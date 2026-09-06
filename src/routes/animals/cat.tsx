@@ -9,12 +9,15 @@ import {
 } from "../../components/site/AnimalListingPage";
 import { getPublicAnimalListing } from "../../lib/animals/publicListing.functions";
 
-const PAGE_SIZE = 16;
+const PAGE_SIZE = 15;
 
 const searchSchema = z.object({
   page: z.number().int().positive().catch(1),
   filter: z.enum(["all", "bb", "adult", "senior"]).catch("all"),
   gender: z.enum(["all", "female", "male"]).catch("all"),
+  q: z.string().trim().max(80).catch(""),
+  neutered: z.enum(["all", "yes", "no", "unknown"]).catch("all"),
+  suitability: z.enum(["all", "newbie", "experienced", "unknown"]).catch("all"),
 });
 
 export const Route = createFileRoute("/animals/cat")({
@@ -31,6 +34,9 @@ export const Route = createFileRoute("/animals/cat")({
         pageSize: PAGE_SIZE,
         ageFilter: deps.filter,
         genderFilter: deps.gender,
+        q: deps.q,
+        neutered: deps.neutered,
+        suitability: deps.suitability,
       },
     }),
   head: () => ({
@@ -43,7 +49,7 @@ export const Route = createFileRoute("/animals/cat")({
 
 function ListingPage() {
   const listing = Route.useLoaderData();
-  const { filter, gender } = Route.useSearch();
+  const { filter, gender, q, neutered, suitability } = Route.useSearch();
 
   return (
     <AnimalListingPage
@@ -54,6 +60,9 @@ function ListingPage() {
       pageSize={PAGE_SIZE}
       ageFilter={filter}
       genderFilter={gender}
+      q={q}
+      neutered={neutered}
+      suitability={suitability}
     />
   );
 }

@@ -1,0 +1,8 @@
+{
+  "database": "profile_schema_2ebb12be50",
+  "missing_column_reproduced": true,
+  "valid_profile_saved": true,
+  "invalid_profiles_rejected": 9,
+  "failed_updates_preserved_profile": true,
+  "production_writes": 0
+}

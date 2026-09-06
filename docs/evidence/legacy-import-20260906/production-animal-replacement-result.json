@@ -1,0 +1,50 @@
+{
+  "authorization": "User explicitly requested importing the 248 legacy animals and replacing existing data",
+  "batch_id": "9847d544-cafb-5670-bfd3-5194df959cd3",
+  "state": "applied",
+  "distinct_public_animals": 248,
+  "adoption_cats": 100,
+  "adoption_dogs": 108,
+  "sponsors": 115,
+  "shared_adoption_sponsorship": 75,
+  "retired_placeholders": 44,
+  "stored_animals": 292,
+  "linked_records_preserved": 30,
+  "linked_tables_verified": 8,
+  "audit_entries": 292,
+  "rollback_manifest_rows": 292,
+  "all_manifest_after_images_match": true,
+  "anonymous_retired_visible": 0,
+  "live_http": {
+    "home": 200,
+    "cats": 200,
+    "dogs": 200,
+    "sponsors": 200,
+    "shared_adoption_detail": 200,
+    "shared_sponsorship_detail": 200,
+    "retired_placeholder_detail": 404
+  },
+  "live_displayed_counts": {
+    "cats": 100,
+    "dogs": 108,
+    "sponsors": 115
+  },
+  "home_empty_message": false,
+  "private_backup_sha256": "f03956ec41b5c2c9e64ccd2a8922c8ab4ed05609845dc115c872b11ce4da52a5",
+  "applied_manifest_sha256": "f0bdc8d650d71688605e93377e2cc1d6c075dd689a42cae7601c0b6dd2a4c8c1",
+  "transaction_controls": [
+    "full original row snapshot match",
+    "existing batch refusal",
+    "animal EXCLUSIVE lock",
+    "eight related tables write locks",
+    "lock and statement timeouts",
+    "atomic data and audit acceptance before commit"
+  ],
+  "photo_uploads": 0,
+  "legacy_private_history_not_published": 4896,
+  "verification_limits": [
+    "HTTP server rendering and anonymous database queries; no owner UAT or browser hydration claim",
+    "Scoped animal and linked-history restore; not full platform backup recovery",
+    "No application-wide maintenance mode was enabled; database mutations were serialized by transaction locks"
+  ]
+}

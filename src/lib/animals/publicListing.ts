@@ -1,4 +1,10 @@
-import type { AgeFilter, Animal, GenderFilter } from "../../types/animal";
+import type {
+  AgeFilter,
+  Animal,
+  GenderFilter,
+  NeuteredFilter,
+  SuitabilityFilter,
+} from "../../types/animal";
 import { parseAgeFilter } from "../../types/animal";
 
 export type PublicAnimalType = Extract<Animal["type"], "cat" | "dog" | "sponsor">;
@@ -23,6 +29,9 @@ export interface PublicAnimalListingInput {
   genderFilter: GenderFilter;
   page: number;
   pageSize: number;
+  q?: string;
+  neutered?: NeuteredFilter;
+  suitability?: SuitabilityFilter;
 }
 
 export interface PublicAnimalListing {
@@ -55,14 +64,39 @@ export function buildPublicAnimalListing({
   genderFilter,
   page,
   pageSize,
+  q = "",
+  neutered = "all",
+  suitability = "all",
 }: PublicAnimalListingInput): PublicAnimalListing {
   const normalizedPage = Math.max(1, Math.trunc(page));
   const normalizedPageSize = Math.max(1, Math.trunc(pageSize));
 
+  const search = q.trim().slice(0, 80).toLocaleLowerCase();
   const filtered = animals
     .filter((animal) => isPublicAnimalMember(animal, type))
     .filter((animal) => genderFilter === "all" || animal.gender === genderFilter)
     .filter((animal) => ageFilter === "all" || parseAgeFilter(animal.age) === ageFilter)
+    .filter(
+      (animal) =>
+        !search ||
+        [animal.name, animal.name_en, animal.public_profile?.code].some((value) =>
+          value?.toLocaleLowerCase().includes(search),
+        ),
+    )
+    .filter(
+      (animal) =>
+        neutered === "all" ||
+        (neutered === "unknown"
+          ? animal.public_profile?.neutered == null
+          : animal.public_profile?.neutered === (neutered === "yes")),
+    )
+    .filter(
+      (animal) =>
+        suitability === "all" ||
+        (suitability === "unknown"
+          ? animal.public_profile?.suitability == null
+          : animal.public_profile?.suitability === suitability),
+    )
     .sort(comparePublicAnimals);
 
   const total = filtered.length;

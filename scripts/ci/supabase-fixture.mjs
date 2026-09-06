@@ -40,7 +40,18 @@ function animal(index, type, gender, age) {
     adoption_eligible: type === "cat" || type === "dog",
     sponsorship_eligible: type === "sponsor",
     retired_at: null,
-    image_url: IMAGE,
+    image_url: index % 3 === 0 ? null : IMAGE,
+    public_profile: {
+      code: `${type === "cat" ? "C" : type === "dog" ? "D" : "S"}${n}`,
+      // Null birthday preserves the existing age bands across calendar years.
+      birthday: null,
+      neutered: index % 3 === 0 ? null : index % 3 === 1,
+      suitability: index % 3 === 0 ? null : index % 3 === 1 ? "newbie" : "experienced",
+      personality: index % 3 === 0 ? null : "性格溫和，喜歡安靜的陪伴。",
+      health: index % 3 === 0 ? null : "此為本機驗證的照顧資料。",
+      story: index % 3 === 0 ? null : "此為本機驗證的動物故事，不代表真實動物。",
+      recordDate: index % 3 === 0 ? null : "2026-08-01",
+    },
     created_at: STAMP,
     updated_at: STAMP,
   };
@@ -219,7 +230,15 @@ const server = createServer((req, res) => {
     const headers = wantsCount
       ? { "content-range": `${from}-${from + Math.max(page.length - 1, 0)}/${filtered.length}` }
       : {};
-    json(res, wantsCount ? 206 : 200, page, headers);
+    if (String(req.headers.accept ?? "").includes("application/vnd.pgrst.object+json")) {
+      if (page.length !== 1) {
+        json(res, 406, {
+          code: "PGRST116",
+          details: `The result contains ${page.length} rows`,
+          message: "JSON object requested, multiple (or no) rows returned",
+        });
+      } else json(res, 200, page[0], headers);
+    } else json(res, wantsCount ? 206 : 200, page, headers);
     return;
   }
 

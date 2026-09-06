@@ -1,0 +1,14 @@
+[
+  {
+    "check": "shared_adoption",
+    "status": 200
+  },
+  {
+    "check": "shared_sponsorship",
+    "status": 200
+  },
+  {
+    "check": "retired_placeholder",
+    "status": 404
+  }
+]

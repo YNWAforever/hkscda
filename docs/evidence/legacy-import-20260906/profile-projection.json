@@ -1,0 +1,50 @@
+{
+  "animals": 248,
+  "applied_manifest_sha256": "f0bdc8d650d71688605e93377e2cc1d6c075dd689a42cae7601c0b6dd2a4c8c1",
+  "as_of": "2026-09-07",
+  "candidate_sha256": "80d5e153e56975f0abfec44ec7db46e67bf130d3fc126fd7d9e0a5d64c90891f",
+  "field_coverage": {
+    "birthday": 247,
+    "code": 248,
+    "health": 105,
+    "neutered": 232,
+    "personality": 124,
+    "recordDate": 248,
+    "story": 1,
+    "suitability": 248
+  },
+  "hold_reasons": {
+    "contact_details": 79,
+    "internal_reference": 87,
+    "markup_url_or_control": 79,
+    "public_review_required": 232
+  },
+  "neutered": {
+    "no": 59,
+    "unknown": 16,
+    "yes": 173
+  },
+  "production_writes": 0,
+  "publication_approved": false,
+  "record_date_source": "updated_at, strict source wall-clock date; historical record, not current health certification",
+  "replacement_candidate_sha256": "9a45496e21a9cf264e56e8c64774825cd0ea593a783e09f048ee91181773dffa",
+  "review_approvals_sha256": "5b23bb52525625ba6f09eba93fb82556f2847c160fe95c4092d14ff4d25e53fc",
+  "review_manifest_sha256": "6cd272d7bb97376d9e27b91dbb026632271aed11cb59716807fb9b070fedc411",
+  "source_sha256": "7a9454278c84c797a7a75bd56bfd416db852c2758483dc999f0e344a06a64225",
+  "staging_sha256": "2dfbf2fdae84b2cef327e032ec3e92e6ab2b0069be8aadb768eca0af28b0300b",
+  "text_review": {
+    "health": {
+      "cleared": 105,
+      "held": 72
+    },
+    "personality": {
+      "cleared": 124,
+      "held": 68
+    },
+    "story": {
+      "cleared": 1,
+      "held": 92
+    }
+  },
+  "version": 1
+}

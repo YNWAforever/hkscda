@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "commit": "df7b4261eab4e646f91a83e76a3a912ea3cfafb1",
+  "worktreeDirty": true,
+  "fixtureId": "legacy-profile-ci-v1",
+  "fixtureSha256": "786e9812043b12e3823338be29b7cde1aff48abc6f98a114ed42ebc387cfd20f",
+  "fixtureSource": "scripts/ci/supabase-fixture.mjs",
+  "baseURL": "http://127.0.0.1:4173",
+  "mode": "brand",
+  "startedAt": "2026-09-06T18:52:02.803Z",
+  "browser": "148.0.7778.96",
+  "measuredViewports": [
+    "375x812",
+    "390x844",
+    "768x1024",
+    "1024x768",
+    "1440x900"
+  ],
+  "failures": [],
+  "completedAt": "2026-09-06T19:00:16.410Z"
+}
