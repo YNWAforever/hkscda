@@ -79,6 +79,7 @@ function SponsorsPage() {
       <section className="section">
         <div className="public-container">
           <AnimalGrid
+            intent="sponsorship"
             animals={listing.animals}
             total={listing.total}
             page={listing.page}

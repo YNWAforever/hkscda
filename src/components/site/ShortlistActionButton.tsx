@@ -12,8 +12,10 @@ const ADD_LABEL: Record<"adoption" | "sponsorship", string> = {
 export function ShortlistActionButton({
   animal,
   compact = false,
+  intent: requestedIntent,
 }: {
   animal: Animal;
+  intent?: "adoption" | "sponsorship";
   compact?: boolean;
 }) {
   const { addItem, findItem, removeItem } = useShortlist();
@@ -24,7 +26,7 @@ export function ShortlistActionButton({
     return null;
   }
 
-  const intent = intentForAnimalType(animalType);
+  const intent = requestedIntent ?? intentForAnimalType(animalType);
 
   if (selected) {
     return (

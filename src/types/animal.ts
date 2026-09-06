@@ -17,6 +17,10 @@ export interface Animal {
   notes: string | null;
   notes_en: string | null;
   status: AnimalStatus;
+  /** Independent catalogue memberships; missing only on pre-migration snapshots. */
+  adoption_eligible?: boolean;
+  sponsorship_eligible?: boolean;
+  retired_at?: string | null;
   image_url: string | null;
   created_at: string;
   updated_at: string;

@@ -47,3 +47,16 @@ describe("AnimalCard", () => {
     expect(markup).not.toContain("--color-dog");
   });
 });
+
+test("sponsorship card preserves cat identity and routes canonical id to sponsorship", async () => {
+  const { AnimalCard } = await import("./AnimalCard");
+  const markup = renderToStaticMarkup(
+    <ShortlistProvider>
+      <AnimalCard animal={animal} intent="sponsorship" />
+    </ShortlistProvider>,
+  );
+  expect(markup).toContain("/sponsors/animal-1");
+  expect(markup).toContain("加入助養清單");
+  expect(markup).toContain("貓貓");
+  expect(markup).not.toContain("待領養");
+});

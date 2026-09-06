@@ -6,6 +6,7 @@ import type { AgeFilter, Animal, GenderFilter } from "../../types/animal";
 
 interface AnimalGridProps {
   animals: Animal[];
+  intent?: "adoption" | "sponsorship";
   total: number;
   page: number;
   ageFilter: AgeFilter;
@@ -52,6 +53,7 @@ function ListingState({
 
 export function AnimalGrid({
   animals,
+  intent,
   total,
   page,
   ageFilter,
@@ -221,7 +223,7 @@ export function AnimalGrid({
       ) : (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
           {animals.map((animal) => (
-            <AnimalCard key={animal.id} animal={animal} />
+            <AnimalCard intent={intent} key={animal.id} animal={animal} />
           ))}
         </div>
       )}

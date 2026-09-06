@@ -1,0 +1,47 @@
+{
+  "database": "replacement_full_ff52ae71a9f4",
+  "fresh_synthetic_fixture": true,
+  "full_membership_migration_applied": true,
+  "snapshot_species_constraint_passed": true,
+  "species_correction_preserved_memberships": true,
+  "candidate_sha256": "9a45496e21a9cf264e56e8c64774825cd0ea593a783e09f048ee91181773dffa",
+  "network": "none",
+  "ports": 0,
+  "baseline": {
+    "total": 44,
+    "retired": 0,
+    "adoption_cats": 26,
+    "adoption_dogs": 13,
+    "sponsors": 2,
+    "history": 8,
+    "audit": 0
+  },
+  "applied": {
+    "total": 292,
+    "retired": 44,
+    "adoption_cats": 100,
+    "adoption_dogs": 108,
+    "sponsors": 115,
+    "history": 8,
+    "audit": 292
+  },
+  "rolled_back": {
+    "total": 44,
+    "retired": 0,
+    "adoption_cats": 26,
+    "adoption_dogs": 13,
+    "sponsors": 2,
+    "history": 8,
+    "audit": 584
+  },
+  "repeat_added": 0,
+  "forced_failure_atomic": true,
+  "rollback_blocked_by_new_history": true,
+  "replay_and_rollback_blocked_by_edits": true,
+  "anonymous_visible_after_apply": 248,
+  "nonstaff_updates": 0,
+  "rollback_manifest_anonymous_denied": true,
+  "baseline_fingerprint_restored": true,
+  "production_writes": 0,
+  "parity_limit": "synthetic placeholders/history; real source candidates; role helper simulated; no photo publication"
+}

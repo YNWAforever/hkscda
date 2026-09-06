@@ -1,0 +1,15 @@
+{
+  "snapshot_cat_rejected_before": true,
+  "snapshot_all_three_types_pass_after": true,
+  "invalid_species_rejected": true,
+  "species_correction_changed_membership_before": true,
+  "species_correction_preserves_membership_after": true,
+  "dual_membership_preserved": true,
+  "legacy_type_transition_compatible": true,
+  "retired_hidden_from_anon": true,
+  "nonstaff_write_denied": true,
+  "full_migration_applied_locally": true,
+  "production_writes": 0,
+  "fixture": "synthetic minimal tables and simulated role helper",
+  "database": "catalog_membership_a434cb794fea"
+}

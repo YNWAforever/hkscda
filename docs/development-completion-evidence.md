@@ -107,3 +107,12 @@ User confirmed export completeness. PASS: 44 inactive reference records in offli
 ## Animal photo staging — 2026-09-06
 
 PASS private local preparation: 1,142 animal-photo links, 1,108 distinct unchanged objects; repeat created zero objects. 97 unmatched and 17 held (7 decode/read errors, 10 unsupported MPO multi-image files). Six attachment-overlap photos remain private. 27 synthetic tests pass; two filesystem review findings fixed and rechecked. [Photo evidence](evidence/legacy-import-20260906/animal-photo-results.md). Unknown legacy statuses retained; no production uploads or publication.
+
+
+## Canonical legacy animal replacement candidate — 2026-09-07
+
+Implemented independent adoption/sponsorship eligibility and soft retirement, preserving canonical cat/dog identity and placeholder-linked history. Candidate: 248 distinct animals, 100 adoption cats, 108 adoption dogs, 115 sponsors, 75 shared identities; 4,896 animals remain private history. This supersedes the earlier animal-status blocker only for export-based selection using explicit eligibility flags; unknown status letters remain uninterpreted.
+
+Reviewed fixes have failing-before/passing-after evidence for reader filtering, species correction, sponsorship snapshot constraint, empty replacement input, and concurrent rollback history loss. Full application suite: 1,954 pass / 86 skip / 0 fail / 5,954 assertions. Python: 34 pass. Typecheck and build: exit 0. Lint: exit 0, zero errors and 40 warnings. Final replacement and rollback rehearsal passed against the complete candidate migration. No production migration, deployment, data change or photo publication occurred.
+
+[Concrete release and guarded rollback proposal](evidence/legacy-import-20260906/animal-replacement-release-proposal.md). Acceptance is LOCAL ONLY: actual production-shaped trigger/auth parity, owner membership/photo review, hosted UAT, backup/live fingerprint and explicit production authorization remain gates. Separate read/write eligibility checks require submissions and edits to be paused and drained during cutover. Existing production payment/provider gates are unchanged.

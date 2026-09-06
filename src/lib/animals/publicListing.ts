@@ -3,6 +3,19 @@ import { parseAgeFilter } from "../../types/animal";
 
 export type PublicAnimalType = Extract<Animal["type"], "cat" | "dog" | "sponsor">;
 
+export function isPublicAnimalMember(
+  animal: Pick<
+    Animal,
+    "type" | "status" | "retired_at" | "adoption_eligible" | "sponsorship_eligible"
+  >,
+  type: PublicAnimalType,
+) {
+  if (animal.retired_at || animal.status !== "available") return false;
+  return type === "sponsor"
+    ? (animal.sponsorship_eligible ?? animal.type === "sponsor")
+    : animal.type === type && (animal.adoption_eligible ?? true);
+}
+
 export interface PublicAnimalListingInput {
   animals: Animal[];
   type: PublicAnimalType;
@@ -47,7 +60,7 @@ export function buildPublicAnimalListing({
   const normalizedPageSize = Math.max(1, Math.trunc(pageSize));
 
   const filtered = animals
-    .filter((animal) => animal.type === type && animal.status === "available")
+    .filter((animal) => isPublicAnimalMember(animal, type))
     .filter((animal) => genderFilter === "all" || animal.gender === genderFilter)
     .filter((animal) => ageFilter === "all" || parseAgeFilter(animal.age) === ageFilter)
     .sort(comparePublicAnimals);
