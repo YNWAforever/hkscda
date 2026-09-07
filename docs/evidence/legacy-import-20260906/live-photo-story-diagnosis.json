@@ -1,0 +1,61 @@
+{
+  "date": "2026-09-07",
+  "scope": "Read-only production diagnosis; no schema, data or asset writes",
+  "main": "649d22b4ee6be1b367c521a9b910e2348a781149",
+  "active_animals": 248,
+  "public_profile_column_exists": false,
+  "linked_photos": 14,
+  "working_photo_requests": 14,
+  "missing_source_files": 234,
+  "source_inventory": {
+    "animals": 248,
+    "photo_source": "User-supplied local hkscda photo folder",
+    "counts": {
+      "source_photo_reference": 248,
+      "local_basename_match_case_insensitive": 14,
+      "referenced_file_absent_from_folder": 234
+    },
+    "local_extensions": {
+      ".jpeg": 1252,
+      ".png": 4
+    }
+  },
+  "pages": [
+    {
+      "route": "/animals/cat",
+      "status": 200,
+      "cards": 15,
+      "fallbacks": 15,
+      "profileStorySections": 0,
+      "images": [],
+      "pageErrors": []
+    },
+    {
+      "route": "/animals/dog",
+      "status": 200,
+      "cards": 15,
+      "fallbacks": 14,
+      "profileStorySections": 0,
+      "images": [
+        {
+          "loaded": true
+        }
+      ],
+      "pageErrors": []
+    },
+    {
+      "route": "/sponsors/27034dd6-b947-55e7-909f-e09ca99cdc5b",
+      "status": 200,
+      "cards": 0,
+      "fallbacks": 0,
+      "profileStorySections": 0,
+      "images": [
+        {
+          "loaded": true
+        }
+      ],
+      "pageErrors": []
+    }
+  ],
+  "acceptance": "Root causes reproduced; production profile publication and missing source files remain unresolved"
+}

@@ -1,0 +1,24 @@
+{
+  "date": "2026-09-07",
+  "authorized": true,
+  "batch": "9b0e8ac8-4b0c-4b5a-a610-039986f88c31",
+  "migration_version": "20260907011009",
+  "repository_migration": "20260906181657_animal_public_profile.sql",
+  "candidate_sha256": "80d5e153e56975f0abfec44ec7db46e67bf130d3fc126fd7d9e0a5d64c90891f",
+  "rollback_manifest_sha256": "50f6e3f1915411ebeb84cc4e981978588bb998633a7b41f148bf14159bfeea48",
+  "transaction_after_images_matched": 248,
+  "anon_visible": 248,
+  "anon_retired_visible": 0,
+  "result": {
+    "active": 248,
+    "cats": 100,
+    "dogs": 108,
+    "sponsors": 115,
+    "photos": 14,
+    "personality": 124,
+    "health": 105,
+    "story": 1,
+    "audits": 248,
+    "rls_enabled": true
+  }
+}
