@@ -1,6 +1,6 @@
 # Legacy profile release proposal — 2026-09-07
 
-Status: local release candidate; production profile publication and deployment are not authorized by the design approval.
+Status update 2026-09-07: PR #110 was separately authorized and merged/deployed. The user subsequently approved the prepared production profile migration and 248-profile publication. Both are now applied; the original proposal below remains as the release/rollback record. Production migration version 20260907011009 maps to repository migration 20260906181657; do not reapply it. Fresh private production before-images and guarded rollback manifest are saved under backups/legacy-import-20260906/profile-production-*.json. See profile-production-publication.json and profile-production-browser.json for measured acceptance.
 
 ## Scope
 

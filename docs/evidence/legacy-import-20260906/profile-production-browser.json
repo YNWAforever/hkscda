@@ -1,0 +1,34 @@
+{
+  "date": "2026-09-07T01:14:53.525Z",
+  "acceptance": "PASS",
+  "pages": [
+    {
+      "route": "/animals/cat",
+      "status": 200,
+      "visibleCodes": 15,
+      "storyVisible": null,
+      "imagesLoaded": 0,
+      "pageErrors": [],
+      "overflow": false
+    },
+    {
+      "route": "/animals/dog",
+      "status": 200,
+      "visibleCodes": 17,
+      "storyVisible": null,
+      "imagesLoaded": 1,
+      "pageErrors": [],
+      "overflow": false
+    },
+    {
+      "route": "/sponsors/eb618e15-989b-5672-b9eb-a10fbf0cd0e4",
+      "status": 200,
+      "visibleCodes": 1,
+      "storyVisible": true,
+      "imagesLoaded": 1,
+      "pageErrors": [],
+      "overflow": false
+    }
+  ],
+  "photoUrlsVerified": 14
+}
