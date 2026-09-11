@@ -161,7 +161,10 @@ describe.skipIf(!reachable)("RLS behavioral matrix: sponsorship_assignment", () 
     const { data: supporterRow, error: supporterError } = await svc
       .from("supporter")
       .upsert(
-        { name: "RLS Test Sponsorship Supporter", email: "rls-test-sponsorship-supporter@example.test" },
+        {
+          name: "RLS Test Sponsorship Supporter",
+          email: "rls-test-sponsorship-supporter@example.test",
+        },
         { onConflict: "email" },
       )
       .select("id")
