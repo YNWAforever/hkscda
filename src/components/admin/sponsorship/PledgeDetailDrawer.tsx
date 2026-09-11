@@ -10,7 +10,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Sheet, SheetContent, SheetTitle } from "../../ui/sheet";
 import { StatusPill } from "../StatusBadge";
 import { centsToHkd } from "../../../lib/donations/domain";
-import type { PaymentProofRecord, PledgeDetail } from "../../../lib/sponsorshipAdmin/types";
+import type {
+  AssignmentEndReason,
+  PaymentProofRecord,
+  PledgeDetail,
+} from "../../../lib/sponsorshipAdmin/types";
 import {
   canCancelPledge,
   canRecordPayment,
@@ -26,6 +30,16 @@ import {
 type PledgeDetailResponse = { pledge: PledgeDetail };
 
 const PAYMENT_METHOD_VALUES = ["fps", "bank_transfer", "payme", "paypal", "give_asia"] as const;
+
+const ASSIGNMENT_END_REASON_VALUES: readonly AssignmentEndReason[] = [
+  "adopted",
+  "deceased",
+  "ineligible",
+  "retired",
+  "supporter_request",
+  "transferred",
+  "other",
+];
 
 const PROOF_REVIEW_STATUS_TONE: Record<
   PaymentProofRecord["reviewStatus"],
@@ -147,6 +161,9 @@ export function PledgeDetailDrawer({
   const [submitting, setSubmitting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [reviewNote, setReviewNote] = useState("");
+  const [assignAnimalId, setAssignAnimalId] = useState("");
+  const [endReason, setEndReason] = useState<AssignmentEndReason>("adopted");
+  const [endNote, setEndNote] = useState("");
   const [cancelNote, setCancelNote] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<(typeof PAYMENT_METHOD_VALUES)[number]>("fps");
   const [reference, setReference] = useState("");
@@ -199,6 +216,43 @@ export function PledgeDetailDrawer({
       await refreshAll();
     } catch (submitError) {
       setActionError(submitError instanceof Error ? submitError.message : copy.errors.cancel);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function submitAssign() {
+    setSubmitting(true);
+    setActionError(null);
+    try {
+      await fetchCoordinatorJson(`/api/admin/sponsorships/pledges/${pledgeId}/assignments`, {
+        method: "POST",
+        body: JSON.stringify({ animalId: assignAnimalId }),
+      });
+      setAssignAnimalId("");
+      await refreshAll();
+    } catch (submitError) {
+      setActionError(submitError instanceof Error ? submitError.message : copy.errors.review);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function submitEndAssignment(assignmentId: string) {
+    setSubmitting(true);
+    setActionError(null);
+    try {
+      await fetchCoordinatorJson(
+        `/api/admin/sponsorships/pledges/${pledgeId}/assignments/${assignmentId}/end`,
+        {
+          method: "POST",
+          body: JSON.stringify({ reason: endReason, note: endNote || undefined }),
+        },
+      );
+      setEndNote("");
+      await refreshAll();
+    } catch (submitError) {
+      setActionError(submitError instanceof Error ? submitError.message : copy.errors.review);
     } finally {
       setSubmitting(false);
     }
@@ -449,6 +503,93 @@ export function PledgeDetailDrawer({
                 </Button>
               </section>
             )}
+
+            <section className="space-y-2">
+              <h3 className="text-sm font-semibold text-[var(--color-panel)]">
+                {copy.assignments.title}
+              </h3>
+              <ul className="space-y-2">
+                {pledge.assignments.map((assignment) => (
+                  <li
+                    key={assignment.id}
+                    className={`space-y-1 rounded-lg border border-[var(--color-border)] p-3 text-sm ${
+                      assignment.endedOn ? "opacity-60" : ""
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-medium text-[var(--color-panel)]">
+                        {assignment.animalNameSnapshot}
+                      </span>
+                      {assignment.reviewReason && (
+                        <StatusPill tone="danger">
+                          {copy.assignments.reasons[assignment.reviewReason]}
+                        </StatusPill>
+                      )}
+                    </div>
+                    <p className="text-[var(--color-text-muted)]">
+                      {copy.assignments.started} {assignment.startedOn}
+                      {assignment.endedOn && (
+                        <>
+                          {" · "}
+                          {copy.assignments.ended} {assignment.endedOn}
+                          {assignment.endReason && (
+                            <> · {copy.assignments.reasons[assignment.endReason]}</>
+                          )}
+                          {assignment.endNote && <> · {assignment.endNote}</>}
+                        </>
+                      )}
+                    </p>
+                    {!assignment.endedOn && (
+                      <div className="flex items-center gap-2">
+                        <Select
+                          value={endReason}
+                          onValueChange={(value) => setEndReason(value as AssignmentEndReason)}
+                        >
+                          <SelectTrigger
+                            aria-label={copy.assignments.reasonLabel}
+                            className="h-9 w-auto"
+                          >
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {ASSIGNMENT_END_REASON_VALUES.map((reason) => (
+                              <SelectItem key={reason} value={reason}>
+                                {copy.assignments.reasons[reason]}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => submitEndAssignment(assignment.id)}
+                          disabled={submitting}
+                        >
+                          {copy.assignments.end}
+                        </Button>
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+              {pledge.needsAnimal && (
+                <p className="text-[var(--color-text-muted)]">{copy.assignments.needsAnimal}</p>
+              )}
+              <div className="flex gap-2">
+                <Input
+                  value={assignAnimalId}
+                  placeholder={copy.assignments.addPlaceholder}
+                  onChange={(event) => setAssignAnimalId(event.target.value)}
+                />
+                <Button
+                  type="button"
+                  onClick={submitAssign}
+                  disabled={submitting || !assignAnimalId}
+                >
+                  {copy.assignments.add}
+                </Button>
+              </div>
+            </section>
 
             {pledge.periods.length > 0 && (
               <section className="space-y-2">
