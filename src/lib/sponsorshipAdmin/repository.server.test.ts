@@ -157,6 +157,7 @@ class FakeQuery {
     if (this.table === "sponsorship_preference") return this.state.preferenceRows;
     if (this.table === "sponsorship_payment_proof") return this.state.proofRows;
     if (this.table === "audit_log") return this.state.auditRows;
+    if (this.table === "sponsorship_assignment") return this.state.assignmentRows;
     if (this.table === "sponsorship_period") return this.state.periodRows;
     if (this.table === "sponsorship_payment_allocation") return this.state.allocationRows;
     return [];
@@ -210,6 +211,7 @@ type FakeState = {
   preferenceRows: Record<string, unknown>[];
   proofRows: Record<string, unknown>[];
   auditRows: Record<string, unknown>[];
+  assignmentRows: Record<string, unknown>[];
   periodRows: Record<string, unknown>[];
   allocationRows: Record<string, unknown>[];
   rpcError: Error | null;
@@ -224,6 +226,7 @@ function createFakeClient(overrides: Partial<FakeState> = {}) {
     preferenceRows: [],
     proofRows: [proofRow()],
     auditRows: [],
+    assignmentRows: [],
     periodRows: [],
     allocationRows: [],
     rpcError: null,
@@ -841,5 +844,51 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     const repo = createSupabaseSponsorshipAdminRepository(client);
 
     expect(await repo.getProofSigningInfo(pledgeId)).toBeNull();
+  });
+
+  test("getPledgeDetail lists open assignments before ended ones", async () => {
+    const { client } = createFakeClient({
+      assignmentRows: [
+        {
+          id: "asg-ended",
+          pledge_id: pledgeId,
+          animal_id: "animal-1",
+          animal_name_snapshot: "小白",
+          started_on: "2026-06-01",
+          ended_on: "2026-07-15",
+          end_reason: "adopted",
+          note: null,
+          end_note: null,
+        },
+        {
+          id: "asg-open",
+          pledge_id: pledgeId,
+          animal_id: "animal-2",
+          animal_name_snapshot: "阿花",
+          started_on: "2026-08-01",
+          ended_on: null,
+          end_reason: null,
+          note: null,
+          end_note: null,
+        },
+      ],
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const detail = await repo.getPledgeDetail(pledgeId);
+
+    // Open first: it is what staff act on. The ended one stays as history
+    // rather than being hidden.
+    expect(detail?.assignments.map((a) => a.id)).toEqual(["asg-open", "asg-ended"]);
+    expect(detail?.assignments[1].endReason).toBe("adopted");
+  });
+
+  test("getPledgeDetail returns an empty assignment list when there are none", async () => {
+    const { client } = createFakeClient();
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const detail = await repo.getPledgeDetail(pledgeId);
+
+    expect(detail?.assignments).toEqual([]);
   });
 });

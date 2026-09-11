@@ -11,6 +11,7 @@ import type {
   PledgeListSearch,
   PledgeSummary,
   RecordPledgePaymentRepoInput,
+  SponsorshipAssignmentRecord,
   SponsorshipPeriodRecord,
   ReviewPledgeProofInput,
 } from "./types";
@@ -86,6 +87,18 @@ type AuditRow = {
   entity_id: string;
   detail: Record<string, unknown> | null;
   timestamp: string;
+};
+
+type AssignmentRow = {
+  id: string;
+  pledge_id: string;
+  animal_id: string | null;
+  animal_name_snapshot: string;
+  started_on: string;
+  ended_on: string | null;
+  end_reason: SponsorshipAssignmentRecord["endReason"];
+  note: string | null;
+  end_note: string | null;
 };
 
 const PLEDGE_SEARCH_CANDIDATE_LIMIT = 1000;
@@ -234,6 +247,33 @@ function mapPeriods(periodRows: PeriodRow[], allocationRows: AllocationRow[]) {
   });
 }
 
+/**
+ * Open assignments first, then ended ones newest-first. Open ones are what
+ * staff act on; ended ones stay visible as history rather than disappearing.
+ *
+ * `reviewReason` is filled in by the service, which has the animal state. The
+ * repository does not guess it.
+ */
+function mapAssignments(rows: AssignmentRow[]): SponsorshipAssignmentRecord[] {
+  const mapped: SponsorshipAssignmentRecord[] = rows.map((row) => ({
+    id: row.id,
+    animalId: row.animal_id,
+    animalNameSnapshot: row.animal_name_snapshot,
+    startedOn: row.started_on,
+    endedOn: row.ended_on,
+    endReason: row.end_reason,
+    note: row.note,
+    endNote: row.end_note,
+    reviewReason: null,
+  }));
+
+  return mapped.sort((a, b) => {
+    if ((a.endedOn === null) !== (b.endedOn === null)) return a.endedOn === null ? -1 : 1;
+    if (a.endedOn && b.endedOn && a.endedOn !== b.endedOn) return a.endedOn < b.endedOn ? 1 : -1;
+    return a.startedOn < b.startedOn ? 1 : -1;
+  });
+}
+
 function mapPreference(row: PreferenceRow): PledgeAnimalPreference {
   return {
     id: row.id,
@@ -359,42 +399,55 @@ export function createSupabaseSponsorshipAdminRepository(
 
       const row = pledgeData as PledgeRow;
 
-      const [supporters, preferencesResult, proofResult, auditResult, periodResult] =
-        await Promise.all([
-          loadSupportersByIds(client, [row.supporter_id]),
-          client
-            .from("sponsorship_preference")
-            .select("*")
-            .eq("pledge_id", id)
-            .order("rank", { ascending: true }),
-          // Newest-first, because this is the history list staff read. It is NOT
-          // the review order: `currentProof` below is chosen by
-          // `selectReviewTargetProof`, which must agree with
-          // review_sponsorship_payment_proof's own `order by created_at asc, id
-          // asc` — see proofReview.ts for why the queue drains oldest-first.
-          client
-            .from("sponsorship_payment_proof")
-            .select("*")
-            .eq("pledge_id", id)
-            .order("created_at", { ascending: false }),
-          client
-            .from("audit_log")
-            .select("id,actor_user_id,action,entity_id,detail,timestamp")
-            .eq("entity_id", id)
-            .order("timestamp", { ascending: false })
-            .limit(20),
-          // The monthly ledger, oldest month first — months read as a sequence,
-          // unlike the proof history, which reads newest-first.
-          client
-            .from("sponsorship_period")
-            .select("id,pledge_id,period_month,committed_cents")
-            .eq("pledge_id", id)
-            .order("period_month", { ascending: true }),
-        ]);
+      const [
+        supporters,
+        preferencesResult,
+        proofResult,
+        auditResult,
+        periodResult,
+        assignmentResult,
+      ] = await Promise.all([
+        loadSupportersByIds(client, [row.supporter_id]),
+        client
+          .from("sponsorship_preference")
+          .select("*")
+          .eq("pledge_id", id)
+          .order("rank", { ascending: true }),
+        // Newest-first, because this is the history list staff read. It is NOT
+        // the review order: `currentProof` below is chosen by
+        // `selectReviewTargetProof`, which must agree with
+        // review_sponsorship_payment_proof's own `order by created_at asc, id
+        // asc` — see proofReview.ts for why the queue drains oldest-first.
+        client
+          .from("sponsorship_payment_proof")
+          .select("*")
+          .eq("pledge_id", id)
+          .order("created_at", { ascending: false }),
+        client
+          .from("audit_log")
+          .select("id,actor_user_id,action,entity_id,detail,timestamp")
+          .eq("entity_id", id)
+          .order("timestamp", { ascending: false })
+          .limit(20),
+        // The monthly ledger, oldest month first — months read as a sequence,
+        // unlike the proof history, which reads newest-first.
+        client
+          .from("sponsorship_period")
+          .select("id,pledge_id,period_month,committed_cents")
+          .eq("pledge_id", id)
+          .order("period_month", { ascending: true }),
+        client
+          .from("sponsorship_assignment")
+          .select(
+            "id,pledge_id,animal_id,animal_name_snapshot,started_on,ended_on,end_reason,note,end_note",
+          )
+          .eq("pledge_id", id),
+      ]);
       if (preferencesResult.error) throw preferencesResult.error;
       if (proofResult.error) throw proofResult.error;
       if (auditResult.error) throw auditResult.error;
       if (periodResult.error) throw periodResult.error;
+      if (assignmentResult.error) throw assignmentResult.error;
 
       const periodRows = (periodResult.data ?? []) as PeriodRow[];
       // Allocations are fetched separately rather than through a nested select:
@@ -424,6 +477,10 @@ export function createSupabaseSponsorshipAdminRepository(
         proofHistory,
         currentProof: selectReviewTargetProof(proofHistory),
         periods: mapPeriods(periodRows, (allocationResult.data ?? []) as AllocationRow[]),
+        assignments: mapAssignments((assignmentResult.data ?? []) as AssignmentRow[]),
+        // The repository reports the raw fact; the service decides whether it
+        // amounts to "needs a person", because that also depends on status.
+        needsAnimal: false,
         recentAuditLog: auditLog,
       } satisfies PledgeDetail;
     },
