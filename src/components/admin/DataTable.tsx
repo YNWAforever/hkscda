@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 
 import { cn } from "../../lib/utils";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
+import { LoadFailure } from "./LoadFailure";
 
 export type DataTableColumn<T> = {
   /** Stable identifier for the column (used as the React key). */
@@ -22,6 +23,16 @@ type DataTableProps<T> = {
   skeletonRows?: number;
   /** Shown when there are no rows and not loading. */
   empty?: ReactNode;
+  /**
+   * The load failure, when the query that produces `rows` errored.
+   *
+   * Takes precedence over `empty`: a failed fetch leaves `rows` empty, and
+   * rendering that as "沒有結果" tells the operator there is no work waiting
+   * when in fact nothing was read. Pass the query's `error` straight through.
+   */
+  error?: unknown;
+  /** Re-runs the failed query. Shown as a retry control in the failure state. */
+  onRetry?: () => void;
   onRowClick?: (row: T) => void;
   /**
    * Optional per-row mobile renderer. When provided, the table is hidden below
@@ -47,10 +58,17 @@ export function DataTable<T>({
   loading = false,
   skeletonRows = 5,
   empty = "沒有結果",
+  error,
+  onRetry,
   onRowClick,
   renderMobileCard,
   className,
 }: DataTableProps<T>) {
+  // Precedence is loading -> error -> empty -> rows. `failed` must be consulted
+  // before the rows.length === 0 branch, otherwise an outage is rendered as
+  // "沒有結果" -- the defect this prop exists to close.
+  const failed = !loading && error != null;
+  const failureCell = <LoadFailure error={error} onRetry={onRetry} className="border-0" />;
   const table = (
     <Table className={className}>
       <TableHeader>
@@ -81,6 +99,12 @@ export function DataTable<T>({
               ))}
             </TableRow>
           ))
+        ) : failed ? (
+          <TableRow className="border-[var(--color-border)] hover:bg-transparent">
+            <TableCell colSpan={columns.length} className="px-3 py-4">
+              {failureCell}
+            </TableCell>
+          </TableRow>
         ) : rows.length === 0 ? (
           <TableRow className="border-[var(--color-border)] hover:bg-transparent">
             <TableCell
@@ -134,6 +158,8 @@ export function DataTable<T>({
               className="h-24 animate-pulse rounded-xl bg-[var(--color-surface-2)]"
             />
           ))
+        ) : failed ? (
+          failureCell
         ) : rows.length === 0 ? (
           <div className="rounded-xl border border-[var(--color-border)] px-3 py-10 text-center text-sm text-[var(--color-text-muted)]">
             {empty}

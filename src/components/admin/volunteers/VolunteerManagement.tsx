@@ -12,6 +12,7 @@ import type {
   VolunteerRegistrationSummary,
 } from "../../../lib/volunteers/types";
 import { DataTable, type DataTableColumn } from "../DataTable";
+import { StatFigure } from "../LoadFailure";
 import { TablePager } from "../TablePager";
 import {
   activityStatusLabels,
@@ -97,11 +98,16 @@ function StatCard({
   label,
   value,
   emphasis,
+  failed = false,
+  loading = false,
 }: {
   icon: React.ReactNode;
   label: string;
   value: number | string;
   emphasis?: boolean;
+  /** The query behind this figure failed. Renders "—", never 0. */
+  failed?: boolean;
+  loading?: boolean;
 }) {
   return (
     <div
@@ -115,7 +121,9 @@ function StatCard({
         {icon}
       </span>
       <div>
-        <p className="text-2xl font-bold tabular-nums text-[var(--color-panel)]">{value}</p>
+        <p className="text-2xl font-bold tabular-nums text-[var(--color-panel)]">
+          <StatFigure value={value} failed={failed} loading={loading} />
+        </p>
         <p className="text-xs text-[var(--color-text-muted)]">{label}</p>
       </div>
     </div>
@@ -192,6 +200,12 @@ export function VolunteerManagement() {
       ),
   });
 
+  // A failed query also yields `data === undefined`, so these defaults are only
+  // safe once the error is read separately. Without that, an outage renders as
+  // an empty table and zero KPIs -- the audit symptom where this page showed no
+  // records while the database held 12 activities and 5 registrations.
+  const activitiesFailed = activitiesQuery.isError;
+  const registrationsFailed = registrationsQuery.isError;
   const activities = activitiesQuery.data?.activities ?? [];
   const registrations = registrationsQuery.data?.registrations ?? [];
 
@@ -661,17 +675,23 @@ export function VolunteerManagement() {
           icon={<Users className="h-5 w-5" />}
           label="待審批人數"
           value={pendingCount}
-          emphasis={pendingCount > 0}
+          emphasis={!activitiesFailed && pendingCount > 0}
+          failed={activitiesFailed}
+          loading={activitiesQuery.isLoading}
         />
         <StatCard
           icon={<CalendarClock className="h-5 w-5" />}
           label="即將舉行的活動"
           value={upcomingCount}
+          failed={activitiesFailed}
+          loading={activitiesQuery.isLoading}
         />
         <StatCard
           icon={<Users className="h-5 w-5" />}
           label="目前顯示的報名"
           value={registrations.length}
+          failed={registrationsFailed}
+          loading={registrationsQuery.isLoading}
         />
       </div>
 
@@ -823,13 +843,18 @@ export function VolunteerManagement() {
           getRowKey={(activity) => activity.id}
           loading={activitiesQuery.isLoading}
           empty="尚未建立任何活動。按「新增活動」開始。"
+          error={activitiesQuery.error}
+          onRetry={() => void activitiesQuery.refetch()}
         />
         <TablePager
           page={activityPage}
           pageSize={VOLUNTEER_ADMIN_PAGE_SIZE}
+          // On failure `total` is undefined, which the pager already treats as
+          // "unknown". Marking it busy additionally disables Next, so the
+          // operator cannot page forward through a list that was never read.
           total={activitiesQuery.data?.total}
           onPageChange={setActivityPage}
-          busy={activitiesQuery.isFetching}
+          busy={activitiesQuery.isFetching || activitiesFailed}
           label="活動"
         />
       </section>
@@ -912,13 +937,15 @@ export function VolunteerManagement() {
               ? `「${activityFilter.title}」目前沒有符合條件的報名。`
               : "沒有符合條件的報名。試試放寬篩選條件。"
           }
+          error={registrationsQuery.error}
+          onRetry={() => void registrationsQuery.refetch()}
         />
         <TablePager
           page={registrationPage}
           pageSize={VOLUNTEER_ADMIN_PAGE_SIZE}
           total={registrationsQuery.data?.total}
           onPageChange={setRegistrationPage}
-          busy={registrationsQuery.isFetching}
+          busy={registrationsQuery.isFetching || registrationsFailed}
           label="報名"
         />
       </section>
