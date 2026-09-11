@@ -2,7 +2,9 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { SponsorshipAdminRepository } from "./repository.server";
 import {
+  assignAnimalSchema,
   cancelPledgeSchema,
+  endAssignmentSchema,
   pledgeListSearchSchema,
   recordPledgePaymentSchema,
   reviewPledgeProofSchema,
@@ -217,6 +219,48 @@ export function createSponsorshipAdminService({
       });
 
       await notify(detail, "cancelled");
+    },
+
+    async assignAnimal(args: { actorUserId: string; pledgeId: string; input: unknown }) {
+      const input = assignAnimalSchema.parse(args.input);
+      const detail = requirePledge(await repo.getPledgeDetail(args.pledgeId));
+      // Checked here as well as in the RPC so staff get a clear message rather
+      // than a raw database exception; the RPC remains the guard that cannot
+      // be bypassed.
+      if (detail.status === "cancelled") {
+        throw new Error("Sponsorship pledge is already cancelled");
+      }
+
+      return repo.assignAnimal({
+        pledgeId: args.pledgeId,
+        animalId: input.animalId,
+        actorUserId: args.actorUserId,
+        note: input.note ?? null,
+      });
+    },
+
+    async endAssignment(args: {
+      actorUserId: string;
+      pledgeId: string;
+      assignmentId: string;
+      input: unknown;
+    }) {
+      const input = endAssignmentSchema.parse(args.input);
+      const detail = requirePledge(await repo.getPledgeDetail(args.pledgeId));
+      const assignment = detail.assignments.find((a) => a.id === args.assignmentId);
+      if (!assignment) {
+        throw new Error("Sponsorship assignment not found");
+      }
+      if (assignment.endedOn !== null) {
+        throw new Error("Sponsorship assignment is already ended");
+      }
+
+      await repo.endAssignment({
+        assignmentId: args.assignmentId,
+        actorUserId: args.actorUserId,
+        reason: input.reason,
+        note: input.note ?? null,
+      });
     },
   };
 }

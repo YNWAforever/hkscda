@@ -85,6 +85,8 @@ function createFakeRepo(overrides: Partial<Repo> = {}): Repo {
     recordPayment: mock(async () => ({ id: "proof-1" })),
     reviewProof: mock(async () => {}),
     cancelPledge: mock(async () => {}),
+    assignAnimal: mock(async () => ({ id: "asg-1" })),
+    endAssignment: mock(async () => {}),
     ...overrides,
   } as Repo;
 }
@@ -674,5 +676,125 @@ describe("createSponsorshipAdminService", () => {
       service.cancelPledge({ actorUserId, pledgeId, input: {} }),
     ).resolves.toBeUndefined();
     expect(repo.cancelPledge).toHaveBeenCalled();
+  });
+
+  test("assignAnimal passes the animal through to the repository", async () => {
+    const repo = createFakeRepo();
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await service.assignAnimal({
+      actorUserId,
+      pledgeId,
+      input: { animalId: "11111111-2222-4333-8444-555555555555" },
+    });
+
+    expect(repo.assignAnimal).toHaveBeenCalledWith({
+      pledgeId,
+      animalId: "11111111-2222-4333-8444-555555555555",
+      actorUserId,
+      note: null,
+    });
+  });
+
+  test("assignAnimal refuses a cancelled pledge before touching the database", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () => baseDetail({ status: "cancelled" })),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await expect(
+      service.assignAnimal({
+        actorUserId,
+        pledgeId,
+        input: { animalId: "11111111-2222-4333-8444-555555555555" },
+      }),
+    ).rejects.toThrow("Sponsorship pledge is already cancelled");
+    expect(repo.assignAnimal).not.toHaveBeenCalled();
+  });
+
+  test("endAssignment passes the reason through", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({
+          assignments: [
+            {
+              id: "asg-1",
+              animalId: "animal-1",
+              animalNameSnapshot: "小白",
+              startedOn: "2026-07-01",
+              endedOn: null,
+              endReason: null,
+              note: null,
+              endNote: null,
+              reviewReason: null,
+            },
+          ],
+        }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await service.endAssignment({
+      actorUserId,
+      pledgeId,
+      assignmentId: "asg-1",
+      input: { reason: "adopted", note: "rehomed" },
+    });
+
+    expect(repo.endAssignment).toHaveBeenCalledWith({
+      assignmentId: "asg-1",
+      actorUserId,
+      reason: "adopted",
+      note: "rehomed",
+    });
+  });
+
+  test("endAssignment refuses one that is already ended", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({
+          assignments: [
+            {
+              id: "asg-1",
+              animalId: "animal-1",
+              animalNameSnapshot: "小白",
+              startedOn: "2026-07-01",
+              endedOn: "2026-08-01",
+              endReason: "adopted",
+              note: null,
+              endNote: null,
+              reviewReason: null,
+            },
+          ],
+        }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await expect(
+      service.endAssignment({
+        actorUserId,
+        pledgeId,
+        assignmentId: "asg-1",
+        input: { reason: "adopted" },
+      }),
+    ).rejects.toThrow("Sponsorship assignment is already ended");
+    expect(repo.endAssignment).not.toHaveBeenCalled();
   });
 });
