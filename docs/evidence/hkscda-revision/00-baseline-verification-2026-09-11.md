@@ -134,3 +134,34 @@ None of the five records required by master plan §15.1 existed at `c037cc1`:
 - `docs/superpowers/specs/hkscda-volunteer-policy-decisions.md` — missing
 - `docs/superpowers/plans/hkscda-migration-and-release.md` — missing
 - `docs/evidence/hkscda-revision/` — missing (created by this file)
+
+## 7. Production-write guard on the animal importer — verified behaviour
+
+`scripts/import-hkscda-animals.js`, exposed as `bun run import:hkscda`, built a
+service_role Supabase client from `VITE_SUPABASE_URL` with **no project-ref
+check**. It reads `.env` / `.env.local`, and `.env.local` in this checkout points
+at the production project, so a single command would have written scraped animal
+rows and public storage objects over real animal records.
+
+`seed-admin.js` already exported a tested guard for exactly this
+(`isProductionProjectRef`, covered by `scripts/seed-admin.test.ts`). It is now
+imported rather than re-declared, so the project ref is defined once.
+
+Verified by running the script directly:
+
+| Target | Command | Result |
+|---|---|---|
+| Production ref | `VITE_SUPABASE_URL=https://iihqjzilgawhfdhdevam.supabase.co node scripts/import-hkscda-animals.js` | exit 1, "Refusing to run against the production Supabase project", **before** any client is created |
+| Local stack | `VITE_SUPABASE_URL=http://127.0.0.1:55321 node scripts/import-hkscda-animals.js` | passes the guard, proceeds, then exits 1 on the genuinely missing `data/hkscda-animals.json` |
+
+Fails closed for production, open for local — the importer remains usable.
+
+### Flagged, not changed
+
+`scripts/import-adoption-guide-drafts.mjs` also builds a service_role client with
+no project-ref guard. It was **not** blocked here: unlike the animal importer it
+requires an explicit `--apply` flag plus `ADOPTION_GUIDE_IMPORT_ACTOR_ID`, and it
+creates content *drafts* rather than overwriting master records, so running it
+against production may be a legitimate authoring workflow. Whether it should
+require a typed confirmation is an owner decision, recorded here rather than
+decided unilaterally.
