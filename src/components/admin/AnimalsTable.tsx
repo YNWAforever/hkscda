@@ -3,6 +3,7 @@ import { useState } from "react";
 
 import { supabase } from "../../lib/supabase";
 import { filterAdminAnimals, isArchivedAnimal } from "../../lib/animals/adminSearch";
+import { needsSpeciesVerification } from "../../lib/animals/adminCatalogue";
 import type { Animal, AnimalPublicationState } from "../../types/animal";
 import { DataTable, type DataTableColumn } from "./DataTable";
 import { StatusPill, type StatusTone } from "./StatusBadge";
@@ -68,6 +69,10 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
   // correcting, and its applications and sponsorships still point at it.
   const filtered = filterAdminAnimals(animals, search, { includeArchived });
   const archivedCount = animals.filter(isArchivedAnimal).length;
+  // Species must be cat or dog. These still carry the legacy 'sponsor'
+  // placeholder and need a human to say which -- it cannot be derived, and
+  // guessing from a name is exactly the incorrect matching the plan forbids.
+  const needsSpeciesCount = filtered.filter(needsSpeciesVerification).length;
 
   /**
    * Archives instead of deleting.
@@ -230,6 +235,13 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
           </label>
         ) : null}
       </div>
+
+      {needsSpeciesCount > 0 ? (
+        <p className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-2 text-sm text-[var(--color-text-muted)]">
+          有 {needsSpeciesCount} 筆記錄的品種仍是舊有的「助養」值，需要人手確認為貓或狗。
+          更改品種不會影響領養／助養刊登範圍。
+        </p>
+      ) : null}
 
       {actionError ? (
         <p role="alert" className="text-sm text-[var(--color-error)]">

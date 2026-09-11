@@ -1,6 +1,10 @@
 import { describe, expect, test } from "bun:test";
 
-import { adminAnimalFilter, isAdminSectionMember } from "./adminCatalogue";
+import {
+  adminAnimalFilter,
+  isAdminSectionMember,
+  needsSpeciesVerification,
+} from "./adminCatalogue";
 import { isPublicAnimalMember } from "./publicListing";
 import type { Animal } from "../../types/animal";
 
@@ -93,5 +97,50 @@ describe("species sections are not narrowed by adoption eligibility", () => {
 
     expect(isAdminSectionMember(withdrawn, "cat")).toBe(true);
     expect(isPublicAnimalMember(withdrawn, "cat")).toBe(false);
+  });
+});
+
+describe("retiring the legacy 'sponsor' species", () => {
+  test("flags exactly the rows a human still has to assign a species to", () => {
+    expect(needsSpeciesVerification({ type: "sponsor" })).toBe(true);
+    expect(needsSpeciesVerification({ type: "cat" })).toBe(false);
+    expect(needsSpeciesVerification({ type: "dog" })).toBe(false);
+  });
+
+  test("a corrected animal keeps its sponsorship membership", () => {
+    // Species and programme are different questions. Correcting a record's
+    // species says nothing about which catalogues it belongs to, so the
+    // corrected animal must remain exactly as sponsorship-eligible as before.
+    //
+    // Until migration 20260911150000 the membership trigger rewrote both flags
+    // on a species change, so this correction silently set
+    // sponsorship_eligible=false and removed the animal from the sponsorship
+    // catalogue -- possibly one people were already paying for. Verified
+    // against real Postgres in
+    // docs/evidence/hkscda-revision/05-phase2-species-retirement-2026-09-11.md.
+    const before = animal({
+      type: "sponsor",
+      adoption_eligible: false,
+      sponsorship_eligible: true,
+    });
+    const afterCorrection = { ...before, type: "cat" as const };
+
+    expect(needsSpeciesVerification(before)).toBe(true);
+    expect(needsSpeciesVerification(afterCorrection)).toBe(false);
+
+    // Still in the sponsorship catalogue, on both sides.
+    expect(isAdminSectionMember(afterCorrection, "sponsor")).toBe(true);
+    expect(isPublicAnimalMember(afterCorrection, "sponsor")).toBe(true);
+    // And now reachable under its real species too.
+    expect(isAdminSectionMember(afterCorrection, "cat")).toBe(true);
+  });
+
+  test("species is never guessed from a name", () => {
+    // Nothing in the record says whether a sponsor-typed animal is a cat or a
+    // dog. The predicate reports that a decision is needed; it does not make one.
+    const unknown = animal({ type: "sponsor", name: "小白" });
+    expect(needsSpeciesVerification(unknown)).toBe(true);
+    expect(isAdminSectionMember(unknown, "cat")).toBe(false);
+    expect(isAdminSectionMember(unknown, "dog")).toBe(false);
   });
 });

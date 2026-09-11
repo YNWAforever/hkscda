@@ -37,6 +37,25 @@ export function adminAnimalFilter(section: AdminAnimalSection): AdminAnimalFilte
 }
 
 /**
+ * True while an animal still carries the legacy `'sponsor'` species placeholder.
+ *
+ * Species must be cat or dog; sponsorship is an eligibility, not a species. The
+ * remaining `type='sponsor'` rows are the ones a human still has to assign a
+ * real species to -- it cannot be derived, because nothing in the record says
+ * whether the animal is a cat or a dog, and guessing from a name is exactly the
+ * incorrect matching the migration rules forbid.
+ *
+ * Correcting one is now safe: until migration 20260911150000 the membership
+ * trigger rewrote both eligibility flags on a species change, so fixing the
+ * species silently removed the animal from the sponsorship catalogue. It now
+ * preserves membership, which is what makes working through this list possible
+ * at all.
+ */
+export function needsSpeciesVerification(animal: Pick<Animal, "type">): boolean {
+  return animal.type === "sponsor";
+}
+
+/**
  * The same decision as a pure predicate, for asserting parity with the public
  * side without a database.
  */
