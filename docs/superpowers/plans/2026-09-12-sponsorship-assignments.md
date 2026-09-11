@@ -1015,7 +1015,10 @@ In `src/lib/sponsorshipAdmin/service.test.ts`, inside `baseDetail`, add after
 
 Run: `bunx tsc --noEmit`
 
-Expected: exit 0.
+Expected: STILL FAILING, now only in `repository.server.ts` — `getPledgeDetail`
+cannot satisfy a `PledgeDetail` that gained two required fields until Task 6
+populates them. That is why these two tasks are done together; `tsc` reaches
+exit 0 at the end of Task 6, not here.
 
 - [ ] **Step 5: Commit**
 
@@ -1173,7 +1176,7 @@ destructuring it as `assignmentResult`:
 ```ts
         client
           .from("sponsorship_assignment")
-          .select("id,pledge_id,animal_id,animal_name_snapshot,started_on,ended_on,end_reason,note,end_note")
+          .select("id,pledge_id,animal_id,animal_name_snapshot,started_on,ended_on,end_reason,note,end_note,animal:animal_id(sponsorship_eligible,status,retired_at,publication_state,animal_profile_internal(deceased_at,adopted_at))")
           .eq("pledge_id", id),
 ```
 
@@ -2199,7 +2202,7 @@ Then replace the service's `getPledgeDetail` pass-through with:
         // no animal. `cancelled` is excluded because it takes no further
         // payments, so there is nothing for staff to resolve.
         needsAnimal:
-          detail.status !== "cancelled" &&
+          detail.status === "active" &&
           assignments.every((assignment) => assignment.endedOn !== null),
       };
     },

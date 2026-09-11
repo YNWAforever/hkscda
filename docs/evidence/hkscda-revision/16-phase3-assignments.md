@@ -236,13 +236,16 @@ receipts** must agree". Three of those four now agree. The fourth does not.
   donation, a payment or a receipt. This slice closes the **relationship** half
   of the gate; the receipts clause is untouched and remains open, exactly as
   `13-phase3-monthly-ledger.md` recorded it.
-- **The animal picker is a raw UUID box.** `PledgeDetailDrawer.tsx:598` renders
+- **The animal picker is a raw UUID box.** `PledgeDetailDrawer.tsx:600` renders
   a plain `<Input>` whose placeholder is literally `動物 UUID` / `Animal UUID`.
   Staff must paste an identifier. There is no search, no name lookup, and no
   eligibility preview — the only thing standing between a typo and a wrong
   confirmation is the database refusing an ineligible animal, which a typo that
   happens to name an *eligible* animal will pass.
-- **An assignment outside the supporter's preference list is never flagged.**
+- **Fixed after this document's first draft.** An assignment for an animal outside
+  the supporter's preference list used to get no `reviewReason` at all, because
+  the state map was built from preferences. The state now comes from the assigned
+  animal itself, so any assigned animal is flagged when it leaves (`cf95c7b`).
   `getPledgeDetail` builds its animal-state map from the pledge's
   `preferences` only (`service.ts:144–148`); the assignment query embeds no
   animal state. So `reviewReasonFor` receives `null` and returns `null` for any
@@ -285,7 +288,7 @@ from zero.
 | Migrations | `bunx supabase db reset --local` | exit 0, **63** applied from zero |
 | Typecheck | `bunx tsc --noEmit` | exit 0, no output |
 | Lint | `bun run lint` | **0 errors**, 41 pre-existing `react-refresh` warnings (after the fix above) |
-| Tests | `bun test` | **2164 pass, 46 skip, 0 fail** (2210 tests across 332 files, 41.82s) |
+| Tests | `bun test` | **2170 pass, 46 skip, 0 fail (332 files)
 | RLS | `bun run test:rls` | **43 pass, 0 fail** (2 files) |
 | Database | `bun run test:db` | **37 pass, 0 fail** (4 files) |
 | Build | `bun run build` | exit 0, built in 28.67s |
@@ -319,3 +322,46 @@ Two further cautions carried forward from `14-…` and
   applying onto production's populated schema;
 - nothing here proposes a release. Applying any of it is a production data
   change and needs explicit approval.
+
+## Corrections and additions after the final review
+
+This document was written before the last two fixes; both are now in the branch.
+
+- **An internal-profile adoption now counts as the animal leaving.** Adoption is
+  recorded in two unrelated places — `animals.status` and
+  `animal_profile_internal.adopted_at` — and the adoptions internal-profile form
+  writes only the second, never touching the first. Neither the assign guard nor
+  the attention signal read it, so an animal adopted through that form stayed
+  assignable, its assignment was never flagged, and the supporter kept paying.
+  Both the TypeScript rule and its SQL counterpart now read it (`1ab42b9`).
+- **The two eligibility rules are provably equivalent**, not merely plausibly so.
+  The TypeScript `isAssignable` and the SQL guard were evaluated over the full
+  cross-product of all six conditions — 144 states, plus 36 more with no
+  `animal_profile_internal` row at all — by calling the real RPC rather than
+  retyping its predicate. 180 evaluations, **zero disagreements**. Exactly two
+  states are assignable: eligible, published, not retired, not deceased, not
+  adopted, and `status` in (`available`, `fostered`).
+
+### Also left undone
+
+- `sponsorship_assignment.note` is effectively write-only: the drawer's add row
+  sends only the animal id, auto-assign passes `null`, and nothing renders it.
+  The `end_note` column exists precisely so ending cannot destroy that value —
+  a protection with nothing yet to protect.
+- `allocateProof` and its RPC `allocate_sponsorship_payment_with_audit` have no
+  caller in `src/`. Carry-over from the ledger slice, not this work.
+- An open assignment whose animal row was hard-deleted (`animal_id` → null) is
+  invisible to **both** signals. Unreachable today — animals are retired via
+  `retired_at`, never deleted — but it is the same failure mode.
+
+### Final gate numbers, measured at branch head
+
+| Gate | Result |
+|---|---|
+| `bunx supabase db reset --local` | exit 0, 63 migrations from zero |
+| `bunx tsc --noEmit` | 0 |
+| `bun run lint` | 0 errors (41 pre-existing warnings) |
+| `bun test` | **2170 pass, 46 skip, 0 fail** |
+| `bun run test:rls` | 43 pass, 0 fail |
+| `bun run test:db` | 37 pass, 0 fail |
+| `bun run build` | 0 |

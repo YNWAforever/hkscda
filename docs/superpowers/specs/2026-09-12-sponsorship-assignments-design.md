@@ -45,19 +45,22 @@ public.sponsorship_assignment
   started_on            date not null
   ended_on              date
   end_reason            text
-  note                  text
+  note                  text          -- why the animal was confirmed; immutable
+  end_note              text          -- why it ended; SEPARATE so ending cannot
+                                      -- destroy the reason above
   created_by            uuid -> admin_user(id)
   ended_by              uuid -> admin_user(id)
   created_at            timestamptz not null default now()
   updated_at            timestamptz not null default now()
 ```
 
-`started_on` is the database's `current_date` at the moment the assignment is
-made, whether automatically on approval or by hand; `ended_on` is `current_date`
-when it is ended. Both come from the database clock, consistent with the existing
-sponsorship RPCs, which already use `now()`. Nothing here depends on a wall-clock
+`started_on` is the Hong Kong date at the moment the assignment is made, whether
+automatically on approval or by hand; `ended_on` likewise when it is ended. Both
+use `(now() at time zone 'Asia/Hong_Kong')::date` rather than `current_date`: the
+database runs UTC, so a plain `current_date` stamps the previous day for anything
+recorded before 08:00 local, and the association operates in Hong Kong. Nothing here depends on a wall-clock
 comparison, so no injectable clock is needed — the one rule that could have
-(`selectAutoAssignPreference`) is a pure ranking with no time in it.
+(`selectAutoAssignAnimal`) is a pure ranking with no time in it.
 
 `animal_name_snapshot` mirrors what `sponsorship_preference` already does, so
 history survives an animal record changing. `on delete set null` matches the
@@ -288,7 +291,7 @@ and the migration hygiene fixes named above.
 
 ## Testing
 
-**Unit** — `selectAutoAssignPreference` as a pure function, the way
+**Unit** — `selectAutoAssignAnimal` as a pure function, the way
 `planPaymentAllocation` and `selectReviewTargetProof` already are, so the rule is
 testable without a database and the SQL is not its only home.
 
