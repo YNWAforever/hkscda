@@ -10,7 +10,13 @@ evidence under `docs/evidence/hkscda-revision/`.
 
 ## Current phase
 
-**Phase 1 — Restore a Trustworthy System.** In progress.
+**Phase 2 — Animals and the Public Website: Code Complete / Assets Pending.**
+Every part that is an engineering problem is delivered and verified; the
+remainder needs image files, a product decision, and production access. Full
+breakdown in `docs/evidence/hkscda-revision/07-phase2-completion-assessment-2026-09-11.md`.
+
+**Phase 1 — Restore a Trustworthy System.** In progress; 1.1 still blocked on
+production read access.
 
 Three states are tracked separately throughout and must never be conflated:
 
@@ -214,6 +220,14 @@ The admin delete cascaded away `animal_profile_internal` and `animal_match`,
 NULLed three preference/followup links, and where a constraint blocked it the
 error was never read — so the UI reported success while nothing happened.
 Replaced with reversible archival; errors are surfaced.
+
+### Slices N–Q — remaining Phase 2
+
+- `52d9509` species correction no longer destroys catalogue membership, which
+  was the blocker to retiring the legacy `type='sponsor'` value
+- `07b6802` homepage features only animals that have a photograph
+- `bc7f245` source mapping rebuilt; photograph gap quantified by reference
+  number — 14 available, 249 missing, matching the audit's count exactly
 
 ### Working records
 
