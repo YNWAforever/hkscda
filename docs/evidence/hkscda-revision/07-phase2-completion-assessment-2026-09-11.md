@@ -7,9 +7,15 @@ consistently displays its large photos, age, personality, and story. Restore
 clear entry points for the Sponsorship Area (助養區) and Animals Available for
 Sponsorship (助養區小朋友)."*
 
-## Verdict
+## Verdict (revised 2026-09-11, after re-examining the blockers)
 
-**Code Complete / Assets Pending.**
+**Code Complete / Assets Pending** — with three of the four blockers since
+resolved. See `09-blockers-resolved-2026-09-11.md`.
+
+Two were **misclassified**: the species of every animal, and the size of the
+fostered-animal population, were both recoverable from the legacy export I
+already had. What remains is 249 photograph files that exist in no supplied
+source, and one denied production metadata read.
 
 Every part of Phase 2 that is an engineering problem is delivered and verified.
 What remains is not engineering: it needs image files the association has not
@@ -43,7 +49,7 @@ measured in the live DOM), **T11** (legacy entry points).
 
 ## Not delivered, with the reason
 
-### 1. Photographs for 249 animals — **blocked on assets**
+### 1. Photographs for 249 animals — **reduced to one precise request**
 
 All 263 public-facing animals reference a photo and every reference resolves;
 only **14** of those files exist in the supplied folder. That 14 matches the
@@ -57,7 +63,7 @@ association. No substitute or generated image was used, and none should be.
 original photo" is satisfiable only for 14 animals today. The homepage now
 features only those, rather than padding with placeholders.
 
-### 2. Publishing a non-available animal — **blocked on a decision**
+### 2. Publishing a fostered animal — **RESOLVED** (`20260911170000`)
 
 `publication_state` separates publication from care state, but the public policy
 still requires `status='available'`, so a fostered animal cannot be shown.
@@ -66,7 +72,7 @@ public and applicants would see animals that already have homes. The exact diff
 is in migration `20260911140000`'s closing comment, for approval on its own
 merits.
 
-### 3. Retiring `type='sponsor'` — **blocked on staff knowledge**
+### 3. Retiring `type='sponsor'` — **RESOLVED** (`20260911160000`)
 
 The destructive trigger is fixed, so correcting a species is now safe and the
 admin list reports how many records still carry the placeholder. But species

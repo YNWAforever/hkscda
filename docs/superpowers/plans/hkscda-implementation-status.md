@@ -229,6 +229,17 @@ Replaced with reversible archival; errors are surfaced.
 - `bc7f245` source mapping rebuilt; photograph gap quantified by reference
   number — 14 available, 249 missing, matching the audit's count exactly
 
+### Blocker resolution
+
+`9bc355b` resolved three of the four Phase 2 blockers from the legacy export:
+species recoverable by unique reference number (128 mapped), fostered animals
+publishable while adopted stay hidden (65 unblocked, 13 still excluded), and the
+photograph gap reduced to a 249-file, 439 MB handover manifest.
+
+Remaining: those 249 files exist in no supplied source, and a metadata-only
+production schema probe was denied by the permission classifier — so whether
+`donation.contact_*` exists in production is still unanswered.
+
 ### Working records
 
 Commits `382ca5d`, `fb47f72`. Baseline verification, 217-entry source defect
