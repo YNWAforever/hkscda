@@ -21,7 +21,12 @@ describe("adult cat copy audit", () => {
       readFileSync(join(process.cwd(), file), "utf8").includes(oldSentence),
     );
     expect(matches).toEqual([]);
-  });
+    // Reads every one of the ~1000 tracked files under src/ and supabase/
+    // synchronously. That is ~0.8s on an idle machine but 5-7s when the rest of
+    // the suite is competing for the disk, which put it over bun:test's 5s
+    // default often enough to fail loaded runs on a repository that had not
+    // changed. The assertion is untouched; only the budget reflects the work.
+  }, 30_000);
 
   test("uses the canonical sentence publicly and narrowly repairs CMS bodies", () => {
     // This sentence used to be hardcoded directly in
