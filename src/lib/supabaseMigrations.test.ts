@@ -958,4 +958,26 @@ describe("supabase migration safety", () => {
       expect(sql).toContain(`(${slug}, '{`);
     }
   });
+
+  test("adds sponsorship assignments with explicit grants, RLS and an anon revoke", () => {
+    const sql = readMigration("20260912120000_sponsorship_assignments.sql");
+
+    // Many sponsors per animal is the point: only the OPEN assignment is
+    // unique, and only per (pledge, animal).
+    expect(sql).toContain(
+      "create unique index if not exists sponsorship_assignment_one_open_per_animal",
+    );
+    expect(sql).toContain("where ended_on is null");
+    expect(sql).not.toContain("unique (animal_id)");
+
+    // A reason is recorded exactly when the relationship ends.
+    expect(sql).toContain("(ended_on is null) = (end_reason is null)");
+
+    expect(sql).toContain("alter table public.sponsorship_assignment enable row level security");
+    expect(sql).toContain("revoke all on public.sponsorship_assignment from anon");
+
+    // The ledger tables shipped without an anon revoke; close it here.
+    expect(sql).toContain("revoke all on public.sponsorship_period from anon");
+    expect(sql).toContain("revoke all on public.sponsorship_payment_allocation from anon");
+  });
 });
