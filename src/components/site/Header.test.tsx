@@ -36,7 +36,17 @@ describe("public navigation IA", () => {
   test("covers the public routes without duplicating a destination", () => {
     const destinations = allItems.map((item) => item.to);
     expect(new Set(destinations).size).toBe(destinations.length);
-    expect(navGroups).toHaveLength(5);
+    // Six since 助養區 was promoted to a top-level group; /sponsors moved out of
+    // 支持救援 rather than being listed twice, which the uniqueness check above
+    // would reject.
+    expect(navGroups).toHaveLength(6);
+  });
+
+  test("gives the sponsorship area a top-level entry point", () => {
+    const sponsorshipGroup = navGroups.find((group) => group.label === "助養區");
+    expect(sponsorshipGroup).toBeDefined();
+    expect(sponsorshipGroup?.items.map((item) => item.label)).toContain("助養區小朋友");
+    expect(sponsorshipGroup?.items.map((item) => item.to)).toContain("/sponsors");
   });
 
   test("every destination is a same-origin router path", () => {

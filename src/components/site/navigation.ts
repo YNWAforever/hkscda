@@ -22,9 +22,21 @@ export const navGroups: NavGroup[] = [
     ],
   },
   {
+    // Sponsorship is one of the association's two primary journeys, but its
+    // only entry point was a single item buried inside 支持救援, so 助養區 had
+    // no top-level presence at all and 助養區小朋友 existed nowhere in the
+    // product. Promoted here rather than duplicated: the destination moved out
+    // of 支持救援, which the "no duplicated destination" guard in
+    // Header.test.tsx would otherwise reject.
+    label: "助養區",
+    items: [
+      { label: "助養區小朋友", to: "/sponsors" },
+      { label: "立即助養", to: "/sponsors/pledge" },
+    ],
+  },
+  {
     label: "支持救援",
     items: [
-      { label: "每月助養", to: "/sponsors" },
       { label: "立即捐助", to: "/donate" },
       { label: "成為義工", to: "/volunteer" },
       { label: "企業及團體參與", to: "/volunteer/group" },

@@ -25,8 +25,12 @@ export function AnimalCard({
         to={detailHref}
         className="animal-profile-card-link focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-inset"
       >
+        {/* The photograph leads the card. It used to sit inside the identity
+            row as an 88px square beside the name, so the animal -- the whole
+            reason someone is on this page -- occupied less area than its own
+            caption. */}
+        <AnimalPhoto animal={animal} />
         <div className="animal-profile-identity">
-          <AnimalPhoto animal={animal} />
           <div className="min-w-0">
             <p className="animal-profile-code">編號 {profile?.code || "未有記錄"}</p>
             <h2>{animal.name}</h2>

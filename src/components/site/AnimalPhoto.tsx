@@ -12,7 +12,7 @@ export function AnimalPhoto({ animal, detail = false }: { animal: Animal; detail
       className={
         detail
           ? "animal-profile-photo animal-profile-photo-detail detail-gallery"
-          : "animal-profile-photo public-animal-media"
+          : "animal-profile-photo animal-profile-photo-card public-animal-media"
       }
     >
       {hasPhoto ? (
