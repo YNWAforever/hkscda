@@ -34,6 +34,35 @@ export type PaymentProofRecord = {
   createdAt: string;
 };
 
+/**
+ * One month of a sponsorship. `committedCents` is what the month asked for;
+ * `allocatedCents` is the sum of the payments attributed to it, so the two are
+ * never the same number stored twice.
+ */
+export type SponsorshipPeriodRecord = {
+  id: string;
+  /** First day of the month, `YYYY-MM-01`. */
+  periodMonth: string;
+  committedCents: number;
+  allocatedCents: number;
+  /** `committedCents - allocatedCents`, floored at zero. */
+  outstandingCents: number;
+  allocations: PaymentAllocationRecord[];
+};
+
+/**
+ * Attribution of one approved payment to one month — not a second revenue row.
+ * A negative `amountCents` is a reversal and names the entry it undoes.
+ */
+export type PaymentAllocationRecord = {
+  id: string;
+  proofId: string;
+  amountCents: number;
+  reversesAllocationId: string | null;
+  note: string | null;
+  createdAt: string;
+};
+
 export type PledgeAuditEntry = {
   id: string;
   actorUserId: string | null;
@@ -62,6 +91,8 @@ export type PledgeDetail = PledgeSummary & {
   preferences: PledgeAnimalPreference[];
   proofHistory: PaymentProofRecord[];
   currentProof: PaymentProofRecord | null;
+  /** The monthly ledger, oldest month first. */
+  periods: SponsorshipPeriodRecord[];
   recentAuditLog: PledgeAuditEntry[];
 };
 

@@ -7,7 +7,8 @@ import {
   recordPledgePaymentSchema,
   reviewPledgeProofSchema,
 } from "./schemas";
-import type { PledgeDetail } from "./types";
+import { MAX_ADVANCE_PERIODS, monthStartOf, planPaymentAllocation } from "./allocation";
+import type { PledgeDetail, PaymentProofRecord } from "./types";
 import type { SendPledgeStatusUpdateEmailArgs } from "./notifications.server";
 import { pledgeReference } from "../sponsorship/statusSummary";
 
@@ -25,6 +26,44 @@ export type CreateSponsorshipAdminServiceArgs = {
   client: SupabaseClient;
   logger?: Pick<Console, "error">;
 };
+
+/**
+ * Works out which months an approved payment pays for.
+ *
+ * Returned rather than applied: the plan travels into
+ * `review_sponsorship_payment_proof` so the approval and the attribution commit
+ * together. Approving in one transaction and attributing in another would leave
+ * a window where money is verified but belongs to no month, and a crash inside
+ * that window would make it permanent.
+ */
+function planApprovedPayment(proof: PaymentProofRecord, detail: PledgeDetail) {
+  const plan = planPaymentAllocation({
+    paymentCents: proof.amountCents,
+    periods: detail.periods,
+    committedCents: detail.amountCents,
+    // payment_date is when the money moved; the month it pays for starts there
+    // and runs forward past whatever is already settled.
+    startMonth: monthStartOf(proof.paymentDate),
+  });
+
+  if (plan.unallocatedCents > 0) {
+    // Refusing beats absorbing. A payment covering more than MAX_ADVANCE_PERIODS
+    // months is not ordinary traffic -- far more likely a mistyped amount -- and
+    // approving it here would leave part of a supporter's money attributed to no
+    // month at all. Staff can correct the amount, reject the proof, or attribute
+    // it deliberately.
+    throw new Error(
+      `Payment of ${proof.amountCents} cents exceeds ${MAX_ADVANCE_PERIODS} months of this ` +
+        `pledge; ${plan.unallocatedCents} cents could not be attributed to a month. ` +
+        `Check the amount, or attribute this payment manually.`,
+    );
+  }
+
+  return plan.allocations.map((allocation) => ({
+    periodMonth: allocation.periodMonth,
+    amountCents: allocation.amountCents,
+  }));
+}
 
 function requirePledge(detail: PledgeDetail | null): PledgeDetail {
   if (!detail) throw new Error("Sponsorship pledge not found");
@@ -149,11 +188,16 @@ export function createSponsorshipAdminService({
         throw new Error("Sponsorship pledge has no proof pending review");
       }
 
+      // A rejected payment pays for nothing, so it attributes to nothing.
+      const allocations =
+        input.decision === "approve" ? planApprovedPayment(detail.currentProof, detail) : [];
+
       await repo.reviewProof({
         pledgeId: args.pledgeId,
         actorUserId: args.actorUserId,
         decision: input.decision,
         note: input.note ?? null,
+        allocations,
       });
 
       await notify(detail, input.decision === "approve" ? "active" : "needs_followup");

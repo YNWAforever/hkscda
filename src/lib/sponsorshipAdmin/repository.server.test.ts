@@ -157,6 +157,8 @@ class FakeQuery {
     if (this.table === "sponsorship_preference") return this.state.preferenceRows;
     if (this.table === "sponsorship_payment_proof") return this.state.proofRows;
     if (this.table === "audit_log") return this.state.auditRows;
+    if (this.table === "sponsorship_period") return this.state.periodRows;
+    if (this.table === "sponsorship_payment_allocation") return this.state.allocationRows;
     return [];
   }
 
@@ -208,6 +210,8 @@ type FakeState = {
   preferenceRows: Record<string, unknown>[];
   proofRows: Record<string, unknown>[];
   auditRows: Record<string, unknown>[];
+  periodRows: Record<string, unknown>[];
+  allocationRows: Record<string, unknown>[];
   rpcError: Error | null;
   rpcResult: unknown;
 };
@@ -220,6 +224,8 @@ function createFakeClient(overrides: Partial<FakeState> = {}) {
     preferenceRows: [],
     proofRows: [proofRow()],
     auditRows: [],
+    periodRows: [],
+    allocationRows: [],
     rpcError: null,
     rpcResult: null,
     ...overrides,
@@ -341,6 +347,9 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
       p_decision: "approve",
       p_actor_user_id: actorUserId,
       p_note: "Looks good",
+      // The months this payment pays for ride along with the decision so the
+      // approval and the attribution commit in one transaction.
+      p_allocations: [],
     });
   });
 
@@ -625,6 +634,154 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
 
     expect(detail?.currentProof).toBeNull();
     expect(detail?.proofHistory).toHaveLength(1);
+  });
+
+  test("getPledgeDetail sums each month's allocations into the ledger", async () => {
+    // September was settled by two payments — a partial and a top-up — so the
+    // month's paid figure has to be the SUM of its allocations. Storing a
+    // paid/allocated column on the period instead would be a second set of
+    // books that could drift from the allocations themselves.
+    const { client } = createFakeClient({
+      periodRows: [
+        { id: "per-aug", pledge_id: pledgeId, period_month: "2026-08-01", committed_cents: 10000 },
+        { id: "per-sep", pledge_id: pledgeId, period_month: "2026-09-01", committed_cents: 10000 },
+      ],
+      allocationRows: [
+        {
+          id: "alloc-1",
+          period_id: "per-aug",
+          proof_id: "proof-1",
+          amount_cents: 10000,
+          reverses_allocation_id: null,
+          note: null,
+          created_at: "2026-08-02T00:00:00.000Z",
+        },
+        {
+          id: "alloc-2",
+          period_id: "per-sep",
+          proof_id: "proof-2",
+          amount_cents: 6000,
+          reverses_allocation_id: null,
+          note: null,
+          created_at: "2026-09-02T00:00:00.000Z",
+        },
+        {
+          id: "alloc-3",
+          period_id: "per-sep",
+          proof_id: "proof-3",
+          amount_cents: 4000,
+          reverses_allocation_id: null,
+          note: null,
+          created_at: "2026-09-20T00:00:00.000Z",
+        },
+      ],
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const detail = await repo.getPledgeDetail(pledgeId);
+
+    expect(detail?.periods.map((p) => p.periodMonth)).toEqual(["2026-08-01", "2026-09-01"]);
+    expect(detail?.periods[1].allocatedCents).toBe(10000);
+    expect(detail?.periods[1].allocations).toHaveLength(2);
+    expect(detail?.periods.every((p) => p.outstandingCents === 0)).toBe(true);
+  });
+
+  test("getPledgeDetail treats a reversal as money taken back off the month", async () => {
+    // A refund is a negative allocation, so the same sum handles it and the
+    // month returns to outstanding — without deleting the original entry, which
+    // stays visible as something that happened and was undone.
+    const { client } = createFakeClient({
+      periodRows: [
+        { id: "per-aug", pledge_id: pledgeId, period_month: "2026-08-01", committed_cents: 10000 },
+      ],
+      allocationRows: [
+        {
+          id: "alloc-1",
+          period_id: "per-aug",
+          proof_id: "proof-1",
+          amount_cents: 10000,
+          reverses_allocation_id: null,
+          note: null,
+          created_at: "2026-08-02T00:00:00.000Z",
+        },
+        {
+          id: "alloc-2",
+          period_id: "per-aug",
+          proof_id: "proof-1",
+          amount_cents: -10000,
+          reverses_allocation_id: "alloc-1",
+          note: "supporter refunded",
+          created_at: "2026-08-20T00:00:00.000Z",
+        },
+      ],
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const detail = await repo.getPledgeDetail(pledgeId);
+
+    expect(detail?.periods[0].allocatedCents).toBe(0);
+    expect(detail?.periods[0].outstandingCents).toBe(10000);
+    expect(detail?.periods[0].allocations).toHaveLength(2);
+  });
+
+  test("getPledgeDetail returns an empty ledger without querying allocations", async () => {
+    // A pledge whose first payment is not yet approved has no months. The
+    // allocation query must be skipped entirely rather than sent with an empty
+    // id list, which PostgREST would reject.
+    const { client, state } = createFakeClient();
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const detail = await repo.getPledgeDetail(pledgeId);
+
+    expect(detail?.periods).toEqual([]);
+    expect(
+      state.calls.some((c) => "table" in c && c.table === "sponsorship_payment_allocation"),
+    ).toBe(false);
+  });
+
+  test("allocateProof passes the planned months to the audited RPC", async () => {
+    const { client, state } = createFakeClient({
+      rpcResult: { status: "allocated", allocatedCents: 20000 },
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const result = await repo.allocateProof({
+      proofId: "proof-1",
+      actorUserId,
+      allocations: [
+        { periodMonth: "2026-08-01", amountCents: 10000 },
+        { periodMonth: "2026-09-01", amountCents: 10000 },
+      ],
+    });
+
+    const call = state.calls.find((c) => c.fn === "allocate_sponsorship_payment_with_audit");
+    expect(call?.payload).toEqual({
+      p_proof_id: "proof-1",
+      p_actor_user_id: actorUserId,
+      p_allocations: [
+        { periodMonth: "2026-08-01", amountCents: 10000 },
+        { periodMonth: "2026-09-01", amountCents: 10000 },
+      ],
+    });
+    expect(result).toEqual({ status: "allocated", allocatedCents: 20000 });
+  });
+
+  test("allocateProof reports an already-allocated payment as success, not failure", async () => {
+    // The RPC is idempotent by claim: a retry after a lost response finds the
+    // allocation already committed. Treating that as an error would push staff
+    // to allocate again and double-count the payment.
+    const { client } = createFakeClient({
+      rpcResult: { status: "already_allocated", allocations: [] },
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const result = await repo.allocateProof({
+      proofId: "proof-1",
+      actorUserId,
+      allocations: [{ periodMonth: "2026-08-01", amountCents: 10000 }],
+    });
+
+    expect(result.status).toBe("already_allocated");
   });
 
   test("getProofSigningInfo signs the same proof getPledgeDetail calls current", async () => {

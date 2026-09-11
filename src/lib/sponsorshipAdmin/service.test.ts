@@ -69,6 +69,7 @@ function baseDetail(overrides: Partial<PledgeDetail> = {}): PledgeDetail {
     preferences: [],
     proofHistory: [],
     currentProof: null,
+    periods: [],
     recentAuditLog: [],
     ...overrides,
   };
@@ -359,6 +360,129 @@ describe("createSponsorshipAdminService", () => {
     expect(repo.reviewProof).toHaveBeenCalledTimes(1);
   });
 
+  test("reviewProof attributes a second month's payment to the second month", async () => {
+    // July is settled, so August's payment must open August rather than
+    // double-crediting a month that is already paid.
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({
+          status: "active",
+          currentProof: pendingProof({
+            id: "proof-month-2",
+            amountCents: 30000,
+            paymentDate: "2026-08-03",
+          }),
+          periods: [
+            {
+              id: "per-jul",
+              periodMonth: "2026-07-01",
+              committedCents: 30000,
+              allocatedCents: 30000,
+              outstandingCents: 0,
+              allocations: [],
+            },
+          ],
+        }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await service.reviewProof({ actorUserId, pledgeId, input: { decision: "approve" } });
+
+    expect(repo.reviewProof).toHaveBeenCalledWith(
+      expect.objectContaining({
+        allocations: [{ periodMonth: "2026-08-01", amountCents: 30000 }],
+      }),
+    );
+  });
+
+  test("reviewProof settles an outstanding month before opening a later one", async () => {
+    // A top-up. July is HK$100 short; the payment must close July first rather
+    // than run ahead to August and leave July permanently outstanding.
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({
+          status: "active",
+          currentProof: pendingProof({ amountCents: 15000, paymentDate: "2026-07-20" }),
+          periods: [
+            {
+              id: "per-jul",
+              periodMonth: "2026-07-01",
+              committedCents: 30000,
+              allocatedCents: 20000,
+              outstandingCents: 10000,
+              allocations: [],
+            },
+          ],
+        }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await service.reviewProof({ actorUserId, pledgeId, input: { decision: "approve" } });
+
+    expect(repo.reviewProof).toHaveBeenCalledWith(
+      expect.objectContaining({
+        allocations: [
+          { periodMonth: "2026-07-01", amountCents: 10000 },
+          { periodMonth: "2026-08-01", amountCents: 5000 },
+        ],
+      }),
+    );
+  });
+
+  test("reviewProof attributes nothing when the payment is rejected", async () => {
+    // Money that was refused was never received, so it pays for no month.
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({ status: "provisional", currentProof: pendingProof() }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await service.reviewProof({ actorUserId, pledgeId, input: { decision: "reject" } });
+
+    expect(repo.reviewProof).toHaveBeenCalledWith(
+      expect.objectContaining({ decision: "reject", allocations: [] }),
+    );
+  });
+
+  test("reviewProof refuses to approve a payment it cannot fully attribute", async () => {
+    // An implausible amount -- almost certainly a mistyped figure. Approving it
+    // would leave part of a supporter's money belonging to no month at all, so
+    // the approval is refused rather than the remainder absorbed.
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({
+          status: "provisional",
+          currentProof: pendingProof({ amountCents: 30000 * 40 }),
+        }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await expect(
+      service.reviewProof({ actorUserId, pledgeId, input: { decision: "approve" } }),
+    ).rejects.toThrow("could not be attributed to a month");
+    expect(repo.reviewProof).not.toHaveBeenCalled();
+  });
+
   test("reviewProof rejects an active pledge with nothing awaiting review", async () => {
     // Between months: the sponsorship is running and every proof is decided.
     // Widening the status gate must not turn review into an always-available
@@ -435,6 +559,8 @@ describe("createSponsorshipAdminService", () => {
       actorUserId,
       decision: "approve",
       note: null,
+      // A first payment opens the month it was paid in.
+      allocations: [{ periodMonth: "2026-07-01", amountCents: 30000 }],
     });
     const call = sender.calls[0] as [unknown, { event: string; reference: string }];
     expect(call[1].event).toBe("active");

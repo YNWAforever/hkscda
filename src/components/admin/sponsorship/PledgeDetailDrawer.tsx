@@ -9,6 +9,7 @@ import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Sheet, SheetContent, SheetTitle } from "../../ui/sheet";
 import { StatusPill } from "../StatusBadge";
+import { centsToHkd } from "../../../lib/donations/domain";
 import type { PaymentProofRecord, PledgeDetail } from "../../../lib/sponsorshipAdmin/types";
 import {
   canCancelPledge,
@@ -35,9 +36,29 @@ const PROOF_REVIEW_STATUS_TONE: Record<
   rejected: "danger",
 };
 
-function amountLabel(amountCents: number) {
-  const dollars = Math.round(amountCents / 100).toLocaleString("en-US");
-  return `HK$${dollars}/月`;
+/**
+ * The pledge's monthly commitment — a rate, so it carries /月.
+ *
+ * `centsToHkd` rather than rounding: section 6.3 requires 123.45 to stay
+ * 123.45, and `Math.round(cents / 100)` silently turned HK$123.45 into HK$123.
+ */
+function monthlyAmountLabel(amountCents: number) {
+  return `${centsToHkd(amountCents)}/月`;
+}
+
+/**
+ * One payment that was received. Deliberately WITHOUT /月: section 6.4 requires
+ * that "one-off payments must not show '/month'". A HK$300 payment covering
+ * three months is not a HK$300/month sponsorship, and labelling it that way
+ * misstates the supporter's commitment.
+ */
+function paymentAmountLabel(amountCents: number) {
+  return centsToHkd(amountCents);
+}
+
+/** `2026-08-01` is the month of August, not the 1st — render it as the month. */
+function monthLabel(periodMonth: string) {
+  return periodMonth.slice(0, 7);
 }
 
 type ProofUrlResponse = { url: string; fileName: string };
@@ -272,7 +293,7 @@ export function PledgeDetailDrawer({
                 {formatFallback(pledge.supporterEmail)} · {formatFallback(pledge.supporterPhone)}
               </p>
               <p className="text-sm text-[var(--color-panel)]">
-                {amountLabel(pledge.amountCents)}（
+                {monthlyAmountLabel(pledge.amountCents)}（
                 {pledge.monthlyTier === "custom" ? copy.customTier : pledge.monthlyTier}）
               </p>
               <p className="text-xs text-[var(--color-text-muted)]">
@@ -379,7 +400,7 @@ export function PledgeDetailDrawer({
                     <p className="text-sm text-[var(--color-text-muted)]">
                       {pledge.currentProof.paymentMethod} ·{" "}
                       {formatFallback(pledge.currentProof.reference)} ·{" "}
-                      {amountLabel(pledge.currentProof.amountCents)}
+                      {paymentAmountLabel(pledge.currentProof.amountCents)}
                     </p>
                     <ProofPreview pledgeId={pledgeId} proof={pledge.currentProof} />
                   </>
@@ -429,6 +450,37 @@ export function PledgeDetailDrawer({
               </section>
             )}
 
+            {pledge.periods.length > 0 && (
+              <section className="space-y-2">
+                <h3 className="text-sm font-semibold text-[var(--color-panel)]">助養月份</h3>
+                <ul className="space-y-2">
+                  {pledge.periods.map((period) => {
+                    const settled = period.outstandingCents === 0;
+                    return (
+                      <li
+                        key={period.id}
+                        className="space-y-1 rounded-lg border border-[var(--color-border)] p-3 text-sm"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-medium text-[var(--color-panel)]">
+                            {monthLabel(period.periodMonth)}
+                          </span>
+                          <StatusPill tone={settled ? "success" : "warning"}>
+                            {settled ? "已付" : "待付"}
+                          </StatusPill>
+                        </div>
+                        <p className="text-[var(--color-text-muted)]">
+                          應付 {paymentAmountLabel(period.committedCents)} · 已付{" "}
+                          {paymentAmountLabel(period.allocatedCents)}
+                          {!settled && <> · 尚欠 {paymentAmountLabel(period.outstandingCents)}</>}
+                        </p>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </section>
+            )}
+
             {pledge.proofHistory.length > 0 && (
               <section className="space-y-2">
                 <h3 className="text-sm font-semibold text-[var(--color-panel)]">
@@ -457,7 +509,7 @@ export function PledgeDetailDrawer({
                         </div>
                         <p className="text-[var(--color-text-muted)]">
                           {proof.paymentMethod} · {formatFallback(proof.reference)} ·{" "}
-                          {amountLabel(proof.amountCents)} · {proofSourceLabel[proof.source]}
+                          {paymentAmountLabel(proof.amountCents)} · {proofSourceLabel[proof.source]}
                         </p>
                         {proof.fileName && (
                           <p className="text-xs text-[var(--color-text-muted)]">

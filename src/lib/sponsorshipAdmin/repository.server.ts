@@ -11,6 +11,7 @@ import type {
   PledgeListSearch,
   PledgeSummary,
   RecordPledgePaymentRepoInput,
+  SponsorshipPeriodRecord,
   ReviewPledgeProofInput,
 } from "./types";
 
@@ -58,6 +59,23 @@ type ProofRow = {
   reviewed_by: string | null;
   reviewed_at: string | null;
   review_note: string | null;
+  created_at: string;
+};
+
+type PeriodRow = {
+  id: string;
+  pledge_id: string;
+  period_month: string;
+  committed_cents: number;
+};
+
+type AllocationRow = {
+  id: string;
+  period_id: string;
+  proof_id: string;
+  amount_cents: number;
+  reverses_allocation_id: string | null;
+  note: string | null;
   created_at: string;
 };
 
@@ -181,6 +199,41 @@ function mapProof(row: ProofRow): PaymentProofRecord {
   };
 }
 
+/**
+ * Joins months to the payments attributed to them. `allocatedCents` is summed
+ * here rather than stored on the period: one number, derived, so the ledger and
+ * the month can never disagree. A reversal carries a negative amount, so the
+ * same sum handles refunds without a second code path.
+ */
+function mapPeriods(periodRows: PeriodRow[], allocationRows: AllocationRow[]) {
+  const byPeriod = new Map<string, AllocationRow[]>();
+  for (const row of allocationRows) {
+    const bucket = byPeriod.get(row.period_id);
+    if (bucket) bucket.push(row);
+    else byPeriod.set(row.period_id, [row]);
+  }
+
+  return periodRows.map((row) => {
+    const rows = byPeriod.get(row.id) ?? [];
+    const allocatedCents = rows.reduce((sum, a) => sum + a.amount_cents, 0);
+    return {
+      id: row.id,
+      periodMonth: row.period_month,
+      committedCents: row.committed_cents,
+      allocatedCents,
+      outstandingCents: Math.max(0, row.committed_cents - allocatedCents),
+      allocations: rows.map((a) => ({
+        id: a.id,
+        proofId: a.proof_id,
+        amountCents: a.amount_cents,
+        reversesAllocationId: a.reverses_allocation_id,
+        note: a.note,
+        createdAt: a.created_at,
+      })),
+    } satisfies SponsorshipPeriodRecord;
+  });
+}
+
 function mapPreference(row: PreferenceRow): PledgeAnimalPreference {
   return {
     id: row.id,
@@ -238,9 +291,27 @@ export type SponsorshipAdminRepository = {
   ): Promise<{ storagePath: string; fileName: string | null } | null>;
   recordPayment(input: RecordPledgePaymentRepoInput): Promise<{ id: string }>;
   reviewProof(
-    input: ReviewPledgeProofInput & { pledgeId: string; actorUserId: string },
+    input: ReviewPledgeProofInput & {
+      pledgeId: string;
+      actorUserId: string;
+      /** Months this payment pays for. Empty for a rejection. */
+      allocations?: Array<{ periodMonth: string; amountCents: number }>;
+    },
   ): Promise<void>;
   cancelPledge(input: CancelPledgeInput & { pledgeId: string; actorUserId: string }): Promise<void>;
+  allocateProof(input: AllocateProofInput): Promise<AllocateProofResult>;
+};
+
+export type AllocateProofInput = {
+  proofId: string;
+  actorUserId: string;
+  allocations: Array<{ periodMonth: string; amountCents: number }>;
+};
+
+export type AllocateProofResult = {
+  /** `already_allocated` means a previous attempt had committed — not an error. */
+  status: "allocated" | "already_allocated";
+  allocatedCents: number;
 };
 
 export function createSupabaseSponsorshipAdminRepository(
@@ -288,33 +359,57 @@ export function createSupabaseSponsorshipAdminRepository(
 
       const row = pledgeData as PledgeRow;
 
-      const [supporters, preferencesResult, proofResult, auditResult] = await Promise.all([
-        loadSupportersByIds(client, [row.supporter_id]),
-        client
-          .from("sponsorship_preference")
-          .select("*")
-          .eq("pledge_id", id)
-          .order("rank", { ascending: true }),
-        // Newest-first, because this is the history list staff read. It is NOT
-        // the review order: `currentProof` below is chosen by
-        // `selectReviewTargetProof`, which must agree with
-        // review_sponsorship_payment_proof's own `order by created_at asc, id
-        // asc` — see proofReview.ts for why the queue drains oldest-first.
-        client
-          .from("sponsorship_payment_proof")
-          .select("*")
-          .eq("pledge_id", id)
-          .order("created_at", { ascending: false }),
-        client
-          .from("audit_log")
-          .select("id,actor_user_id,action,entity_id,detail,timestamp")
-          .eq("entity_id", id)
-          .order("timestamp", { ascending: false })
-          .limit(20),
-      ]);
+      const [supporters, preferencesResult, proofResult, auditResult, periodResult] =
+        await Promise.all([
+          loadSupportersByIds(client, [row.supporter_id]),
+          client
+            .from("sponsorship_preference")
+            .select("*")
+            .eq("pledge_id", id)
+            .order("rank", { ascending: true }),
+          // Newest-first, because this is the history list staff read. It is NOT
+          // the review order: `currentProof` below is chosen by
+          // `selectReviewTargetProof`, which must agree with
+          // review_sponsorship_payment_proof's own `order by created_at asc, id
+          // asc` — see proofReview.ts for why the queue drains oldest-first.
+          client
+            .from("sponsorship_payment_proof")
+            .select("*")
+            .eq("pledge_id", id)
+            .order("created_at", { ascending: false }),
+          client
+            .from("audit_log")
+            .select("id,actor_user_id,action,entity_id,detail,timestamp")
+            .eq("entity_id", id)
+            .order("timestamp", { ascending: false })
+            .limit(20),
+          // The monthly ledger, oldest month first — months read as a sequence,
+          // unlike the proof history, which reads newest-first.
+          client
+            .from("sponsorship_period")
+            .select("id,pledge_id,period_month,committed_cents")
+            .eq("pledge_id", id)
+            .order("period_month", { ascending: true }),
+        ]);
       if (preferencesResult.error) throw preferencesResult.error;
       if (proofResult.error) throw proofResult.error;
       if (auditResult.error) throw auditResult.error;
+      if (periodResult.error) throw periodResult.error;
+
+      const periodRows = (periodResult.data ?? []) as PeriodRow[];
+      // Allocations are fetched separately rather than through a nested select:
+      // a pledge with no months must still return an empty ledger, not fail.
+      const allocationResult = periodRows.length
+        ? await client
+            .from("sponsorship_payment_allocation")
+            .select("id,period_id,proof_id,amount_cents,reverses_allocation_id,note,created_at")
+            .in(
+              "period_id",
+              periodRows.map((row) => row.id),
+            )
+            .order("created_at", { ascending: true })
+        : { data: [] as AllocationRow[], error: null };
+      if (allocationResult.error) throw allocationResult.error;
 
       const preferences = ((preferencesResult.data ?? []) as PreferenceRow[]).map(mapPreference);
       const proofRows = (proofResult.data ?? []) as ProofRow[];
@@ -328,6 +423,7 @@ export function createSupabaseSponsorshipAdminRepository(
         preferences,
         proofHistory,
         currentProof: selectReviewTargetProof(proofHistory),
+        periods: mapPeriods(periodRows, (allocationResult.data ?? []) as AllocationRow[]),
         recentAuditLog: auditLog,
       } satisfies PledgeDetail;
     },
@@ -382,13 +478,31 @@ export function createSupabaseSponsorshipAdminRepository(
     },
 
     async reviewProof(input) {
+      // The allocation travels with the decision so both commit in one
+      // transaction -- see proofReview.ts and the ledger migration.
       const { error } = await client.rpc("review_sponsorship_payment_proof", {
         p_pledge_id: input.pledgeId,
         p_decision: input.decision,
         p_actor_user_id: input.actorUserId,
         p_note: input.note ?? null,
+        p_allocations: input.allocations ?? [],
       });
       if (error) throw error;
+    },
+
+    async allocateProof(input) {
+      const { data, error } = await client.rpc("allocate_sponsorship_payment_with_audit", {
+        p_proof_id: input.proofId,
+        p_actor_user_id: input.actorUserId,
+        p_allocations: input.allocations,
+      });
+      if (error) throw error;
+
+      const result = (data ?? {}) as { status?: string; allocatedCents?: number };
+      return {
+        status: result.status === "already_allocated" ? "already_allocated" : "allocated",
+        allocatedCents: result.allocatedCents ?? 0,
+      };
     },
 
     async cancelPledge(input) {
