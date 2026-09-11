@@ -160,10 +160,13 @@ export function createSponsorshipAdminService({
         ...detail,
         assignments,
         // The second derived signal: a sponsorship that is running but backs
-        // no animal. `cancelled` is excluded because it takes no further
-        // payments, so there is nothing for staff to resolve.
+        // no animal. Only `active` counts -- a pledge that has not reached
+        // `active` yet (pending_payment, provisional, needs_followup) has no
+        // animal for an ordinary reason: nothing has been paid and confirmed
+        // yet, so there is nothing for staff to resolve. `cancelled` is
+        // likewise excluded, since it takes no further payments.
         needsAnimal:
-          detail.status !== "cancelled" &&
+          detail.status === "active" &&
           assignments.every((assignment) => assignment.endedOn !== null),
       };
     },

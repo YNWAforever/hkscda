@@ -275,6 +275,40 @@ describe("createSponsorshipAdminService", () => {
     expect(detail?.needsAnimal).toBe(false);
   });
 
+  test("getPledgeDetail does not report needsAnimal for a pledge with no payment yet", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () => baseDetail({ status: "pending_payment", assignments: [] })),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    const detail = await service.getPledgeDetail(pledgeId);
+
+    // Nothing has been paid yet, so having no animal is simply what a
+    // brand-new pledge looks like — not something staff need to resolve.
+    expect(detail?.needsAnimal).toBe(false);
+  });
+
+  test("getPledgeDetail reports needsAnimal for an active pledge with no assignment at all", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () => baseDetail({ status: "active", assignments: [] })),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    const detail = await service.getPledgeDetail(pledgeId);
+
+    // Auto-assign found nothing eligible: the supporter is paying and has no
+    // animal at all — the most urgent case for this signal.
+    expect(detail?.needsAnimal).toBe(true);
+  });
+
   test("getProofSigningInfo returns a signed url and file name when a proof exists", async () => {
     const repo = createFakeRepo({
       getProofSigningInfo: mock(async () => ({
