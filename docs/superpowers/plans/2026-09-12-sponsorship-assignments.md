@@ -961,7 +961,13 @@ export type SponsorshipAssignmentRecord = {
   startedOn: string;
   endedOn: string | null;
   endReason: AssignmentEndReason | null;
+  /** Why this animal was confirmed. Immutable once written. */
   note: string | null;
+  /**
+   * Why the relationship ended. A SEPARATE column on purpose: ending used to
+   * overwrite `note`, destroying the reason the animal was chosen.
+   */
+  endNote: string | null;
   /**
    * Why this open assignment needs a person to look: the animal has been
    * adopted, has died, has been retired, or has left the sponsorship
@@ -1067,6 +1073,7 @@ Add to `src/lib/sponsorshipAdmin/repository.server.test.ts`:
           ended_on: "2026-07-15",
           end_reason: "adopted",
           note: null,
+          end_note: null,
         },
         {
           id: "asg-open",
@@ -1077,6 +1084,7 @@ Add to `src/lib/sponsorshipAdmin/repository.server.test.ts`:
           ended_on: null,
           end_reason: null,
           note: null,
+          end_note: null,
         },
       ],
     });
@@ -1121,6 +1129,7 @@ type AssignmentRow = {
   ended_on: string | null;
   end_reason: SponsorshipAssignmentRecord["endReason"];
   note: string | null;
+  end_note: string | null;
 };
 ```
 
@@ -1145,6 +1154,7 @@ function mapAssignments(rows: AssignmentRow[]): SponsorshipAssignmentRecord[] {
     endedOn: row.ended_on,
     endReason: row.end_reason,
     note: row.note,
+    endNote: row.end_note,
     reviewReason: null,
   }));
 
@@ -1162,7 +1172,7 @@ destructuring it as `assignmentResult`:
 ```ts
         client
           .from("sponsorship_assignment")
-          .select("id,pledge_id,animal_id,animal_name_snapshot,started_on,ended_on,end_reason,note")
+          .select("id,pledge_id,animal_id,animal_name_snapshot,started_on,ended_on,end_reason,note,end_note")
           .eq("pledge_id", id),
 ```
 
@@ -1449,6 +1459,7 @@ Then add:
               endedOn: null,
               endReason: null,
               note: null,
+              endNote: null,
               reviewReason: null,
             },
           ],
@@ -1489,6 +1500,7 @@ Then add:
               endedOn: "2026-08-01",
               endReason: "adopted",
               note: null,
+              endNote: null,
               reviewReason: null,
             },
           ],
@@ -1871,6 +1883,7 @@ Add to `src/lib/sponsorshipAdmin/service.test.ts`:
               endedOn: null,
               endReason: null,
               note: null,
+              endNote: null,
               reviewReason: null,
             },
           ],
@@ -1999,6 +2012,7 @@ Add to `src/lib/sponsorshipAdmin/service.test.ts`:
               endedOn: null,
               endReason: null,
               note: null,
+              endNote: null,
               reviewReason: null,
             },
           ],
@@ -2043,6 +2057,7 @@ Add to `src/lib/sponsorshipAdmin/service.test.ts`:
               endedOn: "2026-08-01",
               endReason: "adopted",
               note: null,
+              endNote: null,
               reviewReason: null,
             },
           ],
@@ -2091,6 +2106,7 @@ Add to `src/lib/sponsorshipAdmin/service.test.ts`:
               endedOn: null,
               endReason: null,
               note: null,
+              endNote: null,
               reviewReason: null,
             },
           ],
@@ -2374,6 +2390,7 @@ Insert immediately before the `{pledge.periods.length > 0 && (` block:
                           {assignment.endReason && (
                             <> · {copy.assignments.reasons[assignment.endReason]}</>
                           )}
+                          {assignment.endNote && <> · {assignment.endNote}</>}
                         </>
                       )}
                     </p>
