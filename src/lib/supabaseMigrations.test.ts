@@ -980,4 +980,44 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("revoke all on public.sponsorship_period from anon");
     expect(sql).toContain("revoke all on public.sponsorship_payment_allocation from anon");
   });
+
+  test("locks the sponsorship assignment RPCs to service_role and keeps the creation note immutable", () => {
+    const sql = readMigration("20260912120000_sponsorship_assignments.sql");
+
+    const signatures = {
+      assign_sponsorship_animal_with_audit: "(uuid, uuid, uuid, text)",
+      end_sponsorship_assignment_with_audit: "(uuid, uuid, text, text)",
+    } as const;
+
+    for (const [fn, args] of Object.entries(signatures)) {
+      expect(sql).toContain(`create or replace function public.${fn}(`);
+      expect(sql).toContain(`revoke all on function public.${fn}${args} from anon;`);
+      expect(sql).toContain(`revoke all on function public.${fn}${args} from authenticated;`);
+      expect(sql).toContain(`grant execute on function public.${fn}${args} to service_role;`);
+    }
+
+    // Both are security definer with the house search_path pinned.
+    expect((sql.match(/security definer/g) ?? []).length).toBe(2);
+    expect((sql.match(/set search_path = public, pg_temp/g) ?? []).length).toBe(2);
+
+    const guards = sql.match(
+      /from public\.admin_user\s*\n\s*where auth_user_id = p_actor_user_id\s*\n\s*and status = 'active'\s*\n\s*and role in \('staff', 'admin'\)/g,
+    );
+    expect(guards).toHaveLength(2);
+
+    // Both RPCs write exactly one audit_log row inside the same function body
+    // as the data mutation (atomic — never a second, separately-failable call).
+    expect((sql.match(/insert into public\.audit_log/g) ?? []).length).toBe(2);
+
+    // Ending an assignment must not overwrite the note explaining why that
+    // animal was confirmed for that supporter. The end reason gets its own
+    // column; the original note is never touched by the update.
+    expect(sql).toContain("end_note text");
+    expect(sql).toContain("end_note = p_note");
+    expect(sql).not.toContain("coalesce(p_note, note)");
+
+    // Dates come from Hong Kong, not from the UTC clock the database runs on.
+    expect(sql).not.toContain("current_date");
+    expect((sql.match(/\(now\(\) at time zone 'Asia\/Hong_Kong'\)::date/g) ?? []).length).toBe(2);
+  });
 });

@@ -23,9 +23,16 @@ create table if not exists public.sponsorship_assignment (
   -- history survive it.
   animal_id uuid references public.animals(id) on delete set null,
   animal_name_snapshot text not null,
-  started_on date not null default current_date,
+  -- The association operates in Hong Kong; the database runs in UTC. A UTC
+  -- date mis-stamps early-morning work as the previous day (anything before
+  -- 08:00 local) and shifts month-boundary reporting, so take the date from
+  -- Hong Kong -- which is also the zone src/ renders dates in.
+  started_on date not null default (now() at time zone 'Asia/Hong_Kong')::date,
   ended_on date,
   end_reason text,
+  -- Why the relationship ENDED, kept apart from `note` (why it began). Two
+  -- notes written by two people at two moments belong in two columns.
+  end_note text,
   note text,
   created_by uuid references public.admin_user(id),
   ended_by uuid references public.admin_user(id),
@@ -240,10 +247,10 @@ begin
   end if;
 
   update public.sponsorship_assignment
-  set ended_on = current_date,
+  set ended_on = (now() at time zone 'Asia/Hong_Kong')::date,
       end_reason = p_reason,
       ended_by = v_actor_admin_id,
-      note = coalesce(p_note, note)
+      end_note = p_note
   where id = p_assignment_id;
 
   insert into public.audit_log (actor_user_id, action, entity, entity_id, detail)
