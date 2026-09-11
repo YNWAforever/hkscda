@@ -5,6 +5,7 @@ import type {
   sponsorshipLanguageSchema,
   SponsorshipPledgeStatus,
 } from "../sponsorship/schemas";
+import type { CandidateAnimalState } from "./autoAssign";
 
 export type PledgeStatus = SponsorshipPledgeStatus;
 
@@ -13,6 +14,8 @@ export type PledgeAnimalPreference = {
   rank: number;
   animalId: string | null;
   animalNameSnapshot: string;
+  /** The animal's current state, for the auto-assign rule. `null` if unreadable. */
+  animalState: CandidateAnimalState | null;
 };
 
 export type PaymentProofRecord = {

@@ -10,6 +10,7 @@ import {
   reviewPledgeProofSchema,
 } from "./schemas";
 import { MAX_ADVANCE_PERIODS, monthStartOf, planPaymentAllocation } from "./allocation";
+import { selectAutoAssignAnimal } from "./autoAssign";
 import type { PledgeDetail, PaymentProofRecord } from "./types";
 import type { SendPledgeStatusUpdateEmailArgs } from "./notifications.server";
 import { pledgeReference } from "../sponsorship/statusSummary";
@@ -194,12 +195,29 @@ export function createSponsorshipAdminService({
       const allocations =
         input.decision === "approve" ? planApprovedPayment(detail.currentProof, detail) : [];
 
+      // Confirm the supporter's animal on the FIRST approval only. "First"
+      // means the pledge has never had an assignment: one that was ended
+      // because the animal was adopted or died must be replaced by a person,
+      // not silently by the next payment.
+      const assignAnimalId =
+        input.decision === "approve" && detail.assignments.length === 0
+          ? (selectAutoAssignAnimal(
+              detail.preferences.map((preference) => ({
+                rank: preference.rank,
+                animalId: preference.animalId,
+                animalNameSnapshot: preference.animalNameSnapshot,
+                animal: preference.animalState,
+              })),
+            )?.animalId ?? null)
+          : null;
+
       await repo.reviewProof({
         pledgeId: args.pledgeId,
         actorUserId: args.actorUserId,
         decision: input.decision,
         note: input.note ?? null,
         allocations,
+        assignAnimalId,
       });
 
       await notify(detail, input.decision === "approve" ? "active" : "needs_followup");

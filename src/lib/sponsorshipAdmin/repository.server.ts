@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { selectReviewTargetProof } from "./proofReview";
+import type { CandidateAnimalState } from "./autoAssign";
 
 import type {
   AssignmentEndReason,
@@ -43,6 +44,14 @@ type PreferenceRow = {
   rank: number;
   sponsor_animal_id: string | null;
   animal_name_snapshot: string;
+};
+
+type EmbeddedAnimalRow = {
+  sponsorship_eligible: boolean;
+  status: CandidateAnimalState["status"];
+  retired_at: string | null;
+  publication_state: CandidateAnimalState["publicationState"];
+  animal_profile_internal: { deceased_at: string | null } | { deceased_at: string | null }[] | null;
 };
 
 type ProofRow = {
@@ -276,11 +285,27 @@ function mapAssignments(rows: AssignmentRow[]): SponsorshipAssignmentRecord[] {
 }
 
 function mapPreference(row: PreferenceRow): PledgeAnimalPreference {
+  const embedded = (row as unknown as { animal?: EmbeddedAnimalRow | null }).animal ?? null;
   return {
     id: row.id,
     rank: row.rank,
     animalId: row.sponsor_animal_id,
     animalNameSnapshot: row.animal_name_snapshot,
+    animalState: embedded
+      ? {
+          sponsorshipEligible: embedded.sponsorship_eligible,
+          status: embedded.status,
+          retiredAt: embedded.retired_at,
+          publicationState: embedded.publication_state,
+          // PostgREST returns an embedded 1:1 as an array or an object
+          // depending on the relationship; absence means nothing was recorded,
+          // not that the animal died.
+          deceasedAt:
+            (Array.isArray(embedded.animal_profile_internal)
+              ? (embedded.animal_profile_internal[0]?.deceased_at ?? null)
+              : (embedded.animal_profile_internal?.deceased_at ?? null)) ?? null,
+        }
+      : null,
   };
 }
 
@@ -429,7 +454,9 @@ export function createSupabaseSponsorshipAdminRepository(
         loadSupportersByIds(client, [row.supporter_id]),
         client
           .from("sponsorship_preference")
-          .select("*")
+          .select(
+            "*,animal:sponsor_animal_id(sponsorship_eligible,status,retired_at,publication_state,animal_profile_internal(deceased_at))",
+          )
           .eq("pledge_id", id)
           .order("rank", { ascending: true }),
         // Newest-first, because this is the history list staff read. It is NOT
