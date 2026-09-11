@@ -191,6 +191,30 @@ record. Search now covers both plus the English name, read through the public
 parser. Archived records are excluded by default but reachable via a toggle.
 **Acceptance T06.**
 
+### Slice L — Publication separated from care state (Phase 2)
+
+Commit `6289de9`. **Reviewable implementation complete + isolated acceptance passed.**
+
+`status` was both the care record and the public visibility switch, so
+withholding a record meant claiming the animal had been adopted or fostered.
+`publication_state` is the third axis. Migration is **strictly narrowing** and
+measured as such: old predicate = new predicate = 1, zero rows not published.
+Exercised as the anon role — withhold → 0 visible, republish → 1, `status`
+never modified. New records start as `draft`.
+
+**Half-delivered, deliberately:** it does not relax `status='available'`, so a
+fostered animal still cannot be published. That is a *widening* change needing
+its own approval; the exact diff is in the migration's closing comment.
+
+### Slice M — Archive instead of delete (Phase 2)
+
+Commit `e181e35`. **Reviewable implementation complete + isolated acceptance passed.**
+
+The admin delete cascaded away `animal_profile_internal` and `animal_match`,
+NULLed three preference/followup links, and where a constraint blocked it the
+error was never read — so the UI reported success while nothing happened.
+Replaced with reversible archival; errors are surfaced.
+
 ### Working records
 
 Commits `382ca5d`, `fb47f72`. Baseline verification, 217-entry source defect
