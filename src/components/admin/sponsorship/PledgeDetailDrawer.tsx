@@ -162,8 +162,10 @@ export function PledgeDetailDrawer({
   const [actionError, setActionError] = useState<string | null>(null);
   const [reviewNote, setReviewNote] = useState("");
   const [assignAnimalId, setAssignAnimalId] = useState("");
-  const [endReason, setEndReason] = useState<AssignmentEndReason>("adopted");
-  const [endNote, setEndNote] = useState("");
+  const [endReasonByAssignment, setEndReasonByAssignment] = useState<
+    Record<string, AssignmentEndReason>
+  >({});
+  const [endNoteByAssignment, setEndNoteByAssignment] = useState<Record<string, string>>({});
   const [cancelNote, setCancelNote] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<(typeof PAYMENT_METHOD_VALUES)[number]>("fps");
   const [reference, setReference] = useState("");
@@ -242,14 +244,16 @@ export function PledgeDetailDrawer({
     setSubmitting(true);
     setActionError(null);
     try {
+      const reason = endReasonByAssignment[assignmentId] ?? "adopted";
+      const note = endNoteByAssignment[assignmentId] ?? "";
       await fetchCoordinatorJson(
         `/api/admin/sponsorships/pledges/${pledgeId}/assignments/${assignmentId}/end`,
         {
           method: "POST",
-          body: JSON.stringify({ reason: endReason, note: endNote || undefined }),
+          body: JSON.stringify({ reason, note: note || undefined }),
         },
       );
-      setEndNote("");
+      setEndNoteByAssignment((previous) => ({ ...previous, [assignmentId]: "" }));
       await refreshAll();
     } catch (submitError) {
       setActionError(submitError instanceof Error ? submitError.message : copy.errors.review);
@@ -542,8 +546,13 @@ export function PledgeDetailDrawer({
                     {!assignment.endedOn && (
                       <div className="flex items-center gap-2">
                         <Select
-                          value={endReason}
-                          onValueChange={(value) => setEndReason(value as AssignmentEndReason)}
+                          value={endReasonByAssignment[assignment.id] ?? "adopted"}
+                          onValueChange={(value) =>
+                            setEndReasonByAssignment((previous) => ({
+                              ...previous,
+                              [assignment.id]: value as AssignmentEndReason,
+                            }))
+                          }
                         >
                           <SelectTrigger
                             aria-label={copy.assignments.reasonLabel}
@@ -559,6 +568,16 @@ export function PledgeDetailDrawer({
                             ))}
                           </SelectContent>
                         </Select>
+                        <Input
+                          aria-label={copy.assignments.noteLabel}
+                          value={endNoteByAssignment[assignment.id] ?? ""}
+                          onChange={(event) =>
+                            setEndNoteByAssignment((previous) => ({
+                              ...previous,
+                              [assignment.id]: event.target.value,
+                            }))
+                          }
+                        />
                         <Button
                           type="button"
                           variant="outline"
