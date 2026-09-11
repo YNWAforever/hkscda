@@ -60,6 +60,7 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
   const [search, setSearch] = useState("");
   const [includeArchived, setIncludeArchived] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   // Searching matched only names, so the reference number printed on an
   // animal's own public page found nothing. Archived records are excluded by
@@ -68,8 +69,35 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
   const filtered = filterAdminAnimals(animals, search, { includeArchived });
   const archivedCount = animals.filter(isArchivedAnimal).length;
 
-  async function handleDelete(id: string) {
-    await supabase.from("animals").delete().eq("id", id);
+  /**
+   * Archives instead of deleting.
+   *
+   * `.delete()` on an animal was both destructive and dishonest. Nine tables
+   * reference animals: `animal_profile_internal` (the internal medical and
+   * behavioural record) and `animal_match` cascade, so a delete silently
+   * destroyed them; `sponsorship_preference`, `adoption_followup` and
+   * `adoption_application_animal_preference` are ON DELETE SET NULL, so the
+   * record of which animal a sponsor actually chose was quietly erased. Where a
+   * successful adoption, application or case existed the foreign key is
+   * RESTRICT or NO ACTION, so the delete was rejected outright -- and the error
+   * was never read, so the UI called onDeleted() and reported success while
+   * nothing had happened.
+   *
+   * Retiring sets `retired_at` instead, which is what that column exists for:
+   * it removes the animal from the working list and the public catalogues while
+   * preserving every historical foreign key, the internal profile, and the
+   * sponsorship and adoption history pointing at it.
+   */
+  async function handleArchive(id: string, archived: boolean) {
+    setActionError(null);
+    const { error } = await supabase
+      .from("animals")
+      .update({ retired_at: archived ? null : new Date().toISOString() })
+      .eq("id", id);
+    if (error) {
+      setActionError(archived ? "無法取消封存，請重試。" : "無法封存，請重試。");
+      return;
+    }
     setConfirmDelete(null);
     onDeleted();
   }
@@ -91,11 +119,19 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
         >
           {copy.common.edit}
         </Link>
-        {confirmDelete === animal.id ? (
+        {isArchivedAnimal(animal) ? (
+          <button
+            type="button"
+            onClick={() => handleArchive(animal.id, true)}
+            className="text-xs text-[var(--color-primary)] hover:underline"
+          >
+            取消封存
+          </button>
+        ) : confirmDelete === animal.id ? (
           <span className="flex gap-2 text-xs">
             <button
               type="button"
-              onClick={() => handleDelete(animal.id)}
+              onClick={() => handleArchive(animal.id, false)}
               className="text-[var(--color-error)] hover:underline"
             >
               {copy.common.confirm}
@@ -113,8 +149,9 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
             type="button"
             onClick={() => setConfirmDelete(animal.id)}
             className="text-xs text-[var(--color-error)] hover:underline"
+            title="封存後不會在公開網站或預設列表顯示，但所有領養、助養及內部記錄會保留。"
           >
-            {copy.common.delete}
+            封存
           </button>
         )}
       </div>
@@ -193,6 +230,12 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
           </label>
         ) : null}
       </div>
+
+      {actionError ? (
+        <p role="alert" className="text-sm text-[var(--color-error)]">
+          {actionError}
+        </p>
+      ) : null}
 
       <DataTable
         columns={columns}
