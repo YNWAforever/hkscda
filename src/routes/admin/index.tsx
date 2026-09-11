@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import { AdminLayout } from "../../components/admin/AdminLayout";
 import { AnimalsTable } from "../../components/admin/AnimalsTable";
+import { LoadFailure } from "../../components/admin/LoadFailure";
 import { useAdminLanguage } from "../../components/admin/adminI18n";
 import { PaymentsReconcile } from "../../components/admin/donations/PaymentsReconcile";
 import { PledgeReviewLane } from "../../components/admin/sponsorship/PledgeReviewLane";
@@ -51,7 +52,7 @@ function AdminDashboardContent({ section }: { section: DashboardSection }) {
   const [sponsorView, setSponsorView] = useState<"animals" | "pledges">("animals");
   const showPledgeReview = section === "sponsor" && canReviewPledges && sponsorView === "pledges";
 
-  const { data: animals = [], isLoading } = useQuery({
+  const animalsQuery = useQuery({
     queryKey: ["admin-animals", section],
     queryFn: async () => {
       if (section === "applications" || section === "payments") return [];
@@ -65,6 +66,12 @@ function AdminDashboardContent({ section }: { section: DashboardSection }) {
     },
     enabled: section !== "applications" && section !== "payments" && !showPledgeReview,
   });
+
+  // A failed query also yields no rows, so `?? []` alone would render an outage
+  // as "沒有結果" -- telling the operator this section is empty when in fact
+  // nothing was read.
+  const animals = animalsQuery.data ?? [];
+  const isLoading = animalsQuery.isLoading;
 
   return (
     <div className="space-y-4 p-6">
@@ -133,6 +140,12 @@ function AdminDashboardContent({ section }: { section: DashboardSection }) {
         <PledgeReviewLane />
       ) : isLoading ? (
         <div className="py-12 text-center text-gray-400">{copy.common.loading}</div>
+      ) : animalsQuery.isError ? (
+        <LoadFailure
+          error={animalsQuery.error}
+          onRetry={() => void animalsQuery.refetch()}
+          retrying={animalsQuery.isFetching}
+        />
       ) : (
         <AnimalsTable
           animals={animals}

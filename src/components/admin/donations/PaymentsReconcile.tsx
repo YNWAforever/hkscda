@@ -13,6 +13,7 @@ import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { DataTable, type DataTableColumn } from "../DataTable";
+import { StatFigure } from "../LoadFailure";
 import { StatusPill } from "../StatusBadge";
 import { ReconcileDialog } from "./ReconcileDialog";
 import {
@@ -89,11 +90,16 @@ export function PaymentsReconcile() {
     [debouncedSearch, filters, page],
   );
 
-  const { data, isLoading, isFetching } = useQuery({
+  const paymentsQuery = useQuery({
     queryKey: ["admin-payments", paymentSearch],
     queryFn: () => fetchAdminJson<AdminPaymentListResult>(`/api/admin/payments?${paymentSearch}`),
     placeholderData: keepPreviousData,
   });
+  const { data, isLoading, isFetching } = paymentsQuery;
+  // A failed load also leaves `data` undefined, so the `?? 0` defaults below
+  // would report "0 awaiting reconciliation" and "HK$0.00 confirmed" for an
+  // outage -- figures a treasurer would reasonably read as "nothing to do".
+  const paymentsFailed = paymentsQuery.isError;
 
   const { data: identityData } = useQuery(adminIdentityQueryOptions());
 
@@ -325,7 +331,9 @@ export function PaymentsReconcile() {
             <p className="text-xs font-medium uppercase tracking-wide text-[var(--color-text-muted)]">
               {label}
             </p>
-            <p className="mt-2 text-xl font-bold text-[var(--color-panel)]">{value}</p>
+            <p className="mt-2 text-xl font-bold text-[var(--color-panel)]">
+              <StatFigure value={value} failed={paymentsFailed} loading={isLoading} />
+            </p>
           </div>
         ))}
       </section>
@@ -386,6 +394,8 @@ export function PaymentsReconcile() {
         getRowKey={(payment) => payment.id}
         loading={isLoading || isFetching}
         empty="沒有收款紀錄"
+        error={paymentsQuery.error}
+        onRetry={() => void paymentsQuery.refetch()}
         renderMobileCard={renderMobileCard}
       />
 

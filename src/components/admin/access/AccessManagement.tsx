@@ -18,6 +18,7 @@ import {
 } from "../../ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { DataTable, type DataTableColumn } from "../DataTable";
+import { StatFigure } from "../LoadFailure";
 import { useAdminLanguage } from "../adminI18n";
 
 type AdminAccessUser = {
@@ -411,7 +412,16 @@ export function AccessManagement() {
         ].map(([label, value]) => (
           <div key={label} className="rounded-lg border border-[var(--color-border)] bg-white p-4">
             <div className="text-sm text-[var(--color-text-muted)]">{label}</div>
-            <div className="mt-2 text-2xl font-bold text-[var(--color-panel)]">{value}</div>
+            {/* An access page reporting "0 active admins, 0 pending invites"
+                during an outage is a misleading answer to a security question,
+                so a failed load shows the unavailable marker instead. */}
+            <div className="mt-2 text-2xl font-bold text-[var(--color-panel)]">
+              <StatFigure
+                value={value}
+                failed={usersQuery.isError}
+                loading={usersQuery.isLoading}
+              />
+            </div>
           </div>
         ))}
       </div>
@@ -423,6 +433,8 @@ export function AccessManagement() {
           getRowKey={(user) => user.id}
           loading={usersQuery.isLoading}
           empty={t.noUsers}
+          error={usersQuery.error}
+          onRetry={() => void usersQuery.refetch()}
         />
       </section>
 
