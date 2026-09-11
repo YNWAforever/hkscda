@@ -250,6 +250,18 @@ jobs:
       - name: Run RLS behavioral tests
         run: bun run test:rls
 
+      # The database-backed suites opt in through their own *_ALLOW_LOCAL_FIXTURES
+      # pair, and no job set those variables -- so every one of the suite's
+      # skipped tests was a database test and nothing in CI ever executed them.
+      # They are the only coverage for the transactional guarantees that matter
+      # most (manual-gift idempotency, version conflicts, concurrent approval on
+      # the last remaining place, capacity reduction racing an approval, and
+      # rollback when the audit write fails), and the stack this job already
+      # starts is exactly what they need. Measured locally against that stack:
+      # 37 tests, all passing.
+      - name: Run database-backed transaction tests
+        run: bun run test:db
+
       - name: Stop local Supabase stack
         if: always()
         run: bunx supabase stop
