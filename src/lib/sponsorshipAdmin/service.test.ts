@@ -70,6 +70,8 @@ function baseDetail(overrides: Partial<PledgeDetail> = {}): PledgeDetail {
     proofHistory: [],
     currentProof: null,
     periods: [],
+    assignments: [],
+    needsAnimal: false,
     recentAuditLog: [],
     ...overrides,
   };

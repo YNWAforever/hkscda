@@ -63,6 +63,42 @@ export type PaymentAllocationRecord = {
   createdAt: string;
 };
 
+/** Why a confirmed relationship ended. */
+export type AssignmentEndReason =
+  | "adopted"
+  | "deceased"
+  | "ineligible"
+  | "retired"
+  | "supporter_request"
+  | "transferred"
+  | "other";
+
+/**
+ * A confirmed supporter–animal relationship. Carries no amount: the pledge's
+ * monthly commitment is not divided per animal.
+ */
+export type SponsorshipAssignmentRecord = {
+  id: string;
+  animalId: string | null;
+  animalNameSnapshot: string;
+  startedOn: string;
+  endedOn: string | null;
+  endReason: AssignmentEndReason | null;
+  /** Why this animal was confirmed. Immutable once written. */
+  note: string | null;
+  /**
+   * Why the relationship ended. A SEPARATE column on purpose: ending used to
+   * overwrite `note`, destroying the reason the animal was chosen.
+   */
+  endNote: string | null;
+  /**
+   * Why this open assignment needs a person to look: the animal has been
+   * adopted, has died, has been retired, or has left the sponsorship
+   * programme. `null` when nothing is wrong. Derived, never stored.
+   */
+  reviewReason: "adopted" | "deceased" | "retired" | "ineligible" | null;
+};
+
 export type PledgeAuditEntry = {
   id: string;
   actorUserId: string | null;
@@ -93,6 +129,13 @@ export type PledgeDetail = PledgeSummary & {
   currentProof: PaymentProofRecord | null;
   /** The monthly ledger, oldest month first. */
   periods: SponsorshipPeriodRecord[];
+  /** Confirmed animals, open ones first, then ended ones newest-first. */
+  assignments: SponsorshipAssignmentRecord[];
+  /**
+   * The sponsorship is running but backs no animal — the money keeps arriving
+   * and a person must choose one. Derived, never stored.
+   */
+  needsAnimal: boolean;
   recentAuditLog: PledgeAuditEntry[];
 };
 
