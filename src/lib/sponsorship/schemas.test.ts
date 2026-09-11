@@ -158,6 +158,10 @@ describe("insert mappers", () => {
       language: "zh-HK",
       notes: null,
       status: "pending_payment",
+      // The opt-in ticks ride on the pledge as a request, so a trigger can record
+      // them as supporter_consent_intent rows. basePayload ticks email only.
+      consent_email_requested: true,
+      consent_whatsapp_requested: false,
     });
   });
 

@@ -1,5 +1,7 @@
 export type AnimalType = "cat" | "dog" | "sponsor";
 export type AnimalStatus = "available" | "adopted" | "fostered";
+/** Publication is a separate axis from `AnimalStatus` and from archival. */
+export type AnimalPublicationState = "draft" | "published" | "unpublished";
 export type AgeFilter = "all" | "bb" | "adult" | "senior";
 export type GenderFilter = "all" | "male" | "female";
 export type HousingType = "私人樓宇" | "居屋" | "公屋" | "村屋" | "其他";
@@ -35,6 +37,12 @@ export interface Animal {
   adoption_eligible?: boolean;
   sponsorship_eligible?: boolean;
   retired_at?: string | null;
+  /**
+   * Public visibility, independent of the care state in `status` and of
+   * `retired_at` archival. Optional for the same reason as the booleans above:
+   * a snapshot taken before 20260911140000 will not carry it.
+   */
+  publication_state?: AnimalPublicationState;
   image_url: string | null;
   created_at: string;
   updated_at: string;

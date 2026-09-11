@@ -175,6 +175,41 @@ function mapAudit(row: AuditRow): AuditHistoryRow {
   };
 }
 
+/**
+ * Reads a supporter's donations, treating the delivery-job embed as optional.
+ *
+ * `donation_delivery_job` is created by migration 20260905155357, which the
+ * repository's own recorded production preflight shows as `applied:false`. When
+ * the table is absent PostgREST rejects the embed, and because that rejection
+ * arrived as the donation query's error it took the entire supporter detail
+ * page down with it -- the master record vanished because an extension was
+ * missing.
+ *
+ * Delivery status is an extension of a donation, not part of it. If the embed
+ * fails, the same query is retried without it so the donation history still
+ * loads with `deliveryJob: null`. A donation read that fails for its own reasons
+ * still propagates: the retry only succeeds when the embed was the problem, so
+ * this is not a blanket catch.
+ */
+async function loadDonationsWithOptionalDelivery(client: SupabaseClient, supporterId: string) {
+  const withDelivery = await client
+    .from("donation")
+    .select("*,donation_delivery_job(id,status)")
+    .eq("supporter_id", supporterId)
+    .order("created_at", { ascending: false });
+  if (!withDelivery.error) return withDelivery;
+
+  const withoutDelivery = await client
+    .from("donation")
+    .select("*")
+    .eq("supporter_id", supporterId)
+    .order("created_at", { ascending: false });
+  // Still failing without the embed -- the donation read itself is at fault, so
+  // report the original error rather than masking it as a missing extension.
+  if (withoutDelivery.error) return withDelivery;
+  return withoutDelivery;
+}
+
 function toSupporterUpdatePayload(update: SupporterUpdatePayload) {
   const payload: Record<string, string | string[] | null> = {};
   if (update.name !== undefined) payload.name = update.name;
@@ -202,11 +237,7 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
       const summary = await readModel.summary(id);
       if (!summary) return null;
       const [donationResult, pledgeResult] = await Promise.all([
-        client
-          .from("donation")
-          .select("*,donation_delivery_job(id,status)")
-          .eq("supporter_id", id)
-          .order("created_at", { ascending: false }),
+        loadDonationsWithOptionalDelivery(client, id),
         client.from("sponsorship_pledge").select("id").eq("supporter_id", id),
       ]);
       if (donationResult.error) throw donationResult.error;

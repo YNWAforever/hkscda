@@ -92,11 +92,33 @@ async function createRoleUser(
   email: string,
   password: string,
 ): Promise<{ userId: string; client: SupabaseClient }> {
-  const { data, error } = await service.auth.admin.createUser({
+  let { data, error } = await service.auth.admin.createUser({
     email,
     password,
     email_confirm: true,
   });
+
+  // Self-heal a collision left by a previous interrupted run.
+  //
+  // These fixtures use fixed addresses and clean up in afterAll, so any run
+  // killed partway -- a hook timing out under load, a cancelled command --
+  // leaves the auth users behind and every subsequent run fails on
+  // "already been registered". That looks exactly like a real RLS regression
+  // and previously needed a manual `bunx supabase db reset` to clear.
+  //
+  // Only ever touches the suite's own `rls-test-*@example.test` addresses, and
+  // only on the loopback stack this file refuses to run without.
+  if (error && /already.*registered/i.test(error.message)) {
+    const { data: existing } = await service.auth.admin.listUsers();
+    const stale = existing?.users.find((user) => user.email === email);
+    if (stale) await service.auth.admin.deleteUser(stale.id);
+    ({ data, error } = await service.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+    }));
+  }
+
   if (error || !data.user) {
     throw new Error(`Failed to create test user ${email}: ${error?.message}`);
   }
@@ -153,9 +175,17 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
       [treasurerAuthId, "rls-test-treasurer@example.test", "treasurer"],
       [adminAuthId, "rls-test-admin@example.test", "admin"],
     ] as const) {
+      // Upsert on the unique email rather than insert, for the same reason
+      // createRoleUser self-heals: an interrupted run leaves these fixed
+      // addresses behind in admin_user too, and a plain insert then fails on
+      // admin_user_email_key on every later run. The auth_user_id is refreshed
+      // because the previous run's auth user has just been replaced.
       const { data, error } = await svc
         .from("admin_user")
-        .insert({ auth_user_id: authUserId, email, role, status: "active" })
+        .upsert(
+          { auth_user_id: authUserId, email, role, status: "active" },
+          { onConflict: "email" },
+        )
         .select("id")
         .single();
       if (error || !data) {
@@ -166,7 +196,13 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
 
     const { data: supporterRow, error: supporterError } = await svc
       .from("supporter")
-      .insert({ name: "RLS Test Supporter", email: "rls-test-supporter@example.test" })
+      // Upsert for the same reason as admin_user above: this address is fixed,
+      // so an interrupted run leaves the row behind and a plain insert then
+      // fails on supporter_email_key forever after.
+      .upsert(
+        { name: "RLS Test Supporter", email: "rls-test-supporter@example.test" },
+        { onConflict: "email" },
+      )
       .select("id")
       .single();
     if (supporterError || !supporterRow) {
@@ -222,7 +258,14 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
       admin: adminClient,
       service: svc,
     };
-  });
+    // This hook creates four auth users over HTTP, signs each of them in, and
+    // seeds the fixture rows. That exceeds bun:test's 5s hook default whenever
+    // the machine is busy -- and when it does, the hook is killed after the
+    // users exist but before afterAll can remove them, which is precisely what
+    // left the stale `rls-test-*` addresses that then failed every later run.
+    // Raising the budget removes the cause; the self-heal in createRoleUser
+    // clears any residue already left behind.
+  }, 60_000);
 
   afterAll(async () => {
     // Gated on `service` (assigned as beforeAll's first statement), not on

@@ -805,6 +805,22 @@
   border-radius: 8px;
   background: var(--color-surface-offset);
 }
+/* Card variant: the photograph leads the card rather than sitting beside the
+   name as an 88px square. Must stay immediately after `.animal-profile-photo`
+   -- both are single-class selectors, so this wins only by source order, which
+   is also why the `aspect-ratio: 4/3` on `.public-animal-media` never took
+   effect. The negative margin bleeds the photo to the card's edges against
+   `.animal-profile-card-link`'s `padding: 20px 20px 0`; the card already sets
+   `overflow: hidden`, so the corners stay clipped. 4:3 is the portrait ratio
+   the brand guidance asks for and keeps ears and eyes inside the crop. */
+.animal-profile-photo-card {
+  width: auto;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  flex: none;
+  margin: -20px -20px 0;
+  border-radius: 0;
+}
 .animal-profile-photo img {
   display: block;
   width: 100%;

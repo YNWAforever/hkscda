@@ -284,7 +284,15 @@ describe.skipIf(!url)("manual gift real database transaction and leases", () => 
       } catch (error) {
         if (error !== rollback) throw error;
       }
+      // Seeds up to 5,001 supporters and donations into real Postgres, then
+      // reads them back through crm_read_supporters several times over. That is
+      // comfortably inside bun:test's 5s default on an idle machine and
+      // comfortably outside it when the rest of the stack is competing for the
+      // disk -- the 5000 and 5001 cases were timing out at ~5.01s on an
+      // unchanged repository. Every assertion is untouched; only the budget
+      // reflects the work.
     },
+    60_000,
   );
   test("real summary totals include 1001 gifts and retain receipt association", async () => {
     const rollback = new Error("rollback synthetic aggregate fixture");

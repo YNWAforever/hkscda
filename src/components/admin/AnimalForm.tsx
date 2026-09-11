@@ -4,8 +4,16 @@ import { z } from "zod";
 import { useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { supabase } from "../../lib/supabase";
+import { ANIMAL_IMAGE_BUCKET } from "../../lib/animals/photoUpload";
+import {
+  buildPublicProfile,
+  PUBLIC_PROFILE_LABELS,
+  toPublicProfileFields,
+  type PublicProfileFields,
+} from "../../lib/animals/publicProfileInput";
 import type { Animal } from "../../types/animal";
 import { useAdminLanguage } from "./adminI18n";
+import { uploadAnimalPhoto } from "./animalPhotoUpload";
 
 function buildAnimalSchema(messages: { name: string; age: string }) {
   return z.object({
@@ -20,6 +28,19 @@ function buildAnimalSchema(messages: { name: string; age: string }) {
     description: z.string().optional(),
     description_en: z.string().optional(),
     status: z.enum(["available", "adopted", "fostered"]),
+    // Publication is independent of the care state above. Before this existed
+    // the only way to take a record off the public site was to claim the animal
+    // had been adopted or fostered -- falsifying its care record to achieve an
+    // editorial outcome.
+    publication_state: z.enum(["draft", "published", "unpublished"]),
+    // Adoption and sponsorship are independent memberships, and both can be
+    // true. They drive the public RLS policy and both public catalogues, but
+    // until now the editor could not read or write either -- the only way to
+    // change a catalogue was to change the species, which the
+    // animal_catalog_membership_defaults trigger then used to rewrite BOTH
+    // flags. Exposing them directly is what makes that indirection unnecessary.
+    adoption_eligible: z.boolean(),
+    sponsorship_eligible: z.boolean(),
   });
 }
 
@@ -35,6 +56,14 @@ export function AnimalForm({ existing }: AnimalFormProps) {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // The eight allowlisted fields the public site actually renders. Kept in
+  // local state rather than the react-hook-form schema because they are stored
+  // as one jsonb column, validated as a whole, and rejected as a whole.
+  const [profileFields, setProfileFields] = useState<PublicProfileFields>(() =>
+    toPublicProfileFields(existing?.public_profile),
+  );
+  const setProfileField = (key: keyof PublicProfileFields, value: string) =>
+    setProfileFields((current) => ({ ...current, [key]: value }) as PublicProfileFields);
   const animalSchema = useMemo(() => buildAnimalSchema(copy.form.errors), [copy.form.errors]);
 
   const {
@@ -56,8 +85,24 @@ export function AnimalForm({ existing }: AnimalFormProps) {
           description: existing.description ?? "",
           description_en: existing.description_en ?? "",
           status: existing.status,
+          publication_state: existing.publication_state ?? "published",
+          // Fall back to what the 20260906162436 backfill would have derived,
+          // so an older row with a null flag edits as what it actually is
+          // rather than silently defaulting to "not eligible".
+          adoption_eligible: existing.adoption_eligible ?? existing.type !== "sponsor",
+          sponsorship_eligible: existing.sponsorship_eligible ?? existing.type === "sponsor",
         }
-      : { type: "cat", gender: "female", status: "available" },
+      : {
+          type: "cat",
+          gender: "female",
+          status: "available",
+          // A new record starts as a draft: a profile should be prepared and
+          // checked before it is on the public site, not the instant it is
+          // created with a blank story and no photograph.
+          publication_state: "draft",
+          adoption_eligible: true,
+          sponsorship_eligible: false,
+        },
   });
 
   function optionalText(value?: string) {
@@ -69,22 +114,45 @@ export function AnimalForm({ existing }: AnimalFormProps) {
     setSaving(true);
     setError(null);
 
-    let image_url = existing?.image_url ?? null;
+    // Validated through the public reader, so anything accepted here is
+    // something the public page will actually render. Without this a save
+    // succeeds, the reader strips the value, and the field is silently blank in
+    // public with nothing to explain why.
+    const profileResult = buildPublicProfile(profileFields);
+    if (!profileResult.ok) {
+      setError(
+        `以下欄位不符合公開資料規則（不可包含網址、電郵、電話或 < > 符號）：${profileResult.rejected
+          .map((key) => PUBLIC_PROFILE_LABELS[key])
+          .join("、")}`,
+      );
+      setSaving(false);
+      return;
+    }
+
+    const previousImageUrl = existing?.image_url ?? null;
+    let image_url = previousImageUrl;
+    // Set only when this submission uploaded a new object, so a failed save can
+    // remove the orphan it created without ever touching the live photograph.
+    let uploadedPath: string | null = null;
+
+    // For a new animal the id is decided here and then written in the insert
+    // below. Previously this UUID was generated for the object path only and
+    // never sent, so Postgres minted a different id via gen_random_uuid() and
+    // every new animal's photo lived under a UUID unrelated to its own row --
+    // which makes the object unattributable and a later reference check or
+    // cleanup impossible. The column keeps its default; supplying the id simply
+    // makes the row and its photographs agree.
+    const animalId = existing?.id ?? crypto.randomUUID();
 
     if (imageFile) {
-      const animalId = existing?.id ?? crypto.randomUUID();
-      const { error: uploadError } = await supabase.storage
-        .from("animal-images")
-        .upload(`${animalId}.jpg`, imageFile, { upsert: true });
-      if (uploadError) {
+      const uploaded = await uploadAnimalPhoto({ animalId, file: imageFile });
+      if (!uploaded.ok) {
         setError(copy.form.uploadError);
         setSaving(false);
         return;
       }
-      const { data: urlData } = supabase.storage
-        .from("animal-images")
-        .getPublicUrl(`${animalId}.jpg`);
-      image_url = urlData.publicUrl;
+      uploadedPath = uploaded.path;
+      image_url = uploaded.publicUrl;
     }
 
     const payload = {
@@ -99,8 +167,26 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       description: optionalText(values.description),
       description_en: optionalText(values.description_en),
       status: values.status,
+      publication_state: values.publication_state,
+      adoption_eligible: values.adoption_eligible,
+      sponsorship_eligible: values.sponsorship_eligible,
+      public_profile: profileResult.profile,
       image_url,
     };
+
+    // A failed save leaves the freshly uploaded object referenced by nothing.
+    // Removing it is housekeeping, not recovery: the animal's existing photo is
+    // already safe because the upload went to a new path and overwrote nothing.
+    // Cleanup failure is therefore not worth surfacing over the save error the
+    // operator actually needs to see.
+    async function discardOrphanedUpload() {
+      if (!uploadedPath) return;
+      try {
+        await supabase.storage.from(ANIMAL_IMAGE_BUCKET).remove([uploadedPath]);
+      } catch {
+        /* orphan is unreferenced; delayed cleanup will collect it */
+      }
+    }
 
     if (existing) {
       const { error: updateError } = await supabase
@@ -108,13 +194,17 @@ export function AnimalForm({ existing }: AnimalFormProps) {
         .update({ ...payload, updated_at: new Date().toISOString() })
         .eq("id", existing.id);
       if (updateError) {
+        await discardOrphanedUpload();
         setError(copy.form.saveError);
         setSaving(false);
         return;
       }
     } else {
-      const { error: insertError } = await supabase.from("animals").insert(payload);
+      const { error: insertError } = await supabase
+        .from("animals")
+        .insert({ ...payload, id: animalId });
       if (insertError) {
+        await discardOrphanedUpload();
         setError(copy.form.saveError);
         setSaving(false);
         return;
@@ -264,6 +354,183 @@ export function AnimalForm({ existing }: AnimalFormProps) {
               ))}
             </select>
           </div>
+        </div>
+
+        {/* Adoption and sponsorship are independent: both may be ticked, and an
+            animal with neither is visible to staff but appears in no public
+            catalogue (the "public read available" RLS policy requires one). */}
+        {/* Publication is its own axis. Withholding a record must never require
+            claiming the animal was adopted or fostered. */}
+        <div className="mt-4">
+          <label className="mb-1 block text-sm font-medium" htmlFor="publication-state">
+            公開狀態
+          </label>
+          <select id="publication-state" {...register("publication_state")} className={selectField}>
+            <option value="draft" style={optionStyle}>
+              草稿（未曾公開）
+            </option>
+            <option value="published" style={optionStyle}>
+              已公開
+            </option>
+            <option value="unpublished" style={optionStyle}>
+              暫停公開
+            </option>
+          </select>
+          <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+            與上方的狀態（可領養／已領養／寄養中）獨立。暫停公開不會更改動物的照顧記錄。
+          </p>
+        </div>
+
+        <div className="mt-4 space-y-2">
+          <span className="block text-sm font-medium">刊登範圍</span>
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" {...register("adoption_eligible")} className="h-4 w-4" />
+            可供領養（顯示於領養頁面）
+          </label>
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" {...register("sponsorship_eligible")} className="h-4 w-4" />
+            可供助養（顯示於助養區）
+          </label>
+        </div>
+      </fieldset>
+
+      {/* The only animal facts the public site renders. Everything outside this
+          set stays internal: the database CHECK constraint refuses any other
+          key, and refuses URLs, email addresses, phone numbers and angle
+          brackets inside these ones, so contact details cannot leak into a
+          public page through a free-text box. */}
+      <fieldset className="space-y-4 rounded-lg border border-[var(--color-border)] p-4">
+        <legend className="px-1 text-sm font-semibold">公開資料</legend>
+        <p className="text-xs text-[var(--color-text-muted)]">
+          這些內容會直接在公開網站顯示。請勿填寫網址、電郵、電話或個人聯絡資料。
+        </p>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label className="mb-1 block text-sm font-medium" htmlFor="profile-code">
+              編號
+            </label>
+            <input
+              id="profile-code"
+              className={field}
+              value={profileFields.code}
+              onChange={(e) => setProfileField("code", e.target.value)}
+              placeholder="例如 C3761"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium" htmlFor="profile-birthday">
+              出生日期
+            </label>
+            <input
+              id="profile-birthday"
+              type="date"
+              className={field}
+              value={profileFields.birthday}
+              onChange={(e) => setProfileField("birthday", e.target.value)}
+            />
+            {/* Age is derived from this one source rather than kept as a second
+                copy that can disagree with it. */}
+            <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+              填寫後，公開頁面會以此推算年齡。
+            </p>
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium" htmlFor="profile-neutered">
+              絕育狀態
+            </label>
+            <select
+              id="profile-neutered"
+              className={selectField}
+              value={profileFields.neutered}
+              onChange={(e) => setProfileField("neutered", e.target.value)}
+            >
+              <option value="" style={optionStyle}>
+                未有記錄
+              </option>
+              <option value="yes" style={optionStyle}>
+                已絕育
+              </option>
+              <option value="no" style={optionStyle}>
+                未絕育
+              </option>
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium" htmlFor="profile-suitability">
+              適合的領養者
+            </label>
+            <select
+              id="profile-suitability"
+              className={selectField}
+              value={profileFields.suitability}
+              onChange={(e) => setProfileField("suitability", e.target.value)}
+            >
+              <option value="" style={optionStyle}>
+                未有記錄
+              </option>
+              <option value="newbie" style={optionStyle}>
+                適合新手
+              </option>
+              <option value="experienced" style={optionStyle}>
+                適合有經驗者
+              </option>
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium" htmlFor="profile-record-date">
+              記錄日期
+            </label>
+            <input
+              id="profile-record-date"
+              type="date"
+              className={field}
+              value={profileFields.recordDate}
+              onChange={(e) => setProfileField("recordDate", e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="mb-1 block text-sm font-medium" htmlFor="profile-personality">
+            性格（最多 1000 字）
+          </label>
+          <textarea
+            id="profile-personality"
+            rows={3}
+            className={field}
+            value={profileFields.personality}
+            onChange={(e) => setProfileField("personality", e.target.value)}
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium" htmlFor="profile-health">
+            照顧與健康需要（最多 2000 字）
+          </label>
+          <textarea
+            id="profile-health"
+            rows={3}
+            className={field}
+            value={profileFields.health}
+            onChange={(e) => setProfileField("health", e.target.value)}
+          />
+          {/* Simplifying the public page must not drop what an applicant needs
+              to know before applying. */}
+          <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+            申請人在提交申請前需要知道的照顧需要，請在此說明。
+          </p>
+        </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium" htmlFor="profile-story">
+            牠的故事（最多 8000 字）
+          </label>
+          <textarea
+            id="profile-story"
+            rows={6}
+            className={field}
+            value={profileFields.story}
+            onChange={(e) => setProfileField("story", e.target.value)}
+          />
         </div>
       </fieldset>
 

@@ -23,6 +23,8 @@ import fs from "node:fs/promises";
 import { readFileSync, existsSync } from "node:fs";
 import path from "node:path";
 
+import { isProductionProjectRef, PRODUCTION_PROJECT_REF } from "./seed-admin.js";
+
 const JSON_FILE = path.join("data", "hkscda-animals.json");
 
 // ── Env loading (no dotenv dependency needed) ────────────────────────────────
@@ -45,6 +47,21 @@ const SERVICE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!SUPABASE_URL) {
   console.error("✗ VITE_SUPABASE_URL not set. Check your .env file.");
+  process.exit(1);
+}
+// This script writes scraped animal rows and public storage objects with the
+// service_role key, which bypasses RLS. It reads .env / .env.local, and in a
+// developer checkout VITE_SUPABASE_URL there commonly points at the live
+// project -- so without this check `bun run import:hkscda` writes scraped data
+// straight into production, over real animal records. The same guard already
+// protects seed-admin.js; it is imported rather than re-declared so the project
+// ref is defined once and stays covered by scripts/seed-admin.test.ts.
+if (isProductionProjectRef(SUPABASE_URL)) {
+  console.error("✗ Refusing to run against the production Supabase project.");
+  console.error(`  Detected project ref: ${PRODUCTION_PROJECT_REF}`);
+  console.error("  This importer writes animal rows and storage objects with the service_role");
+  console.error("  key. Importing into production would overwrite real animal records.");
+  console.error("  Point VITE_SUPABASE_URL at a local or disposable project first.");
   process.exit(1);
 }
 if (!SERVICE_KEY) {

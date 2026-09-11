@@ -2,7 +2,9 @@ import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { supabase } from "../../lib/supabase";
-import type { Animal } from "../../types/animal";
+import { filterAdminAnimals, isArchivedAnimal } from "../../lib/animals/adminSearch";
+import { needsSpeciesVerification } from "../../lib/animals/adminCatalogue";
+import type { Animal, AnimalPublicationState } from "../../types/animal";
 import { DataTable, type DataTableColumn } from "./DataTable";
 import { StatusPill, type StatusTone } from "./StatusBadge";
 import { useAdminLanguage } from "./adminI18n";
@@ -27,6 +29,22 @@ function AnimalStatus({ status }: { status: string }) {
   return <StatusPill tone={statusTones[status] ?? "neutral"}>{label}</StatusPill>;
 }
 
+const publicationLabels: Record<AnimalPublicationState, string> = {
+  draft: "草稿",
+  published: "已公開",
+  unpublished: "暫停公開",
+};
+
+const publicationTones: Record<AnimalPublicationState, StatusTone> = {
+  draft: "neutral",
+  published: "success",
+  unpublished: "warning",
+};
+
+function AnimalPublication({ state }: { state: AnimalPublicationState }) {
+  return <StatusPill tone={publicationTones[state]}>{publicationLabels[state]}</StatusPill>;
+}
+
 function AnimalAvatar({ animal }: { animal: Animal }) {
   if (animal.image_url) {
     return <img src={animal.image_url} alt="" className="h-10 w-10 rounded object-cover" />;
@@ -41,16 +59,50 @@ function AnimalAvatar({ animal }: { animal: Animal }) {
 export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
   const { copy } = useAdminLanguage();
   const [search, setSearch] = useState("");
+  const [includeArchived, setIncludeArchived] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
-  const filtered = animals.filter(
-    (animal) =>
-      animal.name.toLowerCase().includes(search.toLowerCase()) ||
-      (animal.name_en ?? "").toLowerCase().includes(search.toLowerCase()),
-  );
+  // Searching matched only names, so the reference number printed on an
+  // animal's own public page found nothing. Archived records are excluded by
+  // default but stay reachable through the toggle: a retired animal still needs
+  // correcting, and its applications and sponsorships still point at it.
+  const filtered = filterAdminAnimals(animals, search, { includeArchived });
+  const archivedCount = animals.filter(isArchivedAnimal).length;
+  // Species must be cat or dog. These still carry the legacy 'sponsor'
+  // placeholder and need a human to say which -- it cannot be derived, and
+  // guessing from a name is exactly the incorrect matching the plan forbids.
+  const needsSpeciesCount = filtered.filter(needsSpeciesVerification).length;
 
-  async function handleDelete(id: string) {
-    await supabase.from("animals").delete().eq("id", id);
+  /**
+   * Archives instead of deleting.
+   *
+   * `.delete()` on an animal was both destructive and dishonest. Nine tables
+   * reference animals: `animal_profile_internal` (the internal medical and
+   * behavioural record) and `animal_match` cascade, so a delete silently
+   * destroyed them; `sponsorship_preference`, `adoption_followup` and
+   * `adoption_application_animal_preference` are ON DELETE SET NULL, so the
+   * record of which animal a sponsor actually chose was quietly erased. Where a
+   * successful adoption, application or case existed the foreign key is
+   * RESTRICT or NO ACTION, so the delete was rejected outright -- and the error
+   * was never read, so the UI called onDeleted() and reported success while
+   * nothing had happened.
+   *
+   * Retiring sets `retired_at` instead, which is what that column exists for:
+   * it removes the animal from the working list and the public catalogues while
+   * preserving every historical foreign key, the internal profile, and the
+   * sponsorship and adoption history pointing at it.
+   */
+  async function handleArchive(id: string, archived: boolean) {
+    setActionError(null);
+    const { error } = await supabase
+      .from("animals")
+      .update({ retired_at: archived ? null : new Date().toISOString() })
+      .eq("id", id);
+    if (error) {
+      setActionError(archived ? "無法取消封存，請重試。" : "無法封存，請重試。");
+      return;
+    }
     setConfirmDelete(null);
     onDeleted();
   }
@@ -72,11 +124,19 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
         >
           {copy.common.edit}
         </Link>
-        {confirmDelete === animal.id ? (
+        {isArchivedAnimal(animal) ? (
+          <button
+            type="button"
+            onClick={() => handleArchive(animal.id, true)}
+            className="text-xs text-[var(--color-primary)] hover:underline"
+          >
+            取消封存
+          </button>
+        ) : confirmDelete === animal.id ? (
           <span className="flex gap-2 text-xs">
             <button
               type="button"
-              onClick={() => handleDelete(animal.id)}
+              onClick={() => handleArchive(animal.id, false)}
               className="text-[var(--color-error)] hover:underline"
             >
               {copy.common.confirm}
@@ -94,8 +154,9 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
             type="button"
             onClick={() => setConfirmDelete(animal.id)}
             className="text-xs text-[var(--color-error)] hover:underline"
+            title="封存後不會在公開網站或預設列表顯示，但所有領養、助養及內部記錄會保留。"
           >
-            {copy.common.delete}
+            封存
           </button>
         )}
       </div>
@@ -138,6 +199,14 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
       cell: (animal) => <AnimalStatus status={animal.status} />,
     },
     {
+      // Shown beside the care state, not folded into it: an operator needs to
+      // see at a glance that a record is available but withheld, which the two
+      // columns together say and either one alone cannot.
+      id: "publication",
+      header: "公開狀態",
+      cell: (animal) => <AnimalPublication state={animal.publication_state ?? "published"} />,
+    },
+    {
       id: "actions",
       header: copy.table.actions,
       cell: (animal) => <AnimalActions animal={animal} />,
@@ -146,12 +215,39 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
 
   return (
     <div className="space-y-4">
-      <input
-        value={search}
-        onChange={(event) => setSearch(event.target.value)}
-        placeholder={copy.table.search}
-        className="w-full max-w-xs rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] shadow-sm focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-highlight)]"
-      />
+      <div className="flex flex-wrap items-center gap-4">
+        <input
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="搜尋名稱或編號"
+          aria-label="搜尋名稱或編號"
+          className="w-full max-w-xs rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] shadow-sm focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-highlight)]"
+        />
+        {archivedCount > 0 ? (
+          <label className="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
+            <input
+              type="checkbox"
+              checked={includeArchived}
+              onChange={(event) => setIncludeArchived(event.target.checked)}
+              className="h-4 w-4"
+            />
+            顯示已封存記錄（{archivedCount}）
+          </label>
+        ) : null}
+      </div>
+
+      {needsSpeciesCount > 0 ? (
+        <p className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-2 text-sm text-[var(--color-text-muted)]">
+          有 {needsSpeciesCount} 筆記錄的品種仍是舊有的「助養」值，需要人手確認為貓或狗。
+          更改品種不會影響領養／助養刊登範圍。
+        </p>
+      ) : null}
+
+      {actionError ? (
+        <p role="alert" className="text-sm text-[var(--color-error)]">
+          {actionError}
+        </p>
+      ) : null}
 
       <DataTable
         columns={columns}

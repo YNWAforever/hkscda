@@ -115,3 +115,64 @@ test("explicit empty notes are distinguished from omitted notes", async () => {
   }
   expect(args).toMatchObject({ p_internal_notes: null, p_update_internal_notes: true });
 });
+
+test("a failed counts RPC propagates instead of degrading to zero participants", async () => {
+  // volunteer_activity_counts is the only source of approvedParticipants, and
+  // rules.ts derives remaining capacity as `capacity - approvedParticipants`.
+  // Treating an unreadable count as 0 would present a full activity as empty
+  // and let the next registration overbook it, so this path must fail closed.
+  //
+  // The audit's symptom -- the volunteer page showing zero records while the
+  // database held 12 activities and 5 registrations -- is the *display* half of
+  // this, and is fixed in the UI by rendering the rejection as a failure state
+  // rather than as an empty list. It must not be "fixed" here by swallowing the
+  // error, which would trade a visible outage for silent overbooking.
+  const repo = createSupabaseVolunteerRepository({
+    from: () => ({
+      select: () => ({
+        order: () => ({
+          range: async () => ({
+            data: [
+              {
+                id: "activity-1",
+                type: "shelter",
+                title: "貓舍清潔",
+                description: null,
+                starts_at: "2026-09-20T01:00:00.000Z",
+                ends_at: "2026-09-20T03:00:00.000Z",
+                location: "貓舍",
+                capacity: 12,
+                min_age: null,
+                underage_policy: "not_allowed",
+                auto_approve: false,
+                allow_waitlist: true,
+                status: "published",
+                registration_modes: ["individual"],
+                created_at: "2026-09-01T00:00:00.000Z",
+                updated_at: "2026-09-01T00:00:00.000Z",
+              },
+            ],
+            error: null,
+            count: 1,
+          }),
+        }),
+      }),
+    }),
+    rpc: async () => ({
+      data: null,
+      error: { message: "function public.volunteer_activity_counts(uuid[]) does not exist" },
+    }),
+  } as never);
+
+  await expect(
+    repo.listActivities({
+      status: undefined,
+      type: undefined,
+      q: undefined,
+      page: 1,
+      pageSize: 25,
+    }),
+  ).rejects.toMatchObject({
+    message: "function public.volunteer_activity_counts(uuid[]) does not exist",
+  });
+});
