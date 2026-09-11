@@ -128,6 +128,50 @@ Not a blanket catch: if the plain donation select also fails, the original error
 propagates. Tests cover both directions, and that the fallback preserves
 `amount_cents` exactly.
 
+### Slice F — Animal photo immutable path (Phase 2)
+
+Commit `dd101e3`. **Reviewable implementation complete + isolated acceptance passed.**
+
+AnimalForm uploaded to the fixed path `${animalId}.jpg` with `upsert: true`
+*before* the database write, and the save-failure branch returned without
+touching storage — so the existing photograph was destroyed the moment a file
+was chosen. Uploads now land on a new immutable path via a signed URL from a new
+admin route; a failed save removes only its own orphan.
+
+Two further defects found and fixed: no migration ever created the
+`animal-images` bucket (a clean install had no bucket at all), and a new
+animal's photo path used a UUID never sent in the insert, so it was unrelated to
+its own row. **Acceptance T07.**
+
+### Slice G — Catalogue eligibility in the CMS (Phase 2)
+
+Commit `3f79f02`. **Reviewable implementation complete.**
+
+Admin filtered `.eq("type", section)` while the public side filters on the
+eligibility booleans, so a sponsorship-eligible cat was visible to the public but
+unreachable by staff. The admin list now filters sponsorship by eligibility, and
+the editor gained explicit 可供領養 / 可供助養 controls. A test pins admin/public
+parity. **Acceptance T06/T11.**
+
+### Slice H — Photo-led public cards and the 助養區 entry (Phase 2)
+
+Commit `957ca2d`. **Reviewable implementation complete + browser-verified.**
+
+The card was an 88px avatar card; the photograph now leads at 4:3. 助養區 is a
+top-level navigation group with 助養區小朋友, which existed nowhere in the
+product before. Verified in a real browser: `verify:brand` 26 routes × 5
+viewports and `verify:a11y` 26 routes, both exit 0. **Acceptance T10/T11.**
+
+### Slice I — Database transaction suites actually run (Phase 1.6)
+
+Commit `d011766`. **Isolated acceptance passed.**
+
+The Phase 1.6 coverage already existed and had never run, because no CI job set
+the suites' opt-in variables. `test:db` now runs them from the job that already
+starts the stack: 37 pass, plus 38 RLS — 75 database-backed tests executing
+instead of skipping, including rollback-on-audit-failure and
+capacity-reduction-racing-approval. **Acceptance T01/T03.**
+
 ### Working records
 
 Commits `382ca5d`, `fb47f72`. Baseline verification, 217-entry source defect
@@ -141,20 +185,23 @@ Run against the local Supabase stack with all 55 migrations applied.
 | Gate | Command | Result |
 |---|---|---|
 | Typecheck | `bunx tsc --noEmit` | exit 0 |
-| Test | `bun test` | 2025 pass · 46 skip · 0 fail |
+| Test | `bun test` | 2043 pass · 46 skip · 0 fail (same under `--isolate`, as CI runs) |
+| Database | `bun run test:db` | 37 pass · 0 fail |
+| Brand | `bun run verify:brand` | 26 routes × 5 viewports, exit 0 |
+| A11y | `bun run verify:a11y` | 26 routes, exit 0 |
 | Lint | `bun run lint` | 0 errors, 41 warnings |
 | RLS | `bun run test:rls` | 38 pass · 0 fail |
 | Build | `bun run build` | exit 0 (at baseline; re-run before any release candidate) |
 | Migration rehearsal | `bunx supabase db reset` | all 55 migrations applied from zero, exit 0 |
 
-**Not yet run:** `verify:brand`, `verify:a11y`, `verify:performance` — these need
-a built app and a reachable origin, and belong with the Phase 2 public-layout
-work. Recorded as **not run**, not as passed.
+**Not yet run:** `verify:performance` (Lighthouse). Recorded as **not run**, not
+as passed.
 
-**A constraint on claim-making:** all 46 remaining skips are database-backed
-tests whose env vars no CI job sets. A green blocking gate proves unit and
-boundary behaviour and proves nothing about the database. Any database claim
-must cite a real-Postgres run.
+**A constraint on claim-making:** the 46 remaining skips are still
+database-backed tests, but the main transaction suites now run via `test:db`
+against a real Postgres. `rls-matrix` remains `continue-on-error: true`, so a red
+database test still reports as a green CI run until the owner promotes that job
+through branch protection.
 
 ## Next slices, in dependency order
 

@@ -11,6 +11,14 @@ const STEPS: [string, string, string][] = [
  * Ported from hkscdagpt app/page.tsx (steps-section). The wording about going to
  * the existing site is dropped: the shortlist and the seven-step application are
  * same-origin after the merge.
+ *
+ * The heading and standfirst no longer say the process is "unchanged". That was
+ * reassurance aimed at the people running the migration, not at an adopter, who
+ * has no idea there was a migration and cannot act on the fact. What an adopter
+ * does need -- that the full application asks for home-visit details, that a
+ * draft can be saved partway, and that progress can be checked afterwards --
+ * is kept, since simplifying the homepage must not drop information someone
+ * needs before applying.
  */
 export function AdoptionStepsBand() {
   return (
@@ -18,8 +26,10 @@ export function AdoptionStepsBand() {
       <div className="public-container">
         <div className="section-heading centered-heading">
           <p className="eyebrow">領養流程一覽</p>
-          <h2 id="steps-title">四步看懂，七步申請流程保持不變。</h2>
-          <p>這裡只作簡化說明；正式申請、家訪資料、儲存草稿及狀態查詢流程不變。</p>
+          <h2 id="steps-title">由認識牠到接牠回家，四個步驟。</h2>
+          <p>
+            以下為簡要說明。正式申請包括家訪資料、相片上載及身分驗證；申請途中可儲存草稿，提交後亦可隨時查詢進度。
+          </p>
         </div>
         <ol className="steps-grid">
           {STEPS.map(([number, title, description]) => (
