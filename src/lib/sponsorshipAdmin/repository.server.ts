@@ -1,5 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { selectReviewTargetProof } from "./proofReview";
+
 import type {
   CancelPledgeInput,
   PaymentProofRecord,
@@ -293,11 +295,11 @@ export function createSupabaseSponsorshipAdminRepository(
           .select("*")
           .eq("pledge_id", id)
           .order("rank", { ascending: true }),
-        // currentProof below = the most recent row here (newest created_at
-        // first). This ordering must match review_sponsorship_payment_proof's
-        // own `order by created_at desc limit 1 for update` in the migration,
-        // since the RPC and this query must agree on which row "provisional"
-        // review acts on.
+        // Newest-first, because this is the history list staff read. It is NOT
+        // the review order: `currentProof` below is chosen by
+        // `selectReviewTargetProof`, which must agree with
+        // review_sponsorship_payment_proof's own `order by created_at asc, id
+        // asc` — see proofReview.ts for why the queue drains oldest-first.
         client
           .from("sponsorship_payment_proof")
           .select("*")
@@ -325,23 +327,35 @@ export function createSupabaseSponsorshipAdminRepository(
         supporterPhone: supporters.get(row.supporter_id)?.phone ?? null,
         preferences,
         proofHistory,
-        currentProof: proofHistory[0] ?? null,
+        currentProof: selectReviewTargetProof(proofHistory),
         recentAuditLog: auditLog,
       } satisfies PledgeDetail;
     },
 
     async getProofSigningInfo(pledgeId) {
+      // Signs the file for the proof under review — the same row
+      // `getPledgeDetail` exposes as `currentProof` and the same row the RPC
+      // will update. Signing the newest row instead would show staff one
+      // document while their approve/reject decision landed on another.
       const { data, error } = await client
         .from("sponsorship_payment_proof")
-        .select("storage_path,file_name")
+        .select("id,storage_path,file_name,review_status,created_at")
         .eq("pledge_id", pledgeId)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+        .order("created_at", { ascending: false });
       if (error) throw error;
-      if (!data) return null;
 
-      const row = data as Pick<ProofRow, "storage_path" | "file_name">;
+      type SigningRow = Pick<
+        ProofRow,
+        "id" | "storage_path" | "file_name" | "review_status" | "created_at"
+      >;
+      const row = selectReviewTargetProof(
+        ((data ?? []) as SigningRow[]).map((proofRow) => ({
+          ...proofRow,
+          createdAt: proofRow.created_at,
+          reviewStatus: proofRow.review_status,
+        })),
+      );
+      if (!row) return null;
       // A staff-recorded payment may have no attached file: there is no
       // storage object to sign a URL for, so treat it the same as "no proof".
       if (!row.storage_path) return null;

@@ -575,34 +575,86 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     expect(detail?.recentAuditLog).toHaveLength(1);
   });
 
-  test("getPledgeDetail picks the newest proof as currentProof regardless of input array order", async () => {
-    // Supplied out of chronological order (oldest, newest, middle) so that a
-    // naive "take index 0 of whatever was given" implementation — or one that
-    // silently drops the `.order("created_at", { ascending: false })` call as
-    // seemingly redundant — would fail this test. Only actually sorting by
-    // created_at desc can land on "proof-newest", matching what
-    // review_sponsorship_payment_proof's own `order by created_at desc limit
-    // 1 for update` would act on in the database.
-    const oldestProof = proofRow({ id: "proof-oldest", created_at: "2026-06-01T00:00:00.000Z" });
-    const newestProof = proofRow({ id: "proof-newest", created_at: "2026-07-15T00:00:00.000Z" });
-    const middleProof = proofRow({ id: "proof-middle", created_at: "2026-07-01T00:00:00.000Z" });
+  test("getPledgeDetail picks the oldest PENDING proof as currentProof, regardless of input order", async () => {
+    // Three months of a running sponsorship: month one approved, months two and
+    // three still queued. Supplied out of chronological order so that a naive
+    // "take index 0 of whatever was given" implementation fails.
+    //
+    // currentProof must be month two — the oldest still awaiting review.
+    // Newest-first would land on month three and strand month two forever: it
+    // can never become the newest again, so no later review could reach it and
+    // a real recorded payment would sit unreviewed with no way to act on it.
+    // This must agree with review_sponsorship_payment_proof's own
+    // `order by created_at asc, id asc` (20260911180000).
+    const monthOne = proofRow({
+      id: "proof-month-1",
+      created_at: "2026-06-01T00:00:00.000Z",
+      review_status: "approved",
+    });
+    const monthTwo = proofRow({ id: "proof-month-2", created_at: "2026-07-01T00:00:00.000Z" });
+    const monthThree = proofRow({ id: "proof-month-3", created_at: "2026-07-15T00:00:00.000Z" });
 
     const { client } = createFakeClient({
-      proofRows: [oldestProof, newestProof, middleProof],
+      proofRows: [monthOne, monthThree, monthTwo],
     });
     const repo = createSupabaseSponsorshipAdminRepository(client);
 
     const detail = await repo.getPledgeDetail(pledgeId);
 
-    expect(detail?.currentProof?.id).toBe("proof-newest");
-    // The older rows must still surface in the full history, in
-    // newest-first order — this rules out "current picks right but history
-    // silently drops rows" as a false-positive pass.
+    expect(detail?.currentProof?.id).toBe("proof-month-2");
+    // The other rows must still surface in the full history, in newest-first
+    // order — this rules out "current picks right but history silently drops
+    // rows" as a false-positive pass. History order is a display choice and is
+    // deliberately the opposite of the review order.
     expect(detail?.proofHistory.map((p) => p.id)).toEqual([
-      "proof-newest",
-      "proof-middle",
-      "proof-oldest",
+      "proof-month-3",
+      "proof-month-2",
+      "proof-month-1",
     ]);
+  });
+
+  test("getPledgeDetail reports no currentProof once every proof is decided", async () => {
+    // Between months. Offering a review action here would give staff buttons
+    // the database refuses, so the absence is the point.
+    const { client } = createFakeClient({
+      proofRows: [proofRow({ id: "proof-month-1", review_status: "approved" })],
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const detail = await repo.getPledgeDetail(pledgeId);
+
+    expect(detail?.currentProof).toBeNull();
+    expect(detail?.proofHistory).toHaveLength(1);
+  });
+
+  test("getProofSigningInfo signs the same proof getPledgeDetail calls current", async () => {
+    // The file staff look at and the row their decision updates must be the
+    // same one. Signing the newest row instead would show them month three's
+    // receipt while approving month two's payment.
+    const monthTwo = proofRow({
+      id: "proof-month-2",
+      created_at: "2026-07-01T00:00:00.000Z",
+      storage_path: `${pledgeId}/month-2.jpg`,
+      file_name: "month-2.jpg",
+    });
+    const monthThree = proofRow({
+      id: "proof-month-3",
+      created_at: "2026-07-15T00:00:00.000Z",
+      storage_path: `${pledgeId}/month-3.jpg`,
+      file_name: "month-3.jpg",
+    });
+
+    const { client } = createFakeClient({ proofRows: [monthThree, monthTwo] });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const detail = await repo.getPledgeDetail(pledgeId);
+    const info = await repo.getProofSigningInfo(pledgeId);
+
+    expect(detail?.currentProof?.id).toBe("proof-month-2");
+    expect(info).toEqual({
+      storagePath: `${pledgeId}/month-2.jpg`,
+      fileName: "month-2.jpg",
+    });
   });
 
   test("getProofSigningInfo returns the current proof's storage location", async () => {

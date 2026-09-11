@@ -369,7 +369,7 @@ export function PledgeDetailDrawer({
               </section>
             )}
 
-            {canReviewProof(pledge.status) && (
+            {canReviewProof(pledge.proofHistory) && (
               <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
                 <h3 className="text-sm font-semibold text-[var(--color-panel)]">
                   {copy.reviewProof.title}

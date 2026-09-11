@@ -195,9 +195,27 @@ describe("createSponsorshipAdminService", () => {
     expect(await service.assertRecordPaymentEligible(pledgeId)).toEqual(detail);
   });
 
-  test("assertRecordPaymentEligible rejects when the pledge is not eligible", async () => {
+  test("assertRecordPaymentEligible accepts an active pledge (the second month)", async () => {
+    // A running sponsorship is exactly where month two's payment is recorded.
+    // This used to throw, which is what made the second month impossible.
     const repo = createFakeRepo({
       getPledgeDetail: mock(async () => baseDetail({ status: "active" })),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    const detail = await service.assertRecordPaymentEligible(pledgeId);
+    expect(detail.status).toBe("active");
+  });
+
+  test("assertRecordPaymentEligible rejects when the pledge is not eligible", async () => {
+    // `cancelled` is the real ineligible case: no file should reach the bucket
+    // for a sponsorship that has been ended.
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () => baseDetail({ status: "cancelled" })),
     });
     const service = createSponsorshipAdminService({
       repo,
@@ -223,9 +241,11 @@ describe("createSponsorshipAdminService", () => {
     );
   });
 
-  test("recordPayment rejects when the pledge is not pending_payment or needs_followup", async () => {
+  test("recordPayment rejects a pledge whose status is not eligible", async () => {
+    // Eligible is pending_payment, needs_followup or active; `cancelled` is
+    // not, and must not quietly accept money for an ended sponsorship.
     const repo = createFakeRepo({
-      getPledgeDetail: mock(async () => baseDetail({ status: "active" })),
+      getPledgeDetail: mock(async () => baseDetail({ status: "cancelled" })),
     });
     const service = createSponsorshipAdminService({
       repo,
@@ -319,9 +339,32 @@ describe("createSponsorshipAdminService", () => {
     expect(call[1].reference).toMatch(/^SP-[0-9A-F]{8}$/);
   });
 
-  test("reviewProof rejects when the pledge is not provisional", async () => {
+  test("reviewProof reviews an active pledge's queued proof (the second month)", async () => {
+    // The status gate this replaces required 'provisional'. Approving month one
+    // leaves the pledge 'active' permanently, so that gate made every later
+    // month unreviewable: the payment could be recorded but never decided.
+    // What is being reviewed is a proof, so a queued proof is the precondition.
     const repo = createFakeRepo({
-      getPledgeDetail: mock(async () => baseDetail({ status: "active" })),
+      getPledgeDetail: mock(async () =>
+        baseDetail({ status: "active", currentProof: pendingProof({ id: "proof-month-2" }) }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await service.reviewProof({ actorUserId, pledgeId, input: { decision: "approve" } });
+    expect(repo.reviewProof).toHaveBeenCalledTimes(1);
+  });
+
+  test("reviewProof rejects an active pledge with nothing awaiting review", async () => {
+    // Between months: the sponsorship is running and every proof is decided.
+    // Widening the status gate must not turn review into an always-available
+    // action, or staff get buttons the database refuses.
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () => baseDetail({ status: "active", currentProof: null })),
     });
     const service = createSponsorshipAdminService({
       repo,
@@ -331,7 +374,7 @@ describe("createSponsorshipAdminService", () => {
 
     await expect(
       service.reviewProof({ actorUserId, pledgeId, input: { decision: "approve" } }),
-    ).rejects.toThrow("Sponsorship pledge is not awaiting review");
+    ).rejects.toThrow("Sponsorship pledge has no proof pending review");
     expect(repo.reviewProof).not.toHaveBeenCalled();
   });
 

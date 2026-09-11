@@ -31,9 +31,18 @@ function requirePledge(detail: PledgeDetail | null): PledgeDetail {
   return detail;
 }
 
+/**
+ * Mirrors the status list in `record_sponsorship_payment_proof`
+ * (`20260911180000_sponsorship_second_month.sql`). `active` is here because a
+ * sponsorship is monthly: the second month's payment is recorded against a
+ * pledge that is already running. Recording one does NOT move an active pledge
+ * back to `provisional` — the sponsorship is still active; it is the new proof
+ * that is pending.
+ */
 const RECORD_PAYMENT_ELIGIBLE_STATUSES: PledgeDetail["status"][] = [
   "pending_payment",
   "needs_followup",
+  "active",
 ];
 
 export function createSponsorshipAdminService({
@@ -130,9 +139,12 @@ export function createSponsorshipAdminService({
     async reviewProof(args: { actorUserId: string; pledgeId: string; input: unknown }) {
       const input = reviewPledgeProofSchema.parse(args.input);
       const detail = requirePledge(await repo.getPledgeDetail(args.pledgeId));
-      if (detail.status !== "provisional") {
-        throw new Error("Sponsorship pledge is not awaiting review");
-      }
+      // Deliberately no pledge-status gate. What is being reviewed is a proof,
+      // and `currentProof` already resolves to the one awaiting review (see
+      // proofReview.ts). Requiring status='provisional' conflated the
+      // supporter's standing commitment with the review queue and made every
+      // month after the first unreviewable, since approving month one leaves
+      // the pledge 'active' for good.
       if (!detail.currentProof || detail.currentProof.reviewStatus !== "pending") {
         throw new Error("Sponsorship pledge has no proof pending review");
       }
