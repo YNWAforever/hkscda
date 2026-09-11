@@ -84,10 +84,55 @@ to `0` would present a full activity as empty and permit overbooking. The
 repository fails closed; the display half is fixed in the UI.
 **Acceptance T02 covered by tests.**
 
+### Slice C — Production-write guard on the animal importer
+
+Commit `75736c3`. **Reviewable implementation complete + isolated acceptance passed.**
+
+`bun run import:hkscda` built a service_role client from `VITE_SUPABASE_URL` with
+no project-ref check. It reads `.env.local`, which in this checkout points at the
+live project, so one command would have written scraped animal rows and public
+storage objects over real animal records with RLS bypassed. Now guarded by the
+tested `isProductionProjectRef` already exported by `seed-admin.js`, checked
+before the client is constructed.
+
+Verified both directions: the production ref exits 1 with a refusal; a local
+stack URL passes and proceeds to fail only on the genuinely missing scraped-data
+file.
+
+`scripts/import-adoption-guide-drafts.mjs` has the same missing guard and was
+deliberately **not** blocked — it needs an explicit `--apply` plus an actor id and
+creates content drafts rather than overwriting master records, so production use
+may be legitimate. Flagged for an owner decision.
+
+### Slice D — Failure states on the remaining admin surfaces
+
+Commit `d757070`. **Reviewable implementation complete.**
+
+Applied the Slice B contract to `routes/admin/index.tsx`, `PaymentsReconcile`
+and `AccessManagement`. Each previously rendered an outage as real data: an empty
+animal table, "0 awaiting reconciliation / HK$0.00 confirmed", and
+"0 active admins / 0 pending invites" — the last a misleading answer to a
+security question.
+
+### Slice E — CRM supporter detail resilience
+
+Commit `0e8200c`. **Reviewable implementation complete + isolated acceptance passed.**
+
+The supporter detail read selected `*,donation_delivery_job(id,status)` and threw
+on any error from it, so an absent extension table removed the entire supporter
+master record — the failing detail page the audit recorded. The donation read now
+retries without the embed when the embedded form fails, and reports the extension
+as absent rather than as a delivery job in a default state.
+
+Not a blanket catch: if the plain donation select also fails, the original error
+propagates. Tests cover both directions, and that the fallback preserves
+`amount_cents` exactly.
+
 ### Working records
 
-Commit `382ca5d`. Baseline verification, 217-entry source defect inventory,
-data/API contracts, and the D01–D10 decision log.
+Commits `382ca5d`, `fb47f72`. Baseline verification, 217-entry source defect
+inventory, data/API contracts, the D01–D10 decision log, this status record and
+the migration/release plan.
 
 ## Gate results for the current branch head
 
@@ -96,7 +141,7 @@ Run against the local Supabase stack with all 55 migrations applied.
 | Gate | Command | Result |
 |---|---|---|
 | Typecheck | `bunx tsc --noEmit` | exit 0 |
-| Test | `bun test` | 2023 pass · 46 skip · 0 fail |
+| Test | `bun test` | 2025 pass · 46 skip · 0 fail |
 | Lint | `bun run lint` | 0 errors, 41 warnings |
 | RLS | `bun run test:rls` | 38 pass · 0 fail |
 | Build | `bun run build` | exit 0 (at baseline; re-run before any release candidate) |
@@ -122,19 +167,16 @@ must cite a real-Postgres run.
    `set_volunteer_registration_status_with_audit`, and the `donation.contact_*`
    columns must come before any repair plan.
    **Blocked on read access to the production database.**
-2. **Apply the failure-state contract to the remaining surfaces (Phase 1.3).**
-   `routes/admin/index.tsx`, `PaymentsReconcile`, `AccessManagement`, and the CRM
-   supporter detail, whose extension sections must fail independently of the
-   master record. The primitives from Slice B exist; this is application.
-3. **CRM supporter detail resilience (Phase 1.2).** The detail read embeds
-   `donation_delivery_job(id,status)` and throws on error, so one absent table
-   fails the whole page. Needs the section to fail independently.
-4. **Demonstration-data inventory (Phase 1.5).** Four of the seven named demo
+2. **Demonstration-data inventory (Phase 1.5).** Four of the seven named demo
    items appear nowhere in source, so the inventory must be built from the
-   database per-ID. Also: `scripts/import-hkscda-animals.js` builds a
-   service-role client with no project-ref guard and is exposed as
-   `bun run import:hkscda` — it can write to production. That guard is
-   independent of database access and can be closed now.
+   database per-ID, not from a source grep.
+3. **Basic transaction verification (Phase 1.6).** With isolated data, exercise a
+   volunteer activity edit/approval and a manual donation through success, retry,
+   version conflict, and rollback on audit failure. Restoring reads does not
+   establish that the administration system works.
+4. **Remaining failure-state surfaces.** Slices B and D covered the highest-value
+   screens; the defect inventory lists further `?? []` / `?? 0` sites to work
+   through with the same primitives.
 5. **Phase 2 asset inventory** may proceed in parallel: original-site page/ID to
    reference number to UUID mapping, with matching confidence and a
    missing-photo list by ID and reason.
