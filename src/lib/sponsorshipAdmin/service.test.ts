@@ -155,6 +155,7 @@ describe("createSponsorshipAdminService", () => {
               endReason: null,
               note: null,
               endNote: null,
+              animalState: { ...eligibleState, status: "adopted" },
               reviewReason: null,
             },
           ],
@@ -198,6 +199,7 @@ describe("createSponsorshipAdminService", () => {
               endReason: null,
               note: null,
               endNote: null,
+              animalState: eligibleState,
               reviewReason: null,
             },
           ],
@@ -224,6 +226,47 @@ describe("createSponsorshipAdminService", () => {
     expect(detail?.assignments[0].reviewReason).toBeNull();
   });
 
+  test("getPledgeDetail flags an assignment for an animal that was never shortlisted", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({
+          status: "active",
+          // A pledge can hold several concurrent assignments. Only the FIRST is
+          // auto-confirmed from the shortlist; every animal a staff member adds
+          // by hand afterwards is absent from `preferences` by definition.
+          preferences: [],
+          assignments: [
+            {
+              id: "asg-hand-added",
+              animalId: "animal-hand-added",
+              animalNameSnapshot: "阿花",
+              startedOn: "2026-08-01",
+              endedOn: null,
+              endReason: null,
+              note: "added by staff",
+              endNote: null,
+              animalState: { ...eligibleState, status: "adopted" },
+              reviewReason: null,
+            },
+          ],
+        }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    const detail = await service.getPledgeDetail(pledgeId);
+
+    // Deriving the flag from the supporter's ranked preferences could never
+    // flag this animal: it is on no shortlist, so the lookup missed and the
+    // reason came back null. Nobody would be told the animal had been adopted
+    // while the supporter kept paying.
+    expect(detail?.assignments[0].reviewReason).toBe("adopted");
+  });
+
   test("getPledgeDetail reports a running sponsorship that backs no animal", async () => {
     const repo = createFakeRepo({
       getPledgeDetail: mock(async () =>
@@ -239,6 +282,7 @@ describe("createSponsorshipAdminService", () => {
               endReason: "adopted",
               note: null,
               endNote: null,
+              animalState: null,
               reviewReason: null,
             },
           ],
@@ -841,6 +885,7 @@ describe("createSponsorshipAdminService", () => {
               endReason: null,
               note: null,
               endNote: null,
+              animalState: eligibleState,
               reviewReason: null,
             },
           ],
@@ -1031,6 +1076,7 @@ describe("createSponsorshipAdminService", () => {
               endReason: null,
               note: null,
               endNote: null,
+              animalState: null,
               reviewReason: null,
             },
           ],
@@ -1072,6 +1118,7 @@ describe("createSponsorshipAdminService", () => {
               endReason: "adopted",
               note: null,
               endNote: null,
+              animalState: null,
               reviewReason: null,
             },
           ],

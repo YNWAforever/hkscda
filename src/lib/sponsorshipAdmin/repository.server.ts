@@ -44,7 +44,17 @@ type PreferenceRow = {
   rank: number;
   sponsor_animal_id: string | null;
   animal_name_snapshot: string;
+  /** Embedded by the detail query. Absent on queries that do not ask for it. */
+  animal?: EmbeddedAnimalEmbed;
 };
+
+/**
+ * A to-one embed as it may be typed or returned. PostgREST returns an object,
+ * but supabase-js's select-string inference types the same embed as an array,
+ * so both shapes are accepted and normalised in one place rather than forcing
+ * the result through an `unknown` cast at every call site.
+ */
+type EmbeddedAnimalEmbed = EmbeddedAnimalRow | EmbeddedAnimalRow[] | null;
 
 type EmbeddedAnimalRow = {
   sponsorship_eligible: boolean;
@@ -109,6 +119,13 @@ type AssignmentRow = {
   end_reason: SponsorshipAssignmentRecord["endReason"];
   note: string | null;
   end_note: string | null;
+  /**
+   * The assigned animal, embedded by the detail query. Read from the animal
+   * itself rather than from the supporter's ranked preferences: only the first
+   * animal is auto-confirmed from that shortlist, so any animal a staff member
+   * adds by hand afterwards appears nowhere in it.
+   */
+  animal?: EmbeddedAnimalEmbed;
 };
 
 const PLEDGE_SEARCH_CANDIDATE_LIMIT = 1000;
@@ -258,11 +275,36 @@ function mapPeriods(periodRows: PeriodRow[], allocationRows: AllocationRow[]) {
 }
 
 /**
+ * PostgREST's embedded animal row, as both the ranked preferences and the
+ * confirmed assignments carry it. Shared so the two can never disagree about
+ * what an animal's state is.
+ */
+function mapEmbeddedAnimalState(
+  embed: EmbeddedAnimalEmbed | undefined,
+): CandidateAnimalState | null {
+  const embedded = Array.isArray(embed) ? (embed[0] ?? null) : embed;
+  if (!embedded) return null;
+  return {
+    sponsorshipEligible: embedded.sponsorship_eligible,
+    status: embedded.status,
+    retiredAt: embedded.retired_at,
+    publicationState: embedded.publication_state,
+    // PostgREST returns an embedded 1:1 as an array or an object depending on
+    // the relationship; absence means nothing was recorded, not that the
+    // animal died.
+    deceasedAt:
+      (Array.isArray(embedded.animal_profile_internal)
+        ? (embedded.animal_profile_internal[0]?.deceased_at ?? null)
+        : (embedded.animal_profile_internal?.deceased_at ?? null)) ?? null,
+  };
+}
+
+/**
  * Open assignments first, then ended ones newest-first. Open ones are what
  * staff act on; ended ones stay visible as history rather than disappearing.
  *
- * `reviewReason` is filled in by the service, which has the animal state. The
- * repository does not guess it.
+ * `reviewReason` is derived by the service from `animalState`, which is read
+ * off the assigned animal itself. The repository does not guess it.
  */
 function mapAssignments(rows: AssignmentRow[]): SponsorshipAssignmentRecord[] {
   const mapped: SponsorshipAssignmentRecord[] = rows.map((row) => ({
@@ -274,6 +316,7 @@ function mapAssignments(rows: AssignmentRow[]): SponsorshipAssignmentRecord[] {
     endReason: row.end_reason,
     note: row.note,
     endNote: row.end_note,
+    animalState: mapEmbeddedAnimalState(row.animal),
     reviewReason: null,
   }));
 
@@ -285,27 +328,12 @@ function mapAssignments(rows: AssignmentRow[]): SponsorshipAssignmentRecord[] {
 }
 
 function mapPreference(row: PreferenceRow): PledgeAnimalPreference {
-  const embedded = (row as unknown as { animal?: EmbeddedAnimalRow | null }).animal ?? null;
   return {
     id: row.id,
     rank: row.rank,
     animalId: row.sponsor_animal_id,
     animalNameSnapshot: row.animal_name_snapshot,
-    animalState: embedded
-      ? {
-          sponsorshipEligible: embedded.sponsorship_eligible,
-          status: embedded.status,
-          retiredAt: embedded.retired_at,
-          publicationState: embedded.publication_state,
-          // PostgREST returns an embedded 1:1 as an array or an object
-          // depending on the relationship; absence means nothing was recorded,
-          // not that the animal died.
-          deceasedAt:
-            (Array.isArray(embedded.animal_profile_internal)
-              ? (embedded.animal_profile_internal[0]?.deceased_at ?? null)
-              : (embedded.animal_profile_internal?.deceased_at ?? null)) ?? null,
-        }
-      : null,
+    animalState: mapEmbeddedAnimalState(row.animal),
   };
 }
 
@@ -485,7 +513,7 @@ export function createSupabaseSponsorshipAdminRepository(
         client
           .from("sponsorship_assignment")
           .select(
-            "id,pledge_id,animal_id,animal_name_snapshot,started_on,ended_on,end_reason,note,end_note",
+            "id,pledge_id,animal_id,animal_name_snapshot,started_on,ended_on,end_reason,note,end_note,animal:animal_id(sponsorship_eligible,status,retired_at,publication_state,animal_profile_internal(deceased_at))",
           )
           .eq("pledge_id", id),
       ]);

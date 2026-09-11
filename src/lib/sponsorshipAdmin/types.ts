@@ -94,6 +94,8 @@ export type SponsorshipAssignmentRecord = {
    * overwrite `note`, destroying the reason the animal was chosen.
    */
   endNote: string | null;
+  /** The assigned animal's current state. `null` when unreadable. */
+  animalState: CandidateAnimalState | null;
   /**
    * Why this open assignment needs a person to look: the animal has been
    * adopted, has died, has been retired, or has left the sponsorship

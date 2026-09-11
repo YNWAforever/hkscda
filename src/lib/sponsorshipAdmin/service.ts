@@ -141,18 +141,17 @@ export function createSponsorshipAdminService({
       const detail = await repo.getPledgeDetail(id);
       if (!detail) return null;
 
-      const stateByAnimal = new Map(
-        detail.preferences
-          .filter((preference) => preference.animalId !== null)
-          .map((preference) => [preference.animalId as string, preference.animalState]),
-      );
-
+      // The state comes off the assigned animal itself, never off the
+      // supporter's ranked preferences. Only the first animal is auto-confirmed
+      // from that shortlist; every animal a staff member adds by hand
+      // afterwards is absent from it, and deriving the flag from preferences
+      // meant those animals could never be flagged at all.
       const assignments = detail.assignments.map((assignment) =>
         assignment.endedOn !== null || assignment.animalId === null
           ? assignment
           : {
               ...assignment,
-              reviewReason: reviewReasonFor(stateByAnimal.get(assignment.animalId) ?? null),
+              reviewReason: reviewReasonFor(assignment.animalState),
             },
       );
 

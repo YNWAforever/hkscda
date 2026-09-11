@@ -925,6 +925,47 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     expect(detail?.assignments[1].endReason).toBe("adopted");
   });
 
+  test("getPledgeDetail carries the assigned animal's embedded state onto the assignment", async () => {
+    const { client } = createFakeClient({
+      // No preference row at all: this is the hand-added animal, which is on no
+      // shortlist. The state has to come off the assigned animal itself.
+      preferenceRows: [],
+      assignmentRows: [
+        {
+          id: "asg-open",
+          pledge_id: pledgeId,
+          animal_id: "animal-1",
+          animal_name_snapshot: "小白",
+          started_on: "2026-08-01",
+          ended_on: null,
+          end_reason: null,
+          note: null,
+          end_note: null,
+          animal: {
+            sponsorship_eligible: true,
+            status: "adopted",
+            retired_at: null,
+            publication_state: "published",
+            animal_profile_internal: { deceased_at: null },
+          },
+        },
+      ],
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const detail = await repo.getPledgeDetail(pledgeId);
+
+    expect(detail?.assignments[0].animalState).toEqual({
+      sponsorshipEligible: true,
+      status: "adopted",
+      retiredAt: null,
+      publicationState: "published",
+      deceasedAt: null,
+    });
+    // The repository reports the state; the service turns it into a reason.
+    expect(detail?.assignments[0].reviewReason).toBeNull();
+  });
+
   test("getPledgeDetail returns an empty assignment list when there are none", async () => {
     const { client } = createFakeClient();
     const repo = createSupabaseSponsorshipAdminRepository(client);
