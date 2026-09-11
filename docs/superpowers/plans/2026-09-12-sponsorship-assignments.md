@@ -277,7 +277,7 @@ export function selectAutoAssignAnimal(
 
 Run: `bun test src/lib/sponsorshipAdmin/autoAssign.test.ts`
 
-Expected: PASS, 15 tests.
+Expected: PASS, 14 tests.
 
 - [ ] **Step 5: Commit**
 
