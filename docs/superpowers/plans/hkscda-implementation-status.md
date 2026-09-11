@@ -262,8 +262,9 @@ Run against the local Supabase stack with all 55 migrations applied.
 | Build | `bun run build` | exit 0 (at baseline; re-run before any release candidate) |
 | Migration rehearsal | `bunx supabase db reset` | all 55 migrations applied from zero, exit 0 |
 
-**Not yet run:** `verify:performance` (Lighthouse). Recorded as **not run**, not
-as passed.
+**All repository gates now pass in CI** on PR #112 (run 34601571176), including
+`verify:performance`, which was previously recorded as not run. The database
+suites are confirmed from the job log: test:rls 38 pass, test:db 37 pass.
 
 **A constraint on claim-making:** the 46 remaining skips are still
 database-backed tests, but the main transaction suites now run via `test:db`

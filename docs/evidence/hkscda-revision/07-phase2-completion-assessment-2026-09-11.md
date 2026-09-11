@@ -106,4 +106,4 @@ category is "not done", not "blocked".
 | `bun run verify:a11y` | 26 routes, exit 0 |
 | `bunx supabase db reset` | 58 migrations from zero, exit 0 |
 
-`verify:performance` — not run.
+`verify:performance` — **passed in CI** (run 34601571176, 5m23s); see `11-ci-verification-pr112-2026-09-11.md`.
