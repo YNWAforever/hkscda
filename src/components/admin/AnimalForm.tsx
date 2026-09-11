@@ -22,6 +22,14 @@ function buildAnimalSchema(messages: { name: string; age: string }) {
     description: z.string().optional(),
     description_en: z.string().optional(),
     status: z.enum(["available", "adopted", "fostered"]),
+    // Adoption and sponsorship are independent memberships, and both can be
+    // true. They drive the public RLS policy and both public catalogues, but
+    // until now the editor could not read or write either -- the only way to
+    // change a catalogue was to change the species, which the
+    // animal_catalog_membership_defaults trigger then used to rewrite BOTH
+    // flags. Exposing them directly is what makes that indirection unnecessary.
+    adoption_eligible: z.boolean(),
+    sponsorship_eligible: z.boolean(),
   });
 }
 
@@ -58,8 +66,19 @@ export function AnimalForm({ existing }: AnimalFormProps) {
           description: existing.description ?? "",
           description_en: existing.description_en ?? "",
           status: existing.status,
+          // Fall back to what the 20260906162436 backfill would have derived,
+          // so an older row with a null flag edits as what it actually is
+          // rather than silently defaulting to "not eligible".
+          adoption_eligible: existing.adoption_eligible ?? existing.type !== "sponsor",
+          sponsorship_eligible: existing.sponsorship_eligible ?? existing.type === "sponsor",
         }
-      : { type: "cat", gender: "female", status: "available" },
+      : {
+          type: "cat",
+          gender: "female",
+          status: "available",
+          adoption_eligible: true,
+          sponsorship_eligible: false,
+        },
   });
 
   function optionalText(value?: string) {
@@ -109,6 +128,8 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       description: optionalText(values.description),
       description_en: optionalText(values.description_en),
       status: values.status,
+      adoption_eligible: values.adoption_eligible,
+      sponsorship_eligible: values.sponsorship_eligible,
       image_url,
     };
 
@@ -292,6 +313,21 @@ export function AnimalForm({ existing }: AnimalFormProps) {
               ))}
             </select>
           </div>
+        </div>
+
+        {/* Adoption and sponsorship are independent: both may be ticked, and an
+            animal with neither is visible to staff but appears in no public
+            catalogue (the "public read available" RLS policy requires one). */}
+        <div className="mt-4 space-y-2">
+          <span className="block text-sm font-medium">刊登範圍</span>
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" {...register("adoption_eligible")} className="h-4 w-4" />
+            可供領養（顯示於領養頁面）
+          </label>
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" {...register("sponsorship_eligible")} className="h-4 w-4" />
+            可供助養（顯示於助養區）
+          </label>
         </div>
       </fieldset>
 

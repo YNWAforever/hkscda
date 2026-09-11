@@ -6,6 +6,7 @@ import { z } from "zod";
 import { AdminLayout } from "../../components/admin/AdminLayout";
 import { AnimalsTable } from "../../components/admin/AnimalsTable";
 import { LoadFailure } from "../../components/admin/LoadFailure";
+import { adminAnimalFilter } from "../../lib/animals/adminCatalogue";
 import { useAdminLanguage } from "../../components/admin/adminI18n";
 import { PaymentsReconcile } from "../../components/admin/donations/PaymentsReconcile";
 import { PledgeReviewLane } from "../../components/admin/sponsorship/PledgeReviewLane";
@@ -55,11 +56,19 @@ function AdminDashboardContent({ section }: { section: DashboardSection }) {
   const animalsQuery = useQuery({
     queryKey: ["admin-animals", section],
     queryFn: async () => {
-      if (section === "applications" || section === "payments") return [];
+      // Only three sections list animals. The others (applications, payments,
+      // content, volunteers) render their own surfaces; previously they still
+      // issued `.eq("type", "content")`-style queries that could only ever
+      // return nothing.
+      if (section !== "cat" && section !== "dog" && section !== "sponsor") return [];
+      // "sponsor" is a programme, not a species. Filtering it as a species hid
+      // every cat or dog marked sponsorship-eligible from staff while the
+      // public /sponsors page listed them.
+      const filter = adminAnimalFilter(section);
       const { data, error } = await supabase
         .from("animals")
         .select("*")
-        .eq("type", section)
+        .eq(filter.column, filter.value)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
