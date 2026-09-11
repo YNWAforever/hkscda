@@ -91,7 +91,27 @@ the widened source list must be withdrawn, replace the function with the
 two-value list — but only after the application no longer sends the third value,
 or public sponsorship submissions begin failing.
 
-## 5. The outstanding schema reconciliation
+## 5. The schema reconciliation — RESOLVED 2026-09-11
+
+**Confirmed by read-only metadata probe.** Full ledger and evidence:
+`docs/evidence/hkscda-revision/10-production-schema-reconciliation-2026-09-11.md`.
+
+Three migrations are unapplied to production: `20260905144848`, `20260905155357`,
+`20260905163900`.
+
+**Live incident:** `donation.contact_*` is absent, so the exact select used by
+the Stripe webhook, the PayPal webhook and staff payment reconciliation returns
+`42703` and throws. Payment processing is failing today.
+
+**Deployment ordering, binding on this branch:** `c924244` calls
+`resolve_public_supporter_identity`, which is absent from production. Applying
+migrations before deploying code is not a preference here — deploying the code
+first would break public sponsorship submissions that currently work.
+
+Required order: `20260905144848` → `20260905155357` → `20260905163900` → this
+branch's `20260911*` migrations → application code.
+
+### Original note (superseded)
 
 The audit's central Phase 1 finding is that migrations exist in Git while the
 corresponding objects are **absent from the deployed database** — deployment and
