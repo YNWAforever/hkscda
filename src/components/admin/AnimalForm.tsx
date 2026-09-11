@@ -4,8 +4,10 @@ import { z } from "zod";
 import { useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { supabase } from "../../lib/supabase";
+import { ANIMAL_IMAGE_BUCKET } from "../../lib/animals/photoUpload";
 import type { Animal } from "../../types/animal";
 import { useAdminLanguage } from "./adminI18n";
+import { uploadAnimalPhoto } from "./animalPhotoUpload";
 
 function buildAnimalSchema(messages: { name: string; age: string }) {
   return z.object({
@@ -69,22 +71,30 @@ export function AnimalForm({ existing }: AnimalFormProps) {
     setSaving(true);
     setError(null);
 
-    let image_url = existing?.image_url ?? null;
+    const previousImageUrl = existing?.image_url ?? null;
+    let image_url = previousImageUrl;
+    // Set only when this submission uploaded a new object, so a failed save can
+    // remove the orphan it created without ever touching the live photograph.
+    let uploadedPath: string | null = null;
+
+    // For a new animal the id is decided here and then written in the insert
+    // below. Previously this UUID was generated for the object path only and
+    // never sent, so Postgres minted a different id via gen_random_uuid() and
+    // every new animal's photo lived under a UUID unrelated to its own row --
+    // which makes the object unattributable and a later reference check or
+    // cleanup impossible. The column keeps its default; supplying the id simply
+    // makes the row and its photographs agree.
+    const animalId = existing?.id ?? crypto.randomUUID();
 
     if (imageFile) {
-      const animalId = existing?.id ?? crypto.randomUUID();
-      const { error: uploadError } = await supabase.storage
-        .from("animal-images")
-        .upload(`${animalId}.jpg`, imageFile, { upsert: true });
-      if (uploadError) {
+      const uploaded = await uploadAnimalPhoto({ animalId, file: imageFile });
+      if (!uploaded.ok) {
         setError(copy.form.uploadError);
         setSaving(false);
         return;
       }
-      const { data: urlData } = supabase.storage
-        .from("animal-images")
-        .getPublicUrl(`${animalId}.jpg`);
-      image_url = urlData.publicUrl;
+      uploadedPath = uploaded.path;
+      image_url = uploaded.publicUrl;
     }
 
     const payload = {
@@ -102,19 +112,37 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       image_url,
     };
 
+    // A failed save leaves the freshly uploaded object referenced by nothing.
+    // Removing it is housekeeping, not recovery: the animal's existing photo is
+    // already safe because the upload went to a new path and overwrote nothing.
+    // Cleanup failure is therefore not worth surfacing over the save error the
+    // operator actually needs to see.
+    async function discardOrphanedUpload() {
+      if (!uploadedPath) return;
+      try {
+        await supabase.storage.from(ANIMAL_IMAGE_BUCKET).remove([uploadedPath]);
+      } catch {
+        /* orphan is unreferenced; delayed cleanup will collect it */
+      }
+    }
+
     if (existing) {
       const { error: updateError } = await supabase
         .from("animals")
         .update({ ...payload, updated_at: new Date().toISOString() })
         .eq("id", existing.id);
       if (updateError) {
+        await discardOrphanedUpload();
         setError(copy.form.saveError);
         setSaving(false);
         return;
       }
     } else {
-      const { error: insertError } = await supabase.from("animals").insert(payload);
+      const { error: insertError } = await supabase
+        .from("animals")
+        .insert({ ...payload, id: animalId });
       if (insertError) {
+        await discardOrphanedUpload();
         setError(copy.form.saveError);
         setSaving(false);
         return;
