@@ -784,9 +784,10 @@ the pledge update. Only three things change, marked below.
 --
 -- Three changes from the 20260911190000 definition, and nothing else:
 --   1. a sixth parameter, p_assign_animal_id, defaulted so existing calls work;
---   2. v_actor_admin_id is resolved ONCE, before the allocation branch -- it
---      was previously resolved inside it, so it was NULL on the common
---      first-approval path where no allocations are passed;
+--   2. v_actor_admin_id is resolved ONCE, before the allocation branch, so the
+--      value is available unconditionally. (Tidying, not a fix: its only
+--      consumer sits inside that same branch, and the auto-assign path resolves
+--      its own admin id.)
 --   3. an auto-assign step, which runs only when the pledge has no assignment
 --      rows at all.
 drop function if exists public.review_sponsorship_payment_proof(uuid, text, uuid, text, jsonb);

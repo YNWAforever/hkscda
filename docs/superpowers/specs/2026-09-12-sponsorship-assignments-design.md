@@ -172,11 +172,16 @@ created and the pledge simply shows as active with no animal.
 
 The step slots between the pledge-status update and the `audit_log` insert.
 
-> **Defect to fix while doing this.** `v_actor_admin_id` is currently resolved
-> *inside* the allocation `if` block, so it is still NULL whenever
-> `p_allocations` is empty — the common path for a first approval. The lookup
-> must be hoisted above the block, or `created_by` will be null on every
-> auto-assignment. Also note `v_proof.review_status` has already been set to
+> **Correction.** An earlier draft of this spec called `v_actor_admin_id` a
+> defect — resolved inside the allocation `if`, therefore NULL when
+> `p_allocations` is empty. The variable *is* null on that path, but it has no
+> consequence: its only consumer is `apply_sponsorship_allocations`, called
+> inside the same branch that resolves it, and the auto-assign path does not use
+> it at all (`assign_sponsorship_animal_with_audit` resolves its own admin id
+> from `p_actor_user_id` for `created_by`). Hoisting it is harmless tidying, not
+> a fix. Verified by reading both function bodies.
+>
+> Still true and worth heeding: `v_proof.review_status` has already been set to
 > `approved` by that point, so any "first approval" test must exclude the current
 > proof explicitly.
 
