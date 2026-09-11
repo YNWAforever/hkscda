@@ -28,6 +28,11 @@ function buildAnimalSchema(messages: { name: string; age: string }) {
     description: z.string().optional(),
     description_en: z.string().optional(),
     status: z.enum(["available", "adopted", "fostered"]),
+    // Publication is independent of the care state above. Before this existed
+    // the only way to take a record off the public site was to claim the animal
+    // had been adopted or fostered -- falsifying its care record to achieve an
+    // editorial outcome.
+    publication_state: z.enum(["draft", "published", "unpublished"]),
     // Adoption and sponsorship are independent memberships, and both can be
     // true. They drive the public RLS policy and both public catalogues, but
     // until now the editor could not read or write either -- the only way to
@@ -80,6 +85,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
           description: existing.description ?? "",
           description_en: existing.description_en ?? "",
           status: existing.status,
+          publication_state: existing.publication_state ?? "published",
           // Fall back to what the 20260906162436 backfill would have derived,
           // so an older row with a null flag edits as what it actually is
           // rather than silently defaulting to "not eligible".
@@ -90,6 +96,10 @@ export function AnimalForm({ existing }: AnimalFormProps) {
           type: "cat",
           gender: "female",
           status: "available",
+          // A new record starts as a draft: a profile should be prepared and
+          // checked before it is on the public site, not the instant it is
+          // created with a blank story and no photograph.
+          publication_state: "draft",
           adoption_eligible: true,
           sponsorship_eligible: false,
         },
@@ -157,6 +167,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       description: optionalText(values.description),
       description_en: optionalText(values.description_en),
       status: values.status,
+      publication_state: values.publication_state,
       adoption_eligible: values.adoption_eligible,
       sponsorship_eligible: values.sponsorship_eligible,
       public_profile: profileResult.profile,
@@ -348,6 +359,28 @@ export function AnimalForm({ existing }: AnimalFormProps) {
         {/* Adoption and sponsorship are independent: both may be ticked, and an
             animal with neither is visible to staff but appears in no public
             catalogue (the "public read available" RLS policy requires one). */}
+        {/* Publication is its own axis. Withholding a record must never require
+            claiming the animal was adopted or fostered. */}
+        <div className="mt-4">
+          <label className="mb-1 block text-sm font-medium" htmlFor="publication-state">
+            公開狀態
+          </label>
+          <select id="publication-state" {...register("publication_state")} className={selectField}>
+            <option value="draft" style={optionStyle}>
+              草稿（未曾公開）
+            </option>
+            <option value="published" style={optionStyle}>
+              已公開
+            </option>
+            <option value="unpublished" style={optionStyle}>
+              暫停公開
+            </option>
+          </select>
+          <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+            與上方的狀態（可領養／已領養／寄養中）獨立。暫停公開不會更改動物的照顧記錄。
+          </p>
+        </div>
+
         <div className="mt-4 space-y-2">
           <span className="block text-sm font-medium">刊登範圍</span>
           <label className="flex items-center gap-2 text-sm">

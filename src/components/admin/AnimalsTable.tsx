@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import { supabase } from "../../lib/supabase";
 import { filterAdminAnimals, isArchivedAnimal } from "../../lib/animals/adminSearch";
-import type { Animal } from "../../types/animal";
+import type { Animal, AnimalPublicationState } from "../../types/animal";
 import { DataTable, type DataTableColumn } from "./DataTable";
 import { StatusPill, type StatusTone } from "./StatusBadge";
 import { useAdminLanguage } from "./adminI18n";
@@ -26,6 +26,22 @@ function AnimalStatus({ status }: { status: string }) {
       ? copy.animalStatus[status as keyof typeof copy.animalStatus]
       : status;
   return <StatusPill tone={statusTones[status] ?? "neutral"}>{label}</StatusPill>;
+}
+
+const publicationLabels: Record<AnimalPublicationState, string> = {
+  draft: "草稿",
+  published: "已公開",
+  unpublished: "暫停公開",
+};
+
+const publicationTones: Record<AnimalPublicationState, StatusTone> = {
+  draft: "neutral",
+  published: "success",
+  unpublished: "warning",
+};
+
+function AnimalPublication({ state }: { state: AnimalPublicationState }) {
+  return <StatusPill tone={publicationTones[state]}>{publicationLabels[state]}</StatusPill>;
 }
 
 function AnimalAvatar({ animal }: { animal: Animal }) {
@@ -139,6 +155,14 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
       id: "status",
       header: copy.table.status,
       cell: (animal) => <AnimalStatus status={animal.status} />,
+    },
+    {
+      // Shown beside the care state, not folded into it: an operator needs to
+      // see at a glance that a record is available but withheld, which the two
+      // columns together say and either one alone cannot.
+      id: "publication",
+      header: "公開狀態",
+      cell: (animal) => <AnimalPublication state={animal.publication_state ?? "published"} />,
     },
     {
       id: "actions",

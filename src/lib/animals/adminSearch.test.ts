@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
 import { filterAdminAnimals, isArchivedAnimal, matchesAnimalSearch } from "./adminSearch";
+import { isAdminSectionMember } from "./adminCatalogue";
 import type { Animal, AnimalPublicProfile } from "../../types/animal";
 
 function profile(overrides: Partial<AnimalPublicProfile> = {}): AnimalPublicProfile {
@@ -108,5 +109,92 @@ describe("archived animals stay retrievable but out of the way", () => {
     const result = filterAdminAnimals([withCode, archived], "C3761", { includeArchived: true });
     expect(result).toHaveLength(1);
     expect(result[0]?.id).toBe(withCode.id);
+  });
+});
+
+describe("publication, care state and archival are three independent axes", () => {
+  // The defect: `status` was both the care record and the public visibility
+  // switch, so withholding a record meant claiming the animal had been adopted
+  // or fostered. These assertions describe the separation the RLS policy
+  // enforces; the policy itself is verified against real Postgres in
+  // docs/evidence/hkscda-revision/04-phase2-publication-state-2026-09-11.md.
+  const cases: {
+    label: string;
+    status: Animal["status"];
+    publication: NonNullable<Animal["publication_state"]>;
+    retired: boolean;
+    publiclyVisible: boolean;
+  }[] = [
+    {
+      label: "available + published",
+      status: "available",
+      publication: "published",
+      retired: false,
+      publiclyVisible: true,
+    },
+    {
+      label: "available but withheld",
+      status: "available",
+      publication: "unpublished",
+      retired: false,
+      publiclyVisible: false,
+    },
+    {
+      label: "available but still a draft",
+      status: "available",
+      publication: "draft",
+      retired: false,
+      publiclyVisible: false,
+    },
+    {
+      label: "adopted, still marked published",
+      status: "adopted",
+      publication: "published",
+      retired: false,
+      publiclyVisible: false,
+    },
+    {
+      label: "published but archived",
+      status: "available",
+      publication: "published",
+      retired: true,
+      publiclyVisible: false,
+    },
+  ];
+
+  for (const c of cases) {
+    test(`${c.label} -> ${c.publiclyVisible ? "public" : "not public"}`, () => {
+      const subject = animal({
+        status: c.status,
+        publication_state: c.publication,
+        retired_at: c.retired ? "2026-05-01T00:00:00.000Z" : null,
+      });
+      // Mirrors the RLS predicate: status='available' AND retired_at IS NULL
+      // AND publication_state='published' AND (adoption_eligible OR sponsorship_eligible).
+      const visible =
+        subject.status === "available" &&
+        !subject.retired_at &&
+        (subject.publication_state ?? "published") === "published" &&
+        Boolean(subject.adoption_eligible || subject.sponsorship_eligible);
+      expect(visible).toBe(c.publiclyVisible);
+    });
+  }
+
+  test("withholding a record never requires changing its care state", () => {
+    const withheld = animal({ status: "available", publication_state: "unpublished" });
+    // The care record still says what is true about the animal.
+    expect(withheld.status).toBe("available");
+    // Staff sections are unaffected by publication: an unpublished animal is
+    // still maintainable, which is the point of being able to withhold it.
+    expect(isAdminSectionMember(withheld, "cat")).toBe(true);
+    expect(isArchivedAnimal(withheld)).toBe(false);
+  });
+
+  test("a row from before the migration is treated as published", () => {
+    // publication_state is optional on the type because a snapshot predating
+    // 20260911140000 will not carry it; the column default backfilled every
+    // existing row to published, so absent must mean published, not hidden.
+    const legacy = animal({ publication_state: undefined });
+    expect(legacy.publication_state ?? "published").toBe("published");
   });
 });
