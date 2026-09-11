@@ -16,6 +16,10 @@ import {
 } from "./schemas";
 import { pledgeReference } from "./statusSummary";
 import { buildConsentRows } from "../donations/domain";
+import {
+  createPublicIdentityRepository,
+  type PublicIdentityRepository,
+} from "../supporters/publicIdentity.server";
 import { getAppUrl } from "../appUrl.server";
 import { getEmailConfig } from "../donations/config.server";
 import { verifyUploadedObjects } from "../publicUploads/signedUpload.server";
@@ -139,6 +143,12 @@ type PersistSponsorshipPledgeInput = {
   createStatusTokenPair?: typeof createStatusTokenPair;
   appUrl?: string;
   logger?: Pick<Console, "error">;
+  /**
+   * Resolves the supporter for an unverified public submission without ever
+   * overwriting an existing master record. Injected so the protected path can be
+   * asserted in tests without a database.
+   */
+  resolvePublicIdentity?: PublicIdentityRepository["resolve"];
 };
 
 async function cleanupFailedPersistence(input: {
@@ -189,6 +199,7 @@ export async function persistSponsorshipPledge({
   createStatusTokenPair: makeStatusToken = createStatusTokenPair,
   appUrl = getAppUrl(),
   logger = console,
+  resolvePublicIdentity: resolveIdentity = createPublicIdentityRepository(client).resolve,
 }: PersistSponsorshipPledgeInput): Promise<SponsorshipPledgePersistResult> {
   // Payment proof is optional for a sponsorship pledge -- a pledge with no
   // proof needs no verification at all. But when a proof reference *is*
@@ -224,37 +235,38 @@ export async function persistSponsorshipPledge({
   const uploadedPaths: string[] = [];
 
   try {
-    const supporter = requireNoError(
-      await client
-        .from("supporter")
-        .upsert(
-          {
-            name: parsed.payload.contact.supporterName,
-            email: parsed.payload.contact.email,
-            phone: parsed.payload.contact.phone,
-            language: parsed.payload.language,
-            source: "sponsorship_pledge_form",
-          },
-          { onConflict: "email" },
-        )
-        .select("id")
-        .single(),
-      "Failed to save sponsorship supporter",
-    ) as { id: string } | null;
-    if (!supporter?.id) throw new Error("Missing supporter id");
-    const supporterId = supporter.id;
+    // A pledge is an *unverified* public submission: nobody has proved they own
+    // this email address. Resolving through resolve_public_supporter_identity
+    // (`on conflict (email) do nothing`) means an existing supporter's name,
+    // phone, language and source survive untouched. The previous code here
+    // upserted on email, so a stranger could overwrite a real supporter's
+    // contact details just by typing their address into the public form.
+    const { supporterId } = await resolveIdentity({
+      name: parsed.payload.contact.supporterName,
+      email: parsed.payload.contact.email,
+      phone: parsed.payload.contact.phone,
+      language: parsed.payload.language,
+      source: "sponsorship_pledge_form",
+    });
 
-    requireNoError(
-      await client.from("consent").insert(
-        buildConsentRows({
-          supporterId,
-          source: "sponsorship_pledge_form",
-          timestamp: now().toISOString(),
-          consents: parsed.payload.consents,
-        }),
-      ),
-      "Failed to save sponsorship consent",
-    );
+    // Only opt_out is written from an unverified form -- matching donations
+    // (donations/service.ts) and volunteer registration (volunteers/service.ts).
+    // An opt-in tick here is a *request*: it is carried on the pledge row and
+    // recorded as a supporter_consent_intent by a database trigger, so staff can
+    // promote it to consent later. Writing opt_in directly would let an
+    // unverified submission silently reverse someone's existing opt_out.
+    const consentRows = buildConsentRows({
+      supporterId,
+      source: "sponsorship_pledge_form",
+      timestamp: now().toISOString(),
+      consents: parsed.payload.consents,
+    }).filter((row) => row.status === "opt_out");
+    if (consentRows.length > 0) {
+      requireNoError(
+        await client.from("consent").insert(consentRows),
+        "Failed to save sponsorship consent",
+      );
+    }
 
     const status: SponsorshipPledgeStatus = parsed.proof ? "provisional" : "pending_payment";
 

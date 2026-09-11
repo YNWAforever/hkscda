@@ -163,6 +163,11 @@ export function toPledgeInsert(
     language: input.language,
     notes: input.notes,
     status,
+    // The opt-in ticks are recorded as a *request* on the submission, not as
+    // consent. A database trigger turns these into supporter_consent_intent rows
+    // so staff can verify and promote them; nothing here grants consent.
+    consent_email_requested: input.consents.email,
+    consent_whatsapp_requested: input.consents.whatsapp,
   };
 }
 

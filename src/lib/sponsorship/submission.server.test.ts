@@ -247,6 +247,7 @@ function createFakeClient(options: FakeClientOptions = {}) {
   const state = {
     calls: [] as QueryCall[],
     storageCalls: [] as StorageCall[],
+    rpcCalls: [] as { name: string; args: Record<string, unknown> }[],
     failInsertTable: options.failInsertTable,
     supporterId: options.supporterId ?? "supporter-1",
     storageObjects: options.storageObjects ?? DEFAULT_STORAGE_OBJECTS,
@@ -255,6 +256,18 @@ function createFakeClient(options: FakeClientOptions = {}) {
   const client = {
     from(table: string) {
       return new FakeQuery(state, table);
+    },
+    // The pledge path resolves the supporter through the protected
+    // resolve_public_supporter_identity RPC rather than upserting the master
+    // record. Implementing it here (instead of injecting a stub per test) keeps
+    // the default wiring under test, so a regression back to a direct
+    // `.from("supporter").upsert(...)` shows up as a missing RPC call.
+    async rpc(name: string, args: Record<string, unknown>) {
+      state.rpcCalls.push({ name, args });
+      if (name === "resolve_public_supporter_identity") {
+        return { data: { supporterId: state.supporterId, kind: "existing" }, error: null };
+      }
+      return { data: null, error: new Error(`unexpected rpc: ${name}`) };
     },
     storage: {
       from(bucket: string) {
@@ -314,7 +327,7 @@ describe("persistSponsorshipPledge", () => {
     ).toBe(true);
   });
 
-  test("persists supporter consent choices", async () => {
+  test("records only opt_out consent, never opt_in, from an unverified pledge", async () => {
     const { client, state } = createFakeClient();
     await persistSponsorshipPledge({
       client,
@@ -322,16 +335,13 @@ describe("persistSponsorshipPledge", () => {
       now: () => new Date("2026-07-02T00:00:00.000Z"),
     });
 
+    // Nobody proved they own this email address. Writing the email opt_in here
+    // would let an unverified submission reverse a supporter's existing opt_out,
+    // so only the explicit opt_out is persisted as consent -- matching
+    // donations/service.ts and volunteers/service.ts.
     const consentCall = state.calls.find((c) => c.table === "consent" && c.method === "insert");
     expect(consentCall).toBeDefined();
     expect(consentCall?.payload).toEqual([
-      {
-        supporter_id: "supporter-1",
-        channel: "email",
-        status: "opt_in",
-        source: "sponsorship_pledge_form",
-        timestamp: "2026-07-02T00:00:00.000Z",
-      },
       {
         supporter_id: "supporter-1",
         channel: "whatsapp",
@@ -340,6 +350,50 @@ describe("persistSponsorshipPledge", () => {
         timestamp: "2026-07-02T00:00:00.000Z",
       },
     ]);
+  });
+
+  test("carries the opt-in tick on the pledge as a request, not as consent", async () => {
+    const { client, state } = createFakeClient();
+    await persistSponsorshipPledge({
+      client,
+      parsed: parsedSubmission({ consents: { email: true, whatsapp: false } }),
+      now: () => new Date("2026-07-02T00:00:00.000Z"),
+    });
+
+    // A database trigger turns these flags into supporter_consent_intent rows so
+    // staff can verify and promote them later.
+    const pledgeCall = state.calls.find(
+      (c) => c.table === "sponsorship_pledge" && c.method === "insert",
+    );
+    expect(pledgeCall?.payload).toMatchObject({
+      consent_email_requested: true,
+      consent_whatsapp_requested: false,
+    });
+  });
+
+  test("resolves the supporter through the protected identity path, never upserting the master record", async () => {
+    const { client, state } = createFakeClient();
+    await persistSponsorshipPledge({
+      client,
+      parsed: parsedSubmission({ consents: { email: false, whatsapp: false } }),
+      now: () => new Date("2026-07-02T00:00:00.000Z"),
+    });
+
+    // resolve_public_supporter_identity inserts with `on conflict (email) do
+    // nothing`, so an existing supporter's name, phone, language and source are
+    // preserved. A direct upsert on email would overwrite all four.
+    const resolveCall = state.rpcCalls.find((c) => c.name === "resolve_public_supporter_identity");
+    expect(resolveCall).toBeDefined();
+    expect(resolveCall?.args).toEqual({
+      p_contact: {
+        name: "陳小姐",
+        email: "chan@example.com",
+        phone: "91234567",
+        language: "zh-HK",
+        source: "sponsorship_pledge_form",
+      },
+    });
+    expect(state.calls.some((c) => c.table === "supporter")).toBe(false);
   });
 
   test("creates a provisional pledge and inserts the payment proof row after verifying the upload exists", async () => {

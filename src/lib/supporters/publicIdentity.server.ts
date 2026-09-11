@@ -5,7 +5,7 @@ export type PublicContact = {
   email: string;
   phone: string | null;
   language: "zh-HK" | "en";
-  source: "donation_form" | "volunteer_registration_form";
+  source: "donation_form" | "volunteer_registration_form" | "sponsorship_pledge_form";
 };
 
 export type IdentityResolution = {
