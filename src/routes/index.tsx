@@ -3,6 +3,7 @@ import { publicUrl } from "@/lib/publicOrigin";
 
 import { HomeHero } from "../components/site/home/HomeHero";
 import { FeaturedAnimals } from "../components/site/home/FeaturedAnimals";
+import { selectFeaturedAnimals } from "../lib/animals/featuredSelection";
 import { ImpactBand } from "../components/site/home/ImpactBand";
 import { AdoptionStepsBand } from "../components/site/home/AdoptionStepsBand";
 import { FeaturedStory } from "../components/site/home/FeaturedStory";
@@ -40,7 +41,11 @@ async function loadHome() {
   ]);
 
   return {
-    featuredAnimals: [...(cats?.animals ?? []), ...(dogs?.animals ?? [])],
+    // Only animals with a photograph are featured. Records without one are not
+    // hidden -- they remain in the full directory at /animals/cat, /animals/dog
+    // and /sponsors -- but the homepage band is a first impression, and a grid
+    // of placeholder icons misrepresents what the association has to show.
+    featuredAnimals: selectFeaturedAnimals([...(cats?.animals ?? []), ...(dogs?.animals ?? [])]),
     impact,
     featuredStory: stories?.items?.[0] ?? null,
   };
