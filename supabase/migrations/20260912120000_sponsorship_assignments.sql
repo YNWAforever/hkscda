@@ -108,6 +108,9 @@ comment on table public.sponsorship_assignment is
 -- stale plan or a hand-built call cannot confirm a relationship against an
 -- animal that has been adopted, has died, or has been withdrawn from the
 -- programme. Same defence-in-depth as the allocation planner and its triggers.
+--
+-- The condition below must stay equivalent to `isAssignable` in
+-- src/lib/sponsorshipAdmin/autoAssign.ts, field for field.
 create or replace function public.assign_sponsorship_animal_with_audit(
   p_pledge_id uuid,
   p_animal_id uuid,
@@ -124,6 +127,7 @@ declare
   v_pledge public.sponsorship_pledge%rowtype;
   v_animal public.animals%rowtype;
   v_deceased_at date;
+  v_adopted_at date;
   v_assignment_id uuid;
 begin
   select id into v_actor_admin_id
@@ -156,7 +160,13 @@ begin
   -- Death is recorded on a different table by a different form; animals.status
   -- has no 'deceased' value. A missing profile row means nothing was recorded,
   -- not that the animal died, so this must not become an inner join.
-  select deceased_at into v_deceased_at
+  --
+  -- Adoption is recorded in TWO unrelated places, only one of which is
+  -- animals.status: the staff status RPC writes that column, while the
+  -- adoptions internal-profile form writes animal_profile_internal.adopted_at
+  -- and never touches animals.status. Reading only animals.status left an
+  -- animal adopted through that form still assignable, so both are read here.
+  select deceased_at, adopted_at into v_deceased_at, v_adopted_at
   from public.animal_profile_internal
   where animal_id = p_animal_id;
 
@@ -164,7 +174,8 @@ begin
      or v_animal.status = 'adopted'
      or v_animal.retired_at is not null
      or v_animal.publication_state <> 'published'
-     or v_deceased_at is not null then
+     or v_deceased_at is not null
+     or v_adopted_at is not null then
     raise exception 'Animal % cannot be sponsored', p_animal_id;
   end if;
 

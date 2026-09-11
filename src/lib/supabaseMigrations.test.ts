@@ -1026,6 +1026,34 @@ describe("supabase migration safety", () => {
     expect((sql.match(/\(now\(\) at time zone 'Asia\/Hong_Kong'\)::date/g) ?? []).length).toBe(2);
   });
 
+  test("the assign guard refuses an animal that left by either of adoption's two homes", () => {
+    const sql = readMigration("20260912120000_sponsorship_assignments.sql");
+
+    // Departure is recorded across two unrelated tables. animals.status has no
+    // 'deceased' value at all, and the adoptions internal-profile form writes
+    // animal_profile_internal.adopted_at without ever touching animals.status,
+    // so reading only animals.status left an adopted animal assignable.
+    expect(sql).toContain("select deceased_at, adopted_at into v_deceased_at, v_adopted_at");
+    expect(sql).toContain("from public.animal_profile_internal");
+
+    // A missing profile row means nothing was recorded, not that the animal
+    // left: this must stay a plain select, never an inner join.
+    expect(sql).not.toContain("join public.animal_profile_internal");
+
+    // The refusal must name all six conditions, matching `isAssignable` in
+    // src/lib/sponsorshipAdmin/autoAssign.ts field for field.
+    for (const condition of [
+      "if not v_animal.sponsorship_eligible",
+      "or v_animal.status = 'adopted'",
+      "or v_animal.retired_at is not null",
+      "or v_animal.publication_state <> 'published'",
+      "or v_deceased_at is not null",
+      "or v_adopted_at is not null then",
+    ]) {
+      expect(sql).toContain(condition);
+    }
+  });
+
   test("pins the review RPC's approve/reject branch on the migration that now owns its body", () => {
     // review_sponsorship_payment_proof's approval/rejection logic used to be
     // pinned only against the migration that first introduced it -- a

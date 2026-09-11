@@ -20,6 +20,13 @@ export type CandidateAnimalState = {
   publicationState: "draft" | "published" | "unpublished";
   /** Recorded on `animal_profile_internal`; `animals.status` has no deceased value. */
   deceasedAt: string | null;
+  /**
+   * Recorded on `animal_profile_internal` by the adoptions internal-profile
+   * form. `animals.status` is a SEPARATE, independently-written signal: that
+   * form never touches it, so an animal adopted through it keeps
+   * `status = 'available'`. Departure has to be read from both.
+   */
+  adoptedAt: string | null;
 };
 
 export type PreferenceCandidate = {
@@ -37,6 +44,12 @@ export type PreferenceCandidate = {
  * fostered animal is in temporary care and still needs a sponsor, which is the
  * same reasoning that published fostered animals to the public catalogue.
  *
+ * Adoption is checked TWICE because it is recorded in two unrelated places:
+ * `animals.status` (written by the staff status RPC) and
+ * `animal_profile_internal.adopted_at` (written by the adoptions
+ * internal-profile form, which never touches `animals.status`). Reading only
+ * one of them leaves an animal that has gone home still assignable.
+ *
  * `publicationState` is checked because confirming an assignment opens a new
  * public-facing commitment. It deliberately plays no part in ENDING one —
  * withholding a profile is an editorial act, not a reason to stop a
@@ -49,6 +62,7 @@ export function isAssignable(candidate: PreferenceCandidate): boolean {
   return (
     animal.sponsorshipEligible &&
     animal.status !== "adopted" &&
+    animal.adoptedAt === null &&
     animal.retiredAt === null &&
     animal.deceasedAt === null &&
     animal.publicationState === "published"

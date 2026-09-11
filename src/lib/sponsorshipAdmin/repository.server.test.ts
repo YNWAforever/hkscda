@@ -946,7 +946,7 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
             status: "adopted",
             retired_at: null,
             publication_state: "published",
-            animal_profile_internal: { deceased_at: null },
+            animal_profile_internal: { deceased_at: null, adopted_at: null },
           },
         },
       ],
@@ -961,6 +961,7 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
       retiredAt: null,
       publicationState: "published",
       deceasedAt: null,
+      adoptedAt: null,
     });
     // The repository reports the state; the service turns it into a reason.
     expect(detail?.assignments[0].reviewReason).toBeNull();

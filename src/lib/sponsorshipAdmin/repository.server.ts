@@ -56,12 +56,22 @@ type PreferenceRow = {
  */
 type EmbeddedAnimalEmbed = EmbeddedAnimalRow | EmbeddedAnimalRow[] | null;
 
+/**
+ * The internal-profile columns that say the animal has left. Both live only
+ * here: `animals.status` has no deceased value at all, and the adoptions
+ * internal-profile form writes `adopted_at` without touching `animals.status`.
+ */
+type InternalProfileEmbedRow = {
+  deceased_at: string | null;
+  adopted_at: string | null;
+};
+
 type EmbeddedAnimalRow = {
   sponsorship_eligible: boolean;
   status: CandidateAnimalState["status"];
   retired_at: string | null;
   publication_state: CandidateAnimalState["publicationState"];
-  animal_profile_internal: { deceased_at: string | null } | { deceased_at: string | null }[] | null;
+  animal_profile_internal: InternalProfileEmbedRow | InternalProfileEmbedRow[] | null;
 };
 
 type ProofRow = {
@@ -284,18 +294,22 @@ function mapEmbeddedAnimalState(
 ): CandidateAnimalState | null {
   const embedded = Array.isArray(embed) ? (embed[0] ?? null) : embed;
   if (!embedded) return null;
+  // PostgREST returns an embedded 1:1 as an array or an object depending on
+  // the relationship; absence means nothing was recorded, not that the animal
+  // died or went home.
+  const internal = Array.isArray(embedded.animal_profile_internal)
+    ? (embedded.animal_profile_internal[0] ?? null)
+    : embedded.animal_profile_internal;
   return {
     sponsorshipEligible: embedded.sponsorship_eligible,
     status: embedded.status,
     retiredAt: embedded.retired_at,
     publicationState: embedded.publication_state,
-    // PostgREST returns an embedded 1:1 as an array or an object depending on
-    // the relationship; absence means nothing was recorded, not that the
-    // animal died.
-    deceasedAt:
-      (Array.isArray(embedded.animal_profile_internal)
-        ? (embedded.animal_profile_internal[0]?.deceased_at ?? null)
-        : (embedded.animal_profile_internal?.deceased_at ?? null)) ?? null,
+    deceasedAt: internal?.deceased_at ?? null,
+    // A second, independent adoption signal: the adoptions internal-profile
+    // form writes this and leaves `animals.status` alone, so an animal that
+    // has gone home can still read `status = 'available'`.
+    adoptedAt: internal?.adopted_at ?? null,
   };
 }
 
@@ -483,7 +497,7 @@ export function createSupabaseSponsorshipAdminRepository(
         client
           .from("sponsorship_preference")
           .select(
-            "*,animal:sponsor_animal_id(sponsorship_eligible,status,retired_at,publication_state,animal_profile_internal(deceased_at))",
+            "*,animal:sponsor_animal_id(sponsorship_eligible,status,retired_at,publication_state,animal_profile_internal(deceased_at,adopted_at))",
           )
           .eq("pledge_id", id)
           .order("rank", { ascending: true }),
@@ -513,7 +527,7 @@ export function createSupabaseSponsorshipAdminRepository(
         client
           .from("sponsorship_assignment")
           .select(
-            "id,pledge_id,animal_id,animal_name_snapshot,started_on,ended_on,end_reason,note,end_note,animal:animal_id(sponsorship_eligible,status,retired_at,publication_state,animal_profile_internal(deceased_at))",
+            "id,pledge_id,animal_id,animal_name_snapshot,started_on,ended_on,end_reason,note,end_note,animal:animal_id(sponsorship_eligible,status,retired_at,publication_state,animal_profile_internal(deceased_at,adopted_at))",
           )
           .eq("pledge_id", id),
       ]);

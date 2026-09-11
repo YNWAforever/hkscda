@@ -96,13 +96,19 @@ const RECORD_PAYMENT_ELIGIBLE_STATUSES: PledgeDetail["status"][] = [
  *
  * `retired` flags even though retirement is not an automatic end reason —
  * flagging is not ending, and an archived record is worth a look.
+ *
+ * Adoption is read from BOTH of its homes. `animals.status` is written by the
+ * staff status RPC; `animal_profile_internal.adopted_at` is written by the
+ * adoptions internal-profile form, which never touches `animals.status`. An
+ * animal adopted through that form would otherwise go unflagged while the
+ * supporter kept paying for it.
  */
 function reviewReasonFor(
   animal: CandidateAnimalState | null,
 ): SponsorshipAssignmentRecord["reviewReason"] {
   if (!animal) return null;
   if (animal.deceasedAt !== null) return "deceased";
-  if (animal.status === "adopted") return "adopted";
+  if (animal.status === "adopted" || animal.adoptedAt !== null) return "adopted";
   if (animal.retiredAt !== null) return "retired";
   if (!animal.sponsorshipEligible) return "ineligible";
   return null;

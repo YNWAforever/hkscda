@@ -109,6 +109,7 @@ describe("createSponsorshipAdminService", () => {
     retiredAt: null,
     publicationState: "published" as const,
     deceasedAt: null,
+    adoptedAt: null,
   };
 
   test("listPledges parses search input and delegates to the repository", async () => {
@@ -182,6 +183,85 @@ describe("createSponsorshipAdminService", () => {
     // Flagging is not ending. The money keeps arriving and the assignment
     // stays open; a person decides what to do about it.
     expect(detail?.assignments[0].reviewReason).toBe("adopted");
+  });
+
+  test("getPledgeDetail flags an open assignment whose animal was adopted on its internal profile", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({
+          status: "active",
+          assignments: [
+            {
+              id: "asg-1",
+              animalId: "animal-1",
+              animalNameSnapshot: "小白",
+              startedOn: "2026-07-01",
+              endedOn: null,
+              endReason: null,
+              note: null,
+              endNote: null,
+              // The internal-profile adoption path: the adoptions
+              // internal-profile form writes animal_profile_internal.adopted_at
+              // and NEVER writes animals.status, so a real adopted animal
+              // reaches here still reading status: "available".
+              animalState: { ...eligibleState, status: "available", adoptedAt: "2026-08-01" },
+              reviewReason: null,
+            },
+          ],
+          preferences: [],
+        }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    const detail = await service.getPledgeDetail(pledgeId);
+
+    // Reading only animals.status left this animal unflagged while the
+    // supporter kept paying for an animal that had gone home.
+    expect(detail?.assignments[0].reviewReason).toBe("adopted");
+  });
+
+  test("getPledgeDetail keeps deceased ahead of an internal-profile adoption", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({
+          status: "active",
+          assignments: [
+            {
+              id: "asg-1",
+              animalId: "animal-1",
+              animalNameSnapshot: "小白",
+              startedOn: "2026-07-01",
+              endedOn: null,
+              endReason: null,
+              note: null,
+              endNote: null,
+              animalState: {
+                ...eligibleState,
+                adoptedAt: "2026-08-01",
+                deceasedAt: "2026-08-02",
+              },
+              reviewReason: null,
+            },
+          ],
+          preferences: [],
+        }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    const detail = await service.getPledgeDetail(pledgeId);
+
+    // Precedence is unchanged: death is the reason a person must lead with.
+    expect(detail?.assignments[0].reviewReason).toBe("deceased");
   });
 
   test("getPledgeDetail does not flag an assignment whose animal is fine", async () => {

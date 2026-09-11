@@ -14,6 +14,7 @@ function candidate(overrides: Partial<PreferenceCandidate> = {}): PreferenceCand
       retiredAt: null,
       publicationState: "published",
       deceasedAt: null,
+      adoptedAt: null,
     },
     ...overrides,
   };
@@ -34,6 +35,17 @@ describe("isAssignable", () => {
 
   test("rejects an adopted animal", () => {
     expect(isAssignable(candidate({ animal: { ...baseAnimal, status: "adopted" } }))).toBe(false);
+  });
+
+  test("rejects an animal adopted on its internal profile", () => {
+    // The OTHER home of adoption. The adoptions internal-profile form writes
+    // animal_profile_internal.adopted_at and never touches animals.status, so
+    // an animal that has gone home still reads status: "available" here.
+    expect(
+      isAssignable(
+        candidate({ animal: { ...baseAnimal, status: "available", adoptedAt: "2026-08-01" } }),
+      ),
+    ).toBe(false);
   });
 
   test("rejects a deceased animal", () => {
