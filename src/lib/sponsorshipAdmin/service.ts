@@ -11,7 +11,8 @@ import {
 } from "./schemas";
 import { MAX_ADVANCE_PERIODS, monthStartOf, planPaymentAllocation } from "./allocation";
 import { selectAutoAssignAnimal } from "./autoAssign";
-import type { PledgeDetail, PaymentProofRecord } from "./types";
+import type { CandidateAnimalState } from "./autoAssign";
+import type { PledgeDetail, PaymentProofRecord, SponsorshipAssignmentRecord } from "./types";
 import type { SendPledgeStatusUpdateEmailArgs } from "./notifications.server";
 import { pledgeReference } from "../sponsorship/statusSummary";
 
@@ -87,6 +88,26 @@ const RECORD_PAYMENT_ELIGIBLE_STATUSES: PledgeDetail["status"][] = [
   "active",
 ];
 
+/**
+ * Why an open assignment needs a person to look at it.
+ *
+ * Derived on every read rather than stored: a flag written at one moment would
+ * drift from the animal's real state the instant the CMS changed it.
+ *
+ * `retired` flags even though retirement is not an automatic end reason —
+ * flagging is not ending, and an archived record is worth a look.
+ */
+function reviewReasonFor(
+  animal: CandidateAnimalState | null,
+): SponsorshipAssignmentRecord["reviewReason"] {
+  if (!animal) return null;
+  if (animal.deceasedAt !== null) return "deceased";
+  if (animal.status === "adopted") return "adopted";
+  if (animal.retiredAt !== null) return "retired";
+  if (!animal.sponsorshipEligible) return "ineligible";
+  return null;
+}
+
 export function createSponsorshipAdminService({
   repo,
   sendPledgeStatusUpdateEmail,
@@ -117,7 +138,34 @@ export function createSponsorshipAdminService({
     },
 
     async getPledgeDetail(id: string) {
-      return repo.getPledgeDetail(id);
+      const detail = await repo.getPledgeDetail(id);
+      if (!detail) return null;
+
+      const stateByAnimal = new Map(
+        detail.preferences
+          .filter((preference) => preference.animalId !== null)
+          .map((preference) => [preference.animalId as string, preference.animalState]),
+      );
+
+      const assignments = detail.assignments.map((assignment) =>
+        assignment.endedOn !== null || assignment.animalId === null
+          ? assignment
+          : {
+              ...assignment,
+              reviewReason: reviewReasonFor(stateByAnimal.get(assignment.animalId) ?? null),
+            },
+      );
+
+      return {
+        ...detail,
+        assignments,
+        // The second derived signal: a sponsorship that is running but backs
+        // no animal. `cancelled` is excluded because it takes no further
+        // payments, so there is nothing for staff to resolve.
+        needsAnimal:
+          detail.status !== "cancelled" &&
+          assignments.every((assignment) => assignment.endedOn !== null),
+      };
     },
 
     async getProofSigningInfo(id: string) {

@@ -140,6 +140,141 @@ describe("createSponsorshipAdminService", () => {
     expect(await service.getPledgeDetail(pledgeId)).toBeNull();
   });
 
+  test("getPledgeDetail flags an open assignment whose animal has left", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({
+          status: "active",
+          assignments: [
+            {
+              id: "asg-1",
+              animalId: "animal-1",
+              animalNameSnapshot: "小白",
+              startedOn: "2026-07-01",
+              endedOn: null,
+              endReason: null,
+              note: null,
+              endNote: null,
+              reviewReason: null,
+            },
+          ],
+          preferences: [
+            {
+              id: "pref-1",
+              rank: 1,
+              animalId: "animal-1",
+              animalNameSnapshot: "小白",
+              animalState: { ...eligibleState, status: "adopted" },
+            },
+          ],
+        }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    const detail = await service.getPledgeDetail(pledgeId);
+
+    // Flagging is not ending. The money keeps arriving and the assignment
+    // stays open; a person decides what to do about it.
+    expect(detail?.assignments[0].reviewReason).toBe("adopted");
+  });
+
+  test("getPledgeDetail does not flag an assignment whose animal is fine", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({
+          status: "active",
+          assignments: [
+            {
+              id: "asg-1",
+              animalId: "animal-1",
+              animalNameSnapshot: "小白",
+              startedOn: "2026-07-01",
+              endedOn: null,
+              endReason: null,
+              note: null,
+              endNote: null,
+              reviewReason: null,
+            },
+          ],
+          preferences: [
+            {
+              id: "pref-1",
+              rank: 1,
+              animalId: "animal-1",
+              animalNameSnapshot: "小白",
+              animalState: eligibleState,
+            },
+          ],
+        }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    const detail = await service.getPledgeDetail(pledgeId);
+
+    expect(detail?.assignments[0].reviewReason).toBeNull();
+  });
+
+  test("getPledgeDetail reports a running sponsorship that backs no animal", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({
+          status: "active",
+          assignments: [
+            {
+              id: "asg-1",
+              animalId: "animal-1",
+              animalNameSnapshot: "小白",
+              startedOn: "2026-07-01",
+              endedOn: "2026-08-01",
+              endReason: "adopted",
+              note: null,
+              endNote: null,
+              reviewReason: null,
+            },
+          ],
+        }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    const detail = await service.getPledgeDetail(pledgeId);
+
+    // The animal was adopted and staff ended the assignment, but the pledge
+    // keeps taking payments — so somebody must talk to the supporter.
+    expect(detail?.needsAnimal).toBe(true);
+  });
+
+  test("getPledgeDetail does not report needsAnimal for a cancelled pledge", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () => baseDetail({ status: "cancelled", assignments: [] })),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    const detail = await service.getPledgeDetail(pledgeId);
+
+    // A cancelled sponsorship takes no more payments, so there is nothing to
+    // resolve — flagging it would only add noise to the staff queue.
+    expect(detail?.needsAnimal).toBe(false);
+  });
+
   test("getProofSigningInfo returns a signed url and file name when a proof exists", async () => {
     const repo = createFakeRepo({
       getProofSigningInfo: mock(async () => ({
