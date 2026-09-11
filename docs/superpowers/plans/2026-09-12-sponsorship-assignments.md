@@ -39,6 +39,11 @@ production; never run a migration or seed against it. Start the stack with
 **This worktree is shared with other sessions.** Other files will be modified by
 someone else. Always `git add` by explicit path — never `git add -A` or `git add .`.
 
+> **`public.animals` required columns.** Beyond `id,name,type,status` the table
+> has four more NOT NULL columns with no default — `gender` (checked
+> `in ('male','female')`), `age`, `adoption_eligible` and `sponsorship_eligible`.
+> Every psql block below supplies them. Found the hard way in Task 2.
+
 ## File Structure
 
 | File | Responsibility |
@@ -453,7 +458,7 @@ insert into auth.users (id,email) values ('aa000000-0000-4000-8000-000000000001'
 insert into public.admin_user (auth_user_id,email,role,status) values ('aa000000-0000-4000-8000-000000000001','s@e.test','staff','active');
 insert into public.supporter (id,name,email,language,source) values ('bb000000-0000-4000-8000-000000000001','A','a@e.test','zh-HK','sponsorship_pledge_form');
 insert into public.supporter (id,name,email,language,source) values ('bb000000-0000-4000-8000-000000000002','B','b@e.test','zh-HK','sponsorship_pledge_form');
-insert into public.animals (id,name,type,status) values ('99000000-0000-4000-8000-000000000001','小白','cat','available');
+insert into public.animals (id,name,type,status,gender,age,adoption_eligible,sponsorship_eligible) values ('99000000-0000-4000-8000-000000000001','小白','cat','available','female','adult',false,true);
 insert into public.sponsorship_pledge (id,supporter_id,monthly_tier,amount_cents,language,status) values ('cc000000-0000-4000-8000-000000000001','bb000000-0000-4000-8000-000000000001','100',10000,'zh-HK','active');
 insert into public.sponsorship_pledge (id,supporter_id,monthly_tier,amount_cents,language,status) values ('cc000000-0000-4000-8000-000000000002','bb000000-0000-4000-8000-000000000002','100',10000,'zh-HK','active');
 insert into public.sponsorship_assignment (pledge_id,animal_id,animal_name_snapshot) values ('cc000000-0000-4000-8000-000000000001','99000000-0000-4000-8000-000000000001','小白');
@@ -470,7 +475,7 @@ Then confirm the open-uniqueness constraint rejects a duplicate:
 docker exec -i supabase_db_hkscda psql -U postgres -d postgres -c "
 begin;
 insert into public.supporter (id,name,email,language,source) values ('bb000000-0000-4000-8000-000000000003','C','c@e.test','zh-HK','sponsorship_pledge_form');
-insert into public.animals (id,name,type,status) values ('99000000-0000-4000-8000-000000000002','阿花','cat','available');
+insert into public.animals (id,name,type,status,gender,age,adoption_eligible,sponsorship_eligible) values ('99000000-0000-4000-8000-000000000002','阿花','cat','available','female','adult',false,true);
 insert into public.sponsorship_pledge (id,supporter_id,monthly_tier,amount_cents,language,status) values ('cc000000-0000-4000-8000-000000000003','bb000000-0000-4000-8000-000000000003','100',10000,'zh-HK','active');
 insert into public.sponsorship_assignment (pledge_id,animal_id,animal_name_snapshot) values ('cc000000-0000-4000-8000-000000000003','99000000-0000-4000-8000-000000000002','阿花');
 insert into public.sponsorship_assignment (pledge_id,animal_id,animal_name_snapshot) values ('cc000000-0000-4000-8000-000000000003','99000000-0000-4000-8000-000000000002','阿花');
@@ -700,8 +705,8 @@ insert into auth.users (id,email) values ('aa000000-0000-4000-8000-000000000001'
 insert into public.admin_user (auth_user_id,email,role,status) values ('aa000000-0000-4000-8000-000000000001','s@e.test','staff','active');
 insert into public.supporter (id,name,email,language,source) values ('bb000000-0000-4000-8000-000000000001','A','a@e.test','zh-HK','sponsorship_pledge_form');
 insert into public.sponsorship_pledge (id,supporter_id,monthly_tier,amount_cents,language,status) values ('cc000000-0000-4000-8000-000000000001','bb000000-0000-4000-8000-000000000001','100',10000,'zh-HK','active');
-insert into public.animals (id,name,type,status,sponsorship_eligible,publication_state) values ('99000000-0000-4000-8000-000000000001','小白','cat','available',true,'published');
-insert into public.animals (id,name,type,status,sponsorship_eligible,publication_state) values ('99000000-0000-4000-8000-000000000002','已領養','cat','adopted',true,'published');
+insert into public.animals (id,name,type,status,gender,age,adoption_eligible,sponsorship_eligible,publication_state) values ('99000000-0000-4000-8000-000000000001','小白','cat','available','female','adult',false,true,'published');
+insert into public.animals (id,name,type,status,gender,age,adoption_eligible,sponsorship_eligible,publication_state) values ('99000000-0000-4000-8000-000000000002','已領養','cat','adopted','female','adult',false,true,'published');
 select 'assign ok: '||(public.assign_sponsorship_animal_with_audit('cc000000-0000-4000-8000-000000000001','99000000-0000-4000-8000-000000000001','aa000000-0000-4000-8000-000000000001','first') is not null)::text;
 select public.assign_sponsorship_animal_with_audit('cc000000-0000-4000-8000-000000000001','99000000-0000-4000-8000-000000000002','aa000000-0000-4000-8000-000000000001','adopted animal');
 rollback;"
@@ -719,7 +724,7 @@ insert into auth.users (id,email) values ('aa000000-0000-4000-8000-000000000001'
 insert into public.admin_user (auth_user_id,email,role,status) values ('aa000000-0000-4000-8000-000000000001','s@e.test','staff','active');
 insert into public.supporter (id,name,email,language,source) values ('bb000000-0000-4000-8000-000000000001','A','a@e.test','zh-HK','sponsorship_pledge_form');
 insert into public.sponsorship_pledge (id,supporter_id,monthly_tier,amount_cents,language,status) values ('cc000000-0000-4000-8000-000000000001','bb000000-0000-4000-8000-000000000001','100',10000,'zh-HK','active');
-insert into public.animals (id,name,type,status,sponsorship_eligible,publication_state) values ('99000000-0000-4000-8000-000000000001','小白','cat','available',true,'published');
+insert into public.animals (id,name,type,status,gender,age,adoption_eligible,sponsorship_eligible,publication_state) values ('99000000-0000-4000-8000-000000000001','小白','cat','available','female','adult',false,true,'published');
 select public.end_sponsorship_assignment_with_audit(
   public.assign_sponsorship_animal_with_audit('cc000000-0000-4000-8000-000000000001','99000000-0000-4000-8000-000000000001','aa000000-0000-4000-8000-000000000001',null),
   'aa000000-0000-4000-8000-000000000001','adopted','rehomed');
@@ -877,7 +882,7 @@ insert into auth.users (id,email) values ('aa000000-0000-4000-8000-000000000001'
 insert into public.admin_user (auth_user_id,email,role,status) values ('aa000000-0000-4000-8000-000000000001','s@e.test','staff','active');
 insert into public.supporter (id,name,email,language,source) values ('bb000000-0000-4000-8000-000000000001','A','a@e.test','zh-HK','sponsorship_pledge_form');
 insert into public.sponsorship_pledge (id,supporter_id,monthly_tier,amount_cents,language,status) values ('cc000000-0000-4000-8000-000000000001','bb000000-0000-4000-8000-000000000001','100',10000,'zh-HK','pending_payment');
-insert into public.animals (id,name,type,status,sponsorship_eligible,publication_state) values ('99000000-0000-4000-8000-000000000001','小白','cat','available',true,'published');
+insert into public.animals (id,name,type,status,gender,age,adoption_eligible,sponsorship_eligible,publication_state) values ('99000000-0000-4000-8000-000000000001','小白','cat','available','female','adult',false,true,'published');
 select public.record_sponsorship_payment_proof('cc000000-0000-4000-8000-000000000001','aa000000-0000-4000-8000-000000000001','p/1.jpg','1.jpg','image/jpeg',1000,'fps','M1',10000,'2026-08-01','m1');
 select public.review_sponsorship_payment_proof('cc000000-0000-4000-8000-000000000001','approve','aa000000-0000-4000-8000-000000000001','ok','[]'::jsonb,'99000000-0000-4000-8000-000000000001');
 select animal_name_snapshot, created_by is not null as has_actor from public.sponsorship_assignment;
@@ -897,7 +902,7 @@ insert into auth.users (id,email) values ('aa000000-0000-4000-8000-000000000001'
 insert into public.admin_user (auth_user_id,email,role,status) values ('aa000000-0000-4000-8000-000000000001','s@e.test','staff','active');
 insert into public.supporter (id,name,email,language,source) values ('bb000000-0000-4000-8000-000000000001','A','a@e.test','zh-HK','sponsorship_pledge_form');
 insert into public.sponsorship_pledge (id,supporter_id,monthly_tier,amount_cents,language,status) values ('cc000000-0000-4000-8000-000000000001','bb000000-0000-4000-8000-000000000001','100',10000,'zh-HK','pending_payment');
-insert into public.animals (id,name,type,status,sponsorship_eligible,publication_state) values ('99000000-0000-4000-8000-000000000001','小白','cat','available',true,'published');
+insert into public.animals (id,name,type,status,gender,age,adoption_eligible,sponsorship_eligible,publication_state) values ('99000000-0000-4000-8000-000000000001','小白','cat','available','female','adult',false,true,'published');
 select public.record_sponsorship_payment_proof('cc000000-0000-4000-8000-000000000001','aa000000-0000-4000-8000-000000000001','p/1.jpg','1.jpg','image/jpeg',1000,'fps','M1',10000,'2026-08-01','m1');
 select public.review_sponsorship_payment_proof('cc000000-0000-4000-8000-000000000001','approve','aa000000-0000-4000-8000-000000000001','ok','[]'::jsonb,'99000000-0000-4000-8000-000000000001');
 select public.record_sponsorship_payment_proof('cc000000-0000-4000-8000-000000000001','aa000000-0000-4000-8000-000000000001','p/2.jpg','2.jpg','image/jpeg',1000,'fps','M2',10000,'2026-09-01','m2');
