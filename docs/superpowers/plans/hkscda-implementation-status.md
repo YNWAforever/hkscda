@@ -172,6 +172,25 @@ starts the stack: 37 pass, plus 38 RLS — 75 database-backed tests executing
 instead of skipping, including rollback-on-audit-failure and
 capacity-reduction-racing-approval. **Acceptance T01/T03.**
 
+### Slice J — Public profile editable in the CMS (Phase 2)
+
+Commit `ad2084c`. **Reviewable implementation complete + isolated acceptance passed.**
+
+The public pages render eight `public_profile` fields and not one was editable
+anywhere in admin, so "edit one animal and the public site shows its personality
+and story" was unreachable. All eight are now editable. The writer validates by
+running the READER, making writer/reader agreement true by construction; the DB
+CHECK was exercised directly to confirm all three layers agree. **Acceptance T06.**
+
+### Slice K — Search by reference number, archived kept reachable (Phase 2)
+
+Commit `c258cbf`. **Reviewable implementation complete.**
+
+Search matched only names, so `C3761` found nothing while 荃海棠 found the
+record. Search now covers both plus the English name, read through the public
+parser. Archived records are excluded by default but reachable via a toggle.
+**Acceptance T06.**
+
 ### Working records
 
 Commits `382ca5d`, `fb47f72`. Baseline verification, 217-entry source defect
