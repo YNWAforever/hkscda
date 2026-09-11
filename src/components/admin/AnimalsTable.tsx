@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { supabase } from "../../lib/supabase";
+import { filterAdminAnimals, isArchivedAnimal } from "../../lib/animals/adminSearch";
 import type { Animal } from "../../types/animal";
 import { DataTable, type DataTableColumn } from "./DataTable";
 import { StatusPill, type StatusTone } from "./StatusBadge";
@@ -41,13 +42,15 @@ function AnimalAvatar({ animal }: { animal: Animal }) {
 export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
   const { copy } = useAdminLanguage();
   const [search, setSearch] = useState("");
+  const [includeArchived, setIncludeArchived] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
-  const filtered = animals.filter(
-    (animal) =>
-      animal.name.toLowerCase().includes(search.toLowerCase()) ||
-      (animal.name_en ?? "").toLowerCase().includes(search.toLowerCase()),
-  );
+  // Searching matched only names, so the reference number printed on an
+  // animal's own public page found nothing. Archived records are excluded by
+  // default but stay reachable through the toggle: a retired animal still needs
+  // correcting, and its applications and sponsorships still point at it.
+  const filtered = filterAdminAnimals(animals, search, { includeArchived });
+  const archivedCount = animals.filter(isArchivedAnimal).length;
 
   async function handleDelete(id: string) {
     await supabase.from("animals").delete().eq("id", id);
@@ -146,12 +149,26 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
 
   return (
     <div className="space-y-4">
-      <input
-        value={search}
-        onChange={(event) => setSearch(event.target.value)}
-        placeholder={copy.table.search}
-        className="w-full max-w-xs rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] shadow-sm focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-highlight)]"
-      />
+      <div className="flex flex-wrap items-center gap-4">
+        <input
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="搜尋名稱或編號"
+          aria-label="搜尋名稱或編號"
+          className="w-full max-w-xs rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] shadow-sm focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-highlight)]"
+        />
+        {archivedCount > 0 ? (
+          <label className="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
+            <input
+              type="checkbox"
+              checked={includeArchived}
+              onChange={(event) => setIncludeArchived(event.target.checked)}
+              className="h-4 w-4"
+            />
+            顯示已封存記錄（{archivedCount}）
+          </label>
+        ) : null}
+      </div>
 
       <DataTable
         columns={columns}
