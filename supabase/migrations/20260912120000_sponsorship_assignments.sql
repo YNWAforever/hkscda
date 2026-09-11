@@ -279,9 +279,11 @@ grant execute on function public.end_sponsorship_assignment_with_audit(uuid, uui
 --
 -- Three changes from the 20260911190000 definition, and nothing else:
 --   1. a sixth parameter, p_assign_animal_id, defaulted so existing calls work;
---   2. v_actor_admin_id is resolved ONCE, before the allocation branch -- it
---      was previously resolved inside it, so it was NULL on the common
---      first-approval path where no allocations are passed;
+--   2. v_actor_admin_id is now resolved once, unconditionally, instead of
+--      inside the allocation branch -- not a bug fix (its only consumer,
+--      private.apply_sponsorship_allocations, is called from inside that same
+--      branch, so the value was never read before it was set); just tidying,
+--      so it is available regardless of which branch runs;
 --   3. an auto-assign step, which runs only when the pledge has no assignment
 --      rows at all.
 --
@@ -395,10 +397,11 @@ begin
   set status = v_new_pledge_status
   where id = p_pledge_id;
 
-  -- CHANGE 2: resolve the actor's admin id once, unconditionally. The
-  -- 20260911190000 definition resolved it inside the allocation branch below,
-  -- so it was null on the common first-approval path, where no allocations are
-  -- passed. Everything after this point can now rely on it.
+  -- CHANGE 2: resolve the actor's admin id once, unconditionally, rather than
+  -- inside the allocation branch below where the 20260911190000 definition
+  -- resolved it. Not a bug fix -- its only consumer sits inside that same
+  -- branch, so the value was never read before it was set -- just tidying, so
+  -- it no longer depends on which branch runs.
   select id into v_actor_admin_id
   from public.admin_user
   where auth_user_id = p_actor_user_id;
@@ -424,6 +427,13 @@ begin
   -- none open now. A supporter whose animal was adopted, and whose assignment
   -- staff ended, must be given a new animal by a person rather than silently
   -- by the next payment.
+  --
+  -- If the animal the caller chose has become ineligible since they chose it,
+  -- assign_sponsorship_animal_with_audit raises and the ENTIRE approval rolls
+  -- back -- deliberately: approving the payment while silently skipping the
+  -- assignment would leave a paying supporter with no animal and no signal
+  -- that anything went wrong. The caller re-reads state on retry and picks
+  -- the next eligible choice.
   if p_decision = 'approve' and p_assign_animal_id is not null
      and not exists (
        select 1 from public.sponsorship_assignment where pledge_id = p_pledge_id

@@ -1025,4 +1025,38 @@ describe("supabase migration safety", () => {
     expect(sql).not.toContain("current_date");
     expect((sql.match(/\(now\(\) at time zone 'Asia\/Hong_Kong'\)::date/g) ?? []).length).toBe(2);
   });
+
+  test("pins the review RPC's approve/reject branch on the migration that now owns its body", () => {
+    // review_sponsorship_payment_proof's approval/rejection logic used to be
+    // pinned only against the migration that first introduced it -- a
+    // five-argument signature this migration explicitly drops
+    // (`drop function if exists ... review_sponsorship_payment_proof(uuid,
+    // text, uuid, text, jsonb)` above) and replaces with a six-argument body.
+    // The definition moved files when it was replaced, so the pin has to move
+    // with it: this migration is now the one Postgres actually runs after a
+    // fresh reset, so it is the one whose approval behaviour must be asserted,
+    // or the risk this migration exists to manage -- silently losing approval
+    // logic while reproducing a ~140-line body -- is checked nowhere.
+    const sql = readMigration("20260912120000_sponsorship_assignments.sql");
+
+    // Approving moves both the proof and the pledge forward together.
+    expect(sql).toContain("v_new_review_status := 'approved';");
+    expect(sql).toContain("v_new_pledge_status := 'active';");
+
+    // Rejecting flags the pledge for follow-up rather than cancelling it.
+    expect(sql).toContain("v_new_review_status := 'rejected';");
+    expect(sql).toContain("v_new_pledge_status := 'needs_followup';");
+
+    // 'approve' and 'reject' are the only legal decisions.
+    expect(sql).toContain("raise exception 'Invalid review decision %', p_decision;");
+
+    // The OLDEST still-pending proof is the one reviewed, not the newest row
+    // overall -- losing this ordering would approve the wrong month's payment.
+    expect(sql).toContain("and review_status = 'pending'");
+    expect(sql).toContain("order by created_at asc, id asc");
+
+    // Both the proof and the pledge are written inside the same decision.
+    expect(sql).toContain("update public.sponsorship_payment_proof");
+    expect(sql).toContain("update public.sponsorship_pledge");
+  });
 });
