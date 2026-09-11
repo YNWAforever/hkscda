@@ -1,0 +1,2509 @@
+{
+ "generated": "2026-09-11",
+ "request": "Original photograph files for animals currently offered for adoption or sponsorship.",
+ "scope_note": "All 249 are under the source 'animals/' prefix. NONE are adoption_household files; those 20,626 applicant photos are personal data and must not be transferred.",
+ "why": "The folder supplied so far covers 2018-2020 only (1,159 animal files). Every file below is referenced by a live animal record and resolves in the source files table, but its bytes are absent from that folder.",
+ "file_count": 249,
+ "total_bytes": 460157729,
+ "by_year": {
+  "2020": 2,
+  "2021": 4,
+  "2022": 8,
+  "2023": 12,
+  "2024": 43,
+  "2025": 83,
+  "2026": 97
+ },
+ "files": [
+  {
+   "code": "C1157",
+   "species": "cat",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/iouk60ATDnCl62TiiUcLwCYpfmI3hHCXICbcOQpK.jpeg",
+   "size_bytes": "183726",
+   "uploaded": "2020-11-02",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C1223",
+   "species": "cat",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/2tQrwTLmykravV8fgqecaT0SLtl79qLfR9Pah1vX.jpeg",
+   "size_bytes": "174570",
+   "uploaded": "2024-01-15",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C1392",
+   "species": "cat",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/clPaS3hXNBpjM5aF03VLzS1pS3vzwPPmPIzBX1W9.jpeg",
+   "size_bytes": "119271",
+   "uploaded": "2021-04-13",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C1886",
+   "species": "cat",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/avK9abAZHLzpyzvk1YzNpEwjHub98OajrEjD42bn.jpeg",
+   "size_bytes": "262252",
+   "uploaded": "2022-04-03",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C1997",
+   "species": "cat",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/oeVAZ3Io2hL0Aez04vQFzASgQjHSZbz446k9mLwK.jpeg",
+   "size_bytes": "186862",
+   "uploaded": "2022-06-28",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C2153",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/HN1FLSoiehU9ImvsZxcGKacHShzyo59wCyW8iHNU.jpeg",
+   "size_bytes": "715418",
+   "uploaded": "2023-08-03",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C2188",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/rTQ661DGcBna1nt23KGcEGp7WSRUB50BSnuCA2iw.jpeg",
+   "size_bytes": "199445",
+   "uploaded": "2023-07-06",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C2491",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/58X0e0a3Ew5XdMnAPbeu30g8t1dHimHpqi8WghVF.jpeg",
+   "size_bytes": "342249",
+   "uploaded": "2024-07-20",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C2502",
+   "species": "cat",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/iPimtc4Rf2LHIbDHePThRHsSwpWvSxdbaxhF1xsz.jpeg",
+   "size_bytes": "3397133",
+   "uploaded": "2023-06-29",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C2527",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/1QUL2npDxsfrYWQtMnJXPmEEQNJwI3TAKgJTYFP7.jpeg",
+   "size_bytes": "94989",
+   "uploaded": "2023-07-06",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C2656",
+   "species": "cat",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/CYvcJhGIr9o4F5EAjZbOcdZCT2fgHVYNAH62hwiC.jpeg",
+   "size_bytes": "693518",
+   "uploaded": "2024-02-08",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C2820",
+   "species": "cat",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/habMaYhD43X1P6CqigQQoZONAt52bo2GcOBzerHL.jpeg",
+   "size_bytes": "3017273",
+   "uploaded": "2024-04-25",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C2844",
+   "species": "cat",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/btcpk2s17X9A2atlSGSNR3eJoQL6xYU91lmL98rw.jpeg",
+   "size_bytes": "139182",
+   "uploaded": "2024-07-23",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C2889",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/i11I1BddjXLl11xRMmlYNkvhmWbNwv2OECEw3CSo.jpeg",
+   "size_bytes": "6853822",
+   "uploaded": "2024-03-30",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C2890",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/w3m2U2OAwwnUoJLkzbuFiC3pGvhedlCQQUoldnUV.jpeg",
+   "size_bytes": "8280829",
+   "uploaded": "2024-03-30",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C2905",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/oNrPlpGzN2OfGAycV6ZTWsguVUVYLRI7BXnnAsjc.jpeg",
+   "size_bytes": "6889910",
+   "uploaded": "2024-08-29",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C2950",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/OZIrdNHK3rOB55Fwimn54oRZSwhxrhNEYIWtIxoI.jpeg",
+   "size_bytes": "573632",
+   "uploaded": "2024-05-03",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C2951",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/ggWmAHFlAdtXzfbinVxHOqdIkneMjd6NN5Amt4Ye.jpeg",
+   "size_bytes": "128713",
+   "uploaded": "2024-05-03",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3114",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/MCMLv0x7QHgBiDrptF3nhhQObW4vu8yR8LppvOYX.jpeg",
+   "size_bytes": "543099",
+   "uploaded": "2024-08-16",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3115",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/bsDeFGJn4qYBaDNPZ7DwhDOb5clbHwn908vp3iFT.jpeg",
+   "size_bytes": "407343",
+   "uploaded": "2024-08-16",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3157",
+   "species": "cat",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/aIvbqEJT7E04jcOONlyIXXcmkMetBOzW3KnbbyBy.jpeg",
+   "size_bytes": "420877",
+   "uploaded": "2024-09-27",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3160",
+   "species": "cat",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/ZlHz7hcWVYQVUxanDhWDtWJrQN2Sua7LVEgYZkKy.jpeg",
+   "size_bytes": "1073351",
+   "uploaded": "2024-09-27",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3161",
+   "species": "cat",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/5mTa6AcKIHp5BUbNEx5okFXfU1fJlugrI80RAWXT.jpeg",
+   "size_bytes": "1210535",
+   "uploaded": "2024-09-27",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3163",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/79kpAMFSexQgHRZcbLNgGJdILAbuoMvzh6lBlPMH.jpeg",
+   "size_bytes": "1538036",
+   "uploaded": "2024-09-27",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3165",
+   "species": "cat",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/dadHHHCyNHJsPW57xmLu1SJhoHibidqKv1aw8maJ.jpeg",
+   "size_bytes": "2407301",
+   "uploaded": "2024-09-27",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3166",
+   "species": "cat",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/WJC9kkVEm8lv7lAYGglykoRqE41cSn5YCQ5TK7Xv.jpeg",
+   "size_bytes": "308506",
+   "uploaded": "2024-09-27",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3193",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/1dPztDZnRByDoSA8Gdx743qvJ66aTVx5rg1edl5V.png",
+   "size_bytes": "2325500",
+   "uploaded": "2025-03-25",
+   "mime": "image/png"
+  },
+  {
+   "code": "C3196",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/xtO9Ag8uuj296EbjjHIox7bhXFWqRZMujLC0lkSW.jpeg",
+   "size_bytes": "1969509",
+   "uploaded": "2025-07-03",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3198",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/NcLb6gH6ejRYpR5Us4n3uLDiqm3V3blOEHiNyzRM.jpeg",
+   "size_bytes": "8431842",
+   "uploaded": "2025-06-03",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3200",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/wGw3WuXHaFcnPKxFUo7cNQZ9mYAZ0IjQUYbeSg2Q.jpeg",
+   "size_bytes": "4765263",
+   "uploaded": "2025-01-09",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3205",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/IuB1vn3RPS8JLeemYrRaRgCN3XBIUxl6mY5fkx6H.jpeg",
+   "size_bytes": "6944934",
+   "uploaded": "2025-08-11",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3208",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/iraFGuW1ufskWZ1YmxiHRce4Gt4hwBArkUbbSIxt.",
+   "size_bytes": "3332801",
+   "uploaded": "2026-04-11",
+   "mime": "image/heic"
+  },
+  {
+   "code": "C3210",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/FgpSRVrB8quN863y5k0R8ZcQGpkTSGS9mU5GRON6.jpeg",
+   "size_bytes": "9219792",
+   "uploaded": "2025-09-22",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3212",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/k3tPC3ijlWUeZeqCsM7Ot6orU7zzohQaIUjeL2xa.jpeg",
+   "size_bytes": "6918363",
+   "uploaded": "2025-02-12",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3217",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/j8qh10CQfdtgXoPbBeEUJOLmXotYYLQzY2wHRIUU.jpeg",
+   "size_bytes": "20585",
+   "uploaded": "2025-12-10",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3218",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/ZhbTjKpmT9zImSOWacOe7RKXuKFlvAq2hQaVnPYM.jpeg",
+   "size_bytes": "7888213",
+   "uploaded": "2024-12-19",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3221",
+   "species": "cat",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/z9GgCo66a02zu5TGIt8zRJmUZQVV2t6v4M0GZkAx.jpeg",
+   "size_bytes": "9324496",
+   "uploaded": "2025-08-23",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3225",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/Lpn13SXsTpeESoXbmfKEeRgMzuhbat1WdcQrcBGb.jpeg",
+   "size_bytes": "10108695",
+   "uploaded": "2025-09-08",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3240",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/GTUB3bmEJPtn5OLbkPHEAPFSlyJqGkUsosQtI6Cp.jpeg",
+   "size_bytes": "245011",
+   "uploaded": "2024-11-18",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3257",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/T8NMAXl5f5U9lnkGF2tt7puKKUninW0oFRJdCObT.jpeg",
+   "size_bytes": "9010613",
+   "uploaded": "2025-06-17",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3286",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/IvygFbdpDLk3RlNk7gfaiE9qlxFpVsmHdrVc6Igy.jpeg",
+   "size_bytes": "160225",
+   "uploaded": "2025-07-07",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3294",
+   "species": "cat",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/sJBBAIqmgj1xJaXsJxy41bW2RZ1AN90jw3c2EJb2.jpeg",
+   "size_bytes": "9735401",
+   "uploaded": "2025-06-20",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3325",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/uSjPXUCTZ6RPgNHd9Vrj5Lm029zVk0oRXQCAbNaq.",
+   "size_bytes": "2077060",
+   "uploaded": "2026-06-16",
+   "mime": "image/heic"
+  },
+  {
+   "code": "C3339",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/40CHCTzaKztsdzCzlFrWiYgHZu8Wx1oTs2jqqKAy.jpeg",
+   "size_bytes": "7706636",
+   "uploaded": "2025-02-04",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3356",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/6QD2LsWDWKwctrFtjBP5NFWI8eNdExAEqGlHBsGT.jpeg",
+   "size_bytes": "6492045",
+   "uploaded": "2025-05-19",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3391",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/bnGhHRW37kExkfxxqPRzoi5I6kLOqLf23A0LXY54.jpeg",
+   "size_bytes": "145896",
+   "uploaded": "2025-05-27",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3437",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/joZMUpJ0Z0ys2LiITSV4gZray6Ib1i5aGHh9Ytrw.jpeg",
+   "size_bytes": "4793513",
+   "uploaded": "2026-07-24",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3438",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/g1PliOj3ZheC0HL97vUfrLmk7yy1exAo1BBQaTMo.jpeg",
+   "size_bytes": "4486838",
+   "uploaded": "2026-07-24",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3441",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/fOBPYYoZNTZev009JrRaaQgo18m5EmWE3myYzMgC.jpeg",
+   "size_bytes": "3660079",
+   "uploaded": "2025-07-20",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3444",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/mY3MhqXGVrBTlCXzAiLJFgFh5YehIC6TGqYVk3ub.jpeg",
+   "size_bytes": "3808014",
+   "uploaded": "2025-07-20",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3445",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/FB4ksRnSJN5FIPw9rE9XPKVSjKidvKdyMeQRhmwM.jpeg",
+   "size_bytes": "3518068",
+   "uploaded": "2025-07-20",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3455",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/8R6pWhmN5BC8VAdSIpPHRhfHtqRIT6lEqs829vVR.jpeg",
+   "size_bytes": "349839",
+   "uploaded": "2026-04-29",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3460",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/bOkev5ygwUnIKhMN5Lukzwo8tvgsbUhvxNj4kwnL.jpeg",
+   "size_bytes": "5966294",
+   "uploaded": "2025-10-18",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3464",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/0pVilc2zDGjmYpeq3GCuxTvbe4xIFtLyUerSEpC0.jpeg",
+   "size_bytes": "3763540",
+   "uploaded": "2025-07-20",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3465",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/fCA7O7CsxyHuQklSSiOIIIooLE8PaSc0lCT1Sqn1.jpeg",
+   "size_bytes": "3771942",
+   "uploaded": "2025-08-04",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3469",
+   "species": "cat",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/UNL1fTYolsF5RxKbX4hZRXvQqd872yzOefBhu87P.jpeg",
+   "size_bytes": "7762045",
+   "uploaded": "2025-07-20",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3499",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/2EaxipzipFaxpVojXGu7itNIBR0ZfqZu4FUo6Z8g.jpeg",
+   "size_bytes": "2405932",
+   "uploaded": "2025-09-02",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3502",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/FLqdvK1xkhC7ZUG4utpbdXMxSmuNr9kERRPjo0fS.jpeg",
+   "size_bytes": "3818361",
+   "uploaded": "2025-09-02",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3516",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/nqtPLUjsiYcvDiEu0vaWFKrtEHsSr3jWb6AcNYcA.jpeg",
+   "size_bytes": "8061402",
+   "uploaded": "2025-09-22",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3546",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/YloYYcGWfWtMwv1yAok3LWzybKuuTRGwUm4t1y3p.jpeg",
+   "size_bytes": "206369",
+   "uploaded": "2026-06-26",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3548",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/T1mlv0EDkZC5M0bOR4pHf4s7RQlo2XnGORrZ0nfa.jpeg",
+   "size_bytes": "205047",
+   "uploaded": "2025-11-23",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3549",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/cIHYdYRWVMDqJzThrZfTH5qdd3D4AaNZPajden96.jpeg",
+   "size_bytes": "3069863",
+   "uploaded": "2025-10-22",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3550",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/Ctn5GMFF3OZHmutLqANVHlSaR9Vljo0RJHEtB6Iu.jpeg",
+   "size_bytes": "2694770",
+   "uploaded": "2025-10-22",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3565",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/rzFD7cYeT9nPv5eGX3crUPbYaQCGESOSIyCGXqHR.png",
+   "size_bytes": "233690",
+   "uploaded": "2026-08-17",
+   "mime": "image/png"
+  },
+  {
+   "code": "C3572",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/Ruv0kQHM05aefYhMCwP3TXMMRaCNeN8JxnNiX3Fy.jpeg",
+   "size_bytes": "3035295",
+   "uploaded": "2025-10-22",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3575",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/giZGIP5gtNKAbaM4qEpFIfoIyUJrp9AbmReFk8NF.jpeg",
+   "size_bytes": "1868216",
+   "uploaded": "2025-10-22",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3576",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/JS1R0MwWk90KsQFcQkDzRMBs9mKqGltpi5BgieME.jpeg",
+   "size_bytes": "1997302",
+   "uploaded": "2025-10-22",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3591",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/Cx8VzrL4KQO8EZV5xKRtlE4G8cADSLF1XuZnQfmy.jpeg",
+   "size_bytes": "5723567",
+   "uploaded": "2025-11-26",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3619",
+   "species": "cat",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/H12315vgIB4Cpt8bqDm5KECDzAElby1oxhLF0psI.png",
+   "size_bytes": "2058748",
+   "uploaded": "2025-11-26",
+   "mime": "image/png"
+  },
+  {
+   "code": "C3620",
+   "species": "cat",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/0YYQjdo9Ehz9B8Yrv4S3zeziepeWMP03XZZq7B19.png",
+   "size_bytes": "1564260",
+   "uploaded": "2025-11-26",
+   "mime": "image/png"
+  },
+  {
+   "code": "C3621",
+   "species": "cat",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/dQ4K9KxAyTr1lcIW9pUTAll3n2561lgu3HpYW46T.png",
+   "size_bytes": "1933599",
+   "uploaded": "2025-11-26",
+   "mime": "image/png"
+  },
+  {
+   "code": "C3635",
+   "species": "cat",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/cfyIpySQL9JLuSc2fln0o36Vmr2ZmzcbMIFCw9Gl.jpeg",
+   "size_bytes": "249425",
+   "uploaded": "2026-03-04",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3646",
+   "species": "cat",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/gMNcr9EYh2szI8Z0bwLUf5KXMVQ7OcddRid48GLG.jpeg",
+   "size_bytes": "546653",
+   "uploaded": "2026-01-27",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3673",
+   "species": "cat",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/3Jrbn9J3rIiVC9nZNfMK1WByuQQQxZi3GAkusMmC.jpeg",
+   "size_bytes": "509449",
+   "uploaded": "2026-03-24",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3674",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/68yYSTMKlW8HP7ovYY3UaqYu6rBvfdY0UacqpVga.jpeg",
+   "size_bytes": "116205",
+   "uploaded": "2026-06-21",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3675",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/pzbBULZMg2JbHqdfLyzNh5kfy2q9Zs0axHeeTlc4.jpeg",
+   "size_bytes": "325151",
+   "uploaded": "2026-03-24",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3678",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/DfWmlORU1xL3d0VYwAHYda0VF5waNOUwgsWGDoVZ.jpeg",
+   "size_bytes": "1634162",
+   "uploaded": "2026-03-25",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3685",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/hbQy3deOeGNj9cwzXUhbyQeTOFCjtzKpWPhjfjwF.jpeg",
+   "size_bytes": "142224",
+   "uploaded": "2026-05-12",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3686",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/ZfySKCFX6eP0RUxXA1nhgXokQ3g5GANAxZe8EniG.jpeg",
+   "size_bytes": "93115",
+   "uploaded": "2026-05-12",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3695",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/FWOJTAm8gg0y2rpM24Wp2R8hIuOUqFWhnBh45d9z.jpeg",
+   "size_bytes": "234480",
+   "uploaded": "2026-04-27",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3696",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/HP4QTEOloQ4lb1YS6oVgnCxcWLx9jLRhNcv30wm8.jpeg",
+   "size_bytes": "577517",
+   "uploaded": "2026-04-27",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3699",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/qG2C1t95NtCWuOsz6yeyp4mFUmxdm91zFHI99BGG.jpeg",
+   "size_bytes": "481402",
+   "uploaded": "2026-04-27",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3700",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/ROy5NMRovnaVqFgFcmVLUgWDLx76C4HXNDIAtdbV.jpeg",
+   "size_bytes": "261912",
+   "uploaded": "2026-04-28",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3705",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/gMyMPYRroYs5vQ9kS1nvnl3B0WiuJvDi58jprTR5.jpeg",
+   "size_bytes": "502308",
+   "uploaded": "2026-05-18",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3712",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/5JCj8EH7NmnSBlfWB1Cjk09kCeQZvnNoNMV0d5rk.jpeg",
+   "size_bytes": "328671",
+   "uploaded": "2026-05-26",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3716",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/5A9V81It3CVnODgGIEB6mWIi3PrYOtR3LCfpEnmh.jpeg",
+   "size_bytes": "233777",
+   "uploaded": "2026-06-06",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3718",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/nLmy3KkU8BesDxnmf61kvYYZgMLNim7AhESVf0jv.jpeg",
+   "size_bytes": "1736735",
+   "uploaded": "2026-06-21",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3721",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/tS6sWihn4suG3qT2oLiE9ceEAgME02H055iexE9P.jpeg",
+   "size_bytes": "1613171",
+   "uploaded": "2026-06-14",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3723",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/mn44CI5OS5OC8pVORLWyP4aHqrMohHeSBstmmmC5.jpeg",
+   "size_bytes": "1523141",
+   "uploaded": "2026-06-14",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3724",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/aFjfvzQPX4eA8OylzsfpZVF0j5Eyv4MDfqOLStjw.jpeg",
+   "size_bytes": "3867607",
+   "uploaded": "2026-06-14",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3726",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/alsqdHaDnTbrTAJBMBelqGgM3sFA8BFF6KHWfN6b.jpeg",
+   "size_bytes": "1021678",
+   "uploaded": "2026-06-14",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3734",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/Mz5lF1497rvQMhs6GJEo5uL9oQpT5ZZf9QdL3ow1.jpeg",
+   "size_bytes": "5022151",
+   "uploaded": "2026-06-18",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3739",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/Pz5KqSNznlUGGi8yYo5zZDKTmpTfI8F4kRqUikj4.jpeg",
+   "size_bytes": "569027",
+   "uploaded": "2026-06-21",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3754",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/NPrqsuY5yYM6Gz9AB6kDWWjG1giB9tjvKE7m9lo4.jpeg",
+   "size_bytes": "1671200",
+   "uploaded": "2026-07-09",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3761",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/ahBzluzrExQMgEnVnvrFr7u3zt2zjlXrqAXaei7R.jpeg",
+   "size_bytes": "3474269",
+   "uploaded": "2026-07-12",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3762",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/xyPgahiK9NQjIWE01HDSQKeoLrh8qNDW4lUeJCY6.jpeg",
+   "size_bytes": "1600045",
+   "uploaded": "2026-07-14",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3764",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/R0PXJZQqLHGFXNW8x2az03iqb5HtfXeMdITNZerR.jpeg",
+   "size_bytes": "1951815",
+   "uploaded": "2026-07-24",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3766",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/xM80JcCSYMO83trVy4b0MkRgZuYYiBYwoLRZg1fH.jpeg",
+   "size_bytes": "527248",
+   "uploaded": "2026-07-31",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3769",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/0quXPRYbCwKIvRbJJXXtPQnYkr5WNzDVR3KUxqS1.jpeg",
+   "size_bytes": "732812",
+   "uploaded": "2026-08-05",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3770",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/TIiPx2mQP13d95jjV7xwf2FwiEUX7SdnblfdglBx.jpeg",
+   "size_bytes": "807154",
+   "uploaded": "2026-08-05",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3773",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/aop9SJkwiXnvDD1kWQgzS380fLVwvWNrF6ogO6bK.jpeg",
+   "size_bytes": "2295638",
+   "uploaded": "2026-08-06",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3775",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/1tv8vhF9vdmIUN569uXJTb1zYhJRfeeXbA40j9Va.jpeg",
+   "size_bytes": "2422771",
+   "uploaded": "2026-08-06",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3776",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/Ovpy9DBh6Jtm5GY49ecwIphYVmb1Mc0Uc2Qh4lAW.jpeg",
+   "size_bytes": "4086114",
+   "uploaded": "2026-08-06",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3777",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/hblaETav8qQcC3eAvDa22fcmvv5ZaFkvxLKcVWx0.jpeg",
+   "size_bytes": "1768147",
+   "uploaded": "2026-08-06",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3778",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/fo8L5GDFSXZYMbBxRG35SfU7jxeLD4YOp2c3vzke.jpeg",
+   "size_bytes": "4981362",
+   "uploaded": "2026-08-06",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3779",
+   "species": "cat",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/Cc0fPrPzutmxFt7Zb4FVwiYkLMOXH5IWpEt26me2.jpeg",
+   "size_bytes": "3698946",
+   "uploaded": "2026-08-06",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3783",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/Q2iDbU8wwF2ZmWt3fs5edykCFPz4eF3MWAbp28Mi.jpeg",
+   "size_bytes": "2716059",
+   "uploaded": "2026-08-06",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3784",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/iNzToQE8toVohENCGTygzlVEYZoxn2Tu2Gn2bPQZ.jpeg",
+   "size_bytes": "2037896",
+   "uploaded": "2026-08-07",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3785",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/0LQhKA3CERpjqRxkTB4RhFvw3as4aQA8LViWRvnM.jpeg",
+   "size_bytes": "75572",
+   "uploaded": "2026-08-17",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3786",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/Rv0i7wzR5RKt4ieqYhjD323MvEdaxZ3xlvv6I1l2.jpeg",
+   "size_bytes": "116069",
+   "uploaded": "2026-08-17",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3787",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/XnMPg16SdinEgCkuOqbqaQekODUmHelssGbdWDER.jpeg",
+   "size_bytes": "3071708",
+   "uploaded": "2026-08-21",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3788",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/gYcxglsq1Bh49AA3KGFiFZ4CR28UHQrc49RyYIwH.jpeg",
+   "size_bytes": "1782915",
+   "uploaded": "2026-08-21",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3789",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/59cSeB5SGdSw0x1SjKjyN8fI0bD2duAYut43zikg.jpeg",
+   "size_bytes": "256306",
+   "uploaded": "2026-08-30",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3793",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/7YH32jdisWwgPmXyRQb4DCtDlX3K2QpvfDE3s44g.jpeg",
+   "size_bytes": "1794650",
+   "uploaded": "2026-09-04",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3794",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/ByJ1wtqufVyfDj0VGLuHHLWYLpEf6pgiPE4WS8Dx.jpeg",
+   "size_bytes": "2584537",
+   "uploaded": "2026-09-04",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3795",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/m1L6Z8jVvFmKUpylCy5crXEAMsRBhZbLIdJZ1tOC.jpeg",
+   "size_bytes": "2607825",
+   "uploaded": "2026-09-04",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3796",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/uKL206y2ZRDzM7M0c8yVqplRv1OBxoePtD8XZjd3.jpeg",
+   "size_bytes": "3756754",
+   "uploaded": "2026-09-04",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3797",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/OtRv67AOL9EI3urHhCWvNgIP9HIldsHUrBGvTZRq.jpeg",
+   "size_bytes": "4245613",
+   "uploaded": "2026-09-04",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3798",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/ax0bS9LnEoWCkeXtd2IvHw5Yxm9bt0DM0ywnywhW.jpeg",
+   "size_bytes": "4562087",
+   "uploaded": "2026-09-04",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3799",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/7BidsitsB3xPvkvb1lvt1G2Pgyk1rMyKsaq3MqEm.jpeg",
+   "size_bytes": "3436028",
+   "uploaded": "2026-09-04",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3800",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/VYGPp7MAKVoYqcutI5uwdVQzDSi0rs1nlbnQ5tVG.jpeg",
+   "size_bytes": "5059629",
+   "uploaded": "2026-09-04",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3801",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/SXOpGxx9h5v9o9BuIr0sMTvdKGNQ4TkiUWYFP8Su.jpeg",
+   "size_bytes": "5370072",
+   "uploaded": "2026-09-04",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3802",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/qz3Q4AMkwCFJOhwrIKnAmUkMLSo2II5JV0c49Bzv.jpeg",
+   "size_bytes": "4073398",
+   "uploaded": "2026-09-04",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3803",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/Ymblxj5r5LWAMcJSldf63jZSeT0tsgHlTqJKw5OR.jpeg",
+   "size_bytes": "2497905",
+   "uploaded": "2026-09-04",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3804",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/wshjtoP3AVwzF8ikKhjYsN9hm0KMhzn6mzroBouB.jpeg",
+   "size_bytes": "5148974",
+   "uploaded": "2026-09-04",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C3805",
+   "species": "cat",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/BF1BUlk3q5AsCU3A9kCwCgmvFm3UDWvAczfhEbG6.jpeg",
+   "size_bytes": "2440984",
+   "uploaded": "2026-09-04",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "C807",
+   "species": "cat",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/ERxm5I3JlwlPvnBmxRReJEmq3osZRFgtZZyD6Wv3.jpeg",
+   "size_bytes": "66701",
+   "uploaded": "2020-10-16",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1014",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/WVZaSEZNzNBasUd25Jt0Y1PnqiXW1xMJlYC56tkB.jpeg",
+   "size_bytes": "287570",
+   "uploaded": "2024-12-29",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1017",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/nHYEM19rSzgNhmMWwSojgJYh4Nrm7nz2SScZq0a9.png",
+   "size_bytes": "2816874",
+   "uploaded": "2024-09-03",
+   "mime": "image/png"
+  },
+  {
+   "code": "D1018",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/5iTtobofGdy4Fu1b3tI1LfWoLsRCDDnElKcA27Hg.png",
+   "size_bytes": "3500272",
+   "uploaded": "2024-09-03",
+   "mime": "image/png"
+  },
+  {
+   "code": "D1019",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/bXrdrqWjNnXKLTRnBcNFtVVMu1pKZZWNvtehqFfW.png",
+   "size_bytes": "3299223",
+   "uploaded": "2024-09-03",
+   "mime": "image/png"
+  },
+  {
+   "code": "D1020",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/TaOOy9gYzQLOOhDQFsSu99Wy9oz9jpLN3wWwJ1Lk.jpeg",
+   "size_bytes": "1627505",
+   "uploaded": "2025-05-27",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1021",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/TJULWZLTJRZIQTYR1DvCTCvu4mzkuWffBVyh1MIS.png",
+   "size_bytes": "3486524",
+   "uploaded": "2024-09-03",
+   "mime": "image/png"
+  },
+  {
+   "code": "D1026",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/HZBTfXfi8c1HLxK3oPCwzQduzoWnNiNg4Mad8OTV.png",
+   "size_bytes": "2814856",
+   "uploaded": "2024-09-03",
+   "mime": "image/png"
+  },
+  {
+   "code": "D1033",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/YbVwIV3Twqp9PJO9m5lYlZJee0tcIRgmnBEocXVR.png",
+   "size_bytes": "1826584",
+   "uploaded": "2024-12-30",
+   "mime": "image/png"
+  },
+  {
+   "code": "D1034",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/FD35zEtuuji6JRnuMi5rpj3RZYos2HNn8BvwBw9C.jpeg",
+   "size_bytes": "252471",
+   "uploaded": "2025-01-08",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1035",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/rkltwB4ihG5jgAHVYBeh6HfvArfAhUTuGQ21kOix.jpeg",
+   "size_bytes": "588325",
+   "uploaded": "2024-09-27",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1037",
+   "species": "dog",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/trYqxTCwm3uwcjvV0KOOrsM1N2E8lLEpUqxYkP90.jpeg",
+   "size_bytes": "1856417",
+   "uploaded": "2024-09-27",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1039",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/enNY8xNzW82JO8rrsu6WYkR8KSOSIqyOvPr5eD3J.jpeg",
+   "size_bytes": "1378042",
+   "uploaded": "2024-09-27",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1041",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/aKfDjbaHwdmP0vKuBMBn3r8smO1qBEutiXf0N2pP.jpeg",
+   "size_bytes": "1367339",
+   "uploaded": "2024-10-29",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1069",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/O8w7w4za88YXRCLFVSaNoC6djrBgmtZkKptwz0vs.jpeg",
+   "size_bytes": "268189",
+   "uploaded": "2024-12-19",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1080",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/TNMqTj5R4WUyQMSvlYveTztukMp0NuBAbTOqvNBS.jpeg",
+   "size_bytes": "213295",
+   "uploaded": "2024-12-29",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1082",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/2PEQMhngwXeyDAr2oEmxQ5NerF5HL6KPFw8SgJsA.jpeg",
+   "size_bytes": "418145",
+   "uploaded": "2024-12-29",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1091",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/0P8t6R42uK4wu8z4w9IdfbFJm6zNgu5sFMbW8NVf.png",
+   "size_bytes": "4321142",
+   "uploaded": "2025-03-25",
+   "mime": "image/png"
+  },
+  {
+   "code": "D1096",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/f5ijZVHbxX2XNnB4NoWCGhSRmapmlxqAWhsIIu6w.jpeg",
+   "size_bytes": "267684",
+   "uploaded": "2025-02-12",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1097",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/MMO2EgEWn8AbLcbwnJ9qwX99Hl1H0G6zPX4PLi8v.jpeg",
+   "size_bytes": "328835",
+   "uploaded": "2025-02-12",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1098",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/Vs4boOC6cpZ8zYxMsqYz8QdxsG6bBQXzpxrsQURe.png",
+   "size_bytes": "2174120",
+   "uploaded": "2025-02-12",
+   "mime": "image/png"
+  },
+  {
+   "code": "D1099",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/aMSgtKwDnCTHIawoNLSRvJZ9mRJUZZJJYKr885JM.png",
+   "size_bytes": "3917383",
+   "uploaded": "2025-02-12",
+   "mime": "image/png"
+  },
+  {
+   "code": "D1101",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/YH6NCTmzSMXE2vi8XQqoXzDTvLY92UJlLznnVA9i.jpeg",
+   "size_bytes": "281955",
+   "uploaded": "2025-02-12",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1102",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/QFbVM1ysyCAf9DxZLpFSKJHFuKzaQr0WlL9eDNwc.jpeg",
+   "size_bytes": "505779",
+   "uploaded": "2025-02-12",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1103",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/2Z5DUlh008OtUG6vbXi6sMK40qqRgkDJmx07kXjt.mp4",
+   "size_bytes": "985660",
+   "uploaded": "2025-02-12",
+   "mime": "video/mp4"
+  },
+  {
+   "code": "D1104",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/40y9mu6PASux8RBdyAqnghiPugKo0wOSJRuYkaHB.jpeg",
+   "size_bytes": "165708",
+   "uploaded": "2025-09-12",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1110",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/6wwiv5QfDZ6n3l8i3LjYEh4VC1twdUVgL7Sx72zk.jpeg",
+   "size_bytes": "332635",
+   "uploaded": "2025-02-23",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1125",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/8DkyikIAauOKWWlm6VpFMOn6SD8om2zYwGLhgOOd.jpeg",
+   "size_bytes": "257867",
+   "uploaded": "2025-03-25",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1129",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/GCovLSWn2js3slsqZ9l6mtvXLINMvIMvW4fQcOEr.jpeg",
+   "size_bytes": "383292",
+   "uploaded": "2026-01-03",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1133",
+   "species": "dog",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/hmCpXUmdovQmkPN4keJGLfK3MF83OJj35r9d4BlR.jpeg",
+   "size_bytes": "295757",
+   "uploaded": "2025-03-25",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1134",
+   "species": "dog",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/1wk4NkvmGmmOwh7KF1cYoDJv2jjxNlhvW8VE9wfa.jpeg",
+   "size_bytes": "259704",
+   "uploaded": "2025-03-25",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1153",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/cZiyjPZCU9rY8KNBP4SE3AVIA5cXMft90qyghfRY.jpeg",
+   "size_bytes": "508815",
+   "uploaded": "2025-07-04",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1158",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/WuSF0VLm7C1v0Pxik2Ix6soqf9wJuqVynvFwLcCG.jpeg",
+   "size_bytes": "148449",
+   "uploaded": "2025-06-06",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1159",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/7LwL6BxYX83kJBzVaqkGsP3jUBUsLtXgVeeO8Q2I.jpeg",
+   "size_bytes": "365585",
+   "uploaded": "2025-06-10",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1160",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/4N8v5eNpQGX5Rq51hfY7ucIZJWeaZfmQxEN2FIVP.jpeg",
+   "size_bytes": "640884",
+   "uploaded": "2025-06-11",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1161",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/U4UXEhjiAm9wrDuwdetQKnejkiiBuRZPyYTIxNzF.jpeg",
+   "size_bytes": "1102532",
+   "uploaded": "2025-06-10",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1163",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/WoQpLaPkoBmKGc5xBTAide2qgzrggExRIAwnXzs2.jpeg",
+   "size_bytes": "353695",
+   "uploaded": "2025-08-27",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1169",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/Mkwo5ZrTnE1abjjVXhrGwGgDvu80cqIfP1A8IIha.jpeg",
+   "size_bytes": "203306",
+   "uploaded": "2025-11-12",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1176",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/iHWOOTWI1F3rlgZKkep7Ol342etWtiT63SHffndD.jpeg",
+   "size_bytes": "249291",
+   "uploaded": "2025-09-12",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1193",
+   "species": "dog",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/QFiN4jo5zGI319idrhiHJgeTWIhCjA6zDxPP55gF.jpeg",
+   "size_bytes": "369221",
+   "uploaded": "2025-08-27",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1198",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/WxX9Hz6Zo0hawibY6kCzEdCKxUdM3hWPSZ2HSs4P.jpeg",
+   "size_bytes": "89683",
+   "uploaded": "2025-08-29",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1199",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/CDGMqhNd3kZTzeqL7ugNUMW5hTg4yrpLNvT8RxTs.jpeg",
+   "size_bytes": "280963",
+   "uploaded": "2025-08-29",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1200",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/IBuq3v3Ai9DLyP9GTobOYhP0IZcsJa3z4aPUdXZd.jpeg",
+   "size_bytes": "182503",
+   "uploaded": "2025-08-29",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1201",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/SclfE6KEt2JD87XD0LE5ycsH89FivCtgMsVboEUx.jpeg",
+   "size_bytes": "233981",
+   "uploaded": "2025-08-29",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1202",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/IdapLUYyiUL26pSVv7e2HJwO3MtvCAA8r99HAfYk.png",
+   "size_bytes": "2603356",
+   "uploaded": "2025-08-29",
+   "mime": "image/png"
+  },
+  {
+   "code": "D1203",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/hoe5xq93eNZQDsN5EtDk0XgbwAYN3VUwuxsxcZzs.png",
+   "size_bytes": "2949686",
+   "uploaded": "2025-08-29",
+   "mime": "image/png"
+  },
+  {
+   "code": "D1209",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/ucodes6RFPlyEWjX7Uz5dlix8xTVwv3TyvBjiJ9G.jpeg",
+   "size_bytes": "1832531",
+   "uploaded": "2025-09-14",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1210",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/SNvnqwnnkmQlHVaBE0EsZmERa2QVPCxC4dNXfAhh.jpeg",
+   "size_bytes": "211655",
+   "uploaded": "2025-09-15",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1223",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/yGq8qspgQ5lBf9dBsJWPUEpjN2ovHSxOiZs4sauq.jpeg",
+   "size_bytes": "245268",
+   "uploaded": "2025-10-13",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1230",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/Ldj46nWJ4EJHsaq0NhOUoH3h25tKycpRor2fLLBb.jpeg",
+   "size_bytes": "386349",
+   "uploaded": "2025-11-25",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1231",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/RIRMvjN2Hblj5LNCP6rlBP6yXVGqh0CF3J815efJ.jpeg",
+   "size_bytes": "392839",
+   "uploaded": "2025-11-25",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1238",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/yARQ3YiR8ijLRnDIEI4mBZ8IaO4A0ABm6ZvQZMAY.jpeg",
+   "size_bytes": "157524",
+   "uploaded": "2025-11-12",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1239",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/No85JyTocb1zrrx8qqVZcCIz4D7W2AY4iMfCrEqT.jpeg",
+   "size_bytes": "208440",
+   "uploaded": "2025-11-12",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1240",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/PRpWE5a5Q0NJMmL8NfwtoTK9tKemF01o7cqzfDS5.jpeg",
+   "size_bytes": "10361128",
+   "uploaded": "2025-11-12",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1243",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/lPtFfOuOOMhZOboyQPlS9A7foMn4rGUpojMZ13BA.jpeg",
+   "size_bytes": "126824",
+   "uploaded": "2025-11-21",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1247",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/TxxT8KmlANnabvOg2ci5Tw1TVNZ9TtGxH4PKzFuY.png",
+   "size_bytes": "2266093",
+   "uploaded": "2025-11-26",
+   "mime": "image/png"
+  },
+  {
+   "code": "D1250",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/55LP5tuFTl6iXJ0F5GlVPo3TT4cqBrsJYTAurqzt.jpeg",
+   "size_bytes": "223116",
+   "uploaded": "2026-03-26",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1253",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/NRxeynGw3kHv9BmJD8GJsK33L8dNe4c2A9erbAm0.jpeg",
+   "size_bytes": "1472470",
+   "uploaded": "2026-03-25",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1255",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/d8StW6lelSj1i27SiDBaGLp6QapsGjwCUyvxSk69.jpeg",
+   "size_bytes": "1470040",
+   "uploaded": "2026-03-25",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1260",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/HEC3GFbGmF4mctfj3Zjk1tvKGK9qZCTD0lpUmA4d.jpeg",
+   "size_bytes": "548591",
+   "uploaded": "2026-01-08",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1270",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/cOu84Xigwh5RYFWiLqPCCn6hN5G3t0WgLV0Nc2SE.jpeg",
+   "size_bytes": "301140",
+   "uploaded": "2025-12-20",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1271",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/8EhpWd4LVlwx9bBsC7FvAPz9GJygoPqp6fcVtmh1.jpeg",
+   "size_bytes": "299233",
+   "uploaded": "2026-04-21",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1273",
+   "species": "dog",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/si6LrMaFztK7XTEJYogf52RAcKkavWmzSYqtKVPx.jpeg",
+   "size_bytes": "255114",
+   "uploaded": "2025-12-20",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1274",
+   "species": "dog",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/MrUXIXTOsS2zaFcFjxPNPk5akhjAlQ41fRUt7WSg.jpeg",
+   "size_bytes": "257800",
+   "uploaded": "2025-12-20",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1275",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/m4SwD5Mmq9N8zLxjDqtOFwiuUH9o4WjBGubu0Qss.jpeg",
+   "size_bytes": "333800",
+   "uploaded": "2026-04-21",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1277",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/bui8OmkwspvPeG8pomSyIDItAFf3eEzK03diqZTO.jpeg",
+   "size_bytes": "684127",
+   "uploaded": "2026-01-20",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1285",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/hsLnpqQ8Fiyp1UadPmJ4Ed9u2K5utE0l4kRiAbzg.jpeg",
+   "size_bytes": "226142",
+   "uploaded": "2026-06-08",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1288",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/2NodlDQuVgFiaBNh9kIgCSYtsRVDnU3NhFHYh0TU.jpeg",
+   "size_bytes": "624186",
+   "uploaded": "2026-03-25",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1290",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/deSntHDIeHgB3ubnfUfoNkcPPAal66Af3qG45fjH.jpeg",
+   "size_bytes": "228508",
+   "uploaded": "2026-03-25",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1298",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/gU5NAn9MfinWZ3sC9y9eEDA6OfYYnQXiujOfvDwS.jpeg",
+   "size_bytes": "1015993",
+   "uploaded": "2026-04-21",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1302",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/f29OurD8ZUCMM2YZIq9AKW1kQsbjhk1mglYCoBLt.jpeg",
+   "size_bytes": "210746",
+   "uploaded": "2026-04-23",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1306",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/btk4DZmFSqYawS8BBBtpiO6FWiTFEM2z5SRH7tfX.jpeg",
+   "size_bytes": "518397",
+   "uploaded": "2026-04-27",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1312",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/LyD1vLoJqnLgnZygzCaJ6PMHPouSJNG7YWwqZZMh.jpeg",
+   "size_bytes": "1322464",
+   "uploaded": "2026-05-27",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1314",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/yeao7D63zmsmh39Eg5mEYQPYvLAFZ6HsIe035j3h.jpeg",
+   "size_bytes": "1076708",
+   "uploaded": "2026-06-18",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1316",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/whG0viNnjVMXKtFwwnLG4kiphE6rQb8QhiYoafVV.png",
+   "size_bytes": "4543650",
+   "uploaded": "2026-06-19",
+   "mime": "image/png"
+  },
+  {
+   "code": "D1317",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/Ijlo12qCOCe0bt3tba2vXQ6BzJEdOS59IJk47s33.jpeg",
+   "size_bytes": "422808",
+   "uploaded": "2026-07-31",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1318",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/8RZPEynwuu8PJcJSVEqe7rChG7JDZVyrIn9GMMQO.jpeg",
+   "size_bytes": "405804",
+   "uploaded": "2026-07-31",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1320",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/RQ7wfDBeADRqlaWXZmlUKslNdWMjdXXcYuP3XUNm.jpeg",
+   "size_bytes": "418399",
+   "uploaded": "2026-07-31",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1321",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/3oPF3lBmMVPayjgbLPicFIdU3n27BbBnEzJSC3Gw.jpeg",
+   "size_bytes": "206505",
+   "uploaded": "2026-07-22",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1323",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/PRzdk8Ll6HX5ulFpa3jyJg0OkyeqL0t1ktgPYeSR.jpeg",
+   "size_bytes": "152764",
+   "uploaded": "2026-07-22",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1324",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/9gMBcghAKyoDV4iUkQ1RGyk1tH4XPCSLQ8TzUeTM.jpeg",
+   "size_bytes": "350179",
+   "uploaded": "2026-07-22",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1327",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/RHeQTMVHh9Q7ObioLKlSuLX5qkUkarluRAkll5du.jpeg",
+   "size_bytes": "1878979",
+   "uploaded": "2026-08-10",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1328",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/2uSPeGuas44zFaxNWolqG4ZFov2vQ2aMnMMs9tmW.jpeg",
+   "size_bytes": "2126553",
+   "uploaded": "2026-08-10",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1329",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/gXHBN0O1Op0U5TFkOpFt3v0x2RG3OqrXh2dG7QAl.jpeg",
+   "size_bytes": "2567181",
+   "uploaded": "2026-08-10",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1330",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/f8n0GdS60SKfRU3Z9HCS6HFTZ1kzWOu0Fc3coxJE.jpeg",
+   "size_bytes": "2696575",
+   "uploaded": "2026-08-10",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1331",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/rPZOZxpxmtzdUbiusA0dyyK0wHkKcxficS6Cmq3j.jpeg",
+   "size_bytes": "3412051",
+   "uploaded": "2026-08-10",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1333",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/6Z7IF55T2JPoEUAPwyQ6TTuDLw2U78oTQL8PGput.jpeg",
+   "size_bytes": "282973",
+   "uploaded": "2026-08-10",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1334",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/RXiNPO2D6MoXYa4Txr5tnpDHyeokNjbRzcV6ML0Y.jpeg",
+   "size_bytes": "263393",
+   "uploaded": "2026-08-10",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1337",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/C63Q6OPv9CgKIzrLCdPTEPBZUNmwwMx4V1F929jd.jpeg",
+   "size_bytes": "1971168",
+   "uploaded": "2026-08-31",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1338",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/VIUCBcE3zdUwm7bJN5AWVLTwgAvZEwoolIdZvZdg.jpeg",
+   "size_bytes": "413454",
+   "uploaded": "2026-09-01",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D1339",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/35lLFgXHpCWtsKikJKWylUYYp338xz36AVL6hWV5.jpeg",
+   "size_bytes": "1790731",
+   "uploaded": "2026-09-03",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D436",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/5rWrloAXwNJQst3m21M8Hn433O2emElnP0UXvtR2.jpeg",
+   "size_bytes": "134564",
+   "uploaded": "2021-05-03",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D438",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/acegfaFcw6rTKkBzZM7p5f460U16MEZtCmgwN7HC.jpeg",
+   "size_bytes": "185566",
+   "uploaded": "2022-12-15",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D559",
+   "species": "dog",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/lnJzm42fvTUCqCB11TdWivsVahmWjMMRDpfRETTi.jpeg",
+   "size_bytes": "221970",
+   "uploaded": "2021-06-12",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D569",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/px7sCRD8icxAVwK2sDWW25JuCXnJa5XCIL0li4oc.jpeg",
+   "size_bytes": "264420",
+   "uploaded": "2025-03-17",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D587",
+   "species": "dog",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/BWZdcUsTlu9vh61JSFJP1F1M7AEq2tUcHioffu3f.jpeg",
+   "size_bytes": "143341",
+   "uploaded": "2021-08-02",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D645",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/HbUzZ0LYGLfEEbgfPQd3kyAVLSiqSS6L8ykuO8Yk.jpeg",
+   "size_bytes": "124551",
+   "uploaded": "2022-12-15",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D667",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/bmMBLz7rmW1jeDjPMxnTj5nI2wxqIQL56Z5So3A2.jpeg",
+   "size_bytes": "254000",
+   "uploaded": "2024-04-07",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D676",
+   "species": "dog",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/XIUKNf4ZZQJ5Zy66o25qVVA3N4sxv5XYhkdEjbKa.jpeg",
+   "size_bytes": "261179",
+   "uploaded": "2022-05-07",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D677",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/1Reek3ioZTH1nxFpethPohJLYVFNClJssTFFbMW2.jpeg",
+   "size_bytes": "1286257",
+   "uploaded": "2022-10-18",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D718",
+   "species": "dog",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/EsvKxqarg2iN0seZZaEabWCS9TUHukxhZ9p4KJsu.jpeg",
+   "size_bytes": "339525",
+   "uploaded": "2022-08-25",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D760",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/r3Gm8jKGaOcjgDUxhD9337dtRJqGSA5bwAIA9kLU.jpeg",
+   "size_bytes": "377973",
+   "uploaded": "2022-12-01",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D782",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/N14rr0psiQNPMArrKrqS8P7D1wGhlDsoAsisJCrY.jpeg",
+   "size_bytes": "66772",
+   "uploaded": "2023-02-19",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D791",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/GCZKVpLoZC8DJt34DnVJxJXWHV8Tm1zuiiNpPbp7.jpeg",
+   "size_bytes": "2160410",
+   "uploaded": "2024-09-27",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D814",
+   "species": "dog",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/suvrmtxTClUR5vIDhOuqS2cxSzZJowgLCrXaOBJ0.jpeg",
+   "size_bytes": "677003",
+   "uploaded": "2023-11-29",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D816",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/tDFgvqWcwJ3dv2rirHjBaGzYzLYh8lpbKlyWXusN.jpeg",
+   "size_bytes": "1000869",
+   "uploaded": "2023-08-01",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D834",
+   "species": "dog",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/SaabLoMLgvIMRWxrQnQ3geRVTEtQ0fFhUIGCU9Sy.jpeg",
+   "size_bytes": "101458",
+   "uploaded": "2023-07-04",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D836",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/5XJSNPzM65ThG31WZjjKoYkmSOgJmkcr52zAHzQT.jpeg",
+   "size_bytes": "544147",
+   "uploaded": "2026-04-21",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D842",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/BCT874qqoGNtAXFrQd9QQIqZaRyRpVVPJP3KU772.jpeg",
+   "size_bytes": "256942",
+   "uploaded": "2023-07-13",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D887",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/m8AiEAuIHeGQaDPkMyA3Kh2B6aV4lo4u5JJBgNka.jpeg",
+   "size_bytes": "340523",
+   "uploaded": "2025-03-18",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D910",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/w9NOvkpbWrZ9BUrz5jEBfIUPB0LT8yg92Vi8POhT.jpeg",
+   "size_bytes": "288032",
+   "uploaded": "2023-11-20",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D913",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/EiCQAdWztXb9QyaLeLPj5jcnh8lQP6wjZwdmRcVW.jpeg",
+   "size_bytes": "261500",
+   "uploaded": "2023-11-27",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D914",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/iMAc2TgR110ummw4vOVWmBg6JeCYOUrDt08vxL36.jpeg",
+   "size_bytes": "97042",
+   "uploaded": "2023-11-27",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D921",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": false,
+   "source_path": "animals/QXfy4k0gwmc8A8kS7uuhEXeeQOwp92eoTlQpRsec.png",
+   "size_bytes": "875789",
+   "uploaded": "2025-01-08",
+   "mime": "image/png"
+  },
+  {
+   "code": "D956",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/DJcWmb29Rc3ChQoiDqW2vRzDtmmr1ItWyhPOzgNd.png",
+   "size_bytes": "3896149",
+   "uploaded": "2024-09-06",
+   "mime": "image/png"
+  },
+  {
+   "code": "D959",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/dFNfAP9jonqwdYYAPoQJrb0S3QE3aflop9mwRXgo.png",
+   "size_bytes": "4405715",
+   "uploaded": "2024-09-06",
+   "mime": "image/png"
+  },
+  {
+   "code": "D966",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/1Inyaemt4xaRaTLbBWPHFjoz1L8vug4sgVKvp3ma.jpeg",
+   "size_bytes": "245379",
+   "uploaded": "2026-01-03",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D967",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/fpoHcU28a0kyH91l4KkNXN10DDlPM1J8rA3qXzgR.jpeg",
+   "size_bytes": "582306",
+   "uploaded": "2024-04-05",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D968",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/vYQHPvWbCCUDn2PpByNw67Z7MrXJsROVhHzhAXyW.jpeg",
+   "size_bytes": "471128",
+   "uploaded": "2024-04-05",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D969",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/Tl54vDv0JiSN86YhUkWeRqpKhcJmXcWq8ncdiSj8.jpeg",
+   "size_bytes": "527374",
+   "uploaded": "2024-04-05",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D970",
+   "species": "dog",
+   "adoptable": false,
+   "support_pool": true,
+   "source_path": "animals/zF4G0gUyIzE8FXWpN67AYQGYJPL4S42VD4f24SBK.jpeg",
+   "size_bytes": "251667",
+   "uploaded": "2024-04-05",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D975",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/lAlV8RhiBf9jBgVqHi3FwUUdIyq9PRmFmAP3NKR6.jpeg",
+   "size_bytes": "238702",
+   "uploaded": "2025-02-12",
+   "mime": "image/jpeg"
+  },
+  {
+   "code": "D995",
+   "species": "dog",
+   "adoptable": true,
+   "support_pool": true,
+   "source_path": "animals/XlnTELRTNv9geyz25B3TU8rIwm9OPLkjmelm1sBX.jpeg",
+   "size_bytes": "303502",
+   "uploaded": "2024-06-28",
+   "mime": "image/jpeg"
+  }
+ ]
+}
