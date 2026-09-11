@@ -32,6 +32,8 @@ type FakeState = {
   messageRows: Record<string, unknown>[];
   pledgeRows: Record<string, unknown>[];
   auditRows: Record<string, unknown>[];
+  /** Simulate donation_delivery_job being absent from the database. */
+  deliveryEmbedFails: boolean;
 };
 
 class FakeQuery {
@@ -42,8 +44,16 @@ class FakeQuery {
     private readonly table: string,
   ) {}
 
-  select(_columns: string) {
+  private selected = "";
+
+  select(columns: string) {
+    this.selected = columns;
     return this;
+  }
+
+  /** True when this query asked PostgREST to embed the delivery-job relation. */
+  private embedsDeliveryJob() {
+    return this.selected.includes("donation_delivery_job");
   }
 
   eq(column: string, value: unknown) {
@@ -104,10 +114,20 @@ class FakeQuery {
     onfulfilled?: ((value: unknown) => T1 | PromiseLike<T1>) | null,
     onrejected?: ((reason: unknown) => T2 | PromiseLike<T2>) | null,
   ) {
-    return Promise.resolve({ data: this.filteredRows(), error: null }).then(
-      onfulfilled,
-      onrejected,
-    );
+    // Simulates PostgREST rejecting an embed whose relation does not exist,
+    // while the same table reads fine without it.
+    const result =
+      this.state.deliveryEmbedFails && this.embedsDeliveryJob()
+        ? {
+            data: null,
+            error: {
+              code: "PGRST200",
+              message:
+                "Could not find a relationship between 'donation' and 'donation_delivery_job'",
+            },
+          }
+        : { data: this.filteredRows(), error: null };
+    return Promise.resolve(result).then(onfulfilled, onrejected);
   }
 }
 
@@ -122,6 +142,7 @@ function createFakeClient(overrides: Partial<FakeState> = {}) {
     messageRows: [],
     pledgeRows: [],
     auditRows: [],
+    deliveryEmbedFails: false,
     ...overrides,
   };
 
@@ -324,4 +345,75 @@ test("supporter detail retains a persisted delivery job for retry after page ref
   });
   const detail = await createSupabaseCrmRepository(client).getSupporterDetail(supporterId);
   expect(detail?.donations[0].deliveryJob).toEqual({ id: "job-1", status: "attention_required" });
+});
+
+describe("supporter detail resilience", () => {
+  const donationId = "22222222-3333-4333-8444-555555555555";
+  const donationRow = {
+    id: donationId,
+    supporter_id: supporterId,
+    amount_cents: 12345,
+    currency: "HKD",
+    purpose: "general",
+    status: "succeeded",
+    method: "fps",
+    receipt_requested: true,
+    created_at: "2026-06-15T00:00:00.000Z",
+  };
+
+  test("keeps the supporter record when the delivery-job relation is missing", async () => {
+    // donation_delivery_job is created by migration 20260905155357, which the
+    // repository's recorded production preflight shows as applied:false. With
+    // the table absent PostgREST rejects the embed, and that rejection used to
+    // propagate as the donation query's error -- so a missing *extension* took
+    // the entire supporter master record down with it.
+    const { client } = createFakeClient({
+      donationRows: [donationRow],
+      deliveryEmbedFails: true,
+    });
+    const repo = createSupabaseCrmRepository(client);
+
+    const detail = await repo.getSupporterDetail(supporterId);
+
+    expect(detail).not.toBeNull();
+    expect(detail?.donations).toHaveLength(1);
+    expect(detail?.donations[0]?.id).toBe(donationId);
+    // The extension is reported as absent, not as a delivery job that exists
+    // and happens to be in some default state.
+    expect(detail?.donations[0]?.deliveryJob ?? null).toBeNull();
+    // Dollars and cents survive the fallback path unchanged.
+    expect(detail?.donations[0]?.amountCents).toBe(12345);
+  });
+
+  test("still reports a genuine donation-read failure", async () => {
+    // The fallback must not become a blanket catch: if the donation table
+    // itself cannot be read, that is a real failure and must reach the caller
+    // rather than being presented as an empty donation history.
+    const { client } = createFakeClient({ donationRows: [donationRow] });
+    const broken = {
+      ...(client as unknown as Record<string, unknown>),
+      from(table: string) {
+        if (table !== "donation") {
+          return (client as unknown as { from: (t: string) => unknown }).from(table);
+        }
+        const failing = {
+          select: () => failing,
+          eq: () => failing,
+          in: () => failing,
+          order: () => failing,
+          then: (onfulfilled: (value: unknown) => unknown) =>
+            Promise.resolve({
+              data: null,
+              error: { code: "42501", message: "permission denied for table donation" },
+            }).then(onfulfilled),
+        };
+        return failing;
+      },
+    } as unknown as SupabaseClient;
+    const repo = createSupabaseCrmRepository(broken);
+
+    await expect(repo.getSupporterDetail(supporterId)).rejects.toMatchObject({
+      message: "permission denied for table donation",
+    });
+  });
 });
