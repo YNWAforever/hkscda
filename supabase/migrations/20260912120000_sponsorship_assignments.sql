@@ -93,3 +93,176 @@ revoke all on public.sponsorship_payment_allocation from anon;
 comment on table public.sponsorship_assignment is
   'A confirmed supporter-animal relationship for a span of time. Carries no amount: '
   'the pledge''s monthly commitment is not divided per animal.';
+
+-- Confirms one animal for a pledge.
+--
+-- The caller decides WHICH animal (src/lib/sponsorshipAdmin/autoAssign.ts);
+-- this re-checks that the choice is still valid and refuses otherwise, so a
+-- stale plan or a hand-built call cannot confirm a relationship against an
+-- animal that has been adopted, has died, or has been withdrawn from the
+-- programme. Same defence-in-depth as the allocation planner and its triggers.
+create or replace function public.assign_sponsorship_animal_with_audit(
+  p_pledge_id uuid,
+  p_animal_id uuid,
+  p_actor_user_id uuid,
+  p_note text
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $fn$
+declare
+  v_actor_admin_id uuid;
+  v_pledge public.sponsorship_pledge%rowtype;
+  v_animal public.animals%rowtype;
+  v_deceased_at date;
+  v_assignment_id uuid;
+begin
+  select id into v_actor_admin_id
+  from public.admin_user
+  where auth_user_id = p_actor_user_id
+    and status = 'active'
+    and role in ('staff', 'admin');
+  if v_actor_admin_id is null then
+    raise exception 'Actor % is not an active staff/admin user', p_actor_user_id
+      using errcode = '42501';
+  end if;
+
+  select * into v_pledge
+  from public.sponsorship_pledge
+  where id = p_pledge_id
+  for update;
+  if not found then
+    raise exception 'Sponsorship pledge not found';
+  end if;
+
+  if v_pledge.status = 'cancelled' then
+    raise exception 'Sponsorship pledge is already cancelled';
+  end if;
+
+  select * into v_animal from public.animals where id = p_animal_id;
+  if not found then
+    raise exception 'Animal not found';
+  end if;
+
+  -- Death is recorded on a different table by a different form; animals.status
+  -- has no 'deceased' value. A missing profile row means nothing was recorded,
+  -- not that the animal died, so this must not become an inner join.
+  select deceased_at into v_deceased_at
+  from public.animal_profile_internal
+  where animal_id = p_animal_id;
+
+  if not v_animal.sponsorship_eligible
+     or v_animal.status = 'adopted'
+     or v_animal.retired_at is not null
+     or v_animal.publication_state <> 'published'
+     or v_deceased_at is not null then
+    raise exception 'Animal % cannot be sponsored', p_animal_id;
+  end if;
+
+  insert into public.sponsorship_assignment (
+    pledge_id, animal_id, animal_name_snapshot, note, created_by
+  ) values (
+    p_pledge_id, p_animal_id, v_animal.name, p_note, v_actor_admin_id
+  )
+  returning id into v_assignment_id;
+
+  insert into public.audit_log (actor_user_id, action, entity, entity_id, detail)
+  values (
+    p_actor_user_id,
+    'sponsorship_pledge.animal_assigned',
+    'sponsorship_pledge',
+    p_pledge_id::text,
+    jsonb_build_object(
+      'assignmentId', v_assignment_id,
+      'animalId', p_animal_id,
+      'animalName', v_animal.name,
+      'note', p_note
+    )
+  );
+
+  return v_assignment_id;
+end;
+$fn$;
+
+revoke all on function public.assign_sponsorship_animal_with_audit(uuid, uuid, uuid, text) from public;
+revoke all on function public.assign_sponsorship_animal_with_audit(uuid, uuid, uuid, text) from anon;
+revoke all on function public.assign_sponsorship_animal_with_audit(uuid, uuid, uuid, text) from authenticated;
+grant execute on function public.assign_sponsorship_animal_with_audit(uuid, uuid, uuid, text) to service_role;
+
+-- Ends one assignment. Always a staff decision: there is deliberately no
+-- trigger that ends assignments when an animal leaves, because the money keeps
+-- arriving and a person must decide what happens to it. A derived query
+-- surfaces the ones that need that conversation.
+create or replace function public.end_sponsorship_assignment_with_audit(
+  p_assignment_id uuid,
+  p_actor_user_id uuid,
+  p_reason text,
+  p_note text
+)
+returns void
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $fn$
+declare
+  v_actor_admin_id uuid;
+  v_assignment public.sponsorship_assignment%rowtype;
+begin
+  select id into v_actor_admin_id
+  from public.admin_user
+  where auth_user_id = p_actor_user_id
+    and status = 'active'
+    and role in ('staff', 'admin');
+  if v_actor_admin_id is null then
+    raise exception 'Actor % is not an active staff/admin user', p_actor_user_id
+      using errcode = '42501';
+  end if;
+
+  if p_reason is null or p_reason not in (
+    'adopted', 'deceased', 'ineligible', 'retired',
+    'supporter_request', 'transferred', 'other'
+  ) then
+    raise exception 'Invalid end reason %', p_reason;
+  end if;
+
+  select * into v_assignment
+  from public.sponsorship_assignment
+  where id = p_assignment_id
+  for update;
+  if not found then
+    raise exception 'Sponsorship assignment not found';
+  end if;
+
+  if v_assignment.ended_on is not null then
+    raise exception 'Sponsorship assignment is already ended';
+  end if;
+
+  update public.sponsorship_assignment
+  set ended_on = current_date,
+      end_reason = p_reason,
+      ended_by = v_actor_admin_id,
+      note = coalesce(p_note, note)
+  where id = p_assignment_id;
+
+  insert into public.audit_log (actor_user_id, action, entity, entity_id, detail)
+  values (
+    p_actor_user_id,
+    'sponsorship_pledge.animal_assignment_ended',
+    'sponsorship_pledge',
+    v_assignment.pledge_id::text,
+    jsonb_build_object(
+      'assignmentId', p_assignment_id,
+      'animalId', v_assignment.animal_id,
+      'reason', p_reason,
+      'note', p_note
+    )
+  );
+end;
+$fn$;
+
+revoke all on function public.end_sponsorship_assignment_with_audit(uuid, uuid, text, text) from public;
+revoke all on function public.end_sponsorship_assignment_with_audit(uuid, uuid, text, text) from anon;
+revoke all on function public.end_sponsorship_assignment_with_audit(uuid, uuid, text, text) from authenticated;
+grant execute on function public.end_sponsorship_assignment_with_audit(uuid, uuid, text, text) to service_role;
