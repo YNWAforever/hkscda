@@ -3,6 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { selectReviewTargetProof } from "./proofReview";
 
 import type {
+  AssignmentEndReason,
   CancelPledgeInput,
   PaymentProofRecord,
   PledgeAnimalPreference,
@@ -336,10 +337,28 @@ export type SponsorshipAdminRepository = {
       actorUserId: string;
       /** Months this payment pays for. Empty for a rejection. */
       allocations?: Array<{ periodMonth: string; amountCents: number }>;
+      /** The animal to confirm on a first approval, or null. */
+      assignAnimalId?: string | null;
     },
   ): Promise<void>;
   cancelPledge(input: CancelPledgeInput & { pledgeId: string; actorUserId: string }): Promise<void>;
   allocateProof(input: AllocateProofInput): Promise<AllocateProofResult>;
+  assignAnimal(input: AssignAnimalRepoInput): Promise<{ id: string }>;
+  endAssignment(input: EndAssignmentRepoInput): Promise<void>;
+};
+
+export type AssignAnimalRepoInput = {
+  pledgeId: string;
+  animalId: string;
+  actorUserId: string;
+  note: string | null;
+};
+
+export type EndAssignmentRepoInput = {
+  assignmentId: string;
+  actorUserId: string;
+  reason: AssignmentEndReason;
+  note: string | null;
 };
 
 export type AllocateProofInput = {
@@ -543,6 +562,7 @@ export function createSupabaseSponsorshipAdminRepository(
         p_actor_user_id: input.actorUserId,
         p_note: input.note ?? null,
         p_allocations: input.allocations ?? [],
+        p_assign_animal_id: input.assignAnimalId ?? null,
       });
       if (error) throw error;
     },
@@ -566,6 +586,27 @@ export function createSupabaseSponsorshipAdminRepository(
       const { error } = await client.rpc("cancel_sponsorship_pledge", {
         p_pledge_id: input.pledgeId,
         p_actor_user_id: input.actorUserId,
+        p_note: input.note ?? null,
+      });
+      if (error) throw error;
+    },
+
+    async assignAnimal(input) {
+      const { data, error } = await client.rpc("assign_sponsorship_animal_with_audit", {
+        p_pledge_id: input.pledgeId,
+        p_animal_id: input.animalId,
+        p_actor_user_id: input.actorUserId,
+        p_note: input.note ?? null,
+      });
+      if (error) throw error;
+      return { id: data as string };
+    },
+
+    async endAssignment(input) {
+      const { error } = await client.rpc("end_sponsorship_assignment_with_audit", {
+        p_assignment_id: input.assignmentId,
+        p_actor_user_id: input.actorUserId,
+        p_reason: input.reason,
         p_note: input.note ?? null,
       });
       if (error) throw error;

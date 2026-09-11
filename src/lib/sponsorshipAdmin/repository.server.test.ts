@@ -350,9 +350,51 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
       p_decision: "approve",
       p_actor_user_id: actorUserId,
       p_note: "Looks good",
-      // The months this payment pays for ride along with the decision so the
-      // approval and the attribution commit in one transaction.
       p_allocations: [],
+      // The animal to confirm rides along with the decision, so approving,
+      // attributing and confirming all commit in one transaction.
+      p_assign_animal_id: null,
+    });
+  });
+
+  test("assignAnimal calls the audited RPC with mapped params", async () => {
+    const { client, state } = createFakeClient({ rpcResult: "asg-1" });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const result = await repo.assignAnimal({
+      pledgeId,
+      animalId: "animal-1",
+      actorUserId,
+      note: "Supporter asked for this cat",
+    });
+
+    const call = state.calls.find((c) => c.fn === "assign_sponsorship_animal_with_audit");
+    expect(call?.payload).toEqual({
+      p_pledge_id: pledgeId,
+      p_animal_id: "animal-1",
+      p_actor_user_id: actorUserId,
+      p_note: "Supporter asked for this cat",
+    });
+    expect(result).toEqual({ id: "asg-1" });
+  });
+
+  test("endAssignment calls the audited RPC with mapped params", async () => {
+    const { client, state } = createFakeClient();
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    await repo.endAssignment({
+      assignmentId: "asg-1",
+      actorUserId,
+      reason: "adopted",
+      note: null,
+    });
+
+    const call = state.calls.find((c) => c.fn === "end_sponsorship_assignment_with_audit");
+    expect(call?.payload).toEqual({
+      p_assignment_id: "asg-1",
+      p_actor_user_id: actorUserId,
+      p_reason: "adopted",
+      p_note: null,
     });
   });
 
