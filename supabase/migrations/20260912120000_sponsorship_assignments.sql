@@ -273,3 +273,189 @@ revoke all on function public.end_sponsorship_assignment_with_audit(uuid, uuid, 
 revoke all on function public.end_sponsorship_assignment_with_audit(uuid, uuid, text, text) from anon;
 revoke all on function public.end_sponsorship_assignment_with_audit(uuid, uuid, text, text) from authenticated;
 grant execute on function public.end_sponsorship_assignment_with_audit(uuid, uuid, text, text) to service_role;
+
+-- Approving a payment now also confirms the supporter's animal, in the same
+-- transaction that approves and allocates it.
+--
+-- Three changes from the 20260911190000 definition, and nothing else:
+--   1. a sixth parameter, p_assign_animal_id, defaulted so existing calls work;
+--   2. v_actor_admin_id is resolved ONCE, before the allocation branch -- it
+--      was previously resolved inside it, so it was NULL on the common
+--      first-approval path where no allocations are passed;
+--   3. an auto-assign step, which runs only when the pledge has no assignment
+--      rows at all.
+--
+-- The drop is unavoidable: Postgres cannot disambiguate a five-argument call
+-- between the old function and a defaulted six-argument one, so both cannot
+-- coexist.
+drop function if exists public.review_sponsorship_payment_proof(uuid, text, uuid, text, jsonb);
+
+create or replace function public.review_sponsorship_payment_proof(
+  p_pledge_id uuid,
+  p_decision text,
+  p_actor_user_id uuid,
+  p_note text,
+  p_allocations jsonb default '[]'::jsonb,
+  p_assign_animal_id uuid default null
+)
+returns void
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $fn$
+declare
+  v_pledge public.sponsorship_pledge%rowtype;
+  v_proof public.sponsorship_payment_proof%rowtype;
+  v_new_pledge_status text;
+  v_new_review_status text;
+  v_actor_admin_id uuid;
+  v_allocation jsonb := null;
+  v_assignment_id uuid := null;
+begin
+  if not exists (
+    select 1
+    from public.admin_user
+    where auth_user_id = p_actor_user_id
+      and status = 'active'
+      and role in ('staff', 'admin')
+  ) then
+    raise exception 'Actor % is not an active staff/admin user', p_actor_user_id
+      using errcode = '42501';
+  end if;
+
+  if p_decision not in ('approve', 'reject') then
+    raise exception 'Invalid review decision %', p_decision;
+  end if;
+
+  select *
+  into v_pledge
+  from public.sponsorship_pledge
+  where id = p_pledge_id
+  for update;
+
+  if not found then
+    raise exception 'Sponsorship pledge not found';
+  end if;
+
+  -- Deliberately no pledge-status gate here. The thing being reviewed is the
+  -- proof, and the check that it is pending (below) is the real precondition.
+  -- Requiring status='provisional' conflated the supporter's commitment with the
+  -- review queue -- exactly what the plan says not to do -- and made a second
+  -- month's payment unreviewable.
+
+  -- The OLDEST proof still awaiting review, not the newest row overall.
+  --
+  -- Asking "is the newest proof pending?" worked only while a pledge could
+  -- hold one proof. Now that a running sponsorship accumulates one per month,
+  -- that question strands rows: an older pending proof can never become the
+  -- newest again, so no future review would ever reach it and a recorded
+  -- payment would sit unreviewed with no way to act on it. Two pending proofs
+  -- are reachable in ordinary use precisely because recording a payment on an
+  -- active pledge now leaves it active, so a second can be recorded while a
+  -- first is still queued.
+  --
+  -- `created_at` alone is not a total order -- two proofs written in one
+  -- transaction share now() -- so `id` breaks the tie deterministically. The
+  -- matching rule in application code is src/lib/sponsorshipAdmin/proofReview.ts
+  -- (`selectReviewTargetProof`); the two must agree, or staff approve one
+  -- payment while looking at another document.
+  select *
+  into v_proof
+  from public.sponsorship_payment_proof
+  where pledge_id = p_pledge_id
+    and review_status = 'pending'
+  order by created_at asc, id asc
+  limit 1
+  for update;
+
+  if not found then
+    raise exception 'Sponsorship pledge has no proof pending review';
+  end if;
+
+  if p_decision = 'approve' then
+    v_new_review_status := 'approved';
+    v_new_pledge_status := 'active';
+  else
+    v_new_review_status := 'rejected';
+    -- 'needs_followup' is reachable from both directions and still permits a
+    -- corrected proof, so a rejected month flags staff follow-up without
+    -- cancelling a sponsorship whose earlier months were paid.
+    v_new_pledge_status := 'needs_followup';
+  end if;
+
+  update public.sponsorship_payment_proof
+  set
+    review_status = v_new_review_status,
+    reviewed_by = (select id from public.admin_user where auth_user_id = p_actor_user_id),
+    reviewed_at = now(),
+    review_note = p_note
+  where id = v_proof.id;
+
+  update public.sponsorship_pledge
+  set status = v_new_pledge_status
+  where id = p_pledge_id;
+
+  -- CHANGE 2: resolve the actor's admin id once, unconditionally. The
+  -- 20260911190000 definition resolved it inside the allocation branch below,
+  -- so it was null on the common first-approval path, where no allocations are
+  -- passed. Everything after this point can now rely on it.
+  select id into v_actor_admin_id
+  from public.admin_user
+  where auth_user_id = p_actor_user_id;
+
+  -- Attribute the verified payment to months in the SAME transaction that
+  -- approves it. Two transactions would leave a window in which money is
+  -- approved but attributed to no month, and a crash inside that window would
+  -- make it permanent; section 3.1 puts financial consistency in the database
+  -- transaction. If any allocation violates an invariant, the approval rolls
+  -- back with it and the caller retries -- nothing is half-applied.
+  --
+  -- A rejected proof allocates nothing: money that was refused was never
+  -- received.
+  if p_decision = 'approve' and p_allocations is not null
+     and jsonb_array_length(p_allocations) > 0 then
+    v_allocation := private.apply_sponsorship_allocations(
+      v_proof.id, v_actor_admin_id, p_allocations
+    );
+  end if;
+
+  -- CHANGE 3: confirm the supporter's animal on the FIRST approval only.
+  -- "First" means the pledge has never had an assignment -- not that it has
+  -- none open now. A supporter whose animal was adopted, and whose assignment
+  -- staff ended, must be given a new animal by a person rather than silently
+  -- by the next payment.
+  if p_decision = 'approve' and p_assign_animal_id is not null
+     and not exists (
+       select 1 from public.sponsorship_assignment where pledge_id = p_pledge_id
+     ) then
+    v_assignment_id := public.assign_sponsorship_animal_with_audit(
+      p_pledge_id, p_assign_animal_id, p_actor_user_id, null
+    );
+  end if;
+
+  insert into public.audit_log (
+    actor_user_id,
+    action,
+    entity,
+    entity_id,
+    detail
+  ) values (
+    p_actor_user_id,
+    'sponsorship_pledge.proof_reviewed',
+    'sponsorship_pledge',
+    p_pledge_id::text,
+    jsonb_build_object(
+      'proofId', v_proof.id,
+      'decision', p_decision,
+      'note', p_note,
+      'allocation', v_allocation,
+      'assignmentId', v_assignment_id
+    )
+  );
+end;
+$fn$;
+
+revoke all on function public.review_sponsorship_payment_proof(uuid, text, uuid, text, jsonb, uuid) from public;
+revoke all on function public.review_sponsorship_payment_proof(uuid, text, uuid, text, jsonb, uuid) from anon;
+revoke all on function public.review_sponsorship_payment_proof(uuid, text, uuid, text, jsonb, uuid) from authenticated;
+grant execute on function public.review_sponsorship_payment_proof(uuid, text, uuid, text, jsonb, uuid) to service_role;

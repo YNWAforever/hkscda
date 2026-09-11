@@ -987,6 +987,9 @@ describe("supabase migration safety", () => {
     const signatures = {
       assign_sponsorship_animal_with_audit: "(uuid, uuid, uuid, text)",
       end_sponsorship_assignment_with_audit: "(uuid, uuid, text, text)",
+      // Redefined here to take p_assign_animal_id, so this migration -- not the
+      // ledger one -- now owns its grants.
+      review_sponsorship_payment_proof: "(uuid, text, uuid, text, jsonb, uuid)",
     } as const;
 
     for (const [fn, args] of Object.entries(signatures)) {
@@ -996,18 +999,20 @@ describe("supabase migration safety", () => {
       expect(sql).toContain(`grant execute on function public.${fn}${args} to service_role;`);
     }
 
-    // Both are security definer with the house search_path pinned.
-    expect((sql.match(/security definer/g) ?? []).length).toBe(2);
-    expect((sql.match(/set search_path = public, pg_temp/g) ?? []).length).toBe(2);
+    // All three are security definer with the house search_path pinned.
+    expect((sql.match(/security definer/g) ?? []).length).toBe(3);
+    expect((sql.match(/set search_path = public, pg_temp/g) ?? []).length).toBe(3);
 
     const guards = sql.match(
       /from public\.admin_user\s*\n\s*where auth_user_id = p_actor_user_id\s*\n\s*and status = 'active'\s*\n\s*and role in \('staff', 'admin'\)/g,
     );
-    expect(guards).toHaveLength(2);
+    expect(guards).toHaveLength(3);
 
-    // Both RPCs write exactly one audit_log row inside the same function body
+    // Each RPC writes exactly one audit_log row inside the same function body
     // as the data mutation (atomic — never a second, separately-failable call).
-    expect((sql.match(/insert into public\.audit_log/g) ?? []).length).toBe(2);
+    // The review RPC's own auto-assign step reuses assign_..._with_audit rather
+    // than writing an assignment row itself, so it still writes only its own.
+    expect((sql.match(/insert into public\.audit_log/g) ?? []).length).toBe(3);
 
     // Ending an assignment must not overwrite the note explaining why that
     // animal was confirmed for that supporter. The end reason gets its own
