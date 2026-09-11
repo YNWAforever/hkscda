@@ -88,3 +88,27 @@ remains blocked pending that decision.
 A newly created animal starts as `draft` rather than going live the instant it
 is saved. Existing rows were untouched — the column default made them
 `published`, which is what they already effectively were.
+
+## Browser gates after the change
+
+Rebuilt and re-run against the CI Supabase fixture (`scripts/ci/supabase-fixture.mjs`):
+
+```
+bun run verify:brand  -> 26 routes across 5 viewports, exit 0
+bun run verify:a11y   -> 26 routes, exit 0
+```
+
+The public site was also checked against the isolated stack with a real record,
+confirming the narrowed RLS policy did not hide anything: the seeded animal
+still appears once in `/animals/cat` and once in `/sponsors`, with its name and
+personality, and `C3761` on the detail page.
+
+### A third false signal worth recording
+
+Running `verify:brand` against the **local Supabase stack** (rather than the CI
+fixture) fails on `/help` with a 500, plus "Could not load stories" and "Could
+not load adoption information". That is not a defect: the brand verifier is
+written to run against the fixture, which serves canned responses for those
+endpoints, and a freshly reset local stack contains none of that content. The
+same run passes cleanly against the fixture. Diagnose this by checking which
+backend the preview process was given before suspecting the page.
