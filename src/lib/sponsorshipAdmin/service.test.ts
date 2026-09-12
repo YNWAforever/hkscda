@@ -69,6 +69,9 @@ function baseDetail(overrides: Partial<PledgeDetail> = {}): PledgeDetail {
     preferences: [],
     proofHistory: [],
     currentProof: null,
+    periods: [],
+    assignments: [],
+    needsAnimal: false,
     recentAuditLog: [],
     ...overrides,
   };
@@ -82,6 +85,8 @@ function createFakeRepo(overrides: Partial<Repo> = {}): Repo {
     recordPayment: mock(async () => ({ id: "proof-1" })),
     reviewProof: mock(async () => {}),
     cancelPledge: mock(async () => {}),
+    assignAnimal: mock(async () => ({ id: "asg-1" })),
+    endAssignment: mock(async () => {}),
     ...overrides,
   } as Repo;
 }
@@ -98,6 +103,15 @@ function createFakeSender() {
 }
 
 describe("createSponsorshipAdminService", () => {
+  const eligibleState = {
+    sponsorshipEligible: true,
+    status: "available" as const,
+    retiredAt: null,
+    publicationState: "published" as const,
+    deceasedAt: null,
+    adoptedAt: null,
+  };
+
   test("listPledges parses search input and delegates to the repository", async () => {
     const repo = createFakeRepo();
     const service = createSponsorshipAdminService({
@@ -125,6 +139,298 @@ describe("createSponsorshipAdminService", () => {
     });
 
     expect(await service.getPledgeDetail(pledgeId)).toBeNull();
+  });
+
+  test("getPledgeDetail flags an open assignment whose animal has left", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({
+          status: "active",
+          assignments: [
+            {
+              id: "asg-1",
+              animalId: "animal-1",
+              animalNameSnapshot: "小白",
+              startedOn: "2026-07-01",
+              endedOn: null,
+              endReason: null,
+              note: null,
+              endNote: null,
+              animalState: { ...eligibleState, status: "adopted" },
+              reviewReason: null,
+            },
+          ],
+          preferences: [
+            {
+              id: "pref-1",
+              rank: 1,
+              animalId: "animal-1",
+              animalNameSnapshot: "小白",
+              animalState: { ...eligibleState, status: "adopted" },
+            },
+          ],
+        }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    const detail = await service.getPledgeDetail(pledgeId);
+
+    // Flagging is not ending. The money keeps arriving and the assignment
+    // stays open; a person decides what to do about it.
+    expect(detail?.assignments[0].reviewReason).toBe("adopted");
+  });
+
+  test("getPledgeDetail flags an open assignment whose animal was adopted on its internal profile", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({
+          status: "active",
+          assignments: [
+            {
+              id: "asg-1",
+              animalId: "animal-1",
+              animalNameSnapshot: "小白",
+              startedOn: "2026-07-01",
+              endedOn: null,
+              endReason: null,
+              note: null,
+              endNote: null,
+              // The internal-profile adoption path: the adoptions
+              // internal-profile form writes animal_profile_internal.adopted_at
+              // and NEVER writes animals.status, so a real adopted animal
+              // reaches here still reading status: "available".
+              animalState: { ...eligibleState, status: "available", adoptedAt: "2026-08-01" },
+              reviewReason: null,
+            },
+          ],
+          preferences: [],
+        }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    const detail = await service.getPledgeDetail(pledgeId);
+
+    // Reading only animals.status left this animal unflagged while the
+    // supporter kept paying for an animal that had gone home.
+    expect(detail?.assignments[0].reviewReason).toBe("adopted");
+  });
+
+  test("getPledgeDetail keeps deceased ahead of an internal-profile adoption", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({
+          status: "active",
+          assignments: [
+            {
+              id: "asg-1",
+              animalId: "animal-1",
+              animalNameSnapshot: "小白",
+              startedOn: "2026-07-01",
+              endedOn: null,
+              endReason: null,
+              note: null,
+              endNote: null,
+              animalState: {
+                ...eligibleState,
+                adoptedAt: "2026-08-01",
+                deceasedAt: "2026-08-02",
+              },
+              reviewReason: null,
+            },
+          ],
+          preferences: [],
+        }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    const detail = await service.getPledgeDetail(pledgeId);
+
+    // Precedence is unchanged: death is the reason a person must lead with.
+    expect(detail?.assignments[0].reviewReason).toBe("deceased");
+  });
+
+  test("getPledgeDetail does not flag an assignment whose animal is fine", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({
+          status: "active",
+          assignments: [
+            {
+              id: "asg-1",
+              animalId: "animal-1",
+              animalNameSnapshot: "小白",
+              startedOn: "2026-07-01",
+              endedOn: null,
+              endReason: null,
+              note: null,
+              endNote: null,
+              animalState: eligibleState,
+              reviewReason: null,
+            },
+          ],
+          preferences: [
+            {
+              id: "pref-1",
+              rank: 1,
+              animalId: "animal-1",
+              animalNameSnapshot: "小白",
+              animalState: eligibleState,
+            },
+          ],
+        }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    const detail = await service.getPledgeDetail(pledgeId);
+
+    expect(detail?.assignments[0].reviewReason).toBeNull();
+  });
+
+  test("getPledgeDetail flags an assignment for an animal that was never shortlisted", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({
+          status: "active",
+          // A pledge can hold several concurrent assignments. Only the FIRST is
+          // auto-confirmed from the shortlist; every animal a staff member adds
+          // by hand afterwards is absent from `preferences` by definition.
+          preferences: [],
+          assignments: [
+            {
+              id: "asg-hand-added",
+              animalId: "animal-hand-added",
+              animalNameSnapshot: "阿花",
+              startedOn: "2026-08-01",
+              endedOn: null,
+              endReason: null,
+              note: "added by staff",
+              endNote: null,
+              animalState: { ...eligibleState, status: "adopted" },
+              reviewReason: null,
+            },
+          ],
+        }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    const detail = await service.getPledgeDetail(pledgeId);
+
+    // Deriving the flag from the supporter's ranked preferences could never
+    // flag this animal: it is on no shortlist, so the lookup missed and the
+    // reason came back null. Nobody would be told the animal had been adopted
+    // while the supporter kept paying.
+    expect(detail?.assignments[0].reviewReason).toBe("adopted");
+  });
+
+  test("getPledgeDetail reports a running sponsorship that backs no animal", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({
+          status: "active",
+          assignments: [
+            {
+              id: "asg-1",
+              animalId: "animal-1",
+              animalNameSnapshot: "小白",
+              startedOn: "2026-07-01",
+              endedOn: "2026-08-01",
+              endReason: "adopted",
+              note: null,
+              endNote: null,
+              animalState: null,
+              reviewReason: null,
+            },
+          ],
+        }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    const detail = await service.getPledgeDetail(pledgeId);
+
+    // The animal was adopted and staff ended the assignment, but the pledge
+    // keeps taking payments — so somebody must talk to the supporter.
+    expect(detail?.needsAnimal).toBe(true);
+  });
+
+  test("getPledgeDetail does not report needsAnimal for a cancelled pledge", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () => baseDetail({ status: "cancelled", assignments: [] })),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    const detail = await service.getPledgeDetail(pledgeId);
+
+    // A cancelled sponsorship takes no more payments, so there is nothing to
+    // resolve — flagging it would only add noise to the staff queue.
+    expect(detail?.needsAnimal).toBe(false);
+  });
+
+  test("getPledgeDetail does not report needsAnimal for a pledge with no payment yet", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () => baseDetail({ status: "pending_payment", assignments: [] })),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    const detail = await service.getPledgeDetail(pledgeId);
+
+    // Nothing has been paid yet, so having no animal is simply what a
+    // brand-new pledge looks like — not something staff need to resolve.
+    expect(detail?.needsAnimal).toBe(false);
+  });
+
+  test("getPledgeDetail reports needsAnimal for an active pledge with no assignment at all", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () => baseDetail({ status: "active", assignments: [] })),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    const detail = await service.getPledgeDetail(pledgeId);
+
+    // Auto-assign found nothing eligible: the supporter is paying and has no
+    // animal at all — the most urgent case for this signal.
+    expect(detail?.needsAnimal).toBe(true);
   });
 
   test("getProofSigningInfo returns a signed url and file name when a proof exists", async () => {
@@ -195,9 +501,27 @@ describe("createSponsorshipAdminService", () => {
     expect(await service.assertRecordPaymentEligible(pledgeId)).toEqual(detail);
   });
 
-  test("assertRecordPaymentEligible rejects when the pledge is not eligible", async () => {
+  test("assertRecordPaymentEligible accepts an active pledge (the second month)", async () => {
+    // A running sponsorship is exactly where month two's payment is recorded.
+    // This used to throw, which is what made the second month impossible.
     const repo = createFakeRepo({
       getPledgeDetail: mock(async () => baseDetail({ status: "active" })),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    const detail = await service.assertRecordPaymentEligible(pledgeId);
+    expect(detail.status).toBe("active");
+  });
+
+  test("assertRecordPaymentEligible rejects when the pledge is not eligible", async () => {
+    // `cancelled` is the real ineligible case: no file should reach the bucket
+    // for a sponsorship that has been ended.
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () => baseDetail({ status: "cancelled" })),
     });
     const service = createSponsorshipAdminService({
       repo,
@@ -223,9 +547,11 @@ describe("createSponsorshipAdminService", () => {
     );
   });
 
-  test("recordPayment rejects when the pledge is not pending_payment or needs_followup", async () => {
+  test("recordPayment rejects a pledge whose status is not eligible", async () => {
+    // Eligible is pending_payment, needs_followup or active; `cancelled` is
+    // not, and must not quietly accept money for an ended sponsorship.
     const repo = createFakeRepo({
-      getPledgeDetail: mock(async () => baseDetail({ status: "active" })),
+      getPledgeDetail: mock(async () => baseDetail({ status: "cancelled" })),
     });
     const service = createSponsorshipAdminService({
       repo,
@@ -319,9 +645,136 @@ describe("createSponsorshipAdminService", () => {
     expect(call[1].reference).toMatch(/^SP-[0-9A-F]{8}$/);
   });
 
-  test("reviewProof rejects when the pledge is not provisional", async () => {
+  test("reviewProof reviews an active pledge's queued proof (the second month)", async () => {
+    // The status gate this replaces required 'provisional'. Approving month one
+    // leaves the pledge 'active' permanently, so that gate made every later
+    // month unreviewable: the payment could be recorded but never decided.
+    // What is being reviewed is a proof, so a queued proof is the precondition.
     const repo = createFakeRepo({
-      getPledgeDetail: mock(async () => baseDetail({ status: "active" })),
+      getPledgeDetail: mock(async () =>
+        baseDetail({ status: "active", currentProof: pendingProof({ id: "proof-month-2" }) }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await service.reviewProof({ actorUserId, pledgeId, input: { decision: "approve" } });
+    expect(repo.reviewProof).toHaveBeenCalledTimes(1);
+  });
+
+  test("reviewProof attributes a second month's payment to the second month", async () => {
+    // July is settled, so August's payment must open August rather than
+    // double-crediting a month that is already paid.
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({
+          status: "active",
+          currentProof: pendingProof({
+            id: "proof-month-2",
+            amountCents: 30000,
+            paymentDate: "2026-08-03",
+          }),
+          periods: [
+            {
+              id: "per-jul",
+              periodMonth: "2026-07-01",
+              committedCents: 30000,
+              allocatedCents: 30000,
+              outstandingCents: 0,
+              allocations: [],
+            },
+          ],
+        }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await service.reviewProof({ actorUserId, pledgeId, input: { decision: "approve" } });
+
+    expect(repo.reviewProof).toHaveBeenCalledWith(
+      expect.objectContaining({
+        allocations: [{ periodMonth: "2026-08-01", amountCents: 30000 }],
+      }),
+    );
+  });
+
+  test("reviewProof settles an outstanding month before opening a later one", async () => {
+    // A top-up. July is HK$100 short; the payment must close July first rather
+    // than run ahead to August and leave July permanently outstanding.
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({
+          status: "active",
+          currentProof: pendingProof({ amountCents: 15000, paymentDate: "2026-07-20" }),
+          periods: [
+            {
+              id: "per-jul",
+              periodMonth: "2026-07-01",
+              committedCents: 30000,
+              allocatedCents: 20000,
+              outstandingCents: 10000,
+              allocations: [],
+            },
+          ],
+        }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await service.reviewProof({ actorUserId, pledgeId, input: { decision: "approve" } });
+
+    expect(repo.reviewProof).toHaveBeenCalledWith(
+      expect.objectContaining({
+        allocations: [
+          { periodMonth: "2026-07-01", amountCents: 10000 },
+          { periodMonth: "2026-08-01", amountCents: 5000 },
+        ],
+      }),
+    );
+  });
+
+  test("reviewProof attributes nothing when the payment is rejected", async () => {
+    // Money that was refused was never received, so it pays for no month.
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({ status: "provisional", currentProof: pendingProof() }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await service.reviewProof({ actorUserId, pledgeId, input: { decision: "reject" } });
+
+    expect(repo.reviewProof).toHaveBeenCalledWith(
+      expect.objectContaining({ decision: "reject", allocations: [] }),
+    );
+  });
+
+  test("reviewProof refuses to approve a payment it cannot fully attribute", async () => {
+    // An implausible amount -- almost certainly a mistyped figure. Approving it
+    // would leave part of a supporter's money belonging to no month at all, so
+    // the approval is refused rather than the remainder absorbed.
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({
+          status: "provisional",
+          currentProof: pendingProof({ amountCents: 30000 * 40 }),
+        }),
+      ),
     });
     const service = createSponsorshipAdminService({
       repo,
@@ -331,7 +784,26 @@ describe("createSponsorshipAdminService", () => {
 
     await expect(
       service.reviewProof({ actorUserId, pledgeId, input: { decision: "approve" } }),
-    ).rejects.toThrow("Sponsorship pledge is not awaiting review");
+    ).rejects.toThrow("could not be attributed to a month");
+    expect(repo.reviewProof).not.toHaveBeenCalled();
+  });
+
+  test("reviewProof rejects an active pledge with nothing awaiting review", async () => {
+    // Between months: the sponsorship is running and every proof is decided.
+    // Widening the status gate must not turn review into an always-available
+    // action, or staff get buttons the database refuses.
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () => baseDetail({ status: "active", currentProof: null })),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await expect(
+      service.reviewProof({ actorUserId, pledgeId, input: { decision: "approve" } }),
+    ).rejects.toThrow("Sponsorship pledge has no proof pending review");
     expect(repo.reviewProof).not.toHaveBeenCalled();
   });
 
@@ -392,6 +864,10 @@ describe("createSponsorshipAdminService", () => {
       actorUserId,
       decision: "approve",
       note: null,
+      // A first payment opens the month it was paid in.
+      allocations: [{ periodMonth: "2026-07-01", amountCents: 30000 }],
+      // No preferences on the base pledge, so there is nothing to confirm.
+      assignAnimalId: null,
     });
     const call = sender.calls[0] as [unknown, { event: string; reference: string }];
     expect(call[1].event).toBe("active");
@@ -422,6 +898,125 @@ describe("createSponsorshipAdminService", () => {
     expect(call[1].event).toBe("needs_followup");
     expect(call[1].reference).toBe(pledgeReference(pledgeId));
     expect(call[1].reference).not.toBe(pledgeId);
+  });
+
+  test("approving the first payment confirms the top-ranked eligible animal", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({
+          status: "provisional",
+          currentProof: pendingProof(),
+          preferences: [
+            {
+              id: "pref-1",
+              rank: 1,
+              animalId: "animal-adopted",
+              animalNameSnapshot: "小黑",
+              animalState: { ...eligibleState, status: "adopted" },
+            },
+            {
+              id: "pref-2",
+              rank: 2,
+              animalId: "animal-ok",
+              animalNameSnapshot: "小白",
+              animalState: eligibleState,
+            },
+          ],
+        }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await service.reviewProof({ actorUserId, pledgeId, input: { decision: "approve" } });
+
+    // Rank 1 has been adopted, so the supporter's next choice wins. Skipping
+    // straight past an unavailable first choice is the whole point of ranking.
+    expect(repo.reviewProof).toHaveBeenCalledWith(
+      expect.objectContaining({ assignAnimalId: "animal-ok" }),
+    );
+  });
+
+  test("approving assigns nothing when the pledge already has an assignment", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({
+          status: "active",
+          currentProof: pendingProof(),
+          preferences: [
+            {
+              id: "pref-1",
+              rank: 1,
+              animalId: "animal-ok",
+              animalNameSnapshot: "小白",
+              animalState: eligibleState,
+            },
+          ],
+          assignments: [
+            {
+              id: "asg-1",
+              animalId: "animal-ok",
+              animalNameSnapshot: "小白",
+              startedOn: "2026-07-01",
+              endedOn: null,
+              endReason: null,
+              note: null,
+              endNote: null,
+              animalState: eligibleState,
+              reviewReason: null,
+            },
+          ],
+        }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await service.reviewProof({ actorUserId, pledgeId, input: { decision: "approve" } });
+
+    // Month two of a running sponsorship. Auto-assign belongs to the FIRST
+    // approval only; every later payment must leave the animal alone.
+    expect(repo.reviewProof).toHaveBeenCalledWith(
+      expect.objectContaining({ assignAnimalId: null }),
+    );
+  });
+
+  test("rejecting a payment confirms no animal", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({
+          status: "provisional",
+          currentProof: pendingProof(),
+          preferences: [
+            {
+              id: "pref-1",
+              rank: 1,
+              animalId: "animal-ok",
+              animalNameSnapshot: "小白",
+              animalState: eligibleState,
+            },
+          ],
+        }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await service.reviewProof({ actorUserId, pledgeId, input: { decision: "reject" } });
+
+    // A rejected payment pays for nothing, so it confirms nothing.
+    expect(repo.reviewProof).toHaveBeenCalledWith(
+      expect.objectContaining({ assignAnimalId: null }),
+    );
   });
 
   test("cancelPledge rejects an already-cancelled pledge", async () => {
@@ -503,5 +1098,127 @@ describe("createSponsorshipAdminService", () => {
       service.cancelPledge({ actorUserId, pledgeId, input: {} }),
     ).resolves.toBeUndefined();
     expect(repo.cancelPledge).toHaveBeenCalled();
+  });
+
+  test("assignAnimal passes the animal through to the repository", async () => {
+    const repo = createFakeRepo();
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await service.assignAnimal({
+      actorUserId,
+      pledgeId,
+      input: { animalId: "11111111-2222-4333-8444-555555555555" },
+    });
+
+    expect(repo.assignAnimal).toHaveBeenCalledWith({
+      pledgeId,
+      animalId: "11111111-2222-4333-8444-555555555555",
+      actorUserId,
+      note: null,
+    });
+  });
+
+  test("assignAnimal refuses a cancelled pledge before touching the database", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () => baseDetail({ status: "cancelled" })),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await expect(
+      service.assignAnimal({
+        actorUserId,
+        pledgeId,
+        input: { animalId: "11111111-2222-4333-8444-555555555555" },
+      }),
+    ).rejects.toThrow("Sponsorship pledge is already cancelled");
+    expect(repo.assignAnimal).not.toHaveBeenCalled();
+  });
+
+  test("endAssignment passes the reason through", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({
+          assignments: [
+            {
+              id: "asg-1",
+              animalId: "animal-1",
+              animalNameSnapshot: "小白",
+              startedOn: "2026-07-01",
+              endedOn: null,
+              endReason: null,
+              note: null,
+              endNote: null,
+              animalState: null,
+              reviewReason: null,
+            },
+          ],
+        }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await service.endAssignment({
+      actorUserId,
+      pledgeId,
+      assignmentId: "asg-1",
+      input: { reason: "adopted", note: "rehomed" },
+    });
+
+    expect(repo.endAssignment).toHaveBeenCalledWith({
+      assignmentId: "asg-1",
+      actorUserId,
+      reason: "adopted",
+      note: "rehomed",
+    });
+  });
+
+  test("endAssignment refuses one that is already ended", async () => {
+    const repo = createFakeRepo({
+      getPledgeDetail: mock(async () =>
+        baseDetail({
+          assignments: [
+            {
+              id: "asg-1",
+              animalId: "animal-1",
+              animalNameSnapshot: "小白",
+              startedOn: "2026-07-01",
+              endedOn: "2026-08-01",
+              endReason: "adopted",
+              note: null,
+              endNote: null,
+              animalState: null,
+              reviewReason: null,
+            },
+          ],
+        }),
+      ),
+    });
+    const service = createSponsorshipAdminService({
+      repo,
+      client: fakeClient,
+      sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
+    });
+
+    await expect(
+      service.endAssignment({
+        actorUserId,
+        pledgeId,
+        assignmentId: "asg-1",
+        input: { reason: "adopted" },
+      }),
+    ).rejects.toThrow("Sponsorship assignment is already ended");
+    expect(repo.endAssignment).not.toHaveBeenCalled();
   });
 });

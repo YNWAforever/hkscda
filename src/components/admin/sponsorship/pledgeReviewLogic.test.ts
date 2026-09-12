@@ -90,16 +90,40 @@ const ALL_STATUSES: PledgeStatus[] = [
 ];
 
 describe("canRecordPayment", () => {
-  test("is true only for pending_payment and needs_followup", () => {
+  test("is true for pending_payment, provisional-free running pledges, and needs_followup", () => {
+    // `active` is included because a sponsorship is monthly: month two is
+    // recorded against a pledge that is already running. `provisional` is
+    // excluded so the queued proof gets decided first, and `cancelled` because
+    // an ended sponsorship takes no further payments.
     const allowed = ALL_STATUSES.filter(canRecordPayment);
-    expect(allowed).toEqual(["pending_payment", "needs_followup"]);
+    expect(allowed).toEqual(["pending_payment", "active", "needs_followup"]);
   });
 });
 
 describe("canReviewProof", () => {
-  test("is true only for provisional", () => {
-    const allowed = ALL_STATUSES.filter(canReviewProof);
-    expect(allowed).toEqual(["provisional"]);
+  test("is false when no proof is awaiting review", () => {
+    // Between months every proof is decided, so there is nothing to approve or
+    // reject and the form must stay hidden.
+    expect(canReviewProof([])).toBe(false);
+    expect(
+      canReviewProof([
+        { id: "p1", createdAt: "2026-07-01T00:00:00.000Z", reviewStatus: "approved" },
+        { id: "p2", createdAt: "2026-08-01T00:00:00.000Z", reviewStatus: "rejected" },
+      ]),
+    ).toBe(false);
+  });
+
+  test("is true when a proof is queued, whatever the pledge's status", () => {
+    // The rule it replaces asked the pledge's status and required
+    // 'provisional'. Approving month one leaves the pledge 'active' for good,
+    // so that test hid the review form for every later month — the control
+    // that clears the queue was unreachable exactly when it was needed.
+    expect(
+      canReviewProof([
+        { id: "p1", createdAt: "2026-07-01T00:00:00.000Z", reviewStatus: "approved" },
+        { id: "p2", createdAt: "2026-08-01T00:00:00.000Z", reviewStatus: "pending" },
+      ]),
+    ).toBe(true);
   });
 });
 

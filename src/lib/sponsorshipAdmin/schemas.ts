@@ -55,6 +55,24 @@ export const cancelPledgeSchema = z.object({
   note: optionalTrimmed,
 });
 
+export const assignAnimalSchema = z.object({
+  animalId: z.string().uuid(),
+  note: optionalTrimmed,
+});
+
+export const endAssignmentSchema = z.object({
+  reason: z.enum([
+    "adopted",
+    "deceased",
+    "ineligible",
+    "retired",
+    "supporter_request",
+    "transferred",
+    "other",
+  ]),
+  note: optionalTrimmed,
+});
+
 /**
  * The roles allowed to review pledges. Must stay in lockstep with the
  * `sponsorshipReview` access area in src/lib/admin/access.ts — a later

@@ -37,16 +37,33 @@ export function requiredUuid(params: HandlerContext["params"], key: string) {
   return value;
 }
 
-const notFoundDomainErrors = new Set(["Sponsorship pledge not found"]);
+const notFoundDomainErrors = new Set([
+  "Sponsorship pledge not found",
+  "Sponsorship assignment not found",
+  "Animal not found",
+]);
 
 const conflictDomainErrors = new Set([
   "Sponsorship pledge is not eligible for a recorded payment",
   "Sponsorship pledge is not awaiting review",
   "Sponsorship pledge has no proof pending review",
   "Sponsorship pledge is already cancelled",
+  "Sponsorship assignment is already ended",
 ]);
 
-const forbiddenDomainErrors = new Set(["Actor is not authorized to review sponsorship pledges"]);
+// The database raises "Actor <uuid> is not an active staff/admin user", so an
+// exact-match set could never fire. Matched on the stable prefix instead.
+function isForbiddenDomainError(message: string) {
+  return message.startsWith("Actor ") && message.includes("is not an active staff/admin user");
+}
+
+// "Animal <uuid> cannot be sponsored" interpolates an id, so it cannot live in
+// an exact-match set. This fires when the animal was adopted, died or left the
+// programme between staff loading the page and confirming -- a race that
+// resolves itself on retry, so it is a conflict, not a server fault.
+function isAnimalConflictError(message: string) {
+  return message.startsWith("Animal ") && message.endsWith("cannot be sponsored");
+}
 
 export async function responseError(error: Response) {
   const status = error.status;
@@ -75,10 +92,10 @@ export function domainError(error: Error) {
   if (notFoundDomainErrors.has(error.message)) {
     return jsonResponse({ error: error.message }, { status: 404 });
   }
-  if (conflictDomainErrors.has(error.message)) {
+  if (conflictDomainErrors.has(error.message) || isAnimalConflictError(error.message)) {
     return jsonResponse({ error: error.message }, { status: 409 });
   }
-  if (forbiddenDomainErrors.has(error.message)) {
+  if (isForbiddenDomainError(error.message)) {
     return jsonResponse({ error: error.message }, { status: 403 });
   }
   return null;
@@ -162,6 +179,34 @@ export function createSponsorshipAdminHandlers({
         await service.cancelPledge({
           actorUserId: admin.authUserId,
           pledgeId,
+          input: await jsonBody(request),
+        });
+        return jsonResponse({ ok: true });
+      });
+    },
+
+    assignAnimal({ request, params }: HandlerContext) {
+      return withErrors(async () => {
+        const pledgeId = requiredUuid(params, "id");
+        const admin = await requireCoordinator(request);
+        const result = await service.assignAnimal({
+          actorUserId: admin.authUserId,
+          pledgeId,
+          input: await jsonBody(request),
+        });
+        return jsonResponse(result, { status: 201 });
+      });
+    },
+
+    endAssignment({ request, params }: HandlerContext) {
+      return withErrors(async () => {
+        const pledgeId = requiredUuid(params, "id");
+        const assignmentId = requiredUuid(params, "assignmentId");
+        const admin = await requireCoordinator(request);
+        await service.endAssignment({
+          actorUserId: admin.authUserId,
+          pledgeId,
+          assignmentId,
           input: await jsonBody(request),
         });
         return jsonResponse({ ok: true });

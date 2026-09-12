@@ -3,6 +3,8 @@ import { describe, expect, mock, test } from "bun:test";
 import { createSponsorshipAdminHandlers } from "./http.server";
 
 const pledgeId = "11111111-2222-4333-8444-555555555555";
+const assignmentId = "66666666-7777-4888-8999-aaaaaaaaaaaa";
+const animalId = "11111111-2222-4333-8444-555555555555";
 const admin = {
   id: "admin-1",
   authUserId: "auth-1",
@@ -18,6 +20,8 @@ function createService(overrides: Record<string, unknown> = {}) {
     getProofSigningInfo: mock(async () => null),
     reviewProof: mock(async () => {}),
     cancelPledge: mock(async () => {}),
+    assignAnimal: mock(async () => ({ id: assignmentId })),
+    endAssignment: mock(async () => {}),
     ...overrides,
   };
 }
@@ -173,10 +177,13 @@ describe("createSponsorshipAdminHandlers", () => {
     expect(body.error).toBe("Sponsorship pledge has no proof pending review");
   });
 
+  // The message is raised verbatim by the RPCs with the actor uuid interpolated
+  // in, so it is asserted here exactly as the database produces it.
   test("reviewProof maps the normalized 42501 forbidden domain error to 403", async () => {
+    const actorMessage = `Actor ${admin.authUserId} is not an active staff/admin user`;
     const service = createService({
       reviewProof: mock(async () => {
-        throw new Error("Actor is not authorized to review sponsorship pledges");
+        throw new Error(actorMessage);
       }),
     });
     const handlers = createSponsorshipAdminHandlers({
@@ -193,7 +200,7 @@ describe("createSponsorshipAdminHandlers", () => {
     });
     expect(response.status).toBe(403);
     const body = await response.json();
-    expect(body.error).toBe("Actor is not authorized to review sponsorship pledges");
+    expect(body.error).toBe(actorMessage);
   });
 
   test("cancelPledge returns 200 ok on success", async () => {
@@ -248,6 +255,154 @@ describe("createSponsorshipAdminHandlers", () => {
     expect(response.status).toBe(404);
     const body = await response.json();
     expect(body.error).toBe("Sponsorship pledge not found");
+  });
+
+  test("assignAnimal returns 201 with the created assignment", async () => {
+    const service = createService();
+    const handlers = createSponsorshipAdminHandlers({
+      requireCoordinator: requireCoordinator(),
+      service: service as never,
+    });
+
+    const response = await handlers.assignAnimal({
+      request: request("http://localhost/x", {
+        method: "POST",
+        body: JSON.stringify({ animalId }),
+      }),
+      params: { id: pledgeId },
+    });
+    expect(response.status).toBe(201);
+    const body = await response.json();
+    expect(body.id).toBe(assignmentId);
+  });
+
+  // The RPC interpolates the animal id into this message, so it cannot be
+  // matched by an exact-match set. Staff hit it when the animal was adopted or
+  // died between loading the page and confirming -- a retryable race, so it has
+  // to surface as 409 rather than the generic 500 fallback.
+  test("assignAnimal maps the interpolated animal-ineligible error to 409", async () => {
+    const message = `Animal ${animalId} cannot be sponsored`;
+    const service = createService({
+      assignAnimal: mock(async () => {
+        throw new Error(message);
+      }),
+    });
+    const handlers = createSponsorshipAdminHandlers({
+      requireCoordinator: requireCoordinator(),
+      service: service as never,
+    });
+
+    const response = await handlers.assignAnimal({
+      request: request("http://localhost/x", {
+        method: "POST",
+        body: JSON.stringify({ animalId }),
+      }),
+      params: { id: pledgeId },
+    });
+    expect(response.status).toBe(409);
+    const body = await response.json();
+    expect(body.error).toBe(message);
+  });
+
+  test("assignAnimal maps a missing animal to 404", async () => {
+    const service = createService({
+      assignAnimal: mock(async () => {
+        throw new Error("Animal not found");
+      }),
+    });
+    const handlers = createSponsorshipAdminHandlers({
+      requireCoordinator: requireCoordinator(),
+      service: service as never,
+    });
+
+    const response = await handlers.assignAnimal({
+      request: request("http://localhost/x", {
+        method: "POST",
+        body: JSON.stringify({ animalId }),
+      }),
+      params: { id: pledgeId },
+    });
+    expect(response.status).toBe(404);
+  });
+
+  test("endAssignment returns 200 ok on success", async () => {
+    const service = createService();
+    const handlers = createSponsorshipAdminHandlers({
+      requireCoordinator: requireCoordinator(),
+      service: service as never,
+    });
+
+    const response = await handlers.endAssignment({
+      request: request("http://localhost/x", {
+        method: "POST",
+        body: JSON.stringify({ reason: "adopted" }),
+      }),
+      params: { id: pledgeId, assignmentId },
+    });
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.ok).toBe(true);
+  });
+
+  test("endAssignment maps a missing assignment to 404", async () => {
+    const service = createService({
+      endAssignment: mock(async () => {
+        throw new Error("Sponsorship assignment not found");
+      }),
+    });
+    const handlers = createSponsorshipAdminHandlers({
+      requireCoordinator: requireCoordinator(),
+      service: service as never,
+    });
+
+    const response = await handlers.endAssignment({
+      request: request("http://localhost/x", {
+        method: "POST",
+        body: JSON.stringify({ reason: "adopted" }),
+      }),
+      params: { id: pledgeId, assignmentId },
+    });
+    expect(response.status).toBe(404);
+    const body = await response.json();
+    expect(body.error).toBe("Sponsorship assignment not found");
+  });
+
+  test("endAssignment maps an already-ended assignment to 409", async () => {
+    const service = createService({
+      endAssignment: mock(async () => {
+        throw new Error("Sponsorship assignment is already ended");
+      }),
+    });
+    const handlers = createSponsorshipAdminHandlers({
+      requireCoordinator: requireCoordinator(),
+      service: service as never,
+    });
+
+    const response = await handlers.endAssignment({
+      request: request("http://localhost/x", {
+        method: "POST",
+        body: JSON.stringify({ reason: "adopted" }),
+      }),
+      params: { id: pledgeId, assignmentId },
+    });
+    expect(response.status).toBe(409);
+  });
+
+  test("endAssignment returns 400 for a non-uuid assignmentId", async () => {
+    const service = createService();
+    const handlers = createSponsorshipAdminHandlers({
+      requireCoordinator: requireCoordinator(),
+      service: service as never,
+    });
+
+    const response = await handlers.endAssignment({
+      request: request("http://localhost/x", {
+        method: "POST",
+        body: JSON.stringify({ reason: "adopted" }),
+      }),
+      params: { id: pledgeId, assignmentId: "not-a-uuid" },
+    });
+    expect(response.status).toBe(400);
   });
 
   test("requireCoordinator failure propagates its Response status", async () => {

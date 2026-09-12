@@ -297,6 +297,56 @@ through branch protection.
    reference number to UUID mapping, with matching confidence and a
    missing-photo list by ID and reason.
 
+## Phase 3 — sponsorship, in progress
+
+Branch `feat/hkscda-phase3-sponsorship`, two reviewable slices. Full evidence:
+`docs/evidence/hkscda-revision/13-phase3-monthly-ledger.md`.
+
+### Slice A — a pledge can be processed in its second month (`524138b`)
+
+The phase's stated completion outcome, which was impossible. Recording and
+reviewing a payment were both gated on `sponsorship_pledge.status`, duplicated at
+three layers (RPC, service, UI). Approving month one made the pledge `active`
+permanently, after which month two could be neither recorded nor reviewed.
+
+Review now depends on the proof's own `review_status` — the pledge status is the
+supporter's commitment, the proof status is the review queue, and conflating them
+is what §6.2 forbids. An active pledge is no longer knocked back to `provisional`
+by a new month's payment ("add payments for new months directly; do not reopen or
+duplicate the pledge").
+
+Rehearsal exposed a second defect: review asked "is the newest proof pending?",
+which strands every older pending proof once months accumulate. It now takes the
+oldest proof still pending, so the queue drains.
+
+### Slice B — months and payment allocations (`53c3f3a`)
+
+`sponsorship_period` and `sponsorship_payment_allocation`. An allocation is
+attribution, never revenue: the payment row stays the single accounting record.
+Four invariants live in the database — approved payments only, never more than
+the payment, never across pledges, append-only — and approval and attribution
+commit in one transaction, so money is never approved while belonging to no
+month.
+
+Also fixed two named requirements that were live in the admin UI: `/月` was
+appended to one-off payment amounts (§6.4 forbids it), and `Math.round(cents/100)`
+rendered HK$123.45 as HK$123 (§6.3 requires 123.45 to stay 123.45).
+
+### Verified (isolated stack, 62 migrations from zero)
+
+Two isolated sponsors: one completed two months plus a top-up, the other paid
+three months in advance from one payment. Received equals attributed for both.
+Reversal returns a month to outstanding while keeping both rows.
+
+### Phase 3 work still open
+
+| Item | Why it matters | Note |
+|---|---|---|
+| Confirmed supporter–animal assignments | §6.4 wants two sponsors on the **same animal**; `sponsorship_preference` is only an intention ranking, never confirmed | The money half of that gate passes; the relationship half cannot yet be demonstrated |
+| Sponsorship receipts | A sponsorship payment never becomes a `donation`/`payment`, so `issue_receipt` (keyed on `donation_ids[1]`) cannot fire | Reuse `record_manual_gift_with_audit`, which is itself in an unapplied migration |
+| `cancel_sponsorship_pledge` bulk-rejects every pending proof | Cancelling loses the review state of unrelated months | Untouched here |
+| §6.1 supporter/adoption surfaces, §6.3 role matrix | Remainder of Phase 3 | Not started |
+
 ## Precise blockers
 
 | Blocker | Blocks | Needed |
