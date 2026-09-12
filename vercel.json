@@ -10,7 +10,8 @@
       "fix/layout-*": false,
       "ci/layout-*": false,
       "docs/brand-reconciliation": false,
-      "claude/session-development-c8b184": false
+      "claude/session-development-c8b184": false,
+      "followup/pledgereview-pager-and-migration-docs": false
     }
   }
 }
