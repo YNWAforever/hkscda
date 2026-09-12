@@ -5,7 +5,7 @@ import type {
   NeuteredFilter,
   SuitabilityFilter,
 } from "../../types/animal";
-import { parseAgeFilter } from "../../types/animal";
+import { isPubliclyVisibleStatus, parseAgeFilter } from "../../types/animal";
 
 export type PublicAnimalType = Extract<Animal["type"], "cat" | "dog" | "sponsor">;
 
@@ -16,7 +16,7 @@ export function isPublicAnimalMember(
   >,
   type: PublicAnimalType,
 ) {
-  if (animal.retired_at || animal.status !== "available") return false;
+  if (animal.retired_at || !isPubliclyVisibleStatus(animal.status)) return false;
   return type === "sponsor"
     ? (animal.sponsorship_eligible ?? animal.type === "sponsor")
     : animal.type === type && (animal.adoption_eligible ?? true);
