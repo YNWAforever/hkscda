@@ -2,6 +2,12 @@
 
 Recorded 2026-09-12 · isolated local stack only · **nothing applied to production**
 
+> **Status update:** approved and applied the same day. See
+> `18-full-catchup-applied-to-production.md` for the production application
+> record, post-apply verification, and advisor check. The rehearsal,
+> ordering, and rollback analysis below are unchanged and remain the
+> reference for what was applied.
+
 Builds on `14-live-incident-sponsorship-submissions.md` (the confirmed live
 incident) and `15-production-state-migration-rehearsal.md` (which rehearsed a
 narrower 4-migration fix). This is the full catch-up: `main` is now three
