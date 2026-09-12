@@ -18,7 +18,7 @@
 - Modify: `src/types/animal.ts:2` (after `AnimalStatus`)
 - Test: `src/types/animal.test.ts` (new)
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `src/types/animal.test.ts`:
 
@@ -207,12 +207,17 @@ import { expect, test } from "bun:test";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { readEligibleAnimals } from "./eligibility.server";
 
+// Only simulates filtering on `status` -- `id`, the eligibility booleans, and
+// `retired_at` are intentionally pass-through, since those are exercised via
+// isPublicAnimalMember downstream, not at this fake's query layer.
 function createEligibilityFakeClient(data: Record<string, unknown>[]) {
   let filtered = data;
   const query = {
     select: () => query,
     in: (column: string, values: readonly string[]) => {
-      if (column === "status") filtered = filtered.filter((row) => values.includes(row.status as string));
+      if (column === "status") {
+        filtered = filtered.filter((row) => values.includes(row.status as string));
+      }
       return query;
     },
     eq: (column: string, value: unknown) => {
@@ -315,15 +320,38 @@ test("asks the database for fostered animals alongside available ones", async ()
       .sort(),
   ).toEqual(["foster", "shelter"]);
 });
+
+test("asks the database for fostered animals for sponsorship intent too", async () => {
+  const data = [
+    {
+      id: "foster-sponsor",
+      type: "dog",
+      status: "fostered",
+      adoption_eligible: true,
+      sponsorship_eligible: true,
+    },
+  ];
+  const client = createEligibilityFakeClient(data);
+
+  expect(
+    (
+      await readEligibleAnimals(
+        client,
+        data.map((a) => a.id),
+        "sponsorship",
+      )
+    ).map((a) => a.id),
+  ).toEqual(["foster-sponsor"]);
+});
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `bun test src/lib/animals/eligibility.server.test.ts`
-Expected: the first test passes (unchanged behavior); the second test FAILS —
-expected `["foster", "shelter"]` but received `["shelter"]`, because the fake now
-genuinely filters on `.eq("status", "available")` and the current code still calls
-`.eq`, not `.in`.
+Expected: the first test passes (unchanged behavior); the second and third tests
+FAIL — expected `["foster", "shelter"]`/`["foster-sponsor"]` but the fostered rows
+are missing, because the fake now genuinely filters on `.eq("status", "available")`
+and the current code still calls `.eq`, not `.in`.
 
 - [ ] **Step 3: Write minimal implementation**
 
@@ -371,7 +399,7 @@ to:
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `bun test src/lib/animals/eligibility.server.test.ts`
-Expected: 2 pass.
+Expected: 3 pass.
 
 - [ ] **Step 5: Commit**
 
