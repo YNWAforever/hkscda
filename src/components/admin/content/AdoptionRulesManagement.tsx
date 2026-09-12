@@ -7,6 +7,7 @@ import type {
   AdoptionInformationResource,
   AdoptionRuleContent,
 } from "../../../lib/adoptionInformation/types";
+import { LoadFailure } from "../LoadFailure";
 import {
   ADOPTION_INFORMATION_QUERY_KEY,
   AdoptionContentTabs,
@@ -94,9 +95,11 @@ export function AdoptionRulesManagement({
 
       {rulesQuery.isLoading ? <p aria-live="polite">載入領養規則中…</p> : null}
       {rulesQuery.isError ? (
-        <p role="alert" className="text-sm font-semibold text-[var(--color-error)]">
-          未能載入領養規則，請重新整理頁面。
-        </p>
+        <LoadFailure
+          error={rulesQuery.error}
+          onRetry={() => void rulesQuery.refetch()}
+          title="無法載入領養規則"
+        />
       ) : null}
 
       {!rulesQuery.isLoading && !rulesQuery.isError ? (

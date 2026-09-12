@@ -111,9 +111,7 @@ export function PaymentMethodsManagement() {
 
   const configs = listQuery.data?.items ?? [];
   const queryErrorMessage =
-    listQuery.error || identityQuery.error
-      ? "Unable to load payment method configurations. Please reload the page."
-      : undefined;
+    listQuery.error || identityQuery.error ? "無法載入付款方式設定，請重新整理頁面。" : undefined;
 
   async function refresh() {
     await queryClient.invalidateQueries({ queryKey: QUERY_KEY });

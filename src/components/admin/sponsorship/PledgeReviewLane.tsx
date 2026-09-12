@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { fetchCoordinatorJson } from "../adoptions/api";
 import { useAdminPageCopy } from "../adminPageCopy";
 import { DataTable, type DataTableColumn } from "../DataTable";
+import { STAT_UNAVAILABLE } from "../LoadFailure";
 import { StatusPill } from "../StatusBadge";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
@@ -182,7 +183,11 @@ export function PledgeReviewLane() {
           <div>
             <h2 className="text-base font-semibold text-[var(--color-panel)]">{copy.title}</h2>
             <p className="text-xs text-[var(--color-text-muted)]">
-              {isLoading ? pageCopy.common.loading : copy.totalCount(total)}
+              {isLoading
+                ? pageCopy.common.loading
+                : error
+                  ? STAT_UNAVAILABLE
+                  : copy.totalCount(total)}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -214,15 +219,6 @@ export function PledgeReviewLane() {
           </div>
         </div>
 
-        {error && !isLoading && (
-          <div
-            role="alert"
-            className="border-t border-[var(--color-border)] px-4 py-3 text-sm text-[var(--color-error)]"
-          >
-            {error.message}
-          </div>
-        )}
-
         <DataTable<PledgeSummary>
           columns={columns}
           rows={pledges}
@@ -230,6 +226,8 @@ export function PledgeReviewLane() {
           loading={isLoading}
           skeletonRows={5}
           empty={copy.empty}
+          error={error}
+          onRetry={() => void refetch()}
           onRowClick={(pledge) => setSelectedPledgeId(pledge.id)}
           renderMobileCard={renderCard}
         />

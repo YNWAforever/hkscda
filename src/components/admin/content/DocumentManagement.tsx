@@ -1,19 +1,12 @@
 import { useMemo, useRef, useState, type RefObject } from "react";
-import {
-  ChevronLeft,
-  ChevronRight,
-  FileText,
-  LoaderCircle,
-  Search,
-  Trash2,
-  Upload,
-} from "lucide-react";
+import { FileText, LoaderCircle, Search, Trash2, Upload } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
 import { getSupabaseClient } from "../../../lib/supabase";
 import { pageAfterDelete } from "./documentManagementLogic";
 import type { DocumentAsset, DocumentKind, DocumentLanguage } from "../../../lib/documents/types";
+import { TablePager } from "../TablePager";
 import { uploadDocumentPdf } from "./documentUpload";
 import { fetchAdoptionGuideReleaseOwnership } from "./adoptionGuideReleaseLogic";
 
@@ -229,7 +222,6 @@ export function DocumentManagementView({
   onAction,
 }: ViewProps) {
   const rows = data?.items ?? [];
-  const pageCount = Math.max(1, Math.ceil((data?.total ?? 0) / 25));
   return (
     <div className="space-y-6 p-6">
       <header>
@@ -373,7 +365,7 @@ export function DocumentManagementView({
                   載入中...
                 </td>
               </tr>
-            ) : rows.length === 0 ? (
+            ) : rows.length === 0 && !error ? (
               <tr>
                 <td colSpan={5} className="px-3 py-10 text-center text-[var(--color-text-muted)]">
                   沒有文件
@@ -447,29 +439,14 @@ export function DocumentManagementView({
         </table>
       </div>
       {onPageChange ? (
-        <div className="flex items-center justify-end gap-3">
-          <button
-            type="button"
-            aria-label="上一頁"
-            disabled={page <= 1}
-            onClick={() => onPageChange(page - 1)}
-            className="rounded-md border border-[var(--color-border)] p-2 disabled:opacity-40"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-          <span className="text-sm">
-            {page} / {pageCount}
-          </span>
-          <button
-            type="button"
-            aria-label="下一頁"
-            disabled={page >= pageCount}
-            onClick={() => onPageChange(page + 1)}
-            className="rounded-md border border-[var(--color-border)] p-2 disabled:opacity-40"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </button>
-        </div>
+        <TablePager
+          page={page}
+          pageSize={25}
+          total={data?.total}
+          onPageChange={onPageChange}
+          label="文件"
+          failed={Boolean(error)}
+        />
       ) : null}
     </div>
   );

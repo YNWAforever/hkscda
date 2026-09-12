@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, RefreshCw, Search } from "lucide-react";
+import { RefreshCw, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import type {
@@ -13,6 +13,8 @@ import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Switch } from "../../ui/switch";
 import { useAdminPageCopy } from "../adminPageCopy";
+import { STAT_UNAVAILABLE } from "../LoadFailure";
+import { TablePager } from "../TablePager";
 import { fetchCoordinatorJson } from "./api";
 import { ExportButton } from "./ExportButton";
 import { TaskPanel, TaskPanelAsyncError } from "./TaskPanel";
@@ -82,7 +84,6 @@ export function TaskCenter() {
   const statuses = statusesQuery.data?.statuses ?? [];
   const tasks = tasksQuery.data?.tasks ?? EMPTY_TASKS;
   const total = tasksQuery.data?.total ?? 0;
-  const totalPages = Math.max(1, Math.ceil(total / TASK_CENTER_PAGE_SIZE));
   const summary = useMemo(() => buildTaskCenterSummary(tasks), [tasks]);
   const isFetching = statusesQuery.isFetching || tasksQuery.isFetching;
 
@@ -223,7 +224,12 @@ export function TaskCenter() {
             <div className="text-xs font-medium text-[var(--color-text-muted)]">
               {copy.summary[item]}
             </div>
-            <div className="text-2xl font-bold text-[var(--color-panel)]">{summary[item]}</div>
+            <div className="text-2xl font-bold text-[var(--color-panel)]">
+              {/* buildTaskCenterSummary seeds every bucket at 0, so a failed
+                  tasksQuery reads as "genuinely nothing outstanding" unless
+                  the error is shown here instead of the coerced count. */}
+              {tasksQuery.isError ? STAT_UNAVAILABLE : summary[item]}
+            </div>
           </div>
         ))}
       </section>
@@ -235,7 +241,11 @@ export function TaskCenter() {
         <TaskPanel
           title={copy.tasks}
           subtitle={
-            tasksQuery.isLoading ? pageCopy.common.loading : pageCopy.common.totalCount(total)
+            tasksQuery.isLoading
+              ? pageCopy.common.loading
+              : tasksQuery.isError
+                ? STAT_UNAVAILABLE
+                : pageCopy.common.totalCount(total)
           }
           tasks={tasks}
           statuses={statuses}
@@ -247,31 +257,15 @@ export function TaskCenter() {
         />
       </section>
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-[var(--color-text-muted)]">
-          {pageCopy.common.pageOf(page, totalPages)}
-        </p>
-        <div className="flex items-center gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setPage((current) => Math.max(1, current - 1))}
-            disabled={page <= 1 || isFetching}
-          >
-            <ChevronLeft className="h-4 w-4" />
-            {pageCopy.common.previous}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
-            disabled={page >= totalPages || isFetching}
-          >
-            {pageCopy.common.next}
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+      <TablePager
+        page={page}
+        pageSize={TASK_CENTER_PAGE_SIZE}
+        total={tasksQuery.isError ? undefined : total}
+        onPageChange={setPage}
+        busy={isFetching}
+        label={copy.tasks}
+        failed={tasksQuery.isError}
+      />
     </div>
   );
 }

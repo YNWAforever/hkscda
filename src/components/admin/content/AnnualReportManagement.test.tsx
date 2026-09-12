@@ -46,4 +46,13 @@ describe("AnnualReportManagement", () => {
 
     expect(markup).toMatch(/<input[^>]*disabled=""[^>]*aria-label="Annual Report 2025\/26 次序"/);
   });
+
+  test("does not claim no reports exist underneath a load error", () => {
+    // rows=[] on a failed fetch used to render "尚未建立年度報告" directly
+    // below the error banner -- a failure asserted as a confirmed empty list.
+    const markup = renderToStaticMarkup(<AnnualReportManagementView rows={[]} error="boom" />);
+
+    expect(markup).toContain("boom");
+    expect(markup).not.toContain("尚未建立年度報告");
+  });
 });

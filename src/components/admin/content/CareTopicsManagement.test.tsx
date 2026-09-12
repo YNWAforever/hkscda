@@ -1,8 +1,37 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, mock, test } from "bun:test";
+import { renderToStaticMarkup } from "react-dom/server";
 
-import { toCareTopicInput } from "./CareTopicsManagement";
+const realReactQuery = await import("@tanstack/react-query");
+
+let topicsError: Error | null = null;
+
+mock.module("@tanstack/react-query", () => ({
+  ...realReactQuery,
+  useQueryClient: () => ({ invalidateQueries: async () => {} }),
+  useMutation: () => ({ mutate: () => {}, isPending: false, isError: false }),
+  useQuery: () => ({
+    data: topicsError ? undefined : { items: [] },
+    error: topicsError,
+    isLoading: false,
+    isError: topicsError !== null,
+    refetch: () => {},
+  }),
+}));
+
+const { CareTopicsManagement, toCareTopicInput } = await import("./CareTopicsManagement");
 
 describe("CareTopicsManagement", () => {
+  test("shows a retry control instead of the old unclickable reload message on failure", () => {
+    topicsError = new Error("boom");
+    const markup = renderToStaticMarkup(
+      <CareTopicsManagement activeTab="careTopics" onTabChange={() => {}} />,
+    );
+    expect(markup).toContain("無法載入照顧須知");
+    expect(markup).toContain("重試");
+    expect(markup).not.toContain("未能載入");
+    topicsError = null;
+  });
+
   describe("toCareTopicInput", () => {
     test("maps a new draft without an id", () => {
       const input = toCareTopicInput({

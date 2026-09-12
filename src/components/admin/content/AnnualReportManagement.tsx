@@ -255,7 +255,7 @@ export function AnnualReportManagementView({
                   載入中...
                 </td>
               </tr>
-            ) : rows.length === 0 ? (
+            ) : rows.length === 0 && !error ? (
               <tr>
                 <td colSpan={5} className="px-3 py-10 text-center text-[var(--color-text-muted)]">
                   尚未建立年度報告

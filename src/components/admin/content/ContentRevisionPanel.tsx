@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type { ContentRevisionSummary } from "../../../lib/content/lifecycle";
 import type { ContentDetail } from "../../../lib/content/types";
+import { LoadFailure } from "../LoadFailure";
 type Revision = { id: string; version: number; snapshot: Record<string, unknown> };
 export function ContentRevisionPanel({
   content,
@@ -38,7 +39,16 @@ export function ContentRevisionPanel({
       <p className="text-sm">
         目前已儲存版本 {content.version ?? "—"}；還原會建立新草稿，公開版本保持不變。
       </p>
-      {history.isError || detail.isError ? <p role="alert">未能載入版本紀錄，請重試。</p> : null}
+      {history.isError || detail.isError ? (
+        <LoadFailure
+          error={history.error ?? detail.error}
+          onRetry={() => {
+            void history.refetch();
+            void detail.refetch();
+          }}
+          title="無法載入版本紀錄"
+        />
+      ) : null}
       <div className="flex flex-wrap gap-2">
         {history.data?.revisions.map((row) => (
           <button

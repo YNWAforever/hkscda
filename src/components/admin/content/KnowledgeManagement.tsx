@@ -253,13 +253,15 @@ export function KnowledgeManagementView({
         </p>
       ) : null}
       {loading ? <p aria-live="polite">Loading knowledge posts...</p> : null}
-      {!loading && !ownershipReady ? <p role="alert">Ownership could not be verified.</p> : null}
+      {!loading && !ownershipReady ? <p role="alert">無法核實擁有權。</p> : null}
 
       {!loading && ownershipReady ? (
         <KnowledgeEditor documents={documents} pending={pending} onSave={onSave} />
       ) : null}
 
-      {!loading && ownershipReady && posts.length === 0 ? <p>No knowledge posts yet.</p> : null}
+      {!loading && ownershipReady && posts.length === 0 && !error ? (
+        <p>尚未有知識庫文章。</p>
+      ) : null}
       {!loading &&
         ownershipReady &&
         posts.map((post) => (

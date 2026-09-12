@@ -35,6 +35,8 @@ const baseDetail: GroupEnquiry = {
 
 let detail: GroupEnquiry = baseDetail;
 let total = 1;
+let listError: Error | null = null;
+let detailError: Error | null = null;
 
 mock.module("@tanstack/react-query", () => ({
   ...realReactQuery,
@@ -43,13 +45,21 @@ mock.module("@tanstack/react-query", () => ({
   useQuery: ({ queryKey }: { queryKey: unknown[] }) => {
     if (String(queryKey[0]) === "group-enquiries") {
       return {
-        data: { enquiries: [summary], total },
-        error: null,
+        data: listError ? undefined : { enquiries: [summary], total },
+        error: listError,
+        isError: listError !== null,
         isLoading: false,
         isFetching: false,
+        refetch: () => {},
       };
     }
-    return { data: { enquiry: detail }, error: null, isLoading: false };
+    return {
+      data: detailError ? undefined : { enquiry: detail },
+      error: detailError,
+      isError: detailError !== null,
+      isLoading: false,
+      refetch: () => {},
+    };
   },
 }));
 
@@ -107,5 +117,28 @@ describe("GroupEnquiryManagement", () => {
     total = 90;
     expect(render()).toContain("下一頁");
     total = 1;
+  });
+
+  test("shows a retry instead of a false empty state when the list fails to load", () => {
+    listError = new Error("boom");
+    const markup = render();
+    expect(markup).toContain("無法載入");
+    expect(markup).not.toContain("沒有符合條件的團體查詢。");
+    listError = null;
+  });
+
+  test("blocks paging forward when the list query failed", () => {
+    listError = new Error("boom");
+    // Page 1 with an errored, therefore unknown, total: both Previous (page
+    // position) and Next (the defect this closes) must be disabled.
+    expect((render().match(/disabled=""/g) ?? []).length).toBe(2);
+    listError = null;
+  });
+
+  test("shows a retry instead of silently vanishing when the detail fetch fails", () => {
+    detailError = new Error("boom");
+    const markup = render();
+    expect(markup).toContain("無法載入");
+    detailError = null;
   });
 });

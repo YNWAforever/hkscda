@@ -97,6 +97,21 @@ describe("AdoptionInformationManagement", () => {
     ).toContain("沒有可養狗屋苑資料");
   });
 
+  test("uses the shared TablePager for estates and blocks paging forward on a load error", () => {
+    const markup = renderToStaticMarkup(
+      <AdoptionInformationManagementView
+        activeTab="estates"
+        data={{ ...estates, total: 120 }}
+        page={1}
+        query=""
+        error="boom"
+        onPageChange={() => undefined}
+      />,
+    );
+    expect(markup).toContain("下一頁");
+    expect((markup.match(/disabled=""/g) ?? []).length).toBeGreaterThanOrEqual(1);
+  });
+
   test("bounds search pages and invalidates every adoption-information query", async () => {
     expect(
       buildAdoptionInformationSearchParams({

@@ -6,6 +6,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ContentStatus, ContentSummary, ContentType } from "../../../lib/content/types";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import { DataTable, type DataTableColumn } from "../DataTable";
+import { STAT_UNAVAILABLE } from "../LoadFailure";
 import { TablePager } from "../TablePager";
 import { StatusPill, type StatusTone } from "../StatusBadge";
 import {
@@ -162,6 +163,10 @@ function ContentManagementView({
 }: ContentManagementViewProps) {
   const rows = data?.content ?? [];
   const summary = summarizeContentRows(rows);
+  // A rejected query leaves `data` (and so `rows`) empty, and summary counts
+  // computed from an empty array are real zeros -- not a signal that nothing
+  // could be loaded. Show the cards as unavailable, not as "all clear".
+  const failed = Boolean(error);
   const columns = useMemo<DataTableColumn<ContentSummary>[]>(
     () => [
       {
@@ -263,10 +268,14 @@ function ContentManagementView({
       </div>
 
       <div className="grid gap-3 md:grid-cols-4">
-        <SummaryCard label="全部內容" value={data?.pagination.total ?? summary.total} />
-        <SummaryCard label="本頁已發布" value={summary.published} />
-        <SummaryCard label="本頁草稿" value={summary.drafts} />
-        <SummaryCard label="本頁救援故事" value={summary.rescueStories} />
+        <SummaryCard
+          label="全部內容"
+          value={data?.pagination.total ?? summary.total}
+          failed={failed}
+        />
+        <SummaryCard label="本頁已發布" value={summary.published} failed={failed} />
+        <SummaryCard label="本頁草稿" value={summary.drafts} failed={failed} />
+        <SummaryCard label="本頁救援故事" value={summary.rescueStories} failed={failed} />
       </div>
 
       <section className="space-y-3">
@@ -325,18 +334,14 @@ function ContentManagementView({
           </label>
         </div>
 
-        {error ? (
-          <p className="rounded-lg border border-[var(--color-error)] bg-[var(--color-surface)] p-3 text-sm font-semibold text-[var(--color-error)]">
-            {error}
-          </p>
-        ) : null}
-
         <DataTable
           columns={columns}
           rows={rows}
           getRowKey={(item) => item.id}
           loading={loading}
           empty="沒有宣傳內容"
+          error={error}
+          onRetry={onRefresh}
         />
         {data?.pagination && onPageChange ? (
           <TablePager
@@ -353,11 +358,13 @@ function ContentManagementView({
   );
 }
 
-function SummaryCard({ label, value }: { label: string; value: number }) {
+function SummaryCard({ label, value, failed }: { label: string; value: number; failed?: boolean }) {
   return (
     <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
       <p className="text-sm font-semibold text-[var(--color-text-muted)]">{label}</p>
-      <p className="mt-1 text-2xl font-bold text-[var(--color-panel)]">{value}</p>
+      <p className="mt-1 text-2xl font-bold text-[var(--color-panel)]">
+        {failed ? STAT_UNAVAILABLE : value}
+      </p>
     </div>
   );
 }

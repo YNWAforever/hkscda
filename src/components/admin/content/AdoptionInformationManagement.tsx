@@ -13,6 +13,7 @@ import type {
 } from "../../../lib/adoptionInformation/types";
 import { AdoptionRulesManagement } from "./AdoptionRulesManagement";
 import { CareTopicsManagement } from "./CareTopicsManagement";
+import { TablePager } from "../TablePager";
 
 export const ADOPTION_INFORMATION_QUERY_KEY = ["admin-adoption-information"] as const;
 
@@ -239,7 +240,6 @@ export function AdoptionInformationManagementView({
 }: ViewProps) {
   const fees = data?.items.filter(isFee) ?? [];
   const estates = data?.items.filter(isEstate) ?? [];
-  const pageCount = Math.max(1, Math.ceil((data?.total ?? 0) / 50));
 
   return (
     <div className="space-y-6 p-6">
@@ -325,22 +325,15 @@ export function AdoptionInformationManagementView({
         </section>
       ) : null}
 
-      {activeTab === "estates" && pageCount > 1 ? (
-        <div className="flex items-center gap-3">
-          <button type="button" disabled={page <= 1} onClick={() => onPageChange?.(page - 1)}>
-            上一頁
-          </button>
-          <span>
-            {page} / {pageCount}
-          </span>
-          <button
-            type="button"
-            disabled={page >= pageCount}
-            onClick={() => onPageChange?.(page + 1)}
-          >
-            下一頁
-          </button>
-        </div>
+      {activeTab === "estates" && onPageChange ? (
+        <TablePager
+          page={page}
+          pageSize={50}
+          total={data?.total}
+          onPageChange={onPageChange}
+          label="可養狗屋苑"
+          failed={Boolean(error)}
+        />
       ) : null}
     </div>
   );

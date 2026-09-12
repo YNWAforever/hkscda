@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { ChevronLeft, ChevronRight, RefreshCw, Search } from "lucide-react";
+import { RefreshCw, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import type { AdopterSummary } from "../../../lib/adoptions/types";
@@ -12,6 +12,8 @@ import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { formatAdminNumber, statusDisplayName, useAdminPageCopy } from "../adminPageCopy";
 import { DataTable, type DataTableColumn } from "../DataTable";
+import { STAT_UNAVAILABLE } from "../LoadFailure";
+import { TablePager } from "../TablePager";
 import { fetchCoordinatorJson } from "./api";
 import { formatDate, formatFallback } from "./caseWorkflowLogic";
 import { buildAdopterListSearchParams } from "./adopterWorkflowLogic";
@@ -123,9 +125,6 @@ export function AdopterList() {
 
   const adopters = data?.adopters ?? [];
   const total = data?.total ?? 0;
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
-  const isPreviousDisabled = page <= 1 || isFetching;
-  const isNextDisabled = page >= totalPages || isFetching;
 
   function resetToFirstPage() {
     setPage(1);
@@ -352,7 +351,11 @@ export function AdopterList() {
           <div>
             <h2 className="text-base font-semibold text-[var(--color-panel)]">{copy.tableTitle}</h2>
             <p className="text-xs text-[var(--color-text-muted)]">
-              {isLoading ? pageCopy.common.loading : pageCopy.common.totalCount(total)}
+              {isLoading
+                ? pageCopy.common.loading
+                : error
+                  ? STAT_UNAVAILABLE
+                  : pageCopy.common.totalCount(total)}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -380,15 +383,6 @@ export function AdopterList() {
           </div>
         </div>
 
-        {error && !isLoading && (
-          <div
-            role="alert"
-            className="border-t border-[var(--color-border)] px-4 py-3 text-sm text-[var(--color-error)]"
-          >
-            {error.message}
-          </div>
-        )}
-
         <DataTable<AdopterSummary>
           columns={adopterColumns}
           rows={adopters}
@@ -396,33 +390,21 @@ export function AdopterList() {
           loading={isLoading}
           skeletonRows={5}
           empty={copy.empty}
+          error={error}
+          onRetry={() => void refetch()}
           renderMobileCard={renderAdopterCard}
         />
 
-        <div className="flex min-h-12 flex-wrap items-center justify-between gap-3 border-t border-[var(--color-border)] px-4 py-2 text-xs text-[var(--color-text-muted)]">
-          <span>{pageCopy.common.pageOf(page, totalPages)}</span>
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={() => setPage((currentPage) => Math.max(1, currentPage - 1))}
-              disabled={isPreviousDisabled}
-            >
-              <ChevronLeft className="h-4 w-4" />
-              {pageCopy.common.previous}
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={() => setPage((currentPage) => currentPage + 1)}
-              disabled={isNextDisabled}
-            >
-              {pageCopy.common.next}
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
+        <div className="px-4 py-2">
+          <TablePager
+            page={page}
+            pageSize={pageSize}
+            total={error ? undefined : total}
+            onPageChange={setPage}
+            busy={isFetching}
+            label={copy.tableTitle}
+            failed={Boolean(error)}
+          />
         </div>
       </section>
     </div>

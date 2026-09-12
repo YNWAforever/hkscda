@@ -53,6 +53,21 @@ describe("TablePager", () => {
     );
   });
 
+  test("blocks Next when the query failed, even though total looks just as unknown", () => {
+    // An unknown total normally means "assume more, don't strand the operator".
+    // A failed load also leaves total unknown, but here it means the opposite:
+    // we don't know if there's more AND something is wrong, so don't invite
+    // paging forward into another failure.
+    const markup = render({ page: 1, total: undefined, failed: true });
+    expect(markup).not.toBe("");
+    expect((markup.match(/disabled=""/g) ?? []).length).toBe(2);
+  });
+
+  test("failed only blocks Next; Previous still follows its own page position", () => {
+    const markup = render({ page: 2, total: undefined, failed: true });
+    expect((markup.match(/disabled=""/g) ?? []).length).toBe(1);
+  });
+
   test("labels the nav region for screen readers", () => {
     expect(render({ label: "報名" })).toContain("報名分頁");
   });
