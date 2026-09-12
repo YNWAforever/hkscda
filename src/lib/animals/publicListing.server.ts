@@ -1,6 +1,7 @@
 import { projectPublicAnimal } from "./publicProfile";
 import { supabase } from "../supabase";
 import type { Animal, GenderFilter } from "../../types/animal";
+import { PUBLIC_VISIBLE_ANIMAL_STATUSES } from "../../types/animal";
 import type { PublicAnimalType } from "./publicListing";
 
 const PUBLIC_QUERY_BATCH_SIZE = 1_000;
@@ -15,7 +16,7 @@ export async function readPublicAnimals(input: {
     let query = supabase
       .from("animals")
       .select("*")
-      .eq("status", "available")
+      .in("status", PUBLIC_VISIBLE_ANIMAL_STATUSES)
       .is("retired_at", null)
       .eq(input.type === "sponsor" ? "sponsorship_eligible" : "adoption_eligible", true)
       .order("created_at", { ascending: false })
