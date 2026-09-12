@@ -1,6 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { selectReviewTargetProof } from "./proofReview";
+import type { CandidateAnimalState } from "./autoAssign";
+
 import type {
+  AssignmentEndReason,
   CancelPledgeInput,
   PaymentProofRecord,
   PledgeAnimalPreference,
@@ -9,6 +13,8 @@ import type {
   PledgeListSearch,
   PledgeSummary,
   RecordPledgePaymentRepoInput,
+  SponsorshipAssignmentRecord,
+  SponsorshipPeriodRecord,
   ReviewPledgeProofInput,
 } from "./types";
 
@@ -38,6 +44,34 @@ type PreferenceRow = {
   rank: number;
   sponsor_animal_id: string | null;
   animal_name_snapshot: string;
+  /** Embedded by the detail query. Absent on queries that do not ask for it. */
+  animal?: EmbeddedAnimalEmbed;
+};
+
+/**
+ * A to-one embed as it may be typed or returned. PostgREST returns an object,
+ * but supabase-js's select-string inference types the same embed as an array,
+ * so both shapes are accepted and normalised in one place rather than forcing
+ * the result through an `unknown` cast at every call site.
+ */
+type EmbeddedAnimalEmbed = EmbeddedAnimalRow | EmbeddedAnimalRow[] | null;
+
+/**
+ * The internal-profile columns that say the animal has left. Both live only
+ * here: `animals.status` has no deceased value at all, and the adoptions
+ * internal-profile form writes `adopted_at` without touching `animals.status`.
+ */
+type InternalProfileEmbedRow = {
+  deceased_at: string | null;
+  adopted_at: string | null;
+};
+
+type EmbeddedAnimalRow = {
+  sponsorship_eligible: boolean;
+  status: CandidateAnimalState["status"];
+  retired_at: string | null;
+  publication_state: CandidateAnimalState["publicationState"];
+  animal_profile_internal: InternalProfileEmbedRow | InternalProfileEmbedRow[] | null;
 };
 
 type ProofRow = {
@@ -59,6 +93,23 @@ type ProofRow = {
   created_at: string;
 };
 
+type PeriodRow = {
+  id: string;
+  pledge_id: string;
+  period_month: string;
+  committed_cents: number;
+};
+
+type AllocationRow = {
+  id: string;
+  period_id: string;
+  proof_id: string;
+  amount_cents: number;
+  reverses_allocation_id: string | null;
+  note: string | null;
+  created_at: string;
+};
+
 type AuditRow = {
   id: string;
   actor_user_id: string | null;
@@ -66,6 +117,25 @@ type AuditRow = {
   entity_id: string;
   detail: Record<string, unknown> | null;
   timestamp: string;
+};
+
+type AssignmentRow = {
+  id: string;
+  pledge_id: string;
+  animal_id: string | null;
+  animal_name_snapshot: string;
+  started_on: string;
+  ended_on: string | null;
+  end_reason: SponsorshipAssignmentRecord["endReason"];
+  note: string | null;
+  end_note: string | null;
+  /**
+   * The assigned animal, embedded by the detail query. Read from the animal
+   * itself rather than from the supporter's ranked preferences: only the first
+   * animal is auto-confirmed from that shortlist, so any animal a staff member
+   * adds by hand afterwards appears nowhere in it.
+   */
+  animal?: EmbeddedAnimalEmbed;
 };
 
 const PLEDGE_SEARCH_CANDIDATE_LIMIT = 1000;
@@ -179,12 +249,105 @@ function mapProof(row: ProofRow): PaymentProofRecord {
   };
 }
 
+/**
+ * Joins months to the payments attributed to them. `allocatedCents` is summed
+ * here rather than stored on the period: one number, derived, so the ledger and
+ * the month can never disagree. A reversal carries a negative amount, so the
+ * same sum handles refunds without a second code path.
+ */
+function mapPeriods(periodRows: PeriodRow[], allocationRows: AllocationRow[]) {
+  const byPeriod = new Map<string, AllocationRow[]>();
+  for (const row of allocationRows) {
+    const bucket = byPeriod.get(row.period_id);
+    if (bucket) bucket.push(row);
+    else byPeriod.set(row.period_id, [row]);
+  }
+
+  return periodRows.map((row) => {
+    const rows = byPeriod.get(row.id) ?? [];
+    const allocatedCents = rows.reduce((sum, a) => sum + a.amount_cents, 0);
+    return {
+      id: row.id,
+      periodMonth: row.period_month,
+      committedCents: row.committed_cents,
+      allocatedCents,
+      outstandingCents: Math.max(0, row.committed_cents - allocatedCents),
+      allocations: rows.map((a) => ({
+        id: a.id,
+        proofId: a.proof_id,
+        amountCents: a.amount_cents,
+        reversesAllocationId: a.reverses_allocation_id,
+        note: a.note,
+        createdAt: a.created_at,
+      })),
+    } satisfies SponsorshipPeriodRecord;
+  });
+}
+
+/**
+ * PostgREST's embedded animal row, as both the ranked preferences and the
+ * confirmed assignments carry it. Shared so the two can never disagree about
+ * what an animal's state is.
+ */
+function mapEmbeddedAnimalState(
+  embed: EmbeddedAnimalEmbed | undefined,
+): CandidateAnimalState | null {
+  const embedded = Array.isArray(embed) ? (embed[0] ?? null) : embed;
+  if (!embedded) return null;
+  // PostgREST returns an embedded 1:1 as an array or an object depending on
+  // the relationship; absence means nothing was recorded, not that the animal
+  // died or went home.
+  const internal = Array.isArray(embedded.animal_profile_internal)
+    ? (embedded.animal_profile_internal[0] ?? null)
+    : embedded.animal_profile_internal;
+  return {
+    sponsorshipEligible: embedded.sponsorship_eligible,
+    status: embedded.status,
+    retiredAt: embedded.retired_at,
+    publicationState: embedded.publication_state,
+    deceasedAt: internal?.deceased_at ?? null,
+    // A second, independent adoption signal: the adoptions internal-profile
+    // form writes this and leaves `animals.status` alone, so an animal that
+    // has gone home can still read `status = 'available'`.
+    adoptedAt: internal?.adopted_at ?? null,
+  };
+}
+
+/**
+ * Open assignments first, then ended ones newest-first. Open ones are what
+ * staff act on; ended ones stay visible as history rather than disappearing.
+ *
+ * `reviewReason` is derived by the service from `animalState`, which is read
+ * off the assigned animal itself. The repository does not guess it.
+ */
+function mapAssignments(rows: AssignmentRow[]): SponsorshipAssignmentRecord[] {
+  const mapped: SponsorshipAssignmentRecord[] = rows.map((row) => ({
+    id: row.id,
+    animalId: row.animal_id,
+    animalNameSnapshot: row.animal_name_snapshot,
+    startedOn: row.started_on,
+    endedOn: row.ended_on,
+    endReason: row.end_reason,
+    note: row.note,
+    endNote: row.end_note,
+    animalState: mapEmbeddedAnimalState(row.animal),
+    reviewReason: null,
+  }));
+
+  return mapped.sort((a, b) => {
+    if ((a.endedOn === null) !== (b.endedOn === null)) return a.endedOn === null ? -1 : 1;
+    if (a.endedOn && b.endedOn && a.endedOn !== b.endedOn) return a.endedOn < b.endedOn ? 1 : -1;
+    return a.startedOn < b.startedOn ? 1 : -1;
+  });
+}
+
 function mapPreference(row: PreferenceRow): PledgeAnimalPreference {
   return {
     id: row.id,
     rank: row.rank,
     animalId: row.sponsor_animal_id,
     animalNameSnapshot: row.animal_name_snapshot,
+    animalState: mapEmbeddedAnimalState(row.animal),
   };
 }
 
@@ -236,9 +399,45 @@ export type SponsorshipAdminRepository = {
   ): Promise<{ storagePath: string; fileName: string | null } | null>;
   recordPayment(input: RecordPledgePaymentRepoInput): Promise<{ id: string }>;
   reviewProof(
-    input: ReviewPledgeProofInput & { pledgeId: string; actorUserId: string },
+    input: ReviewPledgeProofInput & {
+      pledgeId: string;
+      actorUserId: string;
+      /** Months this payment pays for. Empty for a rejection. */
+      allocations?: Array<{ periodMonth: string; amountCents: number }>;
+      /** The animal to confirm on a first approval, or null. */
+      assignAnimalId?: string | null;
+    },
   ): Promise<void>;
   cancelPledge(input: CancelPledgeInput & { pledgeId: string; actorUserId: string }): Promise<void>;
+  allocateProof(input: AllocateProofInput): Promise<AllocateProofResult>;
+  assignAnimal(input: AssignAnimalRepoInput): Promise<{ id: string }>;
+  endAssignment(input: EndAssignmentRepoInput): Promise<void>;
+};
+
+export type AssignAnimalRepoInput = {
+  pledgeId: string;
+  animalId: string;
+  actorUserId: string;
+  note: string | null;
+};
+
+export type EndAssignmentRepoInput = {
+  assignmentId: string;
+  actorUserId: string;
+  reason: AssignmentEndReason;
+  note: string | null;
+};
+
+export type AllocateProofInput = {
+  proofId: string;
+  actorUserId: string;
+  allocations: Array<{ periodMonth: string; amountCents: number }>;
+};
+
+export type AllocateProofResult = {
+  /** `already_allocated` means a previous attempt had committed — not an error. */
+  status: "allocated" | "already_allocated";
+  allocatedCents: number;
 };
 
 export function createSupabaseSponsorshipAdminRepository(
@@ -286,18 +485,27 @@ export function createSupabaseSponsorshipAdminRepository(
 
       const row = pledgeData as PledgeRow;
 
-      const [supporters, preferencesResult, proofResult, auditResult] = await Promise.all([
+      const [
+        supporters,
+        preferencesResult,
+        proofResult,
+        auditResult,
+        periodResult,
+        assignmentResult,
+      ] = await Promise.all([
         loadSupportersByIds(client, [row.supporter_id]),
         client
           .from("sponsorship_preference")
-          .select("*")
+          .select(
+            "*,animal:sponsor_animal_id(sponsorship_eligible,status,retired_at,publication_state,animal_profile_internal(deceased_at,adopted_at))",
+          )
           .eq("pledge_id", id)
           .order("rank", { ascending: true }),
-        // currentProof below = the most recent row here (newest created_at
-        // first). This ordering must match review_sponsorship_payment_proof's
-        // own `order by created_at desc limit 1 for update` in the migration,
-        // since the RPC and this query must agree on which row "provisional"
-        // review acts on.
+        // Newest-first, because this is the history list staff read. It is NOT
+        // the review order: `currentProof` below is chosen by
+        // `selectReviewTargetProof`, which must agree with
+        // review_sponsorship_payment_proof's own `order by created_at asc, id
+        // asc` — see proofReview.ts for why the queue drains oldest-first.
         client
           .from("sponsorship_payment_proof")
           .select("*")
@@ -309,10 +517,40 @@ export function createSupabaseSponsorshipAdminRepository(
           .eq("entity_id", id)
           .order("timestamp", { ascending: false })
           .limit(20),
+        // The monthly ledger, oldest month first — months read as a sequence,
+        // unlike the proof history, which reads newest-first.
+        client
+          .from("sponsorship_period")
+          .select("id,pledge_id,period_month,committed_cents")
+          .eq("pledge_id", id)
+          .order("period_month", { ascending: true }),
+        client
+          .from("sponsorship_assignment")
+          .select(
+            "id,pledge_id,animal_id,animal_name_snapshot,started_on,ended_on,end_reason,note,end_note,animal:animal_id(sponsorship_eligible,status,retired_at,publication_state,animal_profile_internal(deceased_at,adopted_at))",
+          )
+          .eq("pledge_id", id),
       ]);
       if (preferencesResult.error) throw preferencesResult.error;
       if (proofResult.error) throw proofResult.error;
       if (auditResult.error) throw auditResult.error;
+      if (periodResult.error) throw periodResult.error;
+      if (assignmentResult.error) throw assignmentResult.error;
+
+      const periodRows = (periodResult.data ?? []) as PeriodRow[];
+      // Allocations are fetched separately rather than through a nested select:
+      // a pledge with no months must still return an empty ledger, not fail.
+      const allocationResult = periodRows.length
+        ? await client
+            .from("sponsorship_payment_allocation")
+            .select("id,period_id,proof_id,amount_cents,reverses_allocation_id,note,created_at")
+            .in(
+              "period_id",
+              periodRows.map((row) => row.id),
+            )
+            .order("created_at", { ascending: true })
+        : { data: [] as AllocationRow[], error: null };
+      if (allocationResult.error) throw allocationResult.error;
 
       const preferences = ((preferencesResult.data ?? []) as PreferenceRow[]).map(mapPreference);
       const proofRows = (proofResult.data ?? []) as ProofRow[];
@@ -325,23 +563,40 @@ export function createSupabaseSponsorshipAdminRepository(
         supporterPhone: supporters.get(row.supporter_id)?.phone ?? null,
         preferences,
         proofHistory,
-        currentProof: proofHistory[0] ?? null,
+        currentProof: selectReviewTargetProof(proofHistory),
+        periods: mapPeriods(periodRows, (allocationResult.data ?? []) as AllocationRow[]),
+        assignments: mapAssignments((assignmentResult.data ?? []) as AssignmentRow[]),
+        // The repository reports the raw fact; the service decides whether it
+        // amounts to "needs a person", because that also depends on status.
+        needsAnimal: false,
         recentAuditLog: auditLog,
       } satisfies PledgeDetail;
     },
 
     async getProofSigningInfo(pledgeId) {
+      // Signs the file for the proof under review — the same row
+      // `getPledgeDetail` exposes as `currentProof` and the same row the RPC
+      // will update. Signing the newest row instead would show staff one
+      // document while their approve/reject decision landed on another.
       const { data, error } = await client
         .from("sponsorship_payment_proof")
-        .select("storage_path,file_name")
+        .select("id,storage_path,file_name,review_status,created_at")
         .eq("pledge_id", pledgeId)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+        .order("created_at", { ascending: false });
       if (error) throw error;
-      if (!data) return null;
 
-      const row = data as Pick<ProofRow, "storage_path" | "file_name">;
+      type SigningRow = Pick<
+        ProofRow,
+        "id" | "storage_path" | "file_name" | "review_status" | "created_at"
+      >;
+      const row = selectReviewTargetProof(
+        ((data ?? []) as SigningRow[]).map((proofRow) => ({
+          ...proofRow,
+          createdAt: proofRow.created_at,
+          reviewStatus: proofRow.review_status,
+        })),
+      );
+      if (!row) return null;
       // A staff-recorded payment may have no attached file: there is no
       // storage object to sign a URL for, so treat it the same as "no proof".
       if (!row.storage_path) return null;
@@ -368,19 +623,59 @@ export function createSupabaseSponsorshipAdminRepository(
     },
 
     async reviewProof(input) {
+      // The allocation travels with the decision so both commit in one
+      // transaction -- see proofReview.ts and the ledger migration.
       const { error } = await client.rpc("review_sponsorship_payment_proof", {
         p_pledge_id: input.pledgeId,
         p_decision: input.decision,
         p_actor_user_id: input.actorUserId,
         p_note: input.note ?? null,
+        p_allocations: input.allocations ?? [],
+        p_assign_animal_id: input.assignAnimalId ?? null,
       });
       if (error) throw error;
+    },
+
+    async allocateProof(input) {
+      const { data, error } = await client.rpc("allocate_sponsorship_payment_with_audit", {
+        p_proof_id: input.proofId,
+        p_actor_user_id: input.actorUserId,
+        p_allocations: input.allocations,
+      });
+      if (error) throw error;
+
+      const result = (data ?? {}) as { status?: string; allocatedCents?: number };
+      return {
+        status: result.status === "already_allocated" ? "already_allocated" : "allocated",
+        allocatedCents: result.allocatedCents ?? 0,
+      };
     },
 
     async cancelPledge(input) {
       const { error } = await client.rpc("cancel_sponsorship_pledge", {
         p_pledge_id: input.pledgeId,
         p_actor_user_id: input.actorUserId,
+        p_note: input.note ?? null,
+      });
+      if (error) throw error;
+    },
+
+    async assignAnimal(input) {
+      const { data, error } = await client.rpc("assign_sponsorship_animal_with_audit", {
+        p_pledge_id: input.pledgeId,
+        p_animal_id: input.animalId,
+        p_actor_user_id: input.actorUserId,
+        p_note: input.note ?? null,
+      });
+      if (error) throw error;
+      return { id: data as string };
+    },
+
+    async endAssignment(input) {
+      const { error } = await client.rpc("end_sponsorship_assignment_with_audit", {
+        p_assignment_id: input.assignmentId,
+        p_actor_user_id: input.actorUserId,
+        p_reason: input.reason,
         p_note: input.note ?? null,
       });
       if (error) throw error;

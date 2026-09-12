@@ -9,7 +9,12 @@ import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Sheet, SheetContent, SheetTitle } from "../../ui/sheet";
 import { StatusPill } from "../StatusBadge";
-import type { PaymentProofRecord, PledgeDetail } from "../../../lib/sponsorshipAdmin/types";
+import { centsToHkd } from "../../../lib/donations/domain";
+import type {
+  AssignmentEndReason,
+  PaymentProofRecord,
+  PledgeDetail,
+} from "../../../lib/sponsorshipAdmin/types";
 import {
   canCancelPledge,
   canRecordPayment,
@@ -26,6 +31,16 @@ type PledgeDetailResponse = { pledge: PledgeDetail };
 
 const PAYMENT_METHOD_VALUES = ["fps", "bank_transfer", "payme", "paypal", "give_asia"] as const;
 
+const ASSIGNMENT_END_REASON_VALUES: readonly AssignmentEndReason[] = [
+  "adopted",
+  "deceased",
+  "ineligible",
+  "retired",
+  "supporter_request",
+  "transferred",
+  "other",
+];
+
 const PROOF_REVIEW_STATUS_TONE: Record<
   PaymentProofRecord["reviewStatus"],
   "warning" | "success" | "danger"
@@ -35,9 +50,29 @@ const PROOF_REVIEW_STATUS_TONE: Record<
   rejected: "danger",
 };
 
-function amountLabel(amountCents: number) {
-  const dollars = Math.round(amountCents / 100).toLocaleString("en-US");
-  return `HK$${dollars}/月`;
+/**
+ * The pledge's monthly commitment — a rate, so it carries /月.
+ *
+ * `centsToHkd` rather than rounding: section 6.3 requires 123.45 to stay
+ * 123.45, and `Math.round(cents / 100)` silently turned HK$123.45 into HK$123.
+ */
+function monthlyAmountLabel(amountCents: number) {
+  return `${centsToHkd(amountCents)}/月`;
+}
+
+/**
+ * One payment that was received. Deliberately WITHOUT /月: section 6.4 requires
+ * that "one-off payments must not show '/month'". A HK$300 payment covering
+ * three months is not a HK$300/month sponsorship, and labelling it that way
+ * misstates the supporter's commitment.
+ */
+function paymentAmountLabel(amountCents: number) {
+  return centsToHkd(amountCents);
+}
+
+/** `2026-08-01` is the month of August, not the 1st — render it as the month. */
+function monthLabel(periodMonth: string) {
+  return periodMonth.slice(0, 7);
 }
 
 type ProofUrlResponse = { url: string; fileName: string };
@@ -126,6 +161,11 @@ export function PledgeDetailDrawer({
   const [submitting, setSubmitting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [reviewNote, setReviewNote] = useState("");
+  const [assignAnimalId, setAssignAnimalId] = useState("");
+  const [endReasonByAssignment, setEndReasonByAssignment] = useState<
+    Record<string, AssignmentEndReason>
+  >({});
+  const [endNoteByAssignment, setEndNoteByAssignment] = useState<Record<string, string>>({});
   const [cancelNote, setCancelNote] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<(typeof PAYMENT_METHOD_VALUES)[number]>("fps");
   const [reference, setReference] = useState("");
@@ -178,6 +218,45 @@ export function PledgeDetailDrawer({
       await refreshAll();
     } catch (submitError) {
       setActionError(submitError instanceof Error ? submitError.message : copy.errors.cancel);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function submitAssign() {
+    setSubmitting(true);
+    setActionError(null);
+    try {
+      await fetchCoordinatorJson(`/api/admin/sponsorships/pledges/${pledgeId}/assignments`, {
+        method: "POST",
+        body: JSON.stringify({ animalId: assignAnimalId }),
+      });
+      setAssignAnimalId("");
+      await refreshAll();
+    } catch (submitError) {
+      setActionError(submitError instanceof Error ? submitError.message : copy.errors.review);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function submitEndAssignment(assignmentId: string) {
+    setSubmitting(true);
+    setActionError(null);
+    try {
+      const reason = endReasonByAssignment[assignmentId] ?? "adopted";
+      const note = endNoteByAssignment[assignmentId] ?? "";
+      await fetchCoordinatorJson(
+        `/api/admin/sponsorships/pledges/${pledgeId}/assignments/${assignmentId}/end`,
+        {
+          method: "POST",
+          body: JSON.stringify({ reason, note: note || undefined }),
+        },
+      );
+      setEndNoteByAssignment((previous) => ({ ...previous, [assignmentId]: "" }));
+      await refreshAll();
+    } catch (submitError) {
+      setActionError(submitError instanceof Error ? submitError.message : copy.errors.review);
     } finally {
       setSubmitting(false);
     }
@@ -272,7 +351,7 @@ export function PledgeDetailDrawer({
                 {formatFallback(pledge.supporterEmail)} · {formatFallback(pledge.supporterPhone)}
               </p>
               <p className="text-sm text-[var(--color-panel)]">
-                {amountLabel(pledge.amountCents)}（
+                {monthlyAmountLabel(pledge.amountCents)}（
                 {pledge.monthlyTier === "custom" ? copy.customTier : pledge.monthlyTier}）
               </p>
               <p className="text-xs text-[var(--color-text-muted)]">
@@ -369,7 +448,7 @@ export function PledgeDetailDrawer({
               </section>
             )}
 
-            {canReviewProof(pledge.status) && (
+            {canReviewProof(pledge.proofHistory) && (
               <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
                 <h3 className="text-sm font-semibold text-[var(--color-panel)]">
                   {copy.reviewProof.title}
@@ -379,7 +458,7 @@ export function PledgeDetailDrawer({
                     <p className="text-sm text-[var(--color-text-muted)]">
                       {pledge.currentProof.paymentMethod} ·{" "}
                       {formatFallback(pledge.currentProof.reference)} ·{" "}
-                      {amountLabel(pledge.currentProof.amountCents)}
+                      {paymentAmountLabel(pledge.currentProof.amountCents)}
                     </p>
                     <ProofPreview pledgeId={pledgeId} proof={pledge.currentProof} />
                   </>
@@ -429,6 +508,139 @@ export function PledgeDetailDrawer({
               </section>
             )}
 
+            <section className="space-y-2">
+              <h3 className="text-sm font-semibold text-[var(--color-panel)]">
+                {copy.assignments.title}
+              </h3>
+              <ul className="space-y-2">
+                {pledge.assignments.map((assignment) => (
+                  <li
+                    key={assignment.id}
+                    className={`space-y-1 rounded-lg border border-[var(--color-border)] p-3 text-sm ${
+                      assignment.endedOn ? "opacity-60" : ""
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-medium text-[var(--color-panel)]">
+                        {assignment.animalNameSnapshot}
+                      </span>
+                      {assignment.reviewReason && (
+                        <StatusPill tone="danger">
+                          {copy.assignments.reasons[assignment.reviewReason]}
+                        </StatusPill>
+                      )}
+                    </div>
+                    <p className="text-[var(--color-text-muted)]">
+                      {copy.assignments.started} {assignment.startedOn}
+                      {assignment.endedOn && (
+                        <>
+                          {" · "}
+                          {copy.assignments.ended} {assignment.endedOn}
+                          {assignment.endReason && (
+                            <> · {copy.assignments.reasons[assignment.endReason]}</>
+                          )}
+                          {assignment.endNote && <> · {assignment.endNote}</>}
+                        </>
+                      )}
+                    </p>
+                    {!assignment.endedOn && (
+                      <div className="flex items-center gap-2">
+                        <Select
+                          value={endReasonByAssignment[assignment.id] ?? "adopted"}
+                          onValueChange={(value) =>
+                            setEndReasonByAssignment((previous) => ({
+                              ...previous,
+                              [assignment.id]: value as AssignmentEndReason,
+                            }))
+                          }
+                        >
+                          <SelectTrigger
+                            aria-label={copy.assignments.reasonLabel}
+                            className="h-9 w-auto"
+                          >
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {ASSIGNMENT_END_REASON_VALUES.map((reason) => (
+                              <SelectItem key={reason} value={reason}>
+                                {copy.assignments.reasons[reason]}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Input
+                          aria-label={copy.assignments.noteLabel}
+                          value={endNoteByAssignment[assignment.id] ?? ""}
+                          onChange={(event) =>
+                            setEndNoteByAssignment((previous) => ({
+                              ...previous,
+                              [assignment.id]: event.target.value,
+                            }))
+                          }
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => submitEndAssignment(assignment.id)}
+                          disabled={submitting}
+                        >
+                          {copy.assignments.end}
+                        </Button>
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+              {pledge.needsAnimal && (
+                <p className="text-[var(--color-text-muted)]">{copy.assignments.needsAnimal}</p>
+              )}
+              <div className="flex gap-2">
+                <Input
+                  value={assignAnimalId}
+                  placeholder={copy.assignments.addPlaceholder}
+                  onChange={(event) => setAssignAnimalId(event.target.value)}
+                />
+                <Button
+                  type="button"
+                  onClick={submitAssign}
+                  disabled={submitting || !assignAnimalId}
+                >
+                  {copy.assignments.add}
+                </Button>
+              </div>
+            </section>
+
+            {pledge.periods.length > 0 && (
+              <section className="space-y-2">
+                <h3 className="text-sm font-semibold text-[var(--color-panel)]">助養月份</h3>
+                <ul className="space-y-2">
+                  {pledge.periods.map((period) => {
+                    const settled = period.outstandingCents === 0;
+                    return (
+                      <li
+                        key={period.id}
+                        className="space-y-1 rounded-lg border border-[var(--color-border)] p-3 text-sm"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-medium text-[var(--color-panel)]">
+                            {monthLabel(period.periodMonth)}
+                          </span>
+                          <StatusPill tone={settled ? "success" : "warning"}>
+                            {settled ? "已付" : "待付"}
+                          </StatusPill>
+                        </div>
+                        <p className="text-[var(--color-text-muted)]">
+                          應付 {paymentAmountLabel(period.committedCents)} · 已付{" "}
+                          {paymentAmountLabel(period.allocatedCents)}
+                          {!settled && <> · 尚欠 {paymentAmountLabel(period.outstandingCents)}</>}
+                        </p>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </section>
+            )}
+
             {pledge.proofHistory.length > 0 && (
               <section className="space-y-2">
                 <h3 className="text-sm font-semibold text-[var(--color-panel)]">
@@ -457,7 +669,7 @@ export function PledgeDetailDrawer({
                         </div>
                         <p className="text-[var(--color-text-muted)]">
                           {proof.paymentMethod} · {formatFallback(proof.reference)} ·{" "}
-                          {amountLabel(proof.amountCents)} · {proofSourceLabel[proof.source]}
+                          {paymentAmountLabel(proof.amountCents)} · {proofSourceLabel[proof.source]}
                         </p>
                         {proof.fileName && (
                           <p className="text-xs text-[var(--color-text-muted)]">

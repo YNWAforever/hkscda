@@ -19,6 +19,7 @@ import {
   pledgeStatusTone,
 } from "./pledgeReviewLogic";
 import { PledgeDetailDrawer } from "./PledgeDetailDrawer";
+import { centsToHkd } from "../../../lib/donations/domain";
 
 type PledgeListResponse = {
   pledges: PledgeSummary[];
@@ -27,9 +28,10 @@ type PledgeListResponse = {
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50] as const;
 
+// A monthly commitment, so /月 is right here. `centsToHkd` rather than
+// rounding: HK$123.45 was being shown as HK$123.
 function amountLabel(pledge: PledgeSummary) {
-  const dollars = Math.round(pledge.amountCents / 100).toLocaleString("en-US");
-  return `HK$${dollars}/月`;
+  return `${centsToHkd(pledge.amountCents)}/月`;
 }
 
 export function PledgeReviewLane() {
