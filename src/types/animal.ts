@@ -1,5 +1,12 @@
 export type AnimalType = "cat" | "dog" | "sponsor";
 export type AnimalStatus = "available" | "adopted" | "fostered";
+
+export const PUBLIC_VISIBLE_ANIMAL_STATUSES: readonly AnimalStatus[] = ["available", "fostered"];
+
+export function isPubliclyVisibleStatus(status: AnimalStatus): boolean {
+  return PUBLIC_VISIBLE_ANIMAL_STATUSES.includes(status);
+}
+
 /** Publication is a separate axis from `AnimalStatus` and from archival. */
 export type AnimalPublicationState = "draft" | "published" | "unpublished";
 export type AgeFilter = "all" | "bb" | "adult" | "senior";
