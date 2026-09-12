@@ -157,6 +157,9 @@ class FakeQuery {
     if (this.table === "sponsorship_preference") return this.state.preferenceRows;
     if (this.table === "sponsorship_payment_proof") return this.state.proofRows;
     if (this.table === "audit_log") return this.state.auditRows;
+    if (this.table === "sponsorship_assignment") return this.state.assignmentRows;
+    if (this.table === "sponsorship_period") return this.state.periodRows;
+    if (this.table === "sponsorship_payment_allocation") return this.state.allocationRows;
     return [];
   }
 
@@ -208,6 +211,9 @@ type FakeState = {
   preferenceRows: Record<string, unknown>[];
   proofRows: Record<string, unknown>[];
   auditRows: Record<string, unknown>[];
+  assignmentRows: Record<string, unknown>[];
+  periodRows: Record<string, unknown>[];
+  allocationRows: Record<string, unknown>[];
   rpcError: Error | null;
   rpcResult: unknown;
 };
@@ -220,6 +226,9 @@ function createFakeClient(overrides: Partial<FakeState> = {}) {
     preferenceRows: [],
     proofRows: [proofRow()],
     auditRows: [],
+    assignmentRows: [],
+    periodRows: [],
+    allocationRows: [],
     rpcError: null,
     rpcResult: null,
     ...overrides,
@@ -341,6 +350,51 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
       p_decision: "approve",
       p_actor_user_id: actorUserId,
       p_note: "Looks good",
+      p_allocations: [],
+      // The animal to confirm rides along with the decision, so approving,
+      // attributing and confirming all commit in one transaction.
+      p_assign_animal_id: null,
+    });
+  });
+
+  test("assignAnimal calls the audited RPC with mapped params", async () => {
+    const { client, state } = createFakeClient({ rpcResult: "asg-1" });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const result = await repo.assignAnimal({
+      pledgeId,
+      animalId: "animal-1",
+      actorUserId,
+      note: "Supporter asked for this cat",
+    });
+
+    const call = state.calls.find((c) => c.fn === "assign_sponsorship_animal_with_audit");
+    expect(call?.payload).toEqual({
+      p_pledge_id: pledgeId,
+      p_animal_id: "animal-1",
+      p_actor_user_id: actorUserId,
+      p_note: "Supporter asked for this cat",
+    });
+    expect(result).toEqual({ id: "asg-1" });
+  });
+
+  test("endAssignment calls the audited RPC with mapped params", async () => {
+    const { client, state } = createFakeClient();
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    await repo.endAssignment({
+      assignmentId: "asg-1",
+      actorUserId,
+      reason: "adopted",
+      note: null,
+    });
+
+    const call = state.calls.find((c) => c.fn === "end_sponsorship_assignment_with_audit");
+    expect(call?.payload).toEqual({
+      p_assignment_id: "asg-1",
+      p_actor_user_id: actorUserId,
+      p_reason: "adopted",
+      p_note: null,
     });
   });
 
@@ -575,34 +629,234 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     expect(detail?.recentAuditLog).toHaveLength(1);
   });
 
-  test("getPledgeDetail picks the newest proof as currentProof regardless of input array order", async () => {
-    // Supplied out of chronological order (oldest, newest, middle) so that a
-    // naive "take index 0 of whatever was given" implementation — or one that
-    // silently drops the `.order("created_at", { ascending: false })` call as
-    // seemingly redundant — would fail this test. Only actually sorting by
-    // created_at desc can land on "proof-newest", matching what
-    // review_sponsorship_payment_proof's own `order by created_at desc limit
-    // 1 for update` would act on in the database.
-    const oldestProof = proofRow({ id: "proof-oldest", created_at: "2026-06-01T00:00:00.000Z" });
-    const newestProof = proofRow({ id: "proof-newest", created_at: "2026-07-15T00:00:00.000Z" });
-    const middleProof = proofRow({ id: "proof-middle", created_at: "2026-07-01T00:00:00.000Z" });
+  test("getPledgeDetail picks the oldest PENDING proof as currentProof, regardless of input order", async () => {
+    // Three months of a running sponsorship: month one approved, months two and
+    // three still queued. Supplied out of chronological order so that a naive
+    // "take index 0 of whatever was given" implementation fails.
+    //
+    // currentProof must be month two — the oldest still awaiting review.
+    // Newest-first would land on month three and strand month two forever: it
+    // can never become the newest again, so no later review could reach it and
+    // a real recorded payment would sit unreviewed with no way to act on it.
+    // This must agree with review_sponsorship_payment_proof's own
+    // `order by created_at asc, id asc` (20260911180000).
+    const monthOne = proofRow({
+      id: "proof-month-1",
+      created_at: "2026-06-01T00:00:00.000Z",
+      review_status: "approved",
+    });
+    const monthTwo = proofRow({ id: "proof-month-2", created_at: "2026-07-01T00:00:00.000Z" });
+    const monthThree = proofRow({ id: "proof-month-3", created_at: "2026-07-15T00:00:00.000Z" });
 
     const { client } = createFakeClient({
-      proofRows: [oldestProof, newestProof, middleProof],
+      proofRows: [monthOne, monthThree, monthTwo],
     });
     const repo = createSupabaseSponsorshipAdminRepository(client);
 
     const detail = await repo.getPledgeDetail(pledgeId);
 
-    expect(detail?.currentProof?.id).toBe("proof-newest");
-    // The older rows must still surface in the full history, in
-    // newest-first order — this rules out "current picks right but history
-    // silently drops rows" as a false-positive pass.
+    expect(detail?.currentProof?.id).toBe("proof-month-2");
+    // The other rows must still surface in the full history, in newest-first
+    // order — this rules out "current picks right but history silently drops
+    // rows" as a false-positive pass. History order is a display choice and is
+    // deliberately the opposite of the review order.
     expect(detail?.proofHistory.map((p) => p.id)).toEqual([
-      "proof-newest",
-      "proof-middle",
-      "proof-oldest",
+      "proof-month-3",
+      "proof-month-2",
+      "proof-month-1",
     ]);
+  });
+
+  test("getPledgeDetail reports no currentProof once every proof is decided", async () => {
+    // Between months. Offering a review action here would give staff buttons
+    // the database refuses, so the absence is the point.
+    const { client } = createFakeClient({
+      proofRows: [proofRow({ id: "proof-month-1", review_status: "approved" })],
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const detail = await repo.getPledgeDetail(pledgeId);
+
+    expect(detail?.currentProof).toBeNull();
+    expect(detail?.proofHistory).toHaveLength(1);
+  });
+
+  test("getPledgeDetail sums each month's allocations into the ledger", async () => {
+    // September was settled by two payments — a partial and a top-up — so the
+    // month's paid figure has to be the SUM of its allocations. Storing a
+    // paid/allocated column on the period instead would be a second set of
+    // books that could drift from the allocations themselves.
+    const { client } = createFakeClient({
+      periodRows: [
+        { id: "per-aug", pledge_id: pledgeId, period_month: "2026-08-01", committed_cents: 10000 },
+        { id: "per-sep", pledge_id: pledgeId, period_month: "2026-09-01", committed_cents: 10000 },
+      ],
+      allocationRows: [
+        {
+          id: "alloc-1",
+          period_id: "per-aug",
+          proof_id: "proof-1",
+          amount_cents: 10000,
+          reverses_allocation_id: null,
+          note: null,
+          created_at: "2026-08-02T00:00:00.000Z",
+        },
+        {
+          id: "alloc-2",
+          period_id: "per-sep",
+          proof_id: "proof-2",
+          amount_cents: 6000,
+          reverses_allocation_id: null,
+          note: null,
+          created_at: "2026-09-02T00:00:00.000Z",
+        },
+        {
+          id: "alloc-3",
+          period_id: "per-sep",
+          proof_id: "proof-3",
+          amount_cents: 4000,
+          reverses_allocation_id: null,
+          note: null,
+          created_at: "2026-09-20T00:00:00.000Z",
+        },
+      ],
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const detail = await repo.getPledgeDetail(pledgeId);
+
+    expect(detail?.periods.map((p) => p.periodMonth)).toEqual(["2026-08-01", "2026-09-01"]);
+    expect(detail?.periods[1].allocatedCents).toBe(10000);
+    expect(detail?.periods[1].allocations).toHaveLength(2);
+    expect(detail?.periods.every((p) => p.outstandingCents === 0)).toBe(true);
+  });
+
+  test("getPledgeDetail treats a reversal as money taken back off the month", async () => {
+    // A refund is a negative allocation, so the same sum handles it and the
+    // month returns to outstanding — without deleting the original entry, which
+    // stays visible as something that happened and was undone.
+    const { client } = createFakeClient({
+      periodRows: [
+        { id: "per-aug", pledge_id: pledgeId, period_month: "2026-08-01", committed_cents: 10000 },
+      ],
+      allocationRows: [
+        {
+          id: "alloc-1",
+          period_id: "per-aug",
+          proof_id: "proof-1",
+          amount_cents: 10000,
+          reverses_allocation_id: null,
+          note: null,
+          created_at: "2026-08-02T00:00:00.000Z",
+        },
+        {
+          id: "alloc-2",
+          period_id: "per-aug",
+          proof_id: "proof-1",
+          amount_cents: -10000,
+          reverses_allocation_id: "alloc-1",
+          note: "supporter refunded",
+          created_at: "2026-08-20T00:00:00.000Z",
+        },
+      ],
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const detail = await repo.getPledgeDetail(pledgeId);
+
+    expect(detail?.periods[0].allocatedCents).toBe(0);
+    expect(detail?.periods[0].outstandingCents).toBe(10000);
+    expect(detail?.periods[0].allocations).toHaveLength(2);
+  });
+
+  test("getPledgeDetail returns an empty ledger without querying allocations", async () => {
+    // A pledge whose first payment is not yet approved has no months. The
+    // allocation query must be skipped entirely rather than sent with an empty
+    // id list, which PostgREST would reject.
+    const { client, state } = createFakeClient();
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const detail = await repo.getPledgeDetail(pledgeId);
+
+    expect(detail?.periods).toEqual([]);
+    expect(
+      state.calls.some((c) => "table" in c && c.table === "sponsorship_payment_allocation"),
+    ).toBe(false);
+  });
+
+  test("allocateProof passes the planned months to the audited RPC", async () => {
+    const { client, state } = createFakeClient({
+      rpcResult: { status: "allocated", allocatedCents: 20000 },
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const result = await repo.allocateProof({
+      proofId: "proof-1",
+      actorUserId,
+      allocations: [
+        { periodMonth: "2026-08-01", amountCents: 10000 },
+        { periodMonth: "2026-09-01", amountCents: 10000 },
+      ],
+    });
+
+    const call = state.calls.find((c) => c.fn === "allocate_sponsorship_payment_with_audit");
+    expect(call?.payload).toEqual({
+      p_proof_id: "proof-1",
+      p_actor_user_id: actorUserId,
+      p_allocations: [
+        { periodMonth: "2026-08-01", amountCents: 10000 },
+        { periodMonth: "2026-09-01", amountCents: 10000 },
+      ],
+    });
+    expect(result).toEqual({ status: "allocated", allocatedCents: 20000 });
+  });
+
+  test("allocateProof reports an already-allocated payment as success, not failure", async () => {
+    // The RPC is idempotent by claim: a retry after a lost response finds the
+    // allocation already committed. Treating that as an error would push staff
+    // to allocate again and double-count the payment.
+    const { client } = createFakeClient({
+      rpcResult: { status: "already_allocated", allocations: [] },
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const result = await repo.allocateProof({
+      proofId: "proof-1",
+      actorUserId,
+      allocations: [{ periodMonth: "2026-08-01", amountCents: 10000 }],
+    });
+
+    expect(result.status).toBe("already_allocated");
+  });
+
+  test("getProofSigningInfo signs the same proof getPledgeDetail calls current", async () => {
+    // The file staff look at and the row their decision updates must be the
+    // same one. Signing the newest row instead would show them month three's
+    // receipt while approving month two's payment.
+    const monthTwo = proofRow({
+      id: "proof-month-2",
+      created_at: "2026-07-01T00:00:00.000Z",
+      storage_path: `${pledgeId}/month-2.jpg`,
+      file_name: "month-2.jpg",
+    });
+    const monthThree = proofRow({
+      id: "proof-month-3",
+      created_at: "2026-07-15T00:00:00.000Z",
+      storage_path: `${pledgeId}/month-3.jpg`,
+      file_name: "month-3.jpg",
+    });
+
+    const { client } = createFakeClient({ proofRows: [monthThree, monthTwo] });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const detail = await repo.getPledgeDetail(pledgeId);
+    const info = await repo.getProofSigningInfo(pledgeId);
+
+    expect(detail?.currentProof?.id).toBe("proof-month-2");
+    expect(info).toEqual({
+      storagePath: `${pledgeId}/month-2.jpg`,
+      fileName: "month-2.jpg",
+    });
   });
 
   test("getProofSigningInfo returns the current proof's storage location", async () => {
@@ -632,5 +886,93 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     const repo = createSupabaseSponsorshipAdminRepository(client);
 
     expect(await repo.getProofSigningInfo(pledgeId)).toBeNull();
+  });
+
+  test("getPledgeDetail lists open assignments before ended ones", async () => {
+    const { client } = createFakeClient({
+      assignmentRows: [
+        {
+          id: "asg-ended",
+          pledge_id: pledgeId,
+          animal_id: "animal-1",
+          animal_name_snapshot: "小白",
+          started_on: "2026-06-01",
+          ended_on: "2026-07-15",
+          end_reason: "adopted",
+          note: null,
+          end_note: null,
+        },
+        {
+          id: "asg-open",
+          pledge_id: pledgeId,
+          animal_id: "animal-2",
+          animal_name_snapshot: "阿花",
+          started_on: "2026-08-01",
+          ended_on: null,
+          end_reason: null,
+          note: null,
+          end_note: null,
+        },
+      ],
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const detail = await repo.getPledgeDetail(pledgeId);
+
+    // Open first: it is what staff act on. The ended one stays as history
+    // rather than being hidden.
+    expect(detail?.assignments.map((a) => a.id)).toEqual(["asg-open", "asg-ended"]);
+    expect(detail?.assignments[1].endReason).toBe("adopted");
+  });
+
+  test("getPledgeDetail carries the assigned animal's embedded state onto the assignment", async () => {
+    const { client } = createFakeClient({
+      // No preference row at all: this is the hand-added animal, which is on no
+      // shortlist. The state has to come off the assigned animal itself.
+      preferenceRows: [],
+      assignmentRows: [
+        {
+          id: "asg-open",
+          pledge_id: pledgeId,
+          animal_id: "animal-1",
+          animal_name_snapshot: "小白",
+          started_on: "2026-08-01",
+          ended_on: null,
+          end_reason: null,
+          note: null,
+          end_note: null,
+          animal: {
+            sponsorship_eligible: true,
+            status: "adopted",
+            retired_at: null,
+            publication_state: "published",
+            animal_profile_internal: { deceased_at: null, adopted_at: null },
+          },
+        },
+      ],
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const detail = await repo.getPledgeDetail(pledgeId);
+
+    expect(detail?.assignments[0].animalState).toEqual({
+      sponsorshipEligible: true,
+      status: "adopted",
+      retiredAt: null,
+      publicationState: "published",
+      deceasedAt: null,
+      adoptedAt: null,
+    });
+    // The repository reports the state; the service turns it into a reason.
+    expect(detail?.assignments[0].reviewReason).toBeNull();
+  });
+
+  test("getPledgeDetail returns an empty assignment list when there are none", async () => {
+    const { client } = createFakeClient();
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const detail = await repo.getPledgeDetail(pledgeId);
+
+    expect(detail?.assignments).toEqual([]);
   });
 });

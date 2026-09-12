@@ -2,12 +2,17 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { SponsorshipAdminRepository } from "./repository.server";
 import {
+  assignAnimalSchema,
   cancelPledgeSchema,
+  endAssignmentSchema,
   pledgeListSearchSchema,
   recordPledgePaymentSchema,
   reviewPledgeProofSchema,
 } from "./schemas";
-import type { PledgeDetail } from "./types";
+import { MAX_ADVANCE_PERIODS, monthStartOf, planPaymentAllocation } from "./allocation";
+import { selectAutoAssignAnimal } from "./autoAssign";
+import type { CandidateAnimalState } from "./autoAssign";
+import type { PledgeDetail, PaymentProofRecord, SponsorshipAssignmentRecord } from "./types";
 import type { SendPledgeStatusUpdateEmailArgs } from "./notifications.server";
 import { pledgeReference } from "../sponsorship/statusSummary";
 
@@ -26,15 +31,88 @@ export type CreateSponsorshipAdminServiceArgs = {
   logger?: Pick<Console, "error">;
 };
 
+/**
+ * Works out which months an approved payment pays for.
+ *
+ * Returned rather than applied: the plan travels into
+ * `review_sponsorship_payment_proof` so the approval and the attribution commit
+ * together. Approving in one transaction and attributing in another would leave
+ * a window where money is verified but belongs to no month, and a crash inside
+ * that window would make it permanent.
+ */
+function planApprovedPayment(proof: PaymentProofRecord, detail: PledgeDetail) {
+  const plan = planPaymentAllocation({
+    paymentCents: proof.amountCents,
+    periods: detail.periods,
+    committedCents: detail.amountCents,
+    // payment_date is when the money moved; the month it pays for starts there
+    // and runs forward past whatever is already settled.
+    startMonth: monthStartOf(proof.paymentDate),
+  });
+
+  if (plan.unallocatedCents > 0) {
+    // Refusing beats absorbing. A payment covering more than MAX_ADVANCE_PERIODS
+    // months is not ordinary traffic -- far more likely a mistyped amount -- and
+    // approving it here would leave part of a supporter's money attributed to no
+    // month at all. Staff can correct the amount, reject the proof, or attribute
+    // it deliberately.
+    throw new Error(
+      `Payment of ${proof.amountCents} cents exceeds ${MAX_ADVANCE_PERIODS} months of this ` +
+        `pledge; ${plan.unallocatedCents} cents could not be attributed to a month. ` +
+        `Check the amount, or attribute this payment manually.`,
+    );
+  }
+
+  return plan.allocations.map((allocation) => ({
+    periodMonth: allocation.periodMonth,
+    amountCents: allocation.amountCents,
+  }));
+}
+
 function requirePledge(detail: PledgeDetail | null): PledgeDetail {
   if (!detail) throw new Error("Sponsorship pledge not found");
   return detail;
 }
 
+/**
+ * Mirrors the status list in `record_sponsorship_payment_proof`
+ * (`20260911180000_sponsorship_second_month.sql`). `active` is here because a
+ * sponsorship is monthly: the second month's payment is recorded against a
+ * pledge that is already running. Recording one does NOT move an active pledge
+ * back to `provisional` — the sponsorship is still active; it is the new proof
+ * that is pending.
+ */
 const RECORD_PAYMENT_ELIGIBLE_STATUSES: PledgeDetail["status"][] = [
   "pending_payment",
   "needs_followup",
+  "active",
 ];
+
+/**
+ * Why an open assignment needs a person to look at it.
+ *
+ * Derived on every read rather than stored: a flag written at one moment would
+ * drift from the animal's real state the instant the CMS changed it.
+ *
+ * `retired` flags even though retirement is not an automatic end reason —
+ * flagging is not ending, and an archived record is worth a look.
+ *
+ * Adoption is read from BOTH of its homes. `animals.status` is written by the
+ * staff status RPC; `animal_profile_internal.adopted_at` is written by the
+ * adoptions internal-profile form, which never touches `animals.status`. An
+ * animal adopted through that form would otherwise go unflagged while the
+ * supporter kept paying for it.
+ */
+function reviewReasonFor(
+  animal: CandidateAnimalState | null,
+): SponsorshipAssignmentRecord["reviewReason"] {
+  if (!animal) return null;
+  if (animal.deceasedAt !== null) return "deceased";
+  if (animal.status === "adopted" || animal.adoptedAt !== null) return "adopted";
+  if (animal.retiredAt !== null) return "retired";
+  if (!animal.sponsorshipEligible) return "ineligible";
+  return null;
+}
 
 export function createSponsorshipAdminService({
   repo,
@@ -66,7 +144,36 @@ export function createSponsorshipAdminService({
     },
 
     async getPledgeDetail(id: string) {
-      return repo.getPledgeDetail(id);
+      const detail = await repo.getPledgeDetail(id);
+      if (!detail) return null;
+
+      // The state comes off the assigned animal itself, never off the
+      // supporter's ranked preferences. Only the first animal is auto-confirmed
+      // from that shortlist; every animal a staff member adds by hand
+      // afterwards is absent from it, and deriving the flag from preferences
+      // meant those animals could never be flagged at all.
+      const assignments = detail.assignments.map((assignment) =>
+        assignment.endedOn !== null || assignment.animalId === null
+          ? assignment
+          : {
+              ...assignment,
+              reviewReason: reviewReasonFor(assignment.animalState),
+            },
+      );
+
+      return {
+        ...detail,
+        assignments,
+        // The second derived signal: a sponsorship that is running but backs
+        // no animal. Only `active` counts -- a pledge that has not reached
+        // `active` yet (pending_payment, provisional, needs_followup) has no
+        // animal for an ordinary reason: nothing has been paid and confirmed
+        // yet, so there is nothing for staff to resolve. `cancelled` is
+        // likewise excluded, since it takes no further payments.
+        needsAnimal:
+          detail.status === "active" &&
+          assignments.every((assignment) => assignment.endedOn !== null),
+      };
     },
 
     async getProofSigningInfo(id: string) {
@@ -130,18 +237,43 @@ export function createSponsorshipAdminService({
     async reviewProof(args: { actorUserId: string; pledgeId: string; input: unknown }) {
       const input = reviewPledgeProofSchema.parse(args.input);
       const detail = requirePledge(await repo.getPledgeDetail(args.pledgeId));
-      if (detail.status !== "provisional") {
-        throw new Error("Sponsorship pledge is not awaiting review");
-      }
+      // Deliberately no pledge-status gate. What is being reviewed is a proof,
+      // and `currentProof` already resolves to the one awaiting review (see
+      // proofReview.ts). Requiring status='provisional' conflated the
+      // supporter's standing commitment with the review queue and made every
+      // month after the first unreviewable, since approving month one leaves
+      // the pledge 'active' for good.
       if (!detail.currentProof || detail.currentProof.reviewStatus !== "pending") {
         throw new Error("Sponsorship pledge has no proof pending review");
       }
+
+      // A rejected payment pays for nothing, so it attributes to nothing.
+      const allocations =
+        input.decision === "approve" ? planApprovedPayment(detail.currentProof, detail) : [];
+
+      // Confirm the supporter's animal on the FIRST approval only. "First"
+      // means the pledge has never had an assignment: one that was ended
+      // because the animal was adopted or died must be replaced by a person,
+      // not silently by the next payment.
+      const assignAnimalId =
+        input.decision === "approve" && detail.assignments.length === 0
+          ? (selectAutoAssignAnimal(
+              detail.preferences.map((preference) => ({
+                rank: preference.rank,
+                animalId: preference.animalId,
+                animalNameSnapshot: preference.animalNameSnapshot,
+                animal: preference.animalState,
+              })),
+            )?.animalId ?? null)
+          : null;
 
       await repo.reviewProof({
         pledgeId: args.pledgeId,
         actorUserId: args.actorUserId,
         decision: input.decision,
         note: input.note ?? null,
+        allocations,
+        assignAnimalId,
       });
 
       await notify(detail, input.decision === "approve" ? "active" : "needs_followup");
@@ -161,6 +293,48 @@ export function createSponsorshipAdminService({
       });
 
       await notify(detail, "cancelled");
+    },
+
+    async assignAnimal(args: { actorUserId: string; pledgeId: string; input: unknown }) {
+      const input = assignAnimalSchema.parse(args.input);
+      const detail = requirePledge(await repo.getPledgeDetail(args.pledgeId));
+      // Checked here as well as in the RPC so staff get a clear message rather
+      // than a raw database exception; the RPC remains the guard that cannot
+      // be bypassed.
+      if (detail.status === "cancelled") {
+        throw new Error("Sponsorship pledge is already cancelled");
+      }
+
+      return repo.assignAnimal({
+        pledgeId: args.pledgeId,
+        animalId: input.animalId,
+        actorUserId: args.actorUserId,
+        note: input.note ?? null,
+      });
+    },
+
+    async endAssignment(args: {
+      actorUserId: string;
+      pledgeId: string;
+      assignmentId: string;
+      input: unknown;
+    }) {
+      const input = endAssignmentSchema.parse(args.input);
+      const detail = requirePledge(await repo.getPledgeDetail(args.pledgeId));
+      const assignment = detail.assignments.find((a) => a.id === args.assignmentId);
+      if (!assignment) {
+        throw new Error("Sponsorship assignment not found");
+      }
+      if (assignment.endedOn !== null) {
+        throw new Error("Sponsorship assignment is already ended");
+      }
+
+      await repo.endAssignment({
+        assignmentId: args.assignmentId,
+        actorUserId: args.actorUserId,
+        reason: input.reason,
+        note: input.note ?? null,
+      });
     },
   };
 }

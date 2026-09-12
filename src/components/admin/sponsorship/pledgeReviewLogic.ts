@@ -1,5 +1,7 @@
 import type { StatusTone } from "../StatusBadge";
 import { MAX_PROOF_BYTES, PROOF_MIME_TYPES } from "../../../lib/sponsorship/schemas";
+import { hasProofAwaitingReview } from "../../../lib/sponsorshipAdmin/proofReview";
+import type { ReviewableProof } from "../../../lib/sponsorshipAdmin/proofReview";
 import type { PledgeStatus } from "../../../lib/sponsorshipAdmin/types";
 
 export type PledgeListFilters = {
@@ -52,14 +54,35 @@ export function pledgeStatusTone(status: PledgeStatus): StatusTone {
   return PLEDGE_STATUS_TONE[status];
 }
 
-/** Statuses for which the "record payment" form should be shown in the detail drawer. */
+/**
+ * Statuses for which the "record payment" form should be shown in the detail
+ * drawer.
+ *
+ * `active` is included because a sponsorship is monthly: the second month's
+ * payment is recorded against a pledge that is already running, and omitting
+ * it here left staff no way to record one. Mirrors the status list in
+ * `record_sponsorship_payment_proof`
+ * (`20260911180000_sponsorship_second_month.sql`).
+ *
+ * `provisional` stays out: a proof is already queued, and the outstanding one
+ * should be decided first. `cancelled` stays out for the obvious reason.
+ */
 export function canRecordPayment(status: PledgeStatus): boolean {
-  return status === "pending_payment" || status === "needs_followup";
+  return status === "pending_payment" || status === "needs_followup" || status === "active";
 }
 
-/** Statuses for which the "review payment proof" form should be shown in the detail drawer. */
-export function canReviewProof(status: PledgeStatus): boolean {
-  return status === "provisional";
+/**
+ * Whether the "review payment proof" form should be shown in the detail
+ * drawer.
+ *
+ * Keyed on the proofs, not the pledge's status. A running sponsorship whose
+ * latest month is queued has status `active`, so a status test would hide the
+ * only control that can clear it; and a `provisional` pledge whose proof was
+ * already decided would offer buttons that the database rejects. Both
+ * questions are answered by whether anything is actually awaiting review.
+ */
+export function canReviewProof(proofs: readonly ReviewableProof[]): boolean {
+  return hasProofAwaitingReview(proofs);
 }
 
 /** Statuses for which the "cancel sponsorship" action should be shown in the detail drawer. */

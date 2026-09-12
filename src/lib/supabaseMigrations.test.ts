@@ -958,4 +958,133 @@ describe("supabase migration safety", () => {
       expect(sql).toContain(`(${slug}, '{`);
     }
   });
+
+  test("adds sponsorship assignments with explicit grants, RLS and an anon revoke", () => {
+    const sql = readMigration("20260912120000_sponsorship_assignments.sql");
+
+    // Many sponsors per animal is the point: only the OPEN assignment is
+    // unique, and only per (pledge, animal).
+    expect(sql).toContain(
+      "create unique index if not exists sponsorship_assignment_one_open_per_animal",
+    );
+    expect(sql).toContain("where ended_on is null");
+    expect(sql).not.toContain("unique (animal_id)");
+
+    // A reason is recorded exactly when the relationship ends.
+    expect(sql).toContain("(ended_on is null) = (end_reason is null)");
+
+    expect(sql).toContain("alter table public.sponsorship_assignment enable row level security");
+    expect(sql).toContain("revoke all on public.sponsorship_assignment from anon");
+
+    // The ledger tables shipped without an anon revoke; close it here.
+    expect(sql).toContain("revoke all on public.sponsorship_period from anon");
+    expect(sql).toContain("revoke all on public.sponsorship_payment_allocation from anon");
+  });
+
+  test("locks the sponsorship assignment RPCs to service_role and keeps the creation note immutable", () => {
+    const sql = readMigration("20260912120000_sponsorship_assignments.sql");
+
+    const signatures = {
+      assign_sponsorship_animal_with_audit: "(uuid, uuid, uuid, text)",
+      end_sponsorship_assignment_with_audit: "(uuid, uuid, text, text)",
+      // Redefined here to take p_assign_animal_id, so this migration -- not the
+      // ledger one -- now owns its grants.
+      review_sponsorship_payment_proof: "(uuid, text, uuid, text, jsonb, uuid)",
+    } as const;
+
+    for (const [fn, args] of Object.entries(signatures)) {
+      expect(sql).toContain(`create or replace function public.${fn}(`);
+      expect(sql).toContain(`revoke all on function public.${fn}${args} from anon;`);
+      expect(sql).toContain(`revoke all on function public.${fn}${args} from authenticated;`);
+      expect(sql).toContain(`grant execute on function public.${fn}${args} to service_role;`);
+    }
+
+    // All three are security definer with the house search_path pinned.
+    expect((sql.match(/security definer/g) ?? []).length).toBe(3);
+    expect((sql.match(/set search_path = public, pg_temp/g) ?? []).length).toBe(3);
+
+    const guards = sql.match(
+      /from public\.admin_user\s*\n\s*where auth_user_id = p_actor_user_id\s*\n\s*and status = 'active'\s*\n\s*and role in \('staff', 'admin'\)/g,
+    );
+    expect(guards).toHaveLength(3);
+
+    // Each RPC writes exactly one audit_log row inside the same function body
+    // as the data mutation (atomic — never a second, separately-failable call).
+    // The review RPC's own auto-assign step reuses assign_..._with_audit rather
+    // than writing an assignment row itself, so it still writes only its own.
+    expect((sql.match(/insert into public\.audit_log/g) ?? []).length).toBe(3);
+
+    // Ending an assignment must not overwrite the note explaining why that
+    // animal was confirmed for that supporter. The end reason gets its own
+    // column; the original note is never touched by the update.
+    expect(sql).toContain("end_note text");
+    expect(sql).toContain("end_note = p_note");
+    expect(sql).not.toContain("coalesce(p_note, note)");
+
+    // Dates come from Hong Kong, not from the UTC clock the database runs on.
+    expect(sql).not.toContain("current_date");
+    expect((sql.match(/\(now\(\) at time zone 'Asia\/Hong_Kong'\)::date/g) ?? []).length).toBe(2);
+  });
+
+  test("the assign guard refuses an animal that left by either of adoption's two homes", () => {
+    const sql = readMigration("20260912120000_sponsorship_assignments.sql");
+
+    // Departure is recorded across two unrelated tables. animals.status has no
+    // 'deceased' value at all, and the adoptions internal-profile form writes
+    // animal_profile_internal.adopted_at without ever touching animals.status,
+    // so reading only animals.status left an adopted animal assignable.
+    expect(sql).toContain("select deceased_at, adopted_at into v_deceased_at, v_adopted_at");
+    expect(sql).toContain("from public.animal_profile_internal");
+
+    // A missing profile row means nothing was recorded, not that the animal
+    // left: this must stay a plain select, never an inner join.
+    expect(sql).not.toContain("join public.animal_profile_internal");
+
+    // The refusal must name all six conditions, matching `isAssignable` in
+    // src/lib/sponsorshipAdmin/autoAssign.ts field for field.
+    for (const condition of [
+      "if not v_animal.sponsorship_eligible",
+      "or v_animal.status = 'adopted'",
+      "or v_animal.retired_at is not null",
+      "or v_animal.publication_state <> 'published'",
+      "or v_deceased_at is not null",
+      "or v_adopted_at is not null then",
+    ]) {
+      expect(sql).toContain(condition);
+    }
+  });
+
+  test("pins the review RPC's approve/reject branch on the migration that now owns its body", () => {
+    // review_sponsorship_payment_proof's approval/rejection logic used to be
+    // pinned only against the migration that first introduced it -- a
+    // five-argument signature this migration explicitly drops
+    // (`drop function if exists ... review_sponsorship_payment_proof(uuid,
+    // text, uuid, text, jsonb)` above) and replaces with a six-argument body.
+    // The definition moved files when it was replaced, so the pin has to move
+    // with it: this migration is now the one Postgres actually runs after a
+    // fresh reset, so it is the one whose approval behaviour must be asserted,
+    // or the risk this migration exists to manage -- silently losing approval
+    // logic while reproducing a ~140-line body -- is checked nowhere.
+    const sql = readMigration("20260912120000_sponsorship_assignments.sql");
+
+    // Approving moves both the proof and the pledge forward together.
+    expect(sql).toContain("v_new_review_status := 'approved';");
+    expect(sql).toContain("v_new_pledge_status := 'active';");
+
+    // Rejecting flags the pledge for follow-up rather than cancelling it.
+    expect(sql).toContain("v_new_review_status := 'rejected';");
+    expect(sql).toContain("v_new_pledge_status := 'needs_followup';");
+
+    // 'approve' and 'reject' are the only legal decisions.
+    expect(sql).toContain("raise exception 'Invalid review decision %', p_decision;");
+
+    // The OLDEST still-pending proof is the one reviewed, not the newest row
+    // overall -- losing this ordering would approve the wrong month's payment.
+    expect(sql).toContain("and review_status = 'pending'");
+    expect(sql).toContain("order by created_at asc, id asc");
+
+    // Both the proof and the pledge are written inside the same decision.
+    expect(sql).toContain("update public.sponsorship_payment_proof");
+    expect(sql).toContain("update public.sponsorship_pledge");
+  });
 });
