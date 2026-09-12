@@ -9,7 +9,8 @@
       "chore/layout-*": false,
       "fix/layout-*": false,
       "ci/layout-*": false,
-      "docs/brand-reconciliation": false
+      "docs/brand-reconciliation": false,
+      "claude/session-development-c8b184": false
     }
   }
 }

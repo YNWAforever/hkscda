@@ -191,7 +191,23 @@ describe("KnowledgeManagement", () => {
           query=""
         />,
       ),
-    ).toContain("No knowledge posts yet");
+    ).toContain("尚未有知識庫文章");
+  });
+
+  test("does not claim there are no posts underneath a load error", () => {
+    // posts defaulted to [] on a rejected query, so the empty-state text
+    // rendered directly alongside the error banner -- a failure asserted as a
+    // confirmed empty knowledge base.
+    const markup = renderToStaticMarkup(
+      <KnowledgeManagementView
+        data={{ posts: [], total: 0, page: 1, pageSize: 50 }}
+        documents={[]}
+        query=""
+        error="boom"
+      />,
+    );
+    expect(markup).toContain("boom");
+    expect(markup).not.toContain("尚未有知識庫文章");
   });
 
   test("invalidates knowledge queries after mutations", async () => {

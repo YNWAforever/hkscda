@@ -122,7 +122,7 @@ function UpdateBody({ update }: { update: StoryUpdate }) {
       >
         {pending ? "載入中" : "閱讀更新正文"}
       </button>
-      {error ? <p role="alert">未能載入正文，請重試。</p> : null}
+      {error ? <p role="alert">無法載入正文，請重試。</p> : null}
     </div>
   );
 }

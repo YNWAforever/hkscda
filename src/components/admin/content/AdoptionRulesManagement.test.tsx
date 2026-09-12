@@ -1,8 +1,37 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, mock, test } from "bun:test";
+import { renderToStaticMarkup } from "react-dom/server";
 
-import { toRuleInput } from "./AdoptionRulesManagement";
+const realReactQuery = await import("@tanstack/react-query");
+
+let rulesError: Error | null = null;
+
+mock.module("@tanstack/react-query", () => ({
+  ...realReactQuery,
+  useQueryClient: () => ({ invalidateQueries: async () => {} }),
+  useMutation: () => ({ mutate: () => {}, isPending: false, isError: false }),
+  useQuery: () => ({
+    data: rulesError ? undefined : { items: [] },
+    error: rulesError,
+    isLoading: false,
+    isError: rulesError !== null,
+    refetch: () => {},
+  }),
+}));
+
+const { AdoptionRulesManagement, toRuleInput } = await import("./AdoptionRulesManagement");
 
 describe("AdoptionRulesManagement", () => {
+  test("shows a retry control instead of the old unclickable reload message on failure", () => {
+    rulesError = new Error("boom");
+    const markup = renderToStaticMarkup(
+      <AdoptionRulesManagement activeTab="rules" onTabChange={() => {}} />,
+    );
+    expect(markup).toContain("無法載入領養規則");
+    expect(markup).toContain("重試");
+    expect(markup).not.toContain("未能載入");
+    rulesError = null;
+  });
+
   describe("toRuleInput", () => {
     test("maps a new draft without an id", () => {
       const input = toRuleInput({

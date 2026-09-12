@@ -12,6 +12,7 @@ import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { formatAdminNumber, statusDisplayName, useAdminPageCopy } from "../adminPageCopy";
+import { LoadFailure } from "../LoadFailure";
 import { fetchCoordinatorJson } from "./api";
 import { formatDate, formatFallback, formatHkdCents } from "./caseWorkflowLogic";
 import { TaskPanel, TaskPanelAsyncError } from "./TaskPanel";
@@ -524,7 +525,24 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
 
   if (adopterLoading) return <LoadingState />;
 
-  if (adopterError || !adopter) {
+  if (adopterError) {
+    return (
+      <div className="space-y-5 p-6">
+        <Link
+          to="/admin/coordinator/adopters"
+          className="inline-flex items-center gap-2 py-2 text-sm font-medium text-[var(--color-primary)] hover:underline"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          {copy.backToAdopters}
+        </Link>
+        <section className={sectionClassName()}>
+          <LoadFailure error={adopterError} onRetry={() => void refetch()} className="border-0" />
+        </section>
+      </div>
+    );
+  }
+
+  if (!adopter) {
     return (
       <div className="space-y-5 p-6">
         <Link
@@ -536,7 +554,7 @@ export function AdopterDetail({ adopterId }: AdopterDetailProps) {
         </Link>
         <section className={sectionClassName()}>
           <div className="p-4 text-[var(--color-error)]" role="alert">
-            {adopterError?.message ?? copy.notFound}
+            {copy.notFound}
           </div>
         </section>
       </div>

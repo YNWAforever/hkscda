@@ -54,6 +54,28 @@ describe("DocumentManagement", () => {
     expect(unrelatedRow).toContain("<button");
     expect(unrelatedRow).not.toContain("\u7531\u9818\u990a\u6307\u5357\u7248\u672c\u7ba1\u7406");
   });
+  test("does not claim there are no documents underneath a load error", () => {
+    const markup = renderToStaticMarkup(
+      <DocumentManagementView data={{ items: [], total: 0 }} error="boom" />,
+    );
+
+    expect(markup).toContain("boom");
+    expect(markup).not.toContain("沒有文件");
+  });
+
+  test("uses the shared TablePager and blocks paging forward on a load error", () => {
+    const markup = renderToStaticMarkup(
+      <DocumentManagementView
+        data={{ items: [asset], total: 60 }}
+        page={1}
+        error="boom"
+        onPageChange={() => undefined}
+      />,
+    );
+    expect(markup).toContain("下一頁");
+    expect((markup.match(/disabled=""/g) ?? []).length).toBeGreaterThanOrEqual(1);
+  });
+
   test("fails closed while document ownership is unknown", () => {
     const markup = renderToStaticMarkup(
       <DocumentManagementView

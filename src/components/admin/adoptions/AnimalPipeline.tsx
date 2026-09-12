@@ -974,7 +974,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
 
           {!pipelineQuery.isLoading && groups.length === 0 && (
             <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-6 text-sm text-[var(--color-text-muted)]">
-              No animals match these filters.
+              沒有符合篩選條件的動物。
             </section>
           )}
 
@@ -1007,7 +1007,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
           {!pipelineQuery.isLoading && (
             <div className="flex min-h-12 flex-wrap items-center justify-between gap-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-xs text-[var(--color-text-muted)]">
               <span>
-                Page {resolvedPage} of {totalPages}
+                第 {resolvedPage} 頁，共 {totalPages} 頁
               </span>
               <div className="flex items-center gap-2">
                 <Select
@@ -1035,7 +1035,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
                   onClick={() => setPage((currentPage) => Math.max(1, currentPage - 1))}
                   disabled={resolvedPage <= 1 || isFetching}
                 >
-                  Previous
+                  上一頁
                 </Button>
                 <Button
                   type="button"
@@ -1044,7 +1044,7 @@ export function AnimalPipeline({ initialAnimalId }: { initialAnimalId?: string }
                   onClick={() => setPage((currentPage) => Math.min(totalPages, currentPage + 1))}
                   disabled={resolvedPage >= totalPages || isFetching}
                 >
-                  Next
+                  下一頁
                 </Button>
               </div>
             </div>

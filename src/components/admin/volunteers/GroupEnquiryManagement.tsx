@@ -9,6 +9,7 @@ import type {
   GroupEnquirySummary,
 } from "../../../lib/groupEnquiries/types";
 import { DataTable, type DataTableColumn } from "../DataTable";
+import { LoadFailure } from "../LoadFailure";
 import { TablePager } from "../TablePager";
 import {
   availableEnquiryTransitions,
@@ -206,6 +207,8 @@ export function GroupEnquiryManagement() {
           getRowKey={(row) => row.id}
           loading={enquiriesQuery.isLoading}
           empty="沒有符合條件的團體查詢。"
+          error={enquiriesQuery.error}
+          onRetry={() => void enquiriesQuery.refetch()}
         />
         <TablePager
           page={page}
@@ -214,10 +217,13 @@ export function GroupEnquiryManagement() {
           onPageChange={setPage}
           busy={enquiriesQuery.isFetching}
           label="團體查詢"
+          failed={enquiriesQuery.isError}
         />
       </div>
 
-      {detail ? (
+      {detailQuery.isError ? (
+        <LoadFailure error={detailQuery.error} onRetry={() => void detailQuery.refetch()} />
+      ) : detail ? (
         <EnquiryDetailPanel
           key={detail.id}
           detail={detail}

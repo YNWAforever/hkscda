@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import type { ContentListResponse } from "./ContentManagement";
 
 const realReactRouter = await import("@tanstack/react-router");
+const realReactQuery = await import("@tanstack/react-query");
 
 type MockLinkProps = {
   children: ReactNode;
@@ -25,6 +26,22 @@ mock.module("@tanstack/react-router", () => ({
       </a>
     );
   },
+}));
+
+let contentError: Error | null = null;
+
+mock.module("@tanstack/react-query", () => ({
+  ...realReactQuery,
+  useQueryClient: () => ({ invalidateQueries: () => {} }),
+  useQuery: () => ({
+    data: contentError
+      ? undefined
+      : { content: [], pagination: { page: 1, pageSize: 25, total: 0, pageCount: 1 } },
+    error: contentError,
+    isLoading: false,
+    isFetching: false,
+    refetch: () => {},
+  }),
 }));
 
 async function renderContentManagement(initialData: ContentListResponse) {
@@ -138,6 +155,20 @@ describe("ContentManagement", () => {
 
     expect(markup).toContain('data-router-link="true"');
     expect(markup).toContain('href="/admin/content/content-1"');
+  });
+
+  test("shows a retry instead of zeroed summary cards and a false empty state when the query fails", async () => {
+    // rows defaulted to `data?.content ?? []` on a rejected query, so
+    // summarizeContentRows saw an empty array and all four summary cards read
+    // a real 0 -- and the table's plain `empty="沒有宣傳內容"` string rendered
+    // right next to it, with nothing to say a fetch had actually failed.
+    contentError = new Error("boom");
+    const { ContentManagement } = await import("./ContentManagement");
+    const markup = renderToStaticMarkup(<ContentManagement />);
+    expect(markup).toContain("無法載入");
+    expect(markup).not.toContain("沒有宣傳內容");
+    expect((markup.match(/—/g) ?? []).length).toBe(4);
+    contentError = null;
   });
 });
 

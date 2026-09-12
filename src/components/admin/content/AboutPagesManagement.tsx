@@ -8,6 +8,7 @@ import type {
   CccpPageContent,
   TnrPageContent,
 } from "../../../lib/aboutPages/types";
+import { LoadFailure } from "../LoadFailure";
 
 export const ABOUT_PAGES_QUERY_KEY = ["admin-about-pages"] as const;
 
@@ -86,9 +87,11 @@ function AboutPagesManagementRuntime() {
   if (pagesQuery.isLoading) return <p aria-live="polite">載入頁面內容中…</p>;
   if (pagesQuery.isError || !pagesQuery.data) {
     return (
-      <p role="alert" className="text-sm font-semibold text-[var(--color-error)]">
-        未能載入頁面內容，請重新整理頁面。
-      </p>
+      <LoadFailure
+        error={pagesQuery.error}
+        onRetry={() => void pagesQuery.refetch()}
+        title="無法載入頁面內容"
+      />
     );
   }
   if (!drafts) return <p aria-live="polite">載入頁面內容中…</p>;

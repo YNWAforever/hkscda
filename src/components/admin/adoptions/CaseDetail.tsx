@@ -21,6 +21,7 @@ import {
   statusDisplayName,
   useAdminPageCopy,
 } from "../adminPageCopy";
+import { LoadFailure } from "../LoadFailure";
 import { fetchCoordinatorJson } from "./api";
 import { openPendingPhotoWindow, openSignedPhotoUrl } from "./caseDetailPhotoWindow";
 import {
@@ -750,7 +751,24 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
     );
   }
 
-  if (caseError || !adoptionCase) {
+  if (caseError) {
+    return (
+      <div className="space-y-5 p-6">
+        <Link
+          to="/admin/applications"
+          className="inline-flex items-center gap-2 py-2 text-sm font-medium text-[var(--color-primary)] hover:underline"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          {copy.backToCases}
+        </Link>
+        <section className={sectionClassName()}>
+          <LoadFailure error={caseError} onRetry={() => void refetch()} className="border-0" />
+        </section>
+      </div>
+    );
+  }
+
+  if (!adoptionCase) {
     return (
       <div className="space-y-5 p-6">
         <Link
@@ -762,7 +780,7 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
         </Link>
         <section className={sectionClassName()}>
           <div className="p-4 text-[var(--color-error)]" role="alert">
-            {caseError?.message ?? copy.notFound}
+            {copy.notFound}
           </div>
         </section>
       </div>

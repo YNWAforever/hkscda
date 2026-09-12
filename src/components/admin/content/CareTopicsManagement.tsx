@@ -8,6 +8,7 @@ import type {
   AdoptionInformationResource,
   CareTopic,
 } from "../../../lib/adoptionInformation/types";
+import { LoadFailure } from "../LoadFailure";
 import {
   ADOPTION_INFORMATION_QUERY_KEY,
   AdoptionContentTabs,
@@ -121,9 +122,11 @@ export function CareTopicsManagement({
 
       {topicsQuery.isLoading ? <p aria-live="polite">載入照顧須知中…</p> : null}
       {topicsQuery.isError ? (
-        <p role="alert" className="text-sm font-semibold text-[var(--color-error)]">
-          未能載入照顧須知，請重新整理頁面。
-        </p>
+        <LoadFailure
+          error={topicsQuery.error}
+          onRetry={() => void topicsQuery.refetch()}
+          title="無法載入照顧須知"
+        />
       ) : null}
 
       {!topicsQuery.isLoading && !topicsQuery.isError ? (

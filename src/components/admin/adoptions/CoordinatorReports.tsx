@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, Download, RefreshCw, Search } from "lucide-react";
+import { Download, RefreshCw, Search } from "lucide-react";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 
 import type {
@@ -15,6 +15,8 @@ import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { formatAdminDateTime, formatAdminNumber, useAdminPageCopy } from "../adminPageCopy";
 import { DataTable, type DataTableColumn } from "../DataTable";
+import { STAT_UNAVAILABLE } from "../LoadFailure";
+import { TablePager } from "../TablePager";
 import { fetchCoordinatorJson } from "./api";
 import { getCoordinatorExportFilename } from "./adopterWorkflowLogic";
 import {
@@ -84,18 +86,22 @@ function MetricTile({
   label,
   value,
   isLoading,
+  failed,
   language,
 }: {
   label: string;
   value: number;
   isLoading: boolean;
+  /** True when the query behind `value` errored. `value` is then a coerced
+   * `?? 0`, not a real figure -- shown as unavailable, never as zero. */
+  failed: boolean;
   language: ReturnType<typeof useAdminPageCopy>["language"];
 }) {
   return (
     <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3">
       <div className="text-xs font-medium text-[var(--color-text-muted)]">{label}</div>
       <div className="mt-1 text-2xl font-bold text-[var(--color-panel)]">
-        {isLoading ? "-" : formatCount(value, language)}
+        {isLoading ? "-" : failed ? STAT_UNAVAILABLE : formatCount(value, language)}
       </div>
     </div>
   );
@@ -445,6 +451,7 @@ export function CoordinatorReports() {
             label={copy.metrics[tile]}
             value={summary?.[tile] ?? 0}
             isLoading={summaryQuery.isLoading}
+            failed={summaryQuery.isError}
             language={language}
           />
         ))}
@@ -498,31 +505,15 @@ export function CoordinatorReports() {
         />
       </section>
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-[var(--color-text-muted)]">
-          {pageCopy.common.pageOf(page, totalPages)}
-        </p>
-        <div className="flex items-center gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setPage((current) => Math.max(1, current - 1))}
-            disabled={page <= 1 || isFetching}
-          >
-            <ChevronLeft className="h-4 w-4" />
-            {pageCopy.common.previous}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
-            disabled={page >= totalPages || isFetching}
-          >
-            {pageCopy.common.next}
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+      <TablePager
+        page={page}
+        pageSize={pageSize}
+        total={historyQuery.isError ? undefined : total}
+        onPageChange={setPage}
+        busy={isFetching}
+        label={copy.exportHistory}
+        failed={historyQuery.isError}
+      />
     </div>
   );
 }

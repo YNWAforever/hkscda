@@ -21,6 +21,8 @@ const registration = {
   registrationType: "group",
   activity: { title: "Fixture activity", startsAt: "2026-09-06T00:00:00Z", remainingCapacity: 1 },
 };
+let registrationError: Error | null = null;
+
 mock.module("@tanstack/react-query", () => ({
   ...query,
   useQueryClient: () => ({
@@ -28,7 +30,12 @@ mock.module("@tanstack/react-query", () => ({
       invalidated.push(input);
     },
   }),
-  useQuery: () => ({ data: { registration }, isLoading: false, error: null }),
+  useQuery: () => ({
+    data: registrationError ? undefined : { registration },
+    isLoading: false,
+    error: registrationError,
+    refetch: () => {},
+  }),
   useMutation: (options: {
     mutationFn: (status: string) => Promise<unknown>;
     onSettled: () => void;
@@ -66,4 +73,18 @@ test("status callback sends reviewed version and refreshes capacity after a reje
   mutations[0].onSettled();
   expect(invalidated).toContainEqual({ queryKey: ["volunteer-registration"] });
   expect(invalidated).toContainEqual({ queryKey: ["volunteer-activities"] });
+});
+
+test("shows a retry control instead of reporting a load failure as a deleted registration", () => {
+  // error was folded into the same branch as `!data?.registration`, so a 500
+  // and a genuinely deleted registration both read as "找不到義工報名。",
+  // with no way to retry either way.
+  registrationError = new Error("boom");
+  const markup = renderToStaticMarkup(
+    <VolunteerRegistrationDetail registrationId="registration-1" />,
+  );
+  expect(markup).toContain("無法載入");
+  expect(markup).toContain("重試");
+  expect(markup).not.toContain("找不到義工報名");
+  registrationError = null;
 });

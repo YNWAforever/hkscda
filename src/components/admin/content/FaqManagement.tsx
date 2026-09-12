@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import { FAQ_CTA_OPTIONS } from "../../../lib/faq/schemas";
 import type { FaqCategory, FaqEntry, FaqEntryInput } from "../../../lib/faq/types";
+import { LoadFailure } from "../LoadFailure";
 
 export const ADMIN_FAQ_QUERY_KEY = ["admin-faq"] as const;
 
@@ -125,9 +126,11 @@ export function FaqManagement() {
         <p className="text-sm text-[var(--color-text-muted)]">載入中…</p>
       ) : null}
       {entriesQuery.isError ? (
-        <p role="alert" className="text-sm text-red-600">
-          未能載入常見問題，請重新整理頁面。
-        </p>
+        <LoadFailure
+          error={entriesQuery.error}
+          onRetry={() => void entriesQuery.refetch()}
+          title="無法載入常見問題"
+        />
       ) : null}
 
       {!entriesQuery.isLoading && !entriesQuery.isError ? (

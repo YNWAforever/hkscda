@@ -12,6 +12,7 @@ import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
 import { Switch } from "../../ui/switch";
 import { useAdminPageCopy } from "../adminPageCopy";
+import { LoadFailure, STAT_UNAVAILABLE } from "../LoadFailure";
 import { fetchCoordinatorJson } from "./api";
 import { formatDate, formatFallback } from "./caseWorkflowLogic";
 import { buildIntakeSearchParams, intakeUrgencyLabel } from "./intakeInboxLogic";
@@ -136,20 +137,11 @@ export function IntakeInbox() {
         </div>
       </section>
 
-      {error && (
-        <div
-          className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-error)]"
-          role="alert"
-        >
-          {copy.loadError}: {error.message}
-        </div>
-      )}
-
       <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
         <div className="flex min-h-14 items-center justify-between gap-3 border-b border-[var(--color-border)] px-4">
           <div className="flex items-center gap-2 text-sm font-semibold text-[var(--color-panel)]">
             <Inbox className="h-4 w-4" />
-            <span>{pageCopy.common.totalCount(items.length)}</span>
+            <span>{error ? STAT_UNAVAILABLE : pageCopy.common.totalCount(items.length)}</span>
           </div>
           {isFetching && (
             <span className="text-xs text-[var(--color-text-muted)]">
@@ -164,6 +156,13 @@ export function IntakeInbox() {
               <div key={index} className="h-20 rounded bg-[var(--color-lavender)]" />
             ))}
           </div>
+        ) : error ? (
+          <LoadFailure
+            error={error}
+            onRetry={() => void refetch()}
+            title={copy.loadError}
+            className="border-0"
+          />
         ) : items.length === 0 ? (
           <div className="px-4 py-8 text-sm text-[var(--color-text-muted)]">{copy.empty}</div>
         ) : (

@@ -1,4 +1,4 @@
-import { describe, expect, mock, test } from "bun:test";
+import { afterAll, describe, expect, mock, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 
 import type { SupporterSummary } from "../../../lib/crm/types";
@@ -25,11 +25,13 @@ const supporter: SupporterSummary = {
   whatsappConsent: null,
 };
 
+let supportersError: Error | null = null;
+
 mock.module("@tanstack/react-query", () => ({
   ...realReactQuery,
   useQuery: () => ({
-    data: { supporters: [supporter], total: 1 },
-    error: null,
+    data: supportersError ? undefined : { supporters: [supporter], total: 1 },
+    error: supportersError,
     isLoading: false,
   }),
 }));
@@ -61,6 +63,15 @@ mock.module("../adminPageCopy", () => ({
   }),
 }));
 
+// bun's mock.module patches the shared module registry for the rest of the
+// process, not just this file -- without restoring it, every other test file
+// that imports "../adminPageCopy" after this one (via any relative path
+// resolving to the same module) would silently get this hardcoded English
+// stub instead of the real, language-aware hook.
+afterAll(() => {
+  mock.module("../adminPageCopy", () => realAdminPageCopy);
+});
+
 mock.module("./ExportBar", () => ({
   ExportBar: () => <span>export</span>,
 }));
@@ -77,5 +88,16 @@ describe("SupporterList", () => {
 
     expect(markup).toContain("Open");
     expect(markup).toContain('href="/admin/supporters/supporter-1"');
+  });
+
+  test("does not claim there are no supporters underneath the load-error banner", () => {
+    // DataTable's empty prop rendered unconditionally, so a failed fetch
+    // showed "Could not load supporters" directly above "No supporters found"
+    // -- the same screen asserting both a failure and a confirmed empty result.
+    supportersError = new Error("boom");
+    const markup = renderToStaticMarkup(<SupporterList />);
+    expect(markup).toContain("Could not load supporters");
+    expect(markup).not.toContain("No supporters found");
+    supportersError = null;
   });
 });

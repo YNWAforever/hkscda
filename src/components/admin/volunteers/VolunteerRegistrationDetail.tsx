@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type { VolunteerRegistrationDetail as VolunteerRegistrationDetailType } from "../../../lib/volunteers/types";
+import { LoadFailure } from "../LoadFailure";
 import {
   attendanceStatusLabels,
   registrationStatusLabels,
@@ -15,7 +16,7 @@ type RegistrationResponse = {
 
 export function VolunteerRegistrationDetail({ registrationId }: { registrationId: string }) {
   const queryClient = useQueryClient();
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["volunteer-registration", registrationId],
     queryFn: () =>
       fetchAdminJson<RegistrationResponse>(`/api/admin/volunteers/registrations/${registrationId}`),
@@ -46,7 +47,14 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
   });
 
   if (isLoading) return <div className="p-6 text-sm text-[var(--color-text-muted)]">載入中...</div>;
-  if (error || !data?.registration) {
+  if (error) {
+    return (
+      <div className="p-6">
+        <LoadFailure error={error} onRetry={() => void refetch()} />
+      </div>
+    );
+  }
+  if (!data?.registration) {
     return <div className="p-6 text-sm text-[var(--color-primary)]">找不到義工報名。</div>;
   }
 

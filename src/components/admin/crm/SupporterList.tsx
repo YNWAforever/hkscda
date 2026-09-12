@@ -222,7 +222,7 @@ export function SupporterList() {
           getRowKey={(s) => s.id}
           loading={isLoading}
           skeletonRows={5}
-          empty={copy.empty}
+          empty={error ? null : copy.empty}
           renderMobileCard={renderSupporterCard}
         />
       </div>

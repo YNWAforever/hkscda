@@ -12,6 +12,13 @@ type TablePagerProps = {
   busy?: boolean;
   /** Describes what is being paged, for the screen-reader label. */
   label?: string;
+  /**
+   * True when the query that produces `total` errored. An unknown total
+   * normally means "assume more, don't strand the operator" (see below), but
+   * a failed load means the opposite: we don't know if there's more AND
+   * something is wrong, so Next must not invite paging into another failure.
+   */
+  failed?: boolean;
 };
 
 /**
@@ -30,17 +37,20 @@ export function TablePager({
   onPageChange,
   busy,
   label = "資料",
+  failed = false,
 }: TablePagerProps) {
   // Without a total we can't know whether a next page exists. Assume there is
   // one whenever the current page came back full — stopping early would hide
-  // rows, which is the bug this component exists to fix.
+  // rows, which is the bug this component exists to fix. `failed` overrides
+  // that assumption: a total that's missing because the load errored is not
+  // "assume more", it's "unknown, and don't page forward into another error".
   const knownTotal = typeof total === "number";
   const lastPage = knownTotal ? Math.max(1, Math.ceil(total / pageSize)) : undefined;
   const first = total === 0 ? 0 : (page - 1) * pageSize + 1;
   const last = knownTotal ? Math.min(page * pageSize, total) : page * pageSize;
 
   const hasPrevious = page > 1;
-  const hasNext = knownTotal ? page < (lastPage ?? 1) : true;
+  const hasNext = failed ? false : knownTotal ? page < (lastPage ?? 1) : true;
 
   // A single page of results needs no controls.
   if (knownTotal && (lastPage ?? 1) <= 1) return null;

@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type { BoardMember, BoardMemberInput } from "../../../lib/governance/types";
+import { LoadFailure } from "../LoadFailure";
 
 export const ADMIN_GOVERNANCE_QUERY_KEY = ["admin-governance"] as const;
 
@@ -89,9 +90,11 @@ export function GovernanceManagement() {
         <p className="text-sm text-[var(--color-text-muted)]">載入中…</p>
       ) : null}
       {membersQuery.isError ? (
-        <p role="alert" className="text-sm text-red-600">
-          未能載入團隊名單，請重新整理頁面。
-        </p>
+        <LoadFailure
+          error={membersQuery.error}
+          onRetry={() => void membersQuery.refetch()}
+          title="無法載入團隊名單"
+        />
       ) : null}
 
       {!membersQuery.isLoading && !membersQuery.isError ? (

@@ -9,6 +9,7 @@ import type {
 } from "../../../lib/crm/types";
 import { Button } from "../../ui/button";
 import { useAdminPageCopy } from "../adminPageCopy";
+import { LoadFailure } from "../LoadFailure";
 import { ConsentEditor } from "./ConsentEditor";
 import { fetchAdminJson } from "./api";
 import { ManualDonationDialog } from "./ManualDonationDialog";
@@ -160,7 +161,7 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
   const copy = SUPPORTER_DETAIL_COPY[language];
   const [timelineFilter, setTimelineFilter] = useState<TimelineFilter>("all");
   const queryClient = useQueryClient();
-  const { data, error, isLoading } = useQuery({
+  const { data, error, isLoading, refetch } = useQuery({
     queryKey: ["crm-supporter", supporterId],
     queryFn: async () => {
       const response = await fetchAdminJson<{ supporter: SupporterDetailData }>(
@@ -199,9 +200,7 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
   if (error || !data) {
     return (
       <div className="p-6">
-        <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-5 text-[var(--color-destructive)]">
-          {copy.loadError}
-        </div>
+        <LoadFailure error={error} onRetry={() => void refetch()} title={copy.loadError} />
       </div>
     );
   }
