@@ -39,10 +39,14 @@ interface AdminCopy {
   nav: Record<AdminSection, string>;
   navGroups: Record<string, string>;
   navItems: Record<string, string>;
+  navDescriptions: Record<string, string>;
   layout: {
     collapseSidebar: string;
     expandSidebar: string;
     openMenu: string;
+    primaryNavigation: string;
+    workspaceNavigation: string;
+    breadcrumb: string;
   };
   login: {
     subtitle: string;
@@ -164,11 +168,20 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       access: "權限管理",
     },
     navGroups: {
-      animals: "動物",
-      adoptions: "領養",
-      donations: "捐款",
-      promotion: "宣傳",
-      system: "系統",
+      animals: "動物管理",
+      adoptions: "領養管理",
+      volunteers: "義工與實習",
+      donations: "捐款與助養",
+      promotion: "網站內容",
+      system: "系統設定",
+    },
+    navDescriptions: {
+      animals: "管理動物資料、領養狀態與助養動物名單。",
+      adoptions: "處理申請個案、領養配對與工作跟進。",
+      volunteers: "安排義工活動、團體查詢與實習申請。",
+      donations: "管理收款、助養承諾配對與支持者紀錄。",
+      promotion: "維護網站內容、領養資訊與團隊資料。",
+      system: "管理帳戶權限、付款方式與領養狀態設定。",
     },
     navItems: {
       "sponsorship-pledges": "助養收款及配對",
@@ -183,7 +196,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       "coordinator-adopters": "領養人",
       "coordinator-reports": "報表紀錄",
       "coordinator-statuses": "狀態設定",
-      volunteers: "義工活動",
+      volunteers: "義工營運中心",
       "volunteer-settings": "義工政策設定",
       "volunteer-group-enquiries": "團體查詢",
       payments: "收款",
@@ -201,6 +214,9 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       collapseSidebar: "收合側欄",
       expandSidebar: "展開側欄",
       openMenu: "開啟選單",
+      primaryNavigation: "後台主要導覽",
+      workspaceNavigation: "工作區導覽",
+      breadcrumb: "導覽路徑",
     },
     login: {
       subtitle: "管理後台登入",
@@ -346,11 +362,20 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       access: "Access Management",
     },
     navGroups: {
-      animals: "Animals",
-      adoptions: "Adoptions",
-      donations: "Donations",
-      promotion: "Promotion",
-      system: "System",
+      animals: "Animal management",
+      adoptions: "Adoption management",
+      volunteers: "Volunteers & internships",
+      donations: "Donations & sponsorship",
+      promotion: "Website content",
+      system: "System settings",
+    },
+    navDescriptions: {
+      animals: "Manage animal profiles, adoption status and animals eligible for sponsorship.",
+      adoptions: "Review applications, adoption matches and follow-up tasks.",
+      volunteers: "Coordinate volunteer activities, group enquiries and internships.",
+      donations: "Manage payments, sponsorship matching and supporter records.",
+      promotion: "Maintain website content, adoption information and team profiles.",
+      system: "Manage account access, payment methods and adoption status settings.",
     },
     navItems: {
       "sponsorship-pledges": "Sponsorship payments and matching",
@@ -365,7 +390,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       "coordinator-adopters": "Adopters",
       "coordinator-reports": "Reports",
       "coordinator-statuses": "Status settings",
-      volunteers: "Volunteers",
+      volunteers: "Volunteer operations",
       "volunteer-settings": "Volunteer policy settings",
       "volunteer-group-enquiries": "Group enquiries",
       payments: "Payments",
@@ -383,6 +408,9 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       collapseSidebar: "Collapse sidebar",
       expandSidebar: "Expand sidebar",
       openMenu: "Open menu",
+      primaryNavigation: "Admin primary navigation",
+      workspaceNavigation: "Workspace navigation",
+      breadcrumb: "Breadcrumb",
     },
     login: {
       subtitle: "Admin sign in",

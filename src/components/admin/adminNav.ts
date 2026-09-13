@@ -1,3 +1,5 @@
+import { canRoleAccessAdminNavItem } from "../../lib/admin/access";
+import type { AdminRole } from "../../lib/admin/access";
 import {
   BarChart3,
   Banknote,
@@ -31,9 +33,14 @@ export type AdminSection =
   | "content"
   | "access";
 
-// Visual grouping for the sidebar. Purely presentational — the active-state
-// logic below still keys off `section`/`activePath`, so routing is unchanged.
-export type AdminNavGroup = "animals" | "adoptions" | "donations" | "promotion" | "system";
+// Domain grouping shares the existing destination access matrix.
+export type AdminNavGroup =
+  | "animals"
+  | "adoptions"
+  | "volunteers"
+  | "donations"
+  | "promotion"
+  | "system";
 
 export type AdminNavItem = {
   id: string;
@@ -45,12 +52,18 @@ export type AdminNavItem = {
   activePath?: string;
 };
 
-export const ADMIN_NAV_GROUPS: { id: AdminNavGroup; label: string }[] = [
-  { id: "animals", label: "動物" },
-  { id: "adoptions", label: "領養" },
-  { id: "donations", label: "捐款" },
-  { id: "promotion", label: "宣傳" },
-  { id: "system", label: "系統" },
+export const ADMIN_NAV_GROUPS: {
+  id: AdminNavGroup;
+  label: string;
+  icon: LucideIcon;
+  defaultItemId: string;
+}[] = [
+  { id: "animals", label: "動物管理", icon: Cat, defaultItemId: "cat" },
+  { id: "adoptions", label: "領養管理", icon: ClipboardList, defaultItemId: "applications" },
+  { id: "volunteers", label: "義工與實習", icon: CalendarDays, defaultItemId: "volunteers" },
+  { id: "donations", label: "捐款與助養", icon: HandCoins, defaultItemId: "payments" },
+  { id: "promotion", label: "網站內容", icon: Megaphone, defaultItemId: "content" },
+  { id: "system", label: "系統設定", icon: Settings2, defaultItemId: "access-management" },
 ];
 
 export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
@@ -66,7 +79,7 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
   {
     id: "internships",
     section: "volunteers",
-    group: "system",
+    group: "volunteers",
     label: "實習申請",
     icon: ClipboardList,
     to: "/admin/internships",
@@ -152,7 +165,7 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
   {
     id: "coordinator-statuses",
     section: "applications",
-    group: "adoptions",
+    group: "system",
     label: "狀態設定",
     icon: Settings2,
     to: "/admin/coordinator/statuses",
@@ -161,7 +174,7 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
   {
     id: "volunteers",
     section: "volunteers",
-    group: "adoptions",
+    group: "volunteers",
     label: "義工",
     icon: CalendarDays,
     to: "/admin/volunteers",
@@ -170,7 +183,7 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
   {
     id: "volunteer-settings",
     section: "volunteers",
-    group: "adoptions",
+    group: "volunteers",
     label: "義工政策設定",
     icon: Settings2,
     to: "/admin/volunteers/settings",
@@ -179,7 +192,7 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
   {
     id: "volunteer-group-enquiries",
     section: "volunteers",
-    group: "adoptions",
+    group: "volunteers",
     label: "團體查詢",
     icon: ClipboardPenLine,
     to: "/admin/volunteers/group-enquiries",
@@ -196,7 +209,7 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
   {
     id: "payment-methods",
     section: "payments",
-    group: "donations",
+    group: "system",
     label: "付款方式設定",
     icon: Settings2,
     to: "/admin/payment-methods",
@@ -279,19 +292,37 @@ export function getActiveAdminNavItemIds(
   pathname: string,
   activeSection: AdminSection,
 ) {
-  const hasPathSpecificActive = items.some((item) =>
-    item.activePath
-      ? pathname === item.activePath || pathname.startsWith(`${item.activePath}/`)
-      : false,
-  );
+  const matches = items
+    .map((item) => ({ item, path: item.activePath ?? (item.to.includes("?") ? null : item.to) }))
+    .filter(({ path }) => path && (pathname === path || pathname.startsWith(`${path}/`)))
+    .sort((a, b) => (b.path?.length ?? 0) - (a.path?.length ?? 0));
+  if (matches[0]) return [matches[0].item.id];
+  const fallback = items.find((item) => !item.activePath && item.section === activeSection);
+  return fallback ? [fallback.id] : [];
+}
 
-  return items
-    .filter((item) => {
-      if (item.activePath) {
-        return pathname === item.activePath || pathname.startsWith(`${item.activePath}/`);
-      }
-      if (hasPathSpecificActive) return false;
-      return activeSection === item.section;
-    })
-    .map((item) => item.id);
+export type AdminNavigationGroup = {
+  id: AdminNavGroup;
+  label: string;
+  icon: LucideIcon;
+  to: string;
+  items: AdminNavItem[];
+};
+
+export function getAdminNavigation(
+  role: AdminRole | null,
+  pathname: string,
+  activeSection: AdminSection,
+): { groups: AdminNavigationGroup[]; activeGroupId: AdminNavGroup | null } {
+  if (!role) return { groups: [], activeGroupId: null };
+  const allowed = ADMIN_NAV_ITEMS.filter((item) => canRoleAccessAdminNavItem(item.id, role));
+  const groups = ADMIN_NAV_GROUPS.flatMap((group) => {
+    const items = allowed.filter((item) => item.group === group.id);
+    const destination = items.find((item) => item.id === group.defaultItemId) ?? items[0];
+    return destination
+      ? [{ id: group.id, label: group.label, icon: group.icon, to: destination.to, items }]
+      : [];
+  });
+  const activeId = getActiveAdminNavItemIds(allowed, pathname, activeSection)[0];
+  return { groups, activeGroupId: allowed.find((item) => item.id === activeId)?.group ?? null };
 }

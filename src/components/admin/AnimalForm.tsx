@@ -447,8 +447,10 @@ export function AnimalForm({ existing }: AnimalFormProps) {
         </legend>
         <div className="grid gap-4 md:grid-cols-3">
           <div>
-            <label className="block text-sm font-medium mb-1">{copy.form.type}</label>
-            <select {...register("type")} className={selectField}>
+            <label htmlFor="animal-type" className="block text-sm font-medium mb-1">
+              {copy.form.type}
+            </label>
+            <select id="animal-type" {...register("type")} className={selectField}>
               {typeOptions.map((option) => (
                 <option
                   key={option.value}
@@ -462,8 +464,10 @@ export function AnimalForm({ existing }: AnimalFormProps) {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">{copy.form.gender}</label>
-            <select {...register("gender")} className={selectField}>
+            <label htmlFor="animal-gender" className="block text-sm font-medium mb-1">
+              {copy.form.gender}
+            </label>
+            <select id="animal-gender" {...register("gender")} className={selectField}>
               {genderOptions.map((option) => (
                 <option
                   key={option.value}
@@ -477,8 +481,10 @@ export function AnimalForm({ existing }: AnimalFormProps) {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">{copy.form.status}</label>
-            <select {...register("status")} className={selectField}>
+            <label htmlFor="animal-status" className="block text-sm font-medium mb-1">
+              {copy.form.status}
+            </label>
+            <select id="animal-status" {...register("status")} className={selectField}>
               {statusOptions.map((option) => (
                 <option
                   key={option.value}
@@ -680,8 +686,11 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       />
 
       <div>
-        <label className="block text-sm font-medium mb-1">{copy.form.photo}</label>
+        <label htmlFor="animal-photo" className="block text-sm font-medium mb-1">
+          {copy.form.photo}
+        </label>
         <input
+          id="animal-photo"
           type="file"
           accept="image/*"
           onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
