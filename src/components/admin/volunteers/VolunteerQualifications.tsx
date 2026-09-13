@@ -1,5 +1,6 @@
 import { VolunteerLegacyReconciliation } from "./VolunteerLegacyReconciliation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { QualificationProfileSearch } from "./QualificationProfileSearch";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
 
@@ -40,7 +41,11 @@ export function VolunteerQualifications() {
     queryKey: ["volunteer-qualifications"],
     queryFn: () => post<Data>({ action: "list" }),
   });
-  const [selected, setSelected] = useState("");
+  const [selected, setSelected] = useState(() =>
+    typeof window === "undefined"
+      ? ""
+      : (new URLSearchParams(window.location.search).get("profile_id") ?? ""),
+  );
   const [tier, setTier] = useState<Profile["tier"]>("newcomer");
   const [joined, setJoined] = useState("");
   const [coverage, setCoverage] = useState("");
@@ -53,9 +58,36 @@ export function VolunteerQualifications() {
   const mutation = useMutation({
     mutationFn: (command: object) => post(command),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["volunteer-qualifications"] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["volunteer-qualifications"] }),
+        queryClient.invalidateQueries({ queryKey: ["volunteer-directory"] }),
+        queryClient.invalidateQueries({ queryKey: ["volunteer-person"] }),
+        queryClient.invalidateQueries({ queryKey: ["volunteer-overview"] }),
+      ]);
     },
   });
+  const profileTier = profile?.tier;
+  const profileJoined = profile?.joined_on;
+  const profileCoverage = profile?.history_coverage_start;
+  useEffect(() => {
+    if (!profileTier) return;
+    setTier(profileTier);
+    setJoined(profileJoined ?? "");
+    setCoverage(profileCoverage ?? "");
+  }, [selected, profileTier, profileJoined, profileCoverage]);
+  const selectProfile = (id: string) => {
+    if (mutation.isPending) return;
+    setSelected(id);
+    setReason("");
+    setKey("");
+    setFrom("");
+    setUntil("");
+    setEvidence("");
+    mutation.reset();
+    const url = new URL(window.location.href);
+    url.searchParams.set("profile_id", id);
+    window.history.replaceState(null, "", url);
+  };
   const act = (command: object) => {
     if (profile && reason.trim())
       mutation.mutate({
@@ -72,26 +104,27 @@ export function VolunteerQualifications() {
         <p>只按已核實證據設定級別及課程資格。自填 Remark 不會授予技能；既有出席及名單會保留。</p>
       </header>
       <nav className="flex gap-4">
-        <a href="/admin/volunteers">返回名單</a>
+        <a href="/admin/volunteers/people">返回義工名冊</a>
         <a href="/admin/volunteers/calendar">義工月曆</a>
       </nav>
-      <VolunteerLegacyReconciliation profiles={query.data?.profiles ?? []} />
+      <QualificationProfileSearch onSelect={selectProfile} disabled={mutation.isPending} />
       {query.isLoading && <p>載入中…</p>}
-      {query.error && <p role="alert">未能載入身份資料</p>}
+      {query.error && (
+        <p role="alert">
+          未能載入身份資料。
+          <button onClick={() => void query.refetch()} className="min-h-11 px-3 underline">
+            重新載入
+          </button>
+        </p>
+      )}
       <label className="flex flex-col gap-2">
         選擇義工
         <select
           className={inputClass}
           value={selected}
-          onChange={(e) => {
-            setSelected(e.target.value);
-            const p = query.data?.profiles.find((x) => x.id === e.target.value);
-            if (p) {
-              setTier(p.tier);
-              setJoined(p.joined_on ?? "");
-              setCoverage(p.history_coverage_start ?? "");
-            }
-          }}
+          aria-label="選擇義工"
+          disabled={mutation.isPending}
+          onChange={(e) => selectProfile(e.target.value)}
         >
           <option value="">請選擇待核實或已有身份</option>
           {query.data?.profiles.map((p) => (
@@ -105,6 +138,13 @@ export function VolunteerQualifications() {
       </label>
       {profile && (
         <div className="space-y-4 rounded-lg border p-5">
+          <h2 className="text-lg font-bold">{profile.display_name} · 身份核實</h2>
+          <a
+            className="inline-block min-h-11 py-2 underline"
+            href={`/admin/volunteers/people/${profile.id}`}
+          >
+            查看完整義工檔案及服務紀錄
+          </a>
           <p>出生日期：{profile.birth_date || "未提供"}</p>
           <label className="flex flex-col gap-2">
             核實級別
@@ -260,6 +300,10 @@ export function VolunteerQualifications() {
           </ul>
         </div>
       )}
+      <details className="rounded-lg border p-4">
+        <summary className="cursor-pointer font-semibold">舊報名身份核對</summary>
+        <VolunteerLegacyReconciliation profiles={query.data?.profiles ?? []} />
+      </details>
       {mutation.error && <p role="alert">{mutation.error.message}</p>}
       {mutation.isSuccess && <p role="status">更新已保存，核實歷史及未來場次跟進任務已保留。</p>}
     </section>

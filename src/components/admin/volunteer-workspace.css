@@ -1,0 +1,327 @@
+/* Scoped to volunteer routes, including their inline dialogs. Existing business
+   components keep ownership of state and semantic status colours. */
+.volunteer-workspace {
+  min-height: 100%;
+  color: var(--color-text);
+  background: var(--color-bg);
+  font-size: 15px;
+  line-height: 1.65;
+}
+.volunteer-workspace * {
+  box-sizing: border-box;
+}
+.vw-masthead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 28px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-divider);
+}
+.vw-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-primary);
+  font-size: 18px;
+  font-weight: 750;
+}
+.vw-role {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  border: 1px solid var(--color-divider);
+  border-radius: 999px;
+  padding: 4px 12px;
+}
+.vw-layout {
+  display: grid;
+  grid-template-columns: 196px minmax(0, 1fr);
+  max-width: 1600px;
+  margin: 0 auto;
+}
+.vw-sidebar {
+  padding: 24px 12px;
+  border-right: 1px solid var(--color-divider);
+  background: var(--color-surface);
+}
+.vw-navigation {
+  position: sticky;
+  top: 20px;
+  display: grid;
+  gap: 28px;
+}
+.vw-nav-label {
+  padding: 0 12px 8px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+.vw-nav-link {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  text-decoration: none;
+}
+.vw-nav-link:hover {
+  color: var(--color-primary);
+  background: var(--color-primary-highlight);
+}
+.vw-nav-link[aria-current="page"] {
+  color: var(--color-primary);
+  background: var(--color-primary-highlight);
+  font-weight: 750;
+}
+.vw-nav-toggle {
+  display: none;
+}
+.vw-page {
+  padding: 24px 32px 48px;
+  min-width: 0;
+}
+.vw-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+.vw-breadcrumb a:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+.vw-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 0 28px;
+}
+.vw-page-header h1 {
+  margin: 0 0 8px;
+  font-size: clamp(24px, 2.8vw, 32px);
+  line-height: 1.35;
+  font-weight: 750;
+  letter-spacing: -0.03em;
+}
+.vw-page-header p {
+  max-width: 62ch;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+.vw-page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.vw-breadcrumb + .vw-content {
+  margin-top: 24px;
+}
+.vw-content {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.vw-content > :first-child {
+  padding: 0;
+}
+.vw-content :where(h1, h2, h3) {
+  color: var(--color-text);
+  line-height: 1.45;
+}
+.vw-content :where(h1) {
+  font-size: 20px;
+}
+.vw-content :where(h2) {
+  font-size: 18px;
+}
+.vw-content
+  :where(section, article, fieldset, .rounded-lg.border, .rounded-xl.border, .rounded-2xl.border) {
+  border-color: var(--color-divider);
+  border-radius: 16px;
+  background-color: var(--color-surface);
+}
+.vw-content :where(section, article, fieldset) {
+  min-width: 0;
+}
+.vw-content :where(label) {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.vw-content :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  min-height: 44px;
+  max-width: 100%;
+  min-width: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 9px 12px;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-size: 14px;
+}
+.vw-content
+  :where(
+    label > input:not([type="checkbox"]):not([type="radio"]),
+    label > select,
+    label > textarea
+  ) {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+}
+.vw-content :where(input[type="checkbox"], input[type="radio"]) {
+  accent-color: var(--color-primary);
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+}
+.vw-content :where(button) {
+  min-height: 44px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.vw-content :where(button:not([class*="bg-"])) {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary);
+  padding: 8px 12px;
+}
+.vw-content :where(button:hover:not(:disabled)) {
+  filter: brightness(0.97);
+}
+.vw-content :where(button:disabled) {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.volunteer-workspace :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 3px;
+}
+.vw-content :where([role="alert"]) {
+  border: 1px solid var(--color-error);
+  border-radius: 8px;
+  padding: 12px 16px;
+  background: var(--color-error-highlight);
+  color: var(--color-error);
+}
+.vw-content :where([role="status"]) {
+  border-radius: 8px;
+  padding: 12px 16px;
+  background: var(--color-info-highlight);
+  color: var(--color-info);
+}
+.vw-content :where(table) {
+  width: 100%;
+  border-collapse: collapse;
+}
+.vw-content :where(th) {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  text-align: left;
+  background: var(--color-surface-offset);
+}
+.vw-content :where(th, td) {
+  padding: 12px;
+  border-bottom: 1px solid var(--color-divider);
+}
+.vw-content :where(.overflow-auto, .overflow-x-auto) {
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+}
+.vw-content :where(pre) {
+  max-width: 100%;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+.vw-skip {
+  position: absolute;
+  top: -100px;
+  left: 16px;
+  z-index: 100;
+  padding: 12px;
+  background: var(--color-surface);
+  color: var(--color-primary);
+}
+.vw-skip:focus {
+  top: 12px;
+}
+@media (max-width: 1199px) {
+  .vw-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .vw-sidebar {
+    padding: 12px 24px;
+    border-right: 0;
+    border-bottom: 1px solid var(--color-divider);
+  }
+  .vw-nav-toggle {
+    display: flex;
+    width: 100%;
+    min-height: 44px;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    color: var(--color-primary);
+    font-weight: 650;
+    font-size: 14px;
+    text-align: left;
+  }
+  .vw-navigation {
+    display: none;
+    position: static;
+    padding: 16px 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+  .vw-navigation[data-open="true"] {
+    display: grid;
+  }
+}
+@media (max-width: 599px) {
+  .vw-masthead {
+    padding: 16px;
+  }
+  .vw-brand {
+    font-size: 16px;
+  }
+  .vw-sidebar {
+    padding: 8px 16px;
+  }
+  .vw-page {
+    padding: 16px 16px 32px;
+  }
+  .vw-page-header {
+    flex-direction: column;
+    padding: 18px 0 24px;
+    gap: 12px;
+  }
+  .vw-navigation {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+  .vw-content :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+    font-size: 16px;
+  }
+  .vw-content :where(.grid > *, .flex > *) {
+    min-width: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .volunteer-workspace *,
+  .volunteer-workspace *::before,
+  .volunteer-workspace *::after {
+    scroll-behavior: auto;
+    transition-duration: 0s;
+    animation-duration: 0s;
+  }
+}

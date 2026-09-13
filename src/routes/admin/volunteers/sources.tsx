@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AdminLayout } from "../../../components/admin/AdminLayout";
+import { VolunteerAdminShell } from "../../../components/admin/VolunteerAdminShell";
 import { VolunteerPolicySources } from "../../../components/admin/volunteers/VolunteerPolicySources";
 import { requireAdminPageAccess } from "../../../lib/admin/pageAccess";
 export const Route = createFileRoute("/admin/volunteers/sources")({
@@ -11,8 +11,8 @@ export const Route = createFileRoute("/admin/volunteers/sources")({
 });
 function Page() {
   return (
-    <AdminLayout activeSection="volunteers">
+    <VolunteerAdminShell>
       <VolunteerPolicySources />
-    </AdminLayout>
+    </VolunteerAdminShell>
   );
 }

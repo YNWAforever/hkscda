@@ -1,3 +1,4 @@
+import { WorkflowSections } from "./WorkflowSections";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
@@ -81,12 +82,20 @@ export function VolunteerPolicySources() {
   return (
     <section className="space-y-6 p-4 md:p-6">
       <h1 className="text-2xl font-bold">共用來源、場地及資格</h1>
+      <WorkflowSections
+        sections={[
+          { id: "source-registry", label: "場地與資格" },
+          { id: "source-publish", label: "來源發布" },
+        ]}
+      />
       <p>共用預設 → 場地 → 模板。來源變更只影響之後的政策預覽；已發布場次保留原有完整版本。</p>
       <a className="underline" href="/admin/volunteers/settings">
         返回模板設定
       </a>
       <section className="space-y-3 rounded border p-4">
-        <h2 className="text-lg font-bold">管理場地及資格名稱</h2>
+        <h2 id="source-registry" className="text-lg font-bold">
+          管理場地及資格名稱
+        </h2>
         <form
           className="grid gap-3 md:grid-cols-2"
           onSubmit={(e) => {
@@ -192,7 +201,9 @@ export function VolunteerPolicySources() {
         {save.isSuccess && <p role="status">已儲存。</p>}
       </section>
       <section className="space-y-3 rounded border p-4">
-        <h2 className="text-lg font-bold">發布共用或場地來源</h2>
+        <h2 id="source-publish" className="text-lg font-bold">
+          發布共用或場地來源
+        </h2>
         <p>
           先在模板設定編輯並儲存所需完整規則，再選擇草稿作來源。場地來源可用「回復繼承」引用共用設定；模板可逐項引用場地或共用設定。
         </p>

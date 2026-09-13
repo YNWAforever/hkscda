@@ -51,12 +51,26 @@ const addDays = (value: string, days: number) => {
 };
 const button = "min-h-11 rounded border border-[var(--color-border)] px-3 py-2";
 export function VolunteerCalendar() {
-  const [date, setDate] = useState(() => dateKey(new Date()));
+  const [date, setDate] = useState(() => {
+    const requested =
+      typeof window === "undefined"
+        ? null
+        : new URLSearchParams(window.location.search).get("date");
+    return requested &&
+      /^\d{4}-\d{2}-\d{2}$/.test(requested) &&
+      !Number.isNaN(Date.parse(requested))
+      ? requested
+      : dateKey(new Date());
+  });
   const [view, setView] = useState<"month" | "week" | "day" | "list">("month");
   const [shelter, setShelter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [shortOnly, setShortOnly] = useState(false);
-  const [selected, setSelected] = useState<string>();
+  const [selected, setSelected] = useState<string | undefined>(() =>
+    typeof window === "undefined"
+      ? undefined
+      : (new URLSearchParams(window.location.search).get("activity_id") ?? undefined),
+  );
   const first =
     view === "month" || view === "list"
       ? date.slice(0, 7) + "-01"
@@ -127,7 +141,7 @@ export function VolunteerCalendar() {
           <a href="/admin/volunteers/settings">規則設定</a>
           <a href="/admin/volunteers/operations">團體及改期</a>
           <a href="/admin/volunteers/qualifications">身份及資格核實</a>
-          <a href="/admin/volunteers">報名名單</a>
+          <a href="/admin/volunteers/activities">報名名單</a>
         </nav>
       </header>
       <div className="flex flex-wrap items-center gap-3">

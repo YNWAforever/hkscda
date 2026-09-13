@@ -1,10 +1,10 @@
+import { useUnsavedVolunteerDraft } from "./useUnsavedVolunteerDraft";
+import { WorkflowSections } from "./WorkflowSections";
+import { PolicyChangeSummary } from "./PolicyChangeSummary";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { fetchAdminJson } from "../../../lib/admin/http";
-import {
-  initialMonthlyPolicy,
-  initialPolicyCatalogue,
-} from "../../../lib/volunteers/policy/catalogue";
+import { initialPolicyCatalogue } from "../../../lib/volunteers/policy/catalogue";
 import { PolicyAdvancedFields } from "./PolicyAdvancedFields";
 import { PolicySourceFields } from "./PolicySourceFields";
 import type { SourceListing } from "../../../lib/volunteers/policy/sourceService";
@@ -85,15 +85,7 @@ export function VolunteerPolicySettings() {
       setIds([]);
     }
   }, [row, base, key]);
-  useEffect(() => {
-    if (!dirty) return;
-    const f = (e: BeforeUnloadEvent) => {
-      e.preventDefault();
-      e.returnValue = "";
-    };
-    addEventListener("beforeunload", f);
-    return () => removeEventListener("beforeunload", f);
-  }, [dirty]);
+  useUnsavedVolunteerDraft(dirty);
   const ready = useMemo(() => (draft ? getPolicyReadiness(draft) : null), [draft]);
   const edit = (f: (x: PolicyDraft) => void) => {
     if (!draft) return;
@@ -206,7 +198,18 @@ export function VolunteerPolicySettings() {
           {dirty ? "（尚未儲存）" : ""}
         </p>
       </header>
-      <section className="grid gap-4 rounded-lg border bg-white p-4 md:grid-cols-3">
+      <WorkflowSections
+        sections={[
+          { id: "policy-basic", label: "基本時段與資格" },
+          { id: "policy-rules", label: "名額及報名規則" },
+          { id: "policy-source", label: "來源" },
+          { id: "policy-publish", label: "預覽與發布" },
+        ]}
+      />
+      <section
+        id="policy-basic"
+        className="grid gap-4 rounded-lg border bg-white p-4 md:grid-cols-3"
+      >
         <F
           n="政策模板"
           c={
@@ -214,7 +217,10 @@ export function VolunteerPolicySettings() {
               aria-label="政策模板"
               className={ic}
               value={key}
-              onChange={(e) => setKey(e.target.value)}
+              onChange={(e) => {
+                if (!dirty || window.confirm("目前有未儲存修改，確定切換模板？"))
+                  setKey(e.target.value);
+              }}
             >
               {[
                 ...new Map(
@@ -424,60 +430,23 @@ export function VolunteerPolicySettings() {
           。這些規則會保留；未解析項目如下。
         </p>
       </section>
-      <PolicyAdvancedFields policy={draft} onChange={edit} />
-      <PolicySourceFields policy={draft} onChange={edit} />
+      <div id="policy-rules">
+        <PolicyAdvancedFields policy={draft} onChange={edit} />
+      </div>
+      <div id="policy-source">
+        <PolicySourceFields policy={draft} onChange={edit} />
+      </div>
       <section className="space-y-2 rounded-lg border bg-white p-4">
-        <h2 className="text-lg font-bold">每月級別評核（唯讀摘要）</h2>
+        <h2 className="text-lg font-bold">每月級別評核</h2>
+        <p className="text-sm text-[var(--color-text-muted)]">
+          評核門檻及通知安排由獨立版本管理。前往級別評核查看目前設定、已發布版本及執行紀錄。
+        </p>
         <a
-          className="text-sm font-bold text-[var(--color-primary)] underline"
+          className="inline-block min-h-11 py-2 font-semibold text-[var(--color-primary)] underline"
           href="/admin/volunteers/assessments"
         >
-          前往每月評核設定及執行
+          管理每月級別評核
         </a>
-        <p className="text-sm text-[var(--color-text-muted)]">
-          此頁的活動政策 API
-          暫未儲存每月評核設定；以下只顯示目前政策目錄內容，避免把表格誤當成已發布設定。
-        </p>
-        <dl className="grid gap-2 text-sm md:grid-cols-2">
-          <div>
-            <dt className="font-bold">晉升恆常義工</dt>
-            <dd>累積 {initialMonthlyPolicy.regular_attendance_threshold} 次核實出席</dd>
-          </div>
-          <div>
-            <dt className="font-bold">資深年資</dt>
-            <dd>{initialMonthlyPolicy.senior_years} 年</dd>
-          </div>
-          <div>
-            <dt className="font-bold">每月最低出席</dt>
-            <dd>
-              恆常 {initialMonthlyPolicy.regular_monthly_minimum} 次；資深{" "}
-              {initialMonthlyPolicy.senior_monthly_minimum} 次
-            </dd>
-          </div>
-          <div>
-            <dt className="font-bold">自動降級</dt>
-            <dd>{initialMonthlyPolicy.senior_auto_demotion ? "啟用" : "停用"}</dd>
-          </div>
-        </dl>
-        <div className="rounded-md bg-[var(--color-surface-offset)] p-3 text-sm">
-          <b>仍待管理員決定</b>
-          <ul className="mt-1 list-disc pl-5">
-            {[
-              ["資深恆常觀察期", initialMonthlyPolicy.senior_regular_observation_months],
-              ["出席計算單位", initialMonthlyPolicy.attendance_unit],
-              ["貓狗場地計算範圍", initialMonthlyPolicy.shelter_scope],
-              ["晉升評核時點", initialMonthlyPolicy.promotion_trigger],
-              ["每月執行時間", initialMonthlyPolicy.assessment_time],
-            ].map(([label, value]) => (
-              <li key={label as string}>
-                {label as string}：
-                {typeof value === "object" && value && "reason" in value
-                  ? String(value.reason)
-                  : "已設定"}
-              </li>
-            ))}
-          </ul>
-        </div>
       </section>
       <section className="rounded-lg border bg-white p-4">
         <h2 className="font-bold">發布準備狀態</h2>
@@ -501,7 +470,9 @@ export function VolunteerPolicySettings() {
         儲存草稿
       </button>
       <section className="space-y-4 rounded-lg border bg-white p-4">
-        <h2 className="text-lg font-bold">預覽及發布</h2>
+        <h2 id="policy-publish" className="text-lg font-bold">
+          預覽及發布
+        </h2>
         <div className="grid gap-3 md:grid-cols-3">
           <F
             n="生效日期"
@@ -518,7 +489,7 @@ export function VolunteerPolicySettings() {
             }
           />
           <F
-            n="結束日期"
+            n="結束日期（可留空）"
             c={
               <input
                 type="date"
@@ -554,12 +525,30 @@ export function VolunteerPolicySettings() {
           ))}
         </fieldset>
         <div className="flex gap-2">
-          <button className={bc + " border"} disabled={dirty || !rev} onClick={() => pre.mutate()}>
+          <button
+            className={bc + " border"}
+            disabled={
+              dirty ||
+              !rev ||
+              !from ||
+              (Boolean(until) && until <= from) ||
+              pre.isPending ||
+              pub.isPending
+            }
+            onClick={() => pre.mutate()}
+          >
             建立預覽
           </button>
           <button
             className={bc + " bg-[var(--color-primary)] text-white"}
-            disabled={!preview || preview.issues.length > 0}
+            disabled={
+              !preview ||
+              preview.issues.length > 0 ||
+              !reason.trim() ||
+              pub.isPending ||
+              pre.isPending ||
+              dirty
+            }
             onClick={() => pub.mutate()}
           >
             發布政策
@@ -575,6 +564,7 @@ export function VolunteerPolicySettings() {
                 {x.path}：{x.message}
               </p>
             ))}
+            <PolicyChangeSummary before={preview.previous} after={preview.candidate} />
             {preview.manifest.map((x) => (
               <p key={x.id}>
                 {x.title} · 名額 {x.capacity}
@@ -598,10 +588,15 @@ export function VolunteerPolicySettings() {
           <input
             type="date"
             className={ic}
+            aria-label="建立活動日期"
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />
-          <button className={bc + " mt-2 border"} disabled={!date} onClick={() => gen.mutate()}>
+          <button
+            className={bc + " mt-2 border"}
+            disabled={!date || gen.isPending}
+            onClick={() => gen.mutate()}
+          >
             建立當日活動
           </button>
         </div>

@@ -79,6 +79,7 @@ export type VolunteerActivitySummary = VolunteerActivityRuleSnapshot & {
 export type VolunteerActivityDetail = VolunteerActivitySummary;
 
 export type VolunteerRegistrationSummary = {
+  profileId?: string | null;
   id: string;
   activityId: string;
   supporterId: string | null;

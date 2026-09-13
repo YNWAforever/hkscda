@@ -1,3 +1,5 @@
+import { WorkflowSections } from "../../../components/admin/volunteers/WorkflowSections";
+import { VolunteerAdminShell } from "../../../components/admin/VolunteerAdminShell";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { requireAdminPageAccess } from "../../../lib/admin/pageAccess";
@@ -48,7 +50,7 @@ export const Route = createFileRoute("/admin/volunteers/assessments")({
   beforeLoad: async ({ context }) => {
     await requireAdminPageAccess("volunteerPolicyManagement", context.queryClient);
   },
-  component: Page,
+  component: AssessmentWorkspace,
 });
 function Page() {
   const [p, setP] = useState<P>(initialMonthlyPolicy),
@@ -78,9 +80,18 @@ function Page() {
   const change = <K extends keyof P>(k: K, v: P[K]) => setP((q) => ({ ...q, [k]: v }));
   const value = (v: unknown) => (typeof v === "string" ? v : "");
   return (
-    <main className="space-y-5 p-4">
+    <div className="space-y-5">
       <header>
         <h1 className="text-2xl font-bold">每月義工級別評核</h1>
+        <WorkflowSections
+          sections={[
+            { id: "assessment-settings", label: "評核設定" },
+            { id: "assessment-run", label: "執行評核" },
+            { id: "assessment-candidates", label: "候選核准" },
+            { id: "assessment-notifications", label: "通知狀態" },
+          ]}
+        />
+        <span id="assessment-settings" />
         <p className="text-sm text-[var(--color-text-muted)]">
           所有時段以香港時間計算。未知歷史覆蓋不會當作零出席，資深義工不會自動降級。
         </p>
@@ -296,12 +307,14 @@ function Page() {
         <input
           className={c}
           type="date"
+          aria-label="評核政策生效日期"
           value={effective}
           onChange={(e) => setEffective(e.target.value)}
         />
         <input
           className={c}
           placeholder="發布原因"
+          aria-label="發布原因"
           value={reason}
           onChange={(e) => setReason(e.target.value)}
         />
@@ -321,14 +334,22 @@ function Page() {
         </button>
       </div>
       <section className="rounded-lg border bg-white p-4">
-        <h2 className="font-bold">執行已完成月份</h2>
+        <h2 id="assessment-run" className="font-bold">
+          執行已完成月份
+        </h2>
         <input
           className={c}
           type="month"
+          aria-label="已完成評核月份"
           value={month}
           onChange={(e) => setMonth(e.target.value)}
         />
-        <select className={c} value={scope} onChange={(e) => setScope(e.target.value)}>
+        <select
+          aria-label="評核範圍"
+          className={c}
+          value={scope}
+          onChange={(e) => setScope(e.target.value)}
+        >
           <option value="combined">貓狗合計</option>
           <option value="cat">貓舍</option>
           <option value="dog">狗舍</option>
@@ -356,7 +377,9 @@ function Page() {
         </ul>
       </section>
       <section className="rounded-lg border bg-white p-4">
-        <h2 className="font-bold">資深義工候選（須人手核准）</h2>
+        <h2 id="assessment-candidates" className="font-bold">
+          資深義工候選（須人手核准）
+        </h2>
         <p className="text-sm text-[var(--color-text-muted)]">
           候選只按已發布政策及已核實年資／恆常觀察證據產生，不會自動晉升。
         </p>
@@ -371,7 +394,9 @@ function Page() {
         </ul>
       </section>{" "}
       <section className="rounded-lg border bg-white p-4">
-        <h2 className="font-bold">通知工作</h2>
+        <h2 id="assessment-notifications" className="font-bold">
+          通知工作
+        </h2>
         <p className="text-sm text-[var(--color-text-muted)]">
           供應商接受不等於已送達；只有回傳送達證據才會顯示已送達。
         </p>
@@ -404,6 +429,13 @@ function Page() {
         </ul>
       </section>
       {msg && <p role="status">{msg}</p>}
-    </main>
+    </div>
+  );
+}
+function AssessmentWorkspace() {
+  return (
+    <VolunteerAdminShell>
+      <Page />
+    </VolunteerAdminShell>
   );
 }

@@ -35,6 +35,7 @@ type ActivityRow = {
 };
 
 type RegistrationRow = {
+  profile_id?: string | null;
   id: string;
   activity_id: string;
   supporter_id: string | null;
@@ -113,6 +114,7 @@ function toRegistration(
     id: row.id,
     activityId: row.activity_id,
     supporterId: row.supporter_id,
+    profileId: row.profile_id ?? null,
     registrationType: row.registration_type,
     status: row.status,
     statusReason: row.status_reason,

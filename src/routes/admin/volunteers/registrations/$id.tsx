@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { AdminLayout } from "../../../../components/admin/AdminLayout";
+import { VolunteerAdminShell } from "../../../../components/admin/VolunteerAdminShell";
 import { VolunteerRegistrationDetail } from "../../../../components/admin/volunteers/VolunteerRegistrationDetail";
 import { requireAdminPageAccess } from "../../../../lib/admin/pageAccess";
 
@@ -16,8 +16,8 @@ function AdminVolunteerRegistrationDetailPage() {
   const { id } = Route.useParams();
 
   return (
-    <AdminLayout activeSection="volunteers">
+    <VolunteerAdminShell>
       <VolunteerRegistrationDetail registrationId={id} />
-    </AdminLayout>
+    </VolunteerAdminShell>
   );
 }

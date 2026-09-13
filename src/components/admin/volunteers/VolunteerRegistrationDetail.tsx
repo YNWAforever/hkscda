@@ -15,6 +15,21 @@ type RegistrationResponse = {
   registration: VolunteerRegistrationDetailType;
 };
 
+export function RegistrationProfileLink({ profileId }: { profileId?: string | null }) {
+  return (
+    <a
+      className="inline-flex min-h-11 items-center text-sm font-semibold text-[var(--color-primary)] underline"
+      href={
+        profileId
+          ? `/admin/volunteers/people/${encodeURIComponent(profileId)}`
+          : "/admin/volunteers/qualifications"
+      }
+    >
+      {profileId ? "查看義工個人詳情" : "身份未連結：前往舊報名身份核對"}
+    </a>
+  );
+}
+
 export function VolunteerRegistrationDetail({ registrationId }: { registrationId: string }) {
   const queryClient = useQueryClient();
   const [correctionReason, setCorrectionReason] = useState("");
@@ -34,6 +49,8 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: ["volunteer-registration"] });
       void queryClient.invalidateQueries({ queryKey: ["volunteer-activities"] });
+      void queryClient.invalidateQueries({ queryKey: ["volunteer-directory"] });
+      void queryClient.invalidateQueries({ queryKey: ["volunteer-overview"] });
     },
   });
 
@@ -51,6 +68,8 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: ["volunteer-registration"] });
       void queryClient.invalidateQueries({ queryKey: ["volunteer-activities"] });
+      void queryClient.invalidateQueries({ queryKey: ["volunteer-directory"] });
+      void queryClient.invalidateQueries({ queryKey: ["volunteer-overview"] });
     },
   });
 
@@ -70,7 +89,10 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
 
   return (
     <div className="space-y-5 p-6">
-      <Link to="/admin/volunteers" className="text-sm font-semibold text-[var(--color-primary)]">
+      <Link
+        to="/admin/volunteers/activities"
+        className="text-sm font-semibold text-[var(--color-primary)]"
+      >
         返回義工管理
       </Link>
       <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
@@ -93,6 +115,7 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
           </div>
         </div>
 
+        <RegistrationProfileLink profileId={registration.profileId} />
         <div className="mt-5 grid gap-4 md:grid-cols-3">
           <DetailItem label="活動" value={registration.activity.title} />
           <DetailItem
