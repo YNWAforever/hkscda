@@ -852,7 +852,7 @@ afterAll(() => {
   mock.module("../adoptions/publicImpact.server", () => realPublicImpactServerModule);
 });
 
-describe("getPublicImpactItems", () => {
+describe("resolvePublicImpactItems", () => {
   test("counts fostered cats and dogs as available, not just status='available'", async () => {
     const data = [
       { type: "cat", status: "available", adoption_eligible: true, retired_at: null },
@@ -873,10 +873,6 @@ describe("getPublicImpactItems", () => {
   });
 });
 ```
-
-(Note: `describe("getPublicImpactItems", ...)` in the block above should read
-`describe("resolvePublicImpactItems", ...)` — testing the extracted function,
-not the `createServerFn` wrapper around it.)
 
 - [ ] **Step 2: Run test to verify it fails**
 
