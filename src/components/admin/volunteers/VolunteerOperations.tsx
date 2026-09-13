@@ -1,3 +1,4 @@
+import { WorkflowSections } from "./WorkflowSections";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSupabaseClient } from "../../../lib/supabase";
@@ -191,6 +192,13 @@ export function VolunteerOperations({ publicMode = false }: { publicMode?: boole
           {publicMode ? "返回義工服務" : "返回義工月曆"}
         </a>
       </header>
+      <WorkflowSections
+        sections={[
+          { id: "operations-create", label: "團體加入場次" },
+          { id: "operations-records", label: "團體記錄" },
+          { id: "operations-reschedule", label: "個人改期" },
+        ]}
+      />
       {listing.isLoading && <p>讀取資料中…</p>}
       {error && (
         <p role="alert">{error instanceof Error ? error.message : "操作未完成，請重新檢查。"}</p>
@@ -199,7 +207,9 @@ export function VolunteerOperations({ publicMode = false }: { publicMode?: boole
       {data && (
         <>
           <section className="space-y-4 rounded-lg border p-4">
-            <h2 className="text-lg font-bold">把團體查詢加入指定場次</h2>
+            <h2 id="operations-create" className="text-lg font-bold">
+              把團體查詢加入指定場次
+            </h2>
             <p className="text-sm">聯絡資料會保存為本次申請的快照。提交後仍待職員核實。</p>
             <div className="grid gap-4 md:grid-cols-3">
               <Field label="已有團體查詢">
@@ -268,7 +278,9 @@ export function VolunteerOperations({ publicMode = false }: { publicMode?: boole
             )}
           </section>
           <section className="space-y-3 rounded-lg border p-4">
-            <h2 className="text-lg font-bold">團體申請記錄</h2>
+            <h2 id="operations-records" className="text-lg font-bold">
+              團體申請記錄
+            </h2>
             {data.requests.map((r) => (
               <p key={r.id}>
                 {r.contact_snapshot.organisation} · {r.headcount} 人 ·{" "}
@@ -356,7 +368,9 @@ export function VolunteerOperations({ publicMode = false }: { publicMode?: boole
             </section>
           )}
           <section className="space-y-4 rounded-lg border p-4">
-            <h2 className="text-lg font-bold">義工改期</h2>
+            <h2 id="operations-reschedule" className="text-lg font-bold">
+              義工改期
+            </h2>
             <p className="text-sm">
               原報名會保留，直至目的場次通過資格、名額、重疊及條款檢查後才原子更新。已有出席紀錄不能透過改期改寫。
             </p>

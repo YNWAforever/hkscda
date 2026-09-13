@@ -41,7 +41,7 @@ function NavList({
         return (
           <div key={group.id} className="space-y-1">
             {!collapsed && (
-              <p className="px-3 pb-0.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+              <p className="px-3 pb-0.5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                 {copy.navGroups[group.id] ?? group.label}
               </p>
             )}

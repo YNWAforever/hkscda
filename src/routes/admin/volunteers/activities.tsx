@@ -1,15 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { VolunteerAdminShell } from "../../../components/admin/VolunteerAdminShell";
-import { VolunteerCalendar } from "../../../components/admin/volunteers/VolunteerCalendar";
+import { VolunteerManagement } from "../../../components/admin/volunteers/VolunteerManagement";
 import { requireAdminPageAccess } from "../../../lib/admin/pageAccess";
-export const Route = createFileRoute("/admin/volunteers/calendar")({
+
+export const Route = createFileRoute("/admin/volunteers/activities")({
   ssr: false,
   beforeLoad: async ({ context }) => {
     await requireAdminPageAccess("volunteerManagement", context.queryClient);
   },
   component: () => (
     <VolunteerAdminShell>
-      <VolunteerCalendar />
+      <VolunteerManagement />
     </VolunteerAdminShell>
   ),
 });

@@ -135,7 +135,11 @@ export function VolunteerManagement() {
   const [activityQuery, setActivityQuery] = useState("");
   const [registrationQuery, setRegistrationQuery] = useState("");
   const [registrationStatus, setRegistrationStatus] = useState<VolunteerRegistrationStatus | "all">(
-    "all",
+    () =>
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).get("registration_status") === "pending"
+        ? "pending"
+        : "all",
   );
   const [attendanceStatus, setAttendanceStatus] = useState<VolunteerAttendanceStatus | "all">(
     "all",
@@ -673,7 +677,7 @@ export function VolunteerManagement() {
       <div className="grid gap-3 sm:grid-cols-3">
         <StatCard
           icon={<Users className="h-5 w-5" />}
-          label="待審批人數"
+          label="本頁活動待審批人數"
           value={pendingCount}
           emphasis={!activitiesFailed && pendingCount > 0}
           failed={activitiesFailed}
@@ -681,7 +685,7 @@ export function VolunteerManagement() {
         />
         <StatCard
           icon={<CalendarClock className="h-5 w-5" />}
-          label="即將舉行的活動"
+          label="本頁即將舉行的活動"
           value={upcomingCount}
           failed={activitiesFailed}
           loading={activitiesQuery.isLoading}

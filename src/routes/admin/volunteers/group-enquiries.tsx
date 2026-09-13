@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { AdminLayout } from "../../../components/admin/AdminLayout";
+import { VolunteerAdminShell } from "../../../components/admin/VolunteerAdminShell";
 import { GroupEnquiryManagement } from "../../../components/admin/volunteers/GroupEnquiryManagement";
 import { requireAdminPageAccess } from "../../../lib/admin/pageAccess";
 
@@ -14,8 +14,8 @@ export const Route = createFileRoute("/admin/volunteers/group-enquiries")({
 
 function AdminVolunteerGroupEnquiriesPage() {
   return (
-    <AdminLayout activeSection="volunteers">
+    <VolunteerAdminShell>
       <GroupEnquiryManagement />
-    </AdminLayout>
+    </VolunteerAdminShell>
   );
 }

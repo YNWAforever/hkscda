@@ -1,3 +1,6 @@
+import { useUnsavedVolunteerDraft } from "./useUnsavedVolunteerDraft";
+import { PolicyChangeSummary } from "./PolicyChangeSummary";
+import { WorkflowSections } from "./WorkflowSections";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
@@ -67,15 +70,7 @@ export function VolunteerDailySettings() {
       setReason("");
     }
   }, [binding]);
-  useEffect(() => {
-    if (!dirty) return;
-    const warn = (e: BeforeUnloadEvent) => {
-      e.preventDefault();
-      e.returnValue = "";
-    };
-    addEventListener("beforeunload", warn);
-    return () => removeEventListener("beforeunload", warn);
-  }, [dirty]);
+  useUnsavedVolunteerDraft(dirty);
   const quota = draft?.daily_limits.find((q) => q.key === binding?.body.key);
   const edit = (change: (p: PolicyDraft) => void) => {
     if (!draft) return;
@@ -137,11 +132,19 @@ export function VolunteerDailySettings() {
           返回義工政策設定
         </a>
       </header>
+      <WorkflowSections
+        sections={[
+          { id: "daily-quota", label: "全日配額" },
+          { id: "daily-release", label: "晚期補位" },
+          { id: "daily-publish", label: "發布核對" },
+        ]}
+      />
       {listing.isLoading && <p>讀取全日設定中…</p>}
       {error && (
         <p role="alert">{error instanceof Error ? error.message : "未能處理設定，請重試。"}</p>
       )}
       {message && <p role="status">{message}</p>}
+      <span id="daily-quota" />
       <Field label="選擇日期及配額">
         <select
           className={input}
@@ -268,7 +271,9 @@ export function VolunteerDailySettings() {
             </label>
           </section>
           <section className="space-y-4 rounded-lg border bg-white p-4">
-            <h2 className="text-lg font-bold">每日晚期補位</h2>
+            <h2 id="daily-release" className="text-lg font-bold">
+              每日晚期補位
+            </h2>
             <p className="text-sm">
               只放寬每日分項；各場總容量、必要資格及報名截止仍然適用。門檻按同一範圍全日已確認人次計算。
             </p>
@@ -583,7 +588,10 @@ export function VolunteerDailySettings() {
           </div>
           {preview && (
             <section className="space-y-4 rounded-lg border bg-white p-4">
-              <h2 className="text-lg font-bold">發布前核對</h2>
+              <h2 id="daily-publish" className="text-lg font-bold">
+                發布前核對
+              </h2>
+              <PolicyChangeSummary before={preview.before} after={preview.after} />
               <p>
                 每日名額由 {limitText(preview.before.maximum)} 改為{" "}
                 {limitText(preview.after.maximum)}；目前已計 {preview.occupied}，適用全日{" "}

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AdminLayout } from "../../../components/admin/AdminLayout";
+import { VolunteerAdminShell } from "../../../components/admin/VolunteerAdminShell";
 import { VolunteerOperations } from "../../../components/admin/volunteers/VolunteerOperations";
 import { requireAdminPageAccess } from "../../../lib/admin/pageAccess";
 export const Route = createFileRoute("/admin/volunteers/operations")({
@@ -8,8 +8,8 @@ export const Route = createFileRoute("/admin/volunteers/operations")({
     await requireAdminPageAccess("volunteerManagement", context.queryClient);
   },
   component: () => (
-    <AdminLayout activeSection="volunteers">
+    <VolunteerAdminShell>
       <VolunteerOperations />
-    </AdminLayout>
+    </VolunteerAdminShell>
   ),
 });

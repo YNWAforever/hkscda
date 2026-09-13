@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, useRouterState } from "@tanstack/react-router";
 
-import { AdminLayout } from "../../components/admin/AdminLayout";
-import { VolunteerManagement } from "../../components/admin/volunteers/VolunteerManagement";
+import { VolunteerAdminShell } from "../../components/admin/VolunteerAdminShell";
+import { VolunteerOverview } from "../../components/admin/volunteers/VolunteerOverview";
 import { requireAdminPageAccess } from "../../lib/admin/pageAccess";
 
 export const Route = createFileRoute("/admin/volunteers")({
@@ -17,8 +17,8 @@ function AdminVolunteersPage() {
   if (pathname !== "/admin/volunteers" && pathname !== "/admin/volunteers/") return <Outlet />;
 
   return (
-    <AdminLayout activeSection="volunteers">
-      <VolunteerManagement />
-    </AdminLayout>
+    <VolunteerAdminShell>
+      <VolunteerOverview />
+    </VolunteerAdminShell>
   );
 }

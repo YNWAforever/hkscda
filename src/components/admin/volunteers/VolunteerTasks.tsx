@@ -1,3 +1,4 @@
+import { WorkflowSections } from "./WorkflowSections";
 import { deliveryLabel } from "../../../lib/notifications/deliveryLabel";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -75,11 +76,27 @@ export function VolunteerTasks() {
           月曆：查看缺人、資格例外及場次詳情
         </a>
       </header>
+      <WorkflowSections
+        sections={[
+          { id: "tasks-pending", label: "待審批" },
+          { id: "tasks-contact", label: "聯絡跟進" },
+          { id: "tasks-notifications", label: "通知狀態" },
+        ]}
+      />
       {query.isLoading && <p>載入中…</p>}
-      {query.error && <p role="alert">未能載入待辦</p>}
+      {query.error && (
+        <p role="alert">
+          未能載入待辦。
+          <button className="min-h-11 px-3 underline" onClick={() => void query.refetch()}>
+            重新載入
+          </button>
+        </p>
+      )}
       {mutation.error && <p role="alert">{mutation.error.message}</p>}
       <section className="space-y-3">
-        <h2 className="text-xl font-semibold">待審批</h2>
+        <h2 id="tasks-pending" className="text-xl font-semibold">
+          待審批
+        </h2>
         {query.data?.pending.length === 0 && <p>目前沒有待審批報名。</p>}
         {query.data?.pending.map((row) => (
           <article key={row.id} className="rounded border p-3">
@@ -88,14 +105,23 @@ export function VolunteerTasks() {
         ))}
       </section>
       <section className="space-y-3">
-        <h2 className="text-xl font-semibold">待聯絡／核實</h2>
+        <h2 id="tasks-contact" className="text-xl font-semibold">
+          待聯絡／核實
+        </h2>
         {query.data?.tasks.length === 0 && <p>目前沒有未完成跟進。</p>}
         {query.data?.tasks.map((row) => (
           <article key={row.id} className="space-y-2 rounded border p-3">
             <p>
               {kind[row.kind] ?? "營運跟進"} · {row.contact_name} · {target(row)}
             </p>
-            <button className="min-h-11 underline" onClick={() => setSelected(row.id)}>
+            <button
+              className="min-h-11 underline"
+              onClick={() => {
+                setSelected(row.id);
+                setReason("");
+                mutation.reset();
+              }}
+            >
               記錄跟進結果
             </button>
             {selected === row.id && (
@@ -122,7 +148,10 @@ export function VolunteerTasks() {
         ))}
       </section>
       <section className="space-y-3">
-        <h2 className="text-xl font-semibold">通知處理狀態</h2>
+        <h2 id="tasks-notifications" className="text-xl font-semibold">
+          通知處理狀態
+        </h2>
+        {query.data?.notifications.length === 0 && <p>目前沒有通知工作。</p>}
         {query.data?.notifications.map((row) => (
           <article key={row.id} className="rounded border p-3">
             <p>
