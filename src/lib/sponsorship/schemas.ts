@@ -162,6 +162,11 @@ export function toPledgeInsert(
     currency: "HKD",
     language: input.language,
     notes: input.notes,
+    contact_submission: {
+      ...input.contact,
+      source: "public_sponsorship_submission",
+      status: "unverified",
+    },
     status,
     // The opt-in ticks are recorded as a *request* on the submission, not as
     // consent. A database trigger turns these into supporter_consent_intent rows

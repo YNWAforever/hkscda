@@ -1,0 +1,7 @@
+{
+  "checks": [
+    "Actual HTTP endpoint rejects invalid signature, accepts signed delivery and deduplicates exact replay",
+    "Real staff browser shows delivered then bounced evidence; send job is not automatically requeued"
+  ],
+  "errors": []
+}

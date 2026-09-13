@@ -249,7 +249,17 @@ export function PaymentsReconcile() {
     {
       id: "amount",
       header: "金額",
-      cell: (payment) => <span className="font-medium">{centsToHkd(payment.amount_cents)}</span>,
+      cell: (payment) => (
+        <span className="font-medium">
+          {centsToHkd(payment.amount_cents)}
+          {Boolean(payment.refunded_cents) && (
+            <small className="block">
+              已退款 {centsToHkd(payment.refunded_cents ?? 0)} · 實收{" "}
+              {centsToHkd(payment.amount_cents - (payment.refunded_cents ?? 0))}
+            </small>
+          )}
+        </span>
+      ),
     },
     {
       id: "purpose",

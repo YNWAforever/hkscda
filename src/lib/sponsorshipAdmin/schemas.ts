@@ -30,6 +30,7 @@ export const pledgeListSearchSchema = z.object({
 });
 
 export const recordPledgePaymentSchema = z.object({
+  idempotencyKey: z.string().uuid(),
   paymentMethod: paymentMethodSchema,
   reference: optionalTrimmed,
   amountCents: z.number().int().positive(),
@@ -46,10 +47,15 @@ export const recordPledgePaymentSchema = z.object({
     .optional(),
 });
 
-export const reviewPledgeProofSchema = z.object({
-  decision: z.enum(["approve", "reject"]),
-  note: optionalTrimmed,
-});
+export const reviewPledgeProofSchema = z
+  .object({
+    proofId: z.string().uuid(),
+    expectedRevision: z.number().int().positive(),
+    idempotencyKey: z.string().uuid(),
+    decision: z.enum(["approve", "reject"]),
+    note: optionalTrimmed,
+  })
+  .strict();
 
 export const cancelPledgeSchema = z.object({
   note: optionalTrimmed,

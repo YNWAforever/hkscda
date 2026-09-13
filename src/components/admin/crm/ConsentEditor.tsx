@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import type { ConsentStatus } from "../../../lib/crm/types";
 import { Button } from "../../ui/button";
-import { Switch } from "../../ui/switch";
+import { consentChanges } from "../../../lib/crm/consentChanges";
 import { useAdminPageCopy } from "../adminPageCopy";
 import { fetchAdminJson } from "./api";
 
@@ -45,22 +45,25 @@ export function ConsentEditor({ supporterId, emailConsent, whatsappConsent }: Co
   const { language } = useAdminPageCopy();
   const copy = CONSENT_COPY[language];
   const queryClient = useQueryClient();
-  const [email, setEmail] = useState(emailConsent === "opt_in");
-  const [whatsapp, setWhatsapp] = useState(whatsappConsent === "opt_in");
+  const [email, setEmail] = useState<ConsentStatus | null>(emailConsent);
+  const [whatsapp, setWhatsapp] = useState<ConsentStatus | null>(whatsappConsent);
 
   useEffect(() => {
-    setEmail(emailConsent === "opt_in");
-    setWhatsapp(whatsappConsent === "opt_in");
+    setEmail(emailConsent);
+    setWhatsapp(whatsappConsent);
   }, [emailConsent, whatsappConsent]);
 
+  const changes = consentChanges(
+    { email: emailConsent, whatsapp: whatsappConsent },
+    { email, whatsapp },
+  );
   const mutation = useMutation({
     mutationFn: () =>
       fetchAdminJson(`/api/admin/supporters/${supporterId}/consents`, {
-        method: "POST",
+        method: "PATCH",
         body: JSON.stringify({
           source: "admin_manual",
-          email,
-          whatsapp,
+          ...changes,
         }),
       }),
     onSuccess: () => {
@@ -78,7 +81,7 @@ export function ConsentEditor({ supporterId, emailConsent, whatsappConsent }: Co
         <Button
           type="button"
           onClick={() => mutation.mutate()}
-          disabled={mutation.isPending}
+          disabled={mutation.isPending || Object.keys(changes).length === 0}
           aria-label={copy.saveAria}
         >
           <Save className="h-4 w-4" />
@@ -95,7 +98,20 @@ export function ConsentEditor({ supporterId, emailConsent, whatsappConsent }: Co
               {copy.emailDescription}
             </span>
           </span>
-          <Switch checked={email} onCheckedChange={setEmail} aria-label={copy.emailAria} />
+          <select
+            className="rounded border p-2"
+            value={email ?? "unknown"}
+            onChange={(e) =>
+              setEmail(e.target.value === "unknown" ? null : (e.target.value as ConsentStatus))
+            }
+            aria-label={copy.emailAria}
+          >
+            <option value="unknown" disabled={emailConsent !== null}>
+              {language === "zh" ? "未有記錄" : "Unknown"}
+            </option>
+            <option value="opt_in">{language === "zh" ? "同意" : "Opt in"}</option>
+            <option value="opt_out">{language === "zh" ? "不同意" : "Opt out"}</option>
+          </select>
         </label>
         <label className="flex items-center justify-between gap-4 rounded-md border border-[var(--color-border)] p-3">
           <span>
@@ -106,7 +122,20 @@ export function ConsentEditor({ supporterId, emailConsent, whatsappConsent }: Co
               {copy.whatsappDescription}
             </span>
           </span>
-          <Switch checked={whatsapp} onCheckedChange={setWhatsapp} aria-label={copy.whatsappAria} />
+          <select
+            className="rounded border p-2"
+            value={whatsapp ?? "unknown"}
+            onChange={(e) =>
+              setWhatsapp(e.target.value === "unknown" ? null : (e.target.value as ConsentStatus))
+            }
+            aria-label={copy.whatsappAria}
+          >
+            <option value="unknown" disabled={whatsappConsent !== null}>
+              {language === "zh" ? "未有記錄" : "Unknown"}
+            </option>
+            <option value="opt_in">{language === "zh" ? "同意" : "Opt in"}</option>
+            <option value="opt_out">{language === "zh" ? "不同意" : "Opt out"}</option>
+          </select>
         </label>
       </div>
       {mutation.error && (

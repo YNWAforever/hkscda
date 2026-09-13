@@ -171,6 +171,8 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       system: "系統",
     },
     navItems: {
+      "sponsorship-pledges": "助養收款及配對",
+      internships: "實習計劃",
       cat: "貓貓",
       dog: "狗狗",
       sponsor: "助養",
@@ -182,6 +184,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       "coordinator-reports": "報表紀錄",
       "coordinator-statuses": "狀態設定",
       volunteers: "義工活動",
+      "volunteer-settings": "義工政策設定",
       "volunteer-group-enquiries": "團體查詢",
       payments: "收款",
       "payment-methods": "付款方式設定",
@@ -350,6 +353,8 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       system: "System",
     },
     navItems: {
+      "sponsorship-pledges": "Sponsorship payments and matching",
+      internships: "Internships",
       cat: "Cats",
       dog: "Dogs",
       sponsor: "Sponsors",
@@ -361,6 +366,7 @@ export const adminCopy: Record<AdminLanguage, AdminCopy> = {
       "coordinator-reports": "Reports",
       "coordinator-statuses": "Status settings",
       volunteers: "Volunteers",
+      "volunteer-settings": "Volunteer policy settings",
       "volunteer-group-enquiries": "Group enquiries",
       payments: "Payments",
       "payment-methods": "Payment method settings",

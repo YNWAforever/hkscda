@@ -1,0 +1,68 @@
+{
+  "checked_at": "2026-09-13T10:43:48.909Z",
+  "target": "hkscda_baseline_parity_20260913",
+  "production_mutated": false,
+  "transaction_rolled_back": true,
+  "scope": "Observed public/private structural drift; no production data, platform or storage clone",
+  "results": [
+    "Unreviewed function drift aborts before migration writes",
+    "Missing pinned function configuration fails closed",
+    "Full source chain applies: 63 baseline plus prerequisite and 36 feature migrations, 288 application objects",
+    "All relation catalogs match production except physical column order; all four changed tables match named column definitions",
+    "Prerequisite repairs observed gaps, retains source_url, removes broad policy and denies browser actor RPCs",
+    "All 36 frozen feature migrations apply and preserve the synthetic canonical animal ID and production-only source URL",
+    "All 288 accepted candidate objects are present; only reviewed comment hashes, source_url and physical column order differ"
+  ],
+  "accepted_candidate_objects": 288,
+  "rehearsed_objects": 288,
+  "differences": [
+    {
+      "key": "private.assert_sponsorship_allocation_valid()",
+      "fields": [
+        "body_md5",
+        "normalized_body_md5"
+      ]
+    },
+    {
+      "key": "public.assign_sponsorship_animal_with_audit(p_pledge_id uuid, p_animal_id uuid, p_actor_user_id uuid, p_note text)",
+      "fields": [
+        "body_md5",
+        "normalized_body_md5"
+      ]
+    },
+    {
+      "key": "public.record_sponsorship_payment_proof(p_pledge_id uuid, p_actor_user_id uuid, p_storage_path text, p_file_name text, p_file_type text, p_file_size integer, p_payment_method text, p_reference text, p_amount_cents integer, p_payment_date date, p_note text)",
+      "fields": [
+        "body_md5",
+        "normalized_body_md5"
+      ]
+    },
+    {
+      "key": "public.review_sponsorship_payment_proof(p_pledge_id uuid, p_decision text, p_actor_user_id uuid, p_note text, p_allocations jsonb, p_assign_animal_id uuid)",
+      "fields": [
+        "body_md5",
+        "normalized_body_md5"
+      ]
+    },
+    {
+      "key": "public.set_animal_catalog_membership_defaults()",
+      "fields": [
+        "body_md5",
+        "normalized_body_md5"
+      ]
+    },
+    {
+      "key": "public.animals",
+      "fields": [
+        "columns",
+        "indexes"
+      ]
+    },
+    {
+      "key": "public.donation",
+      "fields": [
+        "columns"
+      ]
+    }
+  ]
+}

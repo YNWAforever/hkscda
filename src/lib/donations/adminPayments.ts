@@ -15,6 +15,7 @@ export type AdminPaymentRow = {
   provider: PaymentProvider;
   provider_ref: string | null;
   amount_cents: number;
+  refunded_cents?: number;
   status: PaymentStatus;
   received_at: string | null;
   bank_reference: string | null;
@@ -62,7 +63,7 @@ export type PaymentsSummary = {
 
 export type SummarizablePaymentRow = Pick<
   AdminPaymentRow,
-  "amount_cents" | "provider" | "status"
+  "amount_cents" | "refunded_cents" | "provider" | "status"
 > & {
   donation: Pick<AdminPaymentRow["donation"], "id" | "receipt_requested" | "status">;
 };
@@ -193,7 +194,8 @@ export function summarizePayments(
     ) {
       awaitingReceipt += 1;
     }
-    if (payment.status === "succeeded") confirmedAmountCents += payment.amount_cents;
+    if (payment.status === "succeeded")
+      confirmedAmountCents += payment.amount_cents - (payment.refunded_cents ?? 0);
   }
   return { awaitingReconcile, awaitingReceipt, confirmedAmountCents };
 }

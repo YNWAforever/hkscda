@@ -183,3 +183,25 @@ test("includes fostered animals alongside available ones, still excludes adopted
   expect(result.animals.map(({ id }) => id).sort()).toEqual(["foster-cat", "shelter-cat"]);
   expect(result.total).toBe(2);
 });
+
+test("featured listing filters missing photos before its two-animal page", () => {
+  const animals = [
+    animal("a"),
+    animal("b"),
+    { ...animal("c"), image_url: "/real-cat-c.jpg" },
+    { ...animal("d"), image_url: "/real-cat-d.jpg" },
+  ];
+  const input = {
+    animals,
+    type: "cat" as const,
+    ageFilter: "all" as const,
+    genderFilter: "all" as const,
+    page: 1,
+    pageSize: 2,
+    withPhoto: true,
+  };
+  const result = buildPublicAnimalListing(input);
+  expect(result.animals.map(({ id }) => id)).toEqual(["c", "d"]);
+  expect(result.total).toBe(2);
+  expect(buildPublicAnimalListing({ ...input, withPhoto: false }).total).toBe(4);
+});

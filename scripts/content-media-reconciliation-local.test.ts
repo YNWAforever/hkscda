@@ -131,3 +131,47 @@ test("refuses more than 100 candidates before calling Storage remove", async () 
   ).rejects.toThrow("100");
   expect(removed).toBe(false);
 });
+
+test("dedicated policy stack accepts only its matched API/database pair", () => {
+  const isolated = {
+    ...local,
+    apiUrl: "http://127.0.0.1:56321",
+    dbUrl: "postgresql://postgres:postgres@127.0.0.1:56322/postgres",
+  };
+  expect(validateLocalMaintenanceTarget(isolated)).toEqual(isolated);
+  expect(() => validateLocalMaintenanceTarget({ ...isolated, dbUrl: local.dbUrl })).toThrow();
+});
+test("fixture-scoped maintenance never deletes another fixture's orphan", async () => {
+  const prefix = "reconcile-00000000-0000-4000-8000-000000000001/";
+  const removed: string[] = [];
+  await runLocalContentMediaReconciliation(
+    { ...local, objectPrefix: prefix },
+    {
+      now: new Date("2026-09-13"),
+      withLockedInventory: (op) =>
+        op({
+          objects: [
+            {
+              bucket: "content-media-private",
+              path: prefix + "orphan.png",
+              createdAt: "2026-09-01T00:00:00Z",
+            },
+            {
+              bucket: "content-media-private",
+              path: "unrelated/orphan.png",
+              createdAt: "2026-09-01T00:00:00Z",
+            },
+          ],
+          mediaObjects: [],
+          revisionObjects: [],
+          publicationObjects: [],
+          sessions: [],
+          legacyInternalPublicCount: 0,
+        }),
+      remove: async (_b, paths) => {
+        removed.push(...paths);
+      },
+    },
+  );
+  expect(removed).toEqual([prefix + "orphan.png"]);
+});

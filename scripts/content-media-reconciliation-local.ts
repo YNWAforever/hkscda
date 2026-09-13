@@ -9,6 +9,7 @@ import {
 
 export type LocalMaintenanceTarget = {
   apply: boolean;
+  objectPrefix?: string;
   localMaintenance: boolean;
   apiUrl: string;
   dbUrl: string;
@@ -22,15 +23,24 @@ type Dependencies = {
   remove: (bucket: string, paths: string[]) => Promise<void>;
 };
 
-const LOCAL_API = "http://127.0.0.1:55321";
-const LOCAL_DB = "postgresql://postgres:postgres@127.0.0.1:55322/postgres";
+const policyStack = process.argv.includes("--policy-stack");
+const LOCAL_API = policyStack ? "http://127.0.0.1:56321" : "http://127.0.0.1:55321";
+const LOCAL_DB = policyStack
+  ? "postgresql://postgres:postgres@127.0.0.1:56322/postgres"
+  : "postgresql://postgres:postgres@127.0.0.1:55322/postgres";
 const BUCKETS = new Set(["content-media", "content-media-private"]);
 
 export function validateLocalMaintenanceTarget(target: LocalMaintenanceTarget) {
   if (!target.localMaintenance)
     throw new Error("Fresh inventory requires --local-maintenance explicit opt-in");
-  if (target.apiUrl !== LOCAL_API) throw new Error("Exact disposable local API required");
-  if (target.dbUrl !== LOCAL_DB) throw new Error("Exact disposable local database required");
+  if (!["http://127.0.0.1:55321", "http://127.0.0.1:56321"].includes(target.apiUrl))
+    throw new Error("Exact disposable local API required");
+  const expectedDb = target.apiUrl.endsWith(":56321")
+    ? "postgresql://postgres:postgres@127.0.0.1:56322/postgres"
+    : "postgresql://postgres:postgres@127.0.0.1:55322/postgres";
+  if (target.dbUrl !== expectedDb) throw new Error("Exact disposable local database required");
+  if (target.objectPrefix && !/^reconcile-[a-f0-9-]{36}\/$/.test(target.objectPrefix))
+    throw new Error("Exact isolated fixture prefix required");
   return target;
 }
 
@@ -40,9 +50,12 @@ export async function runLocalContentMediaReconciliation(
 ) {
   validateLocalMaintenanceTarget(target);
   return dependencies.withLockedInventory(async (inventory) => {
-    const { candidates } = selectContentMediaReconciliationCandidates(
+    const { candidates: allCandidates } = selectContentMediaReconciliationCandidates(
       inventory,
       dependencies.now ?? new Date(),
+    );
+    const candidates = allCandidates.filter(
+      (candidate) => !target.objectPrefix || candidate.path.startsWith(target.objectPrefix),
     );
     if (!target.apply)
       return summarizeContentMediaReconciliation(inventory, dependencies.now ?? new Date());
@@ -66,6 +79,12 @@ export async function runLocalContentMediaReconciliation(
 }
 
 async function readLocalConfig() {
+  if (policyStack) {
+    const config = JSON.parse(await readFile(".local-policy-test/local-credentials.json", "utf8"));
+    if (config.API_URL !== LOCAL_API || typeof config.SERVICE_ROLE_KEY !== "string")
+      throw new Error("Dedicated local configuration required");
+    return config as { API_URL: string; SERVICE_ROLE_KEY: string };
+  }
   const lines = (await readFile("supabase/.temp/completion-local/start.raw.log", "utf8"))
     .trim()
     .split(/\r?\n/);
@@ -121,6 +140,9 @@ async function lockedInventory(
 if (import.meta.main) {
   const target = validateLocalMaintenanceTarget({
     apply: process.argv.includes("--apply"),
+    objectPrefix: process.argv
+      .find((arg) => arg.startsWith("--fixture-prefix="))
+      ?.slice("--fixture-prefix=".length),
     localMaintenance: process.argv.includes("--local-maintenance"),
     apiUrl: LOCAL_API,
     dbUrl: LOCAL_DB,

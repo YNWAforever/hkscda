@@ -16,9 +16,11 @@ import type {
   SponsorshipAssignmentRecord,
   SponsorshipPeriodRecord,
   ReviewPledgeProofInput,
+  ProofReviewResult,
 } from "./types";
 
 type PledgeRow = {
+  contact_submission?: PledgeDetail["contactSubmission"];
   id: string;
   supporter_id: string;
   monthly_tier: PledgeSummary["monthlyTier"];
@@ -75,6 +77,7 @@ type EmbeddedAnimalRow = {
 };
 
 type ProofRow = {
+  revision: number;
   id: string;
   pledge_id: string;
   storage_path: string | null;
@@ -232,6 +235,7 @@ function mapProof(row: ProofRow): PaymentProofRecord {
   return {
     id: row.id,
     pledgeId: row.pledge_id,
+    revision: row.revision,
     storagePath: row.storage_path,
     fileName: row.file_name,
     fileType: row.file_type,
@@ -396,18 +400,18 @@ export type SponsorshipAdminRepository = {
   getPledgeDetail(id: string): Promise<PledgeDetail | null>;
   getProofSigningInfo(
     pledgeId: string,
+    proofId: string,
+    expectedRevision: number,
   ): Promise<{ storagePath: string; fileName: string | null } | null>;
   recordPayment(input: RecordPledgePaymentRepoInput): Promise<{ id: string }>;
   reviewProof(
     input: ReviewPledgeProofInput & {
       pledgeId: string;
       actorUserId: string;
-      /** Months this payment pays for. Empty for a rejection. */
-      allocations?: Array<{ periodMonth: string; amountCents: number }>;
       /** The animal to confirm on a first approval, or null. */
       assignAnimalId?: string | null;
     },
-  ): Promise<void>;
+  ): Promise<ProofReviewResult>;
   cancelPledge(input: CancelPledgeInput & { pledgeId: string; actorUserId: string }): Promise<void>;
   allocateProof(input: AllocateProofInput): Promise<AllocateProofResult>;
   assignAnimal(input: AssignAnimalRepoInput): Promise<{ id: string }>;
@@ -560,6 +564,7 @@ export function createSupabaseSponsorshipAdminRepository(
       return {
         ...mapSummary(row, supporters),
         notes: row.notes,
+        contactSubmission: row.contact_submission ?? null,
         supporterPhone: supporters.get(row.supporter_id)?.phone ?? null,
         preferences,
         proofHistory,
@@ -573,67 +578,52 @@ export function createSupabaseSponsorshipAdminRepository(
       } satisfies PledgeDetail;
     },
 
-    async getProofSigningInfo(pledgeId) {
-      // Signs the file for the proof under review — the same row
-      // `getPledgeDetail` exposes as `currentProof` and the same row the RPC
-      // will update. Signing the newest row instead would show staff one
-      // document while their approve/reject decision landed on another.
+    async getProofSigningInfo(pledgeId, proofId, expectedRevision) {
       const { data, error } = await client
         .from("sponsorship_payment_proof")
-        .select("id,storage_path,file_name,review_status,created_at")
+        .select("storage_path,file_name")
         .eq("pledge_id", pledgeId)
-        .order("created_at", { ascending: false });
+        .eq("id", proofId)
+        .eq("revision", expectedRevision)
+        .maybeSingle();
       if (error) throw error;
-
-      type SigningRow = Pick<
-        ProofRow,
-        "id" | "storage_path" | "file_name" | "review_status" | "created_at"
-      >;
-      const row = selectReviewTargetProof(
-        ((data ?? []) as SigningRow[]).map((proofRow) => ({
-          ...proofRow,
-          createdAt: proofRow.created_at,
-          reviewStatus: proofRow.review_status,
-        })),
-      );
-      if (!row) return null;
-      // A staff-recorded payment may have no attached file: there is no
-      // storage object to sign a URL for, so treat it the same as "no proof".
-      if (!row.storage_path) return null;
-
-      return { storagePath: row.storage_path, fileName: row.file_name };
+      if (!data?.storage_path) return null;
+      return { storagePath: data.storage_path, fileName: data.file_name };
     },
 
     async recordPayment(input) {
-      const { data, error } = await client.rpc("record_sponsorship_payment_proof", {
-        p_pledge_id: input.pledgeId,
-        p_actor_user_id: input.actorUserId,
-        p_storage_path: input.storagePath,
-        p_file_name: input.fileName,
-        p_file_type: input.fileType,
-        p_file_size: input.fileSize,
-        p_payment_method: input.paymentMethod,
-        p_reference: input.reference ?? null,
-        p_amount_cents: input.amountCents,
-        p_payment_date: input.paymentDate,
-        p_note: input.note ?? null,
+      const { idempotencyKey, actorUserId, pledgeId, ...payment } = input;
+      const { data, error } = await client.rpc("record_exact_sponsorship_payment_proof", {
+        p_actor: actorUserId,
+        p_pledge: pledgeId,
+        p_key: idempotencyKey,
+        p_payment: payment,
       });
       if (error) throw error;
       return { id: data as string };
     },
 
     async reviewProof(input) {
-      // The allocation travels with the decision so both commit in one
-      // transaction -- see proofReview.ts and the ledger migration.
-      const { error } = await client.rpc("review_sponsorship_payment_proof", {
+      const { data, error } = await client.rpc("review_exact_sponsorship_payment_proof", {
         p_pledge_id: input.pledgeId,
+        p_proof_id: input.proofId,
+        p_expected_revision: input.expectedRevision,
+        p_idempotency_key: input.idempotencyKey,
         p_decision: input.decision,
         p_actor_user_id: input.actorUserId,
         p_note: input.note ?? null,
-        p_allocations: input.allocations ?? [],
         p_assign_animal_id: input.assignAnimalId ?? null,
       });
       if (error) throw error;
+      if (data.kind !== "reviewed")
+        throw Response.json(
+          { error: "付款證明或審批資料已更新，請重新載入。", code: data.kind },
+          {
+            status: data.kind === "not_found" ? 404 : 409,
+            headers: { "cache-control": "no-store" },
+          },
+        );
+      return data as ProofReviewResult;
     },
 
     async allocateProof(input) {

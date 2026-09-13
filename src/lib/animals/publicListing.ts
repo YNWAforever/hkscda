@@ -7,16 +7,28 @@ import type {
 } from "../../types/animal";
 import { isPubliclyVisibleStatus, parseAgeFilter } from "../../types/animal";
 
+import { hasDisplayablePhoto } from "./featuredSelection";
+
 export type PublicAnimalType = Extract<Animal["type"], "cat" | "dog" | "sponsor">;
 
 export function isPublicAnimalMember(
   animal: Pick<
     Animal,
-    "type" | "status" | "retired_at" | "adoption_eligible" | "sponsorship_eligible"
+    | "type"
+    | "status"
+    | "retired_at"
+    | "adoption_eligible"
+    | "sponsorship_eligible"
+    | "publication_state"
   >,
   type: PublicAnimalType,
 ) {
-  if (animal.retired_at || !isPubliclyVisibleStatus(animal.status)) return false;
+  if (
+    animal.retired_at ||
+    !isPubliclyVisibleStatus(animal.status) ||
+    (animal.publication_state !== undefined && animal.publication_state !== "published")
+  )
+    return false;
   return type === "sponsor"
     ? (animal.sponsorship_eligible ?? animal.type === "sponsor")
     : animal.type === type && (animal.adoption_eligible ?? true);
@@ -29,6 +41,7 @@ export interface PublicAnimalListingInput {
   genderFilter: GenderFilter;
   page: number;
   pageSize: number;
+  withPhoto?: boolean;
   q?: string;
   neutered?: NeuteredFilter;
   suitability?: SuitabilityFilter;
@@ -64,6 +77,7 @@ export function buildPublicAnimalListing({
   genderFilter,
   page,
   pageSize,
+  withPhoto = false,
   q = "",
   neutered = "all",
   suitability = "all",
@@ -74,6 +88,7 @@ export function buildPublicAnimalListing({
   const search = q.trim().slice(0, 80).toLocaleLowerCase();
   const filtered = animals
     .filter((animal) => isPublicAnimalMember(animal, type))
+    .filter((animal) => !withPhoto || hasDisplayablePhoto(animal))
     .filter((animal) => genderFilter === "all" || animal.gender === genderFilter)
     .filter((animal) => ageFilter === "all" || parseAgeFilter(animal.age) === ageFilter)
     .filter(

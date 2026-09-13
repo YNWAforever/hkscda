@@ -53,15 +53,17 @@ function DogDetailPage() {
 
 function DogDetailNotFound() {
   return (
-    <PublicStateShell
-      title="這隻動物目前不在公開領養名單"
-      description="公開名單會隨照護和領養進度更新，請查看其他正在等待家庭的狗狗。"
-      action={
-        <Link to="/animals/dog" className="btn-secondary min-h-11 px-5">
-          查看狗狗列表
-        </Link>
-      }
-    />
+    <main>
+      <PublicStateShell
+        title="這隻動物目前不在公開領養名單"
+        description="公開名單會隨照護和領養進度更新，請查看其他正在等待家庭的狗狗。"
+        action={
+          <Link to="/animals/dog" className="btn-secondary min-h-11 px-5">
+            查看狗狗列表
+          </Link>
+        }
+      />
+    </main>
   );
 }
 
@@ -81,15 +83,17 @@ function DogDetailPending() {
 
 function DogDetailError() {
   return (
-    <PublicStateShell
-      role="alert"
-      title="暫時未能載入狗狗資料"
-      description="系統未能取得這隻狗狗的資料，請稍後再試。"
-      action={
-        <Link to="/animals/dog" className="btn-primary min-h-11 px-5">
-          返回狗狗列表
-        </Link>
-      }
-    />
+    <main>
+      <PublicStateShell
+        role="alert"
+        title="暫時未能載入狗狗資料"
+        description="系統未能取得這隻狗狗的資料，請稍後再試。"
+        action={
+          <Link to="/animals/dog" className="btn-primary min-h-11 px-5">
+            返回狗狗列表
+          </Link>
+        }
+      />
+    </main>
   );
 }

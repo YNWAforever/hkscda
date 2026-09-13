@@ -54,6 +54,7 @@ export type DonationHistoryRow = {
   } | null;
   id: string;
   amountCents: number;
+  refundedCents?: number;
   currency: "HKD";
   purpose: DonationPurpose;
   customPurpose: string | null;
@@ -69,6 +70,7 @@ export type PaymentHistoryRow = {
   provider: "stripe" | "paypal" | "fps" | "payme" | "manual";
   providerRef: string | null;
   amountCents: number;
+  refundedCents?: number;
   status: "pending" | "succeeded" | "failed" | "refunded";
   receivedAt: string | null;
   bankReference: string | null;

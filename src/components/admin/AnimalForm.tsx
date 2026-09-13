@@ -2,8 +2,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../../lib/supabase";
+import { fetchAdminJson } from "../../lib/admin/http";
 import { ANIMAL_IMAGE_BUCKET } from "../../lib/animals/photoUpload";
 import {
   buildPublicProfile,
@@ -12,6 +13,7 @@ import {
   type PublicProfileFields,
 } from "../../lib/animals/publicProfileInput";
 import type { Animal } from "../../types/animal";
+import { AnimalGalleryEditor, type EditableGalleryItem } from "./AnimalGalleryEditor";
 import { useAdminLanguage } from "./adminI18n";
 import { uploadAnimalPhoto } from "./animalPhotoUpload";
 
@@ -54,7 +56,15 @@ export function AnimalForm({ existing }: AnimalFormProps) {
   const navigate = useNavigate();
   const { copy } = useAdminLanguage();
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [gallery, setGallery] = useState<EditableGalleryItem[]>(() => existing?.gallery ?? []);
   const [saving, setSaving] = useState(false);
+  const [draftRevision, setDraftRevision] = useState(0);
+  const [previewId, setPreviewId] = useState<string | null>(null);
+  const [publishReason, setPublishReason] = useState("");
+  const [versions, setVersions] = useState<
+    Array<{ id: string; revision: number; created_at: string }>
+  >([]);
+  const [animalId] = useState(() => existing?.id ?? crypto.randomUUID());
   const [error, setError] = useState<string | null>(null);
   // The eight allowlisted fields the public site actually renders. Kept in
   // local state rather than the react-hook-form schema because they are stored
@@ -69,6 +79,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(animalSchema),
@@ -105,6 +116,56 @@ export function AnimalForm({ existing }: AnimalFormProps) {
         },
   });
 
+  useEffect(() => {
+    if (!existing) return;
+    void fetchAdminJson<{
+      draft: { body: Record<string, unknown>; revision: number } | null;
+      versions: Array<{ id: string; revision: number; created_at: string }>;
+    }>("/api/admin/animals/publication/", {
+      method: "POST",
+      body: JSON.stringify({ kind: "read", animal_id: animalId }),
+    })
+      .then((result) => {
+        setVersions(result.versions ?? []);
+        if (!result.draft) return;
+        const body = result.draft.body;
+        setDraftRevision(result.draft.revision);
+        setProfileFields(toPublicProfileFields(body.public_profile as Animal["public_profile"]));
+        setGallery(Array.isArray(body.gallery) ? (body.gallery as EditableGalleryItem[]) : []);
+        reset({
+          name: String(body.name ?? ""),
+          name_en: String(body.name_en ?? ""),
+          type: body.type as FormValues["type"],
+          gender: body.gender as FormValues["gender"],
+          age: String(body.age ?? ""),
+          age_en: String(body.age_en ?? ""),
+          notes: String(body.notes ?? ""),
+          notes_en: String(body.notes_en ?? ""),
+          description: String(body.description ?? ""),
+          description_en: String(body.description_en ?? ""),
+          status: body.status as FormValues["status"],
+          publication_state: body.publication_state as FormValues["publication_state"],
+          adoption_eligible: Boolean(body.adoption_eligible),
+          sponsorship_eligible: Boolean(body.sponsorship_eligible),
+        });
+      })
+      .catch(() => setError("未能載入已儲存草稿。"));
+  }, [animalId, existing, reset]);
+
+  async function copyVersion(versionId: string) {
+    try {
+      const result = await fetchAdminJson<{ revision: number }>("/api/admin/animals/publication/", {
+        method: "POST",
+        body: JSON.stringify({ kind: "copy", animal_id: animalId, version_id: versionId }),
+      });
+      setDraftRevision(result.revision);
+      setPreviewId(null);
+      setError("已複製版本為新草稿，請檢查及重新預覽。");
+      window.location.reload();
+    } catch {
+      setError("未能複製版本。");
+    }
+  }
   function optionalText(value?: string) {
     const trimmed = value?.trim();
     return trimmed ? trimmed : null;
@@ -130,7 +191,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
     }
 
     const previousImageUrl = existing?.image_url ?? null;
-    let image_url = previousImageUrl;
+    const image_url = previousImageUrl;
     // Set only when this submission uploaded a new object, so a failed save can
     // remove the orphan it created without ever touching the live photograph.
     let uploadedPath: string | null = null;
@@ -142,7 +203,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
     // which makes the object unattributable and a later reference check or
     // cleanup impossible. The column keeps its default; supplying the id simply
     // makes the row and its photographs agree.
-    const animalId = existing?.id ?? crypto.randomUUID();
+    // animalId is stable for this draft session.
 
     if (imageFile) {
       const uploaded = await uploadAnimalPhoto({ animalId, file: imageFile });
@@ -152,9 +213,36 @@ export function AnimalForm({ existing }: AnimalFormProps) {
         return;
       }
       uploadedPath = uploaded.path;
-      image_url = uploaded.publicUrl;
+      // Private draft object is promoted to an immutable public path only after publish.
     }
 
+    const galleryUploads: string[] = [];
+    const preparedGallery: EditableGalleryItem[] = [];
+    for (const [sort_order, item] of gallery.entries()) {
+      let draft_path = item.draft_path;
+      if (item.file) {
+        const uploaded = await uploadAnimalPhoto({ animalId, file: item.file });
+        if (!uploaded.ok) {
+          setError("相片集上載失敗。");
+          setSaving(false);
+          return;
+        }
+        draft_path = uploaded.path;
+        galleryUploads.push(uploaded.path);
+      }
+      preparedGallery.push({
+        id: item.id,
+        url: item.url,
+        draft_path,
+        alt_zh: item.alt_zh.trim(),
+        alt_en: item.alt_en?.trim() || null,
+        source: item.source.trim(),
+        focal_x: item.focal_x,
+        focal_y: item.focal_y,
+        review_status: item.review_status,
+        sort_order,
+      });
+    }
     const payload = {
       name: values.name.trim(),
       name_en: optionalText(values.name_en),
@@ -172,6 +260,8 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       sponsorship_eligible: values.sponsorship_eligible,
       public_profile: profileResult.profile,
       image_url,
+      draft_image_path: uploadedPath,
+      gallery: preparedGallery,
     };
 
     // A failed save leaves the freshly uploaded object referenced by nothing.
@@ -180,40 +270,73 @@ export function AnimalForm({ existing }: AnimalFormProps) {
     // Cleanup failure is therefore not worth surfacing over the save error the
     // operator actually needs to see.
     async function discardOrphanedUpload() {
-      if (!uploadedPath) return;
+      const paths = [uploadedPath, ...galleryUploads].filter((path): path is string =>
+        Boolean(path),
+      );
+      if (paths.length === 0) return;
       try {
-        await supabase.storage.from(ANIMAL_IMAGE_BUCKET).remove([uploadedPath]);
+        await supabase.storage.from(ANIMAL_IMAGE_BUCKET).remove(paths);
       } catch {
         /* orphan is unreferenced; delayed cleanup will collect it */
       }
     }
 
-    if (existing) {
-      const { error: updateError } = await supabase
-        .from("animals")
-        .update({ ...payload, updated_at: new Date().toISOString() })
-        .eq("id", existing.id);
-      if (updateError) {
-        await discardOrphanedUpload();
-        setError(copy.form.saveError);
-        setSaving(false);
-        return;
-      }
-    } else {
-      const { error: insertError } = await supabase
-        .from("animals")
-        .insert({ ...payload, id: animalId });
-      if (insertError) {
-        await discardOrphanedUpload();
-        setError(copy.form.saveError);
-        setSaving(false);
-        return;
-      }
+    try {
+      const saved = await fetchAdminJson<{ kind: string; revision: number }>(
+        "/api/admin/animals/publication/",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            kind: "save",
+            animal_id: animalId,
+            expected_revision: draftRevision,
+            body: payload,
+          }),
+        },
+      );
+      setDraftRevision(saved.revision);
+      setPreviewId(null);
+      setError("草稿已儲存。請在發布前先預覽；公開資料尚未改動。");
+      setSaving(false);
+      return;
+    } catch {
+      await discardOrphanedUpload();
+      setError(copy.form.saveError);
+      setSaving(false);
+      return;
     }
-
-    navigate({ to: "/admin" });
   }
 
+  async function previewDraft() {
+    try {
+      const result = await fetchAdminJson<{ preview_id: string }>(
+        "/api/admin/animals/publication/",
+        { method: "POST", body: JSON.stringify({ kind: "preview", animal_id: animalId }) },
+      );
+      setPreviewId(result.preview_id);
+      setError("預覽已建立；如再儲存草稿，必須重新預覽。");
+    } catch {
+      setError("未能建立預覽。");
+    }
+  }
+  async function publishDraft() {
+    if (!previewId || !publishReason.trim()) return;
+    try {
+      await fetchAdminJson("/api/admin/animals/publication/", {
+        method: "POST",
+        body: JSON.stringify({
+          kind: "publish",
+          animal_id: animalId,
+          preview_id: previewId,
+          reason: publishReason.trim(),
+        }),
+      });
+      navigate({ to: "/admin" });
+    } catch {
+      setError("草稿已變更或發布失敗，請重新預覽。");
+      setPreviewId(null);
+    }
+  }
   const field =
     "w-full border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] rounded-lg px-3 py-2 text-sm shadow-sm placeholder:text-[var(--color-text-faint)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary-highlight)]";
   const selectField = `${field} cursor-pointer`;
@@ -225,7 +348,6 @@ export function AnimalForm({ existing }: AnimalFormProps) {
   const typeOptions = [
     { value: "cat", label: copy.animalType.cat },
     { value: "dog", label: copy.animalType.dog },
-    { value: "sponsor", label: copy.animalType.sponsor },
   ] as const;
   const genderOptions = [
     { value: "female", label: copy.gender.female },
@@ -328,7 +450,12 @@ export function AnimalForm({ existing }: AnimalFormProps) {
             <label className="block text-sm font-medium mb-1">{copy.form.type}</label>
             <select {...register("type")} className={selectField}>
               {typeOptions.map((option) => (
-                <option key={option.value} value={option.value} style={optionStyle}>
+                <option
+                  key={option.value}
+                  value={option.value}
+                  disabled={Boolean("disabled" in option && option.disabled)}
+                  style={optionStyle}
+                >
                   {option.label}
                 </option>
               ))}
@@ -338,7 +465,12 @@ export function AnimalForm({ existing }: AnimalFormProps) {
             <label className="block text-sm font-medium mb-1">{copy.form.gender}</label>
             <select {...register("gender")} className={selectField}>
               {genderOptions.map((option) => (
-                <option key={option.value} value={option.value} style={optionStyle}>
+                <option
+                  key={option.value}
+                  value={option.value}
+                  disabled={Boolean("disabled" in option && option.disabled)}
+                  style={optionStyle}
+                >
                   {option.label}
                 </option>
               ))}
@@ -348,7 +480,12 @@ export function AnimalForm({ existing }: AnimalFormProps) {
             <label className="block text-sm font-medium mb-1">{copy.form.status}</label>
             <select {...register("status")} className={selectField}>
               {statusOptions.map((option) => (
-                <option key={option.value} value={option.value} style={optionStyle}>
+                <option
+                  key={option.value}
+                  value={option.value}
+                  disabled={Boolean("disabled" in option && option.disabled)}
+                  style={optionStyle}
+                >
                   {option.label}
                 </option>
               ))}
@@ -534,6 +671,14 @@ export function AnimalForm({ existing }: AnimalFormProps) {
         </div>
       </fieldset>
 
+      <AnimalGalleryEditor
+        items={gallery}
+        onChange={(items) => {
+          setGallery(items);
+          setPreviewId(null);
+        }}
+      />
+
       <div>
         <label className="block text-sm font-medium mb-1">{copy.form.photo}</label>
         <input
@@ -551,7 +696,54 @@ export function AnimalForm({ existing }: AnimalFormProps) {
         )}
       </div>
 
+      {versions.length > 0 && (
+        <section className="rounded-lg border p-3">
+          <h2 className="font-bold">已發布版本</h2>
+          {versions.map((version) => (
+            <button
+              key={version.id}
+              type="button"
+              className="mr-2 mt-2 rounded border px-3 py-2 text-sm"
+              onClick={() => copyVersion(version.id)}
+            >
+              版本 {version.revision} · 複製為草稿
+            </button>
+          ))}
+        </section>
+      )}
       {error && <p className="text-red-500 text-sm">{error}</p>}
+
+      {draftRevision > 0 && (
+        <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
+          <h2 className="font-bold">預覽及發布</h2>
+          <button
+            type="button"
+            onClick={previewDraft}
+            className="rounded-lg border px-4 py-2 text-sm"
+          >
+            建立發布預覽
+          </button>
+          <div>
+            <label className="mb-1 block text-sm font-medium" htmlFor="animal-publish-reason">
+              發布原因
+            </label>
+            <input
+              id="animal-publish-reason"
+              className={field}
+              value={publishReason}
+              onChange={(event) => setPublishReason(event.target.value)}
+            />
+          </div>
+          <button
+            type="button"
+            disabled={!previewId || !publishReason.trim()}
+            onClick={publishDraft}
+            className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
+          >
+            發布此版本
+          </button>
+        </section>
+      )}
 
       <div className="flex gap-3 pt-2">
         <button

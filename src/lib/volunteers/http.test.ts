@@ -233,3 +233,29 @@ test("staff status conflict preserves409 and never becomes a successful update",
   expect(response.status).toBe(409);
   expect(response.headers.get("cache-control")).toBe("no-store");
 });
+
+test("policy-trigger approval denials return actionable conflicts rather than generic server failures", async () => {
+  for (const message of [
+    "current_terms_required",
+    "current_policy_required",
+    "volunteer_policy_denied:credentials_required",
+  ]) {
+    const service = createService();
+    service.updateRegistrationStatus = async () => {
+      throw { code: "22023", message };
+    };
+    const handlers = createVolunteerHandlers({ requireVolunteerAdmin: async () => admin, service });
+    const response = await handlers.updateRegistrationStatus({
+      request: new Request("https://example.invalid/status", {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ status: "approved", expectedUpdatedAt: "2026-09-05T00:00:00Z" }),
+      }),
+      params: { id: "11111111-2222-4333-8444-555555555555" },
+    });
+    expect(response.status).toBe(409);
+    const body = await response.json();
+    expect(body.code).toBe(message.replace("volunteer_policy_denied:", ""));
+    expect(body.error).not.toContain("Could not process");
+  }
+});

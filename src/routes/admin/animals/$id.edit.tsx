@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "../../../lib/supabase";
+import { fetchAdminJson } from "../../../lib/admin/http";
 import { AdminLayout } from "../../../components/admin/AdminLayout";
 import { AnimalForm } from "../../../components/admin/AnimalForm";
 import { useAdminLanguage } from "../../../components/admin/adminI18n";
@@ -21,9 +21,11 @@ function EditAnimalPage() {
   const { data: animal, isLoading } = useQuery({
     queryKey: ["admin-animal", id],
     queryFn: async () => {
-      const { data, error } = await supabase.from("animals").select("*").eq("id", id).single();
-      if (error) throw error;
-      return data;
+      const data = await fetchAdminJson<{ animal: Animal | null }>(
+        "/api/admin/animals/publication/",
+        { method: "POST", body: JSON.stringify({ kind: "read", animal_id: id }) },
+      );
+      return data.animal;
     },
   });
 

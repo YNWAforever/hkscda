@@ -1,3 +1,4 @@
+import { PUBLIC_ANIMAL_COLUMNS } from "./publicColumns";
 import { projectPublicAnimal } from "./publicProfile";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
@@ -33,7 +34,8 @@ export async function resolvePublicAnimal(
   const { supabase } = deps;
   let query = supabase
     .from("animals")
-    .select("*")
+    .select(PUBLIC_ANIMAL_COLUMNS)
+    .eq("publication_state", "published")
     .eq("id", data.id)
     .in("status", PUBLIC_VISIBLE_ANIMAL_STATUSES);
   query = query

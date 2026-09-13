@@ -245,14 +245,17 @@ function shiftCloneDates(source: ActivityRow, nextStartsAt: string | null | unde
 function requireUpdated(result: { kind: string }) {
   if (result.kind === "updated") return;
   const status = result.kind === "not_found" ? 404 : 409;
+  const messages: Record<string, string> = {
+    capacity_full: "活動名額不足，請重新檢查剩餘名額。",
+    future_attendance: "活動尚未開始或完成，不能記錄此出席狀態。",
+    attendance_correction_required: "已有出席事實，請選擇更正並填寫原因。",
+    invalid_attendance_status: "只有已批准且未取消的活動報名可以記錄出席。",
+  };
   throw Response.json(
     {
       error: {
         code: result.kind,
-        message:
-          result.kind === "capacity_full"
-            ? "活動名額不足，請重新檢查剩餘名額。"
-            : "資料已更新，請重新檢查後再試。",
+        message: messages[result.kind] ?? "資料已更新，請重新檢查後再試。",
       },
     },
     { status, headers: { "cache-control": "no-store" } },
@@ -266,6 +269,7 @@ export function createSupabaseVolunteerRepository(client: SupabaseClient): Volun
         .from("volunteer_activity")
         .select("*")
         .eq("status", "published")
+        .is("policy_version_id", null)
         .gte("starts_at", new Date().toISOString())
         .order("starts_at", { ascending: true });
       if (error) throw error;
@@ -468,18 +472,23 @@ export function createSupabaseVolunteerRepository(client: SupabaseClient): Volun
       return registration as VolunteerRegistrationDetail;
     },
     async updateAttendance(input) {
-      const { data, error } = await client
-        .from("volunteer_registration")
-        .update({
-          attendance_status: input.attendanceStatus,
-          volunteer_hours: input.volunteerHours,
-          internal_notes: input.internalNotes,
-        })
-        .eq("id", input.registrationId)
-        .select("*")
-        .single();
+      const { data, error } = await client.rpc("set_volunteer_attendance_with_audit", {
+        p_registration_id: input.registrationId,
+        p_actor_user_id: input.actorUserId,
+        p_expected_updated_at: input.expectedUpdatedAt,
+        p_attendance_status: input.attendanceStatus,
+        p_command: input.command,
+        p_reason: input.reason ?? null,
+        p_volunteer_hours: input.volunteerHours ?? null,
+        p_update_volunteer_hours: input.volunteerHours !== undefined,
+        p_internal_notes: input.internalNotes ?? null,
+        p_update_internal_notes: input.internalNotes !== undefined,
+      });
       if (error) throw error;
-      const [registration] = await hydrateRegistrations(client, [data as RegistrationRow]);
+      requireUpdated(data);
+      const [registration] = await hydrateRegistrations(client, [
+        data.registration as RegistrationRow,
+      ]);
       return registration as VolunteerRegistrationDetail;
     },
 

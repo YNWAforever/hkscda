@@ -10,8 +10,9 @@ export async function readEligibleAnimals(
 ) {
   const { data, error } = await client
     .from("animals")
-    .select("id,type,status,adoption_eligible,sponsorship_eligible,retired_at")
+    .select("id,type,status,adoption_eligible,sponsorship_eligible,retired_at,publication_state")
     .in("id", ids)
+    .eq("publication_state", "published")
     .in("status", PUBLIC_VISIBLE_ANIMAL_STATUSES)
     .eq(intent === "sponsorship" ? "sponsorship_eligible" : "adoption_eligible", true)
     .is("retired_at", null);

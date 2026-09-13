@@ -49,6 +49,7 @@ const baseAnimal = {
   adoption_eligible: true,
   sponsorship_eligible: true,
   retired_at: null,
+  publication_state: "published",
   public_profile: null,
 };
 

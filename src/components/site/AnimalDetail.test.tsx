@@ -119,3 +119,51 @@ test("labels an unrecorded age group as unknown", async () => {
   expect(markup).toContain("年齡組別</dt><dd>未有記錄");
   expect(markup).not.toContain("成年");
 });
+
+test("detail preserves hero and renders only approved ordered gallery metadata", async () => {
+  const { AnimalDetail } = await import("./AnimalDetail");
+  const markup = renderToStaticMarkup(
+    <ShortlistProvider>
+      <AnimalDetail
+        animal={{
+          ...animal,
+          image_url: "https://example.invalid/original.jpg",
+          gallery: [
+            {
+              id: "pending",
+              url: "https://example.invalid/pending.jpg",
+              draft_path: null,
+              alt_zh: "待審",
+              alt_en: null,
+              source: "內部",
+              focal_x: 50,
+              focal_y: 50,
+              review_status: "pending",
+              sort_order: 0,
+            },
+            {
+              id: "approved",
+              url: "https://example.invalid/gallery.jpg",
+              draft_path: null,
+              alt_zh: "小白在窗邊",
+              alt_en: "Snowy by window",
+              source: "HKSCDA staff",
+              focal_x: 25,
+              focal_y: 75,
+              review_status: "approved",
+              sort_order: 1,
+            },
+          ],
+        }}
+        backHref="/animals/cat"
+        backLabel="返回列表"
+      />
+    </ShortlistProvider>,
+  );
+  expect(markup).toContain("original.jpg");
+  expect(markup).toContain("gallery.jpg");
+  expect(markup).toContain('alt="小白在窗邊"');
+  expect(markup).toContain("object-position:25% 75%");
+  expect(markup).toContain("相片來源：HKSCDA staff");
+  expect(markup).not.toContain("pending.jpg");
+});

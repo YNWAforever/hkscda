@@ -104,3 +104,12 @@ describe("admin role access mapping", () => {
     expect(canRoleAccessAdminArea("treasurer", "faqManagement")).toBe(false);
   });
 });
+
+test("sponsorship handoff separates read, finance and matching", () => {
+  for (const role of ["staff", "treasurer", "admin"] as const)
+    expect(canRoleAccessAdminArea(role, "sponsorshipRead")).toBe(true);
+  expect(canRoleAccessAdminArea("staff", "sponsorshipFinance")).toBe(false);
+  expect(canRoleAccessAdminArea("treasurer", "sponsorshipFinance")).toBe(true);
+  expect(canRoleAccessAdminArea("treasurer", "sponsorshipReview")).toBe(false);
+  expect(getAdminAreaForLocation({ pathname: "/admin/sponsorships" })).toBe("sponsorshipRead");
+});

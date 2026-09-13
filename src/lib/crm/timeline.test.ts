@@ -277,3 +277,25 @@ describe("crm timeline", () => {
     });
   });
 });
+
+test("verified bounce evidence is visible in CRM without presenting a resend as delivery", () => {
+  const timeline = assembleSupporterTimeline({
+    donations: [],
+    payments: [],
+    receipts: [],
+    consents: [],
+    auditLogs: [],
+    messages: [
+      {
+        id: "bounce",
+        channel: "email",
+        status: "sent",
+        payload: { subject: "Receipt", deliveryState: "bounced" },
+        sentAt: "2026-09-13T00:00:00Z",
+        createdAt: "2026-09-13T00:00:00Z",
+      },
+    ],
+  });
+  expect(timeline[0].description).toContain("退信");
+  expect(timeline[0].status).toBe("sent");
+});

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 
@@ -16,6 +17,8 @@ type RegistrationResponse = {
 
 export function VolunteerRegistrationDetail({ registrationId }: { registrationId: string }) {
   const queryClient = useQueryClient();
+  const [correctionReason, setCorrectionReason] = useState("");
+  const [isCorrection, setIsCorrection] = useState(false);
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["volunteer-registration", registrationId],
     queryFn: () =>
@@ -38,7 +41,12 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
     mutationFn: (attendanceStatus: string) =>
       fetchAdminJson(`/api/admin/volunteers/registrations/${registrationId}/attendance`, {
         method: "PATCH",
-        body: JSON.stringify({ attendanceStatus }),
+        body: JSON.stringify({
+          attendanceStatus,
+          expectedUpdatedAt: data?.registration.updatedAt,
+          command: isCorrection ? "correct" : "record",
+          reason: isCorrection ? correctionReason : undefined,
+        }),
       }),
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: ["volunteer-registration"] });
@@ -111,6 +119,31 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
             {updateStatus.error.message}
           </p>
         )}
+        {updateAttendance.error && (
+          <p role="alert" className="mt-4 text-sm text-[var(--color-error)]">
+            {updateAttendance.error.message}
+          </p>
+        )}
+        <label className="mt-4 flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={isCorrection}
+            onChange={(event) => setIsCorrection(event.target.checked)}
+          />
+          更正出席事實（保留原紀錄）
+        </label>
+        {isCorrection && (
+          <label className="mt-3 block text-sm">
+            更正原因
+            <textarea
+              value={correctionReason}
+              onChange={(event) => setCorrectionReason(event.target.value)}
+              maxLength={2000}
+              required
+              className="mt-1 block w-full rounded-md border border-[var(--color-border)] p-2"
+            />
+          </label>
+        )}
         <DetailItem label="剩餘名額" value={String(registration.activity.remainingCapacity)} />
         <div className="mt-5 flex flex-wrap gap-2">
           {["approved", "waitlisted", "rejected", "cancelled"].map((status) => (
@@ -124,10 +157,18 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
               {status}
             </button>
           ))}
-          {["attended", "completed", "no_show"].map((attendanceStatus) => (
+          {(isCorrection
+            ? ["not_marked", "attended", "completed", "no_show"]
+            : ["attended", "completed", "no_show"]
+          ).map((attendanceStatus) => (
             <button
               key={attendanceStatus}
               type="button"
+              disabled={
+                updateAttendance.isPending ||
+                updateStatus.isPending ||
+                (isCorrection && !correctionReason.trim())
+              }
               onClick={() => updateAttendance.mutate(attendanceStatus)}
               className="rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-medium"
             >

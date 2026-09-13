@@ -12,7 +12,18 @@
       "docs/brand-reconciliation": false,
       "claude/session-development-c8b184": false,
       "followup/pledgereview-pager-and-migration-docs": false,
-      "feat/fostered-animal-public-visibility": false
+      "feat/fostered-animal-public-visibility": false,
+      "codex/admin-volunteer-settings-20260913": false
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/jobs/volunteers",
+      "schedule": "15 * * * *"
+    },
+    {
+      "path": "/api/jobs/sponsorships",
+      "schedule": "30 * * * *"
+    }
+  ]
 }

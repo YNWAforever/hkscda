@@ -38,6 +38,7 @@ type PaymentWithDonation = {
   donation: {
     id: string;
     amount_cents: number;
+    refunded_cents?: number;
     receipt_requested: boolean;
     status: string;
     supporter_id: string;
@@ -181,7 +182,7 @@ async function releaseWebhookEventReservation(
 }
 
 const PAYMENT_WITH_DONATION_SELECT =
-  "id,provider,provider_ref,amount_cents,status,donation:donation_id(id,amount_cents,receipt_requested,status,supporter_id,contact_name,contact_email,contact_phone,contact_language,supporter:supporter_id(id,name,email,language))";
+  "id,provider,provider_ref,amount_cents,status,donation:donation_id(id,amount_cents,refunded_cents,receipt_requested,status,supporter_id,contact_name,contact_email,contact_phone,contact_language,supporter:supporter_id(id,name,email,language))";
 
 async function findPaymentByProvider(
   client: SupabaseClient,
@@ -246,7 +247,7 @@ export async function issueReceiptIfNeeded(
   const { data, error } = await client.rpc("issue_receipt", {
     p_donation_id: donation.id,
     p_supporter_id: donation.supporter_id,
-    p_amount_cents: donation.amount_cents,
+    p_amount_cents: donation.amount_cents - (donation.refunded_cents ?? 0),
     p_tax_year: taxYear,
     p_issued_at: issuedAt,
   });
@@ -274,7 +275,7 @@ export async function issueReceiptIfNeeded(
     const pdf = await generatePdf({
       receiptNo: receipt.receipt_no,
       donorName: donation.contact_name ?? donation.supporter.name,
-      amountCents: donation.amount_cents,
+      amountCents: donation.amount_cents - (donation.refunded_cents ?? 0),
       issuedAt: receipt.issued_at ?? issuedAt,
     });
     const { error: uploadError } = await client.storage
@@ -303,7 +304,7 @@ export async function completeDonationSideEffects(
 ) {
   const donation = payment.donation;
   const receiptNo = isReceiptEligible({
-    amountCents: donation.amount_cents,
+    amountCents: donation.amount_cents - (donation.refunded_cents ?? 0),
     receiptRequested: donation.receipt_requested,
   })
     ? await issueReceiptIfNeeded(client, payment, deps)
@@ -314,7 +315,7 @@ export async function completeDonationSideEffects(
     donationId: donation.id,
     to: donation.contact_email ?? donation.supporter.email,
     donorName: donation.contact_name ?? donation.supporter.name,
-    amountCents: donation.amount_cents,
+    amountCents: donation.amount_cents - (donation.refunded_cents ?? 0),
     language: donation.contact_language ?? donation.supporter.language,
     receiptNo,
   });
@@ -763,7 +764,7 @@ export async function issueReceiptForDonation(
   const payment = data as unknown as PaymentWithDonation;
   if (
     !isReceiptEligible({
-      amountCents: payment.donation.amount_cents,
+      amountCents: payment.donation.amount_cents - (payment.donation.refunded_cents ?? 0),
       receiptRequested: payment.donation.receipt_requested,
     })
   ) {

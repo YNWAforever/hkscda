@@ -4,8 +4,11 @@ import { createClient } from "@supabase/supabase-js";
 import { readFile } from "node:fs/promises";
 
 const enabled = process.env.CONTENT_MEDIA_RECONCILIATION_LOCAL_TEST === "1";
-const localApi = "http://127.0.0.1:55321";
-const localDb = "postgresql://postgres:postgres@127.0.0.1:55322/postgres";
+const policyStack = process.env.CONTENT_MEDIA_RECONCILIATION_POLICY_STACK === "1";
+const localApi = policyStack ? "http://127.0.0.1:56321" : "http://127.0.0.1:55321";
+const localDb = policyStack
+  ? "postgresql://postgres:postgres@127.0.0.1:56322/postgres"
+  : "postgresql://postgres:postgres@127.0.0.1:55322/postgres";
 const marker = `reconcile-${crypto.randomUUID()}`;
 const paths = {
   orphan: `${marker}/orphan.png`,
@@ -36,6 +39,12 @@ let actorId: string;
 let contentId: string;
 
 async function config() {
+  if (policyStack) {
+    const value = JSON.parse(await readFile(".local-policy-test/local-credentials.json", "utf8"));
+    if (value.API_URL !== localApi || typeof value.SERVICE_ROLE_KEY !== "string")
+      throw new Error("Dedicated local configuration required");
+    return value;
+  }
   const rows = (await readFile("supabase/.temp/completion-local/start.raw.log", "utf8"))
     .trim()
     .split(/\r?\n/);
@@ -135,6 +144,8 @@ test.skipIf(!enabled)(
         "scripts/content-media-reconciliation-local.ts",
         "--local-maintenance",
         "--apply",
+        ...(policyStack ? ["--policy-stack"] : []),
+        `--fixture-prefix=${marker}/`,
       ],
       { env: childEnv, stdout: "pipe", stderr: "pipe" },
     );

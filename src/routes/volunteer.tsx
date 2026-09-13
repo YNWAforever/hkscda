@@ -1,3 +1,4 @@
+import { PolicySignup } from "../components/site/volunteer/PolicySignup";
 import { createFileRoute, Outlet, useRouterState } from "@tanstack/react-router";
 import { publicUrl } from "@/lib/publicOrigin";
 import { brand } from "@/lib/brand/brand";
@@ -74,7 +75,11 @@ export const Route = createFileRoute("/volunteer")({
 export function VolunteerPage() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
 
-  if (pathname.startsWith("/volunteer/status/") || pathname.startsWith("/volunteer/group")) {
+  if (
+    pathname.startsWith("/volunteer/status/") ||
+    pathname.startsWith("/volunteer/group") ||
+    pathname === "/volunteer/operations"
+  ) {
     return <Outlet />;
   }
 
@@ -188,6 +193,13 @@ function VolunteerDirectoryPage() {
           協會依靠義工的力量運作。無論你是學生、在職人士或退休人士，都能找到適合自己的義工崗位。
         </p>
       </div>
+
+      <PolicySignup />
+      <p className="mx-auto max-w-3xl p-5">
+        <a className="underline" href="/internships">
+          獸醫學生實習：前往獨立申請及審核流程
+        </a>
+      </p>
 
       <section className="grid gap-4 lg:grid-cols-[1fr_1.1fr]">
         <div className="space-y-3">

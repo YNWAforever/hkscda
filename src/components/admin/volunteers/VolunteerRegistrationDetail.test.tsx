@@ -88,3 +88,18 @@ test("shows a retry control instead of reporting a load failure as a deleted reg
   expect(markup).not.toContain("找不到義工報名");
   registrationError = null;
 });
+
+test("attendance callback carries reviewed version and exposes factual correction controls", async () => {
+  mutations.length = 0;
+  requests.length = 0;
+  const markup = renderToStaticMarkup(
+    <VolunteerRegistrationDetail registrationId="registration-1" />,
+  );
+  expect(markup).toContain("更正出席事實");
+  await expect(mutations[1].mutationFn("completed")).rejects.toThrow("Capacity conflict");
+  expect(requests[0].body).toEqual({
+    attendanceStatus: "completed",
+    expectedUpdatedAt: registration.updatedAt,
+    command: "record",
+  });
+});

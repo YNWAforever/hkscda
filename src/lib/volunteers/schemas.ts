@@ -83,11 +83,24 @@ export const adminRegistrationStatusSchema = z.object({
   internalNotes: optionalTrimmed.optional(),
 });
 
-export const adminAttendanceUpdateSchema = z.object({
-  attendanceStatus: z.enum(volunteerAttendanceStatuses),
-  volunteerHours: numberFromInput(z.number().min(0).max(24)).nullable().optional().default(null),
-  internalNotes: optionalTrimmed.optional(),
-});
+export const adminAttendanceUpdateSchema = z
+  .object({
+    expectedUpdatedAt: z.string().datetime({ offset: true }),
+    command: z.enum(["record", "correct"]).default("record"),
+    reason: z.string().trim().min(1).max(2000).optional(),
+    attendanceStatus: z.enum(volunteerAttendanceStatuses),
+    volunteerHours: numberFromInput(z.number().min(0).max(24)).nullable().optional(),
+    internalNotes: optionalTrimmed.optional(),
+  })
+  .superRefine((value, ctx) => {
+    if (value.command === "correct" && !value.reason) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["reason"],
+        message: "Factual corrections require a reason",
+      });
+    }
+  });
 
 const contactSchema = z.object({
   name: trimmed.min(1).max(120),

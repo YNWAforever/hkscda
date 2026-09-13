@@ -1,0 +1,4324 @@
+{
+  "checked_at": "2026-09-13",
+  "project": "iihqjzilgawhfdhdevam",
+  "scope": "Read-only exact source-reference to UUID map. No imports or production mutations.",
+  "references": [
+    {
+      "code": "C1157",
+      "source_path": "animals/iouk60ATDnCl62TiiUcLwCYpfmI3hHCXICbcOQpK.jpeg",
+      "expected_bytes": 183726,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "e634a338-8b69-5277-918b-8c54143056f7",
+          "code": "C1157",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C1223",
+      "source_path": "animals/2tQrwTLmykravV8fgqecaT0SLtl79qLfR9Pah1vX.jpeg",
+      "expected_bytes": 174570,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "83462c8a-1533-5887-ad64-956aaddcdc01",
+          "code": "C1223",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C1392",
+      "source_path": "animals/clPaS3hXNBpjM5aF03VLzS1pS3vzwPPmPIzBX1W9.jpeg",
+      "expected_bytes": 119271,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "82a670ea-edae-57fd-8925-c011f2455623",
+          "code": "C1392",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C1886",
+      "source_path": "animals/avK9abAZHLzpyzvk1YzNpEwjHub98OajrEjD42bn.jpeg",
+      "expected_bytes": 262252,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "c511de3d-122d-5c09-8946-6f22d98ba533",
+          "code": "C1886",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C1997",
+      "source_path": "animals/oeVAZ3Io2hL0Aez04vQFzASgQjHSZbz446k9mLwK.jpeg",
+      "expected_bytes": 186862,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "edb41fae-7d30-56e4-9309-e14df9701ffa",
+          "code": "C1997",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C2153",
+      "source_path": "animals/HN1FLSoiehU9ImvsZxcGKacHShzyo59wCyW8iHNU.jpeg",
+      "expected_bytes": 715418,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "c31366b1-7bb0-58c8-b504-f2be3bd8fb4d",
+          "code": "C2153",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C2188",
+      "source_path": "animals/rTQ661DGcBna1nt23KGcEGp7WSRUB50BSnuCA2iw.jpeg",
+      "expected_bytes": 199445,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "9b9db09e-afdc-5ea8-8f54-11bc6e922b53",
+          "code": "C2188",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C2491",
+      "source_path": "animals/58X0e0a3Ew5XdMnAPbeu30g8t1dHimHpqi8WghVF.jpeg",
+      "expected_bytes": 342249,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "aca53d9f-2ce6-5b34-8f7f-7b401ccb1705",
+          "code": "C2491",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C2502",
+      "source_path": "animals/iPimtc4Rf2LHIbDHePThRHsSwpWvSxdbaxhF1xsz.jpeg",
+      "expected_bytes": 3397133,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "b747d595-700d-5312-8c7d-7e85576f8eb0",
+          "code": "C2502",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C2527",
+      "source_path": "animals/1QUL2npDxsfrYWQtMnJXPmEEQNJwI3TAKgJTYFP7.jpeg",
+      "expected_bytes": 94989,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "69e9c6f7-442a-55ad-b204-5559c84de365",
+          "code": "C2527",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C2656",
+      "source_path": "animals/CYvcJhGIr9o4F5EAjZbOcdZCT2fgHVYNAH62hwiC.jpeg",
+      "expected_bytes": 693518,
+      "present": false,
+      "canonical_matches": []
+    },
+    {
+      "code": "C2820",
+      "source_path": "animals/habMaYhD43X1P6CqigQQoZONAt52bo2GcOBzerHL.jpeg",
+      "expected_bytes": 3017273,
+      "present": false,
+      "canonical_matches": []
+    },
+    {
+      "code": "C2844",
+      "source_path": "animals/btcpk2s17X9A2atlSGSNR3eJoQL6xYU91lmL98rw.jpeg",
+      "expected_bytes": 139182,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "21a3f019-97b1-50aa-a95c-46738507f2d0",
+          "code": "C2844",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C2889",
+      "source_path": "animals/i11I1BddjXLl11xRMmlYNkvhmWbNwv2OECEw3CSo.jpeg",
+      "expected_bytes": 6853822,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "22e2e6fd-69ba-579a-bb18-321107cb8471",
+          "code": "C2889",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C2890",
+      "source_path": "animals/w3m2U2OAwwnUoJLkzbuFiC3pGvhedlCQQUoldnUV.jpeg",
+      "expected_bytes": 8280829,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "b4e20155-f819-52f5-9ea8-9b0e4ec6373b",
+          "code": "C2890",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C2905",
+      "source_path": "animals/oNrPlpGzN2OfGAycV6ZTWsguVUVYLRI7BXnnAsjc.jpeg",
+      "expected_bytes": 6889910,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "9aa5a9bd-1380-5223-8ece-b66eba240e41",
+          "code": "C2905",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C2950",
+      "source_path": "animals/OZIrdNHK3rOB55Fwimn54oRZSwhxrhNEYIWtIxoI.jpeg",
+      "expected_bytes": 573632,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "247e2ffe-939b-5970-89b8-2f4461bbc789",
+          "code": "C2950",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C2951",
+      "source_path": "animals/ggWmAHFlAdtXzfbinVxHOqdIkneMjd6NN5Amt4Ye.jpeg",
+      "expected_bytes": 128713,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "5c8646ee-0c7a-57fd-8241-2d19383cc4d8",
+          "code": "C2951",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3114",
+      "source_path": "animals/MCMLv0x7QHgBiDrptF3nhhQObW4vu8yR8LppvOYX.jpeg",
+      "expected_bytes": 543099,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "66eb8cca-2f68-5e1c-b6c8-3a756600f614",
+          "code": "C3114",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3115",
+      "source_path": "animals/bsDeFGJn4qYBaDNPZ7DwhDOb5clbHwn908vp3iFT.jpeg",
+      "expected_bytes": 407343,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "ad73d88f-c8c2-5d45-9772-31698aa26778",
+          "code": "C3115",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3157",
+      "source_path": "animals/aIvbqEJT7E04jcOONlyIXXcmkMetBOzW3KnbbyBy.jpeg",
+      "expected_bytes": 420877,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "ad324a36-e36a-5a88-996c-73f2d1044d6b",
+          "code": "C3157",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C3160",
+      "source_path": "animals/ZlHz7hcWVYQVUxanDhWDtWJrQN2Sua7LVEgYZkKy.jpeg",
+      "expected_bytes": 1073351,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "d3316d90-c951-52c1-acec-75fbac80ee5e",
+          "code": "C3160",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C3161",
+      "source_path": "animals/5mTa6AcKIHp5BUbNEx5okFXfU1fJlugrI80RAWXT.jpeg",
+      "expected_bytes": 1210535,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "424f077b-ff0e-548a-aad5-fad57cd494ba",
+          "code": "C3161",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C3163",
+      "source_path": "animals/79kpAMFSexQgHRZcbLNgGJdILAbuoMvzh6lBlPMH.jpeg",
+      "expected_bytes": 1538036,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "81f7f83c-bf1c-549c-9792-51c2c081ba10",
+          "code": "C3163",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C3165",
+      "source_path": "animals/dadHHHCyNHJsPW57xmLu1SJhoHibidqKv1aw8maJ.jpeg",
+      "expected_bytes": 2407301,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "012bc2b3-f8cb-50d4-9285-e87d1a09de31",
+          "code": "C3165",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C3166",
+      "source_path": "animals/WJC9kkVEm8lv7lAYGglykoRqE41cSn5YCQ5TK7Xv.jpeg",
+      "expected_bytes": 308506,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "f483126d-b7c9-562d-b1cb-79e0f135d5d5",
+          "code": "C3166",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C3193",
+      "source_path": "animals/1dPztDZnRByDoSA8Gdx743qvJ66aTVx5rg1edl5V.png",
+      "expected_bytes": 2325500,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "eba0dc28-5a0c-5bde-bd41-6b26c4f77bf5",
+          "code": "C3193",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C3196",
+      "source_path": "animals/xtO9Ag8uuj296EbjjHIox7bhXFWqRZMujLC0lkSW.jpeg",
+      "expected_bytes": 1969509,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "18ec37bb-9f03-5248-b842-78dcc20b8a0e",
+          "code": "C3196",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3198",
+      "source_path": "animals/NcLb6gH6ejRYpR5Us4n3uLDiqm3V3blOEHiNyzRM.jpeg",
+      "expected_bytes": 8431842,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "c93e1750-c049-5faa-ba36-6c7c58cf5aa8",
+          "code": "C3198",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3200",
+      "source_path": "animals/wGw3WuXHaFcnPKxFUo7cNQZ9mYAZ0IjQUYbeSg2Q.jpeg",
+      "expected_bytes": 4765263,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "43875f99-9f73-594d-8b53-732f19ab7109",
+          "code": "C3200",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3205",
+      "source_path": "animals/IuB1vn3RPS8JLeemYrRaRgCN3XBIUxl6mY5fkx6H.jpeg",
+      "expected_bytes": 6944934,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "10f50437-2a57-51b0-b06b-282bf526b406",
+          "code": "C3205",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3208",
+      "source_path": "animals/iraFGuW1ufskWZ1YmxiHRce4Gt4hwBArkUbbSIxt.",
+      "expected_bytes": 3332801,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "e04fa2cb-2cbc-596b-a74a-a5f7e35cbfcf",
+          "code": "C3208",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C3210",
+      "source_path": "animals/FgpSRVrB8quN863y5k0R8ZcQGpkTSGS9mU5GRON6.jpeg",
+      "expected_bytes": 9219792,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "5ad769d5-e19d-5b79-95ef-11de471a9bad",
+          "code": "C3210",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3212",
+      "source_path": "animals/k3tPC3ijlWUeZeqCsM7Ot6orU7zzohQaIUjeL2xa.jpeg",
+      "expected_bytes": 6918363,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "9ee735eb-4409-53aa-92b2-9b8e41cac3ee",
+          "code": "C3212",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3217",
+      "source_path": "animals/j8qh10CQfdtgXoPbBeEUJOLmXotYYLQzY2wHRIUU.jpeg",
+      "expected_bytes": 20585,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "860c6630-5521-5200-a00e-4902d35c8b44",
+          "code": "C3217",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3218",
+      "source_path": "animals/ZhbTjKpmT9zImSOWacOe7RKXuKFlvAq2hQaVnPYM.jpeg",
+      "expected_bytes": 7888213,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "1387b71c-a192-54b5-ae5e-671f27f54481",
+          "code": "C3218",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3221",
+      "source_path": "animals/z9GgCo66a02zu5TGIt8zRJmUZQVV2t6v4M0GZkAx.jpeg",
+      "expected_bytes": 9324496,
+      "present": false,
+      "canonical_matches": []
+    },
+    {
+      "code": "C3225",
+      "source_path": "animals/Lpn13SXsTpeESoXbmfKEeRgMzuhbat1WdcQrcBGb.jpeg",
+      "expected_bytes": 10108695,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "40e18ef9-b47f-538a-bcb3-cf86d923e12e",
+          "code": "C3225",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3240",
+      "source_path": "animals/GTUB3bmEJPtn5OLbkPHEAPFSlyJqGkUsosQtI6Cp.jpeg",
+      "expected_bytes": 245011,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "bf2a0ccb-6e26-50ec-8d55-1bc4312d8838",
+          "code": "C3240",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3257",
+      "source_path": "animals/T8NMAXl5f5U9lnkGF2tt7puKKUninW0oFRJdCObT.jpeg",
+      "expected_bytes": 9010613,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "b01177c0-46db-524d-8ef4-b05efcf18d16",
+          "code": "C3257",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C3286",
+      "source_path": "animals/IvygFbdpDLk3RlNk7gfaiE9qlxFpVsmHdrVc6Igy.jpeg",
+      "expected_bytes": 160225,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "820512bf-a5e1-5bc6-9f83-7b8d2f6eb797",
+          "code": "C3286",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3294",
+      "source_path": "animals/sJBBAIqmgj1xJaXsJxy41bW2RZ1AN90jw3c2EJb2.jpeg",
+      "expected_bytes": 9735401,
+      "present": false,
+      "canonical_matches": []
+    },
+    {
+      "code": "C3325",
+      "source_path": "animals/uSjPXUCTZ6RPgNHd9Vrj5Lm029zVk0oRXQCAbNaq.",
+      "expected_bytes": 2077060,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "db821c45-13e1-5382-83cf-117fd40573a3",
+          "code": "C3325",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3339",
+      "source_path": "animals/40CHCTzaKztsdzCzlFrWiYgHZu8Wx1oTs2jqqKAy.jpeg",
+      "expected_bytes": 7706636,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "bd3e6c9b-bdd7-52a0-a4c2-b686215dd5d7",
+          "code": "C3339",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3356",
+      "source_path": "animals/6QD2LsWDWKwctrFtjBP5NFWI8eNdExAEqGlHBsGT.jpeg",
+      "expected_bytes": 6492045,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "7d3376f6-e074-5be9-9ef9-49d390b5bb2b",
+          "code": "C3356",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3391",
+      "source_path": "animals/bnGhHRW37kExkfxxqPRzoi5I6kLOqLf23A0LXY54.jpeg",
+      "expected_bytes": 145896,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "6874b18a-a793-5d4a-8632-15d8bc5e2ae9",
+          "code": "C3391",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3437",
+      "source_path": "animals/joZMUpJ0Z0ys2LiITSV4gZray6Ib1i5aGHh9Ytrw.jpeg",
+      "expected_bytes": 4793513,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "d0a4abf0-07b3-5486-91b2-01ad1983569e",
+          "code": "C3437",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3438",
+      "source_path": "animals/g1PliOj3ZheC0HL97vUfrLmk7yy1exAo1BBQaTMo.jpeg",
+      "expected_bytes": 4486838,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "91574d31-2a6d-520b-8d53-ac0fde59b2d9",
+          "code": "C3438",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3441",
+      "source_path": "animals/fOBPYYoZNTZev009JrRaaQgo18m5EmWE3myYzMgC.jpeg",
+      "expected_bytes": 3660079,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "cb31d1c4-5954-561b-a401-fdd313b535c5",
+          "code": "C3441",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C3444",
+      "source_path": "animals/mY3MhqXGVrBTlCXzAiLJFgFh5YehIC6TGqYVk3ub.jpeg",
+      "expected_bytes": 3808014,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "472997f7-4570-50a5-bcf5-f5d95f123827",
+          "code": "C3444",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3445",
+      "source_path": "animals/FB4ksRnSJN5FIPw9rE9XPKVSjKidvKdyMeQRhmwM.jpeg",
+      "expected_bytes": 3518068,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "ef229d35-764e-50cc-85eb-e58fa73ad22e",
+          "code": "C3445",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3455",
+      "source_path": "animals/8R6pWhmN5BC8VAdSIpPHRhfHtqRIT6lEqs829vVR.jpeg",
+      "expected_bytes": 349839,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "ded8d86f-49a8-5f34-b004-961928c9964b",
+          "code": "C3455",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3460",
+      "source_path": "animals/bOkev5ygwUnIKhMN5Lukzwo8tvgsbUhvxNj4kwnL.jpeg",
+      "expected_bytes": 5966294,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "a00abb53-7d62-57e1-990e-e56fcf64fc05",
+          "code": "C3460",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3464",
+      "source_path": "animals/0pVilc2zDGjmYpeq3GCuxTvbe4xIFtLyUerSEpC0.jpeg",
+      "expected_bytes": 3763540,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "27aff796-319f-5e1b-b3db-1883c72d1bae",
+          "code": "C3464",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3465",
+      "source_path": "animals/fCA7O7CsxyHuQklSSiOIIIooLE8PaSc0lCT1Sqn1.jpeg",
+      "expected_bytes": 3771942,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "91ee44df-6fd1-502b-a98c-47b90d4cdf92",
+          "code": "C3465",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3469",
+      "source_path": "animals/UNL1fTYolsF5RxKbX4hZRXvQqd872yzOefBhu87P.jpeg",
+      "expected_bytes": 7762045,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "251f4b94-a133-53fa-8376-f75aa54d57b4",
+          "code": "C3469",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C3499",
+      "source_path": "animals/2EaxipzipFaxpVojXGu7itNIBR0ZfqZu4FUo6Z8g.jpeg",
+      "expected_bytes": 2405932,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "5a05b336-3e14-569c-84e0-7e73718f0ecc",
+          "code": "C3499",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3502",
+      "source_path": "animals/FLqdvK1xkhC7ZUG4utpbdXMxSmuNr9kERRPjo0fS.jpeg",
+      "expected_bytes": 3818361,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "ead03c15-077c-569b-9264-7d6011e2aecc",
+          "code": "C3502",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3516",
+      "source_path": "animals/nqtPLUjsiYcvDiEu0vaWFKrtEHsSr3jWb6AcNYcA.jpeg",
+      "expected_bytes": 8061402,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "92c804b4-be34-5bcc-a71f-ab6352099348",
+          "code": "C3516",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C3546",
+      "source_path": "animals/YloYYcGWfWtMwv1yAok3LWzybKuuTRGwUm4t1y3p.jpeg",
+      "expected_bytes": 206369,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "7febfb98-a584-5459-ba8a-3e1fef0ba469",
+          "code": "C3546",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3548",
+      "source_path": "animals/T1mlv0EDkZC5M0bOR4pHf4s7RQlo2XnGORrZ0nfa.jpeg",
+      "expected_bytes": 205047,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "a956072c-4baa-5350-b491-53ade696db54",
+          "code": "C3548",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3549",
+      "source_path": "animals/cIHYdYRWVMDqJzThrZfTH5qdd3D4AaNZPajden96.jpeg",
+      "expected_bytes": 3069863,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "98968d91-852e-597e-aca4-cc8ccf7ccc55",
+          "code": "C3549",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3550",
+      "source_path": "animals/Ctn5GMFF3OZHmutLqANVHlSaR9Vljo0RJHEtB6Iu.jpeg",
+      "expected_bytes": 2694770,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "ff624f61-06b9-5bb5-a281-a197d90caabb",
+          "code": "C3550",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3565",
+      "source_path": "animals/rzFD7cYeT9nPv5eGX3crUPbYaQCGESOSIyCGXqHR.png",
+      "expected_bytes": 233690,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "6bc3c8ea-7b59-52aa-801d-26f18cf3deb5",
+          "code": "C3565",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3572",
+      "source_path": "animals/Ruv0kQHM05aefYhMCwP3TXMMRaCNeN8JxnNiX3Fy.jpeg",
+      "expected_bytes": 3035295,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "e9a6ad5e-3345-5bd8-8a57-de4f5d48b18c",
+          "code": "C3572",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3575",
+      "source_path": "animals/giZGIP5gtNKAbaM4qEpFIfoIyUJrp9AbmReFk8NF.jpeg",
+      "expected_bytes": 1868216,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "2ab4bc34-c7e6-53f0-912b-2f5f584bcfdf",
+          "code": "C3575",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3576",
+      "source_path": "animals/JS1R0MwWk90KsQFcQkDzRMBs9mKqGltpi5BgieME.jpeg",
+      "expected_bytes": 1997302,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "75fa15db-8ef4-52bc-9ba2-83b216dc4a17",
+          "code": "C3576",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3591",
+      "source_path": "animals/Cx8VzrL4KQO8EZV5xKRtlE4G8cADSLF1XuZnQfmy.jpeg",
+      "expected_bytes": 5723567,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "0b56ec2f-bdd5-55a5-9c12-38c7117cf69e",
+          "code": "C3591",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3619",
+      "source_path": "animals/H12315vgIB4Cpt8bqDm5KECDzAElby1oxhLF0psI.png",
+      "expected_bytes": 2058748,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "9aa837c6-231d-59bf-9905-b9368c7b4f52",
+          "code": "C3619",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C3620",
+      "source_path": "animals/0YYQjdo9Ehz9B8Yrv4S3zeziepeWMP03XZZq7B19.png",
+      "expected_bytes": 1564260,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "14f6018d-efe2-5cae-9d17-e0991bcacc4e",
+          "code": "C3620",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C3621",
+      "source_path": "animals/dQ4K9KxAyTr1lcIW9pUTAll3n2561lgu3HpYW46T.png",
+      "expected_bytes": 1933599,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "b4f7b720-f8f5-517c-86d4-d6d3745861f4",
+          "code": "C3621",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C3635",
+      "source_path": "animals/cfyIpySQL9JLuSc2fln0o36Vmr2ZmzcbMIFCw9Gl.jpeg",
+      "expected_bytes": 249425,
+      "present": false,
+      "canonical_matches": []
+    },
+    {
+      "code": "C3646",
+      "source_path": "animals/gMNcr9EYh2szI8Z0bwLUf5KXMVQ7OcddRid48GLG.jpeg",
+      "expected_bytes": 546653,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "e03dccce-6ce7-5459-8f3e-196a3970dfc3",
+          "code": "C3646",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C3673",
+      "source_path": "animals/3Jrbn9J3rIiVC9nZNfMK1WByuQQQxZi3GAkusMmC.jpeg",
+      "expected_bytes": 509449,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "3e7471bd-08d3-5d73-a489-b30e86a48372",
+          "code": "C3673",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C3674",
+      "source_path": "animals/68yYSTMKlW8HP7ovYY3UaqYu6rBvfdY0UacqpVga.jpeg",
+      "expected_bytes": 116205,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "fe974c19-e201-5587-a2a9-902e266c97a6",
+          "code": "C3674",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3675",
+      "source_path": "animals/pzbBULZMg2JbHqdfLyzNh5kfy2q9Zs0axHeeTlc4.jpeg",
+      "expected_bytes": 325151,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "4701495c-9904-516d-a3a0-fcee9ff8932c",
+          "code": "C3675",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3678",
+      "source_path": "animals/DfWmlORU1xL3d0VYwAHYda0VF5waNOUwgsWGDoVZ.jpeg",
+      "expected_bytes": 1634162,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "8e882a75-ca73-5596-a495-7c51abd3a14b",
+          "code": "C3678",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3685",
+      "source_path": "animals/hbQy3deOeGNj9cwzXUhbyQeTOFCjtzKpWPhjfjwF.jpeg",
+      "expected_bytes": 142224,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "e9701a7f-5a06-5b08-a9a6-e5e495480b26",
+          "code": "C3685",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3686",
+      "source_path": "animals/ZfySKCFX6eP0RUxXA1nhgXokQ3g5GANAxZe8EniG.jpeg",
+      "expected_bytes": 93115,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "b7e90760-9d0f-591f-9ffe-67d0d35d91d4",
+          "code": "C3686",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3695",
+      "source_path": "animals/FWOJTAm8gg0y2rpM24Wp2R8hIuOUqFWhnBh45d9z.jpeg",
+      "expected_bytes": 234480,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "f1124a2b-6319-54bf-961c-6437883391d1",
+          "code": "C3695",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3696",
+      "source_path": "animals/HP4QTEOloQ4lb1YS6oVgnCxcWLx9jLRhNcv30wm8.jpeg",
+      "expected_bytes": 577517,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "e66a7c1c-c9a1-5450-8cdf-37fe0f76335a",
+          "code": "C3696",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3699",
+      "source_path": "animals/qG2C1t95NtCWuOsz6yeyp4mFUmxdm91zFHI99BGG.jpeg",
+      "expected_bytes": 481402,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "ad6d9348-911d-5334-8232-f6415a9af41a",
+          "code": "C3699",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3700",
+      "source_path": "animals/ROy5NMRovnaVqFgFcmVLUgWDLx76C4HXNDIAtdbV.jpeg",
+      "expected_bytes": 261912,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "1c936218-16cf-53be-ac3c-efa406dccf7a",
+          "code": "C3700",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3705",
+      "source_path": "animals/gMyMPYRroYs5vQ9kS1nvnl3B0WiuJvDi58jprTR5.jpeg",
+      "expected_bytes": 502308,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "eefc72b5-98d4-5126-800c-3c769395e882",
+          "code": "C3705",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C3712",
+      "source_path": "animals/5JCj8EH7NmnSBlfWB1Cjk09kCeQZvnNoNMV0d5rk.jpeg",
+      "expected_bytes": 328671,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "707a9738-6ffc-5d69-822b-5f5dbf04efaf",
+          "code": "C3712",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3716",
+      "source_path": "animals/5A9V81It3CVnODgGIEB6mWIi3PrYOtR3LCfpEnmh.jpeg",
+      "expected_bytes": 233777,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "36c5a55f-20ab-5dc9-bef1-f620e2a304d0",
+          "code": "C3716",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3718",
+      "source_path": "animals/nLmy3KkU8BesDxnmf61kvYYZgMLNim7AhESVf0jv.jpeg",
+      "expected_bytes": 1736735,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "20da4eac-8c8c-5d7f-afb1-0245ccc932a7",
+          "code": "C3718",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3721",
+      "source_path": "animals/tS6sWihn4suG3qT2oLiE9ceEAgME02H055iexE9P.jpeg",
+      "expected_bytes": 1613171,
+      "present": false,
+      "canonical_matches": []
+    },
+    {
+      "code": "C3723",
+      "source_path": "animals/mn44CI5OS5OC8pVORLWyP4aHqrMohHeSBstmmmC5.jpeg",
+      "expected_bytes": 1523141,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "f5f6e16f-45e9-5c12-b767-ebc43a798f2d",
+          "code": "C3723",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3724",
+      "source_path": "animals/aFjfvzQPX4eA8OylzsfpZVF0j5Eyv4MDfqOLStjw.jpeg",
+      "expected_bytes": 3867607,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "36ba5585-82aa-51fd-a1da-5c3eedfe9867",
+          "code": "C3724",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3726",
+      "source_path": "animals/alsqdHaDnTbrTAJBMBelqGgM3sFA8BFF6KHWfN6b.jpeg",
+      "expected_bytes": 1021678,
+      "present": false,
+      "canonical_matches": []
+    },
+    {
+      "code": "C3734",
+      "source_path": "animals/Mz5lF1497rvQMhs6GJEo5uL9oQpT5ZZf9QdL3ow1.jpeg",
+      "expected_bytes": 5022151,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "76fb81e7-c525-54e0-ab59-44abace4890e",
+          "code": "C3734",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3739",
+      "source_path": "animals/Pz5KqSNznlUGGi8yYo5zZDKTmpTfI8F4kRqUikj4.jpeg",
+      "expected_bytes": 569027,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "9b1a0d8a-6281-5706-9b02-466fadc99866",
+          "code": "C3739",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3754",
+      "source_path": "animals/NPrqsuY5yYM6Gz9AB6kDWWjG1giB9tjvKE7m9lo4.jpeg",
+      "expected_bytes": 1671200,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "35310378-cd9f-5afb-894b-c91d3b04db8b",
+          "code": "C3754",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3761",
+      "source_path": "animals/ahBzluzrExQMgEnVnvrFr7u3zt2zjlXrqAXaei7R.jpeg",
+      "expected_bytes": 3474269,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "0158e19a-4df6-50e0-8eb3-75197252509f",
+          "code": "C3761",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3762",
+      "source_path": "animals/xyPgahiK9NQjIWE01HDSQKeoLrh8qNDW4lUeJCY6.jpeg",
+      "expected_bytes": 1600045,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "4bdc61de-2ecf-58bc-bc2f-fb41d35d20f8",
+          "code": "C3762",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3764",
+      "source_path": "animals/R0PXJZQqLHGFXNW8x2az03iqb5HtfXeMdITNZerR.jpeg",
+      "expected_bytes": 1951815,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "11f95fb9-0c43-50e1-a0a0-9c642513cc72",
+          "code": "C3764",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3766",
+      "source_path": "animals/xM80JcCSYMO83trVy4b0MkRgZuYYiBYwoLRZg1fH.jpeg",
+      "expected_bytes": 527248,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "5c299af5-96cf-59f9-9a9a-c2920f38b18e",
+          "code": "C3766",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3769",
+      "source_path": "animals/0quXPRYbCwKIvRbJJXXtPQnYkr5WNzDVR3KUxqS1.jpeg",
+      "expected_bytes": 732812,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "dba8eed1-1fc8-5cba-9536-c4de5952f853",
+          "code": "C3769",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3770",
+      "source_path": "animals/TIiPx2mQP13d95jjV7xwf2FwiEUX7SdnblfdglBx.jpeg",
+      "expected_bytes": 807154,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "a65c909b-4f00-5aea-907a-82180b1db2b0",
+          "code": "C3770",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3773",
+      "source_path": "animals/aop9SJkwiXnvDD1kWQgzS380fLVwvWNrF6ogO6bK.jpeg",
+      "expected_bytes": 2295638,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "44967e0f-6ebc-52d2-ae37-10cab872bbfc",
+          "code": "C3773",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3775",
+      "source_path": "animals/1tv8vhF9vdmIUN569uXJTb1zYhJRfeeXbA40j9Va.jpeg",
+      "expected_bytes": 2422771,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "b1389afe-5a72-5c98-8536-33c08b688b76",
+          "code": "C3775",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3776",
+      "source_path": "animals/Ovpy9DBh6Jtm5GY49ecwIphYVmb1Mc0Uc2Qh4lAW.jpeg",
+      "expected_bytes": 4086114,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "399f3d03-665e-5983-a121-3b7c0a121295",
+          "code": "C3776",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3777",
+      "source_path": "animals/hblaETav8qQcC3eAvDa22fcmvv5ZaFkvxLKcVWx0.jpeg",
+      "expected_bytes": 1768147,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "a19f2de3-c44a-56b3-8450-688f8a1aac79",
+          "code": "C3777",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3778",
+      "source_path": "animals/fo8L5GDFSXZYMbBxRG35SfU7jxeLD4YOp2c3vzke.jpeg",
+      "expected_bytes": 4981362,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "cd6d2a7b-b64a-564f-8eda-43813b3780b0",
+          "code": "C3778",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3779",
+      "source_path": "animals/Cc0fPrPzutmxFt7Zb4FVwiYkLMOXH5IWpEt26me2.jpeg",
+      "expected_bytes": 3698946,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "c4969fd2-8dfd-547f-baa1-6c32b5ed477e",
+          "code": "C3779",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "C3783",
+      "source_path": "animals/Q2iDbU8wwF2ZmWt3fs5edykCFPz4eF3MWAbp28Mi.jpeg",
+      "expected_bytes": 2716059,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "4cbc476d-a068-5508-8ad9-7072403b98ed",
+          "code": "C3783",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3784",
+      "source_path": "animals/iNzToQE8toVohENCGTygzlVEYZoxn2Tu2Gn2bPQZ.jpeg",
+      "expected_bytes": 2037896,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "db1c90bb-adfa-5267-b4a3-ffca83406776",
+          "code": "C3784",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3785",
+      "source_path": "animals/0LQhKA3CERpjqRxkTB4RhFvw3as4aQA8LViWRvnM.jpeg",
+      "expected_bytes": 75572,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "3e8c7df4-b08b-5992-a5d3-1e664aec91e2",
+          "code": "C3785",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3786",
+      "source_path": "animals/Rv0i7wzR5RKt4ieqYhjD323MvEdaxZ3xlvv6I1l2.jpeg",
+      "expected_bytes": 116069,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "daafea64-be67-506e-a5e1-79a188005feb",
+          "code": "C3786",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3787",
+      "source_path": "animals/XnMPg16SdinEgCkuOqbqaQekODUmHelssGbdWDER.jpeg",
+      "expected_bytes": 3071708,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "6aafdae8-0b67-57e7-a6d3-56f6efd9652e",
+          "code": "C3787",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3788",
+      "source_path": "animals/gYcxglsq1Bh49AA3KGFiFZ4CR28UHQrc49RyYIwH.jpeg",
+      "expected_bytes": 1782915,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "b0a7d326-f0fa-5a53-a47a-e4b4e80cdfb0",
+          "code": "C3788",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3789",
+      "source_path": "animals/59cSeB5SGdSw0x1SjKjyN8fI0bD2duAYut43zikg.jpeg",
+      "expected_bytes": 256306,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "73f60ece-c2df-52f8-af75-40b0e49767a5",
+          "code": "C3789",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3793",
+      "source_path": "animals/7YH32jdisWwgPmXyRQb4DCtDlX3K2QpvfDE3s44g.jpeg",
+      "expected_bytes": 1794650,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "0756d118-8092-52f8-b74c-3b238b691d28",
+          "code": "C3793",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3794",
+      "source_path": "animals/ByJ1wtqufVyfDj0VGLuHHLWYLpEf6pgiPE4WS8Dx.jpeg",
+      "expected_bytes": 2584537,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "a19a5138-0367-5b1e-9228-12b63b93865c",
+          "code": "C3794",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3795",
+      "source_path": "animals/m1L6Z8jVvFmKUpylCy5crXEAMsRBhZbLIdJZ1tOC.jpeg",
+      "expected_bytes": 2607825,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "0258b5d9-ce43-53b0-becb-a370f3938732",
+          "code": "C3795",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3796",
+      "source_path": "animals/uKL206y2ZRDzM7M0c8yVqplRv1OBxoePtD8XZjd3.jpeg",
+      "expected_bytes": 3756754,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "c956331d-9abb-53f5-b00b-a6e7b669601a",
+          "code": "C3796",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3797",
+      "source_path": "animals/OtRv67AOL9EI3urHhCWvNgIP9HIldsHUrBGvTZRq.jpeg",
+      "expected_bytes": 4245613,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "709eefd8-3f2f-57a8-8b68-7fec2580e97c",
+          "code": "C3797",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3798",
+      "source_path": "animals/ax0bS9LnEoWCkeXtd2IvHw5Yxm9bt0DM0ywnywhW.jpeg",
+      "expected_bytes": 4562087,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "ddfbcc33-6265-57d8-9ca7-bdd542a536b7",
+          "code": "C3798",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3799",
+      "source_path": "animals/7BidsitsB3xPvkvb1lvt1G2Pgyk1rMyKsaq3MqEm.jpeg",
+      "expected_bytes": 3436028,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "84f5bbe4-5729-5e5a-b770-6741e2f7747c",
+          "code": "C3799",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3800",
+      "source_path": "animals/VYGPp7MAKVoYqcutI5uwdVQzDSi0rs1nlbnQ5tVG.jpeg",
+      "expected_bytes": 5059629,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "351daf38-2afe-5151-9f85-93db19d9a8a0",
+          "code": "C3800",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3801",
+      "source_path": "animals/SXOpGxx9h5v9o9BuIr0sMTvdKGNQ4TkiUWYFP8Su.jpeg",
+      "expected_bytes": 5370072,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "46a50d58-87b7-5257-b70b-47118aecf1f5",
+          "code": "C3801",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3802",
+      "source_path": "animals/qz3Q4AMkwCFJOhwrIKnAmUkMLSo2II5JV0c49Bzv.jpeg",
+      "expected_bytes": 4073398,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "b4e363f8-5182-5d6d-8187-9079f4a0b837",
+          "code": "C3802",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3803",
+      "source_path": "animals/Ymblxj5r5LWAMcJSldf63jZSeT0tsgHlTqJKw5OR.jpeg",
+      "expected_bytes": 2497905,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "e96965fe-4eb9-5dff-80ce-c80c513ca666",
+          "code": "C3803",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3804",
+      "source_path": "animals/wshjtoP3AVwzF8ikKhjYsN9hm0KMhzn6mzroBouB.jpeg",
+      "expected_bytes": 5148974,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "d089a473-e8d7-5b10-9453-4f072ca24e52",
+          "code": "C3804",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C3805",
+      "source_path": "animals/BF1BUlk3q5AsCU3A9kCwCgmvFm3UDWvAczfhEbG6.jpeg",
+      "expected_bytes": 2440984,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "58d2e1a9-1f12-586d-84ca-ba04499a628f",
+          "code": "C3805",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "C807",
+      "source_path": "animals/ERxm5I3JlwlPvnBmxRReJEmq3osZRFgtZZyD6Wv3.jpeg",
+      "expected_bytes": 66701,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "9dcf78d5-b064-5137-a4e3-c09dd1e76aba",
+          "code": "C807",
+          "type": "cat",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1014",
+      "source_path": "animals/WVZaSEZNzNBasUd25Jt0Y1PnqiXW1xMJlYC56tkB.jpeg",
+      "expected_bytes": 287570,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "7718ec69-924f-540a-a3c8-d02be148bbfb",
+          "code": "D1014",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1017",
+      "source_path": "animals/nHYEM19rSzgNhmMWwSojgJYh4Nrm7nz2SScZq0a9.png",
+      "expected_bytes": 2816874,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "c60ca8fd-b089-5738-8fd1-6e5f1784b17b",
+          "code": "D1017",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1018",
+      "source_path": "animals/5iTtobofGdy4Fu1b3tI1LfWoLsRCDDnElKcA27Hg.png",
+      "expected_bytes": 3500272,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "7625c7a7-f990-526f-a07d-1c46cf680b00",
+          "code": "D1018",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1019",
+      "source_path": "animals/bXrdrqWjNnXKLTRnBcNFtVVMu1pKZZWNvtehqFfW.png",
+      "expected_bytes": 3299223,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "feeea4be-488a-5f0f-abd7-ed2ea575d076",
+          "code": "D1019",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1020",
+      "source_path": "animals/TaOOy9gYzQLOOhDQFsSu99Wy9oz9jpLN3wWwJ1Lk.jpeg",
+      "expected_bytes": 1627505,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "ce525c5c-71a7-5e6f-a340-6c0450ebadf2",
+          "code": "D1020",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1021",
+      "source_path": "animals/TJULWZLTJRZIQTYR1DvCTCvu4mzkuWffBVyh1MIS.png",
+      "expected_bytes": 3486524,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "766afb3b-9aca-583c-b117-92d2cca2640c",
+          "code": "D1021",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1026",
+      "source_path": "animals/HZBTfXfi8c1HLxK3oPCwzQduzoWnNiNg4Mad8OTV.png",
+      "expected_bytes": 2814856,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "c012e3b4-6184-5d23-93ad-1b7fcd26f7b8",
+          "code": "D1026",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1033",
+      "source_path": "animals/YbVwIV3Twqp9PJO9m5lYlZJee0tcIRgmnBEocXVR.png",
+      "expected_bytes": 1826584,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "bfb8d6ed-cb32-5535-b997-b047931b51cc",
+          "code": "D1033",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1034",
+      "source_path": "animals/FD35zEtuuji6JRnuMi5rpj3RZYos2HNn8BvwBw9C.jpeg",
+      "expected_bytes": 252471,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "862a1d7d-ef78-5f25-b5c2-d27b07f8bb70",
+          "code": "D1034",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1035",
+      "source_path": "animals/rkltwB4ihG5jgAHVYBeh6HfvArfAhUTuGQ21kOix.jpeg",
+      "expected_bytes": 588325,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "5bd4dad9-30ec-52b9-b5bf-996ce2f37ef5",
+          "code": "D1035",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1037",
+      "source_path": "animals/trYqxTCwm3uwcjvV0KOOrsM1N2E8lLEpUqxYkP90.jpeg",
+      "expected_bytes": 1856417,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "c8918e5e-477f-5004-93c0-65816a9b2144",
+          "code": "D1037",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1039",
+      "source_path": "animals/enNY8xNzW82JO8rrsu6WYkR8KSOSIqyOvPr5eD3J.jpeg",
+      "expected_bytes": 1378042,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "84f7188e-0473-5923-8a28-7014762907b3",
+          "code": "D1039",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1041",
+      "source_path": "animals/aKfDjbaHwdmP0vKuBMBn3r8smO1qBEutiXf0N2pP.jpeg",
+      "expected_bytes": 1367339,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "4b8a70c3-7591-5b3b-91a6-7448930101ee",
+          "code": "D1041",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1069",
+      "source_path": "animals/O8w7w4za88YXRCLFVSaNoC6djrBgmtZkKptwz0vs.jpeg",
+      "expected_bytes": 268189,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "49d94129-a365-5ed9-ab67-edd2b8422f32",
+          "code": "D1069",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1080",
+      "source_path": "animals/TNMqTj5R4WUyQMSvlYveTztukMp0NuBAbTOqvNBS.jpeg",
+      "expected_bytes": 213295,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "7dc058e3-5cb9-59de-8634-a8ef5fc3baf9",
+          "code": "D1080",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1082",
+      "source_path": "animals/2PEQMhngwXeyDAr2oEmxQ5NerF5HL6KPFw8SgJsA.jpeg",
+      "expected_bytes": 418145,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "cc735dee-14c6-5b0e-b409-f0fb91f2c107",
+          "code": "D1082",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1091",
+      "source_path": "animals/0P8t6R42uK4wu8z4w9IdfbFJm6zNgu5sFMbW8NVf.png",
+      "expected_bytes": 4321142,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "e01991ec-e023-59b3-b6c7-43ef0f947957",
+          "code": "D1091",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1096",
+      "source_path": "animals/f5ijZVHbxX2XNnB4NoWCGhSRmapmlxqAWhsIIu6w.jpeg",
+      "expected_bytes": 267684,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "6e66e94b-fa40-5013-afb1-5a2b1c451017",
+          "code": "D1096",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1097",
+      "source_path": "animals/MMO2EgEWn8AbLcbwnJ9qwX99Hl1H0G6zPX4PLi8v.jpeg",
+      "expected_bytes": 328835,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "40738f71-5dc2-5e9e-8f5f-6757a269be4a",
+          "code": "D1097",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1098",
+      "source_path": "animals/Vs4boOC6cpZ8zYxMsqYz8QdxsG6bBQXzpxrsQURe.png",
+      "expected_bytes": 2174120,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "9fee2c85-660b-5cfa-ab3d-37c805bdc3cf",
+          "code": "D1098",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1099",
+      "source_path": "animals/aMSgtKwDnCTHIawoNLSRvJZ9mRJUZZJJYKr885JM.png",
+      "expected_bytes": 3917383,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "166064a6-cd35-5a17-bd6f-5d1239dff89a",
+          "code": "D1099",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1101",
+      "source_path": "animals/YH6NCTmzSMXE2vi8XQqoXzDTvLY92UJlLznnVA9i.jpeg",
+      "expected_bytes": 281955,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "1645567e-b57c-5253-a9f4-987e08aa1b3f",
+          "code": "D1101",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1102",
+      "source_path": "animals/QFbVM1ysyCAf9DxZLpFSKJHFuKzaQr0WlL9eDNwc.jpeg",
+      "expected_bytes": 505779,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "f1bd674d-5a8e-5fcf-ab01-431880695e65",
+          "code": "D1102",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1103",
+      "source_path": "animals/2Z5DUlh008OtUG6vbXi6sMK40qqRgkDJmx07kXjt.mp4",
+      "expected_bytes": 985660,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "0634b5a6-d89b-5512-aa3a-8dc64707b426",
+          "code": "D1103",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1104",
+      "source_path": "animals/40y9mu6PASux8RBdyAqnghiPugKo0wOSJRuYkaHB.jpeg",
+      "expected_bytes": 165708,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "c68acca8-ed25-55f5-b8c7-eb17834d8bf7",
+          "code": "D1104",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1110",
+      "source_path": "animals/6wwiv5QfDZ6n3l8i3LjYEh4VC1twdUVgL7Sx72zk.jpeg",
+      "expected_bytes": 332635,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "f15d959c-e96c-58a2-bc2e-f1585129e1f5",
+          "code": "D1110",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1125",
+      "source_path": "animals/8DkyikIAauOKWWlm6VpFMOn6SD8om2zYwGLhgOOd.jpeg",
+      "expected_bytes": 257867,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "56867e70-c611-5e03-98fc-6d4eb6c9b15d",
+          "code": "D1125",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1129",
+      "source_path": "animals/GCovLSWn2js3slsqZ9l6mtvXLINMvIMvW4fQcOEr.jpeg",
+      "expected_bytes": 383292,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "78458f1b-4e7b-50d4-9fb4-9f7e013d7312",
+          "code": "D1129",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1133",
+      "source_path": "animals/hmCpXUmdovQmkPN4keJGLfK3MF83OJj35r9d4BlR.jpeg",
+      "expected_bytes": 295757,
+      "present": false,
+      "canonical_matches": []
+    },
+    {
+      "code": "D1134",
+      "source_path": "animals/1wk4NkvmGmmOwh7KF1cYoDJv2jjxNlhvW8VE9wfa.jpeg",
+      "expected_bytes": 259704,
+      "present": false,
+      "canonical_matches": []
+    },
+    {
+      "code": "D1153",
+      "source_path": "animals/cZiyjPZCU9rY8KNBP4SE3AVIA5cXMft90qyghfRY.jpeg",
+      "expected_bytes": 508815,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "d9056c98-b3cc-5dfa-bafb-09285f870d6a",
+          "code": "D1153",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1158",
+      "source_path": "animals/WuSF0VLm7C1v0Pxik2Ix6soqf9wJuqVynvFwLcCG.jpeg",
+      "expected_bytes": 148449,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "11b63cf8-9e02-5462-961c-714a889e420f",
+          "code": "D1158",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1159",
+      "source_path": "animals/7LwL6BxYX83kJBzVaqkGsP3jUBUsLtXgVeeO8Q2I.jpeg",
+      "expected_bytes": 365585,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "c6f1e8b5-04d5-5c42-9f52-86f7c419d7ef",
+          "code": "D1159",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1160",
+      "source_path": "animals/4N8v5eNpQGX5Rq51hfY7ucIZJWeaZfmQxEN2FIVP.jpeg",
+      "expected_bytes": 640884,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "b3a3e53f-3874-50bd-8d0f-29cc1dca0ef3",
+          "code": "D1160",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1161",
+      "source_path": "animals/U4UXEhjiAm9wrDuwdetQKnejkiiBuRZPyYTIxNzF.jpeg",
+      "expected_bytes": 1102532,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "ab934506-31c7-55a5-8675-e4b62f645dc0",
+          "code": "D1161",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1163",
+      "source_path": "animals/WoQpLaPkoBmKGc5xBTAide2qgzrggExRIAwnXzs2.jpeg",
+      "expected_bytes": 353695,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "121563ea-91b9-59e1-a724-44730b3f16fb",
+          "code": "D1163",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1169",
+      "source_path": "animals/Mkwo5ZrTnE1abjjVXhrGwGgDvu80cqIfP1A8IIha.jpeg",
+      "expected_bytes": 203306,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "9a964469-a9f8-5285-8261-77ccec65b4a9",
+          "code": "D1169",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1176",
+      "source_path": "animals/iHWOOTWI1F3rlgZKkep7Ol342etWtiT63SHffndD.jpeg",
+      "expected_bytes": 249291,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "b75e9da8-2a16-53ac-98ed-142efd5f203b",
+          "code": "D1176",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1193",
+      "source_path": "animals/QFiN4jo5zGI319idrhiHJgeTWIhCjA6zDxPP55gF.jpeg",
+      "expected_bytes": 369221,
+      "present": false,
+      "canonical_matches": []
+    },
+    {
+      "code": "D1198",
+      "source_path": "animals/WxX9Hz6Zo0hawibY6kCzEdCKxUdM3hWPSZ2HSs4P.jpeg",
+      "expected_bytes": 89683,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "120a9896-c430-51b1-a561-751ce988f63c",
+          "code": "D1198",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1199",
+      "source_path": "animals/CDGMqhNd3kZTzeqL7ugNUMW5hTg4yrpLNvT8RxTs.jpeg",
+      "expected_bytes": 280963,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "aef653b1-9743-56c5-8463-005ee477a666",
+          "code": "D1199",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1200",
+      "source_path": "animals/IBuq3v3Ai9DLyP9GTobOYhP0IZcsJa3z4aPUdXZd.jpeg",
+      "expected_bytes": 182503,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "f304439f-8225-55bb-8d0b-a3b3dfdf0576",
+          "code": "D1200",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1201",
+      "source_path": "animals/SclfE6KEt2JD87XD0LE5ycsH89FivCtgMsVboEUx.jpeg",
+      "expected_bytes": 233981,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "87b8c307-c644-5461-9650-f0e9e2abff5c",
+          "code": "D1201",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1202",
+      "source_path": "animals/IdapLUYyiUL26pSVv7e2HJwO3MtvCAA8r99HAfYk.png",
+      "expected_bytes": 2603356,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "182f3599-fc8e-552e-819f-20a0ea1008c4",
+          "code": "D1202",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1203",
+      "source_path": "animals/hoe5xq93eNZQDsN5EtDk0XgbwAYN3VUwuxsxcZzs.png",
+      "expected_bytes": 2949686,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "4a604946-19d6-5b66-92b6-cdb3000829d2",
+          "code": "D1203",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1209",
+      "source_path": "animals/ucodes6RFPlyEWjX7Uz5dlix8xTVwv3TyvBjiJ9G.jpeg",
+      "expected_bytes": 1832531,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "7d69d528-1357-546f-9ebb-44d06ae38da8",
+          "code": "D1209",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1210",
+      "source_path": "animals/SNvnqwnnkmQlHVaBE0EsZmERa2QVPCxC4dNXfAhh.jpeg",
+      "expected_bytes": 211655,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "f5fc3de9-fc7e-5a1a-9869-0f11b0e6beb4",
+          "code": "D1210",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1223",
+      "source_path": "animals/yGq8qspgQ5lBf9dBsJWPUEpjN2ovHSxOiZs4sauq.jpeg",
+      "expected_bytes": 245268,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "d3dc35ec-7e04-5e71-9c91-b4a0afbe1403",
+          "code": "D1223",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1230",
+      "source_path": "animals/Ldj46nWJ4EJHsaq0NhOUoH3h25tKycpRor2fLLBb.jpeg",
+      "expected_bytes": 386349,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "cb2928ac-97e7-581e-9e17-bd9621c62a0a",
+          "code": "D1230",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1231",
+      "source_path": "animals/RIRMvjN2Hblj5LNCP6rlBP6yXVGqh0CF3J815efJ.jpeg",
+      "expected_bytes": 392839,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "7d3fcec4-2729-5909-82b0-66f625ffcd02",
+          "code": "D1231",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1238",
+      "source_path": "animals/yARQ3YiR8ijLRnDIEI4mBZ8IaO4A0ABm6ZvQZMAY.jpeg",
+      "expected_bytes": 157524,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "ff70d2e3-dbb4-5d76-b82b-1ef70cf12d42",
+          "code": "D1238",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1239",
+      "source_path": "animals/No85JyTocb1zrrx8qqVZcCIz4D7W2AY4iMfCrEqT.jpeg",
+      "expected_bytes": 208440,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "da666a3d-c9d4-5a3f-8bd0-6b962538aa97",
+          "code": "D1239",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1240",
+      "source_path": "animals/PRpWE5a5Q0NJMmL8NfwtoTK9tKemF01o7cqzfDS5.jpeg",
+      "expected_bytes": 10361128,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "934625cb-083d-54a3-927a-32c33f3f58da",
+          "code": "D1240",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1243",
+      "source_path": "animals/lPtFfOuOOMhZOboyQPlS9A7foMn4rGUpojMZ13BA.jpeg",
+      "expected_bytes": 126824,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "617be031-f3c2-5f8f-b63a-7a90fb77ca3d",
+          "code": "D1243",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1247",
+      "source_path": "animals/TxxT8KmlANnabvOg2ci5Tw1TVNZ9TtGxH4PKzFuY.png",
+      "expected_bytes": 2266093,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "20e97bb7-7be0-5f00-aa93-a533ba88daa8",
+          "code": "D1247",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1250",
+      "source_path": "animals/55LP5tuFTl6iXJ0F5GlVPo3TT4cqBrsJYTAurqzt.jpeg",
+      "expected_bytes": 223116,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "8dc594f3-54b7-59b0-93b3-c3f5a0c58dd5",
+          "code": "D1250",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1253",
+      "source_path": "animals/NRxeynGw3kHv9BmJD8GJsK33L8dNe4c2A9erbAm0.jpeg",
+      "expected_bytes": 1472470,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "ddb16cb5-d9ab-58dd-a9ce-e305ef1064c2",
+          "code": "D1253",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1255",
+      "source_path": "animals/d8StW6lelSj1i27SiDBaGLp6QapsGjwCUyvxSk69.jpeg",
+      "expected_bytes": 1470040,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "8e70e711-7712-5147-90cb-710cbf97ccb0",
+          "code": "D1255",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1260",
+      "source_path": "animals/HEC3GFbGmF4mctfj3Zjk1tvKGK9qZCTD0lpUmA4d.jpeg",
+      "expected_bytes": 548591,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "0d98d682-d822-54fe-aa91-16a9b7d7640d",
+          "code": "D1260",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1270",
+      "source_path": "animals/cOu84Xigwh5RYFWiLqPCCn6hN5G3t0WgLV0Nc2SE.jpeg",
+      "expected_bytes": 301140,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "598165c6-2e7c-52cb-af13-41ebf749ce91",
+          "code": "D1270",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1271",
+      "source_path": "animals/8EhpWd4LVlwx9bBsC7FvAPz9GJygoPqp6fcVtmh1.jpeg",
+      "expected_bytes": 299233,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "52e51440-e09a-5480-b2a9-7c11224c2cba",
+          "code": "D1271",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1273",
+      "source_path": "animals/si6LrMaFztK7XTEJYogf52RAcKkavWmzSYqtKVPx.jpeg",
+      "expected_bytes": 255114,
+      "present": false,
+      "canonical_matches": []
+    },
+    {
+      "code": "D1274",
+      "source_path": "animals/MrUXIXTOsS2zaFcFjxPNPk5akhjAlQ41fRUt7WSg.jpeg",
+      "expected_bytes": 257800,
+      "present": false,
+      "canonical_matches": []
+    },
+    {
+      "code": "D1275",
+      "source_path": "animals/m4SwD5Mmq9N8zLxjDqtOFwiuUH9o4WjBGubu0Qss.jpeg",
+      "expected_bytes": 333800,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "54ff93f3-887b-52cd-97c6-2b3ef969c8f4",
+          "code": "D1275",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1277",
+      "source_path": "animals/bui8OmkwspvPeG8pomSyIDItAFf3eEzK03diqZTO.jpeg",
+      "expected_bytes": 684127,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "543df67a-ee63-5b5d-8ff7-f8b647d2d6d7",
+          "code": "D1277",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1285",
+      "source_path": "animals/hsLnpqQ8Fiyp1UadPmJ4Ed9u2K5utE0l4kRiAbzg.jpeg",
+      "expected_bytes": 226142,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "fe121fb8-bd50-5464-a465-901057adf50e",
+          "code": "D1285",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1288",
+      "source_path": "animals/2NodlDQuVgFiaBNh9kIgCSYtsRVDnU3NhFHYh0TU.jpeg",
+      "expected_bytes": 624186,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "1125e56d-6fed-5954-82e5-b35ffe8dc42b",
+          "code": "D1288",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1290",
+      "source_path": "animals/deSntHDIeHgB3ubnfUfoNkcPPAal66Af3qG45fjH.jpeg",
+      "expected_bytes": 228508,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "53c90df5-e406-5c51-85d5-29b087edb6a7",
+          "code": "D1290",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1298",
+      "source_path": "animals/gU5NAn9MfinWZ3sC9y9eEDA6OfYYnQXiujOfvDwS.jpeg",
+      "expected_bytes": 1015993,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "5a29b937-6f48-5fe8-a865-09918a0bf383",
+          "code": "D1298",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1302",
+      "source_path": "animals/f29OurD8ZUCMM2YZIq9AKW1kQsbjhk1mglYCoBLt.jpeg",
+      "expected_bytes": 210746,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "51234fb9-cd1d-5934-9770-739a433606af",
+          "code": "D1302",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1306",
+      "source_path": "animals/btk4DZmFSqYawS8BBBtpiO6FWiTFEM2z5SRH7tfX.jpeg",
+      "expected_bytes": 518397,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "50d5561e-ebc8-5e64-ad93-07c999822416",
+          "code": "D1306",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1312",
+      "source_path": "animals/LyD1vLoJqnLgnZygzCaJ6PMHPouSJNG7YWwqZZMh.jpeg",
+      "expected_bytes": 1322464,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "e3132c28-f950-5be7-9916-0f1338a1fedc",
+          "code": "D1312",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1314",
+      "source_path": "animals/yeao7D63zmsmh39Eg5mEYQPYvLAFZ6HsIe035j3h.jpeg",
+      "expected_bytes": 1076708,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "cca9c4ad-99bf-5183-bb92-8278028b2ec8",
+          "code": "D1314",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1316",
+      "source_path": "animals/whG0viNnjVMXKtFwwnLG4kiphE6rQb8QhiYoafVV.png",
+      "expected_bytes": 4543650,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "71d7440a-004e-54f7-8a4d-06f5f6f04827",
+          "code": "D1316",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1317",
+      "source_path": "animals/Ijlo12qCOCe0bt3tba2vXQ6BzJEdOS59IJk47s33.jpeg",
+      "expected_bytes": 422808,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "baeca8c7-e983-5bad-ab4d-882f48982cf7",
+          "code": "D1317",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1318",
+      "source_path": "animals/8RZPEynwuu8PJcJSVEqe7rChG7JDZVyrIn9GMMQO.jpeg",
+      "expected_bytes": 405804,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "dbee4317-3097-5cca-9650-8584cdac1f07",
+          "code": "D1318",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1320",
+      "source_path": "animals/RQ7wfDBeADRqlaWXZmlUKslNdWMjdXXcYuP3XUNm.jpeg",
+      "expected_bytes": 418399,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "7eff9d72-be59-5950-a4b8-af764f0e4dd2",
+          "code": "D1320",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1321",
+      "source_path": "animals/3oPF3lBmMVPayjgbLPicFIdU3n27BbBnEzJSC3Gw.jpeg",
+      "expected_bytes": 206505,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "3836db45-6284-5511-9758-a0d1d4bace78",
+          "code": "D1321",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1323",
+      "source_path": "animals/PRzdk8Ll6HX5ulFpa3jyJg0OkyeqL0t1ktgPYeSR.jpeg",
+      "expected_bytes": 152764,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "2792dc05-9676-58ae-83d6-478ec12f33d3",
+          "code": "D1323",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1324",
+      "source_path": "animals/9gMBcghAKyoDV4iUkQ1RGyk1tH4XPCSLQ8TzUeTM.jpeg",
+      "expected_bytes": 350179,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "edec4378-2dcf-5add-b207-fce8f9d18f0f",
+          "code": "D1324",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1327",
+      "source_path": "animals/RHeQTMVHh9Q7ObioLKlSuLX5qkUkarluRAkll5du.jpeg",
+      "expected_bytes": 1878979,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "dc2285ec-9c57-503c-aaa8-f5e1ae9d4f03",
+          "code": "D1327",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1328",
+      "source_path": "animals/2uSPeGuas44zFaxNWolqG4ZFov2vQ2aMnMMs9tmW.jpeg",
+      "expected_bytes": 2126553,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "789bddb0-e51c-59e6-aa2c-14131cc32430",
+          "code": "D1328",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1329",
+      "source_path": "animals/gXHBN0O1Op0U5TFkOpFt3v0x2RG3OqrXh2dG7QAl.jpeg",
+      "expected_bytes": 2567181,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "3e7f456a-188d-5941-941d-a0b65e388105",
+          "code": "D1329",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1330",
+      "source_path": "animals/f8n0GdS60SKfRU3Z9HCS6HFTZ1kzWOu0Fc3coxJE.jpeg",
+      "expected_bytes": 2696575,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "4f4a7c37-dc32-5de0-9c70-16e9e476c5c3",
+          "code": "D1330",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1331",
+      "source_path": "animals/rPZOZxpxmtzdUbiusA0dyyK0wHkKcxficS6Cmq3j.jpeg",
+      "expected_bytes": 3412051,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "20b20c39-ff06-56c5-bada-7784ec36e315",
+          "code": "D1331",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1333",
+      "source_path": "animals/6Z7IF55T2JPoEUAPwyQ6TTuDLw2U78oTQL8PGput.jpeg",
+      "expected_bytes": 282973,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "dbe4a47b-424e-572e-ba33-a6741c8183b7",
+          "code": "D1333",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1334",
+      "source_path": "animals/RXiNPO2D6MoXYa4Txr5tnpDHyeokNjbRzcV6ML0Y.jpeg",
+      "expected_bytes": 263393,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "1e3b2af7-3069-5f15-862e-0d052b46148e",
+          "code": "D1334",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1337",
+      "source_path": "animals/C63Q6OPv9CgKIzrLCdPTEPBZUNmwwMx4V1F929jd.jpeg",
+      "expected_bytes": 1971168,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "4caaa3f7-199c-5c9a-b28a-33ab11b7a7a5",
+          "code": "D1337",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D1338",
+      "source_path": "animals/VIUCBcE3zdUwm7bJN5AWVLTwgAvZEwoolIdZvZdg.jpeg",
+      "expected_bytes": 413454,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "b376a24a-7d36-54eb-85f1-7fc86c6643d6",
+          "code": "D1338",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D1339",
+      "source_path": "animals/35lLFgXHpCWtsKikJKWylUYYp338xz36AVL6hWV5.jpeg",
+      "expected_bytes": 1790731,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "b8d0de34-e42c-5f30-a579-bdafb7f90286",
+          "code": "D1339",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D436",
+      "source_path": "animals/5rWrloAXwNJQst3m21M8Hn433O2emElnP0UXvtR2.jpeg",
+      "expected_bytes": 134564,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "b6959892-70e1-5dc7-8904-14e403c737b4",
+          "code": "D436",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D438",
+      "source_path": "animals/acegfaFcw6rTKkBzZM7p5f460U16MEZtCmgwN7HC.jpeg",
+      "expected_bytes": 185566,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "67a9c9d4-e3ca-5cee-a5ec-ec012df7443b",
+          "code": "D438",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D559",
+      "source_path": "animals/lnJzm42fvTUCqCB11TdWivsVahmWjMMRDpfRETTi.jpeg",
+      "expected_bytes": 221970,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "ee56086e-80e5-5de7-9b4e-eacdcbf935b0",
+          "code": "D559",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D569",
+      "source_path": "animals/px7sCRD8icxAVwK2sDWW25JuCXnJa5XCIL0li4oc.jpeg",
+      "expected_bytes": 264420,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "6e63598d-a9e7-58fc-8e5b-e214dc368171",
+          "code": "D569",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D587",
+      "source_path": "animals/BWZdcUsTlu9vh61JSFJP1F1M7AEq2tUcHioffu3f.jpeg",
+      "expected_bytes": 143341,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "98422c19-2959-55e1-9eaf-c5ffd6820d63",
+          "code": "D587",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D645",
+      "source_path": "animals/HbUzZ0LYGLfEEbgfPQd3kyAVLSiqSS6L8ykuO8Yk.jpeg",
+      "expected_bytes": 124551,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "f6aebd70-1235-55bc-839d-4bb309124bc0",
+          "code": "D645",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D667",
+      "source_path": "animals/bmMBLz7rmW1jeDjPMxnTj5nI2wxqIQL56Z5So3A2.jpeg",
+      "expected_bytes": 254000,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "5791daa3-d3c6-54a1-b113-aa7a5befc06f",
+          "code": "D667",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D676",
+      "source_path": "animals/XIUKNf4ZZQJ5Zy66o25qVVA3N4sxv5XYhkdEjbKa.jpeg",
+      "expected_bytes": 261179,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "124d4d73-5b15-5904-8b5d-b54955fcd517",
+          "code": "D676",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D677",
+      "source_path": "animals/1Reek3ioZTH1nxFpethPohJLYVFNClJssTFFbMW2.jpeg",
+      "expected_bytes": 1286257,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "ef3b5f14-19de-51e7-97ee-2e298cf592b8",
+          "code": "D677",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D718",
+      "source_path": "animals/EsvKxqarg2iN0seZZaEabWCS9TUHukxhZ9p4KJsu.jpeg",
+      "expected_bytes": 339525,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "f2bfbe69-5c3f-526f-9b82-f59935881a9d",
+          "code": "D718",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D760",
+      "source_path": "animals/r3Gm8jKGaOcjgDUxhD9337dtRJqGSA5bwAIA9kLU.jpeg",
+      "expected_bytes": 377973,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "b4b38331-488d-57d2-b284-080c6a6db23d",
+          "code": "D760",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D782",
+      "source_path": "animals/N14rr0psiQNPMArrKrqS8P7D1wGhlDsoAsisJCrY.jpeg",
+      "expected_bytes": 66772,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "096d679e-8538-553c-b8a9-a99ef4abcfb7",
+          "code": "D782",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D791",
+      "source_path": "animals/GCZKVpLoZC8DJt34DnVJxJXWHV8Tm1zuiiNpPbp7.jpeg",
+      "expected_bytes": 2160410,
+      "present": false,
+      "canonical_matches": []
+    },
+    {
+      "code": "D814",
+      "source_path": "animals/suvrmtxTClUR5vIDhOuqS2cxSzZJowgLCrXaOBJ0.jpeg",
+      "expected_bytes": 677003,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "01e9c72c-a9c9-5933-8a4e-249685e16c95",
+          "code": "D814",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D816",
+      "source_path": "animals/tDFgvqWcwJ3dv2rirHjBaGzYzLYh8lpbKlyWXusN.jpeg",
+      "expected_bytes": 1000869,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "65b86c09-9f6a-536e-86ea-c2e78a1ac6ef",
+          "code": "D816",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D834",
+      "source_path": "animals/SaabLoMLgvIMRWxrQnQ3geRVTEtQ0fFhUIGCU9Sy.jpeg",
+      "expected_bytes": 101458,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "27186af2-3360-5ee9-ae6b-f9329fa26540",
+          "code": "D834",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": false,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D836",
+      "source_path": "animals/5XJSNPzM65ThG31WZjjKoYkmSOgJmkcr52zAHzQT.jpeg",
+      "expected_bytes": 544147,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "f060d7cf-5a7a-5bff-ad25-c81a9c0a91f4",
+          "code": "D836",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D842",
+      "source_path": "animals/BCT874qqoGNtAXFrQd9QQIqZaRyRpVVPJP3KU772.jpeg",
+      "expected_bytes": 256942,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "f309ea02-7f4d-59ce-989c-fe3e303d65fb",
+          "code": "D842",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D887",
+      "source_path": "animals/m8AiEAuIHeGQaDPkMyA3Kh2B6aV4lo4u5JJBgNka.jpeg",
+      "expected_bytes": 340523,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "9a70a174-2cb6-5930-bb22-70304523af7e",
+          "code": "D887",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D910",
+      "source_path": "animals/w9NOvkpbWrZ9BUrz5jEBfIUPB0LT8yg92Vi8POhT.jpeg",
+      "expected_bytes": 288032,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "84279346-0484-598f-ab31-fae252bdbe56",
+          "code": "D910",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D913",
+      "source_path": "animals/EiCQAdWztXb9QyaLeLPj5jcnh8lQP6wjZwdmRcVW.jpeg",
+      "expected_bytes": 261500,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "830687ee-6572-5f12-9ee4-6b864dde97d8",
+          "code": "D913",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D914",
+      "source_path": "animals/iMAc2TgR110ummw4vOVWmBg6JeCYOUrDt08vxL36.jpeg",
+      "expected_bytes": 97042,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "e0ca191e-87f6-5c9b-a05d-b3d9870cc351",
+          "code": "D914",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D921",
+      "source_path": "animals/QXfy4k0gwmc8A8kS7uuhEXeeQOwp92eoTlQpRsec.png",
+      "expected_bytes": 875789,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "5a315b08-1c31-5d93-87d8-4f63dbe7d9e3",
+          "code": "D921",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": false
+        }
+      ]
+    },
+    {
+      "code": "D956",
+      "source_path": "animals/DJcWmb29Rc3ChQoiDqW2vRzDtmmr1ItWyhPOzgNd.png",
+      "expected_bytes": 3896149,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "1f8bb2a7-445f-5882-98e1-84bf65367310",
+          "code": "D956",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D959",
+      "source_path": "animals/dFNfAP9jonqwdYYAPoQJrb0S3QE3aflop9mwRXgo.png",
+      "expected_bytes": 4405715,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "c3bc48e8-2ab0-5a19-9e6c-c6081b668c6e",
+          "code": "D959",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D966",
+      "source_path": "animals/1Inyaemt4xaRaTLbBWPHFjoz1L8vug4sgVKvp3ma.jpeg",
+      "expected_bytes": 245379,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "ebd4fb1b-b610-5197-95d0-c46ff0d4f1df",
+          "code": "D966",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D967",
+      "source_path": "animals/fpoHcU28a0kyH91l4KkNXN10DDlPM1J8rA3qXzgR.jpeg",
+      "expected_bytes": 582306,
+      "present": false,
+      "canonical_matches": []
+    },
+    {
+      "code": "D968",
+      "source_path": "animals/vYQHPvWbCCUDn2PpByNw67Z7MrXJsROVhHzhAXyW.jpeg",
+      "expected_bytes": 471128,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "e49e4aac-12f5-5bb3-a8cf-84667cf3bf1f",
+          "code": "D968",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D969",
+      "source_path": "animals/Tl54vDv0JiSN86YhUkWeRqpKhcJmXcWq8ncdiSj8.jpeg",
+      "expected_bytes": 527374,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "7eacc1f5-e871-5ee7-a5a6-5a9957b804ef",
+          "code": "D969",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D970",
+      "source_path": "animals/zF4G0gUyIzE8FXWpN67AYQGYJPL4S42VD4f24SBK.jpeg",
+      "expected_bytes": 251667,
+      "present": false,
+      "canonical_matches": []
+    },
+    {
+      "code": "D975",
+      "source_path": "animals/lAlV8RhiBf9jBgVqHi3FwUUdIyq9PRmFmAP3NKR6.jpeg",
+      "expected_bytes": 238702,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "1c91c28c-ee4c-5dec-8163-dc9468d5017f",
+          "code": "D975",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    },
+    {
+      "code": "D995",
+      "source_path": "animals/XlnTELRTNv9geyz25B3TU8rIwm9OPLkjmelm1sBX.jpeg",
+      "expected_bytes": 303502,
+      "present": false,
+      "canonical_matches": [
+        {
+          "id": "d85b623f-9947-5608-a873-fbeb9f540994",
+          "code": "D995",
+          "type": "dog",
+          "image_url": null,
+          "publication_state": "published",
+          "retired_at": null,
+          "adoption_eligible": true,
+          "sponsorship_eligible": true
+        }
+      ]
+    }
+  ]
+}

@@ -152,6 +152,11 @@ describe("insert mappers", () => {
   test("toPledgeInsert maps camelCase to snake_case with the resolved amount", () => {
     expect(toPledgeInsert("supporter-1", "pending_payment", parsed)).toEqual({
       supporter_id: "supporter-1",
+      contact_submission: {
+        ...parsed.contact,
+        source: "public_sponsorship_submission",
+        status: "unverified",
+      },
       monthly_tier: "300",
       amount_cents: 30000,
       currency: "HKD",

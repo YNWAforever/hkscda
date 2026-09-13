@@ -280,8 +280,20 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
                 >
                   <div>
                     <div className="font-medium text-[var(--color-panel)]">
-                      {formatHkd(donation.amountCents, language)} ·{" "}
-                      {labelFromMap(donation.purpose, purposeLabels)}
+                      {formatHkd(donation.amountCents, language)}
+                      {Boolean(donation.refundedCents) && (
+                        <span>
+                          {" "}
+                          · {language === "en" ? "Refunded" : "已退款"}{" "}
+                          {formatHkd(donation.refundedCents ?? 0, language)} ·{" "}
+                          {language === "en" ? "Retained" : "實收"}{" "}
+                          {formatHkd(
+                            donation.amountCents - (donation.refundedCents ?? 0),
+                            language,
+                          )}
+                        </span>
+                      )}{" "}
+                      · {labelFromMap(donation.purpose, purposeLabels)}
                     </div>
                     {donation.customPurpose ? (
                       <div className="text-xs font-medium text-[var(--color-text-muted)]">

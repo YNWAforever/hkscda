@@ -53,7 +53,7 @@ export async function uploadAnimalPhoto(
   const requestUploadUrl =
     deps.requestUploadUrl ??
     ((id: string, f: File) =>
-      fetchAdminJson<UploadUrlResponse>("/api/admin/animals/photo-upload-url", {
+      fetchAdminJson<UploadUrlResponse>("/api/admin/animals/draft-photo-upload-url", {
         method: "POST",
         body: JSON.stringify({
           animalId: id,
@@ -78,9 +78,9 @@ export async function uploadAnimalPhoto(
     return { ok: false };
   }
 
-  const bucket = target.bucket || ANIMAL_IMAGE_BUCKET;
+  const bucket = "animal-draft-images";
   const { error } = await uploadToSignedUrl(bucket, target.path, target.token, file);
   if (error) return { ok: false };
 
-  return { ok: true, path: target.path, publicUrl: publicUrlFor(bucket, target.path) };
+  return { ok: true, path: target.path, publicUrl: "" };
 }

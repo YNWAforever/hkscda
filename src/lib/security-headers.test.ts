@@ -5,6 +5,8 @@ import { describe, expect, test } from "bun:test";
 
 import {
   applySecurityHeaders,
+  buildContentSecurityPolicy,
+  configuredSupabaseOrigin,
   CSP_REPORT_GROUP,
   CSP_REPORT_PATH,
   SECURITY_HEADERS,
@@ -128,5 +130,55 @@ describe("the policy covers what the app actually loads", () => {
     expect(csp).not.toContain("fonts.gstatic.com");
     const fontSrc = csp.split("; ").find((d) => d.startsWith("font-src"));
     expect(fontSrc).toBe("font-src 'self' data:");
+  });
+});
+
+describe("configured Supabase CSP origin", () => {
+  const directive = (policy: string, name: string) =>
+    policy.split("; ").find((value) => value.startsWith(name + " "))!;
+  test("allows only the configured loopback HTTP origin for auth and storage", () => {
+    const policy = buildContentSecurityPolicy("http://127.0.0.1:56321/");
+    expect(configuredSupabaseOrigin("http://127.0.0.1:56321/")).toBe("http://127.0.0.1:56321");
+    for (const name of ["connect-src", "img-src"]) {
+      expect(directive(policy, name).split(" ")).toContain("http://127.0.0.1:56321");
+      expect(directive(policy, name).split(" ")).not.toContain("http:");
+      expect(directive(policy, name)).not.toContain("http://127.0.0.1:*");
+    }
+    expect(directive(policy, "script-src")).not.toContain("127.0.0.1");
+    expect(directive(policy, "frame-src")).not.toContain("127.0.0.1");
+    expect(configuredSupabaseOrigin("http://localhost:56321")).toBe("http://localhost:56321");
+    expect(configuredSupabaseOrigin("http://[::1]:56321")).toBe("http://[::1]:56321");
+  });
+  test("uses canonical HTTPS origin without path, query or fragment", () => {
+    const configured = "https://CUSTOM.example:8443/storage/v1?key=value#fragment";
+    const policy = buildContentSecurityPolicy(configured);
+    expect(configuredSupabaseOrigin(configured)).toBe("https://custom.example:8443");
+    expect(directive(policy, "connect-src").split(" ")).toContain("https://custom.example:8443");
+    expect(directive(policy, "img-src").split(" ")).toContain("https://custom.example:8443");
+    expect(policy).not.toContain("key=value");
+  });
+  test("unconfigured or unsafe URLs leave the baseline policy unchanged", () => {
+    const baseline = buildContentSecurityPolicy();
+    for (const value of [
+      undefined,
+      "",
+      "not a url",
+      "//example.com",
+      "http://example.com",
+      "http://localhost.evil.test:56321",
+      "http://127.0.0.1.evil.test",
+      "https://user:secret@example.com",
+      "https://user@example.com",
+      "https://*.example.com",
+      "https://example.com; script-src *",
+      "https://example.com\nscript-src *",
+      "javascript:alert(1)",
+      "data:text/html,test",
+      "file:///etc/passwd",
+      "wss://example.com",
+    ]) {
+      expect(configuredSupabaseOrigin(value)).toBeNull();
+      expect(buildContentSecurityPolicy(value)).toBe(baseline);
+    }
   });
 });

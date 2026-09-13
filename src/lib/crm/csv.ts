@@ -6,6 +6,7 @@ export type DonationExportRow = {
   supporterEmail: string;
   donationId: string;
   amountCents: number;
+  refundedCents?: number;
   purpose: string;
   customPurpose: string | null;
   status: string;
@@ -77,6 +78,8 @@ export function buildDonationCsv(rows: DonationExportRow[]) {
       "supporter_email",
       "donation_id",
       "amount_hkd",
+      "refunded_hkd",
+      "retained_hkd",
       "purpose",
       "其他用途",
       "status",
@@ -91,6 +94,8 @@ export function buildDonationCsv(rows: DonationExportRow[]) {
       row.supporterEmail,
       row.donationId,
       centsToDecimal(row.amountCents),
+      centsToDecimal(row.refundedCents ?? 0),
+      centsToDecimal(row.status === "refunded" ? 0 : row.amountCents - (row.refundedCents ?? 0)),
       row.purpose,
       row.customPurpose,
       row.status,
@@ -108,6 +113,7 @@ export type PaymentExportRow = {
   supporterEmail: string;
   provider: string;
   amountCents: number;
+  refundedCents?: number;
   purpose: string;
   customPurpose: string | null;
   status: string;
@@ -125,6 +131,8 @@ export function buildPaymentCsv(rows: PaymentExportRow[]) {
       "supporter_email",
       "provider",
       "amount_hkd",
+      "refunded_hkd",
+      "retained_hkd",
       "purpose",
       "其他用途",
       "status",
@@ -139,6 +147,8 @@ export function buildPaymentCsv(rows: PaymentExportRow[]) {
       row.supporterEmail,
       row.provider,
       centsToDecimal(row.amountCents),
+      centsToDecimal(row.refundedCents ?? 0),
+      centsToDecimal(row.status === "refunded" ? 0 : row.amountCents - (row.refundedCents ?? 0)),
       row.purpose,
       row.customPurpose,
       row.status,

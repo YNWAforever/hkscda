@@ -46,7 +46,12 @@ function multipartRequest(options: {
   const formData = new FormData();
   if (options.includePayload !== false) {
     const payloadValue =
-      typeof options.payload === "string" ? options.payload : JSON.stringify(options.payload ?? {});
+      typeof options.payload === "string"
+        ? options.payload
+        : JSON.stringify({
+            idempotencyKey: "55555555-5555-4555-8555-555555555555",
+            ...options.payload,
+          });
     formData.set("payload", payloadValue);
   }
   if (options.file) {
@@ -187,9 +192,8 @@ describe("handleRecordPaymentUpload", () => {
     const call = (service.recordPayment as ReturnType<typeof mock>).mock.calls[0][0] as {
       input: { file?: { storagePath: string } };
     };
-    // The final `storagePath` on the recorded file uses the path Supabase
-    // storage reports back (`upload.data.path`), not the requested path.
-    expect(call.input.file?.storagePath).toBe("uploaded/path.png");
+    // Retry identity uses the deterministic content-addressed path.
+    expect(call.input.file?.storagePath).toBe(requestedPath);
   });
 
   test("rejects a wrong-MIME-type file with 400 and never touches storage", async () => {

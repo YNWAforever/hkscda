@@ -84,7 +84,7 @@ describe("crm csv", () => {
       },
     ]);
     expect(csv.split("\n")[0]).toBe(
-      "payment_id,supporter_name,supporter_email,provider,amount_hkd,purpose,其他用途,status,provider_ref,bank_reference,received_at,created_at",
+      "payment_id,supporter_name,supporter_email,provider,amount_hkd,refunded_hkd,retained_hkd,purpose,其他用途,status,provider_ref,bank_reference,received_at,created_at",
     );
     expect(csv).toContain("500.00");
     expect(csv).toContain("FPS-9988");

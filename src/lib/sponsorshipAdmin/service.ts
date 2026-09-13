@@ -9,10 +9,9 @@ import {
   recordPledgePaymentSchema,
   reviewPledgeProofSchema,
 } from "./schemas";
-import { MAX_ADVANCE_PERIODS, monthStartOf, planPaymentAllocation } from "./allocation";
 import { selectAutoAssignAnimal } from "./autoAssign";
 import type { CandidateAnimalState } from "./autoAssign";
-import type { PledgeDetail, PaymentProofRecord, SponsorshipAssignmentRecord } from "./types";
+import type { PledgeDetail, SponsorshipAssignmentRecord } from "./types";
 import type { SendPledgeStatusUpdateEmailArgs } from "./notifications.server";
 import { pledgeReference } from "../sponsorship/statusSummary";
 
@@ -31,44 +30,6 @@ export type CreateSponsorshipAdminServiceArgs = {
   logger?: Pick<Console, "error">;
 };
 
-/**
- * Works out which months an approved payment pays for.
- *
- * Returned rather than applied: the plan travels into
- * `review_sponsorship_payment_proof` so the approval and the attribution commit
- * together. Approving in one transaction and attributing in another would leave
- * a window where money is verified but belongs to no month, and a crash inside
- * that window would make it permanent.
- */
-function planApprovedPayment(proof: PaymentProofRecord, detail: PledgeDetail) {
-  const plan = planPaymentAllocation({
-    paymentCents: proof.amountCents,
-    periods: detail.periods,
-    committedCents: detail.amountCents,
-    // payment_date is when the money moved; the month it pays for starts there
-    // and runs forward past whatever is already settled.
-    startMonth: monthStartOf(proof.paymentDate),
-  });
-
-  if (plan.unallocatedCents > 0) {
-    // Refusing beats absorbing. A payment covering more than MAX_ADVANCE_PERIODS
-    // months is not ordinary traffic -- far more likely a mistyped amount -- and
-    // approving it here would leave part of a supporter's money attributed to no
-    // month at all. Staff can correct the amount, reject the proof, or attribute
-    // it deliberately.
-    throw new Error(
-      `Payment of ${proof.amountCents} cents exceeds ${MAX_ADVANCE_PERIODS} months of this ` +
-        `pledge; ${plan.unallocatedCents} cents could not be attributed to a month. ` +
-        `Check the amount, or attribute this payment manually.`,
-    );
-  }
-
-  return plan.allocations.map((allocation) => ({
-    periodMonth: allocation.periodMonth,
-    amountCents: allocation.amountCents,
-  }));
-}
-
 function requirePledge(detail: PledgeDetail | null): PledgeDetail {
   if (!detail) throw new Error("Sponsorship pledge not found");
   return detail;
@@ -84,6 +45,7 @@ function requirePledge(detail: PledgeDetail | null): PledgeDetail {
  */
 const RECORD_PAYMENT_ELIGIBLE_STATUSES: PledgeDetail["status"][] = [
   "pending_payment",
+  "provisional",
   "needs_followup",
   "active",
 ];
@@ -120,11 +82,16 @@ export function createSponsorshipAdminService({
   client,
   logger = console,
 }: CreateSponsorshipAdminServiceArgs) {
-  async function notify(detail: PledgeDetail, event: SendPledgeStatusUpdateEmailArgs["event"]) {
+  async function notify(
+    detail: PledgeDetail,
+    event: SendPledgeStatusUpdateEmailArgs["event"],
+    actorUserId: string,
+  ) {
     if (!detail.supporterEmail) return;
     try {
       await sendPledgeStatusUpdateEmail(client, {
         event,
+        actorUserId,
         language: detail.language,
         supporterId: detail.supporterId,
         supporterEmail: detail.supporterEmail,
@@ -176,8 +143,8 @@ export function createSponsorshipAdminService({
       };
     },
 
-    async getProofSigningInfo(id: string) {
-      const info = await repo.getProofSigningInfo(id);
+    async getProofSigningInfo(id: string, proofId: string, expectedRevision: number) {
+      const info = await repo.getProofSigningInfo(id, proofId, expectedRevision);
       if (!info) return null;
 
       const { data, error } = await client.storage
@@ -217,6 +184,7 @@ export function createSponsorshipAdminService({
       // directly) without attaching a file. When absent, persist null file
       // fields rather than rejecting the request.
       const result = await repo.recordPayment({
+        idempotencyKey: input.idempotencyKey,
         pledgeId: args.pledgeId,
         actorUserId: args.actorUserId,
         storagePath: input.file?.storagePath ?? null,
@@ -230,33 +198,27 @@ export function createSponsorshipAdminService({
         note: input.note ?? null,
       });
 
-      await notify(detail, "proof_recorded");
+      await notify(detail, "proof_recorded", args.actorUserId);
       return result;
     },
 
-    async reviewProof(args: { actorUserId: string; pledgeId: string; input: unknown }) {
+    async reviewProof(args: {
+      actorUserId: string;
+      actorRole?: "staff" | "treasurer" | "admin";
+      pledgeId: string;
+      input: unknown;
+    }) {
       const input = reviewPledgeProofSchema.parse(args.input);
       const detail = requirePledge(await repo.getPledgeDetail(args.pledgeId));
-      // Deliberately no pledge-status gate. What is being reviewed is a proof,
-      // and `currentProof` already resolves to the one awaiting review (see
-      // proofReview.ts). Requiring status='provisional' conflated the
-      // supporter's standing commitment with the review queue and made every
-      // month after the first unreviewable, since approving month one leaves
-      // the pledge 'active' for good.
-      if (!detail.currentProof || detail.currentProof.reviewStatus !== "pending") {
-        throw new Error("Sponsorship pledge has no proof pending review");
-      }
-
-      // A rejected payment pays for nothing, so it attributes to nothing.
-      const allocations =
-        input.decision === "approve" ? planApprovedPayment(detail.currentProof, detail) : [];
-
+      // The database checks this exact proof and computes allocations from the locked ledger.
       // Confirm the supporter's animal on the FIRST approval only. "First"
       // means the pledge has never had an assignment: one that was ended
       // because the animal was adopted or died must be replaced by a person,
       // not silently by the next payment.
       const assignAnimalId =
-        input.decision === "approve" && detail.assignments.length === 0
+        input.decision === "approve" &&
+        args.actorRole !== "treasurer" &&
+        detail.assignments.length === 0
           ? (selectAutoAssignAnimal(
               detail.preferences.map((preference) => ({
                 rank: preference.rank,
@@ -267,16 +229,24 @@ export function createSponsorshipAdminService({
             )?.animalId ?? null)
           : null;
 
-      await repo.reviewProof({
+      const result = await repo.reviewProof({
         pledgeId: args.pledgeId,
         actorUserId: args.actorUserId,
+        proofId: input.proofId,
+        expectedRevision: input.expectedRevision,
+        idempotencyKey: input.idempotencyKey,
         decision: input.decision,
         note: input.note ?? null,
-        allocations,
         assignAnimalId,
       });
 
-      await notify(detail, input.decision === "approve" ? "active" : "needs_followup");
+      if (!result?.replayed)
+        await notify(
+          detail,
+          input.decision === "approve" ? "active" : "needs_followup",
+          args.actorUserId,
+        );
+      return result;
     },
 
     async cancelPledge(args: { actorUserId: string; pledgeId: string; input: unknown }) {
@@ -292,7 +262,7 @@ export function createSponsorshipAdminService({
         note: input.note ?? null,
       });
 
-      await notify(detail, "cancelled");
+      await notify(detail, "cancelled", args.actorUserId);
     },
 
     async assignAnimal(args: { actorUserId: string; pledgeId: string; input: unknown }) {

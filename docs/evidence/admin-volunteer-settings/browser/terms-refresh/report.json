@@ -1,0 +1,10 @@
+{
+  "marker": "terms-refresh-ddbbca22-8c21-4e5e-87a5-1b4772dc167e",
+  "checks": [
+    "Fresh verified volunteer explicitly checked the displayed old terms",
+    "Admin policy publication changed selected session terms; focus refresh displayed new version and cleared consent; booking disabled",
+    "No booking or immutable terms acceptance was created by checking or refreshing",
+    "New terms require a separate explicit checkbox action; test never submitted booking"
+  ],
+  "errors": []
+}

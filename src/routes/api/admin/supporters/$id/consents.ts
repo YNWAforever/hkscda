@@ -19,6 +19,7 @@ function createHandlers() {
 export const Route = createFileRoute("/api/admin/supporters/$id/consents")({
   server: {
     handlers: {
+      PATCH: ({ request, params }) => createHandlers().appendConsents({ request, params }),
       POST: ({ request, params }) => createHandlers().appendConsents({ request, params }),
     },
   },

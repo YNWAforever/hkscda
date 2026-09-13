@@ -88,7 +88,11 @@ export function projectPublicAnimal(animal: Animal, now = () => new Date()): Ani
     adoption_eligible: animal.adoption_eligible,
     sponsorship_eligible: animal.sponsorship_eligible,
     retired_at: animal.retired_at,
+    publication_state: animal.publication_state,
     image_url: animal.image_url,
+    gallery: (animal.gallery ?? [])
+      .filter((item) => item.review_status === "approved" && Boolean(item.url))
+      .sort((a, b) => a.sort_order - b.sort_order),
     created_at: animal.created_at,
     updated_at: animal.updated_at,
     public_profile: profile,

@@ -1,0 +1,11 @@
+{
+  "checks": [
+    "Administrator published dog10 then12; real public API accepts12/rejects13 and preserves old10",
+    "Real administrator browser displays the published dog configuration at390px"
+  ],
+  "errors": [],
+  "activities": {
+    "old": "30049fe9-243f-4d0b-a92c-bd565ef2a31b",
+    "current": "816e5c5c-074c-4e41-be70-a3a4396d7632"
+  }
+}

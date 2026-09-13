@@ -1,0 +1,302 @@
+[
+  {
+    "kind": "column",
+    "key": "donation.acquisition_context",
+    "baseline": "text notnull=false default=",
+    "production": null
+  },
+  {
+    "kind": "column",
+    "key": "donation.acquisition_placement",
+    "baseline": "text notnull=false default=",
+    "production": null
+  },
+  {
+    "kind": "column",
+    "key": "donation.acquisition_source",
+    "baseline": "text notnull=false default=",
+    "production": null
+  },
+  {
+    "kind": "column",
+    "key": "donation.acquisition_trigger",
+    "baseline": "text notnull=false default=",
+    "production": null
+  },
+  {
+    "kind": "column",
+    "key": "payment.provider_order_ref",
+    "baseline": "text notnull=false default=",
+    "production": null
+  },
+  {
+    "kind": "column",
+    "key": "webhook_event.processing_expires_at",
+    "baseline": "timestamp with time zone notnull=false default=",
+    "production": null
+  },
+  {
+    "kind": "column",
+    "key": "webhook_event.processing_owner",
+    "baseline": "text notnull=false default=",
+    "production": null
+  },
+  {
+    "kind": "column",
+    "key": "webhook_event.processing_started_at",
+    "baseline": "timestamp with time zone notnull=false default=",
+    "production": null
+  },
+  {
+    "kind": "constraint",
+    "key": "donation.donation_acquisition_context_check",
+    "baseline": "CHECK (acquisition_context IS NULL OR (acquisition_context = ANY (ARRAY['general'::text, 'story'::text, 'animal'::text, 'sponsor'::text, 'transparency'::text, 'community'::text])))",
+    "production": null
+  },
+  {
+    "kind": "constraint",
+    "key": "donation.donation_acquisition_placement_check",
+    "baseline": "CHECK (acquisition_placement IS NULL OR (acquisition_placement = ANY (ARRAY['mobile-bottom'::text, 'desktop-left'::text])))",
+    "production": null
+  },
+  {
+    "kind": "constraint",
+    "key": "donation.donation_acquisition_source_check",
+    "baseline": "CHECK (acquisition_source IS NULL OR acquisition_source = 'contextual-cta'::text)",
+    "production": null
+  },
+  {
+    "kind": "constraint",
+    "key": "donation.donation_acquisition_trigger_check",
+    "baseline": "CHECK (acquisition_trigger IS NULL OR (acquisition_trigger = ANY (ARRAY['scroll'::text, 'timer'::text])))",
+    "production": null
+  },
+  {
+    "kind": "constraint",
+    "key": "donation.donation_method_check",
+    "baseline": "CHECK (method = ANY (ARRAY['stripe'::text, 'payme'::text, 'fps'::text, 'paypal'::text, 'manual'::text, 'alipayhk'::text]))",
+    "production": "CHECK (method = ANY (ARRAY['stripe'::text, 'payme'::text, 'fps'::text, 'paypal'::text, 'manual'::text]))"
+  },
+  {
+    "kind": "constraint",
+    "key": "payment.payment_provider_check",
+    "baseline": "CHECK (provider = ANY (ARRAY['stripe'::text, 'payme'::text, 'fps'::text, 'paypal'::text, 'manual'::text, 'cod'::text]))",
+    "production": "CHECK (provider = ANY (ARRAY['stripe'::text, 'payme'::text, 'fps'::text, 'paypal'::text, 'manual'::text]))"
+  },
+  {
+    "kind": "constraint",
+    "key": "webhook_event.webhook_event_provider_check",
+    "baseline": "CHECK (provider = ANY (ARRAY['stripe'::text, 'paypal'::text, 'payme'::text, 'fps'::text, 'resend'::text, 'whatsapp'::text, 'cod'::text]))",
+    "production": "CHECK (provider = ANY (ARRAY['stripe'::text, 'paypal'::text, 'payme'::text, 'fps'::text, 'resend'::text, 'whatsapp'::text]))"
+  },
+  {
+    "kind": "function",
+    "key": "private.apply_sponsorship_allocations",
+    "baseline": "CREATE OR REPLACE FUNCTION private.apply_sponsorship_allocations(p_proof_id uuid, p_actor_admin_id uuid, p_allocations jsonb)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare\n  v_proof public.sponsorship_payment_proof%rowtype;\n  v_pledge public.sponsorship_pledge%rowtype;\n  v_entry jsonb;\n  v_month date;\n  v_amount integer;\n  v_period_id uuid;\n  v_existing integer;\n  v_applied jsonb := '[]'::jsonb;\n  v_total integer := 0;\nbegin\n  select * into v_proof\n  from public.sponsorship_payment_proof\n  where id = p_proof_id\n  for update;\n  if not found then\n    raise exception 'Payment proof % not found', p_proof_id;\n  end if;\n\n  if v_proof.review_status <> 'approved' then\n    raise exception\n      'Payment proof % is not approved; only a verified payment may be allocated to a month',\n      p_proof_id;\n  end if;\n\n  select count(*) into v_existing\n  from public.sponsorship_payment_allocation\n  where proof_id = p_proof_id;\n\n  if v_existing > 0 then\n    select coalesce(\n      jsonb_agg(\n        jsonb_build_object(\n          'periodMonth', p.period_month,\n          'amountCents', a.amount_cents,\n          'allocationId', a.id\n        )\n        order by p.period_month\n      ),\n      '[]'::jsonb\n    )\n    into v_applied\n    from public.sponsorship_payment_allocation a\n    join public.sponsorship_period p on p.id = a.period_id\n    where a.proof_id = p_proof_id;\n\n    return jsonb_build_object(\n      'status', 'already_allocated',\n      'proofId', p_proof_id,\n      'allocations', v_applied\n    );\n  end if;\n\n  if p_allocations is null or jsonb_array_length(p_allocations) = 0 then\n    -- Nothing planned. The payment stands as received but unattributed, which\n    -- the ledger shows as an outstanding month rather than hiding.\n    return jsonb_build_object('status', 'skipped', 'proofId', p_proof_id, 'allocatedCents', 0);\n  end if;\n\n  select * into v_pledge\n  from public.sponsorship_pledge\n  where id = v_proof.pledge_id\n  for update;\n  if not found then\n    raise exception 'Sponsorship pledge % not found', v_proof.pledge_id;\n  end if;\n\n  for v_entry in select * from jsonb_array_elements(p_allocations)\n  loop\n    v_month := (v_entry ->> 'periodMonth')::date;\n    v_amount := (v_entry ->> 'amountCents')::integer;\n\n    if v_month is null or v_amount is null then\n      raise exception 'Each allocation needs periodMonth and amountCents, received %', v_entry;\n    end if;\n    if v_month <> date_trunc('month', v_month)::date then\n      raise exception 'periodMonth % must be the first day of a month', v_month;\n    end if;\n    if v_amount <= 0 then\n      raise exception 'Allocation amount must be positive, received %', v_amount;\n    end if;\n\n    -- Open the month if it is new. `committed_cents` comes from the pledge, not\n    -- from the caller, so a month can never be opened committed to an amount\n    -- the supporter never pledged.\n    insert into public.sponsorship_period (pledge_id, period_month, committed_cents)\n    values (v_proof.pledge_id, v_month, v_pledge.amount_cents)\n    on conflict (pledge_id, period_month) do nothing;\n\n    select id into v_period_id\n    from public.sponsorship_period\n    where pledge_id = v_proof.pledge_id and period_month = v_month;\n\n    insert into public.sponsorship_payment_allocation (\n      period_id, proof_id, amount_cents, created_by\n    ) values (\n      v_period_id, p_proof_id, v_amount, p_actor_admin_id\n    );\n\n    v_total := v_total + v_amount;\n    v_applied := v_applied || jsonb_build_object(\n      'periodMonth', v_month,\n      'amountCents', v_amount\n    );\n  end loop;\n\n  return jsonb_build_object(\n    'status', 'allocated',\n    'proofId', p_proof_id,\n    'allocatedCents', v_total,\n    'allocations', v_applied\n  );\nend;\n$function$\n",
+    "production": "CREATE OR REPLACE FUNCTION private.apply_sponsorship_allocations(p_proof_id uuid, p_actor_admin_id uuid, p_allocations jsonb)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare\n  v_proof public.sponsorship_payment_proof%rowtype;\n  v_pledge public.sponsorship_pledge%rowtype;\n  v_entry jsonb;\n  v_month date;\n  v_amount integer;\n  v_period_id uuid;\n  v_existing integer;\n  v_applied jsonb := '[]'::jsonb;\n  v_total integer := 0;\nbegin\n  select * into v_proof\n  from public.sponsorship_payment_proof\n  where id = p_proof_id\n  for update;\n  if not found then\n    raise exception 'Payment proof % not found', p_proof_id;\n  end if;\n\n  if v_proof.review_status <> 'approved' then\n    raise exception\n      'Payment proof % is not approved; only a verified payment may be allocated to a month',\n      p_proof_id;\n  end if;\n\n  select count(*) into v_existing\n  from public.sponsorship_payment_allocation\n  where proof_id = p_proof_id;\n\n  if v_existing > 0 then\n    select coalesce(\n      jsonb_agg(\n        jsonb_build_object(\n          'periodMonth', p.period_month,\n          'amountCents', a.amount_cents,\n          'allocationId', a.id\n        )\n        order by p.period_month\n      ),\n      '[]'::jsonb\n    )\n    into v_applied\n    from public.sponsorship_payment_allocation a\n    join public.sponsorship_period p on p.id = a.period_id\n    where a.proof_id = p_proof_id;\n\n    return jsonb_build_object(\n      'status', 'already_allocated',\n      'proofId', p_proof_id,\n      'allocations', v_applied\n    );\n  end if;\n\n  if p_allocations is null or jsonb_array_length(p_allocations) = 0 then\n    return jsonb_build_object('status', 'skipped', 'proofId', p_proof_id, 'allocatedCents', 0);\n  end if;\n\n  select * into v_pledge\n  from public.sponsorship_pledge\n  where id = v_proof.pledge_id\n  for update;\n  if not found then\n    raise exception 'Sponsorship pledge % not found', v_proof.pledge_id;\n  end if;\n\n  for v_entry in select * from jsonb_array_elements(p_allocations)\n  loop\n    v_month := (v_entry ->> 'periodMonth')::date;\n    v_amount := (v_entry ->> 'amountCents')::integer;\n\n    if v_month is null or v_amount is null then\n      raise exception 'Each allocation needs periodMonth and amountCents, received %', v_entry;\n    end if;\n    if v_month <> date_trunc('month', v_month)::date then\n      raise exception 'periodMonth % must be the first day of a month', v_month;\n    end if;\n    if v_amount <= 0 then\n      raise exception 'Allocation amount must be positive, received %', v_amount;\n    end if;\n\n    insert into public.sponsorship_period (pledge_id, period_month, committed_cents)\n    values (v_proof.pledge_id, v_month, v_pledge.amount_cents)\n    on conflict (pledge_id, period_month) do nothing;\n\n    select id into v_period_id\n    from public.sponsorship_period\n    where pledge_id = v_proof.pledge_id and period_month = v_month;\n\n    insert into public.sponsorship_payment_allocation (\n      period_id, proof_id, amount_cents, created_by\n    ) values (\n      v_period_id, p_proof_id, v_amount, p_actor_admin_id\n    );\n\n    v_total := v_total + v_amount;\n    v_applied := v_applied || jsonb_build_object(\n      'periodMonth', v_month,\n      'amountCents', v_amount\n    );\n  end loop;\n\n  return jsonb_build_object(\n    'status', 'allocated',\n    'proofId', p_proof_id,\n    'allocatedCents', v_total,\n    'allocations', v_applied\n  );\nend;\n$function$\n"
+  },
+  {
+    "kind": "function",
+    "key": "private.assert_sponsorship_allocation_valid",
+    "baseline": "CREATE OR REPLACE FUNCTION private.assert_sponsorship_allocation_valid()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare\n  v_proof public.sponsorship_payment_proof%rowtype;\n  v_period public.sponsorship_period%rowtype;\n  v_original public.sponsorship_payment_allocation%rowtype;\n  v_already_allocated integer;\nbegin\n  -- Lock the payment first: two concurrent allocations of the same proof must\n  -- not each see the other's \"already allocated\" total as absent and together\n  -- exceed it.\n  select * into v_proof\n  from public.sponsorship_payment_proof\n  where id = new.proof_id\n  for update;\n  if not found then\n    raise exception 'Payment proof % not found', new.proof_id;\n  end if;\n\n  if v_proof.review_status <> 'approved' then\n    raise exception\n      'Payment proof % is not approved; only a verified payment may be allocated to a month',\n      new.proof_id;\n  end if;\n\n  select * into v_period from public.sponsorship_period where id = new.period_id;\n  if not found then\n    raise exception 'Sponsorship period % not found', new.period_id;\n  end if;\n\n  if v_period.pledge_id <> v_proof.pledge_id then\n    raise exception\n      'Allocation would attribute a payment from pledge % to a month of pledge %',\n      v_proof.pledge_id, v_period.pledge_id;\n  end if;\n\n  if new.reverses_allocation_id is not null then\n    select * into v_original\n    from public.sponsorship_payment_allocation\n    where id = new.reverses_allocation_id;\n    if not found then\n      raise exception 'Allocation % being reversed does not exist', new.reverses_allocation_id;\n    end if;\n    if v_original.reverses_allocation_id is not null then\n      raise exception 'A reversal cannot itself be reversed; record a fresh allocation instead';\n    end if;\n    -- A reversal that pointed at a different month or payment would move money\n    -- rather than undo an entry.\n    if v_original.proof_id <> new.proof_id or v_original.period_id <> new.period_id then\n      raise exception 'A reversal must name the same payment and month as the allocation it undoes';\n    end if;\n  end if;\n\n  select coalesce(sum(amount_cents), 0) into v_already_allocated\n  from public.sponsorship_payment_allocation\n  where proof_id = new.proof_id;\n\n  -- Invariant 2, the one the plan states outright: \"The total allocated to\n  -- months must not exceed the verified payment amount available for\n  -- allocation.\"\n  if v_already_allocated + new.amount_cents > v_proof.amount_cents then\n    raise exception\n      'Allocating % cents would exceed payment % (amount % cents, already allocated % cents)',\n      new.amount_cents, new.proof_id, v_proof.amount_cents, v_already_allocated;\n  end if;\n\n  if v_already_allocated + new.amount_cents < 0 then\n    raise exception 'Reversing % cents would take payment % below zero allocated',\n      new.amount_cents, new.proof_id;\n  end if;\n\n  return new;\nend;\n$function$\n",
+    "production": "CREATE OR REPLACE FUNCTION private.assert_sponsorship_allocation_valid()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare\n  v_proof public.sponsorship_payment_proof%rowtype;\n  v_period public.sponsorship_period%rowtype;\n  v_original public.sponsorship_payment_allocation%rowtype;\n  v_already_allocated integer;\nbegin\n  select * into v_proof\n  from public.sponsorship_payment_proof\n  where id = new.proof_id\n  for update;\n  if not found then\n    raise exception 'Payment proof % not found', new.proof_id;\n  end if;\n\n  if v_proof.review_status <> 'approved' then\n    raise exception\n      'Payment proof % is not approved; only a verified payment may be allocated to a month',\n      new.proof_id;\n  end if;\n\n  select * into v_period from public.sponsorship_period where id = new.period_id;\n  if not found then\n    raise exception 'Sponsorship period % not found', new.period_id;\n  end if;\n\n  if v_period.pledge_id <> v_proof.pledge_id then\n    raise exception\n      'Allocation would attribute a payment from pledge % to a month of pledge %',\n      v_proof.pledge_id, v_period.pledge_id;\n  end if;\n\n  if new.reverses_allocation_id is not null then\n    select * into v_original\n    from public.sponsorship_payment_allocation\n    where id = new.reverses_allocation_id;\n    if not found then\n      raise exception 'Allocation % being reversed does not exist', new.reverses_allocation_id;\n    end if;\n    if v_original.reverses_allocation_id is not null then\n      raise exception 'A reversal cannot itself be reversed; record a fresh allocation instead';\n    end if;\n    if v_original.proof_id <> new.proof_id or v_original.period_id <> new.period_id then\n      raise exception 'A reversal must name the same payment and month as the allocation it undoes';\n    end if;\n  end if;\n\n  select coalesce(sum(amount_cents), 0) into v_already_allocated\n  from public.sponsorship_payment_allocation\n  where proof_id = new.proof_id;\n\n  if v_already_allocated + new.amount_cents > v_proof.amount_cents then\n    raise exception\n      'Allocating % cents would exceed payment % (amount % cents, already allocated % cents)',\n      new.amount_cents, new.proof_id, v_proof.amount_cents, v_already_allocated;\n  end if;\n\n  if v_already_allocated + new.amount_cents < 0 then\n    raise exception 'Reversing % cents would take payment % below zero allocated',\n      new.amount_cents, new.proof_id;\n  end if;\n\n  return new;\nend;\n$function$\n"
+  },
+  {
+    "kind": "function",
+    "key": "public.assign_sponsorship_animal_with_audit",
+    "baseline": "CREATE OR REPLACE FUNCTION public.assign_sponsorship_animal_with_audit(p_pledge_id uuid, p_animal_id uuid, p_actor_user_id uuid, p_note text)\n RETURNS uuid\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare\n  v_actor_admin_id uuid;\n  v_pledge public.sponsorship_pledge%rowtype;\n  v_animal public.animals%rowtype;\n  v_deceased_at date;\n  v_adopted_at date;\n  v_assignment_id uuid;\nbegin\n  select id into v_actor_admin_id\n  from public.admin_user\n  where auth_user_id = p_actor_user_id\n    and status = 'active'\n    and role in ('staff', 'admin');\n  if v_actor_admin_id is null then\n    raise exception 'Actor % is not an active staff/admin user', p_actor_user_id\n      using errcode = '42501';\n  end if;\n\n  select * into v_pledge\n  from public.sponsorship_pledge\n  where id = p_pledge_id\n  for update;\n  if not found then\n    raise exception 'Sponsorship pledge not found';\n  end if;\n\n  if v_pledge.status = 'cancelled' then\n    raise exception 'Sponsorship pledge is already cancelled';\n  end if;\n\n  select * into v_animal from public.animals where id = p_animal_id;\n  if not found then\n    raise exception 'Animal not found';\n  end if;\n\n  -- Death is recorded on a different table by a different form; animals.status\n  -- has no 'deceased' value. A missing profile row means nothing was recorded,\n  -- not that the animal died, so this must not become an inner join.\n  --\n  -- Adoption is recorded in TWO unrelated places, only one of which is\n  -- animals.status: the staff status RPC writes that column, while the\n  -- adoptions internal-profile form writes animal_profile_internal.adopted_at\n  -- and never touches animals.status. Reading only animals.status left an\n  -- animal adopted through that form still assignable, so both are read here.\n  select deceased_at, adopted_at into v_deceased_at, v_adopted_at\n  from public.animal_profile_internal\n  where animal_id = p_animal_id;\n\n  if not v_animal.sponsorship_eligible\n     or v_animal.status = 'adopted'\n     or v_animal.retired_at is not null\n     or v_animal.publication_state <> 'published'\n     or v_deceased_at is not null\n     or v_adopted_at is not null then\n    raise exception 'Animal % cannot be sponsored', p_animal_id;\n  end if;\n\n  insert into public.sponsorship_assignment (\n    pledge_id, animal_id, animal_name_snapshot, note, created_by\n  ) values (\n    p_pledge_id, p_animal_id, v_animal.name, p_note, v_actor_admin_id\n  )\n  returning id into v_assignment_id;\n\n  insert into public.audit_log (actor_user_id, action, entity, entity_id, detail)\n  values (\n    p_actor_user_id,\n    'sponsorship_pledge.animal_assigned',\n    'sponsorship_pledge',\n    p_pledge_id::text,\n    jsonb_build_object(\n      'assignmentId', v_assignment_id,\n      'animalId', p_animal_id,\n      'animalName', v_animal.name,\n      'note', p_note\n    )\n  );\n\n  return v_assignment_id;\nend;\n$function$\n",
+    "production": "CREATE OR REPLACE FUNCTION public.assign_sponsorship_animal_with_audit(p_pledge_id uuid, p_animal_id uuid, p_actor_user_id uuid, p_note text)\n RETURNS uuid\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare\n  v_actor_admin_id uuid;\n  v_pledge public.sponsorship_pledge%rowtype;\n  v_animal public.animals%rowtype;\n  v_deceased_at date;\n  v_adopted_at date;\n  v_assignment_id uuid;\nbegin\n  select id into v_actor_admin_id\n  from public.admin_user\n  where auth_user_id = p_actor_user_id\n    and status = 'active'\n    and role in ('staff', 'admin');\n  if v_actor_admin_id is null then\n    raise exception 'Actor % is not an active staff/admin user', p_actor_user_id\n      using errcode = '42501';\n  end if;\n\n  select * into v_pledge\n  from public.sponsorship_pledge\n  where id = p_pledge_id\n  for update;\n  if not found then\n    raise exception 'Sponsorship pledge not found';\n  end if;\n\n  if v_pledge.status = 'cancelled' then\n    raise exception 'Sponsorship pledge is already cancelled';\n  end if;\n\n  select * into v_animal from public.animals where id = p_animal_id;\n  if not found then\n    raise exception 'Animal not found';\n  end if;\n\n  select deceased_at, adopted_at into v_deceased_at, v_adopted_at\n  from public.animal_profile_internal\n  where animal_id = p_animal_id;\n\n  if not v_animal.sponsorship_eligible\n     or v_animal.status = 'adopted'\n     or v_animal.retired_at is not null\n     or v_animal.publication_state <> 'published'\n     or v_deceased_at is not null\n     or v_adopted_at is not null then\n    raise exception 'Animal % cannot be sponsored', p_animal_id;\n  end if;\n\n  insert into public.sponsorship_assignment (\n    pledge_id, animal_id, animal_name_snapshot, note, created_by\n  ) values (\n    p_pledge_id, p_animal_id, v_animal.name, p_note, v_actor_admin_id\n  )\n  returning id into v_assignment_id;\n\n  insert into public.audit_log (actor_user_id, action, entity, entity_id, detail)\n  values (\n    p_actor_user_id,\n    'sponsorship_pledge.animal_assigned',\n    'sponsorship_pledge',\n    p_pledge_id::text,\n    jsonb_build_object(\n      'assignmentId', v_assignment_id,\n      'animalId', p_animal_id,\n      'animalName', v_animal.name,\n      'note', p_note\n    )\n  );\n\n  return v_assignment_id;\nend;\n$function$\n"
+  },
+  {
+    "kind": "function",
+    "key": "public.log_animal_mutation",
+    "baseline": "CREATE OR REPLACE FUNCTION public.log_animal_mutation()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare\n  v_entity text := tg_table_name;\n  v_entity_id text;\n  v_detail jsonb;\n  -- audit_log has its own, wider reader set than these tables: it admits every\n  -- treasurer, while these hold staff-only notes or applicant/adopter personal\n  -- data. Copying their values here would relay that content across the role\n  -- boundary the source table draws, so only column names cross into audit_log.\n  v_redacted boolean := tg_table_name in (\n    'animal_profile_internal', 'adoption_applications', 'adopter_profile'\n  );\nbegin\n  if auth.uid() is null then\n    return null; -- ignored for AFTER triggers; see the scope note in 20260803120000.\n  end if;\n\n  -- animal_profile_internal has no `id` column — its primary key is\n  -- animal_id (references public.animals(id)). Every other audited table\n  -- keys off `id`. Pick the right column per table rather than assuming `id`\n  -- everywhere.\n  if tg_table_name = 'animal_profile_internal' then\n    v_entity_id := coalesce(new.animal_id, old.animal_id)::text;\n  else\n    v_entity_id := coalesce(new.id, old.id)::text;\n  end if;\n\n  if tg_op = 'DELETE' then\n    v_detail := case\n      when v_redacted then jsonb_build_object(\n        'columns',\n        (\n          select coalesce(jsonb_agg(key order by key), '[]'::jsonb)\n          from jsonb_each(to_jsonb(old)) as row_columns(key, value)\n          where value <> 'null'::jsonb\n        )\n      )\n      else jsonb_build_object('old', to_jsonb(old))\n    end;\n  elsif tg_op = 'UPDATE' then\n    -- Store only the columns that actually changed; whole-row snapshots on every\n    -- edit would bloat audit_log for no diagnostic gain.\n    v_detail := jsonb_build_object(\n      'changed',\n      (\n        select coalesce(\n          case\n            when v_redacted then jsonb_agg(key order by key)\n            else jsonb_object_agg(key, jsonb_build_object('from', old_row.value, 'to', new_row.value))\n          end,\n          case when v_redacted then '[]'::jsonb else '{}'::jsonb end\n        )\n        from jsonb_each(to_jsonb(old)) as old_row(key, value)\n        join jsonb_each(to_jsonb(new)) as new_row(key, value) using (key)\n        where old_row.value is distinct from new_row.value\n      )\n    );\n  else\n    v_detail := case\n      when v_redacted then jsonb_build_object(\n        'columns',\n        (\n          select coalesce(jsonb_agg(key order by key), '[]'::jsonb)\n          from jsonb_each(to_jsonb(new)) as row_columns(key, value)\n          where value <> 'null'::jsonb\n        )\n      )\n      else jsonb_build_object('new', to_jsonb(new))\n    end;\n  end if;\n\n  insert into public.audit_log (actor_user_id, action, entity, entity_id, detail)\n  values (\n    auth.uid(),\n    v_entity || '.' || lower(tg_op),\n    v_entity,\n    v_entity_id,\n    v_detail\n  );\n\n  return null; -- ignored for AFTER row-level triggers regardless of value.\nend;\n$function$\n",
+    "production": "CREATE OR REPLACE FUNCTION public.log_animal_mutation()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare\n  v_entity text := tg_table_name;\n  v_entity_id text;\n  v_detail jsonb;\nbegin\n  if auth.uid() is null then\n    return null; -- ignored for AFTER triggers; see the scope note above.\n  end if;\n\n  -- animal_profile_internal has no `id` column — its primary key is\n  -- animal_id (references public.animals(id)). Every other audited table\n  -- keys off `id`. Pick the right column per table rather than assuming `id`\n  -- everywhere.\n  if tg_table_name = 'animal_profile_internal' then\n    v_entity_id := coalesce(new.animal_id, old.animal_id)::text;\n  else\n    v_entity_id := coalesce(new.id, old.id)::text;\n  end if;\n\n  if tg_op = 'DELETE' then\n    v_detail := jsonb_build_object('old', to_jsonb(old));\n  elsif tg_op = 'UPDATE' then\n    -- Store only the columns that actually changed; whole-row snapshots on every\n    -- edit would bloat audit_log for no diagnostic gain.\n    v_detail := jsonb_build_object(\n      'changed',\n      (\n        select coalesce(jsonb_object_agg(key, jsonb_build_object('from', old_row.value, 'to', new_row.value)), '{}'::jsonb)\n        from jsonb_each(to_jsonb(old)) as old_row(key, value)\n        join jsonb_each(to_jsonb(new)) as new_row(key, value) using (key)\n        where old_row.value is distinct from new_row.value\n      )\n    );\n  else\n    v_detail := jsonb_build_object('new', to_jsonb(new));\n  end if;\n\n  insert into public.audit_log (actor_user_id, action, entity, entity_id, detail)\n  values (\n    auth.uid(),\n    v_entity || '.' || lower(tg_op),\n    v_entity,\n    v_entity_id,\n    v_detail\n  );\n\n  return null; -- ignored for AFTER row-level triggers regardless of value.\nend;\n$function$\n"
+  },
+  {
+    "kind": "function",
+    "key": "public.record_sponsorship_payment_proof",
+    "baseline": "CREATE OR REPLACE FUNCTION public.record_sponsorship_payment_proof(p_pledge_id uuid, p_actor_user_id uuid, p_storage_path text, p_file_name text, p_file_type text, p_file_size integer, p_payment_method text, p_reference text, p_amount_cents integer, p_payment_date date, p_note text)\n RETURNS uuid\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare\n  v_pledge public.sponsorship_pledge%rowtype;\n  v_proof_id uuid;\nbegin\n  if not exists (\n    select 1\n    from public.admin_user\n    where auth_user_id = p_actor_user_id\n      and status = 'active'\n      and role in ('staff', 'admin')\n  ) then\n    raise exception 'Actor % is not an active staff/admin user', p_actor_user_id\n      using errcode = '42501';\n  end if;\n\n  select *\n  into v_pledge\n  from public.sponsorship_pledge\n  where id = p_pledge_id\n  for update;\n\n  if not found then\n    raise exception 'Sponsorship pledge not found';\n  end if;\n\n  if v_pledge.status not in ('pending_payment', 'needs_followup', 'active') then\n    raise exception 'Sponsorship pledge is not eligible for a recorded payment';\n  end if;\n\n  insert into public.sponsorship_payment_proof (\n    pledge_id,\n    storage_path,\n    file_name,\n    file_type,\n    file_size,\n    payment_method,\n    reference,\n    amount_cents,\n    payment_date,\n    review_status,\n    source\n  ) values (\n    p_pledge_id,\n    p_storage_path,\n    p_file_name,\n    p_file_type,\n    p_file_size,\n    p_payment_method,\n    p_reference,\n    p_amount_cents,\n    p_payment_date,\n    'pending',\n    'staff'\n  )\n  returning id into v_proof_id;\n\n  -- An already-active sponsorship stays active while the new month's proof is\n  -- reviewed. Moving it to 'provisional' would reopen a confirmed relationship,\n  -- which the plan forbids: \"While a pledge remains active, add payments for new\n  -- months directly; do not reopen or duplicate the pledge.\"\n  if v_pledge.status <> 'active' then\n    update public.sponsorship_pledge\n    set status = 'provisional'\n    where id = p_pledge_id;\n  end if;\n\n  insert into public.audit_log (\n    actor_user_id,\n    action,\n    entity,\n    entity_id,\n    detail\n  ) values (\n    p_actor_user_id,\n    'sponsorship_pledge.proof_recorded',\n    'sponsorship_pledge',\n    p_pledge_id::text,\n    jsonb_build_object(\n      'proofId', v_proof_id,\n      'paymentMethod', p_payment_method,\n      'amountCents', p_amount_cents,\n      'note', p_note\n    )\n  );\n\n  return v_proof_id;\nend;\n$function$\n",
+    "production": "CREATE OR REPLACE FUNCTION public.record_sponsorship_payment_proof(p_pledge_id uuid, p_actor_user_id uuid, p_storage_path text, p_file_name text, p_file_type text, p_file_size integer, p_payment_method text, p_reference text, p_amount_cents integer, p_payment_date date, p_note text)\n RETURNS uuid\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare\n  v_pledge public.sponsorship_pledge%rowtype;\n  v_proof_id uuid;\nbegin\n  if not exists (\n    select 1\n    from public.admin_user\n    where auth_user_id = p_actor_user_id\n      and status = 'active'\n      and role in ('staff', 'admin')\n  ) then\n    raise exception 'Actor % is not an active staff/admin user', p_actor_user_id\n      using errcode = '42501';\n  end if;\n\n  select *\n  into v_pledge\n  from public.sponsorship_pledge\n  where id = p_pledge_id\n  for update;\n\n  if not found then\n    raise exception 'Sponsorship pledge not found';\n  end if;\n\n  if v_pledge.status not in ('pending_payment', 'needs_followup', 'active') then\n    raise exception 'Sponsorship pledge is not eligible for a recorded payment';\n  end if;\n\n  insert into public.sponsorship_payment_proof (\n    pledge_id,\n    storage_path,\n    file_name,\n    file_type,\n    file_size,\n    payment_method,\n    reference,\n    amount_cents,\n    payment_date,\n    review_status,\n    source\n  ) values (\n    p_pledge_id,\n    p_storage_path,\n    p_file_name,\n    p_file_type,\n    p_file_size,\n    p_payment_method,\n    p_reference,\n    p_amount_cents,\n    p_payment_date,\n    'pending',\n    'staff'\n  )\n  returning id into v_proof_id;\n\n  if v_pledge.status <> 'active' then\n    update public.sponsorship_pledge\n    set status = 'provisional'\n    where id = p_pledge_id;\n  end if;\n\n  insert into public.audit_log (\n    actor_user_id,\n    action,\n    entity,\n    entity_id,\n    detail\n  ) values (\n    p_actor_user_id,\n    'sponsorship_pledge.proof_recorded',\n    'sponsorship_pledge',\n    p_pledge_id::text,\n    jsonb_build_object(\n      'proofId', v_proof_id,\n      'paymentMethod', p_payment_method,\n      'amountCents', p_amount_cents,\n      'note', p_note\n    )\n  );\n\n  return v_proof_id;\nend;\n$function$\n"
+  },
+  {
+    "kind": "function",
+    "key": "public.reverse_sponsorship_allocation_with_audit",
+    "baseline": "CREATE OR REPLACE FUNCTION public.reverse_sponsorship_allocation_with_audit(p_allocation_id uuid, p_actor_user_id uuid, p_note text)\n RETURNS uuid\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare\n  v_original public.sponsorship_payment_allocation%rowtype;\n  v_period public.sponsorship_period%rowtype;\n  v_actor_admin_id uuid;\n  v_reversal_id uuid;\n  v_net integer;\nbegin\n  select id into v_actor_admin_id\n  from public.admin_user\n  where auth_user_id = p_actor_user_id\n    and status = 'active'\n    and role in ('staff', 'admin');\n  if v_actor_admin_id is null then\n    raise exception 'Actor % is not an active staff/admin user', p_actor_user_id\n      using errcode = '42501';\n  end if;\n\n  select * into v_original\n  from public.sponsorship_payment_allocation\n  where id = p_allocation_id\n  for update;\n  if not found then\n    raise exception 'Allocation % not found', p_allocation_id;\n  end if;\n\n  if v_original.reverses_allocation_id is not null then\n    raise exception 'Allocation % is itself a reversal', p_allocation_id;\n  end if;\n\n  -- Reversing the same entry twice would take back more than was ever put in.\n  select coalesce(sum(amount_cents), 0) into v_net\n  from public.sponsorship_payment_allocation\n  where reverses_allocation_id = p_allocation_id;\n\n  if v_original.amount_cents + v_net <= 0 then\n    raise exception 'Allocation % has already been reversed', p_allocation_id;\n  end if;\n\n  select * into v_period from public.sponsorship_period where id = v_original.period_id;\n\n  insert into public.sponsorship_payment_allocation (\n    period_id, proof_id, amount_cents, reverses_allocation_id, note, created_by\n  ) values (\n    v_original.period_id,\n    v_original.proof_id,\n    -(v_original.amount_cents + v_net),\n    p_allocation_id,\n    p_note,\n    v_actor_admin_id\n  )\n  returning id into v_reversal_id;\n\n  insert into public.audit_log (actor_user_id, action, entity, entity_id, detail)\n  values (\n    p_actor_user_id,\n    'sponsorship_pledge.allocation_reversed',\n    'sponsorship_pledge',\n    v_period.pledge_id::text,\n    jsonb_build_object(\n      'allocationId', p_allocation_id,\n      'reversalId', v_reversal_id,\n      'proofId', v_original.proof_id,\n      'periodMonth', v_period.period_month,\n      'reversedCents', v_original.amount_cents + v_net,\n      'note', p_note\n    )\n  );\n\n  return v_reversal_id;\nend;\n$function$\n",
+    "production": "CREATE OR REPLACE FUNCTION public.reverse_sponsorship_allocation_with_audit(p_allocation_id uuid, p_actor_user_id uuid, p_note text)\n RETURNS uuid\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare\n  v_original public.sponsorship_payment_allocation%rowtype;\n  v_period public.sponsorship_period%rowtype;\n  v_actor_admin_id uuid;\n  v_reversal_id uuid;\n  v_net integer;\nbegin\n  select id into v_actor_admin_id\n  from public.admin_user\n  where auth_user_id = p_actor_user_id\n    and status = 'active'\n    and role in ('staff', 'admin');\n  if v_actor_admin_id is null then\n    raise exception 'Actor % is not an active staff/admin user', p_actor_user_id\n      using errcode = '42501';\n  end if;\n\n  select * into v_original\n  from public.sponsorship_payment_allocation\n  where id = p_allocation_id\n  for update;\n  if not found then\n    raise exception 'Allocation % not found', p_allocation_id;\n  end if;\n\n  if v_original.reverses_allocation_id is not null then\n    raise exception 'Allocation % is itself a reversal', p_allocation_id;\n  end if;\n\n  select coalesce(sum(amount_cents), 0) into v_net\n  from public.sponsorship_payment_allocation\n  where reverses_allocation_id = p_allocation_id;\n\n  if v_original.amount_cents + v_net <= 0 then\n    raise exception 'Allocation % has already been reversed', p_allocation_id;\n  end if;\n\n  select * into v_period from public.sponsorship_period where id = v_original.period_id;\n\n  insert into public.sponsorship_payment_allocation (\n    period_id, proof_id, amount_cents, reverses_allocation_id, note, created_by\n  ) values (\n    v_original.period_id,\n    v_original.proof_id,\n    -(v_original.amount_cents + v_net),\n    p_allocation_id,\n    p_note,\n    v_actor_admin_id\n  )\n  returning id into v_reversal_id;\n\n  insert into public.audit_log (actor_user_id, action, entity, entity_id, detail)\n  values (\n    p_actor_user_id,\n    'sponsorship_pledge.allocation_reversed',\n    'sponsorship_pledge',\n    v_period.pledge_id::text,\n    jsonb_build_object(\n      'allocationId', p_allocation_id,\n      'reversalId', v_reversal_id,\n      'proofId', v_original.proof_id,\n      'periodMonth', v_period.period_month,\n      'reversedCents', v_original.amount_cents + v_net,\n      'note', p_note\n    )\n  );\n\n  return v_reversal_id;\nend;\n$function$\n"
+  },
+  {
+    "kind": "function",
+    "key": "public.review_sponsorship_payment_proof",
+    "baseline": "CREATE OR REPLACE FUNCTION public.review_sponsorship_payment_proof(p_pledge_id uuid, p_decision text, p_actor_user_id uuid, p_note text, p_allocations jsonb DEFAULT '[]'::jsonb, p_assign_animal_id uuid DEFAULT NULL::uuid)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare\n  v_pledge public.sponsorship_pledge%rowtype;\n  v_proof public.sponsorship_payment_proof%rowtype;\n  v_new_pledge_status text;\n  v_new_review_status text;\n  v_actor_admin_id uuid;\n  v_allocation jsonb := null;\n  v_assignment_id uuid := null;\nbegin\n  if not exists (\n    select 1\n    from public.admin_user\n    where auth_user_id = p_actor_user_id\n      and status = 'active'\n      and role in ('staff', 'admin')\n  ) then\n    raise exception 'Actor % is not an active staff/admin user', p_actor_user_id\n      using errcode = '42501';\n  end if;\n\n  if p_decision not in ('approve', 'reject') then\n    raise exception 'Invalid review decision %', p_decision;\n  end if;\n\n  select *\n  into v_pledge\n  from public.sponsorship_pledge\n  where id = p_pledge_id\n  for update;\n\n  if not found then\n    raise exception 'Sponsorship pledge not found';\n  end if;\n\n  -- Deliberately no pledge-status gate here. The thing being reviewed is the\n  -- proof, and the check that it is pending (below) is the real precondition.\n  -- Requiring status='provisional' conflated the supporter's commitment with the\n  -- review queue -- exactly what the plan says not to do -- and made a second\n  -- month's payment unreviewable.\n\n  -- The OLDEST proof still awaiting review, not the newest row overall.\n  --\n  -- Asking \"is the newest proof pending?\" worked only while a pledge could\n  -- hold one proof. Now that a running sponsorship accumulates one per month,\n  -- that question strands rows: an older pending proof can never become the\n  -- newest again, so no future review would ever reach it and a recorded\n  -- payment would sit unreviewed with no way to act on it. Two pending proofs\n  -- are reachable in ordinary use precisely because recording a payment on an\n  -- active pledge now leaves it active, so a second can be recorded while a\n  -- first is still queued.\n  --\n  -- `created_at` alone is not a total order -- two proofs written in one\n  -- transaction share now() -- so `id` breaks the tie deterministically. The\n  -- matching rule in application code is src/lib/sponsorshipAdmin/proofReview.ts\n  -- (`selectReviewTargetProof`); the two must agree, or staff approve one\n  -- payment while looking at another document.\n  select *\n  into v_proof\n  from public.sponsorship_payment_proof\n  where pledge_id = p_pledge_id\n    and review_status = 'pending'\n  order by created_at asc, id asc\n  limit 1\n  for update;\n\n  if not found then\n    raise exception 'Sponsorship pledge has no proof pending review';\n  end if;\n\n  if p_decision = 'approve' then\n    v_new_review_status := 'approved';\n    v_new_pledge_status := 'active';\n  else\n    v_new_review_status := 'rejected';\n    -- 'needs_followup' is reachable from both directions and still permits a\n    -- corrected proof, so a rejected month flags staff follow-up without\n    -- cancelling a sponsorship whose earlier months were paid.\n    v_new_pledge_status := 'needs_followup';\n  end if;\n\n  update public.sponsorship_payment_proof\n  set\n    review_status = v_new_review_status,\n    reviewed_by = (select id from public.admin_user where auth_user_id = p_actor_user_id),\n    reviewed_at = now(),\n    review_note = p_note\n  where id = v_proof.id;\n\n  update public.sponsorship_pledge\n  set status = v_new_pledge_status\n  where id = p_pledge_id;\n\n  -- CHANGE 2: resolve the actor's admin id once, unconditionally, rather than\n  -- inside the allocation branch below where the 20260911190000 definition\n  -- resolved it. Not a bug fix -- its only consumer sits inside that same\n  -- branch, so the value was never read before it was set -- just tidying, so\n  -- it no longer depends on which branch runs.\n  select id into v_actor_admin_id\n  from public.admin_user\n  where auth_user_id = p_actor_user_id;\n\n  -- Attribute the verified payment to months in the SAME transaction that\n  -- approves it. Two transactions would leave a window in which money is\n  -- approved but attributed to no month, and a crash inside that window would\n  -- make it permanent; section 3.1 puts financial consistency in the database\n  -- transaction. If any allocation violates an invariant, the approval rolls\n  -- back with it and the caller retries -- nothing is half-applied.\n  --\n  -- A rejected proof allocates nothing: money that was refused was never\n  -- received.\n  if p_decision = 'approve' and p_allocations is not null\n     and jsonb_array_length(p_allocations) > 0 then\n    v_allocation := private.apply_sponsorship_allocations(\n      v_proof.id, v_actor_admin_id, p_allocations\n    );\n  end if;\n\n  -- CHANGE 3: confirm the supporter's animal on the FIRST approval only.\n  -- \"First\" means the pledge has never had an assignment -- not that it has\n  -- none open now. A supporter whose animal was adopted, and whose assignment\n  -- staff ended, must be given a new animal by a person rather than silently\n  -- by the next payment.\n  --\n  -- If the animal the caller chose has become ineligible since they chose it,\n  -- assign_sponsorship_animal_with_audit raises and the ENTIRE approval rolls\n  -- back -- deliberately: approving the payment while silently skipping the\n  -- assignment would leave a paying supporter with no animal and no signal\n  -- that anything went wrong. The caller re-reads state on retry and picks\n  -- the next eligible choice.\n  if p_decision = 'approve' and p_assign_animal_id is not null\n     and not exists (\n       select 1 from public.sponsorship_assignment where pledge_id = p_pledge_id\n     ) then\n    v_assignment_id := public.assign_sponsorship_animal_with_audit(\n      p_pledge_id, p_assign_animal_id, p_actor_user_id, null\n    );\n  end if;\n\n  insert into public.audit_log (\n    actor_user_id,\n    action,\n    entity,\n    entity_id,\n    detail\n  ) values (\n    p_actor_user_id,\n    'sponsorship_pledge.proof_reviewed',\n    'sponsorship_pledge',\n    p_pledge_id::text,\n    jsonb_build_object(\n      'proofId', v_proof.id,\n      'decision', p_decision,\n      'note', p_note,\n      'allocation', v_allocation,\n      'assignmentId', v_assignment_id\n    )\n  );\nend;\n$function$\n",
+    "production": "CREATE OR REPLACE FUNCTION public.review_sponsorship_payment_proof(p_pledge_id uuid, p_decision text, p_actor_user_id uuid, p_note text, p_allocations jsonb DEFAULT '[]'::jsonb, p_assign_animal_id uuid DEFAULT NULL::uuid)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare\n  v_pledge public.sponsorship_pledge%rowtype;\n  v_proof public.sponsorship_payment_proof%rowtype;\n  v_new_pledge_status text;\n  v_new_review_status text;\n  v_actor_admin_id uuid;\n  v_allocation jsonb := null;\n  v_assignment_id uuid := null;\nbegin\n  if not exists (\n    select 1\n    from public.admin_user\n    where auth_user_id = p_actor_user_id\n      and status = 'active'\n      and role in ('staff', 'admin')\n  ) then\n    raise exception 'Actor % is not an active staff/admin user', p_actor_user_id\n      using errcode = '42501';\n  end if;\n\n  if p_decision not in ('approve', 'reject') then\n    raise exception 'Invalid review decision %', p_decision;\n  end if;\n\n  select *\n  into v_pledge\n  from public.sponsorship_pledge\n  where id = p_pledge_id\n  for update;\n\n  if not found then\n    raise exception 'Sponsorship pledge not found';\n  end if;\n\n  select *\n  into v_proof\n  from public.sponsorship_payment_proof\n  where pledge_id = p_pledge_id\n    and review_status = 'pending'\n  order by created_at asc, id asc\n  limit 1\n  for update;\n\n  if not found then\n    raise exception 'Sponsorship pledge has no proof pending review';\n  end if;\n\n  if p_decision = 'approve' then\n    v_new_review_status := 'approved';\n    v_new_pledge_status := 'active';\n  else\n    v_new_review_status := 'rejected';\n    v_new_pledge_status := 'needs_followup';\n  end if;\n\n  update public.sponsorship_payment_proof\n  set\n    review_status = v_new_review_status,\n    reviewed_by = (select id from public.admin_user where auth_user_id = p_actor_user_id),\n    reviewed_at = now(),\n    review_note = p_note\n  where id = v_proof.id;\n\n  update public.sponsorship_pledge\n  set status = v_new_pledge_status\n  where id = p_pledge_id;\n\n  select id into v_actor_admin_id\n  from public.admin_user\n  where auth_user_id = p_actor_user_id;\n\n  if p_decision = 'approve' and p_allocations is not null\n     and jsonb_array_length(p_allocations) > 0 then\n    v_allocation := private.apply_sponsorship_allocations(\n      v_proof.id, v_actor_admin_id, p_allocations\n    );\n  end if;\n\n  if p_decision = 'approve' and p_assign_animal_id is not null\n     and not exists (\n       select 1 from public.sponsorship_assignment where pledge_id = p_pledge_id\n     ) then\n    v_assignment_id := public.assign_sponsorship_animal_with_audit(\n      p_pledge_id, p_assign_animal_id, p_actor_user_id, null\n    );\n  end if;\n\n  insert into public.audit_log (\n    actor_user_id,\n    action,\n    entity,\n    entity_id,\n    detail\n  ) values (\n    p_actor_user_id,\n    'sponsorship_pledge.proof_reviewed',\n    'sponsorship_pledge',\n    p_pledge_id::text,\n    jsonb_build_object(\n      'proofId', v_proof.id,\n      'decision', p_decision,\n      'note', p_note,\n      'allocation', v_allocation,\n      'assignmentId', v_assignment_id\n    )\n  );\nend;\n$function$\n"
+  },
+  {
+    "kind": "function",
+    "key": "public.set_animal_catalog_membership_defaults",
+    "baseline": "CREATE OR REPLACE FUNCTION public.set_animal_catalog_membership_defaults()\n RETURNS trigger\n LANGUAGE plpgsql\n SET search_path TO 'public', 'pg_temp'\nAS $function$\nbegin\n  if tg_op = 'INSERT' then\n    -- Unchanged from 20260906162436: derive only when the caller said nothing.\n    new.adoption_eligible := coalesce(new.adoption_eligible, new.type in ('cat', 'dog'));\n    new.sponsorship_eligible := coalesce(new.sponsorship_eligible, new.type = 'sponsor');\n  end if;\n  -- On UPDATE the flags are left exactly as supplied. Correcting a species\n  -- never changes which catalogues an animal belongs to.\n  return new;\nend;\n$function$\n",
+    "production": "CREATE OR REPLACE FUNCTION public.set_animal_catalog_membership_defaults()\n RETURNS trigger\n LANGUAGE plpgsql\n SET search_path TO 'public', 'pg_temp'\nAS $function$\nbegin\n  if tg_op = 'INSERT' then\n    new.adoption_eligible := coalesce(new.adoption_eligible, new.type in ('cat', 'dog'));\n    new.sponsorship_eligible := coalesce(new.sponsorship_eligible, new.type = 'sponsor');\n  end if;\n  return new;\nend;\n$function$\n"
+  },
+  {
+    "kind": "index",
+    "key": "payment.payment_provider_order_ref_idx",
+    "baseline": "CREATE UNIQUE INDEX payment_provider_order_ref_idx ON public.payment USING btree (provider, provider_order_ref) WHERE (provider_order_ref IS NOT NULL)",
+    "production": null
+  },
+  {
+    "kind": "index",
+    "key": "webhook_event.webhook_event_processing_idx",
+    "baseline": "CREATE INDEX webhook_event_processing_idx ON public.webhook_event USING btree (provider, provider_event_id, processed_at, processing_expires_at)",
+    "production": null
+  },
+  {
+    "kind": "policy",
+    "key": "adoption_applications.staff can delete adoption applications",
+    "baseline": "[\"PERMISSIVE\", [\"authenticated\"], \"DELETE\", \"private.has_admin_role(ARRAY['staff'::text, 'admin'::text])\", null]",
+    "production": null
+  },
+  {
+    "kind": "policy",
+    "key": "adoption_applications.staff can read adoption applications",
+    "baseline": "[\"PERMISSIVE\", [\"authenticated\"], \"SELECT\", \"private.has_admin_role(ARRAY['staff'::text, 'admin'::text])\", null]",
+    "production": null
+  },
+  {
+    "kind": "policy",
+    "key": "adoption_applications.staff can update adoption applications",
+    "baseline": "[\"PERMISSIVE\", [\"authenticated\"], \"UPDATE\", \"private.has_admin_role(ARRAY['staff'::text, 'admin'::text])\", \"private.has_admin_role(ARRAY['staff'::text, 'admin'::text])\"]",
+    "production": null
+  },
+  {
+    "kind": "trigger",
+    "key": "admin_user.audit_admin_user",
+    "baseline": "CREATE TRIGGER audit_admin_user AFTER INSERT OR DELETE OR UPDATE ON admin_user FOR EACH ROW EXECUTE FUNCTION log_animal_mutation()",
+    "production": null
+  },
+  {
+    "kind": "trigger",
+    "key": "adopter_profile.audit_adopter_profile",
+    "baseline": "CREATE TRIGGER audit_adopter_profile AFTER INSERT OR DELETE OR UPDATE ON adopter_profile FOR EACH ROW EXECUTE FUNCTION log_animal_mutation()",
+    "production": null
+  },
+  {
+    "kind": "trigger",
+    "key": "adoption_applications.audit_adoption_applications",
+    "baseline": "CREATE TRIGGER audit_adoption_applications AFTER INSERT OR DELETE OR UPDATE ON adoption_applications FOR EACH ROW EXECUTE FUNCTION log_animal_mutation()",
+    "production": null
+  },
+  {
+    "kind": "trigger",
+    "key": "adoption_attachment.audit_adoption_attachment",
+    "baseline": "CREATE TRIGGER audit_adoption_attachment AFTER INSERT OR DELETE OR UPDATE ON adoption_attachment FOR EACH ROW EXECUTE FUNCTION log_animal_mutation()",
+    "production": null
+  },
+  {
+    "kind": "trigger",
+    "key": "adoption_case.audit_adoption_case",
+    "baseline": "CREATE TRIGGER audit_adoption_case AFTER INSERT OR DELETE OR UPDATE ON adoption_case FOR EACH ROW EXECUTE FUNCTION log_animal_mutation()",
+    "production": null
+  },
+  {
+    "kind": "trigger",
+    "key": "adoption_fee.audit_adoption_fee",
+    "baseline": "CREATE TRIGGER audit_adoption_fee AFTER INSERT OR DELETE OR UPDATE ON adoption_fee FOR EACH ROW EXECUTE FUNCTION log_animal_mutation()",
+    "production": null
+  },
+  {
+    "kind": "trigger",
+    "key": "adoption_followup.audit_adoption_followup",
+    "baseline": "CREATE TRIGGER audit_adoption_followup AFTER INSERT OR DELETE OR UPDATE ON adoption_followup FOR EACH ROW EXECUTE FUNCTION log_animal_mutation()",
+    "production": null
+  },
+  {
+    "kind": "trigger",
+    "key": "animal_position.audit_animal_position",
+    "baseline": "CREATE TRIGGER audit_animal_position AFTER INSERT OR DELETE OR UPDATE ON animal_position FOR EACH ROW EXECUTE FUNCTION log_animal_mutation()",
+    "production": null
+  },
+  {
+    "kind": "trigger",
+    "key": "arrival_source.audit_arrival_source",
+    "baseline": "CREATE TRIGGER audit_arrival_source AFTER INSERT OR DELETE OR UPDATE ON arrival_source FOR EACH ROW EXECUTE FUNCTION log_animal_mutation()",
+    "production": null
+  },
+  {
+    "kind": "trigger",
+    "key": "consent.audit_consent",
+    "baseline": "CREATE TRIGGER audit_consent AFTER INSERT OR DELETE OR UPDATE ON consent FOR EACH ROW EXECUTE FUNCTION log_animal_mutation()",
+    "production": null
+  },
+  {
+    "kind": "trigger",
+    "key": "coordinator_status.audit_coordinator_status",
+    "baseline": "CREATE TRIGGER audit_coordinator_status AFTER INSERT OR DELETE OR UPDATE ON coordinator_status FOR EACH ROW EXECUTE FUNCTION log_animal_mutation()",
+    "production": null
+  },
+  {
+    "kind": "trigger",
+    "key": "coordinator_status_history.audit_coordinator_status_history",
+    "baseline": "CREATE TRIGGER audit_coordinator_status_history AFTER INSERT OR DELETE OR UPDATE ON coordinator_status_history FOR EACH ROW EXECUTE FUNCTION log_animal_mutation()",
+    "production": null
+  },
+  {
+    "kind": "trigger",
+    "key": "donation.audit_donation",
+    "baseline": "CREATE TRIGGER audit_donation AFTER INSERT OR DELETE OR UPDATE ON donation FOR EACH ROW EXECUTE FUNCTION log_animal_mutation()",
+    "production": null
+  },
+  {
+    "kind": "trigger",
+    "key": "living_area.audit_living_area",
+    "baseline": "CREATE TRIGGER audit_living_area AFTER INSERT OR DELETE OR UPDATE ON living_area FOR EACH ROW EXECUTE FUNCTION log_animal_mutation()",
+    "production": null
+  },
+  {
+    "kind": "trigger",
+    "key": "message_template.audit_message_template",
+    "baseline": "CREATE TRIGGER audit_message_template AFTER INSERT OR DELETE OR UPDATE ON message_template FOR EACH ROW EXECUTE FUNCTION log_animal_mutation()",
+    "production": null
+  },
+  {
+    "kind": "trigger",
+    "key": "payment.audit_payment",
+    "baseline": "CREATE TRIGGER audit_payment AFTER INSERT OR DELETE OR UPDATE ON payment FOR EACH ROW EXECUTE FUNCTION log_animal_mutation()",
+    "production": null
+  },
+  {
+    "kind": "trigger",
+    "key": "receipt.audit_receipt",
+    "baseline": "CREATE TRIGGER audit_receipt AFTER INSERT OR DELETE OR UPDATE ON receipt FOR EACH ROW EXECUTE FUNCTION log_animal_mutation()",
+    "production": null
+  },
+  {
+    "kind": "trigger",
+    "key": "successful_adoption.audit_successful_adoption",
+    "baseline": "CREATE TRIGGER audit_successful_adoption AFTER INSERT OR DELETE OR UPDATE ON successful_adoption FOR EACH ROW EXECUTE FUNCTION log_animal_mutation()",
+    "production": null
+  },
+  {
+    "kind": "trigger",
+    "key": "supporter.audit_supporter",
+    "baseline": "CREATE TRIGGER audit_supporter AFTER INSERT OR DELETE OR UPDATE ON supporter FOR EACH ROW EXECUTE FUNCTION log_animal_mutation()",
+    "production": null
+  },
+  {
+    "kind": "column",
+    "key": "animals.source_url",
+    "baseline": null,
+    "production": "text notnull=false default="
+  },
+  {
+    "kind": "index",
+    "key": "animals.animals_source_url_idx",
+    "baseline": null,
+    "production": "CREATE UNIQUE INDEX animals_source_url_idx ON public.animals USING btree (source_url) WHERE (source_url IS NOT NULL)"
+  },
+  {
+    "kind": "policy",
+    "key": "adoption_applications.admin only",
+    "baseline": null,
+    "production": "[\"PERMISSIVE\", [\"public\"], \"ALL\", \"(auth.role() = 'authenticated'::text)\", null]"
+  }
+]

@@ -1,3 +1,4 @@
+import { volunteerPolicyFailure } from "./policy/errors";
 import { z } from "zod";
 
 import type { AdminUser } from "../donations/supabase.server";
@@ -49,6 +50,15 @@ async function withVolunteerErrors(operation: () => Promise<Response>, publicReq
         { status: 400 },
       );
     }
+    const failure = volunteerPolicyFailure(error);
+    if (failure)
+      return jsonResponse(
+        {
+          error: publicRequest ? "未能完成報名：" + failure.message : failure.message,
+          code: failure.code,
+        },
+        { status: 409 },
+      );
     console.error(error);
     return jsonResponse(
       {

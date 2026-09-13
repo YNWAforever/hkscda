@@ -1,0 +1,11 @@
+{
+  "date": "2026-09-13",
+  "command": "bun run test:acceptance:rls",
+  "target": "isolated API127.0.0.1:56321 / DB127.0.0.1:56322/postgres",
+  "migration_ledger_count": 99,
+  "test_files": 3,
+  "passed": 45,
+  "failed": 0,
+  "assertions": 82,
+  "production_mutations": false
+}
