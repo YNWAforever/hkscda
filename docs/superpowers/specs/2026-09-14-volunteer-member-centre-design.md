@@ -1,0 +1,13 @@
+# Volunteer member centre — approved design
+
+Approved in conversation on 2026-09-14: full mobile-first centre connecting email login, first registration, booking and record tracking.
+
+The /volunteer entry prioritizes two actions: browse sessions and enter the member centre. Use existing HKSCDA blue/magenta tokens and factual copy. Keep one page heading and responsive readable controls. Email authentication is progressive: email entry, sent confirmation/code entry, edit email/resend, signed-in identity. Existing Supabase session/auth and challenge controls remain authoritative; no new provider or password system.
+
+Member centre has three navigable sections: session booking, my bookings, service record/profile. New members can submit name/date of birth and see pending verification even with no sessions. A verified email is not a verified volunteer profile. Browsing does not require authentication; booking does. Session cards show date/time/location, remaining seats and booking window, with search/date filtering. Selected session exposes existing policy roles/remarks/terms and live eligibility. Submission uses current atomic/idempotent commands, clearly distinguishes pending/approved/waitlisted, and refreshes member records.
+
+My bookings show actual activity names/dates even after a session disappears from the public future-session feed. Server enriches only the verified actor's registrations with minimal activity metadata; no internal notes leak. Distinguish upcoming, past and cancelled/rejected, attendance from booking approval; allow current cancellation with confirmation and link existing reschedule/group workflows. Service record shows verified sessions and known coverage/credentials, never invented hours or unknown history as zero.
+
+Legacy non-policy events remain accessible in a clearly labelled expandable section and only show a registration form for a selected eligible activity. Preserve group, status-token and internship routes. Empty/loading/error states have actionable recovery. No publication, production record mutation, provider email or deployment is authorized by this design.
+
+Validation: unit/component tests for progression and history; actor-scoped server tests; existing policy tests; isolated API/member browser journeys including pending and active synthetic identities; 390px/desktop layout and accessibility; typecheck/lint/build. No live email is sent.
