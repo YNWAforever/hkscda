@@ -1,4 +1,4 @@
-import { PUBLIC_ANIMAL_COLUMNS } from "./publicColumns";
+import { readWithOptionalGallery } from "./publicColumns";
 import { projectPublicAnimal } from "./publicProfile";
 import { supabase } from "../supabase";
 import type { Animal, GenderFilter } from "../../types/animal";
@@ -14,26 +14,28 @@ export async function readPublicAnimals(input: {
   const animals: Animal[] = [];
 
   for (let from = 0; ; from += PUBLIC_QUERY_BATCH_SIZE) {
-    let query = supabase
-      .from("animals")
-      .select(PUBLIC_ANIMAL_COLUMNS)
-      .eq("publication_state", "published")
-      .in("status", PUBLIC_VISIBLE_ANIMAL_STATUSES)
-      .is("retired_at", null)
-      .eq(input.type === "sponsor" ? "sponsorship_eligible" : "adoption_eligible", true)
-      .order("created_at", { ascending: false })
-      .order("id", { ascending: true });
+    const { data, error } = await readWithOptionalGallery((columns) => {
+      let query = supabase
+        .from("animals")
+        .select(columns)
+        .eq("publication_state", "published")
+        .in("status", PUBLIC_VISIBLE_ANIMAL_STATUSES)
+        .is("retired_at", null)
+        .eq(input.type === "sponsor" ? "sponsorship_eligible" : "adoption_eligible", true)
+        .order("created_at", { ascending: false })
+        .order("id", { ascending: true });
 
-    if (input.type !== "sponsor") query = query.eq("type", input.type);
+      if (input.type !== "sponsor") query = query.eq("type", input.type);
 
-    if (input.genderFilter !== "all") {
-      query = query.eq("gender", input.genderFilter);
-    }
+      if (input.genderFilter !== "all") {
+        query = query.eq("gender", input.genderFilter);
+      }
 
-    const { data, error } = await query.range(from, from + PUBLIC_QUERY_BATCH_SIZE - 1);
+      return query.range(from, from + PUBLIC_QUERY_BATCH_SIZE - 1);
+    });
     if (error) throw error;
 
-    const batch = (data ?? []) as Animal[];
+    const batch = (data ?? []) as unknown as Animal[];
     animals.push(...batch.map((animal) => projectPublicAnimal(animal)));
     if (batch.length < PUBLIC_QUERY_BATCH_SIZE) break;
   }

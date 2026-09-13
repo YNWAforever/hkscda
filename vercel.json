@@ -13,7 +13,8 @@
       "claude/session-development-c8b184": false,
       "followup/pledgereview-pager-and-migration-docs": false,
       "feat/fostered-animal-public-visibility": false,
-      "codex/admin-volunteer-settings-20260913": false
+      "codex/admin-volunteer-settings-20260913": false,
+      "fix/public-animal-gallery-compat": false
     }
   },
   "crons": [

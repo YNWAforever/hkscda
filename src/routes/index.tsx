@@ -47,6 +47,7 @@ async function loadHome() {
     // and /sponsors -- but the homepage band is a first impression, and a grid
     // of placeholder icons misrepresents what the association has to show.
     featuredAnimals: selectFeaturedAnimals([...(cats?.animals ?? []), ...(dogs?.animals ?? [])]),
+    animalLoadFailed: cats === null || dogs === null,
     impact,
     featuredStory: stories?.items?.[0] ?? null,
   };
@@ -76,12 +77,12 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { featuredAnimals, impact, featuredStory } = Route.useLoaderData();
+  const { featuredAnimals, animalLoadFailed, impact, featuredStory } = Route.useLoaderData();
 
   return (
     <main>
       <HomeHero />
-      <FeaturedAnimals animals={featuredAnimals} />
+      <FeaturedAnimals animals={featuredAnimals} loadFailed={animalLoadFailed} />
       <ImpactBand items={impact.items} asOf={impact.asOf} />
       <AdoptionStepsBand />
       <FeaturedStory story={featuredStory} />
