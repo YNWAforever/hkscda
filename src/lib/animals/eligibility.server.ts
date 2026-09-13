@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { isPublicAnimalMember } from "./publicListing";
 import type { Animal } from "../../types/animal";
+import { PUBLIC_VISIBLE_ANIMAL_STATUSES } from "../../types/animal";
 
 export async function readEligibleAnimals(
   client: SupabaseClient,
@@ -11,7 +12,7 @@ export async function readEligibleAnimals(
     .from("animals")
     .select("id,type,status,adoption_eligible,sponsorship_eligible,retired_at")
     .in("id", ids)
-    .eq("status", "available")
+    .in("status", PUBLIC_VISIBLE_ANIMAL_STATUSES)
     .eq(intent === "sponsorship" ? "sponsorship_eligible" : "adoption_eligible", true)
     .is("retired_at", null);
   if (error) throw new Error("Could not verify selected animals");

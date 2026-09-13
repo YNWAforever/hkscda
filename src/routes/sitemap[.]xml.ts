@@ -3,6 +3,7 @@ import { PUBLIC_SITE_ORIGIN } from "@/lib/publicOrigin";
 
 import { loadPublicStoriesPage } from "../lib/content/publicStoriesPage.server";
 import { supabase } from "../lib/supabase";
+import { PUBLIC_VISIBLE_ANIMAL_STATUSES } from "../types/animal";
 
 const PRODUCTION_ORIGIN = PUBLIC_SITE_ORIGIN;
 
@@ -41,12 +42,12 @@ function escapeXml(value: string) {
   });
 }
 
-async function publicDetailPaths() {
+export async function publicDetailPaths() {
   const [animalsResult, storiesResult] = await Promise.allSettled([
     supabase
       .from("animals")
       .select("id,type,adoption_eligible,sponsorship_eligible")
-      .eq("status", "available")
+      .in("status", PUBLIC_VISIBLE_ANIMAL_STATUSES)
       .is("retired_at", null),
     loadPublicStoriesPage(),
   ]);

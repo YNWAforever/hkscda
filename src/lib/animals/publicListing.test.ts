@@ -163,3 +163,23 @@ test("does not invent adult age for an unknown birthday and age", () => {
   });
   expect(result.animals.map(({ id }) => id)).toEqual(["adult"]);
 });
+
+test("includes fostered animals alongside available ones, still excludes adopted", () => {
+  const animals = [
+    animal("shelter-cat", { status: "available" }),
+    animal("foster-cat", { status: "fostered" }),
+    animal("adopted-cat", { status: "adopted" }),
+  ];
+
+  const result = buildPublicAnimalListing({
+    animals,
+    type: "cat",
+    ageFilter: "all",
+    genderFilter: "all",
+    page: 1,
+    pageSize: 10,
+  });
+
+  expect(result.animals.map(({ id }) => id).sort()).toEqual(["foster-cat", "shelter-cat"]);
+  expect(result.total).toBe(2);
+});
