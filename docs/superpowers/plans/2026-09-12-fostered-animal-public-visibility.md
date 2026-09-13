@@ -1252,15 +1252,25 @@ let service: SupabaseClient;
 let anon: SupabaseClient;
 const seededAnimalIds: string[] = [];
 
+// Covers the status and publication_state conjuncts of the public "animals"
+// read policy -- the two axes this feature slice changed or depends on.
+// retired_at and the (adoption_eligible or sponsorship_eligible) disjunction
+// are deliberately not separately exercised here: per the design spec, this
+// is "one small addition, not a general RLS audit of the animals table."
 describe.skipIf(!reachable)("RLS behavioral matrix: public animal visibility", () => {
   beforeAll(() => {
-    service = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
+    service = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    });
     anon = createClient(SUPABASE_URL, ANON_KEY);
   });
 
   afterAll(async () => {
-    if (seededAnimalIds.length > 0) {
+    if (seededAnimalIds.length === 0) return;
+    try {
       await service.from("animals").delete().in("id", seededAnimalIds);
+    } catch (error) {
+      console.error("Failed to clean up seeded RLS test animals", error);
     }
   });
 
@@ -1282,7 +1292,11 @@ describe.skipIf(!reachable)("RLS behavioral matrix: public animal visibility", (
     expect(insertError).toBeNull();
     seededAnimalIds.push(fostered!.id as string);
 
-    const { data, error } = await anon.from("animals").select("id").eq("id", fostered!.id).maybeSingle();
+    const { data, error } = await anon
+      .from("animals")
+      .select("id")
+      .eq("id", fostered!.id)
+      .maybeSingle();
 
     expect(error).toBeNull();
     expect(data?.id).toBe(fostered!.id);
@@ -1323,10 +1337,20 @@ describe.skipIf(!reachable)("RLS behavioral matrix: public animal visibility", (
     expect(draftError).toBeNull();
     seededAnimalIds.push(draft!.id as string);
 
-    const { data: adoptedRead } = await anon.from("animals").select("id").eq("id", adopted!.id).maybeSingle();
-    const { data: draftRead } = await anon.from("animals").select("id").eq("id", draft!.id).maybeSingle();
+    const { data: adoptedRead, error: adoptedReadError } = await anon
+      .from("animals")
+      .select("id")
+      .eq("id", adopted!.id)
+      .maybeSingle();
+    const { data: draftRead, error: draftReadError } = await anon
+      .from("animals")
+      .select("id")
+      .eq("id", draft!.id)
+      .maybeSingle();
 
+    expect(adoptedReadError).toBeNull();
     expect(adoptedRead).toBeNull();
+    expect(draftReadError).toBeNull();
     expect(draftRead).toBeNull();
   });
 });
