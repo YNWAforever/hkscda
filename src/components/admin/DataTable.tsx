@@ -41,6 +41,8 @@ type DataTableProps<T> = {
    */
   renderMobileCard?: (row: T) => ReactNode;
   className?: string;
+  /** Names a keyboard-focusable table inside its horizontal scroll container. */
+  accessibleLabel?: string;
 };
 
 const ALIGN_CLASS = {
@@ -63,6 +65,7 @@ export function DataTable<T>({
   onRowClick,
   renderMobileCard,
   className,
+  accessibleLabel,
 }: DataTableProps<T>) {
   // Precedence is loading -> error -> empty -> rows. `failed` must be consulted
   // before the rows.length === 0 branch, otherwise an outage is rendered as
@@ -70,7 +73,11 @@ export function DataTable<T>({
   const failed = !loading && error != null;
   const failureCell = <LoadFailure error={error} onRetry={onRetry} className="border-0" />;
   const table = (
-    <Table className={className}>
+    <Table
+      className={className}
+      aria-label={accessibleLabel}
+      tabIndex={accessibleLabel ? 0 : undefined}
+    >
       <TableHeader>
         <TableRow className="border-[var(--color-border)] hover:bg-transparent">
           {columns.map((column) => (

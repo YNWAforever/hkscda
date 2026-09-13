@@ -495,6 +495,7 @@ export function CoordinatorReports() {
         </div>
 
         <DataTable<CoordinatorExportAuditRow>
+          accessibleLabel={copy.exportHistory}
           columns={exportColumns}
           rows={exports}
           getRowKey={(row) => row.id}

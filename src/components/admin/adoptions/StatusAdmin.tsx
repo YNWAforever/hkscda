@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Lock, Pencil, Plus, Save, Trash2, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 
 import type { CoordinatorStatus, CoordinatorStatusCategory } from "../../../lib/adoptions/types";
@@ -104,6 +104,7 @@ export function StatusFieldError({ id, message }: { id: string; message?: string
 }
 
 export function StatusAdmin() {
+  const categoryPanelId = useId();
   const { pageCopy } = useAdminPageCopy();
   const copy = pageCopy.statuses;
   const queryClient = useQueryClient();
@@ -232,11 +233,16 @@ export function StatusAdmin() {
       </div>
 
       <Tabs value={selectedCategory} onValueChange={handleCategoryChange}>
-        <TabsList className="h-auto flex-wrap justify-start gap-1 rounded-lg bg-[var(--color-lavender)] p-1">
+        <TabsList
+          aria-label={copy.fields.category}
+          className="h-auto flex-wrap justify-start gap-1 rounded-lg bg-[var(--color-lavender)] p-1"
+        >
           {CATEGORY_OPTIONS.map((category) => (
             <TabsTrigger
               key={category}
               value={category}
+              id={`${categoryPanelId}-${category}`}
+              aria-controls={categoryPanelId}
               className="data-[state=active]:bg-[var(--color-surface)] data-[state=active]:text-[var(--color-panel)]"
             >
               {copy.categories[category].label}
@@ -245,7 +251,13 @@ export function StatusAdmin() {
         </TabsList>
       </Tabs>
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+      <div
+        id={categoryPanelId}
+        role="tabpanel"
+        aria-labelledby={`${categoryPanelId}-${selectedCategory}`}
+        tabIndex={0}
+        className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]"
+      >
         <section className="overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
           <div className="flex min-h-14 items-center justify-between gap-3 border-b border-[var(--color-border)] px-4">
             <div>
@@ -258,7 +270,7 @@ export function StatusAdmin() {
             </div>
           </div>
 
-          <Table aria-busy={isLoading}>
+          <Table aria-busy={isLoading} tabIndex={0} aria-label={selectedCategoryLabel}>
             <TableHeader>
               <TableRow className="h-11 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-2)]">
                 <TableHead className="w-[34%] px-4 text-[var(--color-text-muted)]">
