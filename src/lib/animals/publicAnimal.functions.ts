@@ -1,6 +1,7 @@
 import { projectPublicAnimal } from "./publicProfile";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { Animal } from "../../types/animal";
 import { PUBLIC_VISIBLE_ANIMAL_STATUSES } from "../../types/animal";
@@ -13,14 +14,23 @@ const publicAnimalInput = z.object({
 
 // Extracted so it's directly callable in tests -- createServerFn's wrapped
 // export throws outside a real request context (no userCtx), the same reason
-// submit-application.functions.ts keeps its core logic in a plain,
-// separately-exported function rather than testing the wrapper itself.
-export async function resolvePublicAnimal(data: { id: string; type?: "cat" | "dog" | "sponsor" }) {
+// submit-application.functions.ts keeps its core logic in a plain function.
+// Takes `supabase` as a parameter rather than importing it itself: the
+// dynamic `await import("../supabase")` has to stay lexically inside the
+// createServerFn .handler() callback below, not in a separately-exported
+// function, or the client bundle build pulls in this function's whole
+// module graph (confirmed by reproduction -- a sibling change that moved a
+// dynamic import out of the handler this same way broke the client build by
+// dragging in an unrelated .server.ts file's node:crypto usage).
+export async function resolvePublicAnimal(
+  data: { id: string; type?: "cat" | "dog" | "sponsor" },
+  deps: { supabase: SupabaseClient },
+) {
   // Screened here rather than in the validator: a malformed id is a missing
   // page, and rejecting it as invalid input would surface as a 500.
   if (!isPublicAnimalId(data.id)) return null;
 
-  const { supabase } = await import("../supabase");
+  const { supabase } = deps;
   let query = supabase
     .from("animals")
     .select("*")
@@ -38,4 +48,7 @@ export async function resolvePublicAnimal(data: { id: string; type?: "cat" | "do
 
 export const getPublicAnimal = createServerFn({ method: "GET" })
   .inputValidator(publicAnimalInput)
-  .handler(async ({ data }) => resolvePublicAnimal(data));
+  .handler(async ({ data }) => {
+    const { supabase } = await import("../supabase");
+    return resolvePublicAnimal(data, { supabase });
+  });

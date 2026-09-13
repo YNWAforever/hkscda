@@ -1,26 +1,35 @@
 import { createServerFn } from "@tanstack/react-start";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { buildPublicImpact, type PublicImpactItem } from "./publicImpact";
 import { PUBLIC_VISIBLE_ANIMAL_STATUSES } from "../../types/animal";
+import type { SpeciesTotals } from "../adoptions/publicImpact";
 
 type CountResult = { count: number | null; error: { message: string } | null };
 
 // Extracted so it's directly callable in tests -- createServerFn's wrapped
 // export throws outside a real request context (no userCtx), the same reason
-// submit-application.functions.ts keeps its core logic in a plain,
-// separately-exported function rather than testing the wrapper itself.
+// submit-application.functions.ts keeps its core logic in a plain function.
+// Takes its dependencies as parameters rather than importing them itself: the
+// dynamic imports have to stay lexically inside the createServerFn .handler()
+// callback below, not in a separately-exported function, or the client
+// bundle build pulls in this function's whole module graph (confirmed by
+// reproduction -- doing it the other way dragged an unrelated .server.ts
+// file's node:crypto usage into the client build and broke it).
 //
 // Read-only public projection over the anonymous client for available counts,
 // so the existing RLS policy stays authoritative there. Adopted counts come
 // from the service-role adoption-impact aggregate instead - the anon policy
 // exposes only available animals, so an anon query for status = adopted could
 // only ever return empty (defect G-04).
-export async function resolvePublicImpactItems(): Promise<{
+export async function resolvePublicImpactItems(deps: {
+  supabase: SupabaseClient;
+  loadAdoptionSpeciesTotals: () => Promise<SpeciesTotals>;
+}): Promise<{
   items: PublicImpactItem[];
   asOf: string | null;
 }> {
-  const { supabase } = await import("../supabase");
-  const { loadAdoptionSpeciesTotals } = await import("../adoptions/publicImpact.server");
+  const { supabase, loadAdoptionSpeciesTotals } = deps;
 
   async function countAvailable(type: "cat" | "dog"): Promise<CountResult> {
     const { count, error } = await supabase
@@ -55,6 +64,8 @@ export async function resolvePublicImpactItems(): Promise<{
   return { items, asOf: items.length ? asOf : null };
 }
 
-export const getPublicImpactItems = createServerFn({ method: "GET" }).handler(() =>
-  resolvePublicImpactItems(),
-);
+export const getPublicImpactItems = createServerFn({ method: "GET" }).handler(async () => {
+  const { supabase } = await import("../supabase");
+  const { loadAdoptionSpeciesTotals } = await import("../adoptions/publicImpact.server");
+  return resolvePublicImpactItems({ supabase, loadAdoptionSpeciesTotals });
+});

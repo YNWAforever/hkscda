@@ -1,12 +1,7 @@
-import { afterAll, describe, expect, mock, test } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-// Spread into a new object, not a bare reference -- bun's mock.module mutates
-// the shared module namespace in place, so a bare reference would be mutated
-// out from under us the moment the mock below is installed, and afterAll's
-// "restore" would silently restore the already-mocked object. See 23566de
-// and 4480fdb for the two prior times this exact bug was fixed in this repo.
-const realSupabaseModule = { ...(await import("../supabase")) };
+import { resolvePublicAnimal } from "./publicAnimal.functions";
 
 function createAnimalFakeClient(data: Record<string, unknown>[]) {
   const eqFilters: Array<[string, unknown]> = [];
@@ -34,10 +29,6 @@ function createAnimalFakeClient(data: Record<string, unknown>[]) {
   return { from: () => query } as unknown as SupabaseClient;
 }
 
-afterAll(() => {
-  mock.module("../supabase", () => realSupabaseModule);
-});
-
 describe("resolvePublicAnimal", () => {
   test("finds a fostered animal by id, same as an available one", async () => {
     const fosterCat = {
@@ -61,13 +52,11 @@ describe("resolvePublicAnimal", () => {
       retired_at: null,
       public_profile: null,
     };
-    mock.module("../supabase", () => ({ supabase: createAnimalFakeClient([fosterCat]) }));
-    const { resolvePublicAnimal } = await import("./publicAnimal.functions");
 
-    const result = await resolvePublicAnimal({
-      id: "12345678-1234-1234-1234-123456789012",
-      type: "cat",
-    });
+    const result = await resolvePublicAnimal(
+      { id: "12345678-1234-1234-1234-123456789012", type: "cat" },
+      { supabase: createAnimalFakeClient([fosterCat]) },
+    );
 
     expect(result?.id).toBe("12345678-1234-1234-1234-123456789012");
   });
