@@ -1,0 +1,1213 @@
+{
+  "generatedAt": "2026-09-13T18:38:38.588Z",
+  "origin": "http://127.0.0.1:56336",
+  "database": "dedicated local Supabase API 56321 / database 56322",
+  "mode": "Real local API/DB page and role checks; policy preview writes an isolated preview snapshot. Explicitly authorized synthetic pending-profile setup if missing and local auth session refresh. No policy publication, attendance or booking mutations. No email.",
+  "checks": [
+    {
+      "role": "admin",
+      "width": 1440,
+      "page": "overview",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440,
+        "overflowing": []
+      },
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-1440-overview.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 1440,
+      "page": "people",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440,
+        "overflowing": []
+      },
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-1440-people.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 1440,
+      "page": "activities",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440,
+        "overflowing": []
+      },
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-1440-activities.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 1440,
+      "page": "calendar",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440,
+        "overflowing": []
+      },
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-1440-calendar.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 1440,
+      "page": "tasks",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440,
+        "overflowing": []
+      },
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-1440-tasks.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 1440,
+      "page": "group-enquiries",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440,
+        "overflowing": []
+      },
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-1440-group-enquiries.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 1440,
+      "page": "operations",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440,
+        "overflowing": []
+      },
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-1440-operations.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 1440,
+      "page": "qualifications",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440,
+        "overflowing": []
+      },
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-1440-qualifications.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 1440,
+      "page": "people/2fbbb04f-da61-4ab1-bad6-5ade74fa45f5",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440,
+        "overflowing": []
+      },
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-1440-people-2fbbb04f-da61-4ab1-bad6-5ade74fa45f5.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 1440,
+      "page": "registrations/87e26b20-e001-4be6-bb91-80d2e6875453",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440,
+        "overflowing": []
+      },
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-1440-registrations-87e26b20-e001-4be6-bb91-80d2e6875453.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 1440,
+      "page": "daily-settings",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440,
+        "overflowing": []
+      },
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-1440-daily-settings.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 1440,
+      "page": "assessments",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440,
+        "overflowing": []
+      },
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-1440-assessments.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 1440,
+      "page": "sources",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440,
+        "overflowing": []
+      },
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-1440-sources.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 1440,
+      "page": "simulation",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440,
+        "overflowing": []
+      },
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-1440-simulation.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 390,
+      "page": "overview",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 390,
+        "document": 390,
+        "overflowing": []
+      },
+      "mobileNavigationVisible": true,
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-390-overview.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 390,
+      "page": "people",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 390,
+        "document": 390,
+        "overflowing": []
+      },
+      "mobileNavigationVisible": true,
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-390-people.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 390,
+      "page": "activities",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 390,
+        "document": 390,
+        "overflowing": []
+      },
+      "mobileNavigationVisible": true,
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-390-activities.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 390,
+      "page": "calendar",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 390,
+        "document": 390,
+        "overflowing": []
+      },
+      "mobileNavigationVisible": true,
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-390-calendar.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 390,
+      "page": "tasks",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 390,
+        "document": 390,
+        "overflowing": []
+      },
+      "mobileNavigationVisible": true,
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-390-tasks.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 390,
+      "page": "group-enquiries",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 390,
+        "document": 390,
+        "overflowing": []
+      },
+      "mobileNavigationVisible": true,
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-390-group-enquiries.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 390,
+      "page": "operations",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 390,
+        "document": 390,
+        "overflowing": []
+      },
+      "mobileNavigationVisible": true,
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-390-operations.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 390,
+      "page": "qualifications",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 390,
+        "document": 390,
+        "overflowing": []
+      },
+      "mobileNavigationVisible": true,
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-390-qualifications.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 390,
+      "page": "people/2fbbb04f-da61-4ab1-bad6-5ade74fa45f5",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 390,
+        "document": 390,
+        "overflowing": []
+      },
+      "mobileNavigationVisible": true,
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-390-people-2fbbb04f-da61-4ab1-bad6-5ade74fa45f5.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 390,
+      "page": "registrations/87e26b20-e001-4be6-bb91-80d2e6875453",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 390,
+        "document": 390,
+        "overflowing": []
+      },
+      "mobileNavigationVisible": true,
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-390-registrations-87e26b20-e001-4be6-bb91-80d2e6875453.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 390,
+      "page": "daily-settings",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 390,
+        "document": 390,
+        "overflowing": []
+      },
+      "mobileNavigationVisible": true,
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-390-daily-settings.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 390,
+      "page": "assessments",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 390,
+        "document": 390,
+        "overflowing": []
+      },
+      "mobileNavigationVisible": true,
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-390-assessments.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 390,
+      "page": "sources",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 390,
+        "document": 390,
+        "overflowing": []
+      },
+      "mobileNavigationVisible": true,
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-390-sources.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 390,
+      "page": "simulation",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 390,
+        "document": 390,
+        "overflowing": []
+      },
+      "mobileNavigationVisible": true,
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-390-simulation.jpg"
+    },
+    {
+      "role": "staff",
+      "width": 1440,
+      "page": "overview",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440,
+        "overflowing": []
+      },
+      "settingsLinks": 0,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "staff-1440-overview.jpg"
+    },
+    {
+      "role": "staff",
+      "width": 1440,
+      "page": "people",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440,
+        "overflowing": []
+      },
+      "settingsLinks": 0,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "staff-1440-people.jpg"
+    },
+    {
+      "role": "staff",
+      "width": 1440,
+      "page": "activities",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440,
+        "overflowing": []
+      },
+      "settingsLinks": 0,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "staff-1440-activities.jpg"
+    },
+    {
+      "role": "staff",
+      "width": 1440,
+      "page": "calendar",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440,
+        "overflowing": []
+      },
+      "settingsLinks": 0,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "staff-1440-calendar.jpg"
+    },
+    {
+      "role": "staff",
+      "width": 1440,
+      "page": "tasks",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440,
+        "overflowing": []
+      },
+      "settingsLinks": 0,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "staff-1440-tasks.jpg"
+    },
+    {
+      "role": "staff",
+      "width": 1440,
+      "page": "group-enquiries",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440,
+        "overflowing": []
+      },
+      "settingsLinks": 0,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "staff-1440-group-enquiries.jpg"
+    },
+    {
+      "role": "staff",
+      "width": 1440,
+      "page": "operations",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440,
+        "overflowing": []
+      },
+      "settingsLinks": 0,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "staff-1440-operations.jpg"
+    },
+    {
+      "role": "staff",
+      "width": 1440,
+      "page": "qualifications",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440,
+        "overflowing": []
+      },
+      "settingsLinks": 0,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "staff-1440-qualifications.jpg"
+    },
+    {
+      "role": "staff",
+      "width": 1440,
+      "page": "people/2fbbb04f-da61-4ab1-bad6-5ade74fa45f5",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440,
+        "overflowing": []
+      },
+      "settingsLinks": 0,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "staff-1440-people-2fbbb04f-da61-4ab1-bad6-5ade74fa45f5.jpg"
+    },
+    {
+      "role": "staff",
+      "width": 1440,
+      "page": "registrations/87e26b20-e001-4be6-bb91-80d2e6875453",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440,
+        "overflowing": []
+      },
+      "settingsLinks": 0,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "staff-1440-registrations-87e26b20-e001-4be6-bb91-80d2e6875453.jpg"
+    },
+    {
+      "role": "staff",
+      "width": 390,
+      "page": "overview",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 390,
+        "document": 390,
+        "overflowing": []
+      },
+      "mobileNavigationVisible": true,
+      "settingsLinks": 0,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "staff-390-overview.jpg"
+    },
+    {
+      "role": "staff",
+      "width": 390,
+      "page": "people",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 390,
+        "document": 390,
+        "overflowing": []
+      },
+      "mobileNavigationVisible": true,
+      "settingsLinks": 0,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "staff-390-people.jpg"
+    },
+    {
+      "role": "staff",
+      "width": 390,
+      "page": "activities",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 390,
+        "document": 390,
+        "overflowing": []
+      },
+      "mobileNavigationVisible": true,
+      "settingsLinks": 0,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "staff-390-activities.jpg"
+    },
+    {
+      "role": "staff",
+      "width": 390,
+      "page": "calendar",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 390,
+        "document": 390,
+        "overflowing": []
+      },
+      "mobileNavigationVisible": true,
+      "settingsLinks": 0,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "staff-390-calendar.jpg"
+    },
+    {
+      "role": "staff",
+      "width": 390,
+      "page": "tasks",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 390,
+        "document": 390,
+        "overflowing": []
+      },
+      "mobileNavigationVisible": true,
+      "settingsLinks": 0,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "staff-390-tasks.jpg"
+    },
+    {
+      "role": "staff",
+      "width": 390,
+      "page": "group-enquiries",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 390,
+        "document": 390,
+        "overflowing": []
+      },
+      "mobileNavigationVisible": true,
+      "settingsLinks": 0,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "staff-390-group-enquiries.jpg"
+    },
+    {
+      "role": "staff",
+      "width": 390,
+      "page": "operations",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 390,
+        "document": 390,
+        "overflowing": []
+      },
+      "mobileNavigationVisible": true,
+      "settingsLinks": 0,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "staff-390-operations.jpg"
+    },
+    {
+      "role": "staff",
+      "width": 390,
+      "page": "qualifications",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 390,
+        "document": 390,
+        "overflowing": []
+      },
+      "mobileNavigationVisible": true,
+      "settingsLinks": 0,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "staff-390-qualifications.jpg"
+    },
+    {
+      "role": "staff",
+      "width": 390,
+      "page": "people/2fbbb04f-da61-4ab1-bad6-5ade74fa45f5",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 390,
+        "document": 390,
+        "overflowing": []
+      },
+      "mobileNavigationVisible": true,
+      "settingsLinks": 0,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "staff-390-people-2fbbb04f-da61-4ab1-bad6-5ade74fa45f5.jpg"
+    },
+    {
+      "role": "staff",
+      "width": 390,
+      "page": "registrations/87e26b20-e001-4be6-bb91-80d2e6875453",
+      "errors": [],
+      "apiFailures": [],
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 390,
+        "document": 390,
+        "overflowing": []
+      },
+      "mobileNavigationVisible": true,
+      "settingsLinks": 0,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "staff-390-registrations-87e26b20-e001-4be6-bb91-80d2e6875453.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 1440,
+      "page": "settings",
+      "errors": [],
+      "apiFailures": [],
+      "policyComparison": "Read-only preview of existing stored draft; no draft saved or policy published",
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 1440,
+        "document": 1440,
+        "overflowing": []
+      },
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-1440-settings.jpg"
+    },
+    {
+      "role": "admin",
+      "width": 390,
+      "page": "settings",
+      "errors": [],
+      "apiFailures": [],
+      "policyComparison": "Read-only preview of existing stored draft; no draft saved or policy published",
+      "shellCount": 1,
+      "mainCount": 1,
+      "h1Count": 1,
+      "overflow": {
+        "viewport": 390,
+        "document": 390,
+        "overflowing": []
+      },
+      "mobileNavigationVisible": true,
+      "settingsLinks": 1,
+      "activeLinks": 1,
+      "violations": [],
+      "screenshot": "admin-390-settings.jpg"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "staff",
+      "page": "settings",
+      "status": 0,
+      "expected": 0,
+      "redirected": true
+    },
+    {
+      "role": "staff",
+      "page": "daily-settings",
+      "status": 0,
+      "expected": 0,
+      "redirected": true
+    },
+    {
+      "role": "staff",
+      "page": "assessments",
+      "status": 0,
+      "expected": 0,
+      "redirected": true
+    },
+    {
+      "role": "staff",
+      "page": "sources",
+      "status": 0,
+      "expected": 0,
+      "redirected": true
+    },
+    {
+      "role": "staff",
+      "page": "simulation",
+      "status": 0,
+      "expected": 0,
+      "redirected": true
+    },
+    {
+      "role": "anonymous",
+      "path": "/api/admin/volunteers/people",
+      "status": 401,
+      "expected": 401
+    },
+    {
+      "role": "anonymous",
+      "path": "/api/admin/volunteers/settings",
+      "status": 401,
+      "expected": 401
+    },
+    {
+      "role": "anonymous",
+      "path": "/api/admin/volunteers/daily-settings/",
+      "status": 401,
+      "expected": 401
+    },
+    {
+      "role": "anonymous",
+      "path": "/api/admin/volunteers/assessments/",
+      "status": 401,
+      "expected": 401
+    },
+    {
+      "role": "anonymous",
+      "path": "/api/admin/volunteers/sources/",
+      "status": 401,
+      "expected": 401
+    },
+    {
+      "role": "anonymous",
+      "path": "/api/admin/volunteers/simulation/",
+      "status": 401,
+      "expected": 401
+    },
+    {
+      "role": "treasurer",
+      "path": "/api/admin/volunteers/people",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "role": "treasurer",
+      "path": "/api/admin/volunteers/settings",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "role": "treasurer",
+      "path": "/api/admin/volunteers/daily-settings/",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "role": "treasurer",
+      "path": "/api/admin/volunteers/assessments/",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "role": "treasurer",
+      "path": "/api/admin/volunteers/sources/",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "role": "treasurer",
+      "path": "/api/admin/volunteers/simulation/",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "role": "volunteer1",
+      "path": "/api/admin/volunteers/people",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "role": "volunteer1",
+      "path": "/api/admin/volunteers/settings",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "role": "volunteer1",
+      "path": "/api/admin/volunteers/daily-settings/",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "role": "volunteer1",
+      "path": "/api/admin/volunteers/assessments/",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "role": "volunteer1",
+      "path": "/api/admin/volunteers/sources/",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "role": "volunteer1",
+      "path": "/api/admin/volunteers/simulation/",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "role": "staff",
+      "path": "/api/admin/volunteers/people",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "role": "staff",
+      "path": "/api/admin/volunteers/settings",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "role": "staff",
+      "path": "/api/admin/volunteers/daily-settings/",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "role": "staff",
+      "path": "/api/admin/volunteers/assessments/",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "role": "staff",
+      "path": "/api/admin/volunteers/sources/",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "role": "staff",
+      "path": "/api/admin/volunteers/simulation/",
+      "status": 403,
+      "expected": 403
+    }
+  ],
+  "journeys": [
+    {
+      "role": "admin",
+      "check": "Overview pending card opens activities with pending filter",
+      "passed": true
+    },
+    {
+      "role": "admin",
+      "check": "Full and partial linked email plus name locate email-verified pending zero-booking identity; detail opens canonical qualification",
+      "passed": true,
+      "profileId": "1a760ef7-9e20-4887-aa73-602867388856"
+    },
+    {
+      "role": "admin",
+      "check": "Unsaved policy edit: dismissed navigation retains input; accepted navigation leaves without saving",
+      "passed": true
+    },
+    {
+      "role": "staff",
+      "check": "Overview pending card opens activities with pending filter",
+      "passed": true
+    },
+    {
+      "role": "staff",
+      "check": "Full and partial linked email plus name locate email-verified pending zero-booking identity; detail opens canonical qualification",
+      "passed": true,
+      "profileId": "1a760ef7-9e20-4887-aa73-602867388856"
+    }
+  ],
+  "blockedRequests": [],
+  "fixtureSetup": {
+    "marker": "admin-centre-zero-e35cf0f6-f96b-486e-83c7-8496d0e903b0",
+    "profileId": "1a760ef7-9e20-4887-aa73-602867388856",
+    "reused": true,
+    "purpose": "Isolated email-confirmed pending zero-booking identity; no email sent"
+  },
+  "representativeScreenshots": [
+    "admin-1440-overview.jpg",
+    "admin-390-people.jpg",
+    "admin-1440-settings-before-preview.jpg",
+    "admin-1440-settings.jpg",
+    "admin-390-assessments.jpg",
+    "staff-390-zero-booking-search.jpg",
+    "staff-390-selected-qualification.jpg",
+    "admin-1440-people-2fbbb04f-da61-4ab1-bad6-5ade74fa45f5.jpg"
+  ],
+  "fullScreenshotDirectory": ".local-policy-test/browser/volunteer-admin-centre"
+}
