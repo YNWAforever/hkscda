@@ -1,69 +1,229 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useReducer, useRef, useState } from "react";
 import { getSupabaseClient } from "../../../lib/supabase";
 import { TurnstileWidget, turnstileEnabled } from "../TurnstileWidget";
-export function VerifiedEmailSignIn() {
+import {
+  emailSignInReducer,
+  initialEmailSignInState,
+  normaliseSignInEmail,
+  resendSecondsRemaining,
+  safeEmailRedirect,
+} from "./emailSignInState";
+
+type VerifiedEmailSignInProps = {
+  emailRedirectTo?: string;
+  onSignedIn?: () => void;
+};
+export function VerifiedEmailSignIn({
+  emailRedirectTo,
+  onSignedIn,
+}: VerifiedEmailSignInProps = {}) {
+  const [state, dispatch] = useReducer(emailSignInReducer, initialEmailSignInState);
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
-  const [sent, setSent] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
   const [captcha, setCaptcha] = useState("");
+  const [resetKey, setResetKey] = useState(0);
+  const [now, setNow] = useState(0);
+  const inFlight = useRef(false);
+  const emailInput = useRef<HTMLInputElement>(null);
+  const codeInput = useRef<HTMLInputElement>(null);
+  const id = useId();
+  const remaining = resendSecondsRemaining(state.resendAt, now);
+  const sent = state.stage === "code";
+
+  useEffect(() => {
+    if (!state.resendAt) return;
+    const timer = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, [state.resendAt]);
+  useEffect(() => {
+    if (state.stage === "code") codeInput.current?.focus();
+  }, [state.stage]);
+
+  async function sendCode() {
+    if (inFlight.current || resendSecondsRemaining(state.resendAt, Date.now()) > 0) return;
+    const validatedEmail = normaliseSignInEmail(sent ? state.email : email);
+    if (!validatedEmail) {
+      dispatch({ type: "failed", message: "請輸入有效的電郵地址。" });
+      emailInput.current?.focus();
+      return;
+    }
+    if (turnstileEnabled && !captcha) {
+      dispatch({ type: "failed", message: "請先完成人機驗證。" });
+      return;
+    }
+    inFlight.current = true;
+    dispatch({ type: "start" });
+    try {
+      const response = await getSupabaseClient().auth.signInWithOtp({
+        email: validatedEmail,
+        options: {
+          captchaToken: captcha || undefined,
+          emailRedirectTo: safeEmailRedirect(
+            emailRedirectTo,
+            typeof window === "undefined" ? undefined : window.location.href,
+          ),
+        },
+      });
+      if (response.error) throw response.error;
+      const sentAt = Date.now();
+      setNow(sentAt);
+      setCode("");
+      setEmail(validatedEmail);
+      dispatch({ type: "sent", email: validatedEmail, now: sentAt });
+    } catch {
+      dispatch({ type: "failed", message: "暫時未能發送登入電郵，請稍後再試。" });
+    } finally {
+      setCaptcha("");
+      setResetKey((key) => key + 1);
+      inFlight.current = false;
+    }
+  }
+  async function verifyCode() {
+    if (inFlight.current) return;
+    if (!code.trim()) {
+      dispatch({ type: "failed", message: "請輸入電郵內的驗證碼。" });
+      codeInput.current?.focus();
+      return;
+    }
+    inFlight.current = true;
+    dispatch({ type: "start" });
+    try {
+      const response = await getSupabaseClient().auth.verifyOtp({
+        email: state.email,
+        token: code.trim(),
+        type: "email",
+      });
+      if (response.error || !response.data.session)
+        throw response.error ?? new Error("Session missing");
+      dispatch({ type: "verified" });
+    } catch {
+      dispatch({
+        type: "failed",
+        message: "驗證碼無效或已過期，請檢查後重試，或重新發送登入電郵。",
+      });
+      return;
+    } finally {
+      inFlight.current = false;
+    }
+    onSignedIn?.();
+  }
+  if (state.stage === "complete")
+    return (
+      <p className="volunteer-auth" role="status">
+        電郵驗證成功，正在載入會員中心。
+      </p>
+    );
+
   return (
     <form
-      className="space-y-3"
-      onSubmit={async (e) => {
-        e.preventDefault();
-        setBusy(true);
-        setError("");
-        try {
-          const client = getSupabaseClient();
-          const response = sent
-            ? await client.auth.verifyOtp({ email, token: code, type: "email" })
-            : await client.auth.signInWithOtp({
-                email,
-                options: { captchaToken: captcha || undefined },
-              });
-          if (response.error) throw response.error;
-          setSent(true);
-        } catch {
-          setError("未能驗證電郵，請檢查資料後再試。");
-        } finally {
-          setBusy(false);
-        }
+      className="volunteer-auth space-y-4"
+      aria-busy={state.busy}
+      noValidate
+      onSubmit={(event) => {
+        event.preventDefault();
+        void (sent ? verifyCode() : sendCode());
       }}
     >
-      <p>請先驗證電郵，以便儲存及查看實習申請。</p>
-      <label className="block">
-        電郵
-        <input
-          className="block w-full rounded border p-2"
-          type="email"
-          required
-          value={email}
-          disabled={sent}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-      </label>
-      {sent && (
-        <label className="block">
-          電郵驗證碼
+      <p className="text-[var(--color-text-muted)]">
+        使用電郵登入，儲存報名及查看義工或實習申請紀錄。
+      </p>
+      {sent ? (
+        <div className="volunteer-auth__sent">
+          <p role="status">
+            登入電郵已寄往 <strong className="break-all">{state.email}</strong>
+          </p>
+          <p className="text-sm text-[var(--color-text-muted)]">
+            請查看收件匣及垃圾郵件。可使用電郵中的登入連結，或輸入驗證碼。
+          </p>
+        </div>
+      ) : (
+        <label className="block" htmlFor={`${id}-email`}>
+          電郵地址
           <input
-            className="block w-full rounded border p-2"
+            ref={emailInput}
+            id={`${id}-email`}
+            className="volunteer-auth__input mt-2 block min-h-11 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3"
+            type="email"
+            autoComplete="email"
+            autoCapitalize="none"
+            spellCheck={false}
             required
-            autoComplete="one-time-code"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
+            value={email}
+            disabled={state.busy}
+            aria-describedby={state.error ? `${id}-error` : undefined}
+            onChange={(event) => setEmail(event.target.value)}
           />
         </label>
       )}
-      {!sent && turnstileEnabled && <TurnstileWidget onVerify={setCaptcha} />}
+      {sent && (
+        <label className="block" htmlFor={`${id}-code`}>
+          電郵驗證碼
+          <input
+            ref={codeInput}
+            id={`${id}-code`}
+            className="volunteer-auth__input mt-2 block min-h-11 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3"
+            required
+            autoComplete="one-time-code"
+            inputMode="numeric"
+            autoCapitalize="none"
+            spellCheck={false}
+            value={code}
+            disabled={state.busy}
+            aria-describedby={state.error ? `${id}-error` : undefined}
+            onChange={(event) => setCode(event.target.value)}
+          />
+        </label>
+      )}
+      {turnstileEnabled && (!sent || remaining === 0) && (
+        <TurnstileWidget
+          onVerify={setCaptcha}
+          onExpire={() => setCaptcha("")}
+          resetKey={resetKey}
+        />
+      )}
       <button
-        className="rounded border px-4 py-2"
-        disabled={busy || (!sent && turnstileEnabled && !captcha)}
+        className="btn-primary min-h-11 w-full"
+        disabled={state.busy || (!sent && (remaining > 0 || (turnstileEnabled && !captcha)))}
       >
-        {sent ? "驗證並登入" : "取得登入驗證碼"}
+        {state.busy
+          ? "處理中…"
+          : sent
+            ? "驗證並登入"
+            : remaining > 0
+              ? `請等候 ${remaining} 秒再發送`
+              : "取得登入電郵"}
       </button>
-      {error && <p role="alert">{error}</p>}
+      {sent && (
+        <div className="volunteer-auth__actions flex flex-wrap gap-3">
+          <button
+            type="button"
+            className="btn-secondary min-h-11"
+            disabled={state.busy || remaining > 0 || (turnstileEnabled && !captcha)}
+            onClick={() => void sendCode()}
+          >
+            {remaining > 0 ? `${remaining} 秒後可重新發送` : "重新發送登入電郵"}
+          </button>
+          <button
+            type="button"
+            className="btn-secondary min-h-11"
+            disabled={state.busy}
+            onClick={() => {
+              setCode("");
+              setCaptcha("");
+              setResetKey((key) => key + 1);
+              dispatch({ type: "edit" });
+              window.setTimeout(() => emailInput.current?.focus(), 0);
+            }}
+          >
+            更改電郵地址
+          </button>
+        </div>
+      )}
+      {state.error && (
+        <p id={`${id}-error`} role="alert" className="text-[var(--color-error)]">
+          {state.error}
+        </p>
+      )}
     </form>
   );
 }

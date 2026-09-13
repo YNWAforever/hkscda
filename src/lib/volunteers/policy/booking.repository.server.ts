@@ -47,6 +47,7 @@ export function createBookingRepository(
         // Explicit projection: no staff notes, actor IDs or private source metadata.
         return {
           id: row.id,
+          shelter: parsed.shelter,
           summary: summaries?.[row.id],
           title: row.title,
           starts_at: row.starts_at,
@@ -95,19 +96,50 @@ export function createBookingRepository(
         .eq("auth_user_id", actor)
         .maybeSingle();
       if (error) throw error;
-      if (!profile) return { profile: null, registrations: [] };
+      const registrationsLimit = 100;
+      if (!profile)
+        return { profile: null, registrations: [], registrations_limit: registrationsLimit };
       const { data: registrations, error: registrationError } = await client
         .from("volunteer_registration")
-        .select("id,activity_id,status,attendance_status,notes")
+        .select(
+          "id,activity_id,status,attendance_status,notes,created_at,activity:volunteer_activity(id,title,starts_at,ends_at,location)",
+        )
         .eq("profile_id", profile.id)
         .order("created_at", { ascending: false })
+        .order("id", { ascending: false })
         .limit(100);
       if (registrationError) throw registrationError;
       const { data: history, error: historyError } = await client.rpc("volunteer_my_history", {
         p_actor: actor,
       });
       if (historyError) throw historyError;
-      return { profile, registrations: registrations ?? [], history } as VolunteerMe;
+      return {
+        profile,
+        registrations_limit: registrationsLimit,
+        registrations: (registrations ?? []).map((raw) => {
+          const row = raw as unknown as VolunteerMe["registrations"][number];
+          // The owned FK join deliberately includes past and unpublished sessions.
+          // Project member remarks only, never internal notes or activity policy data.
+          return {
+            id: row.id,
+            activity_id: row.activity_id,
+            status: row.status,
+            attendance_status: row.attendance_status,
+            notes: row.notes,
+            created_at: row.created_at,
+            activity: row.activity
+              ? {
+                  id: row.activity.id,
+                  title: row.activity.title,
+                  starts_at: row.activity.starts_at,
+                  ends_at: row.activity.ends_at,
+                  location: row.activity.location,
+                }
+              : null,
+          };
+        }),
+        history,
+      } as VolunteerMe;
     },
   };
 }

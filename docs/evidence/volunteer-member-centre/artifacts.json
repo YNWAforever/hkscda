@@ -1,0 +1,25 @@
+{
+  "scope": "Synthetic local browser captures, not production",
+  "artifacts": [
+    {
+      "path": "docs/evidence/volunteer-member-centre/member-1440.png",
+      "bytes": 1386065,
+      "sha256": "18d4628097cf3cdeb6987982c71c8c19fdf266034cec1628fa306ffe28f29d4d"
+    },
+    {
+      "path": "docs/evidence/volunteer-member-centre/member-390.png",
+      "bytes": 1689700,
+      "sha256": "1682e2312454a011decb74ee8d2bd4fe311c149863ee805e2f57d92fbba87ef5"
+    },
+    {
+      "path": "docs/evidence/volunteer-member-centre/mobile-booked.png",
+      "bytes": 348745,
+      "sha256": "d2ee8ad4e7d3fc04ed6c9dfc0b249d5d53b491c3b8ac1bbe59d327857be18be6"
+    },
+    {
+      "path": "docs/evidence/volunteer-member-centre/mobile-login.png",
+      "bytes": 1653178,
+      "sha256": "9e4bbd5e95c78eac42d27513afa98244c340690be23de79fcd0149a2bc2413df"
+    }
+  ]
+}
