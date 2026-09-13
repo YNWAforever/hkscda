@@ -106,3 +106,10 @@ test("renders only approved public facts and escapes profile text", async () => 
   expect(markup).not.toContain(animal.notes);
   expect(markup).not.toContain("<b>");
 });
+
+test("home distinguishes a failed animal read from an empty directory", async () => {
+  const { FeaturedAnimals } = await import("./home/FeaturedAnimals");
+  const markup = renderToStaticMarkup(<FeaturedAnimals animals={[]} loadFailed />);
+  expect(markup).toContain("暫時未能載入領養資料");
+  expect(markup).not.toContain("暫未有可顯示的領養資料");
+});

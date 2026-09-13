@@ -6,11 +6,15 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 // mutated out from under us the moment the mock below is installed.
 const realSupabaseModule = { ...(await import("../supabase")) };
 
-function createListingFakeClient(data: Record<string, unknown>[]) {
+function createListingFakeClient(data: Record<string, unknown>[], missingGallery = false) {
   const eqFilters: Array<[string, unknown]> = [];
   let inFilter: { column: string; values: readonly string[] } | undefined;
+  let columns = "";
   const query = {
-    select: () => query,
+    select: (value: string) => {
+      columns = value;
+      return query;
+    },
     eq: (column: string, value: unknown) => {
       eqFilters.push([column, value]);
       return query;
@@ -22,6 +26,11 @@ function createListingFakeClient(data: Record<string, unknown>[]) {
     is: () => query,
     order: () => query,
     range: async () => {
+      if (missingGallery && columns.split(",").includes("gallery"))
+        return {
+          data: null,
+          error: { code: "42703", message: "column animals.gallery does not exist" },
+        };
       const filtered = data.filter((row) => {
         const passesEq = eqFilters.every(([column, value]) => row[column] === value);
         const passesIn = !inFilter || inFilter.values.includes(row[inFilter.column] as string);
@@ -71,4 +80,23 @@ describe("readPublicAnimals", () => {
 
     expect(result.map((a) => a.id).sort()).toEqual(["foster", "shelter"]);
   });
+});
+
+test("reads published legacy photos before gallery migration without including drafts", async () => {
+  const rows = [
+    {
+      ...baseAnimal,
+      id: "visible",
+      type: "cat",
+      status: "available",
+      image_url: "https://example.invalid/real-cat.jpg",
+    },
+    { ...baseAnimal, id: "draft", type: "cat", status: "available", publication_state: "draft" },
+  ];
+  mock.module("../supabase", () => ({ supabase: createListingFakeClient(rows, true) }));
+  const { readPublicAnimals } = await import("./publicListing.server");
+  const result = await readPublicAnimals({ type: "cat", genderFilter: "all" });
+  expect(result.map((a) => a.id)).toEqual(["visible"]);
+  expect(result[0].image_url).toBe(rows[0].image_url);
+  expect(result[0].gallery).toEqual([]);
 });

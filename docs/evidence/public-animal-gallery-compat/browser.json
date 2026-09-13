@@ -1,0 +1,30 @@
+{
+  "target": "Local fixed app, production anonymous public reads only",
+  "productionWrites": false,
+  "checks": [
+    {
+      "path": "/",
+      "cards": 1
+    },
+    {
+      "path": "/animals/cat",
+      "cards": 15
+    },
+    {
+      "path": "/animals/cat/0158e19a-4df6-50e0-8eb3-75197252509f",
+      "detail": "loaded"
+    },
+    {
+      "path": "/animals/dog",
+      "cards": 15
+    },
+    {
+      "path": "/animals/dog/0634b5a6-d89b-5512-aa3a-8dc64707b426",
+      "detail": "loaded"
+    },
+    {
+      "path": "/sponsors",
+      "cards": 16
+    }
+  ]
+}

@@ -9,7 +9,13 @@ import type { Animal } from "../../../types/animal";
  * notice when it is serving stand-in data; that mode is not ported, so an empty
  * result here is a real empty state.
  */
-export function FeaturedAnimals({ animals }: { animals: Animal[] }) {
+export function FeaturedAnimals({
+  animals,
+  loadFailed = false,
+}: {
+  animals: Animal[];
+  loadFailed?: boolean;
+}) {
   return (
     <section
       className="section section-warm"
@@ -34,8 +40,12 @@ export function FeaturedAnimals({ animals }: { animals: Animal[] }) {
         ) : (
           <PublicStateShell
             headingLevel={2}
-            title="暫未有可顯示的領養資料"
-            description="公開名單會隨照護與領養進度更新。我們不會以舊資料或估算內容代替。"
+            title={loadFailed ? "暫時未能載入領養資料" : "暫未有可顯示的領養資料"}
+            description={
+              loadFailed
+                ? "系統暫時未能取得領養資料，請稍後再試或查看貓狗名單。"
+                : "公開名單會隨照護與領養進度更新。我們不會以舊資料或估算內容代替。"
+            }
             action={
               <Link to="/animals/cat" className="btn-primary min-h-11 px-5">
                 查看貓貓名單

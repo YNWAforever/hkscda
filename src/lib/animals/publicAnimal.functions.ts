@@ -1,4 +1,4 @@
-import { PUBLIC_ANIMAL_COLUMNS } from "./publicColumns";
+import { readWithOptionalGallery } from "./publicColumns";
 import { projectPublicAnimal } from "./publicProfile";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
@@ -32,20 +32,25 @@ export async function resolvePublicAnimal(
   if (!isPublicAnimalId(data.id)) return null;
 
   const { supabase } = deps;
-  let query = supabase
-    .from("animals")
-    .select(PUBLIC_ANIMAL_COLUMNS)
-    .eq("publication_state", "published")
-    .eq("id", data.id)
-    .in("status", PUBLIC_VISIBLE_ANIMAL_STATUSES);
-  query = query
-    .is("retired_at", null)
-    .eq(data.type === "sponsor" || !data.type ? "sponsorship_eligible" : "adoption_eligible", true);
-  if (data.type && data.type !== "sponsor") query = query.eq("type", data.type);
+  const { data: animal, error } = await readWithOptionalGallery((columns) => {
+    let query = supabase
+      .from("animals")
+      .select(columns)
+      .eq("publication_state", "published")
+      .eq("id", data.id)
+      .in("status", PUBLIC_VISIBLE_ANIMAL_STATUSES);
+    query = query
+      .is("retired_at", null)
+      .eq(
+        data.type === "sponsor" || !data.type ? "sponsorship_eligible" : "adoption_eligible",
+        true,
+      );
+    if (data.type && data.type !== "sponsor") query = query.eq("type", data.type);
 
-  const { data: animal, error } = await query.maybeSingle();
+    return query.maybeSingle();
+  });
   if (error) throw new Error("Could not load public animal");
-  return animal ? projectPublicAnimal(animal as Animal) : null;
+  return animal ? projectPublicAnimal(animal as unknown as Animal) : null;
 }
 
 export const getPublicAnimal = createServerFn({ method: "GET" })
