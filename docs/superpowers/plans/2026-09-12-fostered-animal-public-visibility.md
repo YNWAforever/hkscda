@@ -573,9 +573,20 @@ git commit -m "fix: list fostered animals on the public cat/dog/sponsor pages"
 - Modify: `src/lib/animals/publicAnimal.functions.ts`
 - Test: `src/lib/animals/publicAnimal.functions.test.ts` (new)
 
-`getPublicAnimal` is a `createServerFn` handler. Called directly in a server
-context (which is what a Bun test process is), it executes its handler with the
-given `data` exactly like any other async function — no HTTP round trip.
+**Revised after Task 5 was first attempted:** `getPublicAnimal` is a
+`createServerFn` handler, and calling it directly (`getPublicAnimal({ data })`)
+outside a real request throws `TypeError: null is not an object (evaluating
+'userCtx.context')` from inside `@tanstack/react-start`'s own
+`createServerFn.js` — confirmed by reproduction, not a guess. There is no
+existing precedent anywhere in this codebase for invoking a `createServerFn`
+wrapper directly in a test (grepped the whole repo for a `*.test.ts` paired
+with a file containing `createServerFn`; the one match,
+`submit-application.functions.test.ts`, tests the plain function underneath
+the wrapper, not the wrapper itself). This task follows that same, established
+shape: extract the handler's body into a plain, separately-exported
+`resolvePublicAnimal` function that takes the validated `data` directly, with
+`getPublicAnimal` reduced to a thin call-through. The test calls
+`resolvePublicAnimal` and never touches `createServerFn` at all.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -646,20 +657,26 @@ describe("getPublicAnimal", () => {
       public_profile: null,
     };
     mock.module("../supabase", () => ({ supabase: createAnimalFakeClient([fosterCat]) }));
-    const { getPublicAnimal } = await import("./publicAnimal.functions");
+    const { resolvePublicAnimal } = await import("./publicAnimal.functions");
 
-    const result = await getPublicAnimal({ data: { id: "foster-1", type: "cat" } });
+    const result = await resolvePublicAnimal({ id: "foster-1", type: "cat" });
 
     expect(result?.id).toBe("foster-1");
   });
 });
 ```
 
+(Note: `describe("getPublicAnimal", ...)` in the block above should read
+`describe("resolvePublicAnimal", ...)` — testing the extracted function, not
+the `createServerFn` wrapper around it.)
+
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `bun test src/lib/animals/publicAnimal.functions.test.ts`
-Expected: FAIL — `result` is `null`, because the fake's `.eq("status", "available")`
-match excludes the fostered fixture row.
+Expected: FAIL — either a missing-export error (`resolvePublicAnimal` doesn't
+exist yet) or, once it exists from Step 3 minus the status fix, `result` is
+`null` because the fake's `.eq("status", "available")` match excludes the
+fostered fixture row.
 
 - [ ] **Step 3: Write minimal implementation**
 
@@ -672,6 +689,33 @@ import { z } from "zod";
 
 import type { Animal } from "../../types/animal";
 import { isPublicAnimalId } from "./publicAnimal";
+
+const publicAnimalInput = z.object({
+  id: z.string(),
+  type: z.enum(["cat", "dog", "sponsor"]).optional(),
+});
+
+export const getPublicAnimal = createServerFn({ method: "GET" })
+  .inputValidator(publicAnimalInput)
+  .handler(async ({ data }) => {
+    // Screened here rather than in the validator: a malformed id is a missing
+    // page, and rejecting it as invalid input would surface as a 500.
+    if (!isPublicAnimalId(data.id)) return null;
+
+    const { supabase } = await import("../supabase");
+    let query = supabase.from("animals").select("*").eq("id", data.id).eq("status", "available");
+    query = query
+      .is("retired_at", null)
+      .eq(
+        data.type === "sponsor" || !data.type ? "sponsorship_eligible" : "adoption_eligible",
+        true,
+      );
+    if (data.type && data.type !== "sponsor") query = query.eq("type", data.type);
+
+    const { data: animal, error } = await query.maybeSingle();
+    if (error) throw new Error("Could not load public animal");
+    return animal ? projectPublicAnimal(animal as Animal) : null;
+  });
 ```
 
 to:
@@ -684,24 +728,46 @@ import { z } from "zod";
 import type { Animal } from "../../types/animal";
 import { PUBLIC_VISIBLE_ANIMAL_STATUSES } from "../../types/animal";
 import { isPublicAnimalId } from "./publicAnimal";
-```
 
-Then change:
+const publicAnimalInput = z.object({
+  id: z.string(),
+  type: z.enum(["cat", "dog", "sponsor"]).optional(),
+});
 
-```ts
-    const { supabase } = await import("../supabase");
-    let query = supabase.from("animals").select("*").eq("id", data.id).eq("status", "available");
-```
+// Extracted so it's directly callable in tests -- createServerFn's wrapped
+// export throws outside a real request context (no userCtx), the same reason
+// submit-application.functions.ts keeps its core logic in a plain,
+// separately-exported function rather than testing the wrapper itself.
+export async function resolvePublicAnimal(data: {
+  id: string;
+  type?: "cat" | "dog" | "sponsor";
+}) {
+  // Screened here rather than in the validator: a malformed id is a missing
+  // page, and rejecting it as invalid input would surface as a 500.
+  if (!isPublicAnimalId(data.id)) return null;
 
-to:
+  const { supabase } = await import("../supabase");
+  let query = supabase
+    .from("animals")
+    .select("*")
+    .eq("id", data.id)
+    .in("status", PUBLIC_VISIBLE_ANIMAL_STATUSES);
+  query = query
+    .is("retired_at", null)
+    .eq(
+      data.type === "sponsor" || !data.type ? "sponsorship_eligible" : "adoption_eligible",
+      true,
+    );
+  if (data.type && data.type !== "sponsor") query = query.eq("type", data.type);
 
-```ts
-    const { supabase } = await import("../supabase");
-    let query = supabase
-      .from("animals")
-      .select("*")
-      .eq("id", data.id)
-      .in("status", PUBLIC_VISIBLE_ANIMAL_STATUSES);
+  const { data: animal, error } = await query.maybeSingle();
+  if (error) throw new Error("Could not load public animal");
+  return animal ? projectPublicAnimal(animal as Animal) : null;
+}
+
+export const getPublicAnimal = createServerFn({ method: "GET" })
+  .inputValidator(publicAnimalInput)
+  .handler(async ({ data }) => resolvePublicAnimal(data));
 ```
 
 - [ ] **Step 4: Run test to verify it passes**
@@ -727,6 +793,13 @@ git commit -m "fix: let a fostered animal's own page resolve, same as an availab
 Per the approved design, fostered animals count into the same "available" figure
 shown on the homepage — one definition of available everywhere, not a
 shelter-only variant.
+
+**Revised after Task 5's blocker:** `getPublicImpactItems` is also a
+`createServerFn` handler, and calling it directly the way this task originally
+specified hits the exact same `userCtx.context` failure Task 5 found. This
+task uses the same fix: extract the body into a plain, separately-exported
+`resolvePublicImpactItems` function, with `getPublicImpactItems` reduced to a
+thin call-through. The test calls `resolvePublicImpactItems` directly.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -786,9 +859,9 @@ describe("getPublicImpactItems", () => {
     mock.module("../adoptions/publicImpact.server", () => ({
       loadAdoptionSpeciesTotals: async () => ({ cat: 0, dog: 0 }),
     }));
-    const { getPublicImpactItems } = await import("./publicImpact.functions");
+    const { resolvePublicImpactItems } = await import("./publicImpact.functions");
 
-    const { items } = await getPublicImpactItems();
+    const { items } = await resolvePublicImpactItems();
 
     expect(items.find((item) => item.label === "待領養貓貓")?.value).toBe(2);
     expect(items.find((item) => item.label === "待領養狗狗")?.value).toBe(1);
@@ -796,35 +869,42 @@ describe("getPublicImpactItems", () => {
 });
 ```
 
+(Note: `describe("getPublicImpactItems", ...)` in the block above should read
+`describe("resolvePublicImpactItems", ...)` — testing the extracted function,
+not the `createServerFn` wrapper around it.)
+
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `bun test src/lib/animals/publicImpact.functions.test.ts`
-Expected: FAIL — `"待領養貓貓"` value is `1` (only the available cat), not `2`;
-`"待領養狗狗"` is `undefined` (the fostered dog's count is `0`, so `buildPublicImpact`
-filters it out entirely, per its `value > 0` rule).
+Expected: FAIL — either a missing-export error (`resolvePublicImpactItems`
+doesn't exist yet) or, once it exists from Step 3 minus the status fix,
+`"待領養貓貓"` value is `1` (only the available cat), not `2`; `"待領養狗狗"` is
+`undefined` (the fostered dog's count is `0`, so `buildPublicImpact` filters
+it out entirely, per its `value > 0` rule).
 
 - [ ] **Step 3: Write minimal implementation**
 
-In `src/lib/animals/publicImpact.functions.ts`, change:
+In `src/lib/animals/publicImpact.functions.ts`, change the whole file from:
 
 ```ts
 import { createServerFn } from "@tanstack/react-start";
 
 import { buildPublicImpact, type PublicImpactItem } from "./publicImpact";
-```
 
-to:
+type CountResult = { count: number | null; error: { message: string } | null };
 
-```ts
-import { createServerFn } from "@tanstack/react-start";
+/**
+ * Read-only public projection over the anonymous client for available counts,
+ * so the existing RLS policy stays authoritative there. Adopted counts come
+ * from the service-role adoption-impact aggregate instead - the anon policy
+ * exposes only available animals, so an anon query for status = adopted could
+ * only ever return empty (defect G-04).
+ */
+export const getPublicImpactItems = createServerFn({ method: "GET" }).handler(
+  async (): Promise<{ items: PublicImpactItem[]; asOf: string | null }> => {
+    const { supabase } = await import("../supabase");
+    const { loadAdoptionSpeciesTotals } = await import("../adoptions/publicImpact.server");
 
-import { buildPublicImpact, type PublicImpactItem } from "./publicImpact";
-import { PUBLIC_VISIBLE_ANIMAL_STATUSES } from "../../types/animal";
-```
-
-Then change:
-
-```ts
     async function countAvailable(type: "cat" | "dog"): Promise<CountResult> {
       const { count, error } = await supabase
         .from("animals")
@@ -835,21 +915,94 @@ Then change:
         .is("retired_at", null);
       return { count: count ?? null, error: error ? { message: error.message } : null };
     }
+
+    const [availableCats, availableDogs, adoptedTotals] = await Promise.all([
+      countAvailable("cat"),
+      countAvailable("dog"),
+      loadAdoptionSpeciesTotals().catch((error) => {
+        console.error("Adoption species totals unavailable; omitting adopted-count cards.", error);
+        return null;
+      }),
+    ]);
+
+    const verified = (r: CountResult) => (r.error ? null : r.count);
+    const asOf = new Date().toISOString();
+    const items = buildPublicImpact({
+      availableCats: verified(availableCats),
+      availableDogs: verified(availableDogs),
+      adoptedCats: adoptedTotals?.cat ?? null,
+      adoptedDogs: adoptedTotals?.dog ?? null,
+      asOf,
+    });
+
+    return { items, asOf: items.length ? asOf : null };
+  },
+);
 ```
 
 to:
 
 ```ts
-    async function countAvailable(type: "cat" | "dog"): Promise<CountResult> {
-      const { count, error } = await supabase
-        .from("animals")
-        .select("id", { count: "exact", head: true })
-        .eq("type", type)
-        .in("status", PUBLIC_VISIBLE_ANIMAL_STATUSES)
-        .eq("adoption_eligible", true)
-        .is("retired_at", null);
-      return { count: count ?? null, error: error ? { message: error.message } : null };
-    }
+import { createServerFn } from "@tanstack/react-start";
+
+import { buildPublicImpact, type PublicImpactItem } from "./publicImpact";
+import { PUBLIC_VISIBLE_ANIMAL_STATUSES } from "../../types/animal";
+
+type CountResult = { count: number | null; error: { message: string } | null };
+
+// Extracted so it's directly callable in tests -- createServerFn's wrapped
+// export throws outside a real request context (no userCtx), the same reason
+// submit-application.functions.ts keeps its core logic in a plain,
+// separately-exported function rather than testing the wrapper itself.
+//
+// Read-only public projection over the anonymous client for available counts,
+// so the existing RLS policy stays authoritative there. Adopted counts come
+// from the service-role adoption-impact aggregate instead - the anon policy
+// exposes only available animals, so an anon query for status = adopted could
+// only ever return empty (defect G-04).
+export async function resolvePublicImpactItems(): Promise<{
+  items: PublicImpactItem[];
+  asOf: string | null;
+}> {
+  const { supabase } = await import("../supabase");
+  const { loadAdoptionSpeciesTotals } = await import("../adoptions/publicImpact.server");
+
+  async function countAvailable(type: "cat" | "dog"): Promise<CountResult> {
+    const { count, error } = await supabase
+      .from("animals")
+      .select("id", { count: "exact", head: true })
+      .eq("type", type)
+      .in("status", PUBLIC_VISIBLE_ANIMAL_STATUSES)
+      .eq("adoption_eligible", true)
+      .is("retired_at", null);
+    return { count: count ?? null, error: error ? { message: error.message } : null };
+  }
+
+  const [availableCats, availableDogs, adoptedTotals] = await Promise.all([
+    countAvailable("cat"),
+    countAvailable("dog"),
+    loadAdoptionSpeciesTotals().catch((error) => {
+      console.error("Adoption species totals unavailable; omitting adopted-count cards.", error);
+      return null;
+    }),
+  ]);
+
+  const verified = (r: CountResult) => (r.error ? null : r.count);
+  const asOf = new Date().toISOString();
+  const items = buildPublicImpact({
+    availableCats: verified(availableCats),
+    availableDogs: verified(availableDogs),
+    adoptedCats: adoptedTotals?.cat ?? null,
+    adoptedDogs: adoptedTotals?.dog ?? null,
+    asOf,
+  });
+
+  return { items, asOf: items.length ? asOf : null };
+}
+
+export const getPublicImpactItems = createServerFn({ method: "GET" }).handler(() =>
+  resolvePublicImpactItems(),
+);
 ```
 
 - [ ] **Step 4: Run test to verify it passes**
