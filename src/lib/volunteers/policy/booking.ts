@@ -64,6 +64,7 @@ export type PublicSessionSummary = {
   timezone: string;
 };
 export type PolicySession = {
+  shelter?: string;
   summary?: PublicSessionSummary;
   id: string;
   title: string;
@@ -75,6 +76,7 @@ export type PolicySession = {
   policy: Pick<PolicyDraft, "eligibility" | "roles" | "remarks" | "terms">;
 };
 export type VolunteerMe = {
+  registrations_limit?: number;
   history?: {
     verified_sessions: number;
     history_coverage_start: string | null;
@@ -95,6 +97,8 @@ export type VolunteerMe = {
     status: string;
     attendance_status: string;
     notes: string | null;
+    created_at?: string;
+    activity?: Pick<PolicySession, "id" | "title" | "starts_at" | "ends_at" | "location"> | null;
   }[];
 };
 export type BookingRepository = {

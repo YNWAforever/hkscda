@@ -1,0 +1,13 @@
+{
+  "marker": "centre-2c21abc5-ba27-4fbe-a126-ef7f685fe079",
+  "origin": "http://127.0.0.1:56336",
+  "checks": [
+    "Mobile progressive OTP UI (intercepted locally; no email), actual authenticated profile claim and pending verification",
+    "Verified member selects a real policy session, accepts terms, books through actual API/DB and sees full activity metadata",
+    "Service record distinguishes verified attendance; cancellation requires confirmation and persists via current policy command",
+    "Member centre 390px: no horizontal overflow or serious/critical axe violations",
+    "Member centre 1440px: no horizontal overflow or serious/critical axe violations",
+    "Anonymous empty-session onboarding remains available; simulated mail failure never advances to code entry; session service failure is distinct from empty state"
+  ],
+  "errors": []
+}

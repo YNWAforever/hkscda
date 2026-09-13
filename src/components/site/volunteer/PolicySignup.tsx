@@ -1,3 +1,8 @@
+import { VerifiedEmailSignIn } from "./VerifiedEmailSignIn";
+import { VolunteerSessionBrowser } from "./VolunteerSessionBrowser";
+import { VolunteerRecords } from "./VolunteerRecords";
+import { tierLabels, formatSessionRange, registrationSection } from "./centreModel";
+import { CalendarDays, ClipboardList, HeartHandshake, UserRound } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type {
   BookingResult,
@@ -12,11 +17,6 @@ const field =
   "block w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-2";
 const button =
   "rounded-md bg-[var(--color-primary)] px-4 py-2 font-semibold text-[var(--color-surface)] disabled:opacity-50";
-const tierLabels: Record<string, string> = {
-  newcomer: "新手義工",
-  regular: "恆常義工",
-  senior: "資深義工",
-};
 const reasons: Record<string, string> = {
   verified_profile_required: "請先完成義工身份核實。",
   capacity_full: "名額已滿，可按活動政策申請候補。",
@@ -30,11 +30,15 @@ async function readJson<T>(response: Response): Promise<T> {
   const body = await response.json();
   if (!response.ok)
     throw new Error(
-      body.error ?? body.message ?? reasons[body.reason] ?? "未能提交，請重新檢查報名資格及名額。",
+      reasons[body.reason] ?? body.message ?? body.error ?? "未能提交，請重新檢查報名資格及名額。",
     );
   return body as T;
 }
 export function PolicySignup() {
+  const [tab, setTab] = useState<"sessions" | "bookings" | "record">("sessions");
+  const [sessionError, setSessionError] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(true);
   const [sessions, setSessions] = useState<PolicySession[]>([]);
   const [refreshEpoch, setRefreshEpoch] = useState(0);
   const [terms, setTerms] = useState<{ id: string; body: string; published_at: string }[]>([]);
@@ -44,8 +48,6 @@ export function PolicySignup() {
   const [role, setRole] = useState("volunteer");
   const [remarks, setRemarks] = useState("");
   const [acceptedVersion, setAcceptedVersion] = useState<string | null>(null);
-  const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
   const [name, setName] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [notice, setNotice] = useState("");
@@ -55,6 +57,9 @@ export function PolicySignup() {
   const [challenge, setChallenge] = useState("");
   const [challengeReset, setChallengeReset] = useState(0);
   const retry = useRef<{ fingerprint: string; key: string } | null>(null);
+  const upcomingCount =
+    me?.registrations.filter((entry) => registrationSection(entry, new Date()) === "upcoming")
+      .length ?? 0;
   const alreadyBooked = me?.registrations.some(
     (r) => r.activity_id === selected && ["pending", "approved", "waitlisted"].includes(r.status),
   );
@@ -79,10 +84,15 @@ export function PolicySignup() {
         if (current) {
           setSessions(a.sessions);
           setTerms(t.terms);
+          setSessionError("");
+          setLoading(false);
         }
       })
       .catch(() => {
-        if (current) setError("未能載入已核實義工場次，請重新載入頁面。");
+        if (current) {
+          setLoading(false);
+          setSessionError("暫時未能載入場次，請稍後再試。");
+        }
       });
     return () => {
       current = false;
@@ -110,12 +120,22 @@ export function PolicySignup() {
   useEffect(() => {
     try {
       const client = getSupabaseClient();
-      void client.auth.getSession().then(({ data }) => setToken(data.session?.access_token ?? ""));
+      void client.auth
+        .getSession()
+        .then(({ data }) => {
+          setToken(data.session?.access_token ?? "");
+          setAuthLoading(false);
+        })
+        .catch(() => {
+          setAuthLoading(false);
+          setError("登入服務暫時未能使用，請重新載入。");
+        });
       const { data } = client.auth.onAuthStateChange((_event, value) =>
         setToken(value?.access_token ?? ""),
       );
       return () => data.subscription.unsubscribe();
     } catch {
+      setAuthLoading(false);
       setError("登入服務暫時未能使用。");
     }
   }, []);
@@ -186,12 +206,15 @@ export function PolicySignup() {
           : result.status === "waitlisted"
             ? "已加入候補。"
             : result.kind === "booked"
-              ? "報名已記錄。"
+              ? result.status === "approved"
+                ? "預約已確認，可在我的預約查看安排。"
+                : "預約已送出，等待職員審核。"
               : result.kind === "accepted"
                 ? "已確認此場次最新條款。"
                 : "已提交身份資料，請等待職員核實。",
       );
       await refreshMe();
+      if (result.kind === "booked" || result.kind === "cancelled") setTab("bookings");
       setRefreshEpoch((n) => n + 1);
     } finally {
       setChallenge("");
@@ -200,6 +223,8 @@ export function PolicySignup() {
   };
   const changeSelection = (value: string) => {
     setSelected(value);
+    setTab("sessions");
+    window.setTimeout(() => document.getElementById("booking-confirmation")?.focus(), 0);
     const next = sessions.find((entry) => entry.id === value);
     setRole(next?.policy.roles[0]?.key ?? "volunteer");
     setRemarks("");
@@ -208,378 +233,394 @@ export function PolicySignup() {
   };
   return (
     <section
+      id="volunteer-centre"
       aria-labelledby="verified-signup-title"
-      className="space-y-4 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5"
+      className="volunteer-centre"
     >
-      <h2 id="verified-signup-title" className="text-2xl font-bold">
-        已核實義工場次
-      </h2>
-      <a className="inline-block min-h-11 py-2 underline" href="/volunteer/operations">
-        團體申請及我的改期
-      </a>
-      <p>登入後使用你的已核實義工身份報名。資格及名額依活動當前政策確認。</p>
+      <div className="volunteer-centre-heading">
+        <div>
+          <p className="eyebrow">YOUR VOLUNTEER SPACE</p>
+          <h2 id="verified-signup-title">我的義工中心</h2>
+          <p>從第一次登記，到每一次服務，都在這裡。</p>
+        </div>
+        <span className="volunteer-chip">
+          <HeartHandshake size={16} />
+          一起照顧牠們
+        </span>
+      </div>
       {error && (
-        <p role="alert" className="text-[var(--color-error)]">
-          {error}
-        </p>
+        <div role="alert" className="volunteer-alert">
+          <p>{error}</p>
+          <button
+            className="volunteer-text-button"
+            onClick={() => {
+              setError("");
+              setRefreshEpoch((n) => n + 1);
+              if (token) void run(refreshMe);
+            }}
+          >
+            重新載入
+          </button>
+        </div>
       )}
-      {notice && <p role="status">{notice}</p>}
-      {!token ? (
-        <div className="grid gap-3 sm:grid-cols-2">
-          <label>
-            電郵
-            <input
-              className={field}
-              type="email"
-              autoComplete="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-            />
-          </label>
-          <button
-            className={button}
-            disabled={busy || !email}
-            onClick={() =>
-              void run(async () => {
-                const { error } = await getSupabaseClient().auth.signInWithOtp({
-                  email,
-                  options: { emailRedirectTo: window.location.href },
-                });
-                if (error) throw error;
-                setNotice("驗證電郵已發出，請按電郵連結或輸入驗證碼。");
-              })
-            }
-          >
-            傳送登入電郵
-          </button>
-          <label>
-            電郵驗證碼
-            <input
-              className={field}
-              autoComplete="one-time-code"
-              value={code}
-              onChange={(event) => setCode(event.target.value)}
-            />
-          </label>
-          <button
-            className={button}
-            disabled={busy || !code || !email}
-            onClick={() =>
-              void run(async () => {
-                const { error } = await getSupabaseClient().auth.verifyOtp({
-                  email,
-                  token: code,
-                  type: "email",
-                });
-                if (error) throw error;
-              })
-            }
-          >
-            驗證並登入
-          </button>
+      {notice && (
+        <div role="status" className="volunteer-notice">
+          {notice}
+        </div>
+      )}
+      {authLoading ? (
+        <p role="status" className="volunteer-empty">
+          正在確認登入狀態…
+        </p>
+      ) : !token ? (
+        <div className="volunteer-welcome" id="volunteer-login">
+          <div>
+            <span className="volunteer-step-label">首次加入／再次回來</span>
+            <h3>用一個電郵，開始你的義工旅程。</h3>
+            <p>驗證電郵後可登記身份、預約服務及查看紀錄，毋須另設密碼。</p>
+            <ol className="volunteer-steps">
+              <li>
+                <span>1</span>驗證電郵
+              </li>
+              <li>
+                <span>2</span>登記及核實身份
+              </li>
+              <li>
+                <span>3</span>預約服務
+              </li>
+            </ol>
+          </div>
+          <VerifiedEmailSignIn />
         </div>
       ) : (
-        <div className="space-y-3">
-          <button
-            className="underline"
-            onClick={() =>
-              void run(async () => {
-                const { error } = await getSupabaseClient().auth.signOut();
-                if (error) throw error;
-              })
-            }
-          >
-            登出
-          </button>
-          {!me ? (
-            <p>正在確認義工身份…</p>
-          ) : !me.profile ? (
-            <form
-              className="space-y-3"
-              onSubmit={(event) => {
-                event.preventDefault();
-                void run(() =>
-                  command({ action: "claim", display_name: name, birth_date: birthDate }),
-                );
-              }}
-            >
-              <p>首次使用請提交義工身份資料，由職員核實後即可報名。</p>
-              <label>
-                姓名
-                <input
-                  className={field}
-                  required
-                  maxLength={120}
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                />
-              </label>
-              <label>
-                出生日期
-                <input
-                  className={field}
-                  required
-                  type="date"
-                  value={birthDate}
-                  onChange={(event) => setBirthDate(event.target.value)}
-                />
-              </label>
-              <button className={button} disabled={busy || (turnstileEnabled && !challenge)}>
-                提交核實
-              </button>
-            </form>
-          ) : (
-            <p>
-              {me.profile.display_name} · {tierLabels[me.profile.tier] ?? me.profile.tier} ·{" "}
-              {me.profile.status === "active" ? "身份已核實" : "等待職員核實或處理，暫未能報名。"}
-            </p>
-          )}
-          {me?.history && (
-            <div className="space-y-2">
+        <div className="volunteer-member">
+          <div className="volunteer-member-heading">
+            <div>
+              <p className="eyebrow">歡迎回來</p>
+              <h3>{me?.profile?.display_name ?? "一起開始義工旅程"}</h3>
               <p>
-                已記錄及核實出席：{me.history.verified_sessions}場。
-                {me.history.history_coverage_start
-                  ? `完整紀錄由${me.history.history_coverage_start}起計。`
-                  : "較早歷史尚待核實，未有紀錄的月份不視為零出席。"}
+                {me?.profile
+                  ? (tierLabels[me.profile.tier] ?? "義工") +
+                    " · " +
+                    (me.profile.status === "active" ? "身份已核實" : "等待職員核實或處理")
+                  : "電郵已驗證 · 義工身份尚待完成"}
               </p>
-              <h3 className="font-semibold">我的已核實課程及技能</h3>
-              {me.history.credentials.length ? (
-                <ul>
-                  {me.history.credentials.map((c) => (
-                    <li key={c.id}>
-                      {c.label} ·{" "}
-                      {c.revoked ? "已撤銷" : c.currently_valid ? "目前有效" : "目前未生效或已到期"}
-                      {c.valid_until &&
-                        ` · 有效至${new Date(c.valid_until).toLocaleDateString("zh-HK", { timeZone: "Asia/Hong_Kong" })}`}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>尚未有已核實課程或技能紀錄。</p>
-              )}
             </div>
-          )}
-          <button className="underline" disabled={busy} onClick={() => void run(refreshMe)}>
-            重新確認身份及報名
-          </button>
+            <button
+              className="volunteer-text-button"
+              disabled={busy}
+              onClick={() =>
+                void run(async () => {
+                  const { error } = await getSupabaseClient().auth.signOut();
+                  if (error) throw error;
+                  setMe(null);
+                  setNotice("");
+                  setTab("sessions");
+                })
+              }
+            >
+              登出
+            </button>
+          </div>
+          {!me ? (
+            <p role="status">正在確認義工身份…</p>
+          ) : !me.profile ? (
+            <div className="volunteer-onboarding">
+              <h3>
+                <UserRound size={20} />
+                完成首次登記
+              </h3>{" "}
+              <form
+                className="space-y-3"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  void run(() =>
+                    command({ action: "claim", display_name: name, birth_date: birthDate }),
+                  );
+                }}
+              >
+                <p>首次使用請提交義工身份資料，由職員核實後即可報名。</p>
+                <label>
+                  姓名
+                  <input
+                    className={field}
+                    required
+                    maxLength={120}
+                    value={name}
+                    onChange={(event) => setName(event.target.value)}
+                  />
+                </label>
+                <label>
+                  出生日期
+                  <input
+                    className={field}
+                    required
+                    type="date"
+                    value={birthDate}
+                    onChange={(event) => setBirthDate(event.target.value)}
+                  />
+                </label>
+                <button className={button} disabled={busy || (turnstileEnabled && !challenge)}>
+                  提交核實
+                </button>
+              </form>
+            </div>
+          ) : me.profile.status !== "active" ? (
+            <div className="volunteer-notice">
+              <strong>資料已收到，待職員核實</strong>
+              <p>你可以先瀏覽場次及查看已有紀錄；身份核實後，符合政策的場次便可預約。</p>
+              <button
+                className="volunteer-text-button"
+                disabled={busy}
+                onClick={() => void run(refreshMe)}
+              >
+                查看最新核實狀態
+              </button>
+            </div>
+          ) : null}
         </div>
       )}
-      <label className="block">
-        選擇場次
-        <select
-          className={field}
-          value={selected}
-          onChange={(event) => changeSelection(event.target.value)}
+      <nav className="volunteer-nav" aria-label="義工中心功能">
+        <button
+          aria-current={tab === "sessions" ? "page" : undefined}
+          onClick={() => setTab("sessions")}
         >
-          <option value="">請選擇</option>
-          {sessions.map((entry) => (
-            <option key={entry.id} value={entry.id}>
-              {entry.title} ·{" "}
-              {new Date(entry.starts_at).toLocaleString("zh-HK", { timeZone: "Asia/Hong_Kong" })}
-            </option>
-          ))}
-        </select>
-      </label>
-      {sessions.length === 0 && <p>目前未有已發布的核實義工場次。</p>}
-      {session && (
-        <form
-          className="space-y-4"
-          onSubmit={(event) => {
-            event.preventDefault();
-            if (sessionTerms)
-              void run(() =>
-                command({
-                  action: alreadyBooked ? "accept_terms" : "book",
-                  activity_id: session.id,
-                  ...(alreadyBooked ? {} : { role, remarks }),
-                  accept_terms: accepted,
-                  terms_version_id: sessionTerms.id,
-                }),
-              );
-          }}
+          <CalendarDays size={20} />
+          預約場次
+        </button>
+        <button
+          aria-current={tab === "bookings" ? "page" : undefined}
+          onClick={() => setTab("bookings")}
         >
-          <p>
-            {session.location} · 香港時間 · 總名額 {session.capacity} · 適用級別：
-            {session.policy.eligibility.allowed_tiers.map((tier) => tierLabels[tier]).join("、")}
-          </p>
-          {session.summary && (
-            <div className="space-y-1 rounded bg-muted p-3" aria-live="polite">
-              <p>
-                已確認 {session.summary.confirmed}／{session.capacity} · 尚餘{" "}
-                {session.summary.remaining} · 候補 {session.summary.waitlisted}
-              </p>
-              <p>
-                {session.summary.window_state === "not_yet_open"
-                  ? "個人報名尚未開放"
-                  : session.summary.window_state === "window_closed"
-                    ? "個人報名已截止"
-                    : "現於個人報名時間內；仍須核實級別、崗位及配額。"}
-              </p>
-              {session.summary.opens_at && (
-                <p>
-                  開放：
-                  {new Date(session.summary.opens_at).toLocaleString("zh-HK", {
-                    timeZone: session.summary.timezone,
-                  })}
-                  （{session.summary.timezone}）
-                </p>
-              )}
-              {session.summary.closes_at && (
-                <p>
-                  截止：
-                  {new Date(session.summary.closes_at).toLocaleString("zh-HK", {
-                    timeZone: session.summary.timezone,
-                  })}
-                  （{session.summary.timezone}）
-                </p>
-              )}
-            </div>
-          )}
-          {session.policy.roles.length > 0 && (
-            <label className="block">
-              崗位
-              <select
-                className={field}
-                value={role}
-                onChange={(event) => {
-                  setRole(event.target.value);
-                  retry.current = null;
-                }}
-              >
-                {session.policy.roles.map((entry) => (
-                  <option key={entry.key} value={entry.key}>
-                    {entry.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
-          {availability && (
-            <p role="status">
-              {availability.allowed
-                ? "目前可報名"
-                : (reasons[availability.reason ?? ""] ??
-                  availability.message ??
-                  "目前未符合此場次要求，提交時會再次核實。")}
-              {typeof availability.remaining === "number"
-                ? ` · 剩餘 ${availability.remaining} 位`
-                : ""}
-            </p>
-          )}
-          <label className="block">
-            {session.policy.remarks.label}
-            {session.policy.remarks.required ? "（必填）" : ""}
-            {session.policy.remarks.allow_free_text ? (
-              <textarea
-                className={field}
-                required={!alreadyBooked && session.policy.remarks.required}
-                maxLength={session.policy.remarks.max_length}
-                value={remarks}
-                onChange={(event) => {
-                  setRemarks(event.target.value);
-                  retry.current = null;
-                }}
-              />
-            ) : (
-              <select
-                className={field}
-                required={!alreadyBooked && session.policy.remarks.required}
-                value={remarks}
-                onChange={(event) => {
-                  setRemarks(event.target.value);
-                  retry.current = null;
-                }}
-              >
-                <option value="">請選擇</option>
-                {session.policy.remarks.options.map((option) => (
-                  <option key={option}>{option}</option>
-                ))}
-              </select>
-            )}
-          </label>
-          <p>{session.policy.remarks.hint}</p>
-          {sessionTerms ? (
-            <>
-              <div
-                className="max-h-80 overflow-y-auto whitespace-pre-wrap rounded-md border border-[var(--color-border)] p-3"
-                aria-label="義工條款全文"
-              >
-                {sessionTerms.body}
-              </div>
-              <label className="flex items-start gap-2">
-                <input
-                  type="checkbox"
-                  required
-                  checked={accepted}
-                  onChange={(event) => {
-                    setAcceptedVersion(event.target.checked ? (sessionTerms?.id ?? null) : null);
-                    retry.current = null;
+          <ClipboardList size={20} />
+          我的預約
+          {upcomingCount > 0 ? <span className="volunteer-count">{upcomingCount}</span> : null}
+        </button>
+        <button
+          aria-current={tab === "record" ? "page" : undefined}
+          onClick={() => setTab("record")}
+        >
+          <HeartHandshake size={20} />
+          服務紀錄
+        </button>
+      </nav>
+      <div className="volunteer-panel">
+        {tab === "sessions" ? (
+          <>
+            <VolunteerSessionBrowser
+              sessions={sessions}
+              selected={selected}
+              onSelect={changeSelection}
+              loading={loading}
+              error={sessionError}
+              onRetry={() => setRefreshEpoch((n) => n + 1)}
+            />
+            {session && (
+              <div className="volunteer-confirmation">
+                <h3 id="booking-confirmation" tabIndex={-1}>
+                  確認預約 · {session.title}
+                </h3>
+                {!token && (
+                  <p className="volunteer-notice">請先完成上方電郵登入，再確認身份及預約。</p>
+                )}{" "}
+                <form
+                  className="volunteer-booking-form space-y-4"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    if (sessionTerms)
+                      void run(() =>
+                        command({
+                          action: alreadyBooked ? "accept_terms" : "book",
+                          activity_id: session.id,
+                          ...(alreadyBooked ? {} : { role, remarks }),
+                          accept_terms: accepted,
+                          terms_version_id: sessionTerms.id,
+                        }),
+                      );
                   }}
-                />
-                我已閱讀並同意以上義工條款
-              </label>
-            </>
-          ) : (
-            <p>條款尚未提供，暫未開放報名。</p>
-          )}
-          <button
-            className={button}
-            disabled={
-              busy ||
-              me?.profile?.status !== "active" ||
-              !accepted ||
-              !sessionTerms ||
-              (turnstileEnabled && !challenge)
-            }
-          >
-            {alreadyBooked ? "確認此場次最新條款" : "提交報名／候補"}
-          </button>
-        </form>
-      )}
-      {token && (
-        <TurnstileWidget
-          resetKey={challengeReset}
-          onVerify={setChallenge}
-          onExpire={() => setChallenge("")}
-        />
-      )}
-      {me && me.registrations.length > 0 && (
-        <div className="space-y-2">
-          <h3 className="font-bold">我的報名</h3>
-          {me.registrations.map((entry) => (
-            <div
-              key={entry.id}
-              className="flex flex-wrap justify-between gap-2 border-t border-[var(--color-border)] py-2"
-            >
-              <span>
-                {sessions.find((session) => session.id === entry.activity_id)?.title ?? "義工活動"}{" "}
-                ·{" "}
-                {(
-                  {
-                    approved: "已確認",
-                    pending: "待審核",
-                    waitlisted: "候補",
-                    cancelled: "已取消",
-                    rejected: "未獲批准",
-                  } as Record<string, string>
-                )[entry.status] ?? entry.status}
-              </span>
-              {["approved", "pending", "waitlisted"].includes(entry.status) &&
-                !["attended", "completed"].includes(entry.attendance_status) && (
+                >
+                  <p>
+                    {formatSessionRange(session.starts_at, session.ends_at)} · 香港時間
+                    <br />
+                    {session.location} · 總名額 {session.capacity} · 適用級別：
+                    {session.policy.eligibility.allowed_tiers
+                      .map((tier) => tierLabels[tier])
+                      .join("、")}
+                  </p>
+                  {session.summary && (
+                    <div className="space-y-1 rounded bg-muted p-3" aria-live="polite">
+                      <p>
+                        已確認 {session.summary.confirmed}／{session.capacity} · 尚餘{" "}
+                        {session.summary.remaining} · 候補 {session.summary.waitlisted}
+                      </p>
+                      <p>
+                        {session.summary.window_state === "not_yet_open"
+                          ? "個人報名尚未開放"
+                          : session.summary.window_state === "window_closed"
+                            ? "個人報名已截止"
+                            : "現於個人報名時間內；仍須核實級別、崗位及配額。"}
+                      </p>
+                      {session.summary.opens_at && (
+                        <p>
+                          開放：
+                          {new Date(session.summary.opens_at).toLocaleString("zh-HK", {
+                            timeZone: session.summary.timezone,
+                          })}
+                          （{session.summary.timezone}）
+                        </p>
+                      )}
+                      {session.summary.closes_at && (
+                        <p>
+                          截止：
+                          {new Date(session.summary.closes_at).toLocaleString("zh-HK", {
+                            timeZone: session.summary.timezone,
+                          })}
+                          （{session.summary.timezone}）
+                        </p>
+                      )}
+                    </div>
+                  )}
+                  {session.policy.roles.length > 0 && (
+                    <label className="block">
+                      崗位
+                      <select
+                        className={field}
+                        value={role}
+                        onChange={(event) => {
+                          setRole(event.target.value);
+                          retry.current = null;
+                        }}
+                      >
+                        {session.policy.roles.map((entry) => (
+                          <option key={entry.key} value={entry.key}>
+                            {entry.label}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
+                  {availability && (
+                    <p role="status">
+                      {availability.allowed
+                        ? "目前可報名"
+                        : (reasons[availability.reason ?? ""] ??
+                          availability.message ??
+                          "目前未符合此場次要求，提交時會再次核實。")}
+                      {typeof availability.remaining === "number"
+                        ? ` · 剩餘 ${availability.remaining} 位`
+                        : ""}
+                    </p>
+                  )}
+                  <label className="block">
+                    {session.policy.remarks.label}
+                    {session.policy.remarks.required ? "（必填）" : ""}
+                    {session.policy.remarks.allow_free_text ? (
+                      <textarea
+                        className={field}
+                        required={!alreadyBooked && session.policy.remarks.required}
+                        maxLength={session.policy.remarks.max_length}
+                        value={remarks}
+                        onChange={(event) => {
+                          setRemarks(event.target.value);
+                          retry.current = null;
+                        }}
+                      />
+                    ) : (
+                      <select
+                        className={field}
+                        required={!alreadyBooked && session.policy.remarks.required}
+                        value={remarks}
+                        onChange={(event) => {
+                          setRemarks(event.target.value);
+                          retry.current = null;
+                        }}
+                      >
+                        <option value="">請選擇</option>
+                        {session.policy.remarks.options.map((option) => (
+                          <option key={option}>{option}</option>
+                        ))}
+                      </select>
+                    )}
+                  </label>
+                  <p>{session.policy.remarks.hint}</p>
+                  {sessionTerms ? (
+                    <>
+                      <div
+                        className="max-h-80 overflow-y-auto whitespace-pre-wrap rounded-md border border-[var(--color-border)] p-3"
+                        aria-label="義工條款全文"
+                        tabIndex={0}
+                      >
+                        {sessionTerms.body}
+                      </div>
+                      <label className="flex items-start gap-2">
+                        <input
+                          type="checkbox"
+                          required
+                          checked={accepted}
+                          onChange={(event) => {
+                            setAcceptedVersion(
+                              event.target.checked ? (sessionTerms?.id ?? null) : null,
+                            );
+                            retry.current = null;
+                          }}
+                        />
+                        我已閱讀並同意以上義工條款
+                      </label>
+                    </>
+                  ) : (
+                    <p>條款尚未提供，暫未開放報名。</p>
+                  )}
                   <button
-                    className="underline"
-                    disabled={busy || (turnstileEnabled && !challenge)}
-                    onClick={() =>
-                      void run(() => command({ action: "cancel", activity_id: entry.activity_id }))
+                    className={button}
+                    disabled={
+                      busy ||
+                      me?.profile?.status !== "active" ||
+                      !accepted ||
+                      (!alreadyBooked &&
+                        availability?.allowed === false &&
+                        availability.reason !== "capacity_full") ||
+                      !sessionTerms ||
+                      (turnstileEnabled && !challenge)
                     }
                   >
-                    取消報名
+                    {busy ? "正在確認…" : alreadyBooked ? "確認此場次最新條款" : "確認並提交預約"}
                   </button>
-                )}
-            </div>
-          ))}
-        </div>
-      )}
+                </form>
+              </div>
+            )}
+          </>
+        ) : !token ? (
+          <div className="volunteer-empty">
+            <UserRound size={32} />
+            <h3>登入後，查看屬於你的紀錄</h3>
+            <p>你的預約、出席及資格資料只會向已驗證身份顯示。</p>
+            <a className="btn-primary" href="#volunteer-login">
+              登入／首次登記
+            </a>
+          </div>
+        ) : me ? (
+          <VolunteerRecords
+            me={me}
+            mode={tab}
+            busy={busy || (turnstileEnabled && !challenge)}
+            onCancel={(id) => run(() => command({ action: "cancel", activity_id: id }))}
+            onBrowse={() => setTab("sessions")}
+          />
+        ) : (
+          <p role="status">正在載入你的紀錄…</p>
+        )}
+        {token && (
+          <TurnstileWidget
+            resetKey={challengeReset}
+            onVerify={setChallenge}
+            onExpire={() => setChallenge("")}
+          />
+        )}
+      </div>
+      <div className="volunteer-centre-footer">
+        <a href="/volunteer/operations">團體申請及改期服務 →</a>
+        <a href="/internships">獸醫學生實習申請 →</a>
+      </div>
     </section>
   );
 }
