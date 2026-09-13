@@ -1,10 +1,18 @@
+type CatalogRow = { kind: string; key: string; value: Record<string, unknown> };
+type Difference = {
+  key: string;
+  status: string;
+  fields?: string[];
+  baseline?: Record<string, unknown>;
+  production?: Record<string, unknown>;
+};
 import { SQL } from "bun";
 import { readFile, writeFile } from "node:fs/promises";
 const db = new SQL(
   "postgresql://postgres:postgres@127.0.0.1:56322/hkscda_baseline_parity_20260913",
   { max: 1, prepare: false },
 );
-function canonical(x: any): string {
+function canonical(x: unknown): string {
   return JSON.stringify(x, (_k, v) =>
     v && typeof v === "object" && !Array.isArray(v)
       ? Object.fromEntries(
@@ -23,12 +31,12 @@ try {
       "utf8",
     ),
   );
-  const local = new Map(baseline.map((x: any) => [x.kind + ":" + x.key, x]));
-  const remote = new Map(production.objects.map((x: any) => [x.kind + ":" + x.key, x]));
-  const differences: any[] = [];
+  const local = new Map(baseline.map((x: CatalogRow) => [x.kind + ":" + x.key, x]));
+  const remote = new Map(production.objects.map((x: CatalogRow) => [x.kind + ":" + x.key, x]));
+  const differences: Difference[] = [];
   let exact = 0;
   for (const [key, row] of local) {
-    const other: any = remote.get(key);
+    const other = remote.get(key);
     if (!other) {
       differences.push({ key, status: "missing_in_production", baseline: row.value });
       continue;
@@ -51,7 +59,7 @@ try {
   }
   for (const [key, row] of remote)
     if (!local.has(key))
-      differences.push({ key, status: "production_only", production: (row as any).value });
+      differences.push({ key, status: "production_only", production: row.value });
   const report = {
     checked_at: new Date().toISOString(),
     read_only_production: true,

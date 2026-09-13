@@ -1,5 +1,8 @@
 # Final isolated acceptance
 
+> Current six-phase closure: see [six-phase-completion.md](six-phase-completion.md). The current candidate has 38 new migrations (101 including baseline), 2,353 passing tests and no skips. Earlier numbered results below are retained historical evidence. No production activation is claimed.
+
+
 Date: 2026-09-13. Candidate branch: `codex/admin-volunteer-settings-20260913`, base `3fcf8cec235e0fa252b7d134f74948f2a682ebac`. This is code and isolated acceptance evidence, not production activation.
 
 ## Production parity follow-up (2026-09-13)

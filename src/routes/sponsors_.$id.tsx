@@ -60,15 +60,17 @@ function SponsorDetailPage() {
 
 function SponsorDetailNotFound() {
   return (
-    <PublicStateShell
-      title="此動物目前不在公開助養名單"
-      description="助養名單會隨照護安排更新，請返回助養區查看目前可選擇的動物。"
-      action={
-        <Link to="/sponsors" className="btn-secondary min-h-11 px-5">
-          返回助養區
-        </Link>
-      }
-    />
+    <main>
+      <PublicStateShell
+        title="此動物目前不在公開助養名單"
+        description="助養名單會隨照護安排更新，請返回助養區查看目前可選擇的動物。"
+        action={
+          <Link to="/sponsors" className="btn-secondary min-h-11 px-5">
+            返回助養區
+          </Link>
+        }
+      />
+    </main>
   );
 }
 
@@ -88,15 +90,17 @@ function SponsorDetailPending() {
 
 function SponsorDetailError() {
   return (
-    <PublicStateShell
-      role="alert"
-      title="暫時未能載入助養資料"
-      description="系統未能取得這隻動物的公開資料，請稍後再試。"
-      action={
-        <Link to="/sponsors" className="btn-primary min-h-11 px-5">
-          返回助養區
-        </Link>
-      }
-    />
+    <main>
+      <PublicStateShell
+        role="alert"
+        title="暫時未能載入助養資料"
+        description="系統未能取得這隻動物的公開資料，請稍後再試。"
+        action={
+          <Link to="/sponsors" className="btn-primary min-h-11 px-5">
+            返回助養區
+          </Link>
+        }
+      />
+    </main>
   );
 }

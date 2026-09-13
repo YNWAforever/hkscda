@@ -1,3 +1,4 @@
+import { deliveryLabel } from "../notifications/deliveryLabel";
 import { centsToHkd } from "../donations/domain";
 import type {
   AuditHistoryRow,
@@ -251,7 +252,14 @@ export function assembleSupporterTimeline(input: {
       at: message.sentAt ?? message.createdAt,
       kind: "message" as const,
       title: `${message.channel} message ${message.status}`,
-      description: String(message.payload.subject ?? message.payload.template ?? "Message"),
+      description: [
+        String(message.payload.subject ?? message.payload.template ?? "Message"),
+        deliveryLabel(
+          typeof message.payload.deliveryState === "string" ? message.payload.deliveryState : null,
+        ),
+      ]
+        .filter(Boolean)
+        .join(" · "),
       status: message.status,
     })),
     ...input.auditLogs.map((log) => ({

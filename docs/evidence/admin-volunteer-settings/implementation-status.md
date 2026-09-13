@@ -1,5 +1,8 @@
 # Working implementation and acceptance record
 
+> Current six-phase closure: see [six-phase-completion.md](six-phase-completion.md). The current candidate has 38 new migrations (101 including baseline), 2,353 passing tests and no skips. Earlier numbered results below are retained historical evidence. No production activation is claimed.
+
+
 Updated 2026-09-13. This describes the current review candidate. It is not a production completion or final release-gate statement.
 
 ## Production parity follow-up (2026-09-13)

@@ -3,10 +3,15 @@ import { mkdir } from "node:fs/promises";
 import { resolve } from "node:path";
 if (process.env.VOLUNTEER_TEST_ALLOW_LOCAL_FIXTURES !== "1")
   throw new Error("Explicit isolated fixture authorization required");
+const sixPhase = process.argv.includes("--six-phase");
 const container = "supabase_db_hkscda-policy-20260913",
-  target = "hkscda_restore_20260913",
-  privateDir = ".local-policy-test/restore-rehearsal",
-  artifact = "docs/evidence/admin-volunteer-settings/local-restore-rehearsal.json";
+  target = sixPhase ? "hkscda_restore_six_phase_20260913" : "hkscda_restore_20260913",
+  privateDir = sixPhase
+    ? ".local-policy-test/restore-six-phase"
+    : ".local-policy-test/restore-rehearsal",
+  artifact = sixPhase
+    ? "docs/evidence/admin-volunteer-settings/six-phase-restore.json"
+    : "docs/evidence/admin-volunteer-settings/local-restore-rehearsal.json";
 async function command(args: string[]) {
   const p = Bun.spawn(args, { stdout: "pipe", stderr: "pipe" });
   const [out, error, code] = await Promise.all([

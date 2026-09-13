@@ -272,7 +272,7 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
             .eq("supporter_id", id)
             .order("timestamp", { ascending: false }),
           client
-            .from("message")
+            .from("message_delivery_status")
             .select("id,supporter_id,channel,status,payload,sent_at,created_at")
             .eq("supporter_id", id)
             .order("created_at", { ascending: false }),

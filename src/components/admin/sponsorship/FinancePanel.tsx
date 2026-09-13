@@ -1,3 +1,4 @@
+import { deliveryLabel } from "../../../lib/notifications/deliveryLabel";
 import { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchCoordinatorJson } from "../adoptions/api";
@@ -23,6 +24,7 @@ type FinanceData = {
     status: string;
     attempts: number;
     last_error: string | null;
+    delivery_state?: string | null;
   }>;
 };
 export function FinancePanel({
@@ -343,7 +345,8 @@ export function FinancePanel({
               sent: "服務商已接收",
               failed: "傳送失敗，可重試",
             }[d.status] ?? "未確認"}{" "}
-            · 嘗試 {d.attempts} 次{d.last_error ? ` · ${d.last_error}` : ""}
+            · {deliveryLabel(d.delivery_state) ?? "尚無送達證據"} · 嘗試 {d.attempts} 次
+            {d.last_error ? ` · ${d.last_error}` : ""}
           </p>
         ))}
         <Button

@@ -1,3 +1,4 @@
+import { deliveryLabel } from "../../../lib/notifications/deliveryLabel";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
@@ -11,6 +12,7 @@ type Row = {
   created_at?: string;
   starts_at?: string;
   status?: string;
+  delivery_state?: string | null;
   last_error?: string;
   attempts?: number;
 };
@@ -127,6 +129,7 @@ export function VolunteerTasks() {
               {kind[row.kind] ?? "通知"} · {statuses[row.status ?? ""] ?? "待核實"} · 已嘗試{" "}
               {row.attempts} 次
             </p>
+            {deliveryLabel(row.delivery_state) && <p>{deliveryLabel(row.delivery_state)}</p>}
             {row.last_error && <p>原因：{row.last_error}</p>}
             {row.status === "failed" && (
               <button

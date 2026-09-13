@@ -53,15 +53,17 @@ function CatDetailPage() {
 
 function CatDetailNotFound() {
   return (
-    <PublicStateShell
-      title="這隻動物目前不在公開領養名單"
-      description="公開名單會隨照護和領養進度更新，請查看其他正在等待家庭的貓貓。"
-      action={
-        <Link to="/animals/cat" className="btn-secondary min-h-11 px-5">
-          查看貓貓列表
-        </Link>
-      }
-    />
+    <main>
+      <PublicStateShell
+        title="這隻動物目前不在公開領養名單"
+        description="公開名單會隨照護和領養進度更新，請查看其他正在等待家庭的貓貓。"
+        action={
+          <Link to="/animals/cat" className="btn-secondary min-h-11 px-5">
+            查看貓貓列表
+          </Link>
+        }
+      />
+    </main>
   );
 }
 
@@ -81,15 +83,17 @@ function CatDetailPending() {
 
 function CatDetailError() {
   return (
-    <PublicStateShell
-      role="alert"
-      title="暫時未能載入貓貓資料"
-      description="系統未能取得這隻貓貓的資料，請稍後再試。"
-      action={
-        <Link to="/animals/cat" className="btn-primary min-h-11 px-5">
-          返回貓貓列表
-        </Link>
-      }
-    />
+    <main>
+      <PublicStateShell
+        role="alert"
+        title="暫時未能載入貓貓資料"
+        description="系統未能取得這隻貓貓的資料，請稍後再試。"
+        action={
+          <Link to="/animals/cat" className="btn-primary min-h-11 px-5">
+            返回貓貓列表
+          </Link>
+        }
+      />
+    </main>
   );
 }

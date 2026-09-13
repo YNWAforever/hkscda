@@ -6,6 +6,8 @@ if (local.API_URL !== "http://127.0.0.1:56321")
   throw new Error("Start the dedicated hkscda-policy-20260913 stack first");
 const env = {
   ...process.env,
+  CONTENT_MEDIA_RECONCILIATION_LOCAL_TEST: "1",
+  CONTENT_MEDIA_RECONCILIATION_POLICY_STACK: "1",
   VOLUNTEER_TEST_DATABASE_URL: url,
   VOLUNTEER_TEST_ALLOW_LOCAL_FIXTURES: "1",
   SPONSORSHIP_TEST_DATABASE_URL: url,

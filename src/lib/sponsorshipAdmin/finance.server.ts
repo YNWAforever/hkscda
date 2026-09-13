@@ -72,8 +72,10 @@ export function createSponsorshipFinanceRepository(client: SupabaseClient) {
               .in("proof_id", ids)
           : Promise.resolve({ data: [], error: null }),
         client
-          .from("sponsorship_delivery_outbox")
-          .select("id,proof_id,event,status,attempts,last_error,sent_at")
+          .from("sponsorship_delivery_status")
+          .select(
+            "id,proof_id,event,status,attempts,last_error,sent_at,delivery_state,delivery_observed_at",
+          )
           .eq("pledge_id", pledgeId)
           .order("created_at", { ascending: false }),
       ]);

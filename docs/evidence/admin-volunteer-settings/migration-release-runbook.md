@@ -1,5 +1,8 @@
 # Candidate migration release runbook
 
+> Current six-phase closure: see [six-phase-completion.md](six-phase-completion.md). The current candidate has 38 new migrations (101 including baseline), 2,353 passing tests and no skips. Earlier numbered results below are retained historical evidence. No production activation is claimed.
+
+
 Prepared 2026-09-13. This is a reviewable release plan, not production authorization or proof of deployment. No production mutation was performed to prepare it.
 
 ## Production parity follow-up (2026-09-13)
@@ -8,7 +11,7 @@ Read-only production inspection identified concrete baseline gaps. The new guard
 
 ## Scope and frozen evidence
 
-The current worktree is based on commit `3fcf8cec235e0fa252b7d134f74948f2a682ebac`. It contains **63 baseline migrations** through `20260912120000_sponsorship_assignments.sql` and **37 new candidate migrations** listed below. The candidate is prepared on the isolated review branch; it has not been published. Freeze the reviewed source and regenerate/check the LF-normalized UTF-8 SHA-256 values in [migration-release-manifest.json](migration-release-manifest.json) after any change, including changes to an earlier candidate migration. A later candidate added to the directory is not automatically authorized by this list.
+The current worktree is based on commit `3fcf8cec235e0fa252b7d134f74948f2a682ebac`. It contains **63 baseline migrations** through `20260912120000_sponsorship_assignments.sql` and **38 new candidate migrations** listed below. The candidate is prepared on the isolated review branch; it has not been published. Freeze the reviewed source and regenerate/check the LF-normalized UTF-8 SHA-256 values in [migration-release-manifest.json](migration-release-manifest.json) after any change, including changes to an earlier candidate migration. A later candidate added to the directory is not automatically authorized by this list.
 
 The parent recorded a fresh, read-only production ledger snapshot on 2026-09-13 in [production-migration-ledger.json](production-migration-ledger.json): project `iihqjzilgawhfdhdevam`, 33 rows, latest recorded remote version `20260912074747`. This subtask used that saved metadata; it did not make a production connection. The snapshot records migration names, statement counts and joined-statement MD5 values, not SQL bodies or personal data.
 

@@ -57,6 +57,7 @@ import { Route as AdminApplicationsIndexRouteImport } from './routes/admin/appli
 import { Route as VolunteerStatusTokenRouteImport } from './routes/volunteer/status.$token'
 import { Route as SponsorsStatusTokenRouteImport } from './routes/sponsors_.status.$token'
 import { Route as ApiWebhooksStripeRouteImport } from './routes/api/webhooks/stripe'
+import { Route as ApiWebhooksResendRouteImport } from './routes/api/webhooks/resend'
 import { Route as ApiWebhooksPaypalRouteImport } from './routes/api/webhooks/paypal'
 import { Route as ApiWebhooksCodRouteImport } from './routes/api/webhooks/cod'
 import { Route as ApiVolunteerRegistrationsRouteImport } from './routes/api/volunteer/registrations'
@@ -471,6 +472,11 @@ const SponsorsStatusTokenRoute = SponsorsStatusTokenRouteImport.update({
 const ApiWebhooksStripeRoute = ApiWebhooksStripeRouteImport.update({
   id: '/api/webhooks/stripe',
   path: '/api/webhooks/stripe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiWebhooksResendRoute = ApiWebhooksResendRouteImport.update({
+  id: '/api/webhooks/resend',
+  path: '/api/webhooks/resend',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiWebhooksPaypalRoute = ApiWebhooksPaypalRouteImport.update({
@@ -1564,6 +1570,7 @@ export interface FileRoutesByFullPath {
   '/api/volunteer/registrations': typeof ApiVolunteerRegistrationsRoute
   '/api/webhooks/cod': typeof ApiWebhooksCodRoute
   '/api/webhooks/paypal': typeof ApiWebhooksPaypalRoute
+  '/api/webhooks/resend': typeof ApiWebhooksResendRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/sponsors/status/$token': typeof SponsorsStatusTokenRoute
   '/volunteer/status/$token': typeof VolunteerStatusTokenRoute
@@ -1788,6 +1795,7 @@ export interface FileRoutesByTo {
   '/api/volunteer/registrations': typeof ApiVolunteerRegistrationsRoute
   '/api/webhooks/cod': typeof ApiWebhooksCodRoute
   '/api/webhooks/paypal': typeof ApiWebhooksPaypalRoute
+  '/api/webhooks/resend': typeof ApiWebhooksResendRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/sponsors/status/$token': typeof SponsorsStatusTokenRoute
   '/volunteer/status/$token': typeof VolunteerStatusTokenRoute
@@ -2014,6 +2022,7 @@ export interface FileRoutesById {
   '/api/volunteer/registrations': typeof ApiVolunteerRegistrationsRoute
   '/api/webhooks/cod': typeof ApiWebhooksCodRoute
   '/api/webhooks/paypal': typeof ApiWebhooksPaypalRoute
+  '/api/webhooks/resend': typeof ApiWebhooksResendRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/sponsors_/status/$token': typeof SponsorsStatusTokenRoute
   '/volunteer/status/$token': typeof VolunteerStatusTokenRoute
@@ -2241,6 +2250,7 @@ export interface FileRouteTypes {
     | '/api/volunteer/registrations'
     | '/api/webhooks/cod'
     | '/api/webhooks/paypal'
+    | '/api/webhooks/resend'
     | '/api/webhooks/stripe'
     | '/sponsors/status/$token'
     | '/volunteer/status/$token'
@@ -2465,6 +2475,7 @@ export interface FileRouteTypes {
     | '/api/volunteer/registrations'
     | '/api/webhooks/cod'
     | '/api/webhooks/paypal'
+    | '/api/webhooks/resend'
     | '/api/webhooks/stripe'
     | '/sponsors/status/$token'
     | '/volunteer/status/$token'
@@ -2690,6 +2701,7 @@ export interface FileRouteTypes {
     | '/api/volunteer/registrations'
     | '/api/webhooks/cod'
     | '/api/webhooks/paypal'
+    | '/api/webhooks/resend'
     | '/api/webhooks/stripe'
     | '/sponsors_/status/$token'
     | '/volunteer/status/$token'
@@ -2892,6 +2904,7 @@ export interface RootRouteChildren {
   ApiVolunteerRegistrationsRoute: typeof ApiVolunteerRegistrationsRoute
   ApiWebhooksCodRoute: typeof ApiWebhooksCodRoute
   ApiWebhooksPaypalRoute: typeof ApiWebhooksPaypalRoute
+  ApiWebhooksResendRoute: typeof ApiWebhooksResendRoute
   ApiWebhooksStripeRoute: typeof ApiWebhooksStripeRoute
   SponsorsStatusTokenRoute: typeof SponsorsStatusTokenRoute
   ApiInternshipsIndexRoute: typeof ApiInternshipsIndexRoute
@@ -3284,6 +3297,13 @@ declare module '@tanstack/react-router' {
       path: '/api/webhooks/stripe'
       fullPath: '/api/webhooks/stripe'
       preLoaderRoute: typeof ApiWebhooksStripeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/webhooks/resend': {
+      id: '/api/webhooks/resend'
+      path: '/api/webhooks/resend'
+      fullPath: '/api/webhooks/resend'
+      preLoaderRoute: typeof ApiWebhooksResendRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/webhooks/paypal': {
@@ -5252,6 +5272,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiVolunteerRegistrationsRoute: ApiVolunteerRegistrationsRoute,
   ApiWebhooksCodRoute: ApiWebhooksCodRoute,
   ApiWebhooksPaypalRoute: ApiWebhooksPaypalRoute,
+  ApiWebhooksResendRoute: ApiWebhooksResendRoute,
   ApiWebhooksStripeRoute: ApiWebhooksStripeRoute,
   SponsorsStatusTokenRoute: SponsorsStatusTokenRoute,
   ApiInternshipsIndexRoute: ApiInternshipsIndexRoute,

@@ -1,5 +1,5 @@
 {
-  "animalId": "db42d4da-e9d5-4b5c-85c8-92a6ba2a790b",
+  "animalId": "2d913eac-2c28-4e6b-92d5-74bb0cc5c988",
   "checks": [
     "ordinary and staff browser sessions cannot read internal notes or bypass publication with direct writes",
     "draft save did not mutate canonical animal",

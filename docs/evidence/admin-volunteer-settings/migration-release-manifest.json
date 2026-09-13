@@ -3,7 +3,7 @@
   "candidate_base_commit": "3fcf8cec235e0fa252b7d134f74948f2a682ebac",
   "status": "worktree_snapshot_not_release_authorization",
   "baseline_count": 63,
-  "candidate_count": 37,
+  "candidate_count": 38,
   "remote_ledger_count": 33,
   "candidate_files": [
     {
@@ -190,6 +190,11 @@
       "order": 37,
       "path": "supabase/migrations/20260913092132_restrict_receipt_issuance_rpc.sql",
       "sha256_lf_utf8": "607223302dc743f42b5856652f786b98fcdf87b9f96b9d31db690afe2e35747d"
+    },
+    {
+      "order": 38,
+      "path": "supabase/migrations/20260913113000_mail_delivery_evidence.sql",
+      "sha256_lf_utf8": "3aacff491f08f06211082df7a8ccc60a6e38fe8a72792d74c86fc2ea8e63d7fa"
     }
   ],
   "remote_mapping": [
