@@ -633,10 +633,10 @@ afterAll(() => {
   mock.module("../supabase", () => realSupabaseModule);
 });
 
-describe("getPublicAnimal", () => {
+describe("resolvePublicAnimal", () => {
   test("finds a fostered animal by id, same as an available one", async () => {
     const fosterCat = {
-      id: "foster-1",
+      id: "12345678-1234-1234-1234-123456789012",
       type: "cat",
       name: "Mochi",
       name_en: null,
@@ -659,16 +659,21 @@ describe("getPublicAnimal", () => {
     mock.module("../supabase", () => ({ supabase: createAnimalFakeClient([fosterCat]) }));
     const { resolvePublicAnimal } = await import("./publicAnimal.functions");
 
-    const result = await resolvePublicAnimal({ id: "foster-1", type: "cat" });
+    const result = await resolvePublicAnimal({
+      id: "12345678-1234-1234-1234-123456789012",
+      type: "cat",
+    });
 
-    expect(result?.id).toBe("foster-1");
+    expect(result?.id).toBe("12345678-1234-1234-1234-123456789012");
   });
 });
 ```
 
-(Note: `describe("getPublicAnimal", ...)` in the block above should read
-`describe("resolvePublicAnimal", ...)` — testing the extracted function, not
-the `createServerFn` wrapper around it.)
+(Note: the id must be a real UUID shape, not an arbitrary string like
+`"foster-1"` — `isPublicAnimalId`'s guard clause rejects anything else before
+the query ever runs, which would make the test fail for the wrong reason and
+never actually exercise the status filter this task is fixing. Found during
+Task 5's own implementation and code review.)
 
 - [ ] **Step 2: Run test to verify it fails**
 
