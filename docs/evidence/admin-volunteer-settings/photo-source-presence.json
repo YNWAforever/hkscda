@@ -1,0 +1,2003 @@
+{
+  "checked_at": "2026-09-13T08:11:50.3135279Z",
+  "reference_snapshot": "2026-09-11; not a refreshed production inventory",
+  "source_folder": "C:\\Users\\laich\\Downloads\\hkscda",
+  "match_rule": "Exact source basename only, then byte length. No image substitutions or household images.",
+  "requested_count": 249,
+  "present_count": 0,
+  "matching_size_count": 0,
+  "files": [
+    {
+      "code": "C1157",
+      "species": "cat",
+      "source_path": "animals/iouk60ATDnCl62TiiUcLwCYpfmI3hHCXICbcOQpK.jpeg",
+      "expected_bytes": 183726,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C1223",
+      "species": "cat",
+      "source_path": "animals/2tQrwTLmykravV8fgqecaT0SLtl79qLfR9Pah1vX.jpeg",
+      "expected_bytes": 174570,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C1392",
+      "species": "cat",
+      "source_path": "animals/clPaS3hXNBpjM5aF03VLzS1pS3vzwPPmPIzBX1W9.jpeg",
+      "expected_bytes": 119271,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C1886",
+      "species": "cat",
+      "source_path": "animals/avK9abAZHLzpyzvk1YzNpEwjHub98OajrEjD42bn.jpeg",
+      "expected_bytes": 262252,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C1997",
+      "species": "cat",
+      "source_path": "animals/oeVAZ3Io2hL0Aez04vQFzASgQjHSZbz446k9mLwK.jpeg",
+      "expected_bytes": 186862,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C2153",
+      "species": "cat",
+      "source_path": "animals/HN1FLSoiehU9ImvsZxcGKacHShzyo59wCyW8iHNU.jpeg",
+      "expected_bytes": 715418,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C2188",
+      "species": "cat",
+      "source_path": "animals/rTQ661DGcBna1nt23KGcEGp7WSRUB50BSnuCA2iw.jpeg",
+      "expected_bytes": 199445,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C2491",
+      "species": "cat",
+      "source_path": "animals/58X0e0a3Ew5XdMnAPbeu30g8t1dHimHpqi8WghVF.jpeg",
+      "expected_bytes": 342249,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C2502",
+      "species": "cat",
+      "source_path": "animals/iPimtc4Rf2LHIbDHePThRHsSwpWvSxdbaxhF1xsz.jpeg",
+      "expected_bytes": 3397133,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C2527",
+      "species": "cat",
+      "source_path": "animals/1QUL2npDxsfrYWQtMnJXPmEEQNJwI3TAKgJTYFP7.jpeg",
+      "expected_bytes": 94989,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C2656",
+      "species": "cat",
+      "source_path": "animals/CYvcJhGIr9o4F5EAjZbOcdZCT2fgHVYNAH62hwiC.jpeg",
+      "expected_bytes": 693518,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C2820",
+      "species": "cat",
+      "source_path": "animals/habMaYhD43X1P6CqigQQoZONAt52bo2GcOBzerHL.jpeg",
+      "expected_bytes": 3017273,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C2844",
+      "species": "cat",
+      "source_path": "animals/btcpk2s17X9A2atlSGSNR3eJoQL6xYU91lmL98rw.jpeg",
+      "expected_bytes": 139182,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C2889",
+      "species": "cat",
+      "source_path": "animals/i11I1BddjXLl11xRMmlYNkvhmWbNwv2OECEw3CSo.jpeg",
+      "expected_bytes": 6853822,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C2890",
+      "species": "cat",
+      "source_path": "animals/w3m2U2OAwwnUoJLkzbuFiC3pGvhedlCQQUoldnUV.jpeg",
+      "expected_bytes": 8280829,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C2905",
+      "species": "cat",
+      "source_path": "animals/oNrPlpGzN2OfGAycV6ZTWsguVUVYLRI7BXnnAsjc.jpeg",
+      "expected_bytes": 6889910,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C2950",
+      "species": "cat",
+      "source_path": "animals/OZIrdNHK3rOB55Fwimn54oRZSwhxrhNEYIWtIxoI.jpeg",
+      "expected_bytes": 573632,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C2951",
+      "species": "cat",
+      "source_path": "animals/ggWmAHFlAdtXzfbinVxHOqdIkneMjd6NN5Amt4Ye.jpeg",
+      "expected_bytes": 128713,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3114",
+      "species": "cat",
+      "source_path": "animals/MCMLv0x7QHgBiDrptF3nhhQObW4vu8yR8LppvOYX.jpeg",
+      "expected_bytes": 543099,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3115",
+      "species": "cat",
+      "source_path": "animals/bsDeFGJn4qYBaDNPZ7DwhDOb5clbHwn908vp3iFT.jpeg",
+      "expected_bytes": 407343,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3157",
+      "species": "cat",
+      "source_path": "animals/aIvbqEJT7E04jcOONlyIXXcmkMetBOzW3KnbbyBy.jpeg",
+      "expected_bytes": 420877,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3160",
+      "species": "cat",
+      "source_path": "animals/ZlHz7hcWVYQVUxanDhWDtWJrQN2Sua7LVEgYZkKy.jpeg",
+      "expected_bytes": 1073351,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3161",
+      "species": "cat",
+      "source_path": "animals/5mTa6AcKIHp5BUbNEx5okFXfU1fJlugrI80RAWXT.jpeg",
+      "expected_bytes": 1210535,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3163",
+      "species": "cat",
+      "source_path": "animals/79kpAMFSexQgHRZcbLNgGJdILAbuoMvzh6lBlPMH.jpeg",
+      "expected_bytes": 1538036,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3165",
+      "species": "cat",
+      "source_path": "animals/dadHHHCyNHJsPW57xmLu1SJhoHibidqKv1aw8maJ.jpeg",
+      "expected_bytes": 2407301,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3166",
+      "species": "cat",
+      "source_path": "animals/WJC9kkVEm8lv7lAYGglykoRqE41cSn5YCQ5TK7Xv.jpeg",
+      "expected_bytes": 308506,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3193",
+      "species": "cat",
+      "source_path": "animals/1dPztDZnRByDoSA8Gdx743qvJ66aTVx5rg1edl5V.png",
+      "expected_bytes": 2325500,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3196",
+      "species": "cat",
+      "source_path": "animals/xtO9Ag8uuj296EbjjHIox7bhXFWqRZMujLC0lkSW.jpeg",
+      "expected_bytes": 1969509,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3198",
+      "species": "cat",
+      "source_path": "animals/NcLb6gH6ejRYpR5Us4n3uLDiqm3V3blOEHiNyzRM.jpeg",
+      "expected_bytes": 8431842,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3200",
+      "species": "cat",
+      "source_path": "animals/wGw3WuXHaFcnPKxFUo7cNQZ9mYAZ0IjQUYbeSg2Q.jpeg",
+      "expected_bytes": 4765263,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3205",
+      "species": "cat",
+      "source_path": "animals/IuB1vn3RPS8JLeemYrRaRgCN3XBIUxl6mY5fkx6H.jpeg",
+      "expected_bytes": 6944934,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3208",
+      "species": "cat",
+      "source_path": "animals/iraFGuW1ufskWZ1YmxiHRce4Gt4hwBArkUbbSIxt.",
+      "expected_bytes": 3332801,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3210",
+      "species": "cat",
+      "source_path": "animals/FgpSRVrB8quN863y5k0R8ZcQGpkTSGS9mU5GRON6.jpeg",
+      "expected_bytes": 9219792,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3212",
+      "species": "cat",
+      "source_path": "animals/k3tPC3ijlWUeZeqCsM7Ot6orU7zzohQaIUjeL2xa.jpeg",
+      "expected_bytes": 6918363,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3217",
+      "species": "cat",
+      "source_path": "animals/j8qh10CQfdtgXoPbBeEUJOLmXotYYLQzY2wHRIUU.jpeg",
+      "expected_bytes": 20585,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3218",
+      "species": "cat",
+      "source_path": "animals/ZhbTjKpmT9zImSOWacOe7RKXuKFlvAq2hQaVnPYM.jpeg",
+      "expected_bytes": 7888213,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3221",
+      "species": "cat",
+      "source_path": "animals/z9GgCo66a02zu5TGIt8zRJmUZQVV2t6v4M0GZkAx.jpeg",
+      "expected_bytes": 9324496,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3225",
+      "species": "cat",
+      "source_path": "animals/Lpn13SXsTpeESoXbmfKEeRgMzuhbat1WdcQrcBGb.jpeg",
+      "expected_bytes": 10108695,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3240",
+      "species": "cat",
+      "source_path": "animals/GTUB3bmEJPtn5OLbkPHEAPFSlyJqGkUsosQtI6Cp.jpeg",
+      "expected_bytes": 245011,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3257",
+      "species": "cat",
+      "source_path": "animals/T8NMAXl5f5U9lnkGF2tt7puKKUninW0oFRJdCObT.jpeg",
+      "expected_bytes": 9010613,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3286",
+      "species": "cat",
+      "source_path": "animals/IvygFbdpDLk3RlNk7gfaiE9qlxFpVsmHdrVc6Igy.jpeg",
+      "expected_bytes": 160225,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3294",
+      "species": "cat",
+      "source_path": "animals/sJBBAIqmgj1xJaXsJxy41bW2RZ1AN90jw3c2EJb2.jpeg",
+      "expected_bytes": 9735401,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3325",
+      "species": "cat",
+      "source_path": "animals/uSjPXUCTZ6RPgNHd9Vrj5Lm029zVk0oRXQCAbNaq.",
+      "expected_bytes": 2077060,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3339",
+      "species": "cat",
+      "source_path": "animals/40CHCTzaKztsdzCzlFrWiYgHZu8Wx1oTs2jqqKAy.jpeg",
+      "expected_bytes": 7706636,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3356",
+      "species": "cat",
+      "source_path": "animals/6QD2LsWDWKwctrFtjBP5NFWI8eNdExAEqGlHBsGT.jpeg",
+      "expected_bytes": 6492045,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3391",
+      "species": "cat",
+      "source_path": "animals/bnGhHRW37kExkfxxqPRzoi5I6kLOqLf23A0LXY54.jpeg",
+      "expected_bytes": 145896,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3437",
+      "species": "cat",
+      "source_path": "animals/joZMUpJ0Z0ys2LiITSV4gZray6Ib1i5aGHh9Ytrw.jpeg",
+      "expected_bytes": 4793513,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3438",
+      "species": "cat",
+      "source_path": "animals/g1PliOj3ZheC0HL97vUfrLmk7yy1exAo1BBQaTMo.jpeg",
+      "expected_bytes": 4486838,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3441",
+      "species": "cat",
+      "source_path": "animals/fOBPYYoZNTZev009JrRaaQgo18m5EmWE3myYzMgC.jpeg",
+      "expected_bytes": 3660079,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3444",
+      "species": "cat",
+      "source_path": "animals/mY3MhqXGVrBTlCXzAiLJFgFh5YehIC6TGqYVk3ub.jpeg",
+      "expected_bytes": 3808014,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3445",
+      "species": "cat",
+      "source_path": "animals/FB4ksRnSJN5FIPw9rE9XPKVSjKidvKdyMeQRhmwM.jpeg",
+      "expected_bytes": 3518068,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3455",
+      "species": "cat",
+      "source_path": "animals/8R6pWhmN5BC8VAdSIpPHRhfHtqRIT6lEqs829vVR.jpeg",
+      "expected_bytes": 349839,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3460",
+      "species": "cat",
+      "source_path": "animals/bOkev5ygwUnIKhMN5Lukzwo8tvgsbUhvxNj4kwnL.jpeg",
+      "expected_bytes": 5966294,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3464",
+      "species": "cat",
+      "source_path": "animals/0pVilc2zDGjmYpeq3GCuxTvbe4xIFtLyUerSEpC0.jpeg",
+      "expected_bytes": 3763540,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3465",
+      "species": "cat",
+      "source_path": "animals/fCA7O7CsxyHuQklSSiOIIIooLE8PaSc0lCT1Sqn1.jpeg",
+      "expected_bytes": 3771942,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3469",
+      "species": "cat",
+      "source_path": "animals/UNL1fTYolsF5RxKbX4hZRXvQqd872yzOefBhu87P.jpeg",
+      "expected_bytes": 7762045,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3499",
+      "species": "cat",
+      "source_path": "animals/2EaxipzipFaxpVojXGu7itNIBR0ZfqZu4FUo6Z8g.jpeg",
+      "expected_bytes": 2405932,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3502",
+      "species": "cat",
+      "source_path": "animals/FLqdvK1xkhC7ZUG4utpbdXMxSmuNr9kERRPjo0fS.jpeg",
+      "expected_bytes": 3818361,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3516",
+      "species": "cat",
+      "source_path": "animals/nqtPLUjsiYcvDiEu0vaWFKrtEHsSr3jWb6AcNYcA.jpeg",
+      "expected_bytes": 8061402,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3546",
+      "species": "cat",
+      "source_path": "animals/YloYYcGWfWtMwv1yAok3LWzybKuuTRGwUm4t1y3p.jpeg",
+      "expected_bytes": 206369,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3548",
+      "species": "cat",
+      "source_path": "animals/T1mlv0EDkZC5M0bOR4pHf4s7RQlo2XnGORrZ0nfa.jpeg",
+      "expected_bytes": 205047,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3549",
+      "species": "cat",
+      "source_path": "animals/cIHYdYRWVMDqJzThrZfTH5qdd3D4AaNZPajden96.jpeg",
+      "expected_bytes": 3069863,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3550",
+      "species": "cat",
+      "source_path": "animals/Ctn5GMFF3OZHmutLqANVHlSaR9Vljo0RJHEtB6Iu.jpeg",
+      "expected_bytes": 2694770,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3565",
+      "species": "cat",
+      "source_path": "animals/rzFD7cYeT9nPv5eGX3crUPbYaQCGESOSIyCGXqHR.png",
+      "expected_bytes": 233690,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3572",
+      "species": "cat",
+      "source_path": "animals/Ruv0kQHM05aefYhMCwP3TXMMRaCNeN8JxnNiX3Fy.jpeg",
+      "expected_bytes": 3035295,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3575",
+      "species": "cat",
+      "source_path": "animals/giZGIP5gtNKAbaM4qEpFIfoIyUJrp9AbmReFk8NF.jpeg",
+      "expected_bytes": 1868216,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3576",
+      "species": "cat",
+      "source_path": "animals/JS1R0MwWk90KsQFcQkDzRMBs9mKqGltpi5BgieME.jpeg",
+      "expected_bytes": 1997302,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3591",
+      "species": "cat",
+      "source_path": "animals/Cx8VzrL4KQO8EZV5xKRtlE4G8cADSLF1XuZnQfmy.jpeg",
+      "expected_bytes": 5723567,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3619",
+      "species": "cat",
+      "source_path": "animals/H12315vgIB4Cpt8bqDm5KECDzAElby1oxhLF0psI.png",
+      "expected_bytes": 2058748,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3620",
+      "species": "cat",
+      "source_path": "animals/0YYQjdo9Ehz9B8Yrv4S3zeziepeWMP03XZZq7B19.png",
+      "expected_bytes": 1564260,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3621",
+      "species": "cat",
+      "source_path": "animals/dQ4K9KxAyTr1lcIW9pUTAll3n2561lgu3HpYW46T.png",
+      "expected_bytes": 1933599,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3635",
+      "species": "cat",
+      "source_path": "animals/cfyIpySQL9JLuSc2fln0o36Vmr2ZmzcbMIFCw9Gl.jpeg",
+      "expected_bytes": 249425,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3646",
+      "species": "cat",
+      "source_path": "animals/gMNcr9EYh2szI8Z0bwLUf5KXMVQ7OcddRid48GLG.jpeg",
+      "expected_bytes": 546653,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3673",
+      "species": "cat",
+      "source_path": "animals/3Jrbn9J3rIiVC9nZNfMK1WByuQQQxZi3GAkusMmC.jpeg",
+      "expected_bytes": 509449,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3674",
+      "species": "cat",
+      "source_path": "animals/68yYSTMKlW8HP7ovYY3UaqYu6rBvfdY0UacqpVga.jpeg",
+      "expected_bytes": 116205,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3675",
+      "species": "cat",
+      "source_path": "animals/pzbBULZMg2JbHqdfLyzNh5kfy2q9Zs0axHeeTlc4.jpeg",
+      "expected_bytes": 325151,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3678",
+      "species": "cat",
+      "source_path": "animals/DfWmlORU1xL3d0VYwAHYda0VF5waNOUwgsWGDoVZ.jpeg",
+      "expected_bytes": 1634162,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3685",
+      "species": "cat",
+      "source_path": "animals/hbQy3deOeGNj9cwzXUhbyQeTOFCjtzKpWPhjfjwF.jpeg",
+      "expected_bytes": 142224,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3686",
+      "species": "cat",
+      "source_path": "animals/ZfySKCFX6eP0RUxXA1nhgXokQ3g5GANAxZe8EniG.jpeg",
+      "expected_bytes": 93115,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3695",
+      "species": "cat",
+      "source_path": "animals/FWOJTAm8gg0y2rpM24Wp2R8hIuOUqFWhnBh45d9z.jpeg",
+      "expected_bytes": 234480,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3696",
+      "species": "cat",
+      "source_path": "animals/HP4QTEOloQ4lb1YS6oVgnCxcWLx9jLRhNcv30wm8.jpeg",
+      "expected_bytes": 577517,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3699",
+      "species": "cat",
+      "source_path": "animals/qG2C1t95NtCWuOsz6yeyp4mFUmxdm91zFHI99BGG.jpeg",
+      "expected_bytes": 481402,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3700",
+      "species": "cat",
+      "source_path": "animals/ROy5NMRovnaVqFgFcmVLUgWDLx76C4HXNDIAtdbV.jpeg",
+      "expected_bytes": 261912,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3705",
+      "species": "cat",
+      "source_path": "animals/gMyMPYRroYs5vQ9kS1nvnl3B0WiuJvDi58jprTR5.jpeg",
+      "expected_bytes": 502308,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3712",
+      "species": "cat",
+      "source_path": "animals/5JCj8EH7NmnSBlfWB1Cjk09kCeQZvnNoNMV0d5rk.jpeg",
+      "expected_bytes": 328671,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3716",
+      "species": "cat",
+      "source_path": "animals/5A9V81It3CVnODgGIEB6mWIi3PrYOtR3LCfpEnmh.jpeg",
+      "expected_bytes": 233777,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3718",
+      "species": "cat",
+      "source_path": "animals/nLmy3KkU8BesDxnmf61kvYYZgMLNim7AhESVf0jv.jpeg",
+      "expected_bytes": 1736735,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3721",
+      "species": "cat",
+      "source_path": "animals/tS6sWihn4suG3qT2oLiE9ceEAgME02H055iexE9P.jpeg",
+      "expected_bytes": 1613171,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3723",
+      "species": "cat",
+      "source_path": "animals/mn44CI5OS5OC8pVORLWyP4aHqrMohHeSBstmmmC5.jpeg",
+      "expected_bytes": 1523141,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3724",
+      "species": "cat",
+      "source_path": "animals/aFjfvzQPX4eA8OylzsfpZVF0j5Eyv4MDfqOLStjw.jpeg",
+      "expected_bytes": 3867607,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3726",
+      "species": "cat",
+      "source_path": "animals/alsqdHaDnTbrTAJBMBelqGgM3sFA8BFF6KHWfN6b.jpeg",
+      "expected_bytes": 1021678,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3734",
+      "species": "cat",
+      "source_path": "animals/Mz5lF1497rvQMhs6GJEo5uL9oQpT5ZZf9QdL3ow1.jpeg",
+      "expected_bytes": 5022151,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3739",
+      "species": "cat",
+      "source_path": "animals/Pz5KqSNznlUGGi8yYo5zZDKTmpTfI8F4kRqUikj4.jpeg",
+      "expected_bytes": 569027,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3754",
+      "species": "cat",
+      "source_path": "animals/NPrqsuY5yYM6Gz9AB6kDWWjG1giB9tjvKE7m9lo4.jpeg",
+      "expected_bytes": 1671200,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3761",
+      "species": "cat",
+      "source_path": "animals/ahBzluzrExQMgEnVnvrFr7u3zt2zjlXrqAXaei7R.jpeg",
+      "expected_bytes": 3474269,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3762",
+      "species": "cat",
+      "source_path": "animals/xyPgahiK9NQjIWE01HDSQKeoLrh8qNDW4lUeJCY6.jpeg",
+      "expected_bytes": 1600045,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3764",
+      "species": "cat",
+      "source_path": "animals/R0PXJZQqLHGFXNW8x2az03iqb5HtfXeMdITNZerR.jpeg",
+      "expected_bytes": 1951815,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3766",
+      "species": "cat",
+      "source_path": "animals/xM80JcCSYMO83trVy4b0MkRgZuYYiBYwoLRZg1fH.jpeg",
+      "expected_bytes": 527248,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3769",
+      "species": "cat",
+      "source_path": "animals/0quXPRYbCwKIvRbJJXXtPQnYkr5WNzDVR3KUxqS1.jpeg",
+      "expected_bytes": 732812,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3770",
+      "species": "cat",
+      "source_path": "animals/TIiPx2mQP13d95jjV7xwf2FwiEUX7SdnblfdglBx.jpeg",
+      "expected_bytes": 807154,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3773",
+      "species": "cat",
+      "source_path": "animals/aop9SJkwiXnvDD1kWQgzS380fLVwvWNrF6ogO6bK.jpeg",
+      "expected_bytes": 2295638,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3775",
+      "species": "cat",
+      "source_path": "animals/1tv8vhF9vdmIUN569uXJTb1zYhJRfeeXbA40j9Va.jpeg",
+      "expected_bytes": 2422771,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3776",
+      "species": "cat",
+      "source_path": "animals/Ovpy9DBh6Jtm5GY49ecwIphYVmb1Mc0Uc2Qh4lAW.jpeg",
+      "expected_bytes": 4086114,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3777",
+      "species": "cat",
+      "source_path": "animals/hblaETav8qQcC3eAvDa22fcmvv5ZaFkvxLKcVWx0.jpeg",
+      "expected_bytes": 1768147,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3778",
+      "species": "cat",
+      "source_path": "animals/fo8L5GDFSXZYMbBxRG35SfU7jxeLD4YOp2c3vzke.jpeg",
+      "expected_bytes": 4981362,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3779",
+      "species": "cat",
+      "source_path": "animals/Cc0fPrPzutmxFt7Zb4FVwiYkLMOXH5IWpEt26me2.jpeg",
+      "expected_bytes": 3698946,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3783",
+      "species": "cat",
+      "source_path": "animals/Q2iDbU8wwF2ZmWt3fs5edykCFPz4eF3MWAbp28Mi.jpeg",
+      "expected_bytes": 2716059,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3784",
+      "species": "cat",
+      "source_path": "animals/iNzToQE8toVohENCGTygzlVEYZoxn2Tu2Gn2bPQZ.jpeg",
+      "expected_bytes": 2037896,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3785",
+      "species": "cat",
+      "source_path": "animals/0LQhKA3CERpjqRxkTB4RhFvw3as4aQA8LViWRvnM.jpeg",
+      "expected_bytes": 75572,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3786",
+      "species": "cat",
+      "source_path": "animals/Rv0i7wzR5RKt4ieqYhjD323MvEdaxZ3xlvv6I1l2.jpeg",
+      "expected_bytes": 116069,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3787",
+      "species": "cat",
+      "source_path": "animals/XnMPg16SdinEgCkuOqbqaQekODUmHelssGbdWDER.jpeg",
+      "expected_bytes": 3071708,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3788",
+      "species": "cat",
+      "source_path": "animals/gYcxglsq1Bh49AA3KGFiFZ4CR28UHQrc49RyYIwH.jpeg",
+      "expected_bytes": 1782915,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3789",
+      "species": "cat",
+      "source_path": "animals/59cSeB5SGdSw0x1SjKjyN8fI0bD2duAYut43zikg.jpeg",
+      "expected_bytes": 256306,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3793",
+      "species": "cat",
+      "source_path": "animals/7YH32jdisWwgPmXyRQb4DCtDlX3K2QpvfDE3s44g.jpeg",
+      "expected_bytes": 1794650,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3794",
+      "species": "cat",
+      "source_path": "animals/ByJ1wtqufVyfDj0VGLuHHLWYLpEf6pgiPE4WS8Dx.jpeg",
+      "expected_bytes": 2584537,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3795",
+      "species": "cat",
+      "source_path": "animals/m1L6Z8jVvFmKUpylCy5crXEAMsRBhZbLIdJZ1tOC.jpeg",
+      "expected_bytes": 2607825,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3796",
+      "species": "cat",
+      "source_path": "animals/uKL206y2ZRDzM7M0c8yVqplRv1OBxoePtD8XZjd3.jpeg",
+      "expected_bytes": 3756754,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3797",
+      "species": "cat",
+      "source_path": "animals/OtRv67AOL9EI3urHhCWvNgIP9HIldsHUrBGvTZRq.jpeg",
+      "expected_bytes": 4245613,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3798",
+      "species": "cat",
+      "source_path": "animals/ax0bS9LnEoWCkeXtd2IvHw5Yxm9bt0DM0ywnywhW.jpeg",
+      "expected_bytes": 4562087,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3799",
+      "species": "cat",
+      "source_path": "animals/7BidsitsB3xPvkvb1lvt1G2Pgyk1rMyKsaq3MqEm.jpeg",
+      "expected_bytes": 3436028,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3800",
+      "species": "cat",
+      "source_path": "animals/VYGPp7MAKVoYqcutI5uwdVQzDSi0rs1nlbnQ5tVG.jpeg",
+      "expected_bytes": 5059629,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3801",
+      "species": "cat",
+      "source_path": "animals/SXOpGxx9h5v9o9BuIr0sMTvdKGNQ4TkiUWYFP8Su.jpeg",
+      "expected_bytes": 5370072,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3802",
+      "species": "cat",
+      "source_path": "animals/qz3Q4AMkwCFJOhwrIKnAmUkMLSo2II5JV0c49Bzv.jpeg",
+      "expected_bytes": 4073398,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3803",
+      "species": "cat",
+      "source_path": "animals/Ymblxj5r5LWAMcJSldf63jZSeT0tsgHlTqJKw5OR.jpeg",
+      "expected_bytes": 2497905,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3804",
+      "species": "cat",
+      "source_path": "animals/wshjtoP3AVwzF8ikKhjYsN9hm0KMhzn6mzroBouB.jpeg",
+      "expected_bytes": 5148974,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C3805",
+      "species": "cat",
+      "source_path": "animals/BF1BUlk3q5AsCU3A9kCwCgmvFm3UDWvAczfhEbG6.jpeg",
+      "expected_bytes": 2440984,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "C807",
+      "species": "cat",
+      "source_path": "animals/ERxm5I3JlwlPvnBmxRReJEmq3osZRFgtZZyD6Wv3.jpeg",
+      "expected_bytes": 66701,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1014",
+      "species": "dog",
+      "source_path": "animals/WVZaSEZNzNBasUd25Jt0Y1PnqiXW1xMJlYC56tkB.jpeg",
+      "expected_bytes": 287570,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1017",
+      "species": "dog",
+      "source_path": "animals/nHYEM19rSzgNhmMWwSojgJYh4Nrm7nz2SScZq0a9.png",
+      "expected_bytes": 2816874,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1018",
+      "species": "dog",
+      "source_path": "animals/5iTtobofGdy4Fu1b3tI1LfWoLsRCDDnElKcA27Hg.png",
+      "expected_bytes": 3500272,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1019",
+      "species": "dog",
+      "source_path": "animals/bXrdrqWjNnXKLTRnBcNFtVVMu1pKZZWNvtehqFfW.png",
+      "expected_bytes": 3299223,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1020",
+      "species": "dog",
+      "source_path": "animals/TaOOy9gYzQLOOhDQFsSu99Wy9oz9jpLN3wWwJ1Lk.jpeg",
+      "expected_bytes": 1627505,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1021",
+      "species": "dog",
+      "source_path": "animals/TJULWZLTJRZIQTYR1DvCTCvu4mzkuWffBVyh1MIS.png",
+      "expected_bytes": 3486524,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1026",
+      "species": "dog",
+      "source_path": "animals/HZBTfXfi8c1HLxK3oPCwzQduzoWnNiNg4Mad8OTV.png",
+      "expected_bytes": 2814856,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1033",
+      "species": "dog",
+      "source_path": "animals/YbVwIV3Twqp9PJO9m5lYlZJee0tcIRgmnBEocXVR.png",
+      "expected_bytes": 1826584,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1034",
+      "species": "dog",
+      "source_path": "animals/FD35zEtuuji6JRnuMi5rpj3RZYos2HNn8BvwBw9C.jpeg",
+      "expected_bytes": 252471,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1035",
+      "species": "dog",
+      "source_path": "animals/rkltwB4ihG5jgAHVYBeh6HfvArfAhUTuGQ21kOix.jpeg",
+      "expected_bytes": 588325,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1037",
+      "species": "dog",
+      "source_path": "animals/trYqxTCwm3uwcjvV0KOOrsM1N2E8lLEpUqxYkP90.jpeg",
+      "expected_bytes": 1856417,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1039",
+      "species": "dog",
+      "source_path": "animals/enNY8xNzW82JO8rrsu6WYkR8KSOSIqyOvPr5eD3J.jpeg",
+      "expected_bytes": 1378042,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1041",
+      "species": "dog",
+      "source_path": "animals/aKfDjbaHwdmP0vKuBMBn3r8smO1qBEutiXf0N2pP.jpeg",
+      "expected_bytes": 1367339,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1069",
+      "species": "dog",
+      "source_path": "animals/O8w7w4za88YXRCLFVSaNoC6djrBgmtZkKptwz0vs.jpeg",
+      "expected_bytes": 268189,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1080",
+      "species": "dog",
+      "source_path": "animals/TNMqTj5R4WUyQMSvlYveTztukMp0NuBAbTOqvNBS.jpeg",
+      "expected_bytes": 213295,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1082",
+      "species": "dog",
+      "source_path": "animals/2PEQMhngwXeyDAr2oEmxQ5NerF5HL6KPFw8SgJsA.jpeg",
+      "expected_bytes": 418145,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1091",
+      "species": "dog",
+      "source_path": "animals/0P8t6R42uK4wu8z4w9IdfbFJm6zNgu5sFMbW8NVf.png",
+      "expected_bytes": 4321142,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1096",
+      "species": "dog",
+      "source_path": "animals/f5ijZVHbxX2XNnB4NoWCGhSRmapmlxqAWhsIIu6w.jpeg",
+      "expected_bytes": 267684,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1097",
+      "species": "dog",
+      "source_path": "animals/MMO2EgEWn8AbLcbwnJ9qwX99Hl1H0G6zPX4PLi8v.jpeg",
+      "expected_bytes": 328835,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1098",
+      "species": "dog",
+      "source_path": "animals/Vs4boOC6cpZ8zYxMsqYz8QdxsG6bBQXzpxrsQURe.png",
+      "expected_bytes": 2174120,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1099",
+      "species": "dog",
+      "source_path": "animals/aMSgtKwDnCTHIawoNLSRvJZ9mRJUZZJJYKr885JM.png",
+      "expected_bytes": 3917383,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1101",
+      "species": "dog",
+      "source_path": "animals/YH6NCTmzSMXE2vi8XQqoXzDTvLY92UJlLznnVA9i.jpeg",
+      "expected_bytes": 281955,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1102",
+      "species": "dog",
+      "source_path": "animals/QFbVM1ysyCAf9DxZLpFSKJHFuKzaQr0WlL9eDNwc.jpeg",
+      "expected_bytes": 505779,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1103",
+      "species": "dog",
+      "source_path": "animals/2Z5DUlh008OtUG6vbXi6sMK40qqRgkDJmx07kXjt.mp4",
+      "expected_bytes": 985660,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1104",
+      "species": "dog",
+      "source_path": "animals/40y9mu6PASux8RBdyAqnghiPugKo0wOSJRuYkaHB.jpeg",
+      "expected_bytes": 165708,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1110",
+      "species": "dog",
+      "source_path": "animals/6wwiv5QfDZ6n3l8i3LjYEh4VC1twdUVgL7Sx72zk.jpeg",
+      "expected_bytes": 332635,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1125",
+      "species": "dog",
+      "source_path": "animals/8DkyikIAauOKWWlm6VpFMOn6SD8om2zYwGLhgOOd.jpeg",
+      "expected_bytes": 257867,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1129",
+      "species": "dog",
+      "source_path": "animals/GCovLSWn2js3slsqZ9l6mtvXLINMvIMvW4fQcOEr.jpeg",
+      "expected_bytes": 383292,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1133",
+      "species": "dog",
+      "source_path": "animals/hmCpXUmdovQmkPN4keJGLfK3MF83OJj35r9d4BlR.jpeg",
+      "expected_bytes": 295757,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1134",
+      "species": "dog",
+      "source_path": "animals/1wk4NkvmGmmOwh7KF1cYoDJv2jjxNlhvW8VE9wfa.jpeg",
+      "expected_bytes": 259704,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1153",
+      "species": "dog",
+      "source_path": "animals/cZiyjPZCU9rY8KNBP4SE3AVIA5cXMft90qyghfRY.jpeg",
+      "expected_bytes": 508815,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1158",
+      "species": "dog",
+      "source_path": "animals/WuSF0VLm7C1v0Pxik2Ix6soqf9wJuqVynvFwLcCG.jpeg",
+      "expected_bytes": 148449,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1159",
+      "species": "dog",
+      "source_path": "animals/7LwL6BxYX83kJBzVaqkGsP3jUBUsLtXgVeeO8Q2I.jpeg",
+      "expected_bytes": 365585,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1160",
+      "species": "dog",
+      "source_path": "animals/4N8v5eNpQGX5Rq51hfY7ucIZJWeaZfmQxEN2FIVP.jpeg",
+      "expected_bytes": 640884,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1161",
+      "species": "dog",
+      "source_path": "animals/U4UXEhjiAm9wrDuwdetQKnejkiiBuRZPyYTIxNzF.jpeg",
+      "expected_bytes": 1102532,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1163",
+      "species": "dog",
+      "source_path": "animals/WoQpLaPkoBmKGc5xBTAide2qgzrggExRIAwnXzs2.jpeg",
+      "expected_bytes": 353695,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1169",
+      "species": "dog",
+      "source_path": "animals/Mkwo5ZrTnE1abjjVXhrGwGgDvu80cqIfP1A8IIha.jpeg",
+      "expected_bytes": 203306,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1176",
+      "species": "dog",
+      "source_path": "animals/iHWOOTWI1F3rlgZKkep7Ol342etWtiT63SHffndD.jpeg",
+      "expected_bytes": 249291,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1193",
+      "species": "dog",
+      "source_path": "animals/QFiN4jo5zGI319idrhiHJgeTWIhCjA6zDxPP55gF.jpeg",
+      "expected_bytes": 369221,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1198",
+      "species": "dog",
+      "source_path": "animals/WxX9Hz6Zo0hawibY6kCzEdCKxUdM3hWPSZ2HSs4P.jpeg",
+      "expected_bytes": 89683,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1199",
+      "species": "dog",
+      "source_path": "animals/CDGMqhNd3kZTzeqL7ugNUMW5hTg4yrpLNvT8RxTs.jpeg",
+      "expected_bytes": 280963,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1200",
+      "species": "dog",
+      "source_path": "animals/IBuq3v3Ai9DLyP9GTobOYhP0IZcsJa3z4aPUdXZd.jpeg",
+      "expected_bytes": 182503,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1201",
+      "species": "dog",
+      "source_path": "animals/SclfE6KEt2JD87XD0LE5ycsH89FivCtgMsVboEUx.jpeg",
+      "expected_bytes": 233981,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1202",
+      "species": "dog",
+      "source_path": "animals/IdapLUYyiUL26pSVv7e2HJwO3MtvCAA8r99HAfYk.png",
+      "expected_bytes": 2603356,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1203",
+      "species": "dog",
+      "source_path": "animals/hoe5xq93eNZQDsN5EtDk0XgbwAYN3VUwuxsxcZzs.png",
+      "expected_bytes": 2949686,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1209",
+      "species": "dog",
+      "source_path": "animals/ucodes6RFPlyEWjX7Uz5dlix8xTVwv3TyvBjiJ9G.jpeg",
+      "expected_bytes": 1832531,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1210",
+      "species": "dog",
+      "source_path": "animals/SNvnqwnnkmQlHVaBE0EsZmERa2QVPCxC4dNXfAhh.jpeg",
+      "expected_bytes": 211655,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1223",
+      "species": "dog",
+      "source_path": "animals/yGq8qspgQ5lBf9dBsJWPUEpjN2ovHSxOiZs4sauq.jpeg",
+      "expected_bytes": 245268,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1230",
+      "species": "dog",
+      "source_path": "animals/Ldj46nWJ4EJHsaq0NhOUoH3h25tKycpRor2fLLBb.jpeg",
+      "expected_bytes": 386349,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1231",
+      "species": "dog",
+      "source_path": "animals/RIRMvjN2Hblj5LNCP6rlBP6yXVGqh0CF3J815efJ.jpeg",
+      "expected_bytes": 392839,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1238",
+      "species": "dog",
+      "source_path": "animals/yARQ3YiR8ijLRnDIEI4mBZ8IaO4A0ABm6ZvQZMAY.jpeg",
+      "expected_bytes": 157524,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1239",
+      "species": "dog",
+      "source_path": "animals/No85JyTocb1zrrx8qqVZcCIz4D7W2AY4iMfCrEqT.jpeg",
+      "expected_bytes": 208440,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1240",
+      "species": "dog",
+      "source_path": "animals/PRpWE5a5Q0NJMmL8NfwtoTK9tKemF01o7cqzfDS5.jpeg",
+      "expected_bytes": 10361128,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1243",
+      "species": "dog",
+      "source_path": "animals/lPtFfOuOOMhZOboyQPlS9A7foMn4rGUpojMZ13BA.jpeg",
+      "expected_bytes": 126824,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1247",
+      "species": "dog",
+      "source_path": "animals/TxxT8KmlANnabvOg2ci5Tw1TVNZ9TtGxH4PKzFuY.png",
+      "expected_bytes": 2266093,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1250",
+      "species": "dog",
+      "source_path": "animals/55LP5tuFTl6iXJ0F5GlVPo3TT4cqBrsJYTAurqzt.jpeg",
+      "expected_bytes": 223116,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1253",
+      "species": "dog",
+      "source_path": "animals/NRxeynGw3kHv9BmJD8GJsK33L8dNe4c2A9erbAm0.jpeg",
+      "expected_bytes": 1472470,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1255",
+      "species": "dog",
+      "source_path": "animals/d8StW6lelSj1i27SiDBaGLp6QapsGjwCUyvxSk69.jpeg",
+      "expected_bytes": 1470040,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1260",
+      "species": "dog",
+      "source_path": "animals/HEC3GFbGmF4mctfj3Zjk1tvKGK9qZCTD0lpUmA4d.jpeg",
+      "expected_bytes": 548591,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1270",
+      "species": "dog",
+      "source_path": "animals/cOu84Xigwh5RYFWiLqPCCn6hN5G3t0WgLV0Nc2SE.jpeg",
+      "expected_bytes": 301140,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1271",
+      "species": "dog",
+      "source_path": "animals/8EhpWd4LVlwx9bBsC7FvAPz9GJygoPqp6fcVtmh1.jpeg",
+      "expected_bytes": 299233,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1273",
+      "species": "dog",
+      "source_path": "animals/si6LrMaFztK7XTEJYogf52RAcKkavWmzSYqtKVPx.jpeg",
+      "expected_bytes": 255114,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1274",
+      "species": "dog",
+      "source_path": "animals/MrUXIXTOsS2zaFcFjxPNPk5akhjAlQ41fRUt7WSg.jpeg",
+      "expected_bytes": 257800,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1275",
+      "species": "dog",
+      "source_path": "animals/m4SwD5Mmq9N8zLxjDqtOFwiuUH9o4WjBGubu0Qss.jpeg",
+      "expected_bytes": 333800,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1277",
+      "species": "dog",
+      "source_path": "animals/bui8OmkwspvPeG8pomSyIDItAFf3eEzK03diqZTO.jpeg",
+      "expected_bytes": 684127,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1285",
+      "species": "dog",
+      "source_path": "animals/hsLnpqQ8Fiyp1UadPmJ4Ed9u2K5utE0l4kRiAbzg.jpeg",
+      "expected_bytes": 226142,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1288",
+      "species": "dog",
+      "source_path": "animals/2NodlDQuVgFiaBNh9kIgCSYtsRVDnU3NhFHYh0TU.jpeg",
+      "expected_bytes": 624186,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1290",
+      "species": "dog",
+      "source_path": "animals/deSntHDIeHgB3ubnfUfoNkcPPAal66Af3qG45fjH.jpeg",
+      "expected_bytes": 228508,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1298",
+      "species": "dog",
+      "source_path": "animals/gU5NAn9MfinWZ3sC9y9eEDA6OfYYnQXiujOfvDwS.jpeg",
+      "expected_bytes": 1015993,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1302",
+      "species": "dog",
+      "source_path": "animals/f29OurD8ZUCMM2YZIq9AKW1kQsbjhk1mglYCoBLt.jpeg",
+      "expected_bytes": 210746,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1306",
+      "species": "dog",
+      "source_path": "animals/btk4DZmFSqYawS8BBBtpiO6FWiTFEM2z5SRH7tfX.jpeg",
+      "expected_bytes": 518397,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1312",
+      "species": "dog",
+      "source_path": "animals/LyD1vLoJqnLgnZygzCaJ6PMHPouSJNG7YWwqZZMh.jpeg",
+      "expected_bytes": 1322464,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1314",
+      "species": "dog",
+      "source_path": "animals/yeao7D63zmsmh39Eg5mEYQPYvLAFZ6HsIe035j3h.jpeg",
+      "expected_bytes": 1076708,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1316",
+      "species": "dog",
+      "source_path": "animals/whG0viNnjVMXKtFwwnLG4kiphE6rQb8QhiYoafVV.png",
+      "expected_bytes": 4543650,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1317",
+      "species": "dog",
+      "source_path": "animals/Ijlo12qCOCe0bt3tba2vXQ6BzJEdOS59IJk47s33.jpeg",
+      "expected_bytes": 422808,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1318",
+      "species": "dog",
+      "source_path": "animals/8RZPEynwuu8PJcJSVEqe7rChG7JDZVyrIn9GMMQO.jpeg",
+      "expected_bytes": 405804,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1320",
+      "species": "dog",
+      "source_path": "animals/RQ7wfDBeADRqlaWXZmlUKslNdWMjdXXcYuP3XUNm.jpeg",
+      "expected_bytes": 418399,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1321",
+      "species": "dog",
+      "source_path": "animals/3oPF3lBmMVPayjgbLPicFIdU3n27BbBnEzJSC3Gw.jpeg",
+      "expected_bytes": 206505,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1323",
+      "species": "dog",
+      "source_path": "animals/PRzdk8Ll6HX5ulFpa3jyJg0OkyeqL0t1ktgPYeSR.jpeg",
+      "expected_bytes": 152764,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1324",
+      "species": "dog",
+      "source_path": "animals/9gMBcghAKyoDV4iUkQ1RGyk1tH4XPCSLQ8TzUeTM.jpeg",
+      "expected_bytes": 350179,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1327",
+      "species": "dog",
+      "source_path": "animals/RHeQTMVHh9Q7ObioLKlSuLX5qkUkarluRAkll5du.jpeg",
+      "expected_bytes": 1878979,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1328",
+      "species": "dog",
+      "source_path": "animals/2uSPeGuas44zFaxNWolqG4ZFov2vQ2aMnMMs9tmW.jpeg",
+      "expected_bytes": 2126553,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1329",
+      "species": "dog",
+      "source_path": "animals/gXHBN0O1Op0U5TFkOpFt3v0x2RG3OqrXh2dG7QAl.jpeg",
+      "expected_bytes": 2567181,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1330",
+      "species": "dog",
+      "source_path": "animals/f8n0GdS60SKfRU3Z9HCS6HFTZ1kzWOu0Fc3coxJE.jpeg",
+      "expected_bytes": 2696575,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1331",
+      "species": "dog",
+      "source_path": "animals/rPZOZxpxmtzdUbiusA0dyyK0wHkKcxficS6Cmq3j.jpeg",
+      "expected_bytes": 3412051,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1333",
+      "species": "dog",
+      "source_path": "animals/6Z7IF55T2JPoEUAPwyQ6TTuDLw2U78oTQL8PGput.jpeg",
+      "expected_bytes": 282973,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1334",
+      "species": "dog",
+      "source_path": "animals/RXiNPO2D6MoXYa4Txr5tnpDHyeokNjbRzcV6ML0Y.jpeg",
+      "expected_bytes": 263393,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1337",
+      "species": "dog",
+      "source_path": "animals/C63Q6OPv9CgKIzrLCdPTEPBZUNmwwMx4V1F929jd.jpeg",
+      "expected_bytes": 1971168,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1338",
+      "species": "dog",
+      "source_path": "animals/VIUCBcE3zdUwm7bJN5AWVLTwgAvZEwoolIdZvZdg.jpeg",
+      "expected_bytes": 413454,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D1339",
+      "species": "dog",
+      "source_path": "animals/35lLFgXHpCWtsKikJKWylUYYp338xz36AVL6hWV5.jpeg",
+      "expected_bytes": 1790731,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D436",
+      "species": "dog",
+      "source_path": "animals/5rWrloAXwNJQst3m21M8Hn433O2emElnP0UXvtR2.jpeg",
+      "expected_bytes": 134564,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D438",
+      "species": "dog",
+      "source_path": "animals/acegfaFcw6rTKkBzZM7p5f460U16MEZtCmgwN7HC.jpeg",
+      "expected_bytes": 185566,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D559",
+      "species": "dog",
+      "source_path": "animals/lnJzm42fvTUCqCB11TdWivsVahmWjMMRDpfRETTi.jpeg",
+      "expected_bytes": 221970,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D569",
+      "species": "dog",
+      "source_path": "animals/px7sCRD8icxAVwK2sDWW25JuCXnJa5XCIL0li4oc.jpeg",
+      "expected_bytes": 264420,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D587",
+      "species": "dog",
+      "source_path": "animals/BWZdcUsTlu9vh61JSFJP1F1M7AEq2tUcHioffu3f.jpeg",
+      "expected_bytes": 143341,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D645",
+      "species": "dog",
+      "source_path": "animals/HbUzZ0LYGLfEEbgfPQd3kyAVLSiqSS6L8ykuO8Yk.jpeg",
+      "expected_bytes": 124551,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D667",
+      "species": "dog",
+      "source_path": "animals/bmMBLz7rmW1jeDjPMxnTj5nI2wxqIQL56Z5So3A2.jpeg",
+      "expected_bytes": 254000,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D676",
+      "species": "dog",
+      "source_path": "animals/XIUKNf4ZZQJ5Zy66o25qVVA3N4sxv5XYhkdEjbKa.jpeg",
+      "expected_bytes": 261179,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D677",
+      "species": "dog",
+      "source_path": "animals/1Reek3ioZTH1nxFpethPohJLYVFNClJssTFFbMW2.jpeg",
+      "expected_bytes": 1286257,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D718",
+      "species": "dog",
+      "source_path": "animals/EsvKxqarg2iN0seZZaEabWCS9TUHukxhZ9p4KJsu.jpeg",
+      "expected_bytes": 339525,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D760",
+      "species": "dog",
+      "source_path": "animals/r3Gm8jKGaOcjgDUxhD9337dtRJqGSA5bwAIA9kLU.jpeg",
+      "expected_bytes": 377973,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D782",
+      "species": "dog",
+      "source_path": "animals/N14rr0psiQNPMArrKrqS8P7D1wGhlDsoAsisJCrY.jpeg",
+      "expected_bytes": 66772,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D791",
+      "species": "dog",
+      "source_path": "animals/GCZKVpLoZC8DJt34DnVJxJXWHV8Tm1zuiiNpPbp7.jpeg",
+      "expected_bytes": 2160410,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D814",
+      "species": "dog",
+      "source_path": "animals/suvrmtxTClUR5vIDhOuqS2cxSzZJowgLCrXaOBJ0.jpeg",
+      "expected_bytes": 677003,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D816",
+      "species": "dog",
+      "source_path": "animals/tDFgvqWcwJ3dv2rirHjBaGzYzLYh8lpbKlyWXusN.jpeg",
+      "expected_bytes": 1000869,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D834",
+      "species": "dog",
+      "source_path": "animals/SaabLoMLgvIMRWxrQnQ3geRVTEtQ0fFhUIGCU9Sy.jpeg",
+      "expected_bytes": 101458,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D836",
+      "species": "dog",
+      "source_path": "animals/5XJSNPzM65ThG31WZjjKoYkmSOgJmkcr52zAHzQT.jpeg",
+      "expected_bytes": 544147,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D842",
+      "species": "dog",
+      "source_path": "animals/BCT874qqoGNtAXFrQd9QQIqZaRyRpVVPJP3KU772.jpeg",
+      "expected_bytes": 256942,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D887",
+      "species": "dog",
+      "source_path": "animals/m8AiEAuIHeGQaDPkMyA3Kh2B6aV4lo4u5JJBgNka.jpeg",
+      "expected_bytes": 340523,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D910",
+      "species": "dog",
+      "source_path": "animals/w9NOvkpbWrZ9BUrz5jEBfIUPB0LT8yg92Vi8POhT.jpeg",
+      "expected_bytes": 288032,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D913",
+      "species": "dog",
+      "source_path": "animals/EiCQAdWztXb9QyaLeLPj5jcnh8lQP6wjZwdmRcVW.jpeg",
+      "expected_bytes": 261500,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D914",
+      "species": "dog",
+      "source_path": "animals/iMAc2TgR110ummw4vOVWmBg6JeCYOUrDt08vxL36.jpeg",
+      "expected_bytes": 97042,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D921",
+      "species": "dog",
+      "source_path": "animals/QXfy4k0gwmc8A8kS7uuhEXeeQOwp92eoTlQpRsec.png",
+      "expected_bytes": 875789,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D956",
+      "species": "dog",
+      "source_path": "animals/DJcWmb29Rc3ChQoiDqW2vRzDtmmr1ItWyhPOzgNd.png",
+      "expected_bytes": 3896149,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D959",
+      "species": "dog",
+      "source_path": "animals/dFNfAP9jonqwdYYAPoQJrb0S3QE3aflop9mwRXgo.png",
+      "expected_bytes": 4405715,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D966",
+      "species": "dog",
+      "source_path": "animals/1Inyaemt4xaRaTLbBWPHFjoz1L8vug4sgVKvp3ma.jpeg",
+      "expected_bytes": 245379,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D967",
+      "species": "dog",
+      "source_path": "animals/fpoHcU28a0kyH91l4KkNXN10DDlPM1J8rA3qXzgR.jpeg",
+      "expected_bytes": 582306,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D968",
+      "species": "dog",
+      "source_path": "animals/vYQHPvWbCCUDn2PpByNw67Z7MrXJsROVhHzhAXyW.jpeg",
+      "expected_bytes": 471128,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D969",
+      "species": "dog",
+      "source_path": "animals/Tl54vDv0JiSN86YhUkWeRqpKhcJmXcWq8ncdiSj8.jpeg",
+      "expected_bytes": 527374,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D970",
+      "species": "dog",
+      "source_path": "animals/zF4G0gUyIzE8FXWpN67AYQGYJPL4S42VD4f24SBK.jpeg",
+      "expected_bytes": 251667,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D975",
+      "species": "dog",
+      "source_path": "animals/lAlV8RhiBf9jBgVqHi3FwUUdIyq9PRmFmAP3NKR6.jpeg",
+      "expected_bytes": 238702,
+      "present": false,
+      "size_matches": false
+    },
+    {
+      "code": "D995",
+      "species": "dog",
+      "source_path": "animals/XlnTELRTNv9geyz25B3TU8rIwm9OPLkjmelm1sBX.jpeg",
+      "expected_bytes": 303502,
+      "present": false,
+      "size_matches": false
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "checked_at": "2026-09-13",
+  "project": "iihqjzilgawhfdhdevam",
+  "operation": "archive via existing content lifecycle; release approval required",
+  "items": [
+    {
+      "id": "70000000-0000-4000-8000-000000000001",
+      "slug": "demo-siu-bak-recovery",
+      "title": "【示範】小白康復中",
+      "status": "published",
+      "version": 0,
+      "published_revision_id": "2b7fa327-6252-4a55-96c1-0d901b1bed51",
+      "updated_at": "2026-09-06 06:21:55.900217+00"
+    },
+    {
+      "id": "70000000-0000-4000-8000-000000000002",
+      "slug": "demo-lucky-ready-for-adoption",
+      "title": "【示範】Lucky 準備尋家",
+      "status": "published",
+      "version": 0,
+      "published_revision_id": "c3e7b846-f79d-4fd5-b7cf-4a3180999a93",
+      "updated_at": "2026-09-06 06:21:55.900217+00"
+    },
+    {
+      "id": "70000000-0000-4000-8000-000000000003",
+      "slug": "demo-orange-sponsor-needed",
+      "title": "【示範】阿橘需要助養",
+      "status": "published",
+      "version": 0,
+      "published_revision_id": "47d7360d-5a8c-4842-95a6-4913536aff87",
+      "updated_at": "2026-09-06 06:21:55.900217+00"
+    },
+    {
+      "id": "70000000-0000-4000-8000-000000000004",
+      "slug": "demo-summer-adoption-day",
+      "title": "【示範】夏日領養日",
+      "status": "published",
+      "version": 0,
+      "published_revision_id": "9f363805-9ecd-475d-a658-1b17889599eb",
+      "updated_at": "2026-09-06 06:21:55.900217+00"
+    },
+    {
+      "id": "70000000-0000-4000-8000-000000000005",
+      "slug": "demo-charity-market-july",
+      "title": "【示範】七月慈善市集",
+      "status": "published",
+      "version": 0,
+      "published_revision_id": "247b184f-5d81-4a50-b177-b784b021e99a",
+      "updated_at": "2026-09-06 06:21:55.900217+00"
+    },
+    {
+      "id": "70000000-0000-4000-8000-000000000006",
+      "slug": "demo-rescue-report-june",
+      "title": "【示範】六月救援報告",
+      "status": "published",
+      "version": 0,
+      "published_revision_id": "46e76700-2fe8-42d2-8884-c0fe9b38e09e",
+      "updated_at": "2026-09-06 06:21:55.900217+00"
+    },
+    {
+      "id": "70000000-0000-4000-8000-000000000007",
+      "slug": "demo-dodo-adopter-update",
+      "title": "【示範】豆豆新生活更新",
+      "status": "published",
+      "version": 0,
+      "published_revision_id": "bcaf3ef0-df86-479f-8434-d21faf7f0709",
+      "updated_at": "2026-09-06 06:21:55.900217+00"
+    }
+  ]
+}

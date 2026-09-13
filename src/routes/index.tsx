@@ -30,6 +30,7 @@ async function loadHome() {
         genderFilter: "all",
         page: 1,
         pageSize: FEATURED_PER_SPECIES,
+        withPhoto: true,
       },
     }).catch(() => null);
 

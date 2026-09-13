@@ -177,7 +177,7 @@ describe("volunteer service", () => {
     expect(registrations).toHaveLength(1);
   });
 
-  test("delegates status audit atomically and separately audits attendance", async () => {
+  test("delegates status and attendance audit atomically", async () => {
     const { repo, auditLogs } = createRepo();
     const service = createVolunteerService({
       repo,
@@ -196,17 +196,14 @@ describe("volunteer service", () => {
     await service.updateAttendance({
       actorUserId: "admin-user",
       registrationId: "registration-1",
-      input: { attendanceStatus: "completed", volunteerHours: 3 },
+      input: {
+        attendanceStatus: "completed",
+        volunteerHours: 3,
+        expectedUpdatedAt: registration.updatedAt,
+      },
     });
 
-    expect(auditLogs).toMatchObject([
-      {
-        actor_user_id: "admin-user",
-        action: "volunteer_registration.attendance_update",
-        entity: "volunteer_registration",
-        entity_id: "registration-1",
-      },
-    ]);
+    expect(auditLogs).toEqual([]);
   });
   test("rejects public individual registrations below the public age floor", async () => {
     const { repo, registrations } = createRepo();
@@ -252,5 +249,53 @@ test("staff status command carries actor and version into one repository mutatio
       internalNotes: "Reviewed",
     },
   ]);
+  expect(auditLogs).toEqual([]);
+});
+
+test("attendance requires an expected version and correction reason", async () => {
+  const { repo } = createRepo();
+  const service = createVolunteerService({ repo });
+  await expect(
+    service.updateAttendance({
+      actorUserId: "actor",
+      registrationId: registration.id,
+      input: { attendanceStatus: "completed" },
+    }),
+  ).rejects.toThrow();
+  await expect(
+    service.updateAttendance({
+      actorUserId: "actor",
+      registrationId: registration.id,
+      input: {
+        attendanceStatus: "no_show",
+        expectedUpdatedAt: registration.updatedAt,
+        command: "correct",
+        reason: " ",
+      },
+    }),
+  ).rejects.toThrow();
+});
+
+test("attendance sends actor and version to atomic repository without separate read or audit", async () => {
+  const commands: unknown[] = [];
+  const { repo, auditLogs } = createRepo({
+    getRegistrationDetail: async () => {
+      throw new Error("unsafe pre-read");
+    },
+    updateAttendance: async (command) => {
+      commands.push(command);
+      return registration;
+    },
+  });
+  await createVolunteerService({ repo }).updateAttendance({
+    actorUserId: "actor",
+    registrationId: registration.id,
+    input: { attendanceStatus: "completed", expectedUpdatedAt: registration.updatedAt },
+  });
+  expect(commands[0]).toMatchObject({
+    actorUserId: "actor",
+    expectedUpdatedAt: registration.updatedAt,
+    command: "record",
+  });
   expect(auditLogs).toEqual([]);
 });

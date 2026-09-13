@@ -2,11 +2,15 @@ import { afterAll, describe, expect, test } from "bun:test";
 import { SQL } from "bun";
 import { randomUUID } from "node:crypto";
 import { readFileSync } from "node:fs";
-const target = "postgresql://postgres:postgres@127.0.0.1:55322/postgres";
+const target = process.env.CRM_TEST_DATABASE_URL;
+const isolatedTargets = new Set([
+  "postgresql://postgres:postgres@127.0.0.1:55322/postgres",
+  "postgresql://postgres:postgres@127.0.0.1:56322/postgres",
+]);
 const enabled = process.env.CRM_TEST_ALLOW_LOCAL_FIXTURES === "1";
-if (enabled && process.env.CRM_TEST_DATABASE_URL !== target)
+if (enabled && (!target || !isolatedTargets.has(target)))
   throw new Error("Identity integration requires the exact isolated completion database");
-const sql = enabled ? new SQL(target) : null;
+const sql = enabled ? new SQL(target!) : null;
 function db() {
   if (!sql) throw new Error("Local identity fixture is disabled");
   return sql;
@@ -93,7 +97,7 @@ describe.skipIf(!enabled)("public identity actual local database", () => {
       expect(resolved.result.supporterId).toBe(supporter);
       const [donation] =
         await tx`insert into public.donation(supporter_id,amount_cents,purpose,method,contact_name,contact_email,contact_phone,contact_language,consent_email_requested,consent_whatsapp_requested) values(${supporter}::uuid,10000,'general','manual',${contact.name},${email},${contact.phone},'en',true,true) returning id,contact_name,contact_phone`;
-      await tx`insert into public.volunteer_activity(id,type,title,starts_at,location,capacity,status,auto_approve,registration_modes) values(${activity}::uuid,'cleaning_day','Identity snapshot fixture',now()+interval '1 day','Local fixture',10,'published',true,array['individual'])`;
+      await tx`insert into public.volunteer_activity(id,type,title,starts_at,location,capacity,status,auto_approve,registration_modes) values(${activity}::uuid,'cleaning_day','Historical identity snapshot fixture',now()-interval '1 day','Local fixture',10,'published',true,array['individual'])`;
       const [registration] =
         await tx`select * from public.create_volunteer_registration(${activity}::uuid,${supporter}::uuid,'individual',1,${contact.name},${email},${contact.phone},'en',null,25,null,null,null,null,${randomUUID()},now()+interval '1 day',true,true)`;
       expect(donation.contact_name).toBe(contact.name);

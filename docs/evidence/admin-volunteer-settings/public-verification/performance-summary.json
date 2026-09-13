@@ -1,0 +1,194 @@
+[
+  {
+    "sample": "1440x900 / desktop cold-1",
+    "route": "/",
+    "performance": 100,
+    "lcpMs": 653.456,
+    "cls": 0.00028,
+    "tbtMs": 0
+  },
+  {
+    "sample": "1440x900 / desktop cold-2",
+    "route": "/",
+    "performance": 100,
+    "lcpMs": 641.2493,
+    "cls": 0.00028,
+    "tbtMs": 0
+  },
+  {
+    "sample": "1440x900 / desktop cold-3",
+    "route": "/",
+    "performance": 100,
+    "lcpMs": 651.7387,
+    "cls": 0.00028,
+    "tbtMs": 0
+  },
+  {
+    "sample": "1440x900 /adoption/apply desktop cold-1",
+    "route": "/adoption/apply",
+    "performance": 100,
+    "lcpMs": 464.212,
+    "cls": 0.010157,
+    "tbtMs": 0
+  },
+  {
+    "sample": "1440x900 /adoption/apply desktop cold-2",
+    "route": "/adoption/apply",
+    "performance": 100,
+    "lcpMs": 464.61930000000007,
+    "cls": 0.010157,
+    "tbtMs": 0
+  },
+  {
+    "sample": "1440x900 /adoption/apply desktop cold-3",
+    "route": "/adoption/apply",
+    "performance": 100,
+    "lcpMs": 478.32629999999995,
+    "cls": 0.010157,
+    "tbtMs": 0
+  },
+  {
+    "sample": "1440x900 /animals/cat desktop cold-1",
+    "route": "/animals/cat",
+    "performance": 100,
+    "lcpMs": 545.587,
+    "cls": 0.000115,
+    "tbtMs": 0
+  },
+  {
+    "sample": "1440x900 /animals/cat desktop cold-2",
+    "route": "/animals/cat",
+    "performance": 99.0,
+    "lcpMs": 707.3783000000001,
+    "cls": 0.000115,
+    "tbtMs": 0
+  },
+  {
+    "sample": "1440x900 /animals/cat desktop cold-3",
+    "route": "/animals/cat",
+    "performance": 100,
+    "lcpMs": 574.1197,
+    "cls": 0.000115,
+    "tbtMs": 0
+  },
+  {
+    "sample": "1440x900 /donate desktop cold-1",
+    "route": "/donate",
+    "performance": 99.0,
+    "lcpMs": 683.8549999999999,
+    "cls": 0.000413,
+    "tbtMs": 0
+  },
+  {
+    "sample": "1440x900 /donate desktop cold-2",
+    "route": "/donate",
+    "performance": 99.0,
+    "lcpMs": 737.8920499999998,
+    "cls": 0.000413,
+    "tbtMs": 0
+  },
+  {
+    "sample": "1440x900 /donate desktop cold-3",
+    "route": "/donate",
+    "performance": 100,
+    "lcpMs": 537.4992,
+    "cls": 0.000413,
+    "tbtMs": 0
+  },
+  {
+    "sample": "390x844 / mobile cold-1",
+    "route": "/",
+    "performance": 96.0,
+    "lcpMs": 2577.514,
+    "cls": 0.00078,
+    "tbtMs": 37
+  },
+  {
+    "sample": "390x844 / mobile cold-2",
+    "route": "/",
+    "performance": 96.0,
+    "lcpMs": 2631.259,
+    "cls": 0.00078,
+    "tbtMs": 28.5
+  },
+  {
+    "sample": "390x844 / mobile cold-3",
+    "route": "/",
+    "performance": 97.0,
+    "lcpMs": 2466.1789,
+    "cls": 0.00078,
+    "tbtMs": 47.5
+  },
+  {
+    "sample": "390x844 /adoption/apply mobile cold-1",
+    "route": "/adoption/apply",
+    "performance": 100,
+    "lcpMs": 1662.0720000000001,
+    "cls": 0.017628,
+    "tbtMs": 35
+  },
+  {
+    "sample": "390x844 /adoption/apply mobile cold-2",
+    "route": "/adoption/apply",
+    "performance": 99.0,
+    "lcpMs": 1561.8656999999998,
+    "cls": 0.017628,
+    "tbtMs": 100
+  },
+  {
+    "sample": "390x844 /adoption/apply mobile cold-3",
+    "route": "/adoption/apply",
+    "performance": 100,
+    "lcpMs": 1519.6759000000002,
+    "cls": 0.017628,
+    "tbtMs": 39.5
+  },
+  {
+    "sample": "390x844 /animals/cat mobile cold-1",
+    "route": "/animals/cat",
+    "performance": 99.0,
+    "lcpMs": 1868.4189999999999,
+    "cls": 0,
+    "tbtMs": 48
+  },
+  {
+    "sample": "390x844 /animals/cat mobile cold-2",
+    "route": "/animals/cat",
+    "performance": 99.0,
+    "lcpMs": 1846.5934,
+    "cls": 0,
+    "tbtMs": 49.5
+  },
+  {
+    "sample": "390x844 /animals/cat mobile cold-3",
+    "route": "/animals/cat",
+    "performance": 99.0,
+    "lcpMs": 1856.1416,
+    "cls": 0,
+    "tbtMs": 38
+  },
+  {
+    "sample": "390x844 /donate mobile cold-1",
+    "route": "/donate",
+    "performance": 99.0,
+    "lcpMs": 1855.1,
+    "cls": 0.01179,
+    "tbtMs": 64
+  },
+  {
+    "sample": "390x844 /donate mobile cold-2",
+    "route": "/donate",
+    "performance": 99.0,
+    "lcpMs": 1804.5012,
+    "cls": 0.011229,
+    "tbtMs": 53
+  },
+  {
+    "sample": "390x844 /donate mobile cold-3",
+    "route": "/donate",
+    "performance": 99.0,
+    "lcpMs": 1812.3557,
+    "cls": 0.01179,
+    "tbtMs": 29
+  }
+]

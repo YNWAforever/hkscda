@@ -40,6 +40,8 @@ describe("createSponsorshipAdminHandlers", () => {
       listPledges: mock(async () => ({ pledges: [{ id: pledgeId }], total: 1 })),
     });
     const handlers = createSponsorshipAdminHandlers({
+      requireReader: requireCoordinator(),
+      requireFinance: requireCoordinator(),
       requireCoordinator: requireCoordinator(),
       service: service as never,
     });
@@ -56,6 +58,8 @@ describe("createSponsorshipAdminHandlers", () => {
   test("getPledge returns 404 when the service returns null", async () => {
     const service = createService();
     const handlers = createSponsorshipAdminHandlers({
+      requireReader: requireCoordinator(),
+      requireFinance: requireCoordinator(),
       requireCoordinator: requireCoordinator(),
       service: service as never,
     });
@@ -70,6 +74,8 @@ describe("createSponsorshipAdminHandlers", () => {
   test("getPledge returns 400 for a non-uuid id", async () => {
     const service = createService();
     const handlers = createSponsorshipAdminHandlers({
+      requireReader: requireCoordinator(),
+      requireFinance: requireCoordinator(),
       requireCoordinator: requireCoordinator(),
       service: service as never,
     });
@@ -89,12 +95,18 @@ describe("createSponsorshipAdminHandlers", () => {
       })),
     });
     const handlers = createSponsorshipAdminHandlers({
+      requireReader: requireCoordinator(),
+      requireFinance: requireCoordinator(),
       requireCoordinator: requireCoordinator(),
       service: service as never,
     });
 
     const response = await handlers.getProofUrl({
-      request: request("http://localhost/api/admin/sponsorships/pledges/" + pledgeId + "/proof"),
+      request: request(
+        "http://localhost/api/admin/sponsorships/pledges/" +
+          pledgeId +
+          "/proof?proofId=33333333-3333-4333-8333-333333333333&expectedRevision=1",
+      ),
       params: { id: pledgeId },
     });
     expect(response.status).toBe(200);
@@ -106,12 +118,18 @@ describe("createSponsorshipAdminHandlers", () => {
   test("getProofUrl returns 404 when the service returns null", async () => {
     const service = createService();
     const handlers = createSponsorshipAdminHandlers({
+      requireReader: requireCoordinator(),
+      requireFinance: requireCoordinator(),
       requireCoordinator: requireCoordinator(),
       service: service as never,
     });
 
     const response = await handlers.getProofUrl({
-      request: request("http://localhost/api/admin/sponsorships/pledges/" + pledgeId + "/proof"),
+      request: request(
+        "http://localhost/api/admin/sponsorships/pledges/" +
+          pledgeId +
+          "/proof?proofId=33333333-3333-4333-8333-333333333333&expectedRevision=1",
+      ),
       params: { id: pledgeId },
     });
     expect(response.status).toBe(404);
@@ -122,6 +140,8 @@ describe("createSponsorshipAdminHandlers", () => {
   test("getProofUrl returns 400 for a non-uuid id", async () => {
     const service = createService();
     const handlers = createSponsorshipAdminHandlers({
+      requireReader: requireCoordinator(),
+      requireFinance: requireCoordinator(),
       requireCoordinator: requireCoordinator(),
       service: service as never,
     });
@@ -140,6 +160,8 @@ describe("createSponsorshipAdminHandlers", () => {
       }),
     });
     const handlers = createSponsorshipAdminHandlers({
+      requireReader: requireCoordinator(),
+      requireFinance: requireCoordinator(),
       requireCoordinator: requireCoordinator(),
       service: service as never,
     });
@@ -161,6 +183,8 @@ describe("createSponsorshipAdminHandlers", () => {
       }),
     });
     const handlers = createSponsorshipAdminHandlers({
+      requireReader: requireCoordinator(),
+      requireFinance: requireCoordinator(),
       requireCoordinator: requireCoordinator(),
       service: service as never,
     });
@@ -187,6 +211,8 @@ describe("createSponsorshipAdminHandlers", () => {
       }),
     });
     const handlers = createSponsorshipAdminHandlers({
+      requireReader: requireCoordinator(),
+      requireFinance: requireCoordinator(),
       requireCoordinator: requireCoordinator(),
       service: service as never,
     });
@@ -206,6 +232,8 @@ describe("createSponsorshipAdminHandlers", () => {
   test("cancelPledge returns 200 ok on success", async () => {
     const service = createService();
     const handlers = createSponsorshipAdminHandlers({
+      requireReader: requireCoordinator(),
+      requireFinance: requireCoordinator(),
       requireCoordinator: requireCoordinator(),
       service: service as never,
     });
@@ -226,6 +254,8 @@ describe("createSponsorshipAdminHandlers", () => {
       }),
     });
     const handlers = createSponsorshipAdminHandlers({
+      requireReader: requireCoordinator(),
+      requireFinance: requireCoordinator(),
       requireCoordinator: requireCoordinator(),
       service: service as never,
     });
@@ -244,6 +274,8 @@ describe("createSponsorshipAdminHandlers", () => {
       }),
     });
     const handlers = createSponsorshipAdminHandlers({
+      requireReader: requireCoordinator(),
+      requireFinance: requireCoordinator(),
       requireCoordinator: requireCoordinator(),
       service: service as never,
     });
@@ -260,6 +292,8 @@ describe("createSponsorshipAdminHandlers", () => {
   test("assignAnimal returns 201 with the created assignment", async () => {
     const service = createService();
     const handlers = createSponsorshipAdminHandlers({
+      requireReader: requireCoordinator(),
+      requireFinance: requireCoordinator(),
       requireCoordinator: requireCoordinator(),
       service: service as never,
     });
@@ -288,6 +322,8 @@ describe("createSponsorshipAdminHandlers", () => {
       }),
     });
     const handlers = createSponsorshipAdminHandlers({
+      requireReader: requireCoordinator(),
+      requireFinance: requireCoordinator(),
       requireCoordinator: requireCoordinator(),
       service: service as never,
     });
@@ -311,6 +347,8 @@ describe("createSponsorshipAdminHandlers", () => {
       }),
     });
     const handlers = createSponsorshipAdminHandlers({
+      requireReader: requireCoordinator(),
+      requireFinance: requireCoordinator(),
       requireCoordinator: requireCoordinator(),
       service: service as never,
     });
@@ -328,6 +366,8 @@ describe("createSponsorshipAdminHandlers", () => {
   test("endAssignment returns 200 ok on success", async () => {
     const service = createService();
     const handlers = createSponsorshipAdminHandlers({
+      requireReader: requireCoordinator(),
+      requireFinance: requireCoordinator(),
       requireCoordinator: requireCoordinator(),
       service: service as never,
     });
@@ -351,6 +391,8 @@ describe("createSponsorshipAdminHandlers", () => {
       }),
     });
     const handlers = createSponsorshipAdminHandlers({
+      requireReader: requireCoordinator(),
+      requireFinance: requireCoordinator(),
       requireCoordinator: requireCoordinator(),
       service: service as never,
     });
@@ -374,6 +416,8 @@ describe("createSponsorshipAdminHandlers", () => {
       }),
     });
     const handlers = createSponsorshipAdminHandlers({
+      requireReader: requireCoordinator(),
+      requireFinance: requireCoordinator(),
       requireCoordinator: requireCoordinator(),
       service: service as never,
     });
@@ -391,6 +435,8 @@ describe("createSponsorshipAdminHandlers", () => {
   test("endAssignment returns 400 for a non-uuid assignmentId", async () => {
     const service = createService();
     const handlers = createSponsorshipAdminHandlers({
+      requireReader: requireCoordinator(),
+      requireFinance: requireCoordinator(),
       requireCoordinator: requireCoordinator(),
       service: service as never,
     });
@@ -408,7 +454,9 @@ describe("createSponsorshipAdminHandlers", () => {
   test("requireCoordinator failure propagates its Response status", async () => {
     const service = createService();
     const handlers = createSponsorshipAdminHandlers({
-      requireCoordinator: async () => {
+      requireFinance: requireCoordinator(),
+      requireCoordinator: requireCoordinator(),
+      requireReader: async () => {
         throw new Response("Forbidden", { status: 403 });
       },
       service: service as never,

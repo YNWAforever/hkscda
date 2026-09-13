@@ -18,12 +18,21 @@ function createContext() {
   const requireCoordinator = (request: Request) =>
     requireAdmin(request, [...SPONSORSHIP_REVIEW_ROLES], client);
 
-  return { client, service, requireCoordinator };
+  const requireReader = (request: Request) =>
+    requireAdmin(request, ["staff", "treasurer", "admin"], client);
+  const requireFinance = (request: Request) =>
+    requireAdmin(request, ["treasurer", "admin"], client);
+  return { client, service, requireCoordinator, requireReader, requireFinance };
 }
 
 export function createHandlers() {
-  const { service, requireCoordinator } = createContext();
-  return createSponsorshipAdminHandlers({ requireCoordinator, service });
+  const { service, requireCoordinator, requireReader, requireFinance } = createContext();
+  return createSponsorshipAdminHandlers({
+    requireCoordinator,
+    requireReader,
+    requireFinance,
+    service,
+  });
 }
 
 /**

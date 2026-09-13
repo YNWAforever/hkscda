@@ -6,11 +6,7 @@ import {
   hashStatusToken,
   statusTokenExpiry,
 } from "../publicAdoption/statusToken.server";
-import {
-  decideVolunteerRegistrationStatus,
-  formatVolunteerReference,
-  validateAttendanceTransition,
-} from "./rules";
+import { decideVolunteerRegistrationStatus, formatVolunteerReference } from "./rules";
 import {
   adminActivityInputSchema,
   adminActivityUpdateSchema,
@@ -77,6 +73,10 @@ export type VolunteerRepository = {
     internalNotes?: string | null;
   }): Promise<VolunteerRegistrationDetail>;
   updateAttendance(input: {
+    actorUserId: string;
+    expectedUpdatedAt: string;
+    command: "record" | "correct";
+    reason?: string;
     registrationId: string;
     attendanceStatus: VolunteerRegistrationSummary["attendanceStatus"];
     volunteerHours?: number | null;
@@ -295,23 +295,11 @@ export function createVolunteerService({
     },
 
     async updateAttendance(args: { actorUserId: string; registrationId: string; input: unknown }) {
-      const current = await repo.getRegistrationDetail(args.registrationId);
-      if (!current) throw new Error("Volunteer registration not found");
       const input = adminAttendanceUpdateSchema.parse(args.input);
-      validateAttendanceTransition(current.status, input.attendanceStatus);
       const registration = await repo.updateAttendance({
+        ...input,
+        actorUserId: args.actorUserId,
         registrationId: args.registrationId,
-        attendanceStatus: input.attendanceStatus,
-        volunteerHours: input.volunteerHours,
-        internalNotes: input.internalNotes,
-      });
-      await repo.insertAuditLog({
-        actor_user_id: args.actorUserId,
-        action: "volunteer_registration.attendance_update",
-        entity: "volunteer_registration",
-        entity_id: args.registrationId,
-        timestamp: timestamp(now),
-        detail: input,
       });
       return registration;
     },

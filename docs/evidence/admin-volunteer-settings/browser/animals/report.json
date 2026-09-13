@@ -1,0 +1,12 @@
+{
+  "animalId": "db42d4da-e9d5-4b5c-85c8-92a6ba2a790b",
+  "checks": [
+    "ordinary and staff browser sessions cannot read internal notes or bypass publication with direct writes",
+    "draft save did not mutate canonical animal",
+    "saved draft hydrated after leaving and reopening",
+    "preview and publish updated canonical row and approved ordered gallery only after confirmation",
+    "public detail rendered approved gallery alt, source and focal point while retaining original hero",
+    "published immutable version copied back to a new draft revision"
+  ],
+  "errors": []
+}

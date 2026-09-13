@@ -14,5 +14,15 @@
       "followup/pledgereview-pager-and-migration-docs": false,
       "feat/fostered-animal-public-visibility": false
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/jobs/volunteers",
+      "schedule": "15 * * * *"
+    },
+    {
+      "path": "/api/jobs/sponsorships",
+      "schedule": "30 * * * *"
+    }
+  ]
 }

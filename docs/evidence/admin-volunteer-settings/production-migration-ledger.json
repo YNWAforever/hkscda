@@ -1,0 +1,205 @@
+{
+  "checked_at": "2026-09-13",
+  "project": "iihqjzilgawhfdhdevam",
+  "read_only": true,
+  "rows": [
+    {
+      "version": "20260611162942",
+      "name": "create_animals_table",
+      "statements_md5": "da089f0e371ab022c16fdf426c445887",
+      "statement_count": 1
+    },
+    {
+      "version": "20260611162956",
+      "name": "create_adoption_applications_table",
+      "statements_md5": "602c298e430c26e06cb9fde6e45f2cad",
+      "statement_count": 1
+    },
+    {
+      "version": "20260623160506",
+      "name": "phase_2_donations_mvp",
+      "statements_md5": "14bd6bf0f31e5a08409c95ab3b355a93",
+      "statement_count": 64
+    },
+    {
+      "version": "20260623183933",
+      "name": "donor_ops_crm_foundation",
+      "statements_md5": "41284cd78d4f9e2dacb64154eb394667",
+      "statement_count": 18
+    },
+    {
+      "version": "20260627110000",
+      "name": "coordinator_task_timeline",
+      "statements_md5": "54dd9aa0fc5783bbb723e17bd7273e98",
+      "statement_count": 11
+    },
+    {
+      "version": "20260630154259",
+      "name": "add_animal_english_content_fields",
+      "statements_md5": "735236dc42c7d108c2b7f0b9837e963f",
+      "statement_count": 4
+    },
+    {
+      "version": "20260707094012",
+      "name": "story_promotion_center",
+      "statements_md5": "b90dd8aa0052c63e3a6739ee2f7c0834",
+      "statement_count": 1
+    },
+    {
+      "version": "20260718100000",
+      "name": "public_documents_and_donation_purpose",
+      "statements_md5": "b6088dd7bd7338359937e9a190a8cce8",
+      "statement_count": 32
+    },
+    {
+      "version": "20260718110000",
+      "name": "adoption_information",
+      "statements_md5": "184e6449193634365ed754520df2460d",
+      "statement_count": 14
+    },
+    {
+      "version": "20260718111000",
+      "name": "correct_adult_cat_copy",
+      "statements_md5": "9ac9a992f8a18d1253490dac11d8eb5c",
+      "statement_count": 2
+    },
+    {
+      "version": "20260719120000",
+      "name": "document_admin_mutation_hardening",
+      "statements_md5": "aaa225df116b735f2b184c063b8e0291",
+      "statement_count": 13
+    },
+    {
+      "version": "20260719223000",
+      "name": "public_document_read_policies",
+      "statements_md5": "0d51e708bec4cd61c4d38310e98f486c",
+      "statement_count": 9
+    },
+    {
+      "version": "20260724023312",
+      "name": "group_enquiries_and_knowledge",
+      "statements_md5": "63821b9321ce2ad7ca7b9e28ab8f9d69",
+      "statement_count": 1
+    },
+    {
+      "version": "20260724023618",
+      "name": "seed_knowledge_guides",
+      "statements_md5": "f33aa936539c7aa3a25fbf5a3d08f043",
+      "statement_count": 1
+    },
+    {
+      "version": "20260726170246",
+      "name": "correct_service_slogan",
+      "statements_md5": "40854e0a032a8797e2716c55efab3402",
+      "statement_count": 1
+    },
+    {
+      "version": "20260731164635",
+      "name": "adoption_guide_release_cms",
+      "statements_md5": "3108d3e309823f04534152ef70515545",
+      "statement_count": 1
+    },
+    {
+      "version": "20260731171123",
+      "name": "adoption_guide_release_cms_advisor_fixes",
+      "statements_md5": "172347b95642b6b67dd30f2c6a143686",
+      "statement_count": 1
+    },
+    {
+      "version": "20260803120000",
+      "name": "audit_animal_mutations",
+      "statements_md5": "c61df8d9ba97b7c11edf815d726d172d",
+      "statement_count": 1
+    },
+    {
+      "version": "20260906062155",
+      "name": "cms_payment_read_compatibility_repair",
+      "statements_md5": "f0dcfa4c93355aedb8171529ce2ed7b6",
+      "statement_count": 1
+    },
+    {
+      "version": "20260906173545",
+      "name": "animal_catalog_membership",
+      "statements_md5": "d95736d51ec34656c49d3e4f3527c43b",
+      "statement_count": 1
+    },
+    {
+      "version": "20260907011009",
+      "name": "animal_public_profile",
+      "statements_md5": "3177259de6fa601c65fb8018e9d1c1ae",
+      "statement_count": 1
+    },
+    {
+      "version": "20260912073702",
+      "name": "public_supporter_identity_claims",
+      "statements_md5": "46f8b96729d2460c65c4ea04be559107",
+      "statement_count": 1
+    },
+    {
+      "version": "20260912073842",
+      "name": "sponsorship_public_identity_protection",
+      "statements_md5": "e6f923216826ef0e0076814eb79513a3",
+      "statement_count": 1
+    },
+    {
+      "version": "20260912074006",
+      "name": "crm_manual_gift_delivery_jobs",
+      "statements_md5": "4e8376f1d680c8c340f5e1c5655de337",
+      "statement_count": 1
+    },
+    {
+      "version": "20260912074036",
+      "name": "volunteer_atomic_approval",
+      "statements_md5": "58e8bf397f345d77cfc83efd78af3f9c",
+      "statement_count": 1
+    },
+    {
+      "version": "20260912074117",
+      "name": "animal_images_bucket",
+      "statements_md5": "7f1b1ba46e151ae997bb7cafa7fd05fa",
+      "statement_count": 1
+    },
+    {
+      "version": "20260912074156",
+      "name": "animal_publication_state",
+      "statements_md5": "77649050fe54cd5fef17f7599a272580",
+      "statement_count": 1
+    },
+    {
+      "version": "20260912074228",
+      "name": "preserve_eligibility_on_species_change",
+      "statements_md5": "dacaf4a9b4aacf1cf42f26b221215cac",
+      "statement_count": 1
+    },
+    {
+      "version": "20260912074346",
+      "name": "correct_legacy_sponsor_species",
+      "statements_md5": "6721d874e50b97d96a5fb8f62ec858b1",
+      "statement_count": 1
+    },
+    {
+      "version": "20260912074430",
+      "name": "publish_fostered_animals",
+      "statements_md5": "284f655e93c1887ce3e1dcd975b439dc",
+      "statement_count": 1
+    },
+    {
+      "version": "20260912074524",
+      "name": "sponsorship_second_month",
+      "statements_md5": "5f4c3da99540017e82db4e346625a21e",
+      "statement_count": 1
+    },
+    {
+      "version": "20260912074646",
+      "name": "sponsorship_monthly_ledger",
+      "statements_md5": "096c8281e5aa43078f55b09d281218de",
+      "statement_count": 1
+    },
+    {
+      "version": "20260912074747",
+      "name": "sponsorship_assignments",
+      "statements_md5": "b98e9889af48a89802ed1c37d93d8801",
+      "statement_count": 1
+    }
+  ]
+}

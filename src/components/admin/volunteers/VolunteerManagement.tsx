@@ -287,10 +287,10 @@ export function VolunteerManagement() {
   });
 
   const completeAttendance = useMutation({
-    mutationFn: (id: string) =>
+    mutationFn: ({ id, updatedAt }: Pick<VolunteerRegistrationSummary, "id" | "updatedAt">) =>
       fetchAdminJson(`/api/admin/volunteers/registrations/${id}/attendance`, {
         method: "PATCH",
-        body: JSON.stringify({ attendanceStatus: "completed" }),
+        body: JSON.stringify({ attendanceStatus: "completed", expectedUpdatedAt: updatedAt }),
       }),
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: ["volunteer-registrations"] }),
   });
@@ -552,7 +552,7 @@ export function VolunteerManagement() {
             <button
               type="button"
               disabled={completeAttendance.isPending}
-              onClick={() => completeAttendance.mutate(registration.id)}
+              onClick={() => completeAttendance.mutate(registration)}
               className={`${buttonBase} border border-[var(--color-success)] text-[var(--color-success)] hover:bg-[var(--color-success-highlight)]`}
             >
               標記完成

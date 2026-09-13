@@ -1,0 +1,8 @@
+{
+  "candidate_branch": "codex/admin-volunteer-settings-20260913",
+  "candidate_base_head": "3fcf8cec235e0fa252b7d134f74948f2a682ebac",
+  "original_branch": "feat/hkscda-phase3-sponsorship",
+  "original_head": "1520d3f9f60e05ff852bf302e97ad23b400171f4",
+  "original_dirty_paths": 24,
+  "production_mutated": false
+}

@@ -1,0 +1,40 @@
+{
+  "marker": "browser-25511f30-066e-4258-8db4-a9858329c13b",
+  "origin": "http://127.0.0.1:56330",
+  "checks": [
+    "Real staff/treasurer/inactive sessions cannot administer policy; staff registration list remains available",
+    "Browser saved, previewed, published and generated capacity5 then6",
+    "Real API accepted six verified volunteers and rejected seventh; old session remains5",
+    "Verified volunteer UI displays session, own booking and unchecked terms",
+    "Calendar month/week/day/list all show the real6/6 roster"
+  ],
+  "consoleErrors": [],
+  "activities": {
+    "old": "dd0a63b2-416c-4a65-b47f-4c161b4bdd48",
+    "current": "c586cee6-3c16-4b94-b15b-5d8ea3a1ffa7"
+  },
+  "generations": {
+    "old": {
+      "kind": "generated",
+      "activity_id": "dd0a63b2-416c-4a65-b47f-4c161b4bdd48"
+    },
+    "revised": {
+      "kind": "generated",
+      "activity_id": "c586cee6-3c16-4b94-b15b-5d8ea3a1ffa7"
+    }
+  },
+  "viewportChecks": [
+    {
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "overflow": false
+    }
+  ]
+}

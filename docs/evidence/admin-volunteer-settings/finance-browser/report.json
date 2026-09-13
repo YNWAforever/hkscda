@@ -1,0 +1,11 @@
+{
+  "marker": "finance-browser-ec2c9e99-5b54-4cd3-bef9-bda685ef0a6b",
+  "checks": [
+    "staff recorded payment through UI; finance review hidden",
+    "staff review API denied 403",
+    "treasurer approved exact proof and recorded HK$100 partial refund through UI",
+    "canonical gross HK$300, refunded HK$100, retained HK$200",
+    "inactive finance API denied403"
+  ],
+  "pageErrors": []
+}

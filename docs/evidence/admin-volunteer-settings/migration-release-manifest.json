@@ -1,0 +1,529 @@
+{
+  "checked_at": "2026-09-13",
+  "candidate_base_commit": "3fcf8cec235e0fa252b7d134f74948f2a682ebac",
+  "status": "worktree_snapshot_not_release_authorization",
+  "baseline_count": 63,
+  "candidate_count": 36,
+  "remote_ledger_count": 33,
+  "candidate_files": [
+    {
+      "order": 1,
+      "path": "supabase/migrations/20260913062837_volunteer_versioned_policy.sql",
+      "sha256_lf_utf8": "3d3b6f6e550b7a1908a8cc6644f1ce354d48181a8b85c794cddcd92408ba3f17"
+    },
+    {
+      "order": 2,
+      "path": "supabase/migrations/20260913062952_volunteer_atomic_attendance.sql",
+      "sha256_lf_utf8": "0507dd5640257b6ab62bcb3b5190bb4496a3622fe6a1e14f832256f5a8f94822"
+    },
+    {
+      "order": 3,
+      "path": "supabase/migrations/20260913064921_volunteer_profile_commands.sql",
+      "sha256_lf_utf8": "5c44ce10046fc3293e390d7b2f10b59692b3ce8750bd1c1fb28503dc69ec297b"
+    },
+    {
+      "order": 4,
+      "path": "supabase/migrations/20260913065257_volunteer_policy_validation.sql",
+      "sha256_lf_utf8": "d4d40e404d2dbd681cbc2996d4019d30eb4826af533e84ec58318e506dc01635"
+    },
+    {
+      "order": 5,
+      "path": "supabase/migrations/20260913065833_volunteer_daily_policy.sql",
+      "sha256_lf_utf8": "e657325831504e34221c97db46a6f2ccd0411cfe3822272742eb5efc34596cdb"
+    },
+    {
+      "order": 6,
+      "path": "supabase/migrations/20260913070057_volunteer_initial_policy_catalogue.sql",
+      "sha256_lf_utf8": "0e02241bb36d4423b254c2e35bc4fe21ea0605f1a64c95d866c16c414a96cc08"
+    },
+    {
+      "order": 7,
+      "path": "supabase/migrations/20260913070128_volunteer_monthly_assessments.sql",
+      "sha256_lf_utf8": "81db069e23c05a22c5071a92c4f94e011e48099c11e52fe07f759c0a849092f9"
+    },
+    {
+      "order": 8,
+      "path": "supabase/migrations/20260913071632_animal_public_column_boundary.sql",
+      "sha256_lf_utf8": "e60b979f9049342e1dc41a26b2d91340569bbef7649f55ec1aacb051670ffddb"
+    },
+    {
+      "order": 9,
+      "path": "supabase/migrations/20260913071639_volunteer_runtime_jobs.sql",
+      "sha256_lf_utf8": "fb2c4f53b95b3235dfb9ad004168fd5f01b9faa681bd84756d52cd35a68c9623"
+    },
+    {
+      "order": 10,
+      "path": "supabase/migrations/20260913071927_sponsorship_exact_proof_review.sql",
+      "sha256_lf_utf8": "353be32d4cec40b6f5ce6b3c3b04640af811fa6e3ac2c7f4845b4c360de30963"
+    },
+    {
+      "order": 11,
+      "path": "supabase/migrations/20260913072235_volunteer_booking_enforcement.sql",
+      "sha256_lf_utf8": "8101aa3230f1520b97e48625f1de71724bfb21ae9efb5ab523660819c295fe1f"
+    },
+    {
+      "order": 12,
+      "path": "supabase/migrations/20260913072454_veterinary_internship_workflow.sql",
+      "sha256_lf_utf8": "458b88054ae708a66d67a15057e6aefb8dd7d024d85dcc772909efe6ecb33513"
+    },
+    {
+      "order": 13,
+      "path": "supabase/migrations/20260913072851_volunteer_group_operations.sql",
+      "sha256_lf_utf8": "961ca270731e1b55327828a87533ca93e65f68f0c0795ced5a11e5df6a761b4c"
+    },
+    {
+      "order": 14,
+      "path": "supabase/migrations/20260913073012_sponsorship_financial_closure.sql",
+      "sha256_lf_utf8": "a5db754c23b19b9e26b776d4cbf6371db094534b36db9e7606c83e58a2f3ee17"
+    },
+    {
+      "order": 15,
+      "path": "supabase/migrations/20260913073314_animal_publication_lifecycle.sql",
+      "sha256_lf_utf8": "35eb259475259b21afe1f6f32dcb4776abfc69633ca93b3e722642b23aec1722"
+    },
+    {
+      "order": 16,
+      "path": "supabase/migrations/20260913075040_volunteer_verified_service_history.sql",
+      "sha256_lf_utf8": "28fba04c709fb8c79dbc5b1ee3e2e97166caa3bdbdf3c97aafb375a542a60ca0"
+    },
+    {
+      "order": 17,
+      "path": "supabase/migrations/20260913075643_volunteer_release_transitions.sql",
+      "sha256_lf_utf8": "a6f22a82cc0913bfc333116ebf18d6c55bed7c2f33155b1738fb555b5695c0ae"
+    },
+    {
+      "order": 18,
+      "path": "supabase/migrations/20260913075913_sponsorship_contact_verification.sql",
+      "sha256_lf_utf8": "7eee29036e231054d4282a59c8b2f38a4807dc98dbcd7e00fbee895645f2ae61"
+    },
+    {
+      "order": 19,
+      "path": "supabase/migrations/20260913080143_volunteer_immutable_qualification_evidence.sql",
+      "sha256_lf_utf8": "8cc9cb9786c4a3afeeccf3701d9d1d7b35ad6d355eeb63cb19c6af0048d60ea8"
+    },
+    {
+      "order": 20,
+      "path": "supabase/migrations/20260913080152_sponsorship_role_handoff.sql",
+      "sha256_lf_utf8": "aa1c6e44c9d32954c2193b472a437d98008ce2c0d7caa7fd958e7d5d08525871"
+    },
+    {
+      "order": 21,
+      "path": "supabase/migrations/20260913080537_volunteer_policy_simulation.sql",
+      "sha256_lf_utf8": "a39b404db21a322546bddde3454d41bff79ef797e7e957094c8bce113dde5cc7"
+    },
+    {
+      "order": 22,
+      "path": "supabase/migrations/20260913080838_sponsorship_allocation_retry.sql",
+      "sha256_lf_utf8": "f4766c04b66853e0ba622d0ab83a0cd16eb4fdf851a8ded12efb8d38eed589d3"
+    },
+    {
+      "order": 23,
+      "path": "supabase/migrations/20260913081521_sponsorship_partial_refunds.sql",
+      "sha256_lf_utf8": "4e0aa54486c0bafe67c56a3b15852bf5db2face784cc61c06f0106985d5bdbed"
+    },
+    {
+      "order": 24,
+      "path": "supabase/migrations/20260913081533_volunteer_policy_sources.sql",
+      "sha256_lf_utf8": "46196d63ec154fd3d422acd5ebdc5d0b5c2576e7b23a4a34b7bbae9b72bcffee"
+    },
+    {
+      "order": 25,
+      "path": "supabase/migrations/20260913081720_volunteer_legacy_identity_reconciliation.sql",
+      "sha256_lf_utf8": "54182171bf77965303b96063d6b142c3fac13fde60db39fb4df12103799856a6"
+    },
+    {
+      "order": 26,
+      "path": "supabase/migrations/20260913082300_atomic_animal_preference_eligibility.sql",
+      "sha256_lf_utf8": "efd59ced4ff5946f1e62bc66dd7037804cee80542a0da054fe42b49b7f6b821b"
+    },
+    {
+      "order": 27,
+      "path": "supabase/migrations/20260913083120_volunteer_public_availability_summary.sql",
+      "sha256_lf_utf8": "bc3b52e233dcab0ae6ef870c005e5fd4f70f6af26eb2f5a4c4a82e0c6907aff0"
+    },
+    {
+      "order": 28,
+      "path": "supabase/migrations/20260913083503_sponsorship_refund_read_models.sql",
+      "sha256_lf_utf8": "2524ed1c5a8ea7458cc3c77c1ebefcd2d0adafcc562d6c45ec4286f35ac04aa0"
+    },
+    {
+      "order": 29,
+      "path": "supabase/migrations/20260913084120_volunteer_notification_claim_fencing.sql",
+      "sha256_lf_utf8": "406cc87e73b402ffad732ad134336e9af79f83bde35918d124405670e20f5d1d"
+    },
+    {
+      "order": 30,
+      "path": "supabase/migrations/20260913084247_volunteer_booking_shape_guard.sql",
+      "sha256_lf_utf8": "cf2ccb62dd9a52940e8243d5765800718a6c7f6720f5c1213978de6be786e152"
+    },
+    {
+      "order": 31,
+      "path": "supabase/migrations/20260913084717_factual_history_runtime_privileges.sql",
+      "sha256_lf_utf8": "ccf0370f513ecc5ef576a24f00cff2bd1b600a66b048cf893fd618a245a61a68"
+    },
+    {
+      "order": 32,
+      "path": "supabase/migrations/20260913084920_volunteer_operational_tasks.sql",
+      "sha256_lf_utf8": "eaf875b678a42f937ecdce02da43a42796f47e9795883010a76a02bdea98efa2"
+    },
+    {
+      "order": 33,
+      "path": "supabase/migrations/20260913085252_volunteer_promotion_review_tasks.sql",
+      "sha256_lf_utf8": "d25a2ffd0a8c75caa1b2b6134908547772ccb1115a20f3aaa185312a5f4c1825"
+    },
+    {
+      "order": 34,
+      "path": "supabase/migrations/20260913085500_volunteer_tier_candidates.sql",
+      "sha256_lf_utf8": "c2049344111c6523beacd7a89be9bd5633f9736f12672797ed3ec6f27ecff368"
+    },
+    {
+      "order": 35,
+      "path": "supabase/migrations/20260913090746_volunteer_schedule_integrity.sql",
+      "sha256_lf_utf8": "c38ef667a09dbbb1722649729050e052f4d13d8a86c863384d5509fab84e9c17"
+    },
+    {
+      "order": 36,
+      "path": "supabase/migrations/20260913092132_restrict_receipt_issuance_rpc.sql",
+      "sha256_lf_utf8": "607223302dc743f42b5856652f786b98fcdf87b9f96b9d31db690afe2e35747d"
+    }
+  ],
+  "remote_mapping": [
+    {
+      "version": "20260611162942",
+      "name": "create_animals_table",
+      "statements_md5": "da089f0e371ab022c16fdf426c445887",
+      "statement_count": 1,
+      "name_matched_repository_files": ["20260611162942_create_animals_table.sql"],
+      "whole_file_md5_match": [],
+      "classification": "name_match_only_requires_equivalence_review"
+    },
+    {
+      "version": "20260611162956",
+      "name": "create_adoption_applications_table",
+      "statements_md5": "602c298e430c26e06cb9fde6e45f2cad",
+      "statement_count": 1,
+      "name_matched_repository_files": ["20260611162956_create_adoption_applications_table.sql"],
+      "whole_file_md5_match": [],
+      "classification": "name_match_only_requires_equivalence_review"
+    },
+    {
+      "version": "20260623160506",
+      "name": "phase_2_donations_mvp",
+      "statements_md5": "14bd6bf0f31e5a08409c95ab3b355a93",
+      "statement_count": 64,
+      "name_matched_repository_files": ["20260623160506_phase_2_donations_mvp.sql"],
+      "whole_file_md5_match": [],
+      "classification": "name_match_only_requires_equivalence_review"
+    },
+    {
+      "version": "20260623183933",
+      "name": "donor_ops_crm_foundation",
+      "statements_md5": "41284cd78d4f9e2dacb64154eb394667",
+      "statement_count": 18,
+      "name_matched_repository_files": ["20260623183933_donor_ops_crm_foundation.sql"],
+      "whole_file_md5_match": [],
+      "classification": "name_match_only_requires_equivalence_review"
+    },
+    {
+      "version": "20260627110000",
+      "name": "coordinator_task_timeline",
+      "statements_md5": "54dd9aa0fc5783bbb723e17bd7273e98",
+      "statement_count": 11,
+      "name_matched_repository_files": ["20260627110000_coordinator_task_timeline.sql"],
+      "whole_file_md5_match": [],
+      "classification": "name_match_only_requires_equivalence_review"
+    },
+    {
+      "version": "20260630154259",
+      "name": "add_animal_english_content_fields",
+      "statements_md5": "735236dc42c7d108c2b7f0b9837e963f",
+      "statement_count": 4,
+      "name_matched_repository_files": ["20260630154259_add_animal_english_content_fields.sql"],
+      "whole_file_md5_match": [],
+      "classification": "name_match_only_requires_equivalence_review"
+    },
+    {
+      "version": "20260707094012",
+      "name": "story_promotion_center",
+      "statements_md5": "b90dd8aa0052c63e3a6739ee2f7c0834",
+      "statement_count": 1,
+      "name_matched_repository_files": ["20260705120000_story_promotion_center.sql"],
+      "whole_file_md5_match": ["20260705120000_story_promotion_center.sql"],
+      "classification": "whole_file_digest_match"
+    },
+    {
+      "version": "20260718100000",
+      "name": "public_documents_and_donation_purpose",
+      "statements_md5": "b6088dd7bd7338359937e9a190a8cce8",
+      "statement_count": 32,
+      "name_matched_repository_files": ["20260718100000_public_documents_and_donation_purpose.sql"],
+      "whole_file_md5_match": [],
+      "classification": "name_match_only_requires_equivalence_review"
+    },
+    {
+      "version": "20260718110000",
+      "name": "adoption_information",
+      "statements_md5": "184e6449193634365ed754520df2460d",
+      "statement_count": 14,
+      "name_matched_repository_files": ["20260718110000_adoption_information.sql"],
+      "whole_file_md5_match": [],
+      "classification": "name_match_only_requires_equivalence_review"
+    },
+    {
+      "version": "20260718111000",
+      "name": "correct_adult_cat_copy",
+      "statements_md5": "9ac9a992f8a18d1253490dac11d8eb5c",
+      "statement_count": 2,
+      "name_matched_repository_files": ["20260718111000_correct_adult_cat_copy.sql"],
+      "whole_file_md5_match": [],
+      "classification": "name_match_only_requires_equivalence_review"
+    },
+    {
+      "version": "20260719120000",
+      "name": "document_admin_mutation_hardening",
+      "statements_md5": "aaa225df116b735f2b184c063b8e0291",
+      "statement_count": 13,
+      "name_matched_repository_files": ["20260719120000_document_admin_mutation_hardening.sql"],
+      "whole_file_md5_match": [],
+      "classification": "name_match_only_requires_equivalence_review"
+    },
+    {
+      "version": "20260719223000",
+      "name": "public_document_read_policies",
+      "statements_md5": "0d51e708bec4cd61c4d38310e98f486c",
+      "statement_count": 9,
+      "name_matched_repository_files": ["20260719223000_public_document_read_policies.sql"],
+      "whole_file_md5_match": [],
+      "classification": "name_match_only_requires_equivalence_review"
+    },
+    {
+      "version": "20260724023312",
+      "name": "group_enquiries_and_knowledge",
+      "statements_md5": "63821b9321ce2ad7ca7b9e28ab8f9d69",
+      "statement_count": 1,
+      "name_matched_repository_files": ["20260718120000_group_enquiries_and_knowledge.sql"],
+      "whole_file_md5_match": [],
+      "classification": "name_match_only_requires_equivalence_review"
+    },
+    {
+      "version": "20260724023618",
+      "name": "seed_knowledge_guides",
+      "statements_md5": "f33aa936539c7aa3a25fbf5a3d08f043",
+      "statement_count": 1,
+      "name_matched_repository_files": ["20260718121000_seed_knowledge_guides.sql"],
+      "whole_file_md5_match": [],
+      "classification": "name_match_only_requires_equivalence_review"
+    },
+    {
+      "version": "20260726170246",
+      "name": "correct_service_slogan",
+      "statements_md5": "40854e0a032a8797e2716c55efab3402",
+      "statement_count": 1,
+      "name_matched_repository_files": ["20260718122000_correct_service_slogan.sql"],
+      "whole_file_md5_match": ["20260718122000_correct_service_slogan.sql"],
+      "classification": "whole_file_digest_match"
+    },
+    {
+      "version": "20260731164635",
+      "name": "adoption_guide_release_cms",
+      "statements_md5": "3108d3e309823f04534152ef70515545",
+      "statement_count": 1,
+      "name_matched_repository_files": ["20260731120000_adoption_guide_release_cms.sql"],
+      "whole_file_md5_match": ["20260731120000_adoption_guide_release_cms.sql"],
+      "classification": "whole_file_digest_match"
+    },
+    {
+      "version": "20260731171123",
+      "name": "adoption_guide_release_cms_advisor_fixes",
+      "statements_md5": "172347b95642b6b67dd30f2c6a143686",
+      "statement_count": 1,
+      "name_matched_repository_files": [
+        "20260801180000_adoption_guide_release_cms_advisor_fixes.sql"
+      ],
+      "whole_file_md5_match": ["20260801180000_adoption_guide_release_cms_advisor_fixes.sql"],
+      "classification": "whole_file_digest_match"
+    },
+    {
+      "version": "20260803120000",
+      "name": "audit_animal_mutations",
+      "statements_md5": "c61df8d9ba97b7c11edf815d726d172d",
+      "statement_count": 1,
+      "name_matched_repository_files": ["20260803120000_audit_animal_mutations.sql"],
+      "whole_file_md5_match": ["20260803120000_audit_animal_mutations.sql"],
+      "classification": "whole_file_digest_match"
+    },
+    {
+      "version": "20260906062155",
+      "name": "cms_payment_read_compatibility_repair",
+      "statements_md5": "f0dcfa4c93355aedb8171529ce2ed7b6",
+      "statement_count": 1,
+      "name_matched_repository_files": [],
+      "whole_file_md5_match": [],
+      "classification": "remote_only_bundle_requires_object_mapping"
+    },
+    {
+      "version": "20260906173545",
+      "name": "animal_catalog_membership",
+      "statements_md5": "d95736d51ec34656c49d3e4f3527c43b",
+      "statement_count": 1,
+      "name_matched_repository_files": ["20260906162436_animal_catalog_membership.sql"],
+      "whole_file_md5_match": [],
+      "classification": "name_match_only_requires_equivalence_review"
+    },
+    {
+      "version": "20260907011009",
+      "name": "animal_public_profile",
+      "statements_md5": "3177259de6fa601c65fb8018e9d1c1ae",
+      "statement_count": 1,
+      "name_matched_repository_files": ["20260906181657_animal_public_profile.sql"],
+      "whole_file_md5_match": [],
+      "classification": "name_match_only_requires_equivalence_review"
+    },
+    {
+      "version": "20260912073702",
+      "name": "public_supporter_identity_claims",
+      "statements_md5": "46f8b96729d2460c65c4ea04be559107",
+      "statement_count": 1,
+      "name_matched_repository_files": ["20260905144848_public_supporter_identity_claims.sql"],
+      "whole_file_md5_match": ["20260905144848_public_supporter_identity_claims.sql"],
+      "classification": "whole_file_digest_match"
+    },
+    {
+      "version": "20260912073842",
+      "name": "sponsorship_public_identity_protection",
+      "statements_md5": "e6f923216826ef0e0076814eb79513a3",
+      "statement_count": 1,
+      "name_matched_repository_files": [
+        "20260911120000_sponsorship_public_identity_protection.sql"
+      ],
+      "whole_file_md5_match": [],
+      "classification": "name_match_only_requires_equivalence_review"
+    },
+    {
+      "version": "20260912074006",
+      "name": "crm_manual_gift_delivery_jobs",
+      "statements_md5": "4e8376f1d680c8c340f5e1c5655de337",
+      "statement_count": 1,
+      "name_matched_repository_files": ["20260905155357_crm_manual_gift_delivery_jobs.sql"],
+      "whole_file_md5_match": [],
+      "classification": "name_match_only_requires_equivalence_review"
+    },
+    {
+      "version": "20260912074036",
+      "name": "volunteer_atomic_approval",
+      "statements_md5": "58e8bf397f345d77cfc83efd78af3f9c",
+      "statement_count": 1,
+      "name_matched_repository_files": ["20260905163900_volunteer_atomic_approval.sql"],
+      "whole_file_md5_match": [],
+      "classification": "name_match_only_requires_equivalence_review"
+    },
+    {
+      "version": "20260912074117",
+      "name": "animal_images_bucket",
+      "statements_md5": "7f1b1ba46e151ae997bb7cafa7fd05fa",
+      "statement_count": 1,
+      "name_matched_repository_files": ["20260911130000_animal_images_bucket.sql"],
+      "whole_file_md5_match": [],
+      "classification": "name_match_only_requires_equivalence_review"
+    },
+    {
+      "version": "20260912074156",
+      "name": "animal_publication_state",
+      "statements_md5": "77649050fe54cd5fef17f7599a272580",
+      "statement_count": 1,
+      "name_matched_repository_files": ["20260911140000_animal_publication_state.sql"],
+      "whole_file_md5_match": [],
+      "classification": "name_match_only_requires_equivalence_review"
+    },
+    {
+      "version": "20260912074228",
+      "name": "preserve_eligibility_on_species_change",
+      "statements_md5": "dacaf4a9b4aacf1cf42f26b221215cac",
+      "statement_count": 1,
+      "name_matched_repository_files": [
+        "20260911150000_preserve_eligibility_on_species_change.sql"
+      ],
+      "whole_file_md5_match": [],
+      "classification": "name_match_only_requires_equivalence_review"
+    },
+    {
+      "version": "20260912074346",
+      "name": "correct_legacy_sponsor_species",
+      "statements_md5": "6721d874e50b97d96a5fb8f62ec858b1",
+      "statement_count": 1,
+      "name_matched_repository_files": ["20260911160000_correct_legacy_sponsor_species.sql"],
+      "whole_file_md5_match": [],
+      "classification": "name_match_only_requires_equivalence_review"
+    },
+    {
+      "version": "20260912074430",
+      "name": "publish_fostered_animals",
+      "statements_md5": "284f655e93c1887ce3e1dcd975b439dc",
+      "statement_count": 1,
+      "name_matched_repository_files": ["20260911170000_publish_fostered_animals.sql"],
+      "whole_file_md5_match": [],
+      "classification": "name_match_only_requires_equivalence_review"
+    },
+    {
+      "version": "20260912074524",
+      "name": "sponsorship_second_month",
+      "statements_md5": "5f4c3da99540017e82db4e346625a21e",
+      "statement_count": 1,
+      "name_matched_repository_files": ["20260911180000_sponsorship_second_month.sql"],
+      "whole_file_md5_match": [],
+      "classification": "name_match_only_requires_equivalence_review"
+    },
+    {
+      "version": "20260912074646",
+      "name": "sponsorship_monthly_ledger",
+      "statements_md5": "096c8281e5aa43078f55b09d281218de",
+      "statement_count": 1,
+      "name_matched_repository_files": ["20260911190000_sponsorship_monthly_ledger.sql"],
+      "whole_file_md5_match": [],
+      "classification": "name_match_only_requires_equivalence_review"
+    },
+    {
+      "version": "20260912074747",
+      "name": "sponsorship_assignments",
+      "statements_md5": "b98e9889af48a89802ed1c37d93d8801",
+      "statement_count": 1,
+      "name_matched_repository_files": ["20260912120000_sponsorship_assignments.sql"],
+      "whole_file_md5_match": [],
+      "classification": "name_match_only_requires_equivalence_review"
+    }
+  ],
+  "baseline_without_individual_remote_name_match": [
+    "20260626140914_adoption_coordinator_foundation.sql",
+    "20260626144836_adoption_coordinator_workflow_rpcs.sql",
+    "20260626201620_secure_adoption_applications_policy.sql",
+    "20260626202523_harden_webhook_event_processing.sql",
+    "20260627091500_tighten_animals_admin_policy.sql",
+    "20260628120000_harden_receipt_and_payment_lifecycle.sql",
+    "20260628130000_harden_role_grants_drop_stale_policy.sql",
+    "20260628140000_revoke_residual_anon_grants.sql",
+    "20260628143000_coordinator_ops_workbench.sql",
+    "20260628150000_revoke_residual_anon_write_grants.sql",
+    "20260628160000_validate_rpc_actor.sql",
+    "20260630120000_donation_lifecycle_integrity.sql",
+    "20260701105726_admin_access_management.sql",
+    "20260701185227_public_adoption_journey_phase_1.sql",
+    "20260702130000_sponsorship_pledge_phase_2.sql",
+    "20260704165600_volunteer_activity_management_v1.sql",
+    "20260716120000_contextual_donation_attribution.sql",
+    "20260720100000_cod_alipayhk_payment_support.sql",
+    "20260805120000_animal_mutation_audit_atomicity.sql",
+    "20260816120000_cod_payment_order_reference.sql",
+    "20260829120000_governance_board_members.sql",
+    "20260829180000_sponsorship_pledge_admin_review.sql",
+    "20260830120000_faq_entry.sql",
+    "20260830130000_adoption_rules_care_topics.sql",
+    "20260830140000_about_page_content.sql",
+    "20260831120000_payment_public_config.sql",
+    "20260831160000_content_media_storage_bucket.sql",
+    "20260905150012_content_revision_lifecycle.sql",
+    "20260905155426_content_private_media_sessions.sql",
+    "20260905162615_crm_complete_read_models.sql",
+    "20260905163559_content_bounded_authoring_reads.sql"
+  ],
+  "mapping_warning": "Name matches and non-matches are not proof of applied or unapplied state. Whole-file MD5 mismatch is not proof of drift: recorded joined SQL statements can have different formatting, batching or wrappers. Reconcile effective objects and recorded release evidence before any ledger repair."
+}

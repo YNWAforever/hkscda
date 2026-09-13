@@ -225,7 +225,7 @@ describe("listAdminPaymentPage", () => {
         .filter((call) => call.table === "payment" && call.method === "select")
         .map((call) => call.payload),
     ).toContain(
-      "id,provider,amount_cents,status,donation:donation_id(id,receipt_requested,status)",
+      "id,provider,amount_cents,refunded_cents,status,donation:donation_id(id,receipt_requested,status)",
     );
   });
 

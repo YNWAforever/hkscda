@@ -4,8 +4,16 @@ import type { Animal } from "../../types/animal";
 
 /** The portrait and its fallback occupy the same space, including after a load failure. */
 export function AnimalPhoto({ animal, detail = false }: { animal: Animal; detail?: boolean }) {
-  const [failedUrl, setFailedUrl] = useState<string | null>(null);
-  const hasPhoto = Boolean(animal.image_url && failedUrl !== animal.image_url);
+  const [failedUrls, setFailedUrls] = useState<string[]>([]);
+  const failed = (url: string) => failedUrls.includes(url);
+  const markFailed = (url: string) =>
+    setFailedUrls((current) => (current.includes(url) ? current : [...current, url]));
+  const hasPhoto = Boolean(animal.image_url && !failed(animal.image_url));
+  const gallery = detail
+    ? (animal.gallery ?? [])
+        .filter((item) => item.review_status === "approved" && item.url && !failed(item.url))
+        .sort((a, b) => a.sort_order - b.sort_order)
+    : [];
   const Icon = animal.type === "dog" ? Dog : Cat;
   return (
     <div
@@ -20,7 +28,7 @@ export function AnimalPhoto({ animal, detail = false }: { animal: Animal; detail
           src={animal.image_url!}
           alt={animal.name + "的相片"}
           loading={detail ? "eager" : "lazy"}
-          onError={() => setFailedUrl(animal.image_url)}
+          onError={() => markFailed(animal.image_url!)}
         />
       ) : (
         <div
@@ -33,6 +41,22 @@ export function AnimalPhoto({ animal, detail = false }: { animal: Animal; detail
           <small>暫未有相片</small>
         </div>
       )}
+      {gallery.map((item) => (
+        <figure key={item.id}>
+          <img
+            src={item.url!}
+            alt={item.alt_zh}
+            loading="lazy"
+            style={{ objectPosition: item.focal_x + "% " + item.focal_y + "%" }}
+            onError={() => markFailed(item.url!)}
+          />
+          {item.source && (
+            <figcaption className="text-xs text-[var(--color-text-muted)]">
+              相片來源：{item.source}
+            </figcaption>
+          )}
+        </figure>
+      ))}
     </div>
   );
 }

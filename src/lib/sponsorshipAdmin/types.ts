@@ -19,6 +19,7 @@ export type PledgeAnimalPreference = {
 };
 
 export type PaymentProofRecord = {
+  revision: number;
   id: string;
   pledgeId: string;
   storagePath: string | null;
@@ -127,6 +128,13 @@ export type PledgeSummary = {
 };
 
 export type PledgeDetail = PledgeSummary & {
+  contactSubmission?: {
+    supporterName: string;
+    email: string;
+    phone: string;
+    source: string;
+    status: string;
+  } | null;
   notes: string | null;
   supporterPhone: string | null;
   preferences: PledgeAnimalPreference[];
@@ -152,6 +160,7 @@ export type PledgeListSearch = {
 };
 
 export type RecordPledgePaymentInput = {
+  idempotencyKey: string;
   paymentMethod: z.infer<typeof paymentMethodSchema>;
   reference?: string | null;
   amountCents: number;
@@ -185,10 +194,22 @@ export type RecordPledgePaymentRepoInput = Omit<RecordPledgePaymentInput, "file"
 };
 
 export type ReviewPledgeProofInput = {
+  proofId: string;
+  expectedRevision: number;
+  idempotencyKey: string;
   decision: "approve" | "reject";
   note?: string | null;
 };
 
 export type CancelPledgeInput = {
   note?: string | null;
+};
+
+export type ProofReviewResult = {
+  kind: "reviewed";
+  proofId: string;
+  revision: number;
+  decision: "approve" | "reject";
+  allocations: Array<{ periodMonth: string; amountCents: number }>;
+  replayed?: boolean;
 };

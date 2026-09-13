@@ -55,6 +55,24 @@ export const ADMIN_NAV_GROUPS: { id: AdminNavGroup; label: string }[] = [
 
 export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
   {
+    id: "sponsorship-pledges",
+    section: "payments",
+    group: "donations",
+    label: "助養收款及配對",
+    icon: HandCoins,
+    to: "/admin/sponsorships",
+    activePath: "/admin/sponsorships",
+  },
+  {
+    id: "internships",
+    section: "volunteers",
+    group: "system",
+    label: "實習申請",
+    icon: ClipboardList,
+    to: "/admin/internships",
+    activePath: "/admin/internships",
+  },
+  {
     id: "cat",
     section: "cat",
     group: "animals",
@@ -148,6 +166,15 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     icon: CalendarDays,
     to: "/admin/volunteers",
     activePath: "/admin/volunteers",
+  },
+  {
+    id: "volunteer-settings",
+    section: "volunteers",
+    group: "adoptions",
+    label: "義工政策設定",
+    icon: Settings2,
+    to: "/admin/volunteers/settings",
+    activePath: "/admin/volunteers/settings",
   },
   {
     id: "volunteer-group-enquiries",

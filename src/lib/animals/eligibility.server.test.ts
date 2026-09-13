@@ -138,3 +138,20 @@ test("asks the database for fostered animals for sponsorship intent too", async 
     ).map((a) => a.id),
   ).toEqual(["foster-sponsor"]);
 });
+
+test("unpublished canonical IDs are rejected for both service-role submission intents", async () => {
+  const row = {
+    id: "hidden",
+    type: "cat",
+    status: "fostered",
+    publication_state: "unpublished",
+    adoption_eligible: true,
+    sponsorship_eligible: true,
+    retired_at: null,
+  };
+  for (const intent of ["adoption", "sponsorship"] as const) {
+    expect(await readEligibleAnimals(createEligibilityFakeClient([row]), [row.id], intent)).toEqual(
+      [],
+    );
+  }
+});

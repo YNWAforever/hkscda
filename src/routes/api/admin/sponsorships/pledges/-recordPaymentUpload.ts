@@ -66,6 +66,7 @@ export async function handleRecordPaymentUpload({
         return jsonResponse({ error: "Invalid payment payload" }, { status: 400 });
       }
 
+      const submissionKey = z.string().uuid().parse(payload.idempotencyKey);
       const fileValue = formData.get("file");
       let file:
         | { storagePath: string; fileName: string; fileType: string; fileSize: number }
@@ -81,15 +82,29 @@ export async function handleRecordPaymentUpload({
           mimeType: fileValue.type,
           sizeBytes: fileValue.size,
         });
-        const storagePath = `${pledgeId}/staff-${Date.now()}-${safeFileName(descriptor.fileName)}`;
+        const digest = Array.from(
+          new Uint8Array(await crypto.subtle.digest("SHA-256", await fileValue.arrayBuffer())),
+        )
+          .map((v) => v.toString(16).padStart(2, "0"))
+          .join("");
+        const storagePath = `${pledgeId}/staff-${submissionKey}-${digest}-${safeFileName(descriptor.fileName)}`;
         const upload = await client.storage
           .from(SPONSORSHIP_PROOF_BUCKET)
           .upload(storagePath, fileValue, { contentType: descriptor.mimeType, upsert: false });
-        if (upload.error) throw upload.error;
+        if (
+          upload.error &&
+          !["409", "Duplicate"].includes(
+            String(
+              (upload.error as { statusCode?: string; error?: string }).statusCode ??
+                (upload.error as { error?: string }).error,
+            ),
+          )
+        )
+          throw upload.error;
 
-        uploadedStoragePath = upload.data?.path ?? storagePath;
+        uploadedStoragePath = upload.error ? undefined : (upload.data?.path ?? storagePath);
         file = {
-          storagePath: uploadedStoragePath,
+          storagePath,
           fileName: descriptor.fileName,
           fileType: descriptor.mimeType,
           fileSize: descriptor.sizeBytes,

@@ -1,0 +1,11 @@
+{
+  "marker": "4437546f-e73a-43c6-ac88-f050f5a8a4b7",
+  "checks": [
+    "staff completed explicit follow-up; immutable evidence stored without marking delivery",
+    "staff retried failed notification through audited command; no provider sent",
+    "390/768/1440 no horizontal overflow",
+    "anonymous and treasurer task API denied",
+    "anonymous availability returns authoritative aggregate counts and windows without identity or remarks"
+  ],
+  "errors": []
+}

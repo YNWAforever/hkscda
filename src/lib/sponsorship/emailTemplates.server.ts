@@ -115,7 +115,12 @@ export function renderPledgeConfirmationEmail(input: PledgeConfirmationEmailInpu
   );
 }
 
-export type PledgeStatusUpdateEvent = "proof_recorded" | "active" | "needs_followup" | "cancelled";
+export type PledgeStatusUpdateEvent =
+  | "proof_recorded"
+  | "active"
+  | "needs_followup"
+  | "cancelled"
+  | "refund_recorded";
 
 type PledgeStatusUpdateEmailInput = {
   event: PledgeStatusUpdateEvent;
@@ -133,10 +138,12 @@ function pledgeStatusUpdateBodyZh(
   amount: string,
 ) {
   switch (event) {
+    case "refund_recorded":
+      return `<p>您的助養付款（參考編號 <strong>${reference}</strong>）已記錄退款 <strong>${amount}</strong>。</p>`;
     case "proof_recorded":
       return `<p>我們已為您的助養承諾（參考編號 <strong>${reference}</strong>）記錄付款資料，將盡快為您審核。</p>`;
     case "active":
-      return `<p>多謝您！您每月 <strong>${amount}</strong> 的助養承諾（參考編號 <strong>${reference}</strong>）已確認生效。</p>`;
+      return `<p>多謝您！您的助養付款 <strong>${amount}</strong>（參考編號 <strong>${reference}</strong>）已核實。</p>`;
     case "needs_followup":
       return [
         `<p>您的助養承諾（參考編號 <strong>${reference}</strong>）的付款資料需要跟進，未能確認。</p>`,
@@ -157,10 +164,12 @@ function pledgeStatusUpdateBodyEn(
   amount: string,
 ) {
   switch (event) {
+    case "refund_recorded":
+      return `<p>A refund of <strong>${amount}</strong> has been recorded for your sponsorship payment <strong>${reference}</strong>.</p>`;
     case "proof_recorded":
       return `<p>We have recorded a payment for your sponsorship pledge <strong>${reference}</strong> and will review it shortly.</p>`;
     case "active":
-      return `<p>Thank you! Your <strong>${amount}</strong>/month sponsorship pledge <strong>${reference}</strong> is now confirmed and active.</p>`;
+      return `<p>Thank you! Your sponsorship payment of <strong>${amount}</strong> for <strong>${reference}</strong> has been verified.</p>`;
     case "needs_followup":
       return [
         `<p>We were unable to confirm the payment for your sponsorship pledge <strong>${reference}</strong>.</p>`,
@@ -176,15 +185,17 @@ function pledgeStatusUpdateBodyEn(
 }
 
 const PLEDGE_STATUS_SUBJECT_ZH: Record<PledgeStatusUpdateEvent, string> = {
+  refund_recorded: "HKSCDA 助養退款已記錄",
   proof_recorded: "HKSCDA 已收到您的付款記錄",
-  active: "HKSCDA 助養已確認生效",
+  active: "HKSCDA 助養付款已核實",
   needs_followup: "HKSCDA 助養付款需要跟進",
   cancelled: "HKSCDA 助養承諾已取消",
 };
 
 const PLEDGE_STATUS_SUBJECT_EN: Record<PledgeStatusUpdateEvent, string> = {
+  refund_recorded: "HKSCDA sponsorship refund recorded",
   proof_recorded: "HKSCDA recorded your sponsorship payment",
-  active: "HKSCDA sponsorship confirmed",
+  active: "HKSCDA sponsorship payment verified",
   needs_followup: "HKSCDA sponsorship payment needs follow-up",
   cancelled: "HKSCDA sponsorship pledge cancelled",
 };

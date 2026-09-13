@@ -15,11 +15,13 @@ import { Route as SponsorsRouteImport } from './routes/sponsors'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as KnowledgeRouteImport } from './routes/knowledge'
+import { Route as InternshipsRouteImport } from './routes/internships'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as DonateRouteImport } from './routes/donate'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
+import { Route as VolunteerOperationsRouteImport } from './routes/volunteer/operations'
 import { Route as VolunteerGroupRouteImport } from './routes/volunteer/group'
 import { Route as StoriesSlugRouteImport } from './routes/stories/$slug'
 import { Route as SponsorsPledgeRouteImport } from './routes/sponsors_.pledge'
@@ -35,9 +37,11 @@ import { Route as AdoptionInstructionsRouteImport } from './routes/adoption/inst
 import { Route as AdoptionApplyRouteImport } from './routes/adoption/apply'
 import { Route as AdminVolunteersRouteImport } from './routes/admin/volunteers'
 import { Route as AdminSupportersRouteImport } from './routes/admin/supporters'
+import { Route as AdminSponsorshipsRouteImport } from './routes/admin/sponsorships'
 import { Route as AdminResetPasswordRouteImport } from './routes/admin/reset-password'
 import { Route as AdminPaymentMethodsRouteImport } from './routes/admin/payment-methods'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as AdminInternshipsRouteImport } from './routes/admin/internships'
 import { Route as AdminGovernanceRouteImport } from './routes/admin/governance'
 import { Route as AdminFaqRouteImport } from './routes/admin/faq'
 import { Route as AdminContentRouteImport } from './routes/admin/content'
@@ -48,6 +52,7 @@ import { Route as AboutTnrRouteImport } from './routes/about/tnr'
 import { Route as AboutTeamRouteImport } from './routes/about/team'
 import { Route as AboutPrivacyRouteImport } from './routes/about/privacy'
 import { Route as AboutCccpRouteImport } from './routes/about/cccp'
+import { Route as ApiInternshipsIndexRouteImport } from './routes/api/internships/index'
 import { Route as AdminApplicationsIndexRouteImport } from './routes/admin/applications/index'
 import { Route as VolunteerStatusTokenRouteImport } from './routes/volunteer/status.$token'
 import { Route as SponsorsStatusTokenRouteImport } from './routes/sponsors_.status.$token'
@@ -55,11 +60,16 @@ import { Route as ApiWebhooksStripeRouteImport } from './routes/api/webhooks/str
 import { Route as ApiWebhooksPaypalRouteImport } from './routes/api/webhooks/paypal'
 import { Route as ApiWebhooksCodRouteImport } from './routes/api/webhooks/cod'
 import { Route as ApiVolunteerRegistrationsRouteImport } from './routes/api/volunteer/registrations'
+import { Route as ApiVolunteerPolicyRouteImport } from './routes/api/volunteer/policy'
+import { Route as ApiVolunteerOperationsRouteImport } from './routes/api/volunteer/operations'
 import { Route as ApiVolunteerGroupEnquiriesRouteImport } from './routes/api/volunteer/group-enquiries'
 import { Route as ApiVolunteerActivitiesRouteImport } from './routes/api/volunteer/activities'
 import { Route as ApiStoriesMapRouteImport } from './routes/api/stories/map'
 import { Route as ApiStoriesSlugRouteImport } from './routes/api/stories/$slug'
 import { Route as ApiSponsorshipsPledgesRouteImport } from './routes/api/sponsorships/pledges'
+import { Route as ApiJobsVolunteersRouteImport } from './routes/api/jobs/volunteers'
+import { Route as ApiJobsSponsorshipsRouteImport } from './routes/api/jobs/sponsorships'
+import { Route as ApiInternshipsAttachmentRouteImport } from './routes/api/internships/attachment'
 import { Route as ApiAdoptionApplicationsRouteImport } from './routes/api/adoption/applications'
 import { Route as ApiAdminSupportersRouteImport } from './routes/api/admin/supporters'
 import { Route as ApiAdminReceiptsRouteImport } from './routes/api/admin/receipts'
@@ -67,6 +77,7 @@ import { Route as ApiAdminPaymentsRouteImport } from './routes/api/admin/payment
 import { Route as ApiAdminPaymentMethodsRouteImport } from './routes/api/admin/payment-methods'
 import { Route as ApiAdminMeRouteImport } from './routes/api/admin/me'
 import { Route as ApiAdminKnowledgeRouteImport } from './routes/api/admin/knowledge'
+import { Route as ApiAdminInternshipsRouteImport } from './routes/api/admin/internships'
 import { Route as ApiAdminGovernanceRouteImport } from './routes/api/admin/governance'
 import { Route as ApiAdminFaqRouteImport } from './routes/api/admin/faq'
 import { Route as ApiAdminDocumentsRouteImport } from './routes/api/admin/documents'
@@ -78,7 +89,16 @@ import { Route as ApiAdminAboutPagesRouteImport } from './routes/api/admin/about
 import { Route as AnimalsDogIdRouteImport } from './routes/animals/dog_.$id'
 import { Route as AnimalsCatIdRouteImport } from './routes/animals/cat_.$id'
 import { Route as AdoptionStatusTokenRouteImport } from './routes/adoption/status.$token'
+import { Route as AdminVolunteersTasksRouteImport } from './routes/admin/volunteers/tasks'
+import { Route as AdminVolunteersSourcesRouteImport } from './routes/admin/volunteers/sources'
+import { Route as AdminVolunteersSimulationRouteImport } from './routes/admin/volunteers/simulation'
+import { Route as AdminVolunteersSettingsRouteImport } from './routes/admin/volunteers/settings'
+import { Route as AdminVolunteersQualificationsRouteImport } from './routes/admin/volunteers/qualifications'
+import { Route as AdminVolunteersOperationsRouteImport } from './routes/admin/volunteers/operations'
 import { Route as AdminVolunteersGroupEnquiriesRouteImport } from './routes/admin/volunteers/group-enquiries'
+import { Route as AdminVolunteersDailySettingsRouteImport } from './routes/admin/volunteers/daily-settings'
+import { Route as AdminVolunteersCalendarRouteImport } from './routes/admin/volunteers/calendar'
+import { Route as AdminVolunteersAssessmentsRouteImport } from './routes/admin/volunteers/assessments'
 import { Route as AdminSupportersIdRouteImport } from './routes/admin/supporters/$id'
 import { Route as AdminCoordinatorTasksRouteImport } from './routes/admin/coordinator/tasks'
 import { Route as AdminCoordinatorStatusesRouteImport } from './routes/admin/coordinator/statuses'
@@ -102,11 +122,16 @@ import { Route as ApiSponsorshipsPledgesProofUploadUrlRouteImport } from './rout
 import { Route as ApiDonationsDonationIdStatusRouteImport } from './routes/api/donations/$donationId/status'
 import { Route as ApiAdoptionStatusTokenRouteImport } from './routes/api/adoption/status/$token'
 import { Route as ApiAdoptionApplicationsPhotoUploadUrlsRouteImport } from './routes/api/adoption/applications/photo-upload-urls'
+import { Route as ApiAdminVolunteersTasksRouteImport } from './routes/api/admin/volunteers/tasks'
 import { Route as ApiAdminVolunteersRegistrationsRouteImport } from './routes/api/admin/volunteers/registrations'
+import { Route as ApiAdminVolunteersQualificationsRouteImport } from './routes/api/admin/volunteers/qualifications'
 import { Route as ApiAdminVolunteersGroupEnquiriesRouteImport } from './routes/api/admin/volunteers/group-enquiries'
+import { Route as ApiAdminVolunteersCalendarRouteImport } from './routes/api/admin/volunteers/calendar'
 import { Route as ApiAdminVolunteersActivitiesRouteImport } from './routes/api/admin/volunteers/activities'
 import { Route as ApiAdminSupportersIdRouteImport } from './routes/api/admin/supporters/$id'
 import { Route as ApiAdminSponsorshipsPledgesRouteImport } from './routes/api/admin/sponsorships/pledges'
+import { Route as ApiAdminSponsorshipsDeliveriesRouteImport } from './routes/api/admin/sponsorships/deliveries'
+import { Route as ApiAdminSponsorshipsAnimalsRouteImport } from './routes/api/admin/sponsorships/animals'
 import { Route as ApiAdminPaymentMethodsIdRouteImport } from './routes/api/admin/payment-methods/$id'
 import { Route as ApiAdminFinanceActivityRouteImport } from './routes/api/admin/finance/activity'
 import { Route as ApiAdminExportsSupportersDotcsvRouteImport } from './routes/api/admin/exports/supporters[.]csv'
@@ -129,6 +154,15 @@ import { Route as ApiAdminAccessAuditRouteImport } from './routes/api/admin/acce
 import { Route as AdminVolunteersRegistrationsIdRouteImport } from './routes/admin/volunteers/registrations/$id'
 import { Route as AdminCoordinatorAdoptersIdRouteImport } from './routes/admin/coordinator/adopters/$id'
 import { Route as AdminAnimalsIdEditRouteImport } from './routes/admin/animals/$id.edit'
+import { Route as ApiAdminVolunteersSourcesIndexRouteImport } from './routes/api/admin/volunteers/sources/index'
+import { Route as ApiAdminVolunteersSimulationIndexRouteImport } from './routes/api/admin/volunteers/simulation/index'
+import { Route as ApiAdminVolunteersSettingsIndexRouteImport } from './routes/api/admin/volunteers/settings/index'
+import { Route as ApiAdminVolunteersOperationsIndexRouteImport } from './routes/api/admin/volunteers/operations/index'
+import { Route as ApiAdminVolunteersJobsIndexRouteImport } from './routes/api/admin/volunteers/jobs/index'
+import { Route as ApiAdminVolunteersDailySettingsIndexRouteImport } from './routes/api/admin/volunteers/daily-settings/index'
+import { Route as ApiAdminVolunteersAssessmentsIndexRouteImport } from './routes/api/admin/volunteers/assessments/index'
+import { Route as ApiAdminAnimalsPublicationIndexRouteImport } from './routes/api/admin/animals/publication/index'
+import { Route as ApiAdminAnimalsDraftPhotoUploadUrlIndexRouteImport } from './routes/api/admin/animals/draft-photo-upload-url/index'
 import { Route as ApiAdminVolunteersRegistrationsIdRouteImport } from './routes/api/admin/volunteers/registrations/$id'
 import { Route as ApiAdminVolunteersActivitiesIdRouteImport } from './routes/api/admin/volunteers/activities/$id'
 import { Route as ApiAdminSupportersIdConsentsRouteImport } from './routes/api/admin/supporters/$id/consents'
@@ -177,10 +211,12 @@ import { Route as ApiAdminAdoptionGuideReleasesIdPreviewRouteImport } from './ro
 import { Route as ApiAdminAccessUsersIdRouteImport } from './routes/api/admin/access/users/$id'
 import { Route as ApiAdminVolunteersRegistrationsIdStatusRouteImport } from './routes/api/admin/volunteers/registrations/$id/status'
 import { Route as ApiAdminVolunteersRegistrationsIdAttendanceRouteImport } from './routes/api/admin/volunteers/registrations/$id/attendance'
+import { Route as ApiAdminVolunteersJobsIdRetryRouteImport } from './routes/api/admin/volunteers/jobs/$id/retry'
 import { Route as ApiAdminVolunteersActivitiesIdCloneRouteImport } from './routes/api/admin/volunteers/activities/$id/clone'
 import { Route as ApiAdminSponsorshipsPledgesIdReviewRouteImport } from './routes/api/admin/sponsorships/pledges/$id/review'
 import { Route as ApiAdminSponsorshipsPledgesIdProofUrlRouteImport } from './routes/api/admin/sponsorships/pledges/$id/proof-url'
 import { Route as ApiAdminSponsorshipsPledgesIdProofRouteImport } from './routes/api/admin/sponsorships/pledges/$id/proof'
+import { Route as ApiAdminSponsorshipsPledgesIdFinanceRouteImport } from './routes/api/admin/sponsorships/pledges/$id/finance'
 import { Route as ApiAdminSponsorshipsPledgesIdCancelRouteImport } from './routes/api/admin/sponsorships/pledges/$id/cancel'
 import { Route as ApiAdminSponsorshipsPledgesIdAssignmentsRouteImport } from './routes/api/admin/sponsorships/pledges/$id/assignments'
 import { Route as ApiAdminDonationsDeliveryJobIdRetryRouteImport } from './routes/api/admin/donations/delivery/$jobId/retry'
@@ -227,6 +263,11 @@ const KnowledgeRoute = KnowledgeRouteImport.update({
   path: '/knowledge',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InternshipsRoute = InternshipsRouteImport.update({
+  id: '/internships',
+  path: '/internships',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HelpRoute = HelpRouteImport.update({
   id: '/help',
   path: '/help',
@@ -251,6 +292,11 @@ const AboutIndexRoute = AboutIndexRouteImport.update({
   id: '/about/',
   path: '/about/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const VolunteerOperationsRoute = VolunteerOperationsRouteImport.update({
+  id: '/operations',
+  path: '/operations',
+  getParentRoute: () => VolunteerRoute,
 } as any)
 const VolunteerGroupRoute = VolunteerGroupRouteImport.update({
   id: '/group',
@@ -327,6 +373,11 @@ const AdminSupportersRoute = AdminSupportersRouteImport.update({
   path: '/admin/supporters',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminSponsorshipsRoute = AdminSponsorshipsRouteImport.update({
+  id: '/admin/sponsorships',
+  path: '/admin/sponsorships',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminResetPasswordRoute = AdminResetPasswordRouteImport.update({
   id: '/admin/reset-password',
   path: '/admin/reset-password',
@@ -340,6 +391,11 @@ const AdminPaymentMethodsRoute = AdminPaymentMethodsRouteImport.update({
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminInternshipsRoute = AdminInternshipsRouteImport.update({
+  id: '/admin/internships',
+  path: '/admin/internships',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminGovernanceRoute = AdminGovernanceRouteImport.update({
@@ -392,6 +448,11 @@ const AboutCccpRoute = AboutCccpRouteImport.update({
   path: '/about/cccp',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiInternshipsIndexRoute = ApiInternshipsIndexRouteImport.update({
+  id: '/api/internships/',
+  path: '/api/internships/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminApplicationsIndexRoute = AdminApplicationsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -428,6 +489,16 @@ const ApiVolunteerRegistrationsRoute =
     path: '/api/volunteer/registrations',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiVolunteerPolicyRoute = ApiVolunteerPolicyRouteImport.update({
+  id: '/api/volunteer/policy',
+  path: '/api/volunteer/policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiVolunteerOperationsRoute = ApiVolunteerOperationsRouteImport.update({
+  id: '/api/volunteer/operations',
+  path: '/api/volunteer/operations',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiVolunteerGroupEnquiriesRoute =
   ApiVolunteerGroupEnquiriesRouteImport.update({
     id: '/api/volunteer/group-enquiries',
@@ -454,6 +525,22 @@ const ApiSponsorshipsPledgesRoute = ApiSponsorshipsPledgesRouteImport.update({
   path: '/api/sponsorships/pledges',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiJobsVolunteersRoute = ApiJobsVolunteersRouteImport.update({
+  id: '/api/jobs/volunteers',
+  path: '/api/jobs/volunteers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiJobsSponsorshipsRoute = ApiJobsSponsorshipsRouteImport.update({
+  id: '/api/jobs/sponsorships',
+  path: '/api/jobs/sponsorships',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiInternshipsAttachmentRoute =
+  ApiInternshipsAttachmentRouteImport.update({
+    id: '/api/internships/attachment',
+    path: '/api/internships/attachment',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdoptionApplicationsRoute = ApiAdoptionApplicationsRouteImport.update({
   id: '/api/adoption/applications',
   path: '/api/adoption/applications',
@@ -487,6 +574,11 @@ const ApiAdminMeRoute = ApiAdminMeRouteImport.update({
 const ApiAdminKnowledgeRoute = ApiAdminKnowledgeRouteImport.update({
   id: '/api/admin/knowledge',
   path: '/api/admin/knowledge',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminInternshipsRoute = ApiAdminInternshipsRouteImport.update({
+  id: '/api/admin/internships',
+  path: '/api/admin/internships',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAdminGovernanceRoute = ApiAdminGovernanceRouteImport.update({
@@ -546,10 +638,60 @@ const AdoptionStatusTokenRoute = AdoptionStatusTokenRouteImport.update({
   path: '/adoption/status/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminVolunteersTasksRoute = AdminVolunteersTasksRouteImport.update({
+  id: '/tasks',
+  path: '/tasks',
+  getParentRoute: () => AdminVolunteersRoute,
+} as any)
+const AdminVolunteersSourcesRoute = AdminVolunteersSourcesRouteImport.update({
+  id: '/sources',
+  path: '/sources',
+  getParentRoute: () => AdminVolunteersRoute,
+} as any)
+const AdminVolunteersSimulationRoute =
+  AdminVolunteersSimulationRouteImport.update({
+    id: '/simulation',
+    path: '/simulation',
+    getParentRoute: () => AdminVolunteersRoute,
+  } as any)
+const AdminVolunteersSettingsRoute = AdminVolunteersSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminVolunteersRoute,
+} as any)
+const AdminVolunteersQualificationsRoute =
+  AdminVolunteersQualificationsRouteImport.update({
+    id: '/qualifications',
+    path: '/qualifications',
+    getParentRoute: () => AdminVolunteersRoute,
+  } as any)
+const AdminVolunteersOperationsRoute =
+  AdminVolunteersOperationsRouteImport.update({
+    id: '/operations',
+    path: '/operations',
+    getParentRoute: () => AdminVolunteersRoute,
+  } as any)
 const AdminVolunteersGroupEnquiriesRoute =
   AdminVolunteersGroupEnquiriesRouteImport.update({
     id: '/group-enquiries',
     path: '/group-enquiries',
+    getParentRoute: () => AdminVolunteersRoute,
+  } as any)
+const AdminVolunteersDailySettingsRoute =
+  AdminVolunteersDailySettingsRouteImport.update({
+    id: '/daily-settings',
+    path: '/daily-settings',
+    getParentRoute: () => AdminVolunteersRoute,
+  } as any)
+const AdminVolunteersCalendarRoute = AdminVolunteersCalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
+  getParentRoute: () => AdminVolunteersRoute,
+} as any)
+const AdminVolunteersAssessmentsRoute =
+  AdminVolunteersAssessmentsRouteImport.update({
+    id: '/assessments',
+    path: '/assessments',
     getParentRoute: () => AdminVolunteersRoute,
   } as any)
 const AdminSupportersIdRoute = AdminSupportersIdRouteImport.update({
@@ -675,16 +817,33 @@ const ApiAdoptionApplicationsPhotoUploadUrlsRoute =
     path: '/photo-upload-urls',
     getParentRoute: () => ApiAdoptionApplicationsRoute,
   } as any)
+const ApiAdminVolunteersTasksRoute = ApiAdminVolunteersTasksRouteImport.update({
+  id: '/api/admin/volunteers/tasks',
+  path: '/api/admin/volunteers/tasks',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminVolunteersRegistrationsRoute =
   ApiAdminVolunteersRegistrationsRouteImport.update({
     id: '/api/admin/volunteers/registrations',
     path: '/api/admin/volunteers/registrations',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiAdminVolunteersQualificationsRoute =
+  ApiAdminVolunteersQualificationsRouteImport.update({
+    id: '/api/admin/volunteers/qualifications',
+    path: '/api/admin/volunteers/qualifications',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdminVolunteersGroupEnquiriesRoute =
   ApiAdminVolunteersGroupEnquiriesRouteImport.update({
     id: '/api/admin/volunteers/group-enquiries',
     path: '/api/admin/volunteers/group-enquiries',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminVolunteersCalendarRoute =
+  ApiAdminVolunteersCalendarRouteImport.update({
+    id: '/api/admin/volunteers/calendar',
+    path: '/api/admin/volunteers/calendar',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiAdminVolunteersActivitiesRoute =
@@ -702,6 +861,18 @@ const ApiAdminSponsorshipsPledgesRoute =
   ApiAdminSponsorshipsPledgesRouteImport.update({
     id: '/api/admin/sponsorships/pledges',
     path: '/api/admin/sponsorships/pledges',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminSponsorshipsDeliveriesRoute =
+  ApiAdminSponsorshipsDeliveriesRouteImport.update({
+    id: '/api/admin/sponsorships/deliveries',
+    path: '/api/admin/sponsorships/deliveries',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminSponsorshipsAnimalsRoute =
+  ApiAdminSponsorshipsAnimalsRouteImport.update({
+    id: '/api/admin/sponsorships/animals',
+    path: '/api/admin/sponsorships/animals',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiAdminPaymentMethodsIdRoute =
@@ -825,6 +996,60 @@ const AdminAnimalsIdEditRoute = AdminAnimalsIdEditRouteImport.update({
   path: '/admin/animals/$id/edit',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminVolunteersSourcesIndexRoute =
+  ApiAdminVolunteersSourcesIndexRouteImport.update({
+    id: '/api/admin/volunteers/sources/',
+    path: '/api/admin/volunteers/sources/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminVolunteersSimulationIndexRoute =
+  ApiAdminVolunteersSimulationIndexRouteImport.update({
+    id: '/api/admin/volunteers/simulation/',
+    path: '/api/admin/volunteers/simulation/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminVolunteersSettingsIndexRoute =
+  ApiAdminVolunteersSettingsIndexRouteImport.update({
+    id: '/api/admin/volunteers/settings/',
+    path: '/api/admin/volunteers/settings/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminVolunteersOperationsIndexRoute =
+  ApiAdminVolunteersOperationsIndexRouteImport.update({
+    id: '/api/admin/volunteers/operations/',
+    path: '/api/admin/volunteers/operations/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminVolunteersJobsIndexRoute =
+  ApiAdminVolunteersJobsIndexRouteImport.update({
+    id: '/api/admin/volunteers/jobs/',
+    path: '/api/admin/volunteers/jobs/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminVolunteersDailySettingsIndexRoute =
+  ApiAdminVolunteersDailySettingsIndexRouteImport.update({
+    id: '/api/admin/volunteers/daily-settings/',
+    path: '/api/admin/volunteers/daily-settings/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminVolunteersAssessmentsIndexRoute =
+  ApiAdminVolunteersAssessmentsIndexRouteImport.update({
+    id: '/api/admin/volunteers/assessments/',
+    path: '/api/admin/volunteers/assessments/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminAnimalsPublicationIndexRoute =
+  ApiAdminAnimalsPublicationIndexRouteImport.update({
+    id: '/api/admin/animals/publication/',
+    path: '/api/admin/animals/publication/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminAnimalsDraftPhotoUploadUrlIndexRoute =
+  ApiAdminAnimalsDraftPhotoUploadUrlIndexRouteImport.update({
+    id: '/api/admin/animals/draft-photo-upload-url/',
+    path: '/api/admin/animals/draft-photo-upload-url/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdminVolunteersRegistrationsIdRoute =
   ApiAdminVolunteersRegistrationsIdRouteImport.update({
     id: '/$id',
@@ -1109,6 +1334,12 @@ const ApiAdminVolunteersRegistrationsIdAttendanceRoute =
     path: '/attendance',
     getParentRoute: () => ApiAdminVolunteersRegistrationsIdRoute,
   } as any)
+const ApiAdminVolunteersJobsIdRetryRoute =
+  ApiAdminVolunteersJobsIdRetryRouteImport.update({
+    id: '/api/admin/volunteers/jobs/$id/retry',
+    path: '/api/admin/volunteers/jobs/$id/retry',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdminVolunteersActivitiesIdCloneRoute =
   ApiAdminVolunteersActivitiesIdCloneRouteImport.update({
     id: '/clone',
@@ -1131,6 +1362,12 @@ const ApiAdminSponsorshipsPledgesIdProofRoute =
   ApiAdminSponsorshipsPledgesIdProofRouteImport.update({
     id: '/proof',
     path: '/proof',
+    getParentRoute: () => ApiAdminSponsorshipsPledgesIdRoute,
+  } as any)
+const ApiAdminSponsorshipsPledgesIdFinanceRoute =
+  ApiAdminSponsorshipsPledgesIdFinanceRouteImport.update({
+    id: '/finance',
+    path: '/finance',
     getParentRoute: () => ApiAdminSponsorshipsPledgesIdRoute,
   } as any)
 const ApiAdminSponsorshipsPledgesIdCancelRoute =
@@ -1228,6 +1465,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/donate': typeof DonateRoute
   '/help': typeof HelpRoute
+  '/internships': typeof InternshipsRoute
   '/knowledge': typeof KnowledgeRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -1244,9 +1482,11 @@ export interface FileRoutesByFullPath {
   '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/faq': typeof AdminFaqRoute
   '/admin/governance': typeof AdminGovernanceRoute
+  '/admin/internships': typeof AdminInternshipsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/payment-methods': typeof AdminPaymentMethodsRoute
   '/admin/reset-password': typeof AdminResetPasswordRoute
+  '/admin/sponsorships': typeof AdminSponsorshipsRoute
   '/admin/supporters': typeof AdminSupportersRouteWithChildren
   '/admin/volunteers': typeof AdminVolunteersRouteWithChildren
   '/adoption/apply': typeof AdoptionApplyRoute
@@ -1262,6 +1502,7 @@ export interface FileRoutesByFullPath {
   '/sponsors/pledge': typeof SponsorsPledgeRoute
   '/stories/$slug': typeof StoriesSlugRoute
   '/volunteer/group': typeof VolunteerGroupRoute
+  '/volunteer/operations': typeof VolunteerOperationsRoute
   '/about/': typeof AboutIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/animals/new': typeof AdminAnimalsNewRoute
@@ -1281,7 +1522,16 @@ export interface FileRoutesByFullPath {
   '/admin/coordinator/statuses': typeof AdminCoordinatorStatusesRoute
   '/admin/coordinator/tasks': typeof AdminCoordinatorTasksRoute
   '/admin/supporters/$id': typeof AdminSupportersIdRoute
+  '/admin/volunteers/assessments': typeof AdminVolunteersAssessmentsRoute
+  '/admin/volunteers/calendar': typeof AdminVolunteersCalendarRoute
+  '/admin/volunteers/daily-settings': typeof AdminVolunteersDailySettingsRoute
   '/admin/volunteers/group-enquiries': typeof AdminVolunteersGroupEnquiriesRoute
+  '/admin/volunteers/operations': typeof AdminVolunteersOperationsRoute
+  '/admin/volunteers/qualifications': typeof AdminVolunteersQualificationsRoute
+  '/admin/volunteers/settings': typeof AdminVolunteersSettingsRoute
+  '/admin/volunteers/simulation': typeof AdminVolunteersSimulationRoute
+  '/admin/volunteers/sources': typeof AdminVolunteersSourcesRoute
+  '/admin/volunteers/tasks': typeof AdminVolunteersTasksRoute
   '/adoption/status/$token': typeof AdoptionStatusTokenRoute
   '/animals/cat/$id': typeof AnimalsCatIdRoute
   '/animals/dog/$id': typeof AnimalsDogIdRoute
@@ -1293,6 +1543,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/documents': typeof ApiAdminDocumentsRouteWithChildren
   '/api/admin/faq': typeof ApiAdminFaqRoute
   '/api/admin/governance': typeof ApiAdminGovernanceRoute
+  '/api/admin/internships': typeof ApiAdminInternshipsRoute
   '/api/admin/knowledge': typeof ApiAdminKnowledgeRoute
   '/api/admin/me': typeof ApiAdminMeRoute
   '/api/admin/payment-methods': typeof ApiAdminPaymentMethodsRouteWithChildren
@@ -1300,11 +1551,16 @@ export interface FileRoutesByFullPath {
   '/api/admin/receipts': typeof ApiAdminReceiptsRouteWithChildren
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
   '/api/adoption/applications': typeof ApiAdoptionApplicationsRouteWithChildren
+  '/api/internships/attachment': typeof ApiInternshipsAttachmentRoute
+  '/api/jobs/sponsorships': typeof ApiJobsSponsorshipsRoute
+  '/api/jobs/volunteers': typeof ApiJobsVolunteersRoute
   '/api/sponsorships/pledges': typeof ApiSponsorshipsPledgesRouteWithChildren
   '/api/stories/$slug': typeof ApiStoriesSlugRoute
   '/api/stories/map': typeof ApiStoriesMapRoute
   '/api/volunteer/activities': typeof ApiVolunteerActivitiesRoute
   '/api/volunteer/group-enquiries': typeof ApiVolunteerGroupEnquiriesRoute
+  '/api/volunteer/operations': typeof ApiVolunteerOperationsRoute
+  '/api/volunteer/policy': typeof ApiVolunteerPolicyRoute
   '/api/volunteer/registrations': typeof ApiVolunteerRegistrationsRoute
   '/api/webhooks/cod': typeof ApiWebhooksCodRoute
   '/api/webhooks/paypal': typeof ApiWebhooksPaypalRoute
@@ -1312,6 +1568,7 @@ export interface FileRoutesByFullPath {
   '/sponsors/status/$token': typeof SponsorsStatusTokenRoute
   '/volunteer/status/$token': typeof VolunteerStatusTokenRoute
   '/admin/applications/': typeof AdminApplicationsIndexRoute
+  '/api/internships/': typeof ApiInternshipsIndexRoute
   '/admin/animals/$id/edit': typeof AdminAnimalsIdEditRoute
   '/admin/coordinator/adopters/$id': typeof AdminCoordinatorAdoptersIdRoute
   '/admin/volunteers/registrations/$id': typeof AdminVolunteersRegistrationsIdRoute
@@ -1334,11 +1591,16 @@ export interface FileRoutesByFullPath {
   '/api/admin/exports/supporters.csv': typeof ApiAdminExportsSupportersDotcsvRoute
   '/api/admin/finance/activity': typeof ApiAdminFinanceActivityRoute
   '/api/admin/payment-methods/$id': typeof ApiAdminPaymentMethodsIdRouteWithChildren
+  '/api/admin/sponsorships/animals': typeof ApiAdminSponsorshipsAnimalsRoute
+  '/api/admin/sponsorships/deliveries': typeof ApiAdminSponsorshipsDeliveriesRoute
   '/api/admin/sponsorships/pledges': typeof ApiAdminSponsorshipsPledgesRouteWithChildren
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
   '/api/admin/volunteers/activities': typeof ApiAdminVolunteersActivitiesRouteWithChildren
+  '/api/admin/volunteers/calendar': typeof ApiAdminVolunteersCalendarRoute
   '/api/admin/volunteers/group-enquiries': typeof ApiAdminVolunteersGroupEnquiriesRoute
+  '/api/admin/volunteers/qualifications': typeof ApiAdminVolunteersQualificationsRoute
   '/api/admin/volunteers/registrations': typeof ApiAdminVolunteersRegistrationsRouteWithChildren
+  '/api/admin/volunteers/tasks': typeof ApiAdminVolunteersTasksRoute
   '/api/adoption/applications/photo-upload-urls': typeof ApiAdoptionApplicationsPhotoUploadUrlsRoute
   '/api/adoption/status/$token': typeof ApiAdoptionStatusTokenRoute
   '/api/donations/$donationId/status': typeof ApiDonationsDonationIdStatusRoute
@@ -1391,6 +1653,15 @@ export interface FileRoutesByFullPath {
   '/api/admin/supporters/$id/consents': typeof ApiAdminSupportersIdConsentsRoute
   '/api/admin/volunteers/activities/$id': typeof ApiAdminVolunteersActivitiesIdRouteWithChildren
   '/api/admin/volunteers/registrations/$id': typeof ApiAdminVolunteersRegistrationsIdRouteWithChildren
+  '/api/admin/animals/draft-photo-upload-url/': typeof ApiAdminAnimalsDraftPhotoUploadUrlIndexRoute
+  '/api/admin/animals/publication/': typeof ApiAdminAnimalsPublicationIndexRoute
+  '/api/admin/volunteers/assessments/': typeof ApiAdminVolunteersAssessmentsIndexRoute
+  '/api/admin/volunteers/daily-settings/': typeof ApiAdminVolunteersDailySettingsIndexRoute
+  '/api/admin/volunteers/jobs/': typeof ApiAdminVolunteersJobsIndexRoute
+  '/api/admin/volunteers/operations/': typeof ApiAdminVolunteersOperationsIndexRoute
+  '/api/admin/volunteers/settings/': typeof ApiAdminVolunteersSettingsIndexRoute
+  '/api/admin/volunteers/simulation/': typeof ApiAdminVolunteersSimulationIndexRoute
+  '/api/admin/volunteers/sources/': typeof ApiAdminVolunteersSourcesIndexRoute
   '/api/admin/access/invites/$id/resend': typeof ApiAdminAccessInvitesIdResendRoute
   '/api/admin/adoptions/animals/$id/internal': typeof ApiAdminAdoptionsAnimalsIdInternalRoute
   '/api/admin/adoptions/animals/$id/status': typeof ApiAdminAdoptionsAnimalsIdStatusRoute
@@ -1402,10 +1673,12 @@ export interface FileRoutesByFullPath {
   '/api/admin/donations/delivery/$jobId/retry': typeof ApiAdminDonationsDeliveryJobIdRetryRoute
   '/api/admin/sponsorships/pledges/$id/assignments': typeof ApiAdminSponsorshipsPledgesIdAssignmentsRouteWithChildren
   '/api/admin/sponsorships/pledges/$id/cancel': typeof ApiAdminSponsorshipsPledgesIdCancelRoute
+  '/api/admin/sponsorships/pledges/$id/finance': typeof ApiAdminSponsorshipsPledgesIdFinanceRoute
   '/api/admin/sponsorships/pledges/$id/proof': typeof ApiAdminSponsorshipsPledgesIdProofRoute
   '/api/admin/sponsorships/pledges/$id/proof-url': typeof ApiAdminSponsorshipsPledgesIdProofUrlRoute
   '/api/admin/sponsorships/pledges/$id/review': typeof ApiAdminSponsorshipsPledgesIdReviewRoute
   '/api/admin/volunteers/activities/$id/clone': typeof ApiAdminVolunteersActivitiesIdCloneRoute
+  '/api/admin/volunteers/jobs/$id/retry': typeof ApiAdminVolunteersJobsIdRetryRoute
   '/api/admin/volunteers/registrations/$id/attendance': typeof ApiAdminVolunteersRegistrationsIdAttendanceRoute
   '/api/admin/volunteers/registrations/$id/status': typeof ApiAdminVolunteersRegistrationsIdStatusRoute
   '/api/admin/adoptions/applications/$applicationId/photos/$photoId': typeof ApiAdminAdoptionsApplicationsApplicationIdPhotosPhotoIdRoute
@@ -1417,6 +1690,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/donate': typeof DonateRoute
   '/help': typeof HelpRoute
+  '/internships': typeof InternshipsRoute
   '/knowledge': typeof KnowledgeRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -1432,9 +1706,11 @@ export interface FileRoutesByTo {
   '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/faq': typeof AdminFaqRoute
   '/admin/governance': typeof AdminGovernanceRoute
+  '/admin/internships': typeof AdminInternshipsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/payment-methods': typeof AdminPaymentMethodsRoute
   '/admin/reset-password': typeof AdminResetPasswordRoute
+  '/admin/sponsorships': typeof AdminSponsorshipsRoute
   '/admin/supporters': typeof AdminSupportersRouteWithChildren
   '/admin/volunteers': typeof AdminVolunteersRouteWithChildren
   '/adoption/apply': typeof AdoptionApplyRoute
@@ -1450,6 +1726,7 @@ export interface FileRoutesByTo {
   '/sponsors/pledge': typeof SponsorsPledgeRoute
   '/stories/$slug': typeof StoriesSlugRoute
   '/volunteer/group': typeof VolunteerGroupRoute
+  '/volunteer/operations': typeof VolunteerOperationsRoute
   '/about': typeof AboutIndexRoute
   '/admin': typeof AdminIndexRoute
   '/admin/animals/new': typeof AdminAnimalsNewRoute
@@ -1469,7 +1746,16 @@ export interface FileRoutesByTo {
   '/admin/coordinator/statuses': typeof AdminCoordinatorStatusesRoute
   '/admin/coordinator/tasks': typeof AdminCoordinatorTasksRoute
   '/admin/supporters/$id': typeof AdminSupportersIdRoute
+  '/admin/volunteers/assessments': typeof AdminVolunteersAssessmentsRoute
+  '/admin/volunteers/calendar': typeof AdminVolunteersCalendarRoute
+  '/admin/volunteers/daily-settings': typeof AdminVolunteersDailySettingsRoute
   '/admin/volunteers/group-enquiries': typeof AdminVolunteersGroupEnquiriesRoute
+  '/admin/volunteers/operations': typeof AdminVolunteersOperationsRoute
+  '/admin/volunteers/qualifications': typeof AdminVolunteersQualificationsRoute
+  '/admin/volunteers/settings': typeof AdminVolunteersSettingsRoute
+  '/admin/volunteers/simulation': typeof AdminVolunteersSimulationRoute
+  '/admin/volunteers/sources': typeof AdminVolunteersSourcesRoute
+  '/admin/volunteers/tasks': typeof AdminVolunteersTasksRoute
   '/adoption/status/$token': typeof AdoptionStatusTokenRoute
   '/animals/cat/$id': typeof AnimalsCatIdRoute
   '/animals/dog/$id': typeof AnimalsDogIdRoute
@@ -1481,6 +1767,7 @@ export interface FileRoutesByTo {
   '/api/admin/documents': typeof ApiAdminDocumentsRouteWithChildren
   '/api/admin/faq': typeof ApiAdminFaqRoute
   '/api/admin/governance': typeof ApiAdminGovernanceRoute
+  '/api/admin/internships': typeof ApiAdminInternshipsRoute
   '/api/admin/knowledge': typeof ApiAdminKnowledgeRoute
   '/api/admin/me': typeof ApiAdminMeRoute
   '/api/admin/payment-methods': typeof ApiAdminPaymentMethodsRouteWithChildren
@@ -1488,11 +1775,16 @@ export interface FileRoutesByTo {
   '/api/admin/receipts': typeof ApiAdminReceiptsRouteWithChildren
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
   '/api/adoption/applications': typeof ApiAdoptionApplicationsRouteWithChildren
+  '/api/internships/attachment': typeof ApiInternshipsAttachmentRoute
+  '/api/jobs/sponsorships': typeof ApiJobsSponsorshipsRoute
+  '/api/jobs/volunteers': typeof ApiJobsVolunteersRoute
   '/api/sponsorships/pledges': typeof ApiSponsorshipsPledgesRouteWithChildren
   '/api/stories/$slug': typeof ApiStoriesSlugRoute
   '/api/stories/map': typeof ApiStoriesMapRoute
   '/api/volunteer/activities': typeof ApiVolunteerActivitiesRoute
   '/api/volunteer/group-enquiries': typeof ApiVolunteerGroupEnquiriesRoute
+  '/api/volunteer/operations': typeof ApiVolunteerOperationsRoute
+  '/api/volunteer/policy': typeof ApiVolunteerPolicyRoute
   '/api/volunteer/registrations': typeof ApiVolunteerRegistrationsRoute
   '/api/webhooks/cod': typeof ApiWebhooksCodRoute
   '/api/webhooks/paypal': typeof ApiWebhooksPaypalRoute
@@ -1500,6 +1792,7 @@ export interface FileRoutesByTo {
   '/sponsors/status/$token': typeof SponsorsStatusTokenRoute
   '/volunteer/status/$token': typeof VolunteerStatusTokenRoute
   '/admin/applications': typeof AdminApplicationsIndexRoute
+  '/api/internships': typeof ApiInternshipsIndexRoute
   '/admin/animals/$id/edit': typeof AdminAnimalsIdEditRoute
   '/admin/coordinator/adopters/$id': typeof AdminCoordinatorAdoptersIdRoute
   '/admin/volunteers/registrations/$id': typeof AdminVolunteersRegistrationsIdRoute
@@ -1522,11 +1815,16 @@ export interface FileRoutesByTo {
   '/api/admin/exports/supporters.csv': typeof ApiAdminExportsSupportersDotcsvRoute
   '/api/admin/finance/activity': typeof ApiAdminFinanceActivityRoute
   '/api/admin/payment-methods/$id': typeof ApiAdminPaymentMethodsIdRouteWithChildren
+  '/api/admin/sponsorships/animals': typeof ApiAdminSponsorshipsAnimalsRoute
+  '/api/admin/sponsorships/deliveries': typeof ApiAdminSponsorshipsDeliveriesRoute
   '/api/admin/sponsorships/pledges': typeof ApiAdminSponsorshipsPledgesRouteWithChildren
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
   '/api/admin/volunteers/activities': typeof ApiAdminVolunteersActivitiesRouteWithChildren
+  '/api/admin/volunteers/calendar': typeof ApiAdminVolunteersCalendarRoute
   '/api/admin/volunteers/group-enquiries': typeof ApiAdminVolunteersGroupEnquiriesRoute
+  '/api/admin/volunteers/qualifications': typeof ApiAdminVolunteersQualificationsRoute
   '/api/admin/volunteers/registrations': typeof ApiAdminVolunteersRegistrationsRouteWithChildren
+  '/api/admin/volunteers/tasks': typeof ApiAdminVolunteersTasksRoute
   '/api/adoption/applications/photo-upload-urls': typeof ApiAdoptionApplicationsPhotoUploadUrlsRoute
   '/api/adoption/status/$token': typeof ApiAdoptionStatusTokenRoute
   '/api/donations/$donationId/status': typeof ApiDonationsDonationIdStatusRoute
@@ -1579,6 +1877,15 @@ export interface FileRoutesByTo {
   '/api/admin/supporters/$id/consents': typeof ApiAdminSupportersIdConsentsRoute
   '/api/admin/volunteers/activities/$id': typeof ApiAdminVolunteersActivitiesIdRouteWithChildren
   '/api/admin/volunteers/registrations/$id': typeof ApiAdminVolunteersRegistrationsIdRouteWithChildren
+  '/api/admin/animals/draft-photo-upload-url': typeof ApiAdminAnimalsDraftPhotoUploadUrlIndexRoute
+  '/api/admin/animals/publication': typeof ApiAdminAnimalsPublicationIndexRoute
+  '/api/admin/volunteers/assessments': typeof ApiAdminVolunteersAssessmentsIndexRoute
+  '/api/admin/volunteers/daily-settings': typeof ApiAdminVolunteersDailySettingsIndexRoute
+  '/api/admin/volunteers/jobs': typeof ApiAdminVolunteersJobsIndexRoute
+  '/api/admin/volunteers/operations': typeof ApiAdminVolunteersOperationsIndexRoute
+  '/api/admin/volunteers/settings': typeof ApiAdminVolunteersSettingsIndexRoute
+  '/api/admin/volunteers/simulation': typeof ApiAdminVolunteersSimulationIndexRoute
+  '/api/admin/volunteers/sources': typeof ApiAdminVolunteersSourcesIndexRoute
   '/api/admin/access/invites/$id/resend': typeof ApiAdminAccessInvitesIdResendRoute
   '/api/admin/adoptions/animals/$id/internal': typeof ApiAdminAdoptionsAnimalsIdInternalRoute
   '/api/admin/adoptions/animals/$id/status': typeof ApiAdminAdoptionsAnimalsIdStatusRoute
@@ -1590,10 +1897,12 @@ export interface FileRoutesByTo {
   '/api/admin/donations/delivery/$jobId/retry': typeof ApiAdminDonationsDeliveryJobIdRetryRoute
   '/api/admin/sponsorships/pledges/$id/assignments': typeof ApiAdminSponsorshipsPledgesIdAssignmentsRouteWithChildren
   '/api/admin/sponsorships/pledges/$id/cancel': typeof ApiAdminSponsorshipsPledgesIdCancelRoute
+  '/api/admin/sponsorships/pledges/$id/finance': typeof ApiAdminSponsorshipsPledgesIdFinanceRoute
   '/api/admin/sponsorships/pledges/$id/proof': typeof ApiAdminSponsorshipsPledgesIdProofRoute
   '/api/admin/sponsorships/pledges/$id/proof-url': typeof ApiAdminSponsorshipsPledgesIdProofUrlRoute
   '/api/admin/sponsorships/pledges/$id/review': typeof ApiAdminSponsorshipsPledgesIdReviewRoute
   '/api/admin/volunteers/activities/$id/clone': typeof ApiAdminVolunteersActivitiesIdCloneRoute
+  '/api/admin/volunteers/jobs/$id/retry': typeof ApiAdminVolunteersJobsIdRetryRoute
   '/api/admin/volunteers/registrations/$id/attendance': typeof ApiAdminVolunteersRegistrationsIdAttendanceRoute
   '/api/admin/volunteers/registrations/$id/status': typeof ApiAdminVolunteersRegistrationsIdStatusRoute
   '/api/admin/adoptions/applications/$applicationId/photos/$photoId': typeof ApiAdminAdoptionsApplicationsApplicationIdPhotosPhotoIdRoute
@@ -1606,6 +1915,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/donate': typeof DonateRoute
   '/help': typeof HelpRoute
+  '/internships': typeof InternshipsRoute
   '/knowledge': typeof KnowledgeRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -1622,9 +1932,11 @@ export interface FileRoutesById {
   '/admin/content': typeof AdminContentRouteWithChildren
   '/admin/faq': typeof AdminFaqRoute
   '/admin/governance': typeof AdminGovernanceRoute
+  '/admin/internships': typeof AdminInternshipsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/payment-methods': typeof AdminPaymentMethodsRoute
   '/admin/reset-password': typeof AdminResetPasswordRoute
+  '/admin/sponsorships': typeof AdminSponsorshipsRoute
   '/admin/supporters': typeof AdminSupportersRouteWithChildren
   '/admin/volunteers': typeof AdminVolunteersRouteWithChildren
   '/adoption/apply': typeof AdoptionApplyRoute
@@ -1640,6 +1952,7 @@ export interface FileRoutesById {
   '/sponsors_/pledge': typeof SponsorsPledgeRoute
   '/stories/$slug': typeof StoriesSlugRoute
   '/volunteer/group': typeof VolunteerGroupRoute
+  '/volunteer/operations': typeof VolunteerOperationsRoute
   '/about/': typeof AboutIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/animals/new': typeof AdminAnimalsNewRoute
@@ -1659,7 +1972,16 @@ export interface FileRoutesById {
   '/admin/coordinator/statuses': typeof AdminCoordinatorStatusesRoute
   '/admin/coordinator/tasks': typeof AdminCoordinatorTasksRoute
   '/admin/supporters/$id': typeof AdminSupportersIdRoute
+  '/admin/volunteers/assessments': typeof AdminVolunteersAssessmentsRoute
+  '/admin/volunteers/calendar': typeof AdminVolunteersCalendarRoute
+  '/admin/volunteers/daily-settings': typeof AdminVolunteersDailySettingsRoute
   '/admin/volunteers/group-enquiries': typeof AdminVolunteersGroupEnquiriesRoute
+  '/admin/volunteers/operations': typeof AdminVolunteersOperationsRoute
+  '/admin/volunteers/qualifications': typeof AdminVolunteersQualificationsRoute
+  '/admin/volunteers/settings': typeof AdminVolunteersSettingsRoute
+  '/admin/volunteers/simulation': typeof AdminVolunteersSimulationRoute
+  '/admin/volunteers/sources': typeof AdminVolunteersSourcesRoute
+  '/admin/volunteers/tasks': typeof AdminVolunteersTasksRoute
   '/adoption/status/$token': typeof AdoptionStatusTokenRoute
   '/animals/cat_/$id': typeof AnimalsCatIdRoute
   '/animals/dog_/$id': typeof AnimalsDogIdRoute
@@ -1671,6 +1993,7 @@ export interface FileRoutesById {
   '/api/admin/documents': typeof ApiAdminDocumentsRouteWithChildren
   '/api/admin/faq': typeof ApiAdminFaqRoute
   '/api/admin/governance': typeof ApiAdminGovernanceRoute
+  '/api/admin/internships': typeof ApiAdminInternshipsRoute
   '/api/admin/knowledge': typeof ApiAdminKnowledgeRoute
   '/api/admin/me': typeof ApiAdminMeRoute
   '/api/admin/payment-methods': typeof ApiAdminPaymentMethodsRouteWithChildren
@@ -1678,11 +2001,16 @@ export interface FileRoutesById {
   '/api/admin/receipts': typeof ApiAdminReceiptsRouteWithChildren
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
   '/api/adoption/applications': typeof ApiAdoptionApplicationsRouteWithChildren
+  '/api/internships/attachment': typeof ApiInternshipsAttachmentRoute
+  '/api/jobs/sponsorships': typeof ApiJobsSponsorshipsRoute
+  '/api/jobs/volunteers': typeof ApiJobsVolunteersRoute
   '/api/sponsorships/pledges': typeof ApiSponsorshipsPledgesRouteWithChildren
   '/api/stories/$slug': typeof ApiStoriesSlugRoute
   '/api/stories/map': typeof ApiStoriesMapRoute
   '/api/volunteer/activities': typeof ApiVolunteerActivitiesRoute
   '/api/volunteer/group-enquiries': typeof ApiVolunteerGroupEnquiriesRoute
+  '/api/volunteer/operations': typeof ApiVolunteerOperationsRoute
+  '/api/volunteer/policy': typeof ApiVolunteerPolicyRoute
   '/api/volunteer/registrations': typeof ApiVolunteerRegistrationsRoute
   '/api/webhooks/cod': typeof ApiWebhooksCodRoute
   '/api/webhooks/paypal': typeof ApiWebhooksPaypalRoute
@@ -1690,6 +2018,7 @@ export interface FileRoutesById {
   '/sponsors_/status/$token': typeof SponsorsStatusTokenRoute
   '/volunteer/status/$token': typeof VolunteerStatusTokenRoute
   '/admin/applications/': typeof AdminApplicationsIndexRoute
+  '/api/internships/': typeof ApiInternshipsIndexRoute
   '/admin/animals/$id/edit': typeof AdminAnimalsIdEditRoute
   '/admin/coordinator/adopters/$id': typeof AdminCoordinatorAdoptersIdRoute
   '/admin/volunteers/registrations/$id': typeof AdminVolunteersRegistrationsIdRoute
@@ -1712,11 +2041,16 @@ export interface FileRoutesById {
   '/api/admin/exports/supporters.csv': typeof ApiAdminExportsSupportersDotcsvRoute
   '/api/admin/finance/activity': typeof ApiAdminFinanceActivityRoute
   '/api/admin/payment-methods/$id': typeof ApiAdminPaymentMethodsIdRouteWithChildren
+  '/api/admin/sponsorships/animals': typeof ApiAdminSponsorshipsAnimalsRoute
+  '/api/admin/sponsorships/deliveries': typeof ApiAdminSponsorshipsDeliveriesRoute
   '/api/admin/sponsorships/pledges': typeof ApiAdminSponsorshipsPledgesRouteWithChildren
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
   '/api/admin/volunteers/activities': typeof ApiAdminVolunteersActivitiesRouteWithChildren
+  '/api/admin/volunteers/calendar': typeof ApiAdminVolunteersCalendarRoute
   '/api/admin/volunteers/group-enquiries': typeof ApiAdminVolunteersGroupEnquiriesRoute
+  '/api/admin/volunteers/qualifications': typeof ApiAdminVolunteersQualificationsRoute
   '/api/admin/volunteers/registrations': typeof ApiAdminVolunteersRegistrationsRouteWithChildren
+  '/api/admin/volunteers/tasks': typeof ApiAdminVolunteersTasksRoute
   '/api/adoption/applications/photo-upload-urls': typeof ApiAdoptionApplicationsPhotoUploadUrlsRoute
   '/api/adoption/status/$token': typeof ApiAdoptionStatusTokenRoute
   '/api/donations/$donationId/status': typeof ApiDonationsDonationIdStatusRoute
@@ -1769,6 +2103,15 @@ export interface FileRoutesById {
   '/api/admin/supporters/$id/consents': typeof ApiAdminSupportersIdConsentsRoute
   '/api/admin/volunteers/activities/$id': typeof ApiAdminVolunteersActivitiesIdRouteWithChildren
   '/api/admin/volunteers/registrations/$id': typeof ApiAdminVolunteersRegistrationsIdRouteWithChildren
+  '/api/admin/animals/draft-photo-upload-url/': typeof ApiAdminAnimalsDraftPhotoUploadUrlIndexRoute
+  '/api/admin/animals/publication/': typeof ApiAdminAnimalsPublicationIndexRoute
+  '/api/admin/volunteers/assessments/': typeof ApiAdminVolunteersAssessmentsIndexRoute
+  '/api/admin/volunteers/daily-settings/': typeof ApiAdminVolunteersDailySettingsIndexRoute
+  '/api/admin/volunteers/jobs/': typeof ApiAdminVolunteersJobsIndexRoute
+  '/api/admin/volunteers/operations/': typeof ApiAdminVolunteersOperationsIndexRoute
+  '/api/admin/volunteers/settings/': typeof ApiAdminVolunteersSettingsIndexRoute
+  '/api/admin/volunteers/simulation/': typeof ApiAdminVolunteersSimulationIndexRoute
+  '/api/admin/volunteers/sources/': typeof ApiAdminVolunteersSourcesIndexRoute
   '/api/admin/access/invites/$id/resend': typeof ApiAdminAccessInvitesIdResendRoute
   '/api/admin/adoptions/animals/$id/internal': typeof ApiAdminAdoptionsAnimalsIdInternalRoute
   '/api/admin/adoptions/animals/$id/status': typeof ApiAdminAdoptionsAnimalsIdStatusRoute
@@ -1780,10 +2123,12 @@ export interface FileRoutesById {
   '/api/admin/donations/delivery/$jobId/retry': typeof ApiAdminDonationsDeliveryJobIdRetryRoute
   '/api/admin/sponsorships/pledges/$id/assignments': typeof ApiAdminSponsorshipsPledgesIdAssignmentsRouteWithChildren
   '/api/admin/sponsorships/pledges/$id/cancel': typeof ApiAdminSponsorshipsPledgesIdCancelRoute
+  '/api/admin/sponsorships/pledges/$id/finance': typeof ApiAdminSponsorshipsPledgesIdFinanceRoute
   '/api/admin/sponsorships/pledges/$id/proof': typeof ApiAdminSponsorshipsPledgesIdProofRoute
   '/api/admin/sponsorships/pledges/$id/proof-url': typeof ApiAdminSponsorshipsPledgesIdProofUrlRoute
   '/api/admin/sponsorships/pledges/$id/review': typeof ApiAdminSponsorshipsPledgesIdReviewRoute
   '/api/admin/volunteers/activities/$id/clone': typeof ApiAdminVolunteersActivitiesIdCloneRoute
+  '/api/admin/volunteers/jobs/$id/retry': typeof ApiAdminVolunteersJobsIdRetryRoute
   '/api/admin/volunteers/registrations/$id/attendance': typeof ApiAdminVolunteersRegistrationsIdAttendanceRoute
   '/api/admin/volunteers/registrations/$id/status': typeof ApiAdminVolunteersRegistrationsIdStatusRoute
   '/api/admin/adoptions/applications/$applicationId/photos/$photoId': typeof ApiAdminAdoptionsApplicationsApplicationIdPhotosPhotoIdRoute
@@ -1797,6 +2142,7 @@ export interface FileRouteTypes {
     | '/'
     | '/donate'
     | '/help'
+    | '/internships'
     | '/knowledge'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -1813,9 +2159,11 @@ export interface FileRouteTypes {
     | '/admin/content'
     | '/admin/faq'
     | '/admin/governance'
+    | '/admin/internships'
     | '/admin/login'
     | '/admin/payment-methods'
     | '/admin/reset-password'
+    | '/admin/sponsorships'
     | '/admin/supporters'
     | '/admin/volunteers'
     | '/adoption/apply'
@@ -1831,6 +2179,7 @@ export interface FileRouteTypes {
     | '/sponsors/pledge'
     | '/stories/$slug'
     | '/volunteer/group'
+    | '/volunteer/operations'
     | '/about/'
     | '/admin/'
     | '/admin/animals/new'
@@ -1850,7 +2199,16 @@ export interface FileRouteTypes {
     | '/admin/coordinator/statuses'
     | '/admin/coordinator/tasks'
     | '/admin/supporters/$id'
+    | '/admin/volunteers/assessments'
+    | '/admin/volunteers/calendar'
+    | '/admin/volunteers/daily-settings'
     | '/admin/volunteers/group-enquiries'
+    | '/admin/volunteers/operations'
+    | '/admin/volunteers/qualifications'
+    | '/admin/volunteers/settings'
+    | '/admin/volunteers/simulation'
+    | '/admin/volunteers/sources'
+    | '/admin/volunteers/tasks'
     | '/adoption/status/$token'
     | '/animals/cat/$id'
     | '/animals/dog/$id'
@@ -1862,6 +2220,7 @@ export interface FileRouteTypes {
     | '/api/admin/documents'
     | '/api/admin/faq'
     | '/api/admin/governance'
+    | '/api/admin/internships'
     | '/api/admin/knowledge'
     | '/api/admin/me'
     | '/api/admin/payment-methods'
@@ -1869,11 +2228,16 @@ export interface FileRouteTypes {
     | '/api/admin/receipts'
     | '/api/admin/supporters'
     | '/api/adoption/applications'
+    | '/api/internships/attachment'
+    | '/api/jobs/sponsorships'
+    | '/api/jobs/volunteers'
     | '/api/sponsorships/pledges'
     | '/api/stories/$slug'
     | '/api/stories/map'
     | '/api/volunteer/activities'
     | '/api/volunteer/group-enquiries'
+    | '/api/volunteer/operations'
+    | '/api/volunteer/policy'
     | '/api/volunteer/registrations'
     | '/api/webhooks/cod'
     | '/api/webhooks/paypal'
@@ -1881,6 +2245,7 @@ export interface FileRouteTypes {
     | '/sponsors/status/$token'
     | '/volunteer/status/$token'
     | '/admin/applications/'
+    | '/api/internships/'
     | '/admin/animals/$id/edit'
     | '/admin/coordinator/adopters/$id'
     | '/admin/volunteers/registrations/$id'
@@ -1903,11 +2268,16 @@ export interface FileRouteTypes {
     | '/api/admin/exports/supporters.csv'
     | '/api/admin/finance/activity'
     | '/api/admin/payment-methods/$id'
+    | '/api/admin/sponsorships/animals'
+    | '/api/admin/sponsorships/deliveries'
     | '/api/admin/sponsorships/pledges'
     | '/api/admin/supporters/$id'
     | '/api/admin/volunteers/activities'
+    | '/api/admin/volunteers/calendar'
     | '/api/admin/volunteers/group-enquiries'
+    | '/api/admin/volunteers/qualifications'
     | '/api/admin/volunteers/registrations'
+    | '/api/admin/volunteers/tasks'
     | '/api/adoption/applications/photo-upload-urls'
     | '/api/adoption/status/$token'
     | '/api/donations/$donationId/status'
@@ -1960,6 +2330,15 @@ export interface FileRouteTypes {
     | '/api/admin/supporters/$id/consents'
     | '/api/admin/volunteers/activities/$id'
     | '/api/admin/volunteers/registrations/$id'
+    | '/api/admin/animals/draft-photo-upload-url/'
+    | '/api/admin/animals/publication/'
+    | '/api/admin/volunteers/assessments/'
+    | '/api/admin/volunteers/daily-settings/'
+    | '/api/admin/volunteers/jobs/'
+    | '/api/admin/volunteers/operations/'
+    | '/api/admin/volunteers/settings/'
+    | '/api/admin/volunteers/simulation/'
+    | '/api/admin/volunteers/sources/'
     | '/api/admin/access/invites/$id/resend'
     | '/api/admin/adoptions/animals/$id/internal'
     | '/api/admin/adoptions/animals/$id/status'
@@ -1971,10 +2350,12 @@ export interface FileRouteTypes {
     | '/api/admin/donations/delivery/$jobId/retry'
     | '/api/admin/sponsorships/pledges/$id/assignments'
     | '/api/admin/sponsorships/pledges/$id/cancel'
+    | '/api/admin/sponsorships/pledges/$id/finance'
     | '/api/admin/sponsorships/pledges/$id/proof'
     | '/api/admin/sponsorships/pledges/$id/proof-url'
     | '/api/admin/sponsorships/pledges/$id/review'
     | '/api/admin/volunteers/activities/$id/clone'
+    | '/api/admin/volunteers/jobs/$id/retry'
     | '/api/admin/volunteers/registrations/$id/attendance'
     | '/api/admin/volunteers/registrations/$id/status'
     | '/api/admin/adoptions/applications/$applicationId/photos/$photoId'
@@ -1986,6 +2367,7 @@ export interface FileRouteTypes {
     | '/'
     | '/donate'
     | '/help'
+    | '/internships'
     | '/knowledge'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -2001,9 +2383,11 @@ export interface FileRouteTypes {
     | '/admin/content'
     | '/admin/faq'
     | '/admin/governance'
+    | '/admin/internships'
     | '/admin/login'
     | '/admin/payment-methods'
     | '/admin/reset-password'
+    | '/admin/sponsorships'
     | '/admin/supporters'
     | '/admin/volunteers'
     | '/adoption/apply'
@@ -2019,6 +2403,7 @@ export interface FileRouteTypes {
     | '/sponsors/pledge'
     | '/stories/$slug'
     | '/volunteer/group'
+    | '/volunteer/operations'
     | '/about'
     | '/admin'
     | '/admin/animals/new'
@@ -2038,7 +2423,16 @@ export interface FileRouteTypes {
     | '/admin/coordinator/statuses'
     | '/admin/coordinator/tasks'
     | '/admin/supporters/$id'
+    | '/admin/volunteers/assessments'
+    | '/admin/volunteers/calendar'
+    | '/admin/volunteers/daily-settings'
     | '/admin/volunteers/group-enquiries'
+    | '/admin/volunteers/operations'
+    | '/admin/volunteers/qualifications'
+    | '/admin/volunteers/settings'
+    | '/admin/volunteers/simulation'
+    | '/admin/volunteers/sources'
+    | '/admin/volunteers/tasks'
     | '/adoption/status/$token'
     | '/animals/cat/$id'
     | '/animals/dog/$id'
@@ -2050,6 +2444,7 @@ export interface FileRouteTypes {
     | '/api/admin/documents'
     | '/api/admin/faq'
     | '/api/admin/governance'
+    | '/api/admin/internships'
     | '/api/admin/knowledge'
     | '/api/admin/me'
     | '/api/admin/payment-methods'
@@ -2057,11 +2452,16 @@ export interface FileRouteTypes {
     | '/api/admin/receipts'
     | '/api/admin/supporters'
     | '/api/adoption/applications'
+    | '/api/internships/attachment'
+    | '/api/jobs/sponsorships'
+    | '/api/jobs/volunteers'
     | '/api/sponsorships/pledges'
     | '/api/stories/$slug'
     | '/api/stories/map'
     | '/api/volunteer/activities'
     | '/api/volunteer/group-enquiries'
+    | '/api/volunteer/operations'
+    | '/api/volunteer/policy'
     | '/api/volunteer/registrations'
     | '/api/webhooks/cod'
     | '/api/webhooks/paypal'
@@ -2069,6 +2469,7 @@ export interface FileRouteTypes {
     | '/sponsors/status/$token'
     | '/volunteer/status/$token'
     | '/admin/applications'
+    | '/api/internships'
     | '/admin/animals/$id/edit'
     | '/admin/coordinator/adopters/$id'
     | '/admin/volunteers/registrations/$id'
@@ -2091,11 +2492,16 @@ export interface FileRouteTypes {
     | '/api/admin/exports/supporters.csv'
     | '/api/admin/finance/activity'
     | '/api/admin/payment-methods/$id'
+    | '/api/admin/sponsorships/animals'
+    | '/api/admin/sponsorships/deliveries'
     | '/api/admin/sponsorships/pledges'
     | '/api/admin/supporters/$id'
     | '/api/admin/volunteers/activities'
+    | '/api/admin/volunteers/calendar'
     | '/api/admin/volunteers/group-enquiries'
+    | '/api/admin/volunteers/qualifications'
     | '/api/admin/volunteers/registrations'
+    | '/api/admin/volunteers/tasks'
     | '/api/adoption/applications/photo-upload-urls'
     | '/api/adoption/status/$token'
     | '/api/donations/$donationId/status'
@@ -2148,6 +2554,15 @@ export interface FileRouteTypes {
     | '/api/admin/supporters/$id/consents'
     | '/api/admin/volunteers/activities/$id'
     | '/api/admin/volunteers/registrations/$id'
+    | '/api/admin/animals/draft-photo-upload-url'
+    | '/api/admin/animals/publication'
+    | '/api/admin/volunteers/assessments'
+    | '/api/admin/volunteers/daily-settings'
+    | '/api/admin/volunteers/jobs'
+    | '/api/admin/volunteers/operations'
+    | '/api/admin/volunteers/settings'
+    | '/api/admin/volunteers/simulation'
+    | '/api/admin/volunteers/sources'
     | '/api/admin/access/invites/$id/resend'
     | '/api/admin/adoptions/animals/$id/internal'
     | '/api/admin/adoptions/animals/$id/status'
@@ -2159,10 +2574,12 @@ export interface FileRouteTypes {
     | '/api/admin/donations/delivery/$jobId/retry'
     | '/api/admin/sponsorships/pledges/$id/assignments'
     | '/api/admin/sponsorships/pledges/$id/cancel'
+    | '/api/admin/sponsorships/pledges/$id/finance'
     | '/api/admin/sponsorships/pledges/$id/proof'
     | '/api/admin/sponsorships/pledges/$id/proof-url'
     | '/api/admin/sponsorships/pledges/$id/review'
     | '/api/admin/volunteers/activities/$id/clone'
+    | '/api/admin/volunteers/jobs/$id/retry'
     | '/api/admin/volunteers/registrations/$id/attendance'
     | '/api/admin/volunteers/registrations/$id/status'
     | '/api/admin/adoptions/applications/$applicationId/photos/$photoId'
@@ -2174,6 +2591,7 @@ export interface FileRouteTypes {
     | '/'
     | '/donate'
     | '/help'
+    | '/internships'
     | '/knowledge'
     | '/robots.txt'
     | '/sitemap.xml'
@@ -2190,9 +2608,11 @@ export interface FileRouteTypes {
     | '/admin/content'
     | '/admin/faq'
     | '/admin/governance'
+    | '/admin/internships'
     | '/admin/login'
     | '/admin/payment-methods'
     | '/admin/reset-password'
+    | '/admin/sponsorships'
     | '/admin/supporters'
     | '/admin/volunteers'
     | '/adoption/apply'
@@ -2208,6 +2628,7 @@ export interface FileRouteTypes {
     | '/sponsors_/pledge'
     | '/stories/$slug'
     | '/volunteer/group'
+    | '/volunteer/operations'
     | '/about/'
     | '/admin/'
     | '/admin/animals/new'
@@ -2227,7 +2648,16 @@ export interface FileRouteTypes {
     | '/admin/coordinator/statuses'
     | '/admin/coordinator/tasks'
     | '/admin/supporters/$id'
+    | '/admin/volunteers/assessments'
+    | '/admin/volunteers/calendar'
+    | '/admin/volunteers/daily-settings'
     | '/admin/volunteers/group-enquiries'
+    | '/admin/volunteers/operations'
+    | '/admin/volunteers/qualifications'
+    | '/admin/volunteers/settings'
+    | '/admin/volunteers/simulation'
+    | '/admin/volunteers/sources'
+    | '/admin/volunteers/tasks'
     | '/adoption/status/$token'
     | '/animals/cat_/$id'
     | '/animals/dog_/$id'
@@ -2239,6 +2669,7 @@ export interface FileRouteTypes {
     | '/api/admin/documents'
     | '/api/admin/faq'
     | '/api/admin/governance'
+    | '/api/admin/internships'
     | '/api/admin/knowledge'
     | '/api/admin/me'
     | '/api/admin/payment-methods'
@@ -2246,11 +2677,16 @@ export interface FileRouteTypes {
     | '/api/admin/receipts'
     | '/api/admin/supporters'
     | '/api/adoption/applications'
+    | '/api/internships/attachment'
+    | '/api/jobs/sponsorships'
+    | '/api/jobs/volunteers'
     | '/api/sponsorships/pledges'
     | '/api/stories/$slug'
     | '/api/stories/map'
     | '/api/volunteer/activities'
     | '/api/volunteer/group-enquiries'
+    | '/api/volunteer/operations'
+    | '/api/volunteer/policy'
     | '/api/volunteer/registrations'
     | '/api/webhooks/cod'
     | '/api/webhooks/paypal'
@@ -2258,6 +2694,7 @@ export interface FileRouteTypes {
     | '/sponsors_/status/$token'
     | '/volunteer/status/$token'
     | '/admin/applications/'
+    | '/api/internships/'
     | '/admin/animals/$id/edit'
     | '/admin/coordinator/adopters/$id'
     | '/admin/volunteers/registrations/$id'
@@ -2280,11 +2717,16 @@ export interface FileRouteTypes {
     | '/api/admin/exports/supporters.csv'
     | '/api/admin/finance/activity'
     | '/api/admin/payment-methods/$id'
+    | '/api/admin/sponsorships/animals'
+    | '/api/admin/sponsorships/deliveries'
     | '/api/admin/sponsorships/pledges'
     | '/api/admin/supporters/$id'
     | '/api/admin/volunteers/activities'
+    | '/api/admin/volunteers/calendar'
     | '/api/admin/volunteers/group-enquiries'
+    | '/api/admin/volunteers/qualifications'
     | '/api/admin/volunteers/registrations'
+    | '/api/admin/volunteers/tasks'
     | '/api/adoption/applications/photo-upload-urls'
     | '/api/adoption/status/$token'
     | '/api/donations/$donationId/status'
@@ -2337,6 +2779,15 @@ export interface FileRouteTypes {
     | '/api/admin/supporters/$id/consents'
     | '/api/admin/volunteers/activities/$id'
     | '/api/admin/volunteers/registrations/$id'
+    | '/api/admin/animals/draft-photo-upload-url/'
+    | '/api/admin/animals/publication/'
+    | '/api/admin/volunteers/assessments/'
+    | '/api/admin/volunteers/daily-settings/'
+    | '/api/admin/volunteers/jobs/'
+    | '/api/admin/volunteers/operations/'
+    | '/api/admin/volunteers/settings/'
+    | '/api/admin/volunteers/simulation/'
+    | '/api/admin/volunteers/sources/'
     | '/api/admin/access/invites/$id/resend'
     | '/api/admin/adoptions/animals/$id/internal'
     | '/api/admin/adoptions/animals/$id/status'
@@ -2348,10 +2799,12 @@ export interface FileRouteTypes {
     | '/api/admin/donations/delivery/$jobId/retry'
     | '/api/admin/sponsorships/pledges/$id/assignments'
     | '/api/admin/sponsorships/pledges/$id/cancel'
+    | '/api/admin/sponsorships/pledges/$id/finance'
     | '/api/admin/sponsorships/pledges/$id/proof'
     | '/api/admin/sponsorships/pledges/$id/proof-url'
     | '/api/admin/sponsorships/pledges/$id/review'
     | '/api/admin/volunteers/activities/$id/clone'
+    | '/api/admin/volunteers/jobs/$id/retry'
     | '/api/admin/volunteers/registrations/$id/attendance'
     | '/api/admin/volunteers/registrations/$id/status'
     | '/api/admin/adoptions/applications/$applicationId/photos/$photoId'
@@ -2364,6 +2817,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DonateRoute: typeof DonateRoute
   HelpRoute: typeof HelpRoute
+  InternshipsRoute: typeof InternshipsRoute
   KnowledgeRoute: typeof KnowledgeRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -2380,9 +2834,11 @@ export interface RootRouteChildren {
   AdminContentRoute: typeof AdminContentRouteWithChildren
   AdminFaqRoute: typeof AdminFaqRoute
   AdminGovernanceRoute: typeof AdminGovernanceRoute
+  AdminInternshipsRoute: typeof AdminInternshipsRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminPaymentMethodsRoute: typeof AdminPaymentMethodsRoute
   AdminResetPasswordRoute: typeof AdminResetPasswordRoute
+  AdminSponsorshipsRoute: typeof AdminSponsorshipsRoute
   AdminSupportersRoute: typeof AdminSupportersRouteWithChildren
   AdminVolunteersRoute: typeof AdminVolunteersRouteWithChildren
   AdoptionApplyRoute: typeof AdoptionApplyRoute
@@ -2417,6 +2873,7 @@ export interface RootRouteChildren {
   ApiAdminDocumentsRoute: typeof ApiAdminDocumentsRouteWithChildren
   ApiAdminFaqRoute: typeof ApiAdminFaqRoute
   ApiAdminGovernanceRoute: typeof ApiAdminGovernanceRoute
+  ApiAdminInternshipsRoute: typeof ApiAdminInternshipsRoute
   ApiAdminKnowledgeRoute: typeof ApiAdminKnowledgeRoute
   ApiAdminMeRoute: typeof ApiAdminMeRoute
   ApiAdminPaymentMethodsRoute: typeof ApiAdminPaymentMethodsRouteWithChildren
@@ -2424,14 +2881,20 @@ export interface RootRouteChildren {
   ApiAdminReceiptsRoute: typeof ApiAdminReceiptsRouteWithChildren
   ApiAdminSupportersRoute: typeof ApiAdminSupportersRouteWithChildren
   ApiAdoptionApplicationsRoute: typeof ApiAdoptionApplicationsRouteWithChildren
+  ApiInternshipsAttachmentRoute: typeof ApiInternshipsAttachmentRoute
+  ApiJobsSponsorshipsRoute: typeof ApiJobsSponsorshipsRoute
+  ApiJobsVolunteersRoute: typeof ApiJobsVolunteersRoute
   ApiSponsorshipsPledgesRoute: typeof ApiSponsorshipsPledgesRouteWithChildren
   ApiVolunteerActivitiesRoute: typeof ApiVolunteerActivitiesRoute
   ApiVolunteerGroupEnquiriesRoute: typeof ApiVolunteerGroupEnquiriesRoute
+  ApiVolunteerOperationsRoute: typeof ApiVolunteerOperationsRoute
+  ApiVolunteerPolicyRoute: typeof ApiVolunteerPolicyRoute
   ApiVolunteerRegistrationsRoute: typeof ApiVolunteerRegistrationsRoute
   ApiWebhooksCodRoute: typeof ApiWebhooksCodRoute
   ApiWebhooksPaypalRoute: typeof ApiWebhooksPaypalRoute
   ApiWebhooksStripeRoute: typeof ApiWebhooksStripeRoute
   SponsorsStatusTokenRoute: typeof SponsorsStatusTokenRoute
+  ApiInternshipsIndexRoute: typeof ApiInternshipsIndexRoute
   AdminAnimalsIdEditRoute: typeof AdminAnimalsIdEditRoute
   ApiAdminAccessAuditRoute: typeof ApiAdminAccessAuditRoute
   ApiAdminAccessInvitesRoute: typeof ApiAdminAccessInvitesRouteWithChildren
@@ -2446,10 +2909,15 @@ export interface RootRouteChildren {
   ApiAdminExportsPaymentsDotcsvRoute: typeof ApiAdminExportsPaymentsDotcsvRoute
   ApiAdminExportsSupportersDotcsvRoute: typeof ApiAdminExportsSupportersDotcsvRoute
   ApiAdminFinanceActivityRoute: typeof ApiAdminFinanceActivityRoute
+  ApiAdminSponsorshipsAnimalsRoute: typeof ApiAdminSponsorshipsAnimalsRoute
+  ApiAdminSponsorshipsDeliveriesRoute: typeof ApiAdminSponsorshipsDeliveriesRoute
   ApiAdminSponsorshipsPledgesRoute: typeof ApiAdminSponsorshipsPledgesRouteWithChildren
   ApiAdminVolunteersActivitiesRoute: typeof ApiAdminVolunteersActivitiesRouteWithChildren
+  ApiAdminVolunteersCalendarRoute: typeof ApiAdminVolunteersCalendarRoute
   ApiAdminVolunteersGroupEnquiriesRoute: typeof ApiAdminVolunteersGroupEnquiriesRoute
+  ApiAdminVolunteersQualificationsRoute: typeof ApiAdminVolunteersQualificationsRoute
   ApiAdminVolunteersRegistrationsRoute: typeof ApiAdminVolunteersRegistrationsRouteWithChildren
+  ApiAdminVolunteersTasksRoute: typeof ApiAdminVolunteersTasksRoute
   ApiAdoptionStatusTokenRoute: typeof ApiAdoptionStatusTokenRoute
   ApiSponsorshipsStatusTokenRoute: typeof ApiSponsorshipsStatusTokenRoute
   ApiVolunteerStatusTokenRoute: typeof ApiVolunteerStatusTokenRoute
@@ -2464,9 +2932,19 @@ export interface RootRouteChildren {
   ApiAdminAdoptionsIntakeItemsRoute: typeof ApiAdminAdoptionsIntakeItemsRoute
   ApiAdminAdoptionsReportsExportsRoute: typeof ApiAdminAdoptionsReportsExportsRouteWithChildren
   ApiAdminAdoptionsReportsSummaryRoute: typeof ApiAdminAdoptionsReportsSummaryRoute
+  ApiAdminAnimalsDraftPhotoUploadUrlIndexRoute: typeof ApiAdminAnimalsDraftPhotoUploadUrlIndexRoute
+  ApiAdminAnimalsPublicationIndexRoute: typeof ApiAdminAnimalsPublicationIndexRoute
+  ApiAdminVolunteersAssessmentsIndexRoute: typeof ApiAdminVolunteersAssessmentsIndexRoute
+  ApiAdminVolunteersDailySettingsIndexRoute: typeof ApiAdminVolunteersDailySettingsIndexRoute
+  ApiAdminVolunteersJobsIndexRoute: typeof ApiAdminVolunteersJobsIndexRoute
+  ApiAdminVolunteersOperationsIndexRoute: typeof ApiAdminVolunteersOperationsIndexRoute
+  ApiAdminVolunteersSettingsIndexRoute: typeof ApiAdminVolunteersSettingsIndexRoute
+  ApiAdminVolunteersSimulationIndexRoute: typeof ApiAdminVolunteersSimulationIndexRoute
+  ApiAdminVolunteersSourcesIndexRoute: typeof ApiAdminVolunteersSourcesIndexRoute
   ApiAdminAdoptionsAnimalsIdInternalRoute: typeof ApiAdminAdoptionsAnimalsIdInternalRoute
   ApiAdminAdoptionsAnimalsIdStatusRoute: typeof ApiAdminAdoptionsAnimalsIdStatusRoute
   ApiAdminDonationsDeliveryJobIdRetryRoute: typeof ApiAdminDonationsDeliveryJobIdRetryRoute
+  ApiAdminVolunteersJobsIdRetryRoute: typeof ApiAdminVolunteersJobsIdRetryRoute
   ApiAdminAdoptionsApplicationsApplicationIdPhotosPhotoIdRoute: typeof ApiAdminAdoptionsApplicationsApplicationIdPhotosPhotoIdRoute
 }
 
@@ -2514,6 +2992,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KnowledgeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/internships': {
+      id: '/internships'
+      path: '/internships'
+      fullPath: '/internships'
+      preLoaderRoute: typeof InternshipsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/help': {
       id: '/help'
       path: '/help'
@@ -2548,6 +3033,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/about/'
       preLoaderRoute: typeof AboutIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/volunteer/operations': {
+      id: '/volunteer/operations'
+      path: '/operations'
+      fullPath: '/volunteer/operations'
+      preLoaderRoute: typeof VolunteerOperationsRouteImport
+      parentRoute: typeof VolunteerRoute
     }
     '/volunteer/group': {
       id: '/volunteer/group'
@@ -2654,6 +3146,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSupportersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/sponsorships': {
+      id: '/admin/sponsorships'
+      path: '/admin/sponsorships'
+      fullPath: '/admin/sponsorships'
+      preLoaderRoute: typeof AdminSponsorshipsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/reset-password': {
       id: '/admin/reset-password'
       path: '/admin/reset-password'
@@ -2673,6 +3172,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/login'
       fullPath: '/admin/login'
       preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/internships': {
+      id: '/admin/internships'
+      path: '/admin/internships'
+      fullPath: '/admin/internships'
+      preLoaderRoute: typeof AdminInternshipsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/governance': {
@@ -2745,6 +3251,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutCccpRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/internships/': {
+      id: '/api/internships/'
+      path: '/api/internships'
+      fullPath: '/api/internships/'
+      preLoaderRoute: typeof ApiInternshipsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/applications/': {
       id: '/admin/applications/'
       path: '/'
@@ -2794,6 +3307,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiVolunteerRegistrationsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/volunteer/policy': {
+      id: '/api/volunteer/policy'
+      path: '/api/volunteer/policy'
+      fullPath: '/api/volunteer/policy'
+      preLoaderRoute: typeof ApiVolunteerPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/volunteer/operations': {
+      id: '/api/volunteer/operations'
+      path: '/api/volunteer/operations'
+      fullPath: '/api/volunteer/operations'
+      preLoaderRoute: typeof ApiVolunteerOperationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/volunteer/group-enquiries': {
       id: '/api/volunteer/group-enquiries'
       path: '/api/volunteer/group-enquiries'
@@ -2827,6 +3354,27 @@ declare module '@tanstack/react-router' {
       path: '/api/sponsorships/pledges'
       fullPath: '/api/sponsorships/pledges'
       preLoaderRoute: typeof ApiSponsorshipsPledgesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/jobs/volunteers': {
+      id: '/api/jobs/volunteers'
+      path: '/api/jobs/volunteers'
+      fullPath: '/api/jobs/volunteers'
+      preLoaderRoute: typeof ApiJobsVolunteersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/jobs/sponsorships': {
+      id: '/api/jobs/sponsorships'
+      path: '/api/jobs/sponsorships'
+      fullPath: '/api/jobs/sponsorships'
+      preLoaderRoute: typeof ApiJobsSponsorshipsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/internships/attachment': {
+      id: '/api/internships/attachment'
+      path: '/api/internships/attachment'
+      fullPath: '/api/internships/attachment'
+      preLoaderRoute: typeof ApiInternshipsAttachmentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/adoption/applications': {
@@ -2876,6 +3424,13 @@ declare module '@tanstack/react-router' {
       path: '/api/admin/knowledge'
       fullPath: '/api/admin/knowledge'
       preLoaderRoute: typeof ApiAdminKnowledgeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/internships': {
+      id: '/api/admin/internships'
+      path: '/api/admin/internships'
+      fullPath: '/api/admin/internships'
+      preLoaderRoute: typeof ApiAdminInternshipsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/governance': {
@@ -2955,11 +3510,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdoptionStatusTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/volunteers/tasks': {
+      id: '/admin/volunteers/tasks'
+      path: '/tasks'
+      fullPath: '/admin/volunteers/tasks'
+      preLoaderRoute: typeof AdminVolunteersTasksRouteImport
+      parentRoute: typeof AdminVolunteersRoute
+    }
+    '/admin/volunteers/sources': {
+      id: '/admin/volunteers/sources'
+      path: '/sources'
+      fullPath: '/admin/volunteers/sources'
+      preLoaderRoute: typeof AdminVolunteersSourcesRouteImport
+      parentRoute: typeof AdminVolunteersRoute
+    }
+    '/admin/volunteers/simulation': {
+      id: '/admin/volunteers/simulation'
+      path: '/simulation'
+      fullPath: '/admin/volunteers/simulation'
+      preLoaderRoute: typeof AdminVolunteersSimulationRouteImport
+      parentRoute: typeof AdminVolunteersRoute
+    }
+    '/admin/volunteers/settings': {
+      id: '/admin/volunteers/settings'
+      path: '/settings'
+      fullPath: '/admin/volunteers/settings'
+      preLoaderRoute: typeof AdminVolunteersSettingsRouteImport
+      parentRoute: typeof AdminVolunteersRoute
+    }
+    '/admin/volunteers/qualifications': {
+      id: '/admin/volunteers/qualifications'
+      path: '/qualifications'
+      fullPath: '/admin/volunteers/qualifications'
+      preLoaderRoute: typeof AdminVolunteersQualificationsRouteImport
+      parentRoute: typeof AdminVolunteersRoute
+    }
+    '/admin/volunteers/operations': {
+      id: '/admin/volunteers/operations'
+      path: '/operations'
+      fullPath: '/admin/volunteers/operations'
+      preLoaderRoute: typeof AdminVolunteersOperationsRouteImport
+      parentRoute: typeof AdminVolunteersRoute
+    }
     '/admin/volunteers/group-enquiries': {
       id: '/admin/volunteers/group-enquiries'
       path: '/group-enquiries'
       fullPath: '/admin/volunteers/group-enquiries'
       preLoaderRoute: typeof AdminVolunteersGroupEnquiriesRouteImport
+      parentRoute: typeof AdminVolunteersRoute
+    }
+    '/admin/volunteers/daily-settings': {
+      id: '/admin/volunteers/daily-settings'
+      path: '/daily-settings'
+      fullPath: '/admin/volunteers/daily-settings'
+      preLoaderRoute: typeof AdminVolunteersDailySettingsRouteImport
+      parentRoute: typeof AdminVolunteersRoute
+    }
+    '/admin/volunteers/calendar': {
+      id: '/admin/volunteers/calendar'
+      path: '/calendar'
+      fullPath: '/admin/volunteers/calendar'
+      preLoaderRoute: typeof AdminVolunteersCalendarRouteImport
+      parentRoute: typeof AdminVolunteersRoute
+    }
+    '/admin/volunteers/assessments': {
+      id: '/admin/volunteers/assessments'
+      path: '/assessments'
+      fullPath: '/admin/volunteers/assessments'
+      preLoaderRoute: typeof AdminVolunteersAssessmentsRouteImport
       parentRoute: typeof AdminVolunteersRoute
     }
     '/admin/supporters/$id': {
@@ -3123,6 +3741,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdoptionApplicationsPhotoUploadUrlsRouteImport
       parentRoute: typeof ApiAdoptionApplicationsRoute
     }
+    '/api/admin/volunteers/tasks': {
+      id: '/api/admin/volunteers/tasks'
+      path: '/api/admin/volunteers/tasks'
+      fullPath: '/api/admin/volunteers/tasks'
+      preLoaderRoute: typeof ApiAdminVolunteersTasksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/volunteers/registrations': {
       id: '/api/admin/volunteers/registrations'
       path: '/api/admin/volunteers/registrations'
@@ -3130,11 +3755,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminVolunteersRegistrationsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/volunteers/qualifications': {
+      id: '/api/admin/volunteers/qualifications'
+      path: '/api/admin/volunteers/qualifications'
+      fullPath: '/api/admin/volunteers/qualifications'
+      preLoaderRoute: typeof ApiAdminVolunteersQualificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/volunteers/group-enquiries': {
       id: '/api/admin/volunteers/group-enquiries'
       path: '/api/admin/volunteers/group-enquiries'
       fullPath: '/api/admin/volunteers/group-enquiries'
       preLoaderRoute: typeof ApiAdminVolunteersGroupEnquiriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/volunteers/calendar': {
+      id: '/api/admin/volunteers/calendar'
+      path: '/api/admin/volunteers/calendar'
+      fullPath: '/api/admin/volunteers/calendar'
+      preLoaderRoute: typeof ApiAdminVolunteersCalendarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/volunteers/activities': {
@@ -3156,6 +3795,20 @@ declare module '@tanstack/react-router' {
       path: '/api/admin/sponsorships/pledges'
       fullPath: '/api/admin/sponsorships/pledges'
       preLoaderRoute: typeof ApiAdminSponsorshipsPledgesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/sponsorships/deliveries': {
+      id: '/api/admin/sponsorships/deliveries'
+      path: '/api/admin/sponsorships/deliveries'
+      fullPath: '/api/admin/sponsorships/deliveries'
+      preLoaderRoute: typeof ApiAdminSponsorshipsDeliveriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/sponsorships/animals': {
+      id: '/api/admin/sponsorships/animals'
+      path: '/api/admin/sponsorships/animals'
+      fullPath: '/api/admin/sponsorships/animals'
+      preLoaderRoute: typeof ApiAdminSponsorshipsAnimalsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/payment-methods/$id': {
@@ -3310,6 +3963,69 @@ declare module '@tanstack/react-router' {
       path: '/admin/animals/$id/edit'
       fullPath: '/admin/animals/$id/edit'
       preLoaderRoute: typeof AdminAnimalsIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/volunteers/sources/': {
+      id: '/api/admin/volunteers/sources/'
+      path: '/api/admin/volunteers/sources'
+      fullPath: '/api/admin/volunteers/sources/'
+      preLoaderRoute: typeof ApiAdminVolunteersSourcesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/volunteers/simulation/': {
+      id: '/api/admin/volunteers/simulation/'
+      path: '/api/admin/volunteers/simulation'
+      fullPath: '/api/admin/volunteers/simulation/'
+      preLoaderRoute: typeof ApiAdminVolunteersSimulationIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/volunteers/settings/': {
+      id: '/api/admin/volunteers/settings/'
+      path: '/api/admin/volunteers/settings'
+      fullPath: '/api/admin/volunteers/settings/'
+      preLoaderRoute: typeof ApiAdminVolunteersSettingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/volunteers/operations/': {
+      id: '/api/admin/volunteers/operations/'
+      path: '/api/admin/volunteers/operations'
+      fullPath: '/api/admin/volunteers/operations/'
+      preLoaderRoute: typeof ApiAdminVolunteersOperationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/volunteers/jobs/': {
+      id: '/api/admin/volunteers/jobs/'
+      path: '/api/admin/volunteers/jobs'
+      fullPath: '/api/admin/volunteers/jobs/'
+      preLoaderRoute: typeof ApiAdminVolunteersJobsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/volunteers/daily-settings/': {
+      id: '/api/admin/volunteers/daily-settings/'
+      path: '/api/admin/volunteers/daily-settings'
+      fullPath: '/api/admin/volunteers/daily-settings/'
+      preLoaderRoute: typeof ApiAdminVolunteersDailySettingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/volunteers/assessments/': {
+      id: '/api/admin/volunteers/assessments/'
+      path: '/api/admin/volunteers/assessments'
+      fullPath: '/api/admin/volunteers/assessments/'
+      preLoaderRoute: typeof ApiAdminVolunteersAssessmentsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/animals/publication/': {
+      id: '/api/admin/animals/publication/'
+      path: '/api/admin/animals/publication'
+      fullPath: '/api/admin/animals/publication/'
+      preLoaderRoute: typeof ApiAdminAnimalsPublicationIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/animals/draft-photo-upload-url/': {
+      id: '/api/admin/animals/draft-photo-upload-url/'
+      path: '/api/admin/animals/draft-photo-upload-url'
+      fullPath: '/api/admin/animals/draft-photo-upload-url/'
+      preLoaderRoute: typeof ApiAdminAnimalsDraftPhotoUploadUrlIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/volunteers/registrations/$id': {
@@ -3648,6 +4364,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminVolunteersRegistrationsIdAttendanceRouteImport
       parentRoute: typeof ApiAdminVolunteersRegistrationsIdRoute
     }
+    '/api/admin/volunteers/jobs/$id/retry': {
+      id: '/api/admin/volunteers/jobs/$id/retry'
+      path: '/api/admin/volunteers/jobs/$id/retry'
+      fullPath: '/api/admin/volunteers/jobs/$id/retry'
+      preLoaderRoute: typeof ApiAdminVolunteersJobsIdRetryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/volunteers/activities/$id/clone': {
       id: '/api/admin/volunteers/activities/$id/clone'
       path: '/clone'
@@ -3674,6 +4397,13 @@ declare module '@tanstack/react-router' {
       path: '/proof'
       fullPath: '/api/admin/sponsorships/pledges/$id/proof'
       preLoaderRoute: typeof ApiAdminSponsorshipsPledgesIdProofRouteImport
+      parentRoute: typeof ApiAdminSponsorshipsPledgesIdRoute
+    }
+    '/api/admin/sponsorships/pledges/$id/finance': {
+      id: '/api/admin/sponsorships/pledges/$id/finance'
+      path: '/finance'
+      fullPath: '/api/admin/sponsorships/pledges/$id/finance'
+      preLoaderRoute: typeof ApiAdminSponsorshipsPledgesIdFinanceRouteImport
       parentRoute: typeof ApiAdminSponsorshipsPledgesIdRoute
     }
     '/api/admin/sponsorships/pledges/$id/cancel': {
@@ -3797,11 +4527,13 @@ const StoriesRouteWithChildren =
 
 interface VolunteerRouteChildren {
   VolunteerGroupRoute: typeof VolunteerGroupRoute
+  VolunteerOperationsRoute: typeof VolunteerOperationsRoute
   VolunteerStatusTokenRoute: typeof VolunteerStatusTokenRoute
 }
 
 const VolunteerRouteChildren: VolunteerRouteChildren = {
   VolunteerGroupRoute: VolunteerGroupRoute,
+  VolunteerOperationsRoute: VolunteerOperationsRoute,
   VolunteerStatusTokenRoute: VolunteerStatusTokenRoute,
 }
 
@@ -3859,12 +4591,30 @@ const AdminSupportersRouteWithChildren = AdminSupportersRoute._addFileChildren(
 )
 
 interface AdminVolunteersRouteChildren {
+  AdminVolunteersAssessmentsRoute: typeof AdminVolunteersAssessmentsRoute
+  AdminVolunteersCalendarRoute: typeof AdminVolunteersCalendarRoute
+  AdminVolunteersDailySettingsRoute: typeof AdminVolunteersDailySettingsRoute
   AdminVolunteersGroupEnquiriesRoute: typeof AdminVolunteersGroupEnquiriesRoute
+  AdminVolunteersOperationsRoute: typeof AdminVolunteersOperationsRoute
+  AdminVolunteersQualificationsRoute: typeof AdminVolunteersQualificationsRoute
+  AdminVolunteersSettingsRoute: typeof AdminVolunteersSettingsRoute
+  AdminVolunteersSimulationRoute: typeof AdminVolunteersSimulationRoute
+  AdminVolunteersSourcesRoute: typeof AdminVolunteersSourcesRoute
+  AdminVolunteersTasksRoute: typeof AdminVolunteersTasksRoute
   AdminVolunteersRegistrationsIdRoute: typeof AdminVolunteersRegistrationsIdRoute
 }
 
 const AdminVolunteersRouteChildren: AdminVolunteersRouteChildren = {
+  AdminVolunteersAssessmentsRoute: AdminVolunteersAssessmentsRoute,
+  AdminVolunteersCalendarRoute: AdminVolunteersCalendarRoute,
+  AdminVolunteersDailySettingsRoute: AdminVolunteersDailySettingsRoute,
   AdminVolunteersGroupEnquiriesRoute: AdminVolunteersGroupEnquiriesRoute,
+  AdminVolunteersOperationsRoute: AdminVolunteersOperationsRoute,
+  AdminVolunteersQualificationsRoute: AdminVolunteersQualificationsRoute,
+  AdminVolunteersSettingsRoute: AdminVolunteersSettingsRoute,
+  AdminVolunteersSimulationRoute: AdminVolunteersSimulationRoute,
+  AdminVolunteersSourcesRoute: AdminVolunteersSourcesRoute,
+  AdminVolunteersTasksRoute: AdminVolunteersTasksRoute,
   AdminVolunteersRegistrationsIdRoute: AdminVolunteersRegistrationsIdRoute,
 }
 
@@ -4302,6 +5052,7 @@ const ApiAdminSponsorshipsPledgesIdAssignmentsRouteWithChildren =
 interface ApiAdminSponsorshipsPledgesIdRouteChildren {
   ApiAdminSponsorshipsPledgesIdAssignmentsRoute: typeof ApiAdminSponsorshipsPledgesIdAssignmentsRouteWithChildren
   ApiAdminSponsorshipsPledgesIdCancelRoute: typeof ApiAdminSponsorshipsPledgesIdCancelRoute
+  ApiAdminSponsorshipsPledgesIdFinanceRoute: typeof ApiAdminSponsorshipsPledgesIdFinanceRoute
   ApiAdminSponsorshipsPledgesIdProofRoute: typeof ApiAdminSponsorshipsPledgesIdProofRoute
   ApiAdminSponsorshipsPledgesIdProofUrlRoute: typeof ApiAdminSponsorshipsPledgesIdProofUrlRoute
   ApiAdminSponsorshipsPledgesIdReviewRoute: typeof ApiAdminSponsorshipsPledgesIdReviewRoute
@@ -4313,6 +5064,8 @@ const ApiAdminSponsorshipsPledgesIdRouteChildren: ApiAdminSponsorshipsPledgesIdR
       ApiAdminSponsorshipsPledgesIdAssignmentsRouteWithChildren,
     ApiAdminSponsorshipsPledgesIdCancelRoute:
       ApiAdminSponsorshipsPledgesIdCancelRoute,
+    ApiAdminSponsorshipsPledgesIdFinanceRoute:
+      ApiAdminSponsorshipsPledgesIdFinanceRoute,
     ApiAdminSponsorshipsPledgesIdProofRoute:
       ApiAdminSponsorshipsPledgesIdProofRoute,
     ApiAdminSponsorshipsPledgesIdProofUrlRoute:
@@ -4423,6 +5176,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DonateRoute: DonateRoute,
   HelpRoute: HelpRoute,
+  InternshipsRoute: InternshipsRoute,
   KnowledgeRoute: KnowledgeRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
@@ -4439,9 +5193,11 @@ const rootRouteChildren: RootRouteChildren = {
   AdminContentRoute: AdminContentRouteWithChildren,
   AdminFaqRoute: AdminFaqRoute,
   AdminGovernanceRoute: AdminGovernanceRoute,
+  AdminInternshipsRoute: AdminInternshipsRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminPaymentMethodsRoute: AdminPaymentMethodsRoute,
   AdminResetPasswordRoute: AdminResetPasswordRoute,
+  AdminSponsorshipsRoute: AdminSponsorshipsRoute,
   AdminSupportersRoute: AdminSupportersRouteWithChildren,
   AdminVolunteersRoute: AdminVolunteersRouteWithChildren,
   AdoptionApplyRoute: AdoptionApplyRoute,
@@ -4477,6 +5233,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminDocumentsRoute: ApiAdminDocumentsRouteWithChildren,
   ApiAdminFaqRoute: ApiAdminFaqRoute,
   ApiAdminGovernanceRoute: ApiAdminGovernanceRoute,
+  ApiAdminInternshipsRoute: ApiAdminInternshipsRoute,
   ApiAdminKnowledgeRoute: ApiAdminKnowledgeRoute,
   ApiAdminMeRoute: ApiAdminMeRoute,
   ApiAdminPaymentMethodsRoute: ApiAdminPaymentMethodsRouteWithChildren,
@@ -4484,14 +5241,20 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminReceiptsRoute: ApiAdminReceiptsRouteWithChildren,
   ApiAdminSupportersRoute: ApiAdminSupportersRouteWithChildren,
   ApiAdoptionApplicationsRoute: ApiAdoptionApplicationsRouteWithChildren,
+  ApiInternshipsAttachmentRoute: ApiInternshipsAttachmentRoute,
+  ApiJobsSponsorshipsRoute: ApiJobsSponsorshipsRoute,
+  ApiJobsVolunteersRoute: ApiJobsVolunteersRoute,
   ApiSponsorshipsPledgesRoute: ApiSponsorshipsPledgesRouteWithChildren,
   ApiVolunteerActivitiesRoute: ApiVolunteerActivitiesRoute,
   ApiVolunteerGroupEnquiriesRoute: ApiVolunteerGroupEnquiriesRoute,
+  ApiVolunteerOperationsRoute: ApiVolunteerOperationsRoute,
+  ApiVolunteerPolicyRoute: ApiVolunteerPolicyRoute,
   ApiVolunteerRegistrationsRoute: ApiVolunteerRegistrationsRoute,
   ApiWebhooksCodRoute: ApiWebhooksCodRoute,
   ApiWebhooksPaypalRoute: ApiWebhooksPaypalRoute,
   ApiWebhooksStripeRoute: ApiWebhooksStripeRoute,
   SponsorsStatusTokenRoute: SponsorsStatusTokenRoute,
+  ApiInternshipsIndexRoute: ApiInternshipsIndexRoute,
   AdminAnimalsIdEditRoute: AdminAnimalsIdEditRoute,
   ApiAdminAccessAuditRoute: ApiAdminAccessAuditRoute,
   ApiAdminAccessInvitesRoute: ApiAdminAccessInvitesRouteWithChildren,
@@ -4506,13 +5269,18 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminExportsPaymentsDotcsvRoute: ApiAdminExportsPaymentsDotcsvRoute,
   ApiAdminExportsSupportersDotcsvRoute: ApiAdminExportsSupportersDotcsvRoute,
   ApiAdminFinanceActivityRoute: ApiAdminFinanceActivityRoute,
+  ApiAdminSponsorshipsAnimalsRoute: ApiAdminSponsorshipsAnimalsRoute,
+  ApiAdminSponsorshipsDeliveriesRoute: ApiAdminSponsorshipsDeliveriesRoute,
   ApiAdminSponsorshipsPledgesRoute:
     ApiAdminSponsorshipsPledgesRouteWithChildren,
   ApiAdminVolunteersActivitiesRoute:
     ApiAdminVolunteersActivitiesRouteWithChildren,
+  ApiAdminVolunteersCalendarRoute: ApiAdminVolunteersCalendarRoute,
   ApiAdminVolunteersGroupEnquiriesRoute: ApiAdminVolunteersGroupEnquiriesRoute,
+  ApiAdminVolunteersQualificationsRoute: ApiAdminVolunteersQualificationsRoute,
   ApiAdminVolunteersRegistrationsRoute:
     ApiAdminVolunteersRegistrationsRouteWithChildren,
+  ApiAdminVolunteersTasksRoute: ApiAdminVolunteersTasksRoute,
   ApiAdoptionStatusTokenRoute: ApiAdoptionStatusTokenRoute,
   ApiSponsorshipsStatusTokenRoute: ApiSponsorshipsStatusTokenRoute,
   ApiVolunteerStatusTokenRoute: ApiVolunteerStatusTokenRoute,
@@ -4534,11 +5302,26 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminAdoptionsReportsExportsRoute:
     ApiAdminAdoptionsReportsExportsRouteWithChildren,
   ApiAdminAdoptionsReportsSummaryRoute: ApiAdminAdoptionsReportsSummaryRoute,
+  ApiAdminAnimalsDraftPhotoUploadUrlIndexRoute:
+    ApiAdminAnimalsDraftPhotoUploadUrlIndexRoute,
+  ApiAdminAnimalsPublicationIndexRoute: ApiAdminAnimalsPublicationIndexRoute,
+  ApiAdminVolunteersAssessmentsIndexRoute:
+    ApiAdminVolunteersAssessmentsIndexRoute,
+  ApiAdminVolunteersDailySettingsIndexRoute:
+    ApiAdminVolunteersDailySettingsIndexRoute,
+  ApiAdminVolunteersJobsIndexRoute: ApiAdminVolunteersJobsIndexRoute,
+  ApiAdminVolunteersOperationsIndexRoute:
+    ApiAdminVolunteersOperationsIndexRoute,
+  ApiAdminVolunteersSettingsIndexRoute: ApiAdminVolunteersSettingsIndexRoute,
+  ApiAdminVolunteersSimulationIndexRoute:
+    ApiAdminVolunteersSimulationIndexRoute,
+  ApiAdminVolunteersSourcesIndexRoute: ApiAdminVolunteersSourcesIndexRoute,
   ApiAdminAdoptionsAnimalsIdInternalRoute:
     ApiAdminAdoptionsAnimalsIdInternalRoute,
   ApiAdminAdoptionsAnimalsIdStatusRoute: ApiAdminAdoptionsAnimalsIdStatusRoute,
   ApiAdminDonationsDeliveryJobIdRetryRoute:
     ApiAdminDonationsDeliveryJobIdRetryRoute,
+  ApiAdminVolunteersJobsIdRetryRoute: ApiAdminVolunteersJobsIdRetryRoute,
   ApiAdminAdoptionsApplicationsApplicationIdPhotosPhotoIdRoute:
     ApiAdminAdoptionsApplicationsApplicationIdPhotosPhotoIdRoute,
 }

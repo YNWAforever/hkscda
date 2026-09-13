@@ -26,6 +26,19 @@ export interface AnimalPublicProfile {
 export type NeuteredFilter = "all" | "yes" | "no" | "unknown";
 export type SuitabilityFilter = "all" | "newbie" | "experienced" | "unknown";
 
+export interface AnimalGalleryItem {
+  id: string;
+  url: string | null;
+  draft_path: string | null;
+  alt_zh: string;
+  alt_en: string | null;
+  source: string;
+  focal_x: number;
+  focal_y: number;
+  review_status: "pending" | "approved" | "rejected";
+  sort_order: number;
+}
+
 export interface Animal {
   id: string;
   public_profile?: AnimalPublicProfile | null;
@@ -51,6 +64,7 @@ export interface Animal {
    */
   publication_state?: AnimalPublicationState;
   image_url: string | null;
+  gallery?: AnimalGalleryItem[];
   created_at: string;
   updated_at: string;
 }

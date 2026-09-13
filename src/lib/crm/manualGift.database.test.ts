@@ -325,7 +325,7 @@ describe.skipIf(!url)("manual gift real database transaction and leases", () => 
     const id = randomUUID();
     volunteerActivities.push(id);
     const [row] =
-      await database()`insert into public.volunteer_activity(id,type,title,starts_at,location,capacity,status,auto_approve,registration_modes) values(${id}::uuid,'cleaning_day','Local capacity fixture',now()+interval '1 day','Local fixture',${capacity},'published',true,array['individual','group']) returning id,updated_at::text version`;
+      await database()`insert into public.volunteer_activity(id,type,title,starts_at,location,capacity,status,auto_approve,registration_modes) values(${id}::uuid,'cleaning_day','Historical capacity fixture',now()-interval '1 day','Local fixture',${capacity},'published',true,array['individual','group']) returning id,updated_at::text version`;
     return row as { id: string; version: string };
   }
   async function registrationFixture(activityId: string, people = 1) {
@@ -353,7 +353,7 @@ describe.skipIf(!url)("manual gift real database transaction and leases", () => 
     expect((await approveFixture(loser)).kind).toBe("updated");
     expect((await approveFixture(winner)).kind).toBe("conflict");
   });
-  test("real public and staff approvals share the same activity lock", async () => {
+  test("historical public snapshot cannot consume a seat while staff reconciliation respects capacity", async () => {
     const activity = await activityFixture(1),
       staff = await registrationFixture(activity.id);
     await Promise.all([

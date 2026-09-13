@@ -1,0 +1,9 @@
+{
+  "marker": "830733cb-3a7f-44e9-86e1-369fcb600ec6",
+  "checks": [
+    "admin browser saved, previewed and published typed monthly assessment policy",
+    "published notification remained dry-run email only and timezone Asia/Hong_Kong",
+    "staff browser token denied administrator assessment commands"
+  ],
+  "errors": []
+}

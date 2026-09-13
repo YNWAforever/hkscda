@@ -176,3 +176,45 @@ test("a failed counts RPC propagates instead of degrading to zero participants",
     message: "function public.volunteer_activity_counts(uuid[]) does not exist",
   });
 });
+
+test.each([
+  "conflict",
+  "future_attendance",
+  "attendance_correction_required",
+  "invalid_attendance_status",
+])("attendance RPC maps %s to409 without any follow-up write", async (kind) => {
+  const calls: unknown[] = [];
+  const repo = createSupabaseVolunteerRepository({
+    rpc: async (name: string, args: unknown) => {
+      calls.push({ name, args });
+      return { data: { kind }, error: null };
+    },
+    from: () => {
+      throw new Error("No partial write or hydration after rejection");
+    },
+  } as never);
+  try {
+    await repo.updateAttendance({
+      registrationId: "registration-1",
+      actorUserId: "actor",
+      expectedUpdatedAt: "2026-09-13T00:00:00Z",
+      attendanceStatus: "no_show",
+      command: "correct",
+      reason: "Mistaken completion",
+    });
+    throw new Error("Expected rejection");
+  } catch (error) {
+    expect(error).toBeInstanceOf(Response);
+    expect((error as Response).status).toBe(409);
+  }
+  expect(calls[0]).toMatchObject({
+    name: "set_volunteer_attendance_with_audit",
+    args: {
+      p_actor_user_id: "actor",
+      p_expected_updated_at: "2026-09-13T00:00:00Z",
+      p_command: "correct",
+      p_reason: "Mistaken completion",
+      p_update_volunteer_hours: false,
+    },
+  });
+});

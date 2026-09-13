@@ -38,6 +38,7 @@ function supporterRow(overrides: Record<string, unknown> = {}) {
 function proofRow(overrides: Record<string, unknown> = {}) {
   return {
     id: proofId,
+    revision: 1,
     pledge_id: pledgeId,
     storage_path: `${pledgeId}/proof.jpg`,
     file_name: "proof.jpg",
@@ -249,7 +250,7 @@ function createFakeClient(overrides: Partial<FakeState> = {}) {
 }
 
 describe("createSupabaseSponsorshipAdminRepository", () => {
-  test("recordPayment calls record_sponsorship_payment_proof with mapped params", async () => {
+  test("recordPayment calls record_exact_sponsorship_payment_proof with mapped params", async () => {
     const { client, state } = createFakeClient();
     const repo = createSupabaseSponsorshipAdminRepository(client);
 
@@ -260,6 +261,7 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
       fileName: "proof.jpg",
       fileType: "image/jpeg",
       fileSize: 2048,
+      idempotencyKey: "55555555-5555-4555-8555-555555555555",
       paymentMethod: "fps",
       reference: "REF1",
       amountCents: 30000,
@@ -267,19 +269,22 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
       note: "Recorded manually",
     });
 
-    const call = state.calls.find((c) => c.fn === "record_sponsorship_payment_proof");
+    const call = state.calls.find((c) => c.fn === "record_exact_sponsorship_payment_proof");
     expect(call?.payload).toEqual({
-      p_pledge_id: pledgeId,
-      p_actor_user_id: actorUserId,
-      p_storage_path: `${pledgeId}/proof.jpg`,
-      p_file_name: "proof.jpg",
-      p_file_type: "image/jpeg",
-      p_file_size: 2048,
-      p_payment_method: "fps",
-      p_reference: "REF1",
-      p_amount_cents: 30000,
-      p_payment_date: "2026-07-01",
-      p_note: "Recorded manually",
+      p_pledge: pledgeId,
+      p_actor: actorUserId,
+      p_key: "55555555-5555-4555-8555-555555555555",
+      p_payment: {
+        storagePath: `${pledgeId}/proof.jpg`,
+        fileName: "proof.jpg",
+        fileType: "image/jpeg",
+        fileSize: 2048,
+        paymentMethod: "fps",
+        reference: "REF1",
+        amountCents: 30000,
+        paymentDate: "2026-07-01",
+        note: "Recorded manually",
+      },
     });
   });
 
@@ -294,6 +299,7 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
       fileName: null,
       fileType: null,
       fileSize: null,
+      idempotencyKey: "55555555-5555-4555-8555-555555555555",
       paymentMethod: "fps",
       reference: "REF1",
       amountCents: 30000,
@@ -301,19 +307,22 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
       note: "Verified directly in the bank system",
     });
 
-    const call = state.calls.find((c) => c.fn === "record_sponsorship_payment_proof");
+    const call = state.calls.find((c) => c.fn === "record_exact_sponsorship_payment_proof");
     expect(call?.payload).toEqual({
-      p_pledge_id: pledgeId,
-      p_actor_user_id: actorUserId,
-      p_storage_path: null,
-      p_file_name: null,
-      p_file_type: null,
-      p_file_size: null,
-      p_payment_method: "fps",
-      p_reference: "REF1",
-      p_amount_cents: 30000,
-      p_payment_date: "2026-07-01",
-      p_note: "Verified directly in the bank system",
+      p_pledge: pledgeId,
+      p_actor: actorUserId,
+      p_key: "55555555-5555-4555-8555-555555555555",
+      p_payment: {
+        storagePath: null,
+        fileName: null,
+        fileType: null,
+        fileSize: null,
+        paymentMethod: "fps",
+        reference: "REF1",
+        amountCents: 30000,
+        paymentDate: "2026-07-01",
+        note: "Verified directly in the bank system",
+      },
     });
   });
 
@@ -329,6 +338,7 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
         fileName: "x",
         fileType: "image/jpeg",
         fileSize: 1,
+        idempotencyKey: "55555555-5555-4555-8555-555555555555",
         paymentMethod: "fps",
         reference: null,
         amountCents: 1,
@@ -338,19 +348,31 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     ).rejects.toThrow("boom");
   });
 
-  test("reviewProof calls review_sponsorship_payment_proof with mapped params", async () => {
-    const { client, state } = createFakeClient();
+  test("reviewProof calls review_exact_sponsorship_payment_proof with mapped params", async () => {
+    const { client, state } = createFakeClient({
+      rpcResult: { kind: "reviewed", proofId, revision: 2, decision: "approve", allocations: [] },
+    });
     const repo = createSupabaseSponsorshipAdminRepository(client);
 
-    await repo.reviewProof({ pledgeId, decision: "approve", actorUserId, note: "Looks good" });
+    await repo.reviewProof({
+      proofId,
+      expectedRevision: 1,
+      idempotencyKey: actorUserId,
+      pledgeId,
+      decision: "approve",
+      actorUserId,
+      note: "Looks good",
+    });
 
-    const call = state.calls.find((c) => c.fn === "review_sponsorship_payment_proof");
+    const call = state.calls.find((c) => c.fn === "review_exact_sponsorship_payment_proof");
     expect(call?.payload).toEqual({
       p_pledge_id: pledgeId,
       p_decision: "approve",
       p_actor_user_id: actorUserId,
       p_note: "Looks good",
-      p_allocations: [],
+      p_proof_id: proofId,
+      p_expected_revision: 1,
+      p_idempotency_key: actorUserId,
       // The animal to confirm rides along with the decision, so approving,
       // attributing and confirming all commit in one transaction.
       p_assign_animal_id: null,
@@ -829,7 +851,7 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     expect(result.status).toBe("already_allocated");
   });
 
-  test("getProofSigningInfo signs the same proof getPledgeDetail calls current", async () => {
+  test("getProofSigningInfo signs the explicit displayed proof", async () => {
     // The file staff look at and the row their decision updates must be the
     // same one. Signing the newest row instead would show them month three's
     // receipt while approving month two's payment.
@@ -850,7 +872,7 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     const repo = createSupabaseSponsorshipAdminRepository(client);
 
     const detail = await repo.getPledgeDetail(pledgeId);
-    const info = await repo.getProofSigningInfo(pledgeId);
+    const info = await repo.getProofSigningInfo(pledgeId, "proof-month-2", 1);
 
     expect(detail?.currentProof?.id).toBe("proof-month-2");
     expect(info).toEqual({
@@ -863,7 +885,7 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     const { client } = createFakeClient({ proofRows: [proofRow()] });
     const repo = createSupabaseSponsorshipAdminRepository(client);
 
-    const info = await repo.getProofSigningInfo(pledgeId);
+    const info = await repo.getProofSigningInfo(pledgeId, proofId, 1);
     expect(info).toEqual({
       storagePath: `${pledgeId}/proof.jpg`,
       fileName: "proof.jpg",
@@ -874,7 +896,7 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     const { client } = createFakeClient({ proofRows: [] });
     const repo = createSupabaseSponsorshipAdminRepository(client);
 
-    expect(await repo.getProofSigningInfo(pledgeId)).toBeNull();
+    expect(await repo.getProofSigningInfo(pledgeId, proofId, 1)).toBeNull();
   });
 
   test("getProofSigningInfo returns null when the current proof has no attached file", async () => {
@@ -885,7 +907,7 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     });
     const repo = createSupabaseSponsorshipAdminRepository(client);
 
-    expect(await repo.getProofSigningInfo(pledgeId)).toBeNull();
+    expect(await repo.getProofSigningInfo(pledgeId, proofId, 1)).toBeNull();
   });
 
   test("getPledgeDetail lists open assignments before ended ones", async () => {

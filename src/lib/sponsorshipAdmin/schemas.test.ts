@@ -69,6 +69,7 @@ describe("pledgeListSearchSchema", () => {
 describe("recordPledgePaymentSchema", () => {
   function base(overrides: Record<string, unknown> = {}) {
     return {
+      idempotencyKey: "55555555-5555-4555-8555-555555555555",
       paymentMethod: "fps",
       reference: "REF1",
       amountCents: 30000,
@@ -103,7 +104,11 @@ describe("recordPledgePaymentSchema", () => {
   });
 
   test("rejects an invalid payment method", () => {
-    expect(() => recordPledgePaymentSchema.parse(base({ paymentMethod: "cash" }))).toThrow();
+    expect(() =>
+      recordPledgePaymentSchema.parse(
+        base({ idempotencyKey: "55555555-5555-4555-8555-555555555555", paymentMethod: "cash" }),
+      ),
+    ).toThrow();
   });
 
   test("rejects a malformed payment date", () => {
@@ -210,18 +215,36 @@ describe("recordPledgePaymentSchema", () => {
 
 describe("reviewPledgeProofSchema", () => {
   test("accepts approve with no note", () => {
-    const result = reviewPledgeProofSchema.parse({ decision: "approve" });
+    const result = reviewPledgeProofSchema.parse({
+      proofId: "33333333-3333-4333-8333-333333333333",
+      expectedRevision: 1,
+      idempotencyKey: "55555555-5555-4555-8555-555555555555",
+      decision: "approve",
+    });
     expect(result.decision).toBe("approve");
     expect(result.note).toBeNull();
   });
 
   test("accepts reject with a note", () => {
-    const result = reviewPledgeProofSchema.parse({ decision: "reject", note: "Blurry receipt" });
+    const result = reviewPledgeProofSchema.parse({
+      proofId: "33333333-3333-4333-8333-333333333333",
+      expectedRevision: 1,
+      idempotencyKey: "55555555-5555-4555-8555-555555555555",
+      decision: "reject",
+      note: "Blurry receipt",
+    });
     expect(result.note).toBe("Blurry receipt");
   });
 
   test("rejects an invalid decision", () => {
-    expect(() => reviewPledgeProofSchema.parse({ decision: "maybe" })).toThrow();
+    expect(() =>
+      reviewPledgeProofSchema.parse({
+        proofId: "33333333-3333-4333-8333-333333333333",
+        expectedRevision: 1,
+        idempotencyKey: "55555555-5555-4555-8555-555555555555",
+        decision: "maybe",
+      }),
+    ).toThrow();
   });
 });
 

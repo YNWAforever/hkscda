@@ -1,5 +1,8 @@
+import { AnimalPicker } from "./AnimalPicker";
+import { adminIdentityQueryOptions } from "../../../lib/admin/identity";
+import { FinancePanel } from "./FinancePanel";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { fetchCoordinatorJson } from "../adoptions/api";
 import { useAdminPageCopy } from "../adminPageCopy";
@@ -88,7 +91,7 @@ function ProofPreview({ pledgeId, proof }: { pledgeId: string; proof: PaymentPro
   } = useMutation<ProofUrlResponse, Error, void>({
     mutationFn: () =>
       fetchCoordinatorJson<ProofUrlResponse>(
-        `/api/admin/sponsorships/pledges/${encodeURIComponent(pledgeId)}/proof-url`,
+        `/api/admin/sponsorships/pledges/${encodeURIComponent(pledgeId)}/proof-url?proofId=${encodeURIComponent(proof.id)}&expectedRevision=${proof.revision}`,
       ),
   });
 
@@ -160,6 +163,11 @@ export function PledgeDetailDrawer({
   const queryClient = useQueryClient();
   const [submitting, setSubmitting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
+  const identity = useQuery(adminIdentityQueryOptions());
+  const canMatch = identity.data?.admin.role === "staff" || identity.data?.admin.role === "admin";
+  const canFinance =
+    identity.data?.admin.role === "treasurer" || identity.data?.admin.role === "admin";
+  const reviewRetry = useRef<{ fingerprint: string; key: string } | null>(null);
   const [reviewNote, setReviewNote] = useState("");
   const [assignAnimalId, setAssignAnimalId] = useState("");
   const [endReasonByAssignment, setEndReasonByAssignment] = useState<
@@ -190,12 +198,22 @@ export function PledgeDetailDrawer({
   }
 
   async function submitReview(decision: "approve" | "reject") {
+    if (!pledge?.currentProof) return;
+    const command = {
+      decision,
+      note: reviewNote || undefined,
+      proofId: pledge.currentProof.id,
+      expectedRevision: pledge.currentProof.revision,
+    };
+    const fingerprint = JSON.stringify(command);
+    if (reviewRetry.current?.fingerprint !== fingerprint)
+      reviewRetry.current = { fingerprint, key: crypto.randomUUID() };
     setSubmitting(true);
     setActionError(null);
     try {
       await fetchCoordinatorJson(`/api/admin/sponsorships/pledges/${pledgeId}/review`, {
         method: "POST",
-        body: JSON.stringify({ decision, note: reviewNote || undefined }),
+        body: JSON.stringify({ ...command, idempotencyKey: reviewRetry.current.key }),
       });
       setReviewNote("");
       await refreshAll();
@@ -273,15 +291,27 @@ export function PledgeDetailDrawer({
     setProofFile(validationError ? null : file);
   }
 
+  const paymentRetry = useRef<{ fingerprint: string; key: string } | null>(null);
   async function submitPayment() {
     setSubmitting(true);
     setActionError(null);
     try {
       const amountCents = Math.round(Number(amountHkd) * 100);
+      const fingerprint = JSON.stringify({
+        paymentMethod,
+        reference,
+        amountCents,
+        paymentDate,
+        paymentNote,
+        file: proofFile ? [proofFile.name, proofFile.size, proofFile.lastModified] : null,
+      });
+      if (paymentRetry.current?.fingerprint !== fingerprint)
+        paymentRetry.current = { fingerprint, key: crypto.randomUUID() };
       const formData = new FormData();
       formData.set(
         "payload",
         JSON.stringify({
+          idempotencyKey: paymentRetry.current.key,
           paymentMethod,
           reference: reference || undefined,
           amountCents,
@@ -378,7 +408,7 @@ export function PledgeDetailDrawer({
               </p>
             )}
 
-            {canRecordPayment(pledge.status) && (
+            {canMatch && canRecordPayment(pledge.status) && (
               <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
                 <h3 className="text-sm font-semibold text-[var(--color-panel)]">
                   {copy.recordPayment.title}
@@ -448,7 +478,7 @@ export function PledgeDetailDrawer({
               </section>
             )}
 
-            {canReviewProof(pledge.proofHistory) && (
+            {canFinance && canReviewProof(pledge.proofHistory) && (
               <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
                 <h3 className="text-sm font-semibold text-[var(--color-panel)]">
                   {copy.reviewProof.title}
@@ -460,7 +490,11 @@ export function PledgeDetailDrawer({
                       {formatFallback(pledge.currentProof.reference)} ·{" "}
                       {paymentAmountLabel(pledge.currentProof.amountCents)}
                     </p>
-                    <ProofPreview pledgeId={pledgeId} proof={pledge.currentProof} />
+                    <ProofPreview
+                      key={`${pledge.currentProof.id}:${pledge.currentProof.revision}`}
+                      pledgeId={pledgeId}
+                      proof={pledge.currentProof}
+                    />
                   </>
                 )}
                 <Label htmlFor="pledge-review-note">{copy.reviewProof.noteLabel}</Label>
@@ -489,7 +523,7 @@ export function PledgeDetailDrawer({
               </section>
             )}
 
-            {canCancelPledge(pledge.status) && (
+            {canMatch && canCancelPledge(pledge.status) && (
               <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
                 <Label htmlFor="pledge-cancel-note">{copy.cancel.noteLabel}</Label>
                 <Input
@@ -543,7 +577,7 @@ export function PledgeDetailDrawer({
                         </>
                       )}
                     </p>
-                    {!assignment.endedOn && (
+                    {canMatch && !assignment.endedOn && (
                       <div className="flex items-center gap-2">
                         <Select
                           value={endReasonByAssignment[assignment.id] ?? "adopted"}
@@ -603,12 +637,14 @@ export function PledgeDetailDrawer({
                 <Button
                   type="button"
                   onClick={submitAssign}
-                  disabled={submitting || !assignAnimalId}
+                  disabled={!canMatch || submitting || !assignAnimalId}
                 >
                   {copy.assignments.add}
                 </Button>
               </div>
             </section>
+
+            <FinancePanel pledge={pledge} onChanged={refreshAll} />
 
             {pledge.periods.length > 0 && (
               <section className="space-y-2">
@@ -630,9 +666,11 @@ export function PledgeDetailDrawer({
                           </StatusPill>
                         </div>
                         <p className="text-[var(--color-text-muted)]">
-                          應付 {paymentAmountLabel(period.committedCents)} · 已付{" "}
+                          每月意向 {paymentAmountLabel(period.committedCents)} · 已分配{" "}
                           {paymentAmountLabel(period.allocatedCents)}
-                          {!settled && <> · 尚欠 {paymentAmountLabel(period.outstandingCents)}</>}
+                          {!settled && (
+                            <> · 待跟進 {paymentAmountLabel(period.outstandingCents)}（非債務）</>
+                          )}
                         </p>
                       </li>
                     );
@@ -676,6 +714,11 @@ export function PledgeDetailDrawer({
                             {copy.proofHistory.file(proof.fileName)}
                           </p>
                         )}
+                        <ProofPreview
+                          key={`${proof.id}:${proof.revision}`}
+                          pledgeId={pledgeId}
+                          proof={proof}
+                        />
                         {proof.reviewNote && (
                           <p className="text-xs text-[var(--color-panel)]">
                             {copy.proofHistory.note(proof.reviewNote)}

@@ -1,0 +1,11 @@
+{
+  "marker": "intern-29157480-7319-4b60-a700-3af9dc2d7510",
+  "checks": [
+    "Actual admin browser saved, previewed and published intake",
+    "Verified student submitted and uploaded private evidence through actual UI",
+    "Other applicant, anonymous storage and treasurer access denied",
+    "Staff approval required student evidence and preserved review history",
+    "Applicant sees approved result; 390/768/1440 no document overflow"
+  ],
+  "errors": []
+}

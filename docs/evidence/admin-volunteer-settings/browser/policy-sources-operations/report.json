@@ -1,0 +1,87 @@
+{
+  "marker": "journey-f2db1b27-952d-430d-9098-48603876a21b",
+  "checks": [
+    "Staff and treasurer denied source/simulation APIs",
+    "Actual admin browser created named site and credential, previewed and published common source",
+    "Actual template browser restored inherited capacity, saved, previewed and published resolved snapshot",
+    "Verified owner browser submitted enquiry request; staff previewed B→A capacity and confirmed group15",
+    "Staff browser rescheduled same canonical registration with original booking policy fact retained",
+    "Admin browser ran explicit profile/session/time simulation and rendered reasons",
+    "Verified owner page exposes own requests/bookings without staff confirmation controls"
+  ],
+  "errors": [],
+  "screens": [
+    {
+      "label": "sources",
+      "width": 390
+    },
+    {
+      "label": "sources",
+      "width": 768
+    },
+    {
+      "label": "sources",
+      "width": 1440
+    },
+    {
+      "label": "inherited-template",
+      "width": 390
+    },
+    {
+      "label": "inherited-template",
+      "width": 768
+    },
+    {
+      "label": "inherited-template",
+      "width": 1440
+    },
+    {
+      "label": "group-confirmed",
+      "width": 390
+    },
+    {
+      "label": "group-confirmed",
+      "width": 768
+    },
+    {
+      "label": "group-confirmed",
+      "width": 1440
+    },
+    {
+      "label": "rescheduled",
+      "width": 390
+    },
+    {
+      "label": "rescheduled",
+      "width": 768
+    },
+    {
+      "label": "rescheduled",
+      "width": 1440
+    },
+    {
+      "label": "simulation",
+      "width": 390
+    },
+    {
+      "label": "simulation",
+      "width": 768
+    },
+    {
+      "label": "simulation",
+      "width": 1440
+    },
+    {
+      "label": "owner-operations",
+      "width": 390
+    },
+    {
+      "label": "owner-operations",
+      "width": 768
+    },
+    {
+      "label": "owner-operations",
+      "width": 1440
+    }
+  ]
+}

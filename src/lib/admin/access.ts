@@ -22,9 +22,13 @@ export type AdminAccessArea =
   | "coordinatorStatuses"
   | "payments"
   | "supporters"
+  | "internshipManagement"
   | "volunteerManagement"
+  | "volunteerPolicyManagement"
   | "contentManagement"
   | "governanceManagement"
+  | "sponsorshipRead"
+  | "sponsorshipFinance"
   | "sponsorshipReview"
   | "faqManagement"
   | "accessManagement";
@@ -46,12 +50,14 @@ const ROLE_ACCESS: Record<AdminRole, ReadonlySet<AdminAccessArea>> = {
     "adopters",
     "coordinatorReports",
     "volunteerManagement",
+    "internshipManagement",
     "payments",
     "contentManagement",
+    "sponsorshipRead",
     "sponsorshipReview",
     "faqManagement",
   ]),
-  treasurer: new Set(["payments", "supporters"]),
+  treasurer: new Set(["payments", "supporters", "sponsorshipRead", "sponsorshipFinance"]),
   admin: new Set([
     "animals",
     "adoptionCases",
@@ -60,11 +66,15 @@ const ROLE_ACCESS: Record<AdminRole, ReadonlySet<AdminAccessArea>> = {
     "adopters",
     "coordinatorReports",
     "coordinatorStatuses",
+    "volunteerPolicyManagement",
     "volunteerManagement",
+    "internshipManagement",
     "payments",
     "supporters",
     "contentManagement",
     "governanceManagement",
+    "sponsorshipRead",
+    "sponsorshipFinance",
     "sponsorshipReview",
     "faqManagement",
     "accessManagement",
@@ -75,6 +85,7 @@ const NAV_ITEM_AREAS: Record<string, AdminAccessArea> = {
   cat: "animals",
   dog: "animals",
   sponsor: "animals",
+  "sponsorship-pledges": "sponsorshipRead",
   applications: "adoptionCases",
   "coordinator-inbox": "manualIntake",
   "coordinator-intake": "manualIntake",
@@ -82,7 +93,9 @@ const NAV_ITEM_AREAS: Record<string, AdminAccessArea> = {
   "coordinator-adopters": "adopters",
   "coordinator-reports": "coordinatorReports",
   "coordinator-statuses": "coordinatorStatuses",
+  internships: "internshipManagement",
   volunteers: "volunteerManagement",
+  "volunteer-settings": "volunteerPolicyManagement",
   "volunteer-group-enquiries": "volunteerManagement",
   payments: "payments",
   "payment-methods": "payments",
@@ -117,6 +130,7 @@ export function getAdminAreaForLocation(input: {
   if (input.pathname === "/admin") {
     return input.section === "payments" ? "payments" : "animals";
   }
+  if (input.pathname.startsWith("/admin/sponsorships")) return "sponsorshipRead";
   if (input.pathname.startsWith("/admin/animals")) return "animals";
   if (input.pathname.startsWith("/admin/applications")) return "adoptionCases";
   if (input.pathname.startsWith("/admin/coordinator/inbox")) return "manualIntake";
@@ -125,6 +139,20 @@ export function getAdminAreaForLocation(input: {
   if (input.pathname.startsWith("/admin/coordinator/adopters")) return "adopters";
   if (input.pathname.startsWith("/admin/coordinator/reports")) return "coordinatorReports";
   if (input.pathname.startsWith("/admin/coordinator/statuses")) return "coordinatorStatuses";
+  if (
+    input.pathname === "/admin/volunteers/settings" ||
+    input.pathname.startsWith("/admin/volunteers/settings/") ||
+    input.pathname === "/admin/volunteers/sources" ||
+    input.pathname.startsWith("/admin/volunteers/sources/") ||
+    input.pathname === "/admin/volunteers/simulation" ||
+    input.pathname.startsWith("/admin/volunteers/simulation/") ||
+    input.pathname === "/admin/volunteers/daily-settings" ||
+    input.pathname.startsWith("/admin/volunteers/daily-settings/") ||
+    input.pathname === "/admin/volunteers/assessments" ||
+    input.pathname.startsWith("/admin/volunteers/assessments/")
+  )
+    return "volunteerPolicyManagement";
+  if (input.pathname.startsWith("/admin/internships")) return "internshipManagement";
   if (input.pathname.startsWith("/admin/volunteers")) return "volunteerManagement";
   if (input.pathname.startsWith("/admin/supporters")) return "supporters";
   if (input.pathname.startsWith("/admin/content")) return "contentManagement";

@@ -11,6 +11,8 @@ type HandlerContext = {
 };
 
 type CreateSponsorshipAdminHandlersArgs = {
+  requireReader: (request: Request) => Promise<AdminUser>;
+  requireFinance: (request: Request) => Promise<AdminUser>;
   requireCoordinator: (request: Request) => Promise<AdminUser>;
   service: SponsorshipAdminService;
 };
@@ -123,13 +125,15 @@ export async function withErrors(
 }
 
 export function createSponsorshipAdminHandlers({
+  requireReader,
+  requireFinance,
   requireCoordinator,
   service,
 }: CreateSponsorshipAdminHandlersArgs) {
   return {
     listPledges({ request }: HandlerContext) {
       return withErrors(async () => {
-        await requireCoordinator(request);
+        await requireReader(request);
         const search = Object.fromEntries(new URL(request.url).searchParams);
         return jsonResponse(await service.listPledges(search));
       });
@@ -138,7 +142,7 @@ export function createSponsorshipAdminHandlers({
     getPledge({ request, params }: HandlerContext) {
       return withErrors(async () => {
         const pledgeId = requiredUuid(params, "id");
-        await requireCoordinator(request);
+        await requireReader(request);
         const pledge = await service.getPledgeDetail(pledgeId);
         if (!pledge) {
           return jsonResponse({ error: "Sponsorship pledge not found" }, { status: 404 });
@@ -150,8 +154,15 @@ export function createSponsorshipAdminHandlers({
     getProofUrl({ request, params }: HandlerContext) {
       return withErrors(async () => {
         const pledgeId = requiredUuid(params, "id");
-        await requireCoordinator(request);
-        const url = await service.getProofSigningInfo(pledgeId);
+        await requireReader(request);
+        const search = new URL(request.url).searchParams;
+        const proofId = z.string().uuid().parse(search.get("proofId"));
+        const expectedRevision = z.coerce
+          .number()
+          .int()
+          .positive()
+          .parse(search.get("expectedRevision"));
+        const url = await service.getProofSigningInfo(pledgeId, proofId, expectedRevision);
         if (!url) {
           return jsonResponse({ error: "Payment proof not found" }, { status: 404 });
         }
@@ -162,13 +173,14 @@ export function createSponsorshipAdminHandlers({
     reviewProof({ request, params }: HandlerContext) {
       return withErrors(async () => {
         const pledgeId = requiredUuid(params, "id");
-        const admin = await requireCoordinator(request);
-        await service.reviewProof({
+        const admin = await requireFinance(request);
+        const result = await service.reviewProof({
           actorUserId: admin.authUserId,
+          actorRole: admin.role,
           pledgeId,
           input: await jsonBody(request),
         });
-        return jsonResponse({ ok: true });
+        return jsonResponse(result);
       });
     },
 

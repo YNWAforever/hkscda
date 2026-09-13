@@ -48,6 +48,7 @@ type DonationRow = {
   id: string;
   supporter_id: string;
   amount_cents: number;
+  refunded_cents?: number;
   currency: "HKD";
   purpose: "general" | "medical" | "sponsor";
   custom_purpose: string | null;
@@ -63,6 +64,7 @@ type PaymentRow = {
   provider: "stripe" | "paypal" | "fps" | "payme" | "manual";
   provider_ref: string | null;
   amount_cents: number;
+  refunded_cents?: number;
   status: "pending" | "succeeded" | "failed" | "refunded";
   received_at: string | null;
   bank_reference: string | null;
@@ -115,6 +117,7 @@ function mapDonation(row: DonationRow): DonationHistoryRow {
   return {
     id: row.id,
     amountCents: row.amount_cents,
+    refundedCents: row.status === "refunded" ? row.amount_cents : (row.refunded_cents ?? 0),
     currency: row.currency,
     purpose: row.purpose,
     customPurpose: row.custom_purpose,
@@ -133,6 +136,7 @@ function mapPayment(row: PaymentRow): PaymentHistoryRow {
     provider: row.provider,
     providerRef: row.provider_ref,
     amountCents: row.amount_cents,
+    refundedCents: row.status === "refunded" ? row.amount_cents : (row.refunded_cents ?? 0),
     status: row.status,
     receivedAt: row.received_at,
     bankReference: row.bank_reference,
@@ -252,7 +256,7 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
             ? client
                 .from("payment")
                 .select(
-                  "id,donation_id,provider,provider_ref,amount_cents,status,received_at,bank_reference,created_at",
+                  "id,donation_id,provider,provider_ref,amount_cents,refunded_cents,status,received_at,bank_reference,created_at",
                 )
                 .in("donation_id", donationIds)
                 .order("created_at", { ascending: false })

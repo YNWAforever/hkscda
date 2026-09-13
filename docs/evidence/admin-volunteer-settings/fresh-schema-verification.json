@@ -1,0 +1,899 @@
+{
+  "checked_at": "2026-09-13T10:06:36.477Z",
+  "target": "127.0.0.1:56322/postgres",
+  "read_only": true,
+  "ledger": {
+    "count": 99,
+    "first": "20260611162942",
+    "last": "20260913092132"
+  },
+  "functions": [
+    {
+      "name": "allocate_exact_sponsorship_payment",
+      "signature": "allocate_exact_sponsorship_payment(uuid,uuid,bigint,uuid,date,integer,text)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "2799c03faf8e01e71ffe7e47be1d57a2"
+    },
+    {
+      "name": "allocate_sponsorship_payment_with_audit",
+      "signature": "allocate_sponsorship_payment_with_audit(uuid,uuid,jsonb)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "8d28b6d9146e12918c4cb0f41f613fca"
+    },
+    {
+      "name": "animal_publication_command",
+      "signature": "animal_publication_command(uuid,jsonb)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "3695b84b6119914ab477794d7a6e18fd"
+    },
+    {
+      "name": "assign_sponsorship_animal_with_audit",
+      "signature": "assign_sponsorship_animal_with_audit(uuid,uuid,uuid,text)",
+      "result": "uuid",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "5ed4b4434bba934349b9f83e07b0c357"
+    },
+    {
+      "name": "cancel_sponsorship_pledge",
+      "signature": "cancel_sponsorship_pledge(uuid,uuid,text)",
+      "result": "void",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "7841659759d232c8b5c3f86a3f7f70dd"
+    },
+    {
+      "name": "change_adoption_case_status",
+      "signature": "change_adoption_case_status(uuid,uuid,uuid,text,timestamp with time zone)",
+      "result": "void",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "0be258d0e1fe7e4f3aa8031eccc00e8c"
+    },
+    {
+      "name": "claim_donation_delivery_job",
+      "signature": "claim_donation_delivery_job(uuid,uuid,timestamp with time zone)",
+      "result": "TABLE(payment_id uuid, attempts integer)",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "eb7105b529341ec6b19f3495f6ceb64f"
+    },
+    {
+      "name": "claim_sponsorship_deliveries",
+      "signature": "claim_sponsorship_deliveries(uuid,integer,uuid)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "7066498589370fa789597f89d5b3e46a"
+    },
+    {
+      "name": "claim_volunteer_operation_outbox",
+      "signature": "claim_volunteer_operation_outbox(integer,timestamp with time zone)",
+      "result": "SETOF volunteer_operation_outbox",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "1f949ce20e1361eb61719fdaacc84255"
+    },
+    {
+      "name": "claim_volunteer_runtime_job",
+      "signature": "claim_volunteer_runtime_job(text,timestamp with time zone,uuid,timestamp with time zone)",
+      "result": "boolean",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "cb74f952676811a1c09efb2bc93e83c9"
+    },
+    {
+      "name": "create_volunteer_registration",
+      "signature": "create_volunteer_registration(uuid,uuid,text,integer,text,text,text,text,text,integer,integer,text,text,text,text,timestamp with time zone,boolean,boolean)",
+      "result": "volunteer_registration",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "6a75778e799d372b81e0e02d5954171d"
+    },
+    {
+      "name": "create_volunteer_registration",
+      "signature": "create_volunteer_registration(uuid,uuid,text,integer,text,text,text,text,text,integer,integer,text,text,text,text,timestamp with time zone)",
+      "result": "volunteer_registration",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "b0215261c0547da7a1d7076fce97fbb8"
+    },
+    {
+      "name": "crm_export_donations",
+      "signature": "crm_export_donations(jsonb)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "b81083323cd65135401506651793996c"
+    },
+    {
+      "name": "crm_read_supporters",
+      "signature": "crm_read_supporters(jsonb,integer,integer,boolean)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "cc6bbdc397a8314d5667ad4fd6a5b361"
+    },
+    {
+      "name": "crm_supporter_summary",
+      "signature": "crm_supporter_summary(uuid)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "c9489dae0de7209bb71365238ab5ea91"
+    },
+    {
+      "name": "deactivate_faq_entry_with_audit",
+      "signature": "deactivate_faq_entry_with_audit(uuid,uuid)",
+      "result": "void",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "c97a358296e1a7f54b35eb3bbf91d814"
+    },
+    {
+      "name": "defer_volunteer_operation_outbox",
+      "signature": "defer_volunteer_operation_outbox(uuid,text,timestamp with time zone)",
+      "result": "boolean",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": false,
+      "definition_md5": "9ab25242c3531da366f1d8f31a74ce1a"
+    },
+    {
+      "name": "end_sponsorship_assignment_with_audit",
+      "signature": "end_sponsorship_assignment_with_audit(uuid,uuid,text,text)",
+      "result": "void",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "370c0d11c58f2c3960075d88d8ac399e"
+    },
+    {
+      "name": "finalize_successful_adoption",
+      "signature": "finalize_successful_adoption(uuid,uuid,uuid,text,integer,date,date,uuid)",
+      "result": "uuid",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "a75a5eb4df94e03d8ea359591c0a86dd"
+    },
+    {
+      "name": "finish_sponsorship_delivery",
+      "signature": "finish_sponsorship_delivery(uuid,uuid,uuid,text,text)",
+      "result": "boolean",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "2cff826da5ecaf017d22a1e7f1fab209"
+    },
+    {
+      "name": "finish_volunteer_runtime_job",
+      "signature": "finish_volunteer_runtime_job(text,timestamp with time zone,uuid,text,jsonb)",
+      "result": "boolean",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "8ac24941b39d4f0e64db6c2863958ef1"
+    },
+    {
+      "name": "generate_due_volunteer_sessions",
+      "signature": "generate_due_volunteer_sessions(uuid)",
+      "result": "integer",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "111e03dc3f19d2003bda411b73398da7"
+    },
+    {
+      "name": "internship_command",
+      "signature": "internship_command(uuid,jsonb)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "84662adb879ce5365c625d7d4dfb629c"
+    },
+    {
+      "name": "issue_receipt",
+      "signature": "issue_receipt(uuid,uuid,integer,integer,timestamp with time zone)",
+      "result": "TABLE(receipt_no text, receipt_id uuid, pdf_url text, tax_year integer, issued_at timestamp with time zone, already_existed boolean)",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "ed5717d6b27995c291bb34d3508de53d"
+    },
+    {
+      "name": "open_sponsorship_followup_months",
+      "signature": "open_sponsorship_followup_months(uuid,uuid)",
+      "result": "integer",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "b8b5dc8b6972a84e03f9fb1db9ea3028"
+    },
+    {
+      "name": "reconcile_legacy_sponsorship_payment",
+      "signature": "reconcile_legacy_sponsorship_payment(uuid,uuid,uuid,text)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "a0d17da8a1ca7ac90cf9cd2d9a40f8a3"
+    },
+    {
+      "name": "record_exact_sponsorship_payment_proof",
+      "signature": "record_exact_sponsorship_payment_proof(uuid,uuid,uuid,jsonb)",
+      "result": "uuid",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "35fca864d0c23952adb2e6f0f307dbac"
+    },
+    {
+      "name": "record_manual_gift_with_audit",
+      "signature": "record_manual_gift_with_audit(uuid,uuid,jsonb)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "d974315e4c008ed446ae6fd1178eeeb7"
+    },
+    {
+      "name": "record_sponsorship_full_refund",
+      "signature": "record_sponsorship_full_refund(uuid,uuid,bigint,text,text)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "a6448e003e46c216c59dfc6bef26d398"
+    },
+    {
+      "name": "record_sponsorship_payment_proof",
+      "signature": "record_sponsorship_payment_proof(uuid,uuid,text,text,text,integer,text,text,integer,date,text)",
+      "result": "uuid",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": false,
+      "definition_md5": "426bd826423032326a8252dd282544ff"
+    },
+    {
+      "name": "record_sponsorship_receipt_request",
+      "signature": "record_sponsorship_receipt_request(uuid,uuid)",
+      "result": "uuid",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "83503f5cef71d3d21a457464ef8d18a4"
+    },
+    {
+      "name": "record_sponsorship_refund",
+      "signature": "record_sponsorship_refund(uuid,uuid,bigint,integer,uuid,integer,text,text)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "b088563ea1be0a5268429d0dfbe7eb41"
+    },
+    {
+      "name": "record_volunteer_promotion_review",
+      "signature": "record_volunteer_promotion_review(uuid,uuid,text)",
+      "result": "boolean",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "6f0b3b7cc7991b525060bce13f1f5235"
+    },
+    {
+      "name": "resolve_public_supporter_identity",
+      "signature": "resolve_public_supporter_identity(jsonb)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "c9bd9d6b938dabca7060e24006771ba8"
+    },
+    {
+      "name": "retry_donation_delivery_job_with_audit",
+      "signature": "retry_donation_delivery_job_with_audit(uuid,uuid)",
+      "result": "boolean",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "b470688f609093aa8bd81b292abe2dd3"
+    },
+    {
+      "name": "retry_volunteer_operation_outbox",
+      "signature": "retry_volunteer_operation_outbox(uuid,uuid)",
+      "result": "boolean",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "d2c8a47b2c7195eef795d1d523aee521"
+    },
+    {
+      "name": "reverse_sponsorship_allocation_with_audit",
+      "signature": "reverse_sponsorship_allocation_with_audit(uuid,uuid,text)",
+      "result": "uuid",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "545361ffa841d651648e097471db3201"
+    },
+    {
+      "name": "review_exact_sponsorship_payment_proof",
+      "signature": "review_exact_sponsorship_payment_proof(uuid,uuid,bigint,uuid,text,uuid,text,uuid)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "edaf4c862a15e1977172401d8538abbe"
+    },
+    {
+      "name": "review_sponsorship_payment_proof",
+      "signature": "review_sponsorship_payment_proof(uuid,text,uuid,text,jsonb,uuid)",
+      "result": "void",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": false,
+      "definition_md5": "dfeeaa7f8ad557157ebac756fdb6b732"
+    },
+    {
+      "name": "search_sponsorship_assignment_candidates",
+      "signature": "search_sponsorship_assignment_candidates(uuid,text)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "ebe0d7afe2625f62204bce30094caffc"
+    },
+    {
+      "name": "set_volunteer_attendance_with_audit",
+      "signature": "set_volunteer_attendance_with_audit(uuid,uuid,timestamp with time zone,text,text,text,numeric,boolean,text,boolean)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "5ce6700ec2b46fb0cc051abcb21ba3fa"
+    },
+    {
+      "name": "set_volunteer_registration_status_with_audit",
+      "signature": "set_volunteer_registration_status_with_audit(uuid,uuid,timestamp with time zone,text,text,boolean)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "b7d3406b4be571b7359759f61f240d30"
+    },
+    {
+      "name": "settle_volunteer_operation_outbox",
+      "signature": "settle_volunteer_operation_outbox(uuid,integer,text,text,timestamp with time zone,text)",
+      "result": "boolean",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "eb0acf2e4841bbca2cdda47068d88171"
+    },
+    {
+      "name": "update_volunteer_activity_with_audit",
+      "signature": "update_volunteer_activity_with_audit(uuid,uuid,timestamp with time zone,jsonb)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "1bcb91943a67233707dd0826d89aa049"
+    },
+    {
+      "name": "upsert_about_page_content_with_audit",
+      "signature": "upsert_about_page_content_with_audit(uuid,text,jsonb)",
+      "result": "about_page_content",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "9859b5b8328c5c9cb8fb89449b3f0c91"
+    },
+    {
+      "name": "upsert_adoption_rule_with_audit",
+      "signature": "upsert_adoption_rule_with_audit(uuid,uuid,text,text,integer,boolean)",
+      "result": "adoption_rules",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "47858035d7f1e2a78c95ab7883d7ed3c"
+    },
+    {
+      "name": "upsert_care_topic_with_audit",
+      "signature": "upsert_care_topic_with_audit(uuid,uuid,text,text,text,text,text,integer,boolean)",
+      "result": "care_topics",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "e0e87385b8949c7045102206a1b3e053"
+    },
+    {
+      "name": "upsert_faq_entry_with_audit",
+      "signature": "upsert_faq_entry_with_audit(uuid,uuid,text,text,text,text,text,text[],text[],text,boolean,integer,boolean)",
+      "result": "faq_entry",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "0fd84a96f43e1d91bb7be92ab183522a"
+    },
+    {
+      "name": "verify_sponsorship_contact_submission",
+      "signature": "verify_sponsorship_contact_submission(uuid,uuid,text)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "8cb0d8ce53830354a92ef5b61a23781f"
+    },
+    {
+      "name": "volunteer_activity_counts",
+      "signature": "volunteer_activity_counts(uuid[])",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "0463d75cc4fffe0d5add1cad60a24d69"
+    },
+    {
+      "name": "volunteer_assessment_command",
+      "signature": "volunteer_assessment_command(uuid,jsonb)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "bb7deb5c64b2cbdc8c360a28c2a1a21a"
+    },
+    {
+      "name": "volunteer_bind_daily_policy",
+      "signature": "volunteer_bind_daily_policy(jsonb,date)",
+      "result": "void",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": false,
+      "definition_md5": "8f73a8dc1582617a79dfe7183554e7ac"
+    },
+    {
+      "name": "volunteer_booking_command",
+      "signature": "volunteer_booking_command(uuid,jsonb)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "ba510a2a686dab6b1aefb85f34b31213"
+    },
+    {
+      "name": "volunteer_calendar_policy_checks",
+      "signature": "volunteer_calendar_policy_checks(uuid[])",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "635130fd7571fb0365d35bef2cc359ab"
+    },
+    {
+      "name": "volunteer_change_fingerprint",
+      "signature": "volunteer_change_fingerprint(uuid,uuid,jsonb,timestamp with time zone)",
+      "result": "text",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": false,
+      "definition_md5": "fdaecd8fa3869c7ec4831f9028175107"
+    },
+    {
+      "name": "volunteer_daily_fingerprint",
+      "signature": "volunteer_daily_fingerprint(text,date,text,jsonb,timestamp with time zone)",
+      "result": "text",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": false,
+      "definition_md5": "1591882568257cb518041052cedbaf72"
+    },
+    {
+      "name": "volunteer_daily_policy_command",
+      "signature": "volunteer_daily_policy_command(uuid,jsonb)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "c62d8cd0eacdd50ca5306a52e168cee6"
+    },
+    {
+      "name": "volunteer_daily_state",
+      "signature": "volunteer_daily_state(text,date,uuid,timestamp with time zone,uuid)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "958695df8e01a0c1eb8eed2dc25e0c09"
+    },
+    {
+      "name": "volunteer_group_candidate",
+      "signature": "volunteer_group_candidate(uuid,uuid,integer,timestamp with time zone)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": false,
+      "definition_md5": "c9440081f8b7377dca6de60ac781593c"
+    },
+    {
+      "name": "volunteer_legacy_identity_command",
+      "signature": "volunteer_legacy_identity_command(uuid,jsonb)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "852bb90a9c24af3fae727ef0f827d9ac"
+    },
+    {
+      "name": "volunteer_my_history",
+      "signature": "volunteer_my_history(uuid)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "001739c394e0487d7d4b1f2f76341c23"
+    },
+    {
+      "name": "volunteer_operation_command",
+      "signature": "volunteer_operation_command(uuid,jsonb)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "e682e11a7ea0a9430d2e7aa5c7150fa8"
+    },
+    {
+      "name": "volunteer_persist_due_releases",
+      "signature": "volunteer_persist_due_releases(uuid)",
+      "result": "integer",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "547677b78ba7390250c9fdec89dac9d9"
+    },
+    {
+      "name": "volunteer_persist_releases",
+      "signature": "volunteer_persist_releases(uuid,timestamp with time zone)",
+      "result": "integer",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": false,
+      "definition_md5": "fba67b791884f9d4e599721f3ac835e7"
+    },
+    {
+      "name": "volunteer_policy_admin",
+      "signature": "volunteer_policy_admin(uuid)",
+      "result": "void",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "7d009b1859631baefba124327c3b5f54"
+    },
+    {
+      "name": "volunteer_policy_command",
+      "signature": "volunteer_policy_command(uuid,jsonb)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "4fbed5578d81366aa65d272be9b7f5a6"
+    },
+    {
+      "name": "volunteer_policy_credentials",
+      "signature": "volunteer_policy_credentials(uuid,jsonb,timestamp with time zone)",
+      "result": "boolean",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "23136b9bb42a3f836cb4a1392a0f7002"
+    },
+    {
+      "name": "volunteer_policy_evaluate",
+      "signature": "volunteer_policy_evaluate(uuid,uuid,text,timestamp with time zone,uuid)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "93882a45f51e9724d23eaef01450e409"
+    },
+    {
+      "name": "volunteer_policy_fingerprint",
+      "signature": "volunteer_policy_fingerprint(jsonb)",
+      "result": "text",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "e7acf51d8dd3e7dd4699e3852b6ad9b5"
+    },
+    {
+      "name": "volunteer_policy_manifest",
+      "signature": "volunteer_policy_manifest(jsonb,jsonb,timestamp with time zone)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "68fd4b80f2d8396eba2e9af7dd9d8dfd"
+    },
+    {
+      "name": "volunteer_policy_simulation",
+      "signature": "volunteer_policy_simulation(uuid,jsonb)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "d1f62bccf2243938f05d707e223c7e18"
+    },
+    {
+      "name": "volunteer_policy_source_command",
+      "signature": "volunteer_policy_source_command(uuid,jsonb)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "7704581f48be0f7c150eafda5a52be8f"
+    },
+    {
+      "name": "volunteer_profile_command",
+      "signature": "volunteer_profile_command(uuid,jsonb)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "3168c2dfb59f7e152712c00d4161f967"
+    },
+    {
+      "name": "volunteer_public_session_summary",
+      "signature": "volunteer_public_session_summary(uuid[])",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "f4daf6dc2042bd9e6ed82d9debd54c02"
+    },
+    {
+      "name": "volunteer_record_senior_candidate",
+      "signature": "volunteer_record_senior_candidate(uuid,uuid,text)",
+      "result": "void",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": false,
+      "definition_md5": "208ad9e2551db05de91871904900392b"
+    },
+    {
+      "name": "volunteer_release_is_active",
+      "signature": "volunteer_release_is_active(text,jsonb,timestamp with time zone,integer,timestamp with time zone)",
+      "result": "boolean",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": false,
+      "definition_md5": "8e479930d2393491aa3060c1a158b9f2"
+    },
+    {
+      "name": "volunteer_resolve_policy",
+      "signature": "volunteer_resolve_policy(jsonb,text)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": false,
+      "definition_md5": "0697acb5cb6f0ee3cc581c86a89b2c9b"
+    },
+    {
+      "name": "volunteer_task_command",
+      "signature": "volunteer_task_command(uuid,jsonb)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "35d48d5419d395cd9e3bda5ff15601aa"
+    },
+    {
+      "name": "volunteer_validate_policy_references",
+      "signature": "volunteer_validate_policy_references(jsonb)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": false,
+      "definition_md5": "acabc9feb3fb58e9bfee956d8ec0c08b"
+    },
+    {
+      "name": "volunteer_validate_policy_shape",
+      "signature": "volunteer_validate_policy_shape(jsonb)",
+      "result": "jsonb",
+      "security_definer": true,
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_execute": true,
+      "definition_md5": "6a59b25e06afd17f83dfcc1dbfb35996"
+    }
+  ],
+  "grants": [
+    {
+      "name": "audit_log",
+      "service_truncate": false,
+      "service_update": false,
+      "service_delete": false
+    },
+    {
+      "name": "sponsorship_payment_allocation",
+      "service_truncate": false,
+      "service_update": true,
+      "service_delete": true
+    },
+    {
+      "name": "volunteer_registration",
+      "service_truncate": false,
+      "service_update": true,
+      "service_delete": true
+    },
+    {
+      "name": "volunteer_attendance_event",
+      "service_truncate": false,
+      "service_update": false,
+      "service_delete": false
+    },
+    {
+      "name": "volunteer_policy_version",
+      "service_truncate": false,
+      "service_update": false,
+      "service_delete": false
+    },
+    {
+      "name": "volunteer_profile_event",
+      "service_truncate": false,
+      "service_update": false,
+      "service_delete": false
+    },
+    {
+      "name": "volunteer_tier_candidate",
+      "service_truncate": false,
+      "service_update": false,
+      "service_delete": false
+    }
+  ],
+  "animal": {
+    "authenticated_insert": false,
+    "authenticated_update": false,
+    "authenticated_delete": false,
+    "anonymous_notes": false,
+    "authenticated_notes": false,
+    "anonymous_gallery": true
+  },
+  "rls": [
+    {
+      "table_name": "sponsorship_delivery_outbox",
+      "enabled": true
+    },
+    {
+      "table_name": "sponsorship_refund",
+      "enabled": true
+    },
+    {
+      "table_name": "volunteer_operation_outbox",
+      "enabled": true
+    },
+    {
+      "table_name": "volunteer_policy_source_version",
+      "enabled": true
+    },
+    {
+      "table_name": "volunteer_policy_version",
+      "enabled": true
+    },
+    {
+      "table_name": "volunteer_profile",
+      "enabled": true
+    },
+    {
+      "table_name": "volunteer_task_completion",
+      "enabled": true
+    },
+    {
+      "table_name": "volunteer_terms_acceptance",
+      "enabled": true
+    }
+  ],
+  "result": "passed"
+}
