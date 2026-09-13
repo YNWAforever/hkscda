@@ -2,6 +2,10 @@
 
 Date: 2026-09-13. Candidate branch: `codex/admin-volunteer-settings-20260913`, base `3fcf8cec235e0fa252b7d134f74948f2a682ebac`. This is code and isolated acceptance evidence, not production activation.
 
+## Production parity follow-up (2026-09-13)
+
+Read-only production inspection identified concrete baseline gaps. The new guarded prerequisite `20260913060000_verified_baseline_compatibility.sql` precedes the original 36 unchanged migrations; the manifest now contains 37 candidates (100 source files including baseline). Full source-chain and production-shaped rollback rehearsals pass, as does post-prerequisite full acceptance: 2343 passed, one intentional skip, zero failures. The earlier 99-entry CLI/browser/recovery evidence below remains historical, not a claim of a new 100-entry CLI or browser run. See [production-baseline-parity.md](production-baseline-parity.md) for exact repairs, preservation checks and limits. No production writes or ledger repair occurred.
+
 ## Results
 
 | Gate                                       | Result                                                                                                                             |
@@ -44,7 +48,7 @@ Database acceptance also exercises last-seat concurrency, current-policy approva
 
 ## Migration and recovery limits
 
-`migration-release-manifest.json` records all36 LF-normalized SQL hashes. `fresh-schema-verification.json` records the final effective signatures, RLS and permissions. The final grant fix closes four inherited browser-executable commands; the effective public SECURITY DEFINER command scan is browser-restricted. Actual anonymous/authenticated invocation-denial tests run in the complete suite.
+`migration-release-manifest.json` now records all37 LF-normalized SQL hashes. `fresh-schema-verification.json` records the final effective signatures, RLS and permissions. The final grant fix closes four inherited browser-executable commands; the effective public SECURITY DEFINER command scan is browser-restricted. Actual anonymous/authenticated invocation-denial tests run in the complete suite.
 
 The recovery drill restored a consistent synthetic snapshot into `hkscda_restore_20260913` in the same dedicated container, leaving its source untouched. It verifies database schema/data and factual continuity, not external storage objects, provider state, production RTO/RPO or owner/ACL restoration. Grants are independently verified against the clean migration result. Intentional audit-failure and stale-preview tests additionally prove transaction rollback without partial capacity, attendance, money or content mutation. Policy recovery copies an immutable prior version into a new prospective publication; factual correction appends linked evidence.
 

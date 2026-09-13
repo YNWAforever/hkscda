@@ -1,0 +1,870 @@
+{
+  "read_only": true,
+  "objects": [
+    {
+      "kind": "column",
+      "key": "animals.adoption_eligible",
+      "definition": "boolean notnull=true default="
+    },
+    {
+      "kind": "column",
+      "key": "animals.age",
+      "definition": "text notnull=true default="
+    },
+    {
+      "kind": "column",
+      "key": "animals.age_en",
+      "definition": "text notnull=false default="
+    },
+    {
+      "kind": "column",
+      "key": "animals.created_at",
+      "definition": "timestamp with time zone notnull=false default=now()"
+    },
+    {
+      "kind": "column",
+      "key": "animals.description",
+      "definition": "text notnull=false default="
+    },
+    {
+      "kind": "column",
+      "key": "animals.description_en",
+      "definition": "text notnull=false default="
+    },
+    {
+      "kind": "column",
+      "key": "animals.gender",
+      "definition": "text notnull=true default="
+    },
+    {
+      "kind": "column",
+      "key": "animals.id",
+      "definition": "uuid notnull=true default=gen_random_uuid()"
+    },
+    {
+      "kind": "column",
+      "key": "animals.image_url",
+      "definition": "text notnull=false default="
+    },
+    {
+      "kind": "column",
+      "key": "animals.name",
+      "definition": "text notnull=true default="
+    },
+    {
+      "kind": "column",
+      "key": "animals.name_en",
+      "definition": "text notnull=false default="
+    },
+    {
+      "kind": "column",
+      "key": "animals.notes",
+      "definition": "text notnull=false default="
+    },
+    {
+      "kind": "column",
+      "key": "animals.notes_en",
+      "definition": "text notnull=false default="
+    },
+    {
+      "kind": "column",
+      "key": "animals.public_profile",
+      "definition": "jsonb notnull=true default='{}'::jsonb"
+    },
+    {
+      "kind": "column",
+      "key": "animals.publication_state",
+      "definition": "text notnull=true default='published'::text"
+    },
+    {
+      "kind": "column",
+      "key": "animals.retired_at",
+      "definition": "timestamp with time zone notnull=false default="
+    },
+    {
+      "kind": "column",
+      "key": "animals.source_url",
+      "definition": "text notnull=false default="
+    },
+    {
+      "kind": "column",
+      "key": "animals.sponsorship_eligible",
+      "definition": "boolean notnull=true default="
+    },
+    {
+      "kind": "column",
+      "key": "animals.status",
+      "definition": "text notnull=true default='available'::text"
+    },
+    {
+      "kind": "column",
+      "key": "animals.type",
+      "definition": "text notnull=true default="
+    },
+    {
+      "kind": "column",
+      "key": "animals.updated_at",
+      "definition": "timestamp with time zone notnull=false default=now()"
+    },
+    {
+      "kind": "column",
+      "key": "donation.amount_cents",
+      "definition": "integer notnull=true default="
+    },
+    {
+      "kind": "column",
+      "key": "donation.consent_email_requested",
+      "definition": "boolean notnull=true default=false"
+    },
+    {
+      "kind": "column",
+      "key": "donation.consent_whatsapp_requested",
+      "definition": "boolean notnull=true default=false"
+    },
+    {
+      "kind": "column",
+      "key": "donation.contact_email",
+      "definition": "citext notnull=false default="
+    },
+    {
+      "kind": "column",
+      "key": "donation.contact_language",
+      "definition": "text notnull=false default="
+    },
+    {
+      "kind": "column",
+      "key": "donation.contact_name",
+      "definition": "text notnull=false default="
+    },
+    {
+      "kind": "column",
+      "key": "donation.contact_phone",
+      "definition": "text notnull=false default="
+    },
+    {
+      "kind": "column",
+      "key": "donation.created_at",
+      "definition": "timestamp with time zone notnull=true default=now()"
+    },
+    {
+      "kind": "column",
+      "key": "donation.currency",
+      "definition": "text notnull=true default='HKD'::text"
+    },
+    {
+      "kind": "column",
+      "key": "donation.custom_purpose",
+      "definition": "text notnull=false default="
+    },
+    {
+      "kind": "column",
+      "key": "donation.id",
+      "definition": "uuid notnull=true default=gen_random_uuid()"
+    },
+    {
+      "kind": "column",
+      "key": "donation.method",
+      "definition": "text notnull=true default="
+    },
+    {
+      "kind": "column",
+      "key": "donation.purpose",
+      "definition": "text notnull=true default="
+    },
+    {
+      "kind": "column",
+      "key": "donation.receipt_requested",
+      "definition": "boolean notnull=true default=false"
+    },
+    {
+      "kind": "column",
+      "key": "donation.recurring_id",
+      "definition": "uuid notnull=false default="
+    },
+    {
+      "kind": "column",
+      "key": "donation.status",
+      "definition": "text notnull=true default='pending'::text"
+    },
+    {
+      "kind": "column",
+      "key": "donation.supporter_id",
+      "definition": "uuid notnull=true default="
+    },
+    {
+      "kind": "column",
+      "key": "donation.type",
+      "definition": "text notnull=true default='one_time'::text"
+    },
+    {
+      "kind": "column",
+      "key": "donation.updated_at",
+      "definition": "timestamp with time zone notnull=true default=now()"
+    },
+    {
+      "kind": "column",
+      "key": "payment.amount_cents",
+      "definition": "integer notnull=true default="
+    },
+    {
+      "kind": "column",
+      "key": "payment.bank_reference",
+      "definition": "text notnull=false default="
+    },
+    {
+      "kind": "column",
+      "key": "payment.created_at",
+      "definition": "timestamp with time zone notnull=true default=now()"
+    },
+    {
+      "kind": "column",
+      "key": "payment.donation_id",
+      "definition": "uuid notnull=true default="
+    },
+    {
+      "kind": "column",
+      "key": "payment.id",
+      "definition": "uuid notnull=true default=gen_random_uuid()"
+    },
+    {
+      "kind": "column",
+      "key": "payment.provider",
+      "definition": "text notnull=true default="
+    },
+    {
+      "kind": "column",
+      "key": "payment.provider_ref",
+      "definition": "text notnull=false default="
+    },
+    {
+      "kind": "column",
+      "key": "payment.received_at",
+      "definition": "timestamp with time zone notnull=false default="
+    },
+    {
+      "kind": "column",
+      "key": "payment.reconciled_by",
+      "definition": "uuid notnull=false default="
+    },
+    {
+      "kind": "column",
+      "key": "payment.status",
+      "definition": "text notnull=true default='pending'::text"
+    },
+    {
+      "kind": "column",
+      "key": "payment.updated_at",
+      "definition": "timestamp with time zone notnull=true default=now()"
+    },
+    {
+      "kind": "column",
+      "key": "webhook_event.created_at",
+      "definition": "timestamp with time zone notnull=true default=now()"
+    },
+    {
+      "kind": "column",
+      "key": "webhook_event.event_type",
+      "definition": "text notnull=true default="
+    },
+    {
+      "kind": "column",
+      "key": "webhook_event.id",
+      "definition": "uuid notnull=true default=gen_random_uuid()"
+    },
+    {
+      "kind": "column",
+      "key": "webhook_event.payload",
+      "definition": "jsonb notnull=true default='{}'::jsonb"
+    },
+    {
+      "kind": "column",
+      "key": "webhook_event.processed_at",
+      "definition": "timestamp with time zone notnull=false default="
+    },
+    {
+      "kind": "column",
+      "key": "webhook_event.provider",
+      "definition": "text notnull=true default="
+    },
+    {
+      "kind": "column",
+      "key": "webhook_event.provider_event_id",
+      "definition": "text notnull=true default="
+    },
+    {
+      "kind": "column",
+      "key": "webhook_event.updated_at",
+      "definition": "timestamp with time zone notnull=true default=now()"
+    },
+    {
+      "kind": "constraint",
+      "key": "animals.animals_gender_check",
+      "definition": "CHECK (gender = ANY (ARRAY['male'::text, 'female'::text]))"
+    },
+    {
+      "kind": "constraint",
+      "key": "animals.animals_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "kind": "constraint",
+      "key": "animals.animals_public_profile_valid",
+      "definition": "CHECK (private.is_valid_animal_public_profile(public_profile))"
+    },
+    {
+      "kind": "constraint",
+      "key": "animals.animals_publication_state_check",
+      "definition": "CHECK (publication_state = ANY (ARRAY['draft'::text, 'published'::text, 'unpublished'::text]))"
+    },
+    {
+      "kind": "constraint",
+      "key": "animals.animals_status_check",
+      "definition": "CHECK (status = ANY (ARRAY['available'::text, 'adopted'::text, 'fostered'::text]))"
+    },
+    {
+      "kind": "constraint",
+      "key": "animals.animals_type_check",
+      "definition": "CHECK (type = ANY (ARRAY['cat'::text, 'dog'::text, 'sponsor'::text]))"
+    },
+    {
+      "kind": "constraint",
+      "key": "donation.donation_amount_cents_check",
+      "definition": "CHECK (amount_cents > 0)"
+    },
+    {
+      "kind": "constraint",
+      "key": "donation.donation_contact_language_check",
+      "definition": "CHECK (contact_language IS NULL OR (contact_language = ANY (ARRAY['zh-HK'::text, 'en'::text])))"
+    },
+    {
+      "kind": "constraint",
+      "key": "donation.donation_contact_snapshot_length_check",
+      "definition": "CHECK ((contact_name IS NULL OR char_length(contact_name) >= 1 AND char_length(contact_name) <= 120) AND (contact_email IS NULL OR char_length(contact_email::text) <= 254) AND (contact_phone IS NULL OR char_length(contact_phone) <= 40))"
+    },
+    {
+      "kind": "constraint",
+      "key": "donation.donation_currency_check",
+      "definition": "CHECK (currency = 'HKD'::text)"
+    },
+    {
+      "kind": "constraint",
+      "key": "donation.donation_custom_purpose_length_check",
+      "definition": "CHECK (custom_purpose IS NULL OR char_length(custom_purpose) <= 200)"
+    },
+    {
+      "kind": "constraint",
+      "key": "donation.donation_method_check",
+      "definition": "CHECK (method = ANY (ARRAY['stripe'::text, 'payme'::text, 'fps'::text, 'paypal'::text, 'manual'::text]))"
+    },
+    {
+      "kind": "constraint",
+      "key": "donation.donation_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "kind": "constraint",
+      "key": "donation.donation_purpose_check",
+      "definition": "CHECK (purpose = ANY (ARRAY['general'::text, 'medical'::text, 'sponsor'::text]))"
+    },
+    {
+      "kind": "constraint",
+      "key": "donation.donation_recurring_id_fkey",
+      "definition": "FOREIGN KEY (recurring_id) REFERENCES recurring_mandate(id)"
+    },
+    {
+      "kind": "constraint",
+      "key": "donation.donation_status_check",
+      "definition": "CHECK (status = ANY (ARRAY['pending'::text, 'succeeded'::text, 'failed'::text, 'refunded'::text]))"
+    },
+    {
+      "kind": "constraint",
+      "key": "donation.donation_supporter_id_fkey",
+      "definition": "FOREIGN KEY (supporter_id) REFERENCES supporter(id)"
+    },
+    {
+      "kind": "constraint",
+      "key": "donation.donation_type_check",
+      "definition": "CHECK (type = ANY (ARRAY['one_time'::text, 'recurring'::text]))"
+    },
+    {
+      "kind": "constraint",
+      "key": "payment.payment_amount_cents_check",
+      "definition": "CHECK (amount_cents > 0)"
+    },
+    {
+      "kind": "constraint",
+      "key": "payment.payment_donation_id_fkey",
+      "definition": "FOREIGN KEY (donation_id) REFERENCES donation(id) ON DELETE CASCADE"
+    },
+    {
+      "kind": "constraint",
+      "key": "payment.payment_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "kind": "constraint",
+      "key": "payment.payment_provider_check",
+      "definition": "CHECK (provider = ANY (ARRAY['stripe'::text, 'payme'::text, 'fps'::text, 'paypal'::text, 'manual'::text]))"
+    },
+    {
+      "kind": "constraint",
+      "key": "payment.payment_status_check",
+      "definition": "CHECK (status = ANY (ARRAY['pending'::text, 'succeeded'::text, 'failed'::text, 'refunded'::text]))"
+    },
+    {
+      "kind": "constraint",
+      "key": "webhook_event.webhook_event_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "kind": "constraint",
+      "key": "webhook_event.webhook_event_provider_check",
+      "definition": "CHECK (provider = ANY (ARRAY['stripe'::text, 'paypal'::text, 'payme'::text, 'fps'::text, 'resend'::text, 'whatsapp'::text]))"
+    },
+    {
+      "kind": "constraint",
+      "key": "webhook_event.webhook_event_provider_provider_event_id_key",
+      "definition": "UNIQUE (provider, provider_event_id)"
+    },
+    {
+      "kind": "function",
+      "key": "private.apply_sponsorship_allocations",
+      "definition": "CREATE OR REPLACE FUNCTION private.apply_sponsorship_allocations(p_proof_id uuid, p_actor_admin_id uuid, p_allocations jsonb)\n RETURNS jsonb\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare\n  v_proof public.sponsorship_payment_proof%rowtype;\n  v_pledge public.sponsorship_pledge%rowtype;\n  v_entry jsonb;\n  v_month date;\n  v_amount integer;\n  v_period_id uuid;\n  v_existing integer;\n  v_applied jsonb := '[]'::jsonb;\n  v_total integer := 0;\nbegin\n  select * into v_proof\n  from public.sponsorship_payment_proof\n  where id = p_proof_id\n  for update;\n  if not found then\n    raise exception 'Payment proof % not found', p_proof_id;\n  end if;\n\n  if v_proof.review_status <> 'approved' then\n    raise exception\n      'Payment proof % is not approved; only a verified payment may be allocated to a month',\n      p_proof_id;\n  end if;\n\n  select count(*) into v_existing\n  from public.sponsorship_payment_allocation\n  where proof_id = p_proof_id;\n\n  if v_existing > 0 then\n    select coalesce(\n      jsonb_agg(\n        jsonb_build_object(\n          'periodMonth', p.period_month,\n          'amountCents', a.amount_cents,\n          'allocationId', a.id\n        )\n        order by p.period_month\n      ),\n      '[]'::jsonb\n    )\n    into v_applied\n    from public.sponsorship_payment_allocation a\n    join public.sponsorship_period p on p.id = a.period_id\n    where a.proof_id = p_proof_id;\n\n    return jsonb_build_object(\n      'status', 'already_allocated',\n      'proofId', p_proof_id,\n      'allocations', v_applied\n    );\n  end if;\n\n  if p_allocations is null or jsonb_array_length(p_allocations) = 0 then\n    return jsonb_build_object('status', 'skipped', 'proofId', p_proof_id, 'allocatedCents', 0);\n  end if;\n\n  select * into v_pledge\n  from public.sponsorship_pledge\n  where id = v_proof.pledge_id\n  for update;\n  if not found then\n    raise exception 'Sponsorship pledge % not found', v_proof.pledge_id;\n  end if;\n\n  for v_entry in select * from jsonb_array_elements(p_allocations)\n  loop\n    v_month := (v_entry ->> 'periodMonth')::date;\n    v_amount := (v_entry ->> 'amountCents')::integer;\n\n    if v_month is null or v_amount is null then\n      raise exception 'Each allocation needs periodMonth and amountCents, received %', v_entry;\n    end if;\n    if v_month <> date_trunc('month', v_month)::date then\n      raise exception 'periodMonth % must be the first day of a month', v_month;\n    end if;\n    if v_amount <= 0 then\n      raise exception 'Allocation amount must be positive, received %', v_amount;\n    end if;\n\n    insert into public.sponsorship_period (pledge_id, period_month, committed_cents)\n    values (v_proof.pledge_id, v_month, v_pledge.amount_cents)\n    on conflict (pledge_id, period_month) do nothing;\n\n    select id into v_period_id\n    from public.sponsorship_period\n    where pledge_id = v_proof.pledge_id and period_month = v_month;\n\n    insert into public.sponsorship_payment_allocation (\n      period_id, proof_id, amount_cents, created_by\n    ) values (\n      v_period_id, p_proof_id, v_amount, p_actor_admin_id\n    );\n\n    v_total := v_total + v_amount;\n    v_applied := v_applied || jsonb_build_object(\n      'periodMonth', v_month,\n      'amountCents', v_amount\n    );\n  end loop;\n\n  return jsonb_build_object(\n    'status', 'allocated',\n    'proofId', p_proof_id,\n    'allocatedCents', v_total,\n    'allocations', v_applied\n  );\nend;\n$function$\n"
+    },
+    {
+      "kind": "function",
+      "key": "private.assert_sponsorship_allocation_valid",
+      "definition": "CREATE OR REPLACE FUNCTION private.assert_sponsorship_allocation_valid()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare\n  v_proof public.sponsorship_payment_proof%rowtype;\n  v_period public.sponsorship_period%rowtype;\n  v_original public.sponsorship_payment_allocation%rowtype;\n  v_already_allocated integer;\nbegin\n  select * into v_proof\n  from public.sponsorship_payment_proof\n  where id = new.proof_id\n  for update;\n  if not found then\n    raise exception 'Payment proof % not found', new.proof_id;\n  end if;\n\n  if v_proof.review_status <> 'approved' then\n    raise exception\n      'Payment proof % is not approved; only a verified payment may be allocated to a month',\n      new.proof_id;\n  end if;\n\n  select * into v_period from public.sponsorship_period where id = new.period_id;\n  if not found then\n    raise exception 'Sponsorship period % not found', new.period_id;\n  end if;\n\n  if v_period.pledge_id <> v_proof.pledge_id then\n    raise exception\n      'Allocation would attribute a payment from pledge % to a month of pledge %',\n      v_proof.pledge_id, v_period.pledge_id;\n  end if;\n\n  if new.reverses_allocation_id is not null then\n    select * into v_original\n    from public.sponsorship_payment_allocation\n    where id = new.reverses_allocation_id;\n    if not found then\n      raise exception 'Allocation % being reversed does not exist', new.reverses_allocation_id;\n    end if;\n    if v_original.reverses_allocation_id is not null then\n      raise exception 'A reversal cannot itself be reversed; record a fresh allocation instead';\n    end if;\n    if v_original.proof_id <> new.proof_id or v_original.period_id <> new.period_id then\n      raise exception 'A reversal must name the same payment and month as the allocation it undoes';\n    end if;\n  end if;\n\n  select coalesce(sum(amount_cents), 0) into v_already_allocated\n  from public.sponsorship_payment_allocation\n  where proof_id = new.proof_id;\n\n  if v_already_allocated + new.amount_cents > v_proof.amount_cents then\n    raise exception\n      'Allocating % cents would exceed payment % (amount % cents, already allocated % cents)',\n      new.amount_cents, new.proof_id, v_proof.amount_cents, v_already_allocated;\n  end if;\n\n  if v_already_allocated + new.amount_cents < 0 then\n    raise exception 'Reversing % cents would take payment % below zero allocated',\n      new.amount_cents, new.proof_id;\n  end if;\n\n  return new;\nend;\n$function$\n"
+    },
+    {
+      "kind": "function",
+      "key": "public.assign_sponsorship_animal_with_audit",
+      "definition": "CREATE OR REPLACE FUNCTION public.assign_sponsorship_animal_with_audit(p_pledge_id uuid, p_animal_id uuid, p_actor_user_id uuid, p_note text)\n RETURNS uuid\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare\n  v_actor_admin_id uuid;\n  v_pledge public.sponsorship_pledge%rowtype;\n  v_animal public.animals%rowtype;\n  v_deceased_at date;\n  v_adopted_at date;\n  v_assignment_id uuid;\nbegin\n  select id into v_actor_admin_id\n  from public.admin_user\n  where auth_user_id = p_actor_user_id\n    and status = 'active'\n    and role in ('staff', 'admin');\n  if v_actor_admin_id is null then\n    raise exception 'Actor % is not an active staff/admin user', p_actor_user_id\n      using errcode = '42501';\n  end if;\n\n  select * into v_pledge\n  from public.sponsorship_pledge\n  where id = p_pledge_id\n  for update;\n  if not found then\n    raise exception 'Sponsorship pledge not found';\n  end if;\n\n  if v_pledge.status = 'cancelled' then\n    raise exception 'Sponsorship pledge is already cancelled';\n  end if;\n\n  select * into v_animal from public.animals where id = p_animal_id;\n  if not found then\n    raise exception 'Animal not found';\n  end if;\n\n  select deceased_at, adopted_at into v_deceased_at, v_adopted_at\n  from public.animal_profile_internal\n  where animal_id = p_animal_id;\n\n  if not v_animal.sponsorship_eligible\n     or v_animal.status = 'adopted'\n     or v_animal.retired_at is not null\n     or v_animal.publication_state <> 'published'\n     or v_deceased_at is not null\n     or v_adopted_at is not null then\n    raise exception 'Animal % cannot be sponsored', p_animal_id;\n  end if;\n\n  insert into public.sponsorship_assignment (\n    pledge_id, animal_id, animal_name_snapshot, note, created_by\n  ) values (\n    p_pledge_id, p_animal_id, v_animal.name, p_note, v_actor_admin_id\n  )\n  returning id into v_assignment_id;\n\n  insert into public.audit_log (actor_user_id, action, entity, entity_id, detail)\n  values (\n    p_actor_user_id,\n    'sponsorship_pledge.animal_assigned',\n    'sponsorship_pledge',\n    p_pledge_id::text,\n    jsonb_build_object(\n      'assignmentId', v_assignment_id,\n      'animalId', p_animal_id,\n      'animalName', v_animal.name,\n      'note', p_note\n    )\n  );\n\n  return v_assignment_id;\nend;\n$function$\n"
+    },
+    {
+      "kind": "function",
+      "key": "public.log_animal_mutation",
+      "definition": "CREATE OR REPLACE FUNCTION public.log_animal_mutation()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare\n  v_entity text := tg_table_name;\n  v_entity_id text;\n  v_detail jsonb;\nbegin\n  if auth.uid() is null then\n    return null; -- ignored for AFTER triggers; see the scope note above.\n  end if;\n\n  -- animal_profile_internal has no `id` column — its primary key is\n  -- animal_id (references public.animals(id)). Every other audited table\n  -- keys off `id`. Pick the right column per table rather than assuming `id`\n  -- everywhere.\n  if tg_table_name = 'animal_profile_internal' then\n    v_entity_id := coalesce(new.animal_id, old.animal_id)::text;\n  else\n    v_entity_id := coalesce(new.id, old.id)::text;\n  end if;\n\n  if tg_op = 'DELETE' then\n    v_detail := jsonb_build_object('old', to_jsonb(old));\n  elsif tg_op = 'UPDATE' then\n    -- Store only the columns that actually changed; whole-row snapshots on every\n    -- edit would bloat audit_log for no diagnostic gain.\n    v_detail := jsonb_build_object(\n      'changed',\n      (\n        select coalesce(jsonb_object_agg(key, jsonb_build_object('from', old_row.value, 'to', new_row.value)), '{}'::jsonb)\n        from jsonb_each(to_jsonb(old)) as old_row(key, value)\n        join jsonb_each(to_jsonb(new)) as new_row(key, value) using (key)\n        where old_row.value is distinct from new_row.value\n      )\n    );\n  else\n    v_detail := jsonb_build_object('new', to_jsonb(new));\n  end if;\n\n  insert into public.audit_log (actor_user_id, action, entity, entity_id, detail)\n  values (\n    auth.uid(),\n    v_entity || '.' || lower(tg_op),\n    v_entity,\n    v_entity_id,\n    v_detail\n  );\n\n  return null; -- ignored for AFTER row-level triggers regardless of value.\nend;\n$function$\n"
+    },
+    {
+      "kind": "function",
+      "key": "public.record_sponsorship_payment_proof",
+      "definition": "CREATE OR REPLACE FUNCTION public.record_sponsorship_payment_proof(p_pledge_id uuid, p_actor_user_id uuid, p_storage_path text, p_file_name text, p_file_type text, p_file_size integer, p_payment_method text, p_reference text, p_amount_cents integer, p_payment_date date, p_note text)\n RETURNS uuid\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare\n  v_pledge public.sponsorship_pledge%rowtype;\n  v_proof_id uuid;\nbegin\n  if not exists (\n    select 1\n    from public.admin_user\n    where auth_user_id = p_actor_user_id\n      and status = 'active'\n      and role in ('staff', 'admin')\n  ) then\n    raise exception 'Actor % is not an active staff/admin user', p_actor_user_id\n      using errcode = '42501';\n  end if;\n\n  select *\n  into v_pledge\n  from public.sponsorship_pledge\n  where id = p_pledge_id\n  for update;\n\n  if not found then\n    raise exception 'Sponsorship pledge not found';\n  end if;\n\n  if v_pledge.status not in ('pending_payment', 'needs_followup', 'active') then\n    raise exception 'Sponsorship pledge is not eligible for a recorded payment';\n  end if;\n\n  insert into public.sponsorship_payment_proof (\n    pledge_id,\n    storage_path,\n    file_name,\n    file_type,\n    file_size,\n    payment_method,\n    reference,\n    amount_cents,\n    payment_date,\n    review_status,\n    source\n  ) values (\n    p_pledge_id,\n    p_storage_path,\n    p_file_name,\n    p_file_type,\n    p_file_size,\n    p_payment_method,\n    p_reference,\n    p_amount_cents,\n    p_payment_date,\n    'pending',\n    'staff'\n  )\n  returning id into v_proof_id;\n\n  if v_pledge.status <> 'active' then\n    update public.sponsorship_pledge\n    set status = 'provisional'\n    where id = p_pledge_id;\n  end if;\n\n  insert into public.audit_log (\n    actor_user_id,\n    action,\n    entity,\n    entity_id,\n    detail\n  ) values (\n    p_actor_user_id,\n    'sponsorship_pledge.proof_recorded',\n    'sponsorship_pledge',\n    p_pledge_id::text,\n    jsonb_build_object(\n      'proofId', v_proof_id,\n      'paymentMethod', p_payment_method,\n      'amountCents', p_amount_cents,\n      'note', p_note\n    )\n  );\n\n  return v_proof_id;\nend;\n$function$\n"
+    },
+    {
+      "kind": "function",
+      "key": "public.reverse_sponsorship_allocation_with_audit",
+      "definition": "CREATE OR REPLACE FUNCTION public.reverse_sponsorship_allocation_with_audit(p_allocation_id uuid, p_actor_user_id uuid, p_note text)\n RETURNS uuid\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare\n  v_original public.sponsorship_payment_allocation%rowtype;\n  v_period public.sponsorship_period%rowtype;\n  v_actor_admin_id uuid;\n  v_reversal_id uuid;\n  v_net integer;\nbegin\n  select id into v_actor_admin_id\n  from public.admin_user\n  where auth_user_id = p_actor_user_id\n    and status = 'active'\n    and role in ('staff', 'admin');\n  if v_actor_admin_id is null then\n    raise exception 'Actor % is not an active staff/admin user', p_actor_user_id\n      using errcode = '42501';\n  end if;\n\n  select * into v_original\n  from public.sponsorship_payment_allocation\n  where id = p_allocation_id\n  for update;\n  if not found then\n    raise exception 'Allocation % not found', p_allocation_id;\n  end if;\n\n  if v_original.reverses_allocation_id is not null then\n    raise exception 'Allocation % is itself a reversal', p_allocation_id;\n  end if;\n\n  select coalesce(sum(amount_cents), 0) into v_net\n  from public.sponsorship_payment_allocation\n  where reverses_allocation_id = p_allocation_id;\n\n  if v_original.amount_cents + v_net <= 0 then\n    raise exception 'Allocation % has already been reversed', p_allocation_id;\n  end if;\n\n  select * into v_period from public.sponsorship_period where id = v_original.period_id;\n\n  insert into public.sponsorship_payment_allocation (\n    period_id, proof_id, amount_cents, reverses_allocation_id, note, created_by\n  ) values (\n    v_original.period_id,\n    v_original.proof_id,\n    -(v_original.amount_cents + v_net),\n    p_allocation_id,\n    p_note,\n    v_actor_admin_id\n  )\n  returning id into v_reversal_id;\n\n  insert into public.audit_log (actor_user_id, action, entity, entity_id, detail)\n  values (\n    p_actor_user_id,\n    'sponsorship_pledge.allocation_reversed',\n    'sponsorship_pledge',\n    v_period.pledge_id::text,\n    jsonb_build_object(\n      'allocationId', p_allocation_id,\n      'reversalId', v_reversal_id,\n      'proofId', v_original.proof_id,\n      'periodMonth', v_period.period_month,\n      'reversedCents', v_original.amount_cents + v_net,\n      'note', p_note\n    )\n  );\n\n  return v_reversal_id;\nend;\n$function$\n"
+    },
+    {
+      "kind": "function",
+      "key": "public.review_sponsorship_payment_proof",
+      "definition": "CREATE OR REPLACE FUNCTION public.review_sponsorship_payment_proof(p_pledge_id uuid, p_decision text, p_actor_user_id uuid, p_note text, p_allocations jsonb DEFAULT '[]'::jsonb, p_assign_animal_id uuid DEFAULT NULL::uuid)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public', 'pg_temp'\nAS $function$\ndeclare\n  v_pledge public.sponsorship_pledge%rowtype;\n  v_proof public.sponsorship_payment_proof%rowtype;\n  v_new_pledge_status text;\n  v_new_review_status text;\n  v_actor_admin_id uuid;\n  v_allocation jsonb := null;\n  v_assignment_id uuid := null;\nbegin\n  if not exists (\n    select 1\n    from public.admin_user\n    where auth_user_id = p_actor_user_id\n      and status = 'active'\n      and role in ('staff', 'admin')\n  ) then\n    raise exception 'Actor % is not an active staff/admin user', p_actor_user_id\n      using errcode = '42501';\n  end if;\n\n  if p_decision not in ('approve', 'reject') then\n    raise exception 'Invalid review decision %', p_decision;\n  end if;\n\n  select *\n  into v_pledge\n  from public.sponsorship_pledge\n  where id = p_pledge_id\n  for update;\n\n  if not found then\n    raise exception 'Sponsorship pledge not found';\n  end if;\n\n  select *\n  into v_proof\n  from public.sponsorship_payment_proof\n  where pledge_id = p_pledge_id\n    and review_status = 'pending'\n  order by created_at asc, id asc\n  limit 1\n  for update;\n\n  if not found then\n    raise exception 'Sponsorship pledge has no proof pending review';\n  end if;\n\n  if p_decision = 'approve' then\n    v_new_review_status := 'approved';\n    v_new_pledge_status := 'active';\n  else\n    v_new_review_status := 'rejected';\n    v_new_pledge_status := 'needs_followup';\n  end if;\n\n  update public.sponsorship_payment_proof\n  set\n    review_status = v_new_review_status,\n    reviewed_by = (select id from public.admin_user where auth_user_id = p_actor_user_id),\n    reviewed_at = now(),\n    review_note = p_note\n  where id = v_proof.id;\n\n  update public.sponsorship_pledge\n  set status = v_new_pledge_status\n  where id = p_pledge_id;\n\n  select id into v_actor_admin_id\n  from public.admin_user\n  where auth_user_id = p_actor_user_id;\n\n  if p_decision = 'approve' and p_allocations is not null\n     and jsonb_array_length(p_allocations) > 0 then\n    v_allocation := private.apply_sponsorship_allocations(\n      v_proof.id, v_actor_admin_id, p_allocations\n    );\n  end if;\n\n  if p_decision = 'approve' and p_assign_animal_id is not null\n     and not exists (\n       select 1 from public.sponsorship_assignment where pledge_id = p_pledge_id\n     ) then\n    v_assignment_id := public.assign_sponsorship_animal_with_audit(\n      p_pledge_id, p_assign_animal_id, p_actor_user_id, null\n    );\n  end if;\n\n  insert into public.audit_log (\n    actor_user_id,\n    action,\n    entity,\n    entity_id,\n    detail\n  ) values (\n    p_actor_user_id,\n    'sponsorship_pledge.proof_reviewed',\n    'sponsorship_pledge',\n    p_pledge_id::text,\n    jsonb_build_object(\n      'proofId', v_proof.id,\n      'decision', p_decision,\n      'note', p_note,\n      'allocation', v_allocation,\n      'assignmentId', v_assignment_id\n    )\n  );\nend;\n$function$\n"
+    },
+    {
+      "kind": "function",
+      "key": "public.set_animal_catalog_membership_defaults",
+      "definition": "CREATE OR REPLACE FUNCTION public.set_animal_catalog_membership_defaults()\n RETURNS trigger\n LANGUAGE plpgsql\n SET search_path TO 'public', 'pg_temp'\nAS $function$\nbegin\n  if tg_op = 'INSERT' then\n    new.adoption_eligible := coalesce(new.adoption_eligible, new.type in ('cat', 'dog'));\n    new.sponsorship_eligible := coalesce(new.sponsorship_eligible, new.type = 'sponsor');\n  end if;\n  return new;\nend;\n$function$\n"
+    },
+    {
+      "kind": "index",
+      "key": "animals.animals_pkey",
+      "definition": "CREATE UNIQUE INDEX animals_pkey ON public.animals USING btree (id)"
+    },
+    {
+      "kind": "index",
+      "key": "animals.animals_public_catalogue_idx",
+      "definition": "CREATE INDEX animals_public_catalogue_idx ON public.animals USING btree (type) WHERE ((status = ANY (ARRAY['available'::text, 'fostered'::text])) AND (retired_at IS NULL) AND (publication_state = 'published'::text) AND (adoption_eligible OR sponsorship_eligible))"
+    },
+    {
+      "kind": "index",
+      "key": "animals.animals_source_url_idx",
+      "definition": "CREATE UNIQUE INDEX animals_source_url_idx ON public.animals USING btree (source_url) WHERE (source_url IS NOT NULL)"
+    },
+    {
+      "kind": "index",
+      "key": "donation.donation_pkey",
+      "definition": "CREATE UNIQUE INDEX donation_pkey ON public.donation USING btree (id)"
+    },
+    {
+      "kind": "index",
+      "key": "donation.donation_purpose_created_idx",
+      "definition": "CREATE INDEX donation_purpose_created_idx ON public.donation USING btree (purpose, created_at DESC)"
+    },
+    {
+      "kind": "index",
+      "key": "donation.donation_receipt_requested_created_idx",
+      "definition": "CREATE INDEX donation_receipt_requested_created_idx ON public.donation USING btree (created_at DESC) WHERE (receipt_requested = true)"
+    },
+    {
+      "kind": "index",
+      "key": "donation.donation_supporter_created_idx",
+      "definition": "CREATE INDEX donation_supporter_created_idx ON public.donation USING btree (supporter_id, created_at DESC)"
+    },
+    {
+      "kind": "index",
+      "key": "payment.payment_bank_reference_trgm_idx",
+      "definition": "CREATE INDEX payment_bank_reference_trgm_idx ON public.payment USING gin (bank_reference gin_trgm_ops) WHERE (bank_reference IS NOT NULL)"
+    },
+    {
+      "kind": "index",
+      "key": "payment.payment_donation_status_created_idx",
+      "definition": "CREATE INDEX payment_donation_status_created_idx ON public.payment USING btree (donation_id, status, created_at DESC)"
+    },
+    {
+      "kind": "index",
+      "key": "payment.payment_pkey",
+      "definition": "CREATE UNIQUE INDEX payment_pkey ON public.payment USING btree (id)"
+    },
+    {
+      "kind": "index",
+      "key": "payment.payment_provider_ref_idx",
+      "definition": "CREATE UNIQUE INDEX payment_provider_ref_idx ON public.payment USING btree (provider, provider_ref) WHERE (provider_ref IS NOT NULL)"
+    },
+    {
+      "kind": "index",
+      "key": "payment.payment_provider_ref_trgm_idx",
+      "definition": "CREATE INDEX payment_provider_ref_trgm_idx ON public.payment USING gin (provider_ref gin_trgm_ops) WHERE (provider_ref IS NOT NULL)"
+    },
+    {
+      "kind": "index",
+      "key": "webhook_event.webhook_event_pkey",
+      "definition": "CREATE UNIQUE INDEX webhook_event_pkey ON public.webhook_event USING btree (id)"
+    },
+    {
+      "kind": "index",
+      "key": "webhook_event.webhook_event_provider_provider_event_id_key",
+      "definition": "CREATE UNIQUE INDEX webhook_event_provider_provider_event_id_key ON public.webhook_event USING btree (provider, provider_event_id)"
+    },
+    {
+      "kind": "policy",
+      "key": "adoption_applications.admin only",
+      "definition": "[\"PERMISSIVE\", [\"public\"], \"ALL\", \"(auth.role() = 'authenticated'::text)\", null]"
+    },
+    {
+      "kind": "trigger",
+      "key": "admin_user.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON admin_user FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "adopter_profile.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON adopter_profile FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "adoption_application_detail.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON adoption_application_detail FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "adoption_case.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON adoption_case FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "adoption_fee.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON adoption_fee FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "adoption_fees.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON adoption_fees FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "adoption_followup.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON adoption_followup FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "adoption_guide_releases.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON adoption_guide_releases FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "adoption_intake_item.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON adoption_intake_item FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "adoption_rules.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON adoption_rules FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "animal_match.audit_animal_match",
+      "definition": "CREATE TRIGGER audit_animal_match AFTER INSERT OR DELETE OR UPDATE ON animal_match FOR EACH ROW EXECUTE FUNCTION log_animal_mutation()"
+    },
+    {
+      "kind": "trigger",
+      "key": "animal_match.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON animal_match FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "animal_position.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON animal_position FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "animal_profile_internal.audit_animal_profile_internal",
+      "definition": "CREATE TRIGGER audit_animal_profile_internal AFTER INSERT OR DELETE OR UPDATE ON animal_profile_internal FOR EACH ROW EXECUTE FUNCTION log_animal_mutation()"
+    },
+    {
+      "kind": "trigger",
+      "key": "animal_profile_internal.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON animal_profile_internal FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "animals.animal_catalog_membership_defaults",
+      "definition": "CREATE TRIGGER animal_catalog_membership_defaults BEFORE INSERT OR UPDATE OF type ON animals FOR EACH ROW EXECUTE FUNCTION set_animal_catalog_membership_defaults()"
+    },
+    {
+      "kind": "trigger",
+      "key": "animals.audit_animals",
+      "definition": "CREATE TRIGGER audit_animals AFTER INSERT OR DELETE OR UPDATE ON animals FOR EACH ROW EXECUTE FUNCTION log_animal_mutation()"
+    },
+    {
+      "kind": "trigger",
+      "key": "annual_reports.enforce_annual_report_asset",
+      "definition": "CREATE CONSTRAINT TRIGGER enforce_annual_report_asset AFTER INSERT OR UPDATE ON annual_reports DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION private.enforce_annual_report_asset()"
+    },
+    {
+      "kind": "trigger",
+      "key": "annual_reports.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON annual_reports FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "arrival_source.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON arrival_source FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "audit_log.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON audit_log FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "board_member.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON board_member FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "care_topics.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON care_topics FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "consent.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON consent FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "content_item.require_ready_content_public_assets",
+      "definition": "CREATE TRIGGER require_ready_content_public_assets BEFORE UPDATE ON content_item FOR EACH ROW EXECUTE FUNCTION private.require_ready_content_public_assets()"
+    },
+    {
+      "kind": "trigger",
+      "key": "content_item.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON content_item FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "content_link.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON content_link FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "content_media.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON content_media FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "content_revision.content_revision_snapshot_immutable",
+      "definition": "CREATE TRIGGER content_revision_snapshot_immutable BEFORE UPDATE ON content_revision FOR EACH ROW EXECUTE FUNCTION private.guard_content_revision_snapshot()"
+    },
+    {
+      "kind": "trigger",
+      "key": "coordinator_status.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON coordinator_status FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "document_assets.protect_published_annual_report_asset",
+      "definition": "CREATE CONSTRAINT TRIGGER protect_published_annual_report_asset AFTER UPDATE ON document_assets DEFERRABLE INITIALLY IMMEDIATE FOR EACH ROW EXECUTE FUNCTION private.protect_published_annual_report_asset()"
+    },
+    {
+      "kind": "trigger",
+      "key": "document_assets.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON document_assets FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "dog_friendly_estates.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON dog_friendly_estates FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "donation.record_public_consent_intents",
+      "definition": "CREATE TRIGGER record_public_consent_intents AFTER INSERT ON donation FOR EACH ROW EXECUTE FUNCTION record_public_consent_intents()"
+    },
+    {
+      "kind": "trigger",
+      "key": "donation.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON donation FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "faq_entry.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON faq_entry FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "group_enquiries.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON group_enquiries FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "knowledge_posts.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON knowledge_posts FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "living_area.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON living_area FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "message.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON message FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "message_template.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON message_template FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "payment.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON payment FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "payment_public_config.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON payment_public_config FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "receipt.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON receipt FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "receipt_sequence.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON receipt_sequence FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "recipient_notification_draft.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON recipient_notification_draft FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "recurring_mandate.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON recurring_mandate FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "rescue_story_profile.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON rescue_story_profile FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "site_config.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON site_config FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "site_document_slots.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON site_document_slots FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "social_copy_variant.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON social_copy_variant FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "sponsorship_assignment.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON sponsorship_assignment FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "sponsorship_payment_allocation.assert_sponsorship_allocation_valid",
+      "definition": "CREATE TRIGGER assert_sponsorship_allocation_valid BEFORE INSERT ON sponsorship_payment_allocation FOR EACH ROW EXECUTE FUNCTION private.assert_sponsorship_allocation_valid()"
+    },
+    {
+      "kind": "trigger",
+      "key": "sponsorship_payment_allocation.reject_sponsorship_allocation_rewrite",
+      "definition": "CREATE TRIGGER reject_sponsorship_allocation_rewrite BEFORE DELETE OR UPDATE ON sponsorship_payment_allocation FOR EACH ROW EXECUTE FUNCTION private.reject_sponsorship_allocation_rewrite()"
+    },
+    {
+      "kind": "trigger",
+      "key": "sponsorship_period.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON sponsorship_period FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "sponsorship_pledge.record_public_consent_intents",
+      "definition": "CREATE TRIGGER record_public_consent_intents AFTER INSERT ON sponsorship_pledge FOR EACH ROW EXECUTE FUNCTION record_public_consent_intents()"
+    },
+    {
+      "kind": "trigger",
+      "key": "sponsorship_pledge.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON sponsorship_pledge FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "story_update.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON story_update FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "successful_adoption.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON successful_adoption FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "supporter.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON supporter FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "supporter_role.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON supporter_role FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "volunteer_activity.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON volunteer_activity FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "volunteer_registration.record_public_consent_intents",
+      "definition": "CREATE TRIGGER record_public_consent_intents AFTER INSERT ON volunteer_registration FOR EACH ROW EXECUTE FUNCTION record_public_consent_intents()"
+    },
+    {
+      "kind": "trigger",
+      "key": "volunteer_registration.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON volunteer_registration FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    },
+    {
+      "kind": "trigger",
+      "key": "webhook_event.set_updated_at",
+      "definition": "CREATE TRIGGER set_updated_at BEFORE UPDATE ON webhook_event FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+    }
+  ]
+}

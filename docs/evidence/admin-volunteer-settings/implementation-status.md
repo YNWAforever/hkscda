@@ -2,6 +2,10 @@
 
 Updated 2026-09-13. This describes the current review candidate. It is not a production completion or final release-gate statement.
 
+## Production parity follow-up (2026-09-13)
+
+Read-only production inspection identified concrete baseline gaps. The new guarded prerequisite `20260913060000_verified_baseline_compatibility.sql` precedes the original 36 unchanged migrations; the manifest now contains 37 candidates (100 source files including baseline). Full source-chain and production-shaped rollback rehearsals pass, as does post-prerequisite full acceptance: 2343 passed, one intentional skip, zero failures. The earlier 99-entry CLI/browser/recovery evidence below remains historical, not a claim of a new 100-entry CLI or browser run. See [production-baseline-parity.md](production-baseline-parity.md) for exact repairs, preservation checks and limits. No production writes or ledger repair occurred.
+
 ## Candidate and preservation
 
 - Repository: YNWAforever/hkscda; isolated branch codex/admin-volunteer-settings-20260913, based on 3fcf8cec235e0fa252b7d134f74948f2a682ebac.

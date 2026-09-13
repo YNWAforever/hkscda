@@ -2,13 +2,17 @@
 
 Prepared 2026-09-13. This is a reviewable release plan, not production authorization or proof of deployment. No production mutation was performed to prepare it.
 
+## Production parity follow-up (2026-09-13)
+
+Read-only production inspection identified concrete baseline gaps. The new guarded prerequisite `20260913060000_verified_baseline_compatibility.sql` precedes the original 36 unchanged migrations; the manifest now contains 37 candidates (100 source files including baseline). Full source-chain and production-shaped rollback rehearsals pass, as does post-prerequisite full acceptance: 2343 passed, one intentional skip, zero failures. The earlier 99-entry CLI/browser/recovery evidence below remains historical, not a claim of a new 100-entry CLI or browser run. See [production-baseline-parity.md](production-baseline-parity.md) for exact repairs, preservation checks and limits. No production writes or ledger repair occurred.
+
 ## Scope and frozen evidence
 
-The current worktree is based on commit `3fcf8cec235e0fa252b7d134f74948f2a682ebac`. It contains **63 baseline migrations** through `20260912120000_sponsorship_assignments.sql` and **36 new candidate migrations** listed below. The candidate is prepared on the isolated review branch; it has not been published. Freeze the reviewed source and regenerate/check the LF-normalized UTF-8 SHA-256 values in [migration-release-manifest.json](migration-release-manifest.json) after any change, including changes to an earlier candidate migration. A later candidate added to the directory is not automatically authorized by this list.
+The current worktree is based on commit `3fcf8cec235e0fa252b7d134f74948f2a682ebac`. It contains **63 baseline migrations** through `20260912120000_sponsorship_assignments.sql` and **37 new candidate migrations** listed below. The candidate is prepared on the isolated review branch; it has not been published. Freeze the reviewed source and regenerate/check the LF-normalized UTF-8 SHA-256 values in [migration-release-manifest.json](migration-release-manifest.json) after any change, including changes to an earlier candidate migration. A later candidate added to the directory is not automatically authorized by this list.
 
 The parent recorded a fresh, read-only production ledger snapshot on 2026-09-13 in [production-migration-ledger.json](production-migration-ledger.json): project `iihqjzilgawhfdhdevam`, 33 rows, latest recorded remote version `20260912074747`. This subtask used that saved metadata; it did not make a production connection. The snapshot records migration names, statement counts and joined-statement MD5 values, not SQL bodies or personal data.
 
-The isolated baseline replay is documented in [baseline.md](baseline.md): 63 migrations from zero succeeded on `hkscda-policy-20260913`, with API `127.0.0.1:56321` and PostgreSQL `127.0.0.1:56322/postgres`. The shared 55321/55322 environment is excluded. The release owner reported a clean 98-migration replay (63 baseline plus the first 35 candidates), followed by a no-op migration up with `applied: []`. Fresh-database finance browser verification passed five checks with no page errors, and the RLS gate passed 45 tests / 82 assertions. Subsequent complete SECURITY DEFINER grant review found four inherited browser-executable server commands, closed by candidate `20260913092132_restrict_receipt_issuance_rpc.sql`; actual anonymous/authenticated invocation denials pass. **The release owner subsequently completed the exact 99-migration clean replay and a repeated migration up returned `applied: []`. The fresh read-only schema check confirms all 99 ledger entries through `20260913092132`; the dedicated RLS rerun passed 45 tests / 82 assertions. Repeated full root acceptance gates remain in progress and will be recorded in `final-acceptance.md`.** No reset is part of this runbook's execution; the parent owns the isolated rehearsal.
+The isolated baseline replay is documented in [baseline.md](baseline.md): 63 migrations from zero succeeded on `hkscda-policy-20260913`, with API `127.0.0.1:56321` and PostgreSQL `127.0.0.1:56322/postgres`. The shared 55321/55322 environment is excluded. The release owner reported a clean 98-migration replay (63 baseline plus the first 35 candidates), followed by a no-op migration up with `applied: []`. Fresh-database finance browser verification passed five checks with no page errors, and the RLS gate passed 45 tests / 82 assertions. Subsequent complete SECURITY DEFINER grant review found four inherited browser-executable server commands, closed by candidate `20260913092132_restrict_receipt_issuance_rpc.sql`; actual anonymous/authenticated invocation denials pass. **The release owner subsequently completed the exact 99-migration clean replay and a repeated migration up returned `applied: []`. The fresh read-only schema check confirms all 99 ledger entries through `20260913092132`; the dedicated RLS rerun passed 45 tests / 82 assertions. Both full root acceptance runs completed and are recorded in `final-acceptance.md`.** No reset is part of this runbook's execution; the parent owns the isolated rehearsal.
 
 ## Production ledger reconciliation: 33 entries are not 33 source files
 
@@ -60,42 +64,43 @@ The lower-risk release path while the historical mapping is unresolved is an exp
 
 Only the following candidate files are in this plan. Apply each file transactionally, in this order, stopping at the first failure. Do not run a second copy of an already successful file; many additive migrations deliberately use `CREATE TABLE/FUNCTION` and are not raw-SQL rerunnable. Atomic transaction plus recorded-prefix recovery is the retry contract.
 
-1.  `20260913062837_volunteer_versioned_policy.sql`
-2.  `20260913062952_volunteer_atomic_attendance.sql`
-3.  `20260913064921_volunteer_profile_commands.sql`
-4.  `20260913065257_volunteer_policy_validation.sql`
-5.  `20260913065833_volunteer_daily_policy.sql`
-6.  `20260913070057_volunteer_initial_policy_catalogue.sql`
-7.  `20260913070128_volunteer_monthly_assessments.sql`
-8.  `20260913071632_animal_public_column_boundary.sql`
-9.  `20260913071639_volunteer_runtime_jobs.sql`
-10. `20260913071927_sponsorship_exact_proof_review.sql`
-11. `20260913072235_volunteer_booking_enforcement.sql`
-12. `20260913072454_veterinary_internship_workflow.sql`
-13. `20260913072851_volunteer_group_operations.sql`
-14. `20260913073012_sponsorship_financial_closure.sql`
-15. `20260913073314_animal_publication_lifecycle.sql`
-16. `20260913075040_volunteer_verified_service_history.sql`
-17. `20260913075643_volunteer_release_transitions.sql`
-18. `20260913075913_sponsorship_contact_verification.sql`
-19. `20260913080143_volunteer_immutable_qualification_evidence.sql`
-20. `20260913080152_sponsorship_role_handoff.sql`
-21. `20260913080537_volunteer_policy_simulation.sql`
-22. `20260913080838_sponsorship_allocation_retry.sql`
-23. `20260913081521_sponsorship_partial_refunds.sql`
-24. `20260913081533_volunteer_policy_sources.sql`
-25. `20260913081720_volunteer_legacy_identity_reconciliation.sql`
-26. `20260913082300_atomic_animal_preference_eligibility.sql`
-27. `20260913083120_volunteer_public_availability_summary.sql`
-28. `20260913083503_sponsorship_refund_read_models.sql`
-29. `20260913084120_volunteer_notification_claim_fencing.sql`
-30. `20260913084247_volunteer_booking_shape_guard.sql`
-31. `20260913084717_factual_history_runtime_privileges.sql`
-32. `20260913084920_volunteer_operational_tasks.sql`
-33. `20260913085252_volunteer_promotion_review_tasks.sql`
-34. `20260913085500_volunteer_tier_candidates.sql`
-35. `20260913090746_volunteer_schedule_integrity.sql`
-36. `20260913092132_restrict_receipt_issuance_rpc.sql`
+1. `20260913060000_verified_baseline_compatibility.sql` — guarded prerequisites identified by read-only production parity
+2. `20260913062837_volunteer_versioned_policy.sql`
+3. `20260913062952_volunteer_atomic_attendance.sql`
+4. `20260913064921_volunteer_profile_commands.sql`
+5. `20260913065257_volunteer_policy_validation.sql`
+6. `20260913065833_volunteer_daily_policy.sql`
+7. `20260913070057_volunteer_initial_policy_catalogue.sql`
+8. `20260913070128_volunteer_monthly_assessments.sql`
+9. `20260913071632_animal_public_column_boundary.sql`
+10. `20260913071639_volunteer_runtime_jobs.sql`
+11. `20260913071927_sponsorship_exact_proof_review.sql`
+12. `20260913072235_volunteer_booking_enforcement.sql`
+13. `20260913072454_veterinary_internship_workflow.sql`
+14. `20260913072851_volunteer_group_operations.sql`
+15. `20260913073012_sponsorship_financial_closure.sql`
+16. `20260913073314_animal_publication_lifecycle.sql`
+17. `20260913075040_volunteer_verified_service_history.sql`
+18. `20260913075643_volunteer_release_transitions.sql`
+19. `20260913075913_sponsorship_contact_verification.sql`
+20. `20260913080143_volunteer_immutable_qualification_evidence.sql`
+21. `20260913080152_sponsorship_role_handoff.sql`
+22. `20260913080537_volunteer_policy_simulation.sql`
+23. `20260913080838_sponsorship_allocation_retry.sql`
+24. `20260913081521_sponsorship_partial_refunds.sql`
+25. `20260913081533_volunteer_policy_sources.sql`
+26. `20260913081720_volunteer_legacy_identity_reconciliation.sql`
+27. `20260913082300_atomic_animal_preference_eligibility.sql`
+28. `20260913083120_volunteer_public_availability_summary.sql`
+29. `20260913083503_sponsorship_refund_read_models.sql`
+30. `20260913084120_volunteer_notification_claim_fencing.sql`
+31. `20260913084247_volunteer_booking_shape_guard.sql`
+32. `20260913084717_factual_history_runtime_privileges.sql`
+33. `20260913084920_volunteer_operational_tasks.sql`
+34. `20260913085252_volunteer_promotion_review_tasks.sql`
+35. `20260913085500_volunteer_tier_candidates.sql`
+36. `20260913090746_volunteer_schedule_integrity.sql`
+37. `20260913092132_restrict_receipt_issuance_rpc.sql`
 
 ## Static dependency and permission review
 
@@ -146,4 +151,4 @@ Final isolated ordered replay, candidate hash verification and the synthetic bac
 
 The final grant correction preserves service-role execution for receipt issuance, pledge cancellation and the two adoption coordination commands, while removing PUBLIC/anon/authenticated execution. Role checks against caller-supplied UUIDs are not session authentication. The [bounded effective-schema report](fresh-schema-verification.json) records all 80 public SECURITY DEFINER non-trigger functions and verifies no browser execution remains; trigger functions are excluded because EXECUTE privilege does not govern trigger firing. Its refreshed ledger count is 99, with no unledgered suffix, after the release owner completed the final clean replay.
 
-Release evidence handoff: the frozen manifest now covers 36 candidates (99 files including the 63 baseline). The final assessment migration hash was refreshed after its owner confirmed the timezone, attendance-unit, shelter-scope and regular-streak corrections were frozen; the server-command grant migration is included. Final extra-blank-line cleanup changed no SQL statements; hashes were regenerated and the exact normalized files were replayed again. The attached `final-acceptance.md` records the completed final99-file clean replay, no-op migration check and repeated full acceptance results. Review that report before production approval. All 36 frozen migration hashes were rechecked unchanged after the final replay; the schema evidence was refreshed against that 99-entry ledger.
+Historical feature-chain evidence handoff: the original manifest covered 36 candidates (99 files including the 63 baseline); the dated follow-up above adds the verified prerequisite. The final assessment migration hash was refreshed after its owner confirmed the timezone, attendance-unit, shelter-scope and regular-streak corrections were frozen; the server-command grant migration is included. Final extra-blank-line cleanup changed no SQL statements; hashes were regenerated and the exact normalized files were replayed again. The attached `final-acceptance.md` records the completed final99-file clean replay, no-op migration check and repeated full acceptance results. Review that report before production approval. All 36 frozen migration hashes were rechecked unchanged after the final replay; the schema evidence was refreshed against that 99-entry ledger.

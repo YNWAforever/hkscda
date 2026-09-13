@@ -1,0 +1,6376 @@
+{
+  "checked_at": "2026-09-13T10:28:48.898Z",
+  "read_only_production": true,
+  "baseline_migrations": 63,
+  "baseline_objects": 148,
+  "production_objects": 146,
+  "exact_matches": 87,
+  "differences": [
+    {
+      "key": "function:private.apply_sponsorship_allocations(p_proof_id uuid, p_actor_admin_id uuid, p_allocations jsonb)",
+      "status": "different",
+      "fields": [
+        "body_md5",
+        "normalized_body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "ef3488e5331112677bfafe0d75550b97",
+        "volatility": "v",
+        "service_role": false,
+        "authenticated": false,
+        "security_definer": true,
+        "normalized_body_md5": "ef7b1f647118690e153a88aad06b28de"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "9b8e8f86ea7d75c858cdc9f0528d0ffc",
+        "volatility": "v",
+        "service_role": false,
+        "authenticated": false,
+        "security_definer": true,
+        "normalized_body_md5": "cea03701f6cc033c44f2ec8871a53746"
+      }
+    },
+    {
+      "key": "function:private.assert_sponsorship_allocation_valid()",
+      "status": "different",
+      "fields": [
+        "body_md5",
+        "normalized_body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "trigger",
+        "body_md5": "60def99f3a75b180185a5b93e6f58b0a",
+        "volatility": "v",
+        "service_role": false,
+        "authenticated": false,
+        "security_definer": true,
+        "normalized_body_md5": "39384727b711ef079f05437918e07a31"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "trigger",
+        "body_md5": "fe27e125d6beb827d393c25028f3a301",
+        "volatility": "v",
+        "service_role": false,
+        "authenticated": false,
+        "security_definer": true,
+        "normalized_body_md5": "480c31a6ad9230cf7d501ebf435b3b6e"
+      }
+    },
+    {
+      "key": "function:private.build_content_authoring_snapshot(p_content_id uuid)",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "e1d19eedae6ee6c2c6acbc74f267f47a",
+        "volatility": "s",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "44a399e3a05efeab2f29fe471f438d35"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "4c49f48bac1457fde48c8cbe3e74b636",
+        "volatility": "s",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "44a399e3a05efeab2f29fe471f438d35"
+      }
+    },
+    {
+      "key": "function:private.build_content_public_snapshot(p_content_id uuid, p_published_at timestamp with time zone)",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "8cc034b8d2795f30c0385631c8f52608",
+        "volatility": "s",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "fe657c0f7be01f2f6a20bfc0cae7dd81"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "8faca12e97493029007868ce0e34228b",
+        "volatility": "s",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "fe657c0f7be01f2f6a20bfc0cae7dd81"
+      }
+    },
+    {
+      "key": "function:private.content_summary_snapshot(p_snapshot jsonb)",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "cd02952ea89e23aa530674e761107993",
+        "volatility": "i",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "22f2a8997453684c5954c0733cbac690"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "b02b61407a8f7f47e829eeb4cbfc4e37",
+        "volatility": "i",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "22f2a8997453684c5954c0733cbac690"
+      }
+    },
+    {
+      "key": "function:private.enforce_annual_report_asset()",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": true,
+        "config": [
+          "search_path=\"\""
+        ],
+        "result": "trigger",
+        "body_md5": "db3de97534d2516bc613bd1dff5ce78c",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": true,
+        "security_definer": true,
+        "normalized_body_md5": "cd9e9fa879477e30595a7b4ac2ab9af9"
+      },
+      "production": {
+        "anon": true,
+        "config": [
+          "search_path=\"\""
+        ],
+        "result": "trigger",
+        "body_md5": "5abab89f90631153ba7737ef69d046d3",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": true,
+        "security_definer": true,
+        "normalized_body_md5": "cd9e9fa879477e30595a7b4ac2ab9af9"
+      }
+    },
+    {
+      "key": "function:private.guard_content_revision_snapshot()",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "trigger",
+        "body_md5": "5243408d4b0680b01e550cee894defe3",
+        "volatility": "v",
+        "service_role": false,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "31d1879541389e8ea9384bb4bf9132b3"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "trigger",
+        "body_md5": "154b4e01bf94549280b66bbc64c4c707",
+        "volatility": "v",
+        "service_role": false,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "31d1879541389e8ea9384bb4bf9132b3"
+      }
+    },
+    {
+      "key": "function:private.insert_content_revision(p_content_id uuid, p_version integer, p_operation text, p_actor_admin_id uuid, p_snapshot_published_at timestamp with time zone)",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "uuid",
+        "body_md5": "a7ee5b4db2c3742501284367dc4b4e0c",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "2fa4c2f8ccfedfa017a1521b2063e7f5"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "uuid",
+        "body_md5": "5dc6a77bddc78dc7aa2d980202697a66",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "2fa4c2f8ccfedfa017a1521b2063e7f5"
+      }
+    },
+    {
+      "key": "function:private.materialize_published_content_snapshot(p_snapshot jsonb, p_revision_id uuid)",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "a2cde30964665478118bfe565c0272b1",
+        "volatility": "s",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "21635308fd4cc11113458b25eec74e25"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "4135e8e1e0795e89f3e232528d9c8cb6",
+        "volatility": "s",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "21635308fd4cc11113458b25eec74e25"
+      }
+    },
+    {
+      "key": "function:private.protect_published_annual_report_asset()",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": true,
+        "config": [
+          "search_path=\"\""
+        ],
+        "result": "trigger",
+        "body_md5": "f8bd98608922f5fd6ee397b249c45d94",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": true,
+        "security_definer": true,
+        "normalized_body_md5": "04f811790f9e39a67b4d4bc32f687698"
+      },
+      "production": {
+        "anon": true,
+        "config": [
+          "search_path=\"\""
+        ],
+        "result": "trigger",
+        "body_md5": "0c330175c7659dc022eee56dbefc0978",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": true,
+        "security_definer": true,
+        "normalized_body_md5": "04f811790f9e39a67b4d4bc32f687698"
+      }
+    },
+    {
+      "key": "function:private.require_content_actor(p_actor_user_id uuid)",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "admin_user",
+        "body_md5": "36656f5f752ce222410551d54dd9ce44",
+        "volatility": "s",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "1d4aaf4e184b1732d7acec5073483e2a"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "admin_user",
+        "body_md5": "a1efe64786bca41e72611977754d8137",
+        "volatility": "s",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "1d4aaf4e184b1732d7acec5073483e2a"
+      }
+    },
+    {
+      "key": "function:private.require_ready_content_public_assets()",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "trigger",
+        "body_md5": "b5d1f02f0e87eaefa9b26da97509405e",
+        "volatility": "v",
+        "service_role": false,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "a13c97fd2de575ba6d545293107dd4d8"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "trigger",
+        "body_md5": "646845f715dd16d9fa432537a23150eb",
+        "volatility": "v",
+        "service_role": false,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "a13c97fd2de575ba6d545293107dd4d8"
+      }
+    },
+    {
+      "key": "function:private.validate_content_publication_snapshot(p_snapshot jsonb)",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "void",
+        "body_md5": "4192531ab973063fea863a8530f20341",
+        "volatility": "i",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "80c43f7eb47d3cba2d4c8446e664568f"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "void",
+        "body_md5": "f3b6ff6e8a71c8f43bdc0cfb04702cad",
+        "volatility": "i",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "80c43f7eb47d3cba2d4c8446e664568f"
+      }
+    },
+    {
+      "key": "function:public.assign_sponsorship_animal_with_audit(p_pledge_id uuid, p_animal_id uuid, p_actor_user_id uuid, p_note text)",
+      "status": "different",
+      "fields": [
+        "body_md5",
+        "normalized_body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "uuid",
+        "body_md5": "8f38018d13eae6578844123d2c7669b5",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": true,
+        "normalized_body_md5": "536d5221b75e11a5746eca6eddc0c231"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "uuid",
+        "body_md5": "c1210433372efaa5ed168f87c998a38e",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": true,
+        "normalized_body_md5": "99ac203817b9deccb370ee6b1fb29203"
+      }
+    },
+    {
+      "key": "function:public.create_content_media_session(p_actor_user_id uuid, p_content_id uuid, p_expected_version integer, p_mime_type text, p_byte_size integer, p_story_update_id uuid)",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "35d4fa4e97f40872603c3219478aefc9",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "d971e1dbdc99b14599980bd6ec76bf20"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "d42e60b9165453db5961b000326d9d06",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "d971e1dbdc99b14599980bd6ec76bf20"
+      }
+    },
+    {
+      "key": "function:public.create_content_revision_with_audit(p_actor_user_id uuid, p_values jsonb)",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "603203b1f33bb377d4cecc31ce31e771",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "2993ce7bc59f20bf06db2c04fbcd50fc"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "e411e5fe3455d8f2e84c7ebfd792b877",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "2993ce7bc59f20bf06db2c04fbcd50fc"
+      }
+    },
+    {
+      "key": "function:public.deactivate_faq_entry_with_audit(p_actor_user_id uuid, p_id uuid)",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "void",
+        "body_md5": "14164211fadd13aaa2682155978060e5",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": true,
+        "normalized_body_md5": "a8c699c1b358e8f45b0ee6dba94f5759"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "void",
+        "body_md5": "e702a73f33970995dd7ed02a4940a829",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": true,
+        "normalized_body_md5": "a8c699c1b358e8f45b0ee6dba94f5759"
+      }
+    },
+    {
+      "key": "function:public.finalize_content_media_session(p_actor_user_id uuid, p_content_id uuid, p_session_id uuid, p_expected_version integer, p_values jsonb, p_sha256 text)",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "bed9113ca3fd2662aa08d5cefd0770b7",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "85dd58d5b3ff42fee10919afca6afc4b"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "49f72bf5d50763098129804446a117e2",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "85dd58d5b3ff42fee10919afca6afc4b"
+      }
+    },
+    {
+      "key": "function:public.get_content_media_session(p_actor_user_id uuid, p_content_id uuid, p_session_id uuid)",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "d7f160c39f93940825e9c1938f50b349",
+        "volatility": "s",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "737f02364eb10de6bde5fdc82950ea55"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "b90c8c705bf5abcfc34c14af2824bb78",
+        "volatility": "s",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "737f02364eb10de6bde5fdc82950ea55"
+      }
+    },
+    {
+      "key": "function:public.log_animal_mutation()",
+      "status": "different",
+      "fields": [
+        "body_md5",
+        "normalized_body_md5"
+      ],
+      "baseline": {
+        "anon": true,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "trigger",
+        "body_md5": "9c09ace1add74ee81a5b3c8cb2e9d5f1",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": true,
+        "security_definer": true,
+        "normalized_body_md5": "861adfb12bf6f1a27c9dac38b7256fc2"
+      },
+      "production": {
+        "anon": true,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "trigger",
+        "body_md5": "5425f530476791dc6126f71dd41ead22",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": true,
+        "security_definer": true,
+        "normalized_body_md5": "eb422e83ebd0854b779959a9cfe08474"
+      }
+    },
+    {
+      "key": "function:public.mark_content_public_asset_ready(p_actor_user_id uuid, p_content_id uuid, p_asset_id uuid)",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "void",
+        "body_md5": "c9f9036ba4d36d558ba83e0f37575f76",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "84a194e9a9a5e613d9f69e53f919f2ee"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "void",
+        "body_md5": "cd9ce046071af0d1d1914251402f7be8",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "84a194e9a9a5e613d9f69e53f919f2ee"
+      }
+    },
+    {
+      "key": "function:public.mutate_annual_report_with_audit(p_actor_user_id uuid, p_operation text, p_id uuid, p_values jsonb)",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=\"\""
+        ],
+        "result": "uuid",
+        "body_md5": "49f5b63923eb9256603b87cb9eb51362",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "35fd6f3c568ac3d5bad4ec117eb26cde"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=\"\""
+        ],
+        "result": "uuid",
+        "body_md5": "86e7132631e1e42fa512ed1ca938304c",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "35fd6f3c568ac3d5bad4ec117eb26cde"
+      }
+    },
+    {
+      "key": "function:public.mutate_content_revision_with_audit(p_actor_user_id uuid, p_content_id uuid, p_expected_version integer, p_operation text, p_values jsonb)",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "ee86a078b385f874a0a8cd16fbc6a3f3",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "b90d369a18d910ae882fcd91dfbc9b20"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "7d8fa3c1dbe255abbba4b4e2ba3da9e6",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "b90d369a18d910ae882fcd91dfbc9b20"
+      }
+    },
+    {
+      "key": "function:public.mutate_document_asset_with_audit(p_actor_user_id uuid, p_operation text, p_id uuid, p_values jsonb)",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=\"\""
+        ],
+        "result": "uuid",
+        "body_md5": "d42b98066c038f1f2c76a6c109f1e810",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "a85ac97bb238acb1143d422a3fa3c197"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=\"\""
+        ],
+        "result": "uuid",
+        "body_md5": "1cbac745d9f393ddfd8aa487b9d89a3f",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "a85ac97bb238acb1143d422a3fa3c197"
+      }
+    },
+    {
+      "key": "function:public.prepare_content_public_assets(p_actor_user_id uuid, p_content_id uuid, p_revision_id uuid, p_expected_version integer, p_idempotency_key text)",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "70d095c75fd8c9fadd83a3ad2741fdc4",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "9252493ad528dfebaa0849f814991fdf"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "dda27999893382c5ec10510b18fd8096",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "9252493ad528dfebaa0849f814991fdf"
+      }
+    },
+    {
+      "key": "function:public.publish_content_revision(p_actor_user_id uuid, p_content_id uuid, p_revision_id uuid, p_expected_version integer, p_idempotency_key text)",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "a8163cb6795d7434344d2fce422da606",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "241ede9966c4db3d16d79a6d6f435081"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "b4ec1fec1374e7d477c2e678ac49a46c",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "241ede9966c4db3d16d79a6d6f435081"
+      }
+    },
+    {
+      "key": "function:public.read_content_admin_summaries(p_filters jsonb)",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "142cc764ac2e8fa9c8eaa128f18cba59",
+        "volatility": "s",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "ac0752a363a4f8d9860cba9e663cccb1"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "860ce258f30f79a59b64239e23a079d8",
+        "volatility": "s",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "ac0752a363a4f8d9860cba9e663cccb1"
+      }
+    },
+    {
+      "key": "function:public.read_content_authoring_detail(p_content_id uuid, p_history_page integer)",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "e7569e6c2b467cd66e0c5b6d32374407",
+        "volatility": "s",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "4bcf30504346919f34f65be08600b4d7"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "805f2aaf57b61fbfe808efc86753490a",
+        "volatility": "s",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "4bcf30504346919f34f65be08600b4d7"
+      }
+    },
+    {
+      "key": "function:public.read_published_content_snapshots(p_filters jsonb)",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "2adb0ae20d359e0b8f00dd73dacea5ab",
+        "volatility": "s",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "3c145319787ce422f647ae6cbfd00405"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "72ac5606af02822c4f322b8f213c8bf8",
+        "volatility": "s",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "3c145319787ce422f647ae6cbfd00405"
+      }
+    },
+    {
+      "key": "function:public.record_sponsorship_payment_proof(p_pledge_id uuid, p_actor_user_id uuid, p_storage_path text, p_file_name text, p_file_type text, p_file_size integer, p_payment_method text, p_reference text, p_amount_cents integer, p_payment_date date, p_note text)",
+      "status": "different",
+      "fields": [
+        "body_md5",
+        "normalized_body_md5"
+      ],
+      "baseline": {
+        "anon": true,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "uuid",
+        "body_md5": "33241fb70761106fcf0494c829bbc622",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": true,
+        "security_definer": true,
+        "normalized_body_md5": "6332b1ce1b601cc6446246c9556fdc14"
+      },
+      "production": {
+        "anon": true,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "uuid",
+        "body_md5": "4c769328d32135326577127a0d8c80e5",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": true,
+        "security_definer": true,
+        "normalized_body_md5": "9ea31d19f07d4bb7416de68165202a98"
+      }
+    },
+    {
+      "key": "function:public.restore_content_revision(p_actor_user_id uuid, p_content_id uuid, p_revision_id uuid, p_expected_version integer)",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "48894bdbb0bd93385280ef865559ffa6",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "2c21e7003ca4c5e759812625cca50d00"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "jsonb",
+        "body_md5": "2c57f9b91ba23a656f3439f3889ac2ce",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": false,
+        "normalized_body_md5": "2c21e7003ca4c5e759812625cca50d00"
+      }
+    },
+    {
+      "key": "function:public.reverse_sponsorship_allocation_with_audit(p_allocation_id uuid, p_actor_user_id uuid, p_note text)",
+      "status": "different",
+      "fields": [
+        "body_md5",
+        "normalized_body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "uuid",
+        "body_md5": "13a686b56189f772946483558f1839e1",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": true,
+        "normalized_body_md5": "77f43a2356d08e1f2248bcff5ac25c4a"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "uuid",
+        "body_md5": "618902056c992e3fa1371234e9ccbe9a",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": true,
+        "normalized_body_md5": "e182a35ab6cb5fab143fcf65c3922257"
+      }
+    },
+    {
+      "key": "function:public.review_sponsorship_payment_proof(p_pledge_id uuid, p_decision text, p_actor_user_id uuid, p_note text, p_allocations jsonb, p_assign_animal_id uuid)",
+      "status": "different",
+      "fields": [
+        "body_md5",
+        "normalized_body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "void",
+        "body_md5": "cf5c50b4d63f7c840741ed5845d2a43f",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": true,
+        "normalized_body_md5": "9765cf721ba97c745b1df8077322c52c"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "void",
+        "body_md5": "655733a9b8204ac0ea6b142b79a4585b",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": true,
+        "normalized_body_md5": "62d586c500d6793228f43ea3b3e83acd"
+      }
+    },
+    {
+      "key": "function:public.set_animal_catalog_membership_defaults()",
+      "status": "different",
+      "fields": [
+        "body_md5",
+        "normalized_body_md5"
+      ],
+      "baseline": {
+        "anon": true,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "trigger",
+        "body_md5": "4431f9db3ecc87c2f4698a9778ce0139",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": true,
+        "security_definer": false,
+        "normalized_body_md5": "dd289e8082693ac3a9f296ac3ffa1fbe"
+      },
+      "production": {
+        "anon": true,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "trigger",
+        "body_md5": "a2475c7ad65e9f80cc08116bae4d72b6",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": true,
+        "security_definer": false,
+        "normalized_body_md5": "efd6b032d7a90dff91a1e8819c2d81a8"
+      }
+    },
+    {
+      "key": "function:public.update_animal_status_with_audit(p_actor_user_id uuid, p_animal_id uuid, p_status text, p_updated_at timestamp with time zone)",
+      "status": "missing_in_production",
+      "baseline": {
+        "anon": true,
+        "config": [
+          "search_path=\"\""
+        ],
+        "result": "SETOF animals",
+        "body_md5": "5b9da373339bbaba23580ceec6c43612",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": true,
+        "security_definer": false,
+        "normalized_body_md5": "c2499eb31df02688bdaaefb17cf75976"
+      }
+    },
+    {
+      "key": "function:public.upsert_about_page_content_with_audit(p_actor_user_id uuid, p_page_slug text, p_content jsonb)",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "about_page_content",
+        "body_md5": "ce7ec80df6357b0de5b676db931a3b76",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": true,
+        "normalized_body_md5": "ffc49081008180508b7cbec1d0e7b65d"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "about_page_content",
+        "body_md5": "596424993ef9e054cee72aafc198ce0f",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": true,
+        "normalized_body_md5": "ffc49081008180508b7cbec1d0e7b65d"
+      }
+    },
+    {
+      "key": "function:public.upsert_adoption_rule_with_audit(p_actor_user_id uuid, p_id uuid, p_content_zh text, p_content_en text, p_sort_order integer, p_is_published boolean)",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "adoption_rules",
+        "body_md5": "14d70df604fa3d4b61eb9c44be5c80b0",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": true,
+        "normalized_body_md5": "70f01e92c4bd104fe7c97c5561768a87"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "adoption_rules",
+        "body_md5": "d4ce93b1513ba4fe79cedd6fb199196f",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": true,
+        "normalized_body_md5": "70f01e92c4bd104fe7c97c5561768a87"
+      }
+    },
+    {
+      "key": "function:public.upsert_animal_internal_profile_with_audit(p_actor_user_id uuid, p_animal_id uuid, p_values jsonb)",
+      "status": "missing_in_production",
+      "baseline": {
+        "anon": true,
+        "config": [
+          "search_path=\"\""
+        ],
+        "result": "SETOF animal_profile_internal",
+        "body_md5": "06af6d27c79ddc62ea2c0495f22348ed",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": true,
+        "security_definer": false,
+        "normalized_body_md5": "4860f653de3e2ebe2e26b5050cb18b64"
+      }
+    },
+    {
+      "key": "function:public.upsert_care_topic_with_audit(p_actor_user_id uuid, p_id uuid, p_animal_type text, p_label_zh text, p_label_en text, p_content_zh text, p_content_en text, p_sort_order integer, p_is_published boolean)",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "care_topics",
+        "body_md5": "d4314c4a9bb7bec8cfa799202c0f3acf",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": true,
+        "normalized_body_md5": "17d2a78c3dfcdadca210a05ef2456739"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "care_topics",
+        "body_md5": "26cd09bce2bdfbaf0c1de011ccc93ff1",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": true,
+        "normalized_body_md5": "17d2a78c3dfcdadca210a05ef2456739"
+      }
+    },
+    {
+      "key": "function:public.upsert_faq_entry_with_audit(p_actor_user_id uuid, p_id uuid, p_category text, p_question_zh text, p_question_en text, p_answer_zh text, p_answer_en text, p_keywords_zh text[], p_keywords_en text[], p_cta_key text, p_sensitive boolean, p_sort_order integer, p_is_active boolean)",
+      "status": "whitespace_normalized_match",
+      "fields": [
+        "body_md5"
+      ],
+      "baseline": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "faq_entry",
+        "body_md5": "dcdaae8039d2e144f621974f386996f5",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": true,
+        "normalized_body_md5": "665bd791f725e2344c704357fd84cf47"
+      },
+      "production": {
+        "anon": false,
+        "config": [
+          "search_path=public, pg_temp"
+        ],
+        "result": "faq_entry",
+        "body_md5": "445120febac7b628be33e4a1c63b68b9",
+        "volatility": "v",
+        "service_role": true,
+        "authenticated": false,
+        "security_definer": true,
+        "normalized_body_md5": "665bd791f725e2344c704357fd84cf47"
+      }
+    },
+    {
+      "key": "relation:public.admin_user",
+      "status": "different",
+      "fields": [
+        "triggers"
+      ],
+      "baseline": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "d8a8d272f35bd72761992c60c98b01f7",
+        "indexes": "dc47cce488381ea8aac95523ffea0a59",
+        "policies": "f0f083f212ecdf3592499e75bd4c1065",
+        "triggers": "2f31cf3e2dde44487105bbd48b33cde2",
+        "force_rls": false,
+        "constraints": "43b950ee426c710f5576125499ba3563"
+      },
+      "production": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "d8a8d272f35bd72761992c60c98b01f7",
+        "indexes": "dc47cce488381ea8aac95523ffea0a59",
+        "policies": "f0f083f212ecdf3592499e75bd4c1065",
+        "triggers": "8665841dfbb4f3d49f32563463422ed3",
+        "force_rls": false,
+        "constraints": "43b950ee426c710f5576125499ba3563"
+      }
+    },
+    {
+      "key": "relation:public.adopter_profile",
+      "status": "different",
+      "fields": [
+        "triggers"
+      ],
+      "baseline": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "c70c39d2cb95e88f867d61eb51193b17",
+        "indexes": "2d417e2f56327aaa7952c297dd7f8987",
+        "policies": "87ececcf54d5f7ddb7a87d8fb2487ea2",
+        "triggers": "56ef8348b0128d07c91073f2d4d9e4c6",
+        "force_rls": false,
+        "constraints": "fd5c0320796c336918b6fab5e667dfac"
+      },
+      "production": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "c70c39d2cb95e88f867d61eb51193b17",
+        "indexes": "2d417e2f56327aaa7952c297dd7f8987",
+        "policies": "87ececcf54d5f7ddb7a87d8fb2487ea2",
+        "triggers": "141eea799fc5fab1a2b8a09f97cdaad6",
+        "force_rls": false,
+        "constraints": "fd5c0320796c336918b6fab5e667dfac"
+      }
+    },
+    {
+      "key": "relation:public.adoption_applications",
+      "status": "different",
+      "fields": [
+        "policies",
+        "triggers"
+      ],
+      "baseline": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            false
+          ],
+          [
+            "anon",
+            "INSERT",
+            false
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            false
+          ],
+          [
+            "anon",
+            "SELECT",
+            false
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            false
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            false
+          ],
+          [
+            "anon",
+            "UPDATE",
+            false
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "a8c12a6264d2dac2196bf4102de31097",
+        "indexes": "9387f15060cd6aac7273d964bbf41d52",
+        "policies": "7d504cb9dcce700cdf675b834ec758fb",
+        "triggers": "7cf5a4f072216ea1d7f7587714bd39ff",
+        "force_rls": false,
+        "constraints": "c2266bbdf55a1780d8734530f4dae228"
+      },
+      "production": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            false
+          ],
+          [
+            "anon",
+            "INSERT",
+            false
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            false
+          ],
+          [
+            "anon",
+            "SELECT",
+            false
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            false
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            false
+          ],
+          [
+            "anon",
+            "UPDATE",
+            false
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "a8c12a6264d2dac2196bf4102de31097",
+        "indexes": "9387f15060cd6aac7273d964bbf41d52",
+        "policies": "9ae25774e9b7081c2d2e01ec92763c60",
+        "triggers": "d41d8cd98f00b204e9800998ecf8427e",
+        "force_rls": false,
+        "constraints": "c2266bbdf55a1780d8734530f4dae228"
+      }
+    },
+    {
+      "key": "relation:public.adoption_attachment",
+      "status": "different",
+      "fields": [
+        "triggers"
+      ],
+      "baseline": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "104aa549873c0ee9c19d9df0abb2c9e0",
+        "indexes": "6b90b616126eef07b4bd431680891f91",
+        "policies": "140c25d6f83fb82dad7807c82ce57814",
+        "triggers": "c95db711fa224db72cb02a8f140d8ca5",
+        "force_rls": false,
+        "constraints": "965ce668ff04c22c50545b7464a0947d"
+      },
+      "production": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "104aa549873c0ee9c19d9df0abb2c9e0",
+        "indexes": "6b90b616126eef07b4bd431680891f91",
+        "policies": "140c25d6f83fb82dad7807c82ce57814",
+        "triggers": "d41d8cd98f00b204e9800998ecf8427e",
+        "force_rls": false,
+        "constraints": "965ce668ff04c22c50545b7464a0947d"
+      }
+    },
+    {
+      "key": "relation:public.adoption_case",
+      "status": "different",
+      "fields": [
+        "triggers"
+      ],
+      "baseline": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "8b758581bb3f8d1068104be5cd0def3d",
+        "indexes": "b35ae1a26b72cfe93b99c15765e8e60f",
+        "policies": "e24053d4b4aaaf4b09238a5f50e7ad3a",
+        "triggers": "d28ef6fc3d1eec6740990217f2230041",
+        "force_rls": false,
+        "constraints": "f3d0cebd4078e40dcef7a135bd56e573"
+      },
+      "production": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "8b758581bb3f8d1068104be5cd0def3d",
+        "indexes": "b35ae1a26b72cfe93b99c15765e8e60f",
+        "policies": "e24053d4b4aaaf4b09238a5f50e7ad3a",
+        "triggers": "cda437d894fe4d2b43eedb68ede011cc",
+        "force_rls": false,
+        "constraints": "f3d0cebd4078e40dcef7a135bd56e573"
+      }
+    },
+    {
+      "key": "relation:public.adoption_fee",
+      "status": "different",
+      "fields": [
+        "triggers"
+      ],
+      "baseline": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "a0699b8ed2507003e7c3d070f0e30b9b",
+        "indexes": "9a79057db8d5847d85e4d1299cfac048",
+        "policies": "ab3eadb500240b74134c431080e4af14",
+        "triggers": "38b29fab002ff0fdc6d1df2dbf621d2a",
+        "force_rls": false,
+        "constraints": "38cd5547e0b4b195ac5a0fdf42050284"
+      },
+      "production": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "a0699b8ed2507003e7c3d070f0e30b9b",
+        "indexes": "9a79057db8d5847d85e4d1299cfac048",
+        "policies": "ab3eadb500240b74134c431080e4af14",
+        "triggers": "52fc1cad620e4572106e42f561f43d3a",
+        "force_rls": false,
+        "constraints": "38cd5547e0b4b195ac5a0fdf42050284"
+      }
+    },
+    {
+      "key": "relation:public.adoption_followup",
+      "status": "different",
+      "fields": [
+        "triggers"
+      ],
+      "baseline": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "d6579fe400cc2dd6714bb4267febb25a",
+        "indexes": "f42720c334a0b292c9fa31f12af99dfc",
+        "policies": "0031329f6d70327186dcbf16bb8bfd14",
+        "triggers": "c135bc94fbaff31f665f79ed29b4921a",
+        "force_rls": false,
+        "constraints": "ef63fce970fd77991f8b9a75a8aae33c"
+      },
+      "production": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "d6579fe400cc2dd6714bb4267febb25a",
+        "indexes": "f42720c334a0b292c9fa31f12af99dfc",
+        "policies": "0031329f6d70327186dcbf16bb8bfd14",
+        "triggers": "3c54496987746079a0bc4e476a5f7138",
+        "force_rls": false,
+        "constraints": "ef63fce970fd77991f8b9a75a8aae33c"
+      }
+    },
+    {
+      "key": "relation:public.animal_position",
+      "status": "different",
+      "fields": [
+        "triggers"
+      ],
+      "baseline": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "0bccf173ce3616ad1bff525471975226",
+        "indexes": "a958cc1236fe7766416e5d72eddac266",
+        "policies": "cbe447ac4e929f5ac47e5fb54dc07c1d",
+        "triggers": "a18497e83ff0d46251e576a3c8d034af",
+        "force_rls": false,
+        "constraints": "1d484f4104399d4c42d0cfc496af06ff"
+      },
+      "production": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "0bccf173ce3616ad1bff525471975226",
+        "indexes": "a958cc1236fe7766416e5d72eddac266",
+        "policies": "cbe447ac4e929f5ac47e5fb54dc07c1d",
+        "triggers": "34405575117ad1be2e3320d1595315f4",
+        "force_rls": false,
+        "constraints": "1d484f4104399d4c42d0cfc496af06ff"
+      }
+    },
+    {
+      "key": "relation:public.animals",
+      "status": "different",
+      "fields": [
+        "columns",
+        "indexes"
+      ],
+      "baseline": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            false
+          ],
+          [
+            "anon",
+            "INSERT",
+            false
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            false
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            false
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            false
+          ],
+          [
+            "anon",
+            "UPDATE",
+            false
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "ae56f9d0dbdb74fe212716c24be54f36",
+        "indexes": "653463254da0284c6beee870734690c5",
+        "policies": "d1569499dddc701b7e5c60d4681066cf",
+        "triggers": "153e238a6dd8b10b9d9b19284665b776",
+        "force_rls": false,
+        "constraints": "1e4a346e5095b9a9fcaf2b8ca44158b0"
+      },
+      "production": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            false
+          ],
+          [
+            "anon",
+            "INSERT",
+            false
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            false
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            false
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            false
+          ],
+          [
+            "anon",
+            "UPDATE",
+            false
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "9616b57c1d34531c5dbe48c4e836a964",
+        "indexes": "7f03705a07330b7c999bf3b14b2d113a",
+        "policies": "d1569499dddc701b7e5c60d4681066cf",
+        "triggers": "153e238a6dd8b10b9d9b19284665b776",
+        "force_rls": false,
+        "constraints": "1e4a346e5095b9a9fcaf2b8ca44158b0"
+      }
+    },
+    {
+      "key": "relation:public.arrival_source",
+      "status": "different",
+      "fields": [
+        "triggers"
+      ],
+      "baseline": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "a9a56eb1d1ac759e7e0a736a77b5bab6",
+        "indexes": "ad82be3de99f8b102fb6ace3f703a460",
+        "policies": "6561a49e9fe282d22196eababefe18f4",
+        "triggers": "0c3d24ee98452f24adcc2aba924f2f7e",
+        "force_rls": false,
+        "constraints": "93662d62019f5bcbe4533cf8a9191112"
+      },
+      "production": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "a9a56eb1d1ac759e7e0a736a77b5bab6",
+        "indexes": "ad82be3de99f8b102fb6ace3f703a460",
+        "policies": "6561a49e9fe282d22196eababefe18f4",
+        "triggers": "8e5a0eaa5635eefdd71de28b7a3de7fa",
+        "force_rls": false,
+        "constraints": "93662d62019f5bcbe4533cf8a9191112"
+      }
+    },
+    {
+      "key": "relation:public.consent",
+      "status": "different",
+      "fields": [
+        "triggers"
+      ],
+      "baseline": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            false
+          ],
+          [
+            "anon",
+            "INSERT",
+            false
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            false
+          ],
+          [
+            "anon",
+            "SELECT",
+            false
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            false
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            false
+          ],
+          [
+            "anon",
+            "UPDATE",
+            false
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "6a83c6d70584522e442868a3bf2086bb",
+        "indexes": "5fa2a9aa166f61df7b764b1aaca3ef0d",
+        "policies": "0ef5b349d603e7c080afe6f378e98aa0",
+        "triggers": "8d8a09923c43cb7095ae70fcda2b2f66",
+        "force_rls": false,
+        "constraints": "d783e76c2659fd21140d623e03cec6f3"
+      },
+      "production": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            false
+          ],
+          [
+            "anon",
+            "INSERT",
+            false
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            false
+          ],
+          [
+            "anon",
+            "SELECT",
+            false
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            false
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            false
+          ],
+          [
+            "anon",
+            "UPDATE",
+            false
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "6a83c6d70584522e442868a3bf2086bb",
+        "indexes": "5fa2a9aa166f61df7b764b1aaca3ef0d",
+        "policies": "0ef5b349d603e7c080afe6f378e98aa0",
+        "triggers": "bd62028f14ec53a6a1e58872a15d7db9",
+        "force_rls": false,
+        "constraints": "d783e76c2659fd21140d623e03cec6f3"
+      }
+    },
+    {
+      "key": "relation:public.coordinator_status",
+      "status": "different",
+      "fields": [
+        "triggers"
+      ],
+      "baseline": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "7286fb40059df7ac2c592525f23ceb83",
+        "indexes": "00fc9e718ab1d898e8bc9e9c5a7fcd73",
+        "policies": "5fff06aecb667cf34428bc1f2a97fee6",
+        "triggers": "880bd64adbe5cb9bdf0a41bd98cc9688",
+        "force_rls": false,
+        "constraints": "dbc5848034acbdb4a509fe51d15b0f6e"
+      },
+      "production": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "7286fb40059df7ac2c592525f23ceb83",
+        "indexes": "00fc9e718ab1d898e8bc9e9c5a7fcd73",
+        "policies": "5fff06aecb667cf34428bc1f2a97fee6",
+        "triggers": "c9693c22506a2a105bdec48075d33fd2",
+        "force_rls": false,
+        "constraints": "dbc5848034acbdb4a509fe51d15b0f6e"
+      }
+    },
+    {
+      "key": "relation:public.coordinator_status_history",
+      "status": "different",
+      "fields": [
+        "triggers"
+      ],
+      "baseline": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "8aec7c4b41cfe5fd8ad8e7c1e171bd19",
+        "indexes": "cb0dc8e02e16c339c044c029ce786e76",
+        "policies": "45f9500505e046a3382c1cf4086421d9",
+        "triggers": "4883d0f82f2c9d8ecff290f11c6b4b38",
+        "force_rls": false,
+        "constraints": "15a05fc0dd08a8dc5e219a45e7403c60"
+      },
+      "production": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "8aec7c4b41cfe5fd8ad8e7c1e171bd19",
+        "indexes": "cb0dc8e02e16c339c044c029ce786e76",
+        "policies": "45f9500505e046a3382c1cf4086421d9",
+        "triggers": "d41d8cd98f00b204e9800998ecf8427e",
+        "force_rls": false,
+        "constraints": "15a05fc0dd08a8dc5e219a45e7403c60"
+      }
+    },
+    {
+      "key": "relation:public.donation",
+      "status": "different",
+      "fields": [
+        "columns",
+        "triggers",
+        "constraints"
+      ],
+      "baseline": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            false
+          ],
+          [
+            "anon",
+            "INSERT",
+            false
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            false
+          ],
+          [
+            "anon",
+            "SELECT",
+            false
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            false
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            false
+          ],
+          [
+            "anon",
+            "UPDATE",
+            false
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "0077aee5f0f56c6e63bdec3d2b0074b1",
+        "indexes": "31b94e4579a307dbd8c956890f506c1f",
+        "policies": "29700dc6ce26fc97455dadb1f056cb15",
+        "triggers": "2190f8c10de7462b6cfb511041420280",
+        "force_rls": false,
+        "constraints": "7af2e86675333f241a86742907e26778"
+      },
+      "production": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            false
+          ],
+          [
+            "anon",
+            "INSERT",
+            false
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            false
+          ],
+          [
+            "anon",
+            "SELECT",
+            false
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            false
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            false
+          ],
+          [
+            "anon",
+            "UPDATE",
+            false
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "03e437314780b6cb8a2d17fee85950ab",
+        "indexes": "31b94e4579a307dbd8c956890f506c1f",
+        "policies": "29700dc6ce26fc97455dadb1f056cb15",
+        "triggers": "943f474925fd80f607096d7434f5a532",
+        "force_rls": false,
+        "constraints": "bf2e469b81a3340c635118a97c91fd4e"
+      }
+    },
+    {
+      "key": "relation:public.living_area",
+      "status": "different",
+      "fields": [
+        "triggers"
+      ],
+      "baseline": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "a9a56eb1d1ac759e7e0a736a77b5bab6",
+        "indexes": "540c004c527ec4bec764ef5fbfb3cdb9",
+        "policies": "457dc4364ef3c821090194cd911ed165",
+        "triggers": "8c593f005f9b3f7e23d2776e6a3b5bd6",
+        "force_rls": false,
+        "constraints": "3c3ec43fc6d5da223178f68a605d2c10"
+      },
+      "production": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "a9a56eb1d1ac759e7e0a736a77b5bab6",
+        "indexes": "540c004c527ec4bec764ef5fbfb3cdb9",
+        "policies": "457dc4364ef3c821090194cd911ed165",
+        "triggers": "0ac4b280bc43d3ead60bff56f14aa9b9",
+        "force_rls": false,
+        "constraints": "3c3ec43fc6d5da223178f68a605d2c10"
+      }
+    },
+    {
+      "key": "relation:public.message_template",
+      "status": "different",
+      "fields": [
+        "triggers"
+      ],
+      "baseline": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "377b8a9c4afb849e188f6ca50525fe83",
+        "indexes": "35222c50da2d09dad8af0987dcbbf6a2",
+        "policies": "ba5501c7c58084ba2be1f4ef178d2e34",
+        "triggers": "8cfeaabd93c5447bc7c30cabe2e0583c",
+        "force_rls": false,
+        "constraints": "3ee583c4d6c6370d89df67065515c1a8"
+      },
+      "production": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "377b8a9c4afb849e188f6ca50525fe83",
+        "indexes": "35222c50da2d09dad8af0987dcbbf6a2",
+        "policies": "ba5501c7c58084ba2be1f4ef178d2e34",
+        "triggers": "73056bff9330f7b69409f67e70f18d55",
+        "force_rls": false,
+        "constraints": "3ee583c4d6c6370d89df67065515c1a8"
+      }
+    },
+    {
+      "key": "relation:public.payment",
+      "status": "different",
+      "fields": [
+        "columns",
+        "indexes",
+        "triggers",
+        "constraints"
+      ],
+      "baseline": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            false
+          ],
+          [
+            "anon",
+            "INSERT",
+            false
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            false
+          ],
+          [
+            "anon",
+            "SELECT",
+            false
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            false
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            false
+          ],
+          [
+            "anon",
+            "UPDATE",
+            false
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "61c0801770e00d1d321b5bea20d35242",
+        "indexes": "e9f4d4f7e81e391b764ad0afe8f3c63e",
+        "policies": "bdfaf25b7c1c02456b5b4c326523b7f8",
+        "triggers": "388c621cea9165494454404738d4bd96",
+        "force_rls": false,
+        "constraints": "66121cc5ddbd9d012744a9e18f75cc72"
+      },
+      "production": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            false
+          ],
+          [
+            "anon",
+            "INSERT",
+            false
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            false
+          ],
+          [
+            "anon",
+            "SELECT",
+            false
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            false
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            false
+          ],
+          [
+            "anon",
+            "UPDATE",
+            false
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "967df0f06a2c92a0599563e85a31767f",
+        "indexes": "d31a5cefa1e880619d856b9e078c5636",
+        "policies": "bdfaf25b7c1c02456b5b4c326523b7f8",
+        "triggers": "da6c3901992213734339e694c0dc42f4",
+        "force_rls": false,
+        "constraints": "ffeee784ccda2f6a32ec8bd4ed9ff8f1"
+      }
+    },
+    {
+      "key": "relation:public.receipt",
+      "status": "different",
+      "fields": [
+        "triggers"
+      ],
+      "baseline": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "880631b7924775ef37cc5a287cf3a88c",
+        "indexes": "e4271f37c3c7c7a8d565a4a127c1629c",
+        "policies": "9d0ae9ca18d27021ef0464ee00d33c89",
+        "triggers": "58e5e9db303b48f173189f81c1dfb539",
+        "force_rls": false,
+        "constraints": "6bb14916736b1efbc7a42317fdc5d19d"
+      },
+      "production": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "880631b7924775ef37cc5a287cf3a88c",
+        "indexes": "e4271f37c3c7c7a8d565a4a127c1629c",
+        "policies": "9d0ae9ca18d27021ef0464ee00d33c89",
+        "triggers": "e72cf7776a8ffe50a3d07539c578f18b",
+        "force_rls": false,
+        "constraints": "6bb14916736b1efbc7a42317fdc5d19d"
+      }
+    },
+    {
+      "key": "relation:public.successful_adoption",
+      "status": "different",
+      "fields": [
+        "triggers"
+      ],
+      "baseline": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "92b2322845d028765a306ae7a2995d0f",
+        "indexes": "72eebcdf89dd965419824b36d53ab242",
+        "policies": "a82fc227b29276cdf2265c3d11aa5708",
+        "triggers": "b8446f9671b5572226403ae80155440f",
+        "force_rls": false,
+        "constraints": "8b1b1318c770d007ae79907097cc052f"
+      },
+      "production": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "92b2322845d028765a306ae7a2995d0f",
+        "indexes": "72eebcdf89dd965419824b36d53ab242",
+        "policies": "a82fc227b29276cdf2265c3d11aa5708",
+        "triggers": "ec983a3324e5c64d6014dd04cfb8a436",
+        "force_rls": false,
+        "constraints": "8b1b1318c770d007ae79907097cc052f"
+      }
+    },
+    {
+      "key": "relation:public.supporter",
+      "status": "different",
+      "fields": [
+        "triggers"
+      ],
+      "baseline": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            false
+          ],
+          [
+            "anon",
+            "INSERT",
+            false
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            false
+          ],
+          [
+            "anon",
+            "SELECT",
+            false
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            false
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            false
+          ],
+          [
+            "anon",
+            "UPDATE",
+            false
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "6c3753ac355d5bd6f1fa55fa6d269390",
+        "indexes": "5e413b02b7b87ee2d5d47c298868736d",
+        "policies": "ef88ef88576a6d66ad5f820b1291ef01",
+        "triggers": "77fb9728196dd3a85a1501d2e014b024",
+        "force_rls": false,
+        "constraints": "5a5b10442832a243f93d04491d390ac0"
+      },
+      "production": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            false
+          ],
+          [
+            "anon",
+            "INSERT",
+            false
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            false
+          ],
+          [
+            "anon",
+            "SELECT",
+            false
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            false
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            false
+          ],
+          [
+            "anon",
+            "UPDATE",
+            false
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "6c3753ac355d5bd6f1fa55fa6d269390",
+        "indexes": "5e413b02b7b87ee2d5d47c298868736d",
+        "policies": "ef88ef88576a6d66ad5f820b1291ef01",
+        "triggers": "8f144572382f4a6aac3956686cc47f74",
+        "force_rls": false,
+        "constraints": "5a5b10442832a243f93d04491d390ac0"
+      }
+    },
+    {
+      "key": "relation:public.webhook_event",
+      "status": "different",
+      "fields": [
+        "columns",
+        "indexes",
+        "constraints"
+      ],
+      "baseline": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "d8b8eb7c32cf852a392f2d3766a08da9",
+        "indexes": "330068f1fcb1210d40832749f3612fc9",
+        "policies": "7a2f451d3b1d3c0ee2eff15e36aa8af3",
+        "triggers": "5c25d8af681e7e7fd39c736bc006e36d",
+        "force_rls": false,
+        "constraints": "ce242f0158a0cd002ab1ddec0a5aac18"
+      },
+      "production": {
+        "rls": true,
+        "kind": "r",
+        "grants": [
+          [
+            "anon",
+            "DELETE",
+            true
+          ],
+          [
+            "anon",
+            "INSERT",
+            true
+          ],
+          [
+            "anon",
+            "REFERENCES",
+            true
+          ],
+          [
+            "anon",
+            "SELECT",
+            true
+          ],
+          [
+            "anon",
+            "TRIGGER",
+            true
+          ],
+          [
+            "anon",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "anon",
+            "UPDATE",
+            true
+          ],
+          [
+            "authenticated",
+            "DELETE",
+            true
+          ],
+          [
+            "authenticated",
+            "INSERT",
+            true
+          ],
+          [
+            "authenticated",
+            "REFERENCES",
+            true
+          ],
+          [
+            "authenticated",
+            "SELECT",
+            true
+          ],
+          [
+            "authenticated",
+            "TRIGGER",
+            true
+          ],
+          [
+            "authenticated",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "authenticated",
+            "UPDATE",
+            true
+          ],
+          [
+            "service_role",
+            "DELETE",
+            true
+          ],
+          [
+            "service_role",
+            "INSERT",
+            true
+          ],
+          [
+            "service_role",
+            "REFERENCES",
+            true
+          ],
+          [
+            "service_role",
+            "SELECT",
+            true
+          ],
+          [
+            "service_role",
+            "TRIGGER",
+            true
+          ],
+          [
+            "service_role",
+            "TRUNCATE",
+            true
+          ],
+          [
+            "service_role",
+            "UPDATE",
+            true
+          ]
+        ],
+        "columns": "3b1ff2d45f1f8c3d5c99c7ff925bd769",
+        "indexes": "e5759a99ae65a3fc0318a9eaecfdb88d",
+        "policies": "7a2f451d3b1d3c0ee2eff15e36aa8af3",
+        "triggers": "5c25d8af681e7e7fd39c736bc006e36d",
+        "force_rls": false,
+        "constraints": "0b10517087196da580c3b7bae87af673"
+      }
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "checked_at": "2026-09-13T10:47:17.234Z",
+  "candidate_count": 37,
+  "source_chain": 100,
+  "production_mutated": false,
+  "full_tests": {
+    "pass": 2343,
+    "skip": 1,
+    "fail": 0,
+    "assertions": 7620,
+    "files": 391
+  },
+  "typecheck": "pass",
+  "logs": [
+    {
+      "path": ".local-policy-test/parity-acceptance.log",
+      "sha256": "2956bac1cc80a74384442975d66e6e0df99b7b8ce6ac54dbd97c861d04bbbcda"
+    },
+    {
+      "path": ".local-policy-test/parity-typecheck.log",
+      "sha256": "5a3973f79ed9becd5f23c4feff467513814de7ea381d75a4d2e339aa8b8edca9"
+    }
+  ]
+}
