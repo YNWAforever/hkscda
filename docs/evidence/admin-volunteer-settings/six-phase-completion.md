@@ -35,3 +35,11 @@
 按 [migration runbook](migration-release-runbook.md) 的逐檔、逐交易、ledger 確認流程處理，最新第 38 檔為 `20260913113000_mail_delivery_evidence.sql`。不得重播已存在 baseline 或把 remote ledger 33 筆誤當缺少其他 source files。回調 migration 新增不可變 evidence 與 service-only projections，不改寫既有 send facts；關閉新回調入口可停止接收，保留已存證據。不要用刪表作 rollback。
 
 政策回復需把舊版複製為新草稿、比較與發布新的生效版本，不改寫原政策／出席事實。先備份並驗證可還原，再批准正式 migration、部署、供應商啟用及營運試行。此候選沒有 push、merge、部署、真付款、真訊息或 production 記錄 mutation。
+
+## 最終公開網站驗收
+
+[機器可讀結果](six-phase-verification.json) 記錄全部 gate 與本機 log 雜湊。正式 Nitro build 的品牌／版面 gate 通過 26 條路徑 × 5 viewports；axe 通過 26 條路徑（桌面），0 violations；Lighthouse 4 條核心路徑 × 手機／桌面 × 3 次 cold load 共 24 次，97–100 分。這是本機量測，不能推論正式網絡／真實用戶的效能。
+
+首次誤用 Vite preview 導致找不到 Nitro server output，該次失敗沒有當作產品通過證據；改用 package scripts 的 `bun run preview` 後完整重跑通過。保留的 measurement context 中，brand／axe 開始時工作樹未提交，performance 開始時已提交 d24eb0f；三者均為相同 application source。
+
+程式交付 commit：`d24eb0ff5bf9023d4a9ca7b568ca8c27a103d3cc`。此最終文件與量測結果以後續 evidence commit 保存，未 push／merge／deploy。缺失原素材與真實營運試行仍不冒稱完成。
