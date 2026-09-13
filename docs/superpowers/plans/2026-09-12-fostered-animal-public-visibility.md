@@ -573,35 +573,43 @@ git commit -m "fix: list fostered animals on the public cat/dog/sponsor pages"
 - Modify: `src/lib/animals/publicAnimal.functions.ts`
 - Test: `src/lib/animals/publicAnimal.functions.test.ts` (new)
 
-**Revised after Task 5 was first attempted:** `getPublicAnimal` is a
-`createServerFn` handler, and calling it directly (`getPublicAnimal({ data })`)
+**Revised twice. First revision** (while implementing this task): `getPublicAnimal`
+is a `createServerFn` handler, and calling it directly (`getPublicAnimal({ data })`)
 outside a real request throws `TypeError: null is not an object (evaluating
-'userCtx.context')` from inside `@tanstack/react-start`'s own
-`createServerFn.js` — confirmed by reproduction, not a guess. There is no
-existing precedent anywhere in this codebase for invoking a `createServerFn`
-wrapper directly in a test (grepped the whole repo for a `*.test.ts` paired
-with a file containing `createServerFn`; the one match,
-`submit-application.functions.test.ts`, tests the plain function underneath
-the wrapper, not the wrapper itself). This task follows that same, established
-shape: extract the handler's body into a plain, separately-exported
-`resolvePublicAnimal` function that takes the validated `data` directly, with
-`getPublicAnimal` reduced to a thin call-through. The test calls
-`resolvePublicAnimal` and never touches `createServerFn` at all.
+'userCtx.context')` from inside `@tanstack/react-start`'s own `createServerFn.js`
+— confirmed by reproduction. The fix was to extract the handler's body into a
+separately-exported function the test could call directly.
+
+**Second revision** (during Task 9's full verification, which is the first point
+this plan re-runs `bun run build` after each task lands): that first fix broke
+the production **build**. `bun run build` failed with `"randomBytes" is not
+exported by "__vite-browser-external"`, from `src/lib/donations/cod-crypto.server.ts`
+— a completely unrelated file. Bisected in a disposable worktree with healthy
+dependencies (see Task 9's evidence): the extracted, separately-exported function
+did its own `await import("../supabase")`, and once that dynamic import moved out
+of the `.handler()` callback's lexical scope, Rollup traced it as an ordinary
+module export reachable from the client bundle instead of recognizing it as
+server-only. `../supabase` itself is harmless (the intentionally-public anon
+client), but the equivalent mistake in Task 6's `publicImpact.functions.ts`
+reached a `.server.ts` file's `node:crypto` usage through a longer import chain,
+which is what actually failed the build loudly.
+
+The fix, matching what `submit-application.functions.ts` actually does (not just
+"extract a function," which this plan's first pass at Task 5 only did
+superficially): the dynamic import stays lexically inside the `.handler()`
+callback, and the extracted function takes its dependencies — here, `supabase`
+— as a parameter instead of importing them itself. This is also strictly simpler
+to test: no `mock.module` at all, just pass a fake client directly.
 
 - [ ] **Step 1: Write the failing test**
 
 Create `src/lib/animals/publicAnimal.functions.test.ts`:
 
 ```ts
-import { afterAll, describe, expect, mock, test } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-// Spread into a new object, not a bare reference -- bun's mock.module mutates
-// the shared module namespace in place, so a bare reference would be mutated
-// out from under us the moment the mock below is installed, and afterAll's
-// "restore" would silently restore the already-mocked object. See 23566de
-// and 4480fdb for the two prior times this exact bug was fixed in this repo.
-const realSupabaseModule = { ...(await import("../supabase")) };
+import { resolvePublicAnimal } from "./publicAnimal.functions";
 
 function createAnimalFakeClient(data: Record<string, unknown>[]) {
   const eqFilters: Array<[string, unknown]> = [];
@@ -629,10 +637,6 @@ function createAnimalFakeClient(data: Record<string, unknown>[]) {
   return { from: () => query } as unknown as SupabaseClient;
 }
 
-afterAll(() => {
-  mock.module("../supabase", () => realSupabaseModule);
-});
-
 describe("resolvePublicAnimal", () => {
   test("finds a fostered animal by id, same as an available one", async () => {
     const fosterCat = {
@@ -656,13 +660,11 @@ describe("resolvePublicAnimal", () => {
       retired_at: null,
       public_profile: null,
     };
-    mock.module("../supabase", () => ({ supabase: createAnimalFakeClient([fosterCat]) }));
-    const { resolvePublicAnimal } = await import("./publicAnimal.functions");
 
-    const result = await resolvePublicAnimal({
-      id: "12345678-1234-1234-1234-123456789012",
-      type: "cat",
-    });
+    const result = await resolvePublicAnimal(
+      { id: "12345678-1234-1234-1234-123456789012", type: "cat" },
+      { supabase: createAnimalFakeClient([fosterCat]) },
+    );
 
     expect(result?.id).toBe("12345678-1234-1234-1234-123456789012");
   });
@@ -672,63 +674,24 @@ describe("resolvePublicAnimal", () => {
 (Note: the id must be a real UUID shape, not an arbitrary string like
 `"foster-1"` — `isPublicAnimalId`'s guard clause rejects anything else before
 the query ever runs, which would make the test fail for the wrong reason and
-never actually exercise the status filter this task is fixing. Found during
-Task 5's own implementation and code review.)
+never actually exercise the status filter this task is fixing.)
 
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `bun test src/lib/animals/publicAnimal.functions.test.ts`
-Expected: FAIL — either a missing-export error (`resolvePublicAnimal` doesn't
-exist yet) or, once it exists from Step 3 minus the status fix, `result` is
-`null` because the fake's `.eq("status", "available")` match excludes the
-fostered fixture row.
+Expected: FAIL — `resolvePublicAnimal` either doesn't exist yet, or (once it
+exists from Step 3 minus the status fix) `result` is `null` because the fake's
+`.eq("status", "available")` match excludes the fostered fixture row.
 
 - [ ] **Step 3: Write minimal implementation**
 
-In `src/lib/animals/publicAnimal.functions.ts`, change:
+Replace the FULL contents of `src/lib/animals/publicAnimal.functions.ts` with:
 
 ```ts
 import { projectPublicAnimal } from "./publicProfile";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-
-import type { Animal } from "../../types/animal";
-import { isPublicAnimalId } from "./publicAnimal";
-
-const publicAnimalInput = z.object({
-  id: z.string(),
-  type: z.enum(["cat", "dog", "sponsor"]).optional(),
-});
-
-export const getPublicAnimal = createServerFn({ method: "GET" })
-  .inputValidator(publicAnimalInput)
-  .handler(async ({ data }) => {
-    // Screened here rather than in the validator: a malformed id is a missing
-    // page, and rejecting it as invalid input would surface as a 500.
-    if (!isPublicAnimalId(data.id)) return null;
-
-    const { supabase } = await import("../supabase");
-    let query = supabase.from("animals").select("*").eq("id", data.id).eq("status", "available");
-    query = query
-      .is("retired_at", null)
-      .eq(
-        data.type === "sponsor" || !data.type ? "sponsorship_eligible" : "adoption_eligible",
-        true,
-      );
-    if (data.type && data.type !== "sponsor") query = query.eq("type", data.type);
-
-    const { data: animal, error } = await query.maybeSingle();
-    if (error) throw new Error("Could not load public animal");
-    return animal ? projectPublicAnimal(animal as Animal) : null;
-  });
-```
-
-to:
-
-```ts
-import { projectPublicAnimal } from "./publicProfile";
-import { createServerFn } from "@tanstack/react-start";
-import { z } from "zod";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { Animal } from "../../types/animal";
 import { PUBLIC_VISIBLE_ANIMAL_STATUSES } from "../../types/animal";
@@ -741,17 +704,23 @@ const publicAnimalInput = z.object({
 
 // Extracted so it's directly callable in tests -- createServerFn's wrapped
 // export throws outside a real request context (no userCtx), the same reason
-// submit-application.functions.ts keeps its core logic in a plain,
-// separately-exported function rather than testing the wrapper itself.
-export async function resolvePublicAnimal(data: {
-  id: string;
-  type?: "cat" | "dog" | "sponsor";
-}) {
+// submit-application.functions.ts keeps its core logic in a plain function.
+// Takes `supabase` as a parameter rather than importing it itself: the
+// dynamic `await import("../supabase")` has to stay lexically inside the
+// createServerFn .handler() callback below, not in a separately-exported
+// function, or the client bundle build pulls in this function's whole
+// module graph (confirmed by reproduction -- a sibling change that moved a
+// dynamic import out of the handler this same way broke the client build by
+// dragging in an unrelated .server.ts file's node:crypto usage).
+export async function resolvePublicAnimal(
+  data: { id: string; type?: "cat" | "dog" | "sponsor" },
+  deps: { supabase: SupabaseClient },
+) {
   // Screened here rather than in the validator: a malformed id is a missing
   // page, and rejecting it as invalid input would surface as a 500.
   if (!isPublicAnimalId(data.id)) return null;
 
-  const { supabase } = await import("../supabase");
+  const { supabase } = deps;
   let query = supabase
     .from("animals")
     .select("*")
@@ -759,10 +728,7 @@ export async function resolvePublicAnimal(data: {
     .in("status", PUBLIC_VISIBLE_ANIMAL_STATUSES);
   query = query
     .is("retired_at", null)
-    .eq(
-      data.type === "sponsor" || !data.type ? "sponsorship_eligible" : "adoption_eligible",
-      true,
-    );
+    .eq(data.type === "sponsor" || !data.type ? "sponsorship_eligible" : "adoption_eligible", true);
   if (data.type && data.type !== "sponsor") query = query.eq("type", data.type);
 
   const { data: animal, error } = await query.maybeSingle();
@@ -772,7 +738,10 @@ export async function resolvePublicAnimal(data: {
 
 export const getPublicAnimal = createServerFn({ method: "GET" })
   .inputValidator(publicAnimalInput)
-  .handler(async ({ data }) => resolvePublicAnimal(data));
+  .handler(async ({ data }) => {
+    const { supabase } = await import("../supabase");
+    return resolvePublicAnimal(data, { supabase });
+  });
 ```
 
 - [ ] **Step 4: Run test to verify it passes**
@@ -799,28 +768,32 @@ Per the approved design, fostered animals count into the same "available" figure
 shown on the homepage — one definition of available everywhere, not a
 shelter-only variant.
 
-**Revised after Task 5's blocker:** `getPublicImpactItems` is also a
-`createServerFn` handler, and calling it directly the way this task originally
-specified hits the exact same `userCtx.context` failure Task 5 found. This
-task uses the same fix: extract the body into a plain, separately-exported
-`resolvePublicImpactItems` function, with `getPublicImpactItems` reduced to a
-thin call-through. The test calls `resolvePublicImpactItems` directly.
+**Revised twice, same history as Task 5.** First revision (Task 5's blocker):
+`getPublicImpactItems` is also a `createServerFn` handler and can't be called
+directly outside a real request. Second revision (Task 9's full verification,
+`bun run build`): extracting the handler's body into a separately-exported
+function that did its own dynamic imports broke the **production build** —
+`"randomBytes" is not exported by "__vite-browser-external"`, from the
+completely unrelated `src/lib/donations/cod-crypto.server.ts`. This file's
+dynamic import chain (`../adoptions/publicImpact.server` → `../donations/supabase.server`
+→ … → `donations/config.server.ts`'s `node:crypto` usage) is exactly the kind of
+`.server.ts` chain that's supposed to stay out of the client bundle, and it only
+stays out when the dynamic import is lexically inside the `.handler()` callback
+— matching what `submit-application.functions.ts` actually does, not just
+"extract a function." The fix: `resolvePublicImpactItems` takes `supabase` and
+`loadAdoptionSpeciesTotals` as parameters instead of importing them itself; the
+dynamic imports move back into `getPublicImpactItems`'s handler. No
+`mock.module` needed in the test at all — just pass fakes directly.
 
 - [ ] **Step 1: Write the failing test**
 
 Create `src/lib/animals/publicImpact.functions.test.ts`:
 
 ```ts
-import { afterAll, describe, expect, mock, test } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-// Spread into a new object, not a bare reference -- bun's mock.module mutates
-// the shared module namespace in place, so a bare reference would be mutated
-// out from under us the moment the mock below is installed, and afterAll's
-// "restore" would silently restore the already-mocked object. See 23566de
-// and 4480fdb for the two prior times this exact bug was fixed in this repo.
-const realSupabaseModule = { ...(await import("../supabase")) };
-const realPublicImpactServerModule = { ...(await import("../adoptions/publicImpact.server")) };
+import { resolvePublicImpactItems } from "./publicImpact.functions";
 
 // resolvePublicImpactItems calls supabase.from("animals") twice concurrently
 // (once per species, via Promise.all) -- from() must hand back a FRESH query
@@ -854,11 +827,6 @@ function createImpactFakeClient(data: Record<string, unknown>[]) {
   return { from: () => createQuery() } as unknown as SupabaseClient;
 }
 
-afterAll(() => {
-  mock.module("../supabase", () => realSupabaseModule);
-  mock.module("../adoptions/publicImpact.server", () => realPublicImpactServerModule);
-});
-
 describe("resolvePublicImpactItems", () => {
   test("counts fostered cats and dogs as available, not just status='available'", async () => {
     const data = [
@@ -867,13 +835,11 @@ describe("resolvePublicImpactItems", () => {
       { type: "cat", status: "adopted", adoption_eligible: true, retired_at: null },
       { type: "dog", status: "fostered", adoption_eligible: true, retired_at: null },
     ];
-    mock.module("../supabase", () => ({ supabase: createImpactFakeClient(data) }));
-    mock.module("../adoptions/publicImpact.server", () => ({
-      loadAdoptionSpeciesTotals: async () => ({ cat: 0, dog: 0 }),
-    }));
-    const { resolvePublicImpactItems } = await import("./publicImpact.functions");
 
-    const { items } = await resolvePublicImpactItems();
+    const { items } = await resolvePublicImpactItems({
+      supabase: createImpactFakeClient(data),
+      loadAdoptionSpeciesTotals: async () => ({ cat: 0, dog: 0 }),
+    });
 
     expect(items.find((item) => item.label === "待領養貓貓")?.value).toBe(2);
     expect(items.find((item) => item.label === "待領養狗狗")?.value).toBe(1);
@@ -884,96 +850,48 @@ describe("resolvePublicImpactItems", () => {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `bun test src/lib/animals/publicImpact.functions.test.ts`
-Expected: FAIL — either a missing-export error (`resolvePublicImpactItems`
-doesn't exist yet) or, once it exists from Step 3 minus the status fix,
-`"待領養貓貓"` value is `1` (only the available cat), not `2`; `"待領養狗狗"` is
-`undefined` (the fostered dog's count is `0`, so `buildPublicImpact` filters
-it out entirely, per its `value > 0` rule).
+Expected: FAIL — `resolvePublicImpactItems` either doesn't exist yet, or (once
+it exists from Step 3 minus the status fix) `"待領養貓貓"` value is `1` (only the
+available cat), not `2`; `"待領養狗狗"` is `undefined` (the fostered dog's count
+is `0`, so `buildPublicImpact` filters it out entirely, per its `value > 0` rule).
 
 - [ ] **Step 3: Write minimal implementation**
 
-In `src/lib/animals/publicImpact.functions.ts`, change the whole file from:
+Replace the FULL contents of `src/lib/animals/publicImpact.functions.ts` with:
 
 ```ts
 import { createServerFn } from "@tanstack/react-start";
-
-import { buildPublicImpact, type PublicImpactItem } from "./publicImpact";
-
-type CountResult = { count: number | null; error: { message: string } | null };
-
-/**
- * Read-only public projection over the anonymous client for available counts,
- * so the existing RLS policy stays authoritative there. Adopted counts come
- * from the service-role adoption-impact aggregate instead - the anon policy
- * exposes only available animals, so an anon query for status = adopted could
- * only ever return empty (defect G-04).
- */
-export const getPublicImpactItems = createServerFn({ method: "GET" }).handler(
-  async (): Promise<{ items: PublicImpactItem[]; asOf: string | null }> => {
-    const { supabase } = await import("../supabase");
-    const { loadAdoptionSpeciesTotals } = await import("../adoptions/publicImpact.server");
-
-    async function countAvailable(type: "cat" | "dog"): Promise<CountResult> {
-      const { count, error } = await supabase
-        .from("animals")
-        .select("id", { count: "exact", head: true })
-        .eq("type", type)
-        .eq("status", "available")
-        .eq("adoption_eligible", true)
-        .is("retired_at", null);
-      return { count: count ?? null, error: error ? { message: error.message } : null };
-    }
-
-    const [availableCats, availableDogs, adoptedTotals] = await Promise.all([
-      countAvailable("cat"),
-      countAvailable("dog"),
-      loadAdoptionSpeciesTotals().catch((error) => {
-        console.error("Adoption species totals unavailable; omitting adopted-count cards.", error);
-        return null;
-      }),
-    ]);
-
-    const verified = (r: CountResult) => (r.error ? null : r.count);
-    const asOf = new Date().toISOString();
-    const items = buildPublicImpact({
-      availableCats: verified(availableCats),
-      availableDogs: verified(availableDogs),
-      adoptedCats: adoptedTotals?.cat ?? null,
-      adoptedDogs: adoptedTotals?.dog ?? null,
-      asOf,
-    });
-
-    return { items, asOf: items.length ? asOf : null };
-  },
-);
-```
-
-to:
-
-```ts
-import { createServerFn } from "@tanstack/react-start";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { buildPublicImpact, type PublicImpactItem } from "./publicImpact";
 import { PUBLIC_VISIBLE_ANIMAL_STATUSES } from "../../types/animal";
+import type { SpeciesTotals } from "../adoptions/publicImpact";
 
 type CountResult = { count: number | null; error: { message: string } | null };
 
 // Extracted so it's directly callable in tests -- createServerFn's wrapped
 // export throws outside a real request context (no userCtx), the same reason
-// submit-application.functions.ts keeps its core logic in a plain,
-// separately-exported function rather than testing the wrapper itself.
+// submit-application.functions.ts keeps its core logic in a plain function.
+// Takes its dependencies as parameters rather than importing them itself: the
+// dynamic imports have to stay lexically inside the createServerFn .handler()
+// callback below, not in a separately-exported function, or the client
+// bundle build pulls in this function's whole module graph (confirmed by
+// reproduction -- doing it the other way dragged an unrelated .server.ts
+// file's node:crypto usage into the client build and broke it).
 //
 // Read-only public projection over the anonymous client for available counts,
 // so the existing RLS policy stays authoritative there. Adopted counts come
 // from the service-role adoption-impact aggregate instead - the anon policy
 // exposes only available animals, so an anon query for status = adopted could
 // only ever return empty (defect G-04).
-export async function resolvePublicImpactItems(): Promise<{
+export async function resolvePublicImpactItems(deps: {
+  supabase: SupabaseClient;
+  loadAdoptionSpeciesTotals: () => Promise<SpeciesTotals>;
+}): Promise<{
   items: PublicImpactItem[];
   asOf: string | null;
 }> {
-  const { supabase } = await import("../supabase");
-  const { loadAdoptionSpeciesTotals } = await import("../adoptions/publicImpact.server");
+  const { supabase, loadAdoptionSpeciesTotals } = deps;
 
   async function countAvailable(type: "cat" | "dog"): Promise<CountResult> {
     const { count, error } = await supabase
@@ -1008,9 +926,11 @@ export async function resolvePublicImpactItems(): Promise<{
   return { items, asOf: items.length ? asOf : null };
 }
 
-export const getPublicImpactItems = createServerFn({ method: "GET" }).handler(() =>
-  resolvePublicImpactItems(),
-);
+export const getPublicImpactItems = createServerFn({ method: "GET" }).handler(async () => {
+  const { supabase } = await import("../supabase");
+  const { loadAdoptionSpeciesTotals } = await import("../adoptions/publicImpact.server");
+  return resolvePublicImpactItems({ supabase, loadAdoptionSpeciesTotals });
+});
 ```
 
 - [ ] **Step 4: Run test to verify it passes**
@@ -1416,6 +1336,26 @@ Expected: all pass, including Task 8's two new tests.
 
 Run: `bun run build`
 Expected: exit 0.
+
+**This step is why this task exists as a separate, final pass rather than
+trusting each task's own review.** It failed the first time it was actually
+run: `"randomBytes" is not exported by "__vite-browser-external"`, from
+`src/lib/donations/cod-crypto.server.ts` — a file neither Task 5 nor Task 6
+ever touched. Root cause (found by bisecting a merge of this branch onto
+`origin/main` in a disposable worktree with healthy dependencies, since the
+working worktree's own `node_modules` state made the symptom hard to isolate
+at first): Tasks 5 and 6 had each extracted a `createServerFn` handler's body
+into a separately-exported top-level function that did its own dynamic
+`await import(...)` calls. That's fine for typecheck, lint, and unit tests,
+but it breaks the client/server bundle split — with the dynamic import
+lexically inside the `.handler()` callback (the original shape, and the shape
+`submit-application.functions.ts` actually uses), the build correctly excludes
+it from the client bundle; moved to a separate export, Rollup traces it
+normally, and Task 6's import chain reached all the way to a `.server.ts`
+file's `node:crypto` usage. Both tasks' sections above already reflect the
+fix (dependencies passed as parameters, dynamic imports back inside the
+handler) — this note exists so the reason isn't lost. Re-run: exit 0, no
+`externalized for browser compatibility` warnings for either affected file.
 
 - [ ] **Step 6: Commit if Steps 1–5 required any fixups**
 
