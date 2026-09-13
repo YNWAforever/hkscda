@@ -431,7 +431,12 @@ Create `src/lib/animals/publicListing.server.test.ts`:
 import { afterAll, describe, expect, mock, test } from "bun:test";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-const realSupabaseModule = await import("../supabase");
+// Spread into a new object, not a bare reference -- bun's mock.module mutates
+// the shared module namespace in place, so a bare reference would be mutated
+// out from under us the moment the mock below is installed, and afterAll's
+// "restore" would silently restore the already-mocked object. See 23566de
+// and 4480fdb for the two prior times this exact bug was fixed in this repo.
+const realSupabaseModule = { ...(await import("../supabase")) };
 
 function createListingFakeClient(data: Record<string, unknown>[]) {
   const eqFilters: Array<[string, unknown]> = [];
@@ -580,7 +585,12 @@ Create `src/lib/animals/publicAnimal.functions.test.ts`:
 import { afterAll, describe, expect, mock, test } from "bun:test";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-const realSupabaseModule = await import("../supabase");
+// Spread into a new object, not a bare reference -- bun's mock.module mutates
+// the shared module namespace in place, so a bare reference would be mutated
+// out from under us the moment the mock below is installed, and afterAll's
+// "restore" would silently restore the already-mocked object. See 23566de
+// and 4480fdb for the two prior times this exact bug was fixed in this repo.
+const realSupabaseModule = { ...(await import("../supabase")) };
 
 function createAnimalFakeClient(data: Record<string, unknown>[]) {
   const eqFilters: Array<[string, unknown]> = [];
@@ -726,8 +736,13 @@ Create `src/lib/animals/publicImpact.functions.test.ts`:
 import { afterAll, describe, expect, mock, test } from "bun:test";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-const realSupabaseModule = await import("../supabase");
-const realPublicImpactServerModule = await import("../adoptions/publicImpact.server");
+// Spread into a new object, not a bare reference -- bun's mock.module mutates
+// the shared module namespace in place, so a bare reference would be mutated
+// out from under us the moment the mock below is installed, and afterAll's
+// "restore" would silently restore the already-mocked object. See 23566de
+// and 4480fdb for the two prior times this exact bug was fixed in this repo.
+const realSupabaseModule = { ...(await import("../supabase")) };
+const realPublicImpactServerModule = { ...(await import("../adoptions/publicImpact.server")) };
 
 function createImpactFakeClient(data: Record<string, unknown>[]) {
   const eqFilters: Array<[string, unknown]> = [];
@@ -868,8 +883,10 @@ Create `src/routes/sitemap[.]xml.test.ts`:
 ```ts
 import { afterAll, describe, expect, mock, test } from "bun:test";
 
-const realSupabaseModule = await import("../lib/supabase");
-const realStoriesModule = await import("../lib/content/publicStoriesPage.server");
+// Spread into new objects, not bare references -- see the note in Task 4
+// on why a bare reference here would defeat the afterAll restoration below.
+const realSupabaseModule = { ...(await import("../lib/supabase")) };
+const realStoriesModule = { ...(await import("../lib/content/publicStoriesPage.server")) };
 
 function createSitemapFakeClient(data: Record<string, unknown>[]) {
   const eqFilters: Array<[string, unknown]> = [];
