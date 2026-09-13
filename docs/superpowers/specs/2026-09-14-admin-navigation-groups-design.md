@@ -1,7 +1,7 @@
 # HKSCDA 全後台分組與動物分頁設計
 
 日期：2026-09-14。
-狀態：用戶已選方案 1（整個後台統一分組）；此書面規格待最後覆核，尚未修改功能。
+狀態：用戶已批准書面規格；實作與驗收證據見 docs/evidence/admin-navigation-groups/README.md。
 基線：origin/main 8aabbf5（已合併 PR #121 義工營運中心）。
 分支：feat/admin-navigation-groups，沿用既有隔離 worktree。
 
