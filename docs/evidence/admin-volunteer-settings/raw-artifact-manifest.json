@@ -1,0 +1,216 @@
+{
+  "scope": "Synthetic isolated browser evidence retained locally under the existing docs/evidence/.gitignore convention",
+  "code_commit": "67d1b5d466ee47bd499880c27c70005c6c9d9b51",
+  "artifacts": [
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/animals/public-detail-gallery.png",
+      "bytes": 240517,
+      "sha256": "19689aff3e27d89cef91713fc184ea157c428edc08e2d9aa512686ea9eaf747a"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/animals/publication.png",
+      "bytes": 5867,
+      "sha256": "7632cc0b1d7d98784b8e7629d396d20e8114b06ce30e2f1f621562a25ea39037"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/assessments/assessment-published.png",
+      "bytes": 127466,
+      "sha256": "533d55066185790d79bdf4f74a3ec5a14e9c9dd42071ca1688b12267c540b565"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/calendar-1440.png",
+      "bytes": 231183,
+      "sha256": "83e67ffb39caec2cedf52c45be216594ffff3b83eaa275a12c572bb03af2dd63"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/calendar-390.png",
+      "bytes": 156204,
+      "sha256": "eb4b141a82f95af818b80b3e5a5a11e4c162161428f7e7771333f0a229c279b7"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/calendar-768.png",
+      "bytes": 219235,
+      "sha256": "021a1da84e54d861142e6d61ee1b1c999ae12ce88f4b5e94d0da4a8581565765"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/internships/staff-review.png",
+      "bytes": 114780,
+      "sha256": "f39fc2eba2a294a7aac4dd3d8445be5be55ccf14f2148ea99b781d5d24568ac8"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/internships/student-1440.png",
+      "bytes": 168188,
+      "sha256": "fa97b493fba10f8b6a8052f255f0e9d263c982ae132fe07fda25d9ce31868878"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/internships/student-390.png",
+      "bytes": 139354,
+      "sha256": "62fb46568dcc697a5d77689d01373b56ddcb18f210b8014e7f92acb3f406479b"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/internships/student-768.png",
+      "bytes": 142253,
+      "sha256": "c41621d1014e8e9b5b17350885810f9827b63c4859cfff8f3fb2ed7b2a93d85f"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/policy-sources-operations/failure-0.png",
+      "bytes": 6491,
+      "sha256": "196e84764758ab096b57c371f54cd3bbed7f23d0ed72fbfa24bfe34a8fdd3722"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/policy-sources-operations/group-confirmed-1440.png",
+      "bytes": 322052,
+      "sha256": "3960760351cb1da44eba7546214de798137dab6c8533eeef9dc4f0bd3e2984d0"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/policy-sources-operations/group-confirmed-390.png",
+      "bytes": 268775,
+      "sha256": "7b2c9ddcc4a80cb4288ff3fd56583d4e71c67abb154543be7772046173508814"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/policy-sources-operations/group-confirmed-768.png",
+      "bytes": 315902,
+      "sha256": "b5bff05fc4d8ef7e7be4c97a5c30fd4344f4817025677b8f30eca853f1c649ce"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/policy-sources-operations/inherited-template-1440.png",
+      "bytes": 615751,
+      "sha256": "65d17f537e818c507f0ba43dd9c6c151ad356fe8c23c4bea1f915ab1f10c53f9"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/policy-sources-operations/inherited-template-390.png",
+      "bytes": 566025,
+      "sha256": "2ae567f51b56e24dcf2ac84da4dded93ab6556cef905d9e4a996bb56cd396f83"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/policy-sources-operations/inherited-template-768.png",
+      "bytes": 600206,
+      "sha256": "cd833b0225947c4b6710e428d103c0a573e7146e4ee813895f5c1d8aa9dd6442"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/policy-sources-operations/owner-operations-1440.png",
+      "bytes": 216254,
+      "sha256": "1a92dab9efd2e32ffd9446c4dc525f732650a1b8d8bb04f21d53cb72e8b51f0a"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/policy-sources-operations/owner-operations-390.png",
+      "bytes": 183359,
+      "sha256": "ac704cafcc68a141cff195c440a026cbaa0d99dc252a884fada5d0db75383e31"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/policy-sources-operations/owner-operations-768.png",
+      "bytes": 180253,
+      "sha256": "a497f8571921a4cd500052f508ca913127ed18725f1b6112223c83642adef4fa"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/policy-sources-operations/rescheduled-1440.png",
+      "bytes": 327657,
+      "sha256": "147eaf267fadebfef79dc9f0bf86bb53f6f2b17df6766e2993f09c9a4b158198"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/policy-sources-operations/rescheduled-390.png",
+      "bytes": 272691,
+      "sha256": "917528a82eea6d163efccace6f3858c66fc243f6cc566c9ae526bea17f5e8dd3"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/policy-sources-operations/rescheduled-768.png",
+      "bytes": 318876,
+      "sha256": "90d8e45a5ec3aa3b6cd8949d28cdff38a2419906fadac23b0eccf838991e6eda"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/policy-sources-operations/simulation-1440.png",
+      "bytes": 145966,
+      "sha256": "e7087f152929bd287afc5f01dee653e28b5a40480b505d37e59f21418fc240a5"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/policy-sources-operations/simulation-390.png",
+      "bytes": 81491,
+      "sha256": "c9fef603694406576b23e27046eda79a9f98718d4b830f67f3f5c35f9c60e574"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/policy-sources-operations/simulation-768.png",
+      "bytes": 135745,
+      "sha256": "82002c328412cb9b94b19a4f899460d9a4a7157adc571f7d1b851883ecbfc772"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/policy-sources-operations/sources-1440.png",
+      "bytes": 147364,
+      "sha256": "3aa2b66986405d4f5af5374a346d942c43d07df80ebe5927b2a1b1dce6ff1c5a"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/policy-sources-operations/sources-390.png",
+      "bytes": 85557,
+      "sha256": "b5f70b84b99c24b3c871c76df573c9074912eeb00ce0e5a7d457aff2cc84eb89"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/policy-sources-operations/sources-768.png",
+      "bytes": 144866,
+      "sha256": "a8f68773e100cc7a4d73c9262426ccd9040ed8e78cc25a70a467b7b0428e137e"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/settings-5.png",
+      "bytes": 355576,
+      "sha256": "606ae8b81c4c66dfb35b67b01509e6f9e22525e5fcc5b97bc28ad44d3e56706a"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/settings-6.png",
+      "bytes": 365748,
+      "sha256": "6824d27e20aff7bd9339fabe635f24b2f582b0525d0021a4c82ec5856c64454f"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/signup.png",
+      "bytes": 544583,
+      "sha256": "c5ee645a407c3a0b238863d7c088287e49fcaca3dd56d25a067c9aa5be25cc37"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/tasks/tasks-1440.png",
+      "bytes": 103562,
+      "sha256": "c2b3de6c512318316053fd38dab1c6cf19fec94749e3c05c7d03a97b0f984478"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/tasks/tasks-390.png",
+      "bytes": 86820,
+      "sha256": "b9a8e91207f77e907676d00a25a774419ba07c56dc0b50b46cf9fc4e80fde86c"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/tasks/tasks-768.png",
+      "bytes": 90566,
+      "sha256": "007056bdf9de52f679deb6dd4d9d8970377f8f9280eb002e6afd3fcdec41321d"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/terms-refresh/new-terms-unchecked-1440.png",
+      "bytes": 123563,
+      "sha256": "14d77aaedc94232140b283eed6c2506841aca38d9406dc978555a221dcecb155"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/terms-refresh/new-terms-unchecked-390.png",
+      "bytes": 121568,
+      "sha256": "3357741dbdd85ce7f1642600394ad4173a22a6a3776415d8d3eb1c023eb0c86b"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/browser/terms-refresh/new-terms-unchecked-768.png",
+      "bytes": 127086,
+      "sha256": "a83979e73406a6eb037b511b230bd5356cd3b4ea317218a97b184621af247539"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/finance-browser/staff-recorded.png",
+      "bytes": 181054,
+      "sha256": "d91c782eb86182942f7c3af8e27d88ca80370d2d692c125b4bef7fde9bfd2959"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/finance-browser/treasurer-refund-1440.png",
+      "bytes": 173487,
+      "sha256": "13a10907ca3d8b6c4475cc0d40b2fd1076e7a5ef6abf1edadcaad4bf39ba795c"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/finance-browser/treasurer-refund-390.png",
+      "bytes": 94326,
+      "sha256": "b30cceadae15471a7dbe3ab00b11a99e096430e98d75368f1927511908bd41a5"
+    },
+    {
+      "path": "docs/evidence/admin-volunteer-settings/finance-browser/treasurer-refund-768.png",
+      "bytes": 139292,
+      "sha256": "5824ca36b69204fbec4e51155035c8f142f41f9c5cebc237c6e982b45efc3ef5"
+    }
+  ]
+}

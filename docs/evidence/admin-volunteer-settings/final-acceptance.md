@@ -27,6 +27,8 @@ Dedicated final RLS gate also passed:45 tests,82 assertions,0 failures against t
 
 ## Role and workflow evidence
 
+Following docs/evidence/.gitignore,42 raw screenshots remain on disk and are hashed in raw-artifact-manifest.json; compact reports and executable verification scripts are committed.
+
 Reports/screenshots are under `browser/`, `finance-browser/`, and `public-verification/` beside this file. Browser assertions exercise real HTTP/auth/database workflows, not mocked responses:
 
 - Administrator capacity5→6 publication, preserved old5, six accepted/seventh rejected; staff/treasurer/inactive policy denial; all four calendar views agree.
