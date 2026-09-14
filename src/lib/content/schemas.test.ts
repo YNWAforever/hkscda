@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
 import {
+  adminContentSearchSchema,
   contentInputSchema,
   contentMediaInputSchema,
   contentMediaUploadTargetSchema,
@@ -93,5 +94,24 @@ describe("content media schemas", () => {
     }
 
     expect(9 * 1024 * 1024).toBeGreaterThan(MAX_CONTENT_MEDIA_BYTES);
+  });
+});
+
+describe("adminContentSearchSchema", () => {
+  test("parses the new admin filters", () => {
+    const parsed = adminContentSearchSchema.parse({
+      publishedFrom: "2026-01-01",
+      publishedTo: "2026-12-31",
+      mapVisibility: "on",
+      hasUpdate: "yes",
+      draftState: "draft",
+    });
+    expect(parsed.mapVisibility).toBe("on");
+    expect(parsed.hasUpdate).toBe("yes");
+    expect(parsed.draftState).toBe("draft");
+  });
+  test("rejects unknown enum values", () => {
+    expect(adminContentSearchSchema.safeParse({ mapVisibility: "maybe" }).success).toBe(false);
+    expect(adminContentSearchSchema.safeParse({ draftState: "sent" }).success).toBe(false);
   });
 });

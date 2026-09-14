@@ -7,12 +7,12 @@ import {
 } from "./notificationDrafts";
 import { validatePublishableContent } from "./rules";
 import {
+  adminContentSearchSchema,
   CONTENT_MEDIA_BUCKET,
   contentLinkInputSchema,
   contentMediaInputSchema,
   contentMediaUploadTargetSchema,
   contentInputSchema,
-  contentSearchSchema,
   notificationDraftStatusSchema,
   publicContentSearchSchema,
   socialCopyGenerateSchema,
@@ -30,7 +30,7 @@ import type {
   StoryUpdate,
 } from "./types";
 
-type ContentSearch = z.infer<typeof contentSearchSchema>;
+type AdminContentSearch = z.infer<typeof adminContentSearchSchema>;
 type PublicContentSearch = z.infer<typeof publicContentSearchSchema>;
 type ContentInput = z.infer<typeof contentInputSchema>;
 type StoryProfileInput = z.infer<typeof storyProfileInputSchema>;
@@ -75,7 +75,7 @@ export type ContentRepository = {
   }>;
   getPublicContentBySlug(slug: string): Promise<ContentDetail | null>;
   listPublicMapStories(input: PublicContentSearch): Promise<PublicStoryMapPoint[]>;
-  listAdminContent(input: ContentSearch): Promise<{ items: ContentSummary[]; total: number }>;
+  listAdminContent(input: AdminContentSearch): Promise<{ items: ContentSummary[]; total: number }>;
   getAdminUpdateBody?(contentId: string, updateId: string): Promise<string | null>;
   getAdminContent(id: string, historyPage?: number): Promise<ContentDetail | null>;
   createContent(input: ContentInput): Promise<string>;
@@ -294,7 +294,7 @@ export function createContentService({
     },
 
     async listAdminContent(raw: unknown) {
-      return repo.listAdminContent(contentSearchSchema.parse(raw));
+      return repo.listAdminContent(adminContentSearchSchema.parse(raw));
     },
 
     async getAdminUpdateBody(contentId: string, updateId: string) {

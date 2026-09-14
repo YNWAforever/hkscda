@@ -1129,3 +1129,32 @@ describe("createContentService createUploadTarget", () => {
     ).rejects.toThrow();
   });
 });
+
+describe("createContentService listAdminContent", () => {
+  test("forwards admin-only list filters to the repository", async () => {
+    let received: unknown;
+    const { repo } = createRepo({
+      listAdminContent: async (input) => {
+        received = input;
+        return { items: [], total: 0 };
+      },
+    });
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await service.listAdminContent({
+      publishedFrom: "2026-01-01",
+      publishedTo: "2026-12-31",
+      mapVisibility: "on",
+      hasUpdate: "yes",
+      draftState: "draft",
+    });
+
+    expect(received).toMatchObject({
+      publishedFrom: "2026-01-01",
+      publishedTo: "2026-12-31",
+      mapVisibility: "on",
+      hasUpdate: "yes",
+      draftState: "draft",
+    });
+  });
+});

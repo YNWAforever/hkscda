@@ -64,6 +64,16 @@ export const contentSearchSchema = z.object({
   pageSize: boundedPageSize.default(25),
 });
 
+export const adminContentSearchSchema = contentSearchSchema.extend({
+  publishedFrom: z.string().date().optional(),
+  publishedTo: z.string().date().optional(),
+  mapVisibility: z.enum(["on", "off"]).optional(),
+  hasUpdate: z.enum(["yes", "no"]).optional(),
+  draftState: z.enum(notificationDraftStatuses).optional(),
+});
+
+export type AdminContentSearch = z.infer<typeof adminContentSearchSchema>;
+
 export const publicContentSearchSchema = contentSearchSchema.extend({
   status: z.literal("published").optional().default("published"),
 });
