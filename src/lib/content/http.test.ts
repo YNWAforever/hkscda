@@ -292,6 +292,36 @@ describe("createContentHandlers", () => {
     expect(body.issues[0]?.field).toBe("summary");
   });
 
+  test("returns both story profile field issues when publishing an under-specified rescue story", async () => {
+    const issues = [
+      { field: "animalType", message: "Animal type is required before publishing" },
+      { field: "publicStatus", message: "Public status is required before publishing" },
+    ];
+    const service = createService({
+      async publishContent() {
+        throw new ContentValidationError(issues);
+      },
+    });
+    const handlers = createContentHandlers({
+      requireContentAdmin: async () => admin,
+      service,
+    });
+
+    const response = await handlers.publishContent({
+      request: new Request(
+        "https://example.test/api/admin/content/99999999-aaaa-4333-8444-555555555555/publish",
+        { method: "POST" },
+      ),
+      params: { id: "99999999-aaaa-4333-8444-555555555555" },
+    });
+
+    const body = (await response.json()) as { issues: Array<{ field: string }> };
+    expect(response.status).toBe(400);
+    expect(body.issues.map((issue) => issue.field)).toEqual(
+      expect.arrayContaining(["animalType", "publicStatus"]),
+    );
+  });
+
   test("maps zod errors to admin 400 responses", async () => {
     const service = createService({
       async createContent() {

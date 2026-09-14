@@ -5,11 +5,7 @@ import type { ContentDetail, RecipientNotificationDraft, StoryUpdate } from "./t
 
 type ContentService = ReturnType<typeof createContentService>;
 
-type ContentOverride = Partial<Omit<ContentDetail, "notificationDrafts">> & {
-  notificationDrafts?: Array<
-    Pick<RecipientNotificationDraft, "storyUpdateId" | "channel" | "recipientContact">
-  >;
-};
+type ContentOverride = Partial<ContentDetail>;
 
 const storyUpdateId = "22222222-2222-4333-8444-555555555555";
 const missingStoryUpdateId = "33333333-3333-4333-8444-555555555555";
@@ -95,6 +91,7 @@ function createRepo(overrides: Partial<ContentRepository> = {}) {
       socialCopies.push(...rows);
     },
     getStoryUpdate: async (id) => (id === storyUpdateId ? publicStoryUpdate : null),
+    listNotificationDraftKeys: async () => [],
     resolveAdopterRecipients: async () => [
       {
         adoptionCaseId: "case-1",
@@ -123,6 +120,7 @@ function buildService({
   storyUpdate,
   recipients,
   recipientsError,
+  draftKeys,
   insertNotificationDrafts,
   mediaLifecycle,
 }: {
@@ -130,18 +128,14 @@ function buildService({
   storyUpdate?: Partial<StoryUpdate>;
   recipients?: AdopterNotificationRecipient[];
   recipientsError?: Error;
+  draftKeys?: Array<{ channel: string; recipientContact: string }>;
   insertNotificationDrafts?: ContentRepository["insertNotificationDrafts"];
   mediaLifecycle?: {
     publish: (command: unknown) => Promise<{ version: number; revisionId: string }>;
   };
 } = {}) {
   const overrides: Partial<ContentRepository> = {
-    getAdminContent: async () =>
-      ({
-        ...detail,
-        ...content,
-        notificationDrafts: content?.notificationDrafts ?? detail.notificationDrafts,
-      }) as ContentDetail,
+    getAdminContent: async () => ({ ...detail, ...content }) as ContentDetail,
   };
   if (storyUpdate) {
     const update: StoryUpdate = { ...publicStoryUpdate, ...storyUpdate };
@@ -154,6 +148,9 @@ function buildService({
     };
   } else if (recipients) {
     overrides.resolveAdopterRecipients = async () => recipients;
+  }
+  if (draftKeys) {
+    overrides.listNotificationDraftKeys = async () => draftKeys;
   }
   if (insertNotificationDrafts) {
     overrides.insertNotificationDrafts = insertNotificationDrafts;
@@ -366,6 +363,30 @@ describe("createContentService", () => {
     expect(updateCalled).toBe(false);
   });
 
+  test("sets published_at when a direct update publishes content without it", async () => {
+    const updates: Parameters<ContentRepository["updateContent"]>[1][] = [];
+    const { repo } = createRepo({
+      getAdminContent: async () => ({ ...detail, status: "draft", publishedAt: null }),
+      updateContent: async (_id, input) => {
+        updates.push(input);
+        return { ...detail, status: "published", publishedAt: input.publishedAt ?? null };
+      },
+    });
+    const service = createContentService({
+      repo,
+      publicBaseUrl: "https://example.test",
+      now: () => new Date("2026-07-06T00:00:00.000Z"),
+    });
+
+    await service.updateContent({
+      actorUserId: "admin-user",
+      contentId: "content-1",
+      input: { status: "published" },
+    });
+
+    expect(updates).toEqual([{ status: "published", publishedAt: "2026-07-06T00:00:00.000Z" }]);
+  });
+
   test("generates social copy and adopter notification drafts", async () => {
     const { repo, socialCopies, notificationDrafts } = createRepo();
     const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
@@ -457,6 +478,9 @@ describe("createContentService", () => {
 
     const { repo, notificationDrafts } = createRepo({
       getAdminContent: async () => ({ ...detail, notificationDrafts: [existing] }),
+      listNotificationDraftKeys: async () => [
+        { channel: "email", recipientContact: "ada@example.com" },
+      ],
     });
     const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
 
@@ -468,6 +492,43 @@ describe("createContentService", () => {
     expect(notificationDrafts).toHaveLength(1);
     expect(notificationDrafts[0]?.channel).toBe("whatsapp");
     expect(notificationDrafts[0]?.recipientContact).toBe("91234567");
+    expect(result.count).toBe(1);
+  });
+
+  test("dedupes against the full draft-key set, not the 20-row admin window", async () => {
+    // getAdminContent slices notificationDrafts to 20 rows, so an update with
+    // more than 20 drafts could hide the matching key and re-draft a real
+    // person. The repository key lookup returns every draft for this update.
+    const window = Array.from({ length: 20 }, (_, index) => ({
+      id: `draft-${index}`,
+      storyUpdateId: "other-update",
+      contentItemId: "content-1",
+      adoptionCaseId: "case-1",
+      supporterId: "supporter-1",
+      channel: "email" as const,
+      recipientName: "陳小姐",
+      recipientContact: `other-${index}@example.com`,
+      subject: null,
+      body: "已產生的草稿",
+      status: "draft" as const,
+      createdAt: "2026-07-05T11:00:00.000Z",
+      updatedAt: "2026-07-05T11:00:00.000Z",
+    }));
+    const { repo, notificationDrafts } = createRepo({
+      getAdminContent: async () => ({ ...detail, notificationDrafts: window }),
+      listNotificationDraftKeys: async () => [
+        { channel: "email", recipientContact: "ada@example.com" },
+      ],
+    });
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    const result = await service.generateNotificationDrafts({
+      actorUserId: "admin-user",
+      storyUpdateId,
+    });
+
+    expect(notificationDrafts).toHaveLength(1);
+    expect(notificationDrafts[0]?.channel).toBe("whatsapp");
     expect(result.count).toBe(1);
   });
 
@@ -494,6 +555,9 @@ describe("createContentService", () => {
 
     const { repo, notificationDrafts } = createRepo({
       getAdminContent: async () => ({ ...detail, notificationDrafts: [drafted] }),
+      listNotificationDraftKeys: async () => [
+        { channel: "email", recipientContact: "ada@example.com" },
+      ],
       resolveAdopterRecipients: async () => [
         {
           adoptionCaseId: "case-1",
@@ -860,11 +924,8 @@ describe("createContentService createStoryUpdate adopter drafts", () => {
 
   test("an existing draft for the same update/contact is not regenerated", async () => {
     const { service } = buildService({
-      content: {
-        notificationDrafts: [
-          { storyUpdateId: "u1", channel: "email", recipientContact: "adopter@example.test" },
-        ],
-      },
+      content: {},
+      draftKeys: [{ channel: "email", recipientContact: "adopter@example.test" }],
       storyUpdate: {
         id: "u1",
         contentItemId: "c1",

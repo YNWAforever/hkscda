@@ -91,6 +91,9 @@ export type ContentRepository = {
     rows: Array<Omit<SocialCopyVariant, "id" | "createdAt" | "updatedAt">>,
   ): Promise<void>;
   getStoryUpdate(id: string): Promise<StoryUpdate | null>;
+  listNotificationDraftKeys(
+    storyUpdateId: string,
+  ): Promise<Array<{ channel: string; recipientContact: string }>>;
   resolveAdopterRecipients(contentId: string): Promise<AdopterNotificationRecipient[]>;
   insertNotificationDrafts(
     rows: Array<Omit<RecipientNotificationDraft, "id" | "createdAt" | "updatedAt">>,
@@ -229,10 +232,13 @@ export function createContentService({
     // same message to a real person twice. Status is deliberately ignored:
     // a dismissed draft was a decision, and a sent one must never be
     // regenerated.
+    //
+    // Read every draft key for this update from the repository rather than
+    // content.notificationDrafts, which getAdminContent slices to 20 rows: an
+    // update with more drafts could hide a match and duplicate a real send.
+    const existingDrafts = await repo.listNotificationDraftKeys(update.id);
     const alreadyDrafted = new Set(
-      content.notificationDrafts
-        .filter((draft) => draft.storyUpdateId === update.id)
-        .map((draft) => `${draft.channel}:${draft.recipientContact}`),
+      existingDrafts.map((draft) => `${draft.channel}:${draft.recipientContact}`),
     );
 
     const drafts = buildAdopterNotificationDrafts({
@@ -337,7 +343,17 @@ export function createContentService({
         if (issues.length > 0) throw new ContentValidationError(issues);
       }
 
-      const content = await repo.updateContent(contentId, parsed);
+      // The validator no longer requires publishedAt (the publish RPC sets it),
+      // but the DB CHECK still enforces `status <> 'published' or published_at
+      // is not null`. Backfill it here for a direct update that flips the
+      // status, mirroring publishContent's legacy fallback, so the write does
+      // not surface as a generic 500.
+      const payload: Partial<ContentInput> = { ...parsed };
+      if (candidate.status === "published" && !candidate.publishedAt) {
+        payload.publishedAt = timestamp(now);
+      }
+
+      const content = await repo.updateContent(contentId, payload);
       await audit({
         actor_user_id: actorUserId,
         action: "content.update",
@@ -419,7 +435,8 @@ export function createContentService({
             if (notificationDrafts.created === 0) {
               notificationDrafts.warning = "沒有可聯絡的領養者，已略過通知草稿。";
             }
-          } catch {
+          } catch (error) {
+            console.error(error);
             notificationDrafts.warning = "通知草稿建立失敗，更新已儲存。";
           }
         }

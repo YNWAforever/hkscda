@@ -300,3 +300,37 @@ test("resolveAdopterRecipients resolves a linked adoption case through its suppo
     email: "adopter@example.test",
   });
 });
+
+test("listNotificationDraftKeys selects only the channel and contact for one update", async () => {
+  const rows = [
+    { channel: "email", recipient_contact: "ada@example.test" },
+    { channel: "whatsapp", recipient_contact: "91234567" },
+  ];
+  let selected = "";
+  let filter = "";
+  const client = {
+    from(table: string) {
+      expect(table).toBe("recipient_notification_draft");
+      const query = {
+        select(columns: string) {
+          selected = columns;
+          return query;
+        },
+        eq(column: string, value: string) {
+          filter = `${column}:${value}`;
+          return Promise.resolve({ data: rows, error: null });
+        },
+      };
+      return query;
+    },
+  } as unknown as SupabaseClient;
+
+  const keys = await createSupabaseContentRepository(client).listNotificationDraftKeys("update-1");
+
+  expect(keys).toEqual([
+    { channel: "email", recipientContact: "ada@example.test" },
+    { channel: "whatsapp", recipientContact: "91234567" },
+  ]);
+  expect(selected).toBe("channel, recipient_contact");
+  expect(filter).toBe("story_update_id:update-1");
+});
