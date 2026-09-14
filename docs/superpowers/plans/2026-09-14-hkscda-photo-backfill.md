@@ -17,7 +17,7 @@
 - Only ever `UPDATE animals SET image_url = ... WHERE id = ? AND image_url IS NULL`. Never insert, delete, or modify another column.
 - Never overwrite an animal that already has a non-empty `image_url`.
 - Re-host photo bytes in the public `animal-images` bucket; do not hotlink `hkscda.com`.
-- Deterministic storage key `hkscda/<sourceId>.<ext>`; `upsert: true`. Reject photo bodies over 8 MB.
+- Deterministic storage key `hkscda/<sourceId>.<ext>`; `upsert: true`. Accept download bodies up to 50 MB input, but store ≤8 MB after downscaling; the 8 MB `animal-images` bucket limit applies to the downscaled bytes (or, on decode failure, the original bytes when within that limit).
 - Commits use Conventional Commits.
 
 ---

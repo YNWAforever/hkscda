@@ -129,8 +129,11 @@ Resolution, in order:
 
 - **Download** each matched photo from `https://hkscda.com<photoPath>` with the
   browser-like `User-Agent` and `Referer: https://hkscda.com/animals/<type>`;
-  require `Content-Type: image/*`, and reject anything over 8 MB (the
-  `animal-images` bucket's `file_size_limit`); pace ~400 ms.
+  require `Content-Type: image/*`, accept input bodies up to 50 MB, and pace
+  ~400 ms. Each photo is downscaled before upload and the `animal-images` bucket's
+  8 MB `file_size_limit` is enforced on the downscaled bytes; if decoding fails,
+  the original bytes are stored instead when they are within that 8 MB limit (the
+  fallback is reported, not silently re-uploaded).
 - **Upload** to the public `animal-images` bucket at the deterministic key
   `hkscda/<sourceId>.<ext>`, where `ext` comes from the response content type
   (`jpeg`→`jpg`, else `png`/`webp`), `upsert: true`, then `getPublicUrl()`.
