@@ -47,6 +47,7 @@ import {
 } from "./editorState";
 import { ContentRevisionPanel } from "./ContentRevisionPanel";
 import { ContentTimeline } from "./ContentTimeline";
+import { LinkedRecordPicker } from "./LinkedRecordPicker";
 import { NotificationDraftPanel } from "./NotificationDraftPanel";
 import { SocialCopyPanel } from "./SocialCopyPanel";
 
@@ -929,6 +930,7 @@ function LinkedRecords({
     linkedId: "",
     relationship: "adopter",
   });
+  const [linkedLabel, setLinkedLabel] = useState("");
 
   return (
     <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
@@ -945,17 +947,20 @@ function LinkedRecords({
           }
           panelState.clear();
           setForm({ linkedType: "adoption_case", linkedId: "", relationship: "adopter" });
+          setLinkedLabel("");
         }}
       >
         <Field label="類型">
           <select
             value={form.linkedType}
-            onChange={(event) =>
+            onChange={(event) => {
               setForm((current) => ({
                 ...current,
                 linkedType: event.target.value as ContentLinkType,
-              }))
-            }
+                linkedId: "",
+              }));
+              setLinkedLabel("");
+            }}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           >
             {(
@@ -973,14 +978,16 @@ function LinkedRecords({
             ))}
           </select>
         </Field>
-        <Field label="紀錄 ID">
-          <input
-            required
+        <Field label="關聯紀錄">
+          <LinkedRecordPicker
+            linkedType={form.linkedType}
             value={form.linkedId}
-            onChange={(event) =>
-              setForm((current) => ({ ...current, linkedId: event.target.value }))
-            }
-            className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+            label={linkedLabel}
+            disabled={pending}
+            onChange={(pick) => {
+              setForm((current) => ({ ...current, linkedId: pick.id }));
+              setLinkedLabel(pick.label);
+            }}
           />
         </Field>
         <Field label="關係">
@@ -1011,7 +1018,7 @@ function LinkedRecords({
         </Field>
         <button
           type="submit"
-          disabled={pending}
+          disabled={pending || !form.linkedId}
           className="mt-6 inline-flex items-center justify-center gap-2 rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-bold text-[var(--color-primary-foreground)] disabled:opacity-60"
         >
           <Plus className="h-4 w-4" />
