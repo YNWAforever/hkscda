@@ -14,6 +14,10 @@
  *   node scripts/scrape-hkscda-animals.js
  */
 
+// SUPERSEDED (2026-09-14): this targeted a URL/img shape hkscda.com does not
+// use (it now uses /animal/id/<numeric> and CSS background images). Use
+// scripts/scrape-hkscda-listing.mjs + scripts/apply-hkscda-photos.mjs instead.
+
 import { chromium } from "playwright";
 import fs from "node:fs/promises";
 import { createWriteStream, existsSync } from "node:fs";
