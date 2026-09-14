@@ -330,10 +330,14 @@ describe("createContentHandlers", () => {
     );
   });
 
-  test("maps zod errors to admin 400 responses", async () => {
+  test("maps zod errors to admin 400 responses with field-level details", async () => {
     const service = createService({
       async createContent() {
-        throw new z.ZodError([]);
+        const parsed = z
+          .object({ slug: z.string().regex(/^[a-z0-9-]+$/, "此網址格式不正確") })
+          .safeParse({ slug: "Bad Slug" });
+        if (parsed.success) throw new Error("Expected the slug to fail validation");
+        throw parsed.error;
       },
     });
     const handlers = createContentHandlers({
@@ -344,12 +348,15 @@ describe("createContentHandlers", () => {
     const response = await handlers.createContent({
       request: new Request("https://example.test/api/admin/content", {
         method: "POST",
-        body: JSON.stringify({}),
+        body: JSON.stringify({ slug: "Bad Slug" }),
       }),
     });
 
     expect(response.status).toBe(400);
-    expect(await response.json()).toEqual({ error: "Invalid content management request" });
+    expect(await response.json()).toEqual({
+      error: "Invalid content management request",
+      details: { fields: { slug: ["此網址格式不正確"] } },
+    });
   });
 
   test("maps draft-only creation errors to 400 responses", async () => {

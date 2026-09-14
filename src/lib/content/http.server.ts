@@ -87,12 +87,16 @@ async function withContentErrors(operation: () => Promise<Response>, publicReque
         { status: error.status },
       );
     if (error instanceof z.ZodError) {
+      if (publicRequest)
+        return jsonResponse({ error: "Could not load story content" }, { status: 400 });
+
+      const fields = error.issues.reduce<Record<string, string[]>>((acc, issue) => {
+        const key = issue.path.join(".") || "form";
+        (acc[key] ??= []).push(issue.message);
+        return acc;
+      }, {});
       return jsonResponse(
-        {
-          error: publicRequest
-            ? "Could not load story content"
-            : "Invalid content management request",
-        },
+        { error: "Invalid content management request", details: { fields } },
         { status: 400 },
       );
     }

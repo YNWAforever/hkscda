@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { AdminApiError } from "../../../lib/admin/session";
 import type { ContentType } from "../../../lib/content/types";
 import {
   contentOptionalFieldLabels,
@@ -11,6 +12,40 @@ import {
 } from "./contentAdminLogic";
 
 const contentTypes: ContentType[] = ["rescue_story", "event", "charity_market", "report"];
+
+export type ContentCreateFormState = {
+  type: ContentType;
+  title: string;
+  slug: string;
+  summary: string;
+  body: string;
+  optional: Record<keyof typeof contentOptionalFieldLabels, string>;
+};
+
+export function buildCreateContentPayload(form: ContentCreateFormState) {
+  return {
+    type: form.type,
+    title: form.title,
+    slug: form.slug,
+    summary: form.summary,
+    body: form.body,
+    status: "draft" as const,
+    ...form.optional,
+  };
+}
+
+export function createErrorMessage(error: unknown): string {
+  if (error instanceof AdminApiError) {
+    if (error.status === 409) return "此網址已被使用，請改用其他 slug。";
+    if (error.fields) {
+      return Object.entries(error.fields)
+        .flatMap(([field, messages]) => messages.map((message) => `${field}: ${message}`))
+        .join("\n");
+    }
+  }
+  if (error instanceof Error) return error.message;
+  return "建立失敗，請重試。";
+}
 
 export function ContentCreateForm() {
   const navigate = useNavigate();
@@ -33,7 +68,9 @@ export function ContentCreateForm() {
     mutationFn: () =>
       fetchAdminJson<{ id: string }>(`/api/admin/content`, {
         method: "POST",
-        body: JSON.stringify({ type, title, slug, summary, body, status: "draft", ...optional }),
+        body: JSON.stringify(
+          buildCreateContentPayload({ type, title, slug, summary, body, optional }),
+        ),
       }),
     onSuccess: (result) => {
       void navigate({ to: "/admin/content/$id", params: { id: result.id } });
@@ -131,9 +168,21 @@ export function ContentCreateForm() {
         ))}
 
         {create.error ? (
-          <p role="alert" className="text-sm font-semibold text-[var(--color-error)]">
-            {create.error instanceof Error ? create.error.message : "建立失敗，請重試。"}
-          </p>
+          <div role="alert" className="text-sm font-semibold text-[var(--color-error)]">
+            {create.error instanceof AdminApiError && create.error.fields ? (
+              <ul className="space-y-1">
+                {Object.entries(create.error.fields).flatMap(([field, messages]) =>
+                  messages.map((message) => (
+                    <li key={`${field}:${message}`}>
+                      {field}: {message}
+                    </li>
+                  )),
+                )}
+              </ul>
+            ) : (
+              <p>{createErrorMessage(create.error)}</p>
+            )}
+          </div>
         ) : null}
 
         <div className="flex gap-3">
