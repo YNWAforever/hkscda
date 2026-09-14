@@ -26,6 +26,9 @@ const OVERRIDES_FILE = path.join("scripts", "hkscda-photo-overrides.json");
 const MANIFEST_JSON = path.join("data", "hkscda-photo-manifest.json");
 const MANIFEST_CSV = path.join("data", "hkscda-photo-manifest.csv");
 const MAX_BYTES = 8 * 1024 * 1024;
+const DOWNLOAD_DELAY_MS = 400;
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function readEnv() {
   const merged = {};
@@ -51,28 +54,45 @@ export function checkRunGuard({ dryRun, yes }) {
   return null;
 }
 
-export async function downloadPhoto(fetchImpl, url) {
-  const res = await fetchImpl(url, {
-    headers: {
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36",
-      Referer: "https://hkscda.com/animals",
-    },
-  });
-  if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
-  const contentType = res.headers.get("content-type") ?? "";
-  if (!contentType.startsWith("image/")) {
-    throw new Error(`not an image (${contentType || "no content-type"}) for ${url}`);
+export async function downloadPhoto(fetchImpl, url, { retries = 1, sleepImpl = sleep } = {}) {
+  for (let attempt = 0; ; attempt += 1) {
+    let res;
+    try {
+      res = await fetchImpl(url, {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36",
+          Referer: "https://hkscda.com/animals",
+        },
+      });
+    } catch (error) {
+      if (attempt < retries) {
+        await sleepImpl(DOWNLOAD_DELAY_MS);
+        continue;
+      }
+      throw error;
+    }
+    if (!res.ok) {
+      if (res.status >= 500 && attempt < retries) {
+        await sleepImpl(DOWNLOAD_DELAY_MS);
+        continue;
+      }
+      throw new Error(`HTTP ${res.status} for ${url}`);
+    }
+    const contentType = res.headers.get("content-type") ?? "";
+    if (!contentType.startsWith("image/")) {
+      throw new Error(`not an image (${contentType || "no content-type"}) for ${url}`);
+    }
+    const contentLength = res.headers.get("content-length");
+    if (contentLength != null && Number(contentLength) > MAX_BYTES) {
+      throw new Error(`image too large (${contentLength} bytes) for ${url}`);
+    }
+    const buffer = Buffer.from(await res.arrayBuffer());
+    if (buffer.byteLength > MAX_BYTES) {
+      throw new Error(`image too large (${buffer.byteLength} bytes) for ${url}`);
+    }
+    return { bytes: buffer, contentType };
   }
-  const contentLength = res.headers.get("content-length");
-  if (contentLength != null && Number(contentLength) > MAX_BYTES) {
-    throw new Error(`image too large (${contentLength} bytes) for ${url}`);
-  }
-  const buffer = Buffer.from(await res.arrayBuffer());
-  if (buffer.byteLength > MAX_BYTES) {
-    throw new Error(`image too large (${buffer.byteLength} bytes) for ${url}`);
-  }
-  return { bytes: buffer, contentType };
 }
 
 export function toCsv(rows) {
@@ -132,7 +152,13 @@ async function main() {
   }
 
   const deps = {
-    downloadPhoto: (url) => downloadPhoto(fetch, url),
+    downloadPhoto: async (url) => {
+      try {
+        return await downloadPhoto(fetch, url);
+      } finally {
+        await sleep(DOWNLOAD_DELAY_MS);
+      }
+    },
     async uploadPhoto(key, bytes, contentType) {
       const { error: uploadError } = await supabase.storage
         .from("animal-images")

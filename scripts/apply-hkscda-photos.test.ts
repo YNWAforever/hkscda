@@ -100,6 +100,69 @@ describe("downloadPhoto", () => {
     const result = await downloadPhoto(fetchImpl as never, "https://hkscda.com/exact.jpeg");
     expect(result.bytes.byteLength).toBe(size);
   });
+
+  test("retries once on a 500 and then succeeds", async () => {
+    let calls = 0;
+    const fetchImpl = async () => {
+      calls += 1;
+      if (calls === 1) {
+        return {
+          ok: false,
+          status: 500,
+          headers: { get: () => null },
+          arrayBuffer: async () => new Uint8Array([1]).buffer,
+        };
+      }
+      return {
+        ok: true,
+        status: 200,
+        headers: { get: (h: string) => (h.toLowerCase() === "content-type" ? "image/jpeg" : null) },
+        arrayBuffer: async () => new Uint8Array([1, 2, 3]).buffer,
+      };
+    };
+    const result = await downloadPhoto(fetchImpl as never, "https://hkscda.com/a.jpeg", {
+      sleepImpl: async () => {},
+    });
+    expect(calls).toBe(2);
+    expect(result.contentType).toBe("image/jpeg");
+    expect(result.bytes.byteLength).toBe(3);
+  });
+
+  test("rejects after retrying an always-500 response", async () => {
+    let calls = 0;
+    const fetchImpl = async () => {
+      calls += 1;
+      return {
+        ok: false,
+        status: 500,
+        headers: { get: () => null },
+        arrayBuffer: async () => new Uint8Array([1]).buffer,
+      };
+    };
+    await expect(
+      downloadPhoto(fetchImpl as never, "https://hkscda.com/a", { sleepImpl: async () => {} }),
+    ).rejects.toThrow("HTTP 500");
+    expect(calls).toBe(2);
+  });
+
+  test("does not retry a 404", async () => {
+    let calls = 0;
+    const fetchImpl = async () => {
+      calls += 1;
+      return {
+        ok: false,
+        status: 404,
+        headers: { get: () => null },
+        arrayBuffer: async () => new Uint8Array([1]).buffer,
+      };
+    };
+    await expect(
+      downloadPhoto(fetchImpl as never, "https://hkscda.com/missing", {
+        sleepImpl: async () => {},
+      }),
+    ).rejects.toThrow("HTTP 404");
+    expect(calls).toBe(1);
+  });
 });
 
 describe("toCsv", () => {
