@@ -993,6 +993,18 @@ export function createSupabaseContentRepository(client: SupabaseClient): Content
       return toStoryUpdate(data as StoryUpdateRow, media);
     },
 
+    async listNotificationDraftKeys(storyUpdateId) {
+      const { data, error } = await client
+        .from("recipient_notification_draft")
+        .select("channel, recipient_contact")
+        .eq("story_update_id", storyUpdateId);
+      if (error) throw error;
+      return ((data ?? []) as Array<{ channel: string; recipient_contact: string }>).map((row) => ({
+        channel: row.channel,
+        recipientContact: row.recipient_contact,
+      }));
+    },
+
     async resolveAdopterRecipients(contentId) {
       const { data: linkRows, error: linkError } = await client
         .from("content_link")

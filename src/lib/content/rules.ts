@@ -44,9 +44,8 @@ export function validatePublishableContent(content: ContentDetail): PublishValid
   if (blank(content.coverMediaId) && blank(content.coverImageUrl)) {
     issues.push({ field: "coverMediaId", message: "Cover image is required before publishing" });
   }
-  if (blank(content.publishedAt)) {
-    issues.push({ field: "publishedAt", message: "Published date is required before publishing" });
-  }
+  // publishedAt is intentionally not required here: the publish RPC sets it, and
+  // the DB check constraint backstops any legacy fallback that skips it.
   if (content.type === "rescue_story") {
     if (!content.storyProfile) {
       issues.push({
@@ -54,6 +53,18 @@ export function validatePublishableContent(content: ContentDetail): PublishValid
         message: "Rescue stories need Story Wall settings before publishing",
       });
     } else {
+      if (blank(content.storyProfile.animalType)) {
+        issues.push({
+          field: "animalType",
+          message: "Animal type is required before publishing",
+        });
+      }
+      if (blank(content.storyProfile.publicStatus)) {
+        issues.push({
+          field: "publicStatus",
+          message: "Public status is required before publishing",
+        });
+      }
       if (blank(content.storyProfile.rescueRegion)) {
         issues.push({
           field: "rescueRegion",

@@ -91,6 +91,9 @@ export type ContentRepository = {
     rows: Array<Omit<SocialCopyVariant, "id" | "createdAt" | "updatedAt">>,
   ): Promise<void>;
   getStoryUpdate(id: string): Promise<StoryUpdate | null>;
+  listNotificationDraftKeys(
+    storyUpdateId: string,
+  ): Promise<Array<{ channel: string; recipientContact: string }>>;
   resolveAdopterRecipients(contentId: string): Promise<AdopterNotificationRecipient[]>;
   insertNotificationDrafts(
     rows: Array<Omit<RecipientNotificationDraft, "id" | "createdAt" | "updatedAt">>,
@@ -215,6 +218,52 @@ export function createContentService({
     await repo.insertAuditLog({ ...row, timestamp: timestamp(now) });
   }
 
+  async function draftAdopterNotifications(actorUserId: string | null, update: StoryUpdate) {
+    assertPublicOutboundStoryUpdate(update);
+    const content = await repo.getAdminContent(update.contentItemId);
+    if (!content) throw new Error("Content item not found");
+
+    const recipients = await repo.resolveAdopterRecipients(content.id);
+    const publicUrl = publicStoryUrl(publicBaseUrl, content.slug);
+
+    // buildAdopterNotificationDrafts dedupes within one call, but knows
+    // nothing about earlier ones. Without this filter a second press of the
+    // generate button re-drafts every adopter, and the operator sends the
+    // same message to a real person twice. Status is deliberately ignored:
+    // a dismissed draft was a decision, and a sent one must never be
+    // regenerated.
+    //
+    // Read every draft key for this update from the repository rather than
+    // content.notificationDrafts, which getAdminContent slices to 20 rows: an
+    // update with more drafts could hide a match and duplicate a real send.
+    const existingDrafts = await repo.listNotificationDraftKeys(update.id);
+    const alreadyDrafted = new Set(
+      existingDrafts.map((draft) => `${draft.channel}:${draft.recipientContact}`),
+    );
+
+    const drafts = buildAdopterNotificationDrafts({
+      contentItemId: content.id,
+      storyUpdateId: update.id,
+      storyTitle: content.title,
+      updateTitle: update.title,
+      updateBody: update.body,
+      publicUrl,
+      recipients,
+    }).filter((draft) => !alreadyDrafted.has(`${draft.channel}:${draft.recipientContact}`));
+
+    await repo.insertNotificationDrafts(drafts);
+    // Drafting messages addressed to adopters reaches recipient PII, so the
+    // count is the part that matters to a later reviewer — not the bodies.
+    await audit({
+      actor_user_id: actorUserId,
+      action: "content.notification_draft.generate",
+      entity: "recipient_notification_draft",
+      entity_id: update.id,
+      detail: { count: drafts.length },
+    });
+    return drafts.length;
+  }
+
   return {
     async getRevision(contentId: string, revisionId: string) {
       if (!lifecycle) throw new Error("Content lifecycle is unavailable");
@@ -294,7 +343,17 @@ export function createContentService({
         if (issues.length > 0) throw new ContentValidationError(issues);
       }
 
-      const content = await repo.updateContent(contentId, parsed);
+      // The validator no longer requires publishedAt (the publish RPC sets it),
+      // but the DB CHECK still enforces `status <> 'published' or published_at
+      // is not null`. Backfill it here for a direct update that flips the
+      // status, mirroring publishContent's legacy fallback, so the write does
+      // not surface as a generic 500.
+      const payload: Partial<ContentInput> = { ...parsed };
+      if (candidate.status === "published" && !candidate.publishedAt) {
+        payload.publishedAt = timestamp(now);
+      }
+
+      const content = await repo.updateContent(contentId, payload);
       await audit({
         actor_user_id: actorUserId,
         action: "content.update",
@@ -341,27 +400,49 @@ export function createContentService({
     },
 
     async createStoryUpdate({ actorUserId, contentId, input }: CreateStoryUpdateArgs) {
+      const parsed = storyUpdateInputSchema.parse(input);
+      let id: string;
+
       if (lifecycle) {
         const result = await lifecycle.update({ actorUserId, contentId, input });
         if (!result.childId) throw new Error("Content lifecycle did not return a child id");
-        return { id: result.childId, ...result };
+        id = result.childId;
+      } else {
+        id = await repo.createStoryUpdate(contentId, parsed);
+        await audit({
+          actor_user_id: actorUserId,
+          action: "content.story_update.create",
+          entity: "story_update",
+          entity_id: id,
+          detail: {
+            contentId,
+            kind: parsed.kind,
+            visibility: parsed.visibility,
+            shouldGenerateAdopterDrafts: parsed.shouldGenerateAdopterDrafts,
+          },
+        });
       }
-      const parsed = storyUpdateInputSchema.parse(input);
-      const id = await repo.createStoryUpdate(contentId, parsed);
-      await audit({
-        actor_user_id: actorUserId,
-        action: "content.story_update.create",
-        entity: "story_update",
-        entity_id: id,
-        detail: {
-          contentId,
-          kind: parsed.kind,
-          visibility: parsed.visibility,
-          shouldGenerateAdopterDrafts: parsed.shouldGenerateAdopterDrafts,
-        },
-      });
 
-      return { id };
+      const notificationDrafts = { created: 0, warning: null as string | null };
+      if (parsed.shouldGenerateAdopterDrafts) {
+        if (parsed.visibility !== "public") {
+          notificationDrafts.warning = "內部更新不會建立通知草稿。";
+        } else {
+          try {
+            const update = await repo.getStoryUpdate(id);
+            if (!update) throw new Error("Story update not found");
+            notificationDrafts.created = await draftAdopterNotifications(actorUserId, update);
+            if (notificationDrafts.created === 0) {
+              notificationDrafts.warning = "沒有可聯絡的領養者，已略過通知草稿。";
+            }
+          } catch (error) {
+            console.error(error);
+            notificationDrafts.warning = "通知草稿建立失敗，更新已儲存。";
+          }
+        }
+      }
+
+      return { id, notificationDrafts };
     },
 
     async createContentMedia({ actorUserId, contentId, input }: CreateContentMediaArgs) {
@@ -431,6 +512,12 @@ export function createContentService({
     },
 
     async publishContent({ actorUserId, contentId, input }: ContentActionArgs) {
+      const draft = await repo.getAdminContent(contentId);
+      if (!draft) throw new Error("Content item not found");
+
+      const issues = validatePublishableContent(draft);
+      if (issues.length > 0) throw new ContentValidationError(issues);
+
       if (mediaLifecycle) {
         const result = await mediaLifecycle.publish({ actorUserId, contentId, input });
         const content = await repo.getAdminContent(contentId);
@@ -443,11 +530,10 @@ export function createContentService({
         if (!content) throw new Error("Content item not found");
         return { ...content, version: result.version, revisionId: result.revisionId };
       }
-      const content = await repo.getAdminContent(contentId);
-      if (!content) throw new Error("Content item not found");
 
-      const issues = validatePublishableContent(content);
-      if (issues.length > 0) throw new ContentValidationError(issues);
+      if (!draft.publishedAt) {
+        await repo.updateContent(contentId, { publishedAt: timestamp(now) });
+      }
 
       const published = await repo.publishContent(contentId);
       await audit({
@@ -546,49 +632,8 @@ export function createContentService({
     }: GenerateNotificationDraftsArgs) {
       const update = await repo.getStoryUpdate(storyUpdateId);
       if (!update) throw new Error("Story update not found");
-      assertPublicOutboundStoryUpdate(update);
-
-      const content = await repo.getAdminContent(update.contentItemId);
-      if (!content) throw new Error("Content item not found");
-
-      const recipients = await repo.resolveAdopterRecipients(content.id);
-      const publicUrl = publicStoryUrl(publicBaseUrl, content.slug);
-
-      // buildAdopterNotificationDrafts dedupes within one call, but knows
-      // nothing about earlier ones. Without this filter a second press of the
-      // generate button re-drafts every adopter, and the operator sends the
-      // same message to a real person twice. Status is deliberately ignored:
-      // a dismissed draft was a decision, and a sent one must never be
-      // regenerated.
-      const alreadyDrafted = new Set(
-        content.notificationDrafts
-          .filter((draft) => draft.storyUpdateId === update.id)
-          .map((draft) => `${draft.channel}:${draft.recipientContact}`),
-      );
-
-      const drafts = buildAdopterNotificationDrafts({
-        contentItemId: content.id,
-        storyUpdateId: update.id,
-        storyTitle: content.title,
-        updateTitle: update.title,
-        updateBody: update.body,
-        publicUrl,
-        recipients,
-      }).filter((draft) => !alreadyDrafted.has(`${draft.channel}:${draft.recipientContact}`));
-
-      await repo.insertNotificationDrafts(drafts);
-
-      // Drafting messages addressed to adopters reaches recipient PII, so the
-      // count is the part that matters to a later reviewer — not the bodies.
-      await audit({
-        actor_user_id: actorUserId,
-        action: "content.notification_draft.generate",
-        entity: "recipient_notification_draft",
-        entity_id: storyUpdateId,
-        detail: { count: drafts.length },
-      });
-
-      return { count: drafts.length };
+      const count = await draftAdopterNotifications(actorUserId, update);
+      return { count };
     },
 
     async updateNotificationDraftStatus({

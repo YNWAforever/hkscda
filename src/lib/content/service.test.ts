@@ -1,6 +1,11 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, mock, test } from "bun:test";
+import type { AdopterNotificationRecipient } from "./notificationDrafts";
 import { createContentService, type ContentRepository } from "./service";
 import type { ContentDetail, RecipientNotificationDraft, StoryUpdate } from "./types";
+
+type ContentService = ReturnType<typeof createContentService>;
+
+type ContentOverride = Partial<ContentDetail>;
 
 const storyUpdateId = "22222222-2222-4333-8444-555555555555";
 const missingStoryUpdateId = "33333333-3333-4333-8444-555555555555";
@@ -86,6 +91,7 @@ function createRepo(overrides: Partial<ContentRepository> = {}) {
       socialCopies.push(...rows);
     },
     getStoryUpdate: async (id) => (id === storyUpdateId ? publicStoryUpdate : null),
+    listNotificationDraftKeys: async () => [],
     resolveAdopterRecipients: async () => [
       {
         adoptionCaseId: "case-1",
@@ -107,6 +113,58 @@ function createRepo(overrides: Partial<ContentRepository> = {}) {
   };
 
   return { repo, auditLogs, socialCopies, notificationDrafts };
+}
+
+function buildService({
+  content,
+  storyUpdate,
+  recipients,
+  recipientsError,
+  draftKeys,
+  insertNotificationDrafts,
+  mediaLifecycle,
+}: {
+  content?: ContentOverride;
+  storyUpdate?: Partial<StoryUpdate>;
+  recipients?: AdopterNotificationRecipient[];
+  recipientsError?: Error;
+  draftKeys?: Array<{ channel: string; recipientContact: string }>;
+  insertNotificationDrafts?: ContentRepository["insertNotificationDrafts"];
+  mediaLifecycle?: {
+    publish: (command: unknown) => Promise<{ version: number; revisionId: string }>;
+  };
+} = {}) {
+  const overrides: Partial<ContentRepository> = {
+    getAdminContent: async () => ({ ...detail, ...content }) as ContentDetail,
+  };
+  if (storyUpdate) {
+    const update: StoryUpdate = { ...publicStoryUpdate, ...storyUpdate };
+    overrides.getStoryUpdate = async () => update;
+    overrides.createStoryUpdate = mock(async () => update.id);
+  }
+  if (recipientsError) {
+    overrides.resolveAdopterRecipients = async () => {
+      throw recipientsError;
+    };
+  } else if (recipients) {
+    overrides.resolveAdopterRecipients = async () => recipients;
+  }
+  if (draftKeys) {
+    overrides.listNotificationDraftKeys = async () => draftKeys;
+  }
+  if (insertNotificationDrafts) {
+    overrides.insertNotificationDrafts = insertNotificationDrafts;
+  }
+
+  const { repo } = createRepo(overrides);
+  const service: ContentService = createContentService({
+    repo,
+    publicBaseUrl: "https://example.test",
+    mediaLifecycle: mediaLifecycle as unknown as Parameters<
+      typeof createContentService
+    >[0]["mediaLifecycle"],
+  });
+  return { service, repo };
 }
 
 describe("createContentService", () => {
@@ -207,6 +265,75 @@ describe("createContentService", () => {
     );
   });
 
+  test("publishContent returns field-level issues for an incomplete draft", async () => {
+    const publish = mock(async () => ({ version: 1, revisionId: "r1" }));
+    const { service } = buildService({
+      content: { summary: "", coverMediaId: null, coverImageUrl: null },
+      mediaLifecycle: { publish },
+    });
+
+    await expect(
+      service.publishContent({ actorUserId: "u1", contentId: "content-1", input: {} }),
+    ).rejects.toMatchObject({
+      name: "ContentValidationError",
+      issues: expect.arrayContaining([expect.objectContaining({ field: "summary" })]),
+    });
+    expect(publish).not.toHaveBeenCalled();
+  });
+
+  test("publishContent publishes a complete draft", async () => {
+    const publish = mock(async () => ({ version: 2, revisionId: "r2" }));
+    const { service } = buildService({
+      content: {},
+      mediaLifecycle: { publish },
+    });
+
+    await service.publishContent({ actorUserId: "u1", contentId: "content-1", input: {} });
+
+    expect(publish).toHaveBeenCalled();
+  });
+
+  test("sets published_at before a legacy publish that lacks it", async () => {
+    const updates: Parameters<ContentRepository["updateContent"]>[1][] = [];
+    const { repo } = createRepo({
+      getAdminContent: async () => ({ ...detail, publishedAt: null }),
+      updateContent: async (_id, input) => {
+        updates.push(input);
+        return { ...detail, publishedAt: input.publishedAt ?? null };
+      },
+    });
+    const publishedIds: string[] = [];
+    repo.publishContent = async (id) => {
+      publishedIds.push(id);
+      return { ...detail, status: "published" };
+    };
+    const service = createContentService({
+      repo,
+      publicBaseUrl: "https://example.test",
+      now: () => new Date("2026-07-06T00:00:00.000Z"),
+    });
+
+    await service.publishContent({ actorUserId: "admin-user", contentId: "content-1" });
+
+    expect(updates).toEqual([{ publishedAt: "2026-07-06T00:00:00.000Z" }]);
+    expect(publishedIds).toEqual(["content-1"]);
+  });
+
+  test("does not overwrite an existing published_at on a legacy publish", async () => {
+    let updateCalled = false;
+    const { repo } = createRepo({
+      updateContent: async () => {
+        updateCalled = true;
+        return detail;
+      },
+    });
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await service.publishContent({ actorUserId: "admin-user", contentId: "content-1" });
+
+    expect(updateCalled).toBe(false);
+  });
+
   test("validates direct content updates that try to publish", async () => {
     let updateCalled = false;
     const { repo } = createRepo({
@@ -234,6 +361,30 @@ describe("createContentService", () => {
       ],
     });
     expect(updateCalled).toBe(false);
+  });
+
+  test("sets published_at when a direct update publishes content without it", async () => {
+    const updates: Parameters<ContentRepository["updateContent"]>[1][] = [];
+    const { repo } = createRepo({
+      getAdminContent: async () => ({ ...detail, status: "draft", publishedAt: null }),
+      updateContent: async (_id, input) => {
+        updates.push(input);
+        return { ...detail, status: "published", publishedAt: input.publishedAt ?? null };
+      },
+    });
+    const service = createContentService({
+      repo,
+      publicBaseUrl: "https://example.test",
+      now: () => new Date("2026-07-06T00:00:00.000Z"),
+    });
+
+    await service.updateContent({
+      actorUserId: "admin-user",
+      contentId: "content-1",
+      input: { status: "published" },
+    });
+
+    expect(updates).toEqual([{ status: "published", publishedAt: "2026-07-06T00:00:00.000Z" }]);
   });
 
   test("generates social copy and adopter notification drafts", async () => {
@@ -327,6 +478,9 @@ describe("createContentService", () => {
 
     const { repo, notificationDrafts } = createRepo({
       getAdminContent: async () => ({ ...detail, notificationDrafts: [existing] }),
+      listNotificationDraftKeys: async () => [
+        { channel: "email", recipientContact: "ada@example.com" },
+      ],
     });
     const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
 
@@ -338,6 +492,43 @@ describe("createContentService", () => {
     expect(notificationDrafts).toHaveLength(1);
     expect(notificationDrafts[0]?.channel).toBe("whatsapp");
     expect(notificationDrafts[0]?.recipientContact).toBe("91234567");
+    expect(result.count).toBe(1);
+  });
+
+  test("dedupes against the full draft-key set, not the 20-row admin window", async () => {
+    // getAdminContent slices notificationDrafts to 20 rows, so an update with
+    // more than 20 drafts could hide the matching key and re-draft a real
+    // person. The repository key lookup returns every draft for this update.
+    const window = Array.from({ length: 20 }, (_, index) => ({
+      id: `draft-${index}`,
+      storyUpdateId: "other-update",
+      contentItemId: "content-1",
+      adoptionCaseId: "case-1",
+      supporterId: "supporter-1",
+      channel: "email" as const,
+      recipientName: "陳小姐",
+      recipientContact: `other-${index}@example.com`,
+      subject: null,
+      body: "已產生的草稿",
+      status: "draft" as const,
+      createdAt: "2026-07-05T11:00:00.000Z",
+      updatedAt: "2026-07-05T11:00:00.000Z",
+    }));
+    const { repo, notificationDrafts } = createRepo({
+      getAdminContent: async () => ({ ...detail, notificationDrafts: window }),
+      listNotificationDraftKeys: async () => [
+        { channel: "email", recipientContact: "ada@example.com" },
+      ],
+    });
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    const result = await service.generateNotificationDrafts({
+      actorUserId: "admin-user",
+      storyUpdateId,
+    });
+
+    expect(notificationDrafts).toHaveLength(1);
+    expect(notificationDrafts[0]?.channel).toBe("whatsapp");
     expect(result.count).toBe(1);
   });
 
@@ -364,6 +555,9 @@ describe("createContentService", () => {
 
     const { repo, notificationDrafts } = createRepo({
       getAdminContent: async () => ({ ...detail, notificationDrafts: [drafted] }),
+      listNotificationDraftKeys: async () => [
+        { channel: "email", recipientContact: "ada@example.com" },
+      ],
       resolveAdopterRecipients: async () => [
         {
           adoptionCaseId: "case-1",
@@ -563,7 +757,10 @@ describe("createContentService", () => {
           shouldGenerateAdopterDrafts: true,
         },
       }),
-    ).resolves.toEqual({ id: storyUpdateId });
+    ).resolves.toEqual({
+      id: storyUpdateId,
+      notificationDrafts: { created: 2, warning: null },
+    });
     await expect(
       service.createContentMedia({
         actorUserId: "admin-user",
@@ -622,6 +819,185 @@ describe("createContentService", () => {
       }),
     ).rejects.toThrow("Internal story updates cannot use public content media");
     expect(createMediaCalled).toBe(false);
+  });
+});
+
+describe("createContentService createStoryUpdate adopter drafts", () => {
+  test("saving an update with the toggle creates adopter drafts", async () => {
+    const inserted: unknown[] = [];
+    const { service } = buildService({
+      content: {},
+      storyUpdate: {
+        id: "u1",
+        contentItemId: "c1",
+        visibility: "public",
+        title: "救起",
+        body: "近況",
+        shouldGenerateAdopterDrafts: true,
+      },
+      recipients: [
+        {
+          adoptionCaseId: "a1",
+          supporterId: "s1",
+          name: "陳太",
+          email: "adopter@example.test",
+          phone: null,
+        },
+      ],
+      insertNotificationDrafts: async (rows) => {
+        inserted.push(...rows);
+      },
+    });
+    const result = await service.createStoryUpdate({
+      actorUserId: "u1",
+      contentId: "c1",
+      input: {
+        kind: "care",
+        title: "救起",
+        occurredAt: "2026-09-14T00:00:00.000Z",
+        visibility: "public",
+        shouldGenerateAdopterDrafts: true,
+      },
+    });
+    expect(result.notificationDrafts.created).toBe(1);
+    expect(result.notificationDrafts.warning).toBeNull();
+    expect(inserted).toHaveLength(1);
+  });
+
+  test("no resolvable recipients still saves the update and warns", async () => {
+    const { service } = buildService({
+      content: {},
+      storyUpdate: {
+        id: "u1",
+        contentItemId: "c1",
+        visibility: "public",
+        title: "救起",
+        body: null,
+        shouldGenerateAdopterDrafts: true,
+      },
+      recipients: [],
+    });
+    const result = await service.createStoryUpdate({
+      actorUserId: "u1",
+      contentId: "c1",
+      input: {
+        kind: "care",
+        title: "救起",
+        occurredAt: "2026-09-14T00:00:00.000Z",
+        visibility: "public",
+        shouldGenerateAdopterDrafts: true,
+      },
+    });
+    expect(result.id).toBeTruthy();
+    expect(result.notificationDrafts.created).toBe(0);
+    expect(result.notificationDrafts.warning).toBeTruthy();
+  });
+
+  test("a generation failure does not throw and the update is saved", async () => {
+    const { service, repo } = buildService({
+      content: {},
+      storyUpdate: {
+        id: "u1",
+        contentItemId: "c1",
+        visibility: "public",
+        title: "救起",
+        body: null,
+        shouldGenerateAdopterDrafts: true,
+      },
+      recipientsError: new Error("boom"),
+    });
+    const result = await service.createStoryUpdate({
+      actorUserId: "u1",
+      contentId: "c1",
+      input: {
+        kind: "care",
+        title: "救起",
+        occurredAt: "2026-09-14T00:00:00.000Z",
+        visibility: "public",
+        shouldGenerateAdopterDrafts: true,
+      },
+    });
+    expect(result.notificationDrafts.created).toBe(0);
+    expect(result.notificationDrafts.warning).toBeTruthy();
+    expect(repo.createStoryUpdate).toHaveBeenCalled();
+  });
+
+  test("an existing draft for the same update/contact is not regenerated", async () => {
+    const { service } = buildService({
+      content: {},
+      draftKeys: [{ channel: "email", recipientContact: "adopter@example.test" }],
+      storyUpdate: {
+        id: "u1",
+        contentItemId: "c1",
+        visibility: "public",
+        title: "救起",
+        body: null,
+        shouldGenerateAdopterDrafts: true,
+      },
+      recipients: [
+        {
+          adoptionCaseId: "a1",
+          supporterId: "s1",
+          name: "陳太",
+          email: "adopter@example.test",
+          phone: null,
+        },
+      ],
+    });
+    const result = await service.createStoryUpdate({
+      actorUserId: "u1",
+      contentId: "c1",
+      input: {
+        kind: "care",
+        title: "救起",
+        occurredAt: "2026-09-14T00:00:00.000Z",
+        visibility: "public",
+        shouldGenerateAdopterDrafts: true,
+      },
+    });
+    expect(result.notificationDrafts.created).toBe(0);
+  });
+
+  test("an internal update saves without adopter drafts and warns", async () => {
+    let inserted = false;
+    const { service } = buildService({
+      content: {},
+      storyUpdate: {
+        id: "u1",
+        contentItemId: "c1",
+        visibility: "internal",
+        title: "救起",
+        body: null,
+        shouldGenerateAdopterDrafts: true,
+      },
+      recipients: [
+        {
+          adoptionCaseId: "a1",
+          supporterId: "s1",
+          name: "陳太",
+          email: "adopter@example.test",
+          phone: null,
+        },
+      ],
+      insertNotificationDrafts: async () => {
+        inserted = true;
+      },
+    });
+    const result = await service.createStoryUpdate({
+      actorUserId: "u1",
+      contentId: "c1",
+      input: {
+        kind: "care",
+        title: "救起",
+        occurredAt: "2026-09-14T00:00:00.000Z",
+        visibility: "internal",
+        shouldGenerateAdopterDrafts: true,
+      },
+    });
+    expect(result.id).toBeTruthy();
+    expect(result.notificationDrafts.created).toBe(0);
+    expect(result.notificationDrafts.warning).toBeTruthy();
+    expect(inserted).toBe(false);
   });
 });
 

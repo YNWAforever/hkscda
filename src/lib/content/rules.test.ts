@@ -100,3 +100,36 @@ describe("content publish rules", () => {
     expect(JSON.stringify(buildPublicStoryMapPoint(baseContent))).not.toContain("Reporter details");
   });
 });
+
+describe("validatePublishableContent type coverage", () => {
+  test("accepts a complete event/market/report and does not require publishedAt", () => {
+    for (const type of ["event", "charity_market", "report"] as const) {
+      expect(validatePublishableContent({ ...baseContent, type, publishedAt: null })).toEqual([]);
+    }
+  });
+
+  test("requires the shared fields for every type", () => {
+    const issues = validatePublishableContent({
+      ...baseContent,
+      title: "",
+      slug: "",
+      summary: "",
+      coverMediaId: null,
+      coverImageUrl: null,
+    });
+    expect(issues.map((i) => i.field).sort()).toEqual(["coverMediaId", "slug", "summary", "title"]);
+  });
+
+  test("requires rescue animalType and publicStatus", () => {
+    const issues = validatePublishableContent({
+      ...baseContent,
+      storyProfile: {
+        ...baseContent.storyProfile!,
+        animalType: "" as never,
+        publicStatus: "" as never,
+      },
+    });
+    expect(issues.map((i) => i.field)).toContain("animalType");
+    expect(issues.map((i) => i.field)).toContain("publicStatus");
+  });
+});
