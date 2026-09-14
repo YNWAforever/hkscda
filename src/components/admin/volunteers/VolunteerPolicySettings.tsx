@@ -24,7 +24,13 @@ type A = {
   approved_participants: number;
   waitlisted_participants: number;
 };
-type L = { drafts: D[]; versions: V[]; activities: A[] };
+type L = {
+  drafts: D[];
+  versions: V[];
+  activities: A[];
+  activity_total?: number;
+  activity_limit?: number;
+};
 type P = {
   preview_id: string;
   candidate: PolicyDraft;
@@ -574,6 +580,15 @@ export function VolunteerPolicySettings() {
           </div>
         ) : null}
       </section>
+      {(q.data?.activity_total ?? 0) > (q.data?.activity_limit ?? 500) && (
+        <p role="status" className="text-sm">
+          政策影響選取顯示最接近的 {q.data?.activity_limit} 個未來場次；全部場次可在{" "}
+          <a href="/admin/volunteers/activities" className="underline">
+            活動營運中心
+          </a>{" "}
+          依日期查閱及重新綁定。
+        </p>
+      )}
       <section className="grid gap-4 rounded-lg border bg-white p-4 md:grid-cols-2">
         <div>
           <h2 className="font-bold">複製已發布版本</h2>

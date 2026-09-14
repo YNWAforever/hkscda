@@ -66,6 +66,7 @@ test.skipIf(!enabled)(
         ).kind,
       ).toBe("conflict");
       const preview = await command({ kind: "preview", animal_id: animal });
+      await db`select public.editorial_review_command(${admin}::uuid,${JSON.stringify({ entity_kind: "animal", entity_id: animal, revision_key: "1", classification: "approved", evidence: "Explicit synthetic lifecycle fixture; no real animal" })}::jsonb)`;
       const published = await command({
         kind: "publish",
         animal_id: animal,

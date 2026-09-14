@@ -1,0 +1,12 @@
+{
+  "dataset": "quality-c9545bb4",
+  "synthetic": true,
+  "comparison": "old and new queries on identical synthetic data; no production claim",
+  "animals": {
+    "before_rows": 1000,
+    "after_rows": 20,
+    "total": 1001,
+    "before_bytes": 5833001,
+    "after_bytes": 11835
+  }
+}

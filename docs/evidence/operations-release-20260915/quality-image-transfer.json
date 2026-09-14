@@ -1,0 +1,13 @@
+{
+  "synthetic": true,
+  "animal_id": "f3a1e669-4c2a-44ac-8ad0-e60a4711a99a",
+  "image_count": 3,
+  "bytes_per_image": 68,
+  "verified_public_image_bytes": 204,
+  "promotion_downloads": 3,
+  "promotion_uploads": 3,
+  "promotion_payload_bytes": 408,
+  "publish_api_elapsed_ms": 151,
+  "request_count_source": "route loops: one private download and one public upload per new approved image; verified all 3 published objects",
+  "comparison": "promotion concurrency unchanged; local tiny-fixture latency does not justify concurrency tuning or production speed claim"
+}

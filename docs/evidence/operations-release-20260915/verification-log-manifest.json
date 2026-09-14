@@ -1,0 +1,37 @@
+[
+  {
+    "file": ".local-policy-test\\operations-full-tests.log",
+    "sha256": "cf08506f06eac7d1c7e5e71cce773b9f08d44ed08186a22f948b21d7e10013fe",
+    "bytes": 279753
+  },
+  {
+    "file": ".local-policy-test\\operations-rls.log",
+    "sha256": "3bc3b6fb2761563ed40e1433de4dd68a91417e9887bcf9901ed3a31b6c3a7439",
+    "bytes": 5439
+  },
+  {
+    "file": ".local-policy-test\\operations-typecheck.log",
+    "sha256": "5a3973f79ed9becd5f23c4feff467513814de7ea381d75a4d2e339aa8b8edca9",
+    "bytes": 16
+  },
+  {
+    "file": ".local-policy-test\\operations-lint.log",
+    "sha256": "5c56315defc7b10ddaaf28cd79462ed2f864c3c4a5e52c7ea9ea75a999b97446",
+    "bytes": 12042
+  },
+  {
+    "file": ".local-policy-test\\operations-build.log",
+    "sha256": "6aba089a3291af44396013777602bcdb3e637506b4e66cf61a9e8c18ec500829",
+    "bytes": 99015
+  },
+  {
+    "file": ".local-policy-test\\operations-public-brand-final.log",
+    "sha256": "c2fb8d3530bdd94053374ef009b42d25c98677afec7b863746cb3d5188c6512d",
+    "bytes": 53
+  },
+  {
+    "file": ".local-policy-test\\operations-public-a11y-final.log",
+    "sha256": "ce0173c7afd01d41350db81e09386ef67736b36f3cb8e52b19d1eb485cac36c2",
+    "bytes": 52
+  }
+]

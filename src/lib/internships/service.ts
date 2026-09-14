@@ -49,7 +49,18 @@ export const publicCommandSchema = z.discriminatedUnion("action", [
     .strict(),
 ]);
 export const adminCommandSchema = z.discriminatedUnion("action", [
-  z.object({ action: z.literal("list") }).strict(),
+  z
+    .object({
+      action: z.literal("list"),
+      page: z.number().int().min(1).default(1),
+      pageSize: z.number().int().min(1).max(50).default(25),
+      q: z.string().trim().max(200).optional(),
+      status: z
+        .enum(["submitted", "needs_information", "approved", "rejected", "withdrawn"])
+        .optional(),
+    })
+    .strict(),
+  z.object({ action: z.literal("detail"), application_id: z.string().uuid() }).strict(),
   z.object({ action: z.literal("settings") }).strict(),
   z
     .object({

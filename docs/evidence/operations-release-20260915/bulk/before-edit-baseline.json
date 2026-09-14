@@ -1,0 +1,14 @@
+{
+  "environment": "isolated 56322 synthetic",
+  "scope": "calendar activity SQL only, excludes roster and HTTP",
+  "samples_ms": [
+    320.59740000000005,
+    180.94450000000006,
+    71.90420000000006,
+    55.97149999999999,
+    29.631999999999948,
+    80.16769999999997
+  ],
+  "rows": 122,
+  "bytes": 39743
+}

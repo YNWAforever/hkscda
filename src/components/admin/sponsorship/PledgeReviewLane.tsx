@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { ListChecks, Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import { fetchCoordinatorJson } from "../adoptions/api";
 import { useAdminPageCopy } from "../adminPageCopy";
@@ -42,6 +42,7 @@ export function PledgeReviewLane() {
   const [status, setStatus] = useState<PledgeStatus | "all">("all");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<(typeof PAGE_SIZE_OPTIONS)[number]>(25);
+  const reviewTrigger = useRef<HTMLElement | null>(null);
   const [selectedPledgeId, setSelectedPledgeId] = useState<string | null>(null);
 
   const pledgeStatusOptions: Array<{ value: PledgeStatus | "all"; label: string }> = [
@@ -113,6 +114,23 @@ export function PledgeReviewLane() {
         </StatusPill>
       ),
     },
+    {
+      id: "review",
+      header: "審核",
+      cell: (pledge) => (
+        <button
+          type="button"
+          className="min-h-11 underline text-[var(--color-primary)]"
+          onClick={(event) => {
+            event.stopPropagation();
+            reviewTrigger.current = event.currentTarget;
+            setSelectedPledgeId(pledge.id);
+          }}
+        >
+          審核 {pledge.supporterName}
+        </button>
+      ),
+    },
   ];
 
   function renderCard(pledge: PledgeSummary) {
@@ -131,6 +149,17 @@ export function PledgeReviewLane() {
         </div>
         <div className="text-xs text-[var(--color-text-muted)]">
           {amountLabel(pledge)} · {formatDate(pledge.createdAt)}
+          <button
+            type="button"
+            className="block min-h-11 underline"
+            onClick={(event) => {
+              event.stopPropagation();
+              reviewTrigger.current = event.currentTarget;
+              setSelectedPledgeId(pledge.id);
+            }}
+          >
+            審核 {pledge.supporterName}
+          </button>
         </div>
       </div>
     );
@@ -248,7 +277,10 @@ export function PledgeReviewLane() {
       {selectedPledgeId && (
         <PledgeDetailDrawer
           pledgeId={selectedPledgeId}
-          onClose={() => setSelectedPledgeId(null)}
+          onClose={() => {
+            setSelectedPledgeId(null);
+            requestAnimationFrame(() => reviewTrigger.current?.focus());
+          }}
           onChanged={() => refetch()}
         />
       )}

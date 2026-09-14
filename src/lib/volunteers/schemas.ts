@@ -58,6 +58,7 @@ export const volunteerRegistrationSearchSchema = z.object({
 });
 
 export const adminActivityInputSchema = z.object({
+  idempotencyKey: z.string().uuid().optional(),
   type: z.enum(volunteerActivityTypes),
   title: trimmed.min(1).max(160),
   description: optionalTrimmed,

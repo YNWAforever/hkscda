@@ -1,0 +1,1268 @@
+{
+  "phase": "after",
+  "at": "2026-09-14T16:44:42.754Z",
+  "commit": "2ed526acd227a76b6272a8a531f3cbaf64a898e5",
+  "dirtyFiles": [
+    "scripts/test-isolated-acceptance.ts",
+    "src/components/admin/AnimalForm.tsx",
+    "src/components/admin/AnimalsTable.tsx",
+    "src/components/admin/access/AccessManagement.tsx",
+    "src/components/admin/content/AdoptionRulesManagement.tsx",
+    "src/components/admin/content/CareTopicsManagement.tsx",
+    "src/components/admin/content/ContentEditor.tsx",
+    "src/components/admin/content/ContentManagement.test.tsx",
+    "src/components/admin/content/ContentManagement.tsx",
+    "src/components/admin/content/KnowledgeManagement.test.tsx",
+    "src/components/admin/content/KnowledgeManagement.tsx",
+    "src/components/admin/crm/SupporterList.tsx",
+    "src/components/admin/internships/InternshipManagement.tsx",
+    "src/components/admin/sponsorship/PledgeReviewLane.tsx",
+    "src/components/admin/volunteers/PolicySourceFields.tsx",
+    "src/components/admin/volunteers/VolunteerCalendar.tsx",
+    "src/components/admin/volunteers/VolunteerLegacyReconciliation.tsx",
+    "src/components/admin/volunteers/VolunteerManagement.tsx",
+    "src/components/admin/volunteers/VolunteerOperations.tsx",
+    "src/components/admin/volunteers/VolunteerPolicySettings.tsx",
+    "src/components/admin/volunteers/VolunteerQualifications.tsx",
+    "src/components/site/AnimalCard.test.tsx",
+    "src/components/site/AnimalCard.tsx",
+    "src/components/site/AnimalDetail.test.tsx",
+    "src/components/site/AnimalDetail.tsx",
+    "src/components/site/turnstileCallerRecovery.test.ts",
+    "src/components/site/volunteer/PolicySignup.tsx",
+    "src/components/site/volunteer/VolunteerRecords.tsx",
+    "src/components/site/volunteer/VolunteerSessionBrowser.tsx",
+    "src/components/site/volunteer/centreModel.ts",
+    "src/lib/admin/accessManagement.http.server.ts",
+    "src/lib/admin/accessManagement.repository.server.ts",
+    "src/lib/admin/accessManagement.server.ts",
+    "src/lib/admin/session.ts",
+    "src/lib/adoptionInformation/repository.server.ts",
+    "src/lib/animals/publication.database.test.ts",
+    "src/lib/content/exactSampleArchive.database.test.ts",
+    "src/lib/content/lifecycle.integration.test.ts",
+    "src/lib/content/mediaLifecycle.integration.test.ts",
+    "src/lib/crm/manualGift.database.test.ts",
+    "src/lib/documents/repository.server.ts",
+    "src/lib/internships/repository.server.ts",
+    "src/lib/internships/service.ts",
+    "src/lib/volunteers/directory/http.server.ts",
+    "src/lib/volunteers/http.server.ts",
+    "src/lib/volunteers/policy/booking.http.server.ts",
+    "src/lib/volunteers/policy/booking.http.test.ts",
+    "src/lib/volunteers/policy/booking.repository.server.ts",
+    "src/lib/volunteers/policy/booking.repository.test.ts",
+    "src/lib/volunteers/policy/booking.ts",
+    "src/lib/volunteers/policy/calendar.server.ts",
+    "src/lib/volunteers/policy/dailyHttp.server.ts",
+    "src/lib/volunteers/policy/http.server.ts",
+    "src/lib/volunteers/policy/operations.http.server.ts",
+    "src/lib/volunteers/policy/operations.ts",
+    "src/lib/volunteers/policy/qualifications.server.ts",
+    "src/lib/volunteers/policy/repository.server.ts",
+    "src/lib/volunteers/repository.server.ts",
+    "src/lib/volunteers/schemas.ts",
+    "src/lib/volunteers/service.ts",
+    "src/routeTree.gen.ts",
+    "src/routes/admin/index.tsx",
+    "src/routes/admin/volunteers/activities.tsx",
+    "src/routes/api/admin/animals/publication/index.ts",
+    "src/routes/volunteer.test.tsx",
+    "src/routes/volunteer.tsx"
+  ],
+  "runtime": "v24.18.0",
+  "mode": "Vite development loopback; first observation is not a proven cold cache; no network throttling",
+  "device": {
+    "platform": "win32",
+    "cpu": "12th Gen Intel(R) Core(TM) i5-12500",
+    "memoryGB": 32
+  },
+  "dataset": {
+    "from": "2026-09-15T00:00:00+08:00",
+    "until": "2026-10-15T00:00:00+08:00",
+    "counts": {
+      "volunteer_activity": 189,
+      "volunteer_registration": 295,
+      "volunteer_profile": 358,
+      "volunteer_policy_version": 191
+    },
+    "observedCounts": {
+      "volunteer_activity": 1388,
+      "volunteer_registration": 701,
+      "volunteer_profile": 492,
+      "volunteer_policy_version": 279
+    },
+    "comparisonWarning": "Acceptance fixtures grew between HTTP runs. These timings are observations, not a matched dataset speedup. policy-read-performance.json compares a consistent snapshot."
+  },
+  "sourceHashes": {
+    "src/lib/volunteers/policy/calendar.server.ts": "d8a8d7a3f7367bf00c1947911c9faf36df6446fd4e51df8055e5b01d5c749dd5",
+    "src/lib/volunteers/policy/booking.repository.server.ts": "c2ee197c5e3821b6ac526edf32b2f024b11e739e5dedc41d10d953281184f714"
+  },
+  "results": [
+    {
+      "name": "directory",
+      "path": "/api/admin/volunteers/people?limit=25",
+      "first_observation": {
+        "ms": 276.1829,
+        "bytes": 9382,
+        "status": 200
+      },
+      "sequential": {
+        "n": 20,
+        "p50_ms": 181.64079999999967,
+        "p95_ms": 582.5120999999999,
+        "bytes_min": 9382,
+        "bytes_max": 9382,
+        "statuses": [
+          200
+        ]
+      },
+      "concurrency4": {
+        "n": 20,
+        "p50_ms": 414.46650000000045,
+        "p95_ms": 507.0120999999999,
+        "bytes_min": 9382,
+        "bytes_max": 9382,
+        "statuses": [
+          200
+        ]
+      },
+      "samples": [
+        {
+          "ms": 191.92740000000003,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 143.8421000000003,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 116.77279999999973,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 144.58820000000014,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 467.41910000000007,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 180.4303,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 290.2383,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 181.64079999999967,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 161.44920000000002,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 582.5120999999999,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 146.18219999999928,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 452.6140999999998,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 754.8566999999994,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 198.8037000000004,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 179.15880000000016,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 242.95849999999973,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 179.79130000000077,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 219.76180000000022,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 195.40940000000046,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 160.7554999999993,
+          "bytes": 9382,
+          "status": 200
+        }
+      ],
+      "concurrent": [
+        {
+          "ms": 503.83879999999954,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 483.3184999999994,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 414.46650000000045,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 359.9231,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 480.8574000000008,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 457.5507000000007,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 456.5500000000002,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 455.8242,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 249.98979999999938,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 278.2537000000011,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 250.35859999999957,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 304.6947,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 509.4951999999994,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 507.0120999999999,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 504.72990000000027,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 505.494999999999,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 228.50019999999859,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 231.11210000000028,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 234.4323000000004,
+          "bytes": 9382,
+          "status": 200
+        },
+        {
+          "ms": 288.1149000000005,
+          "bytes": 9382,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "activity_list",
+      "path": "/api/admin/volunteers/activities",
+      "first_observation": {
+        "ms": 181.77829999999994,
+        "bytes": 14807,
+        "status": 200
+      },
+      "sequential": {
+        "n": 20,
+        "p50_ms": 193.50860000000102,
+        "p95_ms": 242.33419999999933,
+        "bytes_min": 14807,
+        "bytes_max": 14807,
+        "statuses": [
+          200
+        ]
+      },
+      "concurrency4": {
+        "n": 20,
+        "p50_ms": 297.5679,
+        "p95_ms": 378.3852000000006,
+        "bytes_min": 14807,
+        "bytes_max": 14807,
+        "statuses": [
+          200
+        ]
+      },
+      "samples": [
+        {
+          "ms": 176.6869999999999,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 154.40849999999955,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 242.33419999999933,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 219.7476000000006,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 225.59880000000157,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 191.90390000000116,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 193.50860000000102,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 156.34949999999844,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 200.79909999999836,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 187.34000000000015,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 194.79269999999997,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 224.6872000000003,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 263.64450000000033,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 203.8280999999988,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 189.59789999999884,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 180.1843000000008,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 238.28780000000006,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 200.76920000000064,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 188.5515000000014,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 169.84010000000126,
+          "bytes": 14807,
+          "status": 200
+        }
+      ],
+      "concurrent": [
+        {
+          "ms": 229.89660000000003,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 229.3161,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 270.20850000000064,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 252.6322,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 277.0005000000001,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 274.08600000000115,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 297.5679,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 295.3238000000001,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 378.3852000000006,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 391.6154999999999,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 370.41129999999976,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 353.0540000000001,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 320.45939999999973,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 318.72539999999935,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 292.9328999999998,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 289.59020000000055,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 301.7541999999994,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 354.3773000000001,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 330.3642,
+          "bytes": 14807,
+          "status": 200
+        },
+        {
+          "ms": 352.64660000000003,
+          "bytes": 14807,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "calendar",
+      "path": "/api/admin/volunteers/calendar?from=2026-09-15T00%3A00%3A00%2B08%3A00&until=2026-10-15T00%3A00%3A00%2B08%3A00",
+      "first_observation": {
+        "ms": 254.8091000000004,
+        "bytes": 12704,
+        "status": 200
+      },
+      "sequential": {
+        "n": 20,
+        "p50_ms": 278.72839999999997,
+        "p95_ms": 503.5493000000024,
+        "bytes_min": 12704,
+        "bytes_max": 12704,
+        "statuses": [
+          200
+        ]
+      },
+      "concurrency4": {
+        "n": 20,
+        "p50_ms": 421.0724999999984,
+        "p95_ms": 787.3686000000016,
+        "bytes_min": 12704,
+        "bytes_max": 12704,
+        "statuses": [
+          200
+        ]
+      },
+      "samples": [
+        {
+          "ms": 303.5679,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 262.02000000000044,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 236.05009999999857,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 246.35559999999896,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 303.4435999999987,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 246.76550000000134,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 229.831299999998,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 255.3638000000028,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 383.52939999999944,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 340.92879999999786,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 245.72669999999925,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 254.77869999999893,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 290.83130000000165,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 483.8705000000009,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 347.1782999999996,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 351.6957000000002,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 267.6133000000009,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 503.5493000000024,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 602.2869000000028,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 278.72839999999997,
+          "bytes": 12704,
+          "status": 200
+        }
+      ],
+      "concurrent": [
+        {
+          "ms": 436.384399999999,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 399.1133000000009,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 398.0017000000007,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 370.0486000000019,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 373.38870000000315,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 365.6139000000003,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 357.40850000000137,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 345.3129000000008,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 555.5945999999967,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 394.46630000000005,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 441.35080000000016,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 421.0724999999984,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 787.3686000000016,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 426.6157000000021,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 787.7415000000001,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 425.6427999999978,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 734.4406000000017,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 395.89150000000154,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 735.2653000000028,
+          "bytes": 12704,
+          "status": 200
+        },
+        {
+          "ms": 723.6630999999979,
+          "bytes": 12704,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "policy_list",
+      "path": "/api/admin/volunteers/settings",
+      "first_observation": {
+        "ms": 606.1670999999988,
+        "bytes": 648993,
+        "status": 200
+      },
+      "sequential": {
+        "n": 20,
+        "p50_ms": 697.4479999999967,
+        "p95_ms": 3246.3945999999996,
+        "bytes_min": 648993,
+        "bytes_max": 648993,
+        "statuses": [
+          200
+        ]
+      },
+      "concurrency4": {
+        "n": 20,
+        "p50_ms": 908.0879999999961,
+        "p95_ms": 4642.989000000001,
+        "bytes_min": 648993,
+        "bytes_max": 648993,
+        "statuses": [
+          200
+        ]
+      },
+      "samples": [
+        {
+          "ms": 397.6419999999998,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 3246.3945999999996,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 1602.1787999999979,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 2395.9208999999973,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 1256.170600000005,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 5247.580399999999,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 1612.9292999999961,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 2675.557799999995,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 390.9536999999982,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 332.2019999999975,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 395.1768000000011,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 268.34850000000006,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 267.9570999999996,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 584.8338000000003,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 1076.600099999996,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 2101.7059999999983,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 711.5348000000013,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 697.4479999999967,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 248.24380000000383,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 211.0743999999977,
+          "bytes": 648993,
+          "status": 200
+        }
+      ],
+      "concurrent": [
+        {
+          "ms": 899.6742000000013,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 908.0879999999961,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 868.7681000000011,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 966.5066000000006,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 333.03579999999783,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 488.20820000000094,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 516.9367000000057,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 537.0470000000059,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 731.6094999999987,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 4321.245599999995,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 4207.285600000003,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 620.5126000000018,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 4608.6567,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 4647.445,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 4642.989000000001,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 4574.770699999994,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 1040.6333999999988,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 1117.876900000003,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 1077.9707999999955,
+          "bytes": 648993,
+          "status": 200
+        },
+        {
+          "ms": 758.2572,
+          "bytes": 648993,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "public_sessions",
+      "path": "/api/volunteer/policy",
+      "first_observation": {
+        "ms": 231.44480000000476,
+        "bytes": 22902,
+        "status": 200
+      },
+      "sequential": {
+        "n": 20,
+        "p50_ms": 152.2954000000027,
+        "p95_ms": 575.3389999999999,
+        "bytes_min": 22902,
+        "bytes_max": 22902,
+        "statuses": [
+          200
+        ]
+      },
+      "concurrency4": {
+        "n": 20,
+        "p50_ms": 539.2469999999885,
+        "p95_ms": 687.280500000008,
+        "bytes_min": 22902,
+        "bytes_max": 22902,
+        "statuses": [
+          200
+        ]
+      },
+      "samples": [
+        {
+          "ms": 121.91139999999723,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 285.2669999999998,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 161.15060000000085,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 92.58600000000297,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 1207.9015,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 492.52679999999964,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 575.3389999999999,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 129.564200000008,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 224.49710000000778,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 137.67149999999674,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 102.30019999999786,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 258.309699999998,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 136.09880000000703,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 152.2954000000027,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 287.6622999999963,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 100.39070000000356,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 166.9421000000002,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 111.5515000000014,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 153.84279999999853,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 76.40099999999802,
+          "bytes": 22902,
+          "status": 200
+        }
+      ],
+      "concurrent": [
+        {
+          "ms": 126.60719999999856,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 140.0104999999894,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 230.38940000000002,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 241.16389999999956,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 539.2469999999885,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 518.5100999999995,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 548.1405999999988,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 560.7709000000032,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 227.20969999999215,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 209.78949999999895,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 198.5896999999968,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 242.5789999999979,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 674.5837000000029,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 592.8942999999999,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 716.3591000000015,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 687.280500000008,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 552.6391000000003,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 546.5773000000045,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 560.9306999999972,
+          "bytes": 22902,
+          "status": 200
+        },
+        {
+          "ms": 567.1958000000013,
+          "bytes": 22902,
+          "status": 200
+        }
+      ]
+    }
+  ]
+}

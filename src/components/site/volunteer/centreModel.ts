@@ -71,10 +71,13 @@ export function registrationSection(
 export function shelterLabel(value: string) {
   return (
     (
-      { cat: "貓舍", dog: "狗舍", cat_shelter: "貓舍", dog_shelter: "狗舍" } as Record<
-        string,
-        string
-      >
+      {
+        cat: "貓舍",
+        dog: "狗舍",
+        cat_shelter: "貓舍",
+        dog_shelter: "狗舍",
+        adoption: "領養日",
+      } as Record<string, string>
     )[value] ?? value
   );
 }

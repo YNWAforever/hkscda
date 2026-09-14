@@ -26,7 +26,7 @@ test("public catalogue never authenticates or reads volunteer profiles", async (
   const response = await handlers.get(new Request("https://test.invalid/api/volunteer/policy"));
   expect(response.status).toBe(200);
   expect(response.headers.get("cache-control")).toBe("no-store");
-  expect(await response.json()).toEqual({ sessions: [] });
+  expect(await response.json()).toEqual({ sessions: [], has_more: false });
 });
 test("private reads and commands stop before repository when bearer auth fails", async () => {
   let calls = 0;

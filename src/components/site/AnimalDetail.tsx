@@ -60,34 +60,42 @@ export function AnimalDetail({
           <h1>{animal.name}</h1>
           {animal.name_en ? <p className="animal-english-name">{animal.name_en}</p> : null}
           <dl className="fact-list">
-            <div>
-              <dt>編號</dt>
-              <dd>{profile?.code || "未有記錄"}</dd>
-            </div>
-            <div>
-              <dt>出生日期</dt>
-              <dd>{profile?.birthday || "未有記錄"}</dd>
-            </div>
-            <div>
-              <dt>絕育</dt>
-              <dd>
-                {profile?.neutered === true
-                  ? "已絕育"
-                  : profile?.neutered === false
-                    ? "未絕育"
-                    : "未有記錄"}
-              </dd>
-            </div>
-            <div>
-              <dt>領養經驗</dt>
-              <dd>
-                {profile?.suitability === "newbie"
-                  ? "適合新手"
-                  : profile?.suitability === "experienced"
-                    ? "適合有經驗人士"
-                    : "未有記錄"}
-              </dd>
-            </div>
+            {profile?.code ? (
+              <div>
+                <dt>編號</dt>
+                <dd>{profile?.code || "未有記錄"}</dd>
+              </div>
+            ) : null}
+            {profile?.birthday ? (
+              <div>
+                <dt>出生日期</dt>
+                <dd>{profile?.birthday || "未有記錄"}</dd>
+              </div>
+            ) : null}
+            {profile?.neutered !== null && profile?.neutered !== undefined ? (
+              <div>
+                <dt>絕育</dt>
+                <dd>
+                  {profile?.neutered === true
+                    ? "已絕育"
+                    : profile?.neutered === false
+                      ? "未絕育"
+                      : "未有記錄"}
+                </dd>
+              </div>
+            ) : null}
+            {profile?.suitability ? (
+              <div>
+                <dt>領養經驗</dt>
+                <dd>
+                  {profile?.suitability === "newbie"
+                    ? "適合新手"
+                    : profile?.suitability === "experienced"
+                      ? "適合有經驗人士"
+                      : "未有記錄"}
+                </dd>
+              </div>
+            ) : null}
             {profile?.recordDate ? (
               <div>
                 <dt>原始記錄日期</dt>
@@ -102,10 +110,12 @@ export function AnimalDetail({
               <dt>年齡</dt>
               <dd>{animal.age}</dd>
             </div>
-            <div>
-              <dt>年齡組別</dt>
-              <dd>{AGE_GROUP_LABELS[parseAgeFilter(animal.age)]}</dd>
-            </div>
+            {parseAgeFilter(animal.age) !== "unknown" ? (
+              <div>
+                <dt>年齡組別</dt>
+                <dd>{AGE_GROUP_LABELS[parseAgeFilter(animal.age)]}</dd>
+              </div>
+            ) : null}
             {updatedAt ? (
               <div>
                 <dt>資料更新</dt>

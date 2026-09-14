@@ -55,6 +55,7 @@ describe.skipIf(!enabled)("CMS private media isolated SQL and storage acceptance
     client = createClient(storageUrl!, storageKey!, {
       auth: { persistSession: false, autoRefreshToken: false },
     });
+    await db`insert into auth.users(id,email,email_confirmed_at) values(${actor}::uuid,${`cms-media-${actor}@example.invalid`},clock_timestamp())`;
     await db`insert into public.admin_user(auth_user_id,email,role,status) values(${actor}::uuid,${`cms-media-${actor}@example.test`},'staff','active')`;
   });
   afterAll(async () => {
@@ -74,6 +75,7 @@ describe.skipIf(!enabled)("CMS private media isolated SQL and storage acceptance
       await db`update public.content_item set status='draft',published_slug=null,draft_revision_id=null,published_revision_id=null where id=${id}::uuid`;
       await db`delete from public.content_item where id=${id}::uuid`;
     }
+    await db`delete from public.editorial_content_review where reviewed_by=${actor}::uuid`;
     await db`delete from public.audit_log where actor_user_id=${actor}::uuid`;
     await db`delete from public.admin_user where auth_user_id=${actor}::uuid`;
     await db.close();
@@ -114,6 +116,7 @@ describe.skipIf(!enabled)("CMS private media isolated SQL and storage acceptance
     });
     expect((await fetch(preview.url)).ok).toBe(true);
     expect(preview.expiresIn).toBe(300);
+    await db`select public.editorial_review_command(${actor}::uuid,${{ entity_kind: "content", entity_id: item.content_id, revision_key: first.revisionId, classification: "approved", evidence: "Explicit synthetic media fixture" }}::jsonb)`;
     const published = await lifecycle.publish({
       actorUserId: actor,
       contentId: item.content_id,

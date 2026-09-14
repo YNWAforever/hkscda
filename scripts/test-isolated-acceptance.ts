@@ -6,6 +6,14 @@ if (local.API_URL !== "http://127.0.0.1:56321")
   throw new Error("Start the dedicated hkscda-policy-20260913 stack first");
 const env = {
   ...process.env,
+  // Any real application composition reached by a test must use the same isolated stack.
+  SUPABASE_URL: local.API_URL,
+  SUPABASE_SERVICE_ROLE_KEY: local.SERVICE_ROLE_KEY,
+  VITE_SUPABASE_URL: local.API_URL,
+  VITE_SUPABASE_ANON_KEY: local.ANON_KEY,
+  RESEND_API_KEY: "",
+  STRIPE_SECRET_KEY: "",
+  PAYPAL_CLIENT_SECRET: "",
   CONTENT_MEDIA_RECONCILIATION_LOCAL_TEST: "1",
   CONTENT_MEDIA_RECONCILIATION_POLICY_STACK: "1",
   VOLUNTEER_TEST_DATABASE_URL: url,
@@ -19,6 +27,8 @@ const env = {
   SUPABASE_LOCAL_URL: local.API_URL,
   SUPABASE_LOCAL_ANON_KEY: local.ANON_KEY,
   SUPABASE_LOCAL_SERVICE_ROLE_KEY: local.SERVICE_ROLE_KEY,
+  QUALITY_TEST_API_URL: local.API_URL,
+  QUALITY_TEST_SERVICE_KEY: local.SERVICE_ROLE_KEY,
   CMS_MEDIA_TEST_URL: local.API_URL,
   CMS_MEDIA_TEST_SERVICE_ROLE_KEY: local.SERVICE_ROLE_KEY,
 };

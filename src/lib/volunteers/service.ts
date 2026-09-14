@@ -47,7 +47,11 @@ export type VolunteerRepository = {
   }>;
   getActivityForRegistration(id: string): Promise<VolunteerActivityDetail | null>;
   getActivityDetail(id: string): Promise<VolunteerActivityDetail | null>;
-  createActivity(input: AdminActivityInput): Promise<string>;
+  createActivity(
+    input: AdminActivityInput,
+    actorUserId: string,
+    idempotencyKey: string,
+  ): Promise<string>;
   updateActivity(
     id: string,
     input: Partial<AdminActivityInput>,
@@ -143,15 +147,11 @@ export function createVolunteerService({
 
     async createActivity(args: { actorUserId: string; input: unknown }) {
       const input = adminActivityInputSchema.parse(args.input);
-      const id = await repo.createActivity(input);
-      await repo.insertAuditLog({
-        actor_user_id: args.actorUserId,
-        action: "volunteer_activity.create",
-        entity: "volunteer_activity",
-        entity_id: id,
-        timestamp: timestamp(now),
-        detail: { title: input.title, type: input.type, status: input.status },
-      });
+      const id = await repo.createActivity(
+        { ...input, status: "draft" },
+        args.actorUserId,
+        input.idempotencyKey ?? crypto.randomUUID(),
+      );
       return { id };
     },
 

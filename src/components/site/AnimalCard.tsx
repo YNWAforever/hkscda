@@ -32,7 +32,7 @@ export function AnimalCard({
         <AnimalPhoto animal={animal} />
         <div className="animal-profile-identity">
           <div className="min-w-0">
-            <p className="animal-profile-code">編號 {profile?.code || "未有記錄"}</p>
+            {profile?.code && <p className="animal-profile-code">編號 {profile.code}</p>}
             <h2>{animal.name}</h2>
             <p className="text-sm text-[var(--color-text-muted)]">
               {animal.type === "dog" ? "狗狗" : animal.type === "cat" ? "貓貓" : "助養動物"}
@@ -61,31 +61,37 @@ export function AnimalCard({
             <dt>年齡</dt>
             <dd>{animal.age || "未有記錄"}</dd>
           </div>
-          <div>
-            <dt>絕育</dt>
-            <dd>
-              {profile?.neutered === true
-                ? "已絕育"
-                : profile?.neutered === false
-                  ? "未絕育"
-                  : "未有記錄"}
-            </dd>
-          </div>
-          <div>
-            <dt>領養經驗</dt>
-            <dd>
-              {profile?.suitability === "newbie"
-                ? "適合新手"
-                : profile?.suitability === "experienced"
-                  ? "適合有經驗人士"
-                  : "未有記錄"}
-            </dd>
-          </div>
+          {profile?.neutered !== null && profile?.neutered !== undefined ? (
+            <div>
+              <dt>絕育</dt>
+              <dd>
+                {profile?.neutered === true
+                  ? "已絕育"
+                  : profile?.neutered === false
+                    ? "未絕育"
+                    : "未有記錄"}
+              </dd>
+            </div>
+          ) : null}
+          {profile?.suitability ? (
+            <div>
+              <dt>領養經驗</dt>
+              <dd>
+                {profile?.suitability === "newbie"
+                  ? "適合新手"
+                  : profile?.suitability === "experienced"
+                    ? "適合有經驗人士"
+                    : "未有記錄"}
+              </dd>
+            </div>
+          ) : null}
         </dl>
-        <p className="animal-profile-summary">
-          <span className="font-bold">性格：</span>
-          {profile?.personality || "未有記錄"}
-        </p>
+        {profile?.personality && (
+          <p className="animal-profile-summary">
+            <span className="font-bold">性格：</span>
+            {profile.personality}
+          </p>
+        )}
         <span className="mt-auto inline-flex min-h-11 items-center text-sm font-bold text-[var(--color-primary)]">
           查看詳細資料{" "}
           <span className="ml-1" aria-hidden="true">

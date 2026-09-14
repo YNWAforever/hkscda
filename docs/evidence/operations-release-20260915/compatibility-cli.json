@@ -1,0 +1,33 @@
+{
+  "scope": "Local rehearsal databases only",
+  "runs": [
+    {
+      "label": "older",
+      "exit": 1,
+      "result": {
+        "ready": false,
+        "blockers": [
+          "Missing database capability: volunteer_member_registrations(uuid,integer,integer,integer)",
+          "Missing database capability: volunteer_bulk_command(uuid,jsonb)",
+          "Missing database capability: volunteer_policy_settings_read(uuid)",
+          "Missing database capability: editorial_review_command(uuid,jsonb)",
+          "Missing database capability: editorial_review_queue(uuid,integer,text)",
+          "Migration ledger missing: 20260914160716",
+          "Migration ledger missing: 20260914160736",
+          "Migration ledger missing: 20260914163506",
+          "Migration ledger missing: 20260914161341",
+          "Migration ledger missing: 20260914162305",
+          "Migration ledger missing: 20260914164558"
+        ]
+      }
+    },
+    {
+      "label": "candidate",
+      "exit": 0,
+      "result": {
+        "ready": true,
+        "blockers": []
+      }
+    }
+  ]
+}

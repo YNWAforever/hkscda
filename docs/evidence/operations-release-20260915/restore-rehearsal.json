@@ -1,0 +1,16 @@
+{
+  "at": "2026-09-14T17:03:02.865Z",
+  "source": "hkscda_ops_rehearsal_aca2677c60_fresh",
+  "target": "hkscda_ops_restore_19782cbabb",
+  "backupBytes": 1333103,
+  "counts": {
+    "migrations": 109,
+    "profiles": 1
+  },
+  "grants": {
+    "anonymous": false,
+    "service": true
+  },
+  "passed": true,
+  "scope": "Disposable local rehearsal databases only. No application/production rollback performed. Restore kept SQL grants and factual rows."
+}

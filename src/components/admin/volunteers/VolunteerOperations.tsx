@@ -48,6 +48,10 @@ type Listing = {
   registrations: Registration[];
 };
 type Preview = {
+  terms_version_id?: string;
+  destination_policy_version_id?: string;
+  terms_body?: string;
+  consent_required?: boolean;
   preview_id: string;
   apply_action: "group_apply" | "move_apply";
   manifest: {
@@ -97,6 +101,7 @@ export function VolunteerOperations({ publicMode = false }: { publicMode?: boole
   const [captcha, setCaptcha] = useState("");
   const [reset, setReset] = useState(0);
   const [message, setMessage] = useState("");
+  const [destinationAccepted, setDestinationAccepted] = useState(false);
   const [preview, setPreview] = useState<Preview>();
   const [reason, setReason] = useState("");
   const [enquiryId, setEnquiryId] = useState("");
@@ -127,6 +132,10 @@ export function VolunteerOperations({ publicMode = false }: { publicMode?: boole
     mutationFn: (command: OperationCommand) =>
       api<{
         kind: string;
+        terms_version_id?: string;
+        destination_policy_version_id?: string;
+        terms_body?: string;
+        consent_required?: boolean;
         preview_id?: string;
         manifest?: Preview["manifest"];
         late?: boolean;
@@ -134,7 +143,12 @@ export function VolunteerOperations({ publicMode = false }: { publicMode?: boole
       }>(command),
     onSuccess: (result, command) => {
       if (result.kind === "preview" && result.preview_id) {
+        setDestinationAccepted(false);
         setPreview({
+          terms_version_id: result.terms_version_id,
+          destination_policy_version_id: result.destination_policy_version_id,
+          terms_body: result.terms_body,
+          consent_required: result.consent_required,
           preview_id: result.preview_id,
           apply_action: command.action === "group_preview" ? "group_apply" : "move_apply",
           manifest: result.manifest ?? {},
@@ -210,7 +224,7 @@ export function VolunteerOperations({ publicMode = false }: { publicMode?: boole
             <h2 id="operations-create" className="text-lg font-bold">
               把團體查詢加入指定場次
             </h2>
-            <p className="text-sm">聯絡資料會保存為本次申請的快照。提交後仍待職員核實。</p>
+            <p className="text-sm">我們會保存本次提交的聯絡資料。提交後仍待職員核實。</p>
             <div className="grid gap-4 md:grid-cols-3">
               <Field label="已有團體查詢">
                 <select
@@ -372,7 +386,7 @@ export function VolunteerOperations({ publicMode = false }: { publicMode?: boole
               義工改期
             </h2>
             <p className="text-sm">
-              原報名會保留，直至目的場次通過資格、名額、重疊及條款檢查後才原子更新。已有出席紀錄不能透過改期改寫。
+              確認改期前會保留原有預約。我們會再次核對目的場次的資格、名額及條款；未能改期時，原有預約不受影響。
             </p>
             <div className="grid gap-4 md:grid-cols-3">
               <Field label="現有報名">
@@ -470,6 +484,33 @@ export function VolunteerOperations({ publicMode = false }: { publicMode?: boole
                   。確認前伺服器會再次檢查。
                 </p>
               )}
+              {preview.apply_action === "move_apply" && (
+                <div className="space-y-3">
+                  <h3>目的場次條款</h3>
+                  <div
+                    className="max-h-64 overflow-auto whitespace-pre-wrap rounded border p-3"
+                    tabIndex={0}
+                  >
+                    {preview.terms_body}
+                  </div>
+                  {publicMode ? (
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={destinationAccepted}
+                        onChange={(event) => setDestinationAccepted(event.target.checked)}
+                      />
+                      我已閱讀並同意目的場次條款
+                    </label>
+                  ) : (
+                    preview.consent_required && (
+                      <p role="alert">
+                        請義工本人登入改期頁面閱讀及同意目的場次條款，職員不能代為同意。
+                      </p>
+                    )
+                  )}
+                </div>
+              )}
               <Field label="變更原因">
                 <textarea
                   aria-label="變更原因"
@@ -481,12 +522,27 @@ export function VolunteerOperations({ publicMode = false }: { publicMode?: boole
               </Field>
               <button
                 className={button}
-                disabled={!reason.trim() || busy || !protectedReady}
+                disabled={
+                  !reason.trim() ||
+                  busy ||
+                  !protectedReady ||
+                  (preview.apply_action === "move_apply" &&
+                    (publicMode ? !destinationAccepted : preview.consent_required))
+                }
                 onClick={() => {
                   const body = {
                     action: preview.apply_action,
                     preview_id: preview.preview_id,
                     reason,
+                    ...(preview.apply_action === "move_apply"
+                      ? {
+                          destination_policy_version_id: preview.destination_policy_version_id,
+                          terms_version_id: preview.terms_version_id,
+                          ...(publicMode && destinationAccepted
+                            ? { accept_terms: true as const }
+                            : {}),
+                        }
+                      : {}),
                   };
                   mutate.mutate({ ...body, idempotency_key: commandKey(body) });
                 }}

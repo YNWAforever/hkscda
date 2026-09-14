@@ -1,3 +1,4 @@
+import { ContentReviewPanel } from "./ContentReview";
 import {
   createContext,
   useContext,
@@ -564,6 +565,15 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
         </button>
       </nav>
       <StoryUpdateDraftNotice notice={updateDraftNotice} />
+      {content.revisionId && (
+        <ContentReviewPanel
+          key={content.revisionId}
+          kind="content"
+          id={contentId}
+          revision={content.revisionId}
+          disabled={hasDirty}
+        />
+      )}
       <ContentRevisionPanel
         content={content}
         disabled={editorActionPending || hasDirty || conflict}

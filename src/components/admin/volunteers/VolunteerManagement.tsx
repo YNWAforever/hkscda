@@ -1,3 +1,4 @@
+import { volunteerActionEligibility } from "../../../lib/volunteers/actionEligibility";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { CalendarClock, ChevronDown, Copy, Plus, RefreshCw, Users, X } from "lucide-react";
@@ -21,7 +22,6 @@ import {
   availableRegistrationTransitions,
   buildActivitySearchParams,
   buildRegistrationSearchParams,
-  canMarkAttendance,
   isDestructiveTransition,
   registrationStatusLabels,
   registrationTypeLabels,
@@ -45,15 +45,22 @@ type RegistrationListResponse = {
 };
 
 function toIsoFromLocal(value: string) {
-  return new Date(value).toISOString();
+  return new Date(value + ":00+08:00").toISOString();
 }
 
 function formatDateTime(value: string) {
-  return new Date(value).toLocaleString("zh-HK", { dateStyle: "medium", timeStyle: "short" });
+  return new Date(value).toLocaleString("zh-HK", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "Asia/Hong_Kong",
+  });
 }
 
 function formatDate(value: string) {
-  return new Date(value).toLocaleDateString("zh-HK", { dateStyle: "medium" });
+  return new Date(value).toLocaleDateString("zh-HK", {
+    dateStyle: "medium",
+    timeZone: "Asia/Hong_Kong",
+  });
 }
 
 function statusClass(status: VolunteerRegistrationStatus) {
@@ -507,11 +514,15 @@ export function VolunteerManagement() {
   function renderRegistrationActions(registration: RegistrationRow) {
     {
       const transitions = availableRegistrationTransitions(registration.status);
-      const attendable = canMarkAttendance(
-        registration,
-        registration.activity?.startsAt,
-        () => new Date(),
-      );
+      const attendable = registration.activity
+        ? volunteerActionEligibility({
+            status: registration.status,
+            attendance_status: registration.attendanceStatus,
+            starts_at: registration.activity.startsAt,
+            ends_at: registration.activity.endsAt,
+            activity_status: registration.activity.status,
+          }).completed
+        : false;
 
       if (transitions.length === 0 && !attendable) {
         return <span className="text-xs text-[var(--color-text-muted)]">無需處理</span>;

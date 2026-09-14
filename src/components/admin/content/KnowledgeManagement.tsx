@@ -98,6 +98,8 @@ function toInput(
 
 export function KnowledgeManagement() {
   const queryClient = useQueryClient();
+  const [documentPage, setDocumentPage] = useState(1);
+  const [documentSearch, setDocumentSearch] = useState("");
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<AdminKnowledgeStatus>("all");
   const [page, setPage] = useState(1);
@@ -118,12 +120,12 @@ export function KnowledgeManagement() {
     queryFn: () => fetchAdminJson<AdminKnowledgePage>(`/api/admin/knowledge?${search}`),
   });
   const documentsQuery = useQuery({
-    queryKey: ["admin-knowledge-documents"],
+    queryKey: ["admin-knowledge-documents", documentPage, documentSearch],
     queryFn: async () => {
       const response = await fetchAdminJson<AssetListResponse>(
-        "/api/admin/documents?kind=adoption_guide&page=1&pageSize=50",
+        `/api/admin/documents?kind=adoption_guide&page=${documentPage}&pageSize=50&q=${encodeURIComponent(documentSearch)}`,
       );
-      return filterPublishedPdfAssets(response.items);
+      return { ...response, items: filterPublishedPdfAssets(response.items) };
     },
   });
   const ownershipQuery = useQuery({
@@ -149,34 +151,61 @@ export function KnowledgeManagement() {
   });
 
   return (
-    <KnowledgeManagementView
-      data={knowledgeQuery.data}
-      ownershipReady={ownershipQuery.isSuccess}
-      ownerReleaseIds={ownershipQuery.data?.ownerReleaseIdsByKnowledgePostId}
-      documents={documentsQuery.data ?? []}
-      query={query}
-      status={status}
-      loading={knowledgeQuery.isLoading || documentsQuery.isLoading || ownershipQuery.isLoading}
-      pending={mutation.isPending}
-      error={
-        (knowledgeQuery.error instanceof Error ? knowledgeQuery.error.message : null) ??
-        (ownershipQuery.error instanceof Error ? ownershipQuery.error.message : null) ??
-        (documentsQuery.error instanceof Error ? documentsQuery.error.message : null) ??
-        (mutation.error instanceof Error ? mutation.error.message : null)
-      }
-      onQueryChange={withPageReset(setQuery)}
-      onStatusChange={withPageReset(setStatus)}
-      onPageChange={setPage}
-      fetching={knowledgeQuery.isFetching}
-      onSave={(draft) => mutation.mutate({ action: "save", draft })}
-      onDelete={(id) => {
-        // Irreversible, and the trigger sits inline in a list where a mis-click
-        // is easy. Name the post so the operator can tell which row they hit.
-        const title = knowledgeQuery.data?.posts.find((post) => post.id === id)?.title ?? "此文章";
-        if (!window.confirm(`確定刪除「${title}」？此操作無法復原。`)) return;
-        mutation.mutate({ action: "delete", id });
-      }}
-    />
+    <>
+      <section className="m-6 space-y-3 rounded border p-4">
+        <h2>參考文件選擇</h2>
+        <label>
+          搜尋文件
+          <input
+            className={inputClass}
+            value={documentSearch}
+            onChange={(event) => {
+              setDocumentSearch(event.target.value);
+              setDocumentPage(1);
+            }}
+          />
+        </label>
+        {documentsQuery.data && (
+          <TablePager
+            page={documentPage}
+            pageSize={50}
+            total={documentsQuery.data.total}
+            onPageChange={setDocumentPage}
+            label="參考文件"
+          />
+        )}
+        <p>只可選擇已發布 PDF。切換文件頁面會保留目前所選文件。</p>
+      </section>
+      <KnowledgeManagementView
+        data={knowledgeQuery.data}
+        ownershipReady={ownershipQuery.isSuccess}
+        ownerReleaseIds={ownershipQuery.data?.ownerReleaseIdsByKnowledgePostId}
+        documents={documentsQuery.data?.items ?? []}
+        query={query}
+        status={status}
+        loading={knowledgeQuery.isLoading || ownershipQuery.isLoading}
+        pending={mutation.isPending}
+        error={
+          (knowledgeQuery.error instanceof Error ? knowledgeQuery.error.message : null) ??
+          (ownershipQuery.error instanceof Error ? ownershipQuery.error.message : null) ??
+          (documentsQuery.error instanceof Error ? documentsQuery.error.message : null) ??
+          (mutation.error instanceof Error ? mutation.error.message : null)
+        }
+        onQueryChange={withPageReset(setQuery)}
+        onStatusChange={withPageReset(setStatus)}
+        onPageChange={setPage}
+        fetching={knowledgeQuery.isFetching}
+        onSave={(draft) => mutation.mutate({ action: "save", draft })}
+        onDelete={(id) => {
+          // Irreversible, and the trigger sits inline in a list where a mis-click
+          // is easy. Name the post so the operator can tell which row they hit.
+          const title =
+            knowledgeQuery.data?.posts.find((post) => post.id === id)?.title ?? "此文章";
+          if (!window.confirm(`確定刪除「${title}」？此操作無法復原。`)) return;
+          mutation.mutate({ action: "delete", id });
+        }}
+      />
+    </>
   );
 }
 
@@ -218,9 +247,9 @@ export function KnowledgeManagementView({
     <div className="space-y-6 p-6">
       <header>
         <p className="text-sm font-semibold text-[var(--color-primary)]">Content</p>
-        <h1 className="text-2xl font-bold text-[var(--color-panel)]">Knowledge hub</h1>
+        <h1 className="text-2xl font-bold text-[var(--color-panel)]">知識專區</h1>
         <p className="text-sm text-[var(--color-text-muted)]">
-          Manage public adoption, pet care, and reference links.
+          管理公開領養資訊、寵物照顧及參考連結。
         </p>
       </header>
 
@@ -360,7 +389,7 @@ function EditableKnowledgeEditor({
   const [draft, setDraft] = useState(() => draftFromPost(post));
   return (
     <section className="space-y-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
-      <h2 className="font-bold">{post ? post.title : "New knowledge post"}</h2>
+      <h2 className="font-bold">{post ? post.title : "新增知識文章"}</h2>
       <div className="grid gap-3 md:grid-cols-2">
         <label className="space-y-1 text-sm font-semibold">
           Title
@@ -380,7 +409,7 @@ function EditableKnowledgeEditor({
         </label>
       </div>
       <label className="block space-y-1 text-sm font-semibold">
-        Short intro
+        簡介
         <textarea
           className={inputClass}
           value={draft.shortIntro}
@@ -389,7 +418,7 @@ function EditableKnowledgeEditor({
       </label>
       <div className="grid gap-3 md:grid-cols-2">
         <label className="space-y-1 text-sm font-semibold">
-          Destination mode
+          連結方式
           <select
             className={inputClass}
             value={draft.destinationMode}
@@ -397,30 +426,34 @@ function EditableKnowledgeEditor({
               setDraft({ ...draft, destinationMode: event.target.value as DraftDestinationMode })
             }
           >
-            <option value="external">External URL</option>
-            <option value="document">Document PDF</option>
+            <option value="external">外部網址</option>
+            <option value="document">PDF 文件</option>
           </select>
         </label>
         {draft.destinationMode === "external" ? (
           <label className="space-y-1 text-sm font-semibold">
-            External URL
+            外部網址
             <input
               className={inputClass}
               value={draft.externalUrl}
               onChange={(event) => setDraft({ ...draft, externalUrl: event.target.value })}
               placeholder="https://"
             />
-            <span className="text-xs text-[var(--color-text-muted)]">HTTPS only</span>
+            <span className="text-xs text-[var(--color-text-muted)]">只接受 HTTPS 網址</span>
           </label>
         ) : (
           <label className="space-y-1 text-sm font-semibold">
-            Document PDF
+            PDF 文件
             <select
               className={inputClass}
               value={draft.documentAssetId}
               onChange={(event) => setDraft({ ...draft, documentAssetId: event.target.value })}
             >
-              <option value="">Choose a published PDF</option>
+              <option value="">選擇已發布 PDF</option>
+              {draft.documentAssetId &&
+                !documents.some((asset) => asset.id === draft.documentAssetId) && (
+                  <option value={draft.documentAssetId}>目前已選文件（其他頁面）</option>
+                )}
               {documents.map((asset) => (
                 <option key={asset.id} value={asset.id}>
                   {asset.title}
@@ -440,7 +473,7 @@ function EditableKnowledgeEditor({
           />
         </label>
         <label className="space-y-1 text-sm font-semibold">
-          Sort order
+          排序
           <input
             className={inputClass}
             type="number"

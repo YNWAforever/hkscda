@@ -50,8 +50,8 @@ describe("AnimalDetail", () => {
     expect(markup).toContain("加入領養清單");
     expect(markup).toContain("親人，喜歡曬太陽");
     expect(markup).not.toContain("需要安靜家庭");
-    expect(markup).toContain("絕育");
-    expect(markup).toContain("未有記錄");
+    expect(markup).not.toContain("絕育</dt>");
+    expect(markup).not.toContain("未有記錄");
   });
 
   test("shows the icon fallback instead of an <img> when the animal has no photo", async () => {
@@ -105,7 +105,7 @@ test("shows reviewed profile sections and dated care facts without exposing note
   expect(markup.match(/<h1(?:\s|>)/g)).toHaveLength(1);
 });
 
-test("labels an unrecorded age group as unknown", async () => {
+test("omits an unrecorded age group without inventing an age", async () => {
   const { AnimalDetail } = await import("./AnimalDetail");
   const markup = renderToStaticMarkup(
     <ShortlistProvider>
@@ -116,7 +116,7 @@ test("labels an unrecorded age group as unknown", async () => {
       />
     </ShortlistProvider>,
   );
-  expect(markup).toContain("年齡組別</dt><dd>未有記錄");
+  expect(markup).not.toContain("年齡組別</dt>");
   expect(markup).not.toContain("成年");
 });
 

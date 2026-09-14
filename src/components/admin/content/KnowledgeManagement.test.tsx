@@ -90,13 +90,13 @@ describe("KnowledgeManagement", () => {
       />,
     );
 
-    expect(markup).toContain("Knowledge hub");
-    expect(markup).toContain("External URL");
-    expect(markup).toContain("Document PDF");
-    expect(markup).toContain("HTTPS only");
+    expect(markup).toContain("知識專區");
+    expect(markup).toContain("外部網址");
+    expect(markup).toContain("PDF 文件");
+    expect(markup).toContain("只接受 HTTPS 網址");
     expect(markup).toContain("Published");
     expect(markup).toContain("Draft");
-    expect(markup).toContain("Sort order");
+    expect(markup).toContain("排序");
     expect(markup).toContain("Could not load");
     expect(markup).toContain("What you need to know after adoption");
   });
@@ -140,7 +140,7 @@ describe("KnowledgeManagement", () => {
     );
     expect(pairedSection).toContain(zhHkAssetId);
     expect(pairedSection).toContain(enAssetId);
-    expect(pairedSection).not.toContain("Destination mode");
+    expect(pairedSection).not.toContain("連結方式");
     expect(pairedSection).not.toContain("<input");
     expect(pairedSection).not.toContain("<select");
     expect(pairedSection).not.toContain("<button");

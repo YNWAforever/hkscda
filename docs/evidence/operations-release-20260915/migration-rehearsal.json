@@ -1,0 +1,64 @@
+{
+  "startedAt": "2026-09-14T17:02:51.245Z",
+  "source": "dedicated local56322 platform schema only; no production data",
+  "migrationFiles": 109,
+  "runs": [
+    {
+      "mode": "upgrade",
+      "database": "hkscda_ops_rehearsal_aca2677c60_upgrade",
+      "applied": 109,
+      "compatibility": {
+        "ready": true,
+        "blockers": []
+      },
+      "before": {
+        "directoryMissing": true,
+        "legacyError": "42702"
+      },
+      "directory": "loaded",
+      "legacy": "loaded",
+      "grants": [
+        {
+          "proname": "volunteer_admin_directory_read",
+          "anon": false,
+          "authenticated": false,
+          "service": true
+        },
+        {
+          "proname": "volunteer_legacy_identity_command",
+          "anon": false,
+          "authenticated": false,
+          "service": true
+        }
+      ],
+      "result": "passed"
+    },
+    {
+      "mode": "fresh",
+      "database": "hkscda_ops_rehearsal_aca2677c60_fresh",
+      "applied": 109,
+      "compatibility": {
+        "ready": true,
+        "blockers": []
+      },
+      "before": {},
+      "directory": "loaded",
+      "legacy": "loaded",
+      "grants": [
+        {
+          "proname": "volunteer_admin_directory_read",
+          "anon": false,
+          "authenticated": false,
+          "service": true
+        },
+        {
+          "proname": "volunteer_legacy_identity_command",
+          "anon": false,
+          "authenticated": false,
+          "service": true
+        }
+      ],
+      "result": "passed"
+    }
+  ]
+}

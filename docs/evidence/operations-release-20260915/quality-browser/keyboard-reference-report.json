@@ -1,0 +1,10 @@
+{
+  "checks": [
+    "Existing synthetic pledge: Enter and Space open review drawer, Escape closes and restores trigger focus; no financial mutation",
+    "51 published synthetic PDF references: page2 record51 selectable, selection retained after returning to page1",
+    "Delayed existing draft response: editor unavailable until hydrated; subsequent user edit saves without overwrite or revision0 conflict",
+    "Image publish then reopen/text-only save/preview/publish succeeds with retained referenced private main and gallery objects"
+  ],
+  "errors": [],
+  "screenshots": []
+}

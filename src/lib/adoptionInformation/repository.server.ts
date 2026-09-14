@@ -236,6 +236,7 @@ export function createSupabaseAdoptionInformationRepository(
             ? query.order("estate_name", { ascending: true })
             : query;
       query = query.range(from, from + input.pageSize - 1);
+      query = query.order("id", { ascending: true });
       if ((input.resource === "fees" || input.resource === "careTopics") && input.animalType)
         query = query.eq("animal_type", input.animalType);
       if (input.q) {
