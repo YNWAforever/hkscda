@@ -27,6 +27,21 @@ describe("contentAdminLogic", () => {
     );
   });
 
+  test("buildContentSearchParams serializes the new admin filters", () => {
+    const params = buildContentSearchParams({
+      publishedFrom: "2026-01-01",
+      publishedTo: "2026-06-30",
+      mapVisibility: "on",
+      hasUpdate: "no",
+      draftState: "dismissed",
+    });
+    expect(params.get("publishedFrom")).toBe("2026-01-01");
+    expect(params.get("publishedTo")).toBe("2026-06-30");
+    expect(params.get("mapVisibility")).toBe("on");
+    expect(params.get("hasUpdate")).toBe("no");
+    expect(params.get("draftState")).toBe("dismissed");
+  });
+
   test("formats status tones and content type labels", () => {
     expect(contentStatusTone("published")).toBe("success");
     expect(contentStatusTone("draft")).toBe("warning");

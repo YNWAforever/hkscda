@@ -4,7 +4,12 @@ import { Edit3, Filter, RefreshCw, Search } from "lucide-react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-import type { ContentStatus, ContentSummary, ContentType } from "../../../lib/content/types";
+import type {
+  ContentStatus,
+  ContentSummary,
+  ContentType,
+  NotificationDraftStatus,
+} from "../../../lib/content/types";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { STAT_UNAVAILABLE } from "../LoadFailure";
@@ -98,6 +103,11 @@ function ContentManagementRuntime() {
   const [type, setType] = useState<ContentType | "all">("all");
   const [status, setStatus] = useState<ContentStatus | "all">("all");
   const [rescueRegion, setRescueRegion] = useState("");
+  const [publishedFrom, setPublishedFrom] = useState("");
+  const [publishedTo, setPublishedTo] = useState("");
+  const [mapVisibility, setMapVisibility] = useState<"all" | "on" | "off">("all");
+  const [hasUpdate, setHasUpdate] = useState<"all" | "yes" | "no">("all");
+  const [draftState, setDraftState] = useState<"all" | NotificationDraftStatus>("all");
   const [page, setPage] = useState(1);
 
   // Narrowing the result set invalidates the page number — page 3 of a smaller
@@ -116,9 +126,25 @@ function ContentManagementRuntime() {
         type,
         status,
         rescueRegion,
+        publishedFrom,
+        publishedTo,
+        mapVisibility,
+        hasUpdate,
+        draftState,
         page,
       }).toString(),
-    [query, rescueRegion, status, type, page],
+    [
+      query,
+      rescueRegion,
+      status,
+      type,
+      publishedFrom,
+      publishedTo,
+      mapVisibility,
+      hasUpdate,
+      draftState,
+      page,
+    ],
   );
 
   const contentQuery = useQuery({
@@ -142,11 +168,21 @@ function ContentManagementRuntime() {
         type={type}
         status={status}
         rescueRegion={rescueRegion}
+        publishedFrom={publishedFrom}
+        publishedTo={publishedTo}
+        mapVisibility={mapVisibility}
+        hasUpdate={hasUpdate}
+        draftState={draftState}
         error={contentQuery.error instanceof Error ? contentQuery.error.message : null}
         onQueryChange={withPageReset(setQuery)}
         onTypeChange={withPageReset(setType)}
         onStatusChange={withPageReset(setStatus)}
         onRescueRegionChange={withPageReset(setRescueRegion)}
+        onPublishedFromChange={withPageReset(setPublishedFrom)}
+        onPublishedToChange={withPageReset(setPublishedTo)}
+        onMapVisibilityChange={withPageReset(setMapVisibility)}
+        onHasUpdateChange={withPageReset(setHasUpdate)}
+        onDraftStateChange={withPageReset(setDraftState)}
         onPageChange={setPage}
         fetching={contentQuery.isFetching}
         onRefresh={() => void queryClient.invalidateQueries({ queryKey: ["admin-content"] })}
@@ -162,11 +198,21 @@ type ContentManagementViewProps = {
   type?: ContentType | "all";
   status?: ContentStatus | "all";
   rescueRegion?: string;
+  publishedFrom?: string;
+  publishedTo?: string;
+  mapVisibility?: "all" | "on" | "off";
+  hasUpdate?: "all" | "yes" | "no";
+  draftState?: "all" | NotificationDraftStatus;
   error?: string | null;
   onQueryChange?: (value: string) => void;
   onTypeChange?: (value: ContentType | "all") => void;
   onStatusChange?: (value: ContentStatus | "all") => void;
   onRescueRegionChange?: (value: string) => void;
+  onPublishedFromChange?: (value: string) => void;
+  onPublishedToChange?: (value: string) => void;
+  onMapVisibilityChange?: (value: "all" | "on" | "off") => void;
+  onHasUpdateChange?: (value: "all" | "yes" | "no") => void;
+  onDraftStateChange?: (value: "all" | NotificationDraftStatus) => void;
   onPageChange?: (page: number) => void;
   fetching?: boolean;
   onRefresh?: () => void;
@@ -179,11 +225,21 @@ function ContentManagementView({
   type = "all",
   status = "all",
   rescueRegion = "",
+  publishedFrom = "",
+  publishedTo = "",
+  mapVisibility = "all",
+  hasUpdate = "all",
+  draftState = "all",
   error,
   onQueryChange,
   onTypeChange,
   onStatusChange,
   onRescueRegionChange,
+  onPublishedFromChange,
+  onPublishedToChange,
+  onMapVisibilityChange,
+  onHasUpdateChange,
+  onDraftStateChange,
   onPageChange,
   fetching,
   onRefresh,
@@ -364,6 +420,67 @@ function ContentManagementView({
               placeholder="例如：灣仔"
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm font-normal"
             />
+          </label>
+        </div>
+
+        <div className="grid gap-3 md:grid-cols-2">
+          <label className="space-y-1 text-sm font-semibold text-[var(--color-panel)]">
+            發布日期（起）
+            <input
+              type="date"
+              value={publishedFrom}
+              onChange={(e) => onPublishedFromChange?.(e.target.value)}
+              className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-normal"
+            />
+          </label>
+          <label className="space-y-1 text-sm font-semibold text-[var(--color-panel)]">
+            發布日期（迄）
+            <input
+              type="date"
+              value={publishedTo}
+              onChange={(e) => onPublishedToChange?.(e.target.value)}
+              className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-normal"
+            />
+          </label>
+          <label className="space-y-1 text-sm font-semibold text-[var(--color-panel)]">
+            地圖顯示
+            <select
+              value={mapVisibility}
+              onChange={(e) => onMapVisibilityChange?.(e.target.value as "all" | "on" | "off")}
+              className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-normal"
+            >
+              <option value="all">全部</option>
+              <option value="on">顯示</option>
+              <option value="off">不顯示</option>
+            </select>
+          </label>
+          <label className="space-y-1 text-sm font-semibold text-[var(--color-panel)]">
+            更新記錄
+            <select
+              value={hasUpdate}
+              onChange={(e) => onHasUpdateChange?.(e.target.value as "all" | "yes" | "no")}
+              className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-normal"
+            >
+              <option value="all">全部</option>
+              <option value="yes">有更新</option>
+              <option value="no">沒有更新</option>
+            </select>
+          </label>
+          <label className="space-y-1 text-sm font-semibold text-[var(--color-panel)]">
+            通知草稿
+            <select
+              value={draftState}
+              onChange={(e) =>
+                onDraftStateChange?.(e.target.value as "all" | NotificationDraftStatus)
+              }
+              className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-normal"
+            >
+              <option value="all">全部</option>
+              <option value="draft">草稿</option>
+              <option value="copied">已複製</option>
+              <option value="sent_manually">已手動發送</option>
+              <option value="dismissed">已略過</option>
+            </select>
           </label>
         </div>
 
