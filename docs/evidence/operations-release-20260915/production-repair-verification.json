@@ -1,0 +1,73 @@
+{
+  "at": "2026-09-14T18:44:55.258Z",
+  "compatibility": {
+    "ready": true,
+    "blockers": []
+  },
+  "ledgerCount": 79,
+  "readOnly": true,
+  "dataApi": [
+    {
+      "name": "volunteer_admin_directory_read",
+      "status": 200,
+      "kind": null,
+      "resultKeys": [
+        "page",
+        "limit",
+        "total",
+        "profiles"
+      ]
+    },
+    {
+      "name": "volunteer_bulk_command",
+      "status": 200,
+      "kind": "listed",
+      "resultKeys": [
+        "kind",
+        "total",
+        "page_size",
+        "activities"
+      ]
+    },
+    {
+      "name": "volunteer_member_registrations",
+      "status": 200,
+      "kind": null,
+      "resultKeys": [
+        "page_size",
+        "history_page",
+        "history_total",
+        "registrations",
+        "upcoming_page",
+        "upcoming_total"
+      ]
+    },
+    {
+      "name": "volunteer_policy_settings_read",
+      "status": 200,
+      "kind": null,
+      "resultKeys": [
+        "drafts",
+        "versions",
+        "activities",
+        "activity_limit",
+        "activity_total"
+      ]
+    }
+  ],
+  "publicReads": [
+    {
+      "path": "/api/volunteer/policy",
+      "status": 200
+    },
+    {
+      "path": "/api/volunteer/policy?view=terms",
+      "status": 200
+    },
+    {
+      "path": "/api/volunteer/activities",
+      "status": 200
+    }
+  ],
+  "scope": "Read-only RPCs using existing verified actors; no session issuance or business mutations. No authenticated application-browser journey claimed."
+}
