@@ -160,6 +160,14 @@ export const contentLinkInputSchema = z.object({
   relationship: z.enum(contentLinkRelationships).default("other"),
 });
 
+export const linkSearchSchema = z.object({
+  linkedType: z.enum(contentLinkTypes),
+  q: trimmed.min(1).max(100),
+  limit: numberFromInput(z.number().int().min(1))
+    .catch(20)
+    .transform((value) => Math.min(value, 20)),
+});
+
 export const socialCopyStatusSchema = z.object({
   status: z.enum(socialCopyStatuses),
 });
@@ -181,6 +189,7 @@ export type StoryUpdateInput = z.infer<typeof storyUpdateInputSchema>;
 export type ContentMediaInput = z.infer<typeof contentMediaInputSchema>;
 export type ContentMediaUploadTargetInput = z.infer<typeof contentMediaUploadTargetSchema>;
 export type ContentLinkInput = z.infer<typeof contentLinkInputSchema>;
+export type LinkSearch = z.infer<typeof linkSearchSchema>;
 export type SocialCopyStatusInput = z.infer<typeof socialCopyStatusSchema>;
 export type NotificationDraftStatusInput = z.infer<typeof notificationDraftStatusSchema>;
 export type SocialCopyGenerateInput = z.infer<typeof socialCopyGenerateSchema>;

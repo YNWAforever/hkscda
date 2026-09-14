@@ -13,12 +13,14 @@ import {
   contentMediaInputSchema,
   contentMediaUploadTargetSchema,
   contentInputSchema,
+  linkSearchSchema,
   notificationDraftStatusSchema,
   publicContentSearchSchema,
   socialCopyGenerateSchema,
   socialCopyStatusSchema,
   storyProfileInputSchema,
   storyUpdateInputSchema,
+  type LinkSearch,
 } from "./schemas";
 import { generateSocialCopyVariants } from "./socialCopy";
 import type {
@@ -85,6 +87,9 @@ export type ContentRepository = {
   createContentMedia(contentId: string, input: ContentMediaInput): Promise<string>;
   createSignedUploadUrl(objectPath: string): Promise<{ token: string; path: string }>;
   createContentLink(contentId: string, input: ContentLinkInput): Promise<string>;
+  searchLinks(
+    input: LinkSearch,
+  ): Promise<Array<{ id: string; label: string; sublabel: string | null }>>;
   publishContent(id: string): Promise<ContentDetail>;
   archiveContent(id: string): Promise<ContentDetail>;
   insertSocialCopies(
@@ -509,6 +514,11 @@ export function createContentService({
       });
 
       return { id };
+    },
+
+    async searchLinks(raw: unknown) {
+      const parsed = linkSearchSchema.parse(raw);
+      return repo.searchLinks(parsed);
     },
 
     async publishContent({ actorUserId, contentId, input }: ContentActionArgs) {

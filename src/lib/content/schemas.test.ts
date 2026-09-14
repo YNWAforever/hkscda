@@ -5,6 +5,7 @@ import {
   contentInputSchema,
   contentMediaInputSchema,
   contentMediaUploadTargetSchema,
+  linkSearchSchema,
   MAX_CONTENT_MEDIA_BYTES,
 } from "./schemas";
 
@@ -113,5 +114,13 @@ describe("adminContentSearchSchema", () => {
   test("rejects unknown enum values", () => {
     expect(adminContentSearchSchema.safeParse({ mapVisibility: "maybe" }).success).toBe(false);
     expect(adminContentSearchSchema.safeParse({ draftState: "sent" }).success).toBe(false);
+  });
+});
+
+describe("linkSearchSchema", () => {
+  test("trims q, defaults limit, and rejects unknown types", () => {
+    expect(linkSearchSchema.parse({ linkedType: "animal", q: "  mi  " }).q).toBe("mi");
+    expect(linkSearchSchema.parse({ linkedType: "animal", q: "x" }).limit).toBe(20);
+    expect(linkSearchSchema.safeParse({ linkedType: "nope", q: "x" }).success).toBe(false);
   });
 });

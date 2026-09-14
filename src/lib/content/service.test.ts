@@ -87,6 +87,7 @@ function createRepo(overrides: Partial<ContentRepository> = {}) {
     createContentMedia: async () => "media-2",
     createSignedUploadUrl: async (objectPath) => ({ token: "upload-token", path: objectPath }),
     createContentLink: async () => "link-1",
+    searchLinks: async () => [],
     insertSocialCopies: async (rows) => {
       socialCopies.push(...rows);
     },
@@ -123,6 +124,7 @@ function buildService({
   draftKeys,
   insertNotificationDrafts,
   mediaLifecycle,
+  searchLinks,
 }: {
   content?: ContentOverride;
   storyUpdate?: Partial<StoryUpdate>;
@@ -130,6 +132,7 @@ function buildService({
   recipientsError?: Error;
   draftKeys?: Array<{ channel: string; recipientContact: string }>;
   insertNotificationDrafts?: ContentRepository["insertNotificationDrafts"];
+  searchLinks?: ContentRepository["searchLinks"];
   mediaLifecycle?: {
     publish: (command: unknown) => Promise<{ version: number; revisionId: string }>;
   };
@@ -154,6 +157,9 @@ function buildService({
   }
   if (insertNotificationDrafts) {
     overrides.insertNotificationDrafts = insertNotificationDrafts;
+  }
+  if (searchLinks) {
+    overrides.searchLinks = searchLinks;
   }
 
   const { repo } = createRepo(overrides);
@@ -1156,5 +1162,15 @@ describe("createContentService listAdminContent", () => {
       hasUpdate: "yes",
       draftState: "draft",
     });
+  });
+});
+
+describe("createContentService searchLinks", () => {
+  test("searchLinks delegates to the repository with a bounded limit", async () => {
+    const searchLinks = mock(async () => [{ id: "a1", label: "Milo", sublabel: null }]);
+    const { service } = buildService({ searchLinks });
+    const result = await service.searchLinks({ linkedType: "animal", q: "mi", limit: 5 });
+    expect(searchLinks).toHaveBeenCalledWith({ linkedType: "animal", q: "mi", limit: 5 });
+    expect(result).toHaveLength(1);
   });
 });

@@ -143,6 +143,10 @@ function createService(overrides: Record<string, unknown> = {}) {
       calls.push("createContentLink");
       return { id: "link-1" };
     },
+    async searchLinks() {
+      calls.push("searchLinks");
+      return [{ id: "a1", label: "Milo", sublabel: null }];
+    },
     async generateSocialCopy() {
       calls.push("generateSocialCopy");
       return { count: 3 };
@@ -602,5 +606,45 @@ describe("createContentHandlers", () => {
     expect(await response.json()).toEqual({
       error: "Upload path does not belong to this content item",
     });
+  });
+
+  test("returns linked-record search results for admins without caching", async () => {
+    const service = createService();
+    const handlers = createContentHandlers({
+      requireContentAdmin: async () => admin,
+      service,
+    });
+
+    const response = await handlers.searchLinks({
+      request: new Request(
+        "https://example.test/api/admin/content/link-search?linkedType=animal&q=mi",
+      ),
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(await response.json()).toEqual({
+      results: [{ id: "a1", label: "Milo", sublabel: null }],
+    });
+    expect(service.calls).toEqual(["searchLinks"]);
+  });
+
+  test("rejects linked-record search when auth is missing", async () => {
+    const service = createService();
+    const handlers = createContentHandlers({
+      requireContentAdmin: async () => {
+        throw new Response("Missing authorization token", { status: 401 });
+      },
+      service,
+    });
+
+    const response = await handlers.searchLinks({
+      request: new Request(
+        "https://example.test/api/admin/content/link-search?linkedType=animal&q=mi",
+      ),
+    });
+
+    expect(response.status).toBe(401);
+    expect(service.calls).toEqual([]);
   });
 });

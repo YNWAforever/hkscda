@@ -345,6 +345,13 @@ export function createContentHandlers({ requireContentAdmin, service }: CreateCo
       });
     },
 
+    searchLinks({ request }: HandlerContext) {
+      return withContentErrors(async () => {
+        await requireContentAdmin(request);
+        return jsonResponse({ results: await service.searchLinks(searchParams(request)) });
+      });
+    },
+
     publishContent({ request, params }: HandlerContext) {
       return withContentErrors(async () => {
         const admin = await requireContentAdmin(request);
