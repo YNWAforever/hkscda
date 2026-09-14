@@ -18,8 +18,8 @@ export function summarize(manifest, dbNotListed) {
   return counts;
 }
 
-export async function runBackfill({ sourceList, animals, overrides = new Map(), dryRun = true, deps }) {
-  const results = matchSourceToAnimals(sourceList, animals, overrides);
+export async function runBackfill({ sourceList, animals, overrides = new Map(), dryRun = true, overwrite = false, deps }) {
+  const results = matchSourceToAnimals(sourceList, animals, overrides, { includeAlreadyImaged: overwrite });
   const manifest = [];
 
   for (const result of results) {

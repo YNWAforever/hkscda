@@ -126,6 +126,19 @@ describe("runBackfill", () => {
     expect(calls.updates).toContain("id-2");
   });
 
+  test("overwrite re-processes an already-imaged animal", async () => {
+    const { deps, calls } = makeDeps();
+    const result = await runBackfill({
+      sourceList: [source()],
+      animals: [animal({ image_url: "https://old/x.jpg" })],
+      dryRun: false,
+      overwrite: true,
+      deps,
+    });
+    expect(result.manifest[0].status).toBe("applied");
+    expect(calls.updates).toEqual(["id-1"]);
+  });
+
   test("an animal absent from the listing is reported as db-not-listed", async () => {
     const { deps } = makeDeps();
     const result = await runBackfill({

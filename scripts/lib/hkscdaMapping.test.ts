@@ -87,6 +87,27 @@ describe("matchSourceToAnimals", () => {
     expect(results[0].status).toBe(STATUS.UNMATCHED);
     expect(results[0].reason).toBe("override-missing");
   });
+
+  test("includeAlreadyImaged matches an already-imaged unique record instead of skipping", () => {
+    const results = matchSourceToAnimals(
+      [source()],
+      [animal({ image_url: "https://x/y.jpg" })],
+      new Map(),
+      { includeAlreadyImaged: true },
+    );
+    expect(results[0].status).toBe(STATUS.MATCHED);
+    expect(results[0].animalId).toBe("id-1");
+  });
+
+  test("includeAlreadyImaged matches an already-imaged override", () => {
+    const results = matchSourceToAnimals(
+      [source()],
+      [animal({ id: "id-1", image_url: "https://x/y.jpg" })],
+      new Map([["5309", "id-1"]]),
+      { includeAlreadyImaged: true },
+    );
+    expect(results[0].status).toBe(STATUS.OVERRIDE);
+  });
 });
 
 describe("collectDbNotListed", () => {

@@ -24,7 +24,8 @@ function hasImage(animal) {
   return typeof animal.image_url === "string" && animal.image_url.trim().length > 0;
 }
 
-export function matchSourceToAnimals(sourceList, animals, overrides = new Map()) {
+export function matchSourceToAnimals(sourceList, animals, overrides = new Map(), options = {}) {
+  const { includeAlreadyImaged = false } = options;
   const active = animals.filter((a) => !a.retired_at);
   const byKey = new Map();
   for (const a of active) {
@@ -41,7 +42,7 @@ export function matchSourceToAnimals(sourceList, animals, overrides = new Map())
       const target = active.find((a) => a.id === overrideId);
       if (!target) {
         results.push({ source, status: STATUS.UNMATCHED, reason: "override-missing" });
-      } else if (hasImage(target)) {
+      } else if (hasImage(target) && !includeAlreadyImaged) {
         results.push({ source, status: STATUS.SKIPPED_ALREADY_IMAGED, animalId: target.id });
       } else {
         results.push({ source, status: STATUS.OVERRIDE, animalId: target.id });
@@ -58,7 +59,7 @@ export function matchSourceToAnimals(sourceList, animals, overrides = new Map())
       const target = candidates[0];
       results.push({
         source,
-        status: hasImage(target) ? STATUS.SKIPPED_ALREADY_IMAGED : STATUS.MATCHED,
+        status: hasImage(target) && !includeAlreadyImaged ? STATUS.SKIPPED_ALREADY_IMAGED : STATUS.MATCHED,
         animalId: target.id,
       });
     }
