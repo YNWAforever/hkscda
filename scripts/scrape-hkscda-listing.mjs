@@ -62,7 +62,15 @@ export async function collectListing({
       const html = await fetchHtml(fetchImpl, url, type);
       const cards = parseListingHtml(html, type);
       onProgress(`${type} page ${page}: ${cards.length} card(s)`);
-      if (cards.length === 0) break;
+      if (cards.length === 0) {
+        const reportedPages = parseTotalPages(html);
+        if (page === 1 && reportedPages > 1) {
+          throw new Error(
+            `Markup drift: ${type} page 1 parsed 0 cards but pagination reports ${reportedPages} pages`,
+          );
+        }
+        break;
+      }
 
       for (const card of cards) {
         if (!card.photoPath) {
@@ -83,6 +91,9 @@ export async function collectListing({
       page += 1;
       await sleepImpl(PAGE_DELAY_MS);
     }
+  }
+  if (animals.length === 0) {
+    throw new Error("No animals parsed from any listing — the site markup may have changed.");
   }
   return animals;
 }

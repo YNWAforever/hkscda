@@ -60,6 +60,26 @@ describe("collectListing", () => {
     expect(result[1].photoPath).toBe("/HKSCDA/b.jpeg");
   });
 
+  test("rejects when a species page 1 parses zero cards but pagination reports more pages", async () => {
+    const routes: Record<string, string> = {
+      "https://hkscda.com/animals/cat": `<a href="https://hkscda.com/animals/cat?page=2">2</a>`,
+      "https://hkscda.com/animals/dog": "",
+    };
+    await expect(
+      collectListing({ fetchImpl: fakeFetch(routes), sleepImpl: async () => {} }),
+    ).rejects.toThrow("Markup drift");
+  });
+
+  test("rejects when both listings parse zero cards", async () => {
+    const routes: Record<string, string> = {
+      "https://hkscda.com/animals/cat": "",
+      "https://hkscda.com/animals/dog": "",
+    };
+    await expect(
+      collectListing({ fetchImpl: fakeFetch(routes), sleepImpl: async () => {} }),
+    ).rejects.toThrow("No animals parsed");
+  });
+
   test("aborts when a detail-page fallback hits a Cloudflare challenge", async () => {
     const routes: Record<string, string> = {
       "https://hkscda.com/animals/cat": page2,
