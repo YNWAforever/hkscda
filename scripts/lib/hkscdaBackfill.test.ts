@@ -74,6 +74,20 @@ describe("runBackfill", () => {
     expect(result.manifest[0].image_url).toContain("hkscda/5309.jpg");
   });
 
+  test("an override match applies with status override", async () => {
+    const { deps, calls } = makeDeps();
+    const result = await runBackfill({
+      sourceList: [source({ name: "not in the database" })],
+      animals: [animal()],
+      overrides: new Map([[source().sourceId, "id-1"]]),
+      dryRun: false,
+      deps,
+    });
+    expect(result.manifest[0].status).toBe("override");
+    expect(calls.updates).toEqual(["id-1"]);
+    expect(result.manifest[0].image_url).toContain("hkscda/5309.jpg");
+  });
+
   test("a download failure is recorded as failed and does not throw", async () => {
     const { deps, calls } = makeDeps();
     deps.downloadPhoto = async () => {
@@ -88,6 +102,28 @@ describe("runBackfill", () => {
     expect(result.manifest[0].status).toBe("failed");
     expect(result.manifest[0].error).toBe("boom");
     expect(calls.updates).toEqual([]);
+  });
+
+  test("one failure does not abort the run", async () => {
+    const { deps, calls } = makeDeps();
+    deps.downloadPhoto = async (url: string) => {
+      if (url.includes("/HKSCDA/a.jpeg")) throw new Error("boom");
+      calls.downloads.push(url);
+      return { bytes: new Uint8Array([1, 2, 3]), contentType: "image/jpeg" };
+    };
+    const result = await runBackfill({
+      sourceList: [
+        source({ sourceId: "5309", name: "肥黑", photoPath: "/HKSCDA/a.jpeg" }),
+        source({ sourceId: "5310", name: "小白", photoPath: "/HKSCDA/b.jpeg" }),
+      ],
+      animals: [animal(), animal({ id: "id-2", name: "小白" })],
+      dryRun: false,
+      deps,
+    });
+    expect(result.manifest[0].status).toBe("failed");
+    expect(result.manifest[0].error).toBe("boom");
+    expect(result.manifest[1].status).toBe("applied");
+    expect(calls.updates).toContain("id-2");
   });
 
   test("an animal absent from the listing is reported as db-not-listed", async () => {
