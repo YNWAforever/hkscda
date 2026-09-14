@@ -264,6 +264,34 @@ describe("createContentHandlers", () => {
     });
   });
 
+  test("maps publish validation errors to a 400 with the offending field", async () => {
+    const service = createService({
+      async publishContent() {
+        throw new ContentValidationError([
+          { field: "summary", message: "Summary is required before publishing" },
+        ]);
+      },
+    });
+    const handlers = createContentHandlers({
+      requireContentAdmin: async () => admin,
+      service,
+    });
+
+    const response = await handlers.publishContent({
+      request: new Request(
+        "https://example.test/api/admin/content/99999999-aaaa-4333-8444-555555555555/publish",
+        {
+          method: "POST",
+        },
+      ),
+      params: { id: "99999999-aaaa-4333-8444-555555555555" },
+    });
+
+    const body = (await response.json()) as { issues: Array<{ field: string }> };
+    expect(response.status).toBe(400);
+    expect(body.issues[0]?.field).toBe("summary");
+  });
+
   test("maps zod errors to admin 400 responses", async () => {
     const service = createService({
       async createContent() {

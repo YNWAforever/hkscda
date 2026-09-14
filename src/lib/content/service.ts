@@ -431,6 +431,12 @@ export function createContentService({
     },
 
     async publishContent({ actorUserId, contentId, input }: ContentActionArgs) {
+      const draft = await repo.getAdminContent(contentId);
+      if (!draft) throw new Error("Content item not found");
+
+      const issues = validatePublishableContent(draft);
+      if (issues.length > 0) throw new ContentValidationError(issues);
+
       if (mediaLifecycle) {
         const result = await mediaLifecycle.publish({ actorUserId, contentId, input });
         const content = await repo.getAdminContent(contentId);
@@ -443,11 +449,10 @@ export function createContentService({
         if (!content) throw new Error("Content item not found");
         return { ...content, version: result.version, revisionId: result.revisionId };
       }
-      const content = await repo.getAdminContent(contentId);
-      if (!content) throw new Error("Content item not found");
 
-      const issues = validatePublishableContent(content);
-      if (issues.length > 0) throw new ContentValidationError(issues);
+      if (!draft.publishedAt) {
+        await repo.updateContent(contentId, { publishedAt: timestamp(now) });
+      }
 
       const published = await repo.publishContent(contentId);
       await audit({

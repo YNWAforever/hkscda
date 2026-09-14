@@ -1,6 +1,8 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, mock, test } from "bun:test";
 import { createContentService, type ContentRepository } from "./service";
 import type { ContentDetail, RecipientNotificationDraft, StoryUpdate } from "./types";
+
+type ContentService = ReturnType<typeof createContentService>;
 
 const storyUpdateId = "22222222-2222-4333-8444-555555555555";
 const missingStoryUpdateId = "33333333-3333-4333-8444-555555555555";
@@ -109,6 +111,28 @@ function createRepo(overrides: Partial<ContentRepository> = {}) {
   return { repo, auditLogs, socialCopies, notificationDrafts };
 }
 
+function buildService({
+  content,
+  mediaLifecycle,
+}: {
+  content?: Partial<ContentDetail>;
+  mediaLifecycle?: {
+    publish: (command: unknown) => Promise<{ version: number; revisionId: string }>;
+  };
+} = {}) {
+  const { repo } = createRepo({
+    getAdminContent: async () => ({ ...detail, ...content }),
+  });
+  const service: ContentService = createContentService({
+    repo,
+    publicBaseUrl: "https://example.test",
+    mediaLifecycle: mediaLifecycle as unknown as Parameters<
+      typeof createContentService
+    >[0]["mediaLifecycle"],
+  });
+  return { service, repo };
+}
+
 describe("createContentService", () => {
   test("rejects an explicit published status before creating content", async () => {
     let createCalled = false;
@@ -205,6 +229,75 @@ describe("createContentService", () => {
         entity_id: "content-1",
       }),
     );
+  });
+
+  test("publishContent returns field-level issues for an incomplete draft", async () => {
+    const publish = mock(async () => ({ version: 1, revisionId: "r1" }));
+    const { service } = buildService({
+      content: { summary: "", coverMediaId: null, coverImageUrl: null },
+      mediaLifecycle: { publish },
+    });
+
+    await expect(
+      service.publishContent({ actorUserId: "u1", contentId: "content-1", input: {} }),
+    ).rejects.toMatchObject({
+      name: "ContentValidationError",
+      issues: expect.arrayContaining([expect.objectContaining({ field: "summary" })]),
+    });
+    expect(publish).not.toHaveBeenCalled();
+  });
+
+  test("publishContent publishes a complete draft", async () => {
+    const publish = mock(async () => ({ version: 2, revisionId: "r2" }));
+    const { service } = buildService({
+      content: {},
+      mediaLifecycle: { publish },
+    });
+
+    await service.publishContent({ actorUserId: "u1", contentId: "content-1", input: {} });
+
+    expect(publish).toHaveBeenCalled();
+  });
+
+  test("sets published_at before a legacy publish that lacks it", async () => {
+    const updates: Parameters<ContentRepository["updateContent"]>[1][] = [];
+    const { repo } = createRepo({
+      getAdminContent: async () => ({ ...detail, publishedAt: null }),
+      updateContent: async (_id, input) => {
+        updates.push(input);
+        return { ...detail, publishedAt: input.publishedAt ?? null };
+      },
+    });
+    const publishedIds: string[] = [];
+    repo.publishContent = async (id) => {
+      publishedIds.push(id);
+      return { ...detail, status: "published" };
+    };
+    const service = createContentService({
+      repo,
+      publicBaseUrl: "https://example.test",
+      now: () => new Date("2026-07-06T00:00:00.000Z"),
+    });
+
+    await service.publishContent({ actorUserId: "admin-user", contentId: "content-1" });
+
+    expect(updates).toEqual([{ publishedAt: "2026-07-06T00:00:00.000Z" }]);
+    expect(publishedIds).toEqual(["content-1"]);
+  });
+
+  test("does not overwrite an existing published_at on a legacy publish", async () => {
+    let updateCalled = false;
+    const { repo } = createRepo({
+      updateContent: async () => {
+        updateCalled = true;
+        return detail;
+      },
+    });
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await service.publishContent({ actorUserId: "admin-user", contentId: "content-1" });
+
+    expect(updateCalled).toBe(false);
   });
 
   test("validates direct content updates that try to publish", async () => {

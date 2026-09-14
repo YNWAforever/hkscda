@@ -44,7 +44,8 @@ export function validatePublishableContent(content: ContentDetail): PublishValid
   if (blank(content.coverMediaId) && blank(content.coverImageUrl)) {
     issues.push({ field: "coverMediaId", message: "Cover image is required before publishing" });
   }
-  // publishedAt is intentionally not required: the publish function sets it.
+  // publishedAt is intentionally not required here: the publish RPC sets it, and
+  // the DB check constraint backstops any legacy fallback that skips it.
   if (content.type === "rescue_story") {
     if (!content.storyProfile) {
       issues.push({
