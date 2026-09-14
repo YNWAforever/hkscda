@@ -185,3 +185,31 @@ Gates before handoff: `bun test`, `bunx tsc --noEmit`, `bun run lint`.
 - A recurring sync; adding a `source_animal_id` column; backfilling exact legacy
   ids — revisit only if an exact key becomes available.
 - Scraping personality/health/story text (a separate content review decision).
+
+## Increment 2026-09-14 (post-run): downscale and overwrite re-run
+
+The first production run applied 189 photos. Eight failed: five sources exceeded
+the 8 MB bucket limit (8.4–10.3 MB), two listing/detail references 404 (the site
+stores a filename with no usable extension), and one card points at an `mp4`.
+
+Decision (approved by the user on 2026-09-14): downscale every re-hosted photo to
+a small web image and re-run the whole match set with an opt-in overwrite, rather
+than raising the bucket limit.
+
+- **New devDependency `sharp`.** Script-only; it is never imported by application
+  code, so it cannot reach the Vite bundle or a Vercel function.
+- **`scripts/lib/hkscdaImage.mjs`** — `downscalePhoto(buffer, { maxEdge = 1600,
+  quality = 80 })` returns `{ bytes, contentType: "image/jpeg" }` via
+  `rotate()` (EXIF) → `resize({ fit: "inside", withoutEnlargement: true })` →
+  `jpeg({ quality, mozjpeg: true })`. Verified: a 9 MB 4000×3000 source becomes
+  ~270 KB at 1200×1600.
+- **Applier** downscales each downloaded photo before upload. The storage key
+  stays deterministic (`hkscda/<sourceId>.jpg`), so re-runs overwrite the same
+  object and the DB `image_url` is unchanged for rows already pointing there.
+- **Overwrite mode.** `--overwrite` (only meaningful with `--apply --yes`) makes
+  the matcher stop skipping already-imaged animals and lets the DB update run on
+  rows that already have an `image_url`. This is a deliberate, explicit relaxation
+  of the "never overwrite" invariant: without the flag the original behaviour is
+  unchanged. Only the `image_url` column is ever written.
+- **Expected re-run result:** 224 applied, 3 unrecoverable (2 dead source
+  references, 1 video). The five formerly-oversized sources now fit.

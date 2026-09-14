@@ -1374,3 +1374,356 @@ Run: `bun run dev`, open `http://localhost:8080`, and confirm the `等待一個�
 - `tsconfig.json` excludes `scripts/`, so `bunx tsc --noEmit` will not check these files; rely on `bun test` and keep imports `.mjs`-suffixed.
 - Do not commit `data/hkscda-live.json` or the manifests — they are gitignored in Task 6.
 - Task 7 writes to the live production database. Do not run Step 4 without explicit user approval.
+
+---
+
+## Increment: downscale and overwrite re-run
+
+Context: the first production run applied 189 photos; 8 failed (5 over the 8 MB
+bucket limit, 2 dead source references, 1 `mp4`). The user approved downscaling
+every re-hosted photo to a small web image and re-running the whole match set with
+an opt-in overwrite. Spec: see the "Increment 2026-09-14 (post-run)" section of
+`docs/superpowers/specs/2026-09-14-hkscda-photo-backfill-design.md`.
+
+Global constraints for this increment:
+- `sharp` is a devDependency used only by `scripts/` code; it must never be imported from `src/`.
+- Downscale target: long edge `1600`, JPEG quality `80`, never enlarge, honour EXIF orientation.
+- Overwrite is opt-in via `--overwrite` and only takes effect with `--apply --yes`; the default never-overwrite behaviour must be unchanged.
+- Only the `image_url` column is ever written.
+
+### Task 8: Image downscaling module
+
+**Files:**
+- Create: `scripts/lib/hkscdaImage.mjs`
+- Test: `scripts/lib/hkscdaImage.test.ts`
+- Modify: `package.json` (add `sharp` devDependency)
+
+**Interfaces:**
+- Produces: `downscalePhoto(input: Buffer|Uint8Array, options?: { maxEdge?: number, quality?: number }): Promise<{ bytes: Buffer, contentType: "image/jpeg" }>`; `DEFAULT_MAX_EDGE = 1600`; `DEFAULT_QUALITY = 80`.
+
+- [ ] **Step 1: Add the dependency and write the failing test**
+
+Run: `bun add -d sharp`
+
+Create `scripts/lib/hkscdaImage.test.ts`:
+
+```ts
+import { describe, expect, test } from "bun:test";
+import sharp from "sharp";
+
+import { downscalePhoto } from "./hkscdaImage.mjs";
+
+async function makeImage(width: number, height: number) {
+  return await sharp({
+    create: { width, height, channels: 3, background: { r: 200, g: 100, b: 50 } },
+  })
+    .png()
+    .toBuffer();
+}
+
+describe("downscalePhoto", () => {
+  test("shrinks a large image to the long-edge cap and returns jpeg", async () => {
+    const input = await makeImage(3000, 2000);
+    const { bytes, contentType } = await downscalePhoto(input, { maxEdge: 1600 });
+    expect(contentType).toBe("image/jpeg");
+    const meta = await sharp(bytes).metadata();
+    expect(Math.max(meta.width ?? 0, meta.height ?? 0)).toBeLessThanOrEqual(1600);
+    expect(meta.format).toBe("jpeg");
+  });
+
+  test("does not enlarge a small image", async () => {
+    const input = await makeImage(100, 80);
+    const { bytes } = await downscalePhoto(input, { maxEdge: 1600 });
+    const meta = await sharp(bytes).metadata();
+    expect(`${meta.width}x${meta.height}`).toBe("100x80");
+  });
+
+  test("rejects an empty buffer", async () => {
+    await expect(downscalePhoto(Buffer.alloc(0))).rejects.toThrow("empty image");
+  });
+});
+```
+
+- [ ] **Step 2: Run the test to verify it fails**
+
+Run: `bun test scripts/lib/hkscdaImage.test.ts`
+Expected: FAIL — cannot resolve `./hkscdaImage.mjs`.
+
+- [ ] **Step 3: Write the implementation**
+
+Create `scripts/lib/hkscdaImage.mjs`:
+
+```js
+/**
+ * Pure image downscaling for the hkscda.com photo backfill.
+ * `sharp` is a dev-only dependency used by scripts; it is never imported by app code.
+ */
+import sharp from "sharp";
+
+export const DEFAULT_MAX_EDGE = 1600;
+export const DEFAULT_QUALITY = 80;
+
+export async function downscalePhoto(input, { maxEdge = DEFAULT_MAX_EDGE, quality = DEFAULT_QUALITY } = {}) {
+  if (!input || input.byteLength === 0) throw new Error("empty image buffer");
+  const bytes = await sharp(input)
+    .rotate()
+    .resize({ width: maxEdge, height: maxEdge, fit: "inside", withoutEnlargement: true })
+    .jpeg({ quality, mozjpeg: true })
+    .toBuffer();
+  return { bytes, contentType: "image/jpeg" };
+}
+```
+
+- [ ] **Step 4: Run the test to verify it passes**
+
+Run: `bun test scripts/lib/hkscdaImage.test.ts`
+Expected: PASS.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add package.json bun.lock scripts/lib/hkscdaImage.mjs scripts/lib/hkscdaImage.test.ts
+git commit -m "feat(scripts): add image downscaling for photo backfill"
+```
+
+### Task 9: Thread overwrite through the matcher and orchestration
+
+**Files:**
+- Modify: `scripts/lib/hkscdaMapping.mjs` (`matchSourceToAnimals` signature)
+- Modify: `scripts/lib/hkscdaBackfill.mjs` (`runBackfill` signature)
+- Test: `scripts/lib/hkscdaMapping.test.ts`, `scripts/lib/hkscdaBackfill.test.ts`
+
+**Interfaces:**
+- `matchSourceToAnimals(sourceList, animals, overrides = new Map(), options = {})` where `options.includeAlreadyImaged` (default `false`). When `true`, an already-imaged unique match or override resolves to `MATCHED`/`OVERRIDE` instead of `SKIPPED_ALREADY_IMAGED`.
+- `runBackfill({ sourceList, animals, overrides = new Map(), dryRun = true, overwrite = false, deps })` passes `{ includeAlreadyImaged: overwrite }` to the matcher. Default behaviour unchanged.
+
+- [ ] **Step 1: Write the failing tests**
+
+Add to `scripts/lib/hkscdaMapping.test.ts`:
+
+```ts
+test("includeAlreadyImaged matches an already-imaged unique record instead of skipping", () => {
+  const results = matchSourceToAnimals(
+    [source()],
+    [animal({ image_url: "https://x/y.jpg" })],
+    new Map(),
+    { includeAlreadyImaged: true },
+  );
+  expect(results[0].status).toBe(STATUS.MATCHED);
+  expect(results[0].animalId).toBe("id-1");
+});
+
+test("includeAlreadyImaged matches an already-imaged override", () => {
+  const results = matchSourceToAnimals(
+    [source()],
+    [animal({ id: "id-1", image_url: "https://x/y.jpg" })],
+    new Map([["5309", "id-1"]]),
+    { includeAlreadyImaged: true },
+  );
+  expect(results[0].status).toBe(STATUS.OVERRIDE);
+});
+```
+
+Add to `scripts/lib/hkscdaBackfill.test.ts`:
+
+```ts
+test("overwrite re-processes an already-imaged animal", async () => {
+  const { deps, calls } = makeDeps();
+  const result = await runBackfill({
+    sourceList: [source()],
+    animals: [animal({ image_url: "https://old/x.jpg" })],
+    dryRun: false,
+    overwrite: true,
+    deps,
+  });
+  expect(result.manifest[0].status).toBe("applied");
+  expect(calls.updates).toEqual(["id-1"]);
+});
+```
+
+- [ ] **Step 2: Run the tests to verify they fail**
+
+Run: `bun test scripts/lib/hkscdaMapping.test.ts scripts/lib/hkscdaBackfill.test.ts`
+Expected: FAIL — the `options` / `overwrite` arguments are ignored, so statuses are `skipped-already-imaged`.
+
+- [ ] **Step 3: Write the implementation**
+
+In `scripts/lib/hkscdaMapping.mjs`, change the signature and the two `hasImage` branches:
+
+```js
+export function matchSourceToAnimals(sourceList, animals, overrides = new Map(), options = {}) {
+  const { includeAlreadyImaged = false } = options;
+```
+
+Override branch:
+
+```js
+      } else if (hasImage(target) && !includeAlreadyImaged) {
+        results.push({ source, status: STATUS.SKIPPED_ALREADY_IMAGED, animalId: target.id });
+      } else {
+        results.push({ source, status: STATUS.OVERRIDE, animalId: target.id });
+      }
+```
+
+Unique-match branch:
+
+```js
+      results.push({
+        source,
+        status: hasImage(target) && !includeAlreadyImaged ? STATUS.SKIPPED_ALREADY_IMAGED : STATUS.MATCHED,
+        animalId: target.id,
+      });
+```
+
+In `scripts/lib/hkscdaBackfill.mjs`:
+
+```js
+export async function runBackfill({ sourceList, animals, overrides = new Map(), dryRun = true, overwrite = false, deps }) {
+  const results = matchSourceToAnimals(sourceList, animals, overrides, { includeAlreadyImaged: overwrite });
+```
+
+- [ ] **Step 4: Run the tests to verify they pass**
+
+Run: `bun test scripts/lib/hkscdaMapping.test.ts scripts/lib/hkscdaBackfill.test.ts`
+Expected: PASS.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add scripts/lib/hkscdaMapping.mjs scripts/lib/hkscdaBackfill.mjs scripts/lib/hkscdaMapping.test.ts scripts/lib/hkscdaBackfill.test.ts
+git commit -m "feat(scripts): allow opt-in overwrite in photo backfill matching"
+```
+
+### Task 10: Downscale and `--overwrite` in the applier CLI
+
+**Files:**
+- Modify: `scripts/apply-hkscda-photos.mjs`
+- Test: `scripts/apply-hkscda-photos.test.ts`
+
+**Interfaces:**
+- Consumes: `downscalePhoto` from `./lib/hkscdaImage.mjs`.
+- Produces: `parseArgs(argv) => { apply, yes, overwrite }`.
+
+- [ ] **Step 1: Write the failing test**
+
+Add to `scripts/apply-hkscda-photos.test.ts` inside the `parseArgs` describe:
+
+```ts
+  test("recognises --overwrite", () => {
+    expect(parseArgs(["--apply", "--yes", "--overwrite"])).toEqual({
+      apply: true,
+      yes: true,
+      overwrite: true,
+    });
+  });
+```
+
+- [ ] **Step 2: Run the test to verify it fails**
+
+Run: `bun test scripts/apply-hkscda-photos.test.ts`
+Expected: FAIL — `parseArgs` returns no `overwrite` key (`undefined`).
+
+- [ ] **Step 3: Write the implementation**
+
+In `scripts/apply-hkscda-photos.mjs`:
+
+Add the import:
+
+```js
+import { downscalePhoto } from "./lib/hkscdaImage.mjs";
+```
+
+Change `parseArgs`:
+
+```js
+export function parseArgs(argv) {
+  return {
+    apply: argv.includes("--apply"),
+    yes: argv.includes("--yes"),
+    overwrite: argv.includes("--overwrite"),
+  };
+}
+```
+
+In `main`, read `overwrite` and pass it to both `runBackfill` calls:
+
+```js
+  const { apply, yes, overwrite } = parseArgs(process.argv.slice(2));
+```
+
+```js
+  const plan = await runBackfill({ sourceList, animals: animals ?? [], overrides, dryRun: true, overwrite, deps });
+```
+
+```js
+  const result = dryRun
+    ? plan
+    : await runBackfill({ sourceList, animals: animals ?? [], overrides, dryRun: false, overwrite, deps });
+```
+
+Downscale in the real download dependency (keep the pacing `finally`):
+
+```js
+    downloadPhoto: async (url) => {
+      try {
+        const download = await downloadPhoto(fetch, url);
+        return await downscalePhoto(download.bytes);
+      } finally {
+        await sleep(DOWNLOAD_DELAY_MS);
+      }
+    },
+```
+
+Update `setImageUrl` so overwrite removes the null guard:
+
+```js
+    async setImageUrl(animalId, url) {
+      let query = supabase.from("animals").update({ image_url: url }).eq("id", animalId);
+      if (!overwrite) query = query.is("image_url", null);
+      const { data, error: updateError } = await query.select("id");
+      if (updateError) throw updateError;
+      if (!data || data.length === 0) {
+        throw new Error(`animal ${animalId} was not updated (already has an image or no longer exists)`);
+      }
+    },
+```
+
+Also update the `Mode:` line so the operator sees overwrite is active:
+
+```js
+  console.log(dryRun ? "Mode: DRY RUN — no changes will be made.\n" : `Mode: APPLY${overwrite ? " (OVERWRITE)" : ""} — writing to Supabase.\n`);
+```
+
+- [ ] **Step 4: Run the test to verify it passes**
+
+Run: `bun test scripts/apply-hkscda-photos.test.ts`
+Expected: PASS.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add scripts/apply-hkscda-photos.mjs scripts/apply-hkscda-photos.test.ts
+git commit -m "feat(scripts): downscale photos and add overwrite re-run"
+```
+
+### Task 11: Downscale overwrite re-run against production (operational, requires explicit approval)
+
+- [ ] **Step 1: Dry-run with overwrite**
+
+Run: `bun run backfill:animal-photos --overwrite`
+Expected: `Mode: DRY RUN`, `Planned:` shows ~224 to apply (all live matches including already-imaged), 3 unmatched-live-equivalent failures expected only at apply time.
+
+- [ ] **Step 2: Apply**
+
+Run: `bun run backfill:animal-photos --apply --yes --overwrite`
+Expected: `Mode: APPLY (OVERWRITE)`; `applied` ≈ 224, `failed` = 3 (2 dead references, 1 video).
+
+- [ ] **Step 3: Verify**
+
+Spot-check a replaced URL is now small (`Content-Length` well under 1 MB) and returns `image/jpeg`; re-check the deployed homepage still shows `animal-images` references with no placeholders.
+
+## Increment self-review
+
+- Spec increment requirements (sharp dev-only, 1600/80, opt-in overwrite, only `image_url` written) → Tasks 8, 9, 10, 11.
+- No placeholders: every step contains full code and expected output.
+- Type consistency: `downscalePhoto`, `parseArgs`, `runBackfill({ overwrite })`, `matchSourceToAnimals(..., { includeAlreadyImaged })` are named identically across tasks.
