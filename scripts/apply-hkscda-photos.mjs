@@ -64,6 +64,10 @@ export async function downloadPhoto(fetchImpl, url) {
   if (!contentType.startsWith("image/")) {
     throw new Error(`not an image (${contentType || "no content-type"}) for ${url}`);
   }
+  const contentLength = res.headers.get("content-length");
+  if (contentLength != null && Number(contentLength) > MAX_BYTES) {
+    throw new Error(`image too large (${contentLength} bytes) for ${url}`);
+  }
   const buffer = Buffer.from(await res.arrayBuffer());
   if (buffer.byteLength > MAX_BYTES) {
     throw new Error(`image too large (${buffer.byteLength} bytes) for ${url}`);
@@ -151,13 +155,25 @@ async function main() {
     },
   };
 
-  const { manifest, dbNotListed, summary } = await runBackfill({
+  const plan = await runBackfill({
     sourceList,
     animals: animals ?? [],
     overrides,
-    dryRun,
+    dryRun: true,
     deps,
   });
+  console.log(
+    `Planned: ${plan.summary["pending-apply"] ?? 0} to apply, ` +
+      `${plan.summary["skipped-already-imaged"] ?? 0} already imaged, ` +
+      `${plan.summary.ambiguous ?? 0} ambiguous, ` +
+      `${plan.summary["unmatched-live"] ?? 0} unmatched-live, ` +
+      `${plan.dbNotListed.length} db-not-listed.`,
+  );
+
+  const result = dryRun
+    ? plan
+    : await runBackfill({ sourceList, animals: animals ?? [], overrides, dryRun: false, deps });
+  const { manifest, dbNotListed, summary } = result;
 
   await fs.mkdir(path.dirname(MANIFEST_JSON), { recursive: true });
   await fs.writeFile(MANIFEST_JSON, `${JSON.stringify({ dryRun, summary, manifest, dbNotListed }, null, 2)}\n`, "utf8");
