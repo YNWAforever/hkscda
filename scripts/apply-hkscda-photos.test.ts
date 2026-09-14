@@ -4,9 +4,17 @@ import { checkRunGuard, downloadPhoto, parseArgs, toCsv } from "./apply-hkscda-p
 
 describe("parseArgs", () => {
   test("defaults to dry-run and requires both flags to write", () => {
-    expect(parseArgs([])).toEqual({ apply: false, yes: false });
-    expect(parseArgs(["--apply"])).toEqual({ apply: true, yes: false });
-    expect(parseArgs(["--apply", "--yes"])).toEqual({ apply: true, yes: true });
+    expect(parseArgs([])).toEqual({ apply: false, yes: false, overwrite: false });
+    expect(parseArgs(["--apply"])).toEqual({ apply: true, yes: false, overwrite: false });
+    expect(parseArgs(["--apply", "--yes"])).toEqual({ apply: true, yes: true, overwrite: false });
+  });
+
+  test("recognises --overwrite", () => {
+    expect(parseArgs(["--apply", "--yes", "--overwrite"])).toEqual({
+      apply: true,
+      yes: true,
+      overwrite: true,
+    });
   });
 });
 

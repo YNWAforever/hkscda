@@ -19,6 +19,7 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { runBackfill } from "./lib/hkscdaBackfill.mjs";
+import { downscalePhoto } from "./lib/hkscdaImage.mjs";
 import { extractProjectRef, PRODUCTION_PROJECT_REF } from "./seed-admin.js";
 
 const LIVE_FILE = path.join("data", "hkscda-live.json");
@@ -43,7 +44,11 @@ function readEnv() {
 }
 
 export function parseArgs(argv) {
-  return { apply: argv.includes("--apply"), yes: argv.includes("--yes") };
+  return {
+    apply: argv.includes("--apply"),
+    yes: argv.includes("--yes"),
+    overwrite: argv.includes("--overwrite"),
+  };
 }
 
 export function checkRunGuard({ dryRun, yes }) {
@@ -112,7 +117,7 @@ async function loadOverrides() {
 }
 
 async function main() {
-  const { apply, yes } = parseArgs(process.argv.slice(2));
+  const { apply, yes, overwrite } = parseArgs(process.argv.slice(2));
   const dryRun = !apply;
 
   const guard = checkRunGuard({ dryRun, yes });
@@ -134,7 +139,7 @@ async function main() {
   }
   const projectRef = extractProjectRef(supabaseUrl);
   console.log(`Target project: ${projectRef}${projectRef === PRODUCTION_PROJECT_REF ? " (PRODUCTION)" : ""}`);
-  console.log(dryRun ? "Mode: DRY RUN — no changes will be made.\n" : "Mode: APPLY — writing to Supabase.\n");
+  console.log(dryRun ? "Mode: DRY RUN — no changes will be made.\n" : `Mode: APPLY${overwrite ? " (OVERWRITE)" : ""} — writing to Supabase.\n`);
 
   const sourceList = JSON.parse(await fs.readFile(LIVE_FILE, "utf8"));
   const overrides = await loadOverrides();
@@ -154,7 +159,8 @@ async function main() {
   const deps = {
     downloadPhoto: async (url) => {
       try {
-        return await downloadPhoto(fetch, url);
+        const download = await downloadPhoto(fetch, url);
+        return await downscalePhoto(download.bytes);
       } finally {
         await sleep(DOWNLOAD_DELAY_MS);
       }
@@ -168,15 +174,12 @@ async function main() {
       return data.publicUrl;
     },
     async setImageUrl(animalId, url) {
-      const { data, error: updateError } = await supabase
-        .from("animals")
-        .update({ image_url: url })
-        .eq("id", animalId)
-        .is("image_url", null)
-        .select("id");
+      let query = supabase.from("animals").update({ image_url: url }).eq("id", animalId);
+      if (!overwrite) query = query.is("image_url", null);
+      const { data, error: updateError } = await query.select("id");
       if (updateError) throw updateError;
       if (!data || data.length === 0) {
-        throw new Error(`animal ${animalId} already has an image or no longer exists`);
+        throw new Error(`animal ${animalId} was not updated (already has an image or no longer exists)`);
       }
     },
   };
@@ -186,6 +189,7 @@ async function main() {
     animals: animals ?? [],
     overrides,
     dryRun: true,
+    overwrite,
     deps,
   });
   console.log(
@@ -198,7 +202,7 @@ async function main() {
 
   const result = dryRun
     ? plan
-    : await runBackfill({ sourceList, animals: animals ?? [], overrides, dryRun: false, deps });
+    : await runBackfill({ sourceList, animals: animals ?? [], overrides, dryRun: false, overwrite, deps });
   const { manifest, dbNotListed, summary } = result;
 
   await fs.mkdir(path.dirname(MANIFEST_JSON), { recursive: true });
