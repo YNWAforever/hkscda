@@ -30,6 +30,8 @@ const MAX_PAGES = 30;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+export class ChallengeError extends Error {}
+
 export async function fetchHtml(fetchImpl, url, type) {
   const res = await fetchImpl(url, {
     headers: {
@@ -40,7 +42,7 @@ export async function fetchHtml(fetchImpl, url, type) {
   });
   if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
   const html = await res.text();
-  if (looksLikeChallenge(html)) throw new Error(`Cloudflare challenge at ${url}`);
+  if (looksLikeChallenge(html)) throw new ChallengeError(`Cloudflare challenge at ${url}`);
   return html;
 }
 
@@ -67,7 +69,8 @@ export async function collectListing({
           try {
             const detailHtml = await fetchHtml(fetchImpl, `${origin}/animal/id/${card.sourceId}`, type);
             card.photoPath = parseDetailHtml(detailHtml).photoPath;
-          } catch {
+          } catch (error) {
+            if (error instanceof ChallengeError) throw error;
             // Leave null; the applier reports it rather than failing the run.
           }
           await sleepImpl(PAGE_DELAY_MS);

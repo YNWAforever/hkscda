@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import { collectListing, fetchHtml } from "./scrape-hkscda-listing.mjs";
+import { ChallengeError, collectListing, fetchHtml } from "./scrape-hkscda-listing.mjs";
 
 const page1 = `
 <a href="/animal/id/1" class="animal card d-block">
@@ -58,5 +58,16 @@ describe("collectListing", () => {
     expect(result.map((a) => a.sourceId)).toEqual(["1", "2"]);
     expect(result[0].photoPath).toBe("/HKSCDA/a.jpeg");
     expect(result[1].photoPath).toBe("/HKSCDA/b.jpeg");
+  });
+
+  test("aborts when a detail-page fallback hits a Cloudflare challenge", async () => {
+    const routes: Record<string, string> = {
+      "https://hkscda.com/animals/cat": page2,
+      "https://hkscda.com/animals/dog": "",
+      "https://hkscda.com/animal/id/2": "cf-chl",
+    };
+    await expect(
+      collectListing({ fetchImpl: fakeFetch(routes), sleepImpl: async () => {} }),
+    ).rejects.toThrow(ChallengeError);
   });
 });
