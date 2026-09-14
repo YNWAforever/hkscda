@@ -117,6 +117,30 @@ const toneMap: Record<ReturnType<typeof contentStatusTone>, StatusTone> = {
   muted: "neutral",
 };
 
+export type AdopterDraftNotice = {
+  created: number;
+  warning: string | null;
+};
+
+export function formatAdopterDraftNotice(
+  drafts: AdopterDraftNotice | null | undefined,
+): string | null {
+  if (!drafts) return null;
+  return drafts.warning ?? `已建立 ${drafts.created} 份通知草稿`;
+}
+
+export function StoryUpdateDraftNotice({ notice }: { notice: string | null }) {
+  if (!notice) return null;
+  return (
+    <p
+      role="status"
+      className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3 text-sm"
+    >
+      {notice}
+    </p>
+  );
+}
+
 const DirtyContext = createContext<(panel: string, dirty: boolean) => void>(() => undefined);
 function useDirtyPanel(panel: string) {
   const report = useContext(DirtyContext);
@@ -164,6 +188,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
   const [pendingCopyId, setPendingCopyId] = useState<string | null>(null);
   const [pendingDraftId, setPendingDraftId] = useState<string | null>(null);
   const [generatingUpdateId, setGeneratingUpdateId] = useState<string | null>(null);
+  const [updateDraftNotice, setUpdateDraftNotice] = useState<string | null>(null);
 
   const contentQuery = useQuery({
     queryKey: ["admin-content-detail", contentId, historyPage],
@@ -202,6 +227,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
       dirtyVersions.current = {};
       setResetKey((value) => value + 1);
       setComparison(undefined);
+      setUpdateDraftNotice(null);
       updateContent.reset();
       publishContent.reset();
       archiveContent.reset();
@@ -281,15 +307,20 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
 
   const createStoryUpdate = useMutation({
     mutationFn: (body: StoryUpdateFormState) =>
-      fetchAdminJson<{ id: string }>(`/api/admin/content/${contentId}/updates`, {
-        method: "POST",
-        body: JSON.stringify({
-          ...normalizeStoryUpdateForm(body),
-          expectedVersion: expectedFor("update"),
-        }),
-      }),
-    onSuccess: () =>
-      void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] }),
+      fetchAdminJson<{ id: string; notificationDrafts?: AdopterDraftNotice }>(
+        `/api/admin/content/${contentId}/updates`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            ...normalizeStoryUpdateForm(body),
+            expectedVersion: expectedFor("update"),
+          }),
+        },
+      ),
+    onSuccess: (result) => {
+      setUpdateDraftNotice(formatAdopterDraftNotice(result.notificationDrafts));
+      void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] });
+    },
   });
 
   const createContentMedia = useMutation({
@@ -524,6 +555,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
           下一頁紀錄
         </button>
       </nav>
+      <StoryUpdateDraftNotice notice={updateDraftNotice} />
       <ContentRevisionPanel
         content={content}
         disabled={editorActionPending || hasDirty || conflict}

@@ -204,6 +204,44 @@ describe("ContentEditor", () => {
   });
 });
 
+describe("ContentEditor adopter draft notice", () => {
+  test("shows 已建立 2 份通知草稿 after saving an update with the toggle on", async () => {
+    const { formatAdopterDraftNotice, StoryUpdateDraftNotice } = await import("./ContentEditor");
+    const savedUpdate = { id: "u1", notificationDrafts: { created: 2, warning: null } };
+
+    const notice = formatAdopterDraftNotice(savedUpdate.notificationDrafts);
+
+    expect(notice).toBe("已建立 2 份通知草稿");
+    expect(renderToStaticMarkup(<StoryUpdateDraftNotice notice={notice} />)).toContain(
+      "已建立 2 份通知草稿",
+    );
+  });
+
+  test("shows the warning text instead of a count when draft generation warns", async () => {
+    const { formatAdopterDraftNotice } = await import("./ContentEditor");
+
+    expect(
+      formatAdopterDraftNotice({ created: 0, warning: "沒有可聯絡的領養者，已略過通知草稿。" }),
+    ).toBe("沒有可聯絡的領養者，已略過通知草稿。");
+  });
+
+  test("shows no notice when the update response carries no draft result", async () => {
+    const { formatAdopterDraftNotice } = await import("./ContentEditor");
+
+    expect(formatAdopterDraftNotice(undefined)).toBeNull();
+    expect(formatAdopterDraftNotice(null)).toBeNull();
+  });
+
+  test("renders the notice with a status role", async () => {
+    const { StoryUpdateDraftNotice } = await import("./ContentEditor");
+
+    const markup = renderToStaticMarkup(<StoryUpdateDraftNotice notice="已建立 2 份通知草稿" />);
+
+    expect(markup).toContain('role="status"');
+    expect(markup).toContain("已建立 2 份通知草稿");
+  });
+});
+
 describe("createContentMediaWithUpload", () => {
   function mediaForm(file: File) {
     return {
