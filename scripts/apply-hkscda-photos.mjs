@@ -27,6 +27,7 @@ const OVERRIDES_FILE = path.join("scripts", "hkscda-photo-overrides.json");
 const MANIFEST_JSON = path.join("data", "hkscda-photo-manifest.json");
 const MANIFEST_CSV = path.join("data", "hkscda-photo-manifest.csv");
 const MAX_BYTES = 8 * 1024 * 1024;
+const UPLOAD_INPUT_MAX_BYTES = 50 * 1024 * 1024;
 const DOWNLOAD_DELAY_MS = 400;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -59,7 +60,11 @@ export function checkRunGuard({ dryRun, yes }) {
   return null;
 }
 
-export async function downloadPhoto(fetchImpl, url, { retries = 1, sleepImpl = sleep } = {}) {
+export async function downloadPhoto(
+  fetchImpl,
+  url,
+  { retries = 1, sleepImpl = sleep, maxBytes = MAX_BYTES } = {},
+) {
   for (let attempt = 0; ; attempt += 1) {
     let res;
     try {
@@ -89,14 +94,28 @@ export async function downloadPhoto(fetchImpl, url, { retries = 1, sleepImpl = s
       throw new Error(`not an image (${contentType || "no content-type"}) for ${url}`);
     }
     const contentLength = res.headers.get("content-length");
-    if (contentLength != null && Number(contentLength) > MAX_BYTES) {
+    if (contentLength != null && Number(contentLength) > maxBytes) {
       throw new Error(`image too large (${contentLength} bytes) for ${url}`);
     }
     const buffer = Buffer.from(await res.arrayBuffer());
-    if (buffer.byteLength > MAX_BYTES) {
+    if (buffer.byteLength > maxBytes) {
       throw new Error(`image too large (${buffer.byteLength} bytes) for ${url}`);
     }
     return { bytes: buffer, contentType };
+  }
+}
+
+export async function preparePhotoForUpload(
+  download,
+  { downscaleImpl = downscalePhoto, maxBytes = MAX_BYTES } = {},
+) {
+  try {
+    return await downscaleImpl(download.bytes);
+  } catch (error) {
+    if (download.bytes.byteLength <= maxBytes) {
+      return { bytes: download.bytes, contentType: download.contentType };
+    }
+    throw error;
   }
 }
 
@@ -159,8 +178,8 @@ async function main() {
   const deps = {
     downloadPhoto: async (url) => {
       try {
-        const download = await downloadPhoto(fetch, url);
-        return await downscalePhoto(download.bytes);
+        const download = await downloadPhoto(fetch, url, { maxBytes: UPLOAD_INPUT_MAX_BYTES });
+        return await preparePhotoForUpload(download);
       } finally {
         await sleep(DOWNLOAD_DELAY_MS);
       }

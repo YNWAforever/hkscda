@@ -1,6 +1,12 @@
 import { describe, expect, test } from "bun:test";
 
-import { checkRunGuard, downloadPhoto, parseArgs, toCsv } from "./apply-hkscda-photos.mjs";
+import {
+  checkRunGuard,
+  downloadPhoto,
+  parseArgs,
+  preparePhotoForUpload,
+  toCsv,
+} from "./apply-hkscda-photos.mjs";
 
 describe("parseArgs", () => {
   test("defaults to dry-run and requires both flags to write", () => {
@@ -109,6 +115,85 @@ describe("downloadPhoto", () => {
     expect(result.bytes.byteLength).toBe(size);
   });
 
+  test("accepts a body larger than 8 MB when a custom maxBytes is raised", async () => {
+    const body = new Uint8Array(200);
+    const fetchImpl = async () => ({
+      ok: true,
+      status: 200,
+      headers: {
+        get: (h: string) => {
+          const key = h.toLowerCase();
+          if (key === "content-type") return "image/jpeg";
+          if (key === "content-length") return String(body.byteLength);
+          return null;
+        },
+      },
+      arrayBuffer: async () => body.buffer,
+    });
+    const result = await downloadPhoto(fetchImpl as never, "https://hkscda.com/large.jpeg", {
+      maxBytes: 50 * 1024 * 1024,
+    });
+    expect(result.bytes.byteLength).toBe(200);
+  });
+
+  test("rejects a body over a custom maxBytes alongside a smaller one that fits", async () => {
+    const body = new Uint8Array(200);
+    const fetchImpl = async () => ({
+      ok: true,
+      status: 200,
+      headers: {
+        get: (h: string) => {
+          const key = h.toLowerCase();
+          if (key === "content-type") return "image/jpeg";
+          if (key === "content-length") return String(body.byteLength);
+          return null;
+        },
+      },
+      arrayBuffer: async () => body.buffer,
+    });
+    const small = new Uint8Array(50);
+    const smallFetch = async () => ({
+      ok: true,
+      status: 200,
+      headers: {
+        get: (h: string) => {
+          const key = h.toLowerCase();
+          if (key === "content-type") return "image/jpeg";
+          if (key === "content-length") return String(small.byteLength);
+          return null;
+        },
+      },
+      arrayBuffer: async () => small.buffer,
+    });
+    const accepted = await downloadPhoto(smallFetch as never, "https://hkscda.com/small.jpeg", {
+      maxBytes: 100,
+    });
+    expect(accepted.bytes.byteLength).toBe(50);
+    await expect(
+      downloadPhoto(fetchImpl as never, "https://hkscda.com/big.jpeg", { maxBytes: 100 }),
+    ).rejects.toThrow("image too large");
+  });
+
+  test("rejects a body over the default 8 MB cap", async () => {
+    const size = 8 * 1024 * 1024 + 1;
+    const fetchImpl = async () => ({
+      ok: true,
+      status: 200,
+      headers: {
+        get: (h: string) => {
+          const key = h.toLowerCase();
+          if (key === "content-type") return "image/jpeg";
+          if (key === "content-length") return String(size);
+          return null;
+        },
+      },
+      arrayBuffer: async () => new Uint8Array(size).buffer,
+    });
+    await expect(downloadPhoto(fetchImpl as never, "https://hkscda.com/big.jpeg")).rejects.toThrow(
+      "image too large",
+    );
+  });
+
   test("retries once on a 500 and then succeeds", async () => {
     let calls = 0;
     const fetchImpl = async () => {
@@ -170,6 +255,46 @@ describe("downloadPhoto", () => {
       }),
     ).rejects.toThrow("HTTP 404");
     expect(calls).toBe(1);
+  });
+});
+
+describe("preparePhotoForUpload", () => {
+  test("returns the downscaled result when the downscaler succeeds", async () => {
+    const downscaled = { bytes: Buffer.from([9, 9]), contentType: "image/webp" };
+    const result = await preparePhotoForUpload(
+      { bytes: Buffer.from([1, 2, 3]), contentType: "image/jpeg" },
+      { downscaleImpl: async () => downscaled },
+    );
+    expect(result).toBe(downscaled);
+  });
+
+  test("falls back to the original bytes when the downscaler throws and the original fits", async () => {
+    const bytes = Buffer.from([1, 2, 3]);
+    const result = await preparePhotoForUpload(
+      { bytes, contentType: "image/jpeg" },
+      {
+        downscaleImpl: async () => {
+          throw new Error("VipsJpeg: Invalid SOS parameters");
+        },
+        maxBytes: 100,
+      },
+    );
+    expect(result).toEqual({ bytes, contentType: "image/jpeg" });
+  });
+
+  test("rethrows when the downscaler throws and the original exceeds maxBytes", async () => {
+    const bytes = Buffer.alloc(200, 1);
+    await expect(
+      preparePhotoForUpload(
+        { bytes, contentType: "image/jpeg" },
+        {
+          downscaleImpl: async () => {
+            throw new Error("VipsJpeg: Invalid SOS parameters");
+          },
+          maxBytes: 100,
+        },
+      ),
+    ).rejects.toThrow("VipsJpeg: Invalid SOS parameters");
   });
 });
 
