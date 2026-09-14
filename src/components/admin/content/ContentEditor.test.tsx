@@ -205,7 +205,7 @@ describe("ContentEditor", () => {
 });
 
 describe("ContentEditor adopter draft notice", () => {
-  test("shows 已建立 2 份通知草稿 after saving an update with the toggle on", async () => {
+  test("maps a saved update's draft result to 已建立 2 份通知草稿 and renders it as a status", async () => {
     const { formatAdopterDraftNotice, StoryUpdateDraftNotice } = await import("./ContentEditor");
     const savedUpdate = { id: "u1", notificationDrafts: { created: 2, warning: null } };
 
@@ -230,6 +230,7 @@ describe("ContentEditor adopter draft notice", () => {
 
     expect(formatAdopterDraftNotice(undefined)).toBeNull();
     expect(formatAdopterDraftNotice(null)).toBeNull();
+    expect(formatAdopterDraftNotice({ created: 0, warning: null })).toBeNull();
   });
 
   test("renders the notice with a status role", async () => {

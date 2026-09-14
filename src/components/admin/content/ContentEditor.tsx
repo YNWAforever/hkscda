@@ -126,7 +126,9 @@ export function formatAdopterDraftNotice(
   drafts: AdopterDraftNotice | null | undefined,
 ): string | null {
   if (!drafts) return null;
-  return drafts.warning ?? `已建立 ${drafts.created} 份通知草稿`;
+  if (drafts.warning) return drafts.warning;
+  if (drafts.created === 0) return null;
+  return `已建立 ${drafts.created} 份通知草稿`;
 }
 
 export function StoryUpdateDraftNotice({ notice }: { notice: string | null }) {
@@ -189,6 +191,12 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
   const [pendingDraftId, setPendingDraftId] = useState<string | null>(null);
   const [generatingUpdateId, setGeneratingUpdateId] = useState<string | null>(null);
   const [updateDraftNotice, setUpdateDraftNotice] = useState<string | null>(null);
+
+  // TanStack Router keeps this component mounted when only the `contentId`
+  // param changes, so a stale draft notice must be cleared on id change.
+  useEffect(() => {
+    setUpdateDraftNotice(null);
+  }, [contentId]);
 
   const contentQuery = useQuery({
     queryKey: ["admin-content-detail", contentId, historyPage],
