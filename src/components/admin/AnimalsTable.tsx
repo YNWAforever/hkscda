@@ -2,7 +2,14 @@ import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { supabase } from "../../lib/supabase";
-import { filterAdminAnimals, isArchivedAnimal } from "../../lib/animals/adminSearch";
+import { isArchivedAnimal } from "../../lib/animals/adminSearch";
+import {
+  getAnimalListPage,
+  updateAnimalListFilters,
+  animalListStatuses,
+  animalListDefaults,
+  type AnimalListState,
+} from "../../lib/animals/adminListState";
 import { needsSpeciesVerification } from "../../lib/animals/adminCatalogue";
 import type { Animal, AnimalPublicationState } from "../../types/animal";
 import { DataTable, type DataTableColumn } from "./DataTable";
@@ -11,6 +18,8 @@ import { useAdminLanguage } from "./adminI18n";
 
 interface AnimalsTableProps {
   animals: Animal[];
+  state: AnimalListState;
+  onStateChange: (state: AnimalListState) => void;
   onDeleted: () => void;
 }
 
@@ -56,10 +65,39 @@ function AnimalAvatar({ animal }: { animal: Animal }) {
   );
 }
 
-export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
+export function AnimalsTable({ animals, onDeleted, state, onStateChange }: AnimalsTableProps) {
   const { copy } = useAdminLanguage();
-  const [search, setSearch] = useState("");
-  const [includeArchived, setIncludeArchived] = useState(false);
+  const { language } = useAdminLanguage();
+  const text =
+    language === "zh"
+      ? {
+          search: "搜尋名稱或編號",
+          archived: "顯示已封存記錄",
+          all: "所有狀態",
+          clear: "清除篩選",
+          empty: "此分類尚未有動物記錄。",
+          noResults: "沒有符合篩選的動物。",
+          previous: "上一頁",
+          next: "下一頁",
+          page: "頁",
+          total: "筆記錄",
+          pagination: "動物列表分頁",
+        }
+      : {
+          search: "Search name or reference",
+          archived: "Include archived records",
+          all: "All statuses",
+          clear: "Clear filters",
+          empty: "No animal records in this category yet.",
+          noResults: "No animals match these filters.",
+          previous: "Previous",
+          next: "Next",
+          page: "Page",
+          total: "records",
+          pagination: "Animal list pagination",
+        };
+  const changeFilters = (filters: Partial<Omit<AnimalListState, "page">>) =>
+    onStateChange(updateAnimalListFilters(state, filters));
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -67,7 +105,8 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
   // animal's own public page found nothing. Archived records are excluded by
   // default but stay reachable through the toggle: a retired animal still needs
   // correcting, and its applications and sponsorships still point at it.
-  const filtered = filterAdminAnimals(animals, search, { includeArchived });
+  const list = getAnimalListPage(animals, state);
+  const filtered = list.filtered;
   const archivedCount = animals.filter(isArchivedAnimal).length;
   // Species must be cat or dog. These still carry the legacy 'sponsor'
   // placeholder and need a human to say which -- it cannot be derived, and
@@ -109,18 +148,18 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
 
   function AnimalActions({ animal }: { animal: Animal }) {
     return (
-      <div className="flex gap-3">
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
         <Link
           to="/admin/coordinator/animals"
           search={{ animalId: animal.id }}
-          className="text-xs text-[var(--color-primary)] hover:underline"
+          className="inline-flex min-h-11 items-center px-1 text-xs text-[var(--color-primary)] hover:underline"
         >
           {copy.common.workflow}
         </Link>
         <Link
           to="/admin/animals/$id/edit"
           params={{ id: animal.id }}
-          className="text-xs text-[var(--color-panel)] hover:underline"
+          className="inline-flex min-h-11 items-center px-1 text-xs text-[var(--color-panel)] hover:underline"
         >
           {copy.common.edit}
         </Link>
@@ -128,23 +167,23 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
           <button
             type="button"
             onClick={() => handleArchive(animal.id, true)}
-            className="text-xs text-[var(--color-primary)] hover:underline"
+            className="inline-flex min-h-11 items-center px-1 text-xs text-[var(--color-primary)] hover:underline"
           >
             取消封存
           </button>
         ) : confirmDelete === animal.id ? (
-          <span className="flex gap-2 text-xs">
+          <span className="flex flex-wrap items-center gap-2 text-xs">
             <button
               type="button"
               onClick={() => handleArchive(animal.id, false)}
-              className="text-[var(--color-error)] hover:underline"
+              className="inline-flex min-h-11 items-center px-1 text-[var(--color-error)] hover:underline"
             >
               {copy.common.confirm}
             </button>
             <button
               type="button"
               onClick={() => setConfirmDelete(null)}
-              className="text-[var(--color-text-muted)] hover:underline"
+              className="inline-flex min-h-11 items-center px-1 text-[var(--color-text-muted)] hover:underline"
             >
               {copy.common.cancel}
             </button>
@@ -153,7 +192,7 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
           <button
             type="button"
             onClick={() => setConfirmDelete(animal.id)}
-            className="text-xs text-[var(--color-error)] hover:underline"
+            className="inline-flex min-h-11 items-center px-1 text-xs text-[var(--color-error)] hover:underline"
             title="封存後不會在公開網站或預設列表顯示，但所有領養、助養及內部記錄會保留。"
           >
             封存
@@ -217,21 +256,46 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-4">
         <input
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          placeholder="搜尋名稱或編號"
-          aria-label="搜尋名稱或編號"
-          className="w-full max-w-xs rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] shadow-sm focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-highlight)]"
+          value={state.q}
+          onChange={(event) => changeFilters({ q: event.target.value })}
+          placeholder={text.search}
+          aria-label={text.search}
+          className="min-h-11 w-full max-w-xs rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] shadow-sm focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-highlight)]"
         />
-        {archivedCount > 0 ? (
+        <label className="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
+          {copy.table.status}
+          <select
+            value={state.status}
+            onChange={(event) =>
+              changeFilters({ status: event.target.value as AnimalListState["status"] })
+            }
+            className="min-h-11 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-[var(--color-text)]"
+          >
+            {animalListStatuses.map((status) => (
+              <option key={status} value={status}>
+                {status === "all" ? text.all : copy.animalStatus[status]}
+              </option>
+            ))}
+          </select>
+        </label>
+        {state.q || state.archived || state.status !== "all" ? (
+          <button
+            type="button"
+            onClick={() => onStateChange({ ...animalListDefaults })}
+            className="min-h-11 rounded-lg border border-[var(--color-border)] px-3 text-sm text-[var(--color-panel)]"
+          >
+            {text.clear}
+          </button>
+        ) : null}
+        {archivedCount > 0 || state.archived ? (
           <label className="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
             <input
               type="checkbox"
-              checked={includeArchived}
-              onChange={(event) => setIncludeArchived(event.target.checked)}
+              checked={state.archived}
+              onChange={(event) => changeFilters({ archived: event.target.checked })}
               className="h-4 w-4"
             />
-            顯示已封存記錄（{archivedCount}）
+            {text.archived} ({archivedCount})
           </label>
         ) : null}
       </div>
@@ -251,9 +315,9 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
 
       <DataTable
         columns={columns}
-        rows={filtered}
+        rows={list.rows}
         getRowKey={(animal) => animal.id}
-        empty={copy.common.noResults}
+        empty={animals.length === 0 ? text.empty : text.noResults}
         renderMobileCard={(animal) => (
           <div className="flex items-start gap-3">
             <AnimalAvatar animal={animal} />
@@ -277,6 +341,34 @@ export function AnimalsTable({ animals, onDeleted }: AnimalsTableProps) {
           </div>
         )}
       />
+      {list.total > 0 ? (
+        <nav
+          aria-label={text.pagination}
+          className="flex flex-wrap items-center justify-between gap-3 text-sm"
+        >
+          <p aria-live="polite">
+            {list.total} {text.total} · {text.page} {list.page} / {list.pageCount}
+          </p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              disabled={list.page <= 1}
+              onClick={() => onStateChange({ ...state, page: list.page - 1 })}
+              className="min-h-11 rounded-lg border border-[var(--color-border)] px-3 disabled:opacity-50"
+            >
+              {text.previous}
+            </button>
+            <button
+              type="button"
+              disabled={list.page >= list.pageCount}
+              onClick={() => onStateChange({ ...state, page: list.page + 1 })}
+              className="min-h-11 rounded-lg border border-[var(--color-border)] px-3 disabled:opacity-50"
+            >
+              {text.next}
+            </button>
+          </div>
+        </nav>
+      ) : null}
     </div>
   );
 }

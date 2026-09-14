@@ -260,7 +260,7 @@ export function AccessManagement() {
             updateMutation.mutate({ id: user.id, input: { role: role as AdminRole } })
           }
         >
-          <SelectTrigger className="w-36">
+          <SelectTrigger className="w-36" aria-label={`${t.role}: ${user.email}`}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -376,7 +376,7 @@ export function AccessManagement() {
                   value={inviteRole}
                   onValueChange={(role) => setInviteRole(role as AdminRole)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger aria-label={t.role}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>

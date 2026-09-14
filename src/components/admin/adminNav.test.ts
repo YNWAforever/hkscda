@@ -3,7 +3,12 @@ import { join } from "node:path";
 import { describe, expect, test } from "bun:test";
 
 import { adminCopy } from "./adminI18n";
-import { ADMIN_NAV_ITEMS, getActiveAdminNavItemIds } from "./adminNav";
+import {
+  ADMIN_NAV_GROUPS,
+  ADMIN_NAV_ITEMS,
+  getActiveAdminNavItemIds,
+  getAdminNavigation,
+} from "./adminNav";
 
 describe("admin nav active state", () => {
   test("routes the applications item to the coordinator case list", () => {
@@ -132,5 +137,82 @@ describe("admin nav active state", () => {
       expect(adminCopy.zh.navItems[item.id], `zh nav label for ${item.id}`).toBeString();
       expect(adminCopy.en.navItems[item.id], `en nav label for ${item.id}`).toBeString();
     }
+  });
+});
+
+test("nested volunteer destinations select only the longest match", () => {
+  expect(
+    getActiveAdminNavItemIds(ADMIN_NAV_ITEMS, "/admin/volunteers/settings", "volunteers"),
+  ).toEqual(["volunteer-settings"]);
+});
+
+describe("grouped admin navigation", () => {
+  test("preserves every destination in one of six groups", () => {
+    const nav = getAdminNavigation("admin", "/admin", "cat");
+    expect(nav.groups.map((group) => group.id)).toEqual([
+      "animals",
+      "adoptions",
+      "volunteers",
+      "donations",
+      "promotion",
+      "system",
+    ]);
+    expect(
+      nav.groups
+        .flatMap((group) => group.items)
+        .map((item) => item.id)
+        .sort(),
+    ).toEqual(ADMIN_NAV_ITEMS.map((item) => item.id).sort());
+    for (const item of ADMIN_NAV_ITEMS) {
+      expect(getAdminNavigation("admin", item.to.split("?")[0], item.section).activeGroupId).toBe(
+        item.group,
+      );
+    }
+  });
+  test("keeps existing settings access and falls back to the first permitted destination", () => {
+    for (const role of ["staff", "treasurer"] as const) {
+      const nav = getAdminNavigation(role, "/admin/payment-methods", "payments");
+      expect(nav.groups.find((group) => group.id === "system")?.to).toBe("/admin/payment-methods");
+      expect(nav.activeGroupId).toBe("system");
+      expect(
+        nav.groups.flatMap((group) => group.items).some((item) => item.id === "access-management"),
+      ).toBe(false);
+    }
+    expect(
+      getAdminNavigation("admin", "/admin/access", "access").groups.find(
+        (group) => group.id === "system",
+      )?.to,
+    ).toBe("/admin/access");
+  });
+  test("hides empty groups and uses intended domain entrypoints", () => {
+    expect(
+      getAdminNavigation("treasurer", "/admin", "payments").groups.map((group) => group.id),
+    ).toEqual(["donations", "system"]);
+    expect(getAdminNavigation(null, "/admin", "cat")).toEqual({ groups: [], activeGroupId: null });
+    const groups = getAdminNavigation("admin", "/admin", "cat").groups;
+    expect(groups.find((group) => group.id === "volunteers")?.to).toBe("/admin/volunteers");
+    expect(groups.find((group) => group.id === "donations")?.to).toBe("/admin?section=payments");
+    for (const group of ADMIN_NAV_GROUPS) {
+      expect(adminCopy.zh.navGroups[group.id]).toBeTruthy();
+      expect(adminCopy.en.navGroups[group.id]).toBeTruthy();
+    }
+  });
+  test("matches nested paths without confusing prefixes and preserves section fallback", () => {
+    expect(getAdminNavigation("admin", "/admin/animals/example/edit", "dog").activeGroupId).toBe(
+      "animals",
+    );
+    expect(
+      getAdminNavigation("admin", "/admin/coordinator/statuses", "applications").activeGroupId,
+    ).toBe("system");
+    expect(
+      getActiveAdminNavItemIds(ADMIN_NAV_ITEMS, "/admin/content/adoption-extra", "content"),
+    ).toEqual(["content"]);
+    expect(
+      getActiveAdminNavItemIds(
+        ADMIN_NAV_ITEMS,
+        "/admin/volunteers/group-enquiries/one",
+        "volunteers",
+      ),
+    ).toEqual(["volunteer-group-enquiries"]);
   });
 });
