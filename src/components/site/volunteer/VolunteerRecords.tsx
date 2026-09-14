@@ -1,3 +1,4 @@
+import { volunteerActionEligibility } from "../../../lib/volunteers/actionEligibility";
 import { useState } from "react";
 import { CalendarDays, CheckCircle2, Clock3, MapPin } from "lucide-react";
 import type { VolunteerMe } from "../../../lib/volunteers/policy/booking";
@@ -14,12 +15,14 @@ export function VolunteerRecords({
   busy,
   onCancel,
   onBrowse,
+  onPage,
 }: {
   me: VolunteerMe;
   mode: "bookings" | "record";
   busy: boolean;
   onCancel: (id: string) => Promise<void>;
   onBrowse: () => void;
+  onPage?: (bucket: "upcoming" | "history", page: number) => void;
 }) {
   const [filter, setFilter] = useState<"upcoming" | "past" | "closed">("upcoming");
   const [cancelling, setCancelling] = useState<string | null>(null);
@@ -124,8 +127,7 @@ export function VolunteerRecords({
                 </p>
               )}
               <p className="volunteer-muted">預約編號：{r.id.slice(0, 8).toUpperCase()}</p>
-              {section === "upcoming" &&
-                ["approved", "pending", "waitlisted"].includes(r.status) &&
+              {["approved", "pending", "waitlisted"].includes(r.status) &&
                 !["attended", "completed"].includes(r.attendance_status) && (
                   <div className="volunteer-record-actions">
                     {cancelling === r.id ? (
@@ -151,16 +153,26 @@ export function VolunteerRecords({
                       </div>
                     ) : (
                       <>
-                        <a className="btn-secondary" href="/volunteer/operations">
-                          申請改期
-                        </a>
+                        {r.activity &&
+                          volunteerActionEligibility({ ...r, ...r.activity }, now).reschedule && (
+                            <a className="btn-secondary" href="/volunteer/operations">
+                              申請改期
+                            </a>
+                          )}
                         <button
                           className="volunteer-text-button"
-                          disabled={busy}
+                          disabled={busy || r.actions?.cancel === false}
                           onClick={() => setCancelling(r.id)}
                         >
                           取消預約
                         </button>
+                        {r.actions?.cancel === false && (
+                          <p>
+                            {r.actions.cancel_reason === "cancellation_disabled"
+                              ? "此場次不接受自行取消，請聯絡職員。"
+                              : "已過取消期限或已有出席紀錄，請聯絡職員協助。"}
+                          </p>
+                        )}
                       </>
                     )}
                   </div>
@@ -169,10 +181,46 @@ export function VolunteerRecords({
           ))}
         </div>
       )}
-      <p className="volunteer-muted">
-        顯示最近 {me.registrations.length}{" "}
-        筆預約紀錄。較早紀錄或資料更正請聯絡職員；此頁不會改寫出席歷史。
-      </p>
+      {onPage && (
+        <nav aria-label="預約紀錄分頁" className="flex items-center gap-3">
+          <button
+            className="btn-secondary"
+            disabled={
+              busy ||
+              (section === "upcoming" ? (me.upcoming_page ?? 1) : (me.history_page ?? 1)) <= 1
+            }
+            onClick={() =>
+              onPage(
+                section === "upcoming" ? "upcoming" : "history",
+                (section === "upcoming" ? (me.upcoming_page ?? 1) : (me.history_page ?? 1)) - 1,
+              )
+            }
+          >
+            上一頁
+          </button>
+          <span>
+            第 {section === "upcoming" ? (me.upcoming_page ?? 1) : (me.history_page ?? 1)} 頁
+          </span>
+          <button
+            className="btn-secondary"
+            disabled={
+              busy ||
+              (section === "upcoming" ? (me.upcoming_page ?? 1) : (me.history_page ?? 1)) *
+                (me.page_size ?? 25) >=
+                (section === "upcoming" ? (me.upcoming_total ?? 0) : (me.history_total ?? 0))
+            }
+            onClick={() =>
+              onPage(
+                section === "upcoming" ? "upcoming" : "history",
+                (section === "upcoming" ? (me.upcoming_page ?? 1) : (me.history_page ?? 1)) + 1,
+              )
+            }
+          >
+            下一頁
+          </button>
+        </nav>
+      )}
+      <p className="volunteer-muted">即將參與的預約與過往紀錄分開載入。出席資料更正請聯絡職員。</p>
     </div>
   );
 }

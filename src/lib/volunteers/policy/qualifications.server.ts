@@ -1,3 +1,5 @@
+import { normalizeVolunteerResult } from "../apiResult";
+import { logVolunteerFailure } from "../telemetry.server";
 import { z } from "zod";
 import { createSupabaseServiceClient, requireAdmin } from "../../donations/supabase.server";
 const shared = {
@@ -55,17 +57,15 @@ export async function handleQualificationCommand(request: Request) {
       },
     );
     if (error) throw error;
-    return Response.json(data, {
-      headers,
-      status: data.kind === "conflict" ? 409 : data.kind === "not_found" ? 404 : 200,
-    });
+    const result = normalizeVolunteerResult(data);
+    return Response.json(result.body, { headers, status: result.status });
   } catch (error) {
     if (error instanceof Response) return error;
     if (error instanceof z.ZodError || error instanceof SyntaxError)
       return Response.json({ error: "請檢查資格資料及核實理由" }, { status: 400, headers });
     if (error && typeof error === "object" && "code" in error && error.code === "42501")
       return Response.json({ error: "沒有核實資格權限" }, { status: 403, headers });
-    console.error("Qualification command failed", error);
+    logVolunteerFailure("qualification", error);
     return Response.json({ error: "未能更新資格，請重新整理後重試" }, { status: 500, headers });
   }
 }

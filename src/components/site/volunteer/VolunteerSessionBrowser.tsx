@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CalendarDays, MapPin, ArrowRight, Search } from "lucide-react";
 import type { PolicySession } from "../../../lib/volunteers/policy/booking";
-import { filterCentreSessions, formatSessionRange, shelterLabel } from "./centreModel";
+import { formatSessionRange, shelterLabel } from "./centreModel";
 export function VolunteerSessionBrowser({
   sessions,
+  filter,
+  onFilter,
+  hasMore,
   selected,
   onSelect,
   loading,
@@ -11,6 +14,9 @@ export function VolunteerSessionBrowser({
   onRetry,
 }: {
   sessions: PolicySession[];
+  filter?: { query: string; shelter: string; date: string; page: number };
+  onFilter?: (value: { query: string; shelter: string; date: string; page: number }) => void;
+  hasMore?: boolean;
   selected: string;
   onSelect: (id: string) => void;
   loading: boolean;
@@ -20,8 +26,25 @@ export function VolunteerSessionBrowser({
   const [query, setQuery] = useState("");
   const [shelter, setShelter] = useState("all");
   const [date, setDate] = useState("");
-  const visible = filterCentreSessions(sessions, { query, shelter, date });
-  const shelters = [...new Set(sessions.flatMap((s) => (s.shelter ? [s.shelter] : [])))];
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      if (
+        onFilter &&
+        (filter?.query !== query || filter?.shelter !== shelter || filter?.date !== date)
+      )
+        onFilter({ query, shelter, date, page: 1 });
+    }, 300);
+    return () => window.clearTimeout(timer);
+  }, [query, shelter, date, filter, onFilter]);
+  const visible = sessions;
+  const shelters = [
+    ...new Set([
+      "cat",
+      "dog",
+      "adoption",
+      ...sessions.flatMap((s) => (s.shelter ? [s.shelter] : [])),
+    ]),
+  ];
   return (
     <div className="volunteer-session-browser">
       <div className="volunteer-section-heading">
@@ -84,7 +107,7 @@ export function VolunteerSessionBrowser({
       ) : (
         <>
           <p className="volunteer-muted">
-            找到 {visible.length} 個場次 · 名額與資格會在確認時再次核實
+            本頁顯示 {visible.length} 個場次 · 名額與資格會在確認時再次核實
           </p>
           {!visible.length ? (
             <div className="volunteer-empty">
@@ -147,6 +170,25 @@ export function VolunteerSessionBrowser({
             </div>
           )}
         </>
+      )}
+      {onFilter && filter && (
+        <nav aria-label="場次分頁" className="flex gap-3 items-center">
+          <button
+            className="btn-secondary"
+            disabled={loading || filter.page === 1}
+            onClick={() => onFilter({ ...filter, page: filter.page - 1 })}
+          >
+            上一頁
+          </button>
+          <span>第 {filter.page} 頁</span>
+          <button
+            className="btn-secondary"
+            disabled={loading || !hasMore}
+            onClick={() => onFilter({ ...filter, page: filter.page + 1 })}
+          >
+            下一頁
+          </button>
+        </nav>
       )}
     </div>
   );

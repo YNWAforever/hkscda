@@ -23,6 +23,7 @@ test.skipIf(!url || process.env.CMS_LIFECYCLE_TEST_ALLOW_LOCAL_FIXTURES !== "1")
         for (const item of manifest.items) {
           await tx`insert into public.content_item(id,slug,title,summary,body,type,status,published_at,version,created_by,updated_by) values(${item.id}::uuid,${item.slug},${item.title},'Synthetic rehearsal summary','Synthetic rehearsal body','report','published',now(),0,${admin}::uuid,${admin}::uuid)`;
           await tx`insert into public.content_revision(id,content_item_id,version,operation,authoring_snapshot,public_snapshot,created_by,is_published) values(${item.published_revision_id}::uuid,${item.id}::uuid,0,'synthetic_rehearsal','{"synthetic":true}','{"synthetic":true}',${admin}::uuid,true)`;
+          await tx`insert into public.editorial_content_review(entity_kind,entity_id,revision_key,classification,evidence,reviewed_by) values('content',${item.id}::uuid,${item.published_revision_id},'approved','Explicit synthetic archive rehearsal fixture; transaction rolls back',${actor}::uuid)`;
           await tx`update public.content_item set published_revision_id=${item.published_revision_id}::uuid where id=${item.id}::uuid`;
         }
         await tx`select set_config('hkscda.release_actor',${actor},true)`;

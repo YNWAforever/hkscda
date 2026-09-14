@@ -158,16 +158,15 @@ export function createVolunteerHandlers({
       });
     },
 
-    cloneActivity({ request, params }: HandlerContext) {
+    cloneActivity({ request }: HandlerContext) {
       return withVolunteerErrors(async () => {
-        const admin = await requireVolunteerAdmin(request);
+        await requireVolunteerAdmin(request);
         return jsonResponse(
-          await service.cloneActivity({
-            actorUserId: admin.authUserId,
-            activityId: requiredId(params),
-            input: await jsonBody(request).catch(() => ({})),
-          }),
-          { status: 201 },
+          {
+            error: "請在活動工作台使用「複製至指定日期」，先選日期並預覽適用政策。",
+            code: "target_date_preview_required",
+          },
+          { status: 410 },
         );
       });
     },

@@ -49,6 +49,8 @@ export type BookingResult = {
   reason?: string;
   message?: string;
   allowed?: boolean;
+  waitlist_allowed?: boolean;
+  waitlist_reason?: string;
   remaining?: number;
   status?: string;
   registration_id?: string;
@@ -77,6 +79,11 @@ export type PolicySession = {
 };
 export type VolunteerMe = {
   registrations_limit?: number;
+  upcoming_total?: number;
+  history_total?: number;
+  upcoming_page?: number;
+  history_page?: number;
+  page_size?: number;
   history?: {
     verified_sessions: number;
     history_coverage_start: string | null;
@@ -98,22 +105,46 @@ export type VolunteerMe = {
     attendance_status: string;
     notes: string | null;
     created_at?: string;
+    updated_at?: string;
+    actions?: { cancel: boolean; cancel_reason: string | null };
     activity?: Pick<PolicySession, "id" | "title" | "starts_at" | "ends_at" | "location"> | null;
   }[];
 };
+export const sessionQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).max(100000).default(1),
+  query: z.string().trim().max(120).default(""),
+  shelter: z
+    .string()
+    .regex(/^[a-z][a-z0-9_-]{0,79}$/)
+    .optional(),
+  date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .refine((value) => {
+      const date = new Date(`${value}T00:00:00Z`);
+      return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value;
+    }, "Invalid service date")
+    .optional(),
+});
+export type SessionQuery = z.infer<typeof sessionQuerySchema>;
+export const memberQuerySchema = z.object({
+  upcoming_page: z.coerce.number().int().min(1).max(100000).default(1),
+  history_page: z.coerce.number().int().min(1).max(100000).default(1),
+});
+export type MemberQuery = z.infer<typeof memberQuerySchema>;
 export type BookingRepository = {
   claim(actor: string, command: z.infer<typeof profileClaimSchema>): Promise<BookingResult>;
   command(actor: string, command: BookingCommand): Promise<BookingResult>;
-  sessions(): Promise<PolicySession[]>;
-  terms(): Promise<{ id: string; body: string; published_at: string }[]>;
-  me(actor: string): Promise<VolunteerMe>;
+  sessions(query?: SessionQuery): Promise<PolicySession[]>;
+  terms(ids?: string[]): Promise<{ id: string; body: string; published_at: string }[]>;
+  me(actor: string, query?: MemberQuery): Promise<VolunteerMe>;
 };
 export function createBookingService(repo: BookingRepository) {
   return {
     claim: (actor: string, raw: unknown) => repo.claim(actor, profileClaimSchema.parse(raw)),
     command: (actor: string, raw: unknown) => repo.command(actor, bookingCommandSchema.parse(raw)),
-    sessions: () => repo.sessions(),
-    terms: () => repo.terms(),
-    me: (actor: string) => repo.me(actor),
+    sessions: (raw: unknown = {}) => repo.sessions(sessionQuerySchema.parse(raw)),
+    terms: (ids?: string[]) => repo.terms(ids),
+    me: (actor: string, raw: unknown = {}) => repo.me(actor, memberQuerySchema.parse(raw)),
   };
 }

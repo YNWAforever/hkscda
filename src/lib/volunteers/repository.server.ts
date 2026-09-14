@@ -305,14 +305,15 @@ export function createSupabaseVolunteerRepository(client: SupabaseClient): Volun
       return getActivity(client, id);
     },
 
-    async createActivity(input) {
-      const { data, error } = await client
-        .from("volunteer_activity")
-        .insert(toActivityInsert(input))
-        .select("id")
-        .single();
+    async createActivity(input, actorUserId, idempotencyKey) {
+      const { data, error } = await client.rpc("create_volunteer_draft_with_audit", {
+        p_actor: actorUserId,
+        p_key: idempotencyKey,
+        p_input: toActivityInsert(input),
+      });
       if (error) throw error;
-      return data.id as string;
+      if (data.kind === "conflict") throw new Error("操作識別已用於其他內容，請重新開啟表格");
+      return data.activity_id as string;
     },
 
     async updateActivity(id, input, actorUserId, expectedUpdatedAt) {

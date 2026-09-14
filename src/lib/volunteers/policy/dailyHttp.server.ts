@@ -1,3 +1,5 @@
+import { normalizeVolunteerResult } from "../apiResult";
+import { logVolunteerFailure, withVolunteerTiming } from "../telemetry.server";
 import { z } from "zod";
 import {
   createDailyPolicyService,
@@ -9,10 +11,12 @@ export function createDailyPolicyHandlers(deps: {
   execute: (actor: string, command: DailyPolicyCommand) => Promise<DailyPolicyResult>;
 }) {
   const service = createDailyPolicyService(deps.execute);
-  const response = (body: unknown, status = 200) =>
-    Response.json(body, { status, headers: { "cache-control": "no-store" } });
+  const response = (body: unknown, suppliedStatus?: number) => {
+    const { body: payload, status } = normalizeVolunteerResult(body, suppliedStatus);
+    return Response.json(payload, { status, headers: { "cache-control": "no-store" } });
+  };
   return {
-    async POST(request: Request) {
+    POST: withVolunteerTiming("daily_policy_command", async (request: Request) => {
       try {
         const actor = await deps.requireActor(request);
         let body: unknown;
@@ -22,16 +26,7 @@ export function createDailyPolicyHandlers(deps: {
           return response({ error: "無效的要求內容" }, 400);
         }
         const result = await service.command(actor.authUserId, body);
-        return response(
-          result,
-          result.kind === "conflict"
-            ? 409
-            : result.kind === "invalid"
-              ? 422
-              : result.kind === "not_found"
-                ? 404
-                : 200,
-        );
+        return response(result);
       } catch (error) {
         if (error instanceof Response) return error;
         if (error instanceof z.ZodError)
@@ -40,9 +35,9 @@ export function createDailyPolicyHandlers(deps: {
           if (error.code === "42501") return response({ error: "沒有此操作權限" }, 403);
           if (error.code === "22023") return response({ error: "請重新檢查及預覽全日設定" }, 422);
         }
-        console.error("Daily volunteer policy command failed", error);
+        logVolunteerFailure("daily_policy", error);
         return response({ error: "未能處理全日配額，請稍後重試" }, 500);
       }
-    },
+    }),
   };
 }

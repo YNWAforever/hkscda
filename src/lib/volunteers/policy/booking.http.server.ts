@@ -1,3 +1,5 @@
+import { withVolunteerTiming, logVolunteerFailure } from "../telemetry.server";
+import { normalizeVolunteerResult } from "../apiResult";
 import { z } from "zod";
 import type { createBookingService } from "./booking";
 const envelope = z.object({ command: z.unknown(), turnstileToken: z.string().optional() }).strict();
@@ -6,8 +8,10 @@ export function createBookingHandlers(deps: {
   authenticate: (request: Request) => Promise<string>;
   verify: (token: string | undefined, request: Request) => Promise<boolean>;
 }) {
-  const json = (body: unknown, status = 200) =>
-    Response.json(body, { status, headers: { "cache-control": "no-store" } });
+  const json = (body: unknown, suppliedStatus?: number) => {
+    const { body: normalized, status } = normalizeVolunteerResult(body, suppliedStatus);
+    return Response.json(normalized, { status, headers: { "cache-control": "no-store" } });
+  };
   const run = async (fn: () => Promise<Response>) => {
     try {
       return await fn();
@@ -15,20 +19,50 @@ export function createBookingHandlers(deps: {
       if (error instanceof Response) return json({ error: await error.text() }, error.status);
       if (error instanceof z.ZodError || error instanceof SyntaxError)
         return json({ error: "提交資料無效" }, 400);
-      console.error("Volunteer booking failed", error);
+      if (typeof error === "object" && error && "code" in error) {
+        if (error.code === "42501") return json({ kind: "forbidden" }, 403);
+        if (error.code === "22023") return json({ kind: "invalid" }, 422);
+      }
+      logVolunteerFailure("member_booking", error);
       return json({ error: "暫時未能處理，請重試。" }, 500);
     }
   };
   return {
-    get: (request: Request) =>
+    get: withVolunteerTiming("member_booking_read", (request: Request) =>
       run(async () => {
-        const view = new URL(request.url).searchParams.get("view") ?? "sessions";
-        if (view === "sessions") return json({ sessions: await deps.service.sessions() });
-        if (view === "terms") return json({ terms: await deps.service.terms() });
-        if (view === "me") return json(await deps.service.me(await deps.authenticate(request)));
+        const params = new URL(request.url).searchParams;
+        const view = params.get("view") ?? "sessions";
+        if (view === "sessions") {
+          const rows = await deps.service.sessions(
+            Object.fromEntries(
+              ["page", "query", "shelter", "date"].flatMap((key) =>
+                params.has(key) ? [[key, params.get(key)]] : [],
+              ),
+            ),
+          );
+          return json({ sessions: rows.slice(0, 25), has_more: rows.length > 25 });
+        }
+        if (view === "terms")
+          return json({
+            terms: await deps.service.terms(
+              z.array(z.string().uuid()).max(25).parse(params.getAll("id")),
+            ),
+          });
+        if (view === "me")
+          return json(
+            await deps.service.me(
+              await deps.authenticate(request),
+              Object.fromEntries(
+                ["upcoming_page", "history_page"].flatMap((key) =>
+                  params.has(key) ? [[key, params.get(key)]] : [],
+                ),
+              ),
+            ),
+          );
         return json({ error: "查詢無效" }, 400);
       }),
-    post: (request: Request) =>
+    ),
+    post: withVolunteerTiming("member_booking_command", (request: Request) =>
       run(async () => {
         const actor = await deps.authenticate(request);
         const input = envelope.parse(await request.json());
@@ -48,5 +82,6 @@ export function createBookingHandlers(deps: {
               : 200,
         );
       }),
+    ),
   };
 }

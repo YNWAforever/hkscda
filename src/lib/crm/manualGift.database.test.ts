@@ -94,6 +94,8 @@ if (!url)
   );
 describe.skipIf(!url)("manual gift real database transaction and leases", () => {
   beforeAll(async () => {
+    // Volunteer mutation actors must also have a confirmed, non-banned identity.
+    await database()`insert into auth.users(id,email,email_confirmed_at) values(${staffActor}::uuid,${staffActor + "@example.invalid"},now())`;
     await database()`insert into public.admin_user(auth_user_id,email,role,status) values(${staffActor}::uuid,${staffActor + "@example.invalid"},'staff','active')`;
     await database()`insert into public.admin_user(auth_user_id,email,role,status) values(${actor}::uuid,${actor + "@example.invalid"},'treasurer','active')`;
     await database()`insert into public.supporter(id,name,email,language) values(${supporter}::uuid,'Local CRM fixture',${supporter + "@example.invalid"},'en')`;

@@ -18,6 +18,7 @@ import { useAdminLanguage } from "./adminI18n";
 
 interface AnimalsTableProps {
   animals: Animal[];
+  serverTotal?: number;
   state: AnimalListState;
   onStateChange: (state: AnimalListState) => void;
   onDeleted: () => void;
@@ -56,7 +57,17 @@ function AnimalPublication({ state }: { state: AnimalPublicationState }) {
 
 function AnimalAvatar({ animal }: { animal: Animal }) {
   if (animal.image_url) {
-    return <img src={animal.image_url} alt="" className="h-10 w-10 rounded object-cover" />;
+    return (
+      <img
+        loading="lazy"
+        decoding="async"
+        width={40}
+        height={40}
+        src={animal.image_url}
+        alt=""
+        className="h-10 w-10 rounded object-cover"
+      />
+    );
   }
   return (
     <div className="flex h-10 w-10 items-center justify-center rounded bg-[var(--color-surface-2)] text-lg">
@@ -65,7 +76,13 @@ function AnimalAvatar({ animal }: { animal: Animal }) {
   );
 }
 
-export function AnimalsTable({ animals, onDeleted, state, onStateChange }: AnimalsTableProps) {
+export function AnimalsTable({
+  animals,
+  serverTotal,
+  onDeleted,
+  state,
+  onStateChange,
+}: AnimalsTableProps) {
   const { copy } = useAdminLanguage();
   const { language } = useAdminLanguage();
   const text =
@@ -105,7 +122,16 @@ export function AnimalsTable({ animals, onDeleted, state, onStateChange }: Anima
   // animal's own public page found nothing. Archived records are excluded by
   // default but stay reachable through the toggle: a retired animal still needs
   // correcting, and its applications and sponsorships still point at it.
-  const list = getAnimalListPage(animals, state);
+  const list =
+    serverTotal === undefined
+      ? getAnimalListPage(animals, state)
+      : {
+          rows: animals,
+          filtered: animals,
+          total: serverTotal,
+          page: state.page,
+          pageCount: Math.max(1, Math.ceil(serverTotal / 20)),
+        };
   const filtered = list.filtered;
   const archivedCount = animals.filter(isArchivedAnimal).length;
   // Species must be cat or dog. These still carry the legacy 'sponsor'

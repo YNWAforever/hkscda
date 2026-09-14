@@ -1,3 +1,4 @@
+import { TablePager } from "../TablePager";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { adminIdentityQueryOptions } from "../../../lib/admin/pageAccess";
@@ -217,9 +218,22 @@ function IntakeSettings() {
 export function InternshipManagement() {
   const identity = useQuery(adminIdentityQueryOptions());
   const qc = useQueryClient();
+  const [page, setPage] = useState(1);
+  const [query, setQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
   const q = useQuery({
-    queryKey: ["internships"],
-    queryFn: () => post<{ applications: InternshipApplication[] }>({ action: "list" }),
+    queryKey: ["internships", "list", page, filterStatus, query],
+    queryFn: () =>
+      post<{
+        applications: { id: string; name: string; institution: string; status: string }[];
+        total: number;
+      }>({
+        action: "list",
+        page,
+        pageSize: 25,
+        q: query,
+        ...(filterStatus ? { status: filterStatus } : {}),
+      }),
   });
   const [selected, setSelected] = useState("");
   const [status, setStatus] = useState("needs_information");
@@ -228,16 +242,52 @@ export function InternshipManagement() {
   const [evidence, setEvidence] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const app = q.data?.applications.find((a) => a.id === selected);
+  const detail = useQuery({
+    queryKey: ["internships", "detail", selected],
+    queryFn: () =>
+      post<{ application: InternshipApplication }>({ action: "detail", application_id: selected }),
+    enabled: Boolean(selected),
+  });
+  const app = detail.data?.application;
   return (
     <section className="space-y-5">
       <h1 className="text-2xl font-bold">獸醫學生實習申請</h1>
-      <p>獨立於一般義工級別及時段名額。原客戶申請表尚未提供；以下為基本學生核實流程。</p>
+      <p>獨立於一般義工級別及時段名額。請按學生證明及申請資料核實身份。</p>
       {identity.data?.admin?.role === "admin" && <IntakeSettings />}
+      <label className="block">
+        搜尋申請人
+        <input
+          className={field}
+          value={query}
+          onChange={(event) => {
+            setQuery(event.target.value);
+            setPage(1);
+          }}
+        />
+      </label>
+      <label className="block">
+        申請狀態
+        <select
+          className={field}
+          value={filterStatus}
+          onChange={(event) => {
+            setFilterStatus(event.target.value);
+            setPage(1);
+          }}
+        >
+          <option value="">全部</option>
+          {Object.entries(internshipStatuses).map(([key, label]) => (
+            <option key={key} value={key}>
+              {label}
+            </option>
+          ))}
+        </select>
+      </label>
       <label className="block">
         申請人
         <select
           className={field}
+          aria-label="申請人"
           value={selected}
           onChange={(e) => {
             setSelected(e.target.value);
@@ -249,12 +299,25 @@ export function InternshipManagement() {
           <option value="">選擇申請</option>
           {q.data?.applications.map((a) => (
             <option key={a.id} value={a.id}>
-              {a.contact_snapshot.name} · {a.student_snapshot.institution} ·{" "}
-              {internshipStatuses[a.status]}
+              {a.name} · {a.institution} · {internshipStatuses[a.status]}
             </option>
           ))}
         </select>
       </label>
+      {q.data && (
+        <TablePager
+          page={page}
+          pageSize={25}
+          total={q.data.total}
+          onPageChange={setPage}
+          label="實習申請"
+        />
+      )}
+      {detail.error && (
+        <p role="alert">
+          未能載入申請詳情，請重試。<button onClick={() => void detail.refetch()}>重試</button>
+        </p>
+      )}
       {q.isLoading && <p>載入中…</p>}
       {q.error && <p role="alert">未能載入實習申請</p>}
       {app && (

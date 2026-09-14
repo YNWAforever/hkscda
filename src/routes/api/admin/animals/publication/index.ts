@@ -13,7 +13,6 @@ export const Route = createFileRoute("/api/admin/animals/publication/")({
         let promotedPath: string | null = null;
         let draftPath: string | null = null;
         const promotedPaths: string[] = [];
-        const galleryDraftPaths: string[] = [];
         if (
           command.kind === "publish" &&
           typeof command.preview_id === "string" &&
@@ -66,7 +65,6 @@ export const Route = createFileRoute("/api/admin/animals/publication/")({
                 next.url = c.storage.from("animal-images").getPublicUrl(path).data.publicUrl;
                 next.draft_path = null;
                 promotedPaths.push(path);
-                galleryDraftPaths.push(item.draft_path);
               }
               publicationGallery.push(next);
             }
@@ -99,6 +97,23 @@ export const Route = createFileRoute("/api/admin/animals/publication/")({
           p_actor: a.authUserId,
           p_command: command,
         });
+        if (!error && command.kind === "preview" && data?.body) {
+          const body = data.body as Record<string, unknown>;
+          async function previewUrl(path: unknown, fallback: unknown) {
+            if (typeof path !== "string" || !path) return fallback;
+            const signed = await c.storage.from("animal-draft-images").createSignedUrl(path, 600);
+            if (signed.error) throw signed.error;
+            return signed.data.signedUrl;
+          }
+          body.preview_image_url = await previewUrl(body.draft_image_path, body.image_url);
+          if (Array.isArray(body.gallery))
+            body.gallery = await Promise.all(
+              body.gallery.map(async (item: Record<string, unknown>) => ({
+                ...item,
+                preview_url: await previewUrl(item.draft_path, item.url),
+              })),
+            );
+        }
         if (!error && command.kind === "read" && typeof command.animal_id === "string") {
           const canonical = await c
             .from("animals")
@@ -123,10 +138,8 @@ export const Route = createFileRoute("/api/admin/animals/publication/")({
           await c.storage
             .from("animal-images")
             .remove([...(promotedPath ? [promotedPath] : []), ...promotedPaths]);
-        if (data?.kind === "published" && (draftPath || galleryDraftPaths.length))
-          await c.storage
-            .from("animal-draft-images")
-            .remove([...(draftPath ? [draftPath] : []), ...galleryDraftPaths]);
+        // Saved drafts and historical previews still reference private objects.
+        // Retain them until a reference-aware storage cleanup can prove they are unused.
         return Response.json(data, {
           status: data?.kind === "conflict" ? 409 : data?.kind === "not_found" ? 404 : 200,
           headers: { "cache-control": "no-store" },

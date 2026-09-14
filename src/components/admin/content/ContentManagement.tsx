@@ -1,6 +1,7 @@
+import { ContentReviewQueue } from "./ContentReview";
 import { useMemo, useState } from "react";
 import { Edit3, Filter, RefreshCw, Search } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import type { ContentStatus, ContentSummary, ContentType } from "../../../lib/content/types";
@@ -71,6 +72,28 @@ export function ContentManagement({ initialData }: ContentManagementProps) {
 
 function ContentManagementRuntime() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const [createError, setCreateError] = useState("");
+  const [creating, setCreating] = useState(false);
+  async function createDraft(input: { type: ContentType; title: string; summary: string }) {
+    setCreating(true);
+    setCreateError("");
+    try {
+      const result = await fetchAdminJson<{ id: string }>("/api/admin/content", {
+        method: "POST",
+        body: JSON.stringify({
+          ...input,
+          slug: `${input.type.replaceAll("_", "-")}-${crypto.randomUUID()}`,
+          status: "draft",
+        }),
+      });
+      await navigate({ to: "/admin/content/$id", params: { id: result.id } });
+    } catch {
+      setCreateError("未能建立草稿，請檢查資料後重試。");
+    } finally {
+      setCreating(false);
+    }
+  }
   const [query, setQuery] = useState("");
   const [type, setType] = useState<ContentType | "all">("all");
   const [status, setStatus] = useState<ContentStatus | "all">("all");
@@ -109,22 +132,26 @@ function ContentManagementRuntime() {
   });
 
   return (
-    <ContentManagementView
-      data={contentQuery.data}
-      loading={contentQuery.isLoading}
-      query={query}
-      type={type}
-      status={status}
-      rescueRegion={rescueRegion}
-      error={contentQuery.error instanceof Error ? contentQuery.error.message : null}
-      onQueryChange={withPageReset(setQuery)}
-      onTypeChange={withPageReset(setType)}
-      onStatusChange={withPageReset(setStatus)}
-      onRescueRegionChange={withPageReset(setRescueRegion)}
-      onPageChange={setPage}
-      fetching={contentQuery.isFetching}
-      onRefresh={() => void queryClient.invalidateQueries({ queryKey: ["admin-content"] })}
-    />
+    <>
+      <ContentReviewQueue />
+      <CreateContentDraft onCreate={createDraft} busy={creating} error={createError} />
+      <ContentManagementView
+        data={contentQuery.data}
+        loading={contentQuery.isLoading}
+        query={query}
+        type={type}
+        status={status}
+        rescueRegion={rescueRegion}
+        error={contentQuery.error instanceof Error ? contentQuery.error.message : null}
+        onQueryChange={withPageReset(setQuery)}
+        onTypeChange={withPageReset(setType)}
+        onStatusChange={withPageReset(setStatus)}
+        onRescueRegionChange={withPageReset(setRescueRegion)}
+        onPageChange={setPage}
+        fetching={contentQuery.isFetching}
+        onRefresh={() => void queryClient.invalidateQueries({ queryKey: ["admin-content"] })}
+      />
+    </>
   );
 }
 
@@ -234,7 +261,7 @@ function ContentManagementView({
             to="/admin/content/adoption"
             className="rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)]"
           >
-            ????
+            領養資訊
           </Link>
           <Link
             to="/admin/content/adoption-guides"
@@ -389,4 +416,72 @@ function normalizeListResponse(
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("zh-HK", { dateStyle: "medium" }).format(new Date(value));
+}
+
+function CreateContentDraft({
+  onCreate,
+  busy,
+  error,
+}: {
+  onCreate: (input: { type: ContentType; title: string; summary: string }) => Promise<void>;
+  busy: boolean;
+  error: string;
+}) {
+  const [type, setType] = useState<ContentType>("rescue_story");
+  const [title, setTitle] = useState("");
+  const [summary, setSummary] = useState("");
+  return (
+    <details className="m-6 rounded-lg border p-4">
+      <summary className="cursor-pointer font-semibold">新增內容</summary>
+      <form
+        className="mt-4 space-y-3"
+        onSubmit={(event) => {
+          event.preventDefault();
+          void onCreate({ type, title, summary });
+        }}
+      >
+        <label className="block">
+          內容類型
+          <select
+            className="ml-2 border p-2"
+            value={type}
+            onChange={(event) => setType(event.target.value as ContentType)}
+          >
+            {contentTypeOptions
+              .filter((option): option is ContentType => option !== "all")
+              .map((option) => (
+                <option key={option} value={option}>
+                  {formatContentTypeLabel(option, "zh")}
+                </option>
+              ))}
+          </select>
+        </label>
+        <label className="block">
+          標題
+          <input
+            required
+            maxLength={180}
+            className="block w-full border p-2"
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+          />
+        </label>
+        <label className="block">
+          摘要
+          <textarea
+            required
+            maxLength={320}
+            className="block w-full border p-2"
+            value={summary}
+            onChange={(event) => setSummary(event.target.value)}
+          />
+        </label>
+        <p>建立後會開啟草稿編輯器。請補齊相片、來源及類型所需資料，再檢查及發布。</p>
+        {error && <p role="alert">{error}</p>}
+        <button type="submit" disabled={busy} className="btn-primary min-h-11 px-4">
+          {busy ? "建立中…" : "建立草稿"}
+        </button>
+      </form>
+    </details>
+  );
 }

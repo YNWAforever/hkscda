@@ -22,8 +22,8 @@ export function createBookingRepository(
       if (error) throw error;
       return data;
     },
-    async sessions() {
-      const { data, error } = await client
+    async sessions(query = { page: 1, query: "" }) {
+      let request = client
         .from("volunteer_activity")
         .select(
           "id,title,starts_at,ends_at,location,capacity,policy_version_id,version:volunteer_policy_version(body)",
@@ -32,7 +32,20 @@ export function createBookingRepository(
         .not("policy_version_id", "is", null)
         .gte("starts_at", now().toISOString())
         .order("starts_at")
-        .limit(100);
+        .order("id");
+      if (query.shelter) request = request.eq("shelter_key", query.shelter);
+      if (query.date) {
+        const start = new Date(`${query.date}T00:00:00+08:00`);
+        if (!Number.isFinite(start.getTime())) throw new Error("Invalid date");
+        request = request
+          .gte("starts_at", start.toISOString())
+          .lt("starts_at", new Date(start.getTime() + 86400000).toISOString());
+      }
+      if (query.query) {
+        const escaped = query.query.replace(/[,%().*\\]/g, " ").trim();
+        if (escaped) request = request.or(`title.ilike.%${escaped}%,location.ilike.%${escaped}%`);
+      }
+      const { data, error } = await request.range((query.page - 1) * 25, query.page * 25);
       if (error) throw error;
       const { data: summaries, error: summaryError } = await client.rpc(
         "volunteer_public_session_summary",
@@ -64,7 +77,7 @@ export function createBookingRepository(
         };
       });
     },
-    async terms() {
+    async terms(ids: string[] = []) {
       const { data, error } = await client
         .from("volunteer_terms_version")
         .select("id,body,published_at")
@@ -72,14 +85,6 @@ export function createBookingRepository(
         .order("published_at", { ascending: false })
         .limit(1);
       if (error) throw error;
-      const sessions = await this.sessions();
-      const ids = [
-        ...new Set(
-          sessions.flatMap((session) =>
-            session.policy.terms.version_id ? [session.policy.terms.version_id] : [],
-          ),
-        ),
-      ];
       if (!ids.length) return data ?? [];
       const { data: pinned, error: pinnedError } = await client
         .from("volunteer_terms_version")
@@ -89,25 +94,25 @@ export function createBookingRepository(
       if (pinnedError) throw pinnedError;
       return [...(data ?? []), ...(pinned ?? []).filter((term) => term.id !== data?.[0]?.id)];
     },
-    async me(actor) {
+    async me(actor, query = { upcoming_page: 1, history_page: 1 }) {
       const { data: profile, error } = await client
         .from("volunteer_profile")
         .select("id,display_name,tier,status")
         .eq("auth_user_id", actor)
         .maybeSingle();
       if (error) throw error;
-      const registrationsLimit = 100;
+      const registrationsLimit = 25;
       if (!profile)
         return { profile: null, registrations: [], registrations_limit: registrationsLimit };
-      const { data: registrations, error: registrationError } = await client
-        .from("volunteer_registration")
-        .select(
-          "id,activity_id,status,attendance_status,notes,created_at,activity:volunteer_activity(id,title,starts_at,ends_at,location)",
-        )
-        .eq("profile_id", profile.id)
-        .order("created_at", { ascending: false })
-        .order("id", { ascending: false })
-        .limit(100);
+      const { data: page, error: registrationError } = await client.rpc(
+        "volunteer_member_registrations",
+        {
+          p_actor: actor,
+          p_upcoming_page: query.upcoming_page,
+          p_history_page: query.history_page,
+          p_size: 25,
+        },
+      );
       if (registrationError) throw registrationError;
       const { data: history, error: historyError } = await client.rpc("volunteer_my_history", {
         p_actor: actor,
@@ -116,28 +121,30 @@ export function createBookingRepository(
       return {
         profile,
         registrations_limit: registrationsLimit,
-        registrations: (registrations ?? []).map((raw) => {
-          const row = raw as unknown as VolunteerMe["registrations"][number];
-          // The owned FK join deliberately includes past and unpublished sessions.
-          // Project member remarks only, never internal notes or activity policy data.
-          return {
-            id: row.id,
-            activity_id: row.activity_id,
-            status: row.status,
-            attendance_status: row.attendance_status,
-            notes: row.notes,
-            created_at: row.created_at,
-            activity: row.activity
-              ? {
-                  id: row.activity.id,
-                  title: row.activity.title,
-                  starts_at: row.activity.starts_at,
-                  ends_at: row.activity.ends_at,
-                  location: row.activity.location,
-                }
-              : null,
-          };
-        }),
+        upcoming_total: page.upcoming_total,
+        history_total: page.history_total,
+        upcoming_page: page.upcoming_page,
+        history_page: page.history_page,
+        page_size: page.page_size,
+        registrations: (page.registrations as VolunteerMe["registrations"]).map((row) => ({
+          id: row.id,
+          activity_id: row.activity_id,
+          status: row.status,
+          attendance_status: row.attendance_status,
+          notes: row.notes,
+          created_at: row.created_at,
+          updated_at: row.updated_at,
+          actions: row.actions,
+          activity: row.activity
+            ? {
+                id: row.activity.id,
+                title: row.activity.title,
+                starts_at: row.activity.starts_at,
+                ends_at: row.activity.ends_at,
+                location: row.activity.location,
+              }
+            : null,
+        })),
         history,
       } as VolunteerMe;
     },

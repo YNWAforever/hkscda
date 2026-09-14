@@ -13,7 +13,7 @@ type AccessService = {
   inviteUser(args: { actor: AdminAccessActor; input: unknown }): Promise<unknown>;
   resendInvite(args: { actor: AdminAccessActor; userId: string }): Promise<unknown>;
   updateUser(args: { actor: AdminAccessActor; userId: string; input: unknown }): Promise<unknown>;
-  listAudit(): Promise<unknown>;
+  listAudit(page?: number): Promise<unknown>;
 };
 
 type CreateAdminAccessHandlersArgs = {
@@ -108,7 +108,9 @@ export function createAdminAccessHandlers({
     listAudit({ request }: HandlerContext) {
       return withAccessErrors(async () => {
         await requireAccessAdmin(request);
-        return jsonResponse(await service.listAudit());
+        const rawPage = Number(new URL(request.url).searchParams.get("page") ?? 1);
+        const page = Number.isSafeInteger(rawPage) && rawPage > 0 ? rawPage : 1;
+        return jsonResponse(await service.listAudit(page));
       });
     },
   };

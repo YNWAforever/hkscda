@@ -1,3 +1,4 @@
+import { normalizeVolunteerResult } from "../apiResult";
 import { z } from "zod";
 import { createOperationService, type OperationCommand, type OperationResult } from "./operations";
 const envelope = z.object({ command: z.unknown(), turnstileToken: z.string().optional() }).strict();
@@ -19,8 +20,10 @@ export function createOperationHandlers(deps: {
   verify?: (token: string | undefined, request: Request) => Promise<boolean>;
 }) {
   const service = createOperationService(deps.execute);
-  const json = (body: unknown, status = 200) =>
-    Response.json(body, { status, headers: { "cache-control": "no-store" } });
+  const json = (body: unknown, suppliedStatus?: number) => {
+    const { body: normalized, status } = normalizeVolunteerResult(body, suppliedStatus);
+    return Response.json(normalized, { status, headers: { "cache-control": "no-store" } });
+  };
   return {
     async POST(request: Request) {
       try {
@@ -70,7 +73,7 @@ export function createOperationHandlers(deps: {
           if (error.code === "22023")
             return json({ error: "此變更不符合現行政策，請重新預覽" }, 422);
         }
-        console.error("Volunteer operation failed", error);
+        console.error("Volunteer operation failed", { code: "unknown" });
         return json({ error: "未能處理，請稍後重試" }, 500);
       }
     },

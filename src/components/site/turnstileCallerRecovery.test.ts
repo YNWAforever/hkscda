@@ -5,7 +5,6 @@ import ts from "typescript";
 
 const cases = [
   ["donation", "src/routes/donate.tsx", "handleSubmit"],
-  ["volunteer", "src/routes/volunteer.tsx", "handleSubmit"],
   ["group enquiry", "src/components/site/volunteer/GroupEnquiryForm.tsx", "handleSubmit"],
   ["sponsorship", "src/components/site/sponsorship/PledgeWizard.tsx", "handleSubmit"],
   ["adoption", "src/components/site/adoption/ApplicationWizard.tsx", "onSubmit"],
@@ -107,3 +106,69 @@ for (const [name, path, functionName] of cases) {
     ).toBe(true);
   });
 }
+
+test("policy booking failure preserves input and retry identity while refreshing verification", async () => {
+  const path = "src/components/site/volunteer/PolicySignup.tsx";
+  const source = readFileSync(fileURLToPath(new URL(`../../../${path}`, import.meta.url)), "utf8");
+  const ast = ts.createSourceFile(path, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  const callbacks: string[] = [];
+  const visit = (node: ts.Node) => {
+    if (
+      ts.isVariableDeclaration(node) &&
+      ts.isIdentifier(node.name) &&
+      ["command", "run"].includes(node.name.text)
+    )
+      callbacks.push(`const ${node.getText(ast)};`);
+    ts.forEachChild(node, visit);
+  };
+  visit(ast);
+  expect(callbacks.length).toBe(2);
+  const compiled = new Bun.Transpiler({ loader: "ts" }).transformSync(callbacks.join("\n"));
+  const calls: Array<[string, unknown]> = [];
+  let attempts = 0;
+  const retry: { current: { fingerprint: string; key: string } | null } = { current: null };
+  const scope: Record<string, unknown> = {
+    retry,
+    crypto: { randomUUID: () => "stable-retry" },
+    token: "synthetic",
+    challenge: "synthetic",
+    endpoint: "/api/volunteer/policy",
+    JSON,
+    Error,
+    fetch: async () => {
+      attempts++;
+      throw Error("Synthetic failure");
+    },
+  };
+  const proxy = new Proxy(scope, {
+    has: () => true,
+    get: (target, key) => {
+      if (key === Symbol.unscopables) return undefined;
+      if (typeof key === "string" && key.startsWith("set"))
+        return (value: unknown) =>
+          calls.push([key, typeof value === "function" ? value(0) : value]);
+      return target[key as string];
+    },
+  });
+  const execute = new Function(
+    "scope",
+    `with(scope){${compiled};return input=>run(()=>command(input));}`,
+  )(proxy);
+  const input = {
+    action: "book",
+    activity_id: "synthetic",
+    remarks: "Preserve entered notes",
+    accept_terms: true,
+  };
+  const before = JSON.stringify(input);
+  await execute(input);
+  expect(attempts).toBe(1);
+  expect(JSON.stringify(input)).toBe(before);
+  expect(retry.current?.key).toBe("stable-retry");
+  expect(calls).toContainEqual(["setChallenge", ""]);
+  expect(calls).toContainEqual(["setChallengeReset", 1]);
+  expect(calls).toContainEqual(["setError", "Synthetic failure"]);
+  expect(
+    calls.some(([setter]) => ["setRemarks", "setAcceptedVersion", "setSelected"].includes(setter)),
+  ).toBe(false);
+});

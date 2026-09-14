@@ -1,11 +1,11 @@
+import { ContentReviewPanel } from "./content/ContentReview";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useBlocker, useNavigate } from "@tanstack/react-router";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { fetchAdminJson } from "../../lib/admin/http";
-import { ANIMAL_IMAGE_BUCKET } from "../../lib/animals/photoUpload";
 import {
   buildPublicProfile,
   PUBLIC_PROFILE_LABELS,
@@ -59,6 +59,21 @@ export function AnimalForm({ existing }: AnimalFormProps) {
   const [gallery, setGallery] = useState<EditableGalleryItem[]>(() => existing?.gallery ?? []);
   const [saving, setSaving] = useState(false);
   const [draftRevision, setDraftRevision] = useState(0);
+  const [dirty, setDirty] = useState(false);
+  const editVersion = useRef(0);
+  const [previewBody, setPreviewBody] = useState<Record<string, unknown> | null>(null);
+  const [savedImage, setSavedImage] = useState(existing?.image_url ?? null);
+  const [savedDraftImage, setSavedDraftImage] = useState<string | null>(null);
+  const markDirty = () => {
+    editVersion.current += 1;
+    setDirty(true);
+    setPreviewId(null);
+    setPreviewBody(null);
+  };
+  useBlocker({
+    shouldBlockFn: () => dirty && !window.confirm("離開會捨棄未儲存的內容，確定離開？"),
+    enableBeforeUnload: dirty,
+  });
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [publishReason, setPublishReason] = useState("");
   const [versions, setVersions] = useState<
@@ -66,14 +81,19 @@ export function AnimalForm({ existing }: AnimalFormProps) {
   >([]);
   const [animalId] = useState(() => existing?.id ?? crypto.randomUUID());
   const [error, setError] = useState<string | null>(null);
+  const [draftLoad, setDraftLoad] = useState<"loading" | "ready" | "failed">(
+    existing ? "loading" : "ready",
+  );
   // The eight allowlisted fields the public site actually renders. Kept in
   // local state rather than the react-hook-form schema because they are stored
   // as one jsonb column, validated as a whole, and rejected as a whole.
   const [profileFields, setProfileFields] = useState<PublicProfileFields>(() =>
     toPublicProfileFields(existing?.public_profile),
   );
-  const setProfileField = (key: keyof PublicProfileFields, value: string) =>
+  const setProfileField = (key: keyof PublicProfileFields, value: string) => {
+    markDirty();
     setProfileFields((current) => ({ ...current, [key]: value }) as PublicProfileFields);
+  };
   const animalSchema = useMemo(() => buildAnimalSchema(copy.form.errors), [copy.form.errors]);
 
   const {
@@ -116,8 +136,10 @@ export function AnimalForm({ existing }: AnimalFormProps) {
         },
   });
 
+  const hasExisting = Boolean(existing);
   useEffect(() => {
-    if (!existing) return;
+    if (!hasExisting) return;
+    let cancelled = false;
     void fetchAdminJson<{
       draft: { body: Record<string, unknown>; revision: number } | null;
       versions: Array<{ id: string; revision: number; created_at: string }>;
@@ -126,9 +148,15 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       body: JSON.stringify({ kind: "read", animal_id: animalId }),
     })
       .then((result) => {
+        if (cancelled) return;
         setVersions(result.versions ?? []);
+        setDraftLoad("ready");
         if (!result.draft) return;
         const body = result.draft.body;
+        setSavedImage(typeof body.image_url === "string" ? body.image_url : null);
+        setSavedDraftImage(
+          typeof body.draft_image_path === "string" ? body.draft_image_path : null,
+        );
         setDraftRevision(result.draft.revision);
         setProfileFields(toPublicProfileFields(body.public_profile as Animal["public_profile"]));
         setGallery(Array.isArray(body.gallery) ? (body.gallery as EditableGalleryItem[]) : []);
@@ -149,8 +177,15 @@ export function AnimalForm({ existing }: AnimalFormProps) {
           sponsorship_eligible: Boolean(body.sponsorship_eligible),
         });
       })
-      .catch(() => setError("未能載入已儲存草稿。"));
-  }, [animalId, existing, reset]);
+      .catch(() => {
+        if (cancelled) return;
+        setDraftLoad("failed");
+        setError("未能載入已儲存草稿。");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [animalId, hasExisting, reset]);
 
   async function copyVersion(versionId: string) {
     try {
@@ -172,6 +207,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
   }
 
   async function onSubmit(values: FormValues) {
+    const submittedVersion = editVersion.current;
     setSaving(true);
     setError(null);
 
@@ -190,7 +226,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       return;
     }
 
-    const previousImageUrl = existing?.image_url ?? null;
+    const previousImageUrl = savedImage;
     const image_url = previousImageUrl;
     // Set only when this submission uploaded a new object, so a failed save can
     // remove the orphan it created without ever touching the live photograph.
@@ -260,7 +296,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       sponsorship_eligible: values.sponsorship_eligible,
       public_profile: profileResult.profile,
       image_url,
-      draft_image_path: uploadedPath,
+      draft_image_path: uploadedPath ?? savedDraftImage,
       gallery: preparedGallery,
     };
 
@@ -275,7 +311,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       );
       if (paths.length === 0) return;
       try {
-        await supabase.storage.from(ANIMAL_IMAGE_BUCKET).remove(paths);
+        await supabase.storage.from("animal-draft-images").remove(paths);
       } catch {
         /* orphan is unreferenced; delayed cleanup will collect it */
       }
@@ -295,6 +331,13 @@ export function AnimalForm({ existing }: AnimalFormProps) {
         },
       );
       setDraftRevision(saved.revision);
+      setSavedDraftImage(uploadedPath ?? savedDraftImage);
+      if (editVersion.current === submittedVersion) {
+        setGallery(preparedGallery);
+        setImageFile(null);
+        setDirty(false);
+        reset(values);
+      }
       setPreviewId(null);
       setError("草稿已儲存。請在發布前先預覽；公開資料尚未改動。");
       setSaving(false);
@@ -308,19 +351,25 @@ export function AnimalForm({ existing }: AnimalFormProps) {
   }
 
   async function previewDraft() {
+    if (dirty || saving) return;
     try {
-      const result = await fetchAdminJson<{ preview_id: string }>(
-        "/api/admin/animals/publication/",
-        { method: "POST", body: JSON.stringify({ kind: "preview", animal_id: animalId }) },
-      );
+      const result = await fetchAdminJson<{
+        preview_id: string;
+        revision: number;
+        body: Record<string, unknown>;
+      }>("/api/admin/animals/publication/", {
+        method: "POST",
+        body: JSON.stringify({ kind: "preview", animal_id: animalId }),
+      });
       setPreviewId(result.preview_id);
+      setPreviewBody(result.body);
       setError("預覽已建立；如再儲存草稿，必須重新預覽。");
     } catch {
       setError("未能建立預覽。");
     }
   }
   async function publishDraft() {
-    if (!previewId || !publishReason.trim()) return;
+    if (dirty || saving || !previewId || !publishReason.trim()) return;
     try {
       await fetchAdminJson("/api/admin/animals/publication/", {
         method: "POST",
@@ -359,8 +408,28 @@ export function AnimalForm({ existing }: AnimalFormProps) {
     { value: "fostered", label: copy.animalStatus.fostered },
   ] as const;
 
+  if (draftLoad !== "ready")
+    return (
+      <section aria-busy={draftLoad === "loading"} className="space-y-3 p-6">
+        <p role={draftLoad === "failed" ? "alert" : "status"}>
+          {draftLoad === "loading" ? "正在載入已儲存草稿…" : "未能載入已儲存草稿，請重試後編輯。"}
+        </p>
+        {draftLoad === "failed" && (
+          <button type="button" onClick={() => window.location.reload()}>
+            重新載入草稿
+          </button>
+        )}
+      </section>
+    );
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="max-w-3xl space-y-5">
+    <form
+      onChange={(event) => {
+        if ((event.target as HTMLElement).id !== "animal-publish-reason") markDirty();
+      }}
+      onSubmit={handleSubmit(onSubmit)}
+      className="max-w-3xl space-y-5"
+    >
       <fieldset className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
         <legend className="px-2 text-sm font-bold text-[var(--color-panel)]">
           {copy.form.chineseGroup}
@@ -370,6 +439,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
             <label className="block text-sm font-medium mb-1">{copy.form.chineseName}</label>
             <input
               {...register("name")}
+              aria-label={copy.form.chineseName}
               placeholder={copy.form.namePlaceholder}
               className={field}
             />
@@ -377,13 +447,19 @@ export function AnimalForm({ existing }: AnimalFormProps) {
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">{copy.form.chineseAge}</label>
-            <input {...register("age")} placeholder={copy.form.agePlaceholder} className={field} />
+            <input
+              {...register("age")}
+              aria-label={copy.form.chineseAge}
+              placeholder={copy.form.agePlaceholder}
+              className={field}
+            />
             {errors.age && <p className="text-red-500 text-xs mt-1">{errors.age.message}</p>}
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">{copy.form.chineseNotes}</label>
             <input
               {...register("notes")}
+              aria-label={copy.form.chineseNotes}
               placeholder={copy.form.notesPlaceholder}
               className={field}
             />
@@ -392,6 +468,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
             <label className="block text-sm font-medium mb-1">{copy.form.chineseDescription}</label>
             <textarea
               {...register("description")}
+              aria-label={copy.form.chineseDescription}
               rows={4}
               placeholder={copy.form.descriptionPlaceholder}
               className={field}
@@ -409,6 +486,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
             <label className="block text-sm font-medium mb-1">{copy.form.englishName}</label>
             <input
               {...register("name_en")}
+              aria-label={copy.form.englishName}
               placeholder={copy.form.englishNamePlaceholder}
               className={field}
             />
@@ -417,6 +495,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
             <label className="block text-sm font-medium mb-1">{copy.form.englishAge}</label>
             <input
               {...register("age_en")}
+              aria-label={copy.form.englishAge}
               placeholder={copy.form.englishAgePlaceholder}
               className={field}
             />
@@ -425,6 +504,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
             <label className="block text-sm font-medium mb-1">{copy.form.englishNotes}</label>
             <input
               {...register("notes_en")}
+              aria-label={copy.form.englishNotes}
               placeholder={copy.form.englishNotesPlaceholder}
               className={field}
             />
@@ -433,6 +513,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
             <label className="block text-sm font-medium mb-1">{copy.form.englishDescription}</label>
             <textarea
               {...register("description_en")}
+              aria-label={copy.form.englishDescription}
               rows={4}
               placeholder={copy.form.englishDescriptionPlaceholder}
               className={field}
@@ -725,9 +806,68 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       {draftRevision > 0 && (
         <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
           <h2 className="font-bold">預覽及發布</h2>
+          <div onChange={(event) => event.stopPropagation()}>
+            <ContentReviewPanel
+              key={draftRevision}
+              kind="animal"
+              id={animalId}
+              revision={String(draftRevision)}
+              disabled={dirty || saving}
+            />
+          </div>
+          {dirty && <p role="status">內容已變更，請先儲存，再重新預覽。</p>}
+          {previewBody && (
+            <article
+              aria-label="已儲存版本預覽"
+              className="space-y-3 rounded-lg bg-[var(--color-surface)] p-4"
+            >
+              <p>已儲存版本 {draftRevision}</p>
+              <h3 className="text-2xl font-bold">{String(previewBody.name ?? "")}</h3>
+              {typeof previewBody.preview_image_url === "string" && (
+                <img
+                  src={previewBody.preview_image_url}
+                  alt={String(previewBody.name ?? "")}
+                  className="w-full max-h-96 rounded-lg object-contain"
+                />
+              )}
+              <p>{String(previewBody.age ?? "")}</p>
+              <p className="whitespace-pre-wrap">{String(previewBody.description ?? "")}</p>
+              <p className="whitespace-pre-wrap">{String(previewBody.notes ?? "")}</p>
+              {previewBody.public_profile && typeof previewBody.public_profile === "object"
+                ? Object.entries(previewBody.public_profile)
+                    .filter(([, value]) => value !== null && value !== "")
+                    .map(([key, value]) => (
+                      <p key={key}>
+                        {PUBLIC_PROFILE_LABELS[key as keyof PublicProfileFields] ?? key}：
+                        {String(value)}
+                      </p>
+                    ))
+                : null}
+              {Array.isArray(previewBody.gallery) && (
+                <div className="grid grid-cols-2 gap-3">
+                  {previewBody.gallery.map((item: Record<string, unknown>) =>
+                    typeof item.preview_url === "string" ? (
+                      <figure key={String(item.id)}>
+                        <img
+                          src={item.preview_url}
+                          alt={String(item.alt_zh ?? "")}
+                          className="w-full rounded-lg"
+                        />
+                        <figcaption>
+                          {String(item.alt_zh ?? "")}
+                          {item.review_status !== "approved" ? "（未核准，不會公開）" : ""}
+                        </figcaption>
+                      </figure>
+                    ) : null,
+                  )}
+                </div>
+              )}
+            </article>
+          )}
           <button
             type="button"
             onClick={previewDraft}
+            disabled={dirty || saving}
             className="rounded-lg border px-4 py-2 text-sm"
           >
             建立發布預覽
@@ -745,7 +885,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
           </div>
           <button
             type="button"
-            disabled={!previewId || !publishReason.trim()}
+            disabled={dirty || saving || !previewId || !publishReason.trim()}
             onClick={publishDraft}
             className="rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
           >

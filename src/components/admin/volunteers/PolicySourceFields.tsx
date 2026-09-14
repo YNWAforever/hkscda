@@ -1,4 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
+import { useDebouncedValue } from "../../../lib/useDebouncedValue";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import {
   policySourcePaths,
@@ -88,12 +89,14 @@ export function PolicySourceFields({
   policy: PolicyDraft;
   onChange: (update: (p: PolicyDraft) => void) => void;
 }) {
+  const queryPolicy = useDebouncedValue(policy, 300);
   const result = useQuery({
-    queryKey: ["volunteer-policy-effective", policy],
-    queryFn: () =>
+    queryKey: ["volunteer-policy-effective", queryPolicy],
+    placeholderData: keepPreviousData,
+    queryFn: ({ signal }) =>
       fetchAdminJson<{ body: PolicyDraft; provenance: Record<string, string> }>(
         "/api/admin/volunteers/sources/",
-        { method: "POST", body: JSON.stringify({ action: "resolve", body: policy }) },
+        { method: "POST", signal, body: JSON.stringify({ action: "resolve", body: queryPolicy }) },
       ),
   });
   const origin = (path: string) => {
@@ -135,6 +138,11 @@ export function PolicySourceFields({
           管理共用／場地來源
         </a>
       </p>
+      {(queryPolicy !== policy || result.isFetching) && (
+        <p role="status" className="text-sm text-muted-foreground">
+          正在更新有效設定…
+        </p>
+      )}
       <div className="overflow-auto">
         <table className="w-full text-left text-sm">
           <thead>
@@ -163,6 +171,7 @@ export function PolicySourceFields({
                       .map((x) => labels[x] ?? x)
                       .join(" ")}`}
                     type="checkbox"
+                    disabled={queryPolicy !== policy || result.isFetching || !result.data}
                     checked={policy.inheritance?.includes(path) ?? false}
                     onChange={(e) => setInherited(path, e.target.checked)}
                   />

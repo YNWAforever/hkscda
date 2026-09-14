@@ -1,3 +1,4 @@
+import { TablePager } from "../TablePager";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { Search } from "lucide-react";
@@ -32,14 +33,15 @@ function formatHkd(
 export function SupporterList() {
   const { language, pageCopy } = useAdminPageCopy();
   const copy = pageCopy.supporters;
+  const [page, setPage] = useState(1);
   const [query, setQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState<SupporterRole | "all">("all");
   const search = useMemo(() => {
-    const params = new URLSearchParams();
+    const params = new URLSearchParams({ page: String(page), pageSize: "25" });
     if (query.trim()) params.set("q", query.trim());
     if (roleFilter !== "all") params.set("role", roleFilter);
     return params;
-  }, [query, roleFilter]);
+  }, [query, roleFilter, page]);
   const roleLabels = copy.roleLabels as Record<SupporterRole, string>;
 
   function renderRoles(roles: SupporterRole[]) {
@@ -182,7 +184,10 @@ export function SupporterList() {
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
           <Input
             value={query}
-            onChange={(event) => setQuery(event.target.value)}
+            onChange={(event) => {
+              setQuery(event.target.value);
+              setPage(1);
+            }}
             aria-label={copy.searchLabel}
             className="pl-9"
             placeholder={copy.searchPlaceholder}
@@ -190,7 +195,10 @@ export function SupporterList() {
         </label>
         <Select
           value={roleFilter}
-          onValueChange={(value) => setRoleFilter(value as SupporterRole | "all")}
+          onValueChange={(value) => {
+            setRoleFilter(value as SupporterRole | "all");
+            setPage(1);
+          }}
         >
           <SelectTrigger className="sm:w-48" aria-label={copy.roleFilterLabel}>
             <SelectValue />
@@ -226,6 +234,15 @@ export function SupporterList() {
           renderMobileCard={renderSupporterCard}
         />
       </div>
+      {data && (
+        <TablePager
+          page={page}
+          pageSize={25}
+          total={data.total}
+          onPageChange={setPage}
+          label="支持者"
+        />
+      )}
       {data && (
         <p className="text-xs text-[var(--color-text-muted)]">
           {pageCopy.common.totalSupporters(data.total)}

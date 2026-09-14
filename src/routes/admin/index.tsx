@@ -12,8 +12,7 @@ import {
 import { AdminLayout } from "../../components/admin/AdminLayout";
 import { AnimalsTable } from "../../components/admin/AnimalsTable";
 import { LoadFailure } from "../../components/admin/LoadFailure";
-import { adminAnimalFilter } from "../../lib/animals/adminCatalogue";
-import { PUBLIC_ANIMAL_BASE_COLUMNS } from "../../lib/animals/publicColumns";
+import { fetchAdminJson } from "../../lib/admin/http";
 import type { Animal } from "../../types/animal";
 import { useAdminLanguage } from "../../components/admin/adminI18n";
 import { PaymentsReconcile } from "../../components/admin/donations/PaymentsReconcile";
@@ -22,7 +21,6 @@ import type { AdminSection } from "../../components/admin/adminNav";
 import { canRoleAccessAdminArea, getAdminAreaForLocation } from "../../lib/admin/access";
 import { adminIdentityQueryOptions } from "../../lib/admin/identity";
 import { requireAdminPageAccess } from "../../lib/admin/pageAccess";
-import { supabase } from "../../lib/supabase";
 
 type DashboardSection = Exclude<AdminSection, "supporters" | "access">;
 
@@ -71,38 +69,20 @@ function AdminDashboardContent({ section }: { section: DashboardSection }) {
   const [sponsorView, setSponsorView] = useState<"animals" | "pledges">("animals");
   const showPledgeReview = section === "sponsor" && canReviewPledges && sponsorView === "pledges";
 
+  const [missingPhoto, setMissingPhoto] = useState(false);
   const animalsQuery = useQuery({
-    // This cache holds the canonical section catalogue. URL filters are applied
-    // synchronously in AnimalsTable, with no derived query cache to go stale.
-    queryKey: ["admin-animals", section, identity?.admin.id],
-    queryFn: async () => {
-      // Only three sections list animals. The others (applications, payments,
-      // content, volunteers) render their own surfaces; previously they still
-      // issued `.eq("type", "content")`-style queries that could only ever
-      // return nothing.
-      if (section !== "cat" && section !== "dog" && section !== "sponsor") return [];
-      // "sponsor" is a programme, not a species. Filtering it as a species hid
-      // every cat or dog marked sponsorship-eligible from staff while the
-      // public /sponsors page listed them.
-      const filter = adminAnimalFilter(section);
-      const { data, error } = await supabase
-        .from("animals")
-        // Authenticated readers have explicit column grants. Internal notes
-        // require a separate privileged workflow and are not used in this list.
-        .select(PUBLIC_ANIMAL_BASE_COLUMNS)
-        .eq(filter.column, filter.value)
-        .order("created_at", { ascending: false })
-        .returns<Omit<Animal, "notes" | "notes_en">[]>();
-      if (error) throw error;
-      return (data ?? []).map((animal) => ({ ...animal, notes: null, notes_en: null }));
-    },
+    queryKey: ["admin-animals", section, identity?.admin.id, search, missingPhoto],
+    queryFn: () =>
+      fetchAdminJson<{ animals: Animal[]; total: number; page: number }>(
+        `/api/admin/animals/list?${new URLSearchParams({ section, q: search.q, archived: String(search.archived), status: search.status, page: String(search.page), missingPhoto: String(missingPhoto) })}`,
+      ),
     enabled: identity != null && isAnimalSection && !showPledgeReview,
   });
 
   // A failed query also yields no rows, so `?? []` alone would render an outage
   // as "沒有結果" -- telling the operator this section is empty when in fact
   // nothing was read.
-  const animals = animalsQuery.data ?? [];
+  const animals = animalsQuery.data?.animals ?? [];
   const isLoading = identity == null || animalsQuery.isLoading;
 
   return (
@@ -256,13 +236,29 @@ function AdminDashboardContent({ section }: { section: DashboardSection }) {
           retrying={animalsQuery.isFetching}
         />
       ) : (
-        <AnimalsTable
-          key={section}
-          animals={animals}
-          state={search}
-          onStateChange={changeListState}
-          onDeleted={() => queryClient.invalidateQueries({ queryKey: ["admin-animals", section] })}
-        />
+        <>
+          <label className="block text-sm">
+            <input
+              type="checkbox"
+              checked={missingPhoto}
+              onChange={(event) => {
+                setMissingPhoto(event.target.checked);
+                changeListState({ ...search, page: 1 });
+              }}
+            />{" "}
+            待補相片
+          </label>
+          <AnimalsTable
+            key={section}
+            animals={animals}
+            serverTotal={animalsQuery.data?.total}
+            state={search}
+            onStateChange={changeListState}
+            onDeleted={() =>
+              queryClient.invalidateQueries({ queryKey: ["admin-animals", section] })
+            }
+          />
+        </>
       )}
     </div>
   );

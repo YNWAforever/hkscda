@@ -143,13 +143,14 @@ export function createSupabaseAdminAccessRepository(client: SupabaseClient): Adm
       if (error) throw error;
     },
 
-    async listAudit() {
+    async listAudit(page = 1) {
       const { data, error } = await client
         .from("audit_log")
         .select("id,actor_user_id,action,entity_id,detail,timestamp")
         .in("action", ACCESS_AUDIT_ACTIONS as unknown as string[])
         .order("timestamp", { ascending: false })
-        .limit(50);
+        .order("id", { ascending: false })
+        .range((page - 1) * 50, page * 50);
       if (error) throw error;
       return ((data ?? []) as AuditRow[]).map(mapAudit);
     },

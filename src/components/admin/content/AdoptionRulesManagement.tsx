@@ -1,3 +1,4 @@
+import { TablePager } from "../TablePager";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -49,13 +50,14 @@ export function AdoptionRulesManagement({
   onTabChange: (tab: AdoptionInformationResource) => void;
 }) {
   const queryClient = useQueryClient();
+  const [page, setPage] = useState(1);
   const [draft, setDraft] = useState<RuleDraft | null>(null);
 
   const rulesQuery = useQuery({
-    queryKey: [...ADOPTION_INFORMATION_QUERY_KEY, "rules"],
+    queryKey: [...ADOPTION_INFORMATION_QUERY_KEY, "rules", page],
     queryFn: () =>
       fetchAdminJson<AdminAdoptionInformationPage>(
-        "/api/admin/adoption-information?resource=rules&page=1&pageSize=50",
+        `/api/admin/adoption-information?resource=rules&page=${page}&pageSize=50`,
       ),
   });
 
@@ -127,6 +129,15 @@ export function AdoptionRulesManagement({
         </ol>
       ) : null}
 
+      {rulesQuery.data && (
+        <TablePager
+          page={page}
+          pageSize={50}
+          total={rulesQuery.data.total}
+          onPageChange={setPage}
+          label="資料"
+        />
+      )}
       {draft ? (
         <form
           className="space-y-3 border border-[var(--color-border)] p-4"

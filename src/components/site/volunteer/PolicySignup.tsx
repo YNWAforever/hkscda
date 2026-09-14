@@ -1,3 +1,4 @@
+import { volunteerErrorMessage } from "../../../lib/volunteers/apiResult";
 import { VerifiedEmailSignIn } from "./VerifiedEmailSignIn";
 import { VolunteerSessionBrowser } from "./VolunteerSessionBrowser";
 import { VolunteerRecords } from "./VolunteerRecords";
@@ -17,21 +18,9 @@ const field =
   "block w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-2";
 const button =
   "rounded-md bg-[var(--color-primary)] px-4 py-2 font-semibold text-[var(--color-surface)] disabled:opacity-50";
-const reasons: Record<string, string> = {
-  verified_profile_required: "請先完成義工身份核實。",
-  capacity_full: "名額已滿，可按活動政策申請候補。",
-  overlap: "你已有重疊時段的報名。",
-  terms_required: "請閱讀及同意條款。",
-  terms_version_changed: "條款已更新，請重新載入及閱讀。",
-  invalid_remarks: "請依活動要求填寫備註。",
-  window_closed: "目前不在報名時段內。",
-};
 async function readJson<T>(response: Response): Promise<T> {
   const body = await response.json();
-  if (!response.ok)
-    throw new Error(
-      reasons[body.reason] ?? body.message ?? body.error ?? "未能提交，請重新檢查報名資格及名額。",
-    );
+  if (!response.ok) throw new Error(volunteerErrorMessage(body, response.status));
   return body as T;
 }
 export function PolicySignup() {
@@ -39,8 +28,17 @@ export function PolicySignup() {
   const [sessionError, setSessionError] = useState("");
   const [loading, setLoading] = useState(true);
   const [authLoading, setAuthLoading] = useState(true);
+  const [sessionFilter, setSessionFilter] = useState({
+    query: "",
+    shelter: "all",
+    date: "",
+    page: 1,
+  });
+  const [hasMore, setHasMore] = useState(false);
+  const [memberPages, setMemberPages] = useState({ upcoming_page: 1, history_page: 1 });
   const [sessions, setSessions] = useState<PolicySession[]>([]);
   const [refreshEpoch, setRefreshEpoch] = useState(0);
+  const termCache = useRef(new Map<string, { id: string; body: string; published_at: string }>());
   const [terms, setTerms] = useState<{ id: string; body: string; published_at: string }[]>([]);
   const [token, setToken] = useState("");
   const [me, setMe] = useState<VolunteerMe | null>(null);
@@ -58,8 +56,10 @@ export function PolicySignup() {
   const [challengeReset, setChallengeReset] = useState(0);
   const retry = useRef<{ fingerprint: string; key: string } | null>(null);
   const upcomingCount =
+    me?.upcoming_total ??
     me?.registrations.filter((entry) => registrationSection(entry, new Date()) === "upcoming")
-      .length ?? 0;
+      .length ??
+    0;
   const alreadyBooked = me?.registrations.some(
     (r) => r.activity_id === selected && ["pending", "approved", "waitlisted"].includes(r.status),
   );
@@ -69,20 +69,56 @@ export function PolicySignup() {
     (session?.policy.terms.version_id ? undefined : terms[0]);
   const accepted = acceptedVersion !== null && acceptedVersion === sessionTerms?.id;
   const refreshMe = async () => {
-    const response = await fetch(`${endpoint}?view=me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const response = await fetch(
+      `${endpoint}?view=me&${new URLSearchParams({ upcoming_page: String(memberPages.upcoming_page), history_page: String(memberPages.history_page) })}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    );
     setMe(await readJson<VolunteerMe>(response));
   };
   useEffect(() => {
     let current = true;
-    Promise.all([
-      fetch(endpoint).then(readJson<{ sessions: PolicySession[] }>),
-      fetch(`${endpoint}?view=terms`).then(readJson<{ terms: typeof terms }>),
-    ])
-      .then(([a, t]) => {
+    setLoading(true);
+    const params = new URLSearchParams({
+      page: String(sessionFilter.page),
+      query: sessionFilter.query,
+    });
+    if (sessionFilter.shelter !== "all") params.set("shelter", sessionFilter.shelter);
+    if (sessionFilter.date) params.set("date", sessionFilter.date);
+    fetch(`${endpoint}?${params}`)
+      .then(readJson<{ sessions: PolicySession[]; has_more: boolean }>)
+      .then(async (a) => {
+        const termParams = new URLSearchParams({ view: "terms" });
+        for (const id of new Set(
+          a.sessions.flatMap((row) =>
+            row.policy.terms.version_id ? [row.policy.terms.version_id] : [],
+          ),
+        ))
+          termParams.append("id", id);
+        const pinnedIds = termParams.getAll("id");
+        const needsLatest = a.sessions.some((row) => !row.policy.terms.version_id);
+        const cached = pinnedIds.every((id) => termCache.current.has(id));
+        const missingParams = new URLSearchParams({ view: "terms" });
+        for (const id of pinnedIds) if (!termCache.current.has(id)) missingParams.append("id", id);
+        const fetched =
+          cached && !needsLatest
+            ? []
+            : (await fetch(`${endpoint}?${missingParams}`).then(readJson<{ terms: typeof terms }>))
+                .terms;
+        const t = {
+          terms: [
+            ...fetched,
+            ...pinnedIds.flatMap((id) => {
+              const term = termCache.current.get(id);
+              return term && !fetched.some((row) => row.id === id) ? [term] : [];
+            }),
+          ],
+        };
+        for (const term of t.terms) termCache.current.set(term.id, term);
         if (current) {
           setSessions(a.sessions);
+          setHasMore(a.has_more);
           setTerms(t.terms);
           setSessionError("");
           setLoading(false);
@@ -97,7 +133,7 @@ export function PolicySignup() {
     return () => {
       current = false;
     };
-  }, [refreshEpoch]);
+  }, [refreshEpoch, sessionFilter]);
   useEffect(() => {
     const transitions = sessions
       .flatMap((s) =>
@@ -108,7 +144,7 @@ export function PolicySignup() {
       .filter((ms) => ms > 0);
     const timer = window.setTimeout(
       () => setRefreshEpoch((n) => n + 1),
-      Math.max(100, Math.min(30000, ...transitions)),
+      Math.max(100, Math.min(300000, ...transitions)),
     );
     const refresh = () => setRefreshEpoch((n) => n + 1);
     window.addEventListener("focus", refresh);
@@ -143,7 +179,10 @@ export function PolicySignup() {
     let current = true;
     setMe(null);
     if (token)
-      void fetch(`${endpoint}?view=me`, { headers: { Authorization: `Bearer ${token}` } })
+      void fetch(
+        `${endpoint}?view=me&${new URLSearchParams({ upcoming_page: String(memberPages.upcoming_page), history_page: String(memberPages.history_page) })}`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      )
         .then(readJson<VolunteerMe>)
         .then((value) => {
           if (current) setMe(value);
@@ -154,7 +193,7 @@ export function PolicySignup() {
     return () => {
       current = false;
     };
-  }, [token]);
+  }, [token, memberPages]);
   useEffect(() => {
     let current = true;
     setAvailability(null);
@@ -408,6 +447,12 @@ export function PolicySignup() {
         {tab === "sessions" ? (
           <>
             <VolunteerSessionBrowser
+              filter={sessionFilter}
+              onFilter={(filter) => {
+                setSelected("");
+                setSessionFilter(filter);
+              }}
+              hasMore={hasMore}
               sessions={sessions}
               selected={selected}
               onSelect={changeSelection}
@@ -480,6 +525,13 @@ export function PolicySignup() {
                       )}
                     </div>
                   )}
+                  <p>
+                    參與年齡：
+                    {typeof session.policy.eligibility.min_age === "number"
+                      ? `${session.policy.eligibility.min_age} 歲或以上`
+                      : "請先向職員確認"}
+                    。
+                  </p>
                   {session.policy.roles.length > 0 && (
                     <label className="block">
                       崗位
@@ -503,9 +555,13 @@ export function PolicySignup() {
                     <p role="status">
                       {availability.allowed
                         ? "目前可報名"
-                        : (reasons[availability.reason ?? ""] ??
-                          availability.message ??
-                          "目前未符合此場次要求，提交時會再次核實。")}
+                        : volunteerErrorMessage(
+                            {
+                              reason: availability.reason,
+                              message: availability.message,
+                            },
+                            422,
+                          )}
                       {typeof availability.remaining === "number"
                         ? ` · 剩餘 ${availability.remaining} 位`
                         : ""}
@@ -578,7 +634,7 @@ export function PolicySignup() {
                       !accepted ||
                       (!alreadyBooked &&
                         availability?.allowed === false &&
-                        availability.reason !== "capacity_full") ||
+                        availability.waitlist_allowed !== true) ||
                       !sessionTerms ||
                       (turnstileEnabled && !challenge)
                     }
@@ -600,6 +656,12 @@ export function PolicySignup() {
           </div>
         ) : me ? (
           <VolunteerRecords
+            onPage={(bucket, page) =>
+              setMemberPages((current) => ({
+                ...current,
+                [bucket === "upcoming" ? "upcoming_page" : "history_page"]: page,
+              }))
+            }
             me={me}
             mode={tab}
             busy={busy || (turnstileEnabled && !challenge)}

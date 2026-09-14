@@ -54,7 +54,20 @@ export function VolunteerLegacyReconciliation({
       <p>
         只連結有證據的同一人，不會以相同姓名或電郵自動合併。原有姓名、備註、報名政策及條款紀錄會保留；連結不代表批准。團體與已完成紀錄不在此更改。
       </p>
-      {query.error && <p role="alert">未能載入待核對名單</p>}
+      {query.error && (
+        <div role="alert">
+          <p>未能載入待核對名單，請重試。</p>
+          <button
+            type="button"
+            className={cls}
+            disabled={query.isFetching}
+            onClick={() => void query.refetch()}
+          >
+            重新載入
+          </button>
+        </div>
+      )}
+      {query.isLoading && <p role="status">正在載入待核對名單…</p>}
       <label className="block">
         待核對個人報名
         <select

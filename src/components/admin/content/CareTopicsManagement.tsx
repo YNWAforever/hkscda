@@ -1,3 +1,4 @@
+import { TablePager } from "../TablePager";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -58,14 +59,15 @@ export function CareTopicsManagement({
   onTabChange: (tab: AdoptionInformationResource) => void;
 }) {
   const queryClient = useQueryClient();
+  const [page, setPage] = useState(1);
   const [species, setSpecies] = useState<AdoptionAnimalType>("cat");
   const [draft, setDraft] = useState<CareTopicDraft | null>(null);
 
   const topicsQuery = useQuery({
-    queryKey: [...ADOPTION_INFORMATION_QUERY_KEY, "careTopics"],
+    queryKey: [...ADOPTION_INFORMATION_QUERY_KEY, "careTopics", page, species],
     queryFn: () =>
       fetchAdminJson<AdminAdoptionInformationPage>(
-        "/api/admin/adoption-information?resource=careTopics&page=1&pageSize=50",
+        `/api/admin/adoption-information?resource=careTopics&page=${page}&pageSize=50&animalType=${species}`,
       ),
   });
 
@@ -101,7 +103,10 @@ export function CareTopicsManagement({
             type="button"
             role="tab"
             aria-selected={species === value}
-            onClick={() => setSpecies(value)}
+            onClick={() => {
+              setSpecies(value);
+              setPage(1);
+            }}
             className="px-3 py-2 text-sm font-semibold aria-selected:underline"
           >
             {value === "cat" ? "貓隻" : "狗隻"}
@@ -154,6 +159,15 @@ export function CareTopicsManagement({
         </ul>
       ) : null}
 
+      {topicsQuery.data && (
+        <TablePager
+          page={page}
+          pageSize={50}
+          total={topicsQuery.data.total}
+          onPageChange={setPage}
+          label="資料"
+        />
+      )}
       {draft ? (
         <form
           className="space-y-3 border border-[var(--color-border)] p-4"

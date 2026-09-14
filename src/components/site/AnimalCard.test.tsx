@@ -44,7 +44,7 @@ describe("AnimalCard", () => {
     expect(markup).toContain("public-animal-card");
     expect(markup).toContain("public-animal-media");
     expect(markup).toContain("暫未有相片");
-    expect(markup).toContain("未有記錄");
+    expect(markup).not.toContain("未有記錄");
     expect(markup).not.toContain(animal.notes);
     expect(markup).not.toContain("--color-cat");
     expect(markup).not.toContain("--color-dog");

@@ -16,6 +16,7 @@ type MockLinkProps = {
 
 mock.module("@tanstack/react-router", () => ({
   ...realReactRouter,
+  useNavigate: () => () => Promise.resolve(),
   Link: ({ children, className, params, to }: MockLinkProps) => {
     const href = params
       ? Object.entries(params).reduce((path, [key, value]) => path.replace(`$${key}`, value), to)
@@ -183,7 +184,7 @@ test("links to document and annual-report workspaces", async () => {
   expect(markup).toContain('href="/admin/content/annual-reports"');
   expect(markup).toContain(">年度報告</a>");
   expect(markup).toContain('href="/admin/content/adoption"');
-  expect(markup).toContain(">????</a>");
+  expect(markup).toContain(">領養資訊</a>");
   expect(markup).toContain('href="/admin/content/adoption-guides"');
   expect(markup).toContain(">\u9818\u990a\u5f8c\u6307\u5357\u7248\u672c</a>");
 });

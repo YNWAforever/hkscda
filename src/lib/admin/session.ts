@@ -1,3 +1,4 @@
+import { volunteerErrorMessage } from "../volunteers/apiResult";
 import type { QueryClient } from "@tanstack/react-query";
 import { redirect } from "@tanstack/react-router";
 
@@ -63,6 +64,11 @@ export async function fetchAdminJson<T>(path: string, init?: RequestInit): Promi
     const body = await response.json().catch(() => null);
     const structuredError = structuredAdminApiError(response.status, body);
     if (structuredError) throw structuredError;
+    if (path.includes("/volunteers"))
+      throw new AdminApiError({
+        status: response.status,
+        message: volunteerErrorMessage(body, response.status),
+      });
 
     throw new Error(
       body && typeof body === "object" && typeof body.error === "string"

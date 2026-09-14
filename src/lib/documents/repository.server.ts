@@ -242,7 +242,8 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
         .eq("is_published", true)
         .eq("document_assets.is_published", true)
         .order("sort_order", { ascending: true })
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .order("id", { ascending: false });
       if (error) throw error;
 
       return ((data ?? []) as Row[])
@@ -255,7 +256,8 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
         .from("annual_reports")
         .select(ANNUAL_REPORT_COLUMNS)
         .order("sort_order", { ascending: true })
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .order("id", { ascending: false });
       if (error) throw error;
       return ((data ?? []) as Row[])
         .map((row) => mapAdminAnnualReport(client, row))

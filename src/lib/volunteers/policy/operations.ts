@@ -41,6 +41,9 @@ export const operationCommandSchema = z.discriminatedUnion("action", [
   z
     .object({
       action: z.literal("move_apply"),
+      accept_terms: z.literal(true).optional(),
+      terms_version_id: uuid.optional(),
+      destination_policy_version_id: uuid.optional(),
       preview_id: uuid,
       idempotency_key: uuid,
       reason: z.string().trim().min(1).max(1000),

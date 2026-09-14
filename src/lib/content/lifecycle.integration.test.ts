@@ -42,6 +42,7 @@ async function addCover(item: Result) {
   return row.result as Result;
 }
 async function publish(item: Result, key: string) {
+  await db`insert into public.editorial_content_review(entity_kind,entity_id,revision_key,classification,evidence,reviewed_by) values('content',${item.content_id}::uuid,${item.revision_id},'approved','Explicit synthetic lifecycle fixture; no real content',${actor}::uuid) on conflict do nothing`;
   const [row] =
     await db`select public.publish_content_revision(${actor}::uuid, ${item.content_id}::uuid, ${item.revision_id}::uuid, ${item.version}, ${key}) as result`;
   return row.result as Result;
@@ -50,6 +51,7 @@ async function publish(item: Result, key: string) {
 describe.skipIf(!enabled)("CMS lifecycle isolated database acceptance", () => {
   beforeAll(async () => {
     db = new SQL(databaseUrl!, { max: 4 });
+    await db`insert into auth.users(id,email) values(${actor}::uuid,${`cms-${actor}@example.invalid`})`;
     await db`insert into public.admin_user(auth_user_id,email,role,status) values(${actor}::uuid,${`cms-${actor}@example.test`},'staff','active')`;
   });
   afterAll(async () => {
@@ -59,6 +61,7 @@ describe.skipIf(!enabled)("CMS lifecycle isolated database acceptance", () => {
       await db`update public.content_item set status='draft',published_slug=null,published_revision_id=null,draft_revision_id=null where id=${id}::uuid`;
       await db`delete from public.content_item where id=${id}::uuid`;
     }
+    await db`delete from public.editorial_content_review where reviewed_by=${actor}::uuid`;
     await db`delete from public.audit_log where actor_user_id=${actor}::uuid`;
     await db`delete from public.admin_user where auth_user_id=${actor}::uuid`;
     await db.close();

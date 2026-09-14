@@ -51,6 +51,7 @@ type AccessAuditRow = {
 
 type AccessAuditResponse = {
   audit: AccessAuditRow[];
+  hasMore: boolean;
 };
 
 const copy = {
@@ -175,9 +176,10 @@ export function AccessManagement() {
     queryKey: ["admin-access-users"],
     queryFn: () => fetchAdminJson<AccessUsersResponse>("/api/admin/access/users"),
   });
+  const [auditPage, setAuditPage] = useState(1);
   const auditQuery = useQuery({
-    queryKey: ["admin-access-audit"],
-    queryFn: () => fetchAdminJson<AccessAuditResponse>("/api/admin/access/audit"),
+    queryKey: ["admin-access-audit", auditPage],
+    queryFn: () => fetchAdminJson<AccessAuditResponse>(`/api/admin/access/audit?page=${auditPage}`),
   });
   const meQuery = useQuery(adminIdentityQueryOptions());
 
@@ -440,6 +442,26 @@ export function AccessManagement() {
 
       <section className="rounded-lg border border-[var(--color-border)] bg-white p-4">
         <h2 className="text-base font-semibold text-[var(--color-panel)]">{t.audit}</h2>
+        {auditQuery.error && (
+          <p role="alert">
+            未能載入紀錄。<button onClick={() => void auditQuery.refetch()}>重試</button>
+          </p>
+        )}
+        <nav aria-label="權限紀錄分頁" className="flex gap-3">
+          <button
+            disabled={auditPage === 1 || auditQuery.isFetching}
+            onClick={() => setAuditPage((page) => page - 1)}
+          >
+            上一頁
+          </button>
+          <span>第 {auditPage} 頁</span>
+          <button
+            disabled={!auditQuery.data?.hasMore || auditQuery.isFetching}
+            onClick={() => setAuditPage((page) => page + 1)}
+          >
+            下一頁
+          </button>
+        </nav>
         <div className="mt-3 space-y-2">
           {(auditQuery.data?.audit ?? []).length === 0 ? (
             <p className="text-sm text-[var(--color-text-muted)]">{t.noAudit}</p>

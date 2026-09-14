@@ -1,3 +1,4 @@
+import { withVolunteerTiming, logVolunteerFailure } from "../telemetry.server";
 import { z } from "zod";
 import { directoryQuerySchema, type DirectoryQuery } from "./schemas";
 import type { DirectoryDetail, DirectoryList } from "./types";
@@ -6,7 +7,7 @@ export type DirectoryDependencies = {
   read: (actor: string, input: DirectoryQuery) => Promise<DirectoryList | DirectoryDetail | null>;
 };
 export function createDirectoryHandler(deps: DirectoryDependencies) {
-  return async (request: Request) => {
+  return withVolunteerTiming("directory_read", async (request: Request) => {
     const headers = { "cache-control": "no-store" };
     try {
       const actor = await deps.authorize(request);
@@ -28,7 +29,8 @@ export function createDirectoryHandler(deps: DirectoryDependencies) {
         return Response.json({ error: "請檢查搜尋條件" }, { status: 400, headers });
       if (error && typeof error === "object" && "code" in error && error.code === "42501")
         return Response.json({ error: "沒有查閱權限" }, { status: 403, headers });
+      logVolunteerFailure("directory_read", error);
       return Response.json({ error: "未能載入義工資料，請重試" }, { status: 500, headers });
     }
-  };
+  });
 }

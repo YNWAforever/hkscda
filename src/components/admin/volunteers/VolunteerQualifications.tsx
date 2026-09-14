@@ -37,6 +37,7 @@ const inputClass = "min-h-11 rounded border border-[var(--color-border)] p-2";
 const tiers = { newcomer: "新手義工", regular: "恆常義工", senior: "資深義工" };
 export function VolunteerQualifications() {
   const queryClient = useQueryClient();
+  const [legacyOpened, setLegacyOpened] = useState(false);
   const query = useQuery({
     queryKey: ["volunteer-qualifications"],
     queryFn: () => post<Data>({ action: "list" }),
@@ -300,9 +301,14 @@ export function VolunteerQualifications() {
           </ul>
         </div>
       )}
-      <details className="rounded-lg border p-4">
+      <details
+        className="rounded-lg border p-4"
+        onToggle={(event) => {
+          if (event.currentTarget.open) setLegacyOpened(true);
+        }}
+      >
         <summary className="cursor-pointer font-semibold">舊報名身份核對</summary>
-        <VolunteerLegacyReconciliation profiles={query.data?.profiles ?? []} />
+        {legacyOpened && <VolunteerLegacyReconciliation profiles={query.data?.profiles ?? []} />}
       </details>
       {mutation.error && <p role="alert">{mutation.error.message}</p>}
       {mutation.isSuccess && <p role="status">更新已保存，核實歷史及未來場次跟進任務已保留。</p>}

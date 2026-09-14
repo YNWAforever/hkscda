@@ -69,7 +69,7 @@ export type AdminAccessRepository = {
   insertUser(input: AdminAccessUserInsert): Promise<AdminAccessUser>;
   updateUser(id: string, input: AdminAccessUserUpdate): Promise<AdminAccessUser>;
   insertAuditLog(input: AdminAccessAuditInsert): Promise<void>;
-  listAudit(): Promise<AdminAccessAuditRow[]>;
+  listAudit(page?: number): Promise<AdminAccessAuditRow[]>;
 };
 
 export type AdminInviteAuthProvider = {
@@ -291,8 +291,9 @@ export function createAdminAccessService({
       return updated;
     },
 
-    async listAudit() {
-      return { audit: await repo.listAudit() };
+    async listAudit(page = 1) {
+      const rows = await repo.listAudit(page);
+      return { audit: rows.slice(0, 50), hasMore: rows.length > 50, page };
     },
   };
 }
