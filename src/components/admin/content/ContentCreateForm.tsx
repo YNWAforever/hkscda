@@ -4,7 +4,11 @@ import { useMutation } from "@tanstack/react-query";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type { ContentType } from "../../../lib/content/types";
-import { formatContentTypeLabel, suggestSlug } from "./contentAdminLogic";
+import {
+  contentOptionalFieldLabels,
+  formatContentTypeLabel,
+  suggestSlug,
+} from "./contentAdminLogic";
 
 const contentTypes: ContentType[] = ["rescue_story", "event", "charity_market", "report"];
 
@@ -109,13 +113,13 @@ export function ContentCreateForm() {
         </label>
 
         {(
-          ["ctaLabel", "ctaUrl", "seoTitle", "seoDescription", "ogTitle", "ogDescription"] as const
+          Object.keys(contentOptionalFieldLabels) as Array<keyof typeof contentOptionalFieldLabels>
         ).map((key) => (
           <label
             key={key}
             className="block space-y-1 text-sm font-semibold text-[var(--color-panel)]"
           >
-            {key}
+            {contentOptionalFieldLabels[key]}
             <input
               value={optional[key]}
               onChange={(event) =>

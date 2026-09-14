@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 
 import {
   buildContentSearchParams,
+  contentOptionalFieldLabels,
   contentStatusTone,
   copyTextToClipboard,
   formatContentTypeLabel,
@@ -69,6 +70,22 @@ describe("contentAdminLogic", () => {
         },
       }),
     ).rejects.toThrow("clipboard blocked");
+  });
+});
+
+describe("contentOptionalFieldLabels", () => {
+  test("labels every optional content field", () => {
+    expect(Object.keys(contentOptionalFieldLabels).sort()).toEqual([
+      "ctaLabel",
+      "ctaUrl",
+      "ogDescription",
+      "ogTitle",
+      "seoDescription",
+      "seoTitle",
+    ]);
+    for (const label of Object.values(contentOptionalFieldLabels)) {
+      expect(label.trim().length).toBeGreaterThan(0);
+    }
   });
 });
 

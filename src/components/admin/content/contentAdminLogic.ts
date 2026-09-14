@@ -1,5 +1,14 @@
 import type { ContentStatus, ContentType } from "../../../lib/content/types";
 
+export const contentOptionalFieldLabels = {
+  ctaLabel: "CTA 標籤",
+  ctaUrl: "CTA 連結",
+  seoTitle: "SEO 標題",
+  seoDescription: "SEO 描述",
+  ogTitle: "OG 標題",
+  ogDescription: "OG 描述",
+} as const;
+
 export type ContentSearchInput = {
   q?: string;
   type?: ContentType | "all";
