@@ -1711,16 +1711,16 @@ git commit -m "feat(scripts): downscale photos and add overwrite re-run"
 - [ ] **Step 1: Dry-run with overwrite**
 
 Run: `bun run backfill:animal-photos --overwrite`
-Expected: `Mode: DRY RUN`, `Planned:` shows ~224 to apply (all live matches including already-imaged), 3 unmatched-live-equivalent failures expected only at apply time.
+Expected: `Mode: DRY RUN`, `Planned:` 198 to apply (all live matches including already-imaged), 0 already imaged, 29 unmatched-live.
 
 - [ ] **Step 2: Apply**
 
 Run: `bun run backfill:animal-photos --apply --yes --overwrite`
-Expected: `Mode: APPLY (OVERWRITE)`; `applied` ≈ 224, `failed` = 3 (2 dead references, 1 video).
+Expected: `Mode: APPLY (OVERWRITE)`; `applied` = 195, `failed` = 3 (2 dead references, 1 video).
 
 - [ ] **Step 3: Verify**
 
-Spot-check a replaced URL is now small (`Content-Length` well under 1 MB) and returns `image/jpeg`; re-check the deployed homepage still shows `animal-images` references with no placeholders.
+Spot-check a replaced URL is now small (well under 1 MB; observed ~141 KB) and returns `image/jpeg`; re-check the deployed homepage still shows `animal-images` references with no placeholders.
 
 ## Increment self-review
 

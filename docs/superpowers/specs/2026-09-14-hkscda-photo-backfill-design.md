@@ -211,5 +211,9 @@ than raising the bucket limit.
   rows that already have an `image_url`. This is a deliberate, explicit relaxation
   of the "never overwrite" invariant: without the flag the original behaviour is
   unchanged. Only the `image_url` column is ever written.
-- **Expected re-run result:** 224 applied, 3 unrecoverable (2 dead source
-  references, 1 video). The five formerly-oversized sources now fit.
+- **Result (re-run):** 195 applied, 3 unrecoverable (2 dead source references,
+  1 video). All re-hosted photos are downscaled (a replaced sample fell from
+  2.4 MB to ~141 KB). Because `--overwrite` re-processed the whole match set, the
+  one already-imaged live match was replaced too, so `content-media` fell from 14
+  to 13. In total 208 of 292 animals now have a photo (195 `animal-images`, 13
+  remaining legacy `content-media`). The five formerly-oversized sources fit.
