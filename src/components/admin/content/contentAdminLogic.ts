@@ -54,6 +54,18 @@ export function formatContentTypeLabel(type: ContentType, language: "zh" | "en")
   return labels[type][language];
 }
 
+export function suggestSlug(title: string) {
+  return title
+    .normalize("NFKD")
+    .toLowerCase()
+    .replace(/['’]/g, "-")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 180)
+    .replace(/-+$/g, "");
+}
+
 export function summarizeContentRows(rows: ContentSummaryRow[]) {
   return rows.reduce(
     (summary, row) => ({

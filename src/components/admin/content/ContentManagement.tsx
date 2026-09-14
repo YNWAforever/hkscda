@@ -258,6 +258,12 @@ function ContentManagementView({
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Link
+            to="/admin/content/new"
+            className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-bold text-[var(--color-primary-foreground)]"
+          >
+            建立內容
+          </Link>
+          <Link
             to="/admin/content/adoption"
             className="rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-panel)]"
           >

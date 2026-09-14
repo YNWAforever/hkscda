@@ -111,6 +111,7 @@ import { Route as AdminCoordinatorIntakeRouteImport } from './routes/admin/coord
 import { Route as AdminCoordinatorInboxRouteImport } from './routes/admin/coordinator/inbox'
 import { Route as AdminCoordinatorAnimalsRouteImport } from './routes/admin/coordinator/animals'
 import { Route as AdminCoordinatorAdoptersRouteImport } from './routes/admin/coordinator/adopters'
+import { Route as AdminContentNewRouteImport } from './routes/admin/content/new'
 import { Route as AdminContentKnowledgeRouteImport } from './routes/admin/content/knowledge'
 import { Route as AdminContentDocumentsRouteImport } from './routes/admin/content/documents'
 import { Route as AdminContentAnnualReportsRouteImport } from './routes/admin/content/annual-reports'
@@ -766,6 +767,11 @@ const AdminCoordinatorAdoptersRoute =
     path: '/admin/coordinator/adopters',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminContentNewRoute = AdminContentNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AdminContentRoute,
+} as any)
 const AdminContentKnowledgeRoute = AdminContentKnowledgeRouteImport.update({
   id: '/knowledge',
   path: '/knowledge',
@@ -1571,6 +1577,7 @@ export interface FileRoutesByFullPath {
   '/admin/content/annual-reports': typeof AdminContentAnnualReportsRoute
   '/admin/content/documents': typeof AdminContentDocumentsRoute
   '/admin/content/knowledge': typeof AdminContentKnowledgeRoute
+  '/admin/content/new': typeof AdminContentNewRoute
   '/admin/coordinator/adopters': typeof AdminCoordinatorAdoptersRouteWithChildren
   '/admin/coordinator/animals': typeof AdminCoordinatorAnimalsRoute
   '/admin/coordinator/inbox': typeof AdminCoordinatorInboxRoute
@@ -1804,6 +1811,7 @@ export interface FileRoutesByTo {
   '/admin/content/annual-reports': typeof AdminContentAnnualReportsRoute
   '/admin/content/documents': typeof AdminContentDocumentsRoute
   '/admin/content/knowledge': typeof AdminContentKnowledgeRoute
+  '/admin/content/new': typeof AdminContentNewRoute
   '/admin/coordinator/adopters': typeof AdminCoordinatorAdoptersRouteWithChildren
   '/admin/coordinator/animals': typeof AdminCoordinatorAnimalsRoute
   '/admin/coordinator/inbox': typeof AdminCoordinatorInboxRoute
@@ -2039,6 +2047,7 @@ export interface FileRoutesById {
   '/admin/content/annual-reports': typeof AdminContentAnnualReportsRoute
   '/admin/content/documents': typeof AdminContentDocumentsRoute
   '/admin/content/knowledge': typeof AdminContentKnowledgeRoute
+  '/admin/content/new': typeof AdminContentNewRoute
   '/admin/coordinator/adopters': typeof AdminCoordinatorAdoptersRouteWithChildren
   '/admin/coordinator/animals': typeof AdminCoordinatorAnimalsRoute
   '/admin/coordinator/inbox': typeof AdminCoordinatorInboxRoute
@@ -2275,6 +2284,7 @@ export interface FileRouteTypes {
     | '/admin/content/annual-reports'
     | '/admin/content/documents'
     | '/admin/content/knowledge'
+    | '/admin/content/new'
     | '/admin/coordinator/adopters'
     | '/admin/coordinator/animals'
     | '/admin/coordinator/inbox'
@@ -2508,6 +2518,7 @@ export interface FileRouteTypes {
     | '/admin/content/annual-reports'
     | '/admin/content/documents'
     | '/admin/content/knowledge'
+    | '/admin/content/new'
     | '/admin/coordinator/adopters'
     | '/admin/coordinator/animals'
     | '/admin/coordinator/inbox'
@@ -2742,6 +2753,7 @@ export interface FileRouteTypes {
     | '/admin/content/annual-reports'
     | '/admin/content/documents'
     | '/admin/content/knowledge'
+    | '/admin/content/new'
     | '/admin/coordinator/adopters'
     | '/admin/coordinator/animals'
     | '/admin/coordinator/inbox'
@@ -3781,6 +3793,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCoordinatorAdoptersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/content/new': {
+      id: '/admin/content/new'
+      path: '/new'
+      fullPath: '/admin/content/new'
+      preLoaderRoute: typeof AdminContentNewRouteImport
+      parentRoute: typeof AdminContentRoute
+    }
     '/admin/content/knowledge': {
       id: '/admin/content/knowledge'
       path: '/knowledge'
@@ -4742,6 +4761,7 @@ interface AdminContentRouteChildren {
   AdminContentAnnualReportsRoute: typeof AdminContentAnnualReportsRoute
   AdminContentDocumentsRoute: typeof AdminContentDocumentsRoute
   AdminContentKnowledgeRoute: typeof AdminContentKnowledgeRoute
+  AdminContentNewRoute: typeof AdminContentNewRoute
 }
 
 const AdminContentRouteChildren: AdminContentRouteChildren = {
@@ -4752,6 +4772,7 @@ const AdminContentRouteChildren: AdminContentRouteChildren = {
   AdminContentAnnualReportsRoute: AdminContentAnnualReportsRoute,
   AdminContentDocumentsRoute: AdminContentDocumentsRoute,
   AdminContentKnowledgeRoute: AdminContentKnowledgeRoute,
+  AdminContentNewRoute: AdminContentNewRoute,
 }
 
 const AdminContentRouteWithChildren = AdminContentRoute._addFileChildren(

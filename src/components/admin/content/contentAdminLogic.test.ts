@@ -7,6 +7,7 @@ import {
   formatContentTypeLabel,
   formatIsoForDatetimeLocal,
   parseDatetimeLocalToIso,
+  suggestSlug,
   summarizeContentRows,
 } from "./contentAdminLogic";
 
@@ -68,5 +69,20 @@ describe("contentAdminLogic", () => {
         },
       }),
     ).rejects.toThrow("clipboard blocked");
+  });
+});
+
+describe("suggestSlug", () => {
+  test("kebab-cases an ASCII title", () => {
+    expect(suggestSlug("Rescue Story: Milo's New Home!")).toBe("rescue-story-milo-s-new-home");
+  });
+  test("returns an empty string for a purely CJK title (staff must type a slug)", () => {
+    expect(suggestSlug("米路的新家")).toBe("");
+  });
+  test("strips leading/trailing separators and caps length", () => {
+    const slug = suggestSlug("  --Hello, World--  " + "x".repeat(220));
+    expect(slug.startsWith("hello-world")).toBe(true);
+    expect(slug.length).toBeLessThanOrEqual(180);
+    expect(/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)).toBe(true);
   });
 });
