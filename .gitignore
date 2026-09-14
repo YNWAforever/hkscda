@@ -60,3 +60,8 @@ artifacts/performance-ci*/
 
 # Local database backups -- never commit; may contain real production data
 backups/
+
+# HKSCDA photo backfill output (generated; contains live production data)
+data/hkscda-live.json
+data/hkscda-photo-manifest.json
+data/hkscda-photo-manifest.csv
