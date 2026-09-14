@@ -246,3 +246,57 @@ test("detail page and its separate private cover share one signing batch", async
   expect(detail?.media).toHaveLength(20);
   expect(detail?.coverImageUrl).toBe("https://example.test/cover.jpg");
 });
+
+test("resolveAdopterRecipients resolves a linked adoption case through its supporter", async () => {
+  const tables: Record<string, unknown[]> = {
+    content_link: [
+      {
+        id: "link-1",
+        content_item_id: "content-1",
+        linked_type: "adoption_case",
+        linked_id: "case-1",
+        relationship: "adopter",
+        created_at: "2026-09-01",
+        updated_at: "2026-09-01",
+      },
+    ],
+    adoption_case: [
+      {
+        id: "case-1",
+        supporter_id: "supporter-1",
+        applicant_name: "申請人",
+        applicant_email: "applicant@example.test",
+        applicant_phone: null,
+      },
+    ],
+    supporter: [
+      {
+        id: "supporter-1",
+        name: "陳太",
+        email: "adopter@example.test",
+        phone: null,
+      },
+    ],
+  };
+  const client = {
+    from(table: string) {
+      const query = {
+        select: () => query,
+        eq: () => query,
+        in: async () => ({ data: tables[table] ?? [], error: null }),
+      };
+      return query;
+    },
+  } as unknown as SupabaseClient;
+
+  const recipients =
+    await createSupabaseContentRepository(client).resolveAdopterRecipients("content-1");
+
+  expect(recipients).toHaveLength(1);
+  expect(recipients[0]).toMatchObject({
+    adoptionCaseId: "case-1",
+    supporterId: "supporter-1",
+    name: "陳太",
+    email: "adopter@example.test",
+  });
+});

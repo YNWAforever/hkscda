@@ -129,7 +129,7 @@ function createService(overrides: Record<string, unknown> = {}) {
     },
     async createStoryUpdate() {
       calls.push("createStoryUpdate");
-      return { id: "update-1" };
+      return { id: "update-1", notificationDrafts: { created: 0, warning: null } };
     },
     async createContentMedia() {
       calls.push("createContentMedia");

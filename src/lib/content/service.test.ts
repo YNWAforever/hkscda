@@ -1,8 +1,15 @@
 import { describe, expect, mock, test } from "bun:test";
+import type { AdopterNotificationRecipient } from "./notificationDrafts";
 import { createContentService, type ContentRepository } from "./service";
 import type { ContentDetail, RecipientNotificationDraft, StoryUpdate } from "./types";
 
 type ContentService = ReturnType<typeof createContentService>;
+
+type ContentOverride = Partial<Omit<ContentDetail, "notificationDrafts">> & {
+  notificationDrafts?: Array<
+    Pick<RecipientNotificationDraft, "storyUpdateId" | "channel" | "recipientContact">
+  >;
+};
 
 const storyUpdateId = "22222222-2222-4333-8444-555555555555";
 const missingStoryUpdateId = "33333333-3333-4333-8444-555555555555";
@@ -113,16 +120,46 @@ function createRepo(overrides: Partial<ContentRepository> = {}) {
 
 function buildService({
   content,
+  storyUpdate,
+  recipients,
+  recipientsError,
+  insertNotificationDrafts,
   mediaLifecycle,
 }: {
-  content?: Partial<ContentDetail>;
+  content?: ContentOverride;
+  storyUpdate?: Partial<StoryUpdate>;
+  recipients?: AdopterNotificationRecipient[];
+  recipientsError?: Error;
+  insertNotificationDrafts?: ContentRepository["insertNotificationDrafts"];
   mediaLifecycle?: {
     publish: (command: unknown) => Promise<{ version: number; revisionId: string }>;
   };
 } = {}) {
-  const { repo } = createRepo({
-    getAdminContent: async () => ({ ...detail, ...content }),
-  });
+  const overrides: Partial<ContentRepository> = {
+    getAdminContent: async () =>
+      ({
+        ...detail,
+        ...content,
+        notificationDrafts: content?.notificationDrafts ?? detail.notificationDrafts,
+      }) as ContentDetail,
+  };
+  if (storyUpdate) {
+    const update: StoryUpdate = { ...publicStoryUpdate, ...storyUpdate };
+    overrides.getStoryUpdate = async () => update;
+    overrides.createStoryUpdate = mock(async () => update.id);
+  }
+  if (recipientsError) {
+    overrides.resolveAdopterRecipients = async () => {
+      throw recipientsError;
+    };
+  } else if (recipients) {
+    overrides.resolveAdopterRecipients = async () => recipients;
+  }
+  if (insertNotificationDrafts) {
+    overrides.insertNotificationDrafts = insertNotificationDrafts;
+  }
+
+  const { repo } = createRepo(overrides);
   const service: ContentService = createContentService({
     repo,
     publicBaseUrl: "https://example.test",
@@ -656,7 +693,10 @@ describe("createContentService", () => {
           shouldGenerateAdopterDrafts: true,
         },
       }),
-    ).resolves.toEqual({ id: storyUpdateId });
+    ).resolves.toEqual({
+      id: storyUpdateId,
+      notificationDrafts: { created: 2, warning: null },
+    });
     await expect(
       service.createContentMedia({
         actorUserId: "admin-user",
@@ -715,6 +755,188 @@ describe("createContentService", () => {
       }),
     ).rejects.toThrow("Internal story updates cannot use public content media");
     expect(createMediaCalled).toBe(false);
+  });
+});
+
+describe("createContentService createStoryUpdate adopter drafts", () => {
+  test("saving an update with the toggle creates adopter drafts", async () => {
+    const inserted: unknown[] = [];
+    const { service } = buildService({
+      content: {},
+      storyUpdate: {
+        id: "u1",
+        contentItemId: "c1",
+        visibility: "public",
+        title: "救起",
+        body: "近況",
+        shouldGenerateAdopterDrafts: true,
+      },
+      recipients: [
+        {
+          adoptionCaseId: "a1",
+          supporterId: "s1",
+          name: "陳太",
+          email: "adopter@example.test",
+          phone: null,
+        },
+      ],
+      insertNotificationDrafts: async (rows) => {
+        inserted.push(...rows);
+      },
+    });
+    const result = await service.createStoryUpdate({
+      actorUserId: "u1",
+      contentId: "c1",
+      input: {
+        kind: "care",
+        title: "救起",
+        occurredAt: "2026-09-14T00:00:00.000Z",
+        visibility: "public",
+        shouldGenerateAdopterDrafts: true,
+      },
+    });
+    expect(result.notificationDrafts.created).toBe(1);
+    expect(result.notificationDrafts.warning).toBeNull();
+    expect(inserted).toHaveLength(1);
+  });
+
+  test("no resolvable recipients still saves the update and warns", async () => {
+    const { service } = buildService({
+      content: {},
+      storyUpdate: {
+        id: "u1",
+        contentItemId: "c1",
+        visibility: "public",
+        title: "救起",
+        body: null,
+        shouldGenerateAdopterDrafts: true,
+      },
+      recipients: [],
+    });
+    const result = await service.createStoryUpdate({
+      actorUserId: "u1",
+      contentId: "c1",
+      input: {
+        kind: "care",
+        title: "救起",
+        occurredAt: "2026-09-14T00:00:00.000Z",
+        visibility: "public",
+        shouldGenerateAdopterDrafts: true,
+      },
+    });
+    expect(result.id).toBeTruthy();
+    expect(result.notificationDrafts.created).toBe(0);
+    expect(result.notificationDrafts.warning).toBeTruthy();
+  });
+
+  test("a generation failure does not throw and the update is saved", async () => {
+    const { service, repo } = buildService({
+      content: {},
+      storyUpdate: {
+        id: "u1",
+        contentItemId: "c1",
+        visibility: "public",
+        title: "救起",
+        body: null,
+        shouldGenerateAdopterDrafts: true,
+      },
+      recipientsError: new Error("boom"),
+    });
+    const result = await service.createStoryUpdate({
+      actorUserId: "u1",
+      contentId: "c1",
+      input: {
+        kind: "care",
+        title: "救起",
+        occurredAt: "2026-09-14T00:00:00.000Z",
+        visibility: "public",
+        shouldGenerateAdopterDrafts: true,
+      },
+    });
+    expect(result.notificationDrafts.created).toBe(0);
+    expect(result.notificationDrafts.warning).toBeTruthy();
+    expect(repo.createStoryUpdate).toHaveBeenCalled();
+  });
+
+  test("an existing draft for the same update/contact is not regenerated", async () => {
+    const { service } = buildService({
+      content: {
+        notificationDrafts: [
+          { storyUpdateId: "u1", channel: "email", recipientContact: "adopter@example.test" },
+        ],
+      },
+      storyUpdate: {
+        id: "u1",
+        contentItemId: "c1",
+        visibility: "public",
+        title: "救起",
+        body: null,
+        shouldGenerateAdopterDrafts: true,
+      },
+      recipients: [
+        {
+          adoptionCaseId: "a1",
+          supporterId: "s1",
+          name: "陳太",
+          email: "adopter@example.test",
+          phone: null,
+        },
+      ],
+    });
+    const result = await service.createStoryUpdate({
+      actorUserId: "u1",
+      contentId: "c1",
+      input: {
+        kind: "care",
+        title: "救起",
+        occurredAt: "2026-09-14T00:00:00.000Z",
+        visibility: "public",
+        shouldGenerateAdopterDrafts: true,
+      },
+    });
+    expect(result.notificationDrafts.created).toBe(0);
+  });
+
+  test("an internal update saves without adopter drafts and warns", async () => {
+    let inserted = false;
+    const { service } = buildService({
+      content: {},
+      storyUpdate: {
+        id: "u1",
+        contentItemId: "c1",
+        visibility: "internal",
+        title: "救起",
+        body: null,
+        shouldGenerateAdopterDrafts: true,
+      },
+      recipients: [
+        {
+          adoptionCaseId: "a1",
+          supporterId: "s1",
+          name: "陳太",
+          email: "adopter@example.test",
+          phone: null,
+        },
+      ],
+      insertNotificationDrafts: async () => {
+        inserted = true;
+      },
+    });
+    const result = await service.createStoryUpdate({
+      actorUserId: "u1",
+      contentId: "c1",
+      input: {
+        kind: "care",
+        title: "救起",
+        occurredAt: "2026-09-14T00:00:00.000Z",
+        visibility: "internal",
+        shouldGenerateAdopterDrafts: true,
+      },
+    });
+    expect(result.id).toBeTruthy();
+    expect(result.notificationDrafts.created).toBe(0);
+    expect(result.notificationDrafts.warning).toBeTruthy();
+    expect(inserted).toBe(false);
   });
 });
 
