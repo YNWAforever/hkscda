@@ -110,12 +110,28 @@ export async function preparePhotoForUpload(
   { downscaleImpl = downscalePhoto, maxBytes = MAX_BYTES } = {},
 ) {
   try {
-    return await downscaleImpl(download.bytes);
+    const downscaled = await downscaleImpl(download.bytes);
+    return { ...downscaled, downscaled: true };
   } catch (error) {
     if (download.bytes.byteLength <= maxBytes) {
-      return { bytes: download.bytes, contentType: download.contentType };
+      return {
+        bytes: download.bytes,
+        contentType: download.contentType,
+        downscaled: false,
+        fallbackReason: error.message,
+      };
     }
     throw error;
+  }
+}
+
+export async function setImageUrlWith(supabase, animalId, url, { overwrite = false } = {}) {
+  let query = supabase.from("animals").update({ image_url: url }).eq("id", animalId);
+  if (!overwrite) query = query.is("image_url", null);
+  const { data, error } = await query.select("id");
+  if (error) throw error;
+  if (!data || data.length === 0) {
+    throw new Error(`animal ${animalId} was not updated (already has an image or no longer exists)`);
   }
 }
 
@@ -175,11 +191,19 @@ async function main() {
     process.exit(1);
   }
 
+  let fallbackCount = 0;
   const deps = {
     downloadPhoto: async (url) => {
       try {
         const download = await downloadPhoto(fetch, url, { maxBytes: UPLOAD_INPUT_MAX_BYTES });
-        return await preparePhotoForUpload(download);
+        const prepared = await preparePhotoForUpload(download);
+        if (prepared.downscaled === false) {
+          fallbackCount += 1;
+          if (fallbackCount <= 5) {
+            console.warn(`⚠ downscale fallback (uploading original) for ${url}: ${prepared.fallbackReason}`);
+          }
+        }
+        return prepared;
       } finally {
         await sleep(DOWNLOAD_DELAY_MS);
       }
@@ -192,15 +216,7 @@ async function main() {
       const { data } = supabase.storage.from("animal-images").getPublicUrl(key);
       return data.publicUrl;
     },
-    async setImageUrl(animalId, url) {
-      let query = supabase.from("animals").update({ image_url: url }).eq("id", animalId);
-      if (!overwrite) query = query.is("image_url", null);
-      const { data, error: updateError } = await query.select("id");
-      if (updateError) throw updateError;
-      if (!data || data.length === 0) {
-        throw new Error(`animal ${animalId} was not updated (already has an image or no longer exists)`);
-      }
-    },
+    setImageUrl: (animalId, url) => setImageUrlWith(supabase, animalId, url, { overwrite }),
   };
 
   const plan = await runBackfill({
@@ -243,6 +259,7 @@ async function main() {
   await fs.writeFile(MANIFEST_CSV, `${toCsv(csvRows)}\n`, "utf8");
 
   console.log("Summary:", JSON.stringify(summary, null, 2));
+  console.log(`Fallbacks (uploaded un-downscaled): ${fallbackCount}`);
   console.log(`\nManifest: ${MANIFEST_JSON}\n         ${MANIFEST_CSV}`);
 
   const failed = manifest.filter((row) => row.status === "failed");

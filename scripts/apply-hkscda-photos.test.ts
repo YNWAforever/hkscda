@@ -5,6 +5,7 @@ import {
   downloadPhoto,
   parseArgs,
   preparePhotoForUpload,
+  setImageUrlWith,
   toCsv,
 } from "./apply-hkscda-photos.mjs";
 
@@ -259,13 +260,15 @@ describe("downloadPhoto", () => {
 });
 
 describe("preparePhotoForUpload", () => {
-  test("returns the downscaled result when the downscaler succeeds", async () => {
+  test("returns the downscaled result marked downscaled:true when the downscaler succeeds", async () => {
     const downscaled = { bytes: Buffer.from([9, 9]), contentType: "image/webp" };
     const result = await preparePhotoForUpload(
       { bytes: Buffer.from([1, 2, 3]), contentType: "image/jpeg" },
       { downscaleImpl: async () => downscaled },
     );
-    expect(result).toBe(downscaled);
+    expect(result.downscaled).toBe(true);
+    expect(result.bytes).toBe(downscaled.bytes);
+    expect(result.contentType).toBe("image/webp");
   });
 
   test("falls back to the original bytes when the downscaler throws and the original fits", async () => {
@@ -279,7 +282,12 @@ describe("preparePhotoForUpload", () => {
         maxBytes: 100,
       },
     );
-    expect(result).toEqual({ bytes, contentType: "image/jpeg" });
+    expect(result).toEqual({
+      bytes,
+      contentType: "image/jpeg",
+      downscaled: false,
+      fallbackReason: "VipsJpeg: Invalid SOS parameters",
+    });
   });
 
   test("rethrows when the downscaler throws and the original exceeds maxBytes", async () => {
@@ -295,6 +303,78 @@ describe("preparePhotoForUpload", () => {
         },
       ),
     ).rejects.toThrow("VipsJpeg: Invalid SOS parameters");
+  });
+});
+
+describe("setImageUrlWith", () => {
+  function makeFake({ data = [{ id: "id-1" }], error = null } = {}) {
+    const calls = {
+      from: [] as string[],
+      update: [] as unknown[],
+      eq: [] as [string, unknown][],
+      is: [] as [string, unknown][],
+      select: [] as (string | undefined)[],
+    };
+    const builder = {
+      update(values: unknown) {
+        calls.update.push(values);
+        return this;
+      },
+      eq(column: string, value: unknown) {
+        calls.eq.push([column, value]);
+        return this;
+      },
+      is(column: string, value: unknown) {
+        calls.is.push([column, value]);
+        return this;
+      },
+      select(columns?: string) {
+        calls.select.push(columns);
+        return this;
+      },
+      then(resolve: (value: unknown) => unknown, reject?: (reason: unknown) => unknown) {
+        return Promise.resolve({ data, error }).then(resolve, reject);
+      },
+    };
+    const supabase = {
+      from(table: string) {
+        calls.from.push(table);
+        return builder;
+      },
+    };
+    return { supabase, calls };
+  }
+
+  test("without overwrite, targets only rows whose image_url is null", async () => {
+    const { supabase, calls } = makeFake();
+    await setImageUrlWith(supabase as never, "id-1", "https://x/y.jpg");
+    expect(calls.from).toEqual(["animals"]);
+    expect(calls.update).toEqual([{ image_url: "https://x/y.jpg" }]);
+    expect(calls.eq).toEqual([["id", "id-1"]]);
+    expect(calls.is).toEqual([["image_url", null]]);
+    expect(calls.select).toEqual(["id"]);
+  });
+
+  test("with overwrite, omits the image_url IS NULL guard", async () => {
+    const { supabase, calls } = makeFake();
+    await setImageUrlWith(supabase as never, "id-2", "https://x/z.jpg", { overwrite: true });
+    expect(calls.update).toEqual([{ image_url: "https://x/z.jpg" }]);
+    expect(calls.eq).toEqual([["id", "id-2"]]);
+    expect(calls.is).toEqual([]);
+    expect(calls.select).toEqual(["id"]);
+  });
+
+  test("throws when the update affects no rows", async () => {
+    const { supabase } = makeFake({ data: [] });
+    await expect(setImageUrlWith(supabase as never, "id-1", "https://x/y.jpg")).rejects.toThrow(
+      "animal id-1 was not updated",
+    );
+  });
+
+  test("propagates a Supabase error", async () => {
+    const boom = { message: "boom" };
+    const { supabase } = makeFake({ data: null, error: boom });
+    await expect(setImageUrlWith(supabase as never, "id-1", "https://x/y.jpg")).rejects.toBe(boom);
   });
 });
 
