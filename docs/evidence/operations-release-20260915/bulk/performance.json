@@ -1,0 +1,38 @@
+{
+  "environment": "isolated56322",
+  "scope": "controlled replay of old summary projection vs bounded workspace RPC on same122 synthetic rows; excludes network/browser/roster and production",
+  "samples": 7,
+  "warmups": 2,
+  "measurements": {
+    "legacy": {
+      "rows": 122,
+      "bytes": 40261,
+      "p50_ms": 49.64390000000003,
+      "p95_ms": 132.63700000000006,
+      "samples_ms": [
+        49.64390000000003,
+        132.63700000000006,
+        80.5655999999999,
+        11.17730000000006,
+        71.48829999999998,
+        11.045599999999922,
+        3.909800000000132
+      ]
+    },
+    "bounded": {
+      "rows": 25,
+      "bytes": 11759,
+      "p50_ms": 65.9674,
+      "p95_ms": 152.96809999999982,
+      "samples_ms": [
+        65.9674,
+        41.86720000000014,
+        109.3261,
+        152.96809999999982,
+        32.81839999999988,
+        36.069499999999834,
+        86.75549999999998
+      ]
+    }
+  }
+}

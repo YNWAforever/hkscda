@@ -1,0 +1,12 @@
+{
+  "booking": "booked",
+  "status": "approved",
+  "preview": "preview",
+  "requiresDestinationConsent": true,
+  "applyBeforeConsentDisabled": true,
+  "reschedule": "applied",
+  "destinationTermsRecorded": true,
+  "cancel": "cancelled",
+  "errors": [],
+  "horizontalOverflow": false
+}

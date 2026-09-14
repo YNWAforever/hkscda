@@ -1,0 +1,443 @@
+{
+  "count": 109,
+  "audit_baseline": "9e2b0f4ffb2dee051319b02d1413fa2576475434",
+  "candidate_base": "33b158340dc8fcc137c3ccb3302e514f3676475e",
+  "files": [
+    {
+      "name": "20260611162942_create_animals_table.sql",
+      "sha256": "4b65bc3665a46ad38bd3ee5fc0a3432faaf618ae5b6e857a1803ed5f81c4716f"
+    },
+    {
+      "name": "20260611162956_create_adoption_applications_table.sql",
+      "sha256": "41b25a75799f0fe4b5b54f43ebf14a7dd3f86fb91f33f7d5976f7d1e4e2bddc0"
+    },
+    {
+      "name": "20260623160506_phase_2_donations_mvp.sql",
+      "sha256": "ce4831774402e83ef42a3bfcb10bb40ce66b39f94e9ce5b656b9e45327cbd7b2"
+    },
+    {
+      "name": "20260623183933_donor_ops_crm_foundation.sql",
+      "sha256": "276318d24d46c45b56134419c1a89ab958ce4e76c95668c9e21f9a17d98a0677"
+    },
+    {
+      "name": "20260626140914_adoption_coordinator_foundation.sql",
+      "sha256": "9bae070730b83cc9af0eea3e4083b806bdc75e6acf72619214c4345c193e1014"
+    },
+    {
+      "name": "20260626144836_adoption_coordinator_workflow_rpcs.sql",
+      "sha256": "553ac17d565d19834900bf18732178c00da9b25a710dea17e5ae4aee75da621c"
+    },
+    {
+      "name": "20260626201620_secure_adoption_applications_policy.sql",
+      "sha256": "6d8d62ed8a538487ad0517ed72d23a1e3df6315e72dbb4cbfd1fa45f64517e92"
+    },
+    {
+      "name": "20260626202523_harden_webhook_event_processing.sql",
+      "sha256": "c30fab4cd90f037eafc961cd1c9f6212f729cf2b87390eb9dfa707d1c23e1800"
+    },
+    {
+      "name": "20260627091500_tighten_animals_admin_policy.sql",
+      "sha256": "b730609f43af3c6ff855f10ee7952333618a95ba1063d9ed49391e090f65c849"
+    },
+    {
+      "name": "20260627110000_coordinator_task_timeline.sql",
+      "sha256": "9079733451744975ea02383b2f4dca06d1ae590774010f76c69bb75c5bcfb8f0"
+    },
+    {
+      "name": "20260628120000_harden_receipt_and_payment_lifecycle.sql",
+      "sha256": "6aa54ede558769e7a05700f9717d3275eec03d45806a0f4423be8541bd250174"
+    },
+    {
+      "name": "20260628130000_harden_role_grants_drop_stale_policy.sql",
+      "sha256": "56656cb5abb219143bb650191568294530308c3621292e7d34bbf8bc4a360f45"
+    },
+    {
+      "name": "20260628140000_revoke_residual_anon_grants.sql",
+      "sha256": "5748c9db5402751b8a7702c546c8aa3c995d3d7affde77e02578c66c51450bb7"
+    },
+    {
+      "name": "20260628143000_coordinator_ops_workbench.sql",
+      "sha256": "0842bebd2d7cdd33cd930b0580e5118d18523f1fd76f798b12f9d554482f373d"
+    },
+    {
+      "name": "20260628150000_revoke_residual_anon_write_grants.sql",
+      "sha256": "ad5b288120b62647f2ea2161d062c3f891619b98c8811068cea8372748aafb00"
+    },
+    {
+      "name": "20260628160000_validate_rpc_actor.sql",
+      "sha256": "02f0cf5badc501e3cbdb91c6f6a87a421fbeb19e7efa8012032683fef4156ce3"
+    },
+    {
+      "name": "20260630120000_donation_lifecycle_integrity.sql",
+      "sha256": "83b58ce6b4bf55810e1e087b70a743a84e920a0fcaa938380a3f5161361bd70f"
+    },
+    {
+      "name": "20260630154259_add_animal_english_content_fields.sql",
+      "sha256": "842d7a0768140d74968e64f5506edf1d26dd6fc892d9a1faa1a8842281d7b22e"
+    },
+    {
+      "name": "20260701105726_admin_access_management.sql",
+      "sha256": "1486a804436932531721e39aa76c87959cd047e37960fce8b2baf5082f7ae2da"
+    },
+    {
+      "name": "20260701185227_public_adoption_journey_phase_1.sql",
+      "sha256": "e4bcb883624bf840a356279ec22e5663a8bc1318f5a3f1eb6c8f00a1f6cfe584"
+    },
+    {
+      "name": "20260702130000_sponsorship_pledge_phase_2.sql",
+      "sha256": "43ba52c2e67681f25dd712244b4434e751e2e452e7d431775c8fa26f32ab5309"
+    },
+    {
+      "name": "20260704165600_volunteer_activity_management_v1.sql",
+      "sha256": "1eb78bd001db62103bb60cae30166b2943898aa4263efc4009d2d09b84a53c2a"
+    },
+    {
+      "name": "20260705120000_story_promotion_center.sql",
+      "sha256": "49131417a7067bbac90d04bf26491dd4e36ddaadf12ac1adefe22211319b6467"
+    },
+    {
+      "name": "20260716120000_contextual_donation_attribution.sql",
+      "sha256": "8f8b4edb906b76af03fe05a3e96f76120b21c5b4f2e4fe4ba980c01aa7056891"
+    },
+    {
+      "name": "20260718100000_public_documents_and_donation_purpose.sql",
+      "sha256": "aff0651a938c4606469d684af15bb4f7987d81db4001aac1a5a362832b3b95c8"
+    },
+    {
+      "name": "20260718110000_adoption_information.sql",
+      "sha256": "a81d0c3fa8b47e2f209366abfe75a310274d482790117b0d6ba21c98b5b9d7b5"
+    },
+    {
+      "name": "20260718111000_correct_adult_cat_copy.sql",
+      "sha256": "593631c5df950e7b8f425ae3432d346fca80705297f649368e3032ff6053bca3"
+    },
+    {
+      "name": "20260718120000_group_enquiries_and_knowledge.sql",
+      "sha256": "052078df1028b0af17086e45071c72a3f4b0d3b9bab35fc74f8b5ebe59e69f2b"
+    },
+    {
+      "name": "20260718121000_seed_knowledge_guides.sql",
+      "sha256": "a015ad47851d9181d73f1599d4f6cdf406f4255df5bb11430104d5ce0d4bd83e"
+    },
+    {
+      "name": "20260718122000_correct_service_slogan.sql",
+      "sha256": "9a10e08a4ae74e315f5f63d67e2cfc4763fa19591bea70d36dd1198b880ef166"
+    },
+    {
+      "name": "20260719120000_document_admin_mutation_hardening.sql",
+      "sha256": "b177df2b9f6ce2a0fa843037d60cfb875236ae5a40c76694b14b0f1dfc8ab786"
+    },
+    {
+      "name": "20260719223000_public_document_read_policies.sql",
+      "sha256": "5e992a5983ab89a217fa4be57cf0a7da005963bcfdf5916924821248d8f5311f"
+    },
+    {
+      "name": "20260720100000_cod_alipayhk_payment_support.sql",
+      "sha256": "27467c5fa8db68cc83e5e28569aed1fc0d47ac196d6a7e24f2f2bd0659dcfbde"
+    },
+    {
+      "name": "20260731120000_adoption_guide_release_cms.sql",
+      "sha256": "177c4389c466b4b6148fef26f2364c297580ac71445d4acd05cd75a03617c505"
+    },
+    {
+      "name": "20260801180000_adoption_guide_release_cms_advisor_fixes.sql",
+      "sha256": "38b0f62494827e2be1ac11bf42c0de0f52c6ff719290d543cb6878f989dedf41"
+    },
+    {
+      "name": "20260803120000_audit_animal_mutations.sql",
+      "sha256": "6113cb40fd03fe64366dd62f1bac6df4156bdf1bf44888eeaa607d08d7c09f2c"
+    },
+    {
+      "name": "20260805120000_animal_mutation_audit_atomicity.sql",
+      "sha256": "e20d0e9926971ccf74d22b27ee7fa6940ee408e5735bcd9c25730c811fe1af18"
+    },
+    {
+      "name": "20260816120000_cod_payment_order_reference.sql",
+      "sha256": "6e5b0c7599f6dd1b5d3bb6be105522ca58e41272770113590eecaf43d9cee018"
+    },
+    {
+      "name": "20260829120000_governance_board_members.sql",
+      "sha256": "b7599a62b61b8f0eb2d87063c5f57d68423994469ff233dfa522ac16dfc47092"
+    },
+    {
+      "name": "20260829180000_sponsorship_pledge_admin_review.sql",
+      "sha256": "e01649d47bfcbbb10a7dfd8b16f6eb5e9e45bd1af1021cb3fce2acac59c972be"
+    },
+    {
+      "name": "20260830120000_faq_entry.sql",
+      "sha256": "9de8e31d941012fe4fc6a1bcf28fa5fcdca8dbc64a7e1e28dd35a679d95dbd3a"
+    },
+    {
+      "name": "20260830130000_adoption_rules_care_topics.sql",
+      "sha256": "002b81d73bb11be9c566f7a7627b49a31116f01b2ab1a46f76eae165daabcd1a"
+    },
+    {
+      "name": "20260830140000_about_page_content.sql",
+      "sha256": "e739332ac8edf79c3983b8435d128c145246b17653611bd537565156f0e9984a"
+    },
+    {
+      "name": "20260831120000_payment_public_config.sql",
+      "sha256": "66dc9acabdd6911127fa9827a7c56361a066ccbd1bea431970fb0adb0f645a15"
+    },
+    {
+      "name": "20260831160000_content_media_storage_bucket.sql",
+      "sha256": "9a30633b9106d5cb285b07b36406a9a8fb394100b1c50800a277c94bb255c923"
+    },
+    {
+      "name": "20260905144848_public_supporter_identity_claims.sql",
+      "sha256": "276f4ed3233be2db4d3990b276f76365428d9799d1e89d96017a5c3f31d7245d"
+    },
+    {
+      "name": "20260905150012_content_revision_lifecycle.sql",
+      "sha256": "a65881e96c4d5a0b592465eb47e9f3cbeea8747c132fbd75229372e41bcdf034"
+    },
+    {
+      "name": "20260905155357_crm_manual_gift_delivery_jobs.sql",
+      "sha256": "cebfebc3e2b4962363d8e2af1c4c71dce967c13376116809b00c20f5c46ef214"
+    },
+    {
+      "name": "20260905155426_content_private_media_sessions.sql",
+      "sha256": "3d7503afe53fc837091d90e9dc677e62c0e388563e925472c23bb1e2d0c3aaaf"
+    },
+    {
+      "name": "20260905162615_crm_complete_read_models.sql",
+      "sha256": "f658fb2f6bfc96ca625e34345b3c541bbfead1abb225df3a892074dd81a93208"
+    },
+    {
+      "name": "20260905163559_content_bounded_authoring_reads.sql",
+      "sha256": "984c73137a493f458b67588c8e4ebf535d3599b7ee5311f0a463c7d3420e29e9"
+    },
+    {
+      "name": "20260905163900_volunteer_atomic_approval.sql",
+      "sha256": "e83e149e965e516d82fc060b132ab0e7cad6626effb9578d80733e2d8891d457"
+    },
+    {
+      "name": "20260906162436_animal_catalog_membership.sql",
+      "sha256": "946e588e69ba07e19b35fac01feef20ef089343516f03377fef2d3fc55730f71"
+    },
+    {
+      "name": "20260906181657_animal_public_profile.sql",
+      "sha256": "6b140ef47a2b8697bcd6c07e5a9c60c17a18bf514abae5f4083e0ed4e5b7168b"
+    },
+    {
+      "name": "20260911120000_sponsorship_public_identity_protection.sql",
+      "sha256": "5d49ccdbf1a92239de8fa2b9542b8d38c180d39a6d8362658cc9b3f5457a557b"
+    },
+    {
+      "name": "20260911130000_animal_images_bucket.sql",
+      "sha256": "b81648f287a55f67b410fd668f177776376b5e20c0eddb5aabc0678001994059"
+    },
+    {
+      "name": "20260911140000_animal_publication_state.sql",
+      "sha256": "2570fbab5fe0a9d4924e7c42026e4ba462cd22c0c8c63e391b4dfab2b892914c"
+    },
+    {
+      "name": "20260911150000_preserve_eligibility_on_species_change.sql",
+      "sha256": "a2d7686e47f615c7fa1cbc9ea8797f4ddda6a61a495ee5fa4c1c0c715e85f602"
+    },
+    {
+      "name": "20260911160000_correct_legacy_sponsor_species.sql",
+      "sha256": "9fac3ff750b36ac98ff605ef9da766fe291b762b7bc7aac0b01db0aee5918d95"
+    },
+    {
+      "name": "20260911170000_publish_fostered_animals.sql",
+      "sha256": "cbe7425224d985551dc347323dc54df78b7876c51523f654a9fad6dd062847c3"
+    },
+    {
+      "name": "20260911180000_sponsorship_second_month.sql",
+      "sha256": "8d767650d1fcdb928a1c5e7e439d2332e6b18409eb14064e9a300e9447bda32f"
+    },
+    {
+      "name": "20260911190000_sponsorship_monthly_ledger.sql",
+      "sha256": "11f819a8be5e2447f4f5430ad29906d8cb67037387fe634e15159a3dec614ea0"
+    },
+    {
+      "name": "20260912120000_sponsorship_assignments.sql",
+      "sha256": "cb8f4e424dee753d18bc16e63215da50c117dd777f4dec9362422e66b5bf7ce7"
+    },
+    {
+      "name": "20260913060000_verified_baseline_compatibility.sql",
+      "sha256": "7612b0482dca299f14aad84a4ab3095979d9fb5063d9e6f3e38f239ba609f884"
+    },
+    {
+      "name": "20260913062837_volunteer_versioned_policy.sql",
+      "sha256": "05e32371b11521bdd4d38eb4ddab03b06e86fc35b4c1c4364148e0433bdc57ef"
+    },
+    {
+      "name": "20260913062952_volunteer_atomic_attendance.sql",
+      "sha256": "8cca6759cac87181e69cd727cfb51a8dcee4fdee4c58b727f07e695783fed475"
+    },
+    {
+      "name": "20260913064921_volunteer_profile_commands.sql",
+      "sha256": "736cf2c823e06f53db5a143f7a48802083b3a6de5d6de73e26366d29b941de20"
+    },
+    {
+      "name": "20260913065257_volunteer_policy_validation.sql",
+      "sha256": "27990b24ced9ccc95abc3868b593b0abb2e10ce450e862b62f25a429ebf70564"
+    },
+    {
+      "name": "20260913065833_volunteer_daily_policy.sql",
+      "sha256": "be410eae7f2a81e22632f8e654d663a3aad8e22c8d7c110781719a5c9affec3e"
+    },
+    {
+      "name": "20260913070057_volunteer_initial_policy_catalogue.sql",
+      "sha256": "0e02241bb36d4423b254c2e35bc4fe21ea0605f1a64c95d866c16c414a96cc08"
+    },
+    {
+      "name": "20260913070128_volunteer_monthly_assessments.sql",
+      "sha256": "34728444df5c30cf55e977ea76f12a7b51b42762012760a31e5993f10e5f84d9"
+    },
+    {
+      "name": "20260913071632_animal_public_column_boundary.sql",
+      "sha256": "82a723aa284f257ddbf9aaabdb73339b7027aea78c849a641862877e00e0df3b"
+    },
+    {
+      "name": "20260913071639_volunteer_runtime_jobs.sql",
+      "sha256": "c1ddb3b4d8c50554a50aa6f24b953e866f7983d1b98dad3c5fe9b947fffae124"
+    },
+    {
+      "name": "20260913071927_sponsorship_exact_proof_review.sql",
+      "sha256": "71cdd4ec7a0b7d6835abdbf0ad343588480732daa7f4e20be923e2df6d3cc415"
+    },
+    {
+      "name": "20260913072235_volunteer_booking_enforcement.sql",
+      "sha256": "8101aa3230f1520b97e48625f1de71724bfb21ae9efb5ab523660819c295fe1f"
+    },
+    {
+      "name": "20260913072454_veterinary_internship_workflow.sql",
+      "sha256": "102183ca89569329cedab9cea963682841a99400bd51a96df3db9ec8e1cad9c6"
+    },
+    {
+      "name": "20260913072851_volunteer_group_operations.sql",
+      "sha256": "961ca270731e1b55327828a87533ca93e65f68f0c0795ced5a11e5df6a761b4c"
+    },
+    {
+      "name": "20260913073012_sponsorship_financial_closure.sql",
+      "sha256": "378a425605c6216ad719d62f29203d06523ac4e8e490da8abf4f4b0e9cb7385e"
+    },
+    {
+      "name": "20260913073314_animal_publication_lifecycle.sql",
+      "sha256": "35f44b890c592cbc7f4473357aebb88d5b8f69aa6eb966380d0b35cafde6e5d3"
+    },
+    {
+      "name": "20260913075040_volunteer_verified_service_history.sql",
+      "sha256": "137b1441812f7168ad5d487f9dac03344d29acfb0cb4eddc56aae433ec356387"
+    },
+    {
+      "name": "20260913075643_volunteer_release_transitions.sql",
+      "sha256": "a6f22a82cc0913bfc333116ebf18d6c55bed7c2f33155b1738fb555b5695c0ae"
+    },
+    {
+      "name": "20260913075913_sponsorship_contact_verification.sql",
+      "sha256": "2387d18331b8561d937154346e1ebaae23c5e1f093370c1245aea0403fa0aead"
+    },
+    {
+      "name": "20260913080143_volunteer_immutable_qualification_evidence.sql",
+      "sha256": "3ffaa5c46ebd4550143445471c33d979937937e1086468c071a77b7678d4c42e"
+    },
+    {
+      "name": "20260913080152_sponsorship_role_handoff.sql",
+      "sha256": "3f7006b5be2b755d78df869fb5077fa20e3f4615193010d95e8726d0165e9b37"
+    },
+    {
+      "name": "20260913080537_volunteer_policy_simulation.sql",
+      "sha256": "a39b404db21a322546bddde3454d41bff79ef797e7e957094c8bce113dde5cc7"
+    },
+    {
+      "name": "20260913080838_sponsorship_allocation_retry.sql",
+      "sha256": "de3d7800fe7eadaeecfcdb32217a2c5fabe7a65461a0dadddce0787c768d5f99"
+    },
+    {
+      "name": "20260913081521_sponsorship_partial_refunds.sql",
+      "sha256": "2e7768162cb75841f5ce618b11e6507ceaaeddc7fde4267ca619b94f987ddfce"
+    },
+    {
+      "name": "20260913081533_volunteer_policy_sources.sql",
+      "sha256": "46196d63ec154fd3d422acd5ebdc5d0b5c2576e7b23a4a34b7bbae9b72bcffee"
+    },
+    {
+      "name": "20260913081720_volunteer_legacy_identity_reconciliation.sql",
+      "sha256": "c75263832ed38dbb466f6de5efb628aaae2afcb95fe18fbc19ccebb906bdba75"
+    },
+    {
+      "name": "20260913082300_atomic_animal_preference_eligibility.sql",
+      "sha256": "efd59ced4ff5946f1e62bc66dd7037804cee80542a0da054fe42b49b7f6b821b"
+    },
+    {
+      "name": "20260913083120_volunteer_public_availability_summary.sql",
+      "sha256": "8725b4d3f7e537f307327d670ca77dc912bfc284f937a2f4eb181e31b2fcf209"
+    },
+    {
+      "name": "20260913083503_sponsorship_refund_read_models.sql",
+      "sha256": "8f538c3efca6823f77a6283c381815f0bf2746affec4f250ec3054915228953b"
+    },
+    {
+      "name": "20260913084120_volunteer_notification_claim_fencing.sql",
+      "sha256": "c3c8fe6a4c10938ea060c4429ef889ca9d4dbc35d37ae35cb2eb78615fe32bfa"
+    },
+    {
+      "name": "20260913084247_volunteer_booking_shape_guard.sql",
+      "sha256": "cb397a081d270a2321c5f72cc63593e193b736e591b2b0a21be7ace01b5d8754"
+    },
+    {
+      "name": "20260913084717_factual_history_runtime_privileges.sql",
+      "sha256": "c86279f6417c3ca0cc92067d70d123e79120add99c03e0aa17928ea5adc74f69"
+    },
+    {
+      "name": "20260913084920_volunteer_operational_tasks.sql",
+      "sha256": "b92f2739befe5da02c7d2022137c5dd94688a9ffbbda9726e495cc2338fbdef9"
+    },
+    {
+      "name": "20260913085252_volunteer_promotion_review_tasks.sql",
+      "sha256": "817e5cedb670374be3fe049f7017ca12202e3341a181c5a40f8dee3403f64945"
+    },
+    {
+      "name": "20260913085500_volunteer_tier_candidates.sql",
+      "sha256": "45ed7b321743e80f723694ad31909a998bfc9300dad0fe42730c7d9c2bf70434"
+    },
+    {
+      "name": "20260913090746_volunteer_schedule_integrity.sql",
+      "sha256": "867a240d901cea393d33af35a457399ce9c0724d92c20d8b73a74e8d6060ce9a"
+    },
+    {
+      "name": "20260913092132_restrict_receipt_issuance_rpc.sql",
+      "sha256": "910e41c2464720d5be639998cd4e32abed711e3dd54597103454bbd97cd5c6b3"
+    },
+    {
+      "name": "20260913113000_mail_delivery_evidence.sql",
+      "sha256": "3aacff491f08f06211082df7a8ccc60a6e38fe8a72792d74c86fc2ea8e63d7fa"
+    },
+    {
+      "name": "20260913180745_volunteer_admin_directory_read.sql",
+      "sha256": "7eec16c9583ca9b3ede209ee0cb80efb9a6d466eb5c85f079e901911d489ed5c"
+    },
+    {
+      "name": "20260913182552_volunteer_legacy_list_alias_fix.sql",
+      "sha256": "6c23068f726824022a103c7aa8bf54bb95eaa77aa899b9abc0112086dc7be56c"
+    },
+    {
+      "name": "20260914160716_volunteer_member_booking_correctness.sql",
+      "sha256": "298ac5c74ddfa7f5e726e7ad8b16312fcfb6080228b936f7b2b55f624466eb7b"
+    },
+    {
+      "name": "20260914160736_volunteer_bulk_operations.sql",
+      "sha256": "237fa740928a99f43c50b67739fb77ba7fe916e4c976e57faf7074fd96b38ccf"
+    },
+    {
+      "name": "20260914161341_admin_content_quality_review.sql",
+      "sha256": "88da21fd28dd0f12cbef6c7f9d50d4cbbe9c9d6a8b74a0a6a7ac332241e9423c"
+    },
+    {
+      "name": "20260914162305_animal_nonpublic_review_transition.sql",
+      "sha256": "6792729546fe690daef826fa3d4de4cb584751209e0329c13086488a29de5830"
+    },
+    {
+      "name": "20260914163506_volunteer_policy_read_summary.sql",
+      "sha256": "403a8dc8d803179ef8e83b6e2f8675a92bf97b85125153ccd477623206cefa0c"
+    },
+    {
+      "name": "20260914164558_editorial_verified_actor.sql",
+      "sha256": "920e2a8441eeddc9754c850875e1336ba005f3d825adddbed8fd5c7f99ee4217"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "checks": [
+    "Saved revision A visually rendered; editing B disables preview and publication",
+    "Unsaved navigation prompts and cancellation preserves editor",
+    "Same administrator explicitly reviewed and published saved revision B through API",
+    "Type-specific CMS event draft created through existing audited API and opened in editor",
+    "Animal record1001 reachable in URL page51",
+    "Internship search/page/detail loads separate history",
+    "Mobile390 content review queue renders with keyboard-native links and pager"
+  ],
+  "errors": [],
+  "screenshots": [
+    "animal-saved-preview.png",
+    "content-review-mobile.png"
+  ]
+}

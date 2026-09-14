@@ -1,0 +1,7 @@
+# Mobile filter refinement and browser readiness
+
+Search remains visible; date inputs share one mobile row. Shelter, template, status, group scenario, policy readiness and minimum staffing filters are collapsed behind the mobile-only 更多篩選 button. It exposes aria-expanded/aria-controls and an active-filter count. Desktop filters remain expanded. Closing the disclosure preserves filter values and URL state.
+
+Verification: seven full browser checks passed with no JavaScript errors and zero Axe violations. Focused component lint passed. A subsequent read-only mobile verification using the successful synthetic marker passed Enter/Space expansion, active count, retained status URL, loaded calendar and no horizontal overflow; the final mobile-calendar.png captures this settled state. The intermediate write-based screenshot rerun overlapped the root's full database fixture suite and timed out after apply; it is not used as product failure evidence. No further write-based reruns were performed.
+
+Five browser samples are stored in browser.json, separate from SQL timings. The default date range matched 188 synthetic activities, with one matching the search marker. Navigation to rendered nonempty list: p50 1439.79ms / p95 1468.03ms. Search change to rendered single matching result: p50 238.10ms / p95 357.74ms. These measure the local development server at desktop 1440x1000; they do not establish a before/after speed improvement.

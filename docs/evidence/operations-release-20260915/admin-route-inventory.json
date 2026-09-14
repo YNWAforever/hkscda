@@ -1,0 +1,422 @@
+{
+  "route_files": 48,
+  "baseline_audit_route_files": 48,
+  "rows": [
+    {
+      "file": "src/routes/admin/access-denied.tsx",
+      "route": "/admin/access-denied",
+      "permission_keys": [],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/access.tsx",
+      "route": "/admin/access",
+      "permission_keys": [
+        "accessManagement"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/animals/$id.edit.tsx",
+      "route": "/admin/animals/$id/edit",
+      "permission_keys": [
+        "animals"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/animals/new.tsx",
+      "route": "/admin/animals/new",
+      "permission_keys": [
+        "animals"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/applications/$id.tsx",
+      "route": "/admin/applications/$id",
+      "permission_keys": [],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/applications/index.tsx",
+      "route": "/admin/applications/",
+      "permission_keys": [],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/applications.tsx",
+      "route": "/admin/applications",
+      "permission_keys": [
+        "adoptionCases"
+      ],
+      "outlet_wrapper": true,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/content/$id.tsx",
+      "route": "/admin/content/$id",
+      "permission_keys": [
+        "contentManagement"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/content/about.tsx",
+      "route": "/admin/content/about",
+      "permission_keys": [
+        "contentManagement"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/content/adoption-guides.tsx",
+      "route": "/admin/content/adoption-guides",
+      "permission_keys": [
+        "contentManagement"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/content/adoption.tsx",
+      "route": "/admin/content/adoption",
+      "permission_keys": [
+        "contentManagement"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/content/annual-reports.tsx",
+      "route": "/admin/content/annual-reports",
+      "permission_keys": [],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/content/documents.tsx",
+      "route": "/admin/content/documents",
+      "permission_keys": [],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/content/knowledge.tsx",
+      "route": "/admin/content/knowledge",
+      "permission_keys": [
+        "contentManagement"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/content.tsx",
+      "route": "/admin/content",
+      "permission_keys": [
+        "contentManagement"
+      ],
+      "outlet_wrapper": true,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/coordinator/adopters/$id.tsx",
+      "route": "/admin/coordinator/adopters/$id",
+      "permission_keys": [
+        "adopters"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/coordinator/adopters.tsx",
+      "route": "/admin/coordinator/adopters",
+      "permission_keys": [
+        "adopters"
+      ],
+      "outlet_wrapper": true,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/coordinator/animals.tsx",
+      "route": "/admin/coordinator/animals",
+      "permission_keys": [
+        "animals"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/coordinator/inbox.tsx",
+      "route": "/admin/coordinator/inbox",
+      "permission_keys": [
+        "manualIntake"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/coordinator/intake.tsx",
+      "route": "/admin/coordinator/intake",
+      "permission_keys": [
+        "manualIntake"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/coordinator/reports.tsx",
+      "route": "/admin/coordinator/reports",
+      "permission_keys": [
+        "coordinatorReports"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/coordinator/statuses.tsx",
+      "route": "/admin/coordinator/statuses",
+      "permission_keys": [
+        "coordinatorStatuses"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/coordinator/tasks.tsx",
+      "route": "/admin/coordinator/tasks",
+      "permission_keys": [
+        "coordinatorTasks"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/faq.tsx",
+      "route": "/admin/faq",
+      "permission_keys": [
+        "faqManagement"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/governance.tsx",
+      "route": "/admin/governance",
+      "permission_keys": [
+        "governanceManagement"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/index.tsx",
+      "route": "/admin/",
+      "permission_keys": [],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/internships.tsx",
+      "route": "/admin/internships",
+      "permission_keys": [
+        "internshipManagement"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/login.tsx",
+      "route": "/admin/login",
+      "permission_keys": [],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/payment-methods.tsx",
+      "route": "/admin/payment-methods",
+      "permission_keys": [
+        "payments"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/reset-password.tsx",
+      "route": "/admin/reset-password",
+      "permission_keys": [],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/sponsorships.tsx",
+      "route": "/admin/sponsorships",
+      "permission_keys": [
+        "sponsorshipRead"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/supporters/$id.tsx",
+      "route": "/admin/supporters/$id",
+      "permission_keys": [
+        "supporters"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/supporters.tsx",
+      "route": "/admin/supporters",
+      "permission_keys": [
+        "supporters"
+      ],
+      "outlet_wrapper": true,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/volunteers/activities.tsx",
+      "route": "/admin/volunteers/activities",
+      "permission_keys": [
+        "volunteerManagement"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/volunteers/assessments.tsx",
+      "route": "/admin/volunteers/assessments",
+      "permission_keys": [
+        "volunteerPolicyManagement"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/volunteers/calendar.tsx",
+      "route": "/admin/volunteers/calendar",
+      "permission_keys": [
+        "volunteerManagement"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/volunteers/daily-settings.tsx",
+      "route": "/admin/volunteers/daily-settings",
+      "permission_keys": [
+        "volunteerPolicyManagement"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/volunteers/group-enquiries.tsx",
+      "route": "/admin/volunteers/group-enquiries",
+      "permission_keys": [
+        "volunteerManagement"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/volunteers/operations.tsx",
+      "route": "/admin/volunteers/operations",
+      "permission_keys": [
+        "volunteerManagement"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/volunteers/people/$id.tsx",
+      "route": "/admin/volunteers/people/$id",
+      "permission_keys": [
+        "volunteerManagement"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/volunteers/people.tsx",
+      "route": "/admin/volunteers/people",
+      "permission_keys": [
+        "volunteerManagement"
+      ],
+      "outlet_wrapper": true,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/volunteers/qualifications.tsx",
+      "route": "/admin/volunteers/qualifications",
+      "permission_keys": [
+        "volunteerManagement"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/volunteers/registrations/$id.tsx",
+      "route": "/admin/volunteers/registrations/$id",
+      "permission_keys": [
+        "volunteerManagement"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/volunteers/settings.tsx",
+      "route": "/admin/volunteers/settings",
+      "permission_keys": [
+        "volunteerPolicyManagement"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/volunteers/simulation.tsx",
+      "route": "/admin/volunteers/simulation",
+      "permission_keys": [
+        "volunteerPolicyManagement"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/volunteers/sources.tsx",
+      "route": "/admin/volunteers/sources",
+      "permission_keys": [
+        "volunteerPolicyManagement"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/volunteers/tasks.tsx",
+      "route": "/admin/volunteers/tasks",
+      "permission_keys": [
+        "volunteerManagement"
+      ],
+      "outlet_wrapper": false,
+      "verification": "static inventory; workflow evidence is separate"
+    },
+    {
+      "file": "src/routes/admin/volunteers.tsx",
+      "route": "/admin/volunteers",
+      "permission_keys": [
+        "volunteerManagement"
+      ],
+      "outlet_wrapper": true,
+      "verification": "static inventory; workflow evidence is separate"
+    }
+  ]
+}

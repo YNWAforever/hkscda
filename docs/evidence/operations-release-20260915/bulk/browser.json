@@ -1,0 +1,157 @@
+{
+  "origin": "http://127.0.0.1:56336",
+  "marker": "Synthetic browser bulk 8c2ffc6e",
+  "checks": [
+    "audited draft created through real HTTP; Los Angeles device displays Hong Kong09:30",
+    "exact selection and preview/apply edit UI changes real persisted row",
+    "drawer loads detail only and Escape preserves search",
+    "mobile advanced filters toggle with Enter/Space, preserve URL/state and show active count",
+    "mobile calendar has no page overflow; desktop calendar and keyboard drawer checked",
+    "standalone calendar route shares bounded workspace",
+    "treasurer real API denied403"
+  ],
+  "errors": [],
+  "requests": [
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=86.0"
+    },
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=195.5"
+    },
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=80.4"
+    },
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=77.6"
+    },
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=81.5"
+    },
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=84.7"
+    },
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=77.7"
+    },
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=86.9"
+    },
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=79.9"
+    },
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=78.8"
+    },
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=89.2"
+    },
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=183.8"
+    },
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=52.4"
+    },
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=146.0"
+    },
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=87.3"
+    },
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=87.6"
+    },
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=138.6"
+    },
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=89.0"
+    },
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=69.5"
+    },
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=151.5"
+    },
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=89.8"
+    },
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=64.0"
+    },
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=152.6"
+    },
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=65.4"
+    },
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=81.9"
+    },
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=168.3"
+    },
+    {
+      "status": 200,
+      "serverTiming": "volunteer;dur=90.3"
+    }
+  ],
+  "axe": [],
+  "browserTimings": {
+    "environment": "local development server; synthetic authenticated admin; desktop 1440x1000; no before/after speedup claim",
+    "dataset_counts": [
+      "活動（188）",
+      "活動（188）",
+      "活動（188）",
+      "活動（188）",
+      "活動（188）"
+    ],
+    "navigation_to_rendered_nonempty_list": {
+      "samples_ms": [
+        1439.7918,
+        1441.723,
+        1369.3842000000004,
+        1439.1345000000001,
+        1468.0301999999992
+      ],
+      "p50_ms": 1439.7918,
+      "p95_ms": 1468.0301999999992
+    },
+    "search_change_to_rendered_single_matching_result": {
+      "samples_ms": [
+        228.97430000000077,
+        357.7399000000005,
+        246.91820000000007,
+        222.83329999999842,
+        238.10480000000098
+      ],
+      "p50_ms": 238.10480000000098,
+      "p95_ms": 357.7399000000005
+    }
+  }
+}

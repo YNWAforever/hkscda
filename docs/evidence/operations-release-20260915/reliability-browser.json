@@ -1,0 +1,19 @@
+{
+  "at": "2026-09-14T16:38:55.894Z",
+  "origin": "http://127.0.0.1:56336",
+  "timezone": "America/Los_Angeles",
+  "checks": [
+    {
+      "check": "legacy deferred until opened",
+      "before": 0,
+      "after": 1,
+      "passed": true
+    },
+    {
+      "check": "five rapid keystrokes resolve once and retain unsaved input",
+      "requests": 1,
+      "passed": true
+    }
+  ],
+  "errors": []
+}
