@@ -1258,6 +1258,22 @@ export function createSupabaseContentRepository(client: SupabaseClient): Content
       if (error) throw error;
     },
 
+    async updateSocialCopy(id, patch) {
+      const payload: Record<string, unknown> = {};
+      if (patch.status !== undefined) payload.status = patch.status;
+      if (patch.copyText !== undefined) payload.copy_text = patch.copyText;
+      if (patch.hashtags !== undefined) payload.hashtags = patch.hashtags;
+      if (Object.keys(payload).length === 0) return;
+
+      const { error } = await client
+        .from("social_copy_variant")
+        .update(payload)
+        .eq("id", id)
+        .select("id")
+        .single();
+      if (error) throw error;
+    },
+
     async updateSocialCopyStatus(id, status) {
       const { error } = await client
         .from("social_copy_variant")

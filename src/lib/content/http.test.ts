@@ -159,6 +159,10 @@ function createService(overrides: Record<string, unknown> = {}) {
       calls.push("updateNotificationDraftStatus");
       return { ok: true };
     },
+    async updateSocialCopy() {
+      calls.push("updateSocialCopy");
+      return { ok: true };
+    },
     async updateSocialCopyStatus() {
       calls.push("updateSocialCopyStatus");
       return { ok: true };
@@ -445,7 +449,7 @@ describe("createContentHandlers", () => {
 
   test("maps Supabase single-row misses to admin 404 responses", async () => {
     const service = createService({
-      async updateSocialCopyStatus() {
+      async updateSocialCopy() {
         throw {
           code: "PGRST116",
           message: "JSON object requested, multiple (or no) rows returned",

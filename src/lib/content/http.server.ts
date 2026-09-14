@@ -422,7 +422,7 @@ export function createContentHandlers({ requireContentAdmin, service }: CreateCo
       return withContentErrors(async () => {
         const admin = await requireContentAdmin(request);
         return jsonResponse(
-          await service.updateSocialCopyStatus({
+          await service.updateSocialCopy({
             actorUserId: admin.authUserId,
             copyId: requiredId(params),
             input: await jsonBody(request),

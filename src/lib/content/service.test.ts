@@ -106,6 +106,7 @@ function createRepo(overrides: Partial<ContentRepository> = {}) {
       notificationDrafts.push(...rows);
     },
     updateNotificationDraftStatus: async () => undefined,
+    updateSocialCopy: async () => undefined,
     updateSocialCopyStatus: async () => undefined,
     insertAuditLog: async (row) => {
       auditLogs.push(row);
@@ -125,6 +126,7 @@ function buildService({
   insertNotificationDrafts,
   mediaLifecycle,
   searchLinks,
+  updateSocialCopy,
 }: {
   content?: ContentOverride;
   storyUpdate?: Partial<StoryUpdate>;
@@ -133,6 +135,7 @@ function buildService({
   draftKeys?: Array<{ channel: string; recipientContact: string }>;
   insertNotificationDrafts?: ContentRepository["insertNotificationDrafts"];
   searchLinks?: ContentRepository["searchLinks"];
+  updateSocialCopy?: ContentRepository["updateSocialCopy"];
   mediaLifecycle?: {
     publish: (command: unknown) => Promise<{ version: number; revisionId: string }>;
   };
@@ -160,6 +163,9 @@ function buildService({
   }
   if (searchLinks) {
     overrides.searchLinks = searchLinks;
+  }
+  if (updateSocialCopy) {
+    overrides.updateSocialCopy = updateSocialCopy;
   }
 
   const { repo } = createRepo(overrides);
@@ -456,6 +462,20 @@ describe("createContentService", () => {
         detail: { status: "copied" },
       }),
     );
+  });
+
+  test("updateSocialCopy persists edited text and hashtags", async () => {
+    const updateSocialCopy = mock(async () => {});
+    const { service } = buildService({ updateSocialCopy });
+    await service.updateSocialCopy({
+      actorUserId: "u1",
+      copyId: "copy-1",
+      input: { copyText: "新文案", hashtags: ["領養"] },
+    });
+    expect(updateSocialCopy).toHaveBeenCalledWith("copy-1", {
+      copyText: "新文案",
+      hashtags: ["領養"],
+    });
   });
 
   test("does not re-draft a delivery target that already has a draft for this update", async () => {

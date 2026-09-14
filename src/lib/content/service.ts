@@ -18,9 +18,11 @@ import {
   publicContentSearchSchema,
   socialCopyGenerateSchema,
   socialCopyStatusSchema,
+  socialCopyUpdateSchema,
   storyProfileInputSchema,
   storyUpdateInputSchema,
   type LinkSearch,
+  type SocialCopyUpdateInput,
 } from "./schemas";
 import { generateSocialCopyVariants } from "./socialCopy";
 import type {
@@ -107,6 +109,7 @@ export type ContentRepository = {
     id: string,
     status: RecipientNotificationDraft["status"],
   ): Promise<void>;
+  updateSocialCopy(id: string, patch: SocialCopyUpdateInput): Promise<void>;
   updateSocialCopyStatus(id: string, status: SocialCopyVariant["status"]): Promise<void>;
   insertAuditLog(row: ContentAuditLogInsert): Promise<void>;
 };
@@ -164,6 +167,11 @@ type CreateContentLinkArgs = ActorInput & {
 
 type GenerateSocialCopyArgs = ActorInput & {
   contentId: string;
+  input: unknown;
+};
+
+type UpdateSocialCopyArgs = ActorInput & {
+  copyId: string;
   input: unknown;
 };
 
@@ -620,6 +628,20 @@ export function createContentService({
       });
 
       return { count: variants.length };
+    },
+
+    async updateSocialCopy({ actorUserId, copyId, input }: UpdateSocialCopyArgs) {
+      const parsed: SocialCopyUpdateInput = socialCopyUpdateSchema.parse(input);
+      await repo.updateSocialCopy(copyId, parsed);
+      await audit({
+        actor_user_id: actorUserId,
+        action: "content.social_copy.update",
+        entity: "social_copy_variant",
+        entity_id: copyId,
+        detail: parsed,
+      });
+
+      return { ok: true };
     },
 
     async updateSocialCopyStatus({ actorUserId, copyId, input }: UpdateSocialCopyStatusArgs) {

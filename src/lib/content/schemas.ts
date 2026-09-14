@@ -172,6 +172,16 @@ export const socialCopyStatusSchema = z.object({
   status: z.enum(socialCopyStatuses),
 });
 
+export const socialCopyUpdateSchema = z
+  .object({
+    status: z.enum(socialCopyStatuses).optional(),
+    copyText: trimmed.min(1).max(10000).optional(),
+    hashtags: z.array(trimmed.min(1).max(60)).max(30).optional(),
+  })
+  .refine((value) => Object.keys(value).length > 0, {
+    message: "Provide a status, copyText, or hashtags",
+  });
+
 export const notificationDraftStatusSchema = z.object({
   status: z.enum(notificationDraftStatuses),
 });
@@ -191,5 +201,6 @@ export type ContentMediaUploadTargetInput = z.infer<typeof contentMediaUploadTar
 export type ContentLinkInput = z.infer<typeof contentLinkInputSchema>;
 export type LinkSearch = z.infer<typeof linkSearchSchema>;
 export type SocialCopyStatusInput = z.infer<typeof socialCopyStatusSchema>;
+export type SocialCopyUpdateInput = z.infer<typeof socialCopyUpdateSchema>;
 export type NotificationDraftStatusInput = z.infer<typeof notificationDraftStatusSchema>;
 export type SocialCopyGenerateInput = z.infer<typeof socialCopyGenerateSchema>;
