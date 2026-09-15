@@ -63,6 +63,18 @@ describe("StoryDetail", () => {
     expect(markup).toContain("救援個案");
   });
 
+  test("uses the content CTA and shows the animal type fact", async () => {
+    const { StoryDetail } = await import("./StoryDetail");
+    const markup = renderToStaticMarkup(
+      <StoryDetail content={{ ...content, ctaLabel: "了解牠的故事", ctaUrl: "/sponsors" }} />,
+    );
+
+    expect(markup).toContain("了解牠的故事");
+    expect(markup).toContain('href="/sponsors"');
+    expect(markup).toContain("動物類型");
+    expect(markup).toContain("貓");
+  });
+
   test("wraps the hero in PublicPageFrame with one h1 and a status/region eyebrow", async () => {
     const { StoryDetail } = await import("./StoryDetail");
     const markup = renderToStaticMarkup(<StoryDetail content={content} />);
