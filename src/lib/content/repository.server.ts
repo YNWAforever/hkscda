@@ -8,6 +8,7 @@ import {
   type ContentInput,
   type ContentLinkInput,
   type ContentMediaInput,
+  type LinkSearch,
   type StoryProfileInput,
   type StoryUpdateInput,
 } from "./schemas";
@@ -167,6 +168,75 @@ type SupporterRow = {
   email: string | null;
   phone: string | null;
 };
+
+type LinkSearchResult = { id: string; label: string; sublabel: string | null };
+
+type AnimalLinkRow = {
+  id: string;
+  name: string | null;
+  name_en: string | null;
+  type: string | null;
+};
+
+type AdoptionCaseLinkRow = {
+  id: string;
+  applicant_name: string | null;
+  applicant_email: string | null;
+};
+
+type SuccessfulAdoptionLinkRow = {
+  id: string;
+  case_number: string | null;
+  animal_id: string | null;
+};
+
+type SupporterLinkRow = {
+  id: string;
+  name: string | null;
+  phone: string | null;
+};
+
+type VolunteerActivityLinkRow = {
+  id: string;
+  title: string | null;
+  starts_at: string | null;
+};
+
+function escapeLike(value: string) {
+  return value.replaceAll("\\", "\\\\").replaceAll("%", "\\%").replaceAll("_", "\\_");
+}
+
+function sanitizeOrLikeValue(value: string) {
+  // PostgREST .or() uses comma and parentheses for grammar, so keep search terms literal.
+  return escapeLike(
+    value
+      .replace(/[(),]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .replace(/\s+([%_])/g, "$1"),
+  );
+}
+
+function maskEmail(value: string | null): string | null {
+  const email = value?.trim();
+  if (!email) return null;
+  const at = email.indexOf("@");
+  if (at <= 0) return "***";
+  return `${email[0]}***@${email.slice(at + 1)}`;
+}
+
+function maskPhone(value: string | null): string | null {
+  const phone = value?.trim();
+  if (!phone) return null;
+  const tail = phone.replace(/\D/g, "").slice(-4);
+  return tail ? `****${tail}` : null;
+}
+
+function isoDate(value: string | null): string | null {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+}
 
 function nonNullable<T>(value: T | null | undefined): value is T {
   return value !== null && value !== undefined;
@@ -929,6 +999,84 @@ export function createSupabaseContentRepository(client: SupabaseClient): Content
       return data.id as string;
     },
 
+    async searchLinks(input: LinkSearch): Promise<LinkSearchResult[]> {
+      switch (input.linkedType) {
+        case "animal": {
+          const like = `%${sanitizeOrLikeValue(input.q)}%`;
+          const { data, error } = await client
+            .from("animals")
+            .select("id,name,name_en,type")
+            .or(`name.ilike.${like},name_en.ilike.${like}`)
+            .order("name", { ascending: true })
+            .limit(input.limit);
+          if (error) throw error;
+          return ((data ?? []) as AnimalLinkRow[]).map((row) => ({
+            id: row.id,
+            label: row.name?.trim() || row.name_en?.trim() || "（未命名）",
+            sublabel: row.type ?? null,
+          }));
+        }
+        case "adoption_case": {
+          const { data, error } = await client
+            .from("adoption_case")
+            .select("id,applicant_name,applicant_email")
+            .ilike("applicant_name", `%${escapeLike(input.q)}%`)
+            .order("applicant_name", { ascending: true })
+            .limit(input.limit);
+          if (error) throw error;
+          return ((data ?? []) as AdoptionCaseLinkRow[]).map((row) => ({
+            id: row.id,
+            label: row.applicant_name?.trim() || "（未填姓名）",
+            sublabel: maskEmail(row.applicant_email),
+          }));
+        }
+        case "successful_adoption": {
+          const { data, error } = await client
+            .from("successful_adoption")
+            .select("id,case_number,animal_id")
+            .ilike("case_number", `%${escapeLike(input.q)}%`)
+            .order("case_number", { ascending: true })
+            .limit(input.limit);
+          if (error) throw error;
+          return ((data ?? []) as SuccessfulAdoptionLinkRow[]).map((row) => ({
+            id: row.id,
+            label: row.case_number?.trim() || "（無編號）",
+            sublabel: row.animal_id ?? null,
+          }));
+        }
+        case "supporter": {
+          const { data, error } = await client
+            .from("supporter")
+            .select("id,name,phone")
+            .ilike("name", `%${escapeLike(input.q)}%`)
+            .order("name", { ascending: true })
+            .limit(input.limit);
+          if (error) throw error;
+          return ((data ?? []) as SupporterLinkRow[]).map((row) => ({
+            id: row.id,
+            label: row.name?.trim() || "（未填姓名）",
+            sublabel: maskPhone(row.phone),
+          }));
+        }
+        case "volunteer_activity": {
+          const { data, error } = await client
+            .from("volunteer_activity")
+            .select("id,title,starts_at")
+            .ilike("title", `%${escapeLike(input.q)}%`)
+            .order("title", { ascending: true })
+            .limit(input.limit);
+          if (error) throw error;
+          return ((data ?? []) as VolunteerActivityLinkRow[]).map((row) => ({
+            id: row.id,
+            label: row.title?.trim() || "（未命名活動）",
+            sublabel: isoDate(row.starts_at),
+          }));
+        }
+        default:
+          throw new Error(`Unsupported linked type: ${input.linkedType satisfies never}`);
+      }
+    },
+
     async publishContent(id) {
       const { data, error } = await client
         .from("content_item")
@@ -1104,6 +1252,22 @@ export function createSupabaseContentRepository(client: SupabaseClient): Content
       const { error } = await client
         .from("recipient_notification_draft")
         .update({ status })
+        .eq("id", id)
+        .select("id")
+        .single();
+      if (error) throw error;
+    },
+
+    async updateSocialCopy(id, patch) {
+      const payload: Record<string, unknown> = {};
+      if (patch.status !== undefined) payload.status = patch.status;
+      if (patch.copyText !== undefined) payload.copy_text = patch.copyText;
+      if (patch.hashtags !== undefined) payload.hashtags = patch.hashtags;
+      if (Object.keys(payload).length === 0) return;
+
+      const { error } = await client
+        .from("social_copy_variant")
+        .update(payload)
         .eq("id", id)
         .select("id")
         .single();

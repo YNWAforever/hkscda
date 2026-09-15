@@ -22,11 +22,22 @@ test.skipIf(!enabled)(
     const rollback = new Error("synthetic rollback");
     try {
       await db.begin(async (tx) => {
-        await tx`insert into public.content_item(slug,type,title,summary) select ${marker}||'-'||n,'rescue_story',${marker},'Synthetic bounded read fixture' from generate_series(1,1201) n`;
+        await tx`insert into public.content_item(slug,type,title,summary,status,published_at) select ${marker}||'-'||n,'rescue_story',${marker},'Synthetic bounded read fixture','published',now() from generate_series(1,1201) n`;
         await tx`insert into public.rescue_story_profile(content_item_id,animal_type,public_status,rescue_region) select id,'cat','rescued',${marker} from public.content_item where title=${marker}`;
         await tx`insert into public.story_update(content_item_id,kind,title,body,occurred_at) select item.id,'general','Synthetic update '||n,repeat('Large synthetic update body ',100),now()-n*interval '1 minute' from public.content_item item cross join generate_series(1,100) n where item.title=${marker}`;
         await tx`insert into public.content_media(content_item_id,storage_path,alt_text,is_cover) select item.id,item.id::text||'/'||n||'.jpg','Synthetic image',n=1 from public.content_item item cross join generate_series(1,100) n where item.title=${marker}`;
-        const filters = { rescueRegion: marker, animalType: "cat", page: 25, pageSize: 50 };
+        await tx`insert into public.recipient_notification_draft(story_update_id,content_item_id,channel,recipient_name,recipient_contact,body) select distinct on (update_row.content_item_id) update_row.id,update_row.content_item_id,'email','Synthetic','synthetic@example.test','Synthetic notification body' from public.story_update update_row join public.content_item item on item.id=update_row.content_item_id where item.title=${marker}`;
+        const filters = {
+          rescueRegion: marker,
+          animalType: "cat",
+          publishedFrom: "2000-01-01",
+          publishedTo: "2999-12-31",
+          mapVisibility: "off",
+          hasUpdate: "yes",
+          draftState: "draft",
+          page: 25,
+          pageSize: 50,
+        };
         const [page] =
           await tx`select public.read_content_admin_summaries(${filters}::jsonb) as result`;
         expect(page.result.total).toBe(1201);
@@ -34,6 +45,24 @@ test.skipIf(!enabled)(
         expect(page.result.rows[0].updates).toHaveLength(1);
         expect(page.result.rows[0].media).toHaveLength(1);
         expect(page.result.rows[0].updates[0].body).toBeUndefined();
+
+        const mapOnFilters = { rescueRegion: marker, mapVisibility: "on" };
+        const [mapOn] =
+          await tx`select public.read_content_admin_summaries(${mapOnFilters}::jsonb) as result`;
+        expect(mapOn.result.total).toBe(0);
+        const noUpdatesFilters = { rescueRegion: marker, hasUpdate: "no" };
+        const [noUpdates] =
+          await tx`select public.read_content_admin_summaries(${noUpdatesFilters}::jsonb) as result`;
+        expect(noUpdates.result.total).toBe(0);
+        const beforeRangeFilters = { rescueRegion: marker, publishedTo: "2000-01-01" };
+        const [beforeRange] =
+          await tx`select public.read_content_admin_summaries(${beforeRangeFilters}::jsonb) as result`;
+        expect(beforeRange.result.total).toBe(0);
+        const unmatchedDraftFilters = { rescueRegion: marker, draftState: "sent_manually" };
+        const [unmatchedDraft] =
+          await tx`select public.read_content_admin_summaries(${unmatchedDraftFilters}::jsonb) as result`;
+        expect(unmatchedDraft.result.total).toBe(0);
+
         const contentId = page.result.rows[0].content.id;
         const [first] =
           await tx`select public.read_content_authoring_detail(${contentId}::uuid,1) as result`;

@@ -87,12 +87,16 @@ async function withContentErrors(operation: () => Promise<Response>, publicReque
         { status: error.status },
       );
     if (error instanceof z.ZodError) {
+      if (publicRequest)
+        return jsonResponse({ error: "Could not load story content" }, { status: 400 });
+
+      const fields = error.issues.reduce<Record<string, string[]>>((acc, issue) => {
+        const key = issue.path.join(".") || "form";
+        (acc[key] ??= []).push(issue.message);
+        return acc;
+      }, {});
       return jsonResponse(
-        {
-          error: publicRequest
-            ? "Could not load story content"
-            : "Invalid content management request",
-        },
+        { error: "Invalid content management request", details: { fields } },
         { status: 400 },
       );
     }
@@ -345,6 +349,13 @@ export function createContentHandlers({ requireContentAdmin, service }: CreateCo
       });
     },
 
+    searchLinks({ request }: HandlerContext) {
+      return withContentErrors(async () => {
+        await requireContentAdmin(request);
+        return jsonResponse({ results: await service.searchLinks(searchParams(request)) });
+      });
+    },
+
     publishContent({ request, params }: HandlerContext) {
       return withContentErrors(async () => {
         const admin = await requireContentAdmin(request);
@@ -415,7 +426,7 @@ export function createContentHandlers({ requireContentAdmin, service }: CreateCo
       return withContentErrors(async () => {
         const admin = await requireContentAdmin(request);
         return jsonResponse(
-          await service.updateSocialCopyStatus({
+          await service.updateSocialCopy({
             actorUserId: admin.authUserId,
             copyId: requiredId(params),
             input: await jsonBody(request),

@@ -47,8 +47,9 @@ import {
 } from "./editorState";
 import { ContentRevisionPanel } from "./ContentRevisionPanel";
 import { ContentTimeline } from "./ContentTimeline";
+import { LinkedRecordPicker } from "./LinkedRecordPicker";
 import { NotificationDraftPanel } from "./NotificationDraftPanel";
-import { SocialCopyPanel } from "./SocialCopyPanel";
+import { SocialCopyPanel, type SocialCopyPatch } from "./SocialCopyPanel";
 
 type ContentEditorProps = {
   contentId: string;
@@ -189,6 +190,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
 
   const [validationIssues, setValidationIssues] = useState<PublishValidationIssue[]>([]);
   const [pendingCopyId, setPendingCopyId] = useState<string | null>(null);
+  const [savingCopyId, setSavingCopyId] = useState<string | null>(null);
   const [pendingDraftId, setPendingDraftId] = useState<string | null>(null);
   const [generatingUpdateId, setGeneratingUpdateId] = useState<string | null>(null);
   const [updateDraftNotice, setUpdateDraftNotice] = useState<string | null>(null);
@@ -373,6 +375,18 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
       void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] }),
   });
 
+  const updateSocialCopy = useMutation({
+    mutationFn: ({ copyId, patch }: { copyId: string; patch: SocialCopyPatch }) =>
+      fetchAdminJson<{ ok: true }>(`/api/admin/content/social-copy/${copyId}`, {
+        method: "PATCH",
+        body: JSON.stringify(patch),
+      }),
+    onMutate: ({ copyId }) => setSavingCopyId(copyId),
+    onSettled: () => setSavingCopyId(null),
+    onSuccess: () =>
+      void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] }),
+  });
+
   const generateNotificationDrafts = useMutation({
     mutationFn: (updateId: string) =>
       fetchAdminJson<{ count: number }>(
@@ -411,6 +425,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
     createContentLink.isPending ||
     generateSocialCopy.isPending ||
     updateCopyStatus.isPending ||
+    updateSocialCopy.isPending ||
     generateNotificationDrafts.isPending ||
     updateDraftStatus.isPending;
 
@@ -591,6 +606,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
           createContentLink.error,
           generateSocialCopy.error,
           updateCopyStatus.error,
+          updateSocialCopy.error,
           generateNotificationDrafts.error,
           updateDraftStatus.error,
         ]}
@@ -631,7 +647,9 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
         copies={content.socialCopies}
         onGenerate={() => generateSocialCopy.mutate()}
         onUpdateStatus={(copyId, status) => updateCopyStatus.mutate({ copyId, status })}
+        onSave={(copyId, patch) => updateSocialCopy.mutate({ copyId, patch })}
         pendingCopyId={pendingCopyId}
+        savingCopyId={savingCopyId}
         generating={generateSocialCopy.isPending}
         disabled={editorActionPending}
       />
@@ -929,6 +947,7 @@ function LinkedRecords({
     linkedId: "",
     relationship: "adopter",
   });
+  const [linkedLabel, setLinkedLabel] = useState("");
 
   return (
     <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
@@ -945,17 +964,20 @@ function LinkedRecords({
           }
           panelState.clear();
           setForm({ linkedType: "adoption_case", linkedId: "", relationship: "adopter" });
+          setLinkedLabel("");
         }}
       >
         <Field label="類型">
           <select
             value={form.linkedType}
-            onChange={(event) =>
+            onChange={(event) => {
               setForm((current) => ({
                 ...current,
                 linkedType: event.target.value as ContentLinkType,
-              }))
-            }
+                linkedId: "",
+              }));
+              setLinkedLabel("");
+            }}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           >
             {(
@@ -973,14 +995,16 @@ function LinkedRecords({
             ))}
           </select>
         </Field>
-        <Field label="紀錄 ID">
-          <input
-            required
+        <Field label="關聯紀錄">
+          <LinkedRecordPicker
+            linkedType={form.linkedType}
             value={form.linkedId}
-            onChange={(event) =>
-              setForm((current) => ({ ...current, linkedId: event.target.value }))
-            }
-            className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+            label={linkedLabel}
+            disabled={pending}
+            onChange={(pick) => {
+              setForm((current) => ({ ...current, linkedId: pick.id }));
+              setLinkedLabel(pick.label);
+            }}
           />
         </Field>
         <Field label="關係">
@@ -1011,7 +1035,7 @@ function LinkedRecords({
         </Field>
         <button
           type="submit"
-          disabled={pending}
+          disabled={pending || !form.linkedId}
           className="mt-6 inline-flex items-center justify-center gap-2 rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-bold text-[var(--color-primary-foreground)] disabled:opacity-60"
         >
           <Plus className="h-4 w-4" />

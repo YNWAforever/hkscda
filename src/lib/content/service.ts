@@ -7,18 +7,22 @@ import {
 } from "./notificationDrafts";
 import { validatePublishableContent } from "./rules";
 import {
+  adminContentSearchSchema,
   CONTENT_MEDIA_BUCKET,
   contentLinkInputSchema,
   contentMediaInputSchema,
   contentMediaUploadTargetSchema,
   contentInputSchema,
-  contentSearchSchema,
+  linkSearchSchema,
   notificationDraftStatusSchema,
   publicContentSearchSchema,
   socialCopyGenerateSchema,
   socialCopyStatusSchema,
+  socialCopyUpdateSchema,
   storyProfileInputSchema,
   storyUpdateInputSchema,
+  type LinkSearch,
+  type SocialCopyUpdateInput,
 } from "./schemas";
 import { generateSocialCopyVariants } from "./socialCopy";
 import type {
@@ -30,7 +34,7 @@ import type {
   StoryUpdate,
 } from "./types";
 
-type ContentSearch = z.infer<typeof contentSearchSchema>;
+type AdminContentSearch = z.infer<typeof adminContentSearchSchema>;
 type PublicContentSearch = z.infer<typeof publicContentSearchSchema>;
 type ContentInput = z.infer<typeof contentInputSchema>;
 type StoryProfileInput = z.infer<typeof storyProfileInputSchema>;
@@ -75,7 +79,7 @@ export type ContentRepository = {
   }>;
   getPublicContentBySlug(slug: string): Promise<ContentDetail | null>;
   listPublicMapStories(input: PublicContentSearch): Promise<PublicStoryMapPoint[]>;
-  listAdminContent(input: ContentSearch): Promise<{ items: ContentSummary[]; total: number }>;
+  listAdminContent(input: AdminContentSearch): Promise<{ items: ContentSummary[]; total: number }>;
   getAdminUpdateBody?(contentId: string, updateId: string): Promise<string | null>;
   getAdminContent(id: string, historyPage?: number): Promise<ContentDetail | null>;
   createContent(input: ContentInput): Promise<string>;
@@ -85,6 +89,9 @@ export type ContentRepository = {
   createContentMedia(contentId: string, input: ContentMediaInput): Promise<string>;
   createSignedUploadUrl(objectPath: string): Promise<{ token: string; path: string }>;
   createContentLink(contentId: string, input: ContentLinkInput): Promise<string>;
+  searchLinks(
+    input: LinkSearch,
+  ): Promise<Array<{ id: string; label: string; sublabel: string | null }>>;
   publishContent(id: string): Promise<ContentDetail>;
   archiveContent(id: string): Promise<ContentDetail>;
   insertSocialCopies(
@@ -102,6 +109,7 @@ export type ContentRepository = {
     id: string,
     status: RecipientNotificationDraft["status"],
   ): Promise<void>;
+  updateSocialCopy(id: string, patch: SocialCopyUpdateInput): Promise<void>;
   updateSocialCopyStatus(id: string, status: SocialCopyVariant["status"]): Promise<void>;
   insertAuditLog(row: ContentAuditLogInsert): Promise<void>;
 };
@@ -159,6 +167,11 @@ type CreateContentLinkArgs = ActorInput & {
 
 type GenerateSocialCopyArgs = ActorInput & {
   contentId: string;
+  input: unknown;
+};
+
+type UpdateSocialCopyArgs = ActorInput & {
+  copyId: string;
   input: unknown;
 };
 
@@ -294,7 +307,7 @@ export function createContentService({
     },
 
     async listAdminContent(raw: unknown) {
-      return repo.listAdminContent(contentSearchSchema.parse(raw));
+      return repo.listAdminContent(adminContentSearchSchema.parse(raw));
     },
 
     async getAdminUpdateBody(contentId: string, updateId: string) {
@@ -511,6 +524,11 @@ export function createContentService({
       return { id };
     },
 
+    async searchLinks(raw: unknown) {
+      const parsed = linkSearchSchema.parse(raw);
+      return repo.searchLinks(parsed);
+    },
+
     async publishContent({ actorUserId, contentId, input }: ContentActionArgs) {
       const draft = await repo.getAdminContent(contentId);
       if (!draft) throw new Error("Content item not found");
@@ -610,6 +628,20 @@ export function createContentService({
       });
 
       return { count: variants.length };
+    },
+
+    async updateSocialCopy({ actorUserId, copyId, input }: UpdateSocialCopyArgs) {
+      const parsed: SocialCopyUpdateInput = socialCopyUpdateSchema.parse(input);
+      await repo.updateSocialCopy(copyId, parsed);
+      await audit({
+        actor_user_id: actorUserId,
+        action: "content.social_copy.update",
+        entity: "social_copy_variant",
+        entity_id: copyId,
+        detail: parsed,
+      });
+
+      return { ok: true };
     },
 
     async updateSocialCopyStatus({ actorUserId, copyId, input }: UpdateSocialCopyStatusArgs) {

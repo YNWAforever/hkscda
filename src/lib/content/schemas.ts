@@ -64,6 +64,16 @@ export const contentSearchSchema = z.object({
   pageSize: boundedPageSize.default(25),
 });
 
+export const adminContentSearchSchema = contentSearchSchema.extend({
+  publishedFrom: z.string().date().optional(),
+  publishedTo: z.string().date().optional(),
+  mapVisibility: z.enum(["on", "off"]).optional(),
+  hasUpdate: z.enum(["yes", "no"]).optional(),
+  draftState: z.enum(notificationDraftStatuses).optional(),
+});
+
+export type AdminContentSearch = z.infer<typeof adminContentSearchSchema>;
+
 export const publicContentSearchSchema = contentSearchSchema.extend({
   status: z.literal("published").optional().default("published"),
 });
@@ -150,9 +160,27 @@ export const contentLinkInputSchema = z.object({
   relationship: z.enum(contentLinkRelationships).default("other"),
 });
 
+export const linkSearchSchema = z.object({
+  linkedType: z.enum(contentLinkTypes),
+  q: trimmed.min(1).max(100),
+  limit: numberFromInput(z.number().int().min(1))
+    .catch(20)
+    .transform((value) => Math.min(value, 20)),
+});
+
 export const socialCopyStatusSchema = z.object({
   status: z.enum(socialCopyStatuses),
 });
+
+export const socialCopyUpdateSchema = z
+  .object({
+    status: z.enum(socialCopyStatuses).optional(),
+    copyText: trimmed.min(1).max(10000).optional(),
+    hashtags: z.array(trimmed.min(1).max(60)).max(30).optional(),
+  })
+  .refine((value) => Object.keys(value).length > 0, {
+    message: "Provide a status, copyText, or hashtags",
+  });
 
 export const notificationDraftStatusSchema = z.object({
   status: z.enum(notificationDraftStatuses),
@@ -171,6 +199,8 @@ export type StoryUpdateInput = z.infer<typeof storyUpdateInputSchema>;
 export type ContentMediaInput = z.infer<typeof contentMediaInputSchema>;
 export type ContentMediaUploadTargetInput = z.infer<typeof contentMediaUploadTargetSchema>;
 export type ContentLinkInput = z.infer<typeof contentLinkInputSchema>;
+export type LinkSearch = z.infer<typeof linkSearchSchema>;
 export type SocialCopyStatusInput = z.infer<typeof socialCopyStatusSchema>;
+export type SocialCopyUpdateInput = z.infer<typeof socialCopyUpdateSchema>;
 export type NotificationDraftStatusInput = z.infer<typeof notificationDraftStatusSchema>;
 export type SocialCopyGenerateInput = z.infer<typeof socialCopyGenerateSchema>;

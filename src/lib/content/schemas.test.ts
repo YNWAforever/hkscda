@@ -1,10 +1,13 @@
 import { describe, expect, test } from "bun:test";
 
 import {
+  adminContentSearchSchema,
   contentInputSchema,
   contentMediaInputSchema,
   contentMediaUploadTargetSchema,
+  linkSearchSchema,
   MAX_CONTENT_MEDIA_BYTES,
+  socialCopyUpdateSchema,
 } from "./schemas";
 
 const baseInput = {
@@ -93,5 +96,46 @@ describe("content media schemas", () => {
     }
 
     expect(9 * 1024 * 1024).toBeGreaterThan(MAX_CONTENT_MEDIA_BYTES);
+  });
+});
+
+describe("adminContentSearchSchema", () => {
+  test("parses the new admin filters", () => {
+    const parsed = adminContentSearchSchema.parse({
+      publishedFrom: "2026-01-01",
+      publishedTo: "2026-12-31",
+      mapVisibility: "on",
+      hasUpdate: "yes",
+      draftState: "draft",
+    });
+    expect(parsed.mapVisibility).toBe("on");
+    expect(parsed.hasUpdate).toBe("yes");
+    expect(parsed.draftState).toBe("draft");
+  });
+  test("rejects unknown enum values", () => {
+    expect(adminContentSearchSchema.safeParse({ mapVisibility: "maybe" }).success).toBe(false);
+    expect(adminContentSearchSchema.safeParse({ draftState: "sent" }).success).toBe(false);
+  });
+});
+
+describe("socialCopyUpdateSchema", () => {
+  test("accepts a status-only update (backwards compatible)", () => {
+    expect(socialCopyUpdateSchema.parse({ status: "copied" })).toEqual({ status: "copied" });
+  });
+  test("accepts edited text and hashtags", () => {
+    const parsed = socialCopyUpdateSchema.parse({ copyText: "新文案", hashtags: ["領養", "香港"] });
+    expect(parsed.copyText).toBe("新文案");
+    expect(parsed.hashtags).toEqual(["領養", "香港"]);
+  });
+  test("rejects an empty update", () => {
+    expect(socialCopyUpdateSchema.safeParse({}).success).toBe(false);
+  });
+});
+
+describe("linkSearchSchema", () => {
+  test("trims q, defaults limit, and rejects unknown types", () => {
+    expect(linkSearchSchema.parse({ linkedType: "animal", q: "  mi  " }).q).toBe("mi");
+    expect(linkSearchSchema.parse({ linkedType: "animal", q: "x" }).limit).toBe(20);
+    expect(linkSearchSchema.safeParse({ linkedType: "nope", q: "x" }).success).toBe(false);
   });
 });
