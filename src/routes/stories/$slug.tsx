@@ -3,7 +3,7 @@ import { PUBLIC_SITE_ORIGIN } from "@/lib/publicOrigin";
 
 import { PublicStateShell } from "../../components/site/PublicStateShell";
 import { StoryDetail } from "../../components/site/stories/StoryDetail";
-import { getPublicStory } from "../../lib/content/publicStory.functions";
+import { getPublicStory, getRelatedStories } from "../../lib/content/publicStory.functions";
 
 const ORIGIN = PUBLIC_SITE_ORIGIN;
 
@@ -29,19 +29,24 @@ export const Route = createFileRoute("/stories/$slug")({
     }
     // Genuinely absent, as opposed to unreadable: that is a 404.
     if (!content) throw notFound();
-    return content;
+    const related =
+      content.type === "rescue_story"
+        ? await getRelatedStories({ data: { slug: params.slug } })
+        : [];
+    return { content, related };
   },
   head: ({ loaderData, params }) => {
     const canonical = `${ORIGIN}/stories/${encodeURIComponent(params.slug)}`;
-    const title = loaderData?.seoTitle ?? loaderData?.title ?? "救援故事 · HKSCDA";
+    const title =
+      loaderData?.content?.seoTitle ?? loaderData?.content?.title ?? "救援故事 · HKSCDA";
     const pageTitle = title.includes("HKSCDA") ? title : `${title} · 香港拯救貓狗協會 HKSCDA`;
     const description =
-      loaderData?.seoDescription ??
-      loaderData?.ogDescription ??
-      loaderData?.summary ??
+      loaderData?.content?.seoDescription ??
+      loaderData?.content?.ogDescription ??
+      loaderData?.content?.summary ??
       "HKSCDA 公開救援故事。";
-    const ogTitle = loaderData?.ogTitle ?? pageTitle;
-    const image = absolutePublicUrl(loaderData?.coverImageUrl ?? null);
+    const ogTitle = loaderData?.content?.ogTitle ?? pageTitle;
+    const image = absolutePublicUrl(loaderData?.content?.coverImageUrl ?? null);
     return {
       meta: [
         { title: pageTitle },
@@ -51,8 +56,8 @@ export const Route = createFileRoute("/stories/$slug")({
         { property: "og:type", content: "article" },
         { property: "og:url", content: canonical },
         { property: "og:image", content: image },
-        ...(loaderData?.publishedAt
-          ? [{ property: "article:published_time", content: loaderData.publishedAt }]
+        ...(loaderData?.content?.publishedAt
+          ? [{ property: "article:published_time", content: loaderData.content.publishedAt }]
           : []),
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: ogTitle },
@@ -68,9 +73,9 @@ export const Route = createFileRoute("/stories/$slug")({
 });
 
 function StoryDetailPage() {
-  const content = Route.useLoaderData();
-  if (!content) return <StoryDetailError />;
-  return <StoryDetail content={content} />;
+  const data = Route.useLoaderData();
+  if (!data) return <StoryDetailError />;
+  return <StoryDetail content={data.content} related={data.related} />;
 }
 
 function StoryDetailPending() {

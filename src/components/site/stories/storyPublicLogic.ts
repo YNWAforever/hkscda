@@ -30,6 +30,36 @@ type FilterableStory = {
   storyProfile: Pick<RescueStoryProfile, "animalType" | "publicStatus" | "rescueRegion"> | null;
 };
 
+const animalTypeLabels: Record<AnimalStoryType, string> = {
+  cat: "貓",
+  dog: "狗",
+  mixed: "貓狗",
+  unknown: "未知",
+};
+
+export function animalTypeLabel(type: AnimalStoryType) {
+  return animalTypeLabels[type];
+}
+
+function isSafeStoryHref(value: string) {
+  if (value.startsWith("/") && !value.startsWith("//")) return true;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
+const DEFAULT_STORY_CTA = { href: "/donate?purpose=medical", label: "支援醫療費用 ｜ 立即捐助" };
+
+export function storyCta(story: { ctaLabel: string | null; ctaUrl: string | null }) {
+  const href = story.ctaUrl?.trim();
+  const label = story.ctaLabel?.trim();
+  if (href && label && isSafeStoryHref(href)) return { href, label };
+  return DEFAULT_STORY_CTA;
+}
+
 export function filterStoryCards<T extends FilterableStory>(
   stories: T[],
   filters: StoryCardFilters,

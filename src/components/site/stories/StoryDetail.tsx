@@ -1,12 +1,15 @@
 import { Link } from "@tanstack/react-router";
 import { Heart } from "lucide-react";
 
+import type { PublicStorySummary } from "../../../lib/content/publicStoriesPage.types";
 import type { ContentDetail } from "../../../lib/content/types";
 import { PublicPageFrame } from "../PublicPageFrame";
-import { publicStatusLabel } from "./storyPublicLogic";
+import { StoryCard } from "./StoryWall";
+import { animalTypeLabel, publicStatusLabel, storyCta } from "./storyPublicLogic";
 
 type StoryDetailProps = {
   content: ContentDetail;
+  related: PublicStorySummary[];
 };
 
 /**
@@ -17,10 +20,12 @@ type StoryDetailProps = {
  * consistency with the animal/sponsor detail pages, even though the rest of
  * the frame is PublicPageFrame's.
  */
-export function StoryDetail({ content }: StoryDetailProps) {
+export function StoryDetail({ content, related }: StoryDetailProps) {
   const profile = content.storyProfile;
   const publicUpdates = content.updates.filter((update) => update.visibility === "public");
   const gallery = content.media.filter((media) => !media.isCover).slice(0, 6);
+  const cta = storyCta(content);
+  const hasCustomCta = cta.href !== "/donate?purpose=medical";
   const eyebrow = profile
     ? [publicStatusLabel(profile.publicStatus), profile.publicMapLabel ?? profile.rescueRegion]
         .filter(Boolean)
@@ -122,6 +127,12 @@ export function StoryDetail({ content }: StoryDetailProps) {
                 </h2>
                 <dl className="mt-4 space-y-3 text-sm">
                   <div>
+                    <dt className="font-bold text-[var(--color-text)]">動物類型</dt>
+                    <dd className="mt-1 text-[var(--color-text-muted)]">
+                      {animalTypeLabel(profile.animalType)}
+                    </dd>
+                  </div>
+                  <div>
                     <dt className="font-bold text-[var(--color-text)]">公開區域</dt>
                     <dd className="mt-1 text-[var(--color-text-muted)]">{profile.rescueRegion}</dd>
                   </div>
@@ -145,20 +156,42 @@ export function StoryDetail({ content }: StoryDetailProps) {
 
             <div className="rounded-md bg-[var(--color-panel)] p-5 text-white shadow-soft">
               <Heart className="h-6 w-6 text-[var(--color-secondary)]" aria-hidden="true" />
-              <h2 className="mt-3 font-display text-2xl font-bold">支持救援個案醫療</h2>
+              <h2 className="mt-3 font-display text-2xl font-bold">
+                {hasCustomCta ? "支持這個個案" : "支持救援個案醫療"}
+              </h2>
               <p className="mt-2 text-sm leading-6 text-white/75">
-                你的捐助會用於醫療、暫托、糧食與日常照護，讓更多動物等到安全的一天。
+                {hasCustomCta
+                  ? "你的支持會用於醫療、暫托、糧食與日常照護，讓更多動物等到安全的一天。"
+                  : "你的捐助會用於醫療、暫托、糧食與日常照護，讓更多動物等到安全的一天。"}
               </p>
-              <a
-                href="/donate?purpose=medical"
-                className="btn-primary min-h-11 mt-4 w-full text-sm!"
-              >
-                支援醫療費用 ｜ 立即捐助
+              <a href={cta.href} className="btn-primary min-h-11 mt-4 w-full text-sm!">
+                {cta.label}
               </a>
             </div>
           </aside>
         </div>
       </section>
+
+      {related.length > 0 ? (
+        <section
+          className="section bg-[var(--color-surface)]"
+          aria-labelledby="related-stories-title"
+        >
+          <div className="public-container">
+            <h2
+              id="related-stories-title"
+              className="font-display text-2xl font-bold text-[var(--color-panel)]"
+            >
+              相關故事
+            </h2>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {related.map((story) => (
+                <StoryCard key={story.id} story={story} />
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
     </PublicPageFrame>
   );
 }

@@ -21,3 +21,10 @@ export const getPublicStory = createServerFn({ method: "GET" })
     });
     return service.getPublicContentBySlug(data.slug);
   });
+
+export const getRelatedStories = createServerFn({ method: "GET" })
+  .inputValidator(z.object({ slug: z.string().trim().min(1).max(160) }))
+  .handler(async ({ data }) => {
+    const { loadRelatedStories } = await import("./publicStoriesPage.server");
+    return loadRelatedStories(data.slug);
+  });

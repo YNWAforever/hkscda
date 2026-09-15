@@ -66,4 +66,21 @@ describe("StoryWall", () => {
     expect(markup).toContain("灣仔");
     expect(markup).not.toContain("card-dashed");
   });
+
+  test("uses the content CTA and shows the animal-type chip", async () => {
+    const { StoryWall } = await import("./StoryWall");
+    const customStory: ContentSummary = {
+      ...story,
+      id: "story-2",
+      slug: "mimi-needs-sponsors",
+      ctaLabel: "了解牠的故事",
+      ctaUrl: "/sponsors",
+      storyProfile: { ...story.storyProfile!, animalType: "unknown" },
+    };
+    const markup = renderToStaticMarkup(<StoryWall stories={[customStory]} />);
+
+    expect(markup).toContain('href="/sponsors"');
+    expect(markup).toContain("了解牠的故事");
+    expect(markup).toContain("未知");
+  });
 });

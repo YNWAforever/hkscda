@@ -3,7 +3,7 @@ import { createSupabaseServiceClient } from "../donations/supabase.server";
 import { createSupabaseContentRepository } from "./repository.server";
 import { createContentService } from "./service";
 import type { PublicStoriesPageData, PublicStorySummary } from "./publicStoriesPage.types";
-import type { ContentSummary, PublicStoryMapPoint } from "./types";
+import type { AnimalStoryType, ContentSummary, ContentType, PublicStoryMapPoint } from "./types";
 
 export type { PublicStoriesPageData, PublicStorySummary } from "./publicStoriesPage.types";
 
@@ -13,13 +13,34 @@ type PublicStoriesPageSourceData = {
   points: PublicStoryMapPoint[];
 };
 
+type PublicStoriesPageQuery = {
+  type?: ContentType;
+  animalType?: AnimalStoryType;
+  rescueRegion?: string;
+  pageSize?: number;
+};
+
 type PublicStoriesPageService = {
-  listPublicStoriesPage(input: unknown): Promise<PublicStoriesPageSourceData>;
+  listPublicStoriesPage(input: PublicStoriesPageQuery): Promise<PublicStoriesPageSourceData>;
 };
 
 type PublicStoriesPageServiceFactory = () => PublicStoriesPageService;
 
-function projectPublicStory(item: ContentSummary): PublicStorySummary {
+type RelatedStorySource = {
+  id: string;
+  type: ContentType;
+  storyProfile: { animalType: AnimalStoryType; rescueRegion: string } | null;
+};
+
+type RelatedStoriesService = PublicStoriesPageService & {
+  getPublicContentBySlug(slug: string): Promise<RelatedStorySource | null>;
+};
+
+type RelatedStoriesServiceFactory = () => RelatedStoriesService;
+
+const RELATED_STORIES_LIMIT = 3;
+
+export function projectPublicStory(item: ContentSummary): PublicStorySummary {
   const profile = item.storyProfile;
   if (!profile) return { ...item, storyProfile: null };
 
@@ -75,5 +96,59 @@ export async function loadPublicStoriesPage(
     return await createPublicStoriesPageReader(createService())();
   } catch {
     throw new Error("Could not load stories");
+  }
+}
+
+export function createRelatedStoriesReader(service: RelatedStoriesService) {
+  return async (slug: string): Promise<PublicStorySummary[]> => {
+    const current = await service.getPublicContentBySlug(slug);
+    if (!current || current.type !== "rescue_story" || !current.storyProfile) return [];
+
+    const profile = current.storyProfile;
+    const seen = new Set<string>([current.id]);
+    const selected: ContentSummary[] = [];
+    const append = (items: ContentSummary[]) => {
+      for (const item of items) {
+        if (selected.length >= RELATED_STORIES_LIMIT) return;
+        if (seen.has(item.id)) continue;
+        seen.add(item.id);
+        selected.push(item);
+      }
+    };
+
+    append(
+      (
+        await service.listPublicStoriesPage({
+          type: "rescue_story",
+          animalType: profile.animalType,
+          pageSize: 6,
+        })
+      ).items,
+    );
+
+    if (selected.length < RELATED_STORIES_LIMIT && profile.rescueRegion) {
+      append(
+        (
+          await service.listPublicStoriesPage({
+            type: "rescue_story",
+            rescueRegion: profile.rescueRegion,
+            pageSize: 6,
+          })
+        ).items,
+      );
+    }
+
+    return selected.map(projectPublicStory);
+  };
+}
+
+export async function loadRelatedStories(
+  slug: string,
+  createService: RelatedStoriesServiceFactory = createPublicStoriesPageService,
+): Promise<PublicStorySummary[]> {
+  try {
+    return await createRelatedStoriesReader(createService())(slug);
+  } catch {
+    return [];
   }
 }
