@@ -87,6 +87,7 @@ function createRepo(overrides: Partial<ContentRepository> = {}) {
     createContentMedia: async () => "media-2",
     createSignedUploadUrl: async (objectPath) => ({ token: "upload-token", path: objectPath }),
     createContentLink: async () => "link-1",
+    searchLinks: async () => [],
     insertSocialCopies: async (rows) => {
       socialCopies.push(...rows);
     },
@@ -105,6 +106,7 @@ function createRepo(overrides: Partial<ContentRepository> = {}) {
       notificationDrafts.push(...rows);
     },
     updateNotificationDraftStatus: async () => undefined,
+    updateSocialCopy: async () => undefined,
     updateSocialCopyStatus: async () => undefined,
     insertAuditLog: async (row) => {
       auditLogs.push(row);
@@ -123,6 +125,8 @@ function buildService({
   draftKeys,
   insertNotificationDrafts,
   mediaLifecycle,
+  searchLinks,
+  updateSocialCopy,
 }: {
   content?: ContentOverride;
   storyUpdate?: Partial<StoryUpdate>;
@@ -130,6 +134,8 @@ function buildService({
   recipientsError?: Error;
   draftKeys?: Array<{ channel: string; recipientContact: string }>;
   insertNotificationDrafts?: ContentRepository["insertNotificationDrafts"];
+  searchLinks?: ContentRepository["searchLinks"];
+  updateSocialCopy?: ContentRepository["updateSocialCopy"];
   mediaLifecycle?: {
     publish: (command: unknown) => Promise<{ version: number; revisionId: string }>;
   };
@@ -154,6 +160,12 @@ function buildService({
   }
   if (insertNotificationDrafts) {
     overrides.insertNotificationDrafts = insertNotificationDrafts;
+  }
+  if (searchLinks) {
+    overrides.searchLinks = searchLinks;
+  }
+  if (updateSocialCopy) {
+    overrides.updateSocialCopy = updateSocialCopy;
   }
 
   const { repo } = createRepo(overrides);
@@ -450,6 +462,20 @@ describe("createContentService", () => {
         detail: { status: "copied" },
       }),
     );
+  });
+
+  test("updateSocialCopy persists edited text and hashtags", async () => {
+    const updateSocialCopy = mock(async () => {});
+    const { service } = buildService({ updateSocialCopy });
+    await service.updateSocialCopy({
+      actorUserId: "u1",
+      copyId: "copy-1",
+      input: { copyText: "新文案", hashtags: ["領養"] },
+    });
+    expect(updateSocialCopy).toHaveBeenCalledWith("copy-1", {
+      copyText: "新文案",
+      hashtags: ["領養"],
+    });
   });
 
   test("does not re-draft a delivery target that already has a draft for this update", async () => {
@@ -1127,5 +1153,44 @@ describe("createContentService createUploadTarget", () => {
         },
       }),
     ).rejects.toThrow();
+  });
+});
+
+describe("createContentService listAdminContent", () => {
+  test("forwards admin-only list filters to the repository", async () => {
+    let received: unknown;
+    const { repo } = createRepo({
+      listAdminContent: async (input) => {
+        received = input;
+        return { items: [], total: 0 };
+      },
+    });
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await service.listAdminContent({
+      publishedFrom: "2026-01-01",
+      publishedTo: "2026-12-31",
+      mapVisibility: "on",
+      hasUpdate: "yes",
+      draftState: "draft",
+    });
+
+    expect(received).toMatchObject({
+      publishedFrom: "2026-01-01",
+      publishedTo: "2026-12-31",
+      mapVisibility: "on",
+      hasUpdate: "yes",
+      draftState: "draft",
+    });
+  });
+});
+
+describe("createContentService searchLinks", () => {
+  test("searchLinks delegates to the repository with a bounded limit", async () => {
+    const searchLinks = mock(async () => [{ id: "a1", label: "Milo", sublabel: null }]);
+    const { service } = buildService({ searchLinks });
+    const result = await service.searchLinks({ linkedType: "animal", q: "mi", limit: 5 });
+    expect(searchLinks).toHaveBeenCalledWith({ linkedType: "animal", q: "mi", limit: 5 });
+    expect(result).toHaveLength(1);
   });
 });

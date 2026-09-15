@@ -301,6 +301,39 @@ test("resolveAdopterRecipients resolves a linked adoption case through its suppo
   });
 });
 
+test("listAdminContent forwards the published, map, update and draft filters to the RPC", async () => {
+  let receivedFilters: Record<string, unknown> | null = null;
+  const client = {
+    rpc: async (_fn: string, args: { p_filters: Record<string, unknown> }) => {
+      receivedFilters = args.p_filters;
+      return { data: { total: 0, rows: [] }, error: null };
+    },
+    storage: {
+      from: () => ({
+        createSignedUrls: async () => ({ data: [], error: null }),
+      }),
+    },
+  } as unknown as SupabaseClient;
+
+  await createSupabaseContentRepository(client).listAdminContent({
+    publishedFrom: "2026-01-01",
+    publishedTo: "2026-12-31",
+    mapVisibility: "on",
+    hasUpdate: "yes",
+    draftState: "draft",
+    page: 1,
+    pageSize: 25,
+  });
+
+  expect(receivedFilters).toMatchObject({
+    publishedFrom: "2026-01-01",
+    publishedTo: "2026-12-31",
+    mapVisibility: "on",
+    hasUpdate: "yes",
+    draftState: "draft",
+  });
+});
+
 test("listNotificationDraftKeys selects only the channel and contact for one update", async () => {
   const rows = [
     { channel: "email", recipient_contact: "ada@example.test" },

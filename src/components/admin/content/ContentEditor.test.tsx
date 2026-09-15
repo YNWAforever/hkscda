@@ -129,14 +129,16 @@ describe("ContentEditor", () => {
   test("renders authoring controls for story profile, updates, media, and links", async () => {
     const { ContentAuthoringPanels } = await import("./ContentEditor");
     const markup = renderToStaticMarkup(
-      <ContentAuthoringPanels
-        content={content}
-        pending={false}
-        onCreateLink={async () => undefined}
-        onSaveStoryProfile={async () => undefined}
-        onCreateStoryUpdate={async () => undefined}
-        onCreateMedia={async () => undefined}
-      />,
+      <QueryClientProvider client={new QueryClient()}>
+        <ContentAuthoringPanels
+          content={content}
+          pending={false}
+          onCreateLink={async () => undefined}
+          onSaveStoryProfile={async () => undefined}
+          onCreateStoryUpdate={async () => undefined}
+          onCreateMedia={async () => undefined}
+        />
+      </QueryClientProvider>,
     );
 
     expect(markup).toContain("儲存故事設定");
@@ -172,14 +174,16 @@ describe("ContentEditor", () => {
       ],
     };
     const markup = renderToStaticMarkup(
-      <ContentAuthoringPanels
-        content={contentWithInternalUpdate}
-        pending={false}
-        onCreateLink={async () => undefined}
-        onSaveStoryProfile={async () => undefined}
-        onCreateStoryUpdate={async () => undefined}
-        onCreateMedia={async () => undefined}
-      />,
+      <QueryClientProvider client={new QueryClient()}>
+        <ContentAuthoringPanels
+          content={contentWithInternalUpdate}
+          pending={false}
+          onCreateLink={async () => undefined}
+          onSaveStoryProfile={async () => undefined}
+          onCreateStoryUpdate={async () => undefined}
+          onCreateMedia={async () => undefined}
+        />
+      </QueryClientProvider>,
     );
 
     expect(markup).toContain("圖片先儲存為私密媒體");

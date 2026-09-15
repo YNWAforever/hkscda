@@ -1,10 +1,28 @@
-import type { ContentStatus, ContentType } from "../../../lib/content/types";
+import type {
+  ContentStatus,
+  ContentType,
+  NotificationDraftStatus,
+} from "../../../lib/content/types";
+
+export const contentOptionalFieldLabels = {
+  ctaLabel: "CTA 標籤",
+  ctaUrl: "CTA 連結",
+  seoTitle: "SEO 標題",
+  seoDescription: "SEO 描述",
+  ogTitle: "OG 標題",
+  ogDescription: "OG 描述",
+} as const;
 
 export type ContentSearchInput = {
   q?: string;
   type?: ContentType | "all";
   status?: ContentStatus | "all";
   rescueRegion?: string;
+  publishedFrom?: string;
+  publishedTo?: string;
+  mapVisibility?: "on" | "off" | "all";
+  hasUpdate?: "yes" | "no" | "all";
+  draftState?: NotificationDraftStatus | "all";
   page?: number;
   pageSize?: number;
 };
@@ -31,6 +49,16 @@ export function buildContentSearchParams(input: ContentSearchInput = {}) {
   if (input.type && input.type !== "all") params.set("type", input.type);
   if (input.status && input.status !== "all") params.set("status", input.status);
   if (rescueRegion) params.set("rescueRegion", rescueRegion);
+
+  const publishedFrom = input.publishedFrom?.trim();
+  const publishedTo = input.publishedTo?.trim();
+  if (publishedFrom) params.set("publishedFrom", publishedFrom);
+  if (publishedTo) params.set("publishedTo", publishedTo);
+  if (input.mapVisibility && input.mapVisibility !== "all")
+    params.set("mapVisibility", input.mapVisibility);
+  if (input.hasUpdate && input.hasUpdate !== "all") params.set("hasUpdate", input.hasUpdate);
+  if (input.draftState && input.draftState !== "all") params.set("draftState", input.draftState);
+
   params.set("page", String(page));
   params.set("pageSize", String(pageSize));
 
@@ -52,6 +80,18 @@ export function formatContentTypeLabel(type: ContentType, language: "zh" | "en")
   };
 
   return labels[type][language];
+}
+
+export function suggestSlug(title: string) {
+  return title
+    .normalize("NFKD")
+    .toLowerCase()
+    .replace(/['’]/g, "-")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 180)
+    .replace(/-+$/g, "");
 }
 
 export function summarizeContentRows(rows: ContentSummaryRow[]) {

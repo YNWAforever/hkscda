@@ -2,11 +2,13 @@ import { describe, expect, test } from "bun:test";
 
 import {
   buildContentSearchParams,
+  contentOptionalFieldLabels,
   contentStatusTone,
   copyTextToClipboard,
   formatContentTypeLabel,
   formatIsoForDatetimeLocal,
   parseDatetimeLocalToIso,
+  suggestSlug,
   summarizeContentRows,
 } from "./contentAdminLogic";
 
@@ -23,6 +25,21 @@ describe("contentAdminLogic", () => {
     ).toBe(
       "q=%E5%B0%8F%E7%99%BD&type=rescue_story&status=published&rescueRegion=%E7%81%A3%E4%BB%94&page=2&pageSize=25",
     );
+  });
+
+  test("buildContentSearchParams serializes the new admin filters", () => {
+    const params = buildContentSearchParams({
+      publishedFrom: "2026-01-01",
+      publishedTo: "2026-06-30",
+      mapVisibility: "on",
+      hasUpdate: "no",
+      draftState: "dismissed",
+    });
+    expect(params.get("publishedFrom")).toBe("2026-01-01");
+    expect(params.get("publishedTo")).toBe("2026-06-30");
+    expect(params.get("mapVisibility")).toBe("on");
+    expect(params.get("hasUpdate")).toBe("no");
+    expect(params.get("draftState")).toBe("dismissed");
   });
 
   test("formats status tones and content type labels", () => {
@@ -68,5 +85,36 @@ describe("contentAdminLogic", () => {
         },
       }),
     ).rejects.toThrow("clipboard blocked");
+  });
+});
+
+describe("contentOptionalFieldLabels", () => {
+  test("labels every optional content field", () => {
+    expect(Object.keys(contentOptionalFieldLabels).sort()).toEqual([
+      "ctaLabel",
+      "ctaUrl",
+      "ogDescription",
+      "ogTitle",
+      "seoDescription",
+      "seoTitle",
+    ]);
+    for (const label of Object.values(contentOptionalFieldLabels)) {
+      expect(label.trim().length).toBeGreaterThan(0);
+    }
+  });
+});
+
+describe("suggestSlug", () => {
+  test("kebab-cases an ASCII title", () => {
+    expect(suggestSlug("Rescue Story: Milo's New Home!")).toBe("rescue-story-milo-s-new-home");
+  });
+  test("returns an empty string for a purely CJK title (staff must type a slug)", () => {
+    expect(suggestSlug("米路的新家")).toBe("");
+  });
+  test("strips leading/trailing separators and caps length", () => {
+    const slug = suggestSlug("  --Hello, World--  " + "x".repeat(220));
+    expect(slug.startsWith("hello-world")).toBe(true);
+    expect(slug.length).toBeLessThanOrEqual(180);
+    expect(/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)).toBe(true);
   });
 });

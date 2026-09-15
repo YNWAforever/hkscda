@@ -111,6 +111,7 @@ import { Route as AdminCoordinatorIntakeRouteImport } from './routes/admin/coord
 import { Route as AdminCoordinatorInboxRouteImport } from './routes/admin/coordinator/inbox'
 import { Route as AdminCoordinatorAnimalsRouteImport } from './routes/admin/coordinator/animals'
 import { Route as AdminCoordinatorAdoptersRouteImport } from './routes/admin/coordinator/adopters'
+import { Route as AdminContentNewRouteImport } from './routes/admin/content/new'
 import { Route as AdminContentKnowledgeRouteImport } from './routes/admin/content/knowledge'
 import { Route as AdminContentDocumentsRouteImport } from './routes/admin/content/documents'
 import { Route as AdminContentAnnualReportsRouteImport } from './routes/admin/content/annual-reports'
@@ -147,6 +148,7 @@ import { Route as ApiAdminExportsDonationsDotcsvRouteImport } from './routes/api
 import { Route as ApiAdminDonationsManualRouteImport } from './routes/api/admin/donations/manual'
 import { Route as ApiAdminDocumentsUploadTargetRouteImport } from './routes/api/admin/documents/upload-target'
 import { Route as ApiAdminDocumentsIdRouteImport } from './routes/api/admin/documents/$id'
+import { Route as ApiAdminContentLinkSearchRouteImport } from './routes/api/admin/content/link-search'
 import { Route as ApiAdminContentIdRouteImport } from './routes/api/admin/content/$id'
 import { Route as ApiAdminAnnualReportsIdRouteImport } from './routes/api/admin/annual-reports/$id'
 import { Route as ApiAdminAnimalsPhotoUploadUrlRouteImport } from './routes/api/admin/animals/photo-upload-url'
@@ -766,6 +768,11 @@ const AdminCoordinatorAdoptersRoute =
     path: '/admin/coordinator/adopters',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminContentNewRoute = AdminContentNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AdminContentRoute,
+} as any)
 const AdminContentKnowledgeRoute = AdminContentKnowledgeRouteImport.update({
   id: '/knowledge',
   path: '/knowledge',
@@ -967,6 +974,12 @@ const ApiAdminDocumentsIdRoute = ApiAdminDocumentsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => ApiAdminDocumentsRoute,
 } as any)
+const ApiAdminContentLinkSearchRoute =
+  ApiAdminContentLinkSearchRouteImport.update({
+    id: '/link-search',
+    path: '/link-search',
+    getParentRoute: () => ApiAdminContentRoute,
+  } as any)
 const ApiAdminContentIdRoute = ApiAdminContentIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -1571,6 +1584,7 @@ export interface FileRoutesByFullPath {
   '/admin/content/annual-reports': typeof AdminContentAnnualReportsRoute
   '/admin/content/documents': typeof AdminContentDocumentsRoute
   '/admin/content/knowledge': typeof AdminContentKnowledgeRoute
+  '/admin/content/new': typeof AdminContentNewRoute
   '/admin/coordinator/adopters': typeof AdminCoordinatorAdoptersRouteWithChildren
   '/admin/coordinator/animals': typeof AdminCoordinatorAnimalsRoute
   '/admin/coordinator/inbox': typeof AdminCoordinatorInboxRoute
@@ -1646,6 +1660,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/animals/photo-upload-url': typeof ApiAdminAnimalsPhotoUploadUrlRoute
   '/api/admin/annual-reports/$id': typeof ApiAdminAnnualReportsIdRouteWithChildren
   '/api/admin/content/$id': typeof ApiAdminContentIdRouteWithChildren
+  '/api/admin/content/link-search': typeof ApiAdminContentLinkSearchRoute
   '/api/admin/documents/$id': typeof ApiAdminDocumentsIdRouteWithChildren
   '/api/admin/documents/upload-target': typeof ApiAdminDocumentsUploadTargetRoute
   '/api/admin/donations/manual': typeof ApiAdminDonationsManualRoute
@@ -1804,6 +1819,7 @@ export interface FileRoutesByTo {
   '/admin/content/annual-reports': typeof AdminContentAnnualReportsRoute
   '/admin/content/documents': typeof AdminContentDocumentsRoute
   '/admin/content/knowledge': typeof AdminContentKnowledgeRoute
+  '/admin/content/new': typeof AdminContentNewRoute
   '/admin/coordinator/adopters': typeof AdminCoordinatorAdoptersRouteWithChildren
   '/admin/coordinator/animals': typeof AdminCoordinatorAnimalsRoute
   '/admin/coordinator/inbox': typeof AdminCoordinatorInboxRoute
@@ -1879,6 +1895,7 @@ export interface FileRoutesByTo {
   '/api/admin/animals/photo-upload-url': typeof ApiAdminAnimalsPhotoUploadUrlRoute
   '/api/admin/annual-reports/$id': typeof ApiAdminAnnualReportsIdRouteWithChildren
   '/api/admin/content/$id': typeof ApiAdminContentIdRouteWithChildren
+  '/api/admin/content/link-search': typeof ApiAdminContentLinkSearchRoute
   '/api/admin/documents/$id': typeof ApiAdminDocumentsIdRouteWithChildren
   '/api/admin/documents/upload-target': typeof ApiAdminDocumentsUploadTargetRoute
   '/api/admin/donations/manual': typeof ApiAdminDonationsManualRoute
@@ -2039,6 +2056,7 @@ export interface FileRoutesById {
   '/admin/content/annual-reports': typeof AdminContentAnnualReportsRoute
   '/admin/content/documents': typeof AdminContentDocumentsRoute
   '/admin/content/knowledge': typeof AdminContentKnowledgeRoute
+  '/admin/content/new': typeof AdminContentNewRoute
   '/admin/coordinator/adopters': typeof AdminCoordinatorAdoptersRouteWithChildren
   '/admin/coordinator/animals': typeof AdminCoordinatorAnimalsRoute
   '/admin/coordinator/inbox': typeof AdminCoordinatorInboxRoute
@@ -2114,6 +2132,7 @@ export interface FileRoutesById {
   '/api/admin/animals/photo-upload-url': typeof ApiAdminAnimalsPhotoUploadUrlRoute
   '/api/admin/annual-reports/$id': typeof ApiAdminAnnualReportsIdRouteWithChildren
   '/api/admin/content/$id': typeof ApiAdminContentIdRouteWithChildren
+  '/api/admin/content/link-search': typeof ApiAdminContentLinkSearchRoute
   '/api/admin/documents/$id': typeof ApiAdminDocumentsIdRouteWithChildren
   '/api/admin/documents/upload-target': typeof ApiAdminDocumentsUploadTargetRoute
   '/api/admin/donations/manual': typeof ApiAdminDonationsManualRoute
@@ -2275,6 +2294,7 @@ export interface FileRouteTypes {
     | '/admin/content/annual-reports'
     | '/admin/content/documents'
     | '/admin/content/knowledge'
+    | '/admin/content/new'
     | '/admin/coordinator/adopters'
     | '/admin/coordinator/animals'
     | '/admin/coordinator/inbox'
@@ -2350,6 +2370,7 @@ export interface FileRouteTypes {
     | '/api/admin/animals/photo-upload-url'
     | '/api/admin/annual-reports/$id'
     | '/api/admin/content/$id'
+    | '/api/admin/content/link-search'
     | '/api/admin/documents/$id'
     | '/api/admin/documents/upload-target'
     | '/api/admin/donations/manual'
@@ -2508,6 +2529,7 @@ export interface FileRouteTypes {
     | '/admin/content/annual-reports'
     | '/admin/content/documents'
     | '/admin/content/knowledge'
+    | '/admin/content/new'
     | '/admin/coordinator/adopters'
     | '/admin/coordinator/animals'
     | '/admin/coordinator/inbox'
@@ -2583,6 +2605,7 @@ export interface FileRouteTypes {
     | '/api/admin/animals/photo-upload-url'
     | '/api/admin/annual-reports/$id'
     | '/api/admin/content/$id'
+    | '/api/admin/content/link-search'
     | '/api/admin/documents/$id'
     | '/api/admin/documents/upload-target'
     | '/api/admin/donations/manual'
@@ -2742,6 +2765,7 @@ export interface FileRouteTypes {
     | '/admin/content/annual-reports'
     | '/admin/content/documents'
     | '/admin/content/knowledge'
+    | '/admin/content/new'
     | '/admin/coordinator/adopters'
     | '/admin/coordinator/animals'
     | '/admin/coordinator/inbox'
@@ -2817,6 +2841,7 @@ export interface FileRouteTypes {
     | '/api/admin/animals/photo-upload-url'
     | '/api/admin/annual-reports/$id'
     | '/api/admin/content/$id'
+    | '/api/admin/content/link-search'
     | '/api/admin/documents/$id'
     | '/api/admin/documents/upload-target'
     | '/api/admin/donations/manual'
@@ -3781,6 +3806,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCoordinatorAdoptersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/content/new': {
+      id: '/admin/content/new'
+      path: '/new'
+      fullPath: '/admin/content/new'
+      preLoaderRoute: typeof AdminContentNewRouteImport
+      parentRoute: typeof AdminContentRoute
+    }
     '/admin/content/knowledge': {
       id: '/admin/content/knowledge'
       path: '/knowledge'
@@ -4032,6 +4064,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/admin/documents/$id'
       preLoaderRoute: typeof ApiAdminDocumentsIdRouteImport
       parentRoute: typeof ApiAdminDocumentsRoute
+    }
+    '/api/admin/content/link-search': {
+      id: '/api/admin/content/link-search'
+      path: '/link-search'
+      fullPath: '/api/admin/content/link-search'
+      preLoaderRoute: typeof ApiAdminContentLinkSearchRouteImport
+      parentRoute: typeof ApiAdminContentRoute
     }
     '/api/admin/content/$id': {
       id: '/api/admin/content/$id'
@@ -4742,6 +4781,7 @@ interface AdminContentRouteChildren {
   AdminContentAnnualReportsRoute: typeof AdminContentAnnualReportsRoute
   AdminContentDocumentsRoute: typeof AdminContentDocumentsRoute
   AdminContentKnowledgeRoute: typeof AdminContentKnowledgeRoute
+  AdminContentNewRoute: typeof AdminContentNewRoute
 }
 
 const AdminContentRouteChildren: AdminContentRouteChildren = {
@@ -4752,6 +4792,7 @@ const AdminContentRouteChildren: AdminContentRouteChildren = {
   AdminContentAnnualReportsRoute: AdminContentAnnualReportsRoute,
   AdminContentDocumentsRoute: AdminContentDocumentsRoute,
   AdminContentKnowledgeRoute: AdminContentKnowledgeRoute,
+  AdminContentNewRoute: AdminContentNewRoute,
 }
 
 const AdminContentRouteWithChildren = AdminContentRoute._addFileChildren(
@@ -4977,6 +5018,7 @@ const ApiAdminContentIdRouteWithChildren =
 
 interface ApiAdminContentRouteChildren {
   ApiAdminContentIdRoute: typeof ApiAdminContentIdRouteWithChildren
+  ApiAdminContentLinkSearchRoute: typeof ApiAdminContentLinkSearchRoute
   ApiAdminContentNotificationDraftsIdRoute: typeof ApiAdminContentNotificationDraftsIdRoute
   ApiAdminContentSocialCopyIdRoute: typeof ApiAdminContentSocialCopyIdRoute
   ApiAdminContentUpdatesUpdateIdNotificationDraftsRoute: typeof ApiAdminContentUpdatesUpdateIdNotificationDraftsRoute
@@ -4984,6 +5026,7 @@ interface ApiAdminContentRouteChildren {
 
 const ApiAdminContentRouteChildren: ApiAdminContentRouteChildren = {
   ApiAdminContentIdRoute: ApiAdminContentIdRouteWithChildren,
+  ApiAdminContentLinkSearchRoute: ApiAdminContentLinkSearchRoute,
   ApiAdminContentNotificationDraftsIdRoute:
     ApiAdminContentNotificationDraftsIdRoute,
   ApiAdminContentSocialCopyIdRoute: ApiAdminContentSocialCopyIdRoute,
