@@ -25,6 +25,7 @@ export function StoryDetail({ content, related }: StoryDetailProps) {
   const publicUpdates = content.updates.filter((update) => update.visibility === "public");
   const gallery = content.media.filter((media) => !media.isCover).slice(0, 6);
   const cta = storyCta(content);
+  const hasCustomCta = cta.href !== "/donate?purpose=medical";
   const eyebrow = profile
     ? [publicStatusLabel(profile.publicStatus), profile.publicMapLabel ?? profile.rescueRegion]
         .filter(Boolean)
@@ -155,9 +156,13 @@ export function StoryDetail({ content, related }: StoryDetailProps) {
 
             <div className="rounded-md bg-[var(--color-panel)] p-5 text-white shadow-soft">
               <Heart className="h-6 w-6 text-[var(--color-secondary)]" aria-hidden="true" />
-              <h2 className="mt-3 font-display text-2xl font-bold">支持救援個案醫療</h2>
+              <h2 className="mt-3 font-display text-2xl font-bold">
+                {hasCustomCta ? "支持這個個案" : "支持救援個案醫療"}
+              </h2>
               <p className="mt-2 text-sm leading-6 text-white/75">
-                你的捐助會用於醫療、暫托、糧食與日常照護，讓更多動物等到安全的一天。
+                {hasCustomCta
+                  ? "你的支持會用於醫療、暫托、糧食與日常照護，讓更多動物等到安全的一天。"
+                  : "你的捐助會用於醫療、暫托、糧食與日常照護，讓更多動物等到安全的一天。"}
               </p>
               <a href={cta.href} className="btn-primary min-h-11 mt-4 w-full text-sm!">
                 {cta.label}

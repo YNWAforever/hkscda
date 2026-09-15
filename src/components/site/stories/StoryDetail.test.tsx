@@ -91,6 +91,7 @@ describe("StoryDetail", () => {
 
     expect(markup).toContain('href="/donate?purpose=medical"');
     expect(markup).toContain("支援醫療費用 ｜ 立即捐助");
+    expect(markup).toContain("支持救援個案醫療");
     expect(markup).toContain("救援個案");
   });
 
@@ -105,6 +106,8 @@ describe("StoryDetail", () => {
 
     expect(markup).toContain("了解牠的故事");
     expect(markup).toContain('href="/sponsors"');
+    expect(markup).toContain("支持這個個案");
+    expect(markup).not.toContain("支持救援個案醫療");
     expect(markup).toContain("動物類型");
     expect(markup).toContain("貓");
   });
