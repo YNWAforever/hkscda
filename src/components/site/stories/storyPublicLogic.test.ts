@@ -110,6 +110,9 @@ describe("storyCta", () => {
       "/donate?purpose=medical",
     );
   });
+  test("rejects a protocol-relative url", () => {
+    expect(storyCta({ ctaLabel: "x", ctaUrl: "//evil.com" }).href).toBe("/donate?purpose=medical");
+  });
 });
 
 describe("animalTypeLabel", () => {
