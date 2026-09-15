@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
 import type { ContentSummary } from "../../../lib/content/types";
-import { filterStoryCards, publicStatusLabel } from "./storyPublicLogic";
+import { animalTypeLabel, filterStoryCards, publicStatusLabel, storyCta } from "./storyPublicLogic";
 
 function makeStory({
   id,
@@ -91,5 +91,32 @@ describe("story public logic", () => {
   test("returns public Chinese status labels", () => {
     expect(publicStatusLabel("medical_care")).toBe("醫療照護");
     expect(publicStatusLabel("ready_for_adoption")).toBe("準備領養");
+  });
+});
+
+describe("storyCta", () => {
+  test("uses the content's own CTA when both label and safe url are present", () => {
+    expect(storyCta({ ctaLabel: "了解牠的故事", ctaUrl: "/sponsors" })).toEqual({
+      href: "/sponsors",
+      label: "了解牠的故事",
+    });
+  });
+  test("falls back to the donation CTA when either is missing", () => {
+    expect(storyCta({ ctaLabel: null, ctaUrl: "/sponsors" }).href).toBe("/donate?purpose=medical");
+    expect(storyCta({ ctaLabel: "x", ctaUrl: null }).href).toBe("/donate?purpose=medical");
+  });
+  test("rejects an unsafe url", () => {
+    expect(storyCta({ ctaLabel: "x", ctaUrl: "javascript:alert(1)" }).href).toBe(
+      "/donate?purpose=medical",
+    );
+  });
+});
+
+describe("animalTypeLabel", () => {
+  test("labels every animal type in Traditional Chinese", () => {
+    expect(animalTypeLabel("cat")).toBe("貓");
+    expect(animalTypeLabel("dog")).toBe("狗");
+    expect(animalTypeLabel("mixed")).toBe("貓狗");
+    expect(animalTypeLabel("unknown")).toBe("未知");
   });
 });

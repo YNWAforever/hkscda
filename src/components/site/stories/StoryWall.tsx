@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 
 import type { PublicStorySummary } from "../../../lib/content/publicStoriesPage.types";
 import type { AnimalStoryType, RescuePublicStatus } from "../../../lib/content/types";
-import { filterStoryCards, publicStatusLabel } from "./storyPublicLogic";
+import { animalTypeLabel, filterStoryCards, publicStatusLabel, storyCta } from "./storyPublicLogic";
 
 type StoryWallProps = {
   stories: PublicStorySummary[];
@@ -109,6 +109,7 @@ function StoryCard({ story }: { story: PublicStorySummary }) {
   const profile = story.storyProfile;
   if (!profile) return null;
   const PlaceholderIcon = profile.animalType === "dog" ? Dog : Cat;
+  const cta = storyCta(story);
 
   return (
     <article className="rounded-md border border-[var(--color-border)] flex h-full flex-col overflow-hidden bg-[var(--color-surface)] transition hover:shadow-md">
@@ -138,6 +139,9 @@ function StoryCard({ story }: { story: PublicStorySummary }) {
             <MapPin className="h-3 w-3" aria-hidden="true" />
             {profile.rescueRegion}
           </span>
+          <span className="inline-flex items-center gap-1 rounded-full bg-[var(--color-surface-offset)] px-3 py-1 text-xs font-bold text-[var(--color-text-muted)]">
+            {animalTypeLabel(profile.animalType)}
+          </span>
         </div>
         <div>
           <h2 className="font-display text-xl font-bold leading-snug text-[var(--color-panel)]">
@@ -157,8 +161,8 @@ function StoryCard({ story }: { story: PublicStorySummary }) {
             最新：{story.latestPublicUpdate.title}
           </p>
         ) : null}
-        <a href="/donate?purpose=medical" className="btn-primary mt-auto min-h-11 w-full text-sm!">
-          支援醫療費用 ｜ 立即捐助
+        <a href={cta.href} className="btn-primary mt-auto min-h-11 w-full text-sm!">
+          {cta.label}
         </a>
       </div>
     </article>
