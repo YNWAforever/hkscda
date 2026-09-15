@@ -105,7 +105,7 @@ export function StoryWall({ stories }: StoryWallProps) {
   );
 }
 
-function StoryCard({ story }: { story: PublicStorySummary }) {
+export function StoryCard({ story }: { story: PublicStorySummary }) {
   const profile = story.storyProfile;
   if (!profile) return null;
   const PlaceholderIcon = profile.animalType === "dog" ? Dog : Cat;

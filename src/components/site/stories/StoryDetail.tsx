@@ -1,12 +1,15 @@
 import { Link } from "@tanstack/react-router";
 import { Heart } from "lucide-react";
 
+import type { PublicStorySummary } from "../../../lib/content/publicStoriesPage.types";
 import type { ContentDetail } from "../../../lib/content/types";
 import { PublicPageFrame } from "../PublicPageFrame";
+import { StoryCard } from "./StoryWall";
 import { animalTypeLabel, publicStatusLabel, storyCta } from "./storyPublicLogic";
 
 type StoryDetailProps = {
   content: ContentDetail;
+  related: PublicStorySummary[];
 };
 
 /**
@@ -17,7 +20,7 @@ type StoryDetailProps = {
  * consistency with the animal/sponsor detail pages, even though the rest of
  * the frame is PublicPageFrame's.
  */
-export function StoryDetail({ content }: StoryDetailProps) {
+export function StoryDetail({ content, related }: StoryDetailProps) {
   const profile = content.storyProfile;
   const publicUpdates = content.updates.filter((update) => update.visibility === "public");
   const gallery = content.media.filter((media) => !media.isCover).slice(0, 6);
@@ -163,6 +166,27 @@ export function StoryDetail({ content }: StoryDetailProps) {
           </aside>
         </div>
       </section>
+
+      {related.length > 0 ? (
+        <section
+          className="section bg-[var(--color-surface)]"
+          aria-labelledby="related-stories-title"
+        >
+          <div className="public-container">
+            <h2
+              id="related-stories-title"
+              className="font-display text-2xl font-bold text-[var(--color-panel)]"
+            >
+              相關故事
+            </h2>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {related.map((story) => (
+                <StoryCard key={story.id} story={story} />
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
     </PublicPageFrame>
   );
 }
