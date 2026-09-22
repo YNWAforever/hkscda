@@ -16,7 +16,7 @@ describe("adoption visit windows", () => {
         dog: ["weekday_afternoon"],
         cat: ["weekend_afternoon", "weekday_morning", "weekday_morning"],
       }),
-    ).toEqual({ dog: [], cat: ["weekday_morning", "weekend_afternoon"] });
+    ).toEqual({ dog: [], cat: ["weekend_afternoon"] });
   });
 
   test("falls back from grouped columns to the legacy union for selected species", () => {

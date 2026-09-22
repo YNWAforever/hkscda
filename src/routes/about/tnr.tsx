@@ -34,7 +34,7 @@ const DEFAULT_TNR_CONTENT: TnrPageContent = {
   stages: [
     { title: "誘捕 Trap", description: "義工使用人道捕捉籠，安全捕捉目標流浪貓，過程不傷害動物。" },
     { title: "絕育 Neuter", description: "送往合作獸醫診所進行絕育手術，同時安排基本健康檢查。" },
-    { title: "放回 Return", description: "手術後在原地放回，繼續由 CCCP 義工照顧和觀察。" },
+    { title: "放回 Return", description: "手術後在原地放回，繼續由社區義工照顧和觀察。" },
   ],
   chapter: {
     title: "社區參與",
@@ -58,7 +58,14 @@ export function TNRPage() {
 }
 
 export function TNRContent({ content }: { content?: TnrPageContent | null }) {
-  const page = content ?? DEFAULT_TNR_CONTENT;
+  const source = content ?? DEFAULT_TNR_CONTENT;
+  const page = {
+    ...source,
+    stages: source.stages.map((stage) => ({
+      ...stage,
+      description: stage.description.replaceAll("CCCP 義工", "社區義工").replaceAll("CCCP", "社區"),
+    })),
+  };
   return (
     <PublicPageFrame
       eyebrow={page.hero.eyebrow}

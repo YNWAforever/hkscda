@@ -21,7 +21,7 @@ const optionalTrimmed = z
 
 export const languageSchema = z.enum(["zh-HK", "en"]);
 export const adoptionAnimalTypeSchema = z.enum(["cat", "dog"]);
-export const preferredContactMethodSchema = z.enum(["phone", "whatsapp", "email"]);
+export const preferredContactMethodSchema = z.enum(["phone", "whatsapp"]);
 export const housingTypeSchema = z.enum(["私人樓宇", "居屋", "公屋", "村屋", "其他"]);
 export const visitWindowSchema = z.enum(VISIT_WINDOWS);
 export const dogVisitWindowSchema = z.enum(DOG_VISIT_WINDOWS);
@@ -57,19 +57,15 @@ export const expandedAdoptionApplicationSchema = z
     }),
     home: z.object({
       housingType: housingTypeSchema,
-      landlordRestrictions: optionalTrimmed,
+      landlordRestrictions: trimmed.min(1),
       windowDoorSafety: trimmed.min(1),
       indoorSpaceNotes: optionalTrimmed,
-      homeModificationsPossible: z
-        .boolean()
-        .nullable()
-        .optional()
-        .transform((value) => value ?? null),
+      homeModificationsPossible: z.boolean(),
     }),
     readiness: z.object({
       currentPets: optionalTrimmed,
       petCareExperience: optionalTrimmed,
-      householdAgreement: trimmed.min(1),
+      householdAgreement: z.enum(["yes", "no"]),
       dailySchedule: trimmed.min(1),
       monthlyBudgetHkd: z.number().int().min(0).optional(),
       emergencyCarePlan: trimmed.min(1),
@@ -235,7 +231,7 @@ export function toVisitPreferenceInsert(
     dog: input.visit.dogTimeWindows,
     cat: input.visit.catTimeWindows,
   });
-  const selectedWindows = new Set([...windows.dog, ...windows.cat]);
+  const selectedWindows = new Set<string>([...windows.dog, ...windows.cat]);
 
   return {
     public_application_id: publicApplicationId,

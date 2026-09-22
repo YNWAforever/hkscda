@@ -23,7 +23,6 @@ const staticPaths = [
   "/report/adoption",
   "/report/audit",
   "/about",
-  "/about/cccp",
   "/about/tnr",
   "/about/team",
   "/about/privacy",

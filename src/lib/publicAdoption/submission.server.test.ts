@@ -193,7 +193,7 @@ function validPayload(overrides: Record<string, unknown> = {}) {
     },
     home: {
       housingType: "私人樓宇",
-      landlordRestrictions: "",
+      landlordRestrictions: "沒有",
       windowDoorSafety: "Window nets installed",
       indoorSpaceNotes: "Quiet home",
       homeModificationsPossible: true,
@@ -201,7 +201,7 @@ function validPayload(overrides: Record<string, unknown> = {}) {
     readiness: {
       currentPets: "",
       petCareExperience: "Previous adopter",
-      householdAgreement: "Everyone agrees",
+      householdAgreement: "yes",
       dailySchedule: "Home evenings",
       monthlyBudgetHkd: 1200,
       emergencyCarePlan: "Family backup",
@@ -211,7 +211,7 @@ function validPayload(overrides: Record<string, unknown> = {}) {
       dateRangeStart: "2026-07-10",
       dateRangeEnd: "2026-07-12",
       dogTimeWindows: ["weekend_afternoon"],
-      catTimeWindows: ["weekend_morning"],
+      catTimeWindows: ["weekend_afternoon"],
       notes: "Call first",
     },
     terms: {
@@ -425,8 +425,8 @@ describe("persistPublicAdoptionJourney", () => {
       method: "insert",
       payload: expect.objectContaining({
         dog_time_windows: ["weekend_afternoon"],
-        cat_time_windows: ["weekend_morning"],
-        preferred_time_windows: ["weekend_morning", "weekend_afternoon"],
+        cat_time_windows: ["weekend_afternoon"],
+        preferred_time_windows: ["weekend_afternoon"],
       }),
       options: undefined,
     });
@@ -477,7 +477,7 @@ describe("persistPublicAdoptionJourney", () => {
           visit: {
             dateRangeStart: "2026-07-10",
             dogTimeWindows: ["weekend_afternoon"],
-            catTimeWindows: ["weekend_morning"],
+            catTimeWindows: ["weekend_afternoon"],
           },
         },
       },

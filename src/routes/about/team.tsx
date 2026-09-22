@@ -39,6 +39,14 @@ function formatLastUpdated(value: string) {
   }).format(new Date(value));
 }
 
+const staffDistribution = [
+  { label: "行政", en: "Administration", count: 1 },
+  { label: "媒體內容創作", en: "Media and content creation", count: 1 },
+  { label: "狗舍全職護理員", en: "Full-time dog carers", count: 4 },
+  { label: "狗舍兼職護理員", en: "Part-time dog carers", count: 4 },
+  { label: "貓舍全職護理員", en: "Full-time cat carers", count: 2 },
+] as const;
+
 export function TeamPage({ roster }: { roster: PublicBoardRoster }) {
   return (
     <PublicPageFrame
@@ -86,6 +94,29 @@ export function TeamPage({ roster }: { roster: PublicBoardRoster }) {
               description={`管治名單會連同生效日期一併公開，核實前不會在此刊載。如需查詢協會管治安排，可電郵 ${brand.org.email}。`}
             />
           )}
+        </div>
+      </section>
+      <section className="section" aria-labelledby="staff-distribution-title">
+        <div className="public-container">
+          <h2 id="staff-distribution-title" className="font-display text-2xl font-bold">
+            協會職員分佈{" "}
+            <span lang="en" className="text-lg">
+              Staff distribution
+            </span>
+          </h2>
+          <dl className="mt-5 divide-y divide-[var(--color-border)]">
+            {staffDistribution.map(({ label, en, count }) => (
+              <div key={en} className="flex items-center justify-between gap-4 py-3">
+                <dt className="min-w-0">
+                  <span className="font-bold">{label}</span>
+                  <span lang="en" className="block text-sm text-[var(--color-text-muted)]">
+                    {en}
+                  </span>
+                </dt>
+                <dd className="shrink-0 font-bold">{count} 位</dd>
+              </div>
+            ))}
+          </dl>
         </div>
       </section>
     </PublicPageFrame>

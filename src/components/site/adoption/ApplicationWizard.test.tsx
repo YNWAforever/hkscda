@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 
 import {
   createDefaultValues,
+  draftHasRetiredAnswers,
   mergeDraftValues,
   normalizeApplicationVisitValues,
 } from "./ApplicationWizard";
@@ -28,6 +29,21 @@ describe("application wizard grouped visit state", () => {
 
     expect(restored.visit.dogTimeWindows).toEqual(["weekday_afternoon", "weekend_afternoon"]);
     expect(restored.visit.catTimeWindows).toEqual([]);
+  });
+
+  test("clears retired draft answers while preserving other entries", () => {
+    const draft = {
+      contact: { applicantName: "Ada", preferredContactMethod: "email" },
+      readiness: { dailySchedule: "Home nights", householdAgreement: "Everyone agrees" },
+      visit: { catTimeWindows: ["weekday_morning", "weekday_evening"] },
+    };
+    expect(draftHasRetiredAnswers(draft)).toBe(true);
+    const restored = mergeDraftValues(createDefaultValues(), draft, ["cat"]);
+    expect(restored.contact.applicantName).toBe("Ada");
+    expect(String(restored.contact.preferredContactMethod)).toBe("");
+    expect(restored.readiness.dailySchedule).toBe("Home nights");
+    expect(String(restored.readiness.householdAgreement)).toBe("");
+    expect(restored.visit.catTimeWindows).toEqual(["weekday_evening"]);
   });
 
   test("prunes only inapplicable windows after an explicit species change", () => {

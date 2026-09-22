@@ -19,6 +19,7 @@ describe("TNRContent", () => {
     const markup = renderToStaticMarkup(<TNRContent content={null} />);
     expect(markup).toContain("TNR 捕捉絕育放回");
     expect(markup).toContain("誘捕 Trap");
+    expect(markup).not.toContain("CCCP");
     expect(markup).toContain(
       "義工訓練、誘捕安排與術後照顧都需要人手。查詢可電郵 " + brand.org.email + "。",
     );
@@ -39,11 +40,14 @@ describe("TNRContent", () => {
       },
       cta: { eyebrow: "自訂CTA標語", title: "自訂CTA標題", descriptionPrefix: "自訂CTA前綴" },
     };
+    custom.stages[2].description = "繼續由 CCCP 義工照顧和觀察。";
     const markup = renderToStaticMarkup(<TNRContent content={custom} />);
     expect(markup).toContain("自訂 TNR 標題");
     expect(markup).toContain("自訂階段一標題");
     expect(markup).toContain("自訂階段二標題");
     expect(markup).toContain("自訂階段三標題");
+    expect(markup).toContain("社區義工照顧和觀察");
+    expect(markup).not.toContain("CCCP");
     expect(markup).toContain("自訂章節標題");
     expect(markup).toContain("自訂重點二");
     expect(markup).toContain("自訂CTA前綴 " + brand.org.email + "。");

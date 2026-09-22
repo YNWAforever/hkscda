@@ -148,7 +148,9 @@ describe("AboutPagesManagementView", () => {
     expect(markup).toContain("原則二");
     expect(markup).toContain("原則三");
 
-    expect(markup).toContain("CCCP 卡片標題");
+    expect(markup).not.toContain("CCCP 卡片標題");
+    expect(markup).not.toContain("CCCP 卡片描述");
+    expect(markup).not.toContain(">CCCP</button>");
     expect(markup).toContain("TNR 卡片標題");
   });
 
@@ -180,7 +182,7 @@ describe("AboutPagesManagementView", () => {
     expect(markup).toContain("行動呼籲描述前綴");
   });
 
-  test("renders the cccp tab's fields, including every chapter and work row", () => {
+  test("retired CCCP draft has no visible editor", () => {
     const markup = renderToStaticMarkup(
       <AboutPagesManagementView
         activeTab="cccp"
@@ -192,23 +194,8 @@ describe("AboutPagesManagementView", () => {
         isSaveError={false}
       />,
     );
-
-    expect(markup).toContain('value="CCCP Hero Distinctive Title"');
-    expect(markup).not.toContain("About Hero Distinctive Title");
-    expect(markup).not.toContain("TNR Hero Distinctive Title");
-
-    expect(markup).toContain("章節一標題");
-    expect(markup).toContain("章節二標題");
-
-    expect(markup).toContain("範圍一");
-    expect(markup).toContain("方法一");
-    expect(markup).toContain("成果一");
-    expect(markup).toContain("範圍三");
-
-    expect(markup).toContain("工作方式表格標題");
-    expect(markup).toContain("要點一");
-    expect(markup).toContain("要點二");
-    expect(markup).toContain("要點三");
+    expect(markup).not.toContain("CCCP Hero Distinctive Title");
+    expect(markup).not.toContain(">CCCP</button>");
   });
 
   test("shows the save-error message only when isSaveError is true", () => {

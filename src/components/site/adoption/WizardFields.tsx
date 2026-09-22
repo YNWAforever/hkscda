@@ -11,7 +11,6 @@ import {
   DOG_VISIT_WINDOWS,
   type CatVisitWindow,
   type DogVisitWindow,
-  type VisitWindow,
 } from "../../../lib/publicAdoption/visitWindows";
 import { Input } from "../../ui/input";
 import { Textarea } from "../../ui/textarea";
@@ -57,13 +56,10 @@ const HOUSING_TYPES = ["私人樓宇", "居屋", "公屋", "村屋", "其他"] a
 const CONTACT_METHODS = [
   { value: "whatsapp", zh: "WhatsApp", en: "WhatsApp" },
   { value: "phone", zh: "電話", en: "Phone" },
-  { value: "email", zh: "電郵", en: "Email" },
 ] as const;
-const VISIT_WINDOW_LABELS: Record<VisitWindow, { zh: string; en: string }> = {
-  weekday_morning: { zh: "平日上午", en: "Weekday morning" },
+const VISIT_WINDOW_LABELS: Record<CatVisitWindow, { zh: string; en: string }> = {
   weekday_afternoon: { zh: "平日下午", en: "Weekday afternoon" },
   weekday_evening: { zh: "平日晚上", en: "Weekday evening" },
-  weekend_morning: { zh: "週末上午", en: "Weekend morning" },
   weekend_afternoon: { zh: "週末下午", en: "Weekend afternoon" },
 };
 const VISIT_WINDOWS = CAT_VISIT_WINDOWS.map((value) => ({ value, ...VISIT_WINDOW_LABELS[value] }));
@@ -270,6 +266,7 @@ export function ContactFields({ register, errors }: BaseFieldsProps) {
           id="contact-preferredContactMethod"
           className={selectClass}
         >
+          <option value="">請選擇 / Please select</option>
           {CONTACT_METHODS.map((method) => (
             <option key={method.value} value={method.value}>
               {method.zh} / {method.en}
@@ -330,7 +327,12 @@ export function HomeFields({ register, errors, setValue, watch }: ControlledFiel
           ))}
         </select>
       </FormField>
-      <FormField id="home-modifications" label="可否加裝安全設備" labelEn="Safety modifications">
+      <FormField
+        id="home-modifications"
+        label="可否加裝安全設備"
+        labelEn="Safety modifications"
+        error={errors.home?.homeModificationsPossible?.message}
+      >
         <select
           id="home-modifications"
           className={selectClass}
@@ -340,12 +342,16 @@ export function HomeFields({ register, errors, setValue, watch }: ControlledFiel
           onChange={(event) =>
             setValue(
               "home.homeModificationsPossible",
-              event.target.value === "true" ? true : event.target.value === "false" ? false : null,
+              (event.target.value === "true"
+                ? true
+                : event.target.value === "false"
+                  ? false
+                  : null) as boolean,
               { shouldDirty: true, shouldValidate: true },
             )
           }
         >
-          <option value="null">未確定 / Not sure</option>
+          <option value="null">請選擇 / Please select</option>
           <option value="true">可以 / Yes</option>
           <option value="false">不可以 / No</option>
         </select>
@@ -384,7 +390,7 @@ export function HomeFields({ register, errors, setValue, watch }: ControlledFiel
         <FormField
           id="home-indoorSpaceNotes"
           label="室內活動空間補充"
-          labelEn="Indoor space notes"
+          labelEn="Indoor space notes (optional)"
           error={errors.home?.indoorSpaceNotes?.message}
         >
           <Textarea
@@ -447,16 +453,19 @@ export function ReadinessFields({ register, errors }: BaseFieldsProps) {
       <div className="sm:col-span-2">
         <FormField
           id="readiness-householdAgreement"
-          label="家庭共識"
-          labelEn="Household agreement"
+          label="所有家庭成員同意"
+          labelEn="All household members agree"
           error={errors.readiness?.householdAgreement?.message}
         >
-          <Textarea
+          <select
             {...register("readiness.householdAgreement")}
             id="readiness-householdAgreement"
-            rows={3}
-            className={fieldClass}
-          />
+            className={selectClass}
+          >
+            <option value="">請選擇 / Please select</option>
+            <option value="yes">同意 / Yes</option>
+            <option value="no">不同意 / No</option>
+          </select>
         </FormField>
       </div>
       <div className="sm:col-span-2">
@@ -508,7 +517,7 @@ export function ReadinessFields({ register, errors }: BaseFieldsProps) {
   );
 }
 
-export function nextVisitWindowSelection<T extends VisitWindow>(
+export function nextVisitWindowSelection<T extends CatVisitWindow>(
   selected: readonly T[],
   value: T,
   order: readonly T[],

@@ -1,6 +1,6 @@
 export const brand = {
   nameZh: "香港拯救貓狗協會",
-  nameEn: "Hong Kong Saving Cat and Dog Association",
+  nameEn: "HK SAVING CAT AND DOG ASSOCIATION LIMITED",
   acronym: "HKSCDA",
   slogan: "領養代替購買",
   logo: {
@@ -18,6 +18,7 @@ export const brand = {
     charityFileNumber: "91/14493",
     afcdLicenceNumber: "ORG-00041",
     email: "info@hkscda.com",
+    donationEmail: "donation@hkscda.com",
     phone: "9864 1089",
     phoneHref: "tel:+85298641089",
     foundedLabel: "2007 年 4 月 1 日",

@@ -124,7 +124,6 @@ const copy = {
     method: "付款方式",
     receipt: "我需要退稅收條",
     emailConsent: "我同意以電郵接收捐款確認及收條通知",
-    whatsappConsent: "我同意以 WhatsApp 接收收條及付款相關通知",
     pics: "個人資料只會用於處理捐款、收條、查詢及法例要求的紀錄保存。您可要求查閱、更正或撤回通訊同意。",
     donate: "繼續捐款",
     processing: "處理中",
@@ -160,7 +159,6 @@ const copy = {
     method: "Payment method",
     receipt: "I need a tax receipt",
     emailConsent: "I agree to receive donation confirmation and receipt updates by email",
-    whatsappConsent: "I agree to receive receipt and payment updates by WhatsApp",
     pics: "Personal data is used only for donation processing, receipts, enquiries, and legally required record keeping. You may request access, correction, or consent withdrawal.",
     donate: "Continue donation",
     processing: "Processing",
@@ -233,7 +231,7 @@ export const publicDonationCheckoutEnabled =
 export function createDonationRequest(
   input: Omit<DonationRequestPayload, "currency">,
 ): DonationRequestPayload {
-  return { ...input, currency: "HKD" };
+  return { ...input, consents: { ...input.consents, whatsapp: false }, currency: "HKD" };
 }
 
 export function donationStatusMessage(state: DonationReturnState, language: Language) {
@@ -317,7 +315,6 @@ export function DonatePage({
   const [phone, setPhone] = useState("");
   const [receiptRequested, setReceiptRequested] = useState(true);
   const [emailConsent, setEmailConsent] = useState(true);
-  const [whatsappConsent, setWhatsappConsent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [manualResult, setManualResult] = useState<ManualResult | null>(null);
@@ -404,7 +401,7 @@ export function DonatePage({
             checkoutExperience,
             receiptRequested,
             donor: { name, email, phone, language },
-            consents: { email: emailConsent, whatsapp: whatsappConsent },
+            consents: { email: emailConsent, whatsapp: false },
             turnstileToken,
             ...(attribution ? { attribution } : {}),
           }),
@@ -487,9 +484,9 @@ export function DonatePage({
                   </p>
                   <a
                     className="font-semibold text-[var(--color-primary)] hover:underline"
-                    href={`mailto:${brand.org.email}`}
+                    href={`mailto:${brand.org.donationEmail}`}
                   >
-                    {brand.org.email}
+                    {brand.org.donationEmail}
                   </a>
                 </div>
               </div>
@@ -540,16 +537,8 @@ export function DonatePage({
                   {t.checkoutUnavailable}
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <a href="mailto:info@hkscda.com" className="btn-secondary min-h-11">
-                    info@hkscda.com
-                  </a>
-                  <a
-                    href="https://wa.me/85298641089"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-secondary min-h-11"
-                  >
-                    WhatsApp 9864 1089
+                  <a href={`mailto:${brand.org.donationEmail}`} className="btn-secondary min-h-11">
+                    {brand.org.donationEmail}
                   </a>
                 </div>
               </div>
@@ -726,12 +715,6 @@ export function DonatePage({
                     checked: emailConsent,
                     setChecked: setEmailConsent,
                     label: t.emailConsent,
-                  },
-                  {
-                    id: "donation-whatsapp-consent",
-                    checked: whatsappConsent,
-                    setChecked: setWhatsappConsent,
-                    label: t.whatsappConsent,
                   },
                 ].map(({ id, checked, setChecked, label }) => (
                   <label key={id} htmlFor={id} className="flex items-start gap-3 text-sm">

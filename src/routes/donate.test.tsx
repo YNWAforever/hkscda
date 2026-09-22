@@ -66,16 +66,10 @@ test("renders the optional purpose note and language-aware wedding forms", async
   expect(html).toContain("下載表格 / Download Form");
   expect(html).toContain('href="https://documents.example/wedding-en.pdf"');
   expect(html).toContain("English form");
-  // Two wedding-form PDFs, plus the WhatsApp link in the checkout-unavailable panel
-  // that renders whenever `checkoutEnabled` is false (the default for this render).
   const externalLinks = html.match(/target="_blank"/g) ?? [];
-  // Named rather than counted: the two wedding forms and the WhatsApp fallback in
-  // the checkout-unavailable panel. A future link cannot silently pass by keeping
-  // a total right, and adding one does not break this test for no reason.
   for (const href of [
     "https://documents.example/wedding-zh.pdf",
     "https://documents.example/wedding-en.pdf",
-    "https://wa.me/85298641089",
   ]) {
     expect(html).toContain(`href="${href}"`);
   }
@@ -336,4 +330,36 @@ test("uses the shared public-container class, not the pre-port container-wide ut
 
   expect(html).toContain("public-container");
   expect(html).not.toContain("container-wide");
+});
+
+test("donation contacts use the donation inbox without WhatsApp options", async () => {
+  const { DonatePage, createDonationRequest } = await import("./donate");
+  for (const checkoutEnabled of [false, true]) {
+    const html = renderToStaticMarkup(
+      <DonatePage
+        initialSlots={[]}
+        initialMethods={ALL_METHODS}
+        initialSearch={{}}
+        checkoutEnabled={checkoutEnabled}
+      />,
+    );
+    expect(html).toContain('href="mailto:donation@hkscda.com"');
+    expect(html).toContain("HK SAVING CAT AND DOG ASSOCIATION LIMITED");
+    expect(html).not.toContain("info@hkscda.com");
+    expect(html).not.toContain("WhatsApp");
+    expect(html).not.toContain("wa.me");
+    expect(html).not.toContain("donation-whatsapp-consent");
+  }
+  const payload = createDonationRequest({
+    amountCents: 30000,
+    purpose: "general",
+    customPurpose: "",
+    method: "stripe",
+    checkoutExperience: "desktop_qr",
+    receiptRequested: true,
+    donor: { name: "Test", email: "test@example.com", phone: "", language: "zh-HK" },
+    consents: { email: true, whatsapp: true },
+    turnstileToken: null,
+  });
+  expect(payload.consents).toEqual({ email: true, whatsapp: false });
 });
