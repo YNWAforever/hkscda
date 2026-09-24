@@ -140,13 +140,25 @@ jobs:
           SUPABASE_URL: http://127.0.0.1:54329
           SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-service-role-key
 
+      # Report storage is best-effort; verification above remains enforced.
       - name: Upload brand artefacts
+        id: upload-report
         if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: brand-ci
           path: artifacts/brand-ci
           if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Report unavailable artefacts
+        if: ${{ always() && steps.upload-report.outcome == 'failure' }}
+        shell: bash
+        run: |
+          echo "::warning::Report upload failed. Verification results remain in the job logs; check GitHub artifact storage quota."
+          echo "### Reports unavailable" >> "$GITHUB_STEP_SUMMARY"
+          echo "Artifact upload failed. See verification steps above for test results and the upload log for the storage error." >> "$GITHUB_STEP_SUMMARY"
 
   # Separate job so brand-verify (required) never fails on a11y findings.
   # Non-blocking until proven green repeatedly, then promote via branch
@@ -219,13 +231,25 @@ jobs:
           SUPABASE_URL: http://127.0.0.1:54329
           SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-service-role-key
 
+      # Report storage is best-effort; verification above remains enforced.
       - name: Upload a11y artefacts
+        id: upload-report
         if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: a11y-ci
           path: artifacts/a11y-ci
           if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Report unavailable artefacts
+        if: ${{ always() && steps.upload-report.outcome == 'failure' }}
+        shell: bash
+        run: |
+          echo "::warning::Report upload failed. Verification results remain in the job logs; check GitHub artifact storage quota."
+          echo "### Reports unavailable" >> "$GITHUB_STEP_SUMMARY"
+          echo "Artifact upload failed. See verification steps above for test results and the upload log for the storage error." >> "$GITHUB_STEP_SUMMARY"
 
   # Separate job so the fast gate stays fast. Non-blocking until proven green
   # repeatedly on main, then promote via branch protection (matching the
@@ -340,10 +364,22 @@ jobs:
           SUPABASE_URL: http://127.0.0.1:54329
           SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-service-role-key
 
+      # Report storage is best-effort; verification above remains enforced.
       - name: Upload performance artefacts
+        id: upload-report
         if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: performance-ci
           path: artifacts/performance-ci
           if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Report unavailable artefacts
+        if: ${{ always() && steps.upload-report.outcome == 'failure' }}
+        shell: bash
+        run: |
+          echo "::warning::Report upload failed. Verification results remain in the job logs; check GitHub artifact storage quota."
+          echo "### Reports unavailable" >> "$GITHUB_STEP_SUMMARY"
+          echo "Artifact upload failed. See verification steps above for test results and the upload log for the storage error." >> "$GITHUB_STEP_SUMMARY"
