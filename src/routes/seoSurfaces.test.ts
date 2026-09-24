@@ -40,6 +40,11 @@ describe("SEO surfaces are served by the routes, not shadowed by static files", 
     }
   });
 
+  test("the sitemap omits the retired CCCP route and retains TNR", () => {
+    expect(sitemap()).not.toContain('"/about/cccp"');
+    expect(sitemap()).toContain('"/about/tnr"');
+  });
+
   test("the sitemap advertises no form, token, admin or API path", () => {
     const source = sitemap();
     expect(source).not.toContain("/adoption/apply");

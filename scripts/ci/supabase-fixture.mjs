@@ -22,6 +22,41 @@ const IMAGE = "/brand/hkscda-logo-primary.jpg";
 const STAMP = "2026-08-01T00:00:00.000Z";
 const PAYMENT_FIXTURE_MODE = process.env.PAYMENT_FIXTURE_MODE ?? "paypal";
 
+// Proposed website-correction content, used only by this local read-only fixture.
+const ADOPTION_FEES = [
+  ["dog", "Typical Species 一般品種", "1,000", true],
+  [
+    "dog",
+    "唐狗領養（全包，無額外費用） / Mongrel adoption (all inclusive, no extra fees)",
+    "500",
+    true,
+  ],
+  ["dog", "PROHEART Injection", "300–600", true],
+  [
+    "dog",
+    "五合一疫苗（每劑；唐狗全包領養不另收費） / 5-in-1 vaccine (per dose; no extra charge for all-inclusive mongrel adoption)",
+    "250",
+    true,
+  ],
+  ["dog", "Desex (Female)", "1,500–2,000", true],
+  ["dog", "Desex (Male)", "1,000–1,500", true],
+  ["cat", "Typical Species 一般品種", "1,000", true],
+  ["cat", "DSH 唐貓", "500", true],
+  ["cat", "三合一疫苗（每劑） / 3-in-1 vaccine (per dose)", "250", true],
+  ["cat", "Desex (Female)", "1,500–2,000", true],
+  ["cat", "Desex (Male)", "1,000–1,500", true],
+  ["cat", "Bath", "400", false],
+  ["cat", "Small Cage", "150", true],
+  ["cat", "Big Cage Rental", "400", true],
+].map(([animal_type, item_name, price_hkd, is_published], index) => ({
+  id: `10000000-0000-4000-8000-${String(index + 1).padStart(12, "0")}`,
+  animal_type,
+  item_name,
+  price_hkd,
+  is_published,
+  sort_order: index,
+}));
+
 function animal(index, type, gender, age) {
   const n = String(index).padStart(2, "0");
   return {
@@ -196,6 +231,15 @@ const server = createServer((req, res) => {
 
   if (req.method === "POST" && path.startsWith("/rest/v1/rpc/")) {
     json(res, 200, []);
+    return;
+  }
+
+  if (path === "/rest/v1/adoption_fees") {
+    json(
+      res,
+      200,
+      applyOrder(applyFilters(ADOPTION_FEES, url.searchParams), url.searchParams.get("order")),
+    );
     return;
   }
 

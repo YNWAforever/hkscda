@@ -45,7 +45,6 @@ export const navGroups: NavGroup[] = [
   {
     label: "我們的工作",
     items: [
-      { label: "CCCP 社區貓護理", to: "/about/cccp" },
       { label: "TNR 捕捉絕育放回", to: "/about/tnr" },
       { label: "領養工作成效", to: "/report/adoption" },
     ],

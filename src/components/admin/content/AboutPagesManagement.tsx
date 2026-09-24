@@ -30,7 +30,6 @@ type AboutPagesUpsertResult =
 const TABS: readonly [AboutPageSlug, string][] = [
   ["about", "關於我們"],
   ["tnr", "TNR"],
-  ["cccp", "CCCP"],
 ];
 
 export function invalidateAboutPagesQueries(client: {
@@ -107,9 +106,6 @@ function AboutPagesManagementRuntime() {
       onTnrDraftChange={(content) =>
         setDrafts((current) => (current ? { ...current, tnr: content } : current))
       }
-      onCccpDraftChange={(content) =>
-        setDrafts((current) => (current ? { ...current, cccp: content } : current))
-      }
       onSave={(pageSlug, content) => upsertMutation.mutate({ pageSlug, content })}
       isSaving={upsertMutation.isPending}
       isSaveError={upsertMutation.isError}
@@ -123,7 +119,6 @@ export function AboutPagesManagementView({
   drafts,
   onAboutDraftChange,
   onTnrDraftChange,
-  onCccpDraftChange,
   onSave,
   isSaving,
   isSaveError,
@@ -133,7 +128,6 @@ export function AboutPagesManagementView({
   drafts: PagesData;
   onAboutDraftChange: (content: AboutPageContent) => void;
   onTnrDraftChange: (content: TnrPageContent) => void;
-  onCccpDraftChange: (content: CccpPageContent) => void;
   onSave: (pageSlug: AboutPageSlug, content: unknown) => void;
   isSaving: boolean;
   isSaveError: boolean;
@@ -177,15 +171,6 @@ export function AboutPagesManagementView({
           draft={drafts.tnr}
           onDraftChange={onTnrDraftChange}
           onSave={(c) => onSave("tnr", c)}
-          isSaving={isSaving}
-          isSaveError={isSaveError}
-        />
-      ) : null}
-      {activeTab === "cccp" && drafts.cccp ? (
-        <CccpTabForm
-          draft={drafts.cccp}
-          onDraftChange={onCccpDraftChange}
-          onSave={(c) => onSave("cccp", c)}
           isSaving={isSaving}
           isSaveError={isSaveError}
         />
@@ -373,7 +358,7 @@ function AboutTabForm({
       </fieldset>
 
       <fieldset className="space-y-3 border border-[var(--color-border)] p-4">
-        <legend className="px-1 font-bold">CCCP 與 TNR 橫幅</legend>
+        <legend className="px-1 font-bold">TNR 橫幅</legend>
         <TextField
           label="引言"
           value={draft.communityBand.eyebrow}
@@ -396,36 +381,6 @@ function AboutTabForm({
           }
           multiline
         />
-        <div className="space-y-2 border border-[var(--color-border)] p-3">
-          <p className="font-semibold">CCCP 卡片</p>
-          <TextField
-            label="標題"
-            value={draft.communityBand.cccpCard.title}
-            onChange={(v) =>
-              onDraftChange({
-                ...draft,
-                communityBand: {
-                  ...draft.communityBand,
-                  cccpCard: { ...draft.communityBand.cccpCard, title: v },
-                },
-              })
-            }
-          />
-          <TextField
-            label="描述"
-            value={draft.communityBand.cccpCard.description}
-            onChange={(v) =>
-              onDraftChange({
-                ...draft,
-                communityBand: {
-                  ...draft.communityBand,
-                  cccpCard: { ...draft.communityBand.cccpCard, description: v },
-                },
-              })
-            }
-            multiline
-          />
-        </div>
         <div className="space-y-2 border border-[var(--color-border)] p-3">
           <p className="font-semibold">TNR 卡片</p>
           <TextField
@@ -724,152 +679,6 @@ function TnrTabForm({
           onChange={(v) => onDraftChange({ ...draft, cta: { ...draft.cta, descriptionPrefix: v } })}
           multiline
         />
-      </fieldset>
-
-      <SaveBar isSaving={isSaving} isSaveError={isSaveError} />
-    </form>
-  );
-}
-
-function CccpTabForm({
-  draft,
-  onDraftChange,
-  onSave,
-  isSaving,
-  isSaveError,
-}: {
-  draft: CccpPageContent;
-  onDraftChange: (content: CccpPageContent) => void;
-  onSave: (content: CccpPageContent) => void;
-  isSaving: boolean;
-  isSaveError: boolean;
-}) {
-  return (
-    <form
-      className="space-y-6"
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSave(draft);
-      }}
-    >
-      <fieldset className="space-y-3 border border-[var(--color-border)] p-4">
-        <legend className="px-1 font-bold">主視覺</legend>
-        <TextField
-          label="引言"
-          value={draft.hero.eyebrow}
-          onChange={(v) => onDraftChange({ ...draft, hero: { ...draft.hero, eyebrow: v } })}
-        />
-        <TextField
-          label="標題"
-          value={draft.hero.title}
-          onChange={(v) => onDraftChange({ ...draft, hero: { ...draft.hero, title: v } })}
-        />
-        <TextField
-          label="描述"
-          value={draft.hero.description}
-          onChange={(v) => onDraftChange({ ...draft, hero: { ...draft.hero, description: v } })}
-          multiline
-        />
-      </fieldset>
-
-      <fieldset className="space-y-3 border border-[var(--color-border)] p-4">
-        <legend className="px-1 font-bold">兩個章節</legend>
-        {draft.chapters.map((chapter, index) => (
-          <div key={index} className="space-y-2 border border-[var(--color-border)] p-3">
-            <TextField
-              label={"章節 " + (index + 1) + " 標題"}
-              value={chapter.title}
-              onChange={(v) => {
-                const chapters = [...draft.chapters] as typeof draft.chapters;
-                chapters[index] = { ...chapters[index], title: v };
-                onDraftChange({ ...draft, chapters });
-              }}
-            />
-            <TextField
-              label={"章節 " + (index + 1) + " 描述"}
-              value={chapter.description}
-              onChange={(v) => {
-                const chapters = [...draft.chapters] as typeof draft.chapters;
-                chapters[index] = { ...chapters[index], description: v };
-                onDraftChange({ ...draft, chapters });
-              }}
-              multiline
-            />
-          </div>
-        ))}
-      </fieldset>
-
-      <fieldset className="space-y-3 border border-[var(--color-border)] p-4">
-        <legend className="px-1 font-bold">工作方式表格</legend>
-        <TextField
-          label="表格標題"
-          value={draft.workSectionTitle}
-          onChange={(v) => onDraftChange({ ...draft, workSectionTitle: v })}
-        />
-        {draft.workRows.map((row, index) => (
-          <div key={index} className="space-y-2 border border-[var(--color-border)] p-3">
-            <TextField
-              label={"第 " + (index + 1) + " 行範圍"}
-              value={row.scope}
-              onChange={(v) => {
-                const workRows = [...draft.workRows] as typeof draft.workRows;
-                workRows[index] = { ...workRows[index], scope: v };
-                onDraftChange({ ...draft, workRows });
-              }}
-            />
-            <TextField
-              label={"第 " + (index + 1) + " 行方法"}
-              value={row.method}
-              onChange={(v) => {
-                const workRows = [...draft.workRows] as typeof draft.workRows;
-                workRows[index] = { ...workRows[index], method: v };
-                onDraftChange({ ...draft, workRows });
-              }}
-            />
-            <TextField
-              label={"第 " + (index + 1) + " 行成果"}
-              value={row.result}
-              onChange={(v) => {
-                const workRows = [...draft.workRows] as typeof draft.workRows;
-                workRows[index] = { ...workRows[index], result: v };
-                onDraftChange({ ...draft, workRows });
-              }}
-            />
-          </div>
-        ))}
-      </fieldset>
-
-      <fieldset className="space-y-3 border border-[var(--color-border)] p-4">
-        <legend className="px-1 font-bold">行動呼籲</legend>
-        <TextField
-          label="引言"
-          value={draft.cta.eyebrow}
-          onChange={(v) => onDraftChange({ ...draft, cta: { ...draft.cta, eyebrow: v } })}
-        />
-        <TextField
-          label="標題"
-          value={draft.cta.title}
-          onChange={(v) => onDraftChange({ ...draft, cta: { ...draft.cta, title: v } })}
-        />
-        <TextField
-          label="描述"
-          value={draft.cta.description}
-          onChange={(v) => onDraftChange({ ...draft, cta: { ...draft.cta, description: v } })}
-          multiline
-        />
-        {draft.cta.points.map((point, index) => (
-          <TextField
-            key={index}
-            label={"要點 " + (index + 1)}
-            value={point}
-            onChange={(v) => {
-              const points = [...draft.cta.points] as typeof draft.cta.points;
-              points[index] = v;
-              onDraftChange({ ...draft, cta: { ...draft.cta, points } });
-            }}
-            multiline
-          />
-        ))}
       </fieldset>
 
       <SaveBar isSaving={isSaving} isSaveError={isSaveError} />

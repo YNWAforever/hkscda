@@ -51,3 +51,20 @@ test("shows a distinct temporarily-unavailable state on load failure", async () 
   expect(html).not.toContain("尚未有公開資料");
   expect(html).toContain('role="alert"');
 });
+
+test("renders staff distribution separately from the board and volunteers", async () => {
+  const { TeamPage } = await import("./team");
+  const html = renderToString(<TeamPage roster={populatedRoster} />);
+  expect(html).toContain("協會職員分佈");
+  for (const label of [
+    "行政",
+    "媒體內容創作",
+    "狗舍全職護理員",
+    "狗舍兼職護理員",
+    "貓舍全職護理員",
+  ]) {
+    expect(html).toContain(label);
+  }
+  expect(html).toContain("陳大文");
+  expect(html).toContain("義工團隊");
+});

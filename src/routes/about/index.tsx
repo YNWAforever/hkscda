@@ -8,7 +8,6 @@ import {
   ShieldCheck,
   Stethoscope,
   Syringe,
-  Users,
 } from "lucide-react";
 import { type PublicImpactItem } from "../../lib/animals/publicImpact";
 import { getPublicImpactItems } from "../../lib/animals/publicImpact.functions";
@@ -63,9 +62,8 @@ const DEFAULT_ABOUT_CONTENT: AboutPageContent = {
   },
   communityBand: {
     eyebrow: "社區合作",
-    title: "CCCP 與 TNR，從源頭改善動物處境",
-    description:
-      "社區貓隻照顧計劃和捕捉、絕育、放回工作，讓動物福利不只發生在收容和領養，也能在社區中長久改善。",
+    title: "TNR，從源頭改善社區貓隻處境",
+    description: "透過捕捉、絕育、放回和持續觀察，與社區合作改善流浪貓隻的處境。",
     cccpCard: { title: "CCCP 計劃", description: "了解社區貓隻照顧的合作方法。" },
     tnrCard: { title: "TNR 計劃", description: "了解捕捉、絕育、放回的社區行動。" },
   },
@@ -117,7 +115,29 @@ export function AboutContent({
   impact: PublicImpactItem[];
   content?: AboutPageContent | null;
 }) {
-  const page = content ?? DEFAULT_ABOUT_CONTENT;
+  const source = content ?? DEFAULT_ABOUT_CONTENT;
+  const page = {
+    ...source,
+    communityBand: {
+      ...source.communityBand,
+      title: source.communityBand.title.includes("CCCP")
+        ? DEFAULT_ABOUT_CONTENT.communityBand.title
+        : source.communityBand.title,
+      description:
+        source.communityBand.description.includes("CCCP") ||
+        source.communityBand.description.includes("社區貓隻照顧計劃")
+          ? DEFAULT_ABOUT_CONTENT.communityBand.description
+          : source.communityBand.description,
+      tnrCard: {
+        title: source.communityBand.tnrCard.title.includes("CCCP")
+          ? DEFAULT_ABOUT_CONTENT.communityBand.tnrCard.title
+          : source.communityBand.tnrCard.title,
+        description: source.communityBand.tnrCard.description.includes("CCCP")
+          ? DEFAULT_ABOUT_CONTENT.communityBand.tnrCard.description
+          : source.communityBand.tnrCard.description,
+      },
+    },
+  };
   return (
     <PublicPageFrame
       eyebrow={page.hero.eyebrow}
@@ -214,17 +234,7 @@ export function AboutContent({
               {page.communityBand.description}
             </p>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <a href="/about/cccp" className="border border-white/25 p-5 hover:border-white">
-              <Users className="h-6 w-6" aria-hidden="true" />
-              <h3 className="mt-5 text-lg font-bold">{page.communityBand.cccpCard.title}</h3>
-              <p className="mt-2 text-sm text-white/75">
-                {page.communityBand.cccpCard.description}
-              </p>
-              <span className="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-bold">
-                了解更多 <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </span>
-            </a>
+          <div className="grid gap-4">
             <a href="/about/tnr" className="border border-white/25 p-5 hover:border-white">
               <Syringe className="h-6 w-6" aria-hidden="true" />
               <h3 className="mt-5 text-lg font-bold">{page.communityBand.tnrCard.title}</h3>

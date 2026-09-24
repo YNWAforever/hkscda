@@ -1,6 +1,6 @@
 export const DOG_VISIT_WINDOWS = ["weekday_afternoon", "weekend_afternoon"] as const;
 
-export const CAT_VISIT_WINDOWS = [
+const LEGACY_CAT_VISIT_WINDOWS = [
   "weekday_morning",
   "weekday_afternoon",
   "weekday_evening",
@@ -8,7 +8,12 @@ export const CAT_VISIT_WINDOWS = [
   "weekend_afternoon",
 ] as const;
 
-export const VISIT_WINDOWS = CAT_VISIT_WINDOWS;
+export const CAT_VISIT_WINDOWS = [
+  "weekday_afternoon",
+  "weekday_evening",
+  "weekend_afternoon",
+] as const;
+export const VISIT_WINDOWS = LEGACY_CAT_VISIT_WINDOWS;
 
 export type AdoptionSpecies = "dog" | "cat";
 export type DogVisitWindow = (typeof DOG_VISIT_WINDOWS)[number];
@@ -50,9 +55,16 @@ export function normalizeVisitWindows(
 export function readVisitWindows(
   row: VisitWindowRow,
   species: readonly AdoptionSpecies[],
-): GroupedVisitWindows {
-  return normalizeVisitWindows(species, {
-    dog: row.dog_time_windows ?? row.preferred_time_windows ?? [],
-    cat: row.cat_time_windows ?? row.preferred_time_windows ?? [],
-  });
+): { dog: DogVisitWindow[]; cat: VisitWindow[] } {
+  return {
+    dog: species.includes("dog")
+      ? orderedValues(DOG_VISIT_WINDOWS, row.dog_time_windows ?? row.preferred_time_windows ?? [])
+      : [],
+    cat: species.includes("cat")
+      ? orderedValues(
+          LEGACY_CAT_VISIT_WINDOWS,
+          row.cat_time_windows ?? row.preferred_time_windows ?? [],
+        )
+      : [],
+  };
 }

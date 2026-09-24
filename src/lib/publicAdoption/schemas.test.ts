@@ -39,7 +39,7 @@ function validPayload(overrides: Record<string, unknown> = {}) {
     readiness: {
       currentPets: "None",
       petCareExperience: "Grew up with cats",
-      householdAgreement: "Everyone agrees",
+      householdAgreement: "yes",
       dailySchedule: "Home evenings and weekends",
       monthlyBudgetHkd: 1200,
       emergencyCarePlan: "Nearby 24-hour vet",
@@ -168,13 +168,54 @@ describe("expandedAdoptionApplicationSchema", () => {
         dateRangeStart: "2026-07-10",
         dateRangeEnd: "2026-07-24",
         dogTimeWindows: [],
-        catTimeWindows: ["weekday_morning"],
+        catTimeWindows: ["weekday_afternoon"],
         notes: "",
       },
     });
     expect(expandedAdoptionApplicationSchema.parse(catOnly).visit.catTimeWindows).toEqual([
-      "weekday_morning",
+      "weekday_afternoon",
     ]);
+  });
+
+  test("requires current contact, home, consent, and cat visit answers", () => {
+    const base = validPayload();
+    expect(
+      expandedAdoptionApplicationSchema.safeParse({
+        ...base,
+        contact: { ...base.contact, preferredContactMethod: "email" },
+      }).success,
+    ).toBe(false);
+    expect(
+      expandedAdoptionApplicationSchema.safeParse({
+        ...base,
+        home: { ...base.home, landlordRestrictions: "" },
+      }).success,
+    ).toBe(false);
+    expect(
+      expandedAdoptionApplicationSchema.safeParse({
+        ...base,
+        home: { ...base.home, homeModificationsPossible: null },
+      }).success,
+    ).toBe(false);
+    expect(
+      expandedAdoptionApplicationSchema.safeParse({
+        ...base,
+        readiness: { ...base.readiness, householdAgreement: "Everyone agrees" },
+      }).success,
+    ).toBe(false);
+    expect(
+      expandedAdoptionApplicationSchema.safeParse({
+        ...base,
+        readiness: { ...base.readiness, householdAgreement: "no" },
+      }).success,
+    ).toBe(true);
+    for (const retired of ["weekday_morning", "weekend_morning"])
+      expect(
+        expandedAdoptionApplicationSchema.safeParse({
+          ...base,
+          visit: { ...base.visit, catTimeWindows: [retired] },
+        }).success,
+      ).toBe(false);
   });
 
   test("maps payloads into compatibility and detail inserts", () => {

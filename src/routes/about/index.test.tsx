@@ -79,11 +79,29 @@ describe("AboutContent", () => {
     expect(markup).toContain("讓每一個生命都有重新開始的機會");
   });
 
+  test("replaces the seeded retired programme description while retaining TNR", () => {
+    const content: AboutPageContent = {
+      ...DEFAULT_ABOUT_CONTENT_FOR_TEST,
+      communityBand: {
+        ...DEFAULT_ABOUT_CONTENT_FOR_TEST.communityBand,
+        title: "CCCP 與 TNR，從源頭改善動物處境",
+        description:
+          "社區貓隻照顧計劃和捕捉、絕育、放回工作，讓動物福利不只發生在收容和領養，也能在社區中長久改善。",
+      },
+    };
+    const markup = renderToStaticMarkup(<AboutContent impact={[]} content={content} />);
+    expect(markup).not.toContain("社區貓隻照顧計劃");
+    expect(markup).not.toContain("CCCP");
+    expect(markup).toContain("TNR，從源頭改善社區貓隻處境");
+  });
+
   test("renders loaded content in place of the default when provided", () => {
     const custom = {
       ...DEFAULT_ABOUT_CONTENT_FOR_TEST,
       hero: { ...DEFAULT_ABOUT_CONTENT_FOR_TEST.hero, title: "自訂標題" },
     };
+    custom.communityBand.title = "CCCP 與 TNR 社區工作";
+    custom.communityBand.description = "CCCP 社區貓照顧計劃和 TNR。";
     const markup = renderToStaticMarkup(<AboutContent impact={[]} content={custom} />);
     expect(markup).toContain("自訂標題");
     expect(markup).not.toContain("領養代替購買");
@@ -91,10 +109,13 @@ describe("AboutContent", () => {
     // Distinct, per-field fixture values (rather than shared placeholders) so a
     // swapped cccpCard/tnrCard assignment, a shifted icon/href index, or a field
     // transposition in the component would actually fail this test.
-    expect(markup).toContain("自訂CCCP標題");
-    expect(markup).toContain("自訂CCCP描述");
+    expect(markup).not.toContain("自訂CCCP標題");
+    expect(markup).not.toContain("自訂CCCP描述");
     expect(markup).toContain("自訂TNR標題");
+    expect(markup).not.toContain("CCCP");
     expect(markup).toContain("自訂TNR描述");
+    expect(markup).not.toContain('href="/about/cccp"');
+    expect(markup).toContain('href="/about/tnr"');
     expect(markup).toContain("自訂步驟一標題");
     expect(markup).toContain("自訂步驟一描述");
     expect(markup).toContain("自訂步驟二標題");

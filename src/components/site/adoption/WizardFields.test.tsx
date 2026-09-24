@@ -1,7 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import { VisitFields, nextVisitWindowSelection } from "./WizardFields";
+import {
+  ContactFields,
+  ReadinessFields,
+  VisitFields,
+  nextVisitWindowSelection,
+} from "./WizardFields";
 
 function renderVisitFields(values: Record<string, unknown>, errors: unknown = {}) {
   const watch = ((name: string) => values[name]) as never;
@@ -14,6 +19,19 @@ function renderVisitFields(values: Record<string, unknown>, errors: unknown = {}
     />,
   );
 }
+
+describe("ContactFields", () => {
+  test("offers phone and WhatsApp preference while retaining the email address input", () => {
+    const markup = renderToStaticMarkup(
+      <ContactFields register={(() => ({})) as never} errors={{}} />,
+    );
+    expect(markup).toContain('id="contact-email"');
+    expect(markup).toContain('type="email"');
+    expect(markup).toContain('value="whatsapp"');
+    expect(markup).toContain('value="phone"');
+    expect(markup).not.toContain('value="email"');
+  });
+});
 
 describe("VisitFields", () => {
   test("renders only the dog group for a dog-only shortlist", () => {
@@ -39,6 +57,8 @@ describe("VisitFields", () => {
     expect(markup).toContain("狗舍參觀時間");
     expect(markup).toContain("貓舍參觀時間");
     expect(markup).toContain("Cat visit windows");
+    expect(markup).not.toContain("Weekday morning");
+    expect(markup).not.toContain("Weekend morning");
   });
 
   test("toggles and orders checkbox values canonically", () => {
@@ -69,4 +89,14 @@ describe("VisitFields", () => {
     expect(markup).toContain('role="alert"');
     expect(markup).toContain("Select at least one cat visit window");
   });
+});
+
+test("asks whether all household members agree with explicit Yes and No choices", () => {
+  const markup = renderToStaticMarkup(
+    <ReadinessFields register={(() => ({})) as never} errors={{}} />,
+  );
+  expect(markup).toContain("所有家庭成員同意");
+  expect(markup).toContain("All household members agree");
+  expect(markup).toContain('value="yes"');
+  expect(markup).toContain('value="no"');
 });

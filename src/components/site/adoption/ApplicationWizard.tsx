@@ -151,12 +151,12 @@ export function createDefaultValues(): ApplicationFormValues {
       landlordRestrictions: "",
       windowDoorSafety: "",
       indoorSpaceNotes: "",
-      homeModificationsPossible: null,
+      homeModificationsPossible: null as unknown as boolean,
     },
     readiness: {
       currentPets: "",
       petCareExperience: "",
-      householdAgreement: "",
+      householdAgreement: "" as "yes",
       dailySchedule: "",
       monthlyBudgetHkd: undefined,
       emergencyCarePlan: "",
@@ -194,14 +194,34 @@ export function normalizeApplicationVisitValues(
   });
   return { ...visit, dogTimeWindows: windows.dog, catTimeWindows: windows.cat };
 }
+export function draftHasRetiredAnswers(draft: Record<string, unknown>) {
+  const contact = isRecord(draft.contact) ? draft.contact : {};
+  const readiness = isRecord(draft.readiness) ? draft.readiness : {};
+  const visit = isRecord(draft.visit) ? draft.visit : {};
+  return (
+    contact.preferredContactMethod === "email" ||
+    (typeof readiness.householdAgreement === "string" &&
+      readiness.householdAgreement !== "" &&
+      readiness.householdAgreement !== "yes" &&
+      readiness.householdAgreement !== "no") ||
+    (Array.isArray(visit.catTimeWindows) &&
+      visit.catTimeWindows.some(
+        (value) => value === "weekday_morning" || value === "weekend_morning",
+      ))
+  );
+}
+
 export function mergeDraftValues(
   defaultValues: ApplicationFormValues,
   draft: Record<string, unknown>,
   species: readonly AdoptionSpecies[],
 ) {
-  const contact = isRecord(draft.contact) ? draft.contact : {};
+  const contact = isRecord(draft.contact) ? { ...draft.contact } : {};
+  if (contact.preferredContactMethod === "email") contact.preferredContactMethod = "";
   const home = isRecord(draft.home) ? draft.home : {};
-  const readiness = isRecord(draft.readiness) ? draft.readiness : {};
+  const readiness = isRecord(draft.readiness) ? { ...draft.readiness } : {};
+  if (readiness.householdAgreement !== "yes" && readiness.householdAgreement !== "no")
+    readiness.householdAgreement = "";
   const visit = isRecord(draft.visit) ? draft.visit : {};
   const terms = isRecord(draft.terms) ? draft.terms : {};
   const sourceMetadata = isRecord(draft.sourceMetadata) ? draft.sourceMetadata : {};
@@ -256,6 +276,7 @@ export function ApplicationWizard() {
   const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const [submission, setSubmission] = useState<SubmissionResult | null>(null);
   const [storageReady, setStorageReady] = useState(false);
+  const [draftNeedsUpdate, setDraftNeedsUpdate] = useState(false);
   const [draftStatus, setDraftStatus] = useState<"idle" | "restored" | "saved" | "unavailable">(
     "idle",
   );
@@ -329,6 +350,7 @@ export function ApplicationWizard() {
     const timer = window.setTimeout(() => {
       try {
         const restoredDraft = parseDraft(window.localStorage.getItem(ADOPTION_DRAFT_STORAGE_KEY));
+        setDraftNeedsUpdate(draftHasRetiredAnswers(restoredDraft));
         reset(
           mergeDraftValues(
             defaultValues,
@@ -588,6 +610,16 @@ export function ApplicationWizard() {
           </p>
         </header>
 
+        {draftNeedsUpdate ? (
+          <p
+            role="alert"
+            className="mb-4 rounded-md border border-[var(--color-border)] bg-[var(--color-primary-highlight)] p-3 text-sm text-[var(--color-panel)]"
+          >
+            草稿中的部分舊選項已移除。請重新選擇聯絡方法、家庭成員同意與貓舍參觀時間。 / Some saved
+            choices have changed. Please review contact method, household agreement, and cat visit
+            times.
+          </p>
+        ) : null}
         <form
           onSubmit={handleSubmit(onSubmit, focusFirstInvalidStep)}
           className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]"
