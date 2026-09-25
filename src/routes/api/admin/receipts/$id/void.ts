@@ -1,5 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import { readBoundedText } from "../../../../../lib/http/boundedBody.server";
+import { MAX_ADMIN_JSON_BYTES } from "../../../../../lib/http/adminJson.server";
+import {
+  InvalidRequestJsonError,
+  RequestBodyTooLargeError,
+} from "../../../../../lib/http/publicJson.server";
 
 import { voidReceipt } from "../../../../../lib/donations/reconcile.server";
 import {
@@ -16,10 +22,13 @@ const voidReceiptParamsSchema = z.object({
 });
 
 async function optionalJsonBody(request: Request) {
+  const body = await readBoundedText(request, MAX_ADMIN_JSON_BYTES);
+  if (body === null) throw new RequestBodyTooLargeError("Request body too large");
+  if (body.trim() === "") return {};
   try {
-    return await request.json();
+    return JSON.parse(body) as unknown;
   } catch {
-    return {};
+    throw new InvalidRequestJsonError("Invalid JSON body");
   }
 }
 
@@ -45,7 +54,10 @@ export const Route = createFileRoute("/api/admin/receipts/$id/void")({
           );
         } catch (error) {
           if (error instanceof Response) return error;
-          if (error instanceof z.ZodError) {
+          if (error instanceof RequestBodyTooLargeError) {
+            return jsonResponse({ error: "Request body too large" }, { status: 413 });
+          }
+          if (error instanceof z.ZodError || error instanceof InvalidRequestJsonError) {
             return jsonResponse({ error: "Invalid void receipt request" }, { status: 400 });
           }
           console.error(error);

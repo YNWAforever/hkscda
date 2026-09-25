@@ -49,3 +49,25 @@ test("staff archive uses an atomic audited server mutation", async () => {
     p_archived: true,
   });
 });
+test("oversized animal archive JSON is rejected before the audited mutation", async () => {
+  expect(archiveModule?.Route).toBeDefined();
+  if (!archiveModule?.Route) return;
+  const rpc = mock(async () => ({ data: { kind: "archived" }, error: null }));
+  activeClient = { rpc };
+  const handlers = archiveModule.Route.options.server?.handlers;
+  const handler = handlers && typeof handlers !== "function" ? handlers.POST : undefined;
+  if (!handler) throw new Error("Animal archive POST handler missing");
+  const response = await handler({
+    request: new Request(
+      "http://localhost/api/admin/animals/11111111-1111-4111-8111-111111111111/archive",
+      {
+        method: "POST",
+        body: JSON.stringify({ archived: true, padding: "x".repeat(9 * 1024 * 1024) }),
+      },
+    ),
+    params: { id: "11111111-1111-4111-8111-111111111111" },
+  } as never);
+  if (!(response instanceof Response)) throw new Error("Expected HTTP response");
+  expect(response.status).toBe(413);
+  expect(rpc).not.toHaveBeenCalled();
+});

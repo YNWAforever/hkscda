@@ -1,5 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import { readAdminJson } from "../../../../../lib/http/adminJson.server";
+import {
+  InvalidRequestJsonError,
+  RequestBodyTooLargeError,
+} from "../../../../../lib/http/publicJson.server";
 
 import {
   createSupabaseServiceClient,
@@ -18,8 +23,14 @@ export const Route = createFileRoute("/api/admin/animals/$id/archive")({
           const parsedId = z.string().uuid().safeParse(params.id);
           if (!parsedId.success) return jsonResponse({ error: "Invalid animal id" }, 400);
 
-          const body = await request.json().catch(() => null);
-          if (!body || typeof body !== "object" || typeof body.archived !== "boolean")
+          const body = await readAdminJson(request);
+          if (
+            !body ||
+            typeof body !== "object" ||
+            Array.isArray(body) ||
+            !("archived" in body) ||
+            typeof body.archived !== "boolean"
+          )
             return jsonResponse({ error: "Invalid archive state" }, 400);
 
           const client = createSupabaseServiceClient();
@@ -35,6 +46,10 @@ export const Route = createFileRoute("/api/admin/animals/$id/archive")({
           return jsonResponse(data);
         } catch (error) {
           if (error instanceof Response) return error;
+          if (error instanceof RequestBodyTooLargeError)
+            return jsonResponse({ error: "Request body too large" }, 413);
+          if (error instanceof InvalidRequestJsonError)
+            return jsonResponse({ error: "Invalid archive state" }, 400);
           console.error(error);
           return jsonResponse({ error: "Could not update animal archive state" }, 500);
         }

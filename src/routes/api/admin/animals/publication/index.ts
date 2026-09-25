@@ -1,4 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { readAdminJsonObject } from "../../../../../lib/http/adminJson.server";
+import {
+  InvalidRequestJsonError,
+  RequestBodyTooLargeError,
+} from "../../../../../lib/http/publicJson.server";
 import {
   createSupabaseServiceClient,
   requireAdmin,
@@ -7,9 +12,24 @@ export const Route = createFileRoute("/api/admin/animals/publication/")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const c = createSupabaseServiceClient(),
-          a = await requireAdmin(request, ["staff", "admin"], c),
-          command = (await request.json()) as Record<string, unknown>;
+        const c = createSupabaseServiceClient();
+        const a = await requireAdmin(request, ["staff", "admin"], c);
+        let command: Record<string, unknown>;
+        try {
+          command = await readAdminJsonObject(request);
+        } catch (error) {
+          if (error instanceof RequestBodyTooLargeError)
+            return Response.json(
+              { error: "Request body too large" },
+              { status: 413, headers: { "cache-control": "no-store" } },
+            );
+          if (error instanceof InvalidRequestJsonError)
+            return Response.json(
+              { error: "Invalid JSON body" },
+              { status: 400, headers: { "cache-control": "no-store" } },
+            );
+          throw error;
+        }
         if (command.kind === "publish") {
           delete command.published_image_url;
           delete command.publication_gallery;

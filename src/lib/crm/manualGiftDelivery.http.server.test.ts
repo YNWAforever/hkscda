@@ -80,3 +80,14 @@ test("changed gift payload conflict does not attempt delivery", async () => {
   expect((await createManualGiftDeliveryHandlers(deps).create(request())).status).toBe(409);
   expect(calls).toEqual(["auth"]);
 });
+test("oversized manual gift JSON is rejected before committing", async () => {
+  const { deps, calls } = fixture();
+  const oversized = new Request("http://localhost/api/admin/donations/manual", {
+    method: "POST",
+    body: JSON.stringify({ padding: "x".repeat(9 * 1024 * 1024) }),
+  });
+  expect(oversized.headers.has("content-length")).toBe(false);
+  const response = await createManualGiftDeliveryHandlers(deps).create(oversized);
+  expect(response.status).toBe(413);
+  expect(calls).toEqual(["auth"]);
+});

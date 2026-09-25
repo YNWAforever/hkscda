@@ -116,3 +116,25 @@ test("publish ignores caller-supplied media that was not in the preview", async 
   expect(command).not.toHaveProperty("publication_gallery");
   expect(command).not.toHaveProperty("published_gallery");
 });
+test("publication rejects null and oversized JSON before calling the RPC", async () => {
+  const rpc = mock(async () => ({ data: null, error: null }));
+  activeClient = { rpc };
+  const handlers = Route.options.server?.handlers;
+  const handler = handlers && typeof handlers !== "function" ? handlers.POST : undefined;
+  if (!handler) throw new Error("Animal publication POST handler missing");
+
+  for (const [body, expectedStatus] of [
+    ["null", 400],
+    [JSON.stringify({ padding: "x".repeat(9 * 1024 * 1024) }), 413],
+  ] as const) {
+    const response = await handler({
+      request: new Request("http://localhost/api/admin/animals/publication/", {
+        method: "POST",
+        body,
+      }),
+    } as never);
+    if (!(response instanceof Response)) throw new Error("Expected HTTP response");
+    expect(response.status).toBe(expectedStatus);
+  }
+  expect(rpc).not.toHaveBeenCalled();
+});
