@@ -1,5 +1,6 @@
 import { readEligibleAnimals } from "../../../lib/animals/eligibility.server";
 import { createFileRoute } from "@tanstack/react-router";
+import { RequestBodyTooLargeError, readPublicJson } from "../../../lib/http/publicJson.server";
 
 import { createSupabaseAdoptionCoordinatorRepository } from "../../../lib/adoptions/repository.server";
 import { createAdoptionCoordinatorService } from "../../../lib/adoptions/service";
@@ -85,8 +86,10 @@ export function createAdoptionApplicationsHandler({
 
     let body: unknown;
     try {
-      body = await request.json();
-    } catch {
+      body = await readPublicJson(request);
+    } catch (error) {
+      if (error instanceof RequestBodyTooLargeError)
+        return jsonNoStore({ error: "Request body too large" }, { status: 413 });
       return jsonNoStore({ error: "Invalid JSON body" }, { status: 400 });
     }
 

@@ -23,6 +23,19 @@ const payload = {
 };
 
 describe("group enquiry public route handler", () => {
+  test("rejects JSON null before reading the challenge token", async () => {
+    const handler = createGroupEnquiryRouteHandler({
+      submitPublicEnquiry: async () => {
+        throw new Error("service must not run");
+      },
+      verifyTurnstileToken: async () => {
+        throw new Error("challenge must not run");
+      },
+      enforceRateLimitForRequest: async () => ({ ok: true }),
+    });
+    const response = await handler({ request: request("null") });
+    expect(response.status).toBe(400);
+  });
   test("rejects unsupported methods and malformed JSON before service work", async () => {
     const calls: string[] = [];
     const handler = createGroupEnquiryRouteHandler({

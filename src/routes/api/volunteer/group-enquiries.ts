@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
 import { createSupabaseServiceClient } from "../../../lib/donations/supabase.server";
+import { RequestBodyTooLargeError, readPublicJson } from "../../../lib/http/publicJson.server";
 import { notifyGroupEnquiryAdmins } from "../../../lib/groupEnquiries/notifications.server";
 import { createSupabaseGroupEnquiryRepository } from "../../../lib/groupEnquiries/repository.server";
 import { createGroupEnquiryService } from "../../../lib/groupEnquiries/service";
@@ -35,8 +36,10 @@ function jsonNoStore(body: unknown, init: ResponseInit = {}) {
 
 async function jsonBody(request: Request) {
   try {
-    return await request.json();
-  } catch {
+    return await readPublicJson(request);
+  } catch (error) {
+    if (error instanceof RequestBodyTooLargeError)
+      throw jsonNoStore({ error: "Request body too large" }, { status: 413 });
     throw jsonNoStore({ error: "Invalid JSON body" }, { status: 400 });
   }
 }
@@ -74,6 +77,9 @@ export function createGroupEnquiryRouteHandler({
       }
 
       const body = await jsonBody(request);
+      if (!body || typeof body !== "object" || Array.isArray(body)) {
+        return jsonNoStore({ error: "Invalid group enquiry request" }, { status: 400 });
+      }
       const raw = body as Record<string, unknown>;
       const ip = getClientIp(request);
       const token = typeof raw.turnstileToken === "string" ? raw.turnstileToken : undefined;

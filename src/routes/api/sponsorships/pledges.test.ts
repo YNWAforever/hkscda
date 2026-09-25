@@ -55,6 +55,22 @@ async function invoke(dependencies: Record<string, unknown>) {
 }
 
 describe("sponsorship pledge submission retry", () => {
+  test("rejects an oversized JSON body before submission work", async () => {
+    const { calls, dependencies } = setup();
+    const factory = (module as Record<string, unknown>).createSponsorshipPledgesHandler;
+    expect(factory).toBeFunction();
+    if (typeof factory !== "function") throw new Error("missing sponsorship handler");
+    const oversized = new Request("https://example.test/api/sponsorships/pledges", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ padding: "x".repeat(2 * 1024 * 1024) }),
+    });
+    expect(oversized.headers.has("content-length")).toBe(false);
+
+    const response = (await factory(dependencies)(oversized)) as Response;
+    expect(response.status).toBe(413);
+    expect(calls).toEqual([]);
+  });
   test("returns the original status link for a matching completed attempt without re-verifying or resending", async () => {
     const { calls, dependencies } = setup({
       lookupRetry: async () => ({
