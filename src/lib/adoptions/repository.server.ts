@@ -2177,28 +2177,49 @@ export function createSupabaseAdoptionCoordinatorRepository(
 
       const { start, end } = monthBounds(input.month);
       const from = (input.page - 1) * input.pageSize;
-      let query = client
-        .from("audit_log")
-        .select("*", { count: "exact" })
-        .gte("timestamp", start)
-        .lt("timestamp", end)
-        .in("action", COORDINATOR_EXPORT_ACTIONS)
-        .order("timestamp", { ascending: false });
-
-      if (input.actor) query = query.eq("actor_user_id", input.actor);
-      if (!input.kind) query = query.range(from, from + input.pageSize - 1);
-
-      const { data, error, count } = await query;
-      if (error) throw error;
-      const exports = ((data ?? []) as Record<string, unknown>[])
-        .map(mapExportAuditRow)
-        .filter((row) => !input.kind || row.kind === input.kind);
-      const pagedExports = input.kind ? exports.slice(from, from + input.pageSize) : exports;
-
-      return {
-        exports: pagedExports,
-        total: input.kind ? exports.length : (count ?? exports.length),
+      const queryPage = (offset: number, size: number) => {
+        let query = client
+          .from("audit_log")
+          .select("*", { count: "exact" })
+          .gte("timestamp", start)
+          .lt("timestamp", end)
+          .in("action", COORDINATOR_EXPORT_ACTIONS)
+          .order("timestamp", { ascending: false })
+          .order("id", { ascending: false })
+          .range(offset, offset + size - 1);
+        if (input.actor) query = query.eq("actor_user_id", input.actor);
+        return query;
       };
+
+      if (!input.kind) {
+        const { data, error, count } = await queryPage(from, input.pageSize);
+        if (error) throw error;
+        const exports = ((data ?? []) as Record<string, unknown>[]).map(mapExportAuditRow);
+        return { exports, total: count ?? exports.length };
+      }
+
+      // A filtered month can exceed PostgREST's row cap. Scan bounded pages
+      // so kind filtering and the reported total cover every audit row.
+      const exports: CoordinatorExportAuditRow[] = [];
+      let matchingCount = 0;
+      let offset = 0;
+      const scanSize = 500;
+      while (true) {
+        const { data, error, count } = await queryPage(offset, scanSize);
+        if (error) throw error;
+        const rows = (data ?? []) as Record<string, unknown>[];
+        for (const row of rows) {
+          const mapped = mapExportAuditRow(row);
+          if (mapped.kind !== input.kind) continue;
+          if (matchingCount >= from && matchingCount < from + input.pageSize) {
+            exports.push(mapped);
+          }
+          matchingCount += 1;
+        }
+        offset += rows.length;
+        if (rows.length === 0 || (count !== null && offset >= count)) break;
+      }
+      return { exports, total: matchingCount };
     },
 
     async getCoordinatorMonthlySummary(input): Promise<CoordinatorMonthlySummary> {

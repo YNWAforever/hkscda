@@ -65,6 +65,7 @@ type FakeState = {
   existingProfile: Record<string, unknown> | null;
   supporterRows: Record<string, unknown>[];
   auditRows: Record<string, unknown>[];
+  serverRowCap?: number;
   rpcResult: Record<string, unknown> | null;
   summaryCounts: SummaryCounts;
   followupRow: Record<string, unknown> | null;
@@ -342,7 +343,8 @@ class FakeQuery {
     const ranged = this.rangeBounds
       ? filtered.slice(this.rangeBounds.from, this.rangeBounds.to + 1)
       : filtered;
-    return { data: ranged, error: null, count };
+    const capped = this.table === "audit_log" ? ranged.slice(0, this.state.serverRowCap) : ranged;
+    return { data: capped, error: null, count };
   }
 
   private applyFilters(rows: Record<string, unknown>[]) {
@@ -420,6 +422,7 @@ function createFakeClient(
     existingProfile?: Record<string, unknown> | null;
     supporterRows?: Record<string, unknown>[];
     auditRows?: Record<string, unknown>[];
+    serverRowCap?: number;
     rpcResult?: Record<string, unknown> | null;
     summaryCounts?: Partial<SummaryCounts>;
     followupRow?: Record<string, unknown> | null;
@@ -450,6 +453,7 @@ function createFakeClient(
     existingProfile: options.existingProfile ?? null,
     supporterRows: options.supporterRows ?? [],
     auditRows: options.auditRows ?? [],
+    serverRowCap: options.serverRowCap,
     rpcResult: options.rpcResult ?? null,
     summaryCounts: {
       publicIntakeCases: 0,
@@ -1024,6 +1028,33 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
           filters: { openOnly: true },
         },
       ],
+    });
+  });
+
+  test("kind filtering finds matches beyond a capped first audit page", async () => {
+    const auditRows = Array.from({ length: 1000 }, (_, index) => ({
+      id: "adopters-" + String(index),
+      actor_user_id: createdSupporterId,
+      action: "coordinator_export.adopters",
+      entity_id: "adopters",
+      timestamp: "2026-06-28T02:00:00.000Z",
+      detail: { rowCount: 1 },
+    }));
+    auditRows.push({
+      id: "cases-after-cap",
+      actor_user_id: createdSupporterId,
+      action: "coordinator_export.cases",
+      entity_id: "cases",
+      timestamp: "2026-06-28T01:00:00.000Z",
+      detail: { rowCount: 2 },
+    });
+    const { repo } = setupRepository({ auditRows, serverRowCap: 1000 });
+
+    await expect(
+      repo.listCoordinatorExportHistory({ month: "2026-06", kind: "cases", page: 1, pageSize: 25 }),
+    ).resolves.toMatchObject({
+      total: 1,
+      exports: [expect.objectContaining({ id: "cases-after-cap", kind: "cases" })],
     });
   });
 
