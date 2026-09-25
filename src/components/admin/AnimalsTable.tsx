@@ -160,11 +160,13 @@ export function AnimalsTable({
    */
   async function handleArchive(id: string, archived: boolean) {
     setActionError(null);
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("animals")
       .update({ retired_at: archived ? null : new Date().toISOString() })
-      .eq("id", id);
-    if (error) {
+      .eq("id", id)
+      .select("id")
+      .maybeSingle();
+    if (error || !data) {
       setActionError(archived ? "無法取消封存，請重試。" : "無法封存，請重試。");
       return;
     }

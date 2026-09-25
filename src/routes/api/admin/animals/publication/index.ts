@@ -10,9 +10,13 @@ export const Route = createFileRoute("/api/admin/animals/publication/")({
         const c = createSupabaseServiceClient(),
           a = await requireAdmin(request, ["staff", "admin"], c),
           command = (await request.json()) as Record<string, unknown>;
+        if (command.kind === "publish") {
+          delete command.published_image_url;
+          delete command.publication_gallery;
+          delete command.published_gallery;
+        }
         let promotedPath: string | null = null;
         let draftPath: string | null = null;
-        const promotedPaths: string[] = [];
         if (
           command.kind === "publish" &&
           typeof command.preview_id === "string" &&
@@ -64,7 +68,6 @@ export const Route = createFileRoute("/api/admin/animals/publication/")({
                   throw uploaded.error;
                 next.url = c.storage.from("animal-images").getPublicUrl(path).data.publicUrl;
                 next.draft_path = null;
-                promotedPaths.push(path);
               }
               publicationGallery.push(next);
             }
@@ -124,22 +127,14 @@ export const Route = createFileRoute("/api/admin/animals/publication/")({
           if (data && typeof data === "object") data.animal = canonical.data;
         }
         if (error) {
-          if (promotedPath || promotedPaths.length)
-            await c.storage
-              .from("animal-images")
-              .remove([...(promotedPath ? [promotedPath] : []), ...promotedPaths]);
           const status = error.code === "42501" ? 403 : error.code === "22023" ? 422 : 500;
           return Response.json(
             { error: status === 422 ? "動物草稿資料無效" : "未能處理動物發布" },
             { status },
           );
         }
-        if (data?.kind === "conflict" && (promotedPath || promotedPaths.length))
-          await c.storage
-            .from("animal-images")
-            .remove([...(promotedPath ? [promotedPath] : []), ...promotedPaths]);
-        // Saved drafts and historical previews still reference private objects.
-        // Retain them until a reference-aware storage cleanup can prove they are unused.
+        // A concurrent publish may already reference these public objects.
+        // Keep promoted objects until reference-aware cleanup can prove they are unused.
         return Response.json(data, {
           status: data?.kind === "conflict" ? 409 : data?.kind === "not_found" ? 404 : 200,
           headers: { "cache-control": "no-store" },

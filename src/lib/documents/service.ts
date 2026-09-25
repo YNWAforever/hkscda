@@ -287,7 +287,11 @@ export function createDocumentService({
       if (parsed.objectPath !== undefined || parsed.kind !== undefined) {
         const current = await repo.getAssetById(parsedAssetId);
         if (!current) throw new Error("Document asset not found");
-        if (current.isPublished && parsed.objectPath !== current.objectPath) {
+        if (
+          current.isPublished &&
+          parsed.objectPath !== undefined &&
+          parsed.objectPath !== current.objectPath
+        ) {
           throw new DocumentConflictError("Unpublish the document before changing its object path");
         }
         if (parsed.kind !== undefined && parsed.kind !== current.kind) {

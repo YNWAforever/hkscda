@@ -56,6 +56,28 @@ describe("PayPal order id extraction", () => {
 });
 
 describe("verified PayPal financial events", () => {
+  test("an unmapped completed capture is recorded for manual review", async () => {
+    const handler = (paypalModule as Record<string, unknown>).handleVerifiedPayPalWebhook;
+    expect(handler).toBeFunction();
+    if (typeof handler !== "function") return;
+    let reviewed: Record<string, unknown> | undefined;
+    const result = await handler(
+      {
+        id: "evt-unmapped-completed",
+        event_type: "PAYMENT.CAPTURE.COMPLETED",
+        resource: { id: "capture-unmapped" },
+      },
+      {
+        client: {} as never,
+        flagProviderWebhookForReview: async (_args: unknown, review: Record<string, unknown>) => {
+          reviewed = review;
+          return { kind: "manual_review" };
+        },
+      },
+    );
+    expect(reviewed?.reason).toBe("missing_completed_order_id");
+    expect(result.skipped).toBe("manual_review");
+  });
   test("a denied capture fails the matching pending donation", async () => {
     const handler = (paypalModule as Record<string, unknown>).handleVerifiedPayPalWebhook;
     expect(handler).toBeFunction();

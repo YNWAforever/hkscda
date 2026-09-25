@@ -117,7 +117,21 @@ export async function handleVerifiedPayPalWebhook(
     const orderId = getPayPalReconcileOrderId(payload);
     const fallbackPaymentId = payload.resource?.custom_id;
     if (!orderId && !fallbackPaymentId) {
-      return { received: true, skipped: "missing_order_id" };
+      await review(
+        {
+          client,
+          provider: "paypal",
+          providerRef: payload.resource?.id ?? "",
+          providerEventId: payload.id,
+          eventType: payload.event_type,
+          payload,
+        },
+        {
+          reason: "missing_completed_order_id",
+          detail: { captureId: payload.resource?.id ?? null },
+        },
+      );
+      return { received: true, skipped: "manual_review" };
     }
     const result = await reconcile({
       client,

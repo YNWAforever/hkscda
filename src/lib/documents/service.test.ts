@@ -103,6 +103,23 @@ describe("createDocumentService", () => {
     expect(repo.listAssets).not.toHaveBeenCalled();
   });
 
+  test("allows an unchanged kind on a published asset when the object path is untouched", async () => {
+    const publishedAsset = { ...asset, isPublished: true };
+    const { repo } = createRepo({ getAssetById: mock(async () => publishedAsset) });
+    const service = createDocumentService({ repo });
+
+    await service.updateAsset({
+      actorUserId: "admin",
+      assetId,
+      input: { kind: "annual_report", title: "Updated title" },
+    });
+
+    expect(repo.updateAsset).toHaveBeenCalledWith(
+      assetId,
+      { kind: "annual_report", title: "Updated title" },
+      "admin",
+    );
+  });
   test("rejects object path changes while an asset is published", async () => {
     const publishedAsset = { ...asset, isPublished: true };
     const { repo } = createRepo({ getAssetById: mock(async () => publishedAsset) });
