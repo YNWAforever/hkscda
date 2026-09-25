@@ -9,6 +9,42 @@ const metadata = z
     idempotency_key: z.string().uuid(),
   })
   .strict();
+const MAX_MULTIPART_BYTES = 11 * 1024 * 1024;
+
+export async function readBoundedInternshipFormData(request: Request): Promise<FormData | null> {
+  const declaredLength = Number(request.headers.get("content-length"));
+  if (Number.isFinite(declaredLength) && declaredLength > MAX_MULTIPART_BYTES) return null;
+  if (!request.body) return request.formData();
+
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > MAX_MULTIPART_BYTES) {
+        await reader.cancel().catch(() => undefined);
+        return null;
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  const contentType = request.headers.get("content-type");
+  return new Response(bytes, {
+    headers: contentType ? { "content-type": contentType } : undefined,
+  }).formData();
+}
 export async function internshipAttachment(request: Request) {
   const client = createSupabaseServiceClient();
   try {
@@ -31,9 +67,8 @@ export async function internshipAttachment(request: Request) {
       if (signError) throw signError;
       return Response.json({ url: data.signedUrl }, { headers: { "cache-control": "no-store" } });
     }
-    if (Number(request.headers.get("content-length")) > 11 * 1024 * 1024)
-      return new Response(null, { status: 413 });
-    const form = await request.formData();
+    const form = await readBoundedInternshipFormData(request);
+    if (!form) return new Response(null, { status: 413 });
     const input = metadata.parse({
       application_id: form.get("application_id"),
       expected_revision: form.get("expected_revision"),
