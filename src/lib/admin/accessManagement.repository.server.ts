@@ -187,7 +187,7 @@ export function createSupabaseAdminAccessRepository(client: SupabaseClient): Adm
         .in("action", ACCESS_AUDIT_ACTIONS as unknown as string[])
         .order("timestamp", { ascending: false })
         .order("id", { ascending: false })
-        .range((page - 1) * 50, page * 50);
+        .range((page - 1) * 50, page * 50 - 1);
       if (error) throw error;
       return ((data ?? []) as AuditRow[]).map(mapAudit);
     },
