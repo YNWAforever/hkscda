@@ -461,22 +461,6 @@ async function loadTaskLinks(client: SupabaseClient, rows: FollowupRow[]) {
   return { cases, adopters, animals };
 }
 
-async function searchCaseIds(client: SupabaseClient, q: string) {
-  const like = `%${escapeLike(q)}%`;
-  const columns = ["applicant_name", "applicant_phone", "applicant_email"] as const;
-  const results = await Promise.all(
-    columns.map((column) => client.from("adoption_case").select("id").ilike(column, like)),
-  );
-
-  for (const result of results) {
-    if (result.error) throw result.error;
-  }
-
-  return unique(
-    results.flatMap((result) => (result.data ?? []).map((row) => (row as { id: string }).id)),
-  );
-}
-
 function requireStatus(statuses: Map<string, CoordinatorStatus>, id: string) {
   const status = statuses.get(id);
   if (!status) throw new Error(`Missing coordinator status ${id}`);
@@ -1825,15 +1809,17 @@ export function createSupabaseAdoptionCoordinatorRepository(
         .from("adoption_case")
         .select("*", { count: "exact" })
         .order("created_at", { ascending: false })
+        .order("id", { ascending: false })
         .range(from, from + input.pageSize - 1);
 
       if (input.statusId) query = query.eq("status_id", input.statusId);
       if (input.animalType) query = query.eq("animal_type", input.animalType);
       if (input.openOnly) query = query.is("closed_at", null);
       if (input.q) {
-        const ids = await searchCaseIds(client, input.q);
-        if (ids.length === 0) return { cases: [], total: 0 };
-        query = query.in("id", ids);
+        const like = `%${sanitizeOrLikeValue(input.q)}%`;
+        query = query.or(
+          `applicant_name.ilike.${like},applicant_phone.ilike.${like},applicant_email.ilike.${like}`,
+        );
       }
 
       const { data, error, count } = await query;
@@ -1863,15 +1849,17 @@ export function createSupabaseAdoptionCoordinatorRepository(
         .from("adoption_case")
         .select("*")
         .order("created_at", { ascending: false })
+        .order("id", { ascending: false })
         .range(from, from + input.pageSize - 1);
 
       if (input.statusId) query = query.eq("status_id", input.statusId);
       if (input.animalType) query = query.eq("animal_type", input.animalType);
       if (input.openOnly) query = query.is("closed_at", null);
       if (input.q) {
-        const ids = await searchCaseIds(client, input.q);
-        if (ids.length === 0) return [];
-        query = query.in("id", ids);
+        const like = `%${sanitizeOrLikeValue(input.q)}%`;
+        query = query.or(
+          `applicant_name.ilike.${like},applicant_phone.ilike.${like},applicant_email.ilike.${like}`,
+        );
       }
 
       const { data, error } = await query;

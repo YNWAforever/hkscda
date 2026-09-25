@@ -343,7 +343,7 @@ class FakeQuery {
     const ranged = this.rangeBounds
       ? filtered.slice(this.rangeBounds.from, this.rangeBounds.to + 1)
       : filtered;
-    const capped = this.table === "audit_log" ? ranged.slice(0, this.state.serverRowCap) : ranged;
+    const capped = this.state.serverRowCap ? ranged.slice(0, this.state.serverRowCap) : ranged;
     return { data: capped, error: null, count };
   }
 
@@ -882,6 +882,26 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
         p_actor_user_id: createdSupporterId,
       }),
     });
+  });
+
+  test("searches case list and export beyond a capped preliminary result", async () => {
+    const finalCaseId = "case-third";
+    const { repo } = setupRepository({
+      serverRowCap: 2,
+      caseRows: [
+        caseRow({ id: "case-first", applicant_name: "Ada" }),
+        caseRow({ id: "case-second", applicant_name: "Ada" }),
+        caseRow({ id: finalCaseId, applicant_name: "Ada" }),
+      ],
+    });
+    const search = { q: "Ada", openOnly: false, page: 3, pageSize: 1 };
+
+    const listed = await repo.listCases(search);
+    const exported = await repo.listCaseExportRows(search);
+
+    expect(listed.total).toBe(3);
+    expect(listed.cases.map((row) => row.id)).toEqual([finalCaseId]);
+    expect(exported.map((row) => row.caseId)).toEqual([finalCaseId]);
   });
 
   test("lists open intake items by lane", async () => {
