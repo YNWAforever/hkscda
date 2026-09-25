@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { readAdminJson } from "../http/adminJson.server";
+import { RequestBodyTooLargeError } from "../http/publicJson.server";
 
 import type { AdminUser } from "../donations/supabase.server";
 import { createCrmService } from "./service";
@@ -21,8 +23,13 @@ function searchParams(request: Request) {
 
 async function jsonBody(request: Request) {
   try {
-    return await request.json();
-  } catch {
+    return await readAdminJson(request);
+  } catch (error) {
+    if (error instanceof RequestBodyTooLargeError)
+      throw new Response(JSON.stringify({ error: "Request body too large" }), {
+        status: 413,
+        headers: { "content-type": "application/json", "cache-control": "no-store" },
+      });
     throw new Response(JSON.stringify({ error: "Invalid JSON body" }), {
       status: 400,
       headers: { "content-type": "application/json", "cache-control": "no-store" },

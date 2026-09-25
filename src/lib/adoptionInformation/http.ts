@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { readAdminJson } from "../http/adminJson.server";
+import { RequestBodyTooLargeError } from "../http/publicJson.server";
 
 import { adoptionInformationMutationSchema, deleteEstateRequestSchema } from "./schemas";
 import { AdoptionInformationConflictError } from "./service";
@@ -27,8 +29,10 @@ function jsonResponse(body: unknown, id: string, init?: ResponseInit) {
 
 async function jsonBody(request: Request, id: string) {
   try {
-    return await request.json();
-  } catch {
+    return await readAdminJson(request);
+  } catch (error) {
+    if (error instanceof RequestBodyTooLargeError)
+      throw jsonResponse({ error: "Request body too large" }, id, { status: 413 });
     throw jsonResponse({ error: "Invalid JSON body" }, id, { status: 400 });
   }
 }

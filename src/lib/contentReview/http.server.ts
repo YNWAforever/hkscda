@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { readAdminJson } from "../http/adminJson.server";
+import { RequestBodyTooLargeError } from "../http/publicJson.server";
 import type { createContentReviewService } from "./service";
 export function createContentReviewHttp(deps: {
   authenticate(request: Request): Promise<string>;
@@ -10,7 +12,7 @@ export function createContentReviewHttp(deps: {
       const result =
         request.method === "GET"
           ? await deps.service.list(actor, Object.fromEntries(new URL(request.url).searchParams))
-          : await deps.service.review(actor, await request.json());
+          : await deps.service.review(actor, await readAdminJson(request));
       return Response.json(result, {
         status:
           "kind" in result && result.kind === "conflict"
@@ -22,6 +24,14 @@ export function createContentReviewHttp(deps: {
       });
     } catch (error) {
       if (error instanceof Response) return error;
+      if (error instanceof RequestBodyTooLargeError)
+        return Response.json(
+          { error: "Request body too large" },
+          {
+            status: 413,
+            headers: { "cache-control": "no-store" },
+          },
+        );
       return Response.json(
         { error: "未能完成內容審核，請檢查資料及版本後重試。" },
         {

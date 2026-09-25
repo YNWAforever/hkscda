@@ -108,6 +108,17 @@ beforeEach(() => {
 });
 
 describe("createAdoptionGuideReleaseHandlers", () => {
+  test("returns 413 before service work for an oversized admin JSON body", async () => {
+    const { handlers, service } = createHandlers();
+    const request = jsonRequest("/api/admin/adoption-guide-releases", {
+      padding: "x".repeat(9 * 1024 * 1024),
+    });
+    expect(request.headers.has("content-length")).toBe(false);
+    const response = await handlers.create(request);
+    expect(response.status).toBe(413);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(service.createDraft).not.toHaveBeenCalled();
+  });
   test("returns 401 before unauthenticated requests reach the service", async () => {
     const { handlers, service } = createHandlers(createService(), async () => {
       throw new Response("provider token detail", { status: 401 });
