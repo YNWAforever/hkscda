@@ -66,8 +66,33 @@ describe("adoption upload intents", () => {
     expect(
       await hasCompletedAdoptionApplication(client, applicationId, token, "a".repeat(64)),
     ).toBe("new");
-    expect(queries).toEqual(["adoption_case"]);
+    expect(queries).toEqual(["adoption_case", "adoption_applications"]);
   });
+
+  test("reports a summary-only application as still processing", async () => {
+    const queries: string[] = [];
+    const client = {
+      from(table: string) {
+        queries.push(table);
+        return {
+          select: () => ({
+            eq: () => ({
+              maybeSingle: async () => ({
+                data: table === "adoption_applications" ? { id: applicationId } : null,
+                error: null,
+              }),
+            }),
+          }),
+        };
+      },
+    } as never;
+
+    expect(
+      await hasCompletedAdoptionApplication(client, applicationId, token, "a".repeat(64)),
+    ).toBe("processing");
+    expect(queries).toEqual(["adoption_case", "adoption_applications"]);
+  });
+
   test("recovers only the original completed application details", async () => {
     const filters: Array<[string, unknown]> = [];
     const client = {

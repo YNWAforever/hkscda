@@ -144,6 +144,12 @@ export function createAdoptionApplicationsHandler({
           return jsonNoStore({ error: "Application retry not authorized" }, { status: 403 });
         }
         if (state === "recovered") return recoverCompleted();
+        if (state === "processing") {
+          return jsonNoStore(
+            { error: "Application submission is still processing. Please retry shortly." },
+            { status: 503, headers: { "retry-after": "1" } },
+          );
+        }
         return null;
       };
       const existingResponse = await completionResponse(await lookupCompletion());

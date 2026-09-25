@@ -145,6 +145,24 @@ describe("public adoption submission authorization and retry", () => {
     expect(calls).toEqual(["persist"]);
   });
 
+  test("asks a concurrent retry to wait while another request is still saving", async () => {
+    let completionChecks = 0;
+    const { dependencies, calls } = deps({
+      hasCompleted: async () => (++completionChecks === 1 ? "new" : "processing"),
+      persist: async () => {
+        calls.push("persist");
+        throw new Error("duplicate application id");
+      },
+    });
+
+    const response = await createAdoptionApplicationsHandler(dependencies)(request());
+
+    expect(response.status).toBe(503);
+    expect(response.headers.get("retry-after")).toBe("1");
+    expect(completionChecks).toBe(2);
+    expect(calls).toEqual(["persist"]);
+  });
+
   test("returns success after persistence even if confirmation email throws", async () => {
     const { dependencies, calls } = deps({
       sendEmail: async () => {

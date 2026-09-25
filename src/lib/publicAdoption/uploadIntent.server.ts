@@ -111,14 +111,22 @@ export async function hasCompletedAdoptionApplication(
   statusToken: string,
   expectedFingerprint: string,
   now = new Date(),
-): Promise<"new" | "recovered" | "conflict" | "forbidden" | "expired"> {
+): Promise<"new" | "processing" | "recovered" | "conflict" | "forbidden" | "expired"> {
   const { data, error } = await client
     .from("adoption_case")
     .select("id")
     .eq("public_application_id", applicationId)
     .maybeSingle();
   if (error) throw error;
-  if (!data) return "new";
+  if (!data) {
+    const { data: application, error: applicationError } = await client
+      .from("adoption_applications")
+      .select("id")
+      .eq("id", applicationId)
+      .maybeSingle();
+    if (applicationError) throw applicationError;
+    return application ? "processing" : "new";
+  }
 
   const { data: token, error: tokenError } = await client
     .from("public_status_token")
