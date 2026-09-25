@@ -12,6 +12,7 @@ class FakeQuery {
   selectedColumns = "";
   filters: Filter[] = [];
   rangeArgs: [number, number] | null = null;
+  orders: Array<{ column: string; ascending: boolean }> = [];
   action: "select" | "insert" | "update" | "delete" = "select";
   payload: unknown;
   private countMode = false;
@@ -42,7 +43,8 @@ class FakeQuery {
     this.filters.push(["or", "", value]);
     return this;
   }
-  order() {
+  order(column: string, options?: { ascending?: boolean }) {
+    this.orders.push({ column, ascending: options?.ascending !== false });
     return this;
   }
   range(from: number, to: number) {
@@ -294,6 +296,11 @@ describe("createSupabaseDocumentRepository", () => {
       ]),
     );
     expect(query.rangeArgs).toEqual([10, 19]);
+    expect(query.orders).toEqual([
+      { column: "sort_order", ascending: true },
+      { column: "created_at", ascending: false },
+      { column: "id", ascending: true },
+    ]);
     expect(result.total).toBe(1);
   });
 

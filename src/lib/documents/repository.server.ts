@@ -380,6 +380,7 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
         .select(ASSET_COLUMNS, { count: "exact" })
         .order("sort_order", { ascending: true })
         .order("created_at", { ascending: false })
+        .order("id", { ascending: true })
         .range(from, from + search.pageSize - 1);
 
       if (search.kind) query = query.eq("kind", search.kind);
