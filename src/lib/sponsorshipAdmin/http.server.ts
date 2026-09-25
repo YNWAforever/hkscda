@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { readAdminJson } from "../http/adminJson.server";
-import { RequestBodyTooLargeError } from "../http/publicJson.server";
 
 import type { AdminUser } from "../donations/supabase.server";
+import { InvalidRequestJsonError, RequestBodyTooLargeError } from "../http/publicJson.server";
 import type { createSponsorshipAdminService } from "./service";
 
 type SponsorshipAdminService = ReturnType<typeof createSponsorshipAdminService>;
@@ -115,6 +115,10 @@ export async function withErrors(
     return await operation();
   } catch (error) {
     if (error instanceof Response) return responseError(error);
+    if (error instanceof RequestBodyTooLargeError)
+      return jsonResponse({ error: "Request body too large" }, { status: 413 });
+    if (error instanceof InvalidRequestJsonError)
+      return jsonResponse({ error: "Invalid JSON body" }, { status: 400 });
     if (error instanceof z.ZodError) {
       return jsonResponse({ error: "Invalid sponsorship review request" }, { status: 400 });
     }

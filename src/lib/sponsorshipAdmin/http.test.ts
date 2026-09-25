@@ -1,6 +1,7 @@
-import { describe, expect, mock, test } from "bun:test";
+import { describe, expect, mock, spyOn, test } from "bun:test";
 
-import { createSponsorshipAdminHandlers } from "./http.server";
+import { RequestBodyTooLargeError, InvalidRequestJsonError } from "../http/publicJson.server";
+import { createSponsorshipAdminHandlers, withErrors } from "./http.server";
 
 const pledgeId = "11111111-2222-4333-8444-555555555555";
 const assignmentId = "66666666-7777-4888-8999-aaaaaaaaaaaa";
@@ -467,4 +468,20 @@ describe("createSponsorshipAdminHandlers", () => {
     });
     expect(response.status).toBe(403);
   });
+});
+
+test.each([
+  [new RequestBodyTooLargeError("Request body too large"), 413],
+  [new InvalidRequestJsonError("Invalid JSON body"), 400],
+])("withErrors maps request-body errors to %s", async (error, status) => {
+  const log = spyOn(console, "error").mockImplementation(() => {});
+  try {
+    const response = await withErrors(async () => {
+      throw error;
+    });
+    expect(response.status).toBe(status);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+  } finally {
+    log.mockRestore();
+  }
 });
