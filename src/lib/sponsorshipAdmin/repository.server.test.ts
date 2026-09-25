@@ -504,6 +504,26 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     expect(result.total).toBe(1);
   });
 
+  test("listPledges search includes candidates beyond a capped response", async () => {
+    const { client } = createFakeClient({
+      pledgeRows: [1, 2, 3].map((n) =>
+        pledgeRow({ id: "pledge-" + n, supporter_id: "supporter-" + n }),
+      ),
+      supporterRows: [1, 2, 3].map((n) =>
+        supporterRow({ id: "supporter-" + n, name: "陳小姐", email: "chan" + n + "@example.com" }),
+      ),
+      serverRowCap: 2,
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const page1 = await repo.listPledges({ q: "陳", page: 1, pageSize: 2 });
+    const page2 = await repo.listPledges({ q: "陳", page: 2, pageSize: 2 });
+    expect(page1.total).toBe(3);
+    expect(page2.total).toBe(3);
+    expect(page1.pledges.map((pledge) => pledge.id)).toEqual(["pledge-3", "pledge-2"]);
+    expect(page2.pledges.map((pledge) => pledge.id)).toEqual(["pledge-1"]);
+  });
+
   test("listPledges filters by q against the pledge's human-facing reference", async () => {
     // pledgeReference() (src/lib/sponsorship/statusSummary.ts) formats a
     // pledge's reference as "SP-" + the id's first segment, e.g. `pledgeId`
@@ -527,6 +547,27 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     expect(result.pledges).toHaveLength(1);
     expect(result.pledges[0].id).toBe(pledgeId);
     expect(result.total).toBe(1);
+  });
+
+  test("reference search includes ids beyond a capped response", async () => {
+    const ids = [
+      "11111111-2222-4333-8444-555555555551",
+      "11111111-2222-4333-8444-555555555552",
+      "11111111-2222-4333-8444-555555555553",
+    ];
+    const { client } = createFakeClient({
+      pledgeRows: ids.map((id) => pledgeRow({ id })),
+      supporterRows: [],
+      serverRowCap: 2,
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const page1 = await repo.listPledges({ q: "SP-1111", page: 1, pageSize: 2 });
+    const page2 = await repo.listPledges({ q: "SP-1111", page: 2, pageSize: 2 });
+    expect(page1.total).toBe(3);
+    expect(page2.total).toBe(3);
+    expect(page1.pledges.map((pledge) => pledge.id)).toEqual([ids[2], ids[1]]);
+    expect(page2.pledges.map((pledge) => pledge.id)).toEqual([ids[0]]);
   });
 
   test("listPledges treats a non-reference-shaped q as a supporter-only search", async () => {
