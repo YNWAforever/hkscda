@@ -902,8 +902,9 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     });
 
     await expect(
-      repo.listIntakeItems({ lane: "photos_to_review", openOnly: true }),
+      repo.listIntakeItems({ lane: "photos_to_review", openOnly: true, page: 1, pageSize: 25 }),
     ).resolves.toEqual({
+      total: 1,
       items: [
         {
           id: "intake-1",
@@ -936,8 +937,21 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     expect(calls).toContainEqual({
       table: "adoption_intake_item",
       method: "range",
-      payload: { from: 0, to: 99 },
+      payload: { from: 0, to: 24 },
     });
+  });
+
+  test("paginates intake items beyond the first page with an exact total", async () => {
+    const { repo } = setupRepository({
+      intakeRows: Array.from({ length: 26 }, (_, index) =>
+        intakeRow({ id: `intake-${index + 1}` }),
+      ),
+    });
+
+    const result = await repo.listIntakeItems({ openOnly: true, page: 2, pageSize: 25 });
+
+    expect(result.total).toBe(26);
+    expect(result.items.map((item) => item.id)).toEqual(["intake-26"]);
   });
 
   test("lists coordinator export history from audit log details", async () => {

@@ -124,7 +124,7 @@ function createRepo(
     },
     async listIntakeItems(input) {
       calls.push({ name: "listIntakeItems", payload: input });
-      return { items: [] };
+      return { items: [], total: 0 };
     },
     async listAdopters(input) {
       calls.push({ name: "listAdopters", payload: input });
@@ -713,11 +713,11 @@ describe("createAdoptionCoordinatorService", () => {
 
     expect(calls).toContainEqual({
       name: "listIntakeItems",
-      payload: { lane: "photos_to_review", openOnly: true },
+      payload: { lane: "photos_to_review", openOnly: true, page: 1, pageSize: 25 },
     });
     expect(calls).toContainEqual({
       name: "listIntakeItems",
-      payload: { lane: "needs_followup", openOnly: false },
+      payload: { lane: "needs_followup", openOnly: false, page: 1, pageSize: 25 },
     });
   });
 

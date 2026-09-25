@@ -4,9 +4,14 @@ import { buildIntakeSearchParams, intakeUrgencyLabel } from "./intakeInboxLogic"
 
 describe("intake inbox logic", () => {
   test("builds lane query params", () => {
-    expect(buildIntakeSearchParams({ lane: "photos_to_review", openOnly: true }).toString()).toBe(
-      "lane=photos_to_review&openOnly=true",
-    );
+    expect(
+      buildIntakeSearchParams({
+        lane: "photos_to_review",
+        openOnly: true,
+        page: 2,
+        pageSize: 25,
+      }).toString(),
+    ).toBe("lane=photos_to_review&openOnly=true&page=2&pageSize=25");
   });
 
   test("labels urgency", () => {

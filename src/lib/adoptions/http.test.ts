@@ -122,7 +122,7 @@ function createFakeService(overrides: Partial<AdoptionCoordinatorService> = {}) 
     },
     async listIntakeItems(rawSearch) {
       calls.push({ name: "listIntakeItems", payload: rawSearch });
-      return { items: [] };
+      return { items: [], total: 0 };
     },
     async listTasks(rawSearch) {
       calls.push({ name: "listTasks", payload: rawSearch });
@@ -436,22 +436,25 @@ describe("createAdoptionCoordinatorHandlers", () => {
     const { calls, service } = createFakeService({
       async listIntakeItems(rawSearch) {
         calls.push({ name: "listIntakeItems", payload: rawSearch });
-        return { items: [] };
+        return { items: [], total: 0 };
       },
     });
     const handlers = createHandlers({ service });
 
     const response = await handlers.listIntakeItems({
       request: new Request(
-        "https://example.test/api/admin/adoptions/intake/items?lane=photos_to_review&openOnly=true",
+        "https://example.test/api/admin/adoptions/intake/items?lane=photos_to_review&openOnly=true&page=2&pageSize=25",
       ),
     });
 
     expect(response.status).toBe(200);
     expectNoStoreJson(response);
-    expect(await response.json()).toEqual({ items: [] });
+    expect(await response.json()).toEqual({ items: [], total: 0 });
     expect(calls).toEqual([
-      { name: "listIntakeItems", payload: { lane: "photos_to_review", openOnly: "true" } },
+      {
+        name: "listIntakeItems",
+        payload: { lane: "photos_to_review", openOnly: "true", page: "2", pageSize: "25" },
+      },
     ]);
   });
 

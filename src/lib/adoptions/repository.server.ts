@@ -54,7 +54,6 @@ const ADOPTER_FILTER_TOO_BROAD_ERROR = "Adopter filters match too many records";
 const ANIMAL_PIPELINE_CANDIDATE_ID_LIMIT = 1000;
 const ANIMAL_PIPELINE_FILTER_TOO_BROAD_ERROR =
   "Too many animal pipeline candidates; narrow the search or filters";
-const INTAKE_ITEM_LIMIT = 100;
 const COORDINATOR_EXPORT_ACTIONS = [
   "coordinator_export.cases",
   "coordinator_export.adopters",
@@ -1975,21 +1974,24 @@ export function createSupabaseAdoptionCoordinatorRepository(
     },
 
     async listIntakeItems(input) {
+      const from = (input.page - 1) * input.pageSize;
       let query = client
         .from("adoption_intake_item")
-        .select("*")
+        .select("*", { count: "exact" })
         .order("due_at", { ascending: true })
         .order("created_at", { ascending: true })
-        .range(0, INTAKE_ITEM_LIMIT - 1);
+        .order("id", { ascending: true })
+        .range(from, from + input.pageSize - 1);
 
       if (input.lane) query = query.eq("lane", input.lane);
       if (input.openOnly) query = query.is("resolved_at", null);
 
-      const { data, error } = await query;
+      const { data, error, count } = await query;
       if (error) throw error;
 
       return {
         items: ((data ?? []) as AdoptionIntakeItemRow[]).map(mapIntakeItem),
+        total: count ?? 0,
       };
     },
 
