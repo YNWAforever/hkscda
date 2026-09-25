@@ -20,10 +20,12 @@ function fakeClient({
   conflictStatus,
   existingUpdatedAt = new Date().toISOString(),
   sentPersistenceFails = false,
+  acceptedAfterCompetingFailure = false,
 }: {
   conflictStatus?: "queued" | "sent" | "failed";
   existingUpdatedAt?: string;
   sentPersistenceFails?: boolean;
+  acceptedAfterCompetingFailure?: boolean;
 } = {}) {
   const operations: Array<{ action: string; payload?: Record<string, unknown> }> = [];
   const existing = conflictStatus
@@ -60,6 +62,7 @@ function fakeClient({
           update(payload: Record<string, unknown>) {
             operations.push({ action: "update", payload });
             let matchesTimeFilter = true;
+            let acceptsFailed = false;
             const builder = {
               eq() {
                 return builder;
@@ -74,12 +77,18 @@ function fakeClient({
                   matchesTimeFilter = existing.updated_at <= value;
                 return builder;
               },
+              in(column: string, values: string[]) {
+                if (column === "status") acceptsFailed = values.includes("failed");
+                return builder;
+              },
               select() {
                 return builder;
               },
               maybeSingle: async () => ({
                 data:
-                  (sentPersistenceFails && payload.status === "sent") || !matchesTimeFilter
+                  (sentPersistenceFails && payload.status === "sent") ||
+                  (acceptedAfterCompetingFailure && payload.status === "sent" && !acceptsFailed) ||
+                  !matchesTimeFilter
                     ? null
                     : { id: "message-1" },
                 error: null,
@@ -140,6 +149,17 @@ describe("sendVolunteerRegistrationEmail", () => {
     expect(operations.find((op) => op.payload?.status === "sent")?.payload).toMatchObject({
       payload: { providerMessageId: "email-123" },
     });
+  });
+
+  test("records acceptance after a competing sender marked the row failed", async () => {
+    const { client } = fakeClient({ acceptedAfterCompetingFailure: true });
+    const result = await sendVolunteerRegistrationEmail(client, input, {
+      getEmailConfig: config,
+      createMailProvider: async () => ({
+        send: async () => ({ kind: "accepted", providerMessageId: "email-accepted" }),
+      }),
+    });
+    expect(result).toBe("sent");
   });
 
   test("throws when accepted delivery status cannot be persisted", async () => {

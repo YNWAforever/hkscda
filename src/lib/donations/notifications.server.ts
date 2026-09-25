@@ -205,7 +205,7 @@ export async function sendDonationAcknowledgement(
     .from("message")
     .update({ status: "sent", sent_at: now().toISOString(), payload })
     .eq("id", messageId)
-    .eq("status", "queued")
+    .in("status", ["queued", "failed"])
     .select("id")
     .maybeSingle();
   if (statusError) throw statusError;

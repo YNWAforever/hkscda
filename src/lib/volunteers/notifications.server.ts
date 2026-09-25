@@ -194,7 +194,7 @@ async function sendTrackedVolunteerEmail(
       payload: { ...payload, providerMessageId: result.providerMessageId },
     })
     .eq("id", messageId)
-    .eq("status", "queued")
+    .in("status", ["queued", "failed"])
     .select("id")
     .maybeSingle();
   if (error) throw error;
