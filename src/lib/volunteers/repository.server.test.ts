@@ -1,6 +1,36 @@
 import { expect, test } from "bun:test";
 import { createSupabaseVolunteerRepository } from "./repository.server";
 
+test("admin volunteer lists use stable id tie-breakers across pages", async () => {
+  const orders: Record<string, string[]> = {};
+  const repo = createSupabaseVolunteerRepository({
+    from(table: string) {
+      orders[table] = [];
+      const query = {
+        select: () => query,
+        order(column: string) {
+          orders[table].push(column);
+          return query;
+        },
+        range: async () => ({ data: [], error: null, count: 0 }),
+      };
+      return query;
+    },
+  } as never);
+
+  await repo.listActivities({
+    status: undefined,
+    type: undefined,
+    q: undefined,
+    page: 1,
+    pageSize: 25,
+  });
+  await repo.listRegistrations({ page: 1, pageSize: 25 });
+
+  expect(orders.volunteer_activity).toEqual(["starts_at", "id"]);
+  expect(orders.volunteer_registration).toEqual(["created_at", "id"]);
+});
+
 test("public volunteer identity resolution uses the preserving RPC", async () => {
   const calls: unknown[] = [];
   const client = {
@@ -131,29 +161,31 @@ test("a failed counts RPC propagates instead of degrading to zero participants",
     from: () => ({
       select: () => ({
         order: () => ({
-          range: async () => ({
-            data: [
-              {
-                id: "activity-1",
-                type: "shelter",
-                title: "貓舍清潔",
-                description: null,
-                starts_at: "2026-09-20T01:00:00.000Z",
-                ends_at: "2026-09-20T03:00:00.000Z",
-                location: "貓舍",
-                capacity: 12,
-                min_age: null,
-                underage_policy: "not_allowed",
-                auto_approve: false,
-                allow_waitlist: true,
-                status: "published",
-                registration_modes: ["individual"],
-                created_at: "2026-09-01T00:00:00.000Z",
-                updated_at: "2026-09-01T00:00:00.000Z",
-              },
-            ],
-            error: null,
-            count: 1,
+          order: () => ({
+            range: async () => ({
+              data: [
+                {
+                  id: "activity-1",
+                  type: "shelter",
+                  title: "貓舍清潔",
+                  description: null,
+                  starts_at: "2026-09-20T01:00:00.000Z",
+                  ends_at: "2026-09-20T03:00:00.000Z",
+                  location: "貓舍",
+                  capacity: 12,
+                  min_age: null,
+                  underage_policy: "not_allowed",
+                  auto_approve: false,
+                  allow_waitlist: true,
+                  status: "published",
+                  registration_modes: ["individual"],
+                  created_at: "2026-09-01T00:00:00.000Z",
+                  updated_at: "2026-09-01T00:00:00.000Z",
+                },
+              ],
+              error: null,
+              count: 1,
+            }),
           }),
         }),
       }),

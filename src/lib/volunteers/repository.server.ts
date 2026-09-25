@@ -279,6 +279,7 @@ export function createSupabaseVolunteerRepository(client: SupabaseClient): Volun
         .from("volunteer_activity")
         .select("*", { count: "exact" })
         .order("starts_at", { ascending: false })
+        .order("id", { ascending: false })
         .range(from, from + input.pageSize - 1);
       if (input.status) query = query.eq("status", input.status);
       if (input.type) query = query.eq("type", input.type);
@@ -385,6 +386,7 @@ export function createSupabaseVolunteerRepository(client: SupabaseClient): Volun
         .from("volunteer_registration")
         .select("*", { count: "exact" })
         .order("created_at", { ascending: false })
+        .order("id", { ascending: false })
         .range(from, from + input.pageSize - 1);
       if (input.status) query = query.eq("status", input.status);
       if (input.attendanceStatus) query = query.eq("attendance_status", input.attendanceStatus);
