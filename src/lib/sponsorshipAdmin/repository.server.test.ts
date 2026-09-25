@@ -200,7 +200,11 @@ class FakeQuery {
     let rows = this.filteredRows();
     const total = rows.length;
     if (this.rangeBounds) rows = rows.slice(this.rangeBounds[0], this.rangeBounds[1] + 1);
-    const result = { data: rows, error: null, count: this.countMode ? total : null };
+    const result = {
+      data: this.state.serverRowCap ? rows.slice(0, this.state.serverRowCap) : rows,
+      error: null,
+      count: this.countMode ? total : null,
+    };
     return Promise.resolve(result).then(onfulfilled, onrejected);
   }
 }
@@ -217,6 +221,7 @@ type FakeState = {
   allocationRows: Record<string, unknown>[];
   rpcError: Error | null;
   rpcResult: unknown;
+  serverRowCap?: number;
 };
 
 function createFakeClient(overrides: Partial<FakeState> = {}) {
@@ -572,7 +577,7 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     const supporterRows = Array.from({ length: 1001 }, (_, i) =>
       supporterRow({ id: `supporter-${i}`, name: "陳小姐", email: `chan${i}@example.com` }),
     );
-    const { client } = createFakeClient({ pledgeRows: [], supporterRows });
+    const { client } = createFakeClient({ pledgeRows: [], supporterRows, serverRowCap: 1000 });
     const repo = createSupabaseSponsorshipAdminRepository(client);
 
     await expect(repo.listPledges({ q: "陳", page: 1, pageSize: 25 })).rejects.toThrow(
@@ -589,6 +594,7 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     );
     const { client } = createFakeClient({
       pledgeRows,
+      serverRowCap: 1000,
       supporterRows: [
         supporterRow({ id: "supporter-1", name: "陳小姐", email: "chan@example.com" }),
       ],

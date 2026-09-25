@@ -144,6 +144,12 @@ type AssignmentRow = {
 const PLEDGE_SEARCH_CANDIDATE_LIMIT = 1000;
 const PLEDGE_SEARCH_TOO_BROAD_ERROR = "Pledge search matches too many records";
 
+function assertPledgeSearchCandidateCount(count: number | null) {
+  if (count === null || count > PLEDGE_SEARCH_CANDIDATE_LIMIT) {
+    throw new Error(PLEDGE_SEARCH_TOO_BROAD_ERROR);
+  }
+}
+
 function unique(values: Array<string | null | undefined>) {
   return [...new Set(values.filter(Boolean) as string[])];
 }
@@ -197,12 +203,20 @@ async function searchPledgeIds(client: SupabaseClient, q: string): Promise<strin
 
   const [directResult, supporterResult] = await Promise.all([
     hexPrefix
-      ? client.from("sponsorship_pledge").select("id").filter("id::text", "ilike", `${hexPrefix}%`)
-      : Promise.resolve({ data: [] as Array<{ id: string }>, error: null }),
-    client.from("supporter").select("id").or(`name.ilike.${like},email.ilike.${like}`),
+      ? client
+          .from("sponsorship_pledge")
+          .select("id", { count: "exact" })
+          .filter("id::text", "ilike", `${hexPrefix}%`)
+      : Promise.resolve({ data: [] as Array<{ id: string }>, error: null, count: 0 }),
+    client
+      .from("supporter")
+      .select("id", { count: "exact" })
+      .or(`name.ilike.${like},email.ilike.${like}`),
   ]);
   if (directResult.error) throw directResult.error;
   if (supporterResult.error) throw supporterResult.error;
+  assertPledgeSearchCandidateCount(directResult.count);
+  assertPledgeSearchCandidateCount(supporterResult.count);
 
   const directIds = ((directResult.data ?? []) as Array<{ id: string }>).map((row) => row.id);
   const supporterIds = unique(
@@ -216,9 +230,10 @@ async function searchPledgeIds(client: SupabaseClient, q: string): Promise<strin
 
   const pledgesBySupporterResult = await client
     .from("sponsorship_pledge")
-    .select("id")
+    .select("id", { count: "exact" })
     .in("supporter_id", supporterIds);
   if (pledgesBySupporterResult.error) throw pledgesBySupporterResult.error;
+  assertPledgeSearchCandidateCount(pledgesBySupporterResult.count);
 
   const pledgeIdsBySupporter = ((pledgesBySupporterResult.data ?? []) as Array<{ id: string }>).map(
     (row) => row.id,
