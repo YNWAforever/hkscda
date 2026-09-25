@@ -18,11 +18,16 @@ const registration = {
 
 function fakeClient({
   conflictStatus,
+  existingUpdatedAt = new Date().toISOString(),
   sentPersistenceFails = false,
-}: { conflictStatus?: "queued" | "sent" | "failed"; sentPersistenceFails?: boolean } = {}) {
+}: {
+  conflictStatus?: "queued" | "sent" | "failed";
+  existingUpdatedAt?: string;
+  sentPersistenceFails?: boolean;
+} = {}) {
   const operations: Array<{ action: string; payload?: Record<string, unknown> }> = [];
   const existing = conflictStatus
-    ? { id: "message-1", status: conflictStatus, updated_at: new Date().toISOString() }
+    ? { id: "message-1", status: conflictStatus, updated_at: existingUpdatedAt }
     : null;
   return {
     operations,
@@ -54,11 +59,19 @@ function fakeClient({
           },
           update(payload: Record<string, unknown>) {
             operations.push({ action: "update", payload });
+            let matchesTimeFilter = true;
             const builder = {
               eq() {
                 return builder;
               },
-              lt() {
+              lt(column: string, value: string) {
+                if (column === "updated_at" && existing)
+                  matchesTimeFilter = existing.updated_at < value;
+                return builder;
+              },
+              lte(column: string, value: string) {
+                if (column === "updated_at" && existing)
+                  matchesTimeFilter = existing.updated_at <= value;
                 return builder;
               },
               select() {
@@ -66,7 +79,9 @@ function fakeClient({
               },
               maybeSingle: async () => ({
                 data:
-                  sentPersistenceFails && payload.status === "sent" ? null : { id: "message-1" },
+                  (sentPersistenceFails && payload.status === "sent") || !matchesTimeFilter
+                    ? null
+                    : { id: "message-1" },
                 error: null,
               }),
               then(resolve: (value: { error: null }) => unknown) {
@@ -149,6 +164,48 @@ describe("sendVolunteerRegistrationEmail", () => {
       }),
     ).toBe("skipped");
     expect(send).not.toHaveBeenCalled();
+  });
+
+  test.each(["queued", "failed"] as const)(
+    "starts a fresh lease when reclaiming a %s message",
+    async (status) => {
+      const fixedNow = new Date("2040-01-01T00:05:00.000Z");
+      const { client, operations } = fakeClient({
+        conflictStatus: status,
+        existingUpdatedAt: "2039-12-31T23:59:00.000Z",
+      });
+      const result = await sendVolunteerRegistrationEmail(client, input, {
+        now: () => fixedNow,
+        getEmailConfig: config,
+        createMailProvider: async () => ({
+          send: async () => ({ kind: "accepted", providerMessageId: "email-lease" }),
+        }),
+      });
+
+      expect(result).toBe("sent");
+      expect(
+        operations.find((op) => op.action === "update" && op.payload?.status === "queued")?.payload,
+      ).toMatchObject({
+        status: "queued",
+        updated_at: "2040-01-01T00:05:00.000Z",
+      });
+    },
+  );
+
+  test("reclaims a queued message at the exact lease boundary", async () => {
+    const { client } = fakeClient({
+      conflictStatus: "queued",
+      existingUpdatedAt: "2040-01-01T00:00:00.000Z",
+    });
+    const result = await sendVolunteerRegistrationEmail(client, input, {
+      now: () => new Date("2040-01-01T00:05:00.000Z"),
+      getEmailConfig: config,
+      createMailProvider: async () => ({
+        send: async () => ({ kind: "accepted", providerMessageId: "email-boundary" }),
+      }),
+    });
+
+    expect(result).toBe("sent");
   });
 
   test("does not send while another fresh queued claim owns the lease", async () => {

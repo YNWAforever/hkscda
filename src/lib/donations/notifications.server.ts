@@ -120,7 +120,7 @@ export async function sendDonationAcknowledgement(
       const staleBefore = new Date(currentTime - ACKNOWLEDGEMENT_RETRY_LEASE_MS).toISOString();
       const { data: reclaimed, error: reclaimError } = await client
         .from("message")
-        .update({ status: "queued" })
+        .update({ status: "queued", updated_at: new Date(currentTime).toISOString() })
         .eq("id", existing.id)
         .eq("status", "queued")
         .lte("updated_at", staleBefore)
@@ -135,7 +135,7 @@ export async function sendDonationAcknowledgement(
       // move failed -> queued; a race that loses the claim stays retryable.
       const { data: retried, error: retryError } = await client
         .from("message")
-        .update({ status: "queued" })
+        .update({ status: "queued", updated_at: now().toISOString() })
         .eq("id", existing.id)
         .eq("status", "failed")
         .select("id")

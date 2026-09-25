@@ -82,10 +82,12 @@ function createMessageFake({
                 row &&
                 filters.some(([column, value]) => column === "status" && value === row?.status)
               ) {
-                if (typeof payload === "object" && payload !== null && "status" in payload) {
+                if (typeof payload === "object" && payload !== null) {
+                  const update = payload as { status?: typeof row.status; updated_at?: string };
                   row = {
                     ...row,
-                    status: (payload as { status: typeof row.status }).status,
+                    status: update.status ?? row.status,
+                    updated_at: update.updated_at ?? row.updated_at,
                   };
                 }
               }
@@ -159,13 +161,62 @@ describe("sendDonationAcknowledgement", () => {
       retryableFailure: true,
     });
 
-    const result = await sendDonationAcknowledgement(client as never, input);
+    const result = await sendDonationAcknowledgement(client as never, input, {
+      now: () => new Date("2040-01-01T00:05:00.000Z"),
+    });
 
     expect(result).toBe("queued");
     const retry = ops.find((operation) => operation.action === "update");
-    expect(retry?.payload).toEqual({ status: "queued" });
+    expect(retry?.payload).toEqual({
+      status: "queued",
+      updated_at: "2040-01-01T00:05:00.000Z",
+    });
     expect(retry?.filters).toContainEqual(["status", "failed"]);
     expect(retry?.filters).toContainEqual(["id", "message-1"]);
+  });
+
+  test("starts a fresh lease when retrying a failed acknowledgement", async () => {
+    const fixedNow = new Date("2040-01-01T00:05:00.000Z");
+    const { client, ops } = createMessageFake({
+      conflict: true,
+      existingStatus: "failed",
+      existingUpdatedAt: "2040-01-01T00:00:00.000Z",
+    });
+    const dependencies = {
+      now: () => fixedNow,
+      getEmailConfig: () => ({
+        resendApiKey: undefined,
+        from: "fixture@example.invalid",
+        replyTo: "fixture@example.invalid",
+        notificationEmail: "fixture@example.invalid",
+      }),
+    };
+
+    expect(await sendDonationAcknowledgement(client as never, input, dependencies)).toBe("queued");
+    expect(await sendDonationAcknowledgement(client as never, input, dependencies)).toBe("failed");
+    expect(ops.filter((operation) => operation.action === "update")).toHaveLength(1);
+  });
+
+  test("refreshes a reclaimed queued lease so a second worker cannot claim it", async () => {
+    const fixedNow = new Date("2040-01-01T00:05:00.000Z");
+    const { client, ops } = createMessageFake({
+      conflict: true,
+      existingStatus: "queued",
+      existingUpdatedAt: "2040-01-01T00:00:00.000Z",
+    });
+    const dependencies = {
+      now: () => fixedNow,
+      getEmailConfig: () => ({
+        resendApiKey: undefined,
+        from: "fixture@example.invalid",
+        replyTo: "fixture@example.invalid",
+        notificationEmail: "fixture@example.invalid",
+      }),
+    };
+
+    expect(await sendDonationAcknowledgement(client as never, input, dependencies)).toBe("queued");
+    expect(await sendDonationAcknowledgement(client as never, input, dependencies)).toBe("failed");
+    expect(ops.filter((operation) => operation.action === "update")).toHaveLength(1);
   });
 
   test("records a resolved provider rejection as failed and never marks it sent", async () => {

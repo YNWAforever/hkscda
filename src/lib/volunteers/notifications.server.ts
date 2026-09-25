@@ -121,10 +121,10 @@ async function sendTrackedVolunteerEmail(
         return "failed";
       const { data, error } = await client
         .from("message")
-        .update({ status: "queued" })
+        .update({ status: "queued", updated_at: new Date(currentTime).toISOString() })
         .eq("id", existing.id)
         .eq("status", "queued")
-        .lt("updated_at", new Date(currentTime - DELIVERY_LEASE_MS).toISOString())
+        .lte("updated_at", new Date(currentTime - DELIVERY_LEASE_MS).toISOString())
         .select("id")
         .maybeSingle();
       if (error) throw error;
@@ -133,7 +133,7 @@ async function sendTrackedVolunteerEmail(
     } else {
       const { data, error } = await client
         .from("message")
-        .update({ status: "queued" })
+        .update({ status: "queued", updated_at: now().toISOString() })
         .eq("id", existing.id)
         .eq("status", "failed")
         .select("id")
