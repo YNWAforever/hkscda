@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { readAdminJsonObject } from "../http/adminJson.server";
+import { RequestBodyTooLargeError } from "../http/publicJson.server";
 
 import type { AdminUser } from "../donations/supabase.server";
 import { createGovernanceService } from "./service";
@@ -19,8 +21,10 @@ function jsonNoStore(body: unknown, init: ResponseInit = {}) {
 
 async function jsonBody(request: Request) {
   try {
-    return await request.json();
-  } catch {
+    return await readAdminJsonObject(request);
+  } catch (error) {
+    if (error instanceof RequestBodyTooLargeError)
+      throw jsonNoStore({ error: "Request body too large" }, { status: 413 });
     throw jsonNoStore({ error: "Invalid JSON body" }, { status: 400 });
   }
 }
