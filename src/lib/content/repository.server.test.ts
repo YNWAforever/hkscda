@@ -559,6 +559,39 @@ test("promotion writes use one audited RPC and surface its returned count", asyn
   ]);
 });
 
+test("notification generation batches rows within the RPC's 500-row limit", async () => {
+  const batchSizes: number[] = [];
+  const client = {
+    rpc: async (_name: string, args: { p_command: { rows: unknown[] } }) => {
+      const size = args.p_command.rows.length;
+      batchSizes.push(size);
+      if (size > 500) return { data: null, error: new Error("too many notification drafts") };
+      return { data: { count: size }, error: null };
+    },
+  } as unknown as SupabaseClient;
+  const rows = Array.from({ length: 501 }, (_, index) => ({
+    storyUpdateId: "update-1",
+    contentItemId: "content-1",
+    adoptionCaseId: null,
+    supporterId: null,
+    channel: "email" as const,
+    recipientName: "Reader",
+    recipientContact: "reader-" + index + "@example.test",
+    subject: null,
+    body: "Draft",
+    status: "draft" as const,
+  }));
+
+  const count = await createSupabaseContentRepository(client).generateNotificationDraftsWithAudit?.(
+    rows,
+    "admin-1",
+    "update-1",
+  );
+
+  expect(count).toBe(501);
+  expect(batchSizes).toEqual([500, 1]);
+});
+
 test("promotion RPC errors are not acknowledged as successful writes", async () => {
   const failure = new Error("audit insert failed");
   const client = {

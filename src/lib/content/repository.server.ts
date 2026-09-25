@@ -1165,27 +1165,32 @@ export function createSupabaseContentRepository(client: SupabaseClient): Content
     },
 
     async generateNotificationDraftsWithAudit(rows, actorUserId, storyUpdateId) {
-      const { data, error } = await client.rpc("cms_promotion_command", {
-        p_actor: actorUserId,
-        p_command: {
-          kind: "draft_generate",
-          story_update_id: storyUpdateId,
-          rows: rows.map((row) => ({
-            story_update_id: row.storyUpdateId,
-            content_item_id: row.contentItemId,
-            adoption_case_id: row.adoptionCaseId,
-            supporter_id: row.supporterId,
-            channel: row.channel,
-            recipient_name: row.recipientName,
-            recipient_contact: row.recipientContact,
-            subject: row.subject,
-            body: row.body,
-            status: row.status,
-          })),
-        },
-      });
-      if (error) throw error;
-      return Number((data as { count: number }).count);
+      let created = 0;
+      for (let offset = 0; offset < Math.max(1, rows.length); offset += 500) {
+        const batch = rows.slice(offset, offset + 500);
+        const { data, error } = await client.rpc("cms_promotion_command", {
+          p_actor: actorUserId,
+          p_command: {
+            kind: "draft_generate",
+            story_update_id: storyUpdateId,
+            rows: batch.map((row) => ({
+              story_update_id: row.storyUpdateId,
+              content_item_id: row.contentItemId,
+              adoption_case_id: row.adoptionCaseId,
+              supporter_id: row.supporterId,
+              channel: row.channel,
+              recipient_name: row.recipientName,
+              recipient_contact: row.recipientContact,
+              subject: row.subject,
+              body: row.body,
+              status: row.status,
+            })),
+          },
+        });
+        if (error) throw error;
+        created += Number((data as { count: number }).count);
+      }
+      return created;
     },
 
     async updateSocialCopyStatusWithAudit(id, status, actorUserId) {
