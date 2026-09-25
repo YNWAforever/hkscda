@@ -435,6 +435,16 @@ describe("supabase migration safety", () => {
       "grant execute on function public.refund_provider_payment_atomically(uuid, uuid) to service_role",
     );
   });
+  test("public database roles cannot truncate tables or create triggers and foreign keys", () => {
+    const sql = readMigrationBySuffix("_revoke_public_role_maintenance_privileges.sql");
+
+    expect(sql).toMatch(
+      /revoke truncate, references, trigger on all tables in schema public\s+from public, anon, authenticated/,
+    );
+    expect(sql).toMatch(
+      /alter default privileges for role postgres in schema public\s+revoke truncate, references, trigger on tables\s+from public, anon, authenticated/,
+    );
+  });
   test("skips service-role writes, since those routes already audit themselves", () => {
     const sql = readMigrationBySuffix("_audit_animal_mutations.sql");
 
