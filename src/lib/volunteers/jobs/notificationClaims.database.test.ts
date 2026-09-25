@@ -58,6 +58,46 @@ test.skipIf(!url || process.env.VOLUNTEER_TEST_ALLOW_LOCAL_FIXTURES !== "1")(
             await tx`select status,payload->>'providerMessageId' provider from public.volunteer_operation_outbox where id=${id}::uuid`
           )[0],
         ).toEqual({ status: "provider_accepted", provider: "new-worker" });
+        const expired = crypto.randomUUID();
+        await tx`insert into public.volunteer_operation_outbox(id,dedup_key,kind,payload,available_at) values(${expired}::uuid,${expired},'volunteer_policy_reminder','{"max_attempts":1}','1900-01-01')`;
+        rows =
+          await tx`select * from public.claim_volunteer_operation_outbox(1,clock_timestamp()-interval '1 second')`;
+        expect(rows[0].id).toBe(expired);
+        rows =
+          await tx`select * from public.claim_volunteer_operation_outbox(1,clock_timestamp()+interval '5 minutes')`;
+        expect(rows.some((row: { id: string }) => row.id === expired)).toBe(false);
+        expect(
+          (
+            await tx`select status,claimed_until,last_error from public.volunteer_operation_outbox where id=${expired}::uuid`
+          )[0],
+        ).toMatchObject({
+          status: "failed",
+          claimed_until: null,
+          last_error: "notification_attempts_exhausted",
+        });
+        const deferred = crypto.randomUUID();
+        await tx`insert into public.volunteer_operation_outbox(id,dedup_key,kind,payload,available_at) values(${deferred}::uuid,${deferred},'volunteer_policy_reminder','{"max_attempts":1}','1900-01-01')`;
+        rows =
+          await tx`select * from public.claim_volunteer_operation_outbox(1,clock_timestamp()+interval '5 minutes')`;
+        expect(rows[0].id).toBe(deferred);
+        expect(
+          (
+            await tx`select public.settle_volunteer_operation_outbox(${deferred}::uuid,1,'queued','dry_run_no_provider_delivery','1900-01-01',null) ok`
+          )[0].ok,
+        ).toBe(true);
+        rows =
+          await tx`select * from public.claim_volunteer_operation_outbox(1,clock_timestamp()+interval '5 minutes')`;
+        expect(rows.some((row: { id: string }) => row.id === deferred)).toBe(false);
+        expect(
+          (
+            await tx`select status,last_error from public.volunteer_operation_outbox where id=${deferred}::uuid`
+          )[0],
+        ).toMatchObject({ status: "failed", last_error: "notification_attempts_exhausted" });
+        expect(
+          (
+            await tx`select public.volunteer_task_command(${staff}::uuid,${JSON.stringify({ action: "retry", id: expired })}::jsonb) result`
+          )[0].result.kind,
+        ).toBe("retried");
         await tx`insert into public.volunteer_operation_outbox(id,dedup_key,kind,payload) values(${task}::uuid,${task},'volunteer_operation_changed','{}')`;
         const cmd = { action: "complete", id: task, reason: "Synthetic staff follow-up recorded" };
         let denied = false;
