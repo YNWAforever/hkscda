@@ -169,7 +169,8 @@ export function createSupabaseGroupEnquiryRepository(
       const { error } = await client
         .from("group_enquiries")
         .update({ notification_status: "failed", notification_error: safeError.slice(0, 300) })
-        .eq("id", id);
+        .eq("id", id)
+        .neq("notification_status", "sent");
       if (error) throw error;
     },
 

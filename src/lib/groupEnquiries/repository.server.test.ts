@@ -66,11 +66,12 @@ function createClient(options: { insertError?: unknown; selectRow?: unknown } = 
         update(payload: unknown) {
           calls.push({ name: "update", payload: { table, payload } });
           return {
-            eq: async (column: string, value: unknown) => ({
+            eq: (column: string, value: unknown) => ({
               data: null,
               error: null,
               column,
               value,
+              neq: async () => ({ data: null, error: null }),
             }),
           };
         },
@@ -160,6 +161,33 @@ describe("Supabase group enquiry repository", () => {
     await expect(repo.createOrGet({ ...insert, message: "Please email instead." })).rejects.toThrow(
       "Idempotency key reused with different enquiry",
     );
+  });
+
+  test("a late failed attempt cannot overwrite a sent notification", async () => {
+    let status = "sent";
+    const client = {
+      from: () => ({
+        update(payload: { notification_status: string }) {
+          return {
+            eq: () => ({
+              neq: (_column: string, value: string) => {
+                if (status !== value) status = payload.notification_status;
+                return Promise.resolve({ error: null });
+              },
+              then: (resolve: (result: { error: null }) => unknown) => {
+                status = payload.notification_status;
+                return Promise.resolve({ error: null }).then(resolve);
+              },
+            }),
+          };
+        },
+      }),
+    };
+    const repo = createSupabaseGroupEnquiryRepository(client as never);
+
+    await repo.markNotificationFailed("enquiry-1", "late provider failure");
+
+    expect(status).toBe("sent");
   });
 
   test("marks notification transitions without exposing raw errors", async () => {
