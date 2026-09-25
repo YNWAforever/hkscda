@@ -162,30 +162,47 @@ export function createSupabaseKnowledgeRepository(client: SupabaseClient): Knowl
   return {
     usesAtomicAudit: true,
     async listPublished() {
-      const [pairResult, legacyResult] = await Promise.all([
-        client
-          .from("knowledge_posts")
-          .select(PUBLIC_PAIR_COLUMNS)
-          .eq("is_published", true)
-          .eq("zh_hk_document_assets.is_published", true)
-          .eq("en_document_assets.is_published", true)
-          .order("sort_order", { ascending: true })
-          .order("created_at", { ascending: false })
-          .range(0, 999),
-        client
-          .from("knowledge_posts")
-          .select(POST_COLUMNS)
-          .eq("is_published", true)
-          .eq("document_assets.is_published", true)
-          .or("external_url.not.is.null,document_asset_id.not.is.null")
-          .order("sort_order", { ascending: true })
-          .order("created_at", { ascending: false })
-          .range(0, 999),
-      ]);
-      if (pairResult.error) throw pairResult.error;
-      if (legacyResult.error) throw legacyResult.error;
+      async function readAllPublishedRows(kind: "pair" | "legacy") {
+        const rows: Row[] = [];
+        let from = 0;
+        while (true) {
+          let query = client
+            .from("knowledge_posts")
+            .select(kind === "pair" ? PUBLIC_PAIR_COLUMNS : POST_COLUMNS, { count: "exact" })
+            .eq("is_published", true);
+          if (kind === "pair") {
+            query = query
+              .eq("zh_hk_document_assets.is_published", true)
+              .eq("en_document_assets.is_published", true);
+          } else {
+            query = query
+              .eq("document_assets.is_published", true)
+              .or("external_url.not.is.null,document_asset_id.not.is.null");
+          }
+          const { data, error, count } = await query
+            .order("sort_order", { ascending: true })
+            .order("created_at", { ascending: false })
+            .order("id", { ascending: true })
+            .range(from, from + 999);
+          if (error) throw error;
+          const batch = (data ?? []) as unknown as Row[];
+          if (batch.length === 0) {
+            if (count !== null && count !== undefined && from < count)
+              throw new Error("Published knowledge rows were not returned");
+            break;
+          }
+          rows.push(...batch);
+          from += batch.length;
+          if (count !== null && count !== undefined && from >= count) break;
+        }
+        return rows;
+      }
 
-      const posts = [...((pairResult.data ?? []) as Row[]), ...((legacyResult.data ?? []) as Row[])]
+      const [pairRows, legacyRows] = await Promise.all([
+        readAllPublishedRows("pair"),
+        readAllPublishedRows("legacy"),
+      ]);
+      const posts = [...pairRows, ...legacyRows]
         .map((row) => mapPost(client, row, true))
         .filter((row): row is KnowledgePost => row !== null);
       const uniquePostsById = new Map<string, KnowledgePost>();
@@ -195,7 +212,9 @@ export function createSupabaseKnowledgeRepository(client: SupabaseClient): Knowl
       const uniquePosts = [...uniquePostsById.values()];
       return uniquePosts.sort(
         (left, right) =>
-          left.sortOrder - right.sortOrder || right.createdAt.localeCompare(left.createdAt),
+          left.sortOrder - right.sortOrder ||
+          right.createdAt.localeCompare(left.createdAt) ||
+          left.id.localeCompare(right.id),
       );
     },
 
@@ -205,7 +224,8 @@ export function createSupabaseKnowledgeRepository(client: SupabaseClient): Knowl
         .from("knowledge_posts")
         .select(POST_COLUMNS, { count: "exact" })
         .order("sort_order", { ascending: true })
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .order("id", { ascending: true });
       if (input.status === "published") query = query.eq("is_published", true);
       if (input.status === "draft") query = query.eq("is_published", false);
       if (input.q) {
