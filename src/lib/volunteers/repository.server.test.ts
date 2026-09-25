@@ -251,7 +251,7 @@ test.each([
   });
 });
 
-test("public activity list marks legacy future activities as unavailable for anonymous booking", async () => {
+test("public activity list reads capped pages and marks legacy activities unavailable", async () => {
   const row = {
     id: "f43d0f00-aa4f-4bb9-856d-6fe2f9f13bd0",
     type: "cleaning_day",
@@ -270,6 +270,7 @@ test("public activity list marks legacy future activities as unavailable for ano
     created_at: "2026-01-01T00:00:00.000Z",
     updated_at: "2026-01-01T00:00:00.000Z",
   };
+  const rows = [0, 1, 2].map((index) => ({ ...row, id: "activity-" + index }));
   const query = {
     select() {
       return query;
@@ -283,18 +284,38 @@ test("public activity list marks legacy future activities as unavailable for ano
     gte() {
       return query;
     },
-    order: async () => ({ data: [row], error: null }),
+    order() {
+      return query;
+    },
+    range(from: number, to: number) {
+      return Promise.resolve({
+        data: rows.slice(from, Math.min(to + 1, from + 2)),
+        error: null,
+        count: rows.length,
+      });
+    },
+    then(resolve: (result: { data: typeof rows; error: null; count: number }) => unknown) {
+      return Promise.resolve({ data: rows.slice(0, 2), error: null, count: rows.length }).then(
+        resolve,
+      );
+    },
   };
   const repo = createSupabaseVolunteerRepository({
     from: () => query,
     rpc: async () => ({ data: [], error: null }),
   } as never);
   const activities = await repo.listPublishedActivities();
-  expect(activities[0]).toMatchObject({
-    id: row.id,
-    publicRegistrationAvailable: false,
-    publicRegistrationUnavailableReason: "current_policy_required",
-  });
+  expect(activities.map((activity) => activity.id)).toEqual([
+    "activity-0",
+    "activity-1",
+    "activity-2",
+  ]);
+  for (const activity of activities) {
+    expect(activity).toMatchObject({
+      publicRegistrationAvailable: false,
+      publicRegistrationUnavailableReason: "current_policy_required",
+    });
+  }
 });
 
 test("clone activity invokes one audited RPC without client-side writes", async () => {

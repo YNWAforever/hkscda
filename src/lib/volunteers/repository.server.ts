@@ -257,15 +257,30 @@ export function createSupabaseVolunteerRepository(client: SupabaseClient): Volun
   const publicIdentity = createPublicIdentityRepository(client);
   return {
     async listPublishedActivities() {
-      const { data, error } = await client
-        .from("volunteer_activity")
-        .select("*")
-        .eq("status", "published")
-        .is("policy_version_id", null)
-        .gte("starts_at", new Date().toISOString())
-        .order("starts_at", { ascending: true });
-      if (error) throw error;
-      const activities = await hydrateActivities(client, (data ?? []) as ActivityRow[]);
+      const activities: VolunteerActivitySummary[] = [];
+      const startsAt = new Date().toISOString();
+      let from = 0;
+      while (true) {
+        const { data, error, count } = await client
+          .from("volunteer_activity")
+          .select("*", { count: "exact" })
+          .eq("status", "published")
+          .is("policy_version_id", null)
+          .gte("starts_at", startsAt)
+          .order("starts_at", { ascending: true })
+          .order("id", { ascending: true })
+          .range(from, from + 999);
+        if (error) throw error;
+        const batch = (data ?? []) as ActivityRow[];
+        if (batch.length === 0) {
+          if (count !== null && count !== undefined && from < count)
+            throw new Error("Published volunteer activities were not returned");
+          break;
+        }
+        activities.push(...(await hydrateActivities(client, batch)));
+        from += batch.length;
+        if (count !== null && count !== undefined && from >= count) break;
+      }
       return activities.map((activity) => ({
         ...activity,
         publicRegistrationAvailable: false,
