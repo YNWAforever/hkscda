@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { readAdminJson } from "../../http/adminJson.server";
+import { RequestBodyTooLargeError } from "../../http/publicJson.server";
 import { createSupabaseServiceClient, requireAdmin } from "../../donations/supabase.server";
 export const volunteerTaskSchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("list") }).strict(),
@@ -16,7 +18,7 @@ export async function handleVolunteerTask(request: Request) {
   try {
     const client = createSupabaseServiceClient();
     const actor = await requireAdmin(request, ["staff", "admin"], client);
-    const command = volunteerTaskSchema.parse(await request.json());
+    const command = volunteerTaskSchema.parse(await readAdminJson(request));
     const { data, error } = await client.rpc("volunteer_task_command", {
       p_actor: actor.authUserId,
       p_command: command,
@@ -28,6 +30,8 @@ export async function handleVolunteerTask(request: Request) {
     });
   } catch (error) {
     if (error instanceof Response) return error;
+    if (error instanceof RequestBodyTooLargeError)
+      return Response.json({ error: "Request body too large" }, { status: 413, headers });
     if (error instanceof z.ZodError || error instanceof SyntaxError)
       return Response.json({ error: "請檢查跟進資料" }, { status: 400, headers });
     console.error("volunteer task failed", error);

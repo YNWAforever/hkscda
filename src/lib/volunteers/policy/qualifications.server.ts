@@ -1,6 +1,8 @@
 import { normalizeVolunteerResult } from "../apiResult";
 import { logVolunteerFailure } from "../telemetry.server";
 import { z } from "zod";
+import { readAdminJson } from "../../http/adminJson.server";
+import { RequestBodyTooLargeError } from "../../http/publicJson.server";
 import { createSupabaseServiceClient, requireAdmin } from "../../donations/supabase.server";
 const shared = {
   profile_id: z.string().uuid(),
@@ -46,7 +48,7 @@ export async function handleQualificationCommand(request: Request) {
   try {
     const client = createSupabaseServiceClient();
     const actor = await requireAdmin(request, ["staff", "admin"], client);
-    const input = qualificationCommandSchema.parse(await request.json());
+    const input = qualificationCommandSchema.parse(await readAdminJson(request));
     const { data, error } = await client.rpc(
       input.action === "list_legacy" || input.action === "link_legacy"
         ? "volunteer_legacy_identity_command"
@@ -61,6 +63,8 @@ export async function handleQualificationCommand(request: Request) {
     return Response.json(result.body, { headers, status: result.status });
   } catch (error) {
     if (error instanceof Response) return error;
+    if (error instanceof RequestBodyTooLargeError)
+      return Response.json({ error: "Request body too large" }, { status: 413, headers });
     if (error instanceof z.ZodError || error instanceof SyntaxError)
       return Response.json({ error: "請檢查資格資料及核實理由" }, { status: 400, headers });
     if (error && typeof error === "object" && "code" in error && error.code === "42501")

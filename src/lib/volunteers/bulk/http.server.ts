@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { readAdminJson } from "../../http/adminJson.server";
+import { RequestBodyTooLargeError } from "../../http/publicJson.server";
 import { normalizeVolunteerResult } from "../apiResult";
 import { createBulkService, type BulkCommand } from "./service";
 export function createBulkHandlers(deps: {
@@ -14,8 +16,10 @@ export function createBulkHandlers(deps: {
         const actor = await deps.requireActor(request);
         let body: unknown;
         try {
-          body = await request.json();
-        } catch {
+          body = await readAdminJson(request);
+        } catch (error) {
+          if (error instanceof RequestBodyTooLargeError)
+            return response({ error: "Request body too large" }, 413);
           return response({ error: "無效的要求內容" }, 400);
         }
         const result = normalizeVolunteerResult(await service.command(actor.authUserId, body));
