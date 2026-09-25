@@ -380,21 +380,45 @@ function createWebhookFake({
   const client = {
     rpc(fn: string, args: Record<string, unknown>) {
       operations.push({ table: fn, action: "rpc", payload: args, filters: [] });
-      if (fn !== "fail_pending_provider_payment")
-        return Promise.resolve({ data: null, error: new Error("Unexpected RPC") });
       if (!payment) return Promise.resolve({ data: { kind: "not_found" }, error: null });
       const statuses = [payment.status, payment.donation.status];
-      const compatible = statuses.every((status) => status === "pending" || status === "failed");
-      return Promise.resolve({
-        data: compatible
-          ? { kind: statuses.every((status) => status === "failed") ? "already_failed" : "failed" }
-          : {
-              kind: "state_conflict",
-              payment_status: payment.status,
-              donation_status: payment.donation.status,
-            },
-        error: null,
-      });
+      if (fn === "fail_pending_provider_payment") {
+        const compatible = statuses.every((status) => status === "pending" || status === "failed");
+        return Promise.resolve({
+          data: compatible
+            ? {
+                kind: statuses.every((status) => status === "failed") ? "already_failed" : "failed",
+              }
+            : {
+                kind: "state_conflict",
+                payment_status: payment.status,
+                donation_status: payment.donation.status,
+              },
+          error: null,
+        });
+      }
+      if (fn === "refund_provider_payment_atomically") {
+        const compatible =
+          !transitionMiss &&
+          statuses.every(
+            (status) => status === "pending" || status === "succeeded" || status === "refunded",
+          );
+        return Promise.resolve({
+          data: compatible
+            ? {
+                kind: statuses.every((status) => status === "refunded")
+                  ? "already_refunded"
+                  : "refunded",
+              }
+            : {
+                kind: "state_conflict",
+                payment_status: payment.status,
+                donation_status: payment.donation.status,
+              },
+          error: null,
+        });
+      }
+      return Promise.resolve({ data: null, error: new Error("Unexpected RPC") });
     },
     storage: {
       from() {
@@ -523,14 +547,15 @@ describe("refundProviderPayment", () => {
     });
 
     expect(refund).toMatchObject({ kind: "refunded" });
-    const paymentUpdate = operations.find(
-      (operation) => operation.table === "payment" && operation.action === "update",
-    );
-    const donationUpdate = operations.find(
-      (operation) => operation.table === "donation" && operation.action === "update",
-    );
-    expect(paymentUpdate?.filters).toContainEqual(["in", "status", ["pending", "succeeded"]]);
-    expect(donationUpdate?.filters).toContainEqual(["in", "status", ["pending", "succeeded"]]);
+    expect(
+      operations.find((operation) => operation.table === "refund_provider_payment_atomically")
+        ?.payload,
+    ).toEqual({
+      p_payment_id: "payment-1",
+      p_donation_id: "donation-1",
+    });
+    expect(statusUpdate(operations, "payment")).toBeUndefined();
+    expect(statusUpdate(operations, "donation")).toBeUndefined();
 
     const terminal = {
       ...pendingCodPayment,
@@ -574,11 +599,12 @@ describe("refundProviderPayment", () => {
     });
 
     expect(result).toEqual({ kind: "refunded", donationId: "donation-1" });
-    expect(statusUpdate(operations, "payment")?.status).toBe("refunded");
-    expect(statusUpdate(operations, "donation")?.status).toBe("refunded");
-
-    const paymentUpdate = operations.find((o) => o.table === "payment" && o.action === "update");
-    expect(paymentUpdate?.filters).toContainEqual(["in", "status", ["pending", "succeeded"]]);
+    expect(
+      operations.find((operation) => operation.table === "refund_provider_payment_atomically")
+        ?.action,
+    ).toBe("rpc");
+    expect(statusUpdate(operations, "payment")).toBeUndefined();
+    expect(statusUpdate(operations, "donation")).toBeUndefined();
 
     const receiptUpdate = operations.find((o) => o.table === "receipt" && o.action === "update");
     expect((receiptUpdate?.payload as { status?: string }).status).toBe("void");
@@ -586,6 +612,29 @@ describe("refundProviderPayment", () => {
   });
 });
 
+describe("refundProviderPayment conflicting state", () => {
+  test("a refund conflict cannot partially refund the donation", async () => {
+    const payment = {
+      ...basePayment,
+      status: "failed",
+      donation: { ...basePayment.donation, status: "succeeded" },
+    };
+    const { client, operations } = createWebhookFake({ payment });
+
+    const result = await refundProviderPayment({
+      client: client as never,
+      provider: "stripe",
+      providerRef: "cs_test_123",
+      providerEventId: "evt_refund_conflict",
+      eventType: "charge.refunded",
+      payload: {},
+    });
+
+    expect(result).toMatchObject({ kind: "manual_review" });
+    expect(statusUpdate(operations, "payment")).toBeUndefined();
+    expect(statusUpdate(operations, "donation")).toBeUndefined();
+  });
+});
 describe("flagProviderWebhookForReview", () => {
   test("audits and acknowledges a mapped payment without changing payment state", async () => {
     const codPayment = {

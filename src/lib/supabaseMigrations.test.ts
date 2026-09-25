@@ -419,6 +419,22 @@ describe("supabase migration safety", () => {
       "grant execute on function public.fail_pending_provider_payment(uuid, uuid) to service_role",
     );
   });
+  test("provider refunds transition payment and donation together", () => {
+    const sql = readMigrationBySuffix("_guarded_provider_refund.sql");
+
+    expect(sql).toContain("create or replace function public.refund_provider_payment_atomically(");
+    expect(sql).toContain("security invoker");
+    expect(sql).toContain("set search_path = ''");
+    expect((sql.match(/for update/g) ?? []).length).toBe(2);
+    expect(sql).toContain("update public.payment");
+    expect(sql).toContain("update public.donation");
+    expect(sql).toContain(
+      "revoke all on function public.refund_provider_payment_atomically(uuid, uuid) from public, anon, authenticated",
+    );
+    expect(sql).toContain(
+      "grant execute on function public.refund_provider_payment_atomically(uuid, uuid) to service_role",
+    );
+  });
   test("skips service-role writes, since those routes already audit themselves", () => {
     const sql = readMigrationBySuffix("_audit_animal_mutations.sql");
 

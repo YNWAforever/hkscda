@@ -659,34 +659,23 @@ export async function refundProviderPayment(args: ReconcileProviderArgs) {
   return processProviderWebhook(
     args,
     async (payment) => {
-      const transitionRefundStatus = async (
-        table: "payment" | "donation",
-        id: string,
-        currentStatus: string,
-      ) => {
-        if (currentStatus === "refunded") return true;
-        if (currentStatus !== "pending" && currentStatus !== "succeeded") return false;
+      const { data, error } = await args.client.rpc("refund_provider_payment_atomically", {
+        p_payment_id: payment.id,
+        p_donation_id: payment.donation.id,
+      });
+      if (error) throw error;
 
-        const { data, error } = await args.client
-          .from(table)
-          .update({ status: "refunded" })
-          .eq("id", id)
-          .in("status", ["pending", "succeeded"])
-          .select("id")
-          .maybeSingle<{ id: string }>();
-        if (error) throw error;
-        return Boolean(data);
-      };
-
-      const paymentRefunded = await transitionRefundStatus("payment", payment.id, payment.status);
-      const donationRefunded = await transitionRefundStatus(
-        "donation",
-        payment.donation.id,
-        payment.donation.status,
-      );
-
-      if (!paymentRefunded || !donationRefunded) {
-        const { error } = await args.client.from("audit_log").insert({
+      const outcome = data as {
+        kind?: string;
+        payment_status?: string;
+        donation_status?: string;
+      } | null;
+      if (outcome?.kind === "refunded" || outcome?.kind === "already_refunded") {
+        await voidIssuedReceiptsForDonation(args.client, payment.donation.id, { reason: "refund" });
+        return { kind: "refunded" as const, donationId: payment.donation.id };
+      }
+      if (outcome?.kind === "state_conflict" || outcome?.kind === "not_found") {
+        const { error: auditError } = await args.client.from("audit_log").insert({
           actor_user_id: null,
           action: "payment.refund_state_conflict",
           entity: "payment",
@@ -695,14 +684,14 @@ export async function refundProviderPayment(args: ReconcileProviderArgs) {
             provider: args.provider,
             providerEventId: args.providerEventId,
             donationId: payment.donation.id,
-            paymentStatus: payment.status,
-            donationStatus: payment.donation.status,
-            paymentRefunded,
-            donationRefunded,
+            reason: outcome.kind,
+            paymentStatus: outcome.payment_status ?? null,
+            donationStatus: outcome.donation_status ?? null,
           },
         });
-        if (error) throw error;
+        if (auditError) throw auditError;
 
+        // The provider says funds were returned even if local rows need review.
         await voidIssuedReceiptsForDonation(args.client, payment.donation.id, { reason: "refund" });
         return {
           kind: "manual_review" as const,
@@ -711,15 +700,11 @@ export async function refundProviderPayment(args: ReconcileProviderArgs) {
           paymentId: payment.id,
         };
       }
-
-      await voidIssuedReceiptsForDonation(args.client, payment.donation.id, { reason: "refund" });
-
-      return { kind: "refunded" as const, donationId: payment.donation.id };
+      throw new Error("Provider refund transition returned an invalid result");
     },
     () => auditUnmatchedFinancialEvent(args, "payment.refund_unreconciled"),
   );
 }
-
 export async function flagProviderWebhookForReview(
   args: ReconcileProviderArgs,
   review: { reason: string; detail?: Record<string, unknown> },
