@@ -14,6 +14,7 @@ import {
   refundProviderPayment,
 } from "../../../lib/donations/reconcile.server";
 import { createSupabaseServiceClient } from "../../../lib/donations/supabase.server";
+import { readPaymentWebhookBody } from "../../../lib/donations/webhookBody.server";
 import {
   enforceRateLimit,
   getClientIp,
@@ -230,7 +231,9 @@ export const Route = createFileRoute("/api/webhooks/paypal")({
 
         let payload: PayPalWebhook;
         try {
-          payload = (await request.json()) as PayPalWebhook;
+          const body = await readPaymentWebhookBody(request);
+          if (body === null) return new Response("PayPal webhook too large", { status: 413 });
+          payload = JSON.parse(body) as PayPalWebhook;
         } catch {
           return new Response("Invalid PayPal webhook body", { status: 400 });
         }

@@ -6,6 +6,7 @@ import {
   processCodNotification,
 } from "../../../lib/donations/cod-webhook.server";
 import { createSupabaseServiceClient } from "../../../lib/donations/supabase.server";
+import { readPaymentWebhookBody } from "../../../lib/donations/webhookBody.server";
 import {
   enforceRateLimit,
   getClientIp,
@@ -42,7 +43,9 @@ export async function handleCodWebhookRequest(
 
   let envelope: unknown;
   try {
-    envelope = JSON.parse(await request.text());
+    const body = await readPaymentWebhookBody(request);
+    if (body === null) return new Response("COD notification too large", { status: 413 });
+    envelope = JSON.parse(body);
   } catch {
     return new Response("Invalid COD notification", { status: 400 });
   }
