@@ -81,8 +81,7 @@ class FakeQuery {
   private filters: Array<{ column: string; value: unknown }> = [];
   private likeFilters: Array<{ column: string; value: string }> = [];
   private orFilters: string[] = [];
-  private orderCol: string | null = null;
-  private orderAsc = true;
+  private orders: Array<{ column: string; ascending: boolean }> = [];
   private rangeBounds: [number, number] | null = null;
   private countMode: string | undefined;
 
@@ -138,8 +137,7 @@ class FakeQuery {
   }
 
   order(column: string, options?: { ascending?: boolean }) {
-    this.orderCol = column;
-    this.orderAsc = options?.ascending !== false;
+    this.orders.push({ column, ascending: options?.ascending !== false });
     return this;
   }
 
@@ -178,11 +176,15 @@ class FakeQuery {
     for (const orFilter of this.orFilters) {
       rows = rows.filter((row) => matchesOrFilter(row, orFilter));
     }
-    if (this.orderCol) {
+    if (this.orders.length > 0) {
       rows = [...rows].sort((left, right) => {
-        const l = String(left[this.orderCol as string]);
-        const r = String(right[this.orderCol as string]);
-        return this.orderAsc ? l.localeCompare(r) : r.localeCompare(l);
+        for (const { column, ascending } of this.orders) {
+          const l = String(left[column]);
+          const r = String(right[column]);
+          const comparison = ascending ? l.localeCompare(r) : r.localeCompare(l);
+          if (comparison !== 0) return comparison;
+        }
+        return 0;
       });
     }
     return rows;
@@ -449,7 +451,24 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     const result = await repo.listPledges({ page: 1, pageSize: 25 });
     expect(result.total).toBe(2);
     expect(result.pledges).toHaveLength(2);
-    expect(result.pledges[0].supporterName).toBe("陳小姐");
+    expect(result.pledges.find((pledge) => pledge.id === pledgeId)?.supporterName).toBe("陳小姐");
+  });
+
+  test("listPledges uses a stable id tie-breaker across pages", async () => {
+    const { client } = createFakeClient({
+      pledgeRows: [
+        pledgeRow({ id: "pledge-a" }),
+        pledgeRow({ id: "pledge-c" }),
+        pledgeRow({ id: "pledge-b" }),
+      ],
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const page1 = await repo.listPledges({ page: 1, pageSize: 2 });
+    const page2 = await repo.listPledges({ page: 2, pageSize: 2 });
+
+    expect(page1.pledges.map((pledge) => pledge.id)).toEqual(["pledge-c", "pledge-b"]);
+    expect(page2.pledges.map((pledge) => pledge.id)).toEqual(["pledge-a"]);
   });
 
   test("listPledges filters by status", async () => {

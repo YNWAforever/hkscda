@@ -469,6 +469,7 @@ export function createSupabaseSponsorshipAdminRepository(
         .from("sponsorship_pledge")
         .select("*", { count: "exact" })
         .order("created_at", { ascending: false })
+        .order("id", { ascending: false })
         .range(from, from + input.pageSize - 1);
 
       if (input.status) query = query.eq("status", input.status);
