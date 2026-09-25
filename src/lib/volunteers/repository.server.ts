@@ -78,6 +78,15 @@ function escapeLike(value: string) {
   return value.replaceAll("\\", "\\\\").replaceAll("%", "\\%").replaceAll("_", "\\_");
 }
 
+function postgrestLikeOperand(value: string) {
+  const escaped = value
+    .replaceAll("\\", "\\\\")
+    .replaceAll('"', '\\"')
+    .replaceAll("%", "\\%")
+    .replaceAll("_", "\\_");
+  return '"%' + escaped + '%"';
+}
+
 function toActivity(
   row: ActivityRow,
   counts: ActivityCounts = emptyCounts,
@@ -407,7 +416,7 @@ export function createSupabaseVolunteerRepository(client: SupabaseClient): Volun
       if (input.attendanceStatus) query = query.eq("attendance_status", input.attendanceStatus);
       if (input.activityId) query = query.eq("activity_id", input.activityId);
       if (input.q) {
-        const like = `%${escapeLike(input.q)}%`;
+        const like = postgrestLikeOperand(input.q);
         query = query.or(
           `contact_name.ilike.${like},contact_email.ilike.${like},organization_name.ilike.${like}`,
         );

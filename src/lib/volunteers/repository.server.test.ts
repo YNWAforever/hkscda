@@ -31,6 +31,29 @@ test("admin volunteer lists use stable id tie-breakers across pages", async () =
   expect(orders.volunteer_registration).toEqual(["created_at", "id"]);
 });
 
+test("volunteer registration search quotes punctuation inside PostgREST OR filters", async () => {
+  let filter = "";
+  const query = {
+    select: () => query,
+    order: () => query,
+    range: () => query,
+    or(value: string) {
+      filter = value;
+      return query;
+    },
+    then(resolve: (value: { data: never[]; error: null; count: number }) => unknown) {
+      return Promise.resolve({ data: [], error: null, count: 0 }).then(resolve);
+    },
+  };
+  const repo = createSupabaseVolunteerRepository({ from: () => query } as never);
+
+  await repo.listRegistrations({ q: "Care,(P4)", page: 1, pageSize: 25 });
+
+  expect(filter).toBe(
+    'contact_name.ilike."%Care,(P4)%",contact_email.ilike."%Care,(P4)%",organization_name.ilike."%Care,(P4)%"',
+  );
+});
+
 test("public volunteer identity resolution uses the preserving RPC", async () => {
   const calls: unknown[] = [];
   const client = {
