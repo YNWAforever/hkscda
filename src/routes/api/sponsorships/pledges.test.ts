@@ -86,6 +86,13 @@ describe("sponsorship pledge submission retry", () => {
     expect(calls).toEqual([]);
   });
 
+  test("returns conflict without persisting a changed completed attempt", async () => {
+    const { calls, dependencies } = setup({ lookupRetry: async () => ({ kind: "conflict" }) });
+    const response = await invoke(dependencies);
+    expect(response.status).toBe(409);
+    expect(calls).toEqual([]);
+  });
+
   test("never reveals a status link when the token does not belong to the pledge", async () => {
     const { calls, dependencies } = setup({ lookupRetry: async () => ({ kind: "forbidden" }) });
     const response = await invoke(dependencies);

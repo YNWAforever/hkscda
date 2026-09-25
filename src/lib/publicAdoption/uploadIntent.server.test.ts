@@ -63,9 +63,87 @@ describe("adoption upload intents", () => {
         };
       },
     } as never;
-    expect(await hasCompletedAdoptionApplication(client, applicationId)).toBe(false);
+    expect(
+      await hasCompletedAdoptionApplication(client, applicationId, token, "a".repeat(64)),
+    ).toBe("new");
     expect(queries).toEqual(["adoption_case"]);
   });
+  test("recovers only the original completed application details", async () => {
+    const filters: Array<[string, unknown]> = [];
+    const client = {
+      from(table: string) {
+        const query = {
+          select() {
+            return query;
+          },
+          eq(column: string, value: unknown) {
+            filters.push([column, value]);
+            return query;
+          },
+          async maybeSingle() {
+            return {
+              data:
+                table === "adoption_case"
+                  ? { id: "case-1" }
+                  : {
+                      submission_fingerprint: "a".repeat(64),
+                      expires_at: "2099-01-01T00:00:00.000Z",
+                      revoked_at: null,
+                    },
+              error: null,
+            };
+          },
+        };
+        return query;
+      },
+    } as never;
+    expect(
+      await hasCompletedAdoptionApplication(client, applicationId, token, "a".repeat(64)),
+    ).toBe("recovered");
+    expect(
+      await hasCompletedAdoptionApplication(client, applicationId, token, "b".repeat(64)),
+    ).toBe("conflict");
+    expect(filters).toContainEqual(["token_hash", hashStatusToken(token)]);
+  });
+
+  test("does not recover an expired status token", async () => {
+    const client = {
+      from(table: string) {
+        const query = {
+          select() {
+            return query;
+          },
+          eq() {
+            return query;
+          },
+          async maybeSingle() {
+            return {
+              data:
+                table === "adoption_case"
+                  ? { id: "case-1" }
+                  : {
+                      submission_fingerprint: "a".repeat(64),
+                      expires_at: "2026-09-24T00:00:00.000Z",
+                      revoked_at: null,
+                    },
+              error: null,
+            };
+          },
+        };
+        return query;
+      },
+    } as never;
+    expect(
+      await hasCompletedAdoptionApplication(
+        client,
+        applicationId,
+        token,
+        "a".repeat(64),
+        new Date("2026-09-25T00:00:00.000Z"),
+      ),
+    ).toBe("expired");
+  });
+
   test("removes expired unsubmitted photos, but preserves an existing application", async () => {
     const removed: string[][] = [];
     const deleted: string[] = [];

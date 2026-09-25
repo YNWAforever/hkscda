@@ -7,6 +7,7 @@ import { createAdoptionCoordinatorService } from "../../../lib/adoptions/service
 import { getAppUrl } from "../../../lib/appUrl.server";
 import { createSupabaseServiceClient } from "../../../lib/donations/supabase.server";
 import {
+  fingerprintAdoptionSubmission,
   isSubmissionValidationError,
   parseAdoptionSubmission,
   persistPublicAdoptionJourney,
@@ -106,7 +107,28 @@ export function createAdoptionApplicationsHandler({
         return jsonNoStore({ error: "Photo upload authorization not found" }, { status: 403 });
       }
 
-      if (await hasCompleted(client, parsed.applicationId)) {
+      const completed = await hasCompleted(
+        client,
+        parsed.applicationId,
+        parsed.statusToken,
+        fingerprintAdoptionSubmission(parsed, parsed.statusToken),
+      );
+      if (completed === "conflict") {
+        return jsonNoStore(
+          {
+            error:
+              "This application was already submitted with different details. Check the original status link before starting a new application.",
+          },
+          { status: 409 },
+        );
+      }
+      if (completed === "expired") {
+        return jsonNoStore({ error: "Application status link expired" }, { status: 410 });
+      }
+      if (completed === "forbidden") {
+        return jsonNoStore({ error: "Application retry not authorized" }, { status: 403 });
+      }
+      if (completed === "recovered") {
         try {
           await markSubmitted(client, parsed.applicationId);
         } catch (error) {

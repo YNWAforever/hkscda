@@ -16,6 +16,7 @@ import {
 import { getAppUrl } from "../appUrl.server";
 import { getEmailConfig } from "../donations/config.server";
 import { verifyUploadedObjects } from "../publicUploads/signedUpload.server";
+import { submissionFingerprint } from "../publicUploads/submissionFingerprint.server";
 
 export const ADOPTION_PHOTO_BUCKET = "adoption-application-photos";
 export const MAX_ADOPTION_PHOTOS = 6;
@@ -39,6 +40,13 @@ export type ParsedAdoptionMultipart = {
   payload: ParsedAdoptionPayload;
   photos: ParsedAdoptionPhoto[];
 };
+
+export function fingerprintAdoptionSubmission(
+  parsed: ParsedAdoptionMultipart,
+  statusToken: string,
+): string {
+  return submissionFingerprint("adoption_application", parsed.payload, parsed.photos, statusToken);
+}
 
 export type PublicAdoptionPersistResult = {
   applicationId: string;
@@ -309,6 +317,7 @@ export async function persistPublicAdoptionJourney({
         entity_type: "adoption_application",
         entity_id: applicationId,
         expires_at: expiresAt,
+        submission_fingerprint: fingerprintAdoptionSubmission(parsed, token.rawToken),
       }),
       "Failed to save public status token",
     );

@@ -120,6 +120,9 @@ async function submitAdoptionApplication(payload: unknown, photoUpload: Complete
     }),
   });
   const result = await response.json().catch(() => ({}));
+  if (response.status === 409) {
+    throw new Error("此申請已按原有資料提交。請先查看確認電郵中的狀態連結，再決定是否建立新申請。");
+  }
   if (!response.ok) {
     throw new Error(typeof result.error === "string" ? result.error : "提交失敗，請稍後再試。");
   }

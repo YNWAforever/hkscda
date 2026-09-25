@@ -36,7 +36,7 @@ function deps(overrides: Record<string, unknown> = {}) {
       expiresAt: "2099-01-01T00:00:00.000Z",
       submittedAt: null,
     }),
-    hasCompleted: async () => false,
+    hasCompleted: async () => "new" as const,
     markSubmitted: async () => {
       calls.push("markSubmitted");
     },
@@ -81,7 +81,7 @@ describe("public adoption submission authorization and retry", () => {
   });
 
   test("returns a saved application's status URL on same-ID retry", async () => {
-    const { dependencies, calls } = deps({ hasCompleted: async () => true });
+    const { dependencies, calls } = deps({ hasCompleted: async () => "recovered" as const });
     const response = await createAdoptionApplicationsHandler(dependencies)(request());
     expect(response.status).toBe(200);
     expect(await response.json()).toMatchObject({
@@ -90,6 +90,20 @@ describe("public adoption submission authorization and retry", () => {
       statusUrl: `https://example.test/adoption/status/${statusToken}`,
     });
     expect(calls).toEqual(["markSubmitted"]);
+  });
+
+  test("does not report a changed completed application as accepted", async () => {
+    const { dependencies, calls } = deps({ hasCompleted: async () => "conflict" as const });
+    const response = await createAdoptionApplicationsHandler(dependencies)(request());
+    expect(response.status).toBe(409);
+    expect(calls).toEqual([]);
+  });
+
+  test("does not return an expired status link as successful recovery", async () => {
+    const { dependencies, calls } = deps({ hasCompleted: async () => "expired" as const });
+    const response = await createAdoptionApplicationsHandler(dependencies)(request());
+    expect(response.status).toBe(410);
+    expect(calls).toEqual([]);
   });
 
   test("returns success after persistence even if confirmation email throws", async () => {

@@ -108,14 +108,35 @@ export async function hasPersistedAdoptionApplication(
 export async function hasCompletedAdoptionApplication(
   client: SupabaseClient,
   applicationId: string,
-): Promise<boolean> {
+  statusToken: string,
+  expectedFingerprint: string,
+  now = new Date(),
+): Promise<"new" | "recovered" | "conflict" | "forbidden" | "expired"> {
   const { data, error } = await client
     .from("adoption_case")
     .select("id")
     .eq("public_application_id", applicationId)
     .maybeSingle();
   if (error) throw error;
-  return Boolean(data);
+  if (!data) return "new";
+
+  const { data: token, error: tokenError } = await client
+    .from("public_status_token")
+    .select("submission_fingerprint,expires_at,revoked_at")
+    .eq("entity_type", "adoption_application")
+    .eq("entity_id", applicationId)
+    .eq("token_hash", hashStatusToken(statusToken))
+    .maybeSingle<{
+      submission_fingerprint: string | null;
+      expires_at: string;
+      revoked_at: string | null;
+    }>();
+  if (tokenError) throw tokenError;
+  if (!token) return "forbidden";
+  const expiresAt = Date.parse(token.expires_at);
+  if (token.revoked_at || !Number.isFinite(expiresAt) || expiresAt <= now.getTime())
+    return "expired";
+  return token.submission_fingerprint === expectedFingerprint ? "recovered" : "conflict";
 }
 export async function markAdoptionUploadIntentSubmitted(
   client: SupabaseClient,

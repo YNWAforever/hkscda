@@ -4,6 +4,7 @@ import { RequestBodyTooLargeError, readPublicJson } from "../../../lib/http/publ
 
 import { createSupabaseServiceClient } from "../../../lib/donations/supabase.server";
 import {
+  fingerprintSponsorshipSubmission,
   isSubmissionValidationError,
   lookupSponsorshipPledgeRetry,
   parseSponsorshipSubmission,
@@ -47,6 +48,15 @@ function retryResponse(result: SponsorshipPledgeRetry) {
   if (result.kind === "expired") {
     return jsonNoStore({ error: "Sponsorship status link expired" }, { status: 410 });
   }
+  if (result.kind === "conflict") {
+    return jsonNoStore(
+      {
+        error:
+          "This pledge was already submitted with different details. Check the original status link before starting a new pledge.",
+      },
+      { status: 409 },
+    );
+  }
   if (result.kind === "forbidden") {
     return jsonNoStore({ error: "Sponsorship pledge retry not authorized" }, { status: 403 });
   }
@@ -86,7 +96,8 @@ export function createSponsorshipPledgesHandler({
     try {
       const parsed = parse(body);
       const client = createClient();
-      const lookup = () => lookupRetry(client, parsed.pledgeId, parsed.statusToken);
+      const fingerprint = fingerprintSponsorshipSubmission(parsed);
+      const lookup = () => lookupRetry(client, parsed.pledgeId, parsed.statusToken, fingerprint);
       const existing = retryResponse(await lookup());
       if (existing) return existing;
 

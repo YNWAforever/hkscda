@@ -23,6 +23,7 @@ import {
 import { getAppUrl } from "../appUrl.server";
 import { getEmailConfig } from "../donations/config.server";
 import { verifyUploadedObjects } from "../publicUploads/signedUpload.server";
+import { submissionFingerprint } from "../publicUploads/submissionFingerprint.server";
 
 export const SPONSORSHIP_PROOF_BUCKET = "sponsorship-payment-proof";
 
@@ -78,25 +79,28 @@ export type SponsorshipPledgeRetry =
   | { kind: "new" }
   | { kind: "recovered"; pledgeId: string; reference: string; statusUrl: string }
   | { kind: "forbidden" }
-  | { kind: "expired" };
+  | { kind: "expired" }
+  | { kind: "conflict" };
 
 /** Only the bearer that supplied the original 256-bit token can recover a lost response. */
 export async function lookupSponsorshipPledgeRetry(
   client: PublicSponsorshipSupabaseClient,
   pledgeId: string,
   rawToken: string,
+  expectedFingerprint: string,
   appUrl = getAppUrl(),
   now = new Date(),
 ): Promise<SponsorshipPledgeRetry> {
   const { data: token, error: tokenError } = await client
     .from("public_status_token")
-    .select("entity_type,entity_id,expires_at,revoked_at")
+    .select("entity_type,entity_id,expires_at,revoked_at,submission_fingerprint")
     .eq("token_hash", hashStatusToken(rawToken))
     .maybeSingle<{
       entity_type: string;
       entity_id: string;
       expires_at: string;
       revoked_at: string | null;
+      submission_fingerprint: string | null;
     }>();
   if (tokenError) throw tokenError;
 
@@ -115,12 +119,27 @@ export async function lookupSponsorshipPledgeRetry(
   if (token.revoked_at || !Number.isFinite(expiry) || expiry <= now.getTime()) {
     return { kind: "expired" };
   }
+  if (token.submission_fingerprint !== expectedFingerprint) return { kind: "conflict" };
   return {
     kind: "recovered",
     pledgeId,
     reference: pledgeReference(pledgeId),
     statusUrl: buildStatusUrl(appUrl, rawToken),
   };
+}
+
+export function fingerprintSponsorshipSubmission(
+  parsed: ParsedSponsorshipMultipart & { statusToken: string },
+): string {
+  const { animalPreferences, ...payload } = parsed.payload;
+  // Animal type is filled from current eligibility after parsing; it is not submitted identity.
+  const preferences = animalPreferences.map(({ animalType: _type, ...preference }) => preference);
+  return submissionFingerprint(
+    "sponsorship_pledge",
+    { ...payload, animalPreferences: preferences },
+    parsed.proof ?? null,
+    parsed.statusToken,
+  );
 }
 
 export type UploadedProofReference = {
@@ -373,6 +392,7 @@ export async function persistSponsorshipPledge({
         entity_type: "sponsorship_pledge",
         entity_id: pledgeId,
         expires_at: expiresAt,
+        submission_fingerprint: fingerprintSponsorshipSubmission(parsed),
       }),
       "Failed to save sponsorship status token",
     );
