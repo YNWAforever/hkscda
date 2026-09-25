@@ -233,33 +233,43 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
     return data ? mapAsset(client, data as Row) : null;
   }
 
+  async function readAnnualReportRows(publishedOnly: boolean): Promise<Row[]> {
+    const rows: Row[] = [];
+    let from = 0;
+    while (true) {
+      let query = client.from("annual_reports").select(ANNUAL_REPORT_COLUMNS, { count: "exact" });
+      if (publishedOnly) {
+        query = query.eq("is_published", true).eq("document_assets.is_published", true);
+      }
+      const { data, error, count } = await query
+        .order("sort_order", { ascending: true })
+        .order("created_at", { ascending: false })
+        .order("id", { ascending: false })
+        .range(from, from + 999);
+      if (error) throw error;
+      const batch = (data ?? []) as unknown as Row[];
+      if (batch.length === 0) {
+        if (count !== null && count !== undefined && from < count)
+          throw new Error("Annual reports were not returned");
+        break;
+      }
+      rows.push(...batch);
+      from += batch.length;
+      if (count !== null && count !== undefined && from >= count) break;
+    }
+    return rows;
+  }
+
   return {
     usesAtomicAudit: true,
     async listPublishedAnnualReports() {
-      const { data, error } = await client
-        .from("annual_reports")
-        .select(ANNUAL_REPORT_COLUMNS)
-        .eq("is_published", true)
-        .eq("document_assets.is_published", true)
-        .order("sort_order", { ascending: true })
-        .order("created_at", { ascending: false })
-        .order("id", { ascending: false });
-      if (error) throw error;
-
-      return ((data ?? []) as Row[])
+      return (await readAnnualReportRows(true))
         .map((row) => mapAnnualReport(client, row))
         .filter((row): row is AnnualReport => row !== null);
     },
 
     async listAnnualReports() {
-      const { data, error } = await client
-        .from("annual_reports")
-        .select(ANNUAL_REPORT_COLUMNS)
-        .order("sort_order", { ascending: true })
-        .order("created_at", { ascending: false })
-        .order("id", { ascending: false });
-      if (error) throw error;
-      return ((data ?? []) as Row[])
+      return (await readAnnualReportRows(false))
         .map((row) => mapAdminAnnualReport(client, row))
         .filter((row): row is AnnualReport => row !== null);
     },

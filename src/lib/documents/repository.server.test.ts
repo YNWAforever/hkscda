@@ -20,6 +20,7 @@ class FakeQuery {
   constructor(
     readonly table: string,
     private readonly rows: Record<string, unknown>[],
+    private readonly serverRowCap?: number,
   ) {}
 
   select(columns: string, options?: { count?: string; head?: boolean }) {
@@ -75,10 +76,16 @@ class FakeQuery {
     onfulfilled?: ((value: unknown) => TResult1 | PromiseLike<TResult1>) | null,
     onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null,
   ) {
+    const from = this.rangeArgs?.[0] ?? 0;
+    const to = this.rangeArgs?.[1] ?? this.rows.length - 1;
+    const data = this.rows.slice(
+      from,
+      Math.min(to + 1, from + (this.serverRowCap ?? to - from + 1)),
+    );
     const result =
       this.action === "delete"
         ? { data: null, error: null }
-        : { data: this.rows, error: null, count: this.countMode ? this.rows.length : null };
+        : { data, error: null, count: this.countMode ? this.rows.length : null };
     return Promise.resolve(result).then(onfulfilled, onrejected);
   }
 
@@ -122,12 +129,15 @@ function annualReportRow(overrides: Record<string, unknown> = {}) {
   };
 }
 
-function createFakeClient(rowsByTable: Record<string, Record<string, unknown>[]>) {
+function createFakeClient(
+  rowsByTable: Record<string, Record<string, unknown>[]>,
+  serverRowCap?: number,
+) {
   const queries: FakeQuery[] = [];
   const storageCalls: string[] = [];
   const client = {
     from(table: string) {
-      const query = new FakeQuery(table, rowsByTable[table] ?? []);
+      const query = new FakeQuery(table, rowsByTable[table] ?? [], serverRowCap);
       queries.push(query);
       return query;
     },
@@ -198,6 +208,35 @@ describe("createSupabaseDocumentRepository", () => {
     expect(reports[0]?.document.fileUrl).toBe(
       "https://cdn.test/site-documents/annual-reports/2025-26.pdf",
     );
+  });
+
+  test("public and admin annual reports read past a server row cap", async () => {
+    const ids = [
+      "22222222-3333-4444-8555-666666666666",
+      "33333333-4444-4555-8666-777777777777",
+      "44444444-5555-4666-8777-888888888888",
+    ];
+    const rows = ids.map((id) =>
+      annualReportRow({
+        id,
+        is_published: true,
+        document_assets: assetRow({ is_published: true }),
+      }),
+    );
+    const fake = createFakeClient({ annual_reports: rows }, 2);
+    const repository = createSupabaseDocumentRepository(fake.client);
+
+    const published = await repository.listPublishedAnnualReports();
+    const admin = await repository.listAnnualReports();
+
+    expect(published.map((report) => report.id)).toEqual(ids);
+    expect(admin.map((report) => report.id)).toEqual(ids);
+    expect(fake.queriesFor("annual_reports").map((query) => query.rangeArgs)).toEqual([
+      [0, 999],
+      [2, 1001],
+      [0, 999],
+      [2, 1001],
+    ]);
   });
 
   test("public slots use an inner published asset join and requested slot keys", async () => {
