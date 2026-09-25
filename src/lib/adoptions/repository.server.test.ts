@@ -1311,6 +1311,48 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     ]);
   });
 
+  test("includes history beyond a capped response in adopter list and detail", async () => {
+    const { repo } = setupRepository({
+      serverRowCap: 2,
+      adopterRows: [adopterRow({ id: existingProfileId })],
+      caseRows: Array.from({ length: 3 }, (_, index) =>
+        caseRow({ id: `case-history-${index}`, adopter_profile_id: existingProfileId }),
+      ),
+      followupRows: Array.from({ length: 3 }, (_, index) =>
+        followupRow({
+          id: `task-history-${index}`,
+          adoption_case_id: null,
+          adopter_profile_id: existingProfileId,
+        }),
+      ),
+      successRows: Array.from({ length: 3 }, (_, index) =>
+        successfulAdoptionRow({
+          id: `success-history-${index}`,
+          adopter_profile_id: existingProfileId,
+        }),
+      ),
+      animalRows: [animalRow()],
+    });
+
+    const listed = await repo.listAdopters({
+      blacklisted: "all",
+      hasOpenCases: false,
+      hasOpenTasks: false,
+      page: 1,
+      pageSize: 25,
+    });
+    const detail = await repo.getAdopterDetail(existingProfileId);
+
+    expect(listed.adopters[0]).toMatchObject({
+      openCaseCount: 3,
+      openTaskCount: 3,
+      successfulAdoptionCount: 3,
+    });
+    expect(detail?.cases).toHaveLength(3);
+    expect(detail?.tasks).toHaveLength(3);
+    expect(detail?.successfulAdoptions).toHaveLength(3);
+  });
+
   test("searches adopters by supporter identity without cross-table or filters", async () => {
     const { repo, calls } = setupRepository({
       supporterRows: [
