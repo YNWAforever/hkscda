@@ -2356,6 +2356,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
         .from("successful_adoption")
         .select("*")
         .order("approval_date", { ascending: false })
+        .order("id", { ascending: false })
         .range(from, from + input.pageSize - 1);
       if (error) throw error;
 
@@ -2392,6 +2393,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
         .select("id,type,name,name_en,status")
         .order("type", { ascending: true })
         .order("name", { ascending: true })
+        .order("id", { ascending: true })
         .range(from, from + input.pageSize - 1);
 
       if (input.status !== "all") animalQuery = animalQuery.eq("status", input.status);

@@ -2137,6 +2137,94 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     ).rejects.toThrow(/too many animal pipeline candidates/i);
   });
 
+  function tieOrderedExportClient(
+    primaryTable: string,
+    sourceRows: Array<Record<string, unknown>>,
+  ): SupabaseClient {
+    return {
+      from(table: string) {
+        let from = 0;
+        let to = Number.POSITIVE_INFINITY;
+        const filters: Array<(row: Record<string, unknown>) => boolean> = [];
+        const orders: Array<{ column: string; ascending: boolean }> = [];
+        const result = () => {
+          const rows = (table === primaryTable ? sourceRows : [])
+            .filter((row) => filters.every((filter) => filter(row)))
+            .sort((left, right) => {
+              for (const order of orders) {
+                const comparison = String(left[order.column]).localeCompare(
+                  String(right[order.column]),
+                );
+                if (comparison !== 0) return order.ascending ? comparison : -comparison;
+              }
+              return 0;
+            });
+          return { data: rows.slice(from, to + 1), count: rows.length, error: null };
+        };
+        const query = {
+          select: () => query,
+          in: (column: string, values: unknown[]) => {
+            filters.push((row) => values.includes(row[column]));
+            return query;
+          },
+          order: (column: string, options?: { ascending?: boolean }) => {
+            orders.push({ column, ascending: options?.ascending !== false });
+            return query;
+          },
+          range: (start: number, end: number) => {
+            from = start;
+            to = end;
+            return query;
+          },
+          then: (resolve: (value: ReturnType<typeof result>) => void) => resolve(result()),
+        };
+        return query;
+      },
+    } as unknown as SupabaseClient;
+  }
+
+  test("successful adoption export selects the same capped row when approval dates tie", async () => {
+    const rows = [
+      successfulAdoptionRow({ id: "success-b" }),
+      successfulAdoptionRow({ id: "success-a" }),
+    ];
+    const first = createSupabaseAdoptionCoordinatorRepository(
+      tieOrderedExportClient("successful_adoption", rows),
+    );
+    const second = createSupabaseAdoptionCoordinatorRepository(
+      tieOrderedExportClient("successful_adoption", [...rows].reverse()),
+    );
+
+    const a = await first.listSuccessfulAdoptionExportRows({ page: 1, pageSize: 1 });
+    const b = await second.listSuccessfulAdoptionExportRows({ page: 1, pageSize: 1 });
+    expect(a.map((row) => row.successfulAdoptionId)).toEqual(
+      b.map((row) => row.successfulAdoptionId),
+    );
+  });
+
+  test("animal export selects the same capped row when type and name tie", async () => {
+    const rows = [animalRow({ id: "animal-b" }), animalRow({ id: "animal-a" })];
+    const first = createSupabaseAdoptionCoordinatorRepository(
+      tieOrderedExportClient("animals", rows),
+    );
+    const second = createSupabaseAdoptionCoordinatorRepository(
+      tieOrderedExportClient("animals", [...rows].reverse()),
+    );
+    const input = {
+      status: "all" as const,
+      type: "all" as const,
+      adoptable: "all" as const,
+      supportPool: "all" as const,
+      positionId: "all" as const,
+      page: 1,
+      pageSize: 1,
+    };
+
+    const a = await first.listAnimalExportRows(input);
+    const b = await second.listAnimalExportRows(input);
+    expect(a.map((row) => row.animalId)).toEqual(b.map((row) => row.animalId));
+  });
+
   test("successful adoption export caps rows before mapping", async () => {
     const { repo, calls } = setupRepository({
       successRows: [successfulAdoptionRow()],
