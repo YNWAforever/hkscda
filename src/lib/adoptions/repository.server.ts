@@ -1349,14 +1349,11 @@ async function loadFollowupsByColumn(
   ids: Array<string | null | undefined>,
   columns: string,
 ) {
-  const uniqueIds = unique(ids);
-  if (uniqueIds.length === 0) return [];
-
-  return loadAllPagedRows<FollowupRow>(async (from, to) => {
+  return loadLookupRowsByIds<FollowupRow>(ids, async (batch, from, to) => {
     const { data, error, count } = await client
       .from("adoption_followup")
       .select(columns, { count: "exact" })
-      .in(column, uniqueIds)
+      .in(column, batch)
       .order("due_at", { ascending: true })
       .order("id", { ascending: true })
       .range(from, to);

@@ -1352,6 +1352,32 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     expect(detail?.successfulAdoptions).toHaveLength(3);
   });
 
+  test("batches linked-case follow-up filters for long adopter histories", async () => {
+    const caseRows = Array.from({ length: 501 }, (_, index) =>
+      caseRow({ id: "case-history-" + index, adopter_profile_id: existingProfileId }),
+    );
+    const { repo, calls } = setupRepository({
+      adopterRows: [adopterRow({ id: existingProfileId })],
+      caseRows,
+      followupRows: [
+        followupRow({
+          id: "last-case-task",
+          adoption_case_id: "case-history-500",
+          adopter_profile_id: null,
+        }),
+      ],
+    });
+
+    const detail = await repo.getAdopterDetail(existingProfileId);
+
+    expect(detail?.tasks.map((task) => task.id)).toContain("last-case-task");
+    const caseFilters = callsFor(calls, "adoption_followup", "in")
+      .map((call) => call.payload as { column: string; value: string[] })
+      .filter((filter) => filter.column === "adoption_case_id");
+    expect(caseFilters).toHaveLength(2);
+    expect(caseFilters.every((filter) => filter.value.length <= 500)).toBe(true);
+  });
+
   test("searches adopters by supporter identity without cross-table or filters", async () => {
     const { repo, calls } = setupRepository({
       supporterRows: [
