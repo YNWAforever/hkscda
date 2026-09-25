@@ -75,6 +75,8 @@ async function withErrors(request: Request, operation: (id: string) => Promise<R
     }
     if (error instanceof AdoptionInformationConflictError)
       return jsonResponse({ error: error.message }, id, { status: 409 });
+    if (error && typeof error === "object" && "code" in error && error.code === "P0002")
+      return jsonResponse({ error: "Adoption information item not found" }, id, { status: 404 });
     console.error("Adoption information request failed", { requestId: id, error });
     return jsonResponse({ error: "Could not process adoption information request" }, id, {
       status: 500,

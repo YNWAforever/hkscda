@@ -58,34 +58,21 @@ export async function getAdminUserFromRequest(
       throw new Response("Forbidden", { status: 403 });
     }
 
-    const acceptedAt = new Date().toISOString();
-    const { data: activated, error: activateError } = await client
-      .from("admin_user")
-      .update({
-        status: "active",
-        invite_accepted_at: acceptedAt,
-        updated_at: acceptedAt,
-      })
-      .eq("id", admin.id)
-      .eq("status", "pending")
-      .select("id,auth_user_id,email,role,status")
-      .single();
-    if (activateError) throw activateError;
-
-    const { error: auditError } = await client.from("audit_log").insert({
-      actor_user_id: activated.auth_user_id,
-      action: "admin_user.activate_from_invite",
-      entity: "admin_user",
-      entity_id: activated.id,
-      timestamp: acceptedAt,
-      detail: {
-        targetEmail: activated.email,
-        oldStatus: "pending",
-        newStatus: "active",
-        role: activated.role,
-      },
-    });
-    if (auditError) throw auditError;
+    const { data: activated, error: activateError } = await client.rpc(
+      "activate_admin_invite_with_audit",
+      { p_auth_user_id: user.id },
+    );
+    if (activateError) {
+      if (
+        activateError.code === "P0001" &&
+        (activateError.message === "admin_user_not_found" ||
+          activateError.message === "invalid_status_transition")
+      ) {
+        throw new Response("Forbidden", { status: 403 });
+      }
+      throw activateError;
+    }
+    if (!activated) throw new Error("Admin invite activation returned no user");
 
     return {
       id: activated.id,

@@ -351,6 +351,20 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
       expect(error).not.toBeNull();
     });
 
+    test("admin cannot write admin_user directly", async () => {
+      const { error: updateError } = await clients.admin
+        .from("admin_user")
+        .update({ status: "active" })
+        .eq("email", "rls-test-admin@example.test");
+      expect(updateError).not.toBeNull();
+
+      const { error: deleteError } = await clients.admin
+        .from("admin_user")
+        .delete()
+        .eq("id", "00000000-0000-0000-0000-000000000000");
+      expect(deleteError).not.toBeNull();
+    });
+
     test("admin sees all admin_user rows, including staff's and treasurer's", async () => {
       const { data, error } = await clients.admin.from("admin_user").select("email");
       expect(error).toBeNull();

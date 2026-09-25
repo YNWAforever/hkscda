@@ -28,7 +28,8 @@ export function createKnowledgeService({
     async upsert({ actorUserId, input }: { actorUserId: string; input: unknown }) {
       const parsed = knowledgePostInputSchema.parse(input);
       const { id, ...rest } = parsed;
-      const post = await repo.upsert(id ? { id, ...rest } : rest);
+      const post = await repo.upsert(id ? { id, ...rest } : rest, actorUserId);
+      if (repo.usesAtomicAudit) return post;
       await audit({
         actor_user_id: actorUserId,
         action: parsed.id ? "knowledge_post.update" : "knowledge_post.create",
@@ -41,7 +42,8 @@ export function createKnowledgeService({
 
     async remove({ actorUserId, id }: { actorUserId: string; id: string }) {
       const parsed = deleteKnowledgePostSchema.parse({ id });
-      await repo.remove(parsed.id);
+      await repo.remove(parsed.id, actorUserId);
+      if (repo.usesAtomicAudit) return;
       await audit({
         actor_user_id: actorUserId,
         action: "knowledge_post.delete",

@@ -47,6 +47,10 @@ function createClient(results: Record<string, FakeResult>) {
       calls.push({ name: "from", table });
       return createBuilder(calls, results[table] ?? { data: [], error: null });
     },
+    rpc(name: string, args: unknown) {
+      calls.push({ name: "rpc", functionName: name, args });
+      return Promise.resolve(results.rpc ?? { data: row(), error: null });
+    },
   };
   return client as unknown as SupabaseClient & { calls: unknown[] };
 }
@@ -116,71 +120,84 @@ describe("listAdmin", () => {
   });
 });
 
-describe("upsert", () => {
-  test("inserts a new member with created_by and updated_by set to the actor", async () => {
-    const client = createClient({ board_member: { data: row(), error: null } });
+describe("atomic governance mutations", () => {
+  test("creates a member through the audited RPC", async () => {
+    const client = createClient({ rpc: { data: row(), error: null } });
     const repo = createSupabaseGovernanceRepository(client);
 
     const member = await repo.upsert(
       { name: "陳大文", roleTitle: "主席", sortOrder: 0, effectiveDate: "2026-08-01" },
-      "admin-1",
+      "auth-1",
     );
 
     expect(member.name).toBe("陳大文");
     expect(client.calls).toContainEqual({
-      name: "insert",
-      payload: {
-        name: "陳大文",
-        role_title: "主席",
-        sort_order: 0,
-        effective_date: "2026-08-01",
-        updated_by: "admin-1",
-        created_by: "admin-1",
+      name: "rpc",
+      functionName: "mutate_admin_content_with_audit",
+      args: {
+        p_actor_user_id: "auth-1",
+        p_entity: "board_member",
+        p_operation: "upsert",
+        p_id: null,
+        p_payload: {
+          name: "陳大文",
+          role_title: "主席",
+          sort_order: 0,
+          effective_date: "2026-08-01",
+          updated_by: "auth-1",
+          created_by: "auth-1",
+        },
       },
     });
   });
 
-  test("updates an existing member, setting updated_by but never overwriting created_by", async () => {
-    const client = createClient({ board_member: { data: row(), error: null } });
+  test("updates an existing member through the audited RPC", async () => {
+    const client = createClient({ rpc: { data: row(), error: null } });
     const repo = createSupabaseGovernanceRepository(client);
+    const id = "11111111-1111-4111-8111-111111111111";
 
     await repo.upsert(
-      {
-        id: "11111111-1111-4111-8111-111111111111",
-        name: "陳大文",
-        roleTitle: "主席",
-        sortOrder: 0,
-        effectiveDate: "2026-08-01",
-      },
-      "admin-2",
+      { id, name: "陳大文", roleTitle: "主席", sortOrder: 0, effectiveDate: "2026-08-01" },
+      "auth-2",
     );
 
     expect(client.calls).toContainEqual({
-      name: "update",
-      payload: {
-        id: "11111111-1111-4111-8111-111111111111",
-        name: "陳大文",
-        role_title: "主席",
-        sort_order: 0,
-        effective_date: "2026-08-01",
-        updated_by: "admin-2",
+      name: "rpc",
+      functionName: "mutate_admin_content_with_audit",
+      args: {
+        p_actor_user_id: "auth-2",
+        p_entity: "board_member",
+        p_operation: "upsert",
+        p_id: id,
+        p_payload: {
+          id,
+          name: "陳大文",
+          role_title: "主席",
+          sort_order: 0,
+          effective_date: "2026-08-01",
+          updated_by: "auth-2",
+        },
       },
     });
   });
-});
 
-describe("deactivate", () => {
-  test("sets is_active to false rather than deleting the row", async () => {
-    const client = createClient({ board_member: { data: [], error: null } });
+  test("deactivates a member through the audited RPC", async () => {
+    const client = createClient({ rpc: { data: null, error: null } });
     const repo = createSupabaseGovernanceRepository(client);
+    const id = "11111111-1111-4111-8111-111111111111";
 
-    await repo.deactivate("11111111-1111-4111-8111-111111111111");
+    await repo.deactivate(id, "auth-1");
 
-    expect(client.calls).toContainEqual({ name: "update", payload: { is_active: false } });
     expect(client.calls).toContainEqual({
-      name: "eq",
-      column: "id",
-      value: "11111111-1111-4111-8111-111111111111",
+      name: "rpc",
+      functionName: "mutate_admin_content_with_audit",
+      args: {
+        p_actor_user_id: "auth-1",
+        p_entity: "board_member",
+        p_operation: "deactivate",
+        p_id: id,
+        p_payload: {},
+      },
     });
   });
 });

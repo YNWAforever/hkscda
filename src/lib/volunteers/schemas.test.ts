@@ -10,6 +10,7 @@ describe("volunteer schemas", () => {
   test("normalizes public individual registration payloads", () => {
     const parsed = publicRegistrationSchema.parse({
       activityId: "f43d0f00-aa4f-4bb9-856d-6fe2f9f13bd0",
+      submissionToken: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
       registrationType: "individual",
       contact: {
         name: "  陳小明  ",
@@ -35,6 +36,7 @@ describe("volunteer schemas", () => {
   test("requires organization and supervisor details for group registrations", () => {
     const result = publicRegistrationSchema.safeParse({
       activityId: "f43d0f00-aa4f-4bb9-856d-6fe2f9f13bd0",
+      submissionToken: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
       registrationType: "group",
       contact: {
         name: "Group Lead",
@@ -88,6 +90,7 @@ describe("volunteer schemas", () => {
   test("rejects individual applicants below the public age floor", () => {
     const underage = publicRegistrationSchema.safeParse({
       activityId: "f43d0f00-aa4f-4bb9-856d-6fe2f9f13bd0",
+      submissionToken: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
       registrationType: "individual",
       contact: { name: "Ada", email: "ada@example.com", phone: "91234567", language: "zh-HK" },
       participantCount: 1,
@@ -101,6 +104,7 @@ describe("volunteer schemas", () => {
     expect(
       publicRegistrationSchema.parse({
         activityId: "f43d0f00-aa4f-4bb9-856d-6fe2f9f13bd0",
+        submissionToken: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
         registrationType: "individual",
         contact: { name: "Ada", email: "ada@example.com", phone: "91234567", language: "zh-HK" },
         participantCount: 1,

@@ -15,9 +15,11 @@ type PublicStoriesPageSourceData = {
 
 type PublicStoriesPageQuery = {
   type?: ContentType;
+  isFeatured?: boolean;
   animalType?: AnimalStoryType;
   rescueRegion?: string;
   pageSize?: number;
+  page?: number;
 };
 
 type PublicStoriesPageService = {
@@ -71,14 +73,60 @@ function projectPublicStoriesPage(data: PublicStoriesPageSourceData): PublicStor
   };
 }
 
+const PUBLIC_STORIES_PAGE_SIZE = 50;
+
 export function createPublicStoriesPageReader(service: PublicStoriesPageService) {
   return async (): Promise<PublicStoriesPageData> => {
     try {
-      return projectPublicStoriesPage(await service.listPublicStoriesPage({}));
+      const first = await service.listPublicStoriesPage({
+        page: 1,
+        pageSize: PUBLIC_STORIES_PAGE_SIZE,
+      });
+      const items = [...first.items];
+      const points = [...first.points];
+      const pageCount = Math.ceil(first.total / PUBLIC_STORIES_PAGE_SIZE);
+
+      for (let page = 2; page <= pageCount; page += 1) {
+        const next = await service.listPublicStoriesPage({
+          page,
+          pageSize: PUBLIC_STORIES_PAGE_SIZE,
+        });
+        items.push(...next.items);
+        points.push(...next.points);
+      }
+
+      return projectPublicStoriesPage({ items, total: first.total, points });
     } catch {
       throw new Error("Could not load stories");
     }
   };
+}
+
+export function createFeaturedStoryReader(service: PublicStoriesPageService) {
+  return async (): Promise<PublicStorySummary | null> => {
+    const result = await service.listPublicStoriesPage({
+      type: "rescue_story",
+      isFeatured: true,
+      page: 1,
+      pageSize: 1,
+    });
+    const story = result.items[0];
+    return story?.status === "published" &&
+      story.type === "rescue_story" &&
+      story.storyProfile?.isFeatured
+      ? projectPublicStory(story)
+      : null;
+  };
+}
+
+export async function loadFeaturedStory(
+  createService: PublicStoriesPageServiceFactory = createPublicStoriesPageService,
+): Promise<PublicStorySummary | null> {
+  try {
+    return await createFeaturedStoryReader(createService())();
+  } catch {
+    throw new Error("Could not load featured story");
+  }
 }
 
 function createPublicStoriesPageService() {

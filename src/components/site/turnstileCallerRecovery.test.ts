@@ -14,7 +14,7 @@ const cases = [
 // is observed: an error may change status/token only, never entered field state.
 // This covers callback behavior, not browser rendering or real upload transport.
 for (const [name, path, functionName] of cases) {
-  test(`${name} failed submission preserves entered fields and requests fresh verification`, async () => {
+  test(`${name} failed submission preserves entered fields and appropriate verification state`, async () => {
     const source = readFileSync(
       fileURLToPath(new URL(`../../../${path}`, import.meta.url)),
       "utf8",
@@ -31,6 +31,7 @@ for (const [name, path, functionName] of cases) {
     const compiled = new Bun.Transpiler({ loader: "ts" }).transformSync(callback);
     const calls: Array<[string, unknown]> = [];
     let attempts = 0;
+    const uploadCalls: Array<{ token: unknown; photos: unknown }> = [];
     const fail = async () => {
       attempts++;
       throw new Error("Synthetic submit failure");
@@ -51,10 +52,30 @@ for (const [name, path, functionName] of cases) {
       createDonationRequest: (value: unknown) => value,
       buildVolunteerRegistrationPayload: (value: unknown) => value,
       buildGroupEnquiryPayload: (value: unknown) => value,
-      resolvePledgeSubmissionIds: async () => ({ pledgeId: "fixture", proof: null }),
+      submissionAttempt: {
+        current: { resolve: async () => ({ pledgeId: "fixture", proof: null }) },
+      },
+      uploadSession: {
+        has: () => true,
+        upload: async (selectedPhotos: unknown, token: unknown) => {
+          uploadCalls.push({ photos: selectedPhotos, token });
+          return { applicationId: "fixture", statusToken: "raw-status-token", uploaded: [] };
+        },
+      },
       saveDraft: () => {},
       t: { submitError: "Synthetic error" },
-      window: { innerWidth: 1024 },
+      window: {
+        innerWidth: 1024,
+        crypto: {
+          randomUUID: () => "11111111-2222-4333-8444-555555555555",
+          subtle: { digest: async () => new Uint8Array(32).buffer },
+        },
+        sessionStorage: { getItem: () => null, setItem: () => {} },
+      },
+      checkoutIntentRef: { current: null },
+      TextEncoder,
+      Uint8Array,
+      Array,
       console: { error: () => {} },
       Number,
       JSON,
@@ -84,7 +105,20 @@ for (const [name, path, functionName] of cases) {
     expect(attempts).toBe(1);
     expect(JSON.stringify(entered)).toBe(before);
     expect(calls).toContainEqual(["setTurnstileToken", null]);
-    expect(calls).toContainEqual(["setTurnstileResetKey", 1]);
+    if (name === "adoption") {
+      expect(calls).not.toContainEqual(["setTurnstileResetKey", 1]);
+      scope.turnstileToken = null;
+      await run(entered);
+      expect(attempts).toBe(2);
+      expect(uploadCalls).toEqual([
+        { photos: scope.photos, token: "synthetic-token" },
+        { photos: scope.photos, token: null },
+      ]);
+      expect(JSON.stringify(entered)).toBe(before);
+      expect(calls).not.toContainEqual(["setTurnstileResetKey", 1]);
+    } else {
+      expect(calls).toContainEqual(["setTurnstileResetKey", 1]);
+    }
     const allowed = new Set([
       "setError",
       "setServerError",

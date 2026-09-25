@@ -218,3 +218,78 @@ test.each([
     },
   });
 });
+
+test("public activity list marks legacy future activities as unavailable for anonymous booking", async () => {
+  const row = {
+    id: "f43d0f00-aa4f-4bb9-856d-6fe2f9f13bd0",
+    type: "cleaning_day",
+    title: "Care day",
+    description: null,
+    starts_at: "2099-01-01T00:00:00.000Z",
+    ends_at: "2099-01-01T02:00:00.000Z",
+    location: "Shelter",
+    capacity: 12,
+    min_age: null,
+    underage_policy: "allow_with_guardian_pending",
+    auto_approve: false,
+    allow_waitlist: true,
+    status: "published",
+    registration_modes: ["individual"],
+    created_at: "2026-01-01T00:00:00.000Z",
+    updated_at: "2026-01-01T00:00:00.000Z",
+  };
+  const query = {
+    select() {
+      return query;
+    },
+    eq() {
+      return query;
+    },
+    is() {
+      return query;
+    },
+    gte() {
+      return query;
+    },
+    order: async () => ({ data: [row], error: null }),
+  };
+  const repo = createSupabaseVolunteerRepository({
+    from: () => query,
+    rpc: async () => ({ data: [], error: null }),
+  } as never);
+  const activities = await repo.listPublishedActivities();
+  expect(activities[0]).toMatchObject({
+    id: row.id,
+    publicRegistrationAvailable: false,
+    publicRegistrationUnavailableReason: "current_policy_required",
+  });
+});
+
+test("clone activity invokes one audited RPC without client-side writes", async () => {
+  const calls: unknown[] = [];
+  const repo = createSupabaseVolunteerRepository({
+    rpc: async (name: string, args: unknown) => {
+      calls.push({ name, args });
+      return { data: "activity-clone", error: null };
+    },
+    from: () => {
+      throw new Error("clone must be atomic");
+    },
+  } as never);
+  const result = await repo.cloneActivity({
+    activityId: "source-1",
+    actorUserId: "actor-1",
+    startsAt: "2026-09-01T02:00:00.000Z",
+  });
+  expect(result).toBe("activity-clone");
+  expect(calls).toEqual([
+    {
+      name: "clone_volunteer_activity_with_audit",
+      args: {
+        p_source_activity_id: "source-1",
+        p_actor_user_id: "actor-1",
+        p_starts_at: "2026-09-01T02:00:00.000Z",
+      },
+    },
+  ]);
+});

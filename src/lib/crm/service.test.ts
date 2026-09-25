@@ -102,6 +102,37 @@ function createFakeRepository(): CrmRepository & {
 }
 
 describe("createCrmService", () => {
+  test("uses one atomic repository operation for profile, roles, and audit", async () => {
+    const repo = createFakeRepository();
+    repo.mutateSupporterWithAudit = async (command) => {
+      repo.calls.push({ name: "mutateSupporterWithAudit", payload: command });
+      return { id: "8bda8e40-cf39-4659-8be8-f2d74f9d2046", email: "ada@example.com" };
+    };
+    const service = createCrmService({ repo });
+    await service.createSupporter({
+      actorUserId: null,
+      input: { name: "Ada", email: "ada@example.com", language: "en", tags: [], roles: ["donor"] },
+    });
+    expect(repo.calls.map((call) => call.name)).toEqual(["mutateSupporterWithAudit"]);
+    repo.calls.length = 0;
+    await service.updateSupporter({
+      actorUserId: null,
+      supporterId: "8bda8e40-cf39-4659-8be8-f2d74f9d2046",
+      input: { name: "Ada Wong", roles: ["volunteer"] },
+    });
+    expect(repo.calls.map((call) => call.name)).toEqual(["mutateSupporterWithAudit"]);
+    expect(repo.calls[0]?.payload).toMatchObject({ operation: "update", roles: ["volunteer"] });
+    repo.calls.length = 0;
+    repo.appendConsentsWithAudit = async (command) => {
+      repo.calls.push({ name: "appendConsentsWithAudit", payload: command });
+    };
+    await service.appendConsents({
+      actorUserId: null,
+      supporterId: "8bda8e40-cf39-4659-8be8-f2d74f9d2046",
+      input: { source: "phone_call", email: true },
+    });
+    expect(repo.calls.map((call) => call.name)).toEqual(["appendConsentsWithAudit"]);
+  });
   test("normalizes email when creating a supporter, stores selected roles, and audits", async () => {
     const repo = createFakeRepository();
     const service = createCrmService({

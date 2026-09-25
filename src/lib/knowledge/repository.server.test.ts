@@ -96,6 +96,10 @@ function createClient(data?: RowSource) {
       calls.push({ name: "from", table });
       return createBuilder(calls, data);
     },
+    rpc(name: string, args: unknown) {
+      calls.push({ name: "rpc", functionName: name, args });
+      return Promise.resolve({ data: row, error: null });
+    },
     storage: {
       from(bucket: string) {
         return {
@@ -307,50 +311,41 @@ describe("Supabase knowledge repository", () => {
     expect(orCall?.filter).toContain(`cat\\_\\%${escapedQuote}`);
   });
 
-  test("upserts document destinations and writes audit rows", async () => {
+  test("upserts document destinations through the audited RPC", async () => {
     const client = createClient();
     const repo = createSupabaseKnowledgeRepository(client as never);
-    await repo.upsert({
-      title: "Doc",
-      topic: "adoption",
-      shortIntro: "Intro",
-      sourceName: null,
-      destination: { kind: "document", assetId: "11111111-2222-4333-8444-555555555555" },
-      isPublished: false,
-      sortOrder: 3,
-    });
-    await repo.insertAuditLog({
-      actor_user_id: "admin-1",
-      action: "knowledge_post.create",
-      entity: "knowledge_post",
-      entity_id: "post-1",
-      detail: {},
-      timestamp: "2026-07-22T00:00:00.000Z",
-    });
-    expect(client.calls).toContainEqual({
-      name: "upsert",
-      payload: {
+    await repo.upsert(
+      {
         title: "Doc",
         topic: "adoption",
-        short_intro: "Intro",
-        source_name: null,
-        external_url: null,
-        document_asset_id: "11111111-2222-4333-8444-555555555555",
-        zh_hk_document_asset_id: null,
-        en_document_asset_id: null,
-        is_published: false,
-        sort_order: 3,
+        shortIntro: "Intro",
+        sourceName: null,
+        destination: { kind: "document", assetId: "11111111-2222-4333-8444-555555555555" },
+        isPublished: false,
+        sortOrder: 3,
       },
-    });
+      "auth-1",
+    );
     expect(client.calls).toContainEqual({
-      name: "insert",
-      payload: {
-        actor_user_id: "admin-1",
-        action: "knowledge_post.create",
-        entity: "knowledge_post",
-        entity_id: "post-1",
-        detail: {},
-        timestamp: "2026-07-22T00:00:00.000Z",
+      name: "rpc",
+      functionName: "mutate_admin_content_with_audit",
+      args: {
+        p_actor_user_id: "auth-1",
+        p_entity: "knowledge_post",
+        p_operation: "upsert",
+        p_id: null,
+        p_payload: {
+          title: "Doc",
+          topic: "adoption",
+          short_intro: "Intro",
+          source_name: null,
+          external_url: null,
+          document_asset_id: "11111111-2222-4333-8444-555555555555",
+          zh_hk_document_asset_id: null,
+          en_document_asset_id: null,
+          is_published: false,
+          sort_order: 3,
+        },
       },
     });
   });
@@ -359,33 +354,43 @@ describe("Supabase knowledge repository", () => {
     const client = createClient();
     const repo = createSupabaseKnowledgeRepository(client as never);
 
-    await repo.upsert({
-      title: "Guide",
-      topic: "adoption",
-      shortIntro: "Intro",
-      sourceName: null,
-      destination: {
-        kind: "document_pair",
-        zhHkAssetId: zhId,
-        enAssetId: enId,
-      },
-      isPublished: false,
-      sortOrder: 4,
-    });
-
-    expect(client.calls).toContainEqual({
-      name: "upsert",
-      payload: {
+    await repo.upsert(
+      {
         title: "Guide",
         topic: "adoption",
-        short_intro: "Intro",
-        source_name: null,
-        external_url: null,
-        document_asset_id: null,
-        zh_hk_document_asset_id: zhId,
-        en_document_asset_id: enId,
-        is_published: false,
-        sort_order: 4,
+        shortIntro: "Intro",
+        sourceName: null,
+        destination: {
+          kind: "document_pair",
+          zhHkAssetId: zhId,
+          enAssetId: enId,
+        },
+        isPublished: false,
+        sortOrder: 4,
+      },
+      "auth-1",
+    );
+
+    expect(client.calls).toContainEqual({
+      name: "rpc",
+      functionName: "mutate_admin_content_with_audit",
+      args: {
+        p_actor_user_id: "auth-1",
+        p_entity: "knowledge_post",
+        p_operation: "upsert",
+        p_id: null,
+        p_payload: {
+          title: "Guide",
+          topic: "adoption",
+          short_intro: "Intro",
+          source_name: null,
+          external_url: null,
+          document_asset_id: null,
+          zh_hk_document_asset_id: zhId,
+          en_document_asset_id: enId,
+          is_published: false,
+          sort_order: 4,
+        },
       },
     });
   });

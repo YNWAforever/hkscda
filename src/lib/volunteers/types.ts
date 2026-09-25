@@ -72,6 +72,9 @@ export type VolunteerActivitySummary = VolunteerActivityRuleSnapshot & {
   location: string;
   pendingParticipants: number;
   remainingCapacity: number;
+  // The anonymous registration API cannot create future bookings under current policy.
+  publicRegistrationAvailable?: boolean;
+  publicRegistrationUnavailableReason?: "current_policy_required";
   createdAt: string;
   updatedAt: string;
 };
@@ -107,6 +110,11 @@ export type VolunteerRegistrationSummary = {
 
 export type VolunteerRegistrationDetail = VolunteerRegistrationSummary & {
   activity: VolunteerActivityDetail;
+};
+
+export type VolunteerRegistrationCreateResult = {
+  registration: VolunteerRegistrationDetail;
+  created: boolean;
 };
 
 export type VolunteerRegistrationCreateInput = {

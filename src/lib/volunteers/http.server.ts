@@ -41,6 +41,16 @@ async function withVolunteerErrors(operation: () => Promise<Response>, publicReq
   } catch (error) {
     if (error instanceof Response) return error;
     if (error instanceof z.ZodError) {
+      if (publicRequest && error.issues.some((issue) => issue.path[0] === "submissionToken")) {
+        return jsonResponse(
+          {
+            code: "submission_token_required",
+            error:
+              "submissionToken must be 32 random bytes encoded as canonical base64url. Generate it once per registration and reuse it on retries.",
+          },
+          { status: 400 },
+        );
+      }
       return jsonResponse(
         {
           error: publicRequest

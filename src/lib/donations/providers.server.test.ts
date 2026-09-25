@@ -1,12 +1,60 @@
 import { describe, expect, test } from "bun:test";
 
-import { assertPayPalCaptureCompleted, stripeCheckoutPaymentMethodTypes } from "./providers.server";
+import {
+  assertPayPalCaptureCompleted,
+  createPayPalOrder,
+  stripeCheckoutPaymentMethodTypes,
+} from "./providers.server";
 
 test("keeps Stripe Checkout card-only", () => {
   expect(stripeCheckoutPaymentMethodTypes).toEqual(["card"]);
   expect(stripeCheckoutPaymentMethodTypes).not.toContain("alipay");
 });
 
+test("sends the stable payment id as PayPal-Request-Id when creating an order", async () => {
+  const originalFetch = globalThis.fetch;
+  const originalClientId = process.env.PAYPAL_CLIENT_ID;
+  const originalClientSecret = process.env.PAYPAL_CLIENT_SECRET;
+  const originalApiBase = process.env.PAYPAL_API_BASE;
+  const requests: Array<{ url: string; headers: Headers }> = [];
+  try {
+    process.env.PAYPAL_CLIENT_ID = "test-client";
+    process.env.PAYPAL_CLIENT_SECRET = "test-secret";
+    process.env.PAYPAL_API_BASE = "https://paypal.test";
+    globalThis.fetch = (async (input, init) => {
+      const url = String(input);
+      requests.push({ url, headers: new Headers(init?.headers) });
+      if (url.endsWith("/v1/oauth2/token")) {
+        return Response.json({ access_token: "test-access-token" });
+      }
+      return Response.json(
+        { id: "ORDER-1", links: [{ rel: "payer-action", href: "https://paypal.test/approve" }] },
+        { status: 201 },
+      );
+    }) as typeof fetch;
+
+    const result = await createPayPalOrder({
+      donationId: "donation-1",
+      paymentId: "payment-1",
+      amountCents: 30000,
+      donorEmail: "donor@example.com",
+      purpose: "medical",
+      checkoutExperience: "desktop_qr",
+    });
+
+    expect(result.providerRef).toBe("ORDER-1");
+    expect(requests[1]?.url).toBe("https://paypal.test/v2/checkout/orders");
+    expect(requests[1]?.headers.get("PayPal-Request-Id")).toBe("payment-1");
+  } finally {
+    globalThis.fetch = originalFetch;
+    if (originalClientId === undefined) delete process.env.PAYPAL_CLIENT_ID;
+    else process.env.PAYPAL_CLIENT_ID = originalClientId;
+    if (originalClientSecret === undefined) delete process.env.PAYPAL_CLIENT_SECRET;
+    else process.env.PAYPAL_CLIENT_SECRET = originalClientSecret;
+    if (originalApiBase === undefined) delete process.env.PAYPAL_API_BASE;
+    else process.env.PAYPAL_API_BASE = originalApiBase;
+  }
+});
 describe("PayPal capture completion", () => {
   test("accepts completed capture responses", () => {
     expect(() =>

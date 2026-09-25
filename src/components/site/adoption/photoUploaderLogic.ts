@@ -61,11 +61,13 @@ export async function uploadPhotoDirectly(
 
 export type PhotoUploadUrlsResponse = {
   applicationId: string;
+  statusToken: string;
   uploads: Array<{ category: string; path: string; signedUrl: string; token: string }>;
 };
 
 export async function requestPhotoUploadUrls(
   photos: SelectedPhoto[],
+  turnstileToken?: string | null,
 ): Promise<PhotoUploadUrlsResponse> {
   const response = await fetch("/api/adoption/applications/photo-upload-urls", {
     method: "POST",
@@ -77,17 +79,30 @@ export async function requestPhotoUploadUrls(
         mimeType: photo.file.type,
         sizeBytes: photo.file.size,
       })),
+      turnstileToken: turnstileToken ?? undefined,
     }),
   });
   const result = await response.json().catch(() => ({}));
   if (!response.ok) {
     throw new Error(typeof result.error === "string" ? result.error : "無法準備相片上傳。");
   }
+  if (
+    typeof result.applicationId !== "string" ||
+    typeof result.statusToken !== "string" ||
+    !/^[A-Za-z0-9_-]{8,128}$/.test(result.statusToken) ||
+    !Array.isArray(result.uploads)
+  ) {
+    throw new Error("上傳回覆不完整，請稍後再試。");
+  }
   return result as PhotoUploadUrlsResponse;
 }
 
-export async function uploadAllPhotos(photos: SelectedPhoto[]): Promise<{
+export async function uploadAllPhotos(
+  photos: SelectedPhoto[],
+  turnstileToken?: string | null,
+): Promise<{
   applicationId: string;
+  statusToken: string;
   uploaded: Array<{
     category: AdoptionPhotoCategory;
     fileName: string;
@@ -96,7 +111,10 @@ export async function uploadAllPhotos(photos: SelectedPhoto[]): Promise<{
     storagePath: string;
   }>;
 }> {
-  const { applicationId, uploads } = await requestPhotoUploadUrls(photos);
+  const { applicationId, uploads, statusToken } = await requestPhotoUploadUrls(
+    photos,
+    turnstileToken,
+  );
 
   const uploaded: Array<{
     category: AdoptionPhotoCategory;
@@ -119,5 +137,40 @@ export async function uploadAllPhotos(photos: SelectedPhoto[]): Promise<{
     });
   }
 
-  return { applicationId, uploaded };
+  return { applicationId, statusToken, uploaded };
+}
+
+export type CompletedPhotoUpload = Awaited<ReturnType<typeof uploadAllPhotos>>;
+
+/** Keep the issued application ID and bearer token stable across a retry in this tab. */
+export function createReusablePhotoUpload(performUpload: typeof uploadAllPhotos = uploadAllPhotos) {
+  let cached: {
+    files: Array<{ category: AdoptionPhotoCategory; file: File }>;
+    promise: Promise<CompletedPhotoUpload>;
+  } | null = null;
+  const sameFiles = (photos: SelectedPhoto[]) =>
+    cached !== null &&
+    cached.files.length === photos.length &&
+    photos.every(
+      (photo, index) =>
+        cached?.files[index]?.category === photo.category &&
+        cached.files[index]?.file === photo.file,
+    );
+  return {
+    has: sameFiles,
+    async upload(photos: SelectedPhoto[], turnstileToken?: string | null) {
+      if (sameFiles(photos) && cached) return cached.promise;
+      const promise = performUpload(photos, turnstileToken);
+      cached = {
+        files: photos.map((photo) => ({ category: photo.category, file: photo.file })),
+        promise,
+      };
+      try {
+        return await promise;
+      } catch (error) {
+        if (cached?.promise === promise) cached = null;
+        throw error;
+      }
+    },
+  };
 }

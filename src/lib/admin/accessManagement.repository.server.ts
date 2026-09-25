@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { AdminAccessError } from "./accessManagement.server";
 
 import { getEmailConfig } from "../donations/config.server";
 
@@ -7,8 +8,6 @@ import type {
   AdminAccessAuditRow,
   AdminAccessRepository,
   AdminAccessUser,
-  AdminAccessUserInsert,
-  AdminAccessUserUpdate,
   AdminInviteAuthProvider,
 } from "./accessManagement.server";
 
@@ -37,6 +36,23 @@ type AuditRow = {
 
 const adminUserSelect =
   "id,auth_user_id,email,role,status,invited_at,invite_sent_at,invite_accepted_at,last_invited_by,created_at,updated_at";
+
+const ADMIN_RPC_ERRORS: Record<string, { message: string; status: number }> = {
+  admin_actor_denied: { message: "Active admin access is required", status: 403 },
+  admin_user_not_found: { message: "Admin user not found", status: 404 },
+  duplicate_admin_user: {
+    message: "An active or pending admin already exists for this email",
+    status: 409,
+  },
+  invite_not_pending: { message: "Only pending invites can be resent", status: 422 },
+  empty_admin_user_update: { message: "At least one admin user field is required", status: 422 },
+  invalid_role: { message: "Invalid admin role", status: 422 },
+  invalid_status: { message: "Invalid admin status", status: 422 },
+  invalid_status_transition: { message: "Invalid admin status transition", status: 422 },
+  self_demote: { message: "You cannot remove your own admin role", status: 422 },
+  self_disable: { message: "You cannot disable your own admin user", status: 422 },
+  last_active_admin: { message: "At least one active admin user must remain", status: 422 },
+};
 
 const ACCESS_AUDIT_ACTIONS = [
   "admin_user.invite",
@@ -117,30 +133,51 @@ export function createSupabaseAdminAccessRepository(client: SupabaseClient): Adm
       return count ?? 0;
     },
 
-    async insertUser(input: AdminAccessUserInsert) {
-      const { data, error } = await client
-        .from("admin_user")
-        .insert(input)
-        .select(adminUserSelect)
-        .single();
-      if (error) throw error;
+    async inviteUserWithAudit(input) {
+      const { data, error } = await client.rpc("invite_admin_user_with_audit", {
+        p_actor_user_id: input.actorUserId,
+        p_auth_user_id: input.authUserId,
+        p_email: input.email,
+        p_role: input.role,
+        p_sent_at: input.sentAt,
+      });
+      if (error) {
+        const known = error.code === "P0001" ? ADMIN_RPC_ERRORS[error.message] : undefined;
+        if (known) throw new AdminAccessError(error.message, known.message, known.status);
+        throw error;
+      }
+      if (!data) throw new Error("Admin invite RPC returned no user");
       return mapUser(data as AdminAccessUserRow);
     },
 
-    async updateUser(id: string, input: AdminAccessUserUpdate) {
-      const { data, error } = await client
-        .from("admin_user")
-        .update(input)
-        .eq("id", id)
-        .select(adminUserSelect)
-        .single();
-      if (error) throw error;
+    async resendInviteWithAudit(input) {
+      const { data, error } = await client.rpc("resend_admin_invite_with_audit", {
+        p_actor_user_id: input.actorUserId,
+        p_target_id: input.userId,
+        p_sent_at: input.sentAt,
+      });
+      if (error) {
+        const known = error.code === "P0001" ? ADMIN_RPC_ERRORS[error.message] : undefined;
+        if (known) throw new AdminAccessError(error.message, known.message, known.status);
+        throw error;
+      }
+      if (!data) throw new Error("Admin resend RPC returned no user");
       return mapUser(data as AdminAccessUserRow);
     },
-
-    async insertAuditLog(input) {
-      const { error } = await client.from("audit_log").insert(input);
-      if (error) throw error;
+    async updateUserWithAudit(input) {
+      const { data, error } = await client.rpc("update_admin_user_with_audit", {
+        p_actor_user_id: input.actorUserId,
+        p_target_id: input.userId,
+        p_role: input.role ?? null,
+        p_status: input.status ?? null,
+      });
+      if (error) {
+        const known = error.code === "P0001" ? ADMIN_RPC_ERRORS[error.message] : undefined;
+        if (known) throw new AdminAccessError(error.message, known.message, known.status);
+        throw error;
+      }
+      if (!data) throw new Error("Admin update RPC returned no user");
+      return mapUser(data as AdminAccessUserRow);
     },
 
     async listAudit(page = 1) {
@@ -209,12 +246,23 @@ export function createSupabaseInviteAuthProvider(
 ): AdminInviteAuthProvider {
   return {
     async inviteByEmail(email) {
-      const { data, error } = await client.auth.admin.inviteUserByEmail(email);
+      const { data, error } = await client.auth.admin.generateLink({
+        type: "invite",
+        email,
+      });
       if (error) throw error;
       if (!data.user?.id) {
-        throw new Error("Supabase invite did not return a user id");
+        throw new Error("Supabase invite link generation did not return a user id");
       }
-      return { authUserId: data.user.id, email: data.user.email ?? email };
+      const actionLink = data.properties?.action_link;
+      if (!actionLink) {
+        throw new Error("Supabase invite link generation did not return an action link");
+      }
+      return { authUserId: data.user.id, email: data.user.email ?? email, actionLink };
+    },
+
+    async sendInviteEmail(input) {
+      await (options.sendInviteEmail ?? sendAdminInviteEmail)(input);
     },
 
     async resendInvite(email) {
@@ -229,10 +277,7 @@ export function createSupabaseInviteAuthProvider(
         throw new Error("Supabase invite link generation did not return an action link");
       }
 
-      await (options.sendInviteEmail ?? sendAdminInviteEmail)({
-        to: email,
-        actionLink,
-      });
+      return { actionLink };
     },
   };
 }

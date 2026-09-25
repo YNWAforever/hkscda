@@ -160,6 +160,7 @@ function requirePost(client: SupabaseClient, data: unknown) {
 
 export function createSupabaseKnowledgeRepository(client: SupabaseClient): KnowledgeRepository {
   return {
+    usesAtomicAudit: true,
     async listPublished() {
       const [pairResult, legacyResult] = await Promise.all([
         client
@@ -225,17 +226,28 @@ export function createSupabaseKnowledgeRepository(client: SupabaseClient): Knowl
       };
     },
 
-    async upsert(input: KnowledgePostInput) {
-      const query = input.id
-        ? client.from("knowledge_posts").update(toRow(input)).eq("id", input.id)
-        : client.from("knowledge_posts").upsert(toRow(input));
-      const { data, error } = await query.select(POST_COLUMNS).single();
+    async upsert(input: KnowledgePostInput, actorUserId?: string) {
+      if (!actorUserId) throw new Error("Actor user ID required");
+      const { data, error } = await client.rpc("mutate_admin_content_with_audit", {
+        p_actor_user_id: actorUserId,
+        p_entity: "knowledge_post",
+        p_operation: "upsert",
+        p_id: input.id ?? null,
+        p_payload: toRow(input),
+      });
       if (error) throw error;
       return requirePost(client, data);
     },
 
-    async remove(id: string) {
-      const { error } = await client.from("knowledge_posts").delete().eq("id", id);
+    async remove(id: string, actorUserId?: string) {
+      if (!actorUserId) throw new Error("Actor user ID required");
+      const { error } = await client.rpc("mutate_admin_content_with_audit", {
+        p_actor_user_id: actorUserId,
+        p_entity: "knowledge_post",
+        p_operation: "delete",
+        p_id: id,
+        p_payload: {},
+      });
       if (error) throw error;
     },
 

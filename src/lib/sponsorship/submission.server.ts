@@ -1,7 +1,7 @@
 import { ZodError } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { createStatusTokenPair, statusTokenExpiry } from "../publicAdoption/statusToken.server";
+import { hashStatusToken, statusTokenExpiry } from "../publicAdoption/statusToken.server";
 import { renderPledgeConfirmationEmail } from "./emailTemplates.server";
 import {
   type SponsorshipPaymentProofMetadata,
@@ -74,6 +74,55 @@ function buildStatusUrl(appUrl: string, rawToken: string) {
   return `${appUrl.replace(/\/+$/, "")}/sponsors/status/${encodeURIComponent(rawToken)}`;
 }
 
+export type SponsorshipPledgeRetry =
+  | { kind: "new" }
+  | { kind: "recovered"; pledgeId: string; reference: string; statusUrl: string }
+  | { kind: "forbidden" }
+  | { kind: "expired" };
+
+/** Only the bearer that supplied the original 256-bit token can recover a lost response. */
+export async function lookupSponsorshipPledgeRetry(
+  client: PublicSponsorshipSupabaseClient,
+  pledgeId: string,
+  rawToken: string,
+  appUrl = getAppUrl(),
+  now = new Date(),
+): Promise<SponsorshipPledgeRetry> {
+  const { data: token, error: tokenError } = await client
+    .from("public_status_token")
+    .select("entity_type,entity_id,expires_at,revoked_at")
+    .eq("token_hash", hashStatusToken(rawToken))
+    .maybeSingle<{
+      entity_type: string;
+      entity_id: string;
+      expires_at: string;
+      revoked_at: string | null;
+    }>();
+  if (tokenError) throw tokenError;
+
+  const { data: pledge, error: pledgeError } = await client
+    .from("sponsorship_pledge")
+    .select("id")
+    .eq("id", pledgeId)
+    .maybeSingle<{ id: string }>();
+  if (pledgeError) throw pledgeError;
+
+  if (!token) return pledge ? { kind: "forbidden" } : { kind: "new" };
+  if (token.entity_type !== "sponsorship_pledge" || token.entity_id !== pledgeId || !pledge) {
+    return { kind: "forbidden" };
+  }
+  const expiry = Date.parse(token.expires_at);
+  if (token.revoked_at || !Number.isFinite(expiry) || expiry <= now.getTime()) {
+    return { kind: "expired" };
+  }
+  return {
+    kind: "recovered",
+    pledgeId,
+    reference: pledgeReference(pledgeId),
+    statusUrl: buildStatusUrl(appUrl, rawToken),
+  };
+}
+
 export type UploadedProofReference = {
   fileName: string;
   mimeType: string;
@@ -84,13 +133,14 @@ export type UploadedProofReference = {
 export type SponsorshipSubmissionRequestBody = {
   payload: unknown;
   pledgeId: string;
+  statusToken: string;
   proof?: UploadedProofReference;
   turnstileToken?: string;
 };
 
 export function parseSponsorshipSubmission(
   body: unknown,
-): ParsedSponsorshipMultipart & { pledgeId: string } {
+): ParsedSponsorshipMultipart & { pledgeId: string; statusToken: string } {
   if (typeof body !== "object" || body === null) {
     throw new SubmissionValidationError("Invalid sponsorship pledge request body");
   }
@@ -98,6 +148,15 @@ export function parseSponsorshipSubmission(
 
   if (typeof raw.pledgeId !== "string" || !raw.pledgeId) {
     throw new SubmissionValidationError("Missing sponsorship pledge id");
+  }
+  if (
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(raw.pledgeId)
+  ) {
+    throw new SubmissionValidationError("Invalid sponsorship pledge id");
+  }
+
+  if (typeof raw.statusToken !== "string" || !/^[A-Za-z0-9_-]{43}$/.test(raw.statusToken)) {
+    throw new SubmissionValidationError("Invalid sponsorship status token");
   }
 
   const parsed = sponsorshipPledgeSubmissionSchema.parse(raw.payload);
@@ -133,14 +192,14 @@ export function parseSponsorshipSubmission(
     payload: turnstileToken ? { ...parsed, turnstileToken } : parsed,
     proof,
     pledgeId: raw.pledgeId,
+    statusToken: raw.statusToken,
   };
 }
 
 type PersistSponsorshipPledgeInput = {
   client: PublicSponsorshipSupabaseClient;
-  parsed: ParsedSponsorshipMultipart & { pledgeId: string };
+  parsed: ParsedSponsorshipMultipart & { pledgeId: string; statusToken: string };
   now?: () => Date;
-  createStatusTokenPair?: typeof createStatusTokenPair;
   appUrl?: string;
   logger?: Pick<Console, "error">;
   /**
@@ -196,7 +255,6 @@ export async function persistSponsorshipPledge({
   client,
   parsed,
   now = () => new Date(),
-  createStatusTokenPair: makeStatusToken = createStatusTokenPair,
   appUrl = getAppUrl(),
   logger = console,
   resolvePublicIdentity: resolveIdentity = createPublicIdentityRepository(client).resolve,
@@ -304,7 +362,10 @@ export async function persistSponsorshipPledge({
     }
 
     const reference = pledgeReference(pledgeId);
-    const token = makeStatusToken();
+    const token = {
+      rawToken: parsed.statusToken,
+      tokenHash: hashStatusToken(parsed.statusToken),
+    };
     const expiresAt = statusTokenExpiry(now);
     requireNoError(
       await client.from("public_status_token").insert({
@@ -342,7 +403,7 @@ type EmailSender = {
     replyTo?: string;
     subject: string;
     html: string;
-  }): Promise<unknown>;
+  }): Promise<{ error?: unknown }>;
 };
 
 type SendPledgeConfirmationEmailDeps = {
@@ -351,7 +412,7 @@ type SendPledgeConfirmationEmailDeps = {
   logger?: Pick<Console, "error">;
 };
 
-export type SponsorshipConfirmationEmailResult = "queued" | "sent" | "failed";
+export type SponsorshipConfirmationEmailResult = "sent" | "failed";
 
 async function defaultCreateEmailSender(apiKey: string): Promise<EmailSender> {
   const { Resend } = await import("resend");
@@ -391,7 +452,7 @@ export async function sendPledgeConfirmationEmail(
     .insert({
       supporter_id: result.supporterId,
       channel: "email",
-      status: "queued",
+      status: config.resendApiKey ? "queued" : "failed",
       payload: messagePayload,
     })
     .select("id")
@@ -402,27 +463,32 @@ export async function sendPledgeConfirmationEmail(
   }
 
   const messageId = (message as { id: string }).id;
-  if (!config.resendApiKey) return "queued";
+  if (!config.resendApiKey) return "failed";
 
   try {
     const emails = await createEmailSender(config.resendApiKey);
-    await emails.send({
+    const sendResult = await emails.send({
       from: config.from,
       to: payload.contact.email,
       replyTo: config.replyTo,
       subject: email.subject,
       html: email.html,
     });
+    if (sendResult.error) throw sendResult.error;
   } catch (error) {
     logger.error("Failed to send sponsorship pledge confirmation email", error);
     await client.from("message").update({ status: "failed" }).eq("id", messageId);
     return "failed";
   }
 
-  await client
+  const { error: statusError } = await client
     .from("message")
     .update({ status: "sent", sent_at: new Date().toISOString() })
     .eq("id", messageId);
+  if (statusError) {
+    logger.error("Failed to record sent sponsorship pledge confirmation email", statusError);
+    return "failed";
+  }
   return "sent";
 }
 

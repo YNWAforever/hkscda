@@ -10,11 +10,27 @@ function createFakeRepository(): DonationRepository & {
   resolvedContacts: unknown[];
 } {
   const supporter = { id: "supporter-1", email: "donor@example.com" };
-  const donation = { id: "f8dce8fa-83f4-4d5f-b0b0-fbc3348efb7a", amount_cents: 30000 };
-  const payments: unknown[] = [];
   const donations: unknown[] = [];
+  const payments: unknown[] = [];
   const supporterConsents: unknown[] = [];
   const resolvedContacts: unknown[] = [];
+  const donationRows = new Map<
+    string,
+    {
+      id: string;
+      supporter_id: string;
+      created_at: string;
+      amount_cents: number;
+      idempotency_fingerprint: string;
+    }
+  >();
+  type Payment = Parameters<DonationRepository["createPayment"]>[0] & {
+    id: string;
+    checkout_url: string | null;
+    checkout_attempted_at: string | null;
+    provider_order_ref?: string | null;
+  };
+  const paymentRows = new Map<string, Payment>();
 
   return {
     supporterConsents,
@@ -27,17 +43,58 @@ function createFakeRepository(): DonationRepository & {
     },
     async ensureSupporterRole() {},
     async replaceConsents(rows) {
-      supporterConsents.push(...rows);
+      for (const row of rows) {
+        if (
+          !supporterConsents.some((existing) => JSON.stringify(existing) === JSON.stringify(row))
+        ) {
+          supporterConsents.push(row);
+        }
+      }
+    },
+    async findDonationByIdempotencyKey(key) {
+      return donationRows.get(key) ?? null;
     },
     async createDonation(input) {
       donations.push(input);
-      return donation;
+      const row = {
+        id: "f8dce8fa-83f4-4d5f-b0b0-fbc3348efb7a",
+        supporter_id: supporter.id,
+        created_at: "2026-06-24T10:00:00.000Z",
+        amount_cents: input.amount_cents,
+        idempotency_fingerprint: input.idempotency_fingerprint,
+      };
+      donationRows.set(input.idempotency_key, row);
+      return row;
+    },
+    async findPaymentByIdempotencyKey(key) {
+      return paymentRows.get(key) ?? null;
     },
     async createPayment(payment) {
       payments.push(payment);
-      return { id: "payment-1", ...payment };
+      const row: Payment = {
+        id: "payment-1",
+        ...payment,
+        checkout_url: null,
+        checkout_attempted_at: null,
+      };
+      paymentRows.set(payment.idempotency_key, row);
+      return row;
     },
-    async updatePaymentProviderRef(paymentId, providerRef, providerOrderRef) {
+    async beginCheckoutAttempt(paymentId, timestamp) {
+      const row = [...paymentRows.values()].find((payment) => payment.id === paymentId);
+      if (!row) throw new Error("payment missing");
+      if (row.checkout_attempted_at) {
+        return { attemptedAt: row.checkout_attempted_at, claimed: false };
+      }
+      row.checkout_attempted_at = timestamp;
+      return { attemptedAt: timestamp, claimed: true };
+    },
+    async updatePaymentProviderRef(paymentId, providerRef, checkoutUrl, providerOrderRef) {
+      const row = [...paymentRows.values()].find((payment) => payment.id === paymentId);
+      if (!row) throw new Error("payment missing");
+      row.provider_ref = providerRef;
+      row.checkout_url = checkoutUrl;
+      row.provider_order_ref = providerOrderRef ?? null;
       payments.push({
         id: paymentId,
         provider_ref: providerRef,
@@ -46,7 +103,6 @@ function createFakeRepository(): DonationRepository & {
     },
   };
 }
-
 const providers: PaymentProviders = {
   async createStripeCheckout() {
     return { providerRef: "cs_test_123", url: "https://checkout.stripe.test/session" };
@@ -64,6 +120,7 @@ const providers: PaymentProviders = {
 };
 
 const baseInput = {
+  idempotencyKey: "e15e9832-469b-4710-b2ea-244d8a39aa12",
   amountCents: 30000,
   currency: "HKD" as const,
   purpose: "medical" as const,
@@ -78,6 +135,134 @@ const baseInput = {
 };
 
 describe("createDonation", () => {
+  test("replays the same checkout intent without a second donation, payment, or provider call", async () => {
+    const repository = createFakeRepository();
+    let checkoutCalls = 0;
+    const countingProviders: PaymentProviders = {
+      ...providers,
+      async createStripeCheckout(input) {
+        checkoutCalls += 1;
+        return providers.createStripeCheckout(input);
+      },
+    };
+
+    const args = {
+      input: { ...baseInput, method: "stripe" as const },
+      repository,
+      providers: countingProviders,
+    };
+    const first = await createDonation(args);
+    const replay = await createDonation(args);
+
+    expect(replay).toEqual(first);
+    expect(repository.donations).toHaveLength(1);
+    expect(
+      repository.payments.filter((payment) => "donation_id" in (payment as object)),
+    ).toHaveLength(1);
+    expect(checkoutCalls).toBe(1);
+    expect(repository.supporterConsents).toHaveLength(1);
+  });
+
+  test("keeps the same payment for retry after provider reference persistence fails", async () => {
+    const repository = createFakeRepository();
+    let updateCalls = 0;
+    let checkoutCalls = 0;
+    repository.updatePaymentProviderRef = async () => {
+      updateCalls += 1;
+      if (updateCalls === 1) throw new Error("temporary database outage");
+    };
+    const countingProviders: PaymentProviders = {
+      ...providers,
+      async createStripeCheckout(input) {
+        checkoutCalls += 1;
+        expect(input.paymentId).toBe("payment-1");
+        return providers.createStripeCheckout(input);
+      },
+    };
+    const args = {
+      input: { ...baseInput, method: "stripe" as const },
+      repository,
+      providers: countingProviders,
+    };
+
+    await expect(createDonation(args)).rejects.toThrow("temporary database outage");
+    const replay = await createDonation(args);
+
+    expect(replay.kind).toBe("redirect");
+    expect(repository.donations).toHaveLength(1);
+    expect(
+      repository.payments.filter((payment) => "donation_id" in (payment as object)),
+    ).toHaveLength(1);
+    expect(checkoutCalls).toBe(2);
+  });
+
+  test("rejects a changed request that reuses an existing key", async () => {
+    const repository = createFakeRepository();
+    const input = { ...baseInput, method: "stripe" as const };
+    await createDonation({ input, repository, providers });
+
+    await expect(
+      createDonation({
+        input: { ...input, amountCents: 40000 },
+        repository,
+        providers,
+      }),
+    ).rejects.toThrow("Donation intent conflicts");
+    expect(repository.donations).toHaveLength(1);
+  });
+
+  test("stops an uncertain Stripe checkout after the provider retry window", async () => {
+    const repository = createFakeRepository();
+    let checkoutCalls = 0;
+    const flakyProviders: PaymentProviders = {
+      ...providers,
+      async createStripeCheckout() {
+        checkoutCalls += 1;
+        throw new Error("provider response lost");
+      },
+    };
+    const input = { ...baseInput, method: "stripe" as const };
+    await expect(
+      createDonation({
+        input,
+        repository,
+        providers: flakyProviders,
+        now: () => new Date("2026-09-25T00:00:00Z"),
+      }),
+    ).rejects.toThrow("provider response lost");
+
+    await expect(
+      createDonation({
+        input,
+        repository,
+        providers: flakyProviders,
+        now: () => new Date("2026-09-25T01:01:00Z"),
+      }),
+    ).rejects.toThrow("Checkout outcome is uncertain");
+    expect(checkoutCalls).toBe(1);
+  });
+
+  test("never retries an uncertain COD order creation", async () => {
+    const repository = createFakeRepository();
+    let checkoutCalls = 0;
+    const flakyProviders: PaymentProviders = {
+      ...providers,
+      async createCodAlipayHkCheckout() {
+        checkoutCalls += 1;
+        throw new Error("provider response lost");
+      },
+    };
+    const args = {
+      input: { ...baseInput, method: "alipayhk" as const },
+      repository,
+      providers: flakyProviders,
+    };
+
+    await expect(createDonation(args)).rejects.toThrow("Checkout outcome is uncertain");
+    await expect(createDonation(args)).rejects.toThrow("Checkout outcome is uncertain");
+    expect(checkoutCalls).toBe(1);
+    expect(repository.donations).toHaveLength(1);
+  });
   test("creates pending manual FPS donations with a unique reference", async () => {
     const repository = createFakeRepository();
 
@@ -100,7 +285,7 @@ describe("createDonation", () => {
         amountCents: 30000,
       },
     });
-    expect(repository.payments).toContainEqual({
+    expect(repository.payments[0]).toMatchObject({
       donation_id: "f8dce8fa-83f4-4d5f-b0b0-fbc3348efb7a",
       provider: "fps",
       provider_ref: "HKSCDA-F8DCE8FA",
@@ -167,41 +352,33 @@ describe("createDonation", () => {
     expect(checkoutInput).not.toHaveProperty("customPurpose");
   });
 
-  test("compensates by deleting the donation and payment when checkout fails", async () => {
+  test("keeps the intent and payment when a checkout response is uncertain", async () => {
     const repository = createFakeRepository();
-    const deleted = { payments: [] as string[], donations: [] as string[] };
-    repository.deletePayment = async (id) => {
-      deleted.payments.push(id);
-    };
-    repository.deleteDonation = async (id) => {
-      deleted.donations.push(id);
-    };
-
-    const failingProviders: PaymentProviders = {
-      async createStripeCheckout() {
-        throw new Error("stripe unavailable");
-      },
-      async createPayPalOrder() {
-        throw new Error("paypal unavailable");
-      },
-      async createCodAlipayHkCheckout() {
-        throw new Error("cod unavailable");
+    let calls = 0;
+    const flakyProviders: PaymentProviders = {
+      ...providers,
+      async createStripeCheckout(input) {
+        calls += 1;
+        if (calls === 1) throw new Error("provider response lost");
+        expect(input.paymentId).toBe("payment-1");
+        return providers.createStripeCheckout(input);
       },
     };
+    const args = {
+      input: { ...baseInput, method: "stripe" as const },
+      repository,
+      providers: flakyProviders,
+    };
 
-    await expect(
-      createDonation({
-        input: { ...baseInput, method: "stripe" as const },
-        repository,
-        providers: failingProviders,
-        now: () => new Date("2026-06-24T10:00:00.000Z"),
-      }),
-    ).rejects.toThrow("stripe unavailable");
-
-    expect(deleted.payments).toEqual(["payment-1"]);
-    expect(deleted.donations).toEqual(["f8dce8fa-83f4-4d5f-b0b0-fbc3348efb7a"]);
+    await expect(createDonation(args)).rejects.toThrow("provider response lost");
+    const replay = await createDonation(args);
+    expect(replay.kind).toBe("redirect");
+    expect(repository.donations).toHaveLength(1);
+    expect(
+      repository.payments.filter((payment) => "donation_id" in (payment as object)),
+    ).toHaveLength(1);
+    expect(calls).toBe(2);
   });
-
   test("creates Stripe checkout donations and stores the checkout session id", async () => {
     const repository = createFakeRepository();
 
@@ -266,7 +443,7 @@ describe("createDonation", () => {
       now: () => new Date("2026-06-24T10:00:00.000Z"),
     });
 
-    expect(repository.payments).toContainEqual({
+    expect(repository.payments[0]).toMatchObject({
       donation_id: "f8dce8fa-83f4-4d5f-b0b0-fbc3348efb7a",
       provider: "cod",
       provider_ref: null,

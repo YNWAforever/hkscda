@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { resolveAvailableShelter } from "./resolveInternshipShelter";
 import {
   VerifiedEmailSignIn,
   useVerifiedSession,
@@ -50,6 +51,7 @@ export function InternshipForm() {
   const [shelter, setShelter] = useState("cat");
   const [statement, setStatement] = useState("");
   const [supplement, setSupplement] = useState("");
+  const availableShelter = resolveAvailableShelter(shelter, intake?.settings.shelters ?? []);
   const post = useCallback(
     async (body: object) => {
       const response = await fetch("/api/internships", {
@@ -238,6 +240,7 @@ export function InternshipForm() {
               className="space-y-3"
               onSubmit={(e) => {
                 e.preventDefault();
+                if (!availableShelter) return;
                 void act({
                   action: "submit",
                   intake_version_id: intake.version,
@@ -246,7 +249,7 @@ export function InternshipForm() {
                   institution,
                   course,
                   veterinary_student: student,
-                  shelter,
+                  shelter: availableShelter,
                   statement,
                 });
               }}
@@ -273,7 +276,7 @@ export function InternshipForm() {
                 申請服務場地
                 <select
                   className={field}
-                  value={shelter}
+                  value={availableShelter}
                   onChange={(e) => setShelter(e.target.value)}
                 >
                   {intake.settings.shelters.map((key) => (
@@ -300,7 +303,7 @@ export function InternshipForm() {
                 />{" "}
                 本人現正修讀獸醫課程，並會提供在學證明供核實
               </label>
-              <button className="rounded border px-4 py-2" disabled={busy}>
+              <button className="rounded border px-4 py-2" disabled={busy || !availableShelter}>
                 提交獨立實習申請
               </button>
             </form>

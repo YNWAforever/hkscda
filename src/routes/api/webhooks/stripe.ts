@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import Stripe from "stripe";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { getStripeConfig } from "../../../lib/donations/config.server";
 import {
@@ -59,6 +60,25 @@ async function resolveChargeSessionId(
   return sessions.data[0]?.id ?? null;
 }
 
+export async function recordUnmappedStripeRefund(
+  client: SupabaseClient,
+  input: { chargeId: string; paymentIntent: string | null; eventId: string },
+) {
+  const { error } = await client.from("audit_log").insert({
+    actor_user_id: null,
+    action: "payment.refund_unreconciled",
+    entity: "payment",
+    entity_id: input.chargeId,
+    detail: {
+      provider: "stripe",
+      reason: "session_not_found",
+      chargeId: input.chargeId,
+      paymentIntent: input.paymentIntent,
+      eventId: input.eventId,
+    },
+  });
+  if (error) throw error;
+}
 export const Route = createFileRoute("/api/webhooks/stripe")({
   server: {
     handlers: {
@@ -152,18 +172,10 @@ export const Route = createFileRoute("/api/webhooks/stripe")({
                 eventId: event.id,
               },
             );
-            await base.client.from("audit_log").insert({
-              actor_user_id: null,
-              action: "payment.refund_unreconciled",
-              entity: "payment",
-              entity_id: charge.id ?? "unknown",
-              detail: {
-                provider: "stripe",
-                reason: "session_not_found",
-                chargeId: charge.id ?? null,
-                paymentIntent,
-                eventId: event.id,
-              },
+            await recordUnmappedStripeRefund(base.client, {
+              chargeId: charge.id ?? "unknown",
+              paymentIntent,
+              eventId: event.id,
             });
             return Response.json({ received: true, skipped: "session_not_found_flagged" });
           }

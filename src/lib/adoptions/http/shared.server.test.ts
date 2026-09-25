@@ -29,3 +29,10 @@ test("queryParams returns decoded plain values", () => {
     q: "ginger cat",
   });
 });
+
+test("missing-row RPC errors return 404", async () => {
+  const response = await withErrors(async () => {
+    throw { code: "P0002", message: "Task not found" };
+  });
+  expect(response.status).toBe(404);
+});

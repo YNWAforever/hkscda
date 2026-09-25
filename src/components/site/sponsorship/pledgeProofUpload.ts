@@ -11,6 +11,7 @@ export type SponsorshipProofReference = {
 
 export type PledgeSubmissionIds = {
   pledgeId: string;
+  statusToken: string;
   proof?: SponsorshipProofReference;
 };
 
@@ -70,6 +71,14 @@ export async function uploadProofDirectly(proofFile: File): Promise<ProofUploadR
  * `pledgeId` unconditionally, even for proof-less submissions -- so one is
  * generated fresh here.
  */
+/** 32 cryptographically random bytes; only a hash is persisted server-side. */
+function createPledgeStatusToken() {
+  const bytes = crypto.getRandomValues(new Uint8Array(32));
+  return btoa(String.fromCharCode(...bytes))
+    .replaceAll("+", "-")
+    .replaceAll("/", "_")
+    .replace(/=+$/, "");
+}
 export async function resolvePledgeSubmissionIds(
   includeProof: boolean,
   proofFile: File | null,
@@ -78,6 +87,7 @@ export async function resolvePledgeSubmissionIds(
     const uploadResult = await uploadProofDirectly(proofFile);
     return {
       pledgeId: uploadResult.pledgeId,
+      statusToken: createPledgeStatusToken(),
       proof: {
         fileName: proofFile.name,
         mimeType: proofFile.type,
@@ -86,5 +96,34 @@ export async function resolvePledgeSubmissionIds(
       },
     };
   }
-  return { pledgeId: crypto.randomUUID() };
+  return { pledgeId: crypto.randomUUID(), statusToken: createPledgeStatusToken() };
+}
+
+/** Keep one upload/id for one form submission, including HTTP retries. */
+export function createPledgeSubmissionAttempt() {
+  let prepared: {
+    includeProof: boolean;
+    proofFile: File | null;
+    promise: Promise<PledgeSubmissionIds>;
+  } | null = null;
+
+  return {
+    resolve(includeProof: boolean, proofFile: File | null) {
+      if (prepared && prepared.includeProof === includeProof && prepared.proofFile === proofFile) {
+        return prepared.promise;
+      }
+
+      const promise = resolvePledgeSubmissionIds(includeProof, proofFile);
+      prepared = { includeProof, proofFile, promise };
+      // A failed upload must be prepared again on retry. Once prepared, a
+      // failed pledge request keeps this id so it cannot create a second row.
+      void promise.catch(() => {
+        if (prepared?.promise === promise) prepared = null;
+      });
+      return promise;
+    },
+    reset() {
+      prepared = null;
+    },
+  };
 }

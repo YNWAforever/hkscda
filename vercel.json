@@ -26,6 +26,10 @@
     {
       "path": "/api/jobs/sponsorships",
       "schedule": "30 * * * *"
+    },
+    {
+      "path": "/api/jobs/adoption-uploads",
+      "schedule": "45 3 * * *"
     }
   ]
 }

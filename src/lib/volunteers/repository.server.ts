@@ -234,16 +234,6 @@ async function hydrateRegistrations(client: SupabaseClient, rows: RegistrationRo
   });
 }
 
-function shiftCloneDates(source: ActivityRow, nextStartsAt: string | null | undefined) {
-  if (!nextStartsAt) return { starts_at: source.starts_at, ends_at: source.ends_at };
-  if (!source.ends_at) return { starts_at: nextStartsAt, ends_at: null };
-  const duration = new Date(source.ends_at).getTime() - new Date(source.starts_at).getTime();
-  return {
-    starts_at: nextStartsAt,
-    ends_at: new Date(new Date(nextStartsAt).getTime() + duration).toISOString(),
-  };
-}
-
 function requireUpdated(result: { kind: string }) {
   if (result.kind === "updated") return;
   const status = result.kind === "not_found" ? 404 : 409;
@@ -275,7 +265,12 @@ export function createSupabaseVolunteerRepository(client: SupabaseClient): Volun
         .gte("starts_at", new Date().toISOString())
         .order("starts_at", { ascending: true });
       if (error) throw error;
-      return hydrateActivities(client, (data ?? []) as ActivityRow[]);
+      const activities = await hydrateActivities(client, (data ?? []) as ActivityRow[]);
+      return activities.map((activity) => ({
+        ...activity,
+        publicRegistrationAvailable: false,
+        publicRegistrationUnavailableReason: "current_policy_required" as const,
+      }));
     },
 
     async listActivities(input) {
@@ -327,34 +322,13 @@ export function createSupabaseVolunteerRepository(client: SupabaseClient): Volun
       requireUpdated(data);
     },
     async cloneActivity(input) {
-      const { data: source, error: sourceError } = await client
-        .from("volunteer_activity")
-        .select("*")
-        .eq("id", input.activityId)
-        .single();
-      if (sourceError) throw sourceError;
-      const sourceRow = source as ActivityRow;
-      const dates = shiftCloneDates(sourceRow, input.startsAt);
-      const { data, error } = await client
-        .from("volunteer_activity")
-        .insert({
-          type: sourceRow.type,
-          title: `${sourceRow.title} copy`,
-          description: sourceRow.description,
-          ...dates,
-          location: sourceRow.location,
-          capacity: sourceRow.capacity,
-          min_age: sourceRow.min_age,
-          underage_policy: sourceRow.underage_policy,
-          auto_approve: sourceRow.auto_approve,
-          allow_waitlist: sourceRow.allow_waitlist,
-          status: "draft",
-          registration_modes: sourceRow.registration_modes,
-        })
-        .select("id")
-        .single();
+      const { data, error } = await client.rpc("clone_volunteer_activity_with_audit", {
+        p_source_activity_id: input.activityId,
+        p_actor_user_id: input.actorUserId,
+        p_starts_at: input.startsAt ?? null,
+      });
       if (error) throw error;
-      return data.id as string;
+      return data as string;
     },
 
     resolvePublicIdentity(contact) {
@@ -379,31 +353,30 @@ export function createSupabaseVolunteerRepository(client: SupabaseClient): Volun
     },
 
     async createRegistration(input) {
-      const { data, error } = await client
-        .rpc("create_volunteer_registration", {
-          p_activity_id: input.activityId,
-          p_supporter_id: input.supporterId,
-          p_registration_type: input.registrationType,
-          p_participant_count: input.participantCount,
-          p_contact_name: input.contactName,
-          p_contact_email: input.contactEmail,
-          p_contact_phone: input.contactPhone,
-          p_language: input.language,
-          p_organization_name: input.organizationName,
-          p_declared_age: input.declaredAge,
-          p_youngest_age: input.youngestAge,
-          p_guardian_name: input.guardianName,
-          p_guardian_phone: input.guardianPhone,
-          p_notes: input.notes,
-          p_consent_email_requested: input.consentEmailRequested,
-          p_consent_whatsapp_requested: input.consentWhatsappRequested,
-          p_status_token_hash: input.statusTokenHash,
-          p_status_token_expires_at: input.statusTokenExpiresAt,
-        })
-        .single();
+      const { data, error } = await client.rpc("create_volunteer_registration_idempotent", {
+        p_activity_id: input.activityId,
+        p_supporter_id: input.supporterId,
+        p_registration_type: input.registrationType,
+        p_participant_count: input.participantCount,
+        p_contact_name: input.contactName,
+        p_contact_email: input.contactEmail,
+        p_contact_phone: input.contactPhone,
+        p_language: input.language,
+        p_organization_name: input.organizationName,
+        p_declared_age: input.declaredAge,
+        p_youngest_age: input.youngestAge,
+        p_guardian_name: input.guardianName,
+        p_guardian_phone: input.guardianPhone,
+        p_notes: input.notes,
+        p_consent_email_requested: input.consentEmailRequested,
+        p_consent_whatsapp_requested: input.consentWhatsappRequested,
+        p_status_token_hash: input.statusTokenHash,
+        p_status_token_expires_at: input.statusTokenExpiresAt,
+      });
       if (error) throw error;
-      const [registration] = await hydrateRegistrations(client, [data as RegistrationRow]);
-      return registration as VolunteerRegistrationDetail;
+      const result = data as { registration: RegistrationRow; created: boolean };
+      const [registration] = await hydrateRegistrations(client, [result.registration]);
+      return { registration: registration as VolunteerRegistrationDetail, created: result.created };
     },
 
     async listRegistrations(input) {

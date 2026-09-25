@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { hashStatusToken } from "../publicAdoption/statusToken.server";
 
 import {
   SPONSORSHIP_PROOF_BUCKET,
@@ -12,6 +13,7 @@ import {
 
 const animalId = "11111111-2222-4333-8444-555555555555";
 const pledgeId = "cccccccc-dddd-4eee-8fff-000000000000";
+const statusToken = "A".repeat(43);
 
 function basePayload(overrides: Record<string, unknown> = {}) {
   return {
@@ -63,6 +65,7 @@ function submissionBody(
   return {
     payload,
     pledgeId,
+    statusToken,
     proof,
     turnstileToken: typeof payload.turnstileToken === "string" ? payload.turnstileToken : undefined,
     ...overrides,
@@ -72,7 +75,7 @@ function submissionBody(
 function parsedSubmission(
   payloadOverrides: Record<string, unknown> = {},
   proof?: Record<string, unknown>,
-): ParsedSponsorshipMultipart & { pledgeId: string } {
+): ParsedSponsorshipMultipart & { pledgeId: string; statusToken: string } {
   return parseSponsorshipSubmission(submissionBody(basePayload(payloadOverrides), proof));
 }
 
@@ -102,6 +105,25 @@ describe("parseSponsorshipSubmission", () => {
     expect(() => parseSponsorshipSubmission(body)).toThrow("Missing sponsorship pledge id");
   });
 
+  test("rejects an invalid pledge id before database lookup", () => {
+    expect(() =>
+      parseSponsorshipSubmission(
+        submissionBody(basePayload(), undefined, { pledgeId: "not-a-uuid" }),
+      ),
+    ).toThrow(SubmissionValidationError);
+  });
+  test("rejects missing or weak status tokens", () => {
+    expect(() =>
+      parseSponsorshipSubmission(
+        submissionBody(basePayload(), undefined, { statusToken: undefined }),
+      ),
+    ).toThrow(SubmissionValidationError);
+    expect(() =>
+      parseSponsorshipSubmission(
+        submissionBody(basePayload(), undefined, { statusToken: "guessable" }),
+      ),
+    ).toThrow(SubmissionValidationError);
+  });
   test("rejects proof metadata without a proof reference", () => {
     const body = submissionBody(basePayload({ proofMetadata: proofMetadata() }));
     expect(() => parseSponsorshipSubmission(body)).toThrow(
@@ -141,6 +163,7 @@ describe("parseSponsorshipSubmission", () => {
 
     expect(parsed).toEqual({
       pledgeId,
+      statusToken,
       payload: expect.objectContaining({ turnstileToken: "test-token" }),
       proof: {
         fileName: "proof.jpg",
@@ -163,6 +186,7 @@ type StorageCall = {
 };
 type FakeClientOptions = {
   failInsertTable?: string;
+  failSentStatusUpdate?: boolean;
   supporterId?: string;
   storageObjects?: Array<{ fileName: string; sizeBytes: number; mimeType: string }>;
 };
@@ -175,6 +199,7 @@ class FakeQuery {
     private readonly state: {
       calls: QueryCall[];
       failInsertTable?: string;
+      failSentStatusUpdate?: boolean;
       supporterId: string;
     },
     private readonly table: string,
@@ -232,7 +257,10 @@ class FakeQuery {
     onrejected?: ((reason: unknown) => T2 | PromiseLike<T2>) | null,
   ) {
     const result =
-      this.action === "insert" && this.state.failInsertTable === this.table
+      (this.table === "message" &&
+        this.state.failSentStatusUpdate &&
+        (this.mutationPayload as { status?: string } | undefined)?.status === "sent") ||
+      (this.action === "insert" && this.state.failInsertTable === this.table)
         ? { data: null, error: new Error(`insert failed: ${this.table}`) }
         : { data: this.mutationPayload, error: null };
     return Promise.resolve(result).then(onfulfilled, onrejected);
@@ -249,6 +277,7 @@ function createFakeClient(options: FakeClientOptions = {}) {
     storageCalls: [] as StorageCall[],
     rpcCalls: [] as { name: string; args: Record<string, unknown> }[],
     failInsertTable: options.failInsertTable,
+    failSentStatusUpdate: options.failSentStatusUpdate,
     supporterId: options.supporterId ?? "supporter-1",
     storageObjects: options.storageObjects ?? DEFAULT_STORAGE_OBJECTS,
   };
@@ -323,8 +352,12 @@ describe("persistSponsorshipPledge", () => {
     expect(state.calls.some((c) => c.table === "sponsorship_payment_proof")).toBe(false);
     expect(state.storageCalls.some((c) => c.method === "list")).toBe(false);
     expect(
-      state.calls.some((c) => c.table === "public_status_token" && c.method === "insert"),
-    ).toBe(true);
+      state.calls.find((c) => c.table === "public_status_token" && c.method === "insert")?.payload,
+    ).toMatchObject({
+      token_hash: hashStatusToken(statusToken),
+      entity_id: pledgeId,
+    });
+    expect(result.statusToken).toBe(statusToken);
   });
 
   test("records only opt_out consent, never opt_in, from an unverified pledge", async () => {
@@ -473,8 +506,8 @@ describe("sendPledgeConfirmationEmail", () => {
     };
   }
 
-  test("queues the email and returns 'queued' with no Resend key configured", async () => {
-    const { client } = createFakeClient();
+  test("marks email failed when no Resend key is configured", async () => {
+    const { client, state } = createFakeClient();
     const result = await sendPledgeConfirmationEmail(
       client,
       parsedSubmission().payload,
@@ -488,7 +521,10 @@ describe("sendPledgeConfirmationEmail", () => {
         }),
       },
     );
-    expect(result).toBe("queued");
+    expect(result).toBe("failed");
+    expect(
+      state.calls.find((c) => c.table === "message" && c.method === "insert")?.payload,
+    ).toMatchObject({ status: "failed" });
   });
 
   test("returns 'sent' when the email sender succeeds", async () => {
@@ -508,6 +544,58 @@ describe("sendPledgeConfirmationEmail", () => {
       },
     );
     expect(result).toBe("sent");
+  });
+
+  test("does not report sent when persisting the sent status fails", async () => {
+    const { client } = createFakeClient({ failSentStatusUpdate: true });
+    const result = await sendPledgeConfirmationEmail(
+      client,
+      parsedSubmission().payload,
+      fakeResult(),
+      {
+        getEmailConfig: () => ({
+          resendApiKey: "key",
+          from: "HKSCDA <noreply@hkscda.com>",
+          replyTo: "info@hkscda.com",
+          notificationEmail: "info@hkscda.com",
+        }),
+        createEmailSender: () => ({ send: async () => ({}) }),
+        logger: { error: () => {} },
+      },
+    );
+    expect(result).toBe("failed");
+  });
+  test("marks the message failed when Resend returns an error", async () => {
+    const { client, state } = createFakeClient();
+    const result = await sendPledgeConfirmationEmail(
+      client,
+      parsedSubmission().payload,
+      fakeResult(),
+      {
+        getEmailConfig: () => ({
+          resendApiKey: "key",
+          from: "HKSCDA <noreply@hkscda.com>",
+          replyTo: "info@hkscda.com",
+          notificationEmail: "info@hkscda.com",
+        }),
+        createEmailSender: () => ({
+          send: async () => ({ data: null, error: { name: "validation_error" } }),
+        }),
+        logger: { error: () => {} },
+      },
+    );
+
+    expect(result).toBe("failed");
+    expect(state.calls).toContainEqual({
+      table: "message",
+      method: "update",
+      payload: { status: "failed" },
+    });
+    expect(state.calls).not.toContainEqual({
+      table: "message",
+      method: "update",
+      payload: expect.objectContaining({ status: "sent" }),
+    });
   });
 
   test("returns 'failed' when the email sender throws", async () => {

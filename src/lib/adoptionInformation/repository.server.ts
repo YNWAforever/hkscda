@@ -163,6 +163,7 @@ export function createSupabaseAdoptionInformationRepository(
   }
 
   return {
+    usesAtomicAudit: true,
     async listPublic() {
       const [feeResult, estateResult, ruleResult, careTopicResult] = await Promise.all([
         client
@@ -275,20 +276,28 @@ export function createSupabaseAdoptionInformationRepository(
       };
     },
 
-    async upsertFee(input: AdoptionFeeInput) {
-      const query = input.id
-        ? client.from("adoption_fees").update(feeRow(input)).eq("id", input.id)
-        : client.from("adoption_fees").insert(feeRow(input));
-      const { data, error } = await query.select(FEE_COLUMNS).single();
+    async upsertFee(input: AdoptionFeeInput, actorUserId?: string) {
+      if (!actorUserId) throw new Error("Actor user ID required");
+      const { data, error } = await client.rpc("mutate_admin_content_with_audit", {
+        p_actor_user_id: actorUserId,
+        p_entity: "adoption_fee",
+        p_operation: "upsert",
+        p_id: input.id ?? null,
+        p_payload: feeRow(input),
+      });
       if (error) throwRepositoryError(error);
       return requireFee(data);
     },
 
-    async upsertEstate(input: EstateInput) {
-      const query = input.id
-        ? client.from("dog_friendly_estates").update(estateRow(input)).eq("id", input.id)
-        : client.from("dog_friendly_estates").insert(estateRow(input));
-      const { data, error } = await query.select(ESTATE_COLUMNS).single();
+    async upsertEstate(input: EstateInput, actorUserId?: string) {
+      if (!actorUserId) throw new Error("Actor user ID required");
+      const { data, error } = await client.rpc("mutate_admin_content_with_audit", {
+        p_actor_user_id: actorUserId,
+        p_entity: "dog_friendly_estate",
+        p_operation: "upsert",
+        p_id: input.id ?? null,
+        p_payload: estateRow(input),
+      });
       if (error) throwRepositoryError(error);
       return requireEstate(data);
     },
@@ -326,8 +335,15 @@ export function createSupabaseAdoptionInformationRepository(
       return mapped;
     },
 
-    async deleteEstate(id: string) {
-      const { error } = await client.from("dog_friendly_estates").delete().eq("id", id);
+    async deleteEstate(id: string, actorUserId?: string) {
+      if (!actorUserId) throw new Error("Actor user ID required");
+      const { error } = await client.rpc("mutate_admin_content_with_audit", {
+        p_actor_user_id: actorUserId,
+        p_entity: "dog_friendly_estate",
+        p_operation: "delete",
+        p_id: id,
+        p_payload: {},
+      });
       if (error) throwRepositoryError(error);
     },
 

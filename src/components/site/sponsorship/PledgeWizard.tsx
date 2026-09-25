@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Loader2, ReceiptText } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { centsToHkd } from "../../../lib/donations/domain";
 import {
@@ -11,7 +11,7 @@ import {
 import { SPONSORSHIP_TIER_AMOUNTS_CENTS } from "../../../lib/sponsorship/schemas";
 import { TurnstileWidget, turnstileEnabled } from "../TurnstileWidget";
 import { useShortlist } from "../ShortlistContext";
-import { resolvePledgeSubmissionIds } from "./pledgeProofUpload";
+import { createPledgeSubmissionAttempt } from "./pledgeProofUpload";
 
 type Language = "zh-HK" | "en";
 type MonthlyTier = "100" | "300" | "500" | "custom";
@@ -44,6 +44,7 @@ const copy = {
     submitError: "暫時未能建立助養承諾，請稍後再試。",
     successTitle: "多謝您的助養承諾！",
     successRef: "參考編號",
+    viewStatus: "查看助養狀態",
   },
   en: {
     pledgeEyebrow: "Animal Sponsorship",
@@ -71,6 +72,7 @@ const copy = {
     submitError: "Sponsorship pledge could not be created. Please try again later.",
     successTitle: "Thank you for your sponsorship pledge!",
     successRef: "Reference",
+    viewStatus: "View sponsorship status",
   },
 } satisfies Record<Language, Record<string, string>>;
 
@@ -83,7 +85,7 @@ const paymentMethods: { value: PaymentMethod; zh: string; en: string }[] = [
   { value: "give_asia", zh: "Give.asia", en: "Give.asia" },
 ];
 
-type SubmitResult = { pledgeId: string; reference: string };
+type SubmitResult = { pledgeId: string; reference: string; statusUrl: string };
 
 export function PledgeWizard() {
   const { items, clearIntent } = useShortlist();
@@ -132,6 +134,7 @@ export function PledgeWizard() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<SubmitResult | null>(null);
+  const submissionAttempt = useRef(createPledgeSubmissionAttempt());
 
   function saveDraft() {
     try {
@@ -187,10 +190,11 @@ export function PledgeWizard() {
         };
       }
 
-      const { pledgeId, proof: uploadedProofReference } = await resolvePledgeSubmissionIds(
-        includeProof,
-        proofFile,
-      );
+      const {
+        pledgeId,
+        statusToken,
+        proof: uploadedProofReference,
+      } = await submissionAttempt.current.resolve(includeProof, proofFile);
 
       const response = await fetch("/api/sponsorships/pledges", {
         method: "POST",
@@ -198,6 +202,7 @@ export function PledgeWizard() {
         body: JSON.stringify({
           payload,
           pledgeId,
+          statusToken,
           proof: uploadedProofReference,
           turnstileToken,
         }),
@@ -211,6 +216,7 @@ export function PledgeWizard() {
         // Ignore draft cleanup failure; the pledge already succeeded.
       }
       clearIntent("sponsorship");
+      submissionAttempt.current.reset();
       setResult(data);
     } catch (submitError) {
       if (turnstileEnabled) setTurnstileResetKey((key) => key + 1);
@@ -240,6 +246,9 @@ export function PledgeWizard() {
         <p className="text-sm text-[var(--color-text-muted)]">
           {t.successRef}: <strong>{result.reference}</strong>
         </p>
+        <a href={result.statusUrl} className="text-[var(--color-primary)] underline">
+          {t.viewStatus}
+        </a>
         <Link to="/sponsors" className="text-[var(--color-primary)] hover:underline">
           ← {t.backToSponsors}
         </Link>

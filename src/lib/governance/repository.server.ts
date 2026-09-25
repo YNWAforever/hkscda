@@ -52,6 +52,7 @@ function toRow(input: BoardMemberInput, actorUserId: string) {
 
 export function createSupabaseGovernanceRepository(client: SupabaseClient): GovernanceRepository {
   return {
+    usesAtomicAudit: true,
     async listPublicRoster(): Promise<PublicBoardRoster> {
       const { data, error } = await client
         .from("board_member")
@@ -91,18 +92,28 @@ export function createSupabaseGovernanceRepository(client: SupabaseClient): Gove
     },
 
     async upsert(input: BoardMemberInput, actorUserId: string): Promise<BoardMember> {
-      const query = input.id
-        ? client.from("board_member").update(toRow(input, actorUserId)).eq("id", input.id)
-        : client.from("board_member").insert(toRow(input, actorUserId));
-      const { data, error } = await query.select(ROW_COLUMNS).single();
+      const { data, error } = await client.rpc("mutate_admin_content_with_audit", {
+        p_actor_user_id: actorUserId,
+        p_entity: "board_member",
+        p_operation: "upsert",
+        p_id: input.id ?? null,
+        p_payload: toRow(input, actorUserId),
+      });
       if (error) throw error;
       const mapped = mapRow(data);
       if (!mapped) throw new Error("Board member mutation returned an invalid row");
       return mapped;
     },
 
-    async deactivate(id: string): Promise<void> {
-      const { error } = await client.from("board_member").update({ is_active: false }).eq("id", id);
+    async deactivate(id: string, actorUserId?: string): Promise<void> {
+      if (!actorUserId) throw new Error("Actor user ID required");
+      const { error } = await client.rpc("mutate_admin_content_with_audit", {
+        p_actor_user_id: actorUserId,
+        p_entity: "board_member",
+        p_operation: "deactivate",
+        p_id: id,
+        p_payload: {},
+      });
       if (error) throw error;
     },
 

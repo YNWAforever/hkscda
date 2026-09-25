@@ -80,6 +80,7 @@ function createService(overrides: Partial<VolunteerHandlerService> = {}) {
         reference: "VOL-REGISTRA",
         status: "approved",
         statusUrl: "https://example.test/volunteer/status/raw-token",
+        confirmationEmailSent: true,
       };
     },
     async getPublicRegistrationStatus() {
@@ -258,4 +259,33 @@ test("policy-trigger approval denials return actionable conflicts rather than ge
     expect(body.code).toBe(message.replace("volunteer_policy_denied:", ""));
     expect(body.error).not.toContain("Could not process");
   }
+});
+
+test("public registration explains the required stable submission token", async () => {
+  const service = createService({
+    async submitPublicRegistration() {
+      throw new z.ZodError([
+        {
+          code: z.ZodIssueCode.custom,
+          path: ["submissionToken"],
+          message: "Required",
+        },
+      ]);
+    },
+  });
+  const handlers = createVolunteerHandlers({
+    requireVolunteerAdmin: async () => admin,
+    service,
+  });
+  const response = await handlers.submitPublicRegistration({
+    request: new Request("https://example.test/api/volunteer/registrations", {
+      method: "POST",
+      body: JSON.stringify({}),
+    }),
+  });
+  expect(response.status).toBe(400);
+  expect(await response.json()).toMatchObject({
+    code: "submission_token_required",
+    error: expect.stringContaining("submissionToken"),
+  });
 });

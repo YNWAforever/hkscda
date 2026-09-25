@@ -2,13 +2,16 @@ import { getEmailConfig } from "../donations/config.server";
 import type { GroupEnquiry } from "./types";
 
 type EmailSender = {
-  send(input: {
-    from: string;
-    to: string;
-    replyTo?: string;
-    subject: string;
-    html: string;
-  }): Promise<unknown>;
+  send(
+    input: {
+      from: string;
+      to: string;
+      replyTo?: string;
+      subject: string;
+      html: string;
+    },
+    options?: { idempotencyKey?: string },
+  ): Promise<{ error?: unknown }>;
 };
 
 type EmailConfig = { resendApiKey?: string | null; from: string; replyTo?: string | null };
@@ -69,13 +72,17 @@ export async function notifyGroupEnquiryAdmins(
 
   try {
     const sender = await createEmailSender(config.resendApiKey);
-    await sender.send({
-      from: config.from,
-      to: config.replyTo,
-      replyTo: config.replyTo,
-      subject: email.subject,
-      html: email.html,
-    });
+    const result = await sender.send(
+      {
+        from: config.from,
+        to: config.replyTo,
+        replyTo: config.replyTo,
+        subject: email.subject,
+        html: email.html,
+      },
+      { idempotencyKey: `group-enquiry-${input.enquiry.id}` },
+    );
+    if (result.error) throw result.error;
   } catch (error) {
     logger.error("Failed to notify group enquiry admins", error);
     return "failed";

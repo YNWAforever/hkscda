@@ -31,6 +31,7 @@ const optionalTrimmed = z
   });
 
 export const donationRequestSchema = z.object({
+  idempotencyKey: z.string().uuid(),
   amountCents: z.number().int().min(1000).max(1_000_000),
   currency: z.literal("HKD"),
   purpose: z.enum(donationPurposes),

@@ -4,8 +4,14 @@ import { PUBLIC_SITE_ORIGIN } from "@/lib/publicOrigin";
 import { PublicStateShell } from "../../components/site/PublicStateShell";
 import { StoryDetail } from "../../components/site/stories/StoryDetail";
 import { getPublicStory, getRelatedStories } from "../../lib/content/publicStory.functions";
+import { createStoryDetailReader } from "../../lib/content/publicStoryDetail";
 
 const ORIGIN = PUBLIC_SITE_ORIGIN;
+
+const readStoryDetail = createStoryDetailReader({
+  getStory: (slug) => getPublicStory({ data: { slug } }),
+  getRelated: (slug) => getRelatedStories({ data: { slug } }),
+});
 
 function absolutePublicUrl(value: string | null) {
   if (!value) return `${ORIGIN}/brand/hkscda-logo-primary.jpg`;
@@ -18,9 +24,9 @@ function absolutePublicUrl(value: string | null) {
 
 export const Route = createFileRoute("/stories/$slug")({
   loader: async ({ params }) => {
-    let content;
+    let data;
     try {
-      content = await getPublicStory({ data: { slug: params.slug } });
+      data = await readStoryDetail(params.slug);
     } catch (error) {
       // Unreachable content store: degrade to the unavailable panel rather than
       // returning 500 for the whole document (defect G-17).
@@ -28,12 +34,8 @@ export const Route = createFileRoute("/stories/$slug")({
       return null;
     }
     // Genuinely absent, as opposed to unreadable: that is a 404.
-    if (!content) throw notFound();
-    const related =
-      content.type === "rescue_story"
-        ? await getRelatedStories({ data: { slug: params.slug } })
-        : [];
-    return { content, related };
+    if (!data) throw notFound();
+    return data;
   },
   head: ({ loaderData, params }) => {
     const canonical = `${ORIGIN}/stories/${encodeURIComponent(params.slug)}`;

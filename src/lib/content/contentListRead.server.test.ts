@@ -561,6 +561,10 @@ describe("createSupabaseContentListRead", () => {
 
     expect(result.items).toHaveLength(2);
     expect(result.points.map((point) => point.id)).toEqual(["story-1"]);
+    expect(calls.find((call) => call.table === "content_item")?.orders).toEqual([
+      { column: "published_at", options: { ascending: false } },
+      { column: "id", options: { ascending: false } },
+    ]);
     expect(result.items[0]?.coverImageUrl).toBeNull();
     expect(calls.filter((call) => call.table === "content_item")).toHaveLength(1);
     expect(calls.filter((call) => call.table === "rescue_story_profile")).toHaveLength(1);

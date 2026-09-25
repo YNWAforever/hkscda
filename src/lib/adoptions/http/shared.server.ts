@@ -142,6 +142,9 @@ export async function withErrors(operation: () => Promise<Response>) {
     if (error instanceof z.ZodError) {
       return jsonResponse({ error: "Invalid coordinator request" }, { status: 400 });
     }
+    if (error && typeof error === "object" && "code" in error && error.code === "P0002") {
+      return jsonResponse({ error: "Coordinator item not found" }, { status: 404 });
+    }
     if (error instanceof Error) {
       const response = domainError(error);
       if (response) return response;

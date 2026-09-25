@@ -1,11 +1,14 @@
-// Captures the original Error out-of-band so server.ts can recover the stack
-// when h3 has already swallowed the throw into a generic 500 Response.
+import { AsyncLocalStorage } from "node:async_hooks";
 
-let lastCapturedError: { error: unknown; at: number } | undefined;
-const TTL_MS = 5_000;
+// h3 can turn a thrown request error into a generic response. Keep the original
+// error in that request's async context so concurrent responses cannot consume
+// each other's stack.
+type RequestError = { error?: unknown };
+const requestErrors = new AsyncLocalStorage<RequestError>();
 
 function record(error: unknown) {
-  lastCapturedError = { error, at: Date.now() };
+  const current = requestErrors.getStore();
+  if (current) current.error = error;
 }
 
 if (typeof globalThis.addEventListener === "function") {
@@ -15,13 +18,13 @@ if (typeof globalThis.addEventListener === "function") {
   );
 }
 
+export function withRequestErrorCapture<T>(run: () => T): T {
+  return requestErrors.run({}, run);
+}
+
 export function consumeLastCapturedError(): unknown {
-  if (!lastCapturedError) return undefined;
-  if (Date.now() - lastCapturedError.at > TTL_MS) {
-    lastCapturedError = undefined;
-    return undefined;
-  }
-  const { error } = lastCapturedError;
-  lastCapturedError = undefined;
+  const current = requestErrors.getStore();
+  const error = current?.error;
+  if (current) current.error = undefined;
   return error;
 }

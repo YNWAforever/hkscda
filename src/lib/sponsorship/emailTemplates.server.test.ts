@@ -20,6 +20,10 @@ describe("renderPledgeConfirmationEmail", () => {
     expect(email.html).toContain("SP-ABCDEF12");
     expect(email.html).toContain("HK$300");
     expect(email.html).toContain("轉數快");
+    expect(email.html).toContain("8727588");
+    expect(email.html).toContain("124-511320-838");
+    expect(email.html).not.toContain("012-345-678901");
+    expect(email.html).not.toContain("@hkscda");
     expect(email.html).toContain("https://hkscda.com/sponsors/status/raw-token");
     expect(email.html).toContain("查看助養狀態");
   });

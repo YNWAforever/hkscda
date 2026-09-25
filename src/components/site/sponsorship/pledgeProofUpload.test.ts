@@ -23,7 +23,8 @@ const getSupabaseClient = mock(() => ({ storage: { from: storageFrom } }));
 
 mock.module("../../../lib/supabase", () => ({ getSupabaseClient }));
 
-const { uploadProofDirectly, resolvePledgeSubmissionIds } = await import("./pledgeProofUpload");
+const { uploadProofDirectly, resolvePledgeSubmissionIds, createPledgeSubmissionAttempt } =
+  await import("./pledgeProofUpload");
 
 afterAll(() => {
   mock.module("../../../lib/supabase", () => realSupabaseModule);
@@ -148,6 +149,7 @@ describe("resolvePledgeSubmissionIds", () => {
 
     expect(fetchSpy).not.toHaveBeenCalled();
     expect(result.proof).toBeUndefined();
+    expect(result.statusToken).toMatch(/^[A-Za-z0-9_-]{43}$/);
     expect(typeof result.pledgeId).toBe("string");
     expect(result.pledgeId.length).toBeGreaterThan(0);
     // Confirms a *fresh* id is minted each time, not a constant placeholder.
@@ -165,6 +167,7 @@ describe("resolvePledgeSubmissionIds", () => {
 
     expect(fetchSpy).not.toHaveBeenCalled();
     expect(result.proof).toBeUndefined();
+    expect(result.statusToken).toMatch(/^[A-Za-z0-9_-]{43}$/);
     expect(typeof result.pledgeId).toBe("string");
   });
 
@@ -189,6 +192,7 @@ describe("resolvePledgeSubmissionIds", () => {
 
     expect(result).toEqual({
       pledgeId: "pledge-from-server",
+      statusToken: expect.stringMatching(/^[A-Za-z0-9_-]{43}$/),
       proof: {
         fileName: "receipt.jpg",
         mimeType: "image/jpeg",
@@ -196,5 +200,61 @@ describe("resolvePledgeSubmissionIds", () => {
         storagePath: "pledge-from-server/proof/receipt.jpg",
       },
     });
+  });
+});
+
+describe("createPledgeSubmissionAttempt", () => {
+  const originalFetch = globalThis.fetch;
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+  });
+
+  test("reuses the same pledge id when a proof-less submission is retried", async () => {
+    const attempt = createPledgeSubmissionAttempt();
+    const first = await attempt.resolve(false, null);
+    const retry = await attempt.resolve(false, null);
+    expect(retry.pledgeId).toBe(first.pledgeId);
+    expect(retry.statusToken).toBe(first.statusToken);
+    attempt.reset();
+    expect((await attempt.resolve(false, null)).pledgeId).not.toBe(first.pledgeId);
+  });
+
+  test("does not reupload proof on retry, but prepares a new proof when the file changes", async () => {
+    let count = 0;
+    globalThis.fetch = mock(async () => {
+      count += 1;
+      return Response.json(
+        {
+          pledgeId: `pledge-${count}`,
+          upload: { path: `pledge-${count}/proof/receipt.jpg`, token: "tok" },
+        },
+        { status: 201 },
+      );
+    }) as unknown as typeof fetch;
+    const attempt = createPledgeSubmissionAttempt();
+    const file = makeProofFile();
+    const first = await attempt.resolve(true, file);
+    const retry = await attempt.resolve(true, file);
+    expect(retry).toEqual(first);
+    expect(count).toBe(1);
+    expect((await attempt.resolve(true, makeProofFile())).pledgeId).toBe("pledge-2");
+  });
+
+  test("a failed preparation can be retried", async () => {
+    let count = 0;
+    globalThis.fetch = mock(async () => {
+      count += 1;
+      if (count === 1) return Response.json({ error: "try again" }, { status: 500 });
+      return Response.json(
+        { pledgeId: "pledge-2", upload: { path: "pledge-2/proof/receipt.jpg", token: "tok" } },
+        { status: 201 },
+      );
+    }) as unknown as typeof fetch;
+    const attempt = createPledgeSubmissionAttempt();
+    const file = makeProofFile();
+    await expect(attempt.resolve(true, file)).rejects.toThrow("try again");
+    expect((await attempt.resolve(true, file)).pledgeId).toBe("pledge-2");
+    expect(count).toBe(2);
   });
 });

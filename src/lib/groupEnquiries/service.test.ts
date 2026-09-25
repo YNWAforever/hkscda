@@ -77,6 +77,7 @@ describe("group enquiry service", () => {
       repo,
       notifyAdmins: async () => {
         calls.push({ name: "notifyAdmins" });
+        return "sent" as const;
       },
     });
 
@@ -100,11 +101,15 @@ describe("group enquiry service", () => {
   });
 
   test("replays existing idempotency keys without sending duplicate notifications", async () => {
-    const { repo, calls } = createRepo({ enquiry, created: false });
+    const { repo, calls } = createRepo({
+      enquiry: { ...enquiry, notificationStatus: "sent" },
+      created: false,
+    });
     const service = createGroupEnquiryService({
       repo,
       notifyAdmins: async () => {
         calls.push({ name: "notifyAdmins" });
+        return "sent" as const;
       },
     });
 
@@ -115,6 +120,27 @@ describe("group enquiry service", () => {
     expect(calls.map((call) => call.name)).toEqual(["createOrGet"]);
   });
 
+  test("records a resolved delivery failure and retries the same enquiry", async () => {
+    const { repo, calls } = createRepo();
+    const service = createGroupEnquiryService({
+      repo,
+      notifyAdmins: async () => "failed",
+      logger: { error: () => undefined },
+    });
+    await service.submitPublicEnquiry(payload);
+    expect(calls.map((call) => call.name)).toEqual(["createOrGet", "markNotificationFailed"]);
+
+    const retry = createRepo({
+      enquiry: { ...enquiry, notificationStatus: "failed" },
+      created: false,
+    });
+    const retryService = createGroupEnquiryService({
+      repo: retry.repo,
+      notifyAdmins: async () => "sent",
+    });
+    await retryService.submitPublicEnquiry(payload);
+    expect(retry.calls.map((call) => call.name)).toEqual(["createOrGet", "markNotificationSent"]);
+  });
   test("keeps public success after notification failure and stores a bounded diagnostic", async () => {
     const { repo, calls } = createRepo();
     const service = createGroupEnquiryService({

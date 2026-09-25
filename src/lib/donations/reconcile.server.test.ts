@@ -1,6 +1,12 @@
 import { describe, expect, test } from "bun:test";
 
-import { reconcileProviderPayment } from "./reconcile.server";
+import {
+  failProviderPayment,
+  flagProviderWebhookForReview,
+  processCaptureWebhook,
+  reconcileProviderPayment,
+  refundProviderPayment,
+} from "./reconcile.server";
 
 const pendingPayment = {
   id: "payment-1",
@@ -172,12 +178,14 @@ function createReconcileClient({
   payment = pendingPayment,
   existingAcknowledgement = false,
   webhookLeaseReclaimSucceeds = true,
+  auditInsertError = false,
 }: {
   duplicateWebhookProcessedAt?: string | null;
   duplicateWebhookProcessingExpiresAt?: string | null;
   payment?: typeof pendingPayment;
   existingAcknowledgement?: boolean;
   webhookLeaseReclaimSucceeds?: boolean;
+  auditInsertError?: boolean;
 } = {}) {
   const operations: Operation[] = [];
 
@@ -286,7 +294,11 @@ function createReconcileClient({
               // webhook_event / audit_log inserts are awaited directly.
               then(resolve: (value: { error: unknown }) => void) {
                 return Promise.resolve({
-                  error: webhookConflict ? { code: "23505" } : null,
+                  error: webhookConflict
+                    ? { code: "23505" }
+                    : table === "audit_log" && auditInsertError
+                      ? new Error("audit failed")
+                      : null,
                 }).then(resolve);
               },
             };
@@ -305,6 +317,28 @@ function createReconcileClient({
 }
 
 describe("reconcileProviderPayment webhook event processing", () => {
+  test("releases a failed capture reservation for immediate PayPal retry", async () => {
+    const { client, state } = createImmediateRetryClient();
+    const args = {
+      client: client as never,
+      provider: "paypal" as const,
+      providerRef: "paypal-order-test",
+      providerEventId: "paypal-approved-test",
+      eventType: "CHECKOUT.ORDER.APPROVED",
+      payload: { id: "paypal-approved-test" },
+    };
+    let captureAttempts = 0;
+    const capture = async () => {
+      captureAttempts += 1;
+      if (captureAttempts === 1) throw new Error("transient PayPal failure");
+    };
+
+    await expect(processCaptureWebhook(args, capture)).rejects.toThrow("transient PayPal failure");
+    await expect(processCaptureWebhook(args, capture)).resolves.toEqual({ kind: "captured" });
+    expect(captureAttempts).toBe(2);
+    expect(state.releases).toBe(1);
+  });
+
   test("releases its reservation after a transient failure so immediate redelivery reprocesses", async () => {
     const { client, state } = createImmediateRetryClient();
     const args = {
@@ -573,5 +607,82 @@ describe("reconcileProviderPayment webhook event processing", () => {
 
     expect(donationUpdateIndex).toBeGreaterThan(-1);
     expect(eventProcessedIndex).toBeGreaterThan(donationUpdateIndex);
+  });
+});
+
+describe("financial webhook manual review", () => {
+  const event = {
+    provider: "paypal" as const,
+    providerRef: "order-1",
+    providerEventId: "evt-1",
+    eventType: "PAYMENT.CAPTURE.REFUNDED",
+    payload: { id: "evt-1" },
+  };
+
+  test("uses a provider-neutral action for PayPal review while preserving COD's action", async () => {
+    const paypal = createReconcileClient();
+    await flagProviderWebhookForReview(
+      { ...event, client: paypal.client as never },
+      { reason: "partial_refund" },
+    );
+    expect(paypal.operations.find((op) => op.table === "audit_log")?.payload).toMatchObject({
+      action: "payment.provider_manual_review",
+      detail: { provider: "paypal", reason: "partial_refund" },
+    });
+
+    const cod = createReconcileClient();
+    await flagProviderWebhookForReview(
+      { ...event, provider: "cod", client: cod.client as never },
+      { reason: "cod_unknown" },
+    );
+    expect(cod.operations.find((op) => op.table === "audit_log")?.payload).toMatchObject({
+      action: "payment.cod_manual_review",
+    });
+  });
+
+  test("audits an unmatched denied capture before acknowledging it", async () => {
+    const { client, operations } = createReconcileClient({ payment: null as never });
+    expect(
+      await failProviderPayment({
+        ...event,
+        client: client as never,
+        eventType: "PAYMENT.CAPTURE.DENIED",
+      }),
+    ).toEqual({ kind: "not_found" });
+    const auditIndex = operations.findIndex((op) => op.table === "audit_log");
+    const processedIndex = operations.findIndex(
+      (op) =>
+        op.table === "webhook_event" &&
+        op.action === "update" &&
+        Boolean((op.payload as { processed_at?: string }).processed_at),
+    );
+    expect(auditIndex).toBeGreaterThan(-1);
+    expect(auditIndex).toBeLessThan(processedIndex);
+    expect(operations[auditIndex]?.payload).toMatchObject({
+      action: "payment.denial_unreconciled",
+    });
+  });
+
+  test("audits an unmatched refund and retries if the audit insert fails", async () => {
+    const succeeded = createReconcileClient({ payment: null as never });
+    expect(await refundProviderPayment({ ...event, client: succeeded.client as never })).toEqual({
+      kind: "not_found",
+    });
+    expect(succeeded.operations.find((op) => op.table === "audit_log")?.payload).toMatchObject({
+      action: "payment.refund_unreconciled",
+    });
+
+    const failed = createReconcileClient({ payment: null as never, auditInsertError: true });
+    await expect(
+      refundProviderPayment({ ...event, client: failed.client as never }),
+    ).rejects.toThrow("audit failed");
+    expect(
+      failed.operations.some(
+        (op) =>
+          op.table === "webhook_event" &&
+          op.action === "update" &&
+          Boolean((op.payload as { processed_at?: string }).processed_at),
+      ),
+    ).toBe(false);
   });
 });

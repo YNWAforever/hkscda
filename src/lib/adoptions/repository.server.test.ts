@@ -2293,7 +2293,7 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
   });
 
   test("creates coordinator tasks with all supported followup columns", async () => {
-    const { client, calls } = createFakeClient();
+    const { client, calls } = createFakeClient({ rpcResult: { id: followupId } });
     const repo = createSupabaseAdoptionCoordinatorRepository(client);
 
     await expect(
@@ -2322,36 +2322,42 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     ).resolves.toEqual({ id: followupId });
 
     expect(calls).toContainEqual({
-      table: "adoption_followup",
-      method: "insert",
+      table: "rpc",
+      method: "mutate_adoption_coordinator_with_audit",
       payload: {
-        adoption_case_id: adoptionCaseId,
-        adopter_profile_id: existingProfileId,
-        animal_id: animalId,
-        status_id: statusId,
-        title: "Post-adoption call",
-        task_type: "followup",
-        priority: "high",
-        due_at: "2026-06-28T10:00:00.000Z",
-        scheduled_at: "2026-06-28T09:00:00.000Z",
-        completed_at: "2026-06-28T11:00:00.000Z",
-        assigned_to: "Ada",
-        volunteer: "Ben",
-        contact_channel: "phone",
-        outcome: "Reached adopter",
-        next_step_at: "2026-07-01T10:00:00.000Z",
-        remarks: "Call notes",
-        has_window_net: true,
-        environment: "Flat",
-        score: "A",
-        created_by: createdSupporterId,
-        updated_by: createdSupporterId,
+        p_actor_user_id: createdSupporterId,
+        p_entity: "adoption_followup",
+        p_operation: "create",
+        p_id: null,
+        p_payload: {
+          adoption_case_id: adoptionCaseId,
+          adopter_profile_id: existingProfileId,
+          animal_id: animalId,
+          status_id: statusId,
+          title: "Post-adoption call",
+          task_type: "followup",
+          priority: "high",
+          due_at: "2026-06-28T10:00:00.000Z",
+          scheduled_at: "2026-06-28T09:00:00.000Z",
+          completed_at: "2026-06-28T11:00:00.000Z",
+          assigned_to: "Ada",
+          volunteer: "Ben",
+          contact_channel: "phone",
+          outcome: "Reached adopter",
+          next_step_at: "2026-07-01T10:00:00.000Z",
+          remarks: "Call notes",
+          has_window_net: true,
+          environment: "Flat",
+          score: "A",
+          created_by: createdSupporterId,
+          updated_by: createdSupporterId,
+        },
       },
     });
   });
 
   test("updates coordinator tasks with changed followup columns", async () => {
-    const { client, calls } = createFakeClient();
+    const { client, calls } = createFakeClient({ rpcResult: { id: followupId } });
     const repo = createSupabaseAdoptionCoordinatorRepository(client);
 
     await expect(
@@ -2367,21 +2373,22 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     ).resolves.toEqual({ id: followupId });
 
     expect(calls).toContainEqual({
-      table: "adoption_followup",
-      method: "update",
+      table: "rpc",
+      method: "mutate_adoption_coordinator_with_audit",
       payload: {
-        status_id: statusId,
-        priority: "urgent",
-        due_at: null,
-        assigned_to: null,
-        outcome: "Completed",
-        updated_by: existingSupporterId,
+        p_actor_user_id: existingSupporterId,
+        p_entity: "adoption_followup",
+        p_operation: "update",
+        p_id: followupId,
+        p_payload: {
+          status_id: statusId,
+          priority: "urgent",
+          due_at: null,
+          assigned_to: null,
+          outcome: "Completed",
+          updated_by: existingSupporterId,
+        },
       },
-    });
-    expect(calls).toContainEqual({
-      table: "adoption_followup",
-      method: "eq",
-      payload: { column: "id", value: followupId },
     });
   });
 

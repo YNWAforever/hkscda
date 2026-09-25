@@ -39,3 +39,50 @@ test("empty active consent rows do not issue an insert", async () => {
   await expect(repo.replaceConsents([])).resolves.toBeUndefined();
   expect(fromCalled).toBe(false);
 });
+
+test("opt-out replay uses the existing unique consent key without updating it", async () => {
+  const calls: unknown[] = [];
+  const repo = createSupabaseDonationRepository({
+    from(table: string) {
+      expect(table).toBe("consent");
+      return {
+        async upsert(rows: unknown, options: unknown) {
+          calls.push({ rows, options });
+          return { error: null };
+        },
+        insert() {
+          throw new Error("retry must not insert a duplicate consent row");
+        },
+      };
+    },
+  } as never);
+  const rows = [
+    {
+      supporter_id: "supporter-1",
+      channel: "whatsapp" as const,
+      status: "opt_out" as const,
+      source: "donation_form",
+      timestamp: "2026-09-25T00:00:00.000Z",
+    },
+  ];
+
+  await repo.replaceConsents(rows);
+  await repo.replaceConsents(rows);
+
+  expect(calls).toEqual([
+    {
+      rows,
+      options: {
+        onConflict: "supporter_id,channel,status,source,timestamp",
+        ignoreDuplicates: true,
+      },
+    },
+    {
+      rows,
+      options: {
+        onConflict: "supporter_id,channel,status,source,timestamp",
+        ignoreDuplicates: true,
+      },
+    },
+  ]);
+});

@@ -44,6 +44,18 @@ export type CrmRepository = {
   updateSupporter(id: string, input: SupporterUpdatePayload): Promise<void>;
   ensureSupporterRole(input: { supporterId: string; role: "donor" }): Promise<void>;
   setSupporterRoles(input: { supporterId: string; roles: SupporterRole[] }): Promise<void>;
+  mutateSupporterWithAudit?(command: {
+    operation: "create" | "update";
+    supporterId?: string;
+    supporter?: SupporterInput;
+    update?: SupporterUpdatePayload;
+    roles?: SupporterRole[];
+    audit: AuditLogInsert;
+  }): Promise<{ id: string; email: string } | void>;
+  appendConsentsWithAudit?(command: {
+    rows: ConsentInsertRows;
+    audit: AuditLogInsert;
+  }): Promise<void>;
   insertConsentRows(rows: ConsentInsertRows): Promise<void>;
   recordManualGift(command: ManualGiftCommand): Promise<ManualGiftResult>;
   insertManualDonation(
@@ -78,6 +90,21 @@ export function createCrmService({ repo, now = () => new Date() }: CreateCrmServ
 
     async createSupporter(args: { actorUserId: string | null; input: unknown }) {
       const input = supporterInputSchema.parse(args.input);
+      if (repo.mutateSupporterWithAudit) {
+        return (await repo.mutateSupporterWithAudit({
+          operation: "create",
+          supporter: input,
+          roles: input.roles,
+          audit: {
+            actor_user_id: args.actorUserId,
+            action: "supporter.create_or_update",
+            entity: "supporter",
+            entity_id: "",
+            timestamp: timestamp(now),
+            detail: { email: input.email, source: input.source },
+          },
+        })) as { id: string; email: string };
+      }
       const supporter = await repo.upsertSupporter(input);
       await repo.setSupporterRoles({ supporterId: supporter.id, roles: input.roles });
       await repo.insertAuditLog({
@@ -103,6 +130,23 @@ export function createCrmService({ repo, now = () => new Date() }: CreateCrmServ
         update.deletedAt = deleted ? timestamp(now) : null;
       }
 
+      if (repo.mutateSupporterWithAudit) {
+        await repo.mutateSupporterWithAudit({
+          operation: "update",
+          supporterId: args.supporterId,
+          update,
+          roles,
+          audit: {
+            actor_user_id: args.actorUserId,
+            action: "supporter.update",
+            entity: "supporter",
+            entity_id: args.supporterId,
+            timestamp: timestamp(now),
+            detail: input,
+          },
+        });
+        return;
+      }
       await repo.updateSupporter(args.supporterId, update);
       if (roles !== undefined) {
         await repo.setSupporterRoles({ supporterId: args.supporterId, roles });
@@ -128,6 +172,20 @@ export function createCrmService({ repo, now = () => new Date() }: CreateCrmServ
         update,
         now,
       });
+      if (repo.appendConsentsWithAudit) {
+        await repo.appendConsentsWithAudit({
+          rows,
+          audit: {
+            actor_user_id: args.actorUserId,
+            action: "consent.append",
+            entity: "supporter",
+            entity_id: args.supporterId,
+            timestamp: timestamp(now),
+            detail: { channels: rows.map((row) => row.channel), source: update.source },
+          },
+        });
+        return rows;
+      }
       await repo.insertConsentRows(rows);
       await repo.insertAuditLog({
         actor_user_id: args.actorUserId,

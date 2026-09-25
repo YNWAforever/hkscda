@@ -19,30 +19,33 @@ export async function createStripeCheckout(
 ): Promise<CheckoutProviderResult> {
   const stripe = new Stripe(getStripeConfig().secretKey);
   const appUrl = getAppUrl();
-  const session = await stripe.checkout.sessions.create({
-    mode: "payment",
-    payment_method_types: stripeCheckoutPaymentMethodTypes,
-    customer_email: input.donorEmail,
-    success_url: `${appUrl}/donate?status=success&donation=${input.donationId}`,
-    cancel_url: `${appUrl}/donate?status=cancelled&donation=${input.donationId}`,
-    line_items: [
-      {
-        quantity: 1,
-        price_data: {
-          currency: "hkd",
-          unit_amount: input.amountCents,
-          product_data: {
-            name: purposeLabels[input.purpose] ?? "HKSCDA donation",
+  const session = await stripe.checkout.sessions.create(
+    {
+      mode: "payment",
+      payment_method_types: stripeCheckoutPaymentMethodTypes,
+      customer_email: input.donorEmail,
+      success_url: `${appUrl}/donate?status=success&donation=${input.donationId}`,
+      cancel_url: `${appUrl}/donate?status=cancelled&donation=${input.donationId}`,
+      line_items: [
+        {
+          quantity: 1,
+          price_data: {
+            currency: "hkd",
+            unit_amount: input.amountCents,
+            product_data: {
+              name: purposeLabels[input.purpose] ?? "HKSCDA donation",
+            },
           },
         },
+      ],
+      metadata: {
+        donation_id: input.donationId,
+        payment_id: input.paymentId,
+        purpose: input.purpose,
       },
-    ],
-    metadata: {
-      donation_id: input.donationId,
-      payment_id: input.paymentId,
-      purpose: input.purpose,
     },
-  });
+    { idempotencyKey: "donation-checkout-" + input.paymentId },
+  );
 
   if (!session.url) throw new Error("Stripe did not return a Checkout URL");
   return { providerRef: session.id, url: session.url };
@@ -78,6 +81,7 @@ export async function createPayPalOrder(
     headers: {
       authorization: `Bearer ${token}`,
       "content-type": "application/json",
+      "PayPal-Request-Id": input.paymentId,
     },
     body: JSON.stringify({
       intent: "CAPTURE",
@@ -147,6 +151,25 @@ export async function capturePayPalOrder(orderId: string) {
   assertPayPalCaptureCompleted(response.status, body);
 }
 
+export type PayPalCapture = {
+  id: string;
+  status: string;
+  custom_id?: string;
+  supplementary_data?: { related_ids?: { order_id?: string } };
+};
+
+export async function getPayPalCapture(captureId: string): Promise<PayPalCapture> {
+  const config = getPayPalConfig();
+  const token = await getPayPalAccessToken();
+  const response = await fetch(
+    `${config.apiBase}/v2/payments/captures/${encodeURIComponent(captureId)}`,
+    { headers: { authorization: `Bearer ${token}` } },
+  );
+  if (!response.ok) throw new Error(`PayPal capture lookup failed with ${response.status}`);
+  const capture = (await response.json()) as PayPalCapture;
+  if (capture.id !== captureId) throw new Error("PayPal capture lookup returned another capture");
+  return capture;
+}
 export async function verifyPayPalWebhook(request: Request, body: unknown) {
   const config = getPayPalConfig();
   if (!config.webhookId) throw new Error("Missing PAYPAL_WEBHOOK_ID");

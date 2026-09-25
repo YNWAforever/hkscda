@@ -32,6 +32,8 @@ async function withGovernanceErrors(operation: () => Promise<Response>) {
     if (error instanceof Response) return error;
     if (error instanceof z.ZodError)
       return jsonNoStore({ error: "Invalid governance request" }, { status: 400 });
+    if (error && typeof error === "object" && "code" in error && error.code === "P0002")
+      return jsonNoStore({ error: "Board member not found" }, { status: 404 });
     console.error(error);
     return jsonNoStore({ error: "Could not process governance request" }, { status: 500 });
   }
@@ -53,7 +55,10 @@ export function createAdminGovernanceHandlers({
       return withGovernanceErrors(async () => {
         const admin = await requireGovernanceAdmin(request);
         return jsonNoStore({
-          member: await service.upsert({ actorUserId: admin.id, input: await jsonBody(request) }),
+          member: await service.upsert({
+            actorUserId: admin.authUserId,
+            input: await jsonBody(request),
+          }),
         });
       });
     },
@@ -63,7 +68,7 @@ export function createAdminGovernanceHandlers({
         const admin = await requireGovernanceAdmin(request);
         const body = (await jsonBody(request)) as { id?: string };
         if (!body.id) return jsonNoStore({ error: "Missing board member id" }, { status: 400 });
-        await service.deactivate({ actorUserId: admin.id, id: body.id });
+        await service.deactivate({ actorUserId: admin.authUserId, id: body.id });
         return jsonNoStore({ ok: true });
       });
     },

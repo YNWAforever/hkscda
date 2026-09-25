@@ -17,23 +17,49 @@ export function createSupabaseDonationRepository(client: SupabaseClient): Donati
       return publicIdentity.resolve(contact);
     },
     async ensureSupporterRole(input) {
-      const { error } = await client.from("supporter_role").upsert({
-        supporter_id: input.supporterId,
-        role: input.role,
-      });
+      const { error } = await client.from("supporter_role").upsert(
+        {
+          supporter_id: input.supporterId,
+          role: input.role,
+        },
+        { ignoreDuplicates: true },
+      );
       if (error) throw error;
     },
     async replaceConsents(rows) {
       if (rows.length === 0) return;
-      const { error } = await client.from("consent").insert(rows);
+      const { error } = await client.from("consent").upsert(rows, {
+        onConflict: "supporter_id,channel,status,source,timestamp",
+        ignoreDuplicates: true,
+      });
       if (error) throw error;
+    },
+    async findDonationByIdempotencyKey(key) {
+      const { data, error } = await client
+        .from("donation")
+        .select("id,supporter_id,created_at,amount_cents,idempotency_fingerprint")
+        .eq("idempotency_key", key)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
     },
     async createDonation(input) {
       const { data, error } = await client
         .from("donation")
         .insert(input)
-        .select("id,amount_cents")
+        .select("id,supporter_id,created_at,amount_cents,idempotency_fingerprint")
         .single();
+      if (error) throw error;
+      return data;
+    },
+    async findPaymentByIdempotencyKey(key) {
+      const { data, error } = await client
+        .from("payment")
+        .select(
+          "id,donation_id,idempotency_key,provider,provider_ref,provider_order_ref,amount_cents,status,checkout_url,checkout_attempted_at",
+        )
+        .eq("idempotency_key", key)
+        .maybeSingle();
       if (error) throw error;
       return data;
     },
@@ -42,27 +68,42 @@ export function createSupabaseDonationRepository(client: SupabaseClient): Donati
       if (error) throw error;
       return data;
     },
-    async updatePaymentProviderRef(paymentId, providerRef, providerOrderRef) {
-      const { error } = await client
+    async beginCheckoutAttempt(paymentId, timestamp) {
+      const { data, error } = await client
+        .from("payment")
+        .update({ checkout_attempted_at: timestamp })
+        .eq("id", paymentId)
+        .is("checkout_attempted_at", null)
+        .select("checkout_attempted_at")
+        .maybeSingle();
+      if (error) throw error;
+      if (data) return { attemptedAt: data.checkout_attempted_at as string, claimed: true };
+
+      const { data: existing, error: readError } = await client
+        .from("payment")
+        .select("checkout_attempted_at")
+        .eq("id", paymentId)
+        .single();
+      if (readError) throw readError;
+      if (!existing.checkout_attempted_at) throw new Error("Checkout attempt could not be claimed");
+      return { attemptedAt: existing.checkout_attempted_at as string, claimed: false };
+    },
+    async updatePaymentProviderRef(paymentId, providerRef, checkoutUrl, providerOrderRef) {
+      const { data, error } = await client
         .from("payment")
         .update({
           provider_ref: providerRef,
+          checkout_url: checkoutUrl,
           ...(providerOrderRef ? { provider_order_ref: providerOrderRef } : {}),
         })
-        .eq("id", paymentId);
+        .eq("id", paymentId)
+        .select("id")
+        .maybeSingle();
       if (error) throw error;
-    },
-    async deletePayment(paymentId) {
-      const { error } = await client.from("payment").delete().eq("id", paymentId);
-      if (error) throw error;
-    },
-    async deleteDonation(donationId) {
-      const { error } = await client.from("donation").delete().eq("id", donationId);
-      if (error) throw error;
+      if (!data) throw new Error("Donation payment no longer exists");
     },
   };
 }
-
 export function createSupabaseDonationStatusRepository(
   client: SupabaseClient,
   dependencies: Pick<PublicDonationStatusRepository, "refreshPendingCod"> = {},
