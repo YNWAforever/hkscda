@@ -1099,6 +1099,69 @@ export function createSupabaseContentRepository(client: SupabaseClient): Content
       return hydrateContentDetail(client, data as ContentRow);
     },
 
+    async generateSocialCopiesWithAudit(rows, actorUserId, contentId, storyUpdateId, platform) {
+      const { data, error } = await client.rpc("cms_promotion_command", {
+        p_actor: actorUserId,
+        p_command: {
+          kind: "social_generate",
+          content_id: contentId,
+          story_update_id: storyUpdateId,
+          platform,
+          rows: rows.map((row) => ({
+            content_item_id: row.contentItemId,
+            story_update_id: row.storyUpdateId,
+            platform: row.platform,
+            language: row.language,
+            copy_text: row.copyText,
+            hashtags: row.hashtags,
+            status: row.status,
+          })),
+        },
+      });
+      if (error) throw error;
+      return Number((data as { count: number }).count);
+    },
+
+    async generateNotificationDraftsWithAudit(rows, actorUserId, storyUpdateId) {
+      const { data, error } = await client.rpc("cms_promotion_command", {
+        p_actor: actorUserId,
+        p_command: {
+          kind: "draft_generate",
+          story_update_id: storyUpdateId,
+          rows: rows.map((row) => ({
+            story_update_id: row.storyUpdateId,
+            content_item_id: row.contentItemId,
+            adoption_case_id: row.adoptionCaseId,
+            supporter_id: row.supporterId,
+            channel: row.channel,
+            recipient_name: row.recipientName,
+            recipient_contact: row.recipientContact,
+            subject: row.subject,
+            body: row.body,
+            status: row.status,
+          })),
+        },
+      });
+      if (error) throw error;
+      return Number((data as { count: number }).count);
+    },
+
+    async updateSocialCopyStatusWithAudit(id, status, actorUserId) {
+      const { error } = await client.rpc("cms_promotion_command", {
+        p_actor: actorUserId,
+        p_command: { kind: "social_status", id, status },
+      });
+      if (error) throw error;
+    },
+
+    async updateNotificationDraftStatusWithAudit(id, status, actorUserId) {
+      const { error } = await client.rpc("cms_promotion_command", {
+        p_actor: actorUserId,
+        p_command: { kind: "draft_status", id, status },
+      });
+      if (error) throw error;
+    },
+
     async insertSocialCopies(rows) {
       if (rows.length === 0) return;
       const { error } = await client.from("social_copy_variant").insert(

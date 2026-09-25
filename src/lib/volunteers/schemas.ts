@@ -116,6 +116,14 @@ const contactSchema = z.object({
 export const publicRegistrationSchema = z
   .object({
     activityId: z.string().uuid(),
+    // Clients generate this 32-byte bearer token once and reuse it on transport retries.
+    submissionToken: z
+      .string()
+      .regex(/^[A-Za-z0-9_-]{43}$/)
+      .refine((value) => {
+        const decoded = Buffer.from(value, "base64url");
+        return decoded.length === 32 && decoded.toString("base64url") === value;
+      }),
     registrationType: z.enum(volunteerRegistrationTypes),
     contact: contactSchema,
     participantCount: numberFromInput(z.number().int().min(1).max(500)),

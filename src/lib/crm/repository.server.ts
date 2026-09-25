@@ -324,6 +324,41 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
       } satisfies SupporterDetail;
     },
 
+    async mutateSupporterWithAudit(command) {
+      const input =
+        command.operation === "create"
+          ? {
+              name: command.supporter?.name,
+              email: command.supporter?.email,
+              phone: command.supporter?.phone ?? null,
+              language: command.supporter?.language,
+              tags: command.supporter?.tags,
+              source: command.supporter?.source,
+            }
+          : toSupporterUpdatePayload(command.update ?? {});
+      const { data, error } = await client.rpc("mutate_crm_supporter_with_audit", {
+        p_operation: command.operation,
+        p_supporter_id: command.supporterId ?? null,
+        p_input: input,
+        p_roles: command.roles ?? null,
+        p_actor_user_id: command.audit.actor_user_id,
+        p_at: command.audit.timestamp ?? new Date().toISOString(),
+        p_detail: command.audit.detail,
+      });
+      if (error) throw error;
+      if (command.operation === "create") return data as { id: string; email: string };
+    },
+
+    async appendConsentsWithAudit(command) {
+      const { error } = await client.rpc("append_crm_consents_with_audit", {
+        p_rows: command.rows,
+        p_actor_user_id: command.audit.actor_user_id,
+        p_supporter_id: command.audit.entity_id,
+        p_at: command.audit.timestamp ?? new Date().toISOString(),
+        p_detail: command.audit.detail,
+      });
+      if (error) throw error;
+    },
     async upsertSupporter(input) {
       const { data, error } = await client
         .from("supporter")
@@ -365,21 +400,12 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
     },
 
     async setSupporterRoles(input) {
-      const { error: deleteError } = await client
-        .from("supporter_role")
-        .delete()
-        .eq("supporter_id", input.supporterId);
-      if (deleteError) throw deleteError;
-
-      const { error } = await client.from("supporter_role").insert(
-        input.roles.map((role) => ({
-          supporter_id: input.supporterId,
-          role,
-        })),
-      );
+      const { error } = await client.rpc("replace_supporter_roles_atomic", {
+        p_supporter_id: input.supporterId,
+        p_roles: input.roles,
+      });
       if (error) throw error;
     },
-
     async insertConsentRows(rows) {
       if (rows.length === 0) return;
       // Replays/double-clicks must not append duplicate rows to the legal

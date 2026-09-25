@@ -13,12 +13,8 @@ export function createHandlers() {
   const client = createSupabaseServiceClient();
   const service = createVolunteerService({
     repo: createSupabaseVolunteerRepository(client),
-    async sendRegistrationEmail(input) {
-      await sendVolunteerRegistrationEmail(client, input);
-    },
-    async notifyAdmins(input) {
-      await notifyVolunteerAdmins(input);
-    },
+    sendRegistrationEmail: (input) => sendVolunteerRegistrationEmail(client, input),
+    notifyAdmins: (input) => notifyVolunteerAdmins(client, input),
   });
 
   return createVolunteerHandlers({

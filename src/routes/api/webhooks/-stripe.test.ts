@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
 import { isFullRefund, stripeWebhookAction } from "./stripe";
+import * as stripeModule from "./stripe";
 
 describe("Stripe webhook event routing", () => {
   test("reconciles synchronous and async-succeeded checkout sessions", () => {
@@ -29,5 +30,24 @@ describe("Stripe refund classification", () => {
     // false (with amount_refunded > 0) and must not void the whole receipt.
     expect(isFullRefund({ refunded: true })).toBe(true);
     expect(isFullRefund({ refunded: false })).toBe(false);
+  });
+});
+
+describe("Stripe unmapped refund audit", () => {
+  test("retries when durable manual-review audit insertion fails", async () => {
+    const client = {
+      from: () => ({ insert: async () => ({ error: new Error("audit unavailable") }) }),
+    };
+    const recordUnmappedStripeRefund = (stripeModule as Record<string, unknown>)
+      .recordUnmappedStripeRefund;
+    expect(recordUnmappedStripeRefund).toBeFunction();
+    if (typeof recordUnmappedStripeRefund !== "function") return;
+    await expect(
+      recordUnmappedStripeRefund(client as never, {
+        chargeId: "ch_1",
+        paymentIntent: "pi_1",
+        eventId: "evt_1",
+      }),
+    ).rejects.toThrow("audit unavailable");
   });
 });

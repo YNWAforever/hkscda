@@ -21,6 +21,7 @@ mock.module("@tanstack/react-router", () => ({
     </a>
   ),
   createFileRoute: () => (options: unknown) => options,
+  notFound: () => ({ isNotFound: true }),
 }));
 
 mock.module("../lib/content/publicStoriesPage.functions", () => ({

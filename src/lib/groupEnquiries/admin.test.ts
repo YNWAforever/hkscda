@@ -110,6 +110,7 @@ describe("group enquiry admin service", () => {
       repo,
       notifyAdmins: async () => {
         calls.push({ name: "notify" });
+        return "sent" as const;
       },
     });
     await expect(

@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+
 import {
   buildConsentRows,
   createManualPaymentReference,
@@ -9,33 +11,39 @@ import {
 } from "./domain";
 import type { IdentityResolution, PublicContact } from "../supporters/publicIdentity.server";
 
-type SupporterRow = {
-  id: string;
-  email: string;
-};
-
 type DonationRow = {
   id: string;
+  supporter_id: string;
+  created_at: string;
   amount_cents: number;
+  idempotency_fingerprint: string;
 };
 
 type PaymentInsert = {
   donation_id: string;
+  idempotency_key: string;
   provider: PaymentProvider;
   provider_ref: string | null;
   amount_cents: number;
   status: "pending";
 };
 
-type PaymentRow = PaymentInsert & {
+type PaymentRow = Omit<PaymentInsert, "status"> & {
   id: string;
+  checkout_url?: string | null;
+  checkout_attempted_at?: string | null;
+  provider_order_ref?: string | null;
+  status: "pending" | "succeeded" | "failed" | "refunded";
 };
 
 export type DonationRepository = {
   resolvePublicIdentity(contact: PublicContact): Promise<IdentityResolution>;
   ensureSupporterRole(input: { supporterId: string; role: "donor" }): Promise<void>;
   replaceConsents(rows: ReturnType<typeof buildConsentRows>): Promise<void>;
+  findDonationByIdempotencyKey(key: string): Promise<DonationRow | null>;
   createDonation(input: {
+    idempotency_key: string;
+    idempotency_fingerprint: string;
     supporter_id: string;
     amount_cents: number;
     currency: "HKD";
@@ -56,17 +64,18 @@ export type DonationRepository = {
     consent_email_requested: boolean;
     consent_whatsapp_requested: boolean;
   }): Promise<DonationRow>;
+  findPaymentByIdempotencyKey(key: string): Promise<PaymentRow | null>;
   createPayment(input: PaymentInsert): Promise<PaymentRow>;
+  beginCheckoutAttempt(
+    paymentId: string,
+    timestamp: string,
+  ): Promise<{ attemptedAt: string; claimed: boolean }>;
   updatePaymentProviderRef(
     paymentId: string,
     providerRef: string,
+    checkoutUrl: string,
     providerOrderRef?: string,
   ): Promise<void>;
-  // Compensation hooks used when an external checkout call fails after the
-  // donation/payment rows were already written. Optional so existing fakes stay
-  // valid; the Supabase repository implements both.
-  deletePayment?(paymentId: string): Promise<void>;
-  deleteDonation?(donationId: string): Promise<void>;
 };
 
 export type PaymentProviders = {
@@ -117,18 +126,44 @@ export type CreateDonationResult =
       };
     };
 
-async function compensateFailedCheckout(
-  repository: DonationRepository,
+export class DonationIdempotencyConflictError extends Error {
+  constructor() {
+    super("Donation intent conflicts with an existing request");
+    this.name = "DonationIdempotencyConflictError";
+  }
+}
+
+export class DonationCheckoutRecoveryRequiredError extends Error {
+  constructor(public readonly donationId: string) {
+    super("Checkout outcome is uncertain; contact support before another attempt");
+    this.name = "DonationCheckoutRecoveryRequiredError";
+  }
+}
+
+const PROVIDER_RETRY_WINDOW_MS = 60 * 60 * 1000;
+function fingerprintRequest(input: DonationRequest) {
+  const { idempotencyKey: _key, ...request } = input;
+  return createHash("sha256").update(JSON.stringify(request)).digest("hex");
+}
+
+function assertDonationMatches(donation: DonationRow, fingerprint: string) {
+  if (donation.idempotency_fingerprint !== fingerprint) {
+    throw new DonationIdempotencyConflictError();
+  }
+}
+
+function assertPaymentMatches(
+  payment: PaymentRow,
   donationId: string,
-  paymentId: string,
+  provider: PaymentProvider,
+  amountCents: number,
 ) {
-  try {
-    await repository.deletePayment?.(paymentId);
-    await repository.deleteDonation?.(donationId);
-  } catch (cleanupError) {
-    // Don't mask the original checkout error with a cleanup failure; log and
-    // let the original error propagate.
-    console.error("Failed to clean up donation after checkout failure", cleanupError);
+  if (
+    payment.donation_id !== donationId ||
+    payment.provider !== provider ||
+    payment.amount_cents !== amountCents
+  ) {
+    throw new DonationIdempotencyConflictError();
   }
 }
 
@@ -139,54 +174,84 @@ export async function createDonation({
   now = () => new Date(),
 }: CreateDonationArgs): Promise<CreateDonationResult> {
   const donationInput = donationRequestSchema.parse(input);
-  const supporter = await repository.resolvePublicIdentity({
-    ...donationInput.donor,
-    phone: donationInput.donor.phone ?? null,
-    source: "donation_form",
-  });
+  const requestKey = donationInput.idempotencyKey;
+  const fingerprint = fingerprintRequest(donationInput);
 
-  await repository.ensureSupporterRole({ supporterId: supporter.supporterId, role: "donor" });
+  let donation = await repository.findDonationByIdempotencyKey(requestKey);
+  if (!donation) {
+    const supporter = await repository.resolvePublicIdentity({
+      ...donationInput.donor,
+      phone: donationInput.donor.phone ?? null,
+      source: "donation_form",
+    });
+    await repository.ensureSupporterRole({ supporterId: supporter.supporterId, role: "donor" });
+    try {
+      donation = await repository.createDonation({
+        idempotency_key: requestKey,
+        idempotency_fingerprint: fingerprint,
+        supporter_id: supporter.supporterId,
+        amount_cents: donationInput.amountCents,
+        currency: donationInput.currency,
+        purpose: donationInput.purpose,
+        custom_purpose: donationInput.customPurpose ?? null,
+        type: "one_time",
+        status: "pending",
+        method: donationInput.method,
+        receipt_requested: donationInput.receiptRequested,
+        acquisition_source: donationInput.attribution?.source ?? null,
+        acquisition_context: donationInput.attribution?.context ?? null,
+        acquisition_placement: donationInput.attribution?.placement ?? null,
+        acquisition_trigger: donationInput.attribution?.trigger ?? null,
+        contact_name: donationInput.donor.name,
+        contact_email: donationInput.donor.email,
+        contact_phone: donationInput.donor.phone ?? null,
+        contact_language: donationInput.donor.language,
+        consent_email_requested: donationInput.consents.email,
+        consent_whatsapp_requested: donationInput.consents.whatsapp,
+      });
+    } catch (error) {
+      // A concurrent request may have won the unique key. Only recover if its
+      // committed row exists; otherwise preserve the original database error.
+      donation = await repository.findDonationByIdempotencyKey(requestKey);
+      if (!donation) throw error;
+    }
+  }
+  assertDonationMatches(donation, fingerprint);
   await repository.replaceConsents(
     buildConsentRows({
-      supporterId: supporter.supporterId,
+      supporterId: donation.supporter_id,
       source: "donation_form",
-      timestamp: now().toISOString(),
+      timestamp: donation.created_at,
       consents: donationInput.consents,
     }).filter((row) => row.status === "opt_out"),
   );
 
-  const donation = await repository.createDonation({
-    supporter_id: supporter.supporterId,
-    amount_cents: donationInput.amountCents,
-    currency: donationInput.currency,
-    purpose: donationInput.purpose,
-    custom_purpose: donationInput.customPurpose ?? null,
-    type: "one_time",
-    status: "pending",
-    method: donationInput.method,
-    receipt_requested: donationInput.receiptRequested,
-    acquisition_source: donationInput.attribution?.source ?? null,
-    acquisition_context: donationInput.attribution?.context ?? null,
-    acquisition_placement: donationInput.attribution?.placement ?? null,
-    acquisition_trigger: donationInput.attribution?.trigger ?? null,
-    contact_name: donationInput.donor.name,
-    contact_email: donationInput.donor.email,
-    contact_phone: donationInput.donor.phone ?? null,
-    contact_language: donationInput.donor.language,
-    consent_email_requested: donationInput.consents.email,
-    consent_whatsapp_requested: donationInput.consents.whatsapp,
-  });
+  const paymentProvider: PaymentProvider =
+    donationInput.method === "alipayhk" ? "cod" : donationInput.method;
+  let payment = await repository.findPaymentByIdempotencyKey(requestKey);
+  if (!payment) {
+    const paymentInput: PaymentInsert = {
+      donation_id: donation.id,
+      idempotency_key: requestKey,
+      provider: paymentProvider,
+      provider_ref:
+        donationInput.method === "fps" || donationInput.method === "payme"
+          ? createManualPaymentReference(donation.id)
+          : null,
+      amount_cents: donationInput.amountCents,
+      status: "pending",
+    };
+    try {
+      payment = await repository.createPayment(paymentInput);
+    } catch (error) {
+      payment = await repository.findPaymentByIdempotencyKey(requestKey);
+      if (!payment) throw error;
+    }
+  }
+  assertPaymentMatches(payment, donation.id, paymentProvider, donationInput.amountCents);
 
   if (donationInput.method === "fps" || donationInput.method === "payme") {
     const reference = createManualPaymentReference(donation.id);
-    await repository.createPayment({
-      donation_id: donation.id,
-      provider: donationInput.method,
-      provider_ref: reference,
-      amount_cents: donationInput.amountCents,
-      status: "pending",
-    });
-
     return {
       kind: "manual",
       donationId: donation.id,
@@ -204,55 +269,69 @@ export async function createDonation({
     };
   }
 
-  const paymentProvider: OnlinePaymentProvider =
-    donationInput.method === "alipayhk" ? "cod" : donationInput.method;
-  const pendingPayment = await repository.createPayment({
-    donation_id: donation.id,
-    provider: paymentProvider,
-    provider_ref: null,
-    amount_cents: donationInput.amountCents,
-    status: "pending",
-  });
+  const onlineProvider = paymentProvider as OnlinePaymentProvider;
+  if (payment.status === "succeeded") {
+    return {
+      kind: "redirect",
+      donationId: donation.id,
+      provider: onlineProvider,
+      url: "/donate?status=success&donation=" + encodeURIComponent(donation.id),
+    };
+  }
+  if (payment.status !== "pending") throw new DonationIdempotencyConflictError();
+  if (payment.checkout_url) {
+    return {
+      kind: "redirect",
+      donationId: donation.id,
+      provider: onlineProvider,
+      url: payment.checkout_url,
+    };
+  }
 
+  const attempt = await repository.beginCheckoutAttempt(payment.id, now().toISOString());
+  if (
+    (onlineProvider === "cod" && !attempt.claimed) ||
+    now().getTime() - Date.parse(attempt.attemptedAt) > PROVIDER_RETRY_WINDOW_MS
+  ) {
+    throw new DonationCheckoutRecoveryRequiredError(donation.id);
+  }
   const checkoutInput: CheckoutProviderInput = {
     donationId: donation.id,
-    paymentId: pendingPayment.id,
+    paymentId: payment.id,
     amountCents: donationInput.amountCents,
     donorEmail: donationInput.donor.email,
     purpose: donationInput.purpose,
     checkoutExperience: donationInput.checkoutExperience,
   };
+  // The provider call may have succeeded even if its response or our database
+  // write fails. Keep the intent/payment and retry using the same provider key.
   let checkout: CheckoutProviderResult;
-  try {
-    if (donationInput.method === "stripe") {
-      checkout = await providers.createStripeCheckout(checkoutInput);
-    } else if (donationInput.method === "paypal") {
-      checkout = await providers.createPayPalOrder(checkoutInput);
-    } else if (donationInput.method === "alipayhk") {
+  if (donationInput.method === "stripe") {
+    checkout = await providers.createStripeCheckout(checkoutInput);
+  } else if (donationInput.method === "paypal") {
+    checkout = await providers.createPayPalOrder(checkoutInput);
+  } else if (donationInput.method === "alipayhk") {
+    try {
       checkout = await providers.createCodAlipayHkCheckout(checkoutInput);
-    } else {
-      throw new Error(`Unsupported online donation method: ${donationInput.method}`);
+    } catch (error) {
+      console.error("COD checkout outcome is uncertain", error);
+      throw new DonationCheckoutRecoveryRequiredError(donation.id);
     }
-  } catch (error) {
-    // The checkout provider failed after we wrote the donation + pending
-    // payment. Without compensation these orphan rows accumulate and a retry
-    // creates a second donation for the same intent. Remove them, then rethrow
-    // so the caller surfaces the failure. (payment FK cascades on donation
-    // delete, but we remove both explicitly to be robust to fakes/config.)
-    await compensateFailedCheckout(repository, donation.id, pendingPayment.id);
-    throw error;
+  } else {
+    throw new Error("Unsupported online donation method: " + donationInput.method);
   }
 
   await repository.updatePaymentProviderRef(
-    pendingPayment.id,
+    payment.id,
     checkout.providerRef,
+    checkout.url,
     checkout.providerOrderRef,
   );
 
   return {
     kind: "redirect",
     donationId: donation.id,
-    provider: paymentProvider,
+    provider: onlineProvider,
     url: checkout.url,
   };
 }

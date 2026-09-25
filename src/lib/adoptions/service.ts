@@ -82,11 +82,16 @@ export type AuditLogInsert = {
 };
 
 export type AdoptionCoordinatorRepository = {
+  usesAtomicAudit?: boolean;
   listStatuses(category?: string): Promise<CoordinatorStatus[]>;
   getStatus(id: string): Promise<CoordinatorStatus | null>;
-  createStatus(input: StatusInput): Promise<CoordinatorStatus>;
-  updateStatus(id: string, input: StatusUpdate): Promise<CoordinatorStatus>;
-  deleteStatus(id: string): Promise<void>;
+  createStatus(input: StatusInput, actorUserId?: string | null): Promise<CoordinatorStatus>;
+  updateStatus(
+    id: string,
+    input: StatusUpdate,
+    actorUserId?: string | null,
+  ): Promise<CoordinatorStatus>;
+  deleteStatus(id: string, actorUserId?: string | null): Promise<void>;
   listAnimalPipeline(input: AnimalPipelineSearch): Promise<AnimalPipelineListResult>;
   listCases(input: CaseSearch): Promise<{ cases: AdoptionCaseSummary[]; total: number }>;
   listIntakeItems(input: {
@@ -231,7 +236,8 @@ export function createAdoptionCoordinatorService({
 
     async createStatus(args: { actorUserId: string | null; input: unknown }) {
       const input = statusInputSchema.parse(args.input);
-      const status = await repo.createStatus(input);
+      const status = await repo.createStatus(input, args.actorUserId);
+      if (repo.usesAtomicAudit) return status;
       await repo.insertAuditLog({
         actor_user_id: args.actorUserId,
         action: "coordinator_status.create",
@@ -255,7 +261,8 @@ export function createAdoptionCoordinatorService({
         nextLabelEn: input.labelEn,
       });
 
-      const status = await repo.updateStatus(args.statusId, input);
+      const status = await repo.updateStatus(args.statusId, input, args.actorUserId);
+      if (repo.usesAtomicAudit) return status;
       await repo.insertAuditLog({
         actor_user_id: args.actorUserId,
         action: "coordinator_status.update",
@@ -272,7 +279,8 @@ export function createAdoptionCoordinatorService({
       if (!current) throw new Error("Status not found");
       assertCanMutateStatus(current, { delete: true });
 
-      await repo.deleteStatus(args.statusId);
+      await repo.deleteStatus(args.statusId, args.actorUserId);
+      if (repo.usesAtomicAudit) return;
       await repo.insertAuditLog({
         actor_user_id: args.actorUserId,
         action: "coordinator_status.delete",
@@ -498,21 +506,22 @@ export function createAdoptionCoordinatorService({
         createdBy: args.actorUserId,
       });
 
-      await repo.insertAuditLog({
-        actor_user_id: args.actorUserId,
-        action: buildTaskAuditAction({ created: true, status }),
-        entity: "adoption_followup",
-        entity_id: task.id,
-        timestamp: timestamp(now),
-        detail: {
-          adoptionCaseId: input.adoptionCaseId ?? null,
-          adopterProfileId: input.adopterProfileId ?? null,
-          animalId: input.animalId ?? null,
-          statusId: input.statusId,
-          priority: input.priority,
-          dueAt: input.dueAt ?? null,
-        },
-      });
+      if (!repo.usesAtomicAudit)
+        await repo.insertAuditLog({
+          actor_user_id: args.actorUserId,
+          action: buildTaskAuditAction({ created: true, status }),
+          entity: "adoption_followup",
+          entity_id: task.id,
+          timestamp: timestamp(now),
+          detail: {
+            adoptionCaseId: input.adoptionCaseId ?? null,
+            adopterProfileId: input.adopterProfileId ?? null,
+            animalId: input.animalId ?? null,
+            statusId: input.statusId,
+            priority: input.priority,
+            dueAt: input.dueAt ?? null,
+          },
+        });
 
       return task;
     },
@@ -548,16 +557,17 @@ export function createAdoptionCoordinatorService({
         updatedBy: args.actorUserId,
       });
 
-      await repo.insertAuditLog({
-        actor_user_id: args.actorUserId,
-        action: statusForAudit
-          ? buildTaskAuditAction({ created: false, status: statusForAudit })
-          : "coordinator_task.update",
-        entity: "adoption_followup",
-        entity_id: task.id,
-        timestamp: timestamp(now),
-        detail: input,
-      });
+      if (!repo.usesAtomicAudit)
+        await repo.insertAuditLog({
+          actor_user_id: args.actorUserId,
+          action: statusForAudit
+            ? buildTaskAuditAction({ created: false, status: statusForAudit })
+            : "coordinator_task.update",
+          entity: "adoption_followup",
+          entity_id: task.id,
+          timestamp: timestamp(now),
+          detail: input,
+        });
 
       return task;
     },
@@ -589,19 +599,20 @@ export function createAdoptionCoordinatorService({
         createdBy: args.actorUserId,
         isApproved: status.key === "approved",
       });
-      await repo.insertAuditLog({
-        actor_user_id: args.actorUserId,
-        action: "animal_match.create",
-        entity: "animal_match",
-        entity_id: match.id,
-        timestamp: timestamp(now),
-        detail: {
-          adoptionCaseId: args.caseId,
-          animalId: input.animalId,
-          statusId: input.statusId,
-          isApproved: status.key === "approved",
-        },
-      });
+      if (!repo.usesAtomicAudit)
+        await repo.insertAuditLog({
+          actor_user_id: args.actorUserId,
+          action: "animal_match.create",
+          entity: "animal_match",
+          entity_id: match.id,
+          timestamp: timestamp(now),
+          detail: {
+            adoptionCaseId: args.caseId,
+            animalId: input.animalId,
+            statusId: input.statusId,
+            isApproved: status.key === "approved",
+          },
+        });
       return match;
     },
 

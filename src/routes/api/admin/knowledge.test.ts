@@ -59,6 +59,26 @@ describe("admin knowledge handlers", () => {
     expect(service.calls).toEqual([]);
   });
 
+  test("missing post deletion returns 404", async () => {
+    const service = {
+      ...createService(),
+      remove: async () => {
+        throw { code: "P0002", message: "missing" };
+      },
+    };
+    const handlers = createAdminKnowledgeHandlers({
+      requireKnowledgeAdmin: async () => admin,
+      service,
+    });
+    const response = await handlers.remove({
+      request: request(undefined, {
+        method: "DELETE",
+        body: JSON.stringify({ id: "11111111-2222-4333-8444-555555555555" }),
+      }),
+    });
+    expect(response.status).toBe(404);
+  });
+
   test("lists, upserts, and deletes knowledge posts", async () => {
     const service = createService();
     const handlers = createAdminKnowledgeHandlers({
@@ -93,6 +113,6 @@ describe("admin knowledge handlers", () => {
       ).status,
     ).toBe(200);
     expect(service.calls.map((call) => call.name)).toEqual(["list", "upsert", "remove"]);
-    expect(service.calls[1]?.input).toMatchObject({ actorUserId: "admin-1" });
+    expect(service.calls[1]?.input).toMatchObject({ actorUserId: "auth-1" });
   });
 });

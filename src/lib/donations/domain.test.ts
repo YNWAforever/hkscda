@@ -14,6 +14,7 @@ import type { OnlinePaymentProvider, PaymentProvider } from "./domain";
 describe("donation domain", () => {
   test("normalizes valid HKD donation requests", () => {
     const parsed = donationRequestSchema.parse({
+      idempotencyKey: "e15e9832-469b-4710-b2ea-244d8a39aa12",
       amountCents: 30000,
       currency: "HKD",
       purpose: "medical",
@@ -39,6 +40,7 @@ describe("donation domain", () => {
 
   test("accepts AlipayHK and validates its checkout experience", () => {
     const input = {
+      idempotencyKey: "e15e9832-469b-4710-b2ea-244d8a39aa12",
       amountCents: 30000,
       currency: "HKD" as const,
       purpose: "medical" as const,
@@ -77,6 +79,7 @@ describe("donation domain", () => {
 
   test("normalizes and bounds an optional custom purpose", () => {
     const validRequest = {
+      idempotencyKey: "e15e9832-469b-4710-b2ea-244d8a39aa12",
       amountCents: 30000,
       currency: "HKD",
       purpose: "medical",
@@ -130,6 +133,7 @@ describe("donation domain", () => {
       trigger: "scroll",
     } satisfies DonationAttribution;
     const input = {
+      idempotencyKey: "e15e9832-469b-4710-b2ea-244d8a39aa12",
       amountCents: 30000,
       currency: "HKD",
       purpose: "medical",

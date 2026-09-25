@@ -55,20 +55,30 @@ function renderAdminEmail(registration: VolunteerRegistrationDetail) {
 async function findRegistrationMessage(
   client: SupabaseClient,
   registrationId: string,
+  kind: string,
 ): Promise<ExistingMessage | null> {
   const { data, error } = await client
     .from("message")
     .select("id,status,updated_at")
     .eq("channel", "email")
-    .contains("payload", { kind: "volunteer_registration_confirmation", registrationId })
+    .contains("payload", { kind, registrationId })
     .maybeSingle<ExistingMessage>();
   if (error) throw error;
   return data;
 }
 
-export async function sendVolunteerRegistrationEmail(
+type VolunteerEmail = {
+  registration: VolunteerRegistrationDetail;
+  kind: "volunteer_registration_confirmation" | "volunteer_registration_admin_notification";
+  recipient: string | undefined;
+  subject: string;
+  html: string;
+  idempotencyKey: string;
+};
+
+async function sendTrackedVolunteerEmail(
   client: SupabaseClient,
-  input: { registration: VolunteerRegistrationDetail; statusUrl: string },
+  input: VolunteerEmail,
   {
     getEmailConfig: loadEmailConfig = getEmailConfig,
     createMailProvider = defaultCreateMailProvider,
@@ -77,12 +87,11 @@ export async function sendVolunteerRegistrationEmail(
   }: VolunteerNotificationDependencies = {},
 ): Promise<DeliveryResult> {
   const config = loadEmailConfig();
-  const email = renderRegistrantEmail(input.registration, input.statusUrl);
   const payload: Record<string, unknown> = {
-    kind: "volunteer_registration_confirmation",
+    kind: input.kind,
     registrationId: input.registration.id,
     activityId: input.registration.activityId,
-    subject: email.subject,
+    subject: input.subject,
     entityType: "volunteer_registration",
   };
 
@@ -99,10 +108,10 @@ export async function sendVolunteerRegistrationEmail(
   let messageId: string;
   if (claimError) {
     if ((claimError as { code?: string }).code !== "23505") {
-      logger.error("Failed to queue volunteer registration email", claimError);
+      logger.error("Failed to queue volunteer email", claimError);
       return "failed";
     }
-    const existing = await findRegistrationMessage(client, input.registration.id);
+    const existing = await findRegistrationMessage(client, input.registration.id, input.kind);
     if (!existing) throw new Error("Volunteer message claim disappeared after unique conflict");
     if (existing.status === "sent" || existing.status === "delivered") return "skipped";
     if (existing.status === "queued") {
@@ -136,27 +145,44 @@ export async function sendVolunteerRegistrationEmail(
   } else if (claimed) messageId = (claimed as { id: string }).id;
   else return "failed";
 
-  if (!config.resendApiKey) return "queued";
-  const provider = await createMailProvider(config.resendApiKey);
-  const result = await provider.send({
-    from: config.from,
-    to: input.registration.contactEmail,
-    replyTo: config.replyTo,
-    subject: email.subject,
-    html: email.html,
-    idempotencyKey: `volunteer-registration-${input.registration.id}`,
-  });
-  if (result.kind === "rejected") {
-    logger.error("Volunteer registration provider rejected message", result);
+  async function markFailed(code: string, retryable: boolean) {
     const { error } = await client
       .from("message")
       .update({
         status: "failed",
-        payload: { ...payload, providerErrorCode: result.code, retryable: result.retryable },
+        payload: { ...payload, providerErrorCode: code, retryable },
       })
       .eq("id", messageId)
       .eq("status", "queued");
     if (error) throw error;
+  }
+
+  if (!config.resendApiKey || !input.recipient) {
+    logger.error("Volunteer email is unavailable: provider configuration is incomplete");
+    await markFailed("email_not_configured", true);
+    return "failed";
+  }
+
+  let result: Awaited<ReturnType<MailProvider["send"]>>;
+  try {
+    const provider = await createMailProvider(config.resendApiKey);
+    result = await provider.send({
+      from: config.from,
+      to: input.recipient,
+      replyTo: config.replyTo,
+      subject: input.subject,
+      html: input.html,
+      idempotencyKey: input.idempotencyKey,
+    });
+  } catch (error) {
+    logger.error("Volunteer email provider failed", error);
+    await markFailed("provider_exception", true);
+    return "failed";
+  }
+
+  if (result.kind === "rejected") {
+    logger.error("Volunteer email provider rejected message", result);
+    await markFailed(result.code, result.retryable);
     return "failed";
   }
 
@@ -176,30 +202,41 @@ export async function sendVolunteerRegistrationEmail(
   return "sent";
 }
 
-export async function notifyVolunteerAdmins(
+export function sendVolunteerRegistrationEmail(
+  client: SupabaseClient,
+  input: { registration: VolunteerRegistrationDetail; statusUrl: string },
+  dependencies: VolunteerNotificationDependencies = {},
+): Promise<DeliveryResult> {
+  const email = renderRegistrantEmail(input.registration, input.statusUrl);
+  return sendTrackedVolunteerEmail(
+    client,
+    {
+      registration: input.registration,
+      kind: "volunteer_registration_confirmation",
+      recipient: input.registration.contactEmail,
+      ...email,
+      idempotencyKey: `volunteer-registration-${input.registration.id}`,
+    },
+    dependencies,
+  );
+}
+
+export function notifyVolunteerAdmins(
+  client: SupabaseClient,
   input: { registration: VolunteerRegistrationDetail },
-  {
-    getEmailConfig: loadEmailConfig = getEmailConfig,
-    createMailProvider = defaultCreateMailProvider,
-    logger = console,
-  }: VolunteerNotificationDependencies = {},
-) {
-  const config = loadEmailConfig();
-  if (!config.resendApiKey || !config.replyTo) return "skipped";
+  dependencies: VolunteerNotificationDependencies = {},
+): Promise<DeliveryResult> {
   const email = renderAdminEmail(input.registration);
-  try {
-    const provider = await createMailProvider(config.resendApiKey);
-    const result = await provider.send({
-      from: config.from,
-      to: config.replyTo,
-      replyTo: config.replyTo,
-      subject: email.subject,
-      html: email.html,
+  const config = (dependencies.getEmailConfig ?? getEmailConfig)();
+  return sendTrackedVolunteerEmail(
+    client,
+    {
+      registration: input.registration,
+      kind: "volunteer_registration_admin_notification",
+      recipient: config.replyTo,
+      ...email,
       idempotencyKey: `volunteer-admin-${input.registration.id}`,
-    });
-    return result.kind === "accepted" ? "sent" : "failed";
-  } catch (error) {
-    logger.error("Failed to notify volunteer admins", error);
-    return "failed";
-  }
+    },
+    { ...dependencies, getEmailConfig: () => config },
+  );
 }

@@ -70,6 +70,7 @@ import { Route as ApiStoriesSlugRouteImport } from './routes/api/stories/$slug'
 import { Route as ApiSponsorshipsPledgesRouteImport } from './routes/api/sponsorships/pledges'
 import { Route as ApiJobsVolunteersRouteImport } from './routes/api/jobs/volunteers'
 import { Route as ApiJobsSponsorshipsRouteImport } from './routes/api/jobs/sponsorships'
+import { Route as ApiJobsAdoptionUploadsRouteImport } from './routes/api/jobs/adoption-uploads'
 import { Route as ApiInternshipsAttachmentRouteImport } from './routes/api/internships/attachment'
 import { Route as ApiAdoptionApplicationsRouteImport } from './routes/api/adoption/applications'
 import { Route as ApiAdminSupportersRouteImport } from './routes/api/admin/supporters'
@@ -549,6 +550,11 @@ const ApiJobsVolunteersRoute = ApiJobsVolunteersRouteImport.update({
 const ApiJobsSponsorshipsRoute = ApiJobsSponsorshipsRouteImport.update({
   id: '/api/jobs/sponsorships',
   path: '/api/jobs/sponsorships',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiJobsAdoptionUploadsRoute = ApiJobsAdoptionUploadsRouteImport.update({
+  id: '/api/jobs/adoption-uploads',
+  path: '/api/jobs/adoption-uploads',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiInternshipsAttachmentRoute =
@@ -1626,6 +1632,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
   '/api/adoption/applications': typeof ApiAdoptionApplicationsRouteWithChildren
   '/api/internships/attachment': typeof ApiInternshipsAttachmentRoute
+  '/api/jobs/adoption-uploads': typeof ApiJobsAdoptionUploadsRoute
   '/api/jobs/sponsorships': typeof ApiJobsSponsorshipsRoute
   '/api/jobs/volunteers': typeof ApiJobsVolunteersRoute
   '/api/sponsorships/pledges': typeof ApiSponsorshipsPledgesRouteWithChildren
@@ -1861,6 +1868,7 @@ export interface FileRoutesByTo {
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
   '/api/adoption/applications': typeof ApiAdoptionApplicationsRouteWithChildren
   '/api/internships/attachment': typeof ApiInternshipsAttachmentRoute
+  '/api/jobs/adoption-uploads': typeof ApiJobsAdoptionUploadsRoute
   '/api/jobs/sponsorships': typeof ApiJobsSponsorshipsRoute
   '/api/jobs/volunteers': typeof ApiJobsVolunteersRoute
   '/api/sponsorships/pledges': typeof ApiSponsorshipsPledgesRouteWithChildren
@@ -2098,6 +2106,7 @@ export interface FileRoutesById {
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
   '/api/adoption/applications': typeof ApiAdoptionApplicationsRouteWithChildren
   '/api/internships/attachment': typeof ApiInternshipsAttachmentRoute
+  '/api/jobs/adoption-uploads': typeof ApiJobsAdoptionUploadsRoute
   '/api/jobs/sponsorships': typeof ApiJobsSponsorshipsRoute
   '/api/jobs/volunteers': typeof ApiJobsVolunteersRoute
   '/api/sponsorships/pledges': typeof ApiSponsorshipsPledgesRouteWithChildren
@@ -2336,6 +2345,7 @@ export interface FileRouteTypes {
     | '/api/admin/supporters'
     | '/api/adoption/applications'
     | '/api/internships/attachment'
+    | '/api/jobs/adoption-uploads'
     | '/api/jobs/sponsorships'
     | '/api/jobs/volunteers'
     | '/api/sponsorships/pledges'
@@ -2571,6 +2581,7 @@ export interface FileRouteTypes {
     | '/api/admin/supporters'
     | '/api/adoption/applications'
     | '/api/internships/attachment'
+    | '/api/jobs/adoption-uploads'
     | '/api/jobs/sponsorships'
     | '/api/jobs/volunteers'
     | '/api/sponsorships/pledges'
@@ -2807,6 +2818,7 @@ export interface FileRouteTypes {
     | '/api/admin/supporters'
     | '/api/adoption/applications'
     | '/api/internships/attachment'
+    | '/api/jobs/adoption-uploads'
     | '/api/jobs/sponsorships'
     | '/api/jobs/volunteers'
     | '/api/sponsorships/pledges'
@@ -3019,6 +3031,7 @@ export interface RootRouteChildren {
   ApiAdminSupportersRoute: typeof ApiAdminSupportersRouteWithChildren
   ApiAdoptionApplicationsRoute: typeof ApiAdoptionApplicationsRouteWithChildren
   ApiInternshipsAttachmentRoute: typeof ApiInternshipsAttachmentRoute
+  ApiJobsAdoptionUploadsRoute: typeof ApiJobsAdoptionUploadsRoute
   ApiJobsSponsorshipsRoute: typeof ApiJobsSponsorshipsRoute
   ApiJobsVolunteersRoute: typeof ApiJobsVolunteersRoute
   ApiSponsorshipsPledgesRoute: typeof ApiSponsorshipsPledgesRouteWithChildren
@@ -3517,6 +3530,13 @@ declare module '@tanstack/react-router' {
       path: '/api/jobs/sponsorships'
       fullPath: '/api/jobs/sponsorships'
       preLoaderRoute: typeof ApiJobsSponsorshipsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/jobs/adoption-uploads': {
+      id: '/api/jobs/adoption-uploads'
+      path: '/api/jobs/adoption-uploads'
+      fullPath: '/api/jobs/adoption-uploads'
+      preLoaderRoute: typeof ApiJobsAdoptionUploadsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/internships/attachment': {
@@ -5483,6 +5503,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminSupportersRoute: ApiAdminSupportersRouteWithChildren,
   ApiAdoptionApplicationsRoute: ApiAdoptionApplicationsRouteWithChildren,
   ApiInternshipsAttachmentRoute: ApiInternshipsAttachmentRoute,
+  ApiJobsAdoptionUploadsRoute: ApiJobsAdoptionUploadsRoute,
   ApiJobsSponsorshipsRoute: ApiJobsSponsorshipsRoute,
   ApiJobsVolunteersRoute: ApiJobsVolunteersRoute,
   ApiSponsorshipsPledgesRoute: ApiSponsorshipsPledgesRouteWithChildren,

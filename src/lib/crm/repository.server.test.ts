@@ -417,3 +417,33 @@ describe("supporter detail resilience", () => {
     });
   });
 });
+
+describe("atomic CRM repository mutations", () => {
+  test("supporter mutation is one RPC and propagates a transaction failure", async () => {
+    const calls: Array<{ name: string; args: unknown }> = [];
+    const client = {
+      rpc: async (name: string, args: unknown) => {
+        calls.push({ name, args });
+        return { data: null, error: new Error("audit unavailable") };
+      },
+    } as unknown as SupabaseClient;
+    const repo = createSupabaseCrmRepository(client);
+    await expect(
+      repo.mutateSupporterWithAudit!({
+        operation: "update",
+        supporterId,
+        update: { name: "Ada" },
+        roles: ["donor"],
+        audit: {
+          actor_user_id: null,
+          action: "supporter.update",
+          entity: "supporter",
+          entity_id: supporterId,
+          detail: { name: "Ada" },
+        },
+      }),
+    ).rejects.toThrow("audit unavailable");
+    expect(calls).toHaveLength(1);
+    expect(calls[0]?.name).toBe("mutate_crm_supporter_with_audit");
+  });
+});

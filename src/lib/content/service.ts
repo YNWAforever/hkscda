@@ -112,6 +112,28 @@ export type ContentRepository = {
   updateSocialCopy(id: string, patch: SocialCopyUpdateInput): Promise<void>;
   updateSocialCopyStatus(id: string, status: SocialCopyVariant["status"]): Promise<void>;
   insertAuditLog(row: ContentAuditLogInsert): Promise<void>;
+  generateSocialCopiesWithAudit?(
+    rows: Array<Omit<SocialCopyVariant, "id" | "createdAt" | "updatedAt">>,
+    actorUserId: string | null,
+    contentId: string,
+    storyUpdateId: string | null,
+    platform: string | null,
+  ): Promise<number>;
+  generateNotificationDraftsWithAudit?(
+    rows: Array<Omit<RecipientNotificationDraft, "id" | "createdAt" | "updatedAt">>,
+    actorUserId: string | null,
+    storyUpdateId: string,
+  ): Promise<number>;
+  updateSocialCopyStatusWithAudit?(
+    id: string,
+    status: SocialCopyVariant["status"],
+    actorUserId: string | null,
+  ): Promise<void>;
+  updateNotificationDraftStatusWithAudit?(
+    id: string,
+    status: RecipientNotificationDraft["status"],
+    actorUserId: string | null,
+  ): Promise<void>;
 };
 
 type CreateContentServiceOptions = {
@@ -263,6 +285,10 @@ export function createContentService({
       publicUrl,
       recipients,
     }).filter((draft) => !alreadyDrafted.has(`${draft.channel}:${draft.recipientContact}`));
+
+    if (repo.generateNotificationDraftsWithAudit) {
+      return repo.generateNotificationDraftsWithAudit(drafts, actorUserId, update.id);
+    }
 
     await repo.insertNotificationDrafts(drafts);
     // Drafting messages addressed to adopters reaches recipient PII, so the
@@ -603,18 +629,27 @@ export function createContentService({
         (variant) => !parsed.platform || variant.platform === parsed.platform,
       );
 
-      await repo.insertSocialCopies(
-        variants.map((variant) => ({
-          contentItemId: content.id,
-          storyUpdateId: storyUpdate?.id ?? null,
-          platform: variant.platform,
-          language: variant.language,
-          copyText: variant.copyText,
-          hashtags: variant.hashtags,
-          status: "draft",
-        })),
-      );
+      const rows = variants.map((variant) => ({
+        contentItemId: content.id,
+        storyUpdateId: storyUpdate?.id ?? null,
+        platform: variant.platform,
+        language: variant.language,
+        copyText: variant.copyText,
+        hashtags: variant.hashtags,
+        status: "draft" as const,
+      }));
+      if (repo.generateSocialCopiesWithAudit) {
+        const count = await repo.generateSocialCopiesWithAudit(
+          rows,
+          actorUserId,
+          content.id,
+          storyUpdate?.id ?? null,
+          parsed.platform ?? null,
+        );
+        return { count };
+      }
 
+      await repo.insertSocialCopies(rows);
       await audit({
         actor_user_id: actorUserId,
         action: "content.social_copy.generate",
@@ -646,6 +681,10 @@ export function createContentService({
 
     async updateSocialCopyStatus({ actorUserId, copyId, input }: UpdateSocialCopyStatusArgs) {
       const parsed: SocialCopyStatusInput = socialCopyStatusSchema.parse(input);
+      if (repo.updateSocialCopyStatusWithAudit) {
+        await repo.updateSocialCopyStatusWithAudit(copyId, parsed.status, actorUserId);
+        return { ok: true };
+      }
       await repo.updateSocialCopyStatus(copyId, parsed.status);
       await audit({
         actor_user_id: actorUserId,
@@ -674,6 +713,10 @@ export function createContentService({
       input,
     }: UpdateNotificationDraftStatusArgs) {
       const parsed: NotificationDraftStatusInput = notificationDraftStatusSchema.parse(input);
+      if (repo.updateNotificationDraftStatusWithAudit) {
+        await repo.updateNotificationDraftStatusWithAudit(draftId, parsed.status, actorUserId);
+        return { ok: true };
+      }
       await repo.updateNotificationDraftStatus(draftId, parsed.status);
       await audit({
         actor_user_id: actorUserId,

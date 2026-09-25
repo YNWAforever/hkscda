@@ -22,6 +22,25 @@ function request(url: string, init?: RequestInit) {
 }
 
 describe("createAdoptionInformationHandlers.upsert", () => {
+  test("missing estate deletion returns 404", async () => {
+    const service = createService({
+      deleteEstate: async () => {
+        throw { code: "P0002", message: "missing" };
+      },
+    });
+    const handlers = createAdoptionInformationHandlers({
+      requireAdoptionInformationAdmin: async () => admin,
+      service,
+    });
+    const response = await handlers.deleteEstate({
+      request: request("http://localhost/x", {
+        method: "DELETE",
+        body: JSON.stringify({ id: "22222222-2222-4222-8222-222222222222" }),
+      }),
+    });
+    expect(response.status).toBe(404);
+  });
+
   test("resource=fee returns 201 with { fee } and calls service.upsertFee", async () => {
     const service = createService();
     const requireAdoptionInformationAdmin = mock(async () => admin);

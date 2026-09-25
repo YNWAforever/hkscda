@@ -26,7 +26,7 @@ const getSupabaseClient = mock(() => ({ storage: { from: storageFrom } }));
 
 mock.module("../../../lib/supabase", () => ({ getSupabaseClient }));
 
-const { uploadPhotoDirectly, requestPhotoUploadUrls, uploadAllPhotos } =
+const { uploadPhotoDirectly, requestPhotoUploadUrls, uploadAllPhotos, createReusablePhotoUpload } =
   await import("./photoUploaderLogic");
 
 afterAll(() => {
@@ -92,6 +92,7 @@ describe("requestPhotoUploadUrls", () => {
       Response.json(
         {
           applicationId: "application-1",
+          statusToken: "raw-status-token",
           uploads: [
             {
               category: "home",
@@ -107,7 +108,7 @@ describe("requestPhotoUploadUrls", () => {
     globalThis.fetch = fetchSpy as unknown as typeof fetch;
     const photos = [makePhoto("home", "a.jpg")];
 
-    const result = await requestPhotoUploadUrls(photos);
+    const result = await requestPhotoUploadUrls(photos, "challenge-token");
 
     expect(fetchSpy).toHaveBeenCalledWith(
       "/api/adoption/applications/photo-upload-urls",
@@ -116,17 +117,25 @@ describe("requestPhotoUploadUrls", () => {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           photos: [{ category: "home", fileName: "a.jpg", mimeType: "image/jpeg", sizeBytes: 5 }],
+          turnstileToken: "challenge-token",
         }),
       }),
     );
     expect(result).toEqual({
       applicationId: "application-1",
+      statusToken: "raw-status-token",
       uploads: [
         { category: "home", path: "application-1/home/a.jpg", signedUrl: "https://x", token: "t" },
       ],
     });
   });
 
+  test("rejects a successful response missing the reusable status token", async () => {
+    globalThis.fetch = mock(async () =>
+      Response.json({ applicationId: "application-1", uploads: [] }, { status: 201 }),
+    ) as unknown as typeof fetch;
+    await expect(requestPhotoUploadUrls([makePhoto("home")])).rejects.toThrow("上傳回覆不完整");
+  });
   test("throws using the server's error message when the response is not ok", async () => {
     const fetchSpy = mock(async () => Response.json({ error: "驗證已過期" }, { status: 403 }));
     globalThis.fetch = fetchSpy as unknown as typeof fetch;
@@ -159,6 +168,7 @@ describe("uploadAllPhotos", () => {
       Response.json(
         {
           applicationId: "application-1",
+          statusToken: "raw-status-token",
           uploads: [
             {
               category: "home",
@@ -180,7 +190,7 @@ describe("uploadAllPhotos", () => {
     globalThis.fetch = fetchSpy as unknown as typeof fetch;
 
     const photos = [makePhoto("home", "a.jpg"), makePhoto("window", "b.jpg")];
-    const result = await uploadAllPhotos(photos);
+    const result = await uploadAllPhotos(photos, "challenge-token");
 
     expect(fetchSpy).toHaveBeenCalledTimes(1);
     expect(uploadToSignedUrl).toHaveBeenCalledTimes(2);
@@ -200,6 +210,7 @@ describe("uploadAllPhotos", () => {
     );
     expect(result).toEqual({
       applicationId: "application-1",
+      statusToken: "raw-status-token",
       uploaded: [
         {
           category: "home",
@@ -221,7 +232,10 @@ describe("uploadAllPhotos", () => {
 
   test("throws when a signed URL is missing for a requested category", async () => {
     const fetchSpy = mock(async () =>
-      Response.json({ applicationId: "application-1", uploads: [] }, { status: 201 }),
+      Response.json(
+        { applicationId: "application-1", statusToken: "raw-status-token", uploads: [] },
+        { status: 201 },
+      ),
     );
     globalThis.fetch = fetchSpy as unknown as typeof fetch;
 
@@ -236,6 +250,7 @@ describe("uploadAllPhotos", () => {
       Response.json(
         {
           applicationId: "application-1",
+          statusToken: "raw-status-token",
           uploads: [
             {
               category: "home",
@@ -261,5 +276,23 @@ describe("uploadAllPhotos", () => {
 
     await expect(uploadAllPhotos(photos)).rejects.toThrow("上傳失敗，請重試。");
     expect(uploadToSignedUrl).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("reusable adoption photo upload", () => {
+  test("reuses one application ID and token for a retry with unchanged files", async () => {
+    let calls = 0;
+    const upload = async () => {
+      calls += 1;
+      return { applicationId: `application-${calls}`, statusToken: `token-${calls}`, uploaded: [] };
+    };
+    const session = createReusablePhotoUpload(upload);
+    const photos = [makePhoto("home")];
+    const first = await session.upload(photos, "challenge");
+    const second = await session.upload(photos, null);
+    expect(second).toEqual(first);
+    expect(calls).toBe(1);
+    await session.upload([makePhoto("window")], "new-challenge");
+    expect(calls).toBe(2);
   });
 });

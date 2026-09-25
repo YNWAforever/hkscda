@@ -64,6 +64,46 @@ describe("admin server session", () => {
     }
   });
 
+  test("activates a pending invite through one atomic RPC", async () => {
+    const calls: unknown[] = [];
+    const pending = { ...activeAdmin, status: "pending" as AdminStatus };
+    const client = {
+      auth: {
+        getUser: async () => ({
+          data: { user: { id: pending.auth_user_id, email: pending.email } },
+          error: null,
+        }),
+      },
+      from(table: string) {
+        if (table !== "admin_user") throw new Error("unexpected direct table write: " + table);
+        return {
+          select: () => ({
+            eq: () => ({ maybeSingle: async () => ({ data: pending, error: null }) }),
+          }),
+        };
+      },
+      async rpc(name: string, args: unknown) {
+        calls.push({ name, args });
+        return { data: { ...pending, status: "active" }, error: null };
+      },
+    };
+
+    const result = await getAdminUserFromRequest(
+      new Request("https://example.test/api/admin/me", {
+        headers: { authorization: "Bearer valid-token" },
+      }),
+      client as never,
+      { activatePendingInvite: true },
+    );
+
+    expect(result.status).toBe("active");
+    expect(calls).toEqual([
+      {
+        name: "activate_admin_invite_with_audit",
+        args: { p_auth_user_id: pending.auth_user_id },
+      },
+    ]);
+  });
   test("returns a 403 response when the role is not allowed", async () => {
     try {
       await requireAdmin(

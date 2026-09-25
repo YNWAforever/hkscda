@@ -39,9 +39,10 @@ export type GovernanceAuditLog = {
 };
 
 export interface GovernanceRepository {
+  usesAtomicAudit?: boolean;
   listPublicRoster(): Promise<PublicBoardRoster>;
   listAdmin(): Promise<BoardMember[]>;
   upsert(input: BoardMemberInput, actorUserId: string): Promise<BoardMember>;
-  deactivate(id: string): Promise<void>;
+  deactivate(id: string, actorUserId?: string): Promise<void>;
   insertAuditLog(input: GovernanceAuditLog): Promise<void>;
 }

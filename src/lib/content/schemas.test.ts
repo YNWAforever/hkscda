@@ -28,6 +28,11 @@ describe("content schemas", () => {
     ).toBe("https://www.hkscda.com/stories");
   });
 
+  test("rejects paths that resolve to another origin through a backslash", () => {
+    const deceptivePath = "/\\example.com/x";
+    expect(new URL(deceptivePath, "https://hkscda.test").origin).toBe("https://example.com");
+    expect(() => contentInputSchema.parse({ ...baseInput, ctaUrl: deceptivePath })).toThrow();
+  });
   test("rejects executable or protocol-relative CTA URLs", () => {
     expect(() =>
       contentInputSchema.parse({ ...baseInput, ctaUrl: "javascript:alert(1)" }),

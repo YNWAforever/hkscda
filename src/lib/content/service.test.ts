@@ -478,6 +478,64 @@ describe("createContentService", () => {
     });
   });
 
+  test("uses transactional promotion writes when the repository provides them", async () => {
+    const calls: string[] = [];
+    const { repo } = createRepo({
+      insertSocialCopies: async () => {
+        throw new Error("non-atomic social insert");
+      },
+      insertNotificationDrafts: async () => {
+        throw new Error("non-atomic draft insert");
+      },
+      updateSocialCopyStatus: async () => {
+        throw new Error("non-atomic social status");
+      },
+      updateNotificationDraftStatus: async () => {
+        throw new Error("non-atomic draft status");
+      },
+      insertAuditLog: async () => {
+        throw new Error("non-atomic audit");
+      },
+      generateSocialCopiesWithAudit: async () => {
+        calls.push("social-create");
+        return 3;
+      },
+      generateNotificationDraftsWithAudit: async () => {
+        calls.push("draft-create");
+        return 2;
+      },
+      updateSocialCopyStatusWithAudit: async () => {
+        calls.push("social-status");
+      },
+      updateNotificationDraftStatusWithAudit: async () => {
+        calls.push("draft-status");
+      },
+    });
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await service.generateSocialCopy({
+      actorUserId: "admin-user",
+      contentId: "content-1",
+      input: { storyUpdateId },
+    });
+    const draftResult = await service.generateNotificationDrafts({
+      actorUserId: "admin-user",
+      storyUpdateId,
+    });
+    await service.updateSocialCopyStatus({
+      actorUserId: "admin-user",
+      copyId: "copy-1",
+      input: { status: "copied" },
+    });
+    await service.updateNotificationDraftStatus({
+      actorUserId: "admin-user",
+      draftId: "draft-1",
+      input: { status: "sent_manually" },
+    });
+
+    expect(draftResult.count).toBe(2);
+    expect(calls).toEqual(["social-create", "draft-create", "social-status", "draft-status"]);
+  });
   test("does not re-draft a delivery target that already has a draft for this update", async () => {
     // The panel's generate button appends on every press. An operator who
     // presses it twice gets two drafts addressed to the same adopter, copies

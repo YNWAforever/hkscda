@@ -43,11 +43,12 @@ export type AdoptionInformationAuditLog = {
 };
 
 export interface AdoptionInformationRepository {
+  usesAtomicAudit?: boolean;
   listPublic(): Promise<PublicAdoptionInformation>;
   listAdmin(input: AdminAdoptionInformationQuery): Promise<AdminAdoptionInformationPage>;
-  upsertFee(input: AdoptionFeeInput): Promise<AdoptionFee>;
-  upsertEstate(input: EstateInput): Promise<DogFriendlyEstate>;
-  deleteEstate(id: string): Promise<void>;
+  upsertFee(input: AdoptionFeeInput, actorUserId?: string): Promise<AdoptionFee>;
+  upsertEstate(input: EstateInput, actorUserId?: string): Promise<DogFriendlyEstate>;
+  deleteEstate(id: string, actorUserId?: string): Promise<void>;
   upsertRule(input: AdoptionRuleInput, actorUserId: string): Promise<AdoptionRuleContent>;
   upsertCareTopic(input: CareTopicInput, actorUserId: string): Promise<CareTopic>;
   insertAuditLog(input: AdoptionInformationAuditLog): Promise<void>;
@@ -75,7 +76,8 @@ export function createAdoptionInformationService({
 
     async upsertFee({ actorUserId, input }: { actorUserId: string; input: unknown }) {
       const parsed = adoptionFeeInputSchema.parse(input);
-      const fee = await repo.upsertFee(parsed);
+      const fee = await repo.upsertFee(parsed, actorUserId);
+      if (repo.usesAtomicAudit) return fee;
       await audit({
         actor_user_id: actorUserId,
         action: parsed.id ? "adoption_fee.update" : "adoption_fee.create",
@@ -95,7 +97,8 @@ export function createAdoptionInformationService({
 
     async upsertEstate({ actorUserId, input }: { actorUserId: string; input: unknown }) {
       const parsed = estateInputSchema.parse(input);
-      const estate = await repo.upsertEstate(parsed);
+      const estate = await repo.upsertEstate(parsed, actorUserId);
+      if (repo.usesAtomicAudit) return estate;
       await audit({
         actor_user_id: actorUserId,
         action: parsed.id ? "dog_friendly_estate.update" : "dog_friendly_estate.create",
@@ -117,7 +120,8 @@ export function createAdoptionInformationService({
 
     async deleteEstate({ actorUserId, estateId }: { actorUserId: string; estateId: string }) {
       const id = adoptionInformationIdSchema.parse(estateId);
-      await repo.deleteEstate(id);
+      await repo.deleteEstate(id, actorUserId);
+      if (repo.usesAtomicAudit) return;
       await audit({
         actor_user_id: actorUserId,
         action: "dog_friendly_estate.delete",

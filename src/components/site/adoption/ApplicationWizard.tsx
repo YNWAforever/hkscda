@@ -31,7 +31,11 @@ import {
 import { cn } from "../../../lib/utils";
 import { GuidancePanel } from "./GuidancePanel";
 import { PhotoUploader } from "./PhotoUploader";
-import { uploadAllPhotos, type SelectedPhoto } from "./photoUploaderLogic";
+import {
+  createReusablePhotoUpload,
+  type CompletedPhotoUpload,
+  type SelectedPhoto,
+} from "./photoUploaderLogic";
 import {
   AnimalRankingFields,
   ContactFields,
@@ -99,26 +103,20 @@ type SubmissionResult = {
   statusUrl: string;
 };
 
-async function submitAdoptionApplication(
-  payload: unknown,
-  photos: SelectedPhoto[],
-  turnstileToken: string | null,
-) {
+async function submitAdoptionApplication(payload: unknown, photoUpload: CompletedPhotoUpload) {
   const payloadObject =
     payload && typeof payload === "object" && !Array.isArray(payload)
       ? (payload as Record<string, unknown>)
       : {};
-
-  const { applicationId, uploaded } = await uploadAllPhotos(photos);
 
   const response = await fetch("/api/adoption/applications", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
       payload: payloadObject,
-      applicationId,
-      photos: uploaded,
-      turnstileToken: turnstileToken ?? undefined,
+      applicationId: photoUpload.applicationId,
+      photos: photoUpload.uploaded,
+      statusToken: photoUpload.statusToken,
     }),
   });
   const result = await response.json().catch(() => ({}));
@@ -271,6 +269,7 @@ export function ApplicationWizard() {
   const defaultValues = useMemo(() => createDefaultValues(), []);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [photos, setPhotos] = useState<SelectedPhoto[]>([]);
+  const uploadSession = useMemo(() => createReusablePhotoUpload(), []);
   const [serverError, setServerError] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [turnstileResetKey, setTurnstileResetKey] = useState(0);
@@ -465,7 +464,7 @@ export function ApplicationWizard() {
       setServerError("請上載至少一張家居或窗門相片。");
       return;
     }
-    if (turnstileEnabled && !turnstileToken) {
+    if (turnstileEnabled && !turnstileToken && !uploadSession.has(photos)) {
       setServerError("請先完成人機驗證。");
       return;
     }
@@ -473,13 +472,17 @@ export function ApplicationWizard() {
     let result: SubmissionResult;
     try {
       const payload: ExpandedAdoptionApplication = expandedAdoptionApplicationSchema.parse(values);
+      const uploaded = await uploadSession.upload(photos, turnstileToken);
       setTurnstileToken(null);
-      result = await submitAdoptionApplication(payload, photos, turnstileToken);
+      result = await submitAdoptionApplication(payload, uploaded);
       if (!hasExpectedSubmissionResult(result)) {
         throw new Error("提交回覆不完整，請稍後再試。");
       }
     } catch (error) {
-      if (turnstileEnabled) setTurnstileResetKey((key) => key + 1);
+      if (turnstileEnabled && !uploadSession.has(photos)) {
+        setTurnstileToken(null);
+        setTurnstileResetKey((key) => key + 1);
+      }
       setServerError(error instanceof Error ? error.message : "提交失敗，請稍後再試。");
       return;
     }
@@ -509,7 +512,16 @@ export function ApplicationWizard() {
           <VisitFields register={register} errors={errors} setValue={setValue} watch={watch} />
         );
       case "photos":
-        return <PhotoUploader photos={photos} onPhotosChange={setPhotos} />;
+        return (
+          <PhotoUploader
+            photos={photos}
+            onPhotosChange={(nextPhotos) => {
+              setPhotos(nextPhotos);
+              setTurnstileToken(null);
+              if (turnstileEnabled) setTurnstileResetKey((key) => key + 1);
+            }}
+          />
+        );
       case "review":
         return (
           <ReviewFields
@@ -697,7 +709,10 @@ export function ApplicationWizard() {
                 {currentStep.id === "review" ? (
                   <button
                     type="submit"
-                    disabled={isSubmitting || (turnstileEnabled && !turnstileToken)}
+                    disabled={
+                      isSubmitting ||
+                      (turnstileEnabled && !turnstileToken && !uploadSession.has(photos))
+                    }
                     className="btn-primary min-h-11"
                   >
                     {isSubmitting ? (

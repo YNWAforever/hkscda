@@ -1,7 +1,7 @@
 import { describe, expect, mock, test } from "bun:test";
 
 import { createResendMailProvider } from "../notifications/provider.server";
-import { sendVolunteerRegistrationEmail } from "./notifications.server";
+import { notifyVolunteerAdmins, sendVolunteerRegistrationEmail } from "./notifications.server";
 
 const registration = {
   id: "registration-1",
@@ -162,4 +162,106 @@ describe("sendVolunteerRegistrationEmail", () => {
     ).toBe("failed");
     expect(send).not.toHaveBeenCalled();
   });
+});
+
+test("missing email provider configuration records a failed message instead of leaving it queued", async () => {
+  const { client, operations } = fakeClient();
+  const result = await sendVolunteerRegistrationEmail(client, input, {
+    getEmailConfig: () => ({ ...config(), resendApiKey: undefined }),
+    createMailProvider: async () => {
+      throw new Error("must not create provider");
+    },
+    logger: { error() {} },
+  });
+  expect(result).toBe("failed");
+  expect(operations.some((op) => op.payload?.status === "failed")).toBe(true);
+});
+
+test("missing admin mail configuration reports failed delivery", async () => {
+  const errors: unknown[] = [];
+  const { client, operations } = fakeClient();
+  const result = await notifyVolunteerAdmins(
+    client,
+    { registration },
+    {
+      getEmailConfig: () => ({ ...config(), resendApiKey: undefined }),
+      createMailProvider: async () => {
+        throw new Error("must not create provider");
+      },
+      logger: { error: (...args) => errors.push(args) },
+    },
+  );
+  expect(result).toBe("failed");
+  expect(errors.length).toBeGreaterThan(0);
+  expect(operations.some((op) => op.payload?.status === "failed")).toBe(true);
+});
+
+test("admin notification persists a sent claim and skips a later replay", async () => {
+  const { client, operations } = fakeClient();
+  const send = mock(async () => ({
+    kind: "accepted" as const,
+    providerMessageId: "email-admin-1",
+  }));
+  const first = await notifyVolunteerAdmins(
+    client,
+    { registration },
+    {
+      getEmailConfig: config,
+      createMailProvider: async () => ({ send }),
+    },
+  );
+  expect(first).toBe("sent");
+  expect(operations.some((op) => op.payload?.status === "sent")).toBe(true);
+  const replay = fakeClient({ conflictStatus: "sent" });
+  const second = await notifyVolunteerAdmins(
+    replay.client,
+    { registration },
+    {
+      getEmailConfig: config,
+      createMailProvider: async () => ({ send }),
+    },
+  );
+  expect(second).toBe("skipped");
+  expect(send).toHaveBeenCalledTimes(1);
+});
+
+test("admin provider rejection persists a retryable failed claim", async () => {
+  const { client, operations } = fakeClient();
+  const result = await notifyVolunteerAdmins(
+    client,
+    { registration },
+    {
+      getEmailConfig: config,
+      createMailProvider: async () => ({
+        send: async () => ({
+          kind: "rejected" as const,
+          code: "provider_unavailable",
+          retryable: true,
+        }),
+      }),
+      logger: { error() {} },
+    },
+  );
+  expect(result).toBe("failed");
+  expect(operations.some((op) => op.payload?.status === "failed")).toBe(true);
+});
+
+test("a failed admin claim can be retried without a second message row", async () => {
+  const { client, operations } = fakeClient({ conflictStatus: "failed" });
+  const send = mock(async () => ({
+    kind: "accepted" as const,
+    providerMessageId: "email-admin-2",
+  }));
+  const result = await notifyVolunteerAdmins(
+    client,
+    { registration },
+    {
+      getEmailConfig: config,
+      createMailProvider: async () => ({ send }),
+    },
+  );
+  expect(result).toBe("sent");
+  expect(operations.filter((op) => op.action === "insert")).toHaveLength(1);
+  expect(operations.some((op) => op.payload?.status === "queued")).toBe(true);
+  expect(send).toHaveBeenCalledTimes(1);
 });

@@ -11,7 +11,7 @@ import { HelpCards } from "../components/site/home/HelpCards";
 import { TransparencyBand } from "../components/site/home/TransparencyBand";
 import { getPublicAnimalListing } from "../lib/animals/publicListing.functions";
 import { getPublicImpactItems } from "../lib/animals/publicImpact.functions";
-import { getPublicStoriesPage } from "../lib/content/publicStoriesPage.functions";
+import { getFeaturedPublicStory } from "../lib/content/publicStoriesPage.functions";
 import heroImg from "@/assets/dog-smiling.jpg";
 
 const FEATURED_PER_SPECIES = 2;
@@ -34,11 +34,11 @@ async function loadHome() {
       },
     }).catch(() => null);
 
-  const [cats, dogs, impact, stories] = await Promise.all([
+  const [cats, dogs, impact, featuredStory] = await Promise.all([
     listing("cat"),
     listing("dog"),
     getPublicImpactItems().catch(() => ({ items: [], asOf: null })),
-    getPublicStoriesPage().catch(() => null),
+    getFeaturedPublicStory().catch(() => null),
   ]);
 
   return {
@@ -49,7 +49,7 @@ async function loadHome() {
     featuredAnimals: selectFeaturedAnimals([...(cats?.animals ?? []), ...(dogs?.animals ?? [])]),
     animalLoadFailed: cats === null || dogs === null,
     impact,
-    featuredStory: stories?.items?.[0] ?? null,
+    featuredStory,
   };
 }
 

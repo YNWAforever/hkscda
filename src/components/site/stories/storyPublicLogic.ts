@@ -1,3 +1,4 @@
+import { isSafePublicHref } from "../../../lib/content/publicHref";
 import type {
   AnimalStoryType,
   ContentType,
@@ -41,22 +42,12 @@ export function animalTypeLabel(type: AnimalStoryType) {
   return animalTypeLabels[type];
 }
 
-function isSafeStoryHref(value: string) {
-  if (value.startsWith("/") && !value.startsWith("//")) return true;
-  try {
-    const url = new URL(value);
-    return url.protocol === "https:" || url.protocol === "http:";
-  } catch {
-    return false;
-  }
-}
-
 const DEFAULT_STORY_CTA = { href: "/donate?purpose=medical", label: "支援醫療費用 ｜ 立即捐助" };
 
 export function storyCta(story: { ctaLabel: string | null; ctaUrl: string | null }) {
   const href = story.ctaUrl?.trim();
   const label = story.ctaLabel?.trim();
-  if (href && label && isSafeStoryHref(href)) return { href, label };
+  if (href && label && isSafePublicHref(href)) return { href, label };
   return DEFAULT_STORY_CTA;
 }
 

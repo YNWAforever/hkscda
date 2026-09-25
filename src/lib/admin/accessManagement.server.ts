@@ -30,35 +30,24 @@ export type AdminAccessAuditRow = {
   timestamp: string;
 };
 
-export type AdminAccessUserInsert = {
-  auth_user_id: string;
+export type AdminAccessAtomicInvite = {
+  actorUserId: string;
+  authUserId: string;
   email: string;
   role: AdminRole;
-  status: AdminStatus;
-  invited_at: string;
-  invite_sent_at: string;
-  invite_accepted_at?: string | null;
-  last_invited_by: string;
+  sentAt: string;
 };
 
-export type AdminAccessUserUpdate = {
-  auth_user_id?: string;
+export type AdminAccessAtomicResend = {
+  actorUserId: string;
+  userId: string;
+  sentAt: string;
+};
+export type AdminAccessAtomicUpdate = {
+  actorUserId: string;
+  userId: string;
   role?: AdminRole;
   status?: AdminStatus;
-  invited_at?: string;
-  invite_sent_at?: string;
-  invite_accepted_at?: string | null;
-  last_invited_by?: string;
-  updated_at?: string;
-};
-
-export type AdminAccessAuditInsert = {
-  actor_user_id: string | null;
-  action: string;
-  entity: "admin_user";
-  entity_id: string;
-  timestamp: string;
-  detail: Record<string, unknown>;
 };
 
 export type AdminAccessRepository = {
@@ -66,15 +55,22 @@ export type AdminAccessRepository = {
   findUserById(id: string): Promise<AdminAccessUser | null>;
   findUserByEmail(email: string): Promise<AdminAccessUser | null>;
   countOtherActiveAdmins(id: string): Promise<number>;
-  insertUser(input: AdminAccessUserInsert): Promise<AdminAccessUser>;
-  updateUser(id: string, input: AdminAccessUserUpdate): Promise<AdminAccessUser>;
-  insertAuditLog(input: AdminAccessAuditInsert): Promise<void>;
+  inviteUserWithAudit(input: AdminAccessAtomicInvite): Promise<AdminAccessUser>;
+  resendInviteWithAudit(input: AdminAccessAtomicResend): Promise<AdminAccessUser>;
+  updateUserWithAudit(input: AdminAccessAtomicUpdate): Promise<AdminAccessUser>;
   listAudit(page?: number): Promise<AdminAccessAuditRow[]>;
 };
 
 export type AdminInviteAuthProvider = {
-  inviteByEmail(email: string): Promise<{ authUserId: string; email: string | null }>;
-  resendInvite(email: string): Promise<void>;
+  // Preparation creates a link, but does not deliver it.
+  inviteByEmail(email: string): Promise<{
+    authUserId: string;
+    email: string | null;
+    actionLink: string;
+  }>;
+  sendInviteEmail(input: { to: string; actionLink: string }): Promise<void>;
+  // Resend also prepares a link without delivering it.
+  resendInvite(email: string): Promise<{ actionLink: string }>;
 };
 
 export class AdminAccessError extends Error {
@@ -155,23 +151,6 @@ function removesActiveAdmin(user: AdminAccessUser, nextRole: AdminRole, nextStat
   );
 }
 
-function auditDetail(user: AdminAccessUser, input: UpdateInput) {
-  return {
-    targetEmail: user.email,
-    oldRole: user.role,
-    newRole: input.role ?? user.role,
-    oldStatus: user.status,
-    newStatus: input.status ?? user.status,
-  };
-}
-
-function updateAuditAction(user: AdminAccessUser, input: UpdateInput) {
-  if (input.role !== undefined && input.role !== user.role) return "admin_user.role_update";
-  if (input.status === "disabled" && user.status !== "disabled") return "admin_user.disable";
-  if (input.status === "active" && user.status === "disabled") return "admin_user.reactivate";
-  return "admin_user.update";
-}
-
 export function createAdminAccessService({
   repo,
   auth,
@@ -194,29 +173,19 @@ export function createAdminAccessService({
         throw duplicateAdmin();
       }
 
+      // Link generation may create an Auth identity, but it does not send an email.
+      // A failed database commit must not deliver an unusable invitation. Do not
+      // delete the Auth identity here: the provider may have returned an existing user.
       const invited = await auth.inviteByEmail(input.email);
       const sentAt = timestamp(now);
-      const payload = {
-        auth_user_id: invited.authUserId,
+      const user = await repo.inviteUserWithAudit({
+        actorUserId: args.actor.authUserId,
+        authUserId: invited.authUserId,
+        email: input.email,
         role: input.role,
-        status: "pending" as const,
-        invited_at: sentAt,
-        invite_sent_at: sentAt,
-        invite_accepted_at: null,
-        last_invited_by: args.actor.authUserId,
-      };
-      const user = existing
-        ? await repo.updateUser(existing.id, { ...payload, updated_at: sentAt })
-        : await repo.insertUser({ ...payload, email: input.email });
-
-      await repo.insertAuditLog({
-        actor_user_id: args.actor.authUserId,
-        action: "admin_user.invite",
-        entity: "admin_user",
-        entity_id: user.id,
-        timestamp: sentAt,
-        detail: { targetEmail: user.email, role: user.role, status: user.status },
+        sentAt,
       });
+      await auth.sendInviteEmail({ to: input.email, actionLink: invited.actionLink });
       return user;
     },
 
@@ -227,23 +196,15 @@ export function createAdminAccessService({
         throw new AdminAccessError("invite_not_pending", "Only pending invites can be resent", 422);
       }
 
-      await auth.resendInvite(user.email);
+      const prepared = await auth.resendInvite(user.email);
       const sentAt = timestamp(now);
-      const updated = await repo.updateUser(user.id, {
-        invite_sent_at: sentAt,
-        last_invited_by: args.actor.authUserId,
-        updated_at: sentAt,
+      const resent = await repo.resendInviteWithAudit({
+        actorUserId: args.actor.authUserId,
+        userId: user.id,
+        sentAt,
       });
-
-      await repo.insertAuditLog({
-        actor_user_id: args.actor.authUserId,
-        action: "admin_user.invite_resend",
-        entity: "admin_user",
-        entity_id: user.id,
-        timestamp: sentAt,
-        detail: { targetEmail: user.email, role: user.role, status: user.status },
-      });
-      return updated;
+      await auth.sendInviteEmail({ to: user.email, actionLink: prepared.actionLink });
+      return resent;
     },
 
     async updateUser(args: { actor: AdminAccessActor; userId: string; input: unknown }) {
@@ -273,22 +234,12 @@ export function createAdminAccessService({
         }
       }
 
-      const updatedAt = timestamp(now);
-      const updated = await repo.updateUser(user.id, {
-        ...(input.role ? { role: input.role } : {}),
-        ...(input.status ? { status: input.status } : {}),
-        updated_at: updatedAt,
+      return repo.updateUserWithAudit({
+        actorUserId: args.actor.authUserId,
+        userId: user.id,
+        role: input.role,
+        status: input.status,
       });
-
-      await repo.insertAuditLog({
-        actor_user_id: args.actor.authUserId,
-        action: updateAuditAction(user, input),
-        entity: "admin_user",
-        entity_id: user.id,
-        timestamp: updatedAt,
-        detail: auditDetail(user, input),
-      });
-      return updated;
     },
 
     async listAudit(page = 1) {

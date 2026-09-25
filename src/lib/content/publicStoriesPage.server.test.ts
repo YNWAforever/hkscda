@@ -1,6 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import type { ContentSummary, PublicStoryMapPoint } from "./types";
+import { publicContentSearchSchema } from "./schemas";
 import {
+  createFeaturedStoryReader,
   createPublicStoriesPageReader,
   createRelatedStoriesReader,
   loadPublicStoriesPage,
@@ -48,9 +50,28 @@ describe("public stories page reader", () => {
       },
     });
     expect(await read()).toEqual(expected);
-    expect(calls).toEqual([{}]);
+    expect(calls).toEqual([{ page: 1, pageSize: 50 }]);
   });
 
+  test("includes published content beyond the first database page", async () => {
+    const allItems = Array.from({ length: 51 }, (_, index) => story(`story-${index + 1}`));
+    const read = createPublicStoriesPageReader({
+      async listPublicStoriesPage(input) {
+        const page = input.page ?? 1;
+        const pageSize = input.pageSize ?? 25;
+        const from = (page - 1) * pageSize;
+        return {
+          items: allItems.slice(from, from + pageSize),
+          total: allItems.length,
+          points: [],
+        };
+      },
+    });
+
+    const result = await read();
+    expect(result.items.map((entry) => entry.id)).toEqual(allItems.map((entry) => entry.id));
+    expect(result.total).toBe(51);
+  });
   test("omits private rescue locations at the server serialization boundary", async () => {
     const privateItem = {
       ...item,
@@ -116,6 +137,44 @@ describe("public stories page reader", () => {
   });
 });
 
+describe("featured public story reader", () => {
+  test("preserves a featured-only query through validation", () => {
+    expect(publicContentSearchSchema.parse({ isFeatured: true })).toMatchObject({
+      isFeatured: true,
+    });
+  });
+
+  test("does not display an unfeatured row from an older database function", async () => {
+    const read = createFeaturedStoryReader({
+      listPublicStoriesPage: async () => ({ items: [story("recent")], total: 1, points: [] }),
+    });
+    expect(await read()).toBeNull();
+  });
+
+  test("requests one featured rescue story instead of every story page", async () => {
+    const calls: unknown[] = [];
+    const read = createFeaturedStoryReader({
+      async listPublicStoriesPage(input: Record<string, unknown>) {
+        calls.push(input);
+        return {
+          items:
+            input.isFeatured === true
+              ? [
+                  story("featured", {
+                    storyProfile: { isFeatured: true } as ContentSummary["storyProfile"],
+                  }),
+                ]
+              : [story("recent")],
+          total: 1,
+          points: [],
+        };
+      },
+    });
+
+    expect((await read())?.id).toBe("featured");
+    expect(calls).toEqual([{ type: "rescue_story", isFeatured: true, page: 1, pageSize: 1 }]);
+  });
+});
 describe("related stories reader", () => {
   test("loadRelatedStories prefers the same animal type, excludes the current story, and caps at 3", async () => {
     const reader = createRelatedStoriesReader({

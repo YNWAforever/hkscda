@@ -1668,6 +1668,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
   client: SupabaseClient,
 ): AdoptionCoordinatorRepository & CoordinatorOpsRepositoryMethods {
   return {
+    usesAtomicAudit: true,
     async listStatuses(category) {
       let query = client
         .from("coordinator_status")
@@ -1691,10 +1692,14 @@ export function createSupabaseAdoptionCoordinatorRepository(
       return data ? mapStatus(data as StatusRow) : null;
     },
 
-    async createStatus(input) {
-      const { data, error } = await client
-        .from("coordinator_status")
-        .insert({
+    async createStatus(input, actorUserId) {
+      if (!actorUserId) throw new Error("Actor user ID required");
+      const { data, error } = await client.rpc("mutate_adoption_coordinator_with_audit", {
+        p_actor_user_id: actorUserId,
+        p_entity: "coordinator_status",
+        p_operation: "create",
+        p_id: null,
+        p_payload: {
           category: input.category,
           key: input.key,
           label_zh: input.labelZh,
@@ -1704,26 +1709,34 @@ export function createSupabaseAdoptionCoordinatorRepository(
           is_active: input.isActive,
           is_closing: input.isClosing,
           is_final: input.isFinal,
-        })
-        .select("*")
-        .single();
+        },
+      });
       if (error) throw error;
       return mapStatus(data as StatusRow);
     },
 
-    async updateStatus(id, input) {
-      const { data, error } = await client
-        .from("coordinator_status")
-        .update(toStatusUpdatePayload(input))
-        .eq("id", id)
-        .select("*")
-        .single();
+    async updateStatus(id, input, actorUserId) {
+      if (!actorUserId) throw new Error("Actor user ID required");
+      const { data, error } = await client.rpc("mutate_adoption_coordinator_with_audit", {
+        p_actor_user_id: actorUserId,
+        p_entity: "coordinator_status",
+        p_operation: "update",
+        p_id: id,
+        p_payload: toStatusUpdatePayload(input),
+      });
       if (error) throw error;
       return mapStatus(data as StatusRow);
     },
 
-    async deleteStatus(id) {
-      const { error } = await client.from("coordinator_status").delete().eq("id", id);
+    async deleteStatus(id, actorUserId) {
+      if (!actorUserId) throw new Error("Actor user ID required");
+      const { error } = await client.rpc("mutate_adoption_coordinator_with_audit", {
+        p_actor_user_id: actorUserId,
+        p_entity: "coordinator_status",
+        p_operation: "delete",
+        p_id: id,
+        p_payload: {},
+      });
       if (error) throw error;
     },
 
@@ -2458,24 +2471,27 @@ export function createSupabaseAdoptionCoordinatorRepository(
     },
 
     async createTask(input) {
-      const { data, error } = await client
-        .from("adoption_followup")
-        .insert(toTaskInsertPayload(input))
-        .select("id")
-        .single();
+      const { data, error } = await client.rpc("mutate_adoption_coordinator_with_audit", {
+        p_actor_user_id: input.createdBy,
+        p_entity: "adoption_followup",
+        p_operation: "create",
+        p_id: null,
+        p_payload: toTaskInsertPayload(input),
+      });
       if (error) throw error;
-      return { id: data.id as string };
+      return { id: (data as { id: string }).id };
     },
 
     async updateTask(input) {
-      const { data, error } = await client
-        .from("adoption_followup")
-        .update(toTaskUpdatePayload(input))
-        .eq("id", input.taskId)
-        .select("id")
-        .single();
+      const { data, error } = await client.rpc("mutate_adoption_coordinator_with_audit", {
+        p_actor_user_id: input.updatedBy,
+        p_entity: "adoption_followup",
+        p_operation: "update",
+        p_id: input.taskId,
+        p_payload: toTaskUpdatePayload(input),
+      });
       if (error) throw error;
-      return { id: data.id as string };
+      return { id: (data as { id: string }).id };
     },
 
     async changeCaseStatus(input) {
@@ -2502,21 +2518,21 @@ export function createSupabaseAdoptionCoordinatorRepository(
     },
 
     async createMatch(input) {
-      const { data, error } = await client
-        .from("animal_match")
-        .insert({
+      const { data, error } = await client.rpc("mutate_adoption_coordinator_with_audit", {
+        p_actor_user_id: input.createdBy,
+        p_entity: "animal_match",
+        p_operation: "create",
+        p_id: null,
+        p_payload: {
           adoption_case_id: input.adoptionCaseId,
           animal_id: input.animalId,
           status_id: input.statusId,
           is_approved: input.isApproved,
           notes: input.notes ?? null,
-          created_by: input.createdBy,
-          updated_by: input.createdBy,
-        })
-        .select("id")
-        .single();
+        },
+      });
       if (error) throw error;
-      return { id: data.id as string };
+      return { id: (data as { id: string }).id };
     },
 
     async finalizeAdoption(input) {

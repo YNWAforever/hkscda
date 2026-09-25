@@ -84,7 +84,7 @@ type EmailSender = {
     replyTo?: string;
     subject: string;
     html: string;
-  }): Promise<unknown>;
+  }): Promise<{ error?: unknown }>;
 };
 
 type SendAdoptionConfirmationEmailDeps = {
@@ -172,13 +172,14 @@ export type UploadedPhotoReference = {
 export type AdoptionSubmissionRequestBody = {
   payload: unknown;
   applicationId: string;
+  statusToken: string;
   photos: UploadedPhotoReference[];
   turnstileToken?: string;
 };
 
 export function parseAdoptionSubmission(
   body: unknown,
-): ParsedAdoptionMultipart & { applicationId: string } {
+): ParsedAdoptionMultipart & { applicationId: string; statusToken: string } {
   if (typeof body !== "object" || body === null) {
     throw new SubmissionValidationError("Invalid adoption application request body");
   }
@@ -188,6 +189,9 @@ export function parseAdoptionSubmission(
     throw new SubmissionValidationError("Missing adoption application id");
   }
 
+  if (typeof raw.statusToken !== "string" || !/^[A-Za-z0-9_-]{8,128}$/.test(raw.statusToken)) {
+    throw new SubmissionValidationError("Missing adoption upload token");
+  }
   const parsed = expandedAdoptionApplicationSchema.parse(raw.payload);
   const turnstileToken = typeof raw.turnstileToken === "string" ? raw.turnstileToken : undefined;
 
@@ -211,6 +215,7 @@ export function parseAdoptionSubmission(
     payload: turnstileToken ? { ...parsed, turnstileToken } : parsed,
     photos,
     applicationId: raw.applicationId,
+    statusToken: raw.statusToken,
   };
 }
 
@@ -434,23 +439,28 @@ export async function sendAdoptionConfirmationEmail(
 
   try {
     const emails = await createEmailSender(config.resendApiKey);
-    await emails.send({
+    const sendResult = await emails.send({
       from: config.from,
       to: payload.contact.email,
       replyTo: config.replyTo,
       subject: email.subject,
       html: email.html,
     });
+    if (sendResult.error) throw sendResult.error;
   } catch (error) {
     logger.error("Failed to send adoption confirmation email", error);
     await client.from("message").update({ status: "failed" }).eq("id", messageId);
     return "failed";
   }
 
-  await client
+  const { error: sentError } = await client
     .from("message")
     .update({ status: "sent", sent_at: new Date().toISOString() })
     .eq("id", messageId);
+  if (sentError) {
+    logger.error("Adoption confirmation sent but CRM status update failed", sentError);
+    return "failed";
+  }
   return "sent";
 }
 

@@ -2,7 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ZodError } from "zod";
 
 import { createPaymentProviders } from "../../lib/donations/providers.server";
-import { createDonation } from "../../lib/donations/service";
+import {
+  createDonation,
+  DonationCheckoutRecoveryRequiredError,
+  DonationIdempotencyConflictError,
+} from "../../lib/donations/service";
 import {
   createSupabaseDonationRepository,
   createSupabaseServiceClient,
@@ -48,6 +52,22 @@ export const Route = createFileRoute("/api/donations")({
 
           return Response.json(result);
         } catch (error) {
+          if (error instanceof DonationCheckoutRecoveryRequiredError) {
+            return Response.json(
+              {
+                error: "Checkout outcome is uncertain. Please contact us before trying again.",
+                code: "checkout_recovery_required",
+                donationId: error.donationId,
+              },
+              { status: 409 },
+            );
+          }
+          if (error instanceof DonationIdempotencyConflictError) {
+            return Response.json(
+              { error: "Donation request conflicts with an existing intent" },
+              { status: 409 },
+            );
+          }
           if (error instanceof ZodError) {
             return Response.json(
               { error: "Invalid donation request", issues: error.issues },

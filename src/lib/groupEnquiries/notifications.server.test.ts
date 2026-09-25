@@ -36,7 +36,12 @@ describe("group enquiry admin notifications", () => {
           from: "HKSCDA <noreply@example.test>",
           replyTo: "admin@example.test",
         }),
-        createEmailSender: async () => ({ send: async (input: unknown) => sent.push(input) }),
+        createEmailSender: async () => ({
+          send: async (input: unknown) => {
+            sent.push(input);
+            return { error: null };
+          },
+        }),
       },
     );
 
@@ -79,5 +84,25 @@ describe("group enquiry admin notifications", () => {
         },
       ),
     ).resolves.toBe("failed");
+  });
+});
+
+describe("group enquiry provider failure", () => {
+  test("treats a resolved provider error as failed delivery", async () => {
+    const result = await notifyGroupEnquiryAdmins(
+      { enquiry },
+      {
+        getEmailConfig: () => ({
+          resendApiKey: "key",
+          from: "noreply@example.test",
+          replyTo: "admin@example.test",
+        }),
+        createEmailSender: async () => ({
+          send: async () => ({ data: null, error: { name: "rate_limit" } }),
+        }),
+        logger: { error: () => undefined },
+      },
+    );
+    expect(result).toBe("failed");
   });
 });

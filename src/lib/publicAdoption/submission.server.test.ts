@@ -256,6 +256,7 @@ function submissionBody(
     payload,
     applicationId,
     photos,
+    statusToken: "raw-status-token",
     turnstileToken: typeof payload.turnstileToken === "string" ? payload.turnstileToken : undefined,
     ...overrides,
   };
@@ -296,6 +297,7 @@ describe("parseAdoptionSubmission", () => {
     const parsed = parseAdoptionSubmission(submissionBody());
 
     expect(parsed.applicationId).toBe(applicationId);
+    expect(parsed.statusToken).toBe("raw-status-token");
     expect(parsed.payload.turnstileToken).toBe("turnstile-token");
     expect(parsed.payload.animalPreferences.map((animal) => animal.animalName)).toEqual([
       "Mochi",
@@ -339,6 +341,11 @@ describe("parseAdoptionSubmission", () => {
     expect(() => parseAdoptionSubmission(body)).toThrow("Missing adoption application id");
   });
 
+  test("requires the status token issued with signed photo uploads", () => {
+    const body = submissionBody();
+    delete (body as { statusToken?: unknown }).statusToken;
+    expect(() => parseAdoptionSubmission(body)).toThrow("Missing adoption upload token");
+  });
   test("rejects a photo entry missing storagePath", () => {
     const body = submissionBody(validPayload(), [
       photoRef("home", "home.jpg", { storagePath: undefined }),
@@ -354,6 +361,7 @@ describe("parseAdoptionSubmission", () => {
 
     expect(parsed).toEqual({
       applicationId,
+      statusToken: "raw-status-token",
       payload: expect.objectContaining({ turnstileToken: "turnstile-token" }),
       photos: [
         {
@@ -607,6 +615,46 @@ describe("persistPublicAdoptionJourney", () => {
 });
 
 describe("sendAdoptionConfirmationEmail", () => {
+  test("marks the message failed when Resend returns an error", async () => {
+    const { client, state } = createFakeClient();
+    const result = await sendAdoptionConfirmationEmail(
+      client,
+      parsedSubmission().payload,
+      {
+        applicationId,
+        caseId,
+        reference: "APP-AAAAAAAA",
+        statusToken: "raw-status-token",
+        statusUrl: "https://example.test/adoption/status/raw-status-token",
+        expiresAt: "2026-08-01T00:00:00.000Z",
+      },
+      {
+        getEmailConfig: () => ({
+          resendApiKey: "key",
+          from: "HKSCDA <noreply@example.test>",
+          replyTo: "info@example.test",
+          notificationEmail: "info@example.test",
+        }),
+        createEmailSender: () => ({
+          send: async () => ({ data: null, error: { name: "validation_error" } }),
+        }),
+        logger: { error: () => {} },
+      },
+    );
+
+    expect(result).toBe("failed");
+    expect(state.calls).toContainEqual({
+      table: "message",
+      method: "update",
+      payload: { status: "failed" },
+    });
+    expect(state.calls).not.toContainEqual({
+      table: "message",
+      method: "update",
+      payload: expect.objectContaining({ status: "sent" }),
+    });
+  });
+
   test("queues a confirmation message and leaves it queued when Resend has no API key", async () => {
     const { client, state } = createFakeClient();
     const parsed = parsedSubmission();
@@ -654,5 +702,36 @@ describe("sendAdoptionConfirmationEmail", () => {
       .payload;
     expect(persistedMessagePayload).not.toHaveProperty("statusUrl");
     expect(JSON.stringify(persistedMessagePayload)).not.toContain("raw-status-token");
+  });
+});
+
+describe("adoption confirmation delivery persistence", () => {
+  test("does not report sent when the CRM status update fails", async () => {
+    const { client } = createFakeClient({ failUpdateTable: "message" });
+    const result = await sendAdoptionConfirmationEmail(
+      client,
+      parsedSubmission().payload,
+      {
+        applicationId,
+        caseId,
+        reference: "APP-AAAAAAAA",
+        statusToken: "raw-status-token",
+        statusUrl: "https://example.test/adoption/status/raw-status-token",
+        expiresAt: "2026-08-01T00:00:00.000Z",
+      },
+      {
+        getEmailConfig: () => ({
+          resendApiKey: "key",
+          from: "HKSCDA <noreply@example.test>",
+          replyTo: "info@example.test",
+          notificationEmail: "info@example.test",
+        }),
+        createEmailSender: () => ({
+          send: async () => ({ data: { id: "provider-1" }, error: null }),
+        }),
+        logger: { error: () => {} },
+      },
+    );
+    expect(result).toBe("failed");
   });
 });

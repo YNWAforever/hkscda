@@ -1,3 +1,4 @@
+import { isSafePublicHref } from "./publicHref";
 import { z } from "zod";
 import {
   animalStoryTypes,
@@ -23,18 +24,7 @@ const optionalTrimmed = z
     return next ? next : null;
   });
 
-export function isSafePublicHref(value: string | null | undefined) {
-  const next = value?.trim();
-  if (!next) return false;
-  if (next.startsWith("/") && !next.startsWith("//")) return true;
-
-  try {
-    const url = new URL(next);
-    return url.protocol === "https:" || url.protocol === "http:";
-  } catch {
-    return false;
-  }
-}
+export { isSafePublicHref } from "./publicHref";
 
 const optionalSafePublicHref = optionalTrimmed.refine(
   (value) => value === null || isSafePublicHref(value),
@@ -76,6 +66,7 @@ export type AdminContentSearch = z.infer<typeof adminContentSearchSchema>;
 
 export const publicContentSearchSchema = contentSearchSchema.extend({
   status: z.literal("published").optional().default("published"),
+  isFeatured: z.boolean().optional(),
 });
 
 export const contentInputSchema = z.object({

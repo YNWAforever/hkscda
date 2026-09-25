@@ -43,19 +43,19 @@ function wrapEmailEnvelope(
 }
 
 const PAYMENT_METHODS_ZH = [
-  ["轉數快 FPS", "9864 1089"],
-  ["銀行轉帳", "匯豐銀行 012-345-678901"],
-  ["PayMe", "@hkscda"],
-  ["PayPal", "paypal@hkscda.com"],
-  ["Give.asia", "give.asia/hkscda"],
+  ["轉數快 FPS", "FPS ID 8727588（登記電話 9864 1089）"],
+  ["銀行轉帳", "匯豐銀行 124-511320-838"],
+  ["PayMe", "WhatsApp 9864 1089 索取 PayMe QR Code"],
+  ["PayPal", "https://goo.gl/X2XsY1"],
+  ["Give.asia", "https://hkscda.give.asia"],
 ] as const;
 
 const PAYMENT_METHODS_EN = [
-  ["FPS", "9864 1089"],
-  ["Bank Transfer", "HSBC 012-345-678901"],
-  ["PayMe", "@hkscda"],
-  ["PayPal", "paypal@hkscda.com"],
-  ["Give.asia", "give.asia/hkscda"],
+  ["FPS", "FPS ID 8727588 (registered phone 9864 1089)"],
+  ["Bank Transfer", "HSBC 124-511320-838"],
+  ["PayMe", "Request the PayMe QR code via WhatsApp 9864 1089"],
+  ["PayPal", "https://goo.gl/X2XsY1"],
+  ["Give.asia", "https://hkscda.give.asia"],
 ] as const;
 
 export function renderPledgeConfirmationEmail(input: PledgeConfirmationEmailInput) {

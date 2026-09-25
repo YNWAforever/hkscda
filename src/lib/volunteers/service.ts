@@ -1,11 +1,7 @@
 import { getAppUrl } from "../appUrl.server";
 import { buildConsentRows } from "../donations/domain";
 import type { IdentityResolution, PublicContact } from "../supporters/publicIdentity.server";
-import {
-  createStatusTokenPair,
-  hashStatusToken,
-  statusTokenExpiry,
-} from "../publicAdoption/statusToken.server";
+import { hashStatusToken, statusTokenExpiry } from "../publicAdoption/statusToken.server";
 import { decideVolunteerRegistrationStatus, formatVolunteerReference } from "./rules";
 import {
   adminActivityInputSchema,
@@ -24,6 +20,7 @@ import type {
   VolunteerActivityDetail,
   VolunteerActivitySummary,
   VolunteerRegistrationCreateInput,
+  VolunteerRegistrationCreateResult,
   VolunteerRegistrationDetail,
   VolunteerRegistrationSummary,
 } from "./types";
@@ -58,11 +55,17 @@ export type VolunteerRepository = {
     actorUserId: string,
     expectedUpdatedAt: string,
   ): Promise<void>;
-  cloneActivity(input: { activityId: string; startsAt?: string | null }): Promise<string>;
+  cloneActivity(input: {
+    activityId: string;
+    actorUserId: string;
+    startsAt?: string | null;
+  }): Promise<string>;
   resolvePublicIdentity(contact: PublicContact): Promise<IdentityResolution>;
   ensureSupporterRole(input: { supporterId: string; role: "volunteer" }): Promise<void>;
   insertConsentRows(rows: ConsentRows): Promise<void>;
-  createRegistration(input: VolunteerRegistrationCreateInput): Promise<VolunteerRegistrationDetail>;
+  createRegistration(
+    input: VolunteerRegistrationCreateInput,
+  ): Promise<VolunteerRegistrationCreateResult>;
   listRegistrations(input: VolunteerRegistrationSearch): Promise<{
     registrations: VolunteerRegistrationSummary[];
     total: number;
@@ -92,12 +95,7 @@ export type VolunteerRepository = {
 type VolunteerServiceArgs = {
   repo: VolunteerRepository;
   now?: () => Date;
-  createStatusTokenPair?: typeof createStatusTokenPair;
   appUrl?: string;
-  // The real senders resolve to a delivery outcome ("sent" | "skipped" | "failed")
-  // which the service intentionally discards — `unknown` says so without forcing
-  // callers to wrap them. `Promise<void>` would reject them: TypeScript's
-  // void-return exemption does not apply through a Promise type argument.
   sendRegistrationEmail?: (input: {
     registration: VolunteerRegistrationDetail;
     statusUrl: string;
@@ -108,10 +106,6 @@ type VolunteerServiceArgs = {
 
 function statusUrl(appUrl: string, token: string) {
   return `${appUrl.replace(/\/+$/, "")}/volunteer/status/${encodeURIComponent(token)}`;
-}
-
-function timestamp(now: () => Date) {
-  return now().toISOString();
 }
 
 function noStorePublicSummary(
@@ -130,7 +124,6 @@ function noStorePublicSummary(
 export function createVolunteerService({
   repo,
   now = () => new Date(),
-  createStatusTokenPair: makeStatusToken = createStatusTokenPair,
   appUrl = getAppUrl(),
   sendRegistrationEmail = async () => undefined,
   notifyAdmins = async () => undefined,
@@ -168,15 +161,8 @@ export function createVolunteerService({
     }) {
       const id = await repo.cloneActivity({
         activityId: args.activityId,
+        actorUserId: args.actorUserId,
         startsAt: args.input?.startsAt ?? null,
-      });
-      await repo.insertAuditLog({
-        actor_user_id: args.actorUserId,
-        action: "volunteer_activity.clone",
-        entity: "volunteer_activity",
-        entity_id: id,
-        timestamp: timestamp(now),
-        detail: { sourceActivityId: args.activityId },
       });
       return { id };
     },
@@ -207,26 +193,12 @@ export function createVolunteerService({
         language: input.contact.language,
         source: "volunteer_registration_form",
       });
-      await repo.ensureSupporterRole({ supporterId: supporter.supporterId, role: "volunteer" });
-      await repo.insertConsentRows(
-        buildConsentRows({
-          supporterId: supporter.supporterId,
-          source: "volunteer_registration_form",
-          timestamp: timestamp(now),
-          consents: {
-            email: input.consents.email,
-            whatsapp: input.consents.whatsapp,
-          },
-        }).filter((row) => row.status === "opt_out"),
-      );
-
       const decision = decideVolunteerRegistrationStatus({
         activity,
         draft: input,
         now: now(),
       });
-      const token = makeStatusToken();
-      const registration = await repo.createRegistration({
+      const { registration } = await repo.createRegistration({
         activityId: input.activityId,
         supporterId: supporter.supporterId,
         registrationType: input.registrationType,
@@ -245,22 +217,42 @@ export function createVolunteerService({
         notes: input.notes,
         consentEmailRequested: input.consents.email,
         consentWhatsappRequested: input.consents.whatsapp,
-        statusTokenHash: token.tokenHash,
+        statusTokenHash: hashStatusToken(input.submissionToken),
         statusTokenExpiresAt: statusTokenExpiry(now),
       });
 
-      const publicSummary = noStorePublicSummary(registration, token.rawToken, appUrl);
+      await repo.ensureSupporterRole({ supporterId: supporter.supporterId, role: "volunteer" });
+      await repo.insertConsentRows(
+        buildConsentRows({
+          supporterId: supporter.supporterId,
+          source: "volunteer_registration_form",
+          timestamp: registration.createdAt,
+          consents: {
+            email: input.consents.email,
+            whatsapp: input.consents.whatsapp,
+          },
+        }).filter((row) => row.status === "opt_out"),
+      );
+
+      const publicSummary = noStorePublicSummary(registration, input.submissionToken, appUrl);
+      let confirmationEmailSent = false;
       try {
-        await sendRegistrationEmail({ registration, statusUrl: publicSummary.statusUrl });
+        const delivery = await sendRegistrationEmail({
+          registration,
+          statusUrl: publicSummary.statusUrl,
+        });
+        confirmationEmailSent = delivery === "sent" || delivery === "skipped";
+        if (delivery === "failed") logger.error("Volunteer registration confirmation was not sent");
       } catch (error) {
         logger.error("Failed to send volunteer registration email", error);
       }
       try {
-        await notifyAdmins({ registration });
+        const delivery = await notifyAdmins({ registration });
+        if (delivery === "failed") logger.error("Failed to send volunteer admin notification");
       } catch (error) {
         logger.error("Failed to send volunteer admin notification", error);
       }
-      return publicSummary;
+      return { ...publicSummary, confirmationEmailSent };
     },
 
     async getPublicRegistrationStatus(rawToken: string) {

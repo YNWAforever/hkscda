@@ -13,7 +13,7 @@ import {
   Smartphone,
   Zap,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { brand } from "../lib/brand/brand";
 import {
@@ -97,6 +97,7 @@ type RedirectResult = {
 type DonationReturnState = "pending" | "confirmed" | "unavailable";
 
 export type DonationRequestPayload = {
+  idempotencyKey: string;
   amountCents: number;
   currency: "HKD";
   purpose: DonationPurpose;
@@ -136,6 +137,8 @@ const copy = {
     manualTitle: "請使用以下資料完成付款",
     reference: "付款參考編號",
     submitError: "暫時未能建立捐款，請稍後再試。",
+    checkoutRecoveryRequired: "付款建立結果未能確認。請聯絡職員核實，暫時不要重複付款。",
+    recoveryReference: "查詢編號",
     donorName: "姓名",
     email: "電郵",
     phone: "電話（選填）",
@@ -174,6 +177,9 @@ const copy = {
     manualTitle: "Complete payment with these details",
     reference: "Payment reference",
     submitError: "Donation could not be created. Please try again later.",
+    checkoutRecoveryRequired:
+      "We cannot confirm the checkout outcome. Please contact our team before trying to pay again.",
+    recoveryReference: "Reference",
     donorName: "Name",
     email: "Email",
     phone: "Phone (optional)",
@@ -321,6 +327,7 @@ export function DonatePage({
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const [returnState, setReturnState] = useState<DonationReturnState | null>(null);
+  const checkoutIntentRef = useRef<{ fingerprint: string; key: string } | null>(null);
   const methods = useMemo(() => methodsFromConfig(initialMethods), [initialMethods]);
 
   useEffect(() => {
@@ -335,6 +342,15 @@ export function DonatePage({
     }
   }, [attribution]);
 
+  useEffect(() => {
+    if (!search.donation || returnState !== "confirmed") return;
+    checkoutIntentRef.current = null;
+    try {
+      window.sessionStorage.removeItem("hkscda-donation-checkout-intent");
+    } catch {
+      // Storage may be unavailable.
+    }
+  }, [search.donation, returnState]);
   useEffect(() => {
     const donationId = search.donation;
     if (!donationId || !isPendingCheckoutReturn(search.status)) {
@@ -389,26 +405,71 @@ export function DonatePage({
 
     try {
       const checkoutExperience = checkoutExperienceFromViewport(window.innerWidth);
+      const intentDetails = {
+        amountCents: Math.round(amountHkd * 100),
+        purpose,
+        customPurpose,
+        method,
+        checkoutExperience,
+        receiptRequested,
+        donor: { name, email, phone, language },
+        consents: { email: emailConsent, whatsapp: false },
+        ...(attribution ? { attribution } : {}),
+      };
+      const fingerprintBytes = await window.crypto.subtle.digest(
+        "SHA-256",
+        new TextEncoder().encode(JSON.stringify(intentDetails)),
+      );
+      const fingerprint = Array.from(new Uint8Array(fingerprintBytes), (byte) =>
+        byte.toString(16).padStart(2, "0"),
+      ).join("");
+      let intent = checkoutIntentRef.current;
+      try {
+        const saved = JSON.parse(
+          window.sessionStorage.getItem("hkscda-donation-checkout-intent") ?? "null",
+        ) as { fingerprint?: string; key?: string } | null;
+        if (saved?.fingerprint === fingerprint && saved.key) {
+          intent = { fingerprint, key: saved.key };
+        }
+      } catch {
+        // Session storage can be unavailable; the in-memory key still covers retries.
+      }
+      if (!intent || intent.fingerprint !== fingerprint) {
+        intent = { fingerprint, key: window.crypto.randomUUID() };
+      }
+      checkoutIntentRef.current = intent;
+      try {
+        window.sessionStorage.setItem("hkscda-donation-checkout-intent", JSON.stringify(intent));
+      } catch {
+        // Keep the in-memory key when storage is unavailable.
+      }
+
       const response = await fetch("/api/donations", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(
           createDonationRequest({
-            amountCents: Math.round(amountHkd * 100),
-            purpose,
-            customPurpose,
-            method,
-            checkoutExperience,
-            receiptRequested,
-            donor: { name, email, phone, language },
-            consents: { email: emailConsent, whatsapp: false },
+            ...intentDetails,
+            idempotencyKey: intent.key,
             turnstileToken,
-            ...(attribution ? { attribution } : {}),
           }),
         ),
       });
-
-      if (!response.ok) throw new Error("Donation request failed");
+      if (!response.ok) {
+        const failure = (await response.json().catch(() => null)) as {
+          code?: string;
+          donationId?: string;
+        } | null;
+        if (failure?.code === "checkout_recovery_required") {
+          setError(
+            failure.donationId
+              ? t.checkoutRecoveryRequired + " " + t.recoveryReference + ": " + failure.donationId
+              : t.checkoutRecoveryRequired,
+          );
+          return;
+        }
+        throw new Error("Donation request failed");
+      }
       const data = (await response.json()) as ManualResult | RedirectResult;
 
       if (attribution) {
@@ -432,6 +493,12 @@ export function DonatePage({
       if (data.kind === "redirect") {
         window.location.href = data.url;
         return;
+      }
+      checkoutIntentRef.current = null;
+      try {
+        window.sessionStorage.removeItem("hkscda-donation-checkout-intent");
+      } catch {
+        // Storage may be unavailable.
       }
       setManualResult(data);
     } catch {

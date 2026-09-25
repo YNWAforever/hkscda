@@ -59,9 +59,10 @@ export type KnowledgeAuditLog = {
 };
 
 export interface KnowledgeRepository {
+  usesAtomicAudit?: boolean;
   listPublished(): Promise<KnowledgePost[]>;
   listAdmin(input: AdminKnowledgeQuery): Promise<AdminKnowledgePage>;
-  upsert(input: KnowledgePostInput): Promise<KnowledgePost>;
-  remove(id: string): Promise<void>;
+  upsert(input: KnowledgePostInput, actorUserId?: string): Promise<KnowledgePost>;
+  remove(id: string, actorUserId?: string): Promise<void>;
   insertAuditLog(input: KnowledgeAuditLog): Promise<void>;
 }

@@ -58,6 +58,56 @@ describe("createAdminGovernanceHandlers", () => {
     expect(body.member.name).toBe("陳大文");
   });
 
+  test("passes the authenticated user id to audited mutations", async () => {
+    const actorIds: string[] = [];
+    const handlers = createHandlers({
+      upsert: async ({ actorUserId }) => {
+        actorIds.push(actorUserId);
+        return {
+          id: "11111111-1111-4111-8111-111111111111",
+          name: "Chair",
+          roleTitle: "Chair",
+          sortOrder: 0,
+          effectiveDate: "2026-08-01",
+          isActive: true,
+          createdAt: "2026-08-01T00:00:00Z",
+          updatedAt: "2026-08-01T00:00:00Z",
+        };
+      },
+      deactivate: async ({ actorUserId }) => {
+        actorIds.push(actorUserId);
+      },
+    });
+    await handlers.upsert({
+      request: new Request("http://x/api/admin/governance", {
+        method: "POST",
+        body: JSON.stringify({ name: "Chair", roleTitle: "Chair", effectiveDate: "2026-08-01" }),
+      }),
+    });
+    await handlers.deactivate({
+      request: new Request("http://x/api/admin/governance", {
+        method: "DELETE",
+        body: JSON.stringify({ id: "11111111-1111-4111-8111-111111111111" }),
+      }),
+    });
+    expect(actorIds).toEqual(["auth-1", "auth-1"]);
+  });
+
+  test("missing member deactivation returns 404", async () => {
+    const handlers = createHandlers({
+      deactivate: async () => {
+        throw { code: "P0002", message: "missing" };
+      },
+    });
+    const response = await handlers.deactivate({
+      request: new Request("http://x/api/admin/governance", {
+        method: "DELETE",
+        body: JSON.stringify({ id: "11111111-1111-4111-8111-111111111111" }),
+      }),
+    });
+    expect(response.status).toBe(404);
+  });
+
   test("deactivate requires an id in the body", async () => {
     const handlers = createHandlers();
     const response = await handlers.deactivate({

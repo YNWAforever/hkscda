@@ -469,6 +469,7 @@ export function createSupabaseContentListRead(client: SupabaseClient): ContentLi
         .select(contentColumns, { count: "exact" })
         .eq("status", "published")
         .order("published_at", { ascending: false })
+        .order("id", { ascending: false })
         .range(from, from + input.pageSize - 1);
 
       if (input.type) query = query.eq("type", input.type);

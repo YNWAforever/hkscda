@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import * as paypalModule from "./paypal";
 
 import {
   getPayPalOrderId,
@@ -51,5 +52,100 @@ describe("PayPal order id extraction", () => {
       resource: { id: "capture-1" },
     };
     expect(getPayPalReconcileOrderId(capture)).toBeUndefined();
+  });
+});
+
+describe("verified PayPal financial events", () => {
+  test("a denied capture fails the matching pending donation", async () => {
+    const handler = (paypalModule as Record<string, unknown>).handleVerifiedPayPalWebhook;
+    expect(handler).toBeFunction();
+    if (typeof handler !== "function") return;
+    let received: Record<string, unknown> | undefined;
+    await handler(
+      {
+        id: "evt-denied",
+        event_type: "PAYMENT.CAPTURE.DENIED",
+        resource: {
+          id: "capture-1",
+          supplementary_data: { related_ids: { order_id: "order-1" } },
+        },
+      },
+      {
+        client: {} as never,
+        failProviderPayment: async (args: Record<string, unknown>) => {
+          received = args;
+          return { kind: "failed" };
+        },
+      },
+    );
+    expect(received?.providerRef).toBe("order-1");
+    expect(received?.providerEventId).toBe("evt-denied");
+  });
+
+  test("a full refund resolves the capture and reverses the matching order", async () => {
+    const handler = (paypalModule as Record<string, unknown>).handleVerifiedPayPalWebhook;
+    expect(handler).toBeFunction();
+    if (typeof handler !== "function") return;
+    let refunded: Record<string, unknown> | undefined;
+    await handler(
+      {
+        id: "evt-refund",
+        event_type: "PAYMENT.CAPTURE.REFUNDED",
+        resource: {
+          id: "refund-1",
+          links: [{ rel: "up", href: "https://api-m.paypal.com/v2/payments/captures/capture-1" }],
+        },
+      },
+      {
+        client: {} as never,
+        getPayPalCapture: async (id: string) => ({
+          id,
+          status: "REFUNDED",
+          supplementary_data: { related_ids: { order_id: "order-1" } },
+        }),
+        refundProviderPayment: async (args: Record<string, unknown>) => {
+          refunded = args;
+          return { kind: "refunded" };
+        },
+      },
+    );
+    expect(refunded?.providerRef).toBe("order-1");
+    expect(refunded?.providerEventId).toBe("evt-refund");
+  });
+
+  test("a partial refund is recorded for manual review without voiding the full receipt", async () => {
+    const handler = (paypalModule as Record<string, unknown>).handleVerifiedPayPalWebhook;
+    expect(handler).toBeFunction();
+    if (typeof handler !== "function") return;
+    let reviewed: Record<string, unknown> | undefined;
+    let refunded = false;
+    await handler(
+      {
+        id: "evt-partial",
+        event_type: "PAYMENT.CAPTURE.REFUNDED",
+        resource: {
+          id: "refund-2",
+          supplementary_data: { related_ids: { capture_id: "capture-1" } },
+        },
+      },
+      {
+        client: {} as never,
+        getPayPalCapture: async () => ({
+          id: "capture-1",
+          status: "PARTIALLY_REFUNDED",
+          supplementary_data: { related_ids: { order_id: "order-1" } },
+        }),
+        flagProviderWebhookForReview: async (_args: unknown, review: Record<string, unknown>) => {
+          reviewed = review;
+          return { kind: "manual_review" };
+        },
+        refundProviderPayment: async () => {
+          refunded = true;
+          return { kind: "refunded" };
+        },
+      },
+    );
+    expect(reviewed?.reason).toBe("partial_refund");
+    expect(refunded).toBe(false);
   });
 });

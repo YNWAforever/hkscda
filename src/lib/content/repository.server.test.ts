@@ -367,3 +367,80 @@ test("listNotificationDraftKeys selects only the channel and contact for one upd
   expect(selected).toBe("channel, recipient_contact");
   expect(filter).toBe("story_update_id:update-1");
 });
+
+test("promotion writes use one audited RPC and surface its returned count", async () => {
+  const commands: unknown[] = [];
+  const client = {
+    rpc: async (name: string, args: { p_command: unknown }) => {
+      expect(name).toBe("cms_promotion_command");
+      commands.push(args.p_command);
+      return { data: { count: 1 }, error: null };
+    },
+  } as unknown as SupabaseClient;
+  const repo = createSupabaseContentRepository(client);
+
+  const socialCount = await repo.generateSocialCopiesWithAudit?.(
+    [
+      {
+        contentItemId: "content-1",
+        storyUpdateId: "update-1",
+        platform: "facebook",
+        language: "zh-HK",
+        copyText: "Copy",
+        hashtags: ["test"],
+        status: "draft",
+      },
+    ],
+    "admin-1",
+    "content-1",
+    "update-1",
+    "facebook",
+  );
+  const draftCount = await repo.generateNotificationDraftsWithAudit?.(
+    [
+      {
+        storyUpdateId: "update-1",
+        contentItemId: "content-1",
+        adoptionCaseId: null,
+        supporterId: null,
+        channel: "email",
+        recipientName: "Reader",
+        recipientContact: "reader@example.test",
+        subject: null,
+        body: "Draft",
+        status: "draft",
+      },
+    ],
+    "admin-1",
+    "update-1",
+  );
+  await repo.updateSocialCopyStatusWithAudit?.("copy-1", "copied", "admin-1");
+  await repo.updateNotificationDraftStatusWithAudit?.("draft-1", "sent_manually", "admin-1");
+
+  expect(socialCount).toBe(1);
+  expect(draftCount).toBe(1);
+  expect(commands).toEqual([
+    expect.objectContaining({
+      kind: "social_generate",
+      rows: [expect.objectContaining({ copy_text: "Copy" })],
+    }),
+    expect.objectContaining({
+      kind: "draft_generate",
+      rows: [expect.objectContaining({ recipient_contact: "reader@example.test" })],
+    }),
+    { kind: "social_status", id: "copy-1", status: "copied" },
+    { kind: "draft_status", id: "draft-1", status: "sent_manually" },
+  ]);
+});
+
+test("promotion RPC errors are not acknowledged as successful writes", async () => {
+  const failure = new Error("audit insert failed");
+  const client = {
+    rpc: async () => ({ data: null, error: failure }),
+  } as unknown as SupabaseClient;
+  const repo = createSupabaseContentRepository(client);
+
+  await expect(
+    repo.updateNotificationDraftStatusWithAudit?.("draft-1", "sent_manually", "admin-1"),
+  ).rejects.toBe(failure);
+});

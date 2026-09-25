@@ -110,6 +110,11 @@ describe("storyCta", () => {
       "/donate?purpose=medical",
     );
   });
+  test("falls back for a backslash path that navigates off-site", () => {
+    expect(storyCta({ ctaLabel: "x", ctaUrl: "/\\example.com/x" }).href).toBe(
+      "/donate?purpose=medical",
+    );
+  });
   test("rejects a protocol-relative url", () => {
     expect(storyCta({ ctaLabel: "x", ctaUrl: "//evil.com" }).href).toBe("/donate?purpose=medical");
   });

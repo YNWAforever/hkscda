@@ -36,7 +36,7 @@ export interface GroupEnquiryRepository {
 
 type GroupEnquiryServiceArgs = {
   repo: GroupEnquiryRepository;
-  notifyAdmins?: (input: { enquiry: GroupEnquiry }) => Promise<unknown>;
+  notifyAdmins?: (input: { enquiry: GroupEnquiry }) => Promise<"sent" | "skipped" | "failed">;
   logger?: Pick<Console, "error">;
   now?: () => Date;
 };
@@ -48,7 +48,7 @@ function safeDiagnostic(error: unknown) {
 
 export function createGroupEnquiryService({
   repo,
-  notifyAdmins = async () => undefined,
+  notifyAdmins = async () => "skipped" as const,
   logger = console,
   now = () => new Date(),
 }: GroupEnquiryServiceArgs) {
@@ -62,8 +62,13 @@ export function createGroupEnquiryService({
 
   async function sendAndMark(enquiry: GroupEnquiry) {
     try {
-      await notifyAdmins({ enquiry });
-      await repo.markNotificationSent(enquiry.id);
+      const outcome = await notifyAdmins({ enquiry });
+      if (outcome === "sent") await repo.markNotificationSent(enquiry.id);
+      else
+        await repo.markNotificationFailed(
+          enquiry.id,
+          outcome === "skipped" ? "not_configured" : "delivery_failed",
+        );
     } catch (error) {
       const diagnostic = safeDiagnostic(error);
       logger.error("Failed to send group enquiry notification", error);
@@ -76,7 +81,8 @@ export function createGroupEnquiryService({
       const input = publicGroupEnquirySchema.parse(raw);
       const { turnstileToken: _turnstileToken, ...persisted } = input;
       const result = await repo.createOrGet(persisted);
-      if (result.created) await sendAndMark(result.enquiry);
+      if (result.created || result.enquiry.notificationStatus !== "sent")
+        await sendAndMark(result.enquiry);
       return { ok: true as const, enquiryId: result.enquiry.id };
     },
 

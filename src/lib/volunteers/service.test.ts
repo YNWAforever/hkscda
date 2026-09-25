@@ -30,7 +30,14 @@ function createRepo(overrides: Partial<VolunteerRepository> = {}) {
     },
     createRegistration: async (input) => {
       registrations.push(input);
-      return { ...registration, ...input, id: "registration-1" } as VolunteerRegistrationDetail;
+      return {
+        registration: {
+          ...registration,
+          ...input,
+          id: "registration-1",
+        } as VolunteerRegistrationDetail,
+        created: true,
+      };
     },
     listRegistrations: async () => ({ registrations: [], total: 0 }),
     getRegistrationDetail: async () => registration,
@@ -101,7 +108,6 @@ describe("volunteer service", () => {
     const service = createVolunteerService({
       repo,
       now: () => new Date("2026-07-02T00:00:00.000Z"),
-      createStatusTokenPair: () => ({ rawToken: "raw-token", tokenHash: "hash-token" }),
       appUrl: "https://hkscda.test",
       sendRegistrationEmail: async () => undefined,
       notifyAdmins: async () => undefined,
@@ -119,13 +125,14 @@ describe("volunteer service", () => {
       },
       declaredAge: 21,
       consents: { email: true, whatsapp: false },
+      submissionToken: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
     });
 
     expect(result).toMatchObject({
       registrationId: "registration-1",
       status: "approved",
       reference: "VOL-REGISTRA",
-      statusUrl: "https://hkscda.test/volunteer/status/raw-token",
+      statusUrl: "https://hkscda.test/volunteer/status/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
     });
     expect(supporterRoles).toEqual([{ supporterId: "supporter-1", role: "volunteer" }]);
     expect(resolvedContacts).toEqual([
@@ -142,7 +149,7 @@ describe("volunteer service", () => {
       supporterId: "supporter-1",
       status: "approved",
       statusReason: "auto_approved",
-      statusTokenHash: "hash-token",
+      statusTokenHash: expect.stringMatching(/^[0-9a-f]{64}$/),
       consentEmailRequested: true,
       consentWhatsappRequested: false,
     });
@@ -153,7 +160,6 @@ describe("volunteer service", () => {
     const service = createVolunteerService({
       repo,
       now: () => new Date("2026-07-02T00:00:00.000Z"),
-      createStatusTokenPair: () => ({ rawToken: "raw-token", tokenHash: "hash-token" }),
       appUrl: "https://hkscda.test",
       sendRegistrationEmail: async () => {
         throw new Error("email down");
@@ -172,6 +178,7 @@ describe("volunteer service", () => {
         contact: { name: "Ada", email: "ada@example.com", phone: "91234567", language: "zh-HK" },
         declaredAge: 21,
         consents: { email: true },
+        submissionToken: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
       }),
     ).resolves.toMatchObject({ status: "approved" });
     expect(registrations).toHaveLength(1);
@@ -217,6 +224,7 @@ describe("volunteer service", () => {
         contact: { name: "Ada", email: "ada@example.com", phone: "91234567", language: "zh-HK" },
         declaredAge: 20,
         consents: { email: true },
+        submissionToken: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
       }),
     ).rejects.toThrow(/21/);
     expect(registrations).toHaveLength(0);
@@ -298,4 +306,122 @@ test("attendance sends actor and version to atomic repository without separate r
     command: "record",
   });
   expect(auditLogs).toEqual([]);
+});
+
+test("public registration requires a stable submission token for retries", async () => {
+  const { repo, registrations } = createRepo();
+  const service = createVolunteerService({ repo, now: () => new Date("2026-07-02T00:00:00.000Z") });
+  await expect(
+    service.submitPublicRegistration({
+      activityId: activity.id,
+      registrationType: "individual",
+      participantCount: 1,
+      contact: { name: "Ada", email: "ada@example.com", phone: "91234567", language: "zh-HK" },
+      declaredAge: 21,
+      consents: { email: true },
+    }),
+  ).rejects.toThrow();
+  expect(registrations).toHaveLength(0);
+});
+
+test("a retried public registration uses the same token hash and status URL", async () => {
+  const { repo, registrations } = createRepo();
+  const token = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+  const service = createVolunteerService({
+    repo,
+    now: () => new Date("2026-07-02T00:00:00.000Z"),
+    appUrl: "https://hkscda.test",
+  });
+  const request = {
+    activityId: activity.id,
+    registrationType: "individual",
+    participantCount: 1,
+    contact: { name: "Ada", email: "ada@example.com", phone: "91234567", language: "zh-HK" },
+    declaredAge: 21,
+    consents: { email: true },
+    submissionToken: token,
+  };
+  const first = await service.submitPublicRegistration(request);
+  const second = await service.submitPublicRegistration(request);
+  expect(registrations).toHaveLength(2);
+  expect((registrations[0] as { statusTokenHash: string }).statusTokenHash).toMatch(
+    /^[0-9a-f]{64}$/,
+  );
+  expect((registrations[0] as { statusTokenHash: string }).statusTokenHash).toBe(
+    (registrations[1] as { statusTokenHash: string }).statusTokenHash,
+  );
+  expect(first.statusUrl).toBe("https://hkscda.test/volunteer/status/" + token);
+  expect(second.statusUrl).toBe(first.statusUrl);
+});
+
+test("public response reports a failed confirmation email while preserving registration", async () => {
+  const { repo, registrations } = createRepo();
+  const service = createVolunteerService({
+    repo,
+    now: () => new Date("2026-07-02T00:00:00.000Z"),
+    sendRegistrationEmail: async () => "failed",
+    logger: { error() {} },
+  });
+  const result = await service.submitPublicRegistration({
+    activityId: activity.id,
+    registrationType: "individual",
+    participantCount: 1,
+    contact: { name: "Ada", email: "ada@example.com", phone: "91234567", language: "zh-HK" },
+    declaredAge: 21,
+    consents: { email: true },
+    submissionToken: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  });
+  expect(registrations).toHaveLength(1);
+  expect(result.confirmationEmailSent).toBe(false);
+});
+
+test("a registration replay retries a previously failed admin notification", async () => {
+  const { repo } = createRepo({
+    createRegistration: async () => ({ registration, created: false }),
+  });
+  let attempts = 0;
+  await createVolunteerService({
+    repo,
+    now: () => new Date("2026-07-02T00:00:00.000Z"),
+    notifyAdmins: async () => {
+      attempts += 1;
+      return "sent";
+    },
+    logger: { error() {} },
+  }).submitPublicRegistration({
+    activityId: activity.id,
+    registrationType: "individual",
+    participantCount: 1,
+    contact: { name: "Ada", email: "ada@example.com", phone: "91234567", language: "zh-HK" },
+    declaredAge: 21,
+    consents: { email: true },
+    submissionToken: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  });
+  expect(attempts).toBe(1);
+});
+
+test("clone activity delegates mutation and audit as one repository command", async () => {
+  const commands: unknown[] = [];
+  const { repo } = createRepo({
+    cloneActivity: async (input) => {
+      commands.push(input);
+      return "activity-clone";
+    },
+    insertAuditLog: async () => {
+      throw new Error("separate audit write must not run");
+    },
+  });
+  const result = await createVolunteerService({ repo }).cloneActivity({
+    actorUserId: "actor-1",
+    activityId: activity.id,
+    input: { startsAt: "2026-09-01T02:00:00.000Z" },
+  });
+  expect(result).toEqual({ id: "activity-clone" });
+  expect(commands).toEqual([
+    {
+      activityId: activity.id,
+      actorUserId: "actor-1",
+      startsAt: "2026-09-01T02:00:00.000Z",
+    },
+  ]);
 });
