@@ -100,8 +100,13 @@ function toSummary(row: GroupEnquiryRow) {
   };
 }
 
-function escapeLike(value: string) {
-  return value.replaceAll("\\", "\\\\").replaceAll("%", "\\%").replaceAll("_", "\\_");
+function postgrestLikeOperand(value: string) {
+  const escaped = value
+    .replaceAll("\\", "\\\\")
+    .replaceAll('"', '\\"')
+    .replaceAll("%", "\\%")
+    .replaceAll("_", "\\_");
+  return '"%' + escaped + '%"';
 }
 
 function toUpdate(input: GroupEnquiryAdminUpdate) {
@@ -177,12 +182,13 @@ export function createSupabaseGroupEnquiryRepository(
           { count: "exact" },
         )
         .order("created_at", { ascending: false })
+        .order("id", { ascending: false })
         .range(from, from + input.pageSize - 1);
       if (input.status) query = query.eq("status", input.status);
       if (input.notificationStatus)
         query = query.eq("notification_status", input.notificationStatus);
       if (input.q) {
-        const like = `%${escapeLike(input.q)}%`;
+        const like = postgrestLikeOperand(input.q);
         query = query.or(
           `organisation.ilike.${like},contact_name.ilike.${like},contact_email.ilike.${like}`,
         );

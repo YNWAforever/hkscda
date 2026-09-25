@@ -81,6 +81,46 @@ function createClient(options: { insertError?: unknown; selectRow?: unknown } = 
 }
 
 describe("Supabase group enquiry repository", () => {
+  test("admin enquiry pages have a stable id tie-breaker", async () => {
+    const orders: string[] = [];
+    const query = {
+      select: () => query,
+      order(column: string) {
+        orders.push(column);
+        return query;
+      },
+      range: async () => ({ data: [], error: null, count: 0 }),
+    };
+    const repo = createSupabaseGroupEnquiryRepository({ from: () => query } as never);
+
+    await repo.list({ page: 1, pageSize: 25 });
+
+    expect(orders).toEqual(["created_at", "id"]);
+  });
+
+  test("admin search quotes punctuation inside PostgREST LIKE operands", async () => {
+    let filter = "";
+    const query = {
+      select: () => query,
+      order: () => query,
+      range: () => query,
+      or(value: string) {
+        filter = value;
+        return query;
+      },
+      then(resolve: (value: { data: never[]; error: null; count: number }) => unknown) {
+        return Promise.resolve({ data: [], error: null, count: 0 }).then(resolve);
+      },
+    };
+    const repo = createSupabaseGroupEnquiryRepository({ from: () => query } as never);
+
+    await repo.list({ q: "School,(P4)", page: 1, pageSize: 25 });
+
+    expect(filter).toBe(
+      'organisation.ilike."%School,(P4)%",contact_name.ilike."%School,(P4)%",contact_email.ilike."%School,(P4)%"',
+    );
+  });
+
   test("inserts snake_case payloads and maps rows back to domain shape", async () => {
     const { client, calls } = createClient();
     const repo = createSupabaseGroupEnquiryRepository(client as never);
