@@ -4,7 +4,10 @@ import { z } from "zod";
 import { createSupabaseServiceClient } from "../../../lib/donations/supabase.server";
 import { RequestBodyTooLargeError, readPublicJson } from "../../../lib/http/publicJson.server";
 import { notifyGroupEnquiryAdmins } from "../../../lib/groupEnquiries/notifications.server";
-import { createSupabaseGroupEnquiryRepository } from "../../../lib/groupEnquiries/repository.server";
+import {
+  createSupabaseGroupEnquiryRepository,
+  GroupEnquiryIdempotencyConflictError,
+} from "../../../lib/groupEnquiries/repository.server";
 import { createGroupEnquiryService } from "../../../lib/groupEnquiries/service";
 import type { RateLimitResult } from "../../../lib/security/rate-limit.server";
 import {
@@ -49,6 +52,8 @@ async function withGroupEnquiryErrors(operation: () => Promise<Response>) {
     return await operation();
   } catch (error) {
     if (error instanceof Response) return error;
+    if (error instanceof GroupEnquiryIdempotencyConflictError)
+      return jsonNoStore({ error: "Enquiry changed; please submit again" }, { status: 409 });
     if (error instanceof z.ZodError)
       return jsonNoStore({ error: "Invalid group enquiry request" }, { status: 400 });
     console.error(error);

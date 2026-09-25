@@ -111,6 +111,17 @@ describe("Supabase group enquiry repository", () => {
     expect(calls.map((call) => call.name)).toEqual(["insert", "select.eq"]);
   });
 
+  test("rejects a changed payload that reuses an existing idempotency key", async () => {
+    const { client } = createClient({
+      insertError: { code: "23505", message: "duplicate key" },
+    });
+    const repo = createSupabaseGroupEnquiryRepository(client as never);
+
+    await expect(repo.createOrGet({ ...insert, message: "Please email instead." })).rejects.toThrow(
+      "Idempotency key reused with different enquiry",
+    );
+  });
+
   test("marks notification transitions without exposing raw errors", async () => {
     const { client, calls } = createClient();
     const repo = createSupabaseGroupEnquiryRepository(client as never);

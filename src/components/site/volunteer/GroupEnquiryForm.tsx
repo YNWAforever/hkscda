@@ -105,6 +105,7 @@ export function GroupEnquiryForm() {
         ),
       });
       const body = (await response.json().catch(() => ({}))) as { error?: string };
+      if (response.status === 409) setIdempotencyKey(newIdempotencyKey());
       if (!response.ok) throw new Error(body.error ?? "查詢未能送出，請稍後再試。");
       setSuccess(true);
       setIdempotencyKey(newIdempotencyKey());

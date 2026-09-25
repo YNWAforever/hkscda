@@ -11,6 +11,12 @@ import type {
 } from "./types";
 import type { GroupEnquiryRepository } from "./service";
 
+export class GroupEnquiryIdempotencyConflictError extends Error {
+  constructor() {
+    super("Idempotency key reused with different enquiry");
+  }
+}
+
 type GroupEnquiryRow = {
   id: string;
   organisation: string;
@@ -47,6 +53,13 @@ function toInsert(input: GroupEnquiryInsert) {
     message: input.message,
     idempotency_key: input.idempotencyKey,
   };
+}
+
+function samePublicSubmission(existing: GroupEnquiry, input: GroupEnquiryInsert): boolean {
+  const stored = toInsert(existing);
+  return Object.entries(toInsert(input)).every(
+    ([key, value]) => stored[key as keyof typeof stored] === value,
+  );
 }
 
 function toDomain(row: GroupEnquiryRow): GroupEnquiry {
@@ -130,7 +143,11 @@ export function createSupabaseGroupEnquiryRepository(
 
       for (let attempt = 0; attempt < 2; attempt += 1) {
         const existing = await loadByIdempotencyKey(input.idempotencyKey);
-        if (existing) return { enquiry: existing, created: false };
+        if (existing) {
+          if (!samePublicSubmission(existing, input))
+            throw new GroupEnquiryIdempotencyConflictError();
+          return { enquiry: existing, created: false };
+        }
       }
       throw new Error("Group enquiry duplicate could not be resolved");
     },
