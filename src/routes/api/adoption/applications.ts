@@ -107,28 +107,10 @@ export function createAdoptionApplicationsHandler({
         return jsonNoStore({ error: "Photo upload authorization not found" }, { status: 403 });
       }
 
-      const completed = await hasCompleted(
-        client,
-        parsed.applicationId,
-        parsed.statusToken,
-        fingerprintAdoptionSubmission(parsed, parsed.statusToken),
-      );
-      if (completed === "conflict") {
-        return jsonNoStore(
-          {
-            error:
-              "This application was already submitted with different details. Check the original status link before starting a new application.",
-          },
-          { status: 409 },
-        );
-      }
-      if (completed === "expired") {
-        return jsonNoStore({ error: "Application status link expired" }, { status: 410 });
-      }
-      if (completed === "forbidden") {
-        return jsonNoStore({ error: "Application retry not authorized" }, { status: 403 });
-      }
-      if (completed === "recovered") {
+      const fingerprint = fingerprintAdoptionSubmission(parsed, parsed.statusToken);
+      const lookupCompletion = () =>
+        hasCompleted(client, parsed.applicationId, parsed.statusToken, fingerprint);
+      const recoverCompleted = async () => {
         try {
           await markSubmitted(client, parsed.applicationId);
         } catch (error) {
@@ -142,7 +124,30 @@ export function createAdoptionApplicationsHandler({
           },
           { status: 200 },
         );
-      }
+      };
+      const completionResponse = async (
+        state: Awaited<ReturnType<typeof hasCompleted>>,
+      ): Promise<Response | null> => {
+        if (state === "conflict") {
+          return jsonNoStore(
+            {
+              error:
+                "This application was already submitted with different details. Check the original status link before starting a new application.",
+            },
+            { status: 409 },
+          );
+        }
+        if (state === "expired") {
+          return jsonNoStore({ error: "Application status link expired" }, { status: 410 });
+        }
+        if (state === "forbidden") {
+          return jsonNoStore({ error: "Application retry not authorized" }, { status: 403 });
+        }
+        if (state === "recovered") return recoverCompleted();
+        return null;
+      };
+      const existingResponse = await completionResponse(await lookupCompletion());
+      if (existingResponse) return existingResponse;
 
       if (!validateAdoptionUploadIntent(intent, intentInput)) {
         return jsonNoStore({ error: "Photo upload authorization expired" }, { status: 403 });
@@ -170,15 +175,24 @@ export function createAdoptionApplicationsHandler({
       }
 
       const coordinatorService = createCoordinatorService(client);
-      const result = await persist({
-        client,
-        parsed,
-        coordinatorService,
-        createStatusTokenPair: () => ({
-          rawToken: parsed.statusToken,
-          tokenHash: hashStatusToken(parsed.statusToken),
-        }),
-      });
+      let result: Awaited<ReturnType<typeof persist>>;
+      try {
+        result = await persist({
+          client,
+          parsed,
+          coordinatorService,
+          createStatusTokenPair: () => ({
+            rawToken: parsed.statusToken,
+            tokenHash: hashStatusToken(parsed.statusToken),
+          }),
+        });
+      } catch (error) {
+        // Another request may have committed the same application while this one was saving.
+        // Recover only when its saved bearer token and submission fingerprint match.
+        const completedResponse = await completionResponse(await lookupCompletion());
+        if (completedResponse) return completedResponse;
+        throw error;
+      }
       try {
         await markSubmitted(client, parsed.applicationId);
       } catch (error) {

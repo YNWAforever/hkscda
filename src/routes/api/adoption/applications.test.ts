@@ -106,6 +106,45 @@ describe("public adoption submission authorization and retry", () => {
     expect(calls).toEqual([]);
   });
 
+  test("recovers a concurrent submission that commits after the first completion check", async () => {
+    let completionChecks = 0;
+    const { dependencies, calls } = deps({
+      hasCompleted: async () => (++completionChecks === 1 ? "new" : "recovered"),
+      persist: async () => {
+        calls.push("persist");
+        throw new Error("duplicate application id");
+      },
+    });
+
+    const response = await createAdoptionApplicationsHandler(dependencies)(request());
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      applicationId,
+      reference: "APP-AAAAAAAA",
+      statusUrl: "https://example.test/adoption/status/" + statusToken,
+    });
+    expect(completionChecks).toBe(2);
+    expect(calls).toEqual(["persist", "markSubmitted"]);
+  });
+
+  test("does not recover a failed concurrent submission with different saved details", async () => {
+    let completionChecks = 0;
+    const { dependencies, calls } = deps({
+      hasCompleted: async () => (++completionChecks === 1 ? "new" : "conflict"),
+      persist: async () => {
+        calls.push("persist");
+        throw new Error("duplicate application id");
+      },
+    });
+
+    const response = await createAdoptionApplicationsHandler(dependencies)(request());
+
+    expect(response.status).toBe(409);
+    expect(completionChecks).toBe(2);
+    expect(calls).toEqual(["persist"]);
+  });
+
   test("returns success after persistence even if confirmation email throws", async () => {
     const { dependencies, calls } = deps({
       sendEmail: async () => {
