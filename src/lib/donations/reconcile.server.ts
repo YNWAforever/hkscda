@@ -501,7 +501,12 @@ async function processProviderWebhook<T>(
   args: ReconcileProviderArgs,
   apply: (payment: PaymentWithDonation) => Promise<T>,
   onNotFound?: () => Promise<void>,
-): Promise<T | { kind: "duplicate" } | { kind: "not_found" }> {
+): Promise<
+  | T
+  | { kind: "duplicate" }
+  | { kind: "not_found" }
+  | { kind: "provider_ref_mismatch"; donationId: string; paymentId: string }
+> {
   const reservation = await reserveWebhookEvent(args);
   if (reservation.kind === "duplicate") return { kind: "duplicate" as const };
 
@@ -514,14 +519,43 @@ async function processProviderWebhook<T>(
     if (!payment && args.fallbackPaymentId) {
       const candidate = await findPaymentByIdMaybe(args.client, args.fallbackPaymentId);
       if (candidate && candidate.provider === args.provider) {
+        if (
+          candidate.provider_ref &&
+          args.providerRef &&
+          candidate.provider_ref !== args.providerRef
+        ) {
+          const { error: auditError } = await args.client.from("audit_log").insert({
+            actor_user_id: null,
+            action: "payment.provider_ref_mismatch",
+            entity: "payment",
+            entity_id: candidate.id,
+            detail: {
+              donationId: candidate.donation.id,
+              provider: args.provider,
+              providerEventId: args.providerEventId,
+              expectedProviderRef: candidate.provider_ref,
+              actualProviderRef: args.providerRef,
+            },
+          });
+          if (auditError) throw auditError;
+          await markWebhookEventProcessed(args, reservation.processingOwner);
+          return {
+            kind: "provider_ref_mismatch" as const,
+            donationId: candidate.donation.id,
+            paymentId: candidate.id,
+          };
+        }
         payment = candidate;
         if (!payment.provider_ref && args.providerRef) {
-          const { error } = await args.client
+          const { data: backfilled, error } = await args.client
             .from("payment")
             .update({ provider_ref: args.providerRef })
             .eq("id", payment.id)
-            .is("provider_ref", null);
+            .is("provider_ref", null)
+            .select("id")
+            .maybeSingle();
           if (error) throw error;
+          if (!backfilled) throw new Error("Payment provider reference backfill lost a race");
           payment.provider_ref = args.providerRef;
         }
       }

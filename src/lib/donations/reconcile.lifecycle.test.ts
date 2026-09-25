@@ -286,6 +286,7 @@ function createWebhookFake({
   transitionMiss = false,
   succeededTransitionMiss = false,
   paymentAfterTransitionMiss,
+  providerRefBackfillMiss = false,
 }: {
   payment: typeof basePayment | null;
   // What the provider_ref lookup returns (defaults to `payment`). Set null to
@@ -295,6 +296,7 @@ function createWebhookFake({
   transitionMiss?: boolean;
   succeededTransitionMiss?: boolean;
   paymentAfterTransitionMiss?: typeof basePayment;
+  providerRefBackfillMiss?: boolean;
 }) {
   const operations: Array<{
     table: string;
@@ -333,6 +335,13 @@ function createWebhookFake({
         if (table === "webhook_event" && mode === "update") {
           operations.push({ table, action: mode, payload, filters });
           return Promise.resolve({ data: { id: "webhook-event" }, error: null });
+        }
+        if (table === "payment" && mode === "update" && "provider_ref" in (payload as object)) {
+          operations.push({ table, action: mode, payload, filters });
+          return Promise.resolve({
+            data: providerRefBackfillMiss ? null : { id: "payment-1" },
+            error: null,
+          });
         }
         if (mode === "update" && (payload as { status?: string })?.status === "refunded") {
           operations.push({ table, action: mode, payload, filters });
@@ -957,6 +966,80 @@ describe("reconcileProviderPayment success path", () => {
 });
 
 describe("reconcileProviderPayment metadata fallback", () => {
+  test("quarantines metadata fallback when a different provider reference is already bound", async () => {
+    const conflicting: FakePayment = {
+      ...pendingPaymentNoReceipt,
+      provider: "paypal",
+      provider_ref: "order-original",
+    };
+    const { client, operations } = createWebhookFake({
+      payment: conflicting,
+      paymentByProvider: null,
+    });
+
+    const result = await reconcileProviderPayment({
+      client: client as never,
+      provider: "paypal",
+      providerRef: "order-unrelated",
+      fallbackPaymentId: "payment-1",
+      providerEventId: "evt_conflicting_fallback",
+      eventType: "PAYMENT.CAPTURE.COMPLETED",
+      payload: {},
+      providerSettlement: { amountCents: 20000, currency: "HKD" },
+    });
+
+    expect(result).toMatchObject({ kind: "provider_ref_mismatch", paymentId: "payment-1" });
+    expect(
+      operations.some(
+        (o) =>
+          o.table === "audit_log" &&
+          (o.payload as { action?: string }).action === "payment.provider_ref_mismatch",
+      ),
+    ).toBe(true);
+    expect(
+      operations.some(
+        (o) =>
+          (o.table === "payment" || o.table === "donation") &&
+          o.action === "update" &&
+          (o.payload as { status?: string }).status === "succeeded",
+      ),
+    ).toBe(false);
+  });
+
+  test("does not credit when provider-reference backfill loses its null guard", async () => {
+    const orphan: FakePayment = {
+      ...pendingPaymentNoReceipt,
+      provider: "paypal",
+      provider_ref: null,
+    };
+    const { client, operations } = createWebhookFake({
+      payment: orphan,
+      paymentByProvider: null,
+      providerRefBackfillMiss: true,
+    });
+
+    await expect(
+      reconcileProviderPayment({
+        client: client as never,
+        provider: "paypal",
+        providerRef: "order-xyz",
+        fallbackPaymentId: "payment-1",
+        providerEventId: "evt_backfill_race",
+        eventType: "PAYMENT.CAPTURE.COMPLETED",
+        payload: {},
+        providerSettlement: { amountCents: 20000, currency: "HKD" },
+      }),
+    ).rejects.toThrow("Payment provider reference backfill lost a race");
+    expect(
+      operations.some(
+        (o) =>
+          (o.table === "payment" || o.table === "donation") &&
+          o.action === "update" &&
+          (o.payload as { status?: string }).status === "succeeded",
+      ),
+    ).toBe(false);
+  });
+
   test("reconciles via fallbackPaymentId and backfills provider_ref when the provider_ref lookup misses", async () => {
     const orphan: FakePayment = {
       ...pendingPaymentNoReceipt,
