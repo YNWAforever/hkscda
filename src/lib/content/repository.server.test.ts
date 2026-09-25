@@ -283,7 +283,14 @@ test("resolveAdopterRecipients resolves a linked adoption case through its suppo
       const query = {
         select: () => query,
         eq: () => query,
-        in: async () => ({ data: tables[table] ?? [], error: null }),
+        in: () => query,
+        order: () => query,
+        range: () =>
+          Promise.resolve({
+            data: tables[table] ?? [],
+            count: (tables[table] ?? []).length,
+            error: null,
+          }),
       };
       return query;
     },
@@ -299,6 +306,84 @@ test("resolveAdopterRecipients resolves a linked adoption case through its suppo
     name: "陳太",
     email: "adopter@example.test",
   });
+});
+
+test("resolveAdopterRecipients includes linked adopters beyond capped responses", async () => {
+  const tables: Record<string, Array<Record<string, unknown>>> = {
+    content_link: [
+      ...[1, 2, 3].map((n) => ({
+        id: "link-" + n,
+        content_item_id: "content-1",
+        linked_type: "adoption_case",
+        linked_id: "case-" + n,
+      })),
+      {
+        id: "link-4",
+        content_item_id: "content-1",
+        linked_type: "successful_adoption",
+        linked_id: "success-4",
+      },
+    ],
+    successful_adoption: [
+      { id: "success-4", adoption_case_id: "case-4", supporter_id: "supporter-4" },
+    ],
+    adoption_case: [1, 2, 3, 4].map((n) => ({
+      id: "case-" + n,
+      supporter_id: "supporter-" + n,
+      applicant_name: "Adopter " + n,
+      applicant_email: null,
+      applicant_phone: null,
+    })),
+    supporter: [1, 2, 3, 4].map((n) => ({
+      id: "supporter-" + n,
+      name: "Adopter " + n,
+      email: "adopter" + n + "@example.test",
+      phone: null,
+    })),
+  };
+  const client = {
+    from(table: string) {
+      const filters: Array<(row: Record<string, unknown>) => boolean> = [];
+      let from = 0;
+      let to = Number.POSITIVE_INFINITY;
+      const result = () => {
+        const rows = (tables[table] ?? []).filter((row) => filters.every((filter) => filter(row)));
+        return {
+          data: rows.slice(from, Math.min(to + 1, from + 2)),
+          count: rows.length,
+          error: null,
+        };
+      };
+      const query = {
+        select: () => query,
+        eq: (column: string, value: unknown) => {
+          filters.push((row) => row[column] === value);
+          return query;
+        },
+        in: (column: string, values: unknown[]) => {
+          filters.push((row) => values.includes(row[column]));
+          return query;
+        },
+        order: () => query,
+        range: (start: number, end: number) => {
+          from = start;
+          to = end;
+          return Promise.resolve(result());
+        },
+        then: (resolve: (value: ReturnType<typeof result>) => void) => resolve(result()),
+      };
+      return query;
+    },
+  } as unknown as SupabaseClient;
+
+  const recipients =
+    await createSupabaseContentRepository(client).resolveAdopterRecipients("content-1");
+  expect(recipients.map((recipient) => recipient.email)).toEqual([
+    "adopter1@example.test",
+    "adopter2@example.test",
+    "adopter3@example.test",
+    "adopter4@example.test",
+  ]);
 });
 
 test("listAdminContent forwards the published, map, update and draft filters to the RPC", async () => {
@@ -351,8 +436,10 @@ test("listNotificationDraftKeys selects only the channel and contact for one upd
         },
         eq(column: string, value: string) {
           filter = `${column}:${value}`;
-          return Promise.resolve({ data: rows, error: null });
+          return query;
         },
+        order: () => query,
+        range: () => Promise.resolve({ data: rows, count: rows.length, error: null }),
       };
       return query;
     },
@@ -366,6 +453,45 @@ test("listNotificationDraftKeys selects only the channel and contact for one upd
   ]);
   expect(selected).toBe("channel, recipient_contact");
   expect(filter).toBe("story_update_id:update-1");
+});
+
+test("listNotificationDraftKeys includes existing drafts beyond a capped response", async () => {
+  const rows = [
+    { id: "a", channel: "email", recipient_contact: "a@example.test" },
+    { id: "b", channel: "email", recipient_contact: "b@example.test" },
+    { id: "c", channel: "email", recipient_contact: "c@example.test" },
+  ];
+  const client = {
+    from(table: string) {
+      expect(table).toBe("recipient_notification_draft");
+      let from = 0;
+      let to = Number.POSITIVE_INFINITY;
+      const result = () => ({
+        data: rows.slice(from, Math.min(to + 1, from + 2)),
+        count: rows.length,
+        error: null,
+      });
+      const query = {
+        select: () => query,
+        eq: () => query,
+        order: () => query,
+        range: (start: number, end: number) => {
+          from = start;
+          to = end;
+          return Promise.resolve(result());
+        },
+        then: (resolve: (value: ReturnType<typeof result>) => void) => resolve(result()),
+      };
+      return query;
+    },
+  } as unknown as SupabaseClient;
+
+  const keys = await createSupabaseContentRepository(client).listNotificationDraftKeys("update-1");
+  expect(keys.map((key) => key.recipientContact)).toEqual([
+    "a@example.test",
+    "b@example.test",
+    "c@example.test",
+  ]);
 });
 
 test("promotion writes use one audited RPC and surface its returned count", async () => {

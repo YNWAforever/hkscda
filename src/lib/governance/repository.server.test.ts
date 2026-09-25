@@ -4,9 +4,15 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createSupabaseGovernanceRepository } from "./repository.server";
 
-type FakeResult = { data?: unknown; error?: { message: string } | null };
+type FakeResult = { data?: unknown; count?: number; error?: { message: string } | null };
 
-function createBuilder(calls: unknown[], result: FakeResult) {
+function createBuilder(calls: unknown[], result: FakeResult, cap: number) {
+  let from = 0;
+  let to = Number.POSITIVE_INFINITY;
+  const readResult = (): FakeResult => {
+    const rows = Array.isArray(result.data) ? result.data : [];
+    return { ...result, data: rows.slice(from, Math.min(to + 1, from + cap)), count: rows.length };
+  };
   const builder: Record<string, unknown> = {
     select(columns: string, options?: unknown) {
       calls.push({ name: "select", columns, options });
@@ -18,6 +24,12 @@ function createBuilder(calls: unknown[], result: FakeResult) {
     },
     order(column: string, options?: unknown) {
       calls.push({ name: "order", column, options });
+      return builder;
+    },
+    range(start: number, end: number) {
+      calls.push({ name: "range", start, end });
+      from = start;
+      to = end;
       return builder;
     },
     insert(payload: unknown) {
@@ -33,19 +45,19 @@ function createBuilder(calls: unknown[], result: FakeResult) {
       return Promise.resolve(result);
     },
     then(resolve: (value: FakeResult) => void) {
-      resolve(result);
+      resolve(readResult());
     },
   };
   return builder;
 }
 
-function createClient(results: Record<string, FakeResult>) {
+function createClient(results: Record<string, FakeResult>, cap = Number.POSITIVE_INFINITY) {
   const calls: unknown[] = [];
   const client = {
     calls,
     from(table: string) {
       calls.push({ name: "from", table });
-      return createBuilder(calls, results[table] ?? { data: [], error: null });
+      return createBuilder(calls, results[table] ?? { data: [], error: null }, cap);
     },
     rpc(name: string, args: unknown) {
       calls.push({ name: "rpc", functionName: name, args });
@@ -87,6 +99,28 @@ describe("listPublicRoster", () => {
       { name: "乙", roleTitle: "主席", sortOrder: 1 },
     ]);
     expect(roster.lastUpdated).toBe("2026-08-29T00:00:00.000Z");
+  });
+
+  test("includes active members beyond a capped response and uses their latest update", async () => {
+    const client = createClient(
+      {
+        board_member: {
+          data: [
+            row({ id: "a", name: "甲", sort_order: 0, updated_at: "2026-08-10T00:00:00.000Z" }),
+            row({ id: "b", name: "乙", sort_order: 1, updated_at: "2026-08-11T00:00:00.000Z" }),
+            row({ id: "c", name: "丙", sort_order: 2, updated_at: "2026-08-30T00:00:00.000Z" }),
+          ],
+          error: null,
+        },
+      },
+      2,
+    );
+    const repo = createSupabaseGovernanceRepository(client);
+
+    const roster = await repo.listPublicRoster();
+    expect(roster.members.map((member) => member.name)).toEqual(["甲", "乙", "丙"]);
+    expect(roster.lastUpdated).toBe("2026-08-30T00:00:00.000Z");
+    expect((await repo.listAdmin()).map((member) => member.name)).toEqual(["甲", "乙", "丙"]);
   });
 
   test("returns an empty roster with a null lastUpdated when there are no active members", async () => {

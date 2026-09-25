@@ -690,37 +690,79 @@ function buildRecipient(input: {
   } satisfies AdopterNotificationRecipient;
 }
 
+type RecipientReadFilter = { column: string; value: string } | { column: string; values: string[] };
+
+async function readRecipientRows<T>(
+  client: SupabaseClient,
+  table: string,
+  columns: string,
+  filters: RecipientReadFilter[],
+): Promise<T[]> {
+  const rows: T[] = [];
+  let from = 0;
+  let total = 0;
+  do {
+    let query = client.from(table).select(columns, { count: "exact" });
+    for (const filter of filters) {
+      query =
+        "values" in filter
+          ? query.in(filter.column, filter.values)
+          : query.eq(filter.column, filter.value);
+    }
+    const { data, count, error } = await query
+      .order("id", { ascending: true })
+      .range(from, from + 999);
+    if (error) throw error;
+    const batch = (data ?? []) as T[];
+    if (batch.length === 0 && from < (count ?? 0)) {
+      throw new Error("Recipient records were not all returned");
+    }
+    rows.push(...batch);
+    from += batch.length;
+    total = count ?? from;
+  } while (from < total);
+  return rows;
+}
+
+async function readRecipientRowsByIds<T>(
+  client: SupabaseClient,
+  table: string,
+  columns: string,
+  ids: string[],
+): Promise<T[]> {
+  const uniqueIds = unique(ids);
+  const rows: T[] = [];
+  for (let from = 0; from < uniqueIds.length; from += 100) {
+    rows.push(
+      ...(await readRecipientRows<T>(client, table, columns, [
+        { column: "id", values: uniqueIds.slice(from, from + 100) },
+      ])),
+    );
+  }
+  return rows;
+}
+
 async function loadAdoptionCases(client: SupabaseClient, ids: string[]) {
   const rows = new Map<string, AdoptionCaseRow>();
-  const uniqueIds = unique(ids);
-  if (uniqueIds.length === 0) return rows;
-
-  const { data, error } = await client
-    .from("adoption_case")
-    .select("id,supporter_id,applicant_name,applicant_email,applicant_phone")
-    .in("id", uniqueIds);
-  if (error) throw error;
-
-  for (const row of (data ?? []) as AdoptionCaseRow[]) {
-    rows.set(row.id, row);
-  }
+  const cases = await readRecipientRowsByIds<AdoptionCaseRow>(
+    client,
+    "adoption_case",
+    "id,supporter_id,applicant_name,applicant_email,applicant_phone",
+    ids,
+  );
+  for (const row of cases) rows.set(row.id, row);
   return rows;
 }
 
 async function loadSupporters(client: SupabaseClient, ids: string[]) {
   const rows = new Map<string, SupporterRow>();
-  const uniqueIds = unique(ids);
-  if (uniqueIds.length === 0) return rows;
-
-  const { data, error } = await client
-    .from("supporter")
-    .select("id,name,email,phone")
-    .in("id", uniqueIds);
-  if (error) throw error;
-
-  for (const row of (data ?? []) as SupporterRow[]) {
-    rows.set(row.id, row);
-  }
+  const supporters = await readRecipientRowsByIds<SupporterRow>(
+    client,
+    "supporter",
+    "id,name,email,phone",
+    ids,
+  );
+  for (const row of supporters) rows.set(row.id, row);
   return rows;
 }
 
@@ -1205,26 +1247,36 @@ export function createSupabaseContentRepository(client: SupabaseClient): Content
     },
 
     async listNotificationDraftKeys(storyUpdateId) {
-      const { data, error } = await client
-        .from("recipient_notification_draft")
-        .select("channel, recipient_contact")
-        .eq("story_update_id", storyUpdateId);
-      if (error) throw error;
-      return ((data ?? []) as Array<{ channel: string; recipient_contact: string }>).map((row) => ({
+      const rows: Array<{ channel: string; recipient_contact: string }> = [];
+      let from = 0;
+      let total = 0;
+      do {
+        const { data, count, error } = await client
+          .from("recipient_notification_draft")
+          .select("channel, recipient_contact", { count: "exact" })
+          .eq("story_update_id", storyUpdateId)
+          .order("id", { ascending: true })
+          .range(from, from + 999);
+        if (error) throw error;
+        const batch = (data ?? []) as Array<{ channel: string; recipient_contact: string }>;
+        if (batch.length === 0 && from < (count ?? 0)) {
+          throw new Error("Notification draft keys were not all returned");
+        }
+        rows.push(...batch);
+        from += batch.length;
+        total = count ?? from;
+      } while (from < total);
+      return rows.map((row) => ({
         channel: row.channel,
         recipientContact: row.recipient_contact,
       }));
     },
 
     async resolveAdopterRecipients(contentId) {
-      const { data: linkRows, error: linkError } = await client
-        .from("content_link")
-        .select("*")
-        .eq("content_item_id", contentId)
-        .in("linked_type", ["adoption_case", "successful_adoption"]);
-      if (linkError) throw linkError;
-
-      const links = (linkRows ?? []) as ContentLinkRow[];
+      const links = await readRecipientRows<ContentLinkRow>(client, "content_link", "*", [
+        { column: "content_item_id", value: contentId },
+        { column: "linked_type", values: ["adoption_case", "successful_adoption"] },
+      ]);
       const directAdoptionCaseIds = links
         .filter((row) => row.linked_type === "adoption_case")
         .map((row) => row.linked_id);
@@ -1232,15 +1284,12 @@ export function createSupabaseContentRepository(client: SupabaseClient): Content
         .filter((row) => row.linked_type === "successful_adoption")
         .map((row) => row.linked_id);
 
-      let successfulAdoptions: SuccessfulAdoptionRow[] = [];
-      if (successfulAdoptionIds.length > 0) {
-        const { data, error } = await client
-          .from("successful_adoption")
-          .select("id,adoption_case_id,supporter_id")
-          .in("id", unique(successfulAdoptionIds));
-        if (error) throw error;
-        successfulAdoptions = (data ?? []) as SuccessfulAdoptionRow[];
-      }
+      const successfulAdoptions = await readRecipientRowsByIds<SuccessfulAdoptionRow>(
+        client,
+        "successful_adoption",
+        "id,adoption_case_id,supporter_id",
+        successfulAdoptionIds,
+      );
 
       const adoptionCases = await loadAdoptionCases(
         client,
