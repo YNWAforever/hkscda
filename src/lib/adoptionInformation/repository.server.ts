@@ -162,49 +162,51 @@ export function createSupabaseAdoptionInformationRepository(
     return mapped;
   }
 
+  async function readPublishedRows(table: string, columns: string, orderColumns: string[]) {
+    const rows: Row[] = [];
+    let from = 0;
+    while (true) {
+      let query = client.from(table).select(columns, { count: "exact" }).eq("is_published", true);
+      for (const column of orderColumns) {
+        query = query.order(column, { ascending: true });
+      }
+      const { data, error, count } = await query.range(from, from + 999);
+      if (error) throw error;
+      const batch = (data ?? []) as unknown as Row[];
+      if (batch.length === 0) {
+        if (count !== null && count !== undefined && from < count)
+          throw new Error("Published adoption information rows were not returned");
+        break;
+      }
+      rows.push(...batch);
+      from += batch.length;
+      if (count !== null && count !== undefined && from >= count) break;
+    }
+    return rows;
+  }
+
   return {
     usesAtomicAudit: true,
     async listPublic() {
-      const [feeResult, estateResult, ruleResult, careTopicResult] = await Promise.all([
-        client
-          .from("adoption_fees")
-          .select(FEE_COLUMNS)
-          .eq("is_published", true)
-          .order("animal_type", { ascending: true })
-          .order("sort_order", { ascending: true }),
-        client
-          .from("dog_friendly_estates")
-          .select(ESTATE_COLUMNS)
-          .eq("is_published", true)
-          .order("sort_order", { ascending: true })
-          .order("estate_name", { ascending: true }),
-        client
-          .from("adoption_rules")
-          .select(RULE_COLUMNS)
-          .eq("is_published", true)
-          .order("sort_order", { ascending: true }),
-        client
-          .from("care_topics")
-          .select(CARE_TOPIC_COLUMNS)
-          .eq("is_published", true)
-          .order("animal_type", { ascending: true })
-          .order("sort_order", { ascending: true }),
+      const [fees, estates, rules, careTopics] = await Promise.all([
+        readPublishedRows("adoption_fees", FEE_COLUMNS, ["animal_type", "sort_order", "id"]),
+        readPublishedRows("dog_friendly_estates", ESTATE_COLUMNS, [
+          "sort_order",
+          "estate_name",
+          "id",
+        ]),
+        readPublishedRows("adoption_rules", RULE_COLUMNS, ["sort_order", "id"]),
+        readPublishedRows("care_topics", CARE_TOPIC_COLUMNS, ["animal_type", "sort_order", "id"]),
       ]);
-      if (feeResult.error) throw feeResult.error;
-      if (estateResult.error) throw estateResult.error;
-      if (ruleResult.error) throw ruleResult.error;
-      if (careTopicResult.error) throw careTopicResult.error;
       return {
-        fees: ((feeResult.data ?? []) as Row[])
-          .map(mapFee)
-          .filter((row): row is AdoptionFee => row !== null && row.isPublished),
-        estates: ((estateResult.data ?? []) as Row[])
+        fees: fees.map(mapFee).filter((row): row is AdoptionFee => row !== null && row.isPublished),
+        estates: estates
           .map(mapEstate)
           .filter((row): row is DogFriendlyEstate => row !== null && row.isPublished),
-        rules: ((ruleResult.data ?? []) as Row[])
+        rules: rules
           .map(mapRule)
           .filter((row): row is AdoptionRuleContent => row !== null && row.isPublished),
-        careTopics: ((careTopicResult.data ?? []) as Row[])
+        careTopics: careTopics
           .map(mapCareTopic)
           .filter((row): row is CareTopic => row !== null && row.isPublished),
       };
