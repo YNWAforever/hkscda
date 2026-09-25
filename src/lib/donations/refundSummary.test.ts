@@ -29,3 +29,20 @@ test("partial refund summary and export retain immutable gross and report net", 
   ]);
   expect(csv).toContain("300.00,100.00,200.00");
 });
+
+test("awaiting receipt counts donations rather than payment attempts", () => {
+  const donation = {
+    id: "donation-with-retry",
+    receipt_requested: true,
+    status: "succeeded" as const,
+  };
+  const failedAttempt = {
+    amount_cents: 30000,
+    refunded_cents: 0,
+    provider: "stripe" as const,
+    status: "failed" as const,
+    donation,
+  };
+  const paidAttempt = { ...failedAttempt, status: "succeeded" as const };
+  expect(summarizePayments([failedAttempt, paidAttempt], []).awaitingReceipt).toBe(1);
+});

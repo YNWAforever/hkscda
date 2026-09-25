@@ -181,7 +181,12 @@ export function summarizePayments(
   receipts: AdminReceiptRow[],
 ): PaymentsSummary {
   let awaitingReconcile = 0;
-  let awaitingReceipt = 0;
+  const awaitingReceiptDonationIds = new Set<string>();
+  const issuedReceiptDonationIds = new Set(
+    receipts
+      .filter((receipt) => receipt.status === "issued")
+      .flatMap((receipt) => receipt.donation_ids),
+  );
   let confirmedAmountCents = 0;
   for (const payment of payments) {
     if (payment.status === "pending" && MANUAL_PROVIDERS.includes(payment.provider)) {
@@ -190,12 +195,16 @@ export function summarizePayments(
     if (
       payment.donation.status === "succeeded" &&
       payment.donation.receipt_requested &&
-      !findIssuedReceipt(payment.donation.id, receipts)
+      !issuedReceiptDonationIds.has(payment.donation.id)
     ) {
-      awaitingReceipt += 1;
+      awaitingReceiptDonationIds.add(payment.donation.id);
     }
     if (payment.status === "succeeded")
       confirmedAmountCents += payment.amount_cents - (payment.refunded_cents ?? 0);
   }
-  return { awaitingReconcile, awaitingReceipt, confirmedAmountCents };
+  return {
+    awaitingReconcile,
+    awaitingReceipt: awaitingReceiptDonationIds.size,
+    confirmedAmountCents,
+  };
 }
