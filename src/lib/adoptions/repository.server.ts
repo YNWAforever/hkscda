@@ -2173,7 +2173,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
     },
 
     async createManualCase(input) {
-      const { data, error } = await client.schema("private").rpc("create_manual_adoption_case", {
+      const { data, error } = await client.rpc("create_manual_adoption_case", {
         p_actor_user_id: input.actorUserId,
         p_identity: input.identity,
         p_case: input.case,

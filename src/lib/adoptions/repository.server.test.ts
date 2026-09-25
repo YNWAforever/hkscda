@@ -877,7 +877,6 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     expect(calls).toContainEqual({
       table: "rpc",
       method: "create_manual_adoption_case",
-      schema: "private",
       payload: expect.objectContaining({
         p_actor_user_id: createdSupporterId,
       }),

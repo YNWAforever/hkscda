@@ -253,6 +253,20 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("source = 'manual_intake'");
   });
 
+  test("exposes manual adoption intake through a service-role-only public RPC", () => {
+    const sql = readMigration("20260926133000_expose_manual_adoption_case_rpc.sql");
+    expect(sql).toContain("create or replace function public.create_manual_adoption_case(");
+    expect(sql).toContain("private.create_manual_adoption_case(");
+    expect(sql).toContain("set search_path = public, pg_temp");
+    expect(sql).toContain(
+      "revoke all on function public.create_manual_adoption_case(uuid,jsonb,jsonb,jsonb)",
+    );
+    expect(sql).toContain(
+      "grant execute on function public.create_manual_adoption_case(uuid,jsonb,jsonb,jsonb)",
+    );
+    expect(sql).toContain("to service_role");
+  });
+
   test("adds public adoption journey detail tables with private storage and explicit grants", () => {
     const sql = readMigrationBySuffix("_public_adoption_journey_phase_1.sql");
 
