@@ -2207,6 +2207,65 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     expect(detail?.tasks.map((task) => task.id)).toEqual([caseLinkedTaskId, followupId]);
   });
 
+  test("loads task case labels beyond a capped lookup response", async () => {
+    const { repo } = setupRepository({
+      serverRowCap: 2,
+      adopterRows: [adopterRow({ id: existingProfileId })],
+      caseRows: Array.from({ length: 3 }, (_, index) =>
+        caseRow({ id: `linked-case-${index}`, adopter_profile_id: existingProfileId }),
+      ),
+      followupRows: Array.from({ length: 3 }, (_, index) =>
+        followupRow({
+          id: `linked-task-${index}`,
+          adoption_case_id: `linked-case-${index}`,
+          adopter_profile_id: null,
+        }),
+      ),
+      taskCaseRows: Array.from({ length: 3 }, (_, index) =>
+        taskCaseRow({ id: `linked-case-${index}`, applicant_name: `Applicant ${index}` }),
+      ),
+    });
+
+    const detail = await repo.getAdopterDetail(existingProfileId);
+
+    expect(
+      detail?.tasks.find((task) => task.id === "linked-task-2")?.adoptionCase?.applicantName,
+    ).toBe("Applicant 2");
+  });
+
+  test("loads adopter and animal labels beyond a capped task lookup", async () => {
+    const profileIds = [existingProfileId, secondProfileId, unknownProfileId];
+    const { repo } = setupRepository({
+      serverRowCap: 2,
+      adopterRows: profileIds.map((id, index) =>
+        adopterRow({ id, supporter: { name: `Adopter ${index}` } }),
+      ),
+      caseRows: Array.from({ length: 3 }, (_, index) =>
+        caseRow({ id: `link-case-${index}`, adopter_profile_id: existingProfileId }),
+      ),
+      followupRows: Array.from({ length: 3 }, (_, index) =>
+        followupRow({
+          id: `link-task-${index}`,
+          adoption_case_id: `link-case-${index}`,
+          adopter_profile_id: profileIds[index],
+          animal_id: `link-animal-${index}`,
+        }),
+      ),
+      taskCaseRows: Array.from({ length: 3 }, (_, index) =>
+        taskCaseRow({ id: `link-case-${index}` }),
+      ),
+      animalRows: Array.from({ length: 3 }, (_, index) =>
+        animalRow({ id: `link-animal-${index}`, name: `Animal ${index}` }),
+      ),
+    });
+
+    const detail = await repo.getAdopterDetail(existingProfileId);
+    const lastTask = detail?.tasks.find((task) => task.id === "link-task-2");
+
+    expect(lastTask?.adopterProfile?.displayName).toBe("Adopter 2");
+    expect(lastTask?.animal?.name).toBe("Animal 2");
+  });
+
   test("returns adopter detail with cases, successful adoptions, and tasks", async () => {
     const { repo } = setupRepository({
       adopterRows: [adopterRow()],

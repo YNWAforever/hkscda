@@ -379,68 +379,71 @@ function animalName(row: AnimalRow | undefined) {
 }
 
 async function loadStatusesByIds(client: SupabaseClient, ids: string[]) {
-  const uniqueIds = unique(ids);
-  if (uniqueIds.length === 0) return new Map<string, CoordinatorStatus>();
-
-  const { data, error } = await client.from("coordinator_status").select("*").in("id", uniqueIds);
-  if (error) throw error;
-
-  return new Map(((data ?? []) as StatusRow[]).map((row) => [row.id, mapStatus(row)]));
+  const rows = await loadLookupRowsByIds<StatusRow>(ids, async (batch, from, to) => {
+    const { data, error, count } = await client
+      .from("coordinator_status")
+      .select("*", { count: "exact" })
+      .in("id", batch)
+      .order("id", { ascending: true })
+      .range(from, to);
+    return { data: data as StatusRow[] | null, error, count };
+  });
+  return new Map(rows.map((row) => [row.id, mapStatus(row)]));
 }
 
 async function loadAnimalsByIds(client: SupabaseClient, ids: string[]) {
-  const uniqueIds = unique(ids);
-  if (uniqueIds.length === 0) return new Map<string, AnimalRow>();
-
-  const { data, error } = await client
-    .from("animals")
-    .select("id,name,name_en")
-    .in("id", uniqueIds);
-  if (error) throw error;
-
-  return new Map(((data ?? []) as AnimalRow[]).map((row) => [row.id, row]));
+  const rows = await loadLookupRowsByIds<AnimalRow>(ids, async (batch, from, to) => {
+    const { data, error, count } = await client
+      .from("animals")
+      .select("id,name,name_en", { count: "exact" })
+      .in("id", batch)
+      .order("id", { ascending: true })
+      .range(from, to);
+    return { data: data as AnimalRow[] | null, error, count };
+  });
+  return new Map(rows.map((row) => [row.id, row]));
 }
 
 async function loadTaskCasesByIds(client: SupabaseClient, ids: Array<string | null | undefined>) {
-  const uniqueIds = unique(ids);
-  if (uniqueIds.length === 0) return new Map<string, TaskCaseRow>();
-
-  const { data, error } = await client
-    .from("adoption_case")
-    .select("id,applicant_name,animal_type")
-    .in("id", uniqueIds);
-  if (error) throw error;
-
-  return new Map(((data ?? []) as TaskCaseRow[]).map((row) => [row.id, row]));
+  const rows = await loadLookupRowsByIds<TaskCaseRow>(ids, async (batch, from, to) => {
+    const { data, error, count } = await client
+      .from("adoption_case")
+      .select("id,applicant_name,animal_type", { count: "exact" })
+      .in("id", batch)
+      .order("id", { ascending: true })
+      .range(from, to);
+    return { data: data as TaskCaseRow[] | null, error, count };
+  });
+  return new Map(rows.map((row) => [row.id, row]));
 }
 
 async function loadTaskAdoptersByIds(
   client: SupabaseClient,
   ids: Array<string | null | undefined>,
 ) {
-  const uniqueIds = unique(ids);
-  if (uniqueIds.length === 0) return new Map<string, TaskAdopterRow>();
-
-  const { data, error } = await client
-    .from("adopter_profile")
-    .select("id,supporter_id,is_blacklisted,supporter:supporter_id(name)")
-    .in("id", uniqueIds);
-  if (error) throw error;
-
-  return new Map(((data ?? []) as TaskAdopterRow[]).map((row) => [row.id, row]));
+  const rows = await loadLookupRowsByIds<TaskAdopterRow>(ids, async (batch, from, to) => {
+    const { data, error, count } = await client
+      .from("adopter_profile")
+      .select("id,supporter_id,is_blacklisted,supporter:supporter_id(name)", { count: "exact" })
+      .in("id", batch)
+      .order("id", { ascending: true })
+      .range(from, to);
+    return { data: data as TaskAdopterRow[] | null, error, count };
+  });
+  return new Map(rows.map((row) => [row.id, row]));
 }
 
 async function loadTaskAnimalsByIds(client: SupabaseClient, ids: Array<string | null | undefined>) {
-  const uniqueIds = unique(ids);
-  if (uniqueIds.length === 0) return new Map<string, TaskAnimalRow>();
-
-  const { data, error } = await client
-    .from("animals")
-    .select("id,name,name_en,type,status")
-    .in("id", uniqueIds);
-  if (error) throw error;
-
-  return new Map(((data ?? []) as TaskAnimalRow[]).map((row) => [row.id, row]));
+  const rows = await loadLookupRowsByIds<TaskAnimalRow>(ids, async (batch, from, to) => {
+    const { data, error, count } = await client
+      .from("animals")
+      .select("id,name,name_en,type,status", { count: "exact" })
+      .in("id", batch)
+      .order("id", { ascending: true })
+      .range(from, to);
+    return { data: data as TaskAnimalRow[] | null, error, count };
+  });
+  return new Map(rows.map((row) => [row.id, row]));
 }
 
 async function loadTaskLinks(client: SupabaseClient, rows: FollowupRow[]) {
@@ -1282,12 +1285,18 @@ function countOpenTasks(
   return openTaskIds.size;
 }
 
+type PagedRowsResult<T> = {
+  data: T[] | null;
+  error: unknown;
+  count?: number | null;
+};
+
 async function loadAllPagedRows<T>(
-  fetchPage: (from: number, to: number) => Promise<{ data: T[] | null; error: unknown }>,
+  fetchPage: (from: number, to: number) => Promise<PagedRowsResult<T>>,
 ): Promise<T[]> {
   const rows: T[] = [];
   for (;;) {
-    const { data, error } = await fetchPage(
+    const { data, error, count } = await fetchPage(
       rows.length,
       rows.length + ADOPTER_HISTORY_PAGE_SIZE - 1,
     );
@@ -1295,7 +1304,21 @@ async function loadAllPagedRows<T>(
     const page = data ?? [];
     if (page.length === 0) return rows;
     rows.push(...page);
+    if (typeof count === "number" && rows.length >= count) return rows;
   }
+}
+
+async function loadLookupRowsByIds<T>(
+  ids: Array<string | null | undefined>,
+  fetchPage: (batch: string[], from: number, to: number) => Promise<PagedRowsResult<T>>,
+): Promise<T[]> {
+  const uniqueIds = unique(ids);
+  const rows: T[] = [];
+  for (let index = 0; index < uniqueIds.length; index += ADOPTER_HISTORY_PAGE_SIZE) {
+    const batch = uniqueIds.slice(index, index + ADOPTER_HISTORY_PAGE_SIZE);
+    rows.push(...(await loadAllPagedRows((from, to) => fetchPage(batch, from, to))));
+  }
+  return rows;
 }
 
 function mergeFollowupRows(...groups: FollowupRow[][]) {
@@ -1330,14 +1353,14 @@ async function loadFollowupsByColumn(
   if (uniqueIds.length === 0) return [];
 
   return loadAllPagedRows<FollowupRow>(async (from, to) => {
-    const { data, error } = await client
+    const { data, error, count } = await client
       .from("adoption_followup")
-      .select(columns)
+      .select(columns, { count: "exact" })
       .in(column, uniqueIds)
       .order("due_at", { ascending: true })
       .order("id", { ascending: true })
       .range(from, to);
-    return { data: data as FollowupRow[] | null, error };
+    return { data: data as FollowupRow[] | null, error, count };
   });
 }
 
@@ -1517,24 +1540,25 @@ async function listAdopterSummaries(client: SupabaseClient, input: AdopterSearch
 
   const [caseRows, successRows] = await Promise.all([
     loadAllPagedRows<AdoptionCaseRow>(async (pageFrom, pageTo) => {
-      const { data, error } = await client
+      const { data, error, count } = await client
         .from("adoption_case")
         .select(
           "id,status_id,requested_animal_id,animal_type,applicant_name,adopter_profile_id,closed_at,created_at",
+          { count: "exact" },
         )
         .in("adopter_profile_id", adopterIds)
         .order("id", { ascending: true })
         .range(pageFrom, pageTo);
-      return { data: data as AdoptionCaseRow[] | null, error };
+      return { data: data as AdoptionCaseRow[] | null, error, count };
     }),
     loadAllPagedRows<SuccessfulAdoptionRow>(async (pageFrom, pageTo) => {
-      const { data, error } = await client
+      const { data, error, count } = await client
         .from("successful_adoption")
-        .select("id,adopter_profile_id")
+        .select("id,adopter_profile_id", { count: "exact" })
         .in("adopter_profile_id", adopterIds)
         .order("id", { ascending: true })
         .range(pageFrom, pageTo);
-      return { data: data as SuccessfulAdoptionRow[] | null, error };
+      return { data: data as SuccessfulAdoptionRow[] | null, error, count };
     }),
   ]);
   const [statuses, animals, taskRows] = await Promise.all([
@@ -2047,24 +2071,24 @@ export function createSupabaseAdoptionCoordinatorRepository(
 
       const [caseRows, successRows, consentStatuses] = await Promise.all([
         loadAllPagedRows<AdoptionCaseRow>(async (from, to) => {
-          const { data, error } = await client
+          const { data, error, count } = await client
             .from("adoption_case")
-            .select("*")
+            .select("*", { count: "exact" })
             .eq("adopter_profile_id", id)
             .order("created_at", { ascending: false })
             .order("id", { ascending: false })
             .range(from, to);
-          return { data: data as AdoptionCaseRow[] | null, error };
+          return { data: data as AdoptionCaseRow[] | null, error, count };
         }),
         loadAllPagedRows<SuccessfulAdoptionRow>(async (from, to) => {
-          const { data, error } = await client
+          const { data, error, count } = await client
             .from("successful_adoption")
-            .select("*")
+            .select("*", { count: "exact" })
             .eq("adopter_profile_id", id)
             .order("approval_date", { ascending: false })
             .order("id", { ascending: false })
             .range(from, to);
-          return { data: data as SuccessfulAdoptionRow[] | null, error };
+          return { data: data as SuccessfulAdoptionRow[] | null, error, count };
         }),
         loadConsentStatusesForSupporter(client, supporterId),
       ]);
