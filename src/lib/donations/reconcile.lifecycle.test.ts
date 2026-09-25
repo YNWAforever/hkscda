@@ -868,6 +868,48 @@ describe("reconcileProviderPayment success path", () => {
     expect(donationUpdate?.filters).toContainEqual(["eq", "status", "pending"]);
   });
 
+  test("quarantines mismatched or missing provider settlement before crediting", async () => {
+    for (const settlement of [
+      { amountCents: 19999, currency: "HKD" },
+      { amountCents: 20000, currency: "USD" },
+      { amountCents: null, currency: null },
+    ]) {
+      const { client, operations } = createWebhookFake({ payment: pendingPaymentNoReceipt });
+      const result = await reconcileProviderPayment({
+        client: client as never,
+        provider: "stripe",
+        providerRef: "cs_test_123",
+        providerEventId: "evt_provider_settlement",
+        eventType: "checkout.session.completed",
+        payload: {},
+        providerSettlement: settlement,
+      });
+
+      expect(result).toMatchObject({
+        kind: "provider_settlement_mismatch",
+        donationId: "donation-1",
+        paymentId: "payment-1",
+      });
+      expect(operations.some((o) => o.table === "payment" && o.action === "update")).toBe(false);
+      expect(operations.some((o) => o.table === "donation" && o.action === "update")).toBe(false);
+      expect(
+        operations.some(
+          (o) =>
+            o.table === "audit_log" &&
+            (o.payload as { action?: string }).action === "payment.provider_settlement_mismatch",
+        ),
+      ).toBe(true);
+      expect(
+        operations.some(
+          (o) =>
+            o.table === "webhook_event" &&
+            o.action === "update" &&
+            Boolean((o.payload as { processed_at?: string }).processed_at),
+        ),
+      ).toBe(true);
+    }
+  });
+
   test("quarantines an amount mismatch terminally: audits, acknowledges, does not credit", async () => {
     const mismatched: FakePayment = { ...pendingPaymentNoReceipt, amount_cents: 19999 };
     const { client, operations } = createWebhookFake({ payment: mismatched });

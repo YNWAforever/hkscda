@@ -20,6 +20,8 @@ export type ReconcileProviderArgs = {
   // e.g. the provider_ref write failed after checkout — so a genuinely paid
   // donation is reconciled instead of silently dropped.
   fallbackPaymentId?: string;
+  // Signed settlement details supplied by the provider success webhook.
+  providerSettlement?: { amountCents: number | null; currency: string | null };
 };
 
 type ReconcileManualArgs = {
@@ -79,6 +81,7 @@ type ApplyOptions = {
   actorUserId?: string;
   bankReference?: string;
   deps?: ReconcileDeps;
+  providerSettlement?: ReconcileProviderArgs["providerSettlement"];
 };
 
 const WEBHOOK_PROCESSING_LEASE_MS = 5 * 60 * 1000;
@@ -364,6 +367,37 @@ async function applySucceededPayment(
     };
   }
 
+  if (options.providerSettlement) {
+    const { amountCents, currency } = options.providerSettlement;
+    if (
+      typeof amountCents !== "number" ||
+      !Number.isSafeInteger(amountCents) ||
+      amountCents <= 0 ||
+      amountCents !== payment.amount_cents ||
+      currency?.toUpperCase() !== "HKD"
+    ) {
+      const { error: auditError } = await client.from("audit_log").insert({
+        actor_user_id: null,
+        action: "payment.provider_settlement_mismatch",
+        entity: "payment",
+        entity_id: payment.id,
+        detail: {
+          donationId: payment.donation.id,
+          expectedCents: payment.amount_cents,
+          actualCents: amountCents,
+          expectedCurrency: "HKD",
+          actualCurrency: currency,
+        },
+      });
+      if (auditError) throw auditError;
+      return {
+        kind: "provider_settlement_mismatch" as const,
+        donationId: payment.donation.id,
+        paymentId: payment.id,
+      };
+    }
+  }
+
   const plan = buildReconciliationPlan({
     providerEventId: payment.provider_ref ?? payment.id,
     seenProviderEventIds: new Set(),
@@ -531,7 +565,10 @@ export async function reconcileProviderPayment(
   deps: ReconcileDeps = {},
 ) {
   return processProviderWebhook(args, (payment) =>
-    applySucceededPayment(args.client, payment, { deps }),
+    applySucceededPayment(args.client, payment, {
+      deps,
+      providerSettlement: args.providerSettlement,
+    }),
   );
 }
 

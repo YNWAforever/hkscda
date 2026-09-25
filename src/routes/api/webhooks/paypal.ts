@@ -27,6 +27,7 @@ type PayPalWebhook = {
   resource?: {
     id?: string;
     custom_id?: string;
+    amount?: { value?: string; currency_code?: string };
     links?: Array<{ rel: string; href: string }>;
     supplementary_data?: {
       related_ids?: {
@@ -78,6 +79,13 @@ export function getPayPalRefundCaptureId(event: PayPalWebhook) {
   } catch {
     return undefined;
   }
+}
+
+function parsePayPalAmountCents(value: string | undefined): number | null {
+  const match = /^(\d+)(?:\.(\d{1,2}))?$/.exec(value ?? "");
+  if (!match) return null;
+  const cents = Number(match[1]) * 100 + Number((match[2] ?? "").padEnd(2, "0"));
+  return Number.isSafeInteger(cents) ? cents : null;
 }
 
 export async function handleVerifiedPayPalWebhook(
@@ -139,6 +147,10 @@ export async function handleVerifiedPayPalWebhook(
       provider: "paypal",
       providerRef: orderId ?? "",
       fallbackPaymentId,
+      providerSettlement: {
+        amountCents: parsePayPalAmountCents(payload.resource?.amount?.value),
+        currency: payload.resource?.amount?.currency_code ?? null,
+      },
       providerEventId: payload.id,
       eventType: payload.event_type,
       payload,

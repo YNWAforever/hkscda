@@ -135,6 +135,10 @@ export const Route = createFileRoute("/api/webhooks/stripe")({
               ...base,
               providerRef: session.id,
               fallbackPaymentId: session.metadata?.payment_id ?? undefined,
+              providerSettlement: {
+                amountCents: session.amount_total,
+                currency: session.currency,
+              },
             });
             return Response.json({ received: true });
           }
