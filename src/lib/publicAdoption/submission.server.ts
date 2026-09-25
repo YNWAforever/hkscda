@@ -262,6 +262,7 @@ export async function persistPublicAdoptionJourney({
   }
 
   let applicationId: string | null = null;
+  let caseCreationStarted = false;
   const uploadedPaths: string[] = [];
 
   try {
@@ -344,6 +345,9 @@ export async function persistPublicAdoptionJourney({
       "Failed to save adoption intake item",
     ) as { id?: string } | null;
 
+    // The case insert may commit even if its response is lost. Once started,
+    // preserve the application so the route can recover the completed case.
+    caseCreationStarted = true;
     const caseResult = await coordinatorService.createCaseFromPublicApplication({
       publicApplicationId: applicationId,
       input: {
@@ -375,7 +379,9 @@ export async function persistPublicAdoptionJourney({
       expiresAt,
     };
   } catch (error) {
-    await cleanupFailedPersistence({ client, applicationId, uploadedPaths, logger });
+    if (!caseCreationStarted) {
+      await cleanupFailedPersistence({ client, applicationId, uploadedPaths, logger });
+    }
     logger.error("Failed to save public adoption application", error);
     throw new Error("Failed to save adoption application");
   }

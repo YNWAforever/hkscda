@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { hashStatusToken } from "./statusToken.server";
 import {
   cleanupExpiredAdoptionUploads,
+  createSupabaseAdoptionUploadCleanupPort,
   hasCompletedAdoptionApplication,
   validateAdoptionUploadIntent,
   type AdoptionUploadIntent,
@@ -169,6 +170,25 @@ describe("adoption upload intents", () => {
     ).toBe("expired");
   });
 
+  test("asks the guarded cleanup RPC for the committed application outcome", async () => {
+    const calls: Array<{ name: string; args: unknown }> = [];
+    const client = {
+      rpc: async (name: string, args: unknown) => {
+        calls.push({ name, args });
+        return { data: "completed", error: null };
+      },
+    } as never;
+    const port = createSupabaseAdoptionUploadCleanupPort(client);
+
+    expect(await port.resolveExpiredApplication(applicationId)).toBe("completed");
+    expect(calls).toEqual([
+      {
+        name: "cleanup_expired_adoption_application",
+        args: { p_application_id: applicationId },
+      },
+    ]);
+  });
+
   test("removes expired unsubmitted photos, but preserves an existing application", async () => {
     const removed: string[][] = [];
     const deleted: string[] = [];
@@ -181,7 +201,8 @@ describe("adoption upload intents", () => {
           photoPaths: ["bbbbbbbb-cccc-4ddd-8eee-ffffffffffff/home/home.jpg"],
         }),
       ],
-      hasApplication: async (id: string) => id !== applicationId,
+      resolveExpiredApplication: async (id: string) =>
+        id === applicationId ? ("purged" as const) : ("completed" as const),
       removePhotos: async (paths: string[]) => {
         removed.push(paths);
       },
@@ -199,12 +220,55 @@ describe("adoption upload intents", () => {
     expect(marked).toEqual(["bbbbbbbb-cccc-4ddd-8eee-ffffffffffff"]);
   });
 
+  test("purges a stale summary without a coordinator case before removing its photos", async () => {
+    const steps: string[] = [];
+    const result = await cleanupExpiredAdoptionUploads({
+      listExpired: async () => [intent()],
+      resolveExpiredApplication: async () => {
+        steps.push("resolve expired application");
+        return "purged" as const;
+      },
+      removePhotos: async () => {
+        steps.push("remove photos");
+      },
+      deleteIntent: async () => {
+        steps.push("delete intent");
+      },
+      markSubmitted: async () => {
+        steps.push("mark submitted");
+      },
+    });
+
+    expect(result).toEqual({ removed: 1, preserved: 0, failed: 0 });
+    expect(steps).toEqual(["resolve expired application", "remove photos", "delete intent"]);
+  });
+
+  test("defers cleanup while the database outcome is still uncertain", async () => {
+    const steps: string[] = [];
+    const result = await cleanupExpiredAdoptionUploads({
+      listExpired: async () => [intent()],
+      resolveExpiredApplication: async () => "defer" as const,
+      removePhotos: async () => {
+        steps.push("remove photos");
+      },
+      deleteIntent: async () => {
+        steps.push("delete intent");
+      },
+      markSubmitted: async () => {
+        steps.push("mark submitted");
+      },
+    });
+
+    expect(result).toEqual({ removed: 0, preserved: 1, failed: 0 });
+    expect(steps).toEqual([]);
+  });
+
   test("keeps an intent for retry if Storage removal fails", async () => {
     const deleted: string[] = [];
     const result = await cleanupExpiredAdoptionUploads(
       {
         listExpired: async () => [intent()],
-        hasApplication: async () => false,
+        resolveExpiredApplication: async () => "purged" as const,
         removePhotos: async () => {
           throw new Error("storage unavailable");
         },

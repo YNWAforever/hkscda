@@ -578,6 +578,32 @@ describe("persistPublicAdoptionJourney", () => {
     });
   });
 
+  test("preserves application data when the case creation outcome is uncertain", async () => {
+    const { client, state } = createFakeClient();
+
+    await expect(
+      persistPublicAdoptionJourney({
+        client,
+        parsed: parsedSubmission(),
+        coordinatorService: {
+          async createCaseFromPublicApplication() {
+            throw new Error("case committed but response lost");
+          },
+        },
+        now: () => new Date("2026-07-02T00:00:00.000Z"),
+        createStatusTokenPair: () => ({
+          rawToken: "raw-status-token",
+          tokenHash: "hashed-status-token",
+        }),
+        appUrl: "https://example.test",
+        logger: { error() {} },
+      }),
+    ).rejects.toThrow("Failed to save adoption application");
+
+    expect(callsFor(state.calls, "adoption_applications", "delete")).toHaveLength(0);
+    expect(callsFor(state.calls, "public_status_token", "delete")).toHaveLength(0);
+  });
+
   test("does not fail after creating the coordinator case when intake link update fails", async () => {
     const { client, state } = createFakeClient({
       failUpdateTable: "adoption_intake_item",

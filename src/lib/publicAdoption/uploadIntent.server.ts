@@ -91,19 +91,6 @@ export async function loadAdoptionUploadIntent(
   return data ? toIntent(data) : null;
 }
 
-export async function hasPersistedAdoptionApplication(
-  client: SupabaseClient,
-  applicationId: string,
-): Promise<boolean> {
-  const { data, error } = await client
-    .from("adoption_applications")
-    .select("id")
-    .eq("id", applicationId)
-    .maybeSingle();
-  if (error) throw error;
-  return Boolean(data);
-}
-
 /** A summary row is written before the rest of the journey, so it is not proof of completion. */
 export async function hasCompletedAdoptionApplication(
   client: SupabaseClient,
@@ -160,7 +147,7 @@ export async function markAdoptionUploadIntentSubmitted(
 
 export type AdoptionUploadCleanupPort = {
   listExpired(): Promise<AdoptionUploadIntent[]>;
-  hasApplication(applicationId: string): Promise<boolean>;
+  resolveExpiredApplication(applicationId: string): Promise<"completed" | "purged" | "defer">;
   removePhotos(paths: string[]): Promise<void>;
   deleteIntent(applicationId: string): Promise<void>;
   markSubmitted(applicationId: string): Promise<void>;
@@ -173,8 +160,13 @@ export async function cleanupExpiredAdoptionUploads(
   const summary = { removed: 0, preserved: 0, failed: 0 };
   for (const intent of await port.listExpired()) {
     try {
-      if (await port.hasApplication(intent.applicationId)) {
+      const outcome = await port.resolveExpiredApplication(intent.applicationId);
+      if (outcome === "completed") {
         await port.markSubmitted(intent.applicationId);
+        summary.preserved += 1;
+        continue;
+      }
+      if (outcome === "defer") {
         summary.preserved += 1;
         continue;
       }
@@ -209,7 +201,16 @@ export function createSupabaseAdoptionUploadCleanupPort(
       if (error) throw error;
       return ((data ?? []) as UploadIntentRow[]).map(toIntent);
     },
-    hasApplication: (applicationId) => hasPersistedAdoptionApplication(client, applicationId),
+    async resolveExpiredApplication(applicationId) {
+      const { data, error } = await client.rpc("cleanup_expired_adoption_application", {
+        p_application_id: applicationId,
+      });
+      if (error) throw error;
+      if (data !== "completed" && data !== "purged" && data !== "defer") {
+        throw new Error("Invalid expired adoption application cleanup result");
+      }
+      return data;
+    },
     async removePhotos(paths) {
       if (paths.length === 0) return;
       const { error } = await client.storage.from(ADOPTION_PHOTO_BUCKET).remove(paths);
