@@ -89,6 +89,12 @@ describe("animalPhotoDescriptorSchema", () => {
 });
 
 describe("POST /api/admin/animals/photo-upload-url", () => {
+  test("rejects JSON null without throwing or signing an upload", async () => {
+    const h = handlers();
+    const response = await h.createUploadUrl({ request: request(null) });
+    expect(response.status).toBe(400);
+    expect(h.issued).toEqual([]);
+  });
   test("refuses an unauthenticated caller before issuing anything", async () => {
     const h = handlers({
       requireAnimalAdmin: async () => {

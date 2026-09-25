@@ -137,6 +137,42 @@ function createService(overrides: Partial<VolunteerHandlerService> = {}) {
 }
 
 describe("createVolunteerHandlers", () => {
+  test("rejects an oversized public registration before verification or service work", async () => {
+    const service = createService();
+    const handlers = createVolunteerHandlers({
+      requireVolunteerAdmin: async () => admin,
+      service,
+      verifyPublicRegistration: async () => {
+        throw new Error("verification must not run");
+      },
+    });
+    const request = new Request("https://example.test/api/volunteer/registrations", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ padding: "x".repeat(2 * 1024 * 1024) }),
+    });
+    expect(request.headers.has("content-length")).toBe(false);
+    const response = await handlers.submitPublicRegistration({ request });
+    expect(response.status).toBe(413);
+    expect(service.calls).toEqual([]);
+  });
+
+  test("rejects JSON null before public registration verification", async () => {
+    const service = createService();
+    const handlers = createVolunteerHandlers({
+      requireVolunteerAdmin: async () => admin,
+      service,
+      verifyPublicRegistration: async (input) => Boolean(input.turnstileToken),
+    });
+    const response = await handlers.submitPublicRegistration({
+      request: new Request("https://example.test/api/volunteer/registrations", {
+        method: "POST",
+        body: "null",
+      }),
+    });
+    expect(response.status).toBe(400);
+    expect(service.calls).toEqual([]);
+  });
   test("returns public published activities with no-store cache headers", async () => {
     const service = createService();
     const handlers = createVolunteerHandlers({

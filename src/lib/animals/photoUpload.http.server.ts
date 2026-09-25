@@ -1,3 +1,4 @@
+import { RequestBodyTooLargeError, readPublicJson } from "../http/publicJson.server";
 import { ZodError } from "zod";
 
 import {
@@ -48,11 +49,16 @@ export function createAnimalPhotoUploadHandlers(deps: AnimalPhotoUploadDeps) {
 
       let body: unknown;
       try {
-        body = await request.json();
-      } catch {
+        body = await readPublicJson(request);
+      } catch (error) {
+        if (error instanceof RequestBodyTooLargeError)
+          return jsonNoStore({ error: "Request body too large" }, { status: 413 });
         return jsonNoStore({ error: "Invalid JSON body" }, { status: 400 });
       }
 
+      if (!body || typeof body !== "object" || Array.isArray(body)) {
+        return jsonNoStore({ error: "Invalid photo upload request" }, { status: 400 });
+      }
       const payload = body as { animalId?: unknown; photo?: unknown };
       if (typeof payload.animalId !== "string" || !UUID_PATTERN.test(payload.animalId)) {
         // The animal id becomes the first path segment, so it is constrained to
