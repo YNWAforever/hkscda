@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { z } from "zod";
+import { readBoundedFormData } from "../http/boundedFormData.server";
 import { createSupabaseServiceClient, requireAdmin } from "../donations/supabase.server";
 import { requireVerifiedVolunteer } from "../volunteers/policy/booking.repository.server";
 const metadata = z
@@ -12,38 +13,7 @@ const metadata = z
 const MAX_MULTIPART_BYTES = 11 * 1024 * 1024;
 
 export async function readBoundedInternshipFormData(request: Request): Promise<FormData | null> {
-  const declaredLength = Number(request.headers.get("content-length"));
-  if (Number.isFinite(declaredLength) && declaredLength > MAX_MULTIPART_BYTES) return null;
-  if (!request.body) return request.formData();
-
-  const reader = request.body.getReader();
-  const chunks: Uint8Array[] = [];
-  let total = 0;
-  try {
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      total += value.byteLength;
-      if (total > MAX_MULTIPART_BYTES) {
-        await reader.cancel().catch(() => undefined);
-        return null;
-      }
-      chunks.push(value);
-    }
-  } finally {
-    reader.releaseLock();
-  }
-
-  const bytes = new Uint8Array(total);
-  let offset = 0;
-  for (const chunk of chunks) {
-    bytes.set(chunk, offset);
-    offset += chunk.byteLength;
-  }
-  const contentType = request.headers.get("content-type");
-  return new Response(bytes, {
-    headers: contentType ? { "content-type": contentType } : undefined,
-  }).formData();
+  return readBoundedFormData(request, MAX_MULTIPART_BYTES);
 }
 export async function internshipAttachment(request: Request) {
   const client = createSupabaseServiceClient();

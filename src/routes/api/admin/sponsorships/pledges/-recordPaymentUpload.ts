@@ -2,7 +2,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
 import { safeFileName as sanitizeFileName } from "../../../../../lib/publicUploads/signedUpload.server";
-import { validateProofDescriptor } from "../../../../../lib/sponsorship/schemas";
+import { MAX_PROOF_BYTES, validateProofDescriptor } from "../../../../../lib/sponsorship/schemas";
+import { readBoundedFormData } from "../../../../../lib/http/boundedFormData.server";
 import { SPONSORSHIP_PROOF_BUCKET } from "../../../../../lib/sponsorship/submission.server";
 import { jsonResponse, withErrors } from "../../../../../lib/sponsorshipAdmin/http.server";
 import type { AdminUser } from "../../../../../lib/donations/supabase.server";
@@ -53,7 +54,10 @@ export async function handleRecordPaymentUpload({
     try {
       const admin = await requireCoordinator(request);
 
-      const formData = await request.formData();
+      const formData = await readBoundedFormData(request, MAX_PROOF_BYTES + 1024 * 1024);
+      if (!formData) {
+        return jsonResponse({ error: "Payment upload too large" }, { status: 413 });
+      }
       const payloadValue = formData.get("payload");
       if (typeof payloadValue !== "string") {
         return jsonResponse({ error: "Missing payment payload" }, { status: 400 });

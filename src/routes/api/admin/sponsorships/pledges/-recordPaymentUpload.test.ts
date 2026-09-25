@@ -83,6 +83,31 @@ describe("safeFileName", () => {
 });
 
 describe("handleRecordPaymentUpload", () => {
+  test("rejects an oversized multipart body without Content-Length before recording", async () => {
+    const service = createService();
+    const { client, upload } = createClient();
+    const formData = new FormData();
+    formData.set(
+      "payload",
+      JSON.stringify({ idempotencyKey: "55555555-5555-4555-8555-555555555555" }),
+    );
+    formData.set("padding", "x".repeat(10 * 1024 * 1024));
+    const request = new Request("http://localhost/x", { method: "POST", body: formData });
+    expect(request.headers.has("content-length")).toBe(false);
+
+    const response = await handleRecordPaymentUpload({
+      request,
+      pledgeId,
+      client: client as never,
+      service: service as never,
+      requireCoordinator: requireCoordinator(),
+    });
+
+    expect(response.status).toBe(413);
+    expect(service.recordPayment).not.toHaveBeenCalled();
+    expect(upload).not.toHaveBeenCalled();
+  });
+
   test("returns 400 when the payload part is missing", async () => {
     const service = createService();
     const { client } = createClient();
