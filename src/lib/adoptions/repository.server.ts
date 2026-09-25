@@ -1520,6 +1520,7 @@ async function listAdopterSummaries(client: SupabaseClient, input: AdopterSearch
       { count: "exact" },
     )
     .order("created_at", { ascending: false })
+    .order("id", { ascending: false })
     .range(from, from + input.pageSize - 1);
 
   if (input.blacklisted === "yes") query = query.eq("is_blacklisted", true);
@@ -1635,6 +1636,7 @@ async function listCoordinatorTasks(client: SupabaseClient, input: TaskListSearc
     .select(taskSelectColumns, { count: "exact" })
     .order("due_at", { ascending: true })
     .order("created_at", { ascending: false })
+    .order("id", { ascending: false })
     .range(from, from + input.pageSize - 1);
 
   if (input.statusId) query = query.eq("status_id", input.statusId);
@@ -1793,6 +1795,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
         .from("animals")
         .select(animalPipelineAnimalColumns, { count: "exact" })
         .order("updated_at", { ascending: false })
+        .order("id", { ascending: false })
         .range(from, from + input.pageSize - 1);
 
       if (input.status !== "all") animalQuery = animalQuery.eq("status", input.status);
