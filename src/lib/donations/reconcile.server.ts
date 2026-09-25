@@ -146,7 +146,7 @@ async function reserveWebhookEvent(args: ReconcileProviderArgs) {
 }
 
 async function markWebhookEventProcessed(args: ReconcileProviderArgs, processingOwner: string) {
-  const { error } = await args.client
+  const { data, error } = await args.client
     .from("webhook_event")
     .update({
       processed_at: new Date().toISOString(),
@@ -157,9 +157,12 @@ async function markWebhookEventProcessed(args: ReconcileProviderArgs, processing
     .eq("provider", args.provider)
     .eq("provider_event_id", args.providerEventId)
     .eq("processing_owner", processingOwner)
-    .is("processed_at", null);
+    .is("processed_at", null)
+    .select("id")
+    .maybeSingle();
 
   if (error) throw error;
+  if (!data) throw new WebhookEventInProgressError();
 }
 
 async function releaseWebhookEventReservation(
@@ -609,21 +612,44 @@ export async function failProviderPayment(args: ReconcileProviderArgs) {
   return processProviderWebhook(
     args,
     async (payment) => {
-      const { error: paymentError } = await args.client
-        .from("payment")
-        .update({ status: "failed" })
-        .eq("id", payment.id)
-        .eq("status", "pending");
-      if (paymentError) throw paymentError;
+      const { data, error } = await args.client.rpc("fail_pending_provider_payment", {
+        p_payment_id: payment.id,
+        p_donation_id: payment.donation.id,
+      });
+      if (error) throw error;
 
-      const { error: donationError } = await args.client
-        .from("donation")
-        .update({ status: "failed" })
-        .eq("id", payment.donation.id)
-        .eq("status", "pending");
-      if (donationError) throw donationError;
-
-      return { kind: "failed" as const, donationId: payment.donation.id };
+      const outcome = data as {
+        kind?: string;
+        payment_status?: string;
+        donation_status?: string;
+      } | null;
+      if (outcome?.kind === "failed" || outcome?.kind === "already_failed") {
+        return { kind: "failed" as const, donationId: payment.donation.id };
+      }
+      if (outcome?.kind === "state_conflict" || outcome?.kind === "not_found") {
+        const { error: auditError } = await args.client.from("audit_log").insert({
+          actor_user_id: null,
+          action: "payment.denial_state_conflict",
+          entity: "payment",
+          entity_id: payment.id,
+          detail: {
+            provider: args.provider,
+            providerEventId: args.providerEventId,
+            donationId: payment.donation.id,
+            reason: outcome.kind,
+            paymentStatus: outcome.payment_status ?? null,
+            donationStatus: outcome.donation_status ?? null,
+          },
+        });
+        if (auditError) throw auditError;
+        return {
+          kind: "manual_review" as const,
+          reason: outcome.kind,
+          donationId: payment.donation.id,
+          paymentId: payment.id,
+        };
+      }
+      throw new Error("Provider denial transition returned an invalid result");
     },
     () => auditUnmatchedFinancialEvent(args, "payment.denial_unreconciled"),
   );

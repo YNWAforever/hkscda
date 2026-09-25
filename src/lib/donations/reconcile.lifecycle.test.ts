@@ -330,6 +330,10 @@ function createWebhookFake({
         return Promise.resolve(readSingle(table, filters));
       },
       maybeSingle() {
+        if (table === "webhook_event" && mode === "update") {
+          operations.push({ table, action: mode, payload, filters });
+          return Promise.resolve({ data: { id: "webhook-event" }, error: null });
+        }
         if (mode === "update" && (payload as { status?: string })?.status === "refunded") {
           operations.push({ table, action: mode, payload, filters });
           return Promise.resolve({
@@ -374,6 +378,24 @@ function createWebhookFake({
   }
 
   const client = {
+    rpc(fn: string, args: Record<string, unknown>) {
+      operations.push({ table: fn, action: "rpc", payload: args, filters: [] });
+      if (fn !== "fail_pending_provider_payment")
+        return Promise.resolve({ data: null, error: new Error("Unexpected RPC") });
+      if (!payment) return Promise.resolve({ data: { kind: "not_found" }, error: null });
+      const statuses = [payment.status, payment.donation.status];
+      const compatible = statuses.every((status) => status === "pending" || status === "failed");
+      return Promise.resolve({
+        data: compatible
+          ? { kind: statuses.every((status) => status === "failed") ? "already_failed" : "failed" }
+          : {
+              kind: "state_conflict",
+              payment_status: payment.status,
+              donation_status: payment.donation.status,
+            },
+        error: null,
+      });
+    },
     storage: {
       from() {
         return {
@@ -450,11 +472,35 @@ describe("failProviderPayment", () => {
     });
 
     expect(result).toEqual({ kind: "failed", donationId: "donation-1" });
-    expect(statusUpdate(operations, "payment")?.status).toBe("failed");
-    expect(statusUpdate(operations, "donation")?.status).toBe("failed");
+    expect(operations.find((operation) => operation.action === "rpc")?.payload).toEqual({
+      p_payment_id: "payment-1",
+      p_donation_id: "donation-1",
+    });
+    expect(statusUpdate(operations, "payment")).toBeUndefined();
+    expect(statusUpdate(operations, "donation")).toBeUndefined();
+  });
+  test("a late denial cannot fail a donation after its payment succeeded", async () => {
+    const payment = {
+      ...basePayment,
+      status: "succeeded",
+      donation: { ...basePayment.donation, status: "pending" },
+    };
+    const { client, operations } = createWebhookFake({ payment });
 
-    const paymentUpdate = operations.find((o) => o.table === "payment" && o.action === "update");
-    expect(paymentUpdate?.filters).toContainEqual(["eq", "status", "pending"]);
+    const result = await failProviderPayment({
+      client: client as never,
+      provider: "stripe",
+      providerRef: "cs_test_123",
+      providerEventId: "evt_late_denial",
+      eventType: "checkout.session.async_payment_failed",
+      payload: {},
+    });
+
+    expect(result).toMatchObject({ kind: "manual_review" });
+    expect(statusUpdate(operations, "donation")).toBeUndefined();
+    expect(operations.find((operation) => operation.table === "audit_log")?.payload).toMatchObject({
+      action: "payment.denial_state_conflict",
+    });
   });
 });
 
