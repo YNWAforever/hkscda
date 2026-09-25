@@ -2099,64 +2099,21 @@ export function createSupabaseAdoptionCoordinatorRepository(
     },
 
     async searchManualCaseIdentity(input) {
-      const like = input.q ? `%${sanitizeOrLikeValue(input.q)}%` : "%";
-      const from = (input.page - 1) * input.pageSize;
-      const [adopterResult, supporterResult] = await Promise.all([
-        client
-          .from("adopter_profile")
-          .select("id,supporter_id,is_blacklisted,supporter:supporter_id(id,name,email,phone)")
-          .or(`name_english.ilike.${like},name_chinese.ilike.${like},address.ilike.${like}`)
-          .range(from, from + input.pageSize - 1),
-        client
-          .from("supporter")
-          .select("id,name,email,phone")
-          .or(`name.ilike.${like},email.ilike.${like},phone.ilike.${like}`)
-          .is("deleted_at", null)
-          .range(from, from + input.pageSize - 1),
-      ]);
-      if (adopterResult.error) throw adopterResult.error;
-      if (supporterResult.error) throw supporterResult.error;
-
-      const adopterCandidates = ((adopterResult.data ?? []) as Record<string, unknown>[]).map(
-        (row): ManualCaseIdentityCandidate => {
-          const supporter = adopterSupporter(row);
-          return {
-            kind: "adopter",
-            supporterId: supporter?.id ?? (row.supporter_id as string | null) ?? null,
-            adopterProfileId: row.id as string,
-            displayName: adopterDisplayName(row),
-            email: supporter?.email ?? null,
-            phone: supporter?.phone ?? null,
-            isBlacklisted: Boolean(row.is_blacklisted),
-            latestCaseAt: null,
-          };
-        },
-      );
-
-      const usedSupporterIds = new Set(
-        adopterCandidates
-          .map((candidate) => candidate.supporterId)
-          .filter((id): id is string => Boolean(id)),
-      );
-      const supporterCandidates = ((supporterResult.data ?? []) as Record<string, unknown>[])
-        .filter((row) => !usedSupporterIds.has(row.id as string))
-        .map(
-          (row): ManualCaseIdentityCandidate => ({
-            kind: "supporter",
-            supporterId: row.id as string,
-            adopterProfileId: null,
-            displayName: (row.name as string | null) ?? (row.id as string),
-            email: (row.email as string | null) ?? null,
-            phone: (row.phone as string | null) ?? null,
-            isBlacklisted: false,
-            latestCaseAt: null,
-          }),
-        );
-
-      return {
-        candidates: [...adopterCandidates, ...supporterCandidates],
-        total: adopterCandidates.length + supporterCandidates.length,
-      };
+      const { data, error } = await client.rpc("search_manual_case_identity", {
+        p_query: input.q ?? "",
+        p_page: input.page,
+        p_page_size: input.pageSize,
+      });
+      if (error) throw error;
+      if (
+        !data ||
+        typeof data !== "object" ||
+        !Array.isArray(data.candidates) ||
+        typeof data.total !== "number"
+      ) {
+        throw new Error("Invalid manual case identity search result");
+      }
+      return data as { candidates: ManualCaseIdentityCandidate[]; total: number };
     },
 
     async createManualCase(input) {

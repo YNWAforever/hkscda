@@ -807,38 +807,35 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     });
   });
 
-  test("searches manual intake identity candidates across adopters and supporters", async () => {
+  test("returns a globally paged identity result with an exact total", async () => {
+    const candidate = {
+      kind: "adopter" as const,
+      supporterId: existingSupporterId,
+      adopterProfileId: existingProfileId,
+      displayName: "Ada",
+      email: "ada@example.test",
+      phone: "61234567",
+      isBlacklisted: true,
+      latestCaseAt: null,
+    };
     const { repo, calls } = setupRepository({
-      adopterRows: [
-        adopterRow({
-          supporter: {
-            id: existingSupporterId,
-            name: "Ada",
-            email: "ada@example.test",
-            phone: "61234567",
-          },
-        }),
-      ],
-      supporterRows: [
-        { id: secondSupporterId, name: "Ben", email: "ben@example.test", phone: "69876543" },
-      ],
+      rpcResult: { candidates: [candidate], total: 21 },
     });
 
     const result = await repo.searchManualCaseIdentity({
-      q: "Ada",
-      page: 1,
+      q: "ada@example.test",
+      page: 2,
       pageSize: 10,
     });
 
-    expect(result.candidates).toEqual([
-      expect.objectContaining({
-        kind: "adopter",
-        adopterProfileId: existingProfileId,
-        displayName: "Ada",
-      }),
+    expect(result).toEqual({ candidates: [candidate], total: 21 });
+    expect(callsFor(calls, "rpc", "search_manual_case_identity")).toEqual([
+      {
+        table: "rpc",
+        method: "search_manual_case_identity",
+        payload: { p_query: "ada@example.test", p_page: 2, p_page_size: 10 },
+      },
     ]);
-    expect(callsFor(calls, "adopter_profile", "or")).toHaveLength(1);
-    expect(callsFor(calls, "supporter", "or")).toHaveLength(1);
   });
 
   test("creates manual cases through the transactional RPC", async () => {
