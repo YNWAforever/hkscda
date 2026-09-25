@@ -383,6 +383,24 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("auth.uid()");
   });
 
+  test("archives animals only through an atomic service-role audit mutation", () => {
+    const grants = readMigration("20260913071632_animal_public_column_boundary.sql");
+    const sql = readMigrationBySuffix("_animal_archive_atomic_audit.sql");
+
+    expect(grants).toContain("revoke insert,update,delete on public.animals from authenticated");
+    expect(sql).toContain("create or replace function public.set_animal_archived_with_audit(");
+    expect(sql).toContain("security invoker");
+    expect(sql).toContain("set search_path = ''");
+    expect(sql).toContain("for update");
+    expect(sql).toContain("update public.animals");
+    expect(sql).toContain("insert into public.audit_log");
+    expect(sql).toContain(
+      "revoke all on function public.set_animal_archived_with_audit(uuid, uuid, boolean) from public, anon, authenticated",
+    );
+    expect(sql).toContain(
+      "grant execute on function public.set_animal_archived_with_audit(uuid, uuid, boolean) to service_role",
+    );
+  });
   test("skips service-role writes, since those routes already audit themselves", () => {
     const sql = readMigrationBySuffix("_audit_animal_mutations.sql");
 

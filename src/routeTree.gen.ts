@@ -200,6 +200,7 @@ import { Route as ApiAdminContentIdMediaRouteImport } from './routes/api/admin/c
 import { Route as ApiAdminContentIdLinksRouteImport } from './routes/api/admin/content/$id/links'
 import { Route as ApiAdminContentIdArchiveRouteImport } from './routes/api/admin/content/$id/archive'
 import { Route as ApiAdminAnnualReportsIdPublishRouteImport } from './routes/api/admin/annual-reports/$id/publish'
+import { Route as ApiAdminAnimalsIdArchiveRouteImport } from './routes/api/admin/animals/$id/archive'
 import { Route as ApiAdminAdoptionsTasksIdRouteImport } from './routes/api/admin/adoptions/tasks/$id'
 import { Route as ApiAdminAdoptionsStatusesIdRouteImport } from './routes/api/admin/adoptions/statuses/$id'
 import { Route as ApiAdminAdoptionsReportsSummaryRouteImport } from './routes/api/admin/adoptions/reports/summary'
@@ -1273,6 +1274,12 @@ const ApiAdminAnnualReportsIdPublishRoute =
     path: '/publish',
     getParentRoute: () => ApiAdminAnnualReportsIdRoute,
   } as any)
+const ApiAdminAnimalsIdArchiveRoute =
+  ApiAdminAnimalsIdArchiveRouteImport.update({
+    id: '/api/admin/animals/$id/archive',
+    path: '/api/admin/animals/$id/archive',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdminAdoptionsTasksIdRoute =
   ApiAdminAdoptionsTasksIdRouteImport.update({
     id: '/$id',
@@ -1716,6 +1723,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/adoptions/reports/summary': typeof ApiAdminAdoptionsReportsSummaryRoute
   '/api/admin/adoptions/statuses/$id': typeof ApiAdminAdoptionsStatusesIdRoute
   '/api/admin/adoptions/tasks/$id': typeof ApiAdminAdoptionsTasksIdRoute
+  '/api/admin/animals/$id/archive': typeof ApiAdminAnimalsIdArchiveRoute
   '/api/admin/annual-reports/$id/publish': typeof ApiAdminAnnualReportsIdPublishRoute
   '/api/admin/content/$id/archive': typeof ApiAdminContentIdArchiveRoute
   '/api/admin/content/$id/links': typeof ApiAdminContentIdLinksRoute
@@ -1952,6 +1960,7 @@ export interface FileRoutesByTo {
   '/api/admin/adoptions/reports/summary': typeof ApiAdminAdoptionsReportsSummaryRoute
   '/api/admin/adoptions/statuses/$id': typeof ApiAdminAdoptionsStatusesIdRoute
   '/api/admin/adoptions/tasks/$id': typeof ApiAdminAdoptionsTasksIdRoute
+  '/api/admin/animals/$id/archive': typeof ApiAdminAnimalsIdArchiveRoute
   '/api/admin/annual-reports/$id/publish': typeof ApiAdminAnnualReportsIdPublishRoute
   '/api/admin/content/$id/archive': typeof ApiAdminContentIdArchiveRoute
   '/api/admin/content/$id/links': typeof ApiAdminContentIdLinksRoute
@@ -2190,6 +2199,7 @@ export interface FileRoutesById {
   '/api/admin/adoptions/reports/summary': typeof ApiAdminAdoptionsReportsSummaryRoute
   '/api/admin/adoptions/statuses/$id': typeof ApiAdminAdoptionsStatusesIdRoute
   '/api/admin/adoptions/tasks/$id': typeof ApiAdminAdoptionsTasksIdRoute
+  '/api/admin/animals/$id/archive': typeof ApiAdminAnimalsIdArchiveRoute
   '/api/admin/annual-reports/$id/publish': typeof ApiAdminAnnualReportsIdPublishRoute
   '/api/admin/content/$id/archive': typeof ApiAdminContentIdArchiveRoute
   '/api/admin/content/$id/links': typeof ApiAdminContentIdLinksRoute
@@ -2429,6 +2439,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/reports/summary'
     | '/api/admin/adoptions/statuses/$id'
     | '/api/admin/adoptions/tasks/$id'
+    | '/api/admin/animals/$id/archive'
     | '/api/admin/annual-reports/$id/publish'
     | '/api/admin/content/$id/archive'
     | '/api/admin/content/$id/links'
@@ -2665,6 +2676,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/reports/summary'
     | '/api/admin/adoptions/statuses/$id'
     | '/api/admin/adoptions/tasks/$id'
+    | '/api/admin/animals/$id/archive'
     | '/api/admin/annual-reports/$id/publish'
     | '/api/admin/content/$id/archive'
     | '/api/admin/content/$id/links'
@@ -2902,6 +2914,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/reports/summary'
     | '/api/admin/adoptions/statuses/$id'
     | '/api/admin/adoptions/tasks/$id'
+    | '/api/admin/animals/$id/archive'
     | '/api/admin/annual-reports/$id/publish'
     | '/api/admin/content/$id/archive'
     | '/api/admin/content/$id/links'
@@ -3087,6 +3100,7 @@ export interface RootRouteChildren {
   ApiAdminAdoptionsIntakeItemsRoute: typeof ApiAdminAdoptionsIntakeItemsRoute
   ApiAdminAdoptionsReportsExportsRoute: typeof ApiAdminAdoptionsReportsExportsRouteWithChildren
   ApiAdminAdoptionsReportsSummaryRoute: typeof ApiAdminAdoptionsReportsSummaryRoute
+  ApiAdminAnimalsIdArchiveRoute: typeof ApiAdminAnimalsIdArchiveRoute
   ApiAdminAnimalsDraftPhotoUploadUrlIndexRoute: typeof ApiAdminAnimalsDraftPhotoUploadUrlIndexRoute
   ApiAdminAnimalsPublicationIndexRoute: typeof ApiAdminAnimalsPublicationIndexRoute
   ApiAdminVolunteersAssessmentsIndexRoute: typeof ApiAdminVolunteersAssessmentsIndexRoute
@@ -4442,6 +4456,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminAnnualReportsIdPublishRouteImport
       parentRoute: typeof ApiAdminAnnualReportsIdRoute
     }
+    '/api/admin/animals/$id/archive': {
+      id: '/api/admin/animals/$id/archive'
+      path: '/api/admin/animals/$id/archive'
+      fullPath: '/api/admin/animals/$id/archive'
+      preLoaderRoute: typeof ApiAdminAnimalsIdArchiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/adoptions/tasks/$id': {
       id: '/api/admin/adoptions/tasks/$id'
       path: '/$id'
@@ -5569,6 +5590,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminAdoptionsReportsExportsRoute:
     ApiAdminAdoptionsReportsExportsRouteWithChildren,
   ApiAdminAdoptionsReportsSummaryRoute: ApiAdminAdoptionsReportsSummaryRoute,
+  ApiAdminAnimalsIdArchiveRoute: ApiAdminAnimalsIdArchiveRoute,
   ApiAdminAnimalsDraftPhotoUploadUrlIndexRoute:
     ApiAdminAnimalsDraftPhotoUploadUrlIndexRoute,
   ApiAdminAnimalsPublicationIndexRoute: ApiAdminAnimalsPublicationIndexRoute,
