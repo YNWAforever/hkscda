@@ -1492,6 +1492,7 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
 
   test("rejects oversized adopter candidate filters before building a large in query", async () => {
     const { repo, calls } = setupRepository({
+      serverRowCap: 1000,
       caseRows: Array.from({ length: 1001 }, (_, index) =>
         caseRow({
           id: `case-${index}`,
@@ -1521,6 +1522,7 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
 
   test("rejects broad supporter identity searches before building a large supporter id query", async () => {
     const { repo, calls } = setupRepository({
+      serverRowCap: 1000,
       supporterRows: Array.from({ length: 1001 }, (_, index) => ({
         id: `supporter-${index}`,
         name: `Ada ${index}`,
@@ -1550,6 +1552,7 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
 
   test("rejects broad case-linked task filters before building a large case id query", async () => {
     const { repo, calls } = setupRepository({
+      serverRowCap: 1000,
       followupRows: Array.from({ length: 1001 }, (_, index) =>
         followupRow({
           id: `task-${index}`,

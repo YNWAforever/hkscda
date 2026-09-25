@@ -1351,15 +1351,17 @@ async function searchAdopterIds(client: SupabaseClient, q: string) {
   const [profileResult, supporterResult] = await Promise.all([
     client
       .from("adopter_profile")
-      .select("id")
+      .select("id", { count: "exact" })
       .or(`name_english.ilike.${like},name_chinese.ilike.${like},address.ilike.${like}`),
     client
       .from("supporter")
-      .select("id")
+      .select("id", { count: "exact" })
       .or(`name.ilike.${like},email.ilike.${like},phone.ilike.${like}`),
   ]);
   if (profileResult.error) throw profileResult.error;
   if (supporterResult.error) throw supporterResult.error;
+  assertAdopterCandidateSourceCount(profileResult.count);
+  assertAdopterCandidateSourceCount(supporterResult.count);
 
   const profileIds = (profileResult.data ?? []).map((row) => (row as { id: string }).id);
   const supporterIds = unique(
@@ -1378,21 +1380,23 @@ async function searchAdopterIds(client: SupabaseClient, q: string) {
 }
 
 async function loadOpenCaseAdopterIds(client: SupabaseClient) {
-  const { data, error } = await client
+  const { data, error, count } = await client
     .from("adoption_case")
-    .select("adopter_profile_id")
+    .select("adopter_profile_id", { count: "exact" })
     .is("closed_at", null);
   if (error) throw error;
+  assertAdopterCandidateSourceCount(count);
 
   return unique((data ?? []).map((row) => (row as AdoptionCaseRow).adopter_profile_id));
 }
 
 async function loadOpenTaskAdopterIds(client: SupabaseClient) {
-  const { data, error } = await client
+  const { data, error, count } = await client
     .from("adoption_followup")
-    .select("id,adopter_profile_id,adoption_case_id")
+    .select("id,adopter_profile_id,adoption_case_id", { count: "exact" })
     .is("completed_at", null);
   if (error) throw error;
+  assertAdopterCandidateSourceCount(count);
 
   const taskRows = (data ?? []) as unknown as FollowupRow[];
   const caseIds = unique(taskRows.map((row) => row.adoption_case_id));
@@ -1449,6 +1453,12 @@ function assertAdopterCandidateIdLimit(candidateIds: Set<string> | null) {
 
 function assertAdopterCandidateIdArrayLimit(candidateIds: string[]) {
   if (candidateIds.length > ADOPTER_CANDIDATE_ID_LIMIT) {
+    throw new Error(ADOPTER_FILTER_TOO_BROAD_ERROR);
+  }
+}
+
+function assertAdopterCandidateSourceCount(count: number | null) {
+  if (count === null || count > ADOPTER_CANDIDATE_ID_LIMIT) {
     throw new Error(ADOPTER_FILTER_TOO_BROAD_ERROR);
   }
 }
