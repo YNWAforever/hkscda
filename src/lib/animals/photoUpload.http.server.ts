@@ -15,6 +15,7 @@ export type SignedAnimalPhotoUpload = {
 };
 
 export type AnimalPhotoUploadDeps = {
+  bucket?: string;
   /** Rejects the request unless the caller is an authorised admin. */
   requireAnimalAdmin: (request: Request) => Promise<unknown>;
   /** Issues a signed upload URL for exactly this object path. */
@@ -35,6 +36,7 @@ function jsonNoStore(body: unknown, init: ResponseInit = {}) {
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export function createAnimalPhotoUploadHandlers(deps: AnimalPhotoUploadDeps) {
+  const bucket = deps.bucket ?? ANIMAL_IMAGE_BUCKET;
   const newVersion = deps.newVersion ?? (() => crypto.randomUUID());
 
   return {
@@ -89,9 +91,9 @@ export function createAnimalPhotoUploadHandlers(deps: AnimalPhotoUploadDeps) {
         fileName: descriptor.fileName,
       });
 
-      const upload = await deps.createSignedUpload(ANIMAL_IMAGE_BUCKET, path);
+      const upload = await deps.createSignedUpload(bucket, path);
       return jsonNoStore({
-        bucket: ANIMAL_IMAGE_BUCKET,
+        bucket,
         path: upload.path,
         signedUrl: upload.signedUrl,
         token: upload.token,

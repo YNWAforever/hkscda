@@ -175,4 +175,22 @@ describe("POST /api/admin/animals/photo-upload-url", () => {
     expect(response.status).toBe(400);
     expect(h.issued).toEqual([]);
   });
+  test("reports the same draft bucket used to sign the upload", async () => {
+    const issuedBuckets: string[] = [];
+    const h = handlers({
+      bucket: "animal-draft-images",
+      createSignedUpload: async (bucket, path) => {
+        issuedBuckets.push(bucket);
+        return { path, signedUrl: "https://storage.test/upload", token: "tok" };
+      },
+    });
+    const response = await h.createUploadUrl({
+      request: request({
+        animalId,
+        photo: { fileName: "cici.jpg", mimeType: "image/jpeg", sizeBytes: 2048 },
+      }),
+    });
+    expect(issuedBuckets).toEqual(["animal-draft-images"]);
+    await expect(response.json()).resolves.toMatchObject({ bucket: "animal-draft-images" });
+  });
 });

@@ -10,11 +10,10 @@ export const Route = createFileRoute("/api/admin/animals/draft-photo-upload-url/
       POST: async ({ request }) => {
         const c = createSupabaseServiceClient();
         const h = createAnimalPhotoUploadHandlers({
+          bucket: "animal-draft-images",
           requireAnimalAdmin: (r) => requireAdmin(r, ["staff", "admin"], c),
-          async createSignedUpload(_bucket, path) {
-            const { data, error } = await c.storage
-              .from("animal-draft-images")
-              .createSignedUploadUrl(path);
+          async createSignedUpload(bucket, path) {
+            const { data, error } = await c.storage.from(bucket).createSignedUploadUrl(path);
             if (error) throw error;
             return { ...data, path: data.path };
           },
