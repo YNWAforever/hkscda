@@ -50,6 +50,14 @@ export class AdoptionInstructionConflictError extends AdoptionInstructionError {
   }
 }
 
+export class AdoptionInstructionSchemaUnavailableError extends AdoptionInstructionError {
+  name = "AdoptionInstructionSchemaUnavailableError";
+
+  constructor() {
+    super("internal", 500);
+  }
+}
+
 export type AdoptionInstructionAdminPage = {
   page: AdoptionInstructionPageState;
   published: AdoptionInstructionRevision | null;
@@ -239,7 +247,12 @@ export function createSupabaseAdoptionInstructionRepository(
         .eq("page_key", ADOPTION_INSTRUCTIONS_PAGE_KEY)
         .eq("state", "published")
         .maybeSingle();
-      if (error) throwRepositoryError(error);
+      if (error) {
+        if (["PGRST205", "42P01"].includes(error.code)) {
+          throw new AdoptionInstructionSchemaUnavailableError();
+        }
+        throwRepositoryError(error);
+      }
       return data ? requireRevision(data) : null;
     },
 

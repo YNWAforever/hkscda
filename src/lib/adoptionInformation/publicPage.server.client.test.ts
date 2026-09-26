@@ -13,6 +13,7 @@ class FakeSupabaseQuery {
   constructor(
     private readonly table: string,
     private readonly calls: string[],
+    private readonly revisionError: { code: string; message: string } | null,
   ) {}
 
   select() {
@@ -36,6 +37,7 @@ class FakeSupabaseQuery {
       ["page_key", "adoption-instructions"],
       ["state", "published"],
     ]);
+    if (this.revisionError) return { data: null, error: this.revisionError };
     return {
       data: {
         id: "44444444-4444-4444-8444-444444444444",
@@ -116,10 +118,13 @@ class FakeSupabaseQuery {
   }
 }
 
-function fakeSupabaseClient(calls: string[]) {
+function fakeSupabaseClient(
+  calls: string[],
+  revisionError: { code: string; message: string } | null = null,
+) {
   return {
     from(table: string) {
-      return new FakeSupabaseQuery(table, calls);
+      return new FakeSupabaseQuery(table, calls, revisionError);
     },
     storage: {
       from(bucket: string) {
@@ -146,5 +151,28 @@ describe("public adoption page reader client wiring", () => {
     expect(result.feesBySpecies.dog.map((fee) => fee.itemName)).toEqual(["Dog adoption fee"]);
     expect(result.guideGroups).toEqual([]);
     expect(result.copy.hero.title).toBe("領養需知");
+  });
+
+  test("uses the approved seed copy while the CMS migration has not run", async () => {
+    const calls: string[] = [];
+    const read = createPublicAdoptionPageReaderFromClient(
+      fakeSupabaseClient(calls, {
+        code: "PGRST205",
+        message: "Could not find the table in the schema cache",
+      }) as never,
+    );
+
+    const result = await read();
+
+    expect(result.copy).toEqual(initialAdoptionInstructionContent);
+    expect(result.feesBySpecies.dog.map((fee) => fee.itemName)).toEqual(["Dog adoption fee"]);
+  });
+
+  test("keeps unrelated CMS read errors visible", async () => {
+    const read = createPublicAdoptionPageReaderFromClient(
+      fakeSupabaseClient([], { code: "42501", message: "permission denied" }) as never,
+    );
+
+    expect(read()).rejects.toThrow();
   });
 });
