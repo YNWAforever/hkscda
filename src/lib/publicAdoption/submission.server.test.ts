@@ -4,6 +4,7 @@ import {
   SubmissionValidationError,
   parseAdoptionSubmission,
   persistPublicAdoptionJourney,
+  resumePublicAdoptionCase,
   sendAdoptionConfirmationEmail,
   type ParsedAdoptionMultipart,
   type PublicAdoptionSupabaseClient,
@@ -54,6 +55,13 @@ class FakeQuery {
 
   insert(payload: unknown, options?: unknown) {
     this.state.calls.push({ table: this.table, method: "insert", payload, options });
+    this.action = "insert";
+    this.mutationPayload = payload;
+    return this;
+  }
+
+  upsert(payload: unknown, options?: unknown) {
+    this.state.calls.push({ table: this.table, method: "upsert", payload, options });
     this.action = "insert";
     this.mutationPayload = payload;
     return this;
@@ -373,6 +381,43 @@ describe("parseAdoptionSubmission", () => {
         },
       ],
     });
+  });
+});
+
+describe("resumePublicAdoptionCase", () => {
+  test("creates only the missing case and links the existing intake item", async () => {
+    const { client, state } = createFakeClient();
+    const coordinator = coordinatorService(state.calls);
+    const result = await resumePublicAdoptionCase({
+      client,
+      parsed: parsedSubmission(),
+      coordinatorService: coordinator.service,
+    });
+
+    expect(result).toEqual({ caseId });
+    expect(coordinator.calls).toContainEqual(
+      expect.objectContaining({
+        publicApplicationId: applicationId,
+        input: expect.objectContaining({
+          applicant_name: "Ada",
+          preferences: expect.objectContaining({ language: "en" }),
+        }),
+      }),
+    );
+    expect(callsFor(state.calls, "adoption_applications", "insert")).toHaveLength(0);
+    expect(callsFor(state.calls, "public_status_token", "insert")).toHaveLength(0);
+    expect(callsFor(state.calls, "adoption_intake_item", "upsert")).toContainEqual(
+      expect.objectContaining({
+        payload: expect.objectContaining({
+          public_application_id: applicationId,
+          adoption_case_id: caseId,
+        }),
+        options: { onConflict: "public_application_id", ignoreDuplicates: true },
+      }),
+    );
+    expect(callsFor(state.calls, "adoption_intake_item", "update")).toContainEqual(
+      expect.objectContaining({ payload: { adoption_case_id: caseId } }),
+    );
   });
 });
 

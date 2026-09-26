@@ -11,6 +11,7 @@ import {
   isSubmissionValidationError,
   parseAdoptionSubmission,
   persistPublicAdoptionJourney,
+  resumePublicAdoptionCase,
   sendAdoptionConfirmationEmail,
 } from "../../../lib/publicAdoption/submission.server";
 import {
@@ -43,6 +44,7 @@ type Dependencies = {
     client: ReturnType<typeof createSupabaseServiceClient>,
   ) => ReturnType<typeof createAdoptionCoordinatorService>;
   persist: typeof persistPublicAdoptionJourney;
+  resumeCase: typeof resumePublicAdoptionCase;
   sendEmail: typeof sendAdoptionConfirmationEmail;
   appUrl: typeof getAppUrl;
   logger: Pick<Console, "error">;
@@ -71,6 +73,7 @@ export function createAdoptionApplicationsHandler({
       repo: createSupabaseAdoptionCoordinatorRepository(client),
     }),
   persist = persistPublicAdoptionJourney,
+  resumeCase = resumePublicAdoptionCase,
   sendEmail = sendAdoptionConfirmationEmail,
   appUrl = getAppUrl,
   logger = console,
@@ -144,6 +147,24 @@ export function createAdoptionApplicationsHandler({
           return jsonNoStore({ error: "Application retry not authorized" }, { status: 403 });
         }
         if (state === "recovered") return recoverCompleted();
+        if (state === "resumable") {
+          try {
+            await resumeCase({
+              client,
+              parsed,
+              coordinatorService: createCoordinatorService(client),
+              logger,
+            });
+          } catch (error) {
+            logger.error("Could not resume adoption case creation", error);
+            if ((await lookupCompletion()) === "recovered") return recoverCompleted();
+            return jsonNoStore(
+              { error: "Application submission is still processing. Please retry shortly." },
+              { status: 503, headers: { "retry-after": "1" } },
+            );
+          }
+          return recoverCompleted();
+        }
         if (state === "processing") {
           return jsonNoStore(
             { error: "Application submission is still processing. Please retry shortly." },

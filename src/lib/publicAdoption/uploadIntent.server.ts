@@ -98,7 +98,9 @@ export async function hasCompletedAdoptionApplication(
   statusToken: string,
   expectedFingerprint: string,
   now = new Date(),
-): Promise<"new" | "processing" | "recovered" | "conflict" | "forbidden" | "expired"> {
+): Promise<
+  "new" | "processing" | "resumable" | "recovered" | "conflict" | "forbidden" | "expired"
+> {
   const { data, error } = await client
     .from("adoption_case")
     .select("id")
@@ -112,12 +114,12 @@ export async function hasCompletedAdoptionApplication(
       .eq("id", applicationId)
       .maybeSingle();
     if (applicationError) throw applicationError;
-    return application ? "processing" : "new";
+    if (!application) return "new";
   }
 
   const { data: token, error: tokenError } = await client
     .from("public_status_token")
-    .select("submission_fingerprint,expires_at,revoked_at")
+    .select("submission_fingerprint,expires_at,revoked_at,created_at")
     .eq("entity_type", "adoption_application")
     .eq("entity_id", applicationId)
     .eq("token_hash", hashStatusToken(statusToken))
@@ -125,13 +127,21 @@ export async function hasCompletedAdoptionApplication(
       submission_fingerprint: string | null;
       expires_at: string;
       revoked_at: string | null;
+      created_at: string;
     }>();
   if (tokenError) throw tokenError;
-  if (!token) return "forbidden";
+  if (!token) return data ? "forbidden" : "processing";
   const expiresAt = Date.parse(token.expires_at);
   if (token.revoked_at || !Number.isFinite(expiresAt) || expiresAt <= now.getTime())
     return "expired";
-  return token.submission_fingerprint === expectedFingerprint ? "recovered" : "conflict";
+  if (token.submission_fingerprint !== expectedFingerprint) return "conflict";
+  if (data) return "recovered";
+  // Let an in-flight first request finish before a bearer-authenticated retry
+  // attempts the uniquely constrained case creation again.
+  const createdAt = Date.parse(token.created_at);
+  return Number.isFinite(createdAt) && now.getTime() - createdAt >= 60_000
+    ? "resumable"
+    : "processing";
 }
 export async function markAdoptionUploadIntentSubmitted(
   client: SupabaseClient,

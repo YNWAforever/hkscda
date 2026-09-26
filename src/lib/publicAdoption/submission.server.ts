@@ -227,6 +227,57 @@ export function parseAdoptionSubmission(
   };
 }
 
+export async function resumePublicAdoptionCase({
+  client,
+  parsed,
+  coordinatorService,
+  logger = console,
+}: Pick<
+  PersistPublicAdoptionJourneyInput,
+  "client" | "parsed" | "coordinatorService" | "logger"
+>): Promise<{ caseId: string }> {
+  // The caller has checked the saved bearer token and fingerprint. Photo
+  // metadata and details preceded that token; the intake item is restored if
+  // its write was interrupted. The case has a unique application ID.
+  const caseResult = await coordinatorService.createCaseFromPublicApplication({
+    publicApplicationId: parsed.applicationId,
+    input: {
+      ...toAdoptionApplicationSummaryInsert(parsed.payload),
+      preferences: coordinatorPreferences(parsed.payload),
+    },
+  });
+  try {
+    // A token can have committed before the first request lost the intake
+    // insert response. Preserve an existing staff-edited item on conflict.
+    const { error: intakeError } = await client.from("adoption_intake_item").upsert(
+      {
+        public_application_id: parsed.applicationId,
+        adoption_case_id: caseResult.id,
+        lane: "new_adoption_application",
+        urgency: "normal",
+        summary: {
+          reference: referenceForApplication(parsed.applicationId),
+          applicantName: parsed.payload.contact.applicantName,
+          animalName: parsed.payload.animalPreferences[0]?.animalName ?? null,
+          photoCount: parsed.photos.length,
+          preferredContactMethod: parsed.payload.contact.preferredContactMethod,
+        },
+        due_at: intakeDueAt(parsed.payload),
+      },
+      { onConflict: "public_application_id", ignoreDuplicates: true },
+    );
+    if (intakeError) logger.error("Failed to restore resumed adoption intake item", intakeError);
+    const { error } = await client
+      .from("adoption_intake_item")
+      .update({ adoption_case_id: caseResult.id })
+      .eq("public_application_id", parsed.applicationId);
+    if (error) logger.error("Failed to link resumed adoption intake item", error);
+  } catch (error) {
+    logger.error("Failed to link resumed adoption intake item", error);
+  }
+  return { caseId: caseResult.id };
+}
+
 export async function persistPublicAdoptionJourney({
   client,
   parsed,

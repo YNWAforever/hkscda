@@ -75,23 +75,76 @@ describe("adoption upload intents", () => {
     const client = {
       from(table: string) {
         queries.push(table);
-        return {
-          select: () => ({
-            eq: () => ({
-              maybeSingle: async () => ({
-                data: table === "adoption_applications" ? { id: applicationId } : null,
-                error: null,
-              }),
-            }),
-          }),
+        const query = {
+          select() {
+            return query;
+          },
+          eq() {
+            return query;
+          },
+          async maybeSingle() {
+            return {
+              data: table === "adoption_applications" ? { id: applicationId } : null,
+              error: null,
+            };
+          },
         };
+        return query;
       },
     } as never;
 
     expect(
       await hasCompletedAdoptionApplication(client, applicationId, token, "a".repeat(64)),
     ).toBe("processing");
-    expect(queries).toEqual(["adoption_case", "adoption_applications"]);
+    expect(queries).toEqual(["adoption_case", "adoption_applications", "public_status_token"]);
+  });
+
+  test("allows a matching aged partial application to resume case creation", async () => {
+    const client = {
+      from(table: string) {
+        const query = {
+          select() {
+            return query;
+          },
+          eq() {
+            return query;
+          },
+          async maybeSingle() {
+            return {
+              data:
+                table === "adoption_case"
+                  ? null
+                  : table === "adoption_applications"
+                    ? { id: applicationId }
+                    : {
+                        submission_fingerprint: "a".repeat(64),
+                        expires_at: "2026-10-25T00:00:00.000Z",
+                        revoked_at: null,
+                        created_at: "2026-09-25T00:00:00.000Z",
+                      },
+              error: null,
+            };
+          },
+        };
+        return query;
+      },
+    } as never;
+    expect(
+      await hasCompletedAdoptionApplication(
+        client,
+        applicationId,
+        token,
+        "a".repeat(64),
+        new Date("2026-09-25T00:00:30.000Z"),
+      ),
+    ).toBe("processing");
+    const now = new Date("2026-09-25T00:02:00.000Z");
+    expect(
+      await hasCompletedAdoptionApplication(client, applicationId, token, "a".repeat(64), now),
+    ).toBe("resumable");
+    expect(
+      await hasCompletedAdoptionApplication(client, applicationId, token, "b".repeat(64), now),
+    ).toBe("conflict");
   });
 
   test("recovers only the original completed application details", async () => {

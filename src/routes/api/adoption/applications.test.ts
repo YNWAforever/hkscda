@@ -163,6 +163,39 @@ describe("public adoption submission authorization and retry", () => {
     expect(calls).toEqual(["persist"]);
   });
 
+  test("resumes an aged partial application without reinserting its summary", async () => {
+    const { dependencies, calls } = deps({
+      hasCompleted: async () => "resumable" as const,
+      resumeCase: async () => {
+        calls.push("resumeCase");
+        return { caseId: "case-1" };
+      },
+    });
+    const response = await createAdoptionApplicationsHandler(dependencies)(request());
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      applicationId,
+      reference: "APP-AAAAAAAA",
+      statusUrl: "https://example.test/adoption/status/" + statusToken,
+    });
+    expect(calls).toEqual(["resumeCase", "markSubmitted"]);
+  });
+
+  test("recovers when the original case commits during resume", async () => {
+    let checks = 0;
+    const { dependencies, calls } = deps({
+      hasCompleted: async () => (++checks === 1 ? "resumable" : "recovered"),
+      resumeCase: async () => {
+        calls.push("resumeCase");
+        throw new Error("duplicate case");
+      },
+    });
+    const response = await createAdoptionApplicationsHandler(dependencies)(request());
+    expect(response.status).toBe(200);
+    expect(checks).toBe(2);
+    expect(calls).toEqual(["resumeCase", "markSubmitted"]);
+  });
+
   test("returns success after persistence even if confirmation email throws", async () => {
     const { dependencies, calls } = deps({
       sendEmail: async () => {
