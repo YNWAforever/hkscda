@@ -113,6 +113,7 @@ function createRepository(page = adminPage()) {
         publishedAt: null,
       });
     },
+    archiveDraft: async () => revision({ state: "archived" }),
     listHistory: async () => page.history,
   };
   return { repository, calls, getPage: () => page };
@@ -255,4 +256,26 @@ test("publish retry reaches the atomic idempotency lookup even after the draft i
     service.publish({ actor: admin, expectedVersion: 4, idempotencyKey: "retry-publish-00000001" }),
   ).resolves.toMatchObject({ revisionId: draftRevisionId });
   expect(calls.publish).toHaveLength(1);
+});
+
+test("only admins can archive a draft without publishing and the version is passed atomically", async () => {
+  const { repository } = createRepository();
+  let input: unknown;
+  const repo = {
+    ...repository,
+    archiveDraft: async (value: unknown) => {
+      input = value;
+      return revision({ state: "archived" });
+    },
+  };
+  const service = createAdoptionInstructionService({ repository: repo, now });
+  await expect(service.archiveDraft({ actor: staff, expectedVersion: 4 })).rejects.toMatchObject({
+    code: "forbidden",
+  });
+  await service.archiveDraft({ actor: admin, expectedVersion: 4 });
+  expect(input).toEqual({
+    actorUserId: admin.authUserId,
+    expectedVersion: 4,
+    now: "2026-08-02T12:00:00.000Z",
+  });
 });

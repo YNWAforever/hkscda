@@ -50,6 +50,7 @@ describe("adoption page editor", () => {
     expect(html).toContain("草稿版本 4");
     expect(html).not.toContain("發布頁面");
     expect(html).not.toContain("還原此版本");
+    expect(html).not.toContain("封存草稿（不發布）");
     expect(html).toContain('name="hero.title"');
     expect(html).toContain('name="care.cat.title"');
   });
@@ -58,6 +59,7 @@ describe("adoption page editor", () => {
       <AdoptionInstructionsManagementView data={page} role="admin" />,
     );
     expect(html).toMatch(/<button[^>]*>發布頁面<\/button>/);
+    expect(html).toContain("封存草稿（不發布）");
     expect(html).toMatch(/<button[^>]*disabled=""[^>]*>還原此版本<\/button>/);
   });
   test("invalid fields announce their path and block publish", () => {

@@ -9,7 +9,7 @@
 - The unused About-page component split is not integrated; it has no functional benefit and conflicts with newer main.
 
 ## Verification
-- Source suite: `bun test src` — 2484 pass, 80 skip, 0 fail (429 files).
+- Source suite: `bun test --isolate src` — 2486 pass, 80 skip, 0 fail (429 files).
 - Focused adoption UI/API/public tests — 43 pass before the final client-wiring fixture update; complete source suite includes that update.
 - Stories/payment focused suite — 50 pass.
 - TypeScript passes. ESLint: zero errors, 52 existing-style Fast Refresh warnings. Production Vite/Nitro build passes.
@@ -27,3 +27,10 @@ The CLI generated a new current timestamp; the never-integrated August migration
 
 Deploy sequence: approve production migration, take the normal private backup, rehearse against the current schema, apply the additive migration, verify seed and service-only RPC permissions, then merge the adoption PR. The new public reader requires the published seed; do not merge its PR before this gate. No production database mutation or publication was performed here.
 The stories/payment/evidence PR has no migration dependency and can merge independently.
+
+## Fresh review and recovery fix
+A fresh whole-branch reviewer found one Important issue: restoring history required publishing an existing draft. Added admin-only DELETE draft / archive RPC with expected-version enforcement. It archives the saved draft, preserves history and the public revision, and permits restore. Staff/stale archive calls are rejected. The service regression test failed before implementation and passed after; full isolated source suite is now 2486 pass, 80 skip, zero fail. Browser fixture and real SQL archive-then-restore checks passed.
+
+The reviewer found no remaining Critical issues; the potential trailing-slash story issue was withdrawn after a full router load demonstrated a 307 canonical redirect. Production schema/deployment, real authenticated browser integration, simultaneous multi-session contention and comprehensive accessibility were not independently certified by the reviewer.
+
+PRs: #131 stories/payment/evidence; #132 adoption CMS (draft pending migration approval). GitHub Actions did not start: account payments/spending-limit blocker, not a code test failure. Vercel preview for #131 passed.

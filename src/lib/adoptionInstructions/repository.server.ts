@@ -83,6 +83,11 @@ export type AdoptionInstructionRepository = {
     idempotencyKey: string;
     now: string;
   }): Promise<AdoptionInstructionPublishResult>;
+  archiveDraft(input: {
+    actorUserId: string;
+    expectedVersion: number;
+    now: string;
+  }): Promise<AdoptionInstructionRevision>;
   restore(input: {
     actorUserId: string;
     sourceRevisionId: string;
@@ -271,6 +276,15 @@ export function createSupabaseAdoptionInstructionRepository(
         revisionId: parsed.data.revision_id,
         revisionVersion: parsed.data.revision_version,
       };
+    },
+
+    async archiveDraft(input) {
+      const { data, error } = await client.rpc("archive_adoption_instruction_draft", {
+        p_actor_user_id: input.actorUserId,
+        p_expected_version: input.expectedVersion,
+      });
+      if (error) throwRepositoryError(error);
+      return requireRevision(data);
     },
 
     async restore(input) {

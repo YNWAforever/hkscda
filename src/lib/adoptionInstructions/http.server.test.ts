@@ -79,6 +79,7 @@ function createService() {
       revisionId: draftId,
       revisionVersion: 3,
     })),
+    archiveDraft: mock(async () => ({ ...adminPage.draft!, state: "archived" })),
     restore: mock(async () => ({
       ...adminPage.draft!,
       id: "33333333-3333-4333-8333-333333333333",
@@ -251,4 +252,23 @@ describe("createAdoptionInstructionHandlers", () => {
     });
     expect(service.restore).toHaveBeenCalledWith({ actor: admin, revisionId });
   });
+});
+
+test("archive draft rejects staff and forwards an admin version token without caching", async () => {
+  const staffHandlers = createHandlers();
+  expect(
+    (
+      await staffHandlers.handlers.archiveDraft(
+        jsonRequest("/api/admin/adoption-instructions/draft", { expectedVersion: 2 }, "DELETE"),
+      )
+    ).status,
+  ).toBe(403);
+  expect(staffHandlers.service.archiveDraft).not.toHaveBeenCalled();
+  const { handlers, service } = createHandlers(createService(), async () => admin);
+  const response = await handlers.archiveDraft(
+    jsonRequest("/api/admin/adoption-instructions/draft", { expectedVersion: 2 }, "DELETE"),
+  );
+  expect(response.status).toBe(200);
+  expect(response.headers.get("cache-control")).toBe("no-store");
+  expect(service.archiveDraft).toHaveBeenCalledWith({ actor: admin, expectedVersion: 2 });
 });

@@ -368,3 +368,21 @@ grant execute on function public.ensure_adoption_instruction_draft(integer, uuid
 grant execute on function public.update_adoption_instruction_draft(integer, jsonb, uuid) to service_role;
 grant execute on function public.publish_adoption_instruction_page(integer, uuid, text) to service_role;
 grant execute on function public.restore_adoption_instruction_revision(uuid, integer, uuid) to service_role;
+
+-- Retain abandoned draft content without changing the published revision.
+create or replace function public.archive_adoption_instruction_draft(p_expected_version integer, p_actor_user_id uuid)
+returns jsonb language plpgsql security invoker set search_path = public, pg_temp as $$
+declare actor public.admin_user%rowtype; page public.adoption_instruction_pages%rowtype; draft public.adoption_instruction_revisions%rowtype;
+begin
+ actor := private.require_adoption_instruction_actor(p_actor_user_id,true);
+ select * into page from public.adoption_instruction_pages where page_key='adoption-instructions' for update;
+ if page.draft_revision_id is null then raise exception 'Draft not found' using errcode='P0002'; end if;
+ select * into draft from public.adoption_instruction_revisions where id=page.draft_revision_id for update;
+ if p_expected_version is null or draft.version <> p_expected_version then raise exception 'Stale draft' using errcode='40001'; end if;
+ update public.adoption_instruction_revisions set state='archived', archived_by=actor.id, archived_at=now(), updated_by=actor.id, updated_at=now(), version=version+1 where id=draft.id returning * into draft;
+ update public.adoption_instruction_pages set draft_revision_id=null, version=version+1, updated_at=now() where page_key=page.page_key;
+ insert into public.audit_log(actor_user_id,action,entity,entity_id,detail) values(p_actor_user_id,'adoption_instruction.archive_draft','adoption_instruction_revision',draft.id::text,jsonb_build_object('expected_version',p_expected_version));
+ return to_jsonb(draft);
+end $$;
+revoke all on function public.archive_adoption_instruction_draft(integer,uuid) from public,anon,authenticated;
+grant execute on function public.archive_adoption_instruction_draft(integer,uuid) to service_role;

@@ -109,6 +109,21 @@ export function createAdoptionInstructionService({
       });
     },
 
+    async archiveDraft({
+      actor,
+      expectedVersion,
+    }: {
+      actor: AdoptionInstructionActor;
+      expectedVersion: number;
+    }) {
+      requirePublishingAdmin(actor);
+      return repository.archiveDraft({
+        actorUserId: actor.authUserId,
+        expectedVersion: positiveVersionSchema.parse(expectedVersion),
+        now: isoNow(),
+      });
+    },
+
     async restore({ actor, revisionId }: RestoreInput) {
       requirePublishingAdmin(actor);
       const page = await repository.getAdminPage();

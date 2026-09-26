@@ -41,6 +41,15 @@ begin
  if (select count(*) from public.adoption_instruction_revisions) <> 3 then raise exception 'History lost'; end if;
  begin perform public.update_adoption_instruction_draft((draft->>'version')::integer,content,staff); raise exception 'Stale prior revision overwrote new draft'; exception when serialization_failure then null; end;
  if (select count(*) from public.audit_log where action like 'adoption_instruction.%') <> 4 then raise exception 'Audit count mismatch'; end if;
- raise notice 'PASS: seed, strict validation, RLS, staff save, draft isolation, stale save, admin publish, idempotency, restore, history and cross-revision concurrency';
+ begin perform public.archive_adoption_instruction_draft((restored->>'version')::integer,staff); raise exception 'Staff archived draft'; exception when insufficient_privilege then null; end;
+ begin perform public.archive_adoption_instruction_draft((restored->>'version')::integer - 1,administrator); raise exception 'Stale archive succeeded'; exception when serialization_failure then null; end;
+ perform public.archive_adoption_instruction_draft((restored->>'version')::integer,administrator);
+ if (select r.content#>>'{hero,title}' from public.adoption_instruction_revisions r where state='published') <> '驗證草稿' then raise exception 'Archive changed published copy'; end if;
+ if not exists(select 1 from public.adoption_instruction_revisions where id=(restored->>'id')::uuid and state='archived') then raise exception 'Archived draft history lost'; end if;
+ select version into pversion from public.adoption_instruction_pages;
+ restored := public.restore_adoption_instruction_revision(original,pversion,administrator);
+ if restored#>>'{content,hero,title}' <> '領養需知' then raise exception 'Recovery after archive failed'; end if;
+ if (select count(*) from public.audit_log where action='adoption_instruction.archive_draft') <> 1 then raise exception 'Archive audit missing'; end if;
+ raise notice 'PASS: archive without publication, recovery with active draft,  seed, strict validation, RLS, staff save, draft isolation, stale save, admin publish, idempotency, restore, history and cross-revision concurrency';
 end $$;
 rollback;

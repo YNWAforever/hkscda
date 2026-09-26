@@ -142,6 +142,18 @@ export function createAdoptionInstructionHandlers({
       });
     },
 
+    archiveDraft(request: Request) {
+      return withHttpErrors(async () => {
+        const actor = await requireActor(request);
+        requirePublishingAdmin(actor);
+        const body = z
+          .object({ expectedVersion: positiveVersionSchema })
+          .strict()
+          .parse(await jsonBody(request));
+        return jsonNoStore(await service.archiveDraft({ actor, ...body }));
+      });
+    },
+
     restore(request: Request) {
       return withHttpErrors(async () => {
         const actor = await requireActor(request);

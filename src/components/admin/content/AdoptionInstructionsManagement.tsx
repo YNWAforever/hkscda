@@ -14,14 +14,15 @@ type Operation =
   | { action: "create"; expectedPageVersion: number }
   | { action: "save"; expectedVersion: number; content: AdoptionInstructionContent }
   | { action: "publish"; expectedVersion: number; idempotencyKey: string }
+  | { action: "archive"; expectedVersion: number }
   | { action: "restore"; revisionId: string };
 export function buildAdoptionInstructionMutation(operation: Operation) {
   const { action, ...body } = operation;
   return {
     path:
       "/api/admin/adoption-instructions/" +
-      (action === "save" || action === "create" ? "draft" : action),
-    method: action === "save" ? "PUT" : "POST",
+      (action === "save" || action === "create" || action === "archive" ? "draft" : action),
+    method: action === "archive" ? "DELETE" : action === "save" ? "PUT" : "POST",
     body,
   };
 }
@@ -163,7 +164,7 @@ export function AdoptionInstructionsManagementView(props: Props) {
     setServerFields({});
     try {
       const result = await props.onMutation(operation);
-      if (operation.action === "publish") {
+      if (operation.action === "publish" || operation.action === "archive") {
         setLocal(null);
         setSaved(null);
         publishKey.current = null;
@@ -314,8 +315,31 @@ export function AdoptionInstructionsManagementView(props: Props) {
           </button>
         )}
       </div>
+      {props.role === "admin" && draft && (
+        <button
+          type="button"
+          disabled={pending || conflict || dirty}
+          onClick={() => void run({ action: "archive", expectedVersion: revision.version })}
+        >
+          封存草稿（不發布）
+        </button>
+      )}
+      {dirty && (
+        <button
+          type="button"
+          disabled={pending}
+          onClick={() => {
+            setLocal(saved);
+            setServerFields({});
+          }}
+        >
+          放棄未儲存修改
+        </button>
+      )}
       <h3 className="font-bold">版本紀錄</h3>
-      {draft && props.role === "admin" && <p>請先發布目前草稿，才可將歷史版本還原為新草稿。</p>}
+      {draft && props.role === "admin" && (
+        <p>請先封存或發布目前草稿，才可將歷史版本還原為新草稿。</p>
+      )}
       <ul>
         {props.data.history
           .filter((item) => item.state !== "draft")

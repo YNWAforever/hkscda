@@ -54,6 +54,8 @@ export function createAdoptionInstructionRouteDelegates(factory: HandlerFactory 
       withComposition(factory, (handlers) => handlers.preview(request)),
     publish: (request: Request) =>
       withComposition(factory, (handlers) => handlers.publish(request)),
+    archiveDraft: (request: Request) =>
+      withComposition(factory, (handlers) => handlers.archiveDraft(request)),
     restore: (request: Request) =>
       withComposition(factory, (handlers) => handlers.restore(request)),
   };
