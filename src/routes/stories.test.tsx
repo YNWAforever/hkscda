@@ -1,3 +1,4 @@
+import * as router from "@tanstack/react-router";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, mock, test } from "bun:test";
@@ -8,6 +9,7 @@ import type { PublicStoriesPageData } from "../lib/content/publicStoriesPage.ser
 let mockPathname = "/stories";
 
 mock.module("@tanstack/react-router", () => ({
+  ...router,
   Link: ({
     children,
     params,
