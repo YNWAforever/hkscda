@@ -4,7 +4,7 @@ import { z } from "zod";
 import { paymentPublicConfigMethodSchema } from "./schemas";
 import type { PublicPaymentMethod } from "./types";
 
-const publicRowSchema = z.object({
+const publicPaymentMethodRowSchema = z.object({
   method: paymentPublicConfigMethodSchema,
   display_label_zh: z.string(),
   display_label_en: z.string(),
@@ -28,7 +28,7 @@ export async function loadPublicPaymentMethods(
 
   const rows: PublicPaymentMethod[] = [];
   for (const raw of data ?? []) {
-    const parsed = publicRowSchema.safeParse(raw);
+    const parsed = publicPaymentMethodRowSchema.safeParse(raw);
     if (!parsed.success) continue;
     rows.push({
       method: parsed.data.method,

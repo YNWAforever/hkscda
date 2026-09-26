@@ -12,6 +12,7 @@ import type {
   AdoptionGuideReleaseState,
   AdoptionGuideSpecies,
 } from "../../../lib/adoptionGuideReleases/types";
+import { CMS_STATE_LABELS } from "./cmsStateLabels";
 import { uploadDocumentPdf } from "./documentUpload";
 import {
   ADOPTION_GUIDE_EDITOR_STEPS,
@@ -450,7 +451,7 @@ export function AdoptionGuideReleaseManagementView({
                     {release.knowledgeTitle || release.topic}
                   </span>
                   <span className="text-xs text-[var(--color-text-muted)]">
-                    {release.species} · {release.state}
+                    {release.species} · {CMS_STATE_LABELS[release.state]}
                   </span>
                 </button>
               </li>
