@@ -95,4 +95,5 @@ export const groupEnquirySearchSchema = z.object({
 export const adminGroupEnquiryPatchSchema = adminGroupEnquiryUpdateSchema.extend({
   id: z.string().min(1),
   action: z.literal("retryNotification").optional(),
+  expectedUpdatedAt: z.string().datetime({ offset: true }),
 });

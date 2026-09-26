@@ -206,4 +206,54 @@ describe("Supabase group enquiry repository", () => {
       payload: { notification_status: "failed", notification_error: "safe failure" },
     });
   });
+
+  test("admin update and audit use one version-checked RPC", async () => {
+    const calls: Array<{ name: string; args: unknown }> = [];
+    const repo = createSupabaseGroupEnquiryRepository({
+      rpc: async (name: string, args: unknown) => {
+        calls.push({ name, args });
+        return { data: { kind: "updated", enquiry: row }, error: null };
+      },
+    } as never);
+
+    await expect(
+      repo.updateWithAudit({
+        id: row.id,
+        input: { status: "resolved", adminNotes: "handled" },
+        actorUserId: "99999999-9999-4999-8999-999999999999",
+        expectedUpdatedAt: row.updated_at,
+      }),
+    ).resolves.toMatchObject({ id: row.id, status: "new" });
+    expect(calls).toEqual([
+      {
+        name: "update_group_enquiry_with_audit",
+        args: {
+          p_enquiry_id: row.id,
+          p_actor_user_id: "99999999-9999-4999-8999-999999999999",
+          p_expected_updated_at: row.updated_at,
+          p_patch: { status: "resolved", adminNotes: "handled" },
+        },
+      },
+    ]);
+  });
+
+  test("stale admin update returns a conflict without another write", async () => {
+    const calls: string[] = [];
+    const repo = createSupabaseGroupEnquiryRepository({
+      rpc: async (name: string) => {
+        calls.push(name);
+        return { data: { kind: "conflict" }, error: null };
+      },
+    } as never);
+
+    await expect(
+      repo.updateWithAudit({
+        id: row.id,
+        input: { status: "closed" },
+        actorUserId: "99999999-9999-4999-8999-999999999999",
+        expectedUpdatedAt: row.updated_at,
+      }),
+    ).rejects.toMatchObject({ status: 409 });
+    expect(calls).toEqual(["update_group_enquiry_with_audit"]);
+  });
 });

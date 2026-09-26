@@ -109,14 +109,6 @@ function postgrestLikeOperand(value: string) {
   return '"%' + escaped + '%"';
 }
 
-function toUpdate(input: GroupEnquiryAdminUpdate) {
-  const payload: Record<string, unknown> = {};
-  if (input.status !== undefined) payload.status = input.status;
-  if (input.assignedTo !== undefined) payload.assigned_to = input.assignedTo;
-  if (input.adminNotes !== undefined) payload.admin_notes = input.adminNotes;
-  return payload;
-}
-
 function isDuplicateKeyError(error: unknown) {
   if (!error || typeof error !== "object") return false;
   const maybe = error as { code?: string; message?: string };
@@ -209,15 +201,32 @@ export function createSupabaseGroupEnquiryRepository(
       return data ? toDomain(data as GroupEnquiryRow) : null;
     },
 
-    async update(id, input) {
-      const { data, error } = await client
-        .from("group_enquiries")
-        .update(toUpdate(input))
-        .eq("id", id)
-        .select("*")
-        .single();
+    async updateWithAudit({ id, input, actorUserId, expectedUpdatedAt }) {
+      const { data, error } = await client.rpc("update_group_enquiry_with_audit", {
+        p_enquiry_id: id,
+        p_actor_user_id: actorUserId,
+        p_expected_updated_at: expectedUpdatedAt,
+        p_patch: input,
+      });
       if (error) throw error;
-      return toDomain(data as GroupEnquiryRow);
+      const result = data as
+        | { kind: "updated"; enquiry: GroupEnquiryRow }
+        | { kind: "not_found" }
+        | { kind: "conflict" };
+      if (result.kind === "not_found")
+        throw new Response(JSON.stringify({ error: "Group enquiry not found" }), {
+          status: 404,
+          headers: { "content-type": "application/json", "cache-control": "no-store" },
+        });
+      if (result.kind === "conflict")
+        throw new Response(
+          JSON.stringify({ error: "Group enquiry changed; refresh and try again" }),
+          {
+            status: 409,
+            headers: { "content-type": "application/json", "cache-control": "no-store" },
+          },
+        );
+      return toDomain(result.enquiry);
     },
 
     async insertAuditLog(input) {
