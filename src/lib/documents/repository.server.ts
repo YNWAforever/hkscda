@@ -519,6 +519,28 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
       return data === true;
     },
 
+    async hasPublishedSlotReference(id: string) {
+      const { count, error } = await client
+        .from("site_document_slots")
+        .select("id", { count: "exact", head: true })
+        .eq("document_asset_id", id)
+        .eq("is_published", true);
+      if (error) throw error;
+      return (count ?? 0) > 0;
+    },
+
+    async hasPublishedKnowledgeReference(id: string) {
+      const { count, error } = await client
+        .from("knowledge_posts")
+        .select("id", { count: "exact", head: true })
+        .eq("is_published", true)
+        .or(
+          `document_asset_id.eq.${id},zh_hk_document_asset_id.eq.${id},en_document_asset_id.eq.${id}`,
+        );
+      if (error) throw error;
+      return (count ?? 0) > 0;
+    },
+
     async countAssetReferences(id: string) {
       const [reports, slots] = await Promise.all([
         client

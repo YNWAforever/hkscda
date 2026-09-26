@@ -239,6 +239,38 @@ describe("createSupabaseDocumentRepository", () => {
     ]);
   });
 
+  test("counts only published slots that reference the selected asset", async () => {
+    const fake = createFakeClient({ site_document_slots: [{ id: "slot-1" }] });
+    const repository = createSupabaseDocumentRepository(fake.client);
+
+    await expect(repository.hasPublishedSlotReference(assetId)).resolves.toBe(true);
+    expect(fake.queryFor("site_document_slots").filters).toEqual([
+      ["eq", "document_asset_id", assetId],
+      ["eq", "is_published", true],
+    ]);
+
+    const empty = createSupabaseDocumentRepository(createFakeClient({}).client);
+    await expect(empty.hasPublishedSlotReference(assetId)).resolves.toBe(false);
+  });
+
+  test("checks all published knowledge-post PDF reference columns", async () => {
+    const fake = createFakeClient({ knowledge_posts: [{ id: "post-1" }] });
+    const repository = createSupabaseDocumentRepository(fake.client);
+
+    await expect(repository.hasPublishedKnowledgeReference(assetId)).resolves.toBe(true);
+    expect(fake.queryFor("knowledge_posts").filters).toEqual([
+      ["eq", "is_published", true],
+      [
+        "or",
+        "",
+        `document_asset_id.eq.${assetId},zh_hk_document_asset_id.eq.${assetId},en_document_asset_id.eq.${assetId}`,
+      ],
+    ]);
+
+    const empty = createSupabaseDocumentRepository(createFakeClient({}).client);
+    await expect(empty.hasPublishedKnowledgeReference(assetId)).resolves.toBe(false);
+  });
+
   test("public slots use an inner published asset join and requested slot keys", async () => {
     const fake = createFakeClient({
       site_document_slots: [

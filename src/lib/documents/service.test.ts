@@ -50,6 +50,8 @@ function createRepo(overrides: Partial<DocumentRepository> = {}) {
     updateAsset: mock(async (_id, input) => ({ ...asset, ...input })),
     setAssetPublished: mock(async (_id, isPublished) => ({ ...asset, isPublished })),
     countAssetReferences: mock(async () => 0),
+    hasPublishedSlotReference: mock(async () => false),
+    hasPublishedKnowledgeReference: mock(async () => false),
     deleteAsset: mock(async () => undefined),
     createSignedUploadUrl: mock(async (path) => ({ token: "upload-token", path })),
     verifyObject: mock(async () => true),
@@ -209,6 +211,30 @@ describe("createDocumentService", () => {
       DocumentConflictError,
     );
     expect(repo.deleteAsset).not.toHaveBeenCalled();
+  });
+
+  test("rejects unpublishing an asset used by a published site document slot", async () => {
+    const hasPublishedSlotReference = mock(async () => true);
+    const { repo } = createRepo({ hasPublishedSlotReference });
+    const service = createDocumentService({ repo });
+
+    await expect(service.unpublishAsset({ actorUserId: "admin", assetId })).rejects.toBeInstanceOf(
+      DocumentConflictError,
+    );
+    expect(hasPublishedSlotReference).toHaveBeenCalledWith(assetId);
+    expect(repo.setAssetPublished).not.toHaveBeenCalled();
+  });
+
+  test("rejects unpublishing an asset used by a published knowledge post", async () => {
+    const hasPublishedKnowledgeReference = mock(async () => true);
+    const { repo } = createRepo({ hasPublishedKnowledgeReference });
+    const service = createDocumentService({ repo });
+
+    await expect(service.unpublishAsset({ actorUserId: "admin", assetId })).rejects.toBeInstanceOf(
+      DocumentConflictError,
+    );
+    expect(hasPublishedKnowledgeReference).toHaveBeenCalledWith(assetId);
+    expect(repo.setAssetPublished).not.toHaveBeenCalled();
   });
 
   test("creates a validated signed upload target", async () => {
