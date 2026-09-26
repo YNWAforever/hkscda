@@ -1,8 +1,9 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { getSupabaseServerConfig } from "../donations/config.server";
 
-const INTENT_LIFETIME_MS = 24 * 60 * 60 * 1000;
+export const PROOF_INTENT_LIFETIME_MS = 24 * 60 * 60 * 1000;
 const HMAC_CONTEXT = "sponsorship-proof-upload:v1:";
 
 type ProofIntentSubject = { pledgeId: string; path: string };
@@ -21,7 +22,7 @@ export function createProofUploadIntent(
   subject: ProofIntentSubject,
   options: ProofIntentOptions = {},
 ): string {
-  const expiresAt = (options.now ?? new Date()).getTime() + INTENT_LIFETIME_MS;
+  const expiresAt = (options.now ?? new Date()).getTime() + PROOF_INTENT_LIFETIME_MS;
   const encoded = Buffer.from(
     JSON.stringify({ v: 1, p: subject.pledgeId, s: subject.path, e: expiresAt }),
   ).toString("base64url");
@@ -58,4 +59,16 @@ export function verifyProofUploadIntent(
   } catch {
     return false;
   }
+}
+
+export async function registerProofUploadIntent(
+  client: SupabaseClient,
+  input: { pledgeId: string; storagePath: string; expiresAt: string },
+): Promise<void> {
+  const { error } = await client.from("sponsorship_proof_upload_intent").insert({
+    pledge_id: input.pledgeId,
+    storage_path: input.storagePath,
+    expires_at: input.expiresAt,
+  });
+  if (error) throw error;
 }
