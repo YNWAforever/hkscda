@@ -242,6 +242,7 @@ export async function issueReceiptIfNeeded(
   client: SupabaseClient,
   payment: PaymentWithDonation,
   deps: ReconcileDeps = {},
+  actorUserId?: string,
 ) {
   const donation = payment.donation;
   const now = deps.now ?? (() => new Date());
@@ -250,13 +251,17 @@ export async function issueReceiptIfNeeded(
   const issuedAt = now().toISOString();
   const taxYear = new Date(issuedAt).getFullYear();
 
-  const { data, error } = await client.rpc("issue_receipt", {
+  const receiptParams = {
     p_donation_id: donation.id,
     p_supporter_id: donation.supporter_id,
     p_amount_cents: donation.amount_cents - (donation.refunded_cents ?? 0),
     p_tax_year: taxYear,
     p_issued_at: issuedAt,
-  });
+  };
+  const { data, error } = await client.rpc(
+    actorUserId ? "issue_receipt_with_audit" : "issue_receipt",
+    actorUserId ? { ...receiptParams, p_actor: actorUserId } : receiptParams,
+  );
   if (error) throw error;
 
   const receipt = (Array.isArray(data) ? data[0] : data) as
@@ -889,15 +894,11 @@ export async function issueReceiptForDonation(
     throw Response.json({ error: "Donation is not eligible for an IRD receipt" }, { status: 422 });
   }
 
-  const receiptNo = await issueReceiptIfNeeded(client, payment, deps);
-  const { error: auditError } = await client.from("audit_log").insert({
-    actor_user_id: actorUserId,
-    action: "receipt.issue",
-    entity: "donation",
-    entity_id: donationId,
-    detail: { receiptNo, supporterId: context.supporterId ?? null },
-  });
-  if (auditError) throw auditError;
+  if (context.supporterId && context.supporterId !== payment.donation.supporter_id) {
+    throw Response.json({ error: "Supporter does not match donation" }, { status: 422 });
+  }
+
+  const receiptNo = await issueReceiptIfNeeded(client, payment, deps, actorUserId);
   return { receiptNo };
 }
 

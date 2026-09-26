@@ -209,6 +209,58 @@ describe("completeDonationSideEffects", () => {
 });
 
 describe("issueReceiptForDonation", () => {
+  test("audit failure cannot commit a manual receipt", async () => {
+    let receiptCommitted = false;
+    const rpcCalls: string[] = [];
+    const client = {
+      rpc(fn: string) {
+        rpcCalls.push(fn);
+        if (fn === "issue_receipt") {
+          receiptCommitted = true;
+          return Promise.resolve({
+            data: [
+              {
+                receipt_no: "HKSCDA-2026-000001",
+                receipt_id: "receipt-1",
+                pdf_url: "2026/HKSCDA-2026-000001.pdf",
+                tax_year: 2026,
+                issued_at: "2026-06-24T10:00:00.000Z",
+              },
+            ],
+            error: null,
+          });
+        }
+        return Promise.resolve({ data: null, error: new Error("audit failed") });
+      },
+      from(table: string) {
+        if (table === "audit_log")
+          return { insert: async () => ({ error: new Error("audit failed") }) };
+        return {
+          select() {
+            const builder = {
+              eq() {
+                return builder;
+              },
+              order() {
+                return builder;
+              },
+              limit() {
+                return builder;
+              },
+              maybeSingle: async () => ({ data: basePayment, error: null }),
+            };
+            return builder;
+          },
+        };
+      },
+    };
+
+    await expect(issueReceiptForDonation(client as never, "donation-1", "admin-1")).rejects.toThrow(
+      "audit failed",
+    );
+    expect(rpcCalls).toEqual(["issue_receipt_with_audit"]);
+    expect(receiptCommitted).toBe(false);
+  });
   test("rejects ineligible donations before calling the receipt RPC", async () => {
     const rpcCalls: string[] = [];
     const ineligiblePayment = {
