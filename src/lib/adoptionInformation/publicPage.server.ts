@@ -6,6 +6,9 @@ import {
 } from "../documents/public.server";
 import type { DocumentSlot } from "../documents/types";
 import { createSupabaseServiceClient } from "../donations/supabase.server";
+import { adoptionInstructionContentSchema } from "../adoptionInstructions/schemas";
+import { createSupabaseAdoptionInstructionRepository } from "../adoptionInstructions/repository.server";
+import type { AdoptionInstructionContent } from "../adoptionInstructions/types";
 import { createSupabaseAdoptionInformationRepository } from "./repository.server";
 import type { AdoptionInformationRepository } from "./service";
 import type { AdoptionFee, AdoptionRuleContent, CareTopic, DogFriendlyEstate } from "./types";
@@ -31,6 +34,7 @@ export type PublicAdoptionGuideGroup = {
 };
 
 export type PublicAdoptionPageData = {
+  copy: AdoptionInstructionContent;
   feesBySpecies: { dog: AdoptionFee[]; cat: AdoptionFee[] };
   estates: DogFriendlyEstate[];
   guideGroups: PublicAdoptionGuideGroup[];
@@ -40,6 +44,7 @@ export type PublicAdoptionPageData = {
 
 type PublicRepository = Pick<AdoptionInformationRepository, "listPublic">;
 type GuideLoader = (slotKeys: string[]) => Promise<DocumentSlot[]>;
+type CopyLoader = () => Promise<AdoptionInstructionContent>;
 
 function completeGuideGroup(
   slots: DocumentSlot[],
@@ -55,14 +60,17 @@ function completeGuideGroup(
 export function createPublicAdoptionPageReader({
   adoptionRepository,
   loadGuides,
+  loadCopy,
 }: {
   adoptionRepository: PublicRepository;
   loadGuides: GuideLoader;
+  loadCopy: CopyLoader;
 }) {
   return async (): Promise<PublicAdoptionPageData> => {
-    const [information, slots] = await Promise.all([
+    const [information, slots, copy] = await Promise.all([
       adoptionRepository.listPublic(),
       loadGuides([...POST_ADOPTION_GUIDE_SLOT_KEYS]),
+      loadCopy(),
     ]);
     const fees = information.fees
       .filter((fee) => fee.isPublished)
@@ -93,6 +101,7 @@ export function createPublicAdoptionPageReader({
       .sort((left, right) => left.sortOrder - right.sortOrder);
 
     return {
+      copy,
       feesBySpecies: {
         dog: fees.filter((fee) => fee.animalType === "dog"),
         cat: fees.filter((fee) => fee.animalType === "cat"),
@@ -116,9 +125,17 @@ export function createPublicAdoptionPageReader({
 
 export function createPublicAdoptionPageReaderFromClient(client: SupabaseClient) {
   const documentRepository = createPublicDocumentRepository(client);
+  const adoptionInstructionRepository = createSupabaseAdoptionInstructionRepository(client);
   return createPublicAdoptionPageReader({
     adoptionRepository: createSupabaseAdoptionInformationRepository(client),
     loadGuides: (slotKeys) => loadPublishedDocumentSlots(slotKeys, documentRepository),
+    async loadCopy() {
+      const revision = await adoptionInstructionRepository.getPublished();
+      if (!revision || revision.state !== "published") {
+        throw new Error("Published adoption instructions were not found");
+      }
+      return adoptionInstructionContentSchema.parse(revision.content);
+    },
   });
 }
 

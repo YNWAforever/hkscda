@@ -1,10 +1,13 @@
+import * as router from "@tanstack/react-router";
 import { describe, expect, mock, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 
 import type { PublicAdoptionPageData } from "../../lib/adoptionInformation/publicPage.server";
 import { createAdoptionInstructionsLoader } from "../../lib/adoptionInformation/publicPage.loader";
+import { initialAdoptionInstructionContent } from "../../lib/adoptionInstructions/content";
 
 mock.module("@tanstack/react-router", () => ({
+  ...router,
   createFileRoute: () => (options: unknown) => options,
   Link: ({ children, to, ...props }: { children?: unknown; to: string }) => (
     <a href={to} {...props}>
@@ -46,6 +49,7 @@ const fee = (animalType: "dog" | "cat", row: readonly [string, string], index: n
 });
 
 const data = {
+  copy: initialAdoptionInstructionContent,
   feesBySpecies: {
     dog: dogRows.map((row, index) => fee("dog", row, index)),
     cat: catRows.map((row, index) => fee("cat", row, index)),
@@ -235,5 +239,21 @@ describe("adoption instructions route", () => {
     expect(markup).toContain("領養規則");
     expect(markup).toContain("養貓需知");
     expect(markup).toContain("養狗需知");
+  });
+
+  test("renders published page labels while retaining the bilingual rule and care collections", async () => {
+    const { AdoptionInstructionsContent } = await import("./instructions");
+    const copy = {
+      ...initialAdoptionInstructionContent,
+      hero: { ...initialAdoptionInstructionContent.hero, title: "Published title" },
+      rules: { title: "Published rules" },
+    };
+    const html = renderToStaticMarkup(<AdoptionInstructionsContent data={{ ...data, copy }} />);
+    expect(html).toContain("Published title");
+    expect(html).toContain("Published rules");
+    expect(html).toContain("申請人須年滿18歲。");
+    expect(html).toContain("為貓貓提供安全的室內環境。");
+    expect(html).toContain('aria-pressed="false"');
+    expect(html).toContain("English");
   });
 });

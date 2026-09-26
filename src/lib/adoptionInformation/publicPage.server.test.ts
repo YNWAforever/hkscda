@@ -1,3 +1,4 @@
+import { initialAdoptionInstructionContent } from "../adoptionInstructions/content";
 import { describe, expect, test } from "bun:test";
 
 import type { DocumentSlot } from "../documents/types";
@@ -34,6 +35,7 @@ describe("public adoption information page reader", () => {
   test("groups complete bilingual guide slots by species", async () => {
     const calls: string[][] = [];
     const read = createPublicAdoptionPageReader({
+      loadCopy: async () => initialAdoptionInstructionContent,
       adoptionRepository: {
         async listPublic() {
           return {
@@ -93,6 +95,7 @@ describe("public adoption information page reader", () => {
 
   test("falls back to legacy slots before a coordinated release exists", async () => {
     const read = createPublicAdoptionPageReader({
+      loadCopy: async () => initialAdoptionInstructionContent,
       adoptionRepository: {
         async listPublic() {
           return { fees: [], estates: [], rules: [], careTopics: [] };
@@ -116,6 +119,7 @@ describe("public adoption information page reader", () => {
     const unpublished = guide("en", "guide-en", "post_adoption_guide_dog");
     unpublished.document.isPublished = false;
     const read = createPublicAdoptionPageReader({
+      loadCopy: async () => initialAdoptionInstructionContent,
       adoptionRepository: {
         async listPublic() {
           return { fees: [], estates: [], rules: [], careTopics: [] };
@@ -131,6 +135,7 @@ describe("public adoption information page reader", () => {
 
   test("includes only published rules and care topics, sorted by sortOrder and grouped by species", async () => {
     const read = createPublicAdoptionPageReader({
+      loadCopy: async () => initialAdoptionInstructionContent,
       adoptionRepository: {
         async listPublic() {
           return {

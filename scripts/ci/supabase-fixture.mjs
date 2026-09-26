@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { createServer } from "node:http";
 
 /**
@@ -231,6 +232,46 @@ const server = createServer((req, res) => {
 
   if (req.method === "POST" && path.startsWith("/rest/v1/rpc/")) {
     json(res, 200, []);
+    return;
+  }
+
+  if (path === "/rest/v1/adoption_instruction_revisions") {
+    const content = JSON.parse(
+      readFileSync(
+        new URL(
+          "../../supabase/migrations/20260926152438_adoption_instruction_page_cms.sql",
+          import.meta.url,
+        ),
+        "utf8",
+      ).split("$adoption_instruction_content$")[1],
+    );
+    const rows = applyFilters(
+      [
+        {
+          id: "44444444-4444-4444-8444-444444444444",
+          page_key: "adoption-instructions",
+          revision_number: 1,
+          state: "published",
+          content,
+          source_revision_id: null,
+          version: 1,
+          created_by: null,
+          updated_by: null,
+          published_by: null,
+          published_at: STAMP,
+          created_at: STAMP,
+          updated_at: STAMP,
+        },
+      ],
+      url.searchParams,
+    );
+    json(
+      res,
+      200,
+      String(req.headers.accept ?? "").includes("application/vnd.pgrst.object+json")
+        ? (rows[0] ?? null)
+        : rows,
+    );
     return;
   }
 
