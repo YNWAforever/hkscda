@@ -26,6 +26,25 @@ describe("resilientPublicLoader", () => {
     expect(await loader()).toEqual({ status: "error" });
   });
 
+  test("does not log personal data from an upstream failure", async () => {
+    const seen: unknown[] = [];
+    const original = console.error;
+    console.error = (...args: unknown[]) => void seen.push(args);
+    try {
+      await resilientPublicLoader(async () => {
+        throw Object.assign(new Error("private email alice@example.test"), { code: "XX000" });
+      })();
+    } finally {
+      console.error = original;
+    }
+    expect(
+      seen
+        .flat()
+        .some((value) => value instanceof Error && value.message.includes("alice@example.test")),
+    ).toBe(false);
+    expect(JSON.stringify(seen)).toContain("XX000");
+  });
+
   test("does not swallow the cause silently", async () => {
     const seen: unknown[] = [];
     const original = console.error;

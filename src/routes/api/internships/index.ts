@@ -10,7 +10,14 @@ export const Route = createFileRoute("/api/internships/")({
           prefix: "internship-intake",
           max: 20,
           window: "1 m",
+          requireAvailability: true,
         });
+        if (limit.unavailable) {
+          return Response.json(
+            { error: "Submission temporarily unavailable. Please try again later." },
+            { status: 503, headers: { "cache-control": "no-store", "retry-after": "60" } },
+          );
+        }
         if (!limit.ok) return Response.json({ error: "請稍後再試" }, { status: 429 });
         return internshipHandlers().post(request);
       },

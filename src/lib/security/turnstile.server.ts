@@ -5,6 +5,7 @@ const SITEVERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverif
 export type VerifyTurnstileDeps = {
   fetch?: typeof fetch;
   secret?: string;
+  isProduction?: boolean;
 };
 
 /**
@@ -63,8 +64,7 @@ function warnTurnstileDisabledOnce(): void {
   warnedTurnstileDisabled = true;
   if (isProductionRuntime()) {
     console.error(
-      "TURNSTILE_SECRET_KEY is not set in production: Turnstile verification is DISABLED " +
-        "(failing open). This should only happen when Turnstile is intentionally turned off.",
+      "TURNSTILE_SECRET_KEY is not set in production: public challenge verification is unavailable.",
     );
   }
 }
@@ -73,14 +73,9 @@ function warnTurnstileDisabledOnce(): void {
  * Verify a Cloudflare Turnstile token server-side.
  *
  * Hybrid failure policy:
- * - Fails OPEN (returns true) when `TURNSTILE_SECRET_KEY` is unset, so dev,
- *   preview, and the existing test suite work without a key configured. In
- *   production this path is guarded by {@link assertTurnstileConfigFromEnv}
- *   (which boots-fails on a site-key-only config) and logged once via
- *   `warnTurnstileDisabledOnce`, so it can never be a *silent* bypass.
- * - Fails CLOSED (returns false) once a secret IS configured but the token is
- *   missing/invalid or the verification request fails. Treat "secret set in
- *   production" as the enforced state.
+ * - Missing secret fails closed in production and allows local/preview fixtures.
+ * - A configured secret always requires a valid token and successful verification.
+ * - Callers must handle a rejected challenge before performing submission work.
  */
 export async function verifyTurnstile(
   token: string | undefined | null,
@@ -90,7 +85,7 @@ export async function verifyTurnstile(
   const secret = deps.secret ?? process.env.TURNSTILE_SECRET_KEY;
   if (!secret) {
     warnTurnstileDisabledOnce();
-    return true;
+    return !(deps.isProduction ?? isProductionRuntime());
   }
   if (!token) return false;
 
@@ -107,8 +102,8 @@ export async function verifyTurnstile(
     if (!response.ok) return false;
     const result = (await response.json()) as { success?: boolean };
     return result.success === true;
-  } catch (error) {
-    console.error("Turnstile verification failed", error);
+  } catch {
+    console.error("Turnstile verification failed");
     return false;
   }
 }

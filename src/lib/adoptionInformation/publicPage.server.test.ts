@@ -2,7 +2,11 @@ import { initialAdoptionInstructionContent } from "../adoptionInstructions/conte
 import { describe, expect, test } from "bun:test";
 
 import type { DocumentSlot } from "../documents/types";
-import { POST_ADOPTION_GUIDE_SLOT_KEY, createPublicAdoptionPageReader } from "./publicPage.server";
+import {
+  POST_ADOPTION_GUIDE_SLOT_KEY,
+  loadPublicAdoptionPage,
+  createPublicAdoptionPageReader,
+} from "./publicPage.server";
 
 const guide = (
   language: "zh-HK" | "en",
@@ -209,4 +213,10 @@ describe("public adoption information page reader", () => {
     expect(result.careTopics.dog.map((topic) => topic.id)).toEqual(["topic-dog-1", "topic-dog-2"]);
     expect(result.careTopics.cat.map((topic) => topic.id)).toEqual(["topic-cat-1"]);
   });
+});
+
+test("public adoption page keeps the original database failure as the cause", async () => {
+  const cause = Object.assign(new Error("private-record detail"), { code: "XX000" });
+  const load = () => Promise.reject(cause);
+  await expect(loadPublicAdoptionPage(load)).rejects.toMatchObject({ cause });
 });

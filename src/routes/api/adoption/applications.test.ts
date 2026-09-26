@@ -69,6 +69,15 @@ function deps(overrides: Record<string, unknown> = {}) {
 }
 
 describe("public adoption submission authorization and retry", () => {
+  test("returns 503 without writing when abuse protection is unavailable", async () => {
+    const { dependencies, calls } = deps({
+      rateLimit: async () => ({ ok: false, unavailable: true }),
+    });
+    const response = await createAdoptionApplicationsHandler(dependencies)(request());
+    expect(response.status).toBe(503);
+    expect(calls).toEqual([]);
+  });
+
   test("rejects an upload token that does not match the stored intent", async () => {
     const { dependencies, calls } = deps({
       loadIntent: async () => ({

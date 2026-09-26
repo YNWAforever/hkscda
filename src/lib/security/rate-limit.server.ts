@@ -50,10 +50,13 @@ export type RateLimitOptions = {
   max: number;
   /** Sliding window size, e.g. "1 m". */
   window: RateLimitWindow;
+  /** Public submissions require the limiter in production. */
+  requireAvailability?: boolean;
 };
 
 export type RateLimitResult = {
   ok: boolean;
+  unavailable?: boolean;
   limit?: number;
   remaining?: number;
   /** Unix ms timestamp when the window resets (for Retry-After). */
@@ -168,9 +171,9 @@ function getLimiter(opts: RateLimitOptions): RateLimiter | null {
 /**
  * Enforce a rate limit for `identifier` (typically a client IP).
  *
- * Fails OPEN: when Upstash is not configured (dev/preview) or the Redis call
- * errors, the request is allowed. Blocking legitimate donors/applicants on a
- * transient Redis outage is worse than briefly skipping the limit.
+ * Public submissions marked `requireAvailability` fail closed in production
+ * when Upstash is absent or unavailable. Other callers retain their own policy,
+ * including signed webhooks and status reads.
  *
  * Pass `deps.limiter` to inject a fake limiter in tests (or `null` to force the
  * unconfigured path).
@@ -178,17 +181,18 @@ function getLimiter(opts: RateLimitOptions): RateLimiter | null {
 export async function enforceRateLimit(
   identifier: string,
   opts: RateLimitOptions,
-  deps: { limiter?: RateLimiter | null } = {},
+  deps: { limiter?: RateLimiter | null; isProduction?: boolean } = {},
 ): Promise<RateLimitResult> {
+  const failClosed = opts.requireAvailability && (deps.isProduction ?? isProductionRuntime());
   const limiter = deps.limiter !== undefined ? deps.limiter : getLimiter(opts);
-  if (!limiter) return { ok: true };
+  if (!limiter) return failClosed ? { ok: false, unavailable: true } : { ok: true };
 
   try {
     const { success, limit, remaining, reset } = await limiter.limit(identifier);
     return { ok: success, limit, remaining, reset };
-  } catch (error) {
-    console.error("Rate limit check failed; allowing request", error);
-    return { ok: true };
+  } catch {
+    console.error("Rate limit check failed", { failClosed: Boolean(failClosed) });
+    return failClosed ? { ok: false, unavailable: true } : { ok: true };
   }
 }
 

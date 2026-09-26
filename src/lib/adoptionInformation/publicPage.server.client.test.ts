@@ -6,6 +6,13 @@ import {
   createPublicAdoptionPageReaderFromClient,
 } from "./publicPage.server";
 
+type FakeOptions = {
+  revisionError?: { code: string; message: string } | null;
+  revisionData?: unknown;
+  revisionContent?: unknown;
+  tableError?: { table: string; code: string; message: string };
+};
+
 class FakeSupabaseQuery {
   private filters: Array<[string, unknown]> = [];
   private rangeBounds: [number, number] | null = null;
@@ -13,7 +20,7 @@ class FakeSupabaseQuery {
   constructor(
     private readonly table: string,
     private readonly calls: string[],
-    private readonly revisionError: { code: string; message: string } | null,
+    private readonly options: FakeOptions,
   ) {}
 
   select() {
@@ -37,14 +44,15 @@ class FakeSupabaseQuery {
       ["page_key", "adoption-instructions"],
       ["state", "published"],
     ]);
-    if (this.revisionError) return { data: null, error: this.revisionError };
+    if (this.options.revisionError) return { data: null, error: this.options.revisionError };
+    if ("revisionData" in this.options) return { data: this.options.revisionData, error: null };
     return {
       data: {
         id: "44444444-4444-4444-8444-444444444444",
         page_key: "adoption-instructions",
         revision_number: 1,
         state: "published",
-        content: initialAdoptionInstructionContent,
+        content: this.options.revisionContent ?? initialAdoptionInstructionContent,
         source_revision_id: null,
         version: 1,
         created_by: null,
@@ -71,7 +79,8 @@ class FakeSupabaseQuery {
     this.calls.push(this.table);
     const rows = this.rows();
     const data = this.rangeBounds ? rows.slice(this.rangeBounds[0], this.rangeBounds[1] + 1) : rows;
-    return Promise.resolve({ data, error: null, count: rows.length }).then(resolve);
+    const error = this.options.tableError?.table === this.table ? this.options.tableError : null;
+    return Promise.resolve({ data: error ? null : data, error, count: rows.length }).then(resolve);
   }
 
   private rows() {
@@ -118,13 +127,10 @@ class FakeSupabaseQuery {
   }
 }
 
-function fakeSupabaseClient(
-  calls: string[],
-  revisionError: { code: string; message: string } | null = null,
-) {
+function fakeSupabaseClient(calls: string[], options: FakeOptions = {}) {
   return {
     from(table: string) {
-      return new FakeSupabaseQuery(table, calls, revisionError);
+      return new FakeSupabaseQuery(table, calls, options);
     },
     storage: {
       from(bucket: string) {
@@ -157,8 +163,10 @@ describe("public adoption page reader client wiring", () => {
     const calls: string[] = [];
     const read = createPublicAdoptionPageReaderFromClient(
       fakeSupabaseClient(calls, {
-        code: "PGRST205",
-        message: "Could not find the table in the schema cache",
+        revisionError: {
+          code: "PGRST205",
+          message: "Could not find the table in the schema cache",
+        },
       }) as never,
     );
 
@@ -168,9 +176,65 @@ describe("public adoption page reader client wiring", () => {
     expect(result.feesBySpecies.dog.map((fee) => fee.itemName)).toEqual(["Dog adoption fee"]);
   });
 
+  test("uses approved seed copy for a missing CMS relation (42P01)", async () => {
+    const read = createPublicAdoptionPageReaderFromClient(
+      fakeSupabaseClient([], {
+        revisionError: { code: "42P01", message: "relation does not exist" },
+      }) as never,
+    );
+    expect((await read()).copy).toEqual(initialAdoptionInstructionContent);
+  });
+
+  test.each(["42501", "XX000", "PGRST116"])("rejects CMS read error %s", async (code) => {
+    const read = createPublicAdoptionPageReaderFromClient(
+      fakeSupabaseClient([], { revisionError: { code, message: "CMS read failed" } }) as never,
+    );
+    await expect(read()).rejects.toThrow();
+  });
+
+  test("rejects an absent published CMS revision", async () => {
+    const read = createPublicAdoptionPageReaderFromClient(
+      fakeSupabaseClient([], { revisionData: null }) as never,
+    );
+    await expect(read()).rejects.toThrow("Published adoption instructions were not found");
+  });
+
+  test("rejects invalid published CMS content", async () => {
+    const read = createPublicAdoptionPageReaderFromClient(
+      fakeSupabaseClient([], { revisionContent: { invalid: true } }) as never,
+    );
+    await expect(read()).rejects.toThrow();
+  });
+
+  test("prefers valid published CMS content over the seed", async () => {
+    const copy = {
+      ...initialAdoptionInstructionContent,
+      hero: { ...initialAdoptionInstructionContent.hero, title: "CMS revision title" },
+    };
+    const read = createPublicAdoptionPageReaderFromClient(
+      fakeSupabaseClient([], { revisionContent: copy }) as never,
+    );
+    expect((await read()).copy.hero.title).toBe("CMS revision title");
+  });
+
+  test.each(["adoption_fees", "site_document_slots"])(
+    "rejects an unrelated %s read error",
+    async (table) => {
+      const read = createPublicAdoptionPageReaderFromClient(
+        fakeSupabaseClient([], {
+          revisionError: { code: "PGRST205", message: "CMS table missing" },
+          tableError: { table, code: "42501", message: "unrelated source denied" },
+        }) as never,
+      );
+      await expect(read()).rejects.toThrow();
+    },
+  );
+
   test("keeps unrelated CMS read errors visible", async () => {
     const read = createPublicAdoptionPageReaderFromClient(
-      fakeSupabaseClient([], { code: "42501", message: "permission denied" }) as never,
+      fakeSupabaseClient([], {
+        revisionError: { code: "42501", message: "permission denied" },
+      }) as never,
     );
 
     expect(read()).rejects.toThrow();
