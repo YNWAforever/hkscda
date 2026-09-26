@@ -34,3 +34,10 @@ A fresh whole-branch reviewer found one Important issue: restoring history requi
 The reviewer found no remaining Critical issues; the potential trailing-slash story issue was withdrawn after a full router load demonstrated a 307 canonical redirect. Production schema/deployment, real authenticated browser integration, simultaneous multi-session contention and comprehensive accessibility were not independently certified by the reviewer.
 
 PRs: #131 stories/payment/evidence; #132 adoption CMS (draft pending migration approval). GitHub Actions did not start: account payments/spending-limit blocker, not a code test failure. Vercel preview for #131 passed.
+
+## Publication and cleanup
+- PR #131 merged normally into main as b77e4cde6c90d52d2f9ceeb48c8857d264d34694 (no administrator override). Adoption PR #132 includes that merge and remains draft.
+- Removed five reviewed source worktrees: public-route-port-group4, payment-public-config, adoption-http-boundary, about-pages-content-cms, admin-volunteer-settings-20260913. Removed their five local branches and four remaining obsolete remote branches. Removed the merged temporary PR #131 branch too.
+- Original commits are in a verified Git bundle; working files, ignored notes and local evidence are in verified ZIP archives under the original checkout's ignored `.superpowers/retained-work-archive-20260926/`. A SHA256 manifest records branch heads and dirty status. Volunteer archive was recreated and every current source file compared byte-for-byte after a Windows newline status-comparison mismatch. No work was discarded due to that false mismatch.
+- Root remains at its original checkout with 155 status entries. PR #130 and the active adoption integration checkout are retained. 37 worktrees remain registered; this cleanup applies to the five specifically reviewed worktrees, not unrelated active work.
+- Full brand sweep against the dev server was not green: TanStack's virtual client entry returned404, preventing hydration across routes. The production bundle builds successfully; this dev-server result is not treated as successful brand verification.
