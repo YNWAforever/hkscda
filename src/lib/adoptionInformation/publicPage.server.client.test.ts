@@ -1,3 +1,4 @@
+import { initialAdoptionInstructionContent } from "../adoptionInstructions/content";
 import { describe, expect, test } from "bun:test";
 
 import {
@@ -25,6 +26,33 @@ class FakeSupabaseQuery {
   in(column: string, values: unknown[]) {
     this.filters.push([column, values]);
     return this;
+  }
+
+  async maybeSingle() {
+    this.calls.push(this.table);
+    expect(this.table).toBe("adoption_instruction_revisions");
+    expect(this.filters).toEqual([
+      ["page_key", "adoption-instructions"],
+      ["state", "published"],
+    ]);
+    return {
+      data: {
+        id: "44444444-4444-4444-8444-444444444444",
+        page_key: "adoption-instructions",
+        revision_number: 1,
+        state: "published",
+        content: initialAdoptionInstructionContent,
+        source_revision_id: null,
+        version: 1,
+        created_by: null,
+        updated_by: null,
+        published_by: null,
+        published_at: "2026-09-26T00:00:00Z",
+        created_at: "2026-09-26T00:00:00Z",
+        updated_at: "2026-09-26T00:00:00Z",
+      },
+      error: null,
+    };
   }
 
   order() {
@@ -109,5 +137,6 @@ describe("public adoption page reader client wiring", () => {
     expect(calls).toContain("site_document_slots");
     expect(result.feesBySpecies.dog.map((fee) => fee.itemName)).toEqual(["Dog adoption fee"]);
     expect(result.guideGroups).toEqual([]);
+    expect(result.copy.hero.title).toBe("領養需知");
   });
 });

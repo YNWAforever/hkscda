@@ -216,10 +216,10 @@ export function createSupabaseAdoptionInstructionRepository(
       if (!pageData) throw new AdoptionInstructionError("not_found", 404);
       const page = requirePage(pageData);
       const published = page.publishedRevisionId
-        ? history.find((revision) => revision.id === page.publishedRevisionId) ?? null
+        ? (history.find((revision) => revision.id === page.publishedRevisionId) ?? null)
         : null;
       const draft = page.draftRevisionId
-        ? history.find((revision) => revision.id === page.draftRevisionId) ?? null
+        ? (history.find((revision) => revision.id === page.draftRevisionId) ?? null)
         : null;
       if ((page.publishedRevisionId && !published) || (page.draftRevisionId && !draft)) {
         throw new AdoptionInstructionError("internal", 500);

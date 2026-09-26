@@ -79,7 +79,10 @@ function createService() {
       revisionId: draftId,
       revisionVersion: 3,
     })),
-    restore: mock(async () => ({ ...adminPage.draft!, id: "33333333-3333-4333-8333-333333333333" })),
+    restore: mock(async () => ({
+      ...adminPage.draft!,
+      id: "33333333-3333-4333-8333-333333333333",
+    })),
   };
 }
 
@@ -102,7 +105,9 @@ describe("createAdoptionInstructionHandlers", () => {
       throw new Response("provider authorization detail", { status: 401 });
     });
 
-    const response = await handlers.get(new Request("https://test/api/admin/adoption-instructions"));
+    const response = await handlers.get(
+      new Request("https://test/api/admin/adoption-instructions"),
+    );
 
     expect(response.status).toBe(401);
     expect(response.headers.get("cache-control")).toBe("no-store");
@@ -122,7 +127,11 @@ describe("createAdoptionInstructionHandlers", () => {
         jsonRequest("/api/admin/adoption-instructions/draft", { expectedPageVersion: 2 }),
       ),
       handlers.updateDraft(
-        jsonRequest("/api/admin/adoption-instructions/draft", { expectedVersion: 2, content }, "PUT"),
+        jsonRequest(
+          "/api/admin/adoption-instructions/draft",
+          { expectedVersion: 2, content },
+          "PUT",
+        ),
       ),
       handlers.preview(new Request("https://test/api/admin/adoption-instructions/preview")),
     ]);

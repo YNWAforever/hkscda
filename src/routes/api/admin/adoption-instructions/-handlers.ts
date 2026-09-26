@@ -14,7 +14,8 @@ type AdoptionInstructionHandlers = ReturnType<typeof createAdoptionInstructionHa
 type HandlerFactory = () => AdoptionInstructionHandlers;
 
 export function toAdoptionInstructionActor(user: AdminUser): AdoptionInstructionActor {
-  if (user.role !== "staff" && user.role !== "admin") throw new Response("Forbidden", { status: 403 });
+  if (user.role !== "staff" && user.role !== "admin")
+    throw new Response("Forbidden", { status: 403 });
   return { authUserId: user.authUserId, role: user.role };
 }
 
@@ -49,9 +50,12 @@ export function createAdoptionInstructionRouteDelegates(factory: HandlerFactory 
       withComposition(factory, (handlers) => handlers.ensureDraft(request)),
     updateDraft: (request: Request) =>
       withComposition(factory, (handlers) => handlers.updateDraft(request)),
-    preview: (request: Request) => withComposition(factory, (handlers) => handlers.preview(request)),
-    publish: (request: Request) => withComposition(factory, (handlers) => handlers.publish(request)),
-    restore: (request: Request) => withComposition(factory, (handlers) => handlers.restore(request)),
+    preview: (request: Request) =>
+      withComposition(factory, (handlers) => handlers.preview(request)),
+    publish: (request: Request) =>
+      withComposition(factory, (handlers) => handlers.publish(request)),
+    restore: (request: Request) =>
+      withComposition(factory, (handlers) => handlers.restore(request)),
   };
 }
 

@@ -1,15 +1,3 @@
-export interface AdoptionInstructionRule {
-  id: string;
-  text: string;
-}
-
-export interface AdoptionInstructionCareTopic {
-  id: string;
-  value: string;
-  label: string;
-  content: string;
-}
-
 export interface AdoptionInstructionContent {
   hero: { eyebrow: string; title: string; description: string };
   fees: {
@@ -36,10 +24,10 @@ export interface AdoptionInstructionContent {
     zhHkActionLabel: string;
     enActionLabel: string;
   };
-  rules: { title: string; items: AdoptionInstructionRule[] };
+  rules: { title: string };
   care: {
-    cat: { title: string; topics: AdoptionInstructionCareTopic[] };
-    dog: { title: string; topics: AdoptionInstructionCareTopic[] };
+    cat: { title: string };
+    dog: { title: string };
   };
 }
 

@@ -56,6 +56,7 @@ describe("AdoptionInformationManagement", () => {
 
     expect(markup).toContain("????");
     expect(markup).toContain("Typical Species ????");
+    expect(markup).toContain("頁面內容");
     expect(markup).toContain('value="HK$1,500"');
     expect(markup).toContain("??");
     expect(markup).toContain("??");

@@ -99,11 +99,8 @@ export function createAdoptionInstructionService({
 
     async publish({ actor, expectedVersion, idempotencyKey }: PublishInput) {
       requirePublishingAdmin(actor);
-      const page = await repository.getAdminPage();
-      if (!page.draft) throw new AdoptionInstructionError("not_found", 404);
+      // The atomic RPC checks the cached request before looking for a draft.
       const parsedVersion = positiveVersionSchema.parse(expectedVersion);
-      if (page.draft.version !== parsedVersion) throw new AdoptionInstructionConflictError();
-      adoptionInstructionContentSchema.parse(page.draft.content);
       return repository.publish({
         actorUserId: actor.authUserId,
         expectedVersion: parsedVersion,

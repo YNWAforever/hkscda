@@ -19,7 +19,9 @@ const publishedRevisionId = "11111111-1111-4111-8111-111111111111";
 const draftRevisionId = "22222222-2222-4222-8222-222222222222";
 const restoredDraftRevisionId = "33333333-3333-4333-8333-333333333333";
 
-function revision(overrides: Partial<AdoptionInstructionRevision> = {}): AdoptionInstructionRevision {
+function revision(
+  overrides: Partial<AdoptionInstructionRevision> = {},
+): AdoptionInstructionRevision {
   return {
     id: publishedRevisionId,
     pageKey: "adoption-instructions",
@@ -38,7 +40,9 @@ function revision(overrides: Partial<AdoptionInstructionRevision> = {}): Adoptio
   };
 }
 
-function adminPage(overrides: Partial<AdoptionInstructionAdminPage> = {}): AdoptionInstructionAdminPage {
+function adminPage(
+  overrides: Partial<AdoptionInstructionAdminPage> = {},
+): AdoptionInstructionAdminPage {
   return {
     page: {
       pageKey: "adoption-instructions",
@@ -138,11 +142,20 @@ describe("createAdoptionInstructionService", () => {
     const { repository, calls } = createRepository(
       adminPage({
         page: { ...adminPage().page, draftRevisionId },
-        draft: revision({ id: draftRevisionId, state: "draft", revisionNumber: 2, version: 4, publishedAt: null }),
+        draft: revision({
+          id: draftRevisionId,
+          state: "draft",
+          revisionNumber: 2,
+          version: 4,
+          publishedAt: null,
+        }),
       }),
     );
     const service = createAdoptionInstructionService({ repository, now });
-    const content = { ...initialAdoptionInstructionContent, hero: { ...initialAdoptionInstructionContent.hero, title: "更新後的領養需知" } };
+    const content = {
+      ...initialAdoptionInstructionContent,
+      hero: { ...initialAdoptionInstructionContent.hero, title: "更新後的領養需知" },
+    };
 
     const updated = await service.updateDraft({ actor: staff, expectedVersion: 4, content });
 
@@ -161,13 +174,23 @@ describe("createAdoptionInstructionService", () => {
     const { repository, calls } = createRepository(
       adminPage({
         page: { ...adminPage().page, draftRevisionId },
-        draft: revision({ id: draftRevisionId, state: "draft", revisionNumber: 2, version: 4, publishedAt: null }),
+        draft: revision({
+          id: draftRevisionId,
+          state: "draft",
+          revisionNumber: 2,
+          version: 4,
+          publishedAt: null,
+        }),
       }),
     );
     const service = createAdoptionInstructionService({ repository, now });
 
     await expect(
-      service.updateDraft({ actor: staff, expectedVersion: 3, content: initialAdoptionInstructionContent }),
+      service.updateDraft({
+        actor: staff,
+        expectedVersion: 3,
+        content: initialAdoptionInstructionContent,
+      }),
     ).rejects.toBeInstanceOf(AdoptionInstructionConflictError);
     expect(calls.updateDraft).toEqual([]);
   });
@@ -176,13 +199,21 @@ describe("createAdoptionInstructionService", () => {
     const { repository, calls } = createRepository(
       adminPage({
         page: { ...adminPage().page, draftRevisionId },
-        draft: revision({ id: draftRevisionId, state: "draft", revisionNumber: 2, version: 4, publishedAt: null }),
+        draft: revision({
+          id: draftRevisionId,
+          state: "draft",
+          revisionNumber: 2,
+          version: 4,
+          publishedAt: null,
+        }),
       }),
     );
     const service = createAdoptionInstructionService({ repository, now });
     const idempotencyKey = "publish-adoption-instructions-0001";
 
-    await expect(service.publish({ actor: staff, expectedVersion: 4, idempotencyKey })).rejects.toMatchObject({
+    await expect(
+      service.publish({ actor: staff, expectedVersion: 4, idempotencyKey }),
+    ).rejects.toMatchObject({
       code: "forbidden",
     });
     await service.publish({ actor: admin, expectedVersion: 4, idempotencyKey });
@@ -215,4 +246,13 @@ describe("createAdoptionInstructionService", () => {
     ]);
     expect(getPage().history[0]).toEqual(source);
   });
+});
+
+test("publish retry reaches the atomic idempotency lookup even after the draft is gone", async () => {
+  const { repository, calls } = createRepository();
+  const service = createAdoptionInstructionService({ repository, now });
+  await expect(
+    service.publish({ actor: admin, expectedVersion: 4, idempotencyKey: "retry-publish-00000001" }),
+  ).resolves.toMatchObject({ revisionId: draftRevisionId });
+  expect(calls.publish).toHaveLength(1);
 });

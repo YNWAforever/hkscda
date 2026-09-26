@@ -1,3 +1,4 @@
+import { AdoptionInstructionsManagement } from "./AdoptionInstructionsManagement";
 import { useMemo, useState } from "react";
 import { ChevronDown, ChevronUp, Plus, Search, Trash2 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -16,6 +17,8 @@ import { CareTopicsManagement } from "./CareTopicsManagement";
 import { TablePager } from "../TablePager";
 
 export const ADOPTION_INFORMATION_QUERY_KEY = ["admin-adoption-information"] as const;
+
+export type AdoptionContentTab = AdoptionInformationResource | "page";
 
 type InitialData = {
   fees: AdminAdoptionInformationPage;
@@ -56,14 +59,15 @@ export function AdoptionContentTabs({
   activeTab,
   onTabChange,
 }: {
-  activeTab: AdoptionInformationResource;
-  onTabChange: (tab: AdoptionInformationResource) => void;
+  activeTab: AdoptionContentTab;
+  onTabChange: (tab: AdoptionContentTab) => void;
 }) {
   return (
     <div className="flex gap-2 border-b border-[var(--color-border)]" role="tablist">
       {(
         [
           ["fees", "領養費用"],
+          ["page", "頁面內容"],
           ["estates", "可養狗屋苑"],
           ["rules", "領養規則"],
           ["careTopics", "動物照顧須知"],
@@ -92,13 +96,13 @@ type MutationInput =
 
 function AdoptionInformationManagementRuntime() {
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<AdoptionInformationResource>("fees");
+  const [activeTab, setActiveTab] = useState<AdoptionContentTab>("fees");
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
   const search = useMemo(
     () =>
       buildAdoptionInformationSearchParams({
-        resource: activeTab,
+        resource: activeTab === "page" ? "fees" : activeTab,
         q: query,
         page,
         pageSize: 50,
@@ -106,6 +110,7 @@ function AdoptionInformationManagementRuntime() {
     [activeTab, page, query],
   );
   const informationQuery = useQuery({
+    enabled: activeTab === "fees" || activeTab === "estates",
     queryKey: [...ADOPTION_INFORMATION_QUERY_KEY, search],
     queryFn: () =>
       fetchAdminJson<AdminAdoptionInformationPage>("/api/admin/adoption-information?" + search),
@@ -141,11 +146,20 @@ function AdoptionInformationManagementRuntime() {
     onSuccess: () => invalidateAdoptionInformationQueries(queryClient),
   });
 
-  const handleTabChange = (tab: AdoptionInformationResource) => {
+  const handleTabChange = (tab: AdoptionContentTab) => {
     setActiveTab(tab);
     setQuery("");
     setPage(1);
   };
+
+  if (activeTab === "page") {
+    return (
+      <div>
+        <AdoptionContentTabs activeTab={activeTab} onTabChange={handleTabChange} />
+        <AdoptionInstructionsManagement />
+      </div>
+    );
+  }
 
   if (activeTab === "rules") {
     return <AdoptionRulesManagement activeTab={activeTab} onTabChange={handleTabChange} />;
@@ -206,14 +220,14 @@ function AdoptionInformationManagementRuntime() {
 }
 
 type ViewProps = {
-  activeTab: AdoptionInformationResource;
+  activeTab: AdoptionContentTab;
   data?: AdminAdoptionInformationPage;
   loading?: boolean;
   error?: string | null;
   query: string;
   page?: number;
   pending?: boolean;
-  onTabChange?: (tab: AdoptionInformationResource) => void;
+  onTabChange?: (tab: AdoptionContentTab) => void;
   onQueryChange?: (value: string) => void;
   onPageChange?: (page: number) => void;
   onSaveFee?: (fee: AdoptionFee) => void;

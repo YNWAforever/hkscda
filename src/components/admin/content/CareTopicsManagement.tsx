@@ -1,3 +1,4 @@
+import type { AdoptionContentTab } from "./AdoptionInformationManagement";
 import { TablePager } from "../TablePager";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -6,7 +7,6 @@ import { fetchAdminJson } from "../../../lib/admin/http";
 import type {
   AdminAdoptionInformationPage,
   AdoptionAnimalType,
-  AdoptionInformationResource,
   CareTopic,
 } from "../../../lib/adoptionInformation/types";
 import { LoadFailure } from "../LoadFailure";
@@ -55,8 +55,8 @@ export function CareTopicsManagement({
   activeTab,
   onTabChange,
 }: {
-  activeTab: AdoptionInformationResource;
-  onTabChange: (tab: AdoptionInformationResource) => void;
+  activeTab: AdoptionContentTab;
+  onTabChange: (tab: AdoptionContentTab) => void;
 }) {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);

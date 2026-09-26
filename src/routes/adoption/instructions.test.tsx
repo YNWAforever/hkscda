@@ -1,3 +1,4 @@
+import * as router from "@tanstack/react-router";
 import { describe, expect, mock, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 
@@ -6,6 +7,7 @@ import { createAdoptionInstructionsLoader } from "../../lib/adoptionInformation/
 import { initialAdoptionInstructionContent } from "../../lib/adoptionInstructions/content";
 
 mock.module("@tanstack/react-router", () => ({
+  ...router,
   createFileRoute: () => (options: unknown) => options,
   Link: ({ children, to, ...props }: { children?: unknown; to: string }) => (
     <a href={to} {...props}>
@@ -239,39 +241,19 @@ describe("adoption instructions route", () => {
     expect(markup).toContain("養狗需知");
   });
 
-  test("renders the selected published copy and activates its first custom care topic", async () => {
+  test("renders published page labels while retaining the bilingual rule and care collections", async () => {
     const { AdoptionInstructionsContent } = await import("./instructions");
     const copy = {
       ...initialAdoptionInstructionContent,
-      hero: {
-        ...initialAdoptionInstructionContent.hero,
-        eyebrow: "Published eyebrow",
-        title: "Published instructions title",
-      },
-      rules: {
-        title: "Published rules",
-        items: [{ id: "published-rule", text: "Published rule text" }],
-      },
-      care: {
-        ...initialAdoptionInstructionContent.care,
-        cat: {
-          title: "Published cat care",
-          topics: [
-            { id: "cat-away", value: "away", label: "Away first", content: "Away content" },
-            { id: "cat-home", value: "home", label: "Home second", content: "Home content" },
-          ],
-        },
-      },
+      hero: { ...initialAdoptionInstructionContent.hero, title: "Published title" },
+      rules: { title: "Published rules" },
     };
-    const markup = renderToStaticMarkup(
-      <AdoptionInstructionsContent data={{ ...data, copy } as PublicAdoptionPageData} />,
-    );
-
-    expect(markup).toContain("Published eyebrow");
-    expect(markup).toContain("Published instructions title");
-    expect(markup).toContain("Published rules");
-    expect(markup).toContain("Published rule text");
-    expect(markup).toContain('aria-controls="radix-_R_k_-content-away"');
-    expect(markup).toMatch(/aria-controls="radix-_R_k_-content-away" data-state="active"/);
+    const html = renderToStaticMarkup(<AdoptionInstructionsContent data={{ ...data, copy }} />);
+    expect(html).toContain("Published title");
+    expect(html).toContain("Published rules");
+    expect(html).toContain("申請人須年滿18歲。");
+    expect(html).toContain("為貓貓提供安全的室內環境。");
+    expect(html).toContain('aria-pressed="false"');
+    expect(html).toContain("English");
   });
 });

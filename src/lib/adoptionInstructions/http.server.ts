@@ -15,7 +15,10 @@ const updateBodySchema = z
   .object({ expectedVersion: positiveVersionSchema, content: adoptionInstructionContentSchema })
   .strict();
 const publishBodySchema = z
-  .object({ expectedVersion: positiveVersionSchema, idempotencyKey: z.string().trim().min(16).max(200) })
+  .object({
+    expectedVersion: positiveVersionSchema,
+    idempotencyKey: z.string().trim().min(16).max(200),
+  })
   .strict();
 const restoreBodySchema = z.object({ revisionId: z.string().uuid() }).strict();
 
@@ -41,7 +44,9 @@ function fieldErrors(issues: ReadonlyArray<{ path: ReadonlyArray<PropertyKey>; m
   return fields;
 }
 
-function validationResponse(issues: ReadonlyArray<{ path: ReadonlyArray<PropertyKey>; message: string }>) {
+function validationResponse(
+  issues: ReadonlyArray<{ path: ReadonlyArray<PropertyKey>; message: string }>,
+) {
   return jsonNoStore(
     {
       error: {
@@ -59,10 +64,7 @@ export function adoptionInstructionInternalErrorResponse() {
 }
 
 function adoptionInstructionErrorResponse(error: AdoptionInstructionError) {
-  return jsonNoStore(
-    { error: { code: error.code, message: messages[error.code] } },
-    error.status,
-  );
+  return jsonNoStore({ error: { code: error.code, message: messages[error.code] } }, error.status);
 }
 
 async function withHttpErrors(operation: () => Promise<Response>) {

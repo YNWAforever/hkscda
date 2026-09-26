@@ -115,13 +115,37 @@ function InstructionsPage() {
 
 export function AdoptionInstructionsContent({ data }: { data: PublicAdoptionPageData }) {
   const [language, setLanguage] = useState<AdoptionLanguage>("zh-HK");
-  const copy = pageCopy[language];
+  const copy =
+    language === "en"
+      ? pageCopy.en
+      : {
+          ...pageCopy["zh-HK"],
+          rulesHeading: data.copy.rules.title,
+          catCareHeading: data.copy.care.cat.title,
+          dogCareHeading: data.copy.care.dog.title,
+          feesHeading: data.copy.fees.sectionTitle,
+          feesNote: data.copy.fees.notice,
+          dogFeeTitle: data.copy.fees.dogTitle,
+          catFeeTitle: data.copy.fees.catTitle,
+          estatesHeading: data.copy.estates.sectionTitle,
+          estatesNote: data.copy.estates.introduction,
+          estateNameHeader: data.copy.estates.estateLabel,
+          districtHeader: data.copy.estates.districtLabel,
+          notesHeader: data.copy.estates.notesLabel,
+          estatesEmpty: data.copy.estates.emptyState,
+          guidesHeading: data.copy.guides.sectionTitle,
+          catGuideTitle: data.copy.guides.catTitle,
+          dogGuideTitle: data.copy.guides.dogTitle,
+          generalGuideTitle: data.copy.guides.generalTitle,
+          zhVersion: data.copy.guides.zhHkActionLabel,
+          enVersion: data.copy.guides.enActionLabel,
+        };
 
   return (
     <PublicPageFrame
-      eyebrow="領養準備"
-      title="領養需知"
-      description="了解申請、家訪和日常照護，為你和動物做好長期準備。"
+      eyebrow={data.copy.hero.eyebrow}
+      title={data.copy.hero.title}
+      description={data.copy.hero.description}
     >
       <div
         className="public-container space-y-12 py-4"
@@ -228,8 +252,18 @@ function AdoptionInformationSections({
           {copy.feesHeading}
         </h2>
         <div className="grid gap-6 lg:grid-cols-2">
-          <FeeTable title={copy.dogFeeTitle} fees={data.feesBySpecies.dog} />
-          <FeeTable title={copy.catFeeTitle} fees={data.feesBySpecies.cat} />
+          <FeeTable
+            title={copy.dogFeeTitle}
+            fees={data.feesBySpecies.dog}
+            itemLabel={language === "en" ? "Item" : data.copy.fees.itemLabel}
+            amountLabel={language === "en" ? "Fee (HK$)" : data.copy.fees.amountLabel}
+          />
+          <FeeTable
+            title={copy.catFeeTitle}
+            fees={data.feesBySpecies.cat}
+            itemLabel={language === "en" ? "Item" : data.copy.fees.itemLabel}
+            amountLabel={language === "en" ? "Fee (HK$)" : data.copy.fees.amountLabel}
+          />
         </div>
         <p className="text-sm text-[var(--color-text-muted)]">{copy.feesNote}</p>
       </section>
@@ -321,7 +355,17 @@ function AdoptionInformationSections({
   );
 }
 
-function FeeTable({ title, fees }: { title: string; fees: AdoptionFee[] }) {
+function FeeTable({
+  title,
+  fees,
+  itemLabel,
+  amountLabel,
+}: {
+  title: string;
+  fees: AdoptionFee[];
+  itemLabel: string;
+  amountLabel: string;
+}) {
   return (
     <div className="overflow-x-auto">
       <table aria-label={title} className="w-full border-collapse text-left text-sm">
@@ -329,10 +373,10 @@ function FeeTable({ title, fees }: { title: string; fees: AdoptionFee[] }) {
         <thead>
           <tr className="border-b border-[var(--color-border)]">
             <th scope="col" className="px-3 py-3 font-bold">
-              項目
+              {itemLabel}
             </th>
             <th scope="col" className="px-3 py-3 font-bold">
-              費用（HK$）
+              {amountLabel}
             </th>
           </tr>
         </thead>

@@ -1,81 +1,47 @@
-import { describe, expect, mock, test } from "bun:test";
-import { renderToStaticMarkup } from "react-dom/server";
-
-import type { PublicAdoptionPageData } from "../../../lib/adoptionInformation/publicPage.server";
-import { initialAdoptionInstructionContent } from "../../../lib/adoptionInstructions/content";
+import { expect, test } from "bun:test";
+import { loadAdoptionInstructionPreview } from "../../../lib/adoptionInstructions/preview";
+import { initialAdoptionInstructionContent as copy } from "../../../lib/adoptionInstructions/content";
 import type { AdoptionInstructionRevision } from "../../../lib/adoptionInstructions/types";
-
-let accessArea: string | undefined;
-let queryOptions:
-  | { queryKey: unknown[]; queryFn: () => Promise<PublicAdoptionPageData> }
-  | undefined;
-let requestedPath: string | undefined;
-let publicPageCalls = 0;
-
-const previewData = {
-  copy: {
-    ...initialAdoptionInstructionContent,
-    hero: { ...initialAdoptionInstructionContent.hero, title: "Draft preview title" },
-  },
-  feesBySpecies: { dog: [], cat: [] },
+const page = {
+  copy,
+  feesBySpecies: { cat: [], dog: [] },
   estates: [],
   guideGroups: [],
-} satisfies PublicAdoptionPageData;
-
-const draftRevision = {
-  content: previewData.copy,
-} as AdoptionInstructionRevision;
-
-const publishedPageData = {
-  ...previewData,
-  copy: initialAdoptionInstructionContent,
-} satisfies PublicAdoptionPageData;
-
-mock.module("@tanstack/react-router", () => ({
-  createFileRoute: () => (options: unknown) => options,
-}));
-
-mock.module("@tanstack/react-query", () => ({
-  useQuery: (options: typeof queryOptions) => {
-    queryOptions = options;
-    return { data: previewData, isPending: false, error: null };
-  },
-}));
-
-mock.module("../../../lib/admin/pageAccess", () => ({
-  requireAdminPageAccess: async (area: string) => {
-    accessArea = area;
-  },
-}));
-
-mock.module("../../../lib/admin/session", () => ({
-  fetchAdminJson: async (path: string) => {
-    requestedPath = path;
-    return draftRevision;
-  },
-}));
-
-mock.module("../../../lib/adoptionInformation/publicPage.functions", () => ({
-  getPublicAdoptionPage: async () => {
-    publicPageCalls += 1;
-    return publishedPageData;
-  },
-}));
-
-describe("adoption instructions preview route", () => {
-  test("requires content access and renders the authenticated draft preview without the admin layout", async () => {
-    const { Route, AdoptionInstructionsPreviewPage } = await import("./adoption-preview");
-    await (Route as unknown as { beforeLoad: () => Promise<void> }).beforeLoad();
-
-    const markup = renderToStaticMarkup(<AdoptionInstructionsPreviewPage />);
-    const preview = await queryOptions?.queryFn();
-
-    expect(accessArea).toBe("contentManagement");
-    expect(queryOptions?.queryKey).toEqual(["adoption-instructions", "preview"]);
-    expect(requestedPath).toBe("/api/admin/adoption-instructions/preview");
-    expect(publicPageCalls).toBe(1);
-    expect(preview?.copy.hero.title).toBe("Draft preview title");
-    expect(markup).toContain("Draft preview title");
-    expect(markup).not.toContain("AdminLayout");
-  });
+  rules: [],
+  careTopics: { cat: [], dog: [] },
+};
+const draft: AdoptionInstructionRevision = {
+  id: "22222222-2222-4222-8222-222222222222",
+  pageKey: "adoption-instructions",
+  revisionNumber: 2,
+  state: "draft",
+  content: { ...copy, hero: { ...copy.hero, title: "Preview title" } },
+  version: 1,
+  sourceRevisionId: null,
+  createdBy: null,
+  updatedBy: null,
+  publishedBy: null,
+  publishedAt: null,
+  createdAt: "2026-09-26T00:00:00Z",
+  updatedAt: "2026-09-26T00:00:00Z",
+};
+test("preview replaces only page labels and preserves the live bilingual collections", async () => {
+  const result = await loadAdoptionInstructionPreview(
+    async () => page,
+    async () => draft,
+  );
+  expect(result.copy.hero.title).toBe("Preview title");
+  expect(page.copy.hero.title).toBe("領養需知");
+  expect(result.rules).toBe(page.rules);
+  expect(result.careTopics).toBe(page.careTopics);
+});
+test("preview propagates authorization failures instead of displaying public copy as a draft", async () => {
+  await expect(
+    loadAdoptionInstructionPreview(
+      async () => page,
+      async () => {
+        throw new Error("forbidden");
+      },
+    ),
+  ).rejects.toThrow("forbidden");
 });

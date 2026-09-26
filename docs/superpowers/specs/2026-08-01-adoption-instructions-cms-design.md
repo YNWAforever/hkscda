@@ -135,3 +135,7 @@ If a published copy change is wrong, restore the last known-good revision into a
 - Only admins can publish or restore.
 - Every publish/restore is versioned and audited.
 - Public output always comes from a validated published revision; provider failures use the existing route error boundary and do not substitute draft or empty authoring content.
+
+## Integration reconciliation — 2026-09-26
+
+Current main already owns bilingual rules and care-topic editing, ordering and public reads. Preserve those modules. The page revision document covers hero, fee labels/notice, estate labels/introduction, guide labels, rules title and cat/dog care titles. Remove rule/topic arrays from this document and editor. English page labels retain existing behavior. The existing fee/estate/guide surfaces remain authoritative. See `docs/evidence/retained-work-integration-20260926/verification.md` for verification and the migration-before-deployment gate.
