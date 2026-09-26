@@ -11,6 +11,10 @@ const purposeLabels: Record<string, string> = {
   sponsor: "助養動物 Sponsor a pet",
 };
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 export const stripeCheckoutPaymentMethodTypes: Stripe.Checkout.SessionCreateParams.PaymentMethodType[] =
   ["card"];
 
@@ -111,12 +115,27 @@ export async function createPayPalOrder(
     throw new Error(`PayPal order request failed with ${response.status}`);
   }
 
-  const data = (await response.json()) as { id: string; links?: { rel: string; href: string }[] };
-  const approveLink = data.links?.find(
-    (link) => link.rel === "payer-action" || link.rel === "approve",
+  const data: unknown = await response.json();
+  if (!isRecord(data) || typeof data.id !== "string" || !data.id.trim()) {
+    throw new Error("PayPal did not return an order ID");
+  }
+  const links = Array.isArray(data.links) ? data.links : [];
+  const approveLink = links.find(
+    (link) => isRecord(link) && (link.rel === "payer-action" || link.rel === "approve"),
   );
-  if (!approveLink) throw new Error("PayPal did not return an approval URL");
-  return { providerRef: data.id, url: approveLink.href };
+  if (!isRecord(approveLink) || typeof approveLink.href !== "string") {
+    throw new Error("PayPal did not return an approval URL");
+  }
+  let approveUrl: URL;
+  try {
+    approveUrl = new URL(approveLink.href);
+  } catch {
+    throw new Error("PayPal did not return a secure approval URL");
+  }
+  if (approveUrl.protocol !== "https:" || approveUrl.username || approveUrl.password) {
+    throw new Error("PayPal did not return a secure approval URL");
+  }
+  return { providerRef: data.id, url: approveUrl.href };
 }
 
 export function assertPayPalCaptureCompleted(httpStatus: number, body: unknown) {
