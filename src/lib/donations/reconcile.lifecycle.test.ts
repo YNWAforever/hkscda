@@ -389,6 +389,14 @@ function createWebhookFake({
   const client = {
     rpc(fn: string, args: Record<string, unknown>) {
       operations.push({ table: fn, action: "rpc", payload: args, filters: [] });
+      if (fn === "void_donation_receipts_with_audit")
+        return Promise.resolve({
+          data: issuedReceipts.map((receipt) => ({
+            receipt_id: receipt.id,
+            pdf_url: receipt.pdf_url,
+          })),
+          error: null,
+        });
       if (!payment) return Promise.resolve({ data: { kind: "not_found" }, error: null });
       const statuses = [payment.status, payment.donation.status];
       if (fn === "fail_pending_provider_payment") {
@@ -615,8 +623,10 @@ describe("refundProviderPayment", () => {
     expect(statusUpdate(operations, "payment")).toBeUndefined();
     expect(statusUpdate(operations, "donation")).toBeUndefined();
 
-    const receiptUpdate = operations.find((o) => o.table === "receipt" && o.action === "update");
-    expect((receiptUpdate?.payload as { status?: string }).status).toBe("void");
+    expect(
+      operations.find((o) => o.table === "void_donation_receipts_with_audit")?.payload,
+    ).toEqual({ p_donation_id: "donation-1", p_reason: "refund" });
+    expect(operations.some((o) => o.table === "receipt" && o.action === "update")).toBe(false);
     expect(removals).toEqual(["2026/HKSCDA-2026-000001.pdf"]);
   });
 });
@@ -1113,6 +1123,13 @@ describe("voidReceipt", () => {
     const operations: Array<{ table: string; action: string; payload?: unknown }> = [];
     const removals: string[] = [];
     const client = {
+      rpc(fn: string, payload: unknown) {
+        operations.push({ table: fn, action: "rpc", payload });
+        return Promise.resolve({
+          data: [{ receipt_id: "receipt-1", pdf_url: "2026/HKSCDA-2026-000001.pdf" }],
+          error: null,
+        });
+      },
       storage: {
         from() {
           return {
@@ -1123,32 +1140,6 @@ describe("voidReceipt", () => {
           };
         },
       },
-      from(table: string) {
-        return {
-          insert(payload: unknown) {
-            operations.push({ table, action: "insert", payload });
-            return Promise.resolve({ error: null });
-          },
-          update(payload: unknown) {
-            const builder = {
-              eq() {
-                return builder;
-              },
-              select() {
-                return builder;
-              },
-              single() {
-                operations.push({ table, action: "update", payload });
-                return Promise.resolve({
-                  data: { id: "receipt-1", pdf_url: "2026/HKSCDA-2026-000001.pdf" },
-                  error: null,
-                });
-              },
-            };
-            return builder;
-          },
-        };
-      },
     };
 
     const result = await voidReceipt(client as never, "receipt-1", "admin-1", {
@@ -1157,6 +1148,12 @@ describe("voidReceipt", () => {
 
     expect(result).toEqual({ receiptId: "receipt-1", status: "void" });
     expect(removals).toEqual(["2026/HKSCDA-2026-000001.pdf"]);
-    expect(operations.some((o) => o.table === "audit_log" && o.action === "insert")).toBe(true);
+    expect(operations).toEqual([
+      {
+        table: "void_receipt_with_audit",
+        action: "rpc",
+        payload: { p_receipt_id: "receipt-1", p_actor: "admin-1", p_supporter_id: "supporter-1" },
+      },
+    ]);
   });
 });

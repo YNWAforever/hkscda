@@ -915,38 +915,15 @@ async function removeReceiptPdf(client: SupabaseClient, pdfUrl: string | null | 
 async function voidIssuedReceiptsForDonation(
   client: SupabaseClient,
   donationId: string,
-  options: { actorUserId?: string; reason?: string } = {},
+  options: { reason?: string } = {},
 ) {
-  const { data: receipts, error } = await client
-    .from("receipt")
-    .select("id,pdf_url")
-    .contains("donation_ids", [donationId])
-    .eq("status", "issued");
+  const { data, error } = await client.rpc("void_donation_receipts_with_audit", {
+    p_donation_id: donationId,
+    p_reason: options.reason ?? "refund",
+  });
   if (error) throw error;
-
-  for (const receipt of (receipts ?? []) as Array<{ id: string; pdf_url: string | null }>) {
-    const { error: updateError } = await client
-      .from("receipt")
-      .update({
-        status: "void",
-        voided_at: new Date().toISOString(),
-        voided_by: options.actorUserId ?? null,
-      })
-      .eq("id", receipt.id)
-      .eq("status", "issued");
-    if (updateError) throw updateError;
+  for (const receipt of (data ?? []) as Array<{ receipt_id: string; pdf_url: string | null }>) {
     await removeReceiptPdf(client, receipt.pdf_url);
-
-    // Audit-trail the void so a refund-driven void is not silent (mirrors the
-    // manual voidReceipt path). actor is null for system/webhook-driven voids.
-    const { error: auditError } = await client.from("audit_log").insert({
-      actor_user_id: options.actorUserId ?? null,
-      action: "receipt.void",
-      entity: "receipt",
-      entity_id: receipt.id,
-      detail: { reason: options.reason ?? "refund", donationId },
-    });
-    if (auditError) throw auditError;
   }
 }
 
@@ -956,31 +933,15 @@ export async function voidReceipt(
   actorUserId: string,
   context: ReceiptActionContext = {},
 ) {
-  const voidedAt = new Date().toISOString();
-  const { data, error } = await client
-    .from("receipt")
-    .update({
-      status: "void",
-      voided_at: voidedAt,
-      voided_by: actorUserId,
-    })
-    .eq("id", receiptId)
-    .eq("status", "issued")
-    .select("id,pdf_url")
-    .single();
-  if (error) throw error;
-  if (!data) throw new Error("Receipt not found or already voided");
-
-  await removeReceiptPdf(client, (data as { pdf_url: string | null }).pdf_url);
-
-  const { error: auditError } = await client.from("audit_log").insert({
-    actor_user_id: actorUserId,
-    action: "receipt.void",
-    entity: "receipt",
-    entity_id: receiptId,
-    detail: { voidedAt, supporterId: context.supporterId ?? null },
+  const { data, error } = await client.rpc("void_receipt_with_audit", {
+    p_receipt_id: receiptId,
+    p_actor: actorUserId,
+    p_supporter_id: context.supporterId ?? null,
   });
-  if (auditError) throw auditError;
+  if (error) throw error;
+  const row = (data as Array<{ receipt_id: string; pdf_url: string | null }> | null)?.[0];
+  if (!row) throw new Error("Receipt not found or already voided");
 
-  return { receiptId, status: "void" as const };
+  await removeReceiptPdf(client, row.pdf_url);
+  return { receiptId: row.receipt_id, status: "void" as const };
 }
