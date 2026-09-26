@@ -76,6 +76,9 @@ test("does not expose a preview owned by another staff member before the publish
 
   if (!(response instanceof Response)) throw new Error("Expected HTTP response");
   expect(response.status).toBe(409);
+  expect(await response.json()).toEqual({
+    error: { code: "stale_preview", message: "草稿已變更，請重新預覽。" },
+  });
   expect(download).not.toHaveBeenCalled();
   expect(upload).not.toHaveBeenCalled();
 });
@@ -157,6 +160,9 @@ test("does not promote an unreviewed animal image before editorial approval reje
 
   if (!(response instanceof Response)) throw new Error("Expected HTTP response");
   expect(response.status).toBe(422);
+  expect(await response.json()).toEqual({
+    error: { code: "invalid_draft", message: "動物草稿資料無效" },
+  });
   expect(download).not.toHaveBeenCalled();
   expect(upload).not.toHaveBeenCalled();
   expect(rpc).not.toHaveBeenCalled();
@@ -285,7 +291,7 @@ test("promotes distinct gallery images only after the publish transaction commit
     return { error: null };
   });
   const rpc = mock(async (name: string, _args: { p_command: Record<string, unknown> }) => {
-    if (name === "animal_publication_command") {
+    if (name === "publish_animal_publication_once") {
       published = true;
       return { data: { kind: "published" }, error: null };
     }
@@ -360,7 +366,7 @@ test("promotes distinct gallery images only after the publish transaction commit
 test("a committed publish reports pending media when Storage cannot copy immediately", async () => {
   const upload = mock(async () => ({ error: new Error("storage unavailable") }));
   const rpc = mock(async (name: string) =>
-    name === "animal_publication_command"
+    name === "publish_animal_publication_once"
       ? { data: { kind: "published" }, error: null }
       : { data: true, error: null },
   );
@@ -412,4 +418,55 @@ test("a committed publish reports pending media when Storage cannot copy immedia
   } finally {
     console.error = previousError;
   }
+});
+
+test("retrying a committed preview resumes its pending media copy", async () => {
+  const sourcePath = "animal-1/private.jpg";
+  const publicPath = "animal-1/versions/preview-1.jpg";
+  const upload = mock(async () => ({ error: null }));
+  const rpc = mock(async (name: string) =>
+    name === "publish_animal_publication_once"
+      ? { data: { kind: "published", version_id: "version-1", replayed: true }, error: null }
+      : { data: true, error: null },
+  );
+  activeClient = {
+    from: (table: string) => {
+      if (table === "animal_publication_preview") return queryRow(null);
+      if (table === "animal_publication_media_copy") {
+        const query = {
+          eq: () => query,
+          is: () => query,
+          limit: async () => ({
+            data: [{ source_path: sourcePath, public_path: publicPath }],
+            error: null,
+          }),
+        };
+        return { select: () => query };
+      }
+      throw new Error("Unexpected table: " + table);
+    },
+    storage: {
+      from: (bucket: string) =>
+        bucket === "animal-draft-images"
+          ? { download: async () => ({ data: new Blob(["image"]), error: null }) }
+          : { upload },
+    },
+    rpc,
+  };
+  const handlers = Route.options.server?.handlers;
+  const handler = handlers && typeof handlers !== "function" ? handlers.POST : undefined;
+  if (!handler) throw new Error("Animal publication POST handler missing");
+  const response = await handler({
+    request: new Request("http://localhost/api/admin/animals/publication/", {
+      method: "POST",
+      body: JSON.stringify({ kind: "publish", preview_id: "preview-1", animal_id: "animal-1" }),
+    }),
+  } as never);
+  if (!(response instanceof Response)) throw new Error("Expected HTTP response");
+  expect(response.status).toBe(200);
+  expect(upload).toHaveBeenCalledTimes(1);
+  expect(rpc).toHaveBeenCalledWith("publish_animal_publication_once", {
+    p_actor: "staff-user",
+    p_command: expect.objectContaining({ preview_id: "preview-1" }),
+  });
 });

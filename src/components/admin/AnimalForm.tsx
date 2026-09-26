@@ -5,6 +5,7 @@ import { z } from "zod";
 import { useBlocker, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { fetchAdminJson } from "../../lib/admin/http";
+import { AdminApiError } from "../../lib/admin/session";
 import {
   buildPublicProfile,
   PUBLIC_PROFILE_LABELS,
@@ -368,9 +369,15 @@ export function AnimalForm({ existing }: AnimalFormProps) {
         return;
       }
       navigate({ to: "/admin" });
-    } catch {
-      setError("草稿已變更或發布失敗，請重新預覽。");
-      setPreviewId(null);
+    } catch (error) {
+      if (error instanceof AdminApiError && [403, 404, 409, 422].includes(error.status)) {
+        setError("草稿已變更或發布失敗，請重新預覽。");
+        setPreviewId(null);
+      } else {
+        // A lost HTTP response may follow a committed publish. Keep the
+        // preview ID so the idempotent publish command can be retried.
+        setError("未能確認發布結果。請重試發布；不會建立重複版本。");
+      }
     }
   }
   const field =

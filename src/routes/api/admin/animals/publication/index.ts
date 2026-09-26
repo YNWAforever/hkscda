@@ -45,8 +45,9 @@ export const Route = createFileRoute("/api/admin/animals/publication/")({
           typeof command.preview_id === "string" &&
           typeof command.animal_id === "string"
         ) {
-          // Check the publish RPC's ownership, expiry and revision gates before
-          // copying an already-invalid preview's private media to the public bucket.
+          // Derive media URLs only from a preview owned by this actor and still
+          // at the current draft revision. The publish RPC repeats these gates
+          // while holding the draft row lock.
           const { data: preview, error: previewError } = await c
             .from("animal_publication_preview")
             .select("body,draft_revision")
@@ -89,7 +90,7 @@ export const Route = createFileRoute("/api/admin/animals/publication/")({
             if (reviewError) throw reviewError;
             if (review?.classification !== "approved")
               return Response.json(
-                { error: "動物草稿資料無效" },
+                { error: { code: "invalid_draft", message: "動物草稿資料無效" } },
                 { status: 422, headers: { "cache-control": "no-store" } },
               );
             body = candidateBody;
@@ -144,10 +145,15 @@ export const Route = createFileRoute("/api/admin/animals/publication/")({
             pendingCopies.push({ sourcePath: draftPath, publicPath });
           }
         }
-        const { data, error } = await c.rpc("animal_publication_command", {
-          p_actor: a.authUserId,
-          p_command: command,
-        });
+        const { data, error } = await c.rpc(
+          command.kind === "publish"
+            ? "publish_animal_publication_once"
+            : "animal_publication_command",
+          {
+            p_actor: a.authUserId,
+            p_command: command,
+          },
+        );
         if (!error && command.kind === "preview" && data?.body) {
           const body = data.body as Record<string, unknown>;
           async function previewUrl(path: unknown, fallback: unknown) {
@@ -176,9 +182,45 @@ export const Route = createFileRoute("/api/admin/animals/publication/")({
         }
         if (error) {
           const status = error.code === "42501" ? 403 : error.code === "22023" ? 422 : 500;
+          const message = status === 422 ? "動物草稿資料無效" : "未能處理動物發布";
           return Response.json(
-            { error: status === 422 ? "動物草稿資料無效" : "未能處理動物發布" },
-            { status },
+            command.kind === "publish"
+              ? {
+                  error: { code: status === 422 ? "invalid_draft" : "publication_failed", message },
+                }
+              : { error: message },
+            { status, headers: { "cache-control": "no-store" } },
+          );
+        }
+        if (
+          command.kind === "publish" &&
+          (data?.kind === "conflict" || data?.kind === "not_found")
+        ) {
+          return Response.json(
+            { error: { code: "stale_preview", message: "草稿已變更，請重新預覽。" } },
+            {
+              status: data.kind === "conflict" ? 409 : 404,
+              headers: { "cache-control": "no-store" },
+            },
+          );
+        }
+        if (data?.kind === "published" && data.replayed === true) {
+          if (typeof data.version_id !== "string")
+            throw new Error("Replayed publication is missing its version ID");
+          const { data: queued, error: queuedError } = await c
+            .from("animal_publication_media_copy")
+            .select("source_path,public_path")
+            .eq("publication_version_id", data.version_id)
+            .is("copied_at", null)
+            .limit(50);
+          if (queuedError) throw queuedError;
+          pendingCopies.splice(
+            0,
+            pendingCopies.length,
+            ...(queued ?? []).map((row) => ({
+              sourcePath: row.source_path as string,
+              publicPath: row.public_path as string,
+            })),
           );
         }
         let mediaPending = false;
