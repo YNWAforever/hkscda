@@ -13,6 +13,7 @@ import {
 import {
   cleanupExpiredSponsorshipProofUploads,
   createSupabaseSponsorshipProofCleanupPort,
+  createSupabaseStaffSponsorshipProofCleanupPort,
 } from "../../../lib/sponsorship/proofCleanup.server";
 import { authorizedCron } from "../../../lib/volunteers/jobs/auth.server";
 
@@ -30,8 +31,22 @@ export function createPublicUploadCleanupHandler({
   createClient = createSupabaseServiceClient,
   runAdoption = (client) =>
     cleanupExpiredAdoptionUploads(createSupabaseAdoptionUploadCleanupPort(client)),
-  runSponsorship = (client) =>
-    cleanupExpiredSponsorshipProofUploads(createSupabaseSponsorshipProofCleanupPort(client)),
+  runSponsorship = async (client) => {
+    const results = await Promise.allSettled([
+      cleanupExpiredSponsorshipProofUploads(createSupabaseSponsorshipProofCleanupPort(client)),
+      cleanupExpiredSponsorshipProofUploads(createSupabaseStaffSponsorshipProofCleanupPort(client)),
+    ]);
+    const failure = results.find((result) => result.status === "rejected");
+    if (failure?.status === "rejected") throw failure.reason;
+    const summaries = results.map((result) =>
+      result.status === "fulfilled" ? result.value : { removed: 0, preserved: 0, failed: 0 },
+    );
+    return {
+      removed: summaries.reduce((total, item) => total + item.removed, 0),
+      preserved: summaries.reduce((total, item) => total + item.preserved, 0),
+      failed: summaries.reduce((total, item) => total + item.failed, 0),
+    };
+  },
   runInternship = (client) =>
     cleanupExpiredInternshipUploads(createSupabaseInternshipUploadCleanupPort(client)),
   logger = console,
