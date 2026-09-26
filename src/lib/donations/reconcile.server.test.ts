@@ -178,6 +178,7 @@ function createReconcileClient({
   payment = pendingPayment,
   existingAcknowledgement = false,
   webhookLeaseReclaimSucceeds = true,
+  webhookMarkSucceeds = true,
   auditInsertError = false,
 }: {
   duplicateWebhookProcessedAt?: string | null;
@@ -185,6 +186,7 @@ function createReconcileClient({
   payment?: typeof pendingPayment;
   existingAcknowledgement?: boolean;
   webhookLeaseReclaimSucceeds?: boolean;
+  webhookMarkSucceeds?: boolean;
   auditInsertError?: boolean;
 } = {}) {
   const operations: Operation[] = [];
@@ -229,6 +231,16 @@ function createReconcileClient({
         return Promise.resolve({ data: null, error: null });
       },
       maybeSingle() {
+        if (
+          table === "webhook_event" &&
+          action === "update" &&
+          (payload as { processed_at?: string })?.processed_at
+        ) {
+          return Promise.resolve({
+            data: webhookMarkSucceeds ? { id: "webhook-event" } : null,
+            error: null,
+          });
+        }
         if (
           table === "webhook_event" &&
           action === "update" &&
@@ -409,6 +421,22 @@ describe("reconcileProviderPayment webhook event processing", () => {
     expect(eventProcessedIndex).toBeGreaterThan(donationUpdateIndex);
   });
 
+  test("does not acknowledge an unmatched event after losing its processing owner", async () => {
+    const { client } = createReconcileClient({
+      payment: null as never,
+      webhookMarkSucceeds: false,
+    });
+    await expect(
+      reconcileProviderPayment({
+        client: client as never,
+        provider: "stripe",
+        providerRef: "cs_missing",
+        providerEventId: "evt_lost_mark",
+        eventType: "checkout.session.completed",
+        payload: { id: "evt_lost_mark" },
+      }),
+    ).rejects.toThrow("Webhook event is still processing");
+  });
   test("retries duplicate webhook events that were reserved but not processed", async () => {
     const { client, operations } = createReconcileClient({
       duplicateWebhookProcessedAt: null,

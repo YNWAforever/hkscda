@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createAnimalPhotoUploadHandlers } from "../../../../../lib/animals/photoUpload.http.server";
+import { createAnimalDraftPhotoUploadHandler } from "../../../../../lib/animals/draftUpload.server";
 import {
   createSupabaseServiceClient,
   requireAdmin,
@@ -9,15 +9,9 @@ export const Route = createFileRoute("/api/admin/animals/draft-photo-upload-url/
     handlers: {
       POST: async ({ request }) => {
         const c = createSupabaseServiceClient();
-        const h = createAnimalPhotoUploadHandlers({
+        const h = createAnimalDraftPhotoUploadHandler({
+          client: c,
           requireAnimalAdmin: (r) => requireAdmin(r, ["staff", "admin"], c),
-          async createSignedUpload(_bucket, path) {
-            const { data, error } = await c.storage
-              .from("animal-draft-images")
-              .createSignedUploadUrl(path);
-            if (error) throw error;
-            return { ...data, path: data.path };
-          },
         });
         return h.createUploadUrl({ request });
       },

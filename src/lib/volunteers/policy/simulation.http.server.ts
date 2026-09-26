@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { readAdminJson } from "../../http/adminJson.server";
+import { RequestBodyTooLargeError } from "../../http/publicJson.server";
 export const simulationCommandSchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("list") }).strict(),
   z
@@ -24,8 +26,13 @@ export function createSimulationHandlers(deps: {
         const actor = await deps.authenticate(request);
         let raw: unknown;
         try {
-          raw = await request.json();
-        } catch {
+          raw = await readAdminJson(request);
+        } catch (error) {
+          if (error instanceof RequestBodyTooLargeError)
+            return Response.json(
+              { error: "Request body too large" },
+              { status: 413, headers: { "cache-control": "no-store" } },
+            );
           return Response.json({ error: "無效內容" }, { status: 400 });
         }
         const result = await deps.execute(actor, simulationCommandSchema.parse(raw));

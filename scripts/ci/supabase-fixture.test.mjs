@@ -4,7 +4,7 @@ import { spawn } from "node:child_process";
 import { createServer } from "node:net";
 import { once } from "node:events";
 
-test("CI animal fixture serves membership-filtered public catalogues", async () => {
+test("CI fixture serves public catalogues and paginated adoption fees", async () => {
   const reservation = createServer();
   reservation.listen(0, "127.0.0.1");
   await once(reservation, "listening");
@@ -43,6 +43,30 @@ test("CI animal fixture serves membership-filtered public catalogues", async () 
       },
     );
     assert.equal((await detail.json()).id, "00000000-0000-4000-8000-000000000001");
+
+    const feeUrl =
+      "http://127.0.0.1:" + port + "/rest/v1/adoption_fees?is_published=eq.true&order=animal_type.asc,sort_order.asc,id.asc";
+    const firstFeePage = await fetch(feeUrl + "&offset=0&limit=1", {
+      headers: { prefer: "count=exact" },
+    });
+    assert.equal(firstFeePage.status, 206);
+    assert.equal(firstFeePage.headers.get("content-range"), "0-0/13");
+    const firstFeeRows = await firstFeePage.json();
+    assert.equal(firstFeeRows.length, 1);
+
+    const secondFeePage = await fetch(feeUrl + "&offset=1&limit=1", {
+      headers: { prefer: "count=exact" },
+    });
+    assert.equal(secondFeePage.headers.get("content-range"), "1-1/13");
+    const secondFeeRows = await secondFeePage.json();
+    assert.equal(secondFeeRows.length, 1);
+    assert.notEqual(firstFeeRows[0].id, secondFeeRows[0].id);
+
+    const exhaustedFeePage = await fetch(feeUrl + "&offset=13&limit=1", {
+      headers: { prefer: "count=exact" },
+    });
+    assert.equal(exhaustedFeePage.headers.get("content-range"), "*/13");
+    assert.deepEqual(await exhaustedFeePage.json(), []);
   } finally {
     const exited = once(child, "exit");
     child.kill();

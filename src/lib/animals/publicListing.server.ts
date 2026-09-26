@@ -13,7 +13,8 @@ export async function readPublicAnimals(input: {
 }) {
   const animals: Animal[] = [];
 
-  for (let from = 0; ; from += PUBLIC_QUERY_BATCH_SIZE) {
+  let from = 0;
+  while (true) {
     const { data, error } = await readWithOptionalGallery((columns) => {
       let query = supabase
         .from("animals")
@@ -36,8 +37,9 @@ export async function readPublicAnimals(input: {
     if (error) throw error;
 
     const batch = (data ?? []) as unknown as Animal[];
+    if (batch.length === 0) break;
     animals.push(...batch.map((animal) => projectPublicAnimal(animal)));
-    if (batch.length < PUBLIC_QUERY_BATCH_SIZE) break;
+    from += batch.length;
   }
 
   return animals;

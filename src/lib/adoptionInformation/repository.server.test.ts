@@ -5,12 +5,14 @@ import { createSupabaseAdoptionInformationRepository } from "./repository.server
 class FakeQuery {
   calls: Array<{ table: string; method: string; payload?: unknown }>;
   table: string;
-  count = 2;
   rows?: unknown[];
+  rangeBounds: [number, number] | null = null;
   constructor(
     calls: Array<{ table: string; method: string; payload?: unknown }>,
     table: string,
     rows?: unknown[],
+    private readonly serverRowCap?: number,
+    private readonly countOverride?: number,
   ) {
     this.calls = calls;
     this.table = table;
@@ -30,6 +32,7 @@ class FakeQuery {
     return this.record("order", { column, options });
   }
   range(from: number, to: number) {
+    this.rangeBounds = [from, to];
     return this.record("range", { from, to });
   }
   or(value: string) {
@@ -58,19 +61,34 @@ class FakeQuery {
             },
           ]
         : []);
-    return Promise.resolve({ data, error: null, count: this.count }).then(resolve);
+    const from = this.rangeBounds?.[0] ?? 0;
+    const to = this.rangeBounds?.[1] ?? data.length - 1;
+    const page = data.slice(from, Math.min(to + 1, from + (this.serverRowCap ?? to - from + 1)));
+    return Promise.resolve({
+      data: page,
+      error: null,
+      count: this.countOverride ?? data.length,
+    }).then(resolve);
   }
 }
 
 function setup(options?: {
   rowsByTable?: Record<string, unknown[]>;
   rpcResponses?: Record<string, { data: unknown; error: unknown }>;
+  serverRowCap?: number;
+  countOverride?: number;
 }) {
   const calls: Array<{ table: string; method: string; payload?: unknown }> = [];
   const rpcCalls: Array<{ fn: string; args: unknown }> = [];
   const client = {
     from(table: string) {
-      return new FakeQuery(calls, table, options?.rowsByTable?.[table]);
+      return new FakeQuery(
+        calls,
+        table,
+        options?.rowsByTable?.[table],
+        options?.serverRowCap,
+        options?.countOverride,
+      );
     },
     rpc(fn: string, args: unknown) {
       rpcCalls.push({ fn, args });
@@ -107,7 +125,7 @@ describe("Supabase adoption information repository", () => {
       method: "select",
       payload: {
         columns: "id,animal_type,item_name,price_hkd,sort_order,is_published",
-        options: undefined,
+        options: { count: "exact" },
       },
     });
     expect(calls).toContainEqual({
@@ -120,6 +138,43 @@ describe("Supabase adoption information repository", () => {
       method: "order",
       payload: { column: "estate_name", options: { ascending: true } },
     });
+    expect(calls).toContainEqual({
+      table: "dog_friendly_estates",
+      method: "order",
+      payload: { column: "id", options: { ascending: true } },
+    });
+  });
+
+  test("public adoption information reads estates after a capped response", async () => {
+    const ids = [
+      "11111111-2222-4333-8444-555555555555",
+      "22222222-3333-4444-8555-666666666666",
+      "33333333-4444-4555-8666-777777777777",
+    ];
+    const estates = ids.map((id, index) => ({
+      id,
+      estate_name: "Estate " + index,
+      district: "Kowloon",
+      notes: null,
+      sort_order: index,
+      is_published: true,
+    }));
+    const { calls, repo } = setup({
+      rowsByTable: { dog_friendly_estates: estates },
+      serverRowCap: 2,
+    });
+
+    const result = await repo.listPublic();
+
+    expect(result.estates.map((estate) => estate.id)).toEqual(ids);
+    expect(
+      calls
+        .filter((call) => call.table === "dog_friendly_estates" && call.method === "range")
+        .map((call) => call.payload),
+    ).toEqual([
+      { from: 0, to: 999 },
+      { from: 2, to: 1001 },
+    ]);
   });
 
   test("caps range and escapes PostgREST search wildcards", async () => {
@@ -332,6 +387,7 @@ describe("Supabase adoption information repository", () => {
           },
         ],
       },
+      countOverride: 2,
     });
     const result = await repo.listAdmin({
       resource: "rules",

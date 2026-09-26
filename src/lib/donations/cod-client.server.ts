@@ -117,6 +117,7 @@ export function createCodClient({
     const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
     let response: Response;
+    let outer: unknown;
     try {
       response = await fetchImplementation(`${config.apiBase}/v1/service`, {
         method: "POST",
@@ -124,6 +125,12 @@ export function createCodClient({
         body: JSON.stringify(envelope),
         signal: controller.signal,
       });
+      try {
+        outer = await response.json();
+      } catch {
+        if (controller.signal.aborted) throw new CodClientError("timeout");
+        throw new CodClientError(response.ok ? "malformed_response" : "http", response.status);
+      }
     } catch (error) {
       if (controller.signal.aborted) throw new CodClientError("timeout");
       throw asCodClientError(error);
@@ -131,12 +138,6 @@ export function createCodClient({
       clearTimeout(timeout);
     }
 
-    let outer: unknown;
-    try {
-      outer = await response.json();
-    } catch {
-      throw new CodClientError(response.ok ? "malformed_response" : "http", response.status);
-    }
     if (!isRecord(outer)) throw new CodClientError("malformed_response");
     if (outer.success === false) throw new CodClientError("business", response.status);
     if (!response.ok) throw new CodClientError("http", response.status);

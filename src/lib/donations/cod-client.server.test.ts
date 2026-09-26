@@ -271,6 +271,39 @@ describe("COD encrypted client", () => {
     ).rejects.toMatchObject({ category: "timeout" } satisfies Partial<CodClientError>);
   });
 
+  test("times out when response headers arrive but the JSON body stalls", async () => {
+    const stalledFetch = (async (_input: RequestInfo | URL, init?: RequestInit) => {
+      const body = new ReadableStream({
+        start(controller) {
+          init?.signal?.addEventListener(
+            "abort",
+            () => controller.error(new DOMException("aborted", "AbortError")),
+            { once: true },
+          );
+        },
+      });
+      return new Response(body, {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    }) as typeof fetch;
+
+    const request = createCodClient({
+      config: config(),
+      fetch: stalledFetch,
+      timeoutMs: 10,
+    }).refreshTransactionStatus({ outTradeNo: "COD-1" });
+    const outcome = await Promise.race([
+      request.then(
+        () => "resolved",
+        (error: unknown) => error,
+      ),
+      new Promise<string>((resolve) => setTimeout(() => resolve("still waiting"), 100)),
+    ]);
+
+    expect(outcome).toMatchObject({ category: "timeout" } satisfies Partial<CodClientError>);
+  });
+
   test("rejects a request identifier that is not RFC-4122-shaped", async () => {
     globalThis.fetch = (async () =>
       encryptedResponse({ status: "paid" })) as unknown as typeof fetch;

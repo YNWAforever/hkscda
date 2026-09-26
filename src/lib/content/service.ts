@@ -566,7 +566,12 @@ export function createContentService({
         const result = await mediaLifecycle.publish({ actorUserId, contentId, input });
         const content = await repo.getAdminContent(contentId);
         if (!content) throw new Error("Content item not found");
-        return { ...content, version: result.version, revisionId: result.revisionId };
+        return {
+          ...content,
+          version: result.version,
+          revisionId: result.revisionId,
+          mediaPending: result.mediaPending,
+        };
       }
       if (lifecycle) {
         const result = await lifecycle.publish({ actorUserId, contentId, input });

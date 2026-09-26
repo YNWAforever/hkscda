@@ -63,6 +63,18 @@ function createService() {
 }
 
 describe("admin group enquiry handlers", () => {
+  test("rejects JSON null before reading update fields", async () => {
+    const service = createService();
+    const handlers = createAdminGroupEnquiryHandlers({
+      requireVolunteerAdmin: async () => admin,
+      service,
+    });
+    const response = await handlers.update({
+      request: request(undefined, { method: "PATCH", body: "null" }),
+    });
+    expect(response.status).toBe(400);
+    expect(service.calls).toEqual([]);
+  });
   test("requires admin access before service work", async () => {
     const service = createService();
     const handlers = createAdminGroupEnquiryHandlers({

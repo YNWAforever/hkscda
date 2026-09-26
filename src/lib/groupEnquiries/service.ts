@@ -30,7 +30,12 @@ export interface GroupEnquiryRepository {
   markNotificationFailed(id: string, safeError: string): Promise<void>;
   list(input: GroupEnquirySearch): Promise<{ enquiries: GroupEnquirySummary[]; total: number }>;
   getById(id: string): Promise<GroupEnquiry | null>;
-  update(id: string, input: GroupEnquiryAdminUpdate): Promise<GroupEnquiry>;
+  updateWithAudit(args: {
+    id: string;
+    input: GroupEnquiryAdminUpdate;
+    actorUserId: string;
+    expectedUpdatedAt: string;
+  }): Promise<GroupEnquiry>;
   insertAuditLog(input: GroupEnquiryAuditLog): Promise<void>;
 }
 
@@ -98,13 +103,12 @@ export function createGroupEnquiryService({
 
     async updateGroupEnquiry(args: { id: string; input: unknown; actorUserId: string }) {
       const input = adminGroupEnquiryPatchSchema.parse({ id: args.id, ...(args.input as object) });
-      const { id, action: _action, ...patch } = input;
-      const enquiry = await repo.update(id, patch);
-      await audit({
-        actor_user_id: args.actorUserId,
-        action: "group_enquiries.update",
-        entity_id: id,
-        detail: { fields: Object.keys(patch).sort(), status: patch.status ?? null },
+      const { id, action: _action, expectedUpdatedAt, ...patch } = input;
+      const enquiry = await repo.updateWithAudit({
+        id,
+        input: patch,
+        actorUserId: args.actorUserId,
+        expectedUpdatedAt,
       });
       return { enquiry };
     },
@@ -112,13 +116,13 @@ export function createGroupEnquiryService({
     async retryGroupEnquiryNotification(args: { id: string; actorUserId: string }) {
       const enquiry = await repo.getById(args.id);
       if (!enquiry) throw new Error("Group enquiry not found");
-      await sendAndMark(enquiry);
       await audit({
         actor_user_id: args.actorUserId,
         action: "group_enquiries.retry_notification",
         entity_id: enquiry.id,
         detail: { fields: ["notificationStatus"], status: null },
       });
+      await sendAndMark(enquiry);
       return { ok: true };
     },
   };

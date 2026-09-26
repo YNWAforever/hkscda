@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { readAdminJson } from "../http/adminJson.server";
+import { InvalidRequestJsonError, RequestBodyTooLargeError } from "../http/publicJson.server";
 import type { ManualGiftResult } from "./manualGift.server";
 import type { DeliveryRunResult } from "../donations/deliveryJobs.server";
 
@@ -22,7 +24,13 @@ async function guarded(operation: () => Promise<Response>) {
       headers.set("cache-control", "no-store");
       return new Response(error.body, { status: error.status, headers });
     }
-    if (error instanceof z.ZodError || error instanceof SyntaxError)
+    if (error instanceof RequestBodyTooLargeError)
+      return json({ error: "Request body too large" }, 413);
+    if (
+      error instanceof z.ZodError ||
+      error instanceof SyntaxError ||
+      error instanceof InvalidRequestJsonError
+    )
       return json({ error: "Invalid manual gift request" }, 400);
     return json({ error: "Could not process manual gift request" }, 500);
   }
@@ -44,7 +52,7 @@ export function createManualGiftDeliveryHandlers(deps: Dependencies) {
         const actor = await deps.requireTreasurer(request);
         const result = await deps.createGift({
           actorUserId: actor.authUserId,
-          input: await request.json(),
+          input: await readAdminJson(request),
         });
         const deliveryStatus = result.deliveryJobId
           ? await attempt(result.deliveryJobId)

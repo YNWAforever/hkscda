@@ -1,14 +1,17 @@
 import { readEligibleAnimals } from "../../../lib/animals/eligibility.server";
 import { createFileRoute } from "@tanstack/react-router";
+import { RequestBodyTooLargeError, readPublicJson } from "../../../lib/http/publicJson.server";
 
 import { createSupabaseAdoptionCoordinatorRepository } from "../../../lib/adoptions/repository.server";
 import { createAdoptionCoordinatorService } from "../../../lib/adoptions/service";
 import { getAppUrl } from "../../../lib/appUrl.server";
 import { createSupabaseServiceClient } from "../../../lib/donations/supabase.server";
 import {
+  fingerprintAdoptionSubmission,
   isSubmissionValidationError,
   parseAdoptionSubmission,
   persistPublicAdoptionJourney,
+  resumePublicAdoptionCase,
   sendAdoptionConfirmationEmail,
 } from "../../../lib/publicAdoption/submission.server";
 import {
@@ -22,6 +25,7 @@ import {
   matchesAdoptionUploadIntent,
   validateAdoptionUploadIntent,
 } from "../../../lib/publicAdoption/uploadIntent.server";
+import { ADOPTION_TERMS_VERSION } from "../../../lib/publicAdoption/schemas";
 import type { RateLimitResult } from "../../../lib/security/rate-limit.server";
 import {
   enforceRateLimit,
@@ -41,6 +45,7 @@ type Dependencies = {
     client: ReturnType<typeof createSupabaseServiceClient>,
   ) => ReturnType<typeof createAdoptionCoordinatorService>;
   persist: typeof persistPublicAdoptionJourney;
+  resumeCase: typeof resumePublicAdoptionCase;
   sendEmail: typeof sendAdoptionConfirmationEmail;
   appUrl: typeof getAppUrl;
   logger: Pick<Console, "error">;
@@ -69,6 +74,7 @@ export function createAdoptionApplicationsHandler({
       repo: createSupabaseAdoptionCoordinatorRepository(client),
     }),
   persist = persistPublicAdoptionJourney,
+  resumeCase = resumePublicAdoptionCase,
   sendEmail = sendAdoptionConfirmationEmail,
   appUrl = getAppUrl,
   logger = console,
@@ -85,8 +91,10 @@ export function createAdoptionApplicationsHandler({
 
     let body: unknown;
     try {
-      body = await request.json();
-    } catch {
+      body = await readPublicJson(request);
+    } catch (error) {
+      if (error instanceof RequestBodyTooLargeError)
+        return jsonNoStore({ error: "Request body too large" }, { status: 413 });
       return jsonNoStore({ error: "Invalid JSON body" }, { status: 400 });
     }
 
@@ -103,7 +111,10 @@ export function createAdoptionApplicationsHandler({
         return jsonNoStore({ error: "Photo upload authorization not found" }, { status: 403 });
       }
 
-      if (await hasCompleted(client, parsed.applicationId)) {
+      const fingerprint = fingerprintAdoptionSubmission(parsed, parsed.statusToken);
+      const lookupCompletion = () =>
+        hasCompleted(client, parsed.applicationId, parsed.statusToken, fingerprint);
+      const recoverCompleted = async () => {
         try {
           await markSubmitted(client, parsed.applicationId);
         } catch (error) {
@@ -117,6 +128,57 @@ export function createAdoptionApplicationsHandler({
           },
           { status: 200 },
         );
+      };
+      const completionResponse = async (
+        state: Awaited<ReturnType<typeof hasCompleted>>,
+      ): Promise<Response | null> => {
+        if (state === "conflict") {
+          return jsonNoStore(
+            {
+              error:
+                "This application was already submitted with different details. Check the original status link before starting a new application.",
+            },
+            { status: 409 },
+          );
+        }
+        if (state === "expired") {
+          return jsonNoStore({ error: "Application status link expired" }, { status: 410 });
+        }
+        if (state === "forbidden") {
+          return jsonNoStore({ error: "Application retry not authorized" }, { status: 403 });
+        }
+        if (state === "recovered") return recoverCompleted();
+        if (state === "resumable") {
+          try {
+            await resumeCase({
+              client,
+              parsed,
+              coordinatorService: createCoordinatorService(client),
+              logger,
+            });
+          } catch (error) {
+            logger.error("Could not resume adoption case creation", error);
+            if ((await lookupCompletion()) === "recovered") return recoverCompleted();
+            return jsonNoStore(
+              { error: "Application submission is still processing. Please retry shortly." },
+              { status: 503, headers: { "retry-after": "1" } },
+            );
+          }
+          return recoverCompleted();
+        }
+        if (state === "processing") {
+          return jsonNoStore(
+            { error: "Application submission is still processing. Please retry shortly." },
+            { status: 503, headers: { "retry-after": "1" } },
+          );
+        }
+        return null;
+      };
+      const existingResponse = await completionResponse(await lookupCompletion());
+      if (existingResponse) return existingResponse;
+
+      if (parsed.payload.terms.version !== ADOPTION_TERMS_VERSION) {
+        return jsonNoStore({ error: "請重新閱讀並同意最新的領養條款。" }, { status: 400 });
       }
 
       if (!validateAdoptionUploadIntent(intent, intentInput)) {
@@ -145,15 +207,24 @@ export function createAdoptionApplicationsHandler({
       }
 
       const coordinatorService = createCoordinatorService(client);
-      const result = await persist({
-        client,
-        parsed,
-        coordinatorService,
-        createStatusTokenPair: () => ({
-          rawToken: parsed.statusToken,
-          tokenHash: hashStatusToken(parsed.statusToken),
-        }),
-      });
+      let result: Awaited<ReturnType<typeof persist>>;
+      try {
+        result = await persist({
+          client,
+          parsed,
+          coordinatorService,
+          createStatusTokenPair: () => ({
+            rawToken: parsed.statusToken,
+            tokenHash: hashStatusToken(parsed.statusToken),
+          }),
+        });
+      } catch (error) {
+        // Another request may have committed the same application while this one was saving.
+        // Recover only when its saved bearer token and submission fingerprint match.
+        const completedResponse = await completionResponse(await lookupCompletion());
+        if (completedResponse) return completedResponse;
+        throw error;
+      }
       try {
         await markSubmitted(client, parsed.applicationId);
       } catch (error) {

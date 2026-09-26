@@ -1,4 +1,9 @@
 import { z } from "zod";
+import { readAdminJson } from "../../../../../lib/http/adminJson.server";
+import {
+  InvalidRequestJsonError,
+  RequestBodyTooLargeError,
+} from "../../../../../lib/http/publicJson.server";
 import {
   createSupabaseServiceClient,
   requireAdmin,
@@ -10,12 +15,7 @@ export function createHandlers() {
       try {
         const client = createSupabaseServiceClient();
         const actor = await requireAdmin(request, ["admin"], client);
-        let body: unknown;
-        try {
-          body = await request.json();
-        } catch {
-          return Response.json({ error: "無效要求" }, { status: 400 });
-        }
+        const body = await readAdminJson(request);
         const command = sourceCommandSchema.parse(body);
         const { data, error } = await client.rpc("volunteer_policy_source_command", {
           p_actor: actor.authUserId,
@@ -28,6 +28,10 @@ export function createHandlers() {
         });
       } catch (error) {
         if (error instanceof Response) return error;
+        if (error instanceof RequestBodyTooLargeError)
+          return Response.json({ error: "Request body too large" }, { status: 413 });
+        if (error instanceof InvalidRequestJsonError)
+          return Response.json({ error: "無效要求" }, { status: 400 });
         if (error instanceof z.ZodError)
           return Response.json({ error: "請核對設定欄位", issues: error.issues }, { status: 400 });
         if (

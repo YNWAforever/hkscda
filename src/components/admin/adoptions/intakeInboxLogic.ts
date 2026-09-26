@@ -5,6 +5,8 @@ export type IntakeInboxLanguage = "zh" | "en";
 export type IntakeSearchParamsInput = {
   lane?: AdoptionIntakeLane;
   openOnly?: boolean;
+  page?: number;
+  pageSize?: number;
 };
 
 const urgencyLabels: Record<AdoptionIntakeUrgency, Record<IntakeInboxLanguage, string>> = {
@@ -32,6 +34,8 @@ export function buildIntakeSearchParams(input: IntakeSearchParamsInput) {
   if (input.openOnly !== undefined) {
     params.set("openOnly", String(input.openOnly));
   }
+  params.set("page", String(input.page ?? 1));
+  params.set("pageSize", String(input.pageSize ?? 25));
 
   return params;
 }

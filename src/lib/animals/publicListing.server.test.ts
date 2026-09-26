@@ -6,7 +6,11 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 // mutated out from under us the moment the mock below is installed.
 const realSupabaseModule = { ...(await import("../supabase")) };
 
-function createListingFakeClient(data: Record<string, unknown>[], missingGallery = false) {
+function createListingFakeClient(
+  data: Record<string, unknown>[],
+  missingGallery = false,
+  serverRowCap?: number,
+) {
   const eqFilters: Array<[string, unknown]> = [];
   let inFilter: { column: string; values: readonly string[] } | undefined;
   let columns = "";
@@ -25,7 +29,7 @@ function createListingFakeClient(data: Record<string, unknown>[], missingGallery
     },
     is: () => query,
     order: () => query,
-    range: async () => {
+    range: async (from: number, to: number) => {
       if (missingGallery && columns.split(",").includes("gallery"))
         return {
           data: null,
@@ -36,7 +40,10 @@ function createListingFakeClient(data: Record<string, unknown>[], missingGallery
         const passesIn = !inFilter || inFilter.values.includes(row[inFilter.column] as string);
         return passesEq && passesIn;
       });
-      return { data: filtered, error: null };
+      return {
+        data: filtered.slice(from, Math.min(to + 1, from + (serverRowCap ?? to - from + 1))),
+        error: null,
+      };
     },
   };
   return { from: () => query } as unknown as SupabaseClient;
@@ -67,6 +74,21 @@ afterAll(() => {
 });
 
 describe("readPublicAnimals", () => {
+  test("reads later animals when the server caps each response below the requested batch", async () => {
+    const rows = Array.from({ length: 3 }, (_, index) => ({
+      ...baseAnimal,
+      id: `animal-${index}`,
+      type: "cat",
+      status: "available",
+    }));
+    mock.module("../supabase", () => ({ supabase: createListingFakeClient(rows, false, 2) }));
+    const { readPublicAnimals } = await import("./publicListing.server");
+
+    const result = await readPublicAnimals({ type: "cat", genderFilter: "all" });
+
+    expect(result.map((animal) => animal.id)).toEqual(["animal-0", "animal-1", "animal-2"]);
+  });
+
   test("includes fostered cats alongside available ones, excludes adopted", async () => {
     const data = [
       { ...baseAnimal, id: "shelter", type: "cat", status: "available" },

@@ -150,11 +150,21 @@ export function createBookingRepository(
     },
   };
 }
-export async function requireVerifiedVolunteer(request: Request, client: SupabaseClient) {
+export async function requireVerifiedVolunteer(
+  request: Request,
+  client: SupabaseClient,
+  now = () => new Date(),
+) {
   const token = request.headers.get("authorization")?.match(/^Bearer ([^\s]+)$/i)?.[1];
   if (!token) throw new Response("請先登入", { status: 401 });
   const { data, error } = await client.auth.getUser(token);
   if (error || !data.user) throw new Response("登入已過期，請重新登入", { status: 401 });
+  const bannedUntil = data.user.banned_until;
+  if (bannedUntil) {
+    const expiry = Date.parse(bannedUntil);
+    if (!Number.isFinite(expiry) || expiry > now().getTime())
+      throw new Response("帳戶已暫停", { status: 403 });
+  }
   if (!data.user.email_confirmed_at) throw new Response("請先驗證電郵", { status: 403 });
   return data.user.id;
 }

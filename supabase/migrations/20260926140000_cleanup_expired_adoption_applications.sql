@@ -1,0 +1,48 @@
+-- Resolve an expired upload intent and its partial application under row locks.
+-- The intent stays in place until Storage deletion succeeds, so the job can retry.
+create or replace function public.cleanup_expired_adoption_application(
+  p_application_id uuid
+) returns text
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_intent public.adoption_upload_intent%rowtype;
+begin
+  select * into v_intent
+  from public.adoption_upload_intent
+  where application_id = p_application_id
+  for update;
+
+  if not found or v_intent.submitted_at is not null
+    or v_intent.expires_at >= clock_timestamp() - interval '1 hour' then
+    return 'defer';
+  end if;
+
+  -- Lock the parent before testing for a committed case. A concurrent case
+  -- insert needs a foreign-key key-share lock on this row.
+  perform 1
+  from public.adoption_applications
+  where id = p_application_id
+  for update;
+
+  if found then
+    if exists (
+      select 1 from public.adoption_case
+      where public_application_id = p_application_id
+    ) then
+      return 'completed';
+    end if;
+
+    delete from public.adoption_applications where id = p_application_id;
+  end if;
+
+  return 'purged';
+end;
+$$;
+
+revoke all on function public.cleanup_expired_adoption_application(uuid)
+  from public, anon, authenticated;
+grant execute on function public.cleanup_expired_adoption_application(uuid)
+  to service_role;

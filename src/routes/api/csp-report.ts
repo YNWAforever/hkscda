@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { readBoundedText } from "../../lib/http/boundedBody.server";
 
 import {
   enforceRateLimit,
@@ -117,20 +118,8 @@ export const Route = createFileRoute("/api/csp-report")({
           return new Response(null, { status: 415 });
         }
 
-        // Reject on the Content-Length header where present, before ever reading
-        // the body — matches the pattern used elsewhere (submission.server.ts).
-        const contentLength = request.headers.get("content-length");
-        if (contentLength && Number(contentLength) > MAX_REPORT_BYTES) {
-          return new Response(null, { status: 413 });
-        }
-
-        const raw = await request.text();
-        // `.length` is UTF-16 code units, not bytes — check the real UTF-8 size,
-        // since this app's bilingual zh-HK/en content makes a >1-byte-per-char
-        // report field a realistic way to smuggle a body past a code-unit check.
-        if (Buffer.byteLength(raw, "utf8") > MAX_REPORT_BYTES) {
-          return new Response(null, { status: 413 });
-        }
+        const raw = await readBoundedText(request, MAX_REPORT_BYTES);
+        if (raw === null) return new Response(null, { status: 413 });
 
         let payload: unknown;
         try {

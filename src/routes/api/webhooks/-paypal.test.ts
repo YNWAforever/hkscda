@@ -56,6 +56,54 @@ describe("PayPal order id extraction", () => {
 });
 
 describe("verified PayPal financial events", () => {
+  test("an unmapped completed capture is recorded for manual review", async () => {
+    const handler = (paypalModule as Record<string, unknown>).handleVerifiedPayPalWebhook;
+    expect(handler).toBeFunction();
+    if (typeof handler !== "function") return;
+    let reviewed: Record<string, unknown> | undefined;
+    const result = await handler(
+      {
+        id: "evt-unmapped-completed",
+        event_type: "PAYMENT.CAPTURE.COMPLETED",
+        resource: { id: "capture-unmapped" },
+      },
+      {
+        client: {} as never,
+        flagProviderWebhookForReview: async (_args: unknown, review: Record<string, unknown>) => {
+          reviewed = review;
+          return { kind: "manual_review" };
+        },
+      },
+    );
+    expect(reviewed?.reason).toBe("missing_completed_order_id");
+    expect(result.skipped).toBe("manual_review");
+  });
+  test("forwards the verified completed capture amount and currency", async () => {
+    const handler = (paypalModule as Record<string, unknown>).handleVerifiedPayPalWebhook;
+    expect(handler).toBeFunction();
+    if (typeof handler !== "function") return;
+    let received: Record<string, unknown> | undefined;
+    await handler(
+      {
+        id: "evt-completed",
+        event_type: "PAYMENT.CAPTURE.COMPLETED",
+        resource: {
+          id: "capture-1",
+          amount: { value: "200.00", currency_code: "HKD" },
+          supplementary_data: { related_ids: { order_id: "order-1" } },
+        },
+      },
+      {
+        client: {} as never,
+        reconcileProviderPayment: async (args: Record<string, unknown>) => {
+          received = args;
+          return { kind: "applied" };
+        },
+      },
+    );
+    expect(received?.providerSettlement).toEqual({ amountCents: 20000, currency: "HKD" });
+  });
+
   test("a denied capture fails the matching pending donation", async () => {
     const handler = (paypalModule as Record<string, unknown>).handleVerifiedPayPalWebhook;
     expect(handler).toBeFunction();

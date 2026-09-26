@@ -97,7 +97,9 @@ export type AdoptionCoordinatorRepository = {
   listIntakeItems(input: {
     lane?: AdoptionIntakeLane;
     openOnly: boolean;
-  }): Promise<{ items: AdoptionIntakeItem[] }>;
+    page: number;
+    pageSize: number;
+  }): Promise<{ items: AdoptionIntakeItem[]; total: number }>;
   listCaseExportRows(input: CaseSearch): Promise<CoordinatorCaseExportRow[]>;
   getCaseDetail(id: string): Promise<AdoptionCaseDetail | null>;
   listAdopters(input: AdopterSearch): Promise<{ adopters: AdopterSummary[]; total: number }>;
@@ -316,6 +318,8 @@ export function createAdoptionCoordinatorService({
             .transform((value) =>
               value === undefined ? true : value === true || value === "true",
             ),
+          page: z.coerce.number().int().min(1).catch(1),
+          pageSize: z.coerce.number().int().min(1).max(100).catch(25),
         })
         .parse(rawSearch);
       return repo.listIntakeItems(input);

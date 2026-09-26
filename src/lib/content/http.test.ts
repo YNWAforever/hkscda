@@ -173,6 +173,25 @@ function createService(overrides: Record<string, unknown> = {}) {
 }
 
 describe("createContentHandlers", () => {
+  test("rejects an oversized optional publish body before service work", async () => {
+    const service = createService();
+    const handlers = createContentHandlers({ requireContentAdmin: async () => admin, service });
+    const request = new Request(
+      "https://example.test/api/admin/content/99999999-aaaa-4333-8444-555555555555/publish",
+      {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ padding: "x".repeat(9 * 1024 * 1024) }),
+      },
+    );
+    expect(request.headers.has("content-length")).toBe(false);
+    const response = await handlers.publishContent({
+      request,
+      params: { id: "99999999-aaaa-4333-8444-555555555555" },
+    });
+    expect(response.status).toBe(413);
+    expect(service.calls).toEqual([]);
+  });
   test("returns public content with no-store cache headers", async () => {
     const service = createService();
     const handlers = createContentHandlers({

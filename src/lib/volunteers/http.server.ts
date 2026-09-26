@@ -2,6 +2,7 @@ import { volunteerPolicyFailure } from "./policy/errors";
 import { z } from "zod";
 
 import type { AdminUser } from "../donations/supabase.server";
+import { RequestBodyTooLargeError, readPublicJson } from "../http/publicJson.server";
 import { createVolunteerService } from "./service";
 
 type VolunteerService = ReturnType<typeof createVolunteerService>;
@@ -23,8 +24,10 @@ function searchParams(request: Request) {
 
 async function jsonBody(request: Request) {
   try {
-    return await request.json();
-  } catch {
+    return await readPublicJson(request);
+  } catch (error) {
+    if (error instanceof RequestBodyTooLargeError)
+      throw jsonResponse({ error: "Request body too large" }, { status: 413 });
     throw jsonResponse({ error: "Invalid JSON body" }, { status: 400 });
   }
 }
@@ -104,6 +107,9 @@ export function createVolunteerHandlers({
     submitPublicRegistration({ request }: HandlerContext) {
       return withVolunteerErrors(async () => {
         const body = await jsonBody(request);
+        if (!body || typeof body !== "object" || Array.isArray(body)) {
+          return jsonResponse({ error: "Invalid volunteer registration request" }, { status: 400 });
+        }
         if (!(await verifyPublicRegistration(body as Record<string, unknown>, request))) {
           return jsonResponse({ error: "Verification failed" }, { status: 403 });
         }

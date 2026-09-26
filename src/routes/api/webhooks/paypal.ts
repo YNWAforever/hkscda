@@ -14,6 +14,7 @@ import {
   refundProviderPayment,
 } from "../../../lib/donations/reconcile.server";
 import { createSupabaseServiceClient } from "../../../lib/donations/supabase.server";
+import { readPaymentWebhookBody } from "../../../lib/donations/webhookBody.server";
 import {
   enforceRateLimit,
   getClientIp,
@@ -26,6 +27,7 @@ type PayPalWebhook = {
   resource?: {
     id?: string;
     custom_id?: string;
+    amount?: { value?: string; currency_code?: string };
     links?: Array<{ rel: string; href: string }>;
     supplementary_data?: {
       related_ids?: {
@@ -79,6 +81,13 @@ export function getPayPalRefundCaptureId(event: PayPalWebhook) {
   }
 }
 
+function parsePayPalAmountCents(value: string | undefined): number | null {
+  const match = /^(\d+)(?:\.(\d{1,2}))?$/.exec(value ?? "");
+  if (!match) return null;
+  const cents = Number(match[1]) * 100 + Number((match[2] ?? "").padEnd(2, "0"));
+  return Number.isSafeInteger(cents) ? cents : null;
+}
+
 export async function handleVerifiedPayPalWebhook(
   payload: PayPalWebhook,
   deps: PayPalWebhookDependencies,
@@ -117,13 +126,31 @@ export async function handleVerifiedPayPalWebhook(
     const orderId = getPayPalReconcileOrderId(payload);
     const fallbackPaymentId = payload.resource?.custom_id;
     if (!orderId && !fallbackPaymentId) {
-      return { received: true, skipped: "missing_order_id" };
+      await review(
+        {
+          client,
+          provider: "paypal",
+          providerRef: payload.resource?.id ?? "",
+          providerEventId: payload.id,
+          eventType: payload.event_type,
+          payload,
+        },
+        {
+          reason: "missing_completed_order_id",
+          detail: { captureId: payload.resource?.id ?? null },
+        },
+      );
+      return { received: true, skipped: "manual_review" };
     }
     const result = await reconcile({
       client,
       provider: "paypal",
       providerRef: orderId ?? "",
       fallbackPaymentId,
+      providerSettlement: {
+        amountCents: parsePayPalAmountCents(payload.resource?.amount?.value),
+        currency: payload.resource?.amount?.currency_code ?? null,
+      },
       providerEventId: payload.id,
       eventType: payload.event_type,
       payload,
@@ -216,7 +243,9 @@ export const Route = createFileRoute("/api/webhooks/paypal")({
 
         let payload: PayPalWebhook;
         try {
-          payload = (await request.json()) as PayPalWebhook;
+          const body = await readPaymentWebhookBody(request);
+          if (body === null) return new Response("PayPal webhook too large", { status: 413 });
+          payload = JSON.parse(body) as PayPalWebhook;
         } catch {
           return new Response("Invalid PayPal webhook body", { status: 400 });
         }

@@ -9,6 +9,7 @@ import {
   refundProviderPayment,
 } from "../../../lib/donations/reconcile.server";
 import { createSupabaseServiceClient } from "../../../lib/donations/supabase.server";
+import { readPaymentWebhookBody } from "../../../lib/donations/webhookBody.server";
 import {
   enforceRateLimit,
   getClientIp,
@@ -99,7 +100,8 @@ export const Route = createFileRoute("/api/webhooks/stripe")({
         if (!signature) return new Response("Missing Stripe signature", { status: 400 });
 
         const stripe = new Stripe(getStripeConfig().secretKey);
-        const body = await request.text();
+        const body = await readPaymentWebhookBody(request);
+        if (body === null) return new Response("Stripe webhook too large", { status: 413 });
         let event: Stripe.Event;
 
         try {
@@ -133,6 +135,10 @@ export const Route = createFileRoute("/api/webhooks/stripe")({
               ...base,
               providerRef: session.id,
               fallbackPaymentId: session.metadata?.payment_id ?? undefined,
+              providerSettlement: {
+                amountCents: session.amount_total,
+                currency: session.currency,
+              },
             });
             return Response.json({ received: true });
           }

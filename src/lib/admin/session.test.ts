@@ -2,8 +2,10 @@ import { afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
 import { QueryClient } from "@tanstack/react-query";
 
 const getSession = mock(
-  async (): Promise<{ data: { session: { access_token: string } | null } }> => ({
-    data: { session: { access_token: "session-token" } },
+  async (): Promise<{
+    data: { session: { access_token: string; user: { id: string } } | null };
+  }> => ({
+    data: { session: { access_token: "session-token", user: { id: "auth-a" } } },
   }),
 );
 
@@ -28,7 +30,7 @@ describe("admin browser session", () => {
 
   beforeEach(() => {
     getSession.mockResolvedValue({
-      data: { session: { access_token: "session-token" } },
+      data: { session: { access_token: "session-token", user: { id: "auth-a" } } },
     });
   });
 
@@ -234,11 +236,18 @@ describe("requireSignedInAdminIdentity", () => {
     calls = 0;
     globalThis.fetch = mock(async () => {
       calls += 1;
-      return new Response(JSON.stringify({ admin: { id: "a1", email: "a@b.c", role: "admin" } }), {
-        headers: { "content-type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({
+          admin: { id: "a1", authUserId: "auth-a", email: "a@b.c", role: "admin" },
+        }),
+        {
+          headers: { "content-type": "application/json" },
+        },
+      );
     }) as unknown as typeof fetch;
-    getSession.mockResolvedValue({ data: { session: { access_token: "session-token" } } });
+    getSession.mockResolvedValue({
+      data: { session: { access_token: "session-token", user: { id: "auth-a" } } },
+    });
   });
 
   afterEach(() => {
@@ -259,6 +268,37 @@ describe("requireSignedInAdminIdentity", () => {
     await requireSignedInAdminIdentity(queryClient);
     await requireSignedInAdminIdentity(queryClient);
     expect(calls).toBe(1);
+  });
+
+  test("reloads identity when a different admin signs in on the same query client", async () => {
+    let authUserId = "auth-a";
+    getSession.mockImplementation(async () => ({
+      data: { session: { access_token: `token-${authUserId}`, user: { id: authUserId } } },
+    }));
+    globalThis.fetch = mock(async () => {
+      calls += 1;
+      return Response.json({
+        admin: { id: authUserId, authUserId, email: `${authUserId}@example.com`, role: "staff" },
+      });
+    }) as unknown as typeof fetch;
+
+    const queryClient = new QueryClient();
+    expect((await requireSignedInAdminIdentity(queryClient)).admin.authUserId).toBe("auth-a");
+    authUserId = "auth-b";
+    expect((await requireSignedInAdminIdentity(queryClient)).admin.authUserId).toBe("auth-b");
+    expect(calls).toBe(2);
+  });
+
+  test("clears cached admin identity when the session has ended", async () => {
+    const queryClient = new QueryClient();
+    queryClient.setQueryData(["admin-me"], {
+      admin: { id: "a1", authUserId: "auth-a", email: "a@example.com", role: "admin" },
+    });
+    getSession.mockResolvedValue({ data: { session: null } });
+
+    await expect(requireSignedInAdminIdentity(queryClient)).rejects.toBeDefined();
+    expect(queryClient.getQueryData(["admin-me"])).toBeUndefined();
+    expect(calls).toBe(0);
   });
 
   test("redirects to login when there is no session", async () => {

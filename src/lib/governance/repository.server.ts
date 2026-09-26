@@ -50,20 +50,34 @@ function toRow(input: BoardMemberInput, actorUserId: string) {
   };
 }
 
+async function readBoardRows(client: SupabaseClient, activeOnly: boolean): Promise<BoardMember[]> {
+  const rows: unknown[] = [];
+  let from = 0;
+  let total = 0;
+  do {
+    let query = client.from("board_member").select(ROW_COLUMNS, { count: "exact" });
+    if (activeOnly) query = query.eq("is_active", true);
+    const { data, count, error } = await query
+      .order("sort_order", { ascending: true })
+      .order("id", { ascending: true })
+      .range(from, from + 999);
+    if (error) throw error;
+    const batch = data ?? [];
+    if (batch.length === 0 && from < (count ?? 0)) {
+      throw new Error("Board roster read stopped before all rows were returned");
+    }
+    rows.push(...batch);
+    from += batch.length;
+    total = count ?? from;
+  } while (from < total);
+  return rows.map(mapRow).filter((row): row is BoardMember => row !== null);
+}
+
 export function createSupabaseGovernanceRepository(client: SupabaseClient): GovernanceRepository {
   return {
     usesAtomicAudit: true,
     async listPublicRoster(): Promise<PublicBoardRoster> {
-      const { data, error } = await client
-        .from("board_member")
-        .select(ROW_COLUMNS)
-        .eq("is_active", true)
-        .order("sort_order", { ascending: true });
-      if (error) throw error;
-
-      const members = ((data ?? []) as unknown[])
-        .map(mapRow)
-        .filter((row): row is BoardMember => row !== null);
+      const members = await readBoardRows(client, true);
 
       const lastUpdated = members.reduce<string | null>(
         (latest, member) => (!latest || member.updatedAt > latest ? member.updatedAt : latest),
@@ -81,14 +95,7 @@ export function createSupabaseGovernanceRepository(client: SupabaseClient): Gove
     },
 
     async listAdmin(): Promise<BoardMember[]> {
-      const { data, error } = await client
-        .from("board_member")
-        .select(ROW_COLUMNS)
-        .order("sort_order", { ascending: true });
-      if (error) throw error;
-      return ((data ?? []) as unknown[])
-        .map(mapRow)
-        .filter((row): row is BoardMember => row !== null);
+      return readBoardRows(client, false);
     },
 
     async upsert(input: BoardMemberInput, actorUserId: string): Promise<BoardMember> {

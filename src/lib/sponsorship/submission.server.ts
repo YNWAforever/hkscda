@@ -22,7 +22,8 @@ import {
 } from "../supporters/publicIdentity.server";
 import { getAppUrl } from "../appUrl.server";
 import { getEmailConfig } from "../donations/config.server";
-import { verifyUploadedObjects } from "../publicUploads/signedUpload.server";
+import { safeFileName, verifyUploadedObjects } from "../publicUploads/signedUpload.server";
+import { submissionFingerprint } from "../publicUploads/submissionFingerprint.server";
 
 export const SPONSORSHIP_PROOF_BUCKET = "sponsorship-payment-proof";
 
@@ -39,6 +40,7 @@ export type ParsedSponsorshipPayload = SponsorshipPledgeSubmission & {
 
 export type ParsedSponsorshipProof = SponsorshipProofDescriptor & {
   storagePath: string;
+  proofIntent?: string;
   metadata: SponsorshipPaymentProofMetadata;
 };
 
@@ -78,25 +80,28 @@ export type SponsorshipPledgeRetry =
   | { kind: "new" }
   | { kind: "recovered"; pledgeId: string; reference: string; statusUrl: string }
   | { kind: "forbidden" }
-  | { kind: "expired" };
+  | { kind: "expired" }
+  | { kind: "conflict" };
 
 /** Only the bearer that supplied the original 256-bit token can recover a lost response. */
 export async function lookupSponsorshipPledgeRetry(
   client: PublicSponsorshipSupabaseClient,
   pledgeId: string,
   rawToken: string,
+  expectedFingerprint: string,
   appUrl = getAppUrl(),
   now = new Date(),
 ): Promise<SponsorshipPledgeRetry> {
   const { data: token, error: tokenError } = await client
     .from("public_status_token")
-    .select("entity_type,entity_id,expires_at,revoked_at")
+    .select("entity_type,entity_id,expires_at,revoked_at,submission_fingerprint")
     .eq("token_hash", hashStatusToken(rawToken))
     .maybeSingle<{
       entity_type: string;
       entity_id: string;
       expires_at: string;
       revoked_at: string | null;
+      submission_fingerprint: string | null;
     }>();
   if (tokenError) throw tokenError;
 
@@ -115,12 +120,27 @@ export async function lookupSponsorshipPledgeRetry(
   if (token.revoked_at || !Number.isFinite(expiry) || expiry <= now.getTime()) {
     return { kind: "expired" };
   }
+  if (token.submission_fingerprint !== expectedFingerprint) return { kind: "conflict" };
   return {
     kind: "recovered",
     pledgeId,
     reference: pledgeReference(pledgeId),
     statusUrl: buildStatusUrl(appUrl, rawToken),
   };
+}
+
+export function fingerprintSponsorshipSubmission(
+  parsed: ParsedSponsorshipMultipart & { statusToken: string },
+): string {
+  const { animalPreferences, ...payload } = parsed.payload;
+  // Animal type is filled from current eligibility after parsing; it is not submitted identity.
+  const preferences = animalPreferences.map(({ animalType: _type, ...preference }) => preference);
+  return submissionFingerprint(
+    "sponsorship_pledge",
+    { ...payload, animalPreferences: preferences },
+    parsed.proof ?? null,
+    parsed.statusToken,
+  );
 }
 
 export type UploadedProofReference = {
@@ -185,7 +205,16 @@ export function parseSponsorshipSubmission(
     if (typeof entry.storagePath !== "string" || !entry.storagePath) {
       throw new SubmissionValidationError("Missing storage path for the payment proof");
     }
-    proof = { ...descriptor, storagePath: entry.storagePath, metadata: parsed.proofMetadata };
+    const expectedPath = raw.pledgeId + "/proof/" + safeFileName(descriptor.fileName);
+    if (entry.storagePath !== expectedPath) {
+      throw new SubmissionValidationError("Payment proof path does not match this pledge");
+    }
+    proof = {
+      ...descriptor,
+      storagePath: entry.storagePath,
+      proofIntent: typeof entry.proofIntent === "string" ? entry.proofIntent : undefined,
+      metadata: parsed.proofMetadata,
+    };
   }
 
   return {
@@ -209,47 +238,6 @@ type PersistSponsorshipPledgeInput = {
    */
   resolvePublicIdentity?: PublicIdentityRepository["resolve"];
 };
-
-async function cleanupFailedPersistence(input: {
-  client: PublicSponsorshipSupabaseClient;
-  pledgeId: string | null;
-  uploadedPaths: string[];
-  logger: Pick<Console, "error">;
-}) {
-  if (input.uploadedPaths.length > 0) {
-    try {
-      const { error } = await input.client.storage
-        .from(SPONSORSHIP_PROOF_BUCKET)
-        .remove(input.uploadedPaths);
-      if (error) input.logger.error("Failed to clean up sponsorship payment proof", error);
-    } catch (error) {
-      input.logger.error("Failed to clean up sponsorship payment proof", error);
-    }
-  }
-
-  if (input.pledgeId) {
-    try {
-      const { error } = await input.client
-        .from("public_status_token")
-        .delete()
-        .eq("entity_id", input.pledgeId)
-        .eq("entity_type", "sponsorship_pledge");
-      if (error) input.logger.error("Failed to clean up sponsorship status token", error);
-    } catch (error) {
-      input.logger.error("Failed to clean up sponsorship status token", error);
-    }
-
-    try {
-      const { error } = await input.client
-        .from("sponsorship_pledge")
-        .delete()
-        .eq("id", input.pledgeId);
-      if (error) input.logger.error("Failed to clean up sponsorship pledge row", error);
-    } catch (error) {
-      input.logger.error("Failed to clean up sponsorship pledge row", error);
-    }
-  }
-}
 
 export async function persistSponsorshipPledge({
   client,
@@ -289,16 +277,9 @@ export async function persistSponsorshipPledge({
     }
   }
 
-  let pledgeId: string | null = null;
-  const uploadedPaths: string[] = [];
-
   try {
-    // A pledge is an *unverified* public submission: nobody has proved they own
-    // this email address. Resolving through resolve_public_supporter_identity
-    // (`on conflict (email) do nothing`) means an existing supporter's name,
-    // phone, language and source survive untouched. The previous code here
-    // upserted on email, so a stranger could overwrite a real supporter's
-    // contact details just by typing their address into the public form.
+    // Resolve unverified public identity without overwriting an existing
+    // supporter. Explicit opt-outs are saved independently of pledge creation.
     const { supporterId } = await resolveIdentity({
       name: parsed.payload.contact.supporterName,
       email: parsed.payload.contact.email,
@@ -307,12 +288,6 @@ export async function persistSponsorshipPledge({
       source: "sponsorship_pledge_form",
     });
 
-    // Only opt_out is written from an unverified form -- matching donations
-    // (donations/service.ts) and volunteer registration (volunteers/service.ts).
-    // An opt-in tick here is a *request*: it is carried on the pledge row and
-    // recorded as a supporter_consent_intent by a database trigger, so staff can
-    // promote it to consent later. Writing opt_in directly would let an
-    // unverified submission silently reverse someone's existing opt_out.
     const consentRows = buildConsentRows({
       supporterId,
       source: "sponsorship_pledge_form",
@@ -327,68 +302,42 @@ export async function persistSponsorshipPledge({
     }
 
     const status: SponsorshipPledgeStatus = parsed.proof ? "provisional" : "pending_payment";
-
-    requireNoError(
-      await client
-        .from("sponsorship_pledge")
-        .insert({ id: parsed.pledgeId, ...toPledgeInsert(supporterId, status, parsed.payload) })
-        .select("id")
-        .single(),
-      "Failed to save sponsorship pledge",
-    );
-    pledgeId = parsed.pledgeId;
-
-    requireNoError(
-      await client
-        .from("sponsorship_preference")
-        .insert(toPreferenceInserts(pledgeId, parsed.payload)),
-      "Failed to save sponsorship animal preferences",
-    );
-
-    if (parsed.proof) {
-      requireNoError(
-        await client
-          .from("sponsorship_payment_proof")
-          .insert(
-            toPaymentProofInsert(
-              pledgeId,
-              parsed.proof.storagePath,
-              parsed.proof,
-              parsed.proof.metadata,
-            ),
-          ),
-        "Failed to save sponsorship payment proof",
-      );
-    }
-
-    const reference = pledgeReference(pledgeId);
-    const token = {
-      rawToken: parsed.statusToken,
-      tokenHash: hashStatusToken(parsed.statusToken),
-    };
+    const pledgeInsert = toPledgeInsert(supporterId, status, parsed.payload);
+    const proofInsert = parsed.proof
+      ? toPaymentProofInsert(
+          parsed.pledgeId,
+          parsed.proof.storagePath,
+          parsed.proof,
+          parsed.proof.metadata,
+        )
+      : null;
     const expiresAt = statusTokenExpiry(now);
-    requireNoError(
-      await client.from("public_status_token").insert({
-        token_hash: token.tokenHash,
-        entity_type: "sponsorship_pledge",
-        entity_id: pledgeId,
+    const { error } = await client.rpc("create_public_sponsorship_pledge", {
+      p_pledge_id: parsed.pledgeId,
+      p_pledge: pledgeInsert,
+      p_preferences: toPreferenceInserts(parsed.pledgeId, parsed.payload),
+      p_proof: proofInsert,
+      p_token: {
+        token_hash: hashStatusToken(parsed.statusToken),
         expires_at: expiresAt,
-      }),
-      "Failed to save sponsorship status token",
-    );
+        submission_fingerprint: fingerprintSponsorshipSubmission(parsed),
+      },
+    });
+    if (error) throw error;
 
     return {
-      pledgeId,
+      pledgeId: parsed.pledgeId,
       supporterId,
-      reference,
+      reference: pledgeReference(parsed.pledgeId),
       status,
-      amountCents: toPledgeInsert(supporterId, status, parsed.payload).amount_cents,
-      statusToken: token.rawToken,
-      statusUrl: buildStatusUrl(appUrl, token.rawToken),
+      amountCents: pledgeInsert.amount_cents,
+      statusToken: parsed.statusToken,
+      statusUrl: buildStatusUrl(appUrl, parsed.statusToken),
       expiresAt,
     };
   } catch (error) {
-    await cleanupFailedPersistence({ client, pledgeId, uploadedPaths, logger });
+    // The RPC is atomic. Its response can be lost after commit, so deleting
+    // anything here could destroy a completed pledge and its bearer token.
     logger.error("Failed to save sponsorship pledge", error);
     throw new Error("Failed to save sponsorship pledge");
   }

@@ -244,6 +244,7 @@ export function ManualCaseIntake() {
   const copy = pageCopy.manualIntake;
   const navigate = useNavigate();
   const [identitySearch, setIdentitySearch] = useState("");
+  const [identitySearchPage, setIdentitySearchPage] = useState(1);
   const [identityMode, setIdentityMode] = useState<IdentityMode>("new_supporter");
   const [selectedCandidate, setSelectedCandidate] = useState<ManualCaseIdentityCandidate | null>(
     null,
@@ -259,8 +260,8 @@ export function ManualCaseIntake() {
 
   const searchText = identitySearch.trim();
   const identitySearchParams = useMemo(
-    () => buildIdentitySearchParams({ q: searchText }),
-    [searchText],
+    () => buildIdentitySearchParams({ q: searchText, page: identitySearchPage }),
+    [searchText, identitySearchPage],
   );
 
   const caseStatusesQuery = useQuery<StatusesResponse, Error>({
@@ -309,6 +310,10 @@ export function ManualCaseIntake() {
     [followupStatusesQuery.data?.statuses],
   );
   const identityCandidates = identitySearchQuery.data?.candidates ?? [];
+  const identitySearchTotalPages = Math.max(
+    1,
+    Math.ceil((identitySearchQuery.data?.total ?? 0) / 10),
+  );
   const selectedCaseStatus = caseStatuses.find((status) => status.id === caseForm.initialStatusId);
   const selectedTaskStatus = followupStatuses.find((status) => status.id === initialTask.statusId);
 
@@ -475,7 +480,10 @@ export function ManualCaseIntake() {
             <Input
               id="manual-intake-identity-search"
               value={identitySearch}
-              onChange={(event) => setIdentitySearch(event.target.value)}
+              onChange={(event) => {
+                setIdentitySearch(event.target.value);
+                setIdentitySearchPage(1);
+              }}
               className="h-9"
               placeholder={copy.identityPlaceholder}
             />
@@ -531,6 +539,33 @@ export function ManualCaseIntake() {
                 </Button>
               ))}
             </div>
+            {identitySearchTotalPages > 1 && (
+              <div className="flex items-center justify-end gap-2 border-t border-[var(--color-border)] px-3 py-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={identitySearchPage <= 1 || identitySearchQuery.isFetching}
+                  onClick={() => setIdentitySearchPage((page) => Math.max(1, page - 1))}
+                >
+                  {pageCopy.common.previous}
+                </Button>
+                <span className="text-xs text-[var(--color-text-muted)]">
+                  {pageCopy.common.pageOf(identitySearchPage, identitySearchTotalPages)}
+                </span>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={
+                    identitySearchPage >= identitySearchTotalPages || identitySearchQuery.isFetching
+                  }
+                  onClick={() => setIdentitySearchPage((page) => page + 1)}
+                >
+                  {pageCopy.common.next}
+                </Button>
+              </div>
+            )}
           </div>
         )}
 

@@ -1,5 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ZodError } from "zod";
+import {
+  InvalidRequestJsonError,
+  RequestBodyTooLargeError,
+  readPublicJson,
+} from "../../lib/http/publicJson.server";
 
 import { createPaymentProviders } from "../../lib/donations/providers.server";
 import {
@@ -36,8 +41,11 @@ export const Route = createFileRoute("/api/donations")({
         }
 
         try {
-          const body = (await request.json()) as Record<string, unknown>;
-          const { turnstileToken, ...input } = body;
+          const body = await readPublicJson(request);
+          if (!body || typeof body !== "object" || Array.isArray(body)) {
+            return Response.json({ error: "Invalid donation request" }, { status: 400 });
+          }
+          const { turnstileToken, ...input } = body as Record<string, unknown>;
 
           if (!(await verifyTurnstile(turnstileToken as string | undefined, ip))) {
             return Response.json({ error: "Verification failed" }, { status: 403 });
@@ -52,6 +60,10 @@ export const Route = createFileRoute("/api/donations")({
 
           return Response.json(result);
         } catch (error) {
+          if (error instanceof RequestBodyTooLargeError)
+            return Response.json({ error: "Request body too large" }, { status: 413 });
+          if (error instanceof InvalidRequestJsonError)
+            return Response.json({ error: "Invalid JSON body" }, { status: 400 });
           if (error instanceof DonationCheckoutRecoveryRequiredError) {
             return Response.json(
               {

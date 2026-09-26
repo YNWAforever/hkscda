@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import { normalizeCspReports } from "./csp-report";
+import { normalizeCspReports, Route } from "./csp-report";
 
 describe("normalizeCspReports", () => {
   test("parses the legacy report-uri envelope", () => {
@@ -103,4 +103,34 @@ describe("normalizeCspReports", () => {
     expect(report?.documentUri).toBeUndefined();
     expect(report?.blockedUri).toBeUndefined();
   });
+});
+
+test("CSP report stops reading once the byte cap is crossed", async () => {
+  let pulls = 0;
+  const body = new ReadableStream<Uint8Array>({
+    pull(controller) {
+      pulls++;
+      controller.enqueue(new Uint8Array(8 * 1024));
+      if (pulls >= 100) controller.close();
+    },
+  });
+  const request = new Request("https://example.test/api/csp-report", {
+    method: "POST",
+    headers: { "content-type": "application/csp-report" },
+    body,
+    duplex: "half",
+  } as RequestInit & { duplex: "half" });
+  expect(request.headers.has("content-length")).toBe(false);
+  const handler = (
+    Route as unknown as {
+      options: {
+        server?: { handlers?: { POST?: (context: { request: Request }) => Promise<Response> } };
+      };
+    }
+  ).options.server?.handlers?.POST;
+  expect(handler).toBeDefined();
+  if (!handler) throw new Error("missing CSP report handler");
+  const response = await handler({ request });
+  expect(response.status).toBe(413);
+  expect(pulls).toBeLessThan(10);
 });

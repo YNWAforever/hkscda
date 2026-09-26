@@ -1,3 +1,4 @@
+import { RequestBodyTooLargeError, readPublicJson } from "../http/publicJson.server";
 import { ZodError } from "zod";
 
 import {
@@ -14,6 +15,7 @@ export type SignedAnimalPhotoUpload = {
 };
 
 export type AnimalPhotoUploadDeps = {
+  bucket?: string;
   /** Rejects the request unless the caller is an authorised admin. */
   requireAnimalAdmin: (request: Request) => Promise<unknown>;
   /** Issues a signed upload URL for exactly this object path. */
@@ -34,6 +36,7 @@ function jsonNoStore(body: unknown, init: ResponseInit = {}) {
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export function createAnimalPhotoUploadHandlers(deps: AnimalPhotoUploadDeps) {
+  const bucket = deps.bucket ?? ANIMAL_IMAGE_BUCKET;
   const newVersion = deps.newVersion ?? (() => crypto.randomUUID());
 
   return {
@@ -48,11 +51,16 @@ export function createAnimalPhotoUploadHandlers(deps: AnimalPhotoUploadDeps) {
 
       let body: unknown;
       try {
-        body = await request.json();
-      } catch {
+        body = await readPublicJson(request);
+      } catch (error) {
+        if (error instanceof RequestBodyTooLargeError)
+          return jsonNoStore({ error: "Request body too large" }, { status: 413 });
         return jsonNoStore({ error: "Invalid JSON body" }, { status: 400 });
       }
 
+      if (!body || typeof body !== "object" || Array.isArray(body)) {
+        return jsonNoStore({ error: "Invalid photo upload request" }, { status: 400 });
+      }
       const payload = body as { animalId?: unknown; photo?: unknown };
       if (typeof payload.animalId !== "string" || !UUID_PATTERN.test(payload.animalId)) {
         // The animal id becomes the first path segment, so it is constrained to
@@ -83,9 +91,9 @@ export function createAnimalPhotoUploadHandlers(deps: AnimalPhotoUploadDeps) {
         fileName: descriptor.fileName,
       });
 
-      const upload = await deps.createSignedUpload(ANIMAL_IMAGE_BUCKET, path);
+      const upload = await deps.createSignedUpload(bucket, path);
       return jsonNoStore({
-        bucket: ANIMAL_IMAGE_BUCKET,
+        bucket,
         path: upload.path,
         signedUrl: upload.signedUrl,
         token: upload.token,

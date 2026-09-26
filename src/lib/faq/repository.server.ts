@@ -54,30 +54,38 @@ function toHelpFaq(entry: FaqEntry): HelpFaq {
   };
 }
 
+async function readFaqRows(client: SupabaseClient, activeOnly: boolean): Promise<FaqEntry[]> {
+  const rows: unknown[] = [];
+  let from = 0;
+  let total = 0;
+  do {
+    let query = client.from("faq_entry").select(ROW_COLUMNS, { count: "exact" });
+    if (activeOnly) query = query.eq("is_active", true);
+    const { data, count, error } = await query
+      .order("category", { ascending: true })
+      .order("sort_order", { ascending: true })
+      .order("id", { ascending: true })
+      .range(from, from + 999);
+    if (error) throw error;
+    const batch = data ?? [];
+    if (batch.length === 0 && from < (count ?? 0)) {
+      throw new Error("FAQ read stopped before all rows were returned");
+    }
+    rows.push(...batch);
+    from += batch.length;
+    total = count ?? from;
+  } while (from < total);
+  return rows.map(mapRow).filter((row): row is FaqEntry => row !== null);
+}
+
 export function createSupabaseFaqRepository(client: SupabaseClient): FaqRepository {
   return {
     async listPublic(): Promise<HelpFaq[]> {
-      const { data, error } = await client
-        .from("faq_entry")
-        .select(ROW_COLUMNS)
-        .eq("is_active", true)
-        .order("category", { ascending: true })
-        .order("sort_order", { ascending: true });
-      if (error) throw error;
-      return ((data ?? []) as unknown[])
-        .map(mapRow)
-        .filter((row): row is FaqEntry => row !== null)
-        .map(toHelpFaq);
+      return (await readFaqRows(client, true)).map(toHelpFaq);
     },
 
     async listAdmin(): Promise<FaqEntry[]> {
-      const { data, error } = await client
-        .from("faq_entry")
-        .select(ROW_COLUMNS)
-        .order("category", { ascending: true })
-        .order("sort_order", { ascending: true });
-      if (error) throw error;
-      return ((data ?? []) as unknown[]).map(mapRow).filter((row): row is FaqEntry => row !== null);
+      return readFaqRows(client, false);
     },
 
     async upsert(input: FaqEntryInput, actorUserId: string): Promise<FaqEntry> {

@@ -1,0 +1,122 @@
+-- Publish the reviewed content revision before copying its private images to a public bucket.
+-- A prepared asset is durable copy intent; public reads omit it until ready.
+create or replace function public.prepare_content_public_assets(p_actor_user_id uuid,p_content_id uuid,p_revision_id uuid,p_expected_version integer,p_idempotency_key text)
+returns jsonb language plpgsql security invoker set search_path=public,pg_temp as $$
+declare item public.content_item%rowtype;revision public.content_revision%rowtype;cached public.content_publication_prepare%rowtype;published public.content_publish_request%rowtype;media jsonb;session public.content_media_session%rowtype;
+begin
+ perform private.require_content_actor(p_actor_user_id);
+ if p_idempotency_key is null or char_length(p_idempotency_key) not between 16 and 200 then raise exception 'Invalid publication key' using errcode='22023';end if;
+ perform pg_advisory_xact_lock(hashtextextended(p_idempotency_key,0));
+ select * into published from public.content_publish_request where idempotency_key=p_idempotency_key;
+ if found then
+  if published.content_item_id is distinct from p_content_id or published.revision_id is distinct from p_revision_id or published.expected_version is distinct from p_expected_version then raise exception 'Publication payload conflict' using errcode='23505';end if;
+  return coalesce((select jsonb_agg(to_jsonb(asset) order by asset.id) from public.content_public_asset asset where asset.revision_id=p_revision_id and asset.content_item_id=p_content_id),'[]'::jsonb);
+ end if;
+ select * into item from public.content_item where id=p_content_id for update;
+ if not found then raise exception 'Content not found' using errcode='P0002';end if;
+ if item.version is distinct from p_expected_version then raise exception 'Stale content version' using errcode='40001';end if;
+ select * into revision from public.content_revision where id=p_revision_id and content_item_id=p_content_id;
+ if not found then raise exception 'Revision not found' using errcode='P0002';end if;
+ if revision.version>item.version then raise exception 'Invalid content revision' using errcode='23514';end if;
+ perform private.validate_content_publication_snapshot(revision.public_snapshot);
+ if exists(select 1 from public.content_item other where other.id<>p_content_id and other.status='published' and other.published_slug=revision.public_snapshot->'content'->>'slug') then raise exception 'Published slug already used' using errcode='23505';end if;
+ select * into cached from public.content_publication_prepare where idempotency_key=p_idempotency_key;
+ if found then
+  if cached.content_item_id is distinct from p_content_id or cached.revision_id is distinct from p_revision_id or cached.expected_version is distinct from p_expected_version then raise exception 'Publication payload conflict' using errcode='23505';end if;
+ else
+  insert into public.content_publication_prepare(idempotency_key,content_item_id,revision_id,expected_version) values(p_idempotency_key,p_content_id,p_revision_id,p_expected_version);
+  for media in select value from jsonb_array_elements(revision.public_snapshot->'media') loop
+   if media->>'storage_bucket'='content-media' then continue;end if;
+   if media->>'storage_bucket'<>'content-media-private' then raise exception 'Unknown media source' using errcode='23514';end if;
+   select * into session from public.content_media_session where content_item_id=p_content_id and storage_path=media->>'storage_path' and result is not null;
+   if not found or session.sha256 is null then raise exception 'Verified media session required' using errcode='23514';end if;
+   insert into public.content_public_asset(content_item_id,revision_id,media_id,source_bucket,source_path,public_path,sha256)
+   values(p_content_id,p_revision_id,(media->>'id')::uuid,'content-media-private',media->>'storage_path','published/'||p_revision_id::text||'/'||(media->>'id')||case session.mime_type when 'image/jpeg' then '.jpg' when 'image/png' then '.png' else '.webp' end,session.sha256)
+   on conflict(revision_id,media_id) do nothing;
+  end loop;
+ end if;
+ return coalesce((select jsonb_agg(to_jsonb(asset) order by asset.id) from public.content_public_asset asset where revision_id=p_revision_id and content_item_id=p_content_id),'[]'::jsonb);
+end $$;
+
+create or replace function private.require_ready_content_public_assets()
+returns trigger language plpgsql security invoker set search_path=public,pg_temp as $$
+declare snapshot jsonb;
+begin
+  if new.status='published' and
+     (old.status is distinct from new.status or old.published_revision_id is distinct from new.published_revision_id) then
+    select public_snapshot into snapshot from public.content_revision
+      where id=new.published_revision_id and content_item_id=new.id;
+    if snapshot is null then
+      raise exception 'Published revision required' using errcode='23514';
+    end if;
+    if exists(
+      select 1 from jsonb_array_elements(snapshot->'media') media
+      where media->>'storage_bucket'<>'content-media'
+        and not exists(
+          select 1 from public.content_public_asset asset
+          where asset.content_item_id=new.id
+            and asset.revision_id=new.published_revision_id
+            and asset.media_id=(media->>'id')::uuid
+        )
+    ) then
+      raise exception 'Public media copy preparation required' using errcode='23514';
+    end if;
+  end if;
+  return new;
+end $$;
+
+alter table public.content_public_asset
+  add column copy_claimed_at timestamptz;
+create index content_public_asset_pending_idx
+  on public.content_public_asset(created_at, id) where ready=false;
+
+create function public.claim_due_content_public_assets(
+  p_cutoff timestamptz,
+  p_limit integer default 50
+)
+returns setof public.content_public_asset
+language sql security invoker set search_path='' as $$
+  with candidates as (
+    select asset.id
+    from public.content_public_asset asset
+    join public.content_item item
+      on item.id=asset.content_item_id
+      and item.status='published'
+      and item.published_revision_id=asset.revision_id
+    where asset.ready=false
+      and asset.created_at<p_cutoff
+      and (asset.copy_claimed_at is null or
+           asset.copy_claimed_at<pg_catalog.clock_timestamp()-interval '1 hour')
+    order by asset.created_at, asset.id
+    limit least(greatest(coalesce(p_limit,50),1),50)
+    for update of asset skip locked
+  )
+  update public.content_public_asset asset
+  set copy_claimed_at=pg_catalog.clock_timestamp()
+  from candidates
+  where asset.id=candidates.id
+  returning asset.*;
+$$;
+
+create function public.mark_claimed_content_public_asset_ready(
+  p_asset_id uuid,
+  p_claimed_at timestamptz
+)
+returns boolean language plpgsql security invoker set search_path='' as $$
+begin
+  update public.content_public_asset
+  set ready=true, copy_claimed_at=null
+  where id=p_asset_id and ready=false and copy_claimed_at=p_claimed_at;
+  if found then return true; end if;
+  return exists(select 1 from public.content_public_asset
+    where id=p_asset_id and ready=true);
+end $$;
+
+revoke all on function public.claim_due_content_public_assets(timestamptz,integer)
+  from public,anon,authenticated;
+revoke all on function public.mark_claimed_content_public_asset_ready(uuid,timestamptz)
+  from public,anon,authenticated;
+grant execute on function public.claim_due_content_public_assets(timestamptz,integer)
+  to service_role;
+grant execute on function public.mark_claimed_content_public_asset_ready(uuid,timestamptz)
+  to service_role;

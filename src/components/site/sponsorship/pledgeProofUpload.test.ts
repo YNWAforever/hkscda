@@ -47,11 +47,12 @@ describe("uploadProofDirectly", () => {
     globalThis.fetch = originalFetch;
   });
 
-  test("requests a signed URL with no turnstileToken, uploads the file, and returns the pledge id and storage path", async () => {
+  test("verifies Turnstile before requesting a signed URL and returns the proof intent", async () => {
     const fetchSpy = mock(async () =>
       Response.json(
         {
           pledgeId: "pledge-1",
+          proofIntent: "signed-intent",
           upload: { path: "pledge-1/proof/receipt.jpg", signedUrl: "https://x", token: "tok" },
         },
         { status: 201 },
@@ -60,7 +61,7 @@ describe("uploadProofDirectly", () => {
     globalThis.fetch = fetchSpy as unknown as typeof fetch;
     const file = makeProofFile();
 
-    const result = await uploadProofDirectly(file);
+    const result = await uploadProofDirectly(file, "challenge");
 
     expect(fetchSpy).toHaveBeenCalledWith(
       "/api/sponsorships/pledges/proof-upload-url",
@@ -68,26 +69,27 @@ describe("uploadProofDirectly", () => {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
+          turnstileToken: "challenge",
           proof: { fileName: "receipt.jpg", mimeType: "image/jpeg", sizeBytes: 5 },
         }),
       }),
     );
-    // The exact-body assertion above already proves no turnstileToken field
-    // is sent to this endpoint -- the token is single-use and verified only
-    // at final submission.
-
     expect(storageFrom).toHaveBeenCalledWith("sponsorship-payment-proof");
     expect(uploadToSignedUrl).toHaveBeenCalledWith("pledge-1/proof/receipt.jpg", "tok", file, {
       contentType: "image/jpeg",
     });
-    expect(result).toEqual({ pledgeId: "pledge-1", storagePath: "pledge-1/proof/receipt.jpg" });
+    expect(result).toEqual({
+      pledgeId: "pledge-1",
+      storagePath: "pledge-1/proof/receipt.jpg",
+      proofIntent: "signed-intent",
+    });
   });
 
   test("throws using the server's error message when the upload-url request fails", async () => {
     const fetchSpy = mock(async () => Response.json({ error: "驗證已過期" }, { status: 403 }));
     globalThis.fetch = fetchSpy as unknown as typeof fetch;
 
-    await expect(uploadProofDirectly(makeProofFile())).rejects.toThrow("驗證已過期");
+    await expect(uploadProofDirectly(makeProofFile(), "challenge")).rejects.toThrow("驗證已過期");
     expect(uploadToSignedUrl).not.toHaveBeenCalled();
   });
 
@@ -95,7 +97,9 @@ describe("uploadProofDirectly", () => {
     const fetchSpy = mock(async () => new Response("not json", { status: 500 }));
     globalThis.fetch = fetchSpy as unknown as typeof fetch;
 
-    await expect(uploadProofDirectly(makeProofFile())).rejects.toThrow("無法準備付款證明上傳。");
+    await expect(uploadProofDirectly(makeProofFile(), "challenge")).rejects.toThrow(
+      "無法準備付款證明上傳。",
+    );
     expect(uploadToSignedUrl).not.toHaveBeenCalled();
   });
 
@@ -104,6 +108,7 @@ describe("uploadProofDirectly", () => {
       Response.json(
         {
           pledgeId: "pledge-1",
+          proofIntent: "signed-intent",
           upload: { path: "pledge-1/proof/receipt.jpg", signedUrl: "https://x", token: "tok" },
         },
         { status: 201 },
@@ -116,7 +121,7 @@ describe("uploadProofDirectly", () => {
     console.error = consoleErrorSpy;
 
     try {
-      await expect(uploadProofDirectly(makeProofFile())).rejects.toThrow(
+      await expect(uploadProofDirectly(makeProofFile(), "challenge")).rejects.toThrow(
         "付款證明上傳失敗，請重試。",
       );
       expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
@@ -145,7 +150,7 @@ describe("resolvePledgeSubmissionIds", () => {
     });
     globalThis.fetch = fetchSpy as unknown as typeof fetch;
 
-    const result = await resolvePledgeSubmissionIds(false, null);
+    const result = await resolvePledgeSubmissionIds(false, null, "challenge");
 
     expect(fetchSpy).not.toHaveBeenCalled();
     expect(result.proof).toBeUndefined();
@@ -153,7 +158,7 @@ describe("resolvePledgeSubmissionIds", () => {
     expect(typeof result.pledgeId).toBe("string");
     expect(result.pledgeId.length).toBeGreaterThan(0);
     // Confirms a *fresh* id is minted each time, not a constant placeholder.
-    const second = await resolvePledgeSubmissionIds(false, null);
+    const second = await resolvePledgeSubmissionIds(false, null, "challenge");
     expect(second.pledgeId).not.toBe(result.pledgeId);
   });
 
@@ -163,7 +168,7 @@ describe("resolvePledgeSubmissionIds", () => {
     });
     globalThis.fetch = fetchSpy as unknown as typeof fetch;
 
-    const result = await resolvePledgeSubmissionIds(true, null);
+    const result = await resolvePledgeSubmissionIds(true, null, "challenge");
 
     expect(fetchSpy).not.toHaveBeenCalled();
     expect(result.proof).toBeUndefined();
@@ -176,6 +181,7 @@ describe("resolvePledgeSubmissionIds", () => {
       Response.json(
         {
           pledgeId: "pledge-from-server",
+          proofIntent: "signed-intent",
           upload: {
             path: "pledge-from-server/proof/receipt.jpg",
             signedUrl: "https://x",
@@ -188,7 +194,7 @@ describe("resolvePledgeSubmissionIds", () => {
     globalThis.fetch = fetchSpy as unknown as typeof fetch;
     const file = makeProofFile();
 
-    const result = await resolvePledgeSubmissionIds(true, file);
+    const result = await resolvePledgeSubmissionIds(true, file, "challenge");
 
     expect(result).toEqual({
       pledgeId: "pledge-from-server",
@@ -198,6 +204,7 @@ describe("resolvePledgeSubmissionIds", () => {
         mimeType: "image/jpeg",
         sizeBytes: 5,
         storagePath: "pledge-from-server/proof/receipt.jpg",
+        proofIntent: "signed-intent",
       },
     });
   });
@@ -212,12 +219,12 @@ describe("createPledgeSubmissionAttempt", () => {
 
   test("reuses the same pledge id when a proof-less submission is retried", async () => {
     const attempt = createPledgeSubmissionAttempt();
-    const first = await attempt.resolve(false, null);
-    const retry = await attempt.resolve(false, null);
+    const first = await attempt.resolve(false, null, "challenge");
+    const retry = await attempt.resolve(false, null, "challenge");
     expect(retry.pledgeId).toBe(first.pledgeId);
     expect(retry.statusToken).toBe(first.statusToken);
     attempt.reset();
-    expect((await attempt.resolve(false, null)).pledgeId).not.toBe(first.pledgeId);
+    expect((await attempt.resolve(false, null, "challenge")).pledgeId).not.toBe(first.pledgeId);
   });
 
   test("does not reupload proof on retry, but prepares a new proof when the file changes", async () => {
@@ -227,6 +234,7 @@ describe("createPledgeSubmissionAttempt", () => {
       return Response.json(
         {
           pledgeId: `pledge-${count}`,
+          proofIntent: "signed-intent",
           upload: { path: `pledge-${count}/proof/receipt.jpg`, token: "tok" },
         },
         { status: 201 },
@@ -234,11 +242,11 @@ describe("createPledgeSubmissionAttempt", () => {
     }) as unknown as typeof fetch;
     const attempt = createPledgeSubmissionAttempt();
     const file = makeProofFile();
-    const first = await attempt.resolve(true, file);
-    const retry = await attempt.resolve(true, file);
+    const first = await attempt.resolve(true, file, "challenge");
+    const retry = await attempt.resolve(true, file, "challenge");
     expect(retry).toEqual(first);
     expect(count).toBe(1);
-    expect((await attempt.resolve(true, makeProofFile())).pledgeId).toBe("pledge-2");
+    expect((await attempt.resolve(true, makeProofFile(), "challenge")).pledgeId).toBe("pledge-2");
   });
 
   test("a failed preparation can be retried", async () => {
@@ -247,14 +255,18 @@ describe("createPledgeSubmissionAttempt", () => {
       count += 1;
       if (count === 1) return Response.json({ error: "try again" }, { status: 500 });
       return Response.json(
-        { pledgeId: "pledge-2", upload: { path: "pledge-2/proof/receipt.jpg", token: "tok" } },
+        {
+          pledgeId: "pledge-2",
+          proofIntent: "signed-intent",
+          upload: { path: "pledge-2/proof/receipt.jpg", token: "tok" },
+        },
         { status: 201 },
       );
     }) as unknown as typeof fetch;
     const attempt = createPledgeSubmissionAttempt();
     const file = makeProofFile();
-    await expect(attempt.resolve(true, file)).rejects.toThrow("try again");
-    expect((await attempt.resolve(true, file)).pledgeId).toBe("pledge-2");
+    await expect(attempt.resolve(true, file, "challenge")).rejects.toThrow("try again");
+    expect((await attempt.resolve(true, file, "challenge")).pledgeId).toBe("pledge-2");
     expect(count).toBe(2);
   });
 });

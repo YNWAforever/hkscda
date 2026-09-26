@@ -37,11 +37,17 @@ let detail: GroupEnquiry = baseDetail;
 let total = 1;
 let listError: Error | null = null;
 let detailError: Error | null = null;
+let mutationError: Error | null = null;
 
 mock.module("@tanstack/react-query", () => ({
   ...realReactQuery,
   useQueryClient: () => ({ invalidateQueries: () => {} }),
-  useMutation: () => ({ mutate: () => {}, isPending: false, isError: false }),
+  useMutation: () => ({
+    mutate: () => {},
+    isPending: false,
+    isError: mutationError !== null,
+    error: mutationError,
+  }),
   useQuery: ({ queryKey }: { queryKey: unknown[] }) => {
     if (String(queryKey[0]) === "group-enquiries") {
       return {
@@ -110,6 +116,12 @@ describe("GroupEnquiryManagement", () => {
     detail = { ...baseDetail, notificationStatus: "sent" };
     expect(render()).not.toContain("重新發送通知");
     detail = baseDetail;
+  });
+
+  test("explains a stale edit conflict and tells staff to reload", () => {
+    mutationError = Object.assign(new Error("conflict"), { status: 409 });
+    expect(render()).toContain("資料已被其他職員更新，請重新整理頁面後再試。");
+    mutationError = null;
   });
 
   test("shows page controls only when there is more than one page", () => {

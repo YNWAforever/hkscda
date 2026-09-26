@@ -117,3 +117,27 @@ test("claim cannot inject a tier or another auth user", async () => {
   );
   expect(response.status).toBe(400);
 });
+
+test("member booking rejects an oversized JSON command before service work", async () => {
+  let calls = 0;
+  const handlers = createBookingHandlers({
+    service: createBookingService({
+      ...base,
+      command: async () => {
+        calls++;
+        return { kind: "booked" };
+      },
+    }),
+    authenticate: async () => id,
+    verify: async () => true,
+  });
+  const request = new Request("https://test.invalid/api/volunteer/policy", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ padding: "x".repeat(2 * 1024 * 1024) }),
+  });
+  expect(request.headers.has("content-length")).toBe(false);
+  const response = await handlers.post(request);
+  expect(response.status).toBe(413);
+  expect(calls).toBe(0);
+});

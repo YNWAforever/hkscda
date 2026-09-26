@@ -81,8 +81,7 @@ class FakeQuery {
   private filters: Array<{ column: string; value: unknown }> = [];
   private likeFilters: Array<{ column: string; value: string }> = [];
   private orFilters: string[] = [];
-  private orderCol: string | null = null;
-  private orderAsc = true;
+  private orders: Array<{ column: string; ascending: boolean }> = [];
   private rangeBounds: [number, number] | null = null;
   private countMode: string | undefined;
 
@@ -138,8 +137,7 @@ class FakeQuery {
   }
 
   order(column: string, options?: { ascending?: boolean }) {
-    this.orderCol = column;
-    this.orderAsc = options?.ascending !== false;
+    this.orders.push({ column, ascending: options?.ascending !== false });
     return this;
   }
 
@@ -178,11 +176,15 @@ class FakeQuery {
     for (const orFilter of this.orFilters) {
       rows = rows.filter((row) => matchesOrFilter(row, orFilter));
     }
-    if (this.orderCol) {
+    if (this.orders.length > 0) {
       rows = [...rows].sort((left, right) => {
-        const l = String(left[this.orderCol as string]);
-        const r = String(right[this.orderCol as string]);
-        return this.orderAsc ? l.localeCompare(r) : r.localeCompare(l);
+        for (const { column, ascending } of this.orders) {
+          const l = String(left[column]);
+          const r = String(right[column]);
+          const comparison = ascending ? l.localeCompare(r) : r.localeCompare(l);
+          if (comparison !== 0) return comparison;
+        }
+        return 0;
       });
     }
     return rows;
@@ -200,7 +202,11 @@ class FakeQuery {
     let rows = this.filteredRows();
     const total = rows.length;
     if (this.rangeBounds) rows = rows.slice(this.rangeBounds[0], this.rangeBounds[1] + 1);
-    const result = { data: rows, error: null, count: this.countMode ? total : null };
+    const result = {
+      data: this.state.serverRowCap ? rows.slice(0, this.state.serverRowCap) : rows,
+      error: null,
+      count: this.countMode ? total : null,
+    };
     return Promise.resolve(result).then(onfulfilled, onrejected);
   }
 }
@@ -217,6 +223,7 @@ type FakeState = {
   allocationRows: Record<string, unknown>[];
   rpcError: Error | null;
   rpcResult: unknown;
+  serverRowCap?: number;
 };
 
 function createFakeClient(overrides: Partial<FakeState> = {}) {
@@ -444,7 +451,24 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     const result = await repo.listPledges({ page: 1, pageSize: 25 });
     expect(result.total).toBe(2);
     expect(result.pledges).toHaveLength(2);
-    expect(result.pledges[0].supporterName).toBe("陳小姐");
+    expect(result.pledges.find((pledge) => pledge.id === pledgeId)?.supporterName).toBe("陳小姐");
+  });
+
+  test("listPledges uses a stable id tie-breaker across pages", async () => {
+    const { client } = createFakeClient({
+      pledgeRows: [
+        pledgeRow({ id: "pledge-a" }),
+        pledgeRow({ id: "pledge-c" }),
+        pledgeRow({ id: "pledge-b" }),
+      ],
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const page1 = await repo.listPledges({ page: 1, pageSize: 2 });
+    const page2 = await repo.listPledges({ page: 2, pageSize: 2 });
+
+    expect(page1.pledges.map((pledge) => pledge.id)).toEqual(["pledge-c", "pledge-b"]);
+    expect(page2.pledges.map((pledge) => pledge.id)).toEqual(["pledge-a"]);
   });
 
   test("listPledges filters by status", async () => {
@@ -480,6 +504,26 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     expect(result.total).toBe(1);
   });
 
+  test("listPledges search includes candidates beyond a capped response", async () => {
+    const { client } = createFakeClient({
+      pledgeRows: [1, 2, 3].map((n) =>
+        pledgeRow({ id: "pledge-" + n, supporter_id: "supporter-" + n }),
+      ),
+      supporterRows: [1, 2, 3].map((n) =>
+        supporterRow({ id: "supporter-" + n, name: "陳小姐", email: "chan" + n + "@example.com" }),
+      ),
+      serverRowCap: 2,
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const page1 = await repo.listPledges({ q: "陳", page: 1, pageSize: 2 });
+    const page2 = await repo.listPledges({ q: "陳", page: 2, pageSize: 2 });
+    expect(page1.total).toBe(3);
+    expect(page2.total).toBe(3);
+    expect(page1.pledges.map((pledge) => pledge.id)).toEqual(["pledge-3", "pledge-2"]);
+    expect(page2.pledges.map((pledge) => pledge.id)).toEqual(["pledge-1"]);
+  });
+
   test("listPledges filters by q against the pledge's human-facing reference", async () => {
     // pledgeReference() (src/lib/sponsorship/statusSummary.ts) formats a
     // pledge's reference as "SP-" + the id's first segment, e.g. `pledgeId`
@@ -503,6 +547,27 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     expect(result.pledges).toHaveLength(1);
     expect(result.pledges[0].id).toBe(pledgeId);
     expect(result.total).toBe(1);
+  });
+
+  test("reference search includes ids beyond a capped response", async () => {
+    const ids = [
+      "11111111-2222-4333-8444-555555555551",
+      "11111111-2222-4333-8444-555555555552",
+      "11111111-2222-4333-8444-555555555553",
+    ];
+    const { client } = createFakeClient({
+      pledgeRows: ids.map((id) => pledgeRow({ id })),
+      supporterRows: [],
+      serverRowCap: 2,
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const page1 = await repo.listPledges({ q: "SP-1111", page: 1, pageSize: 2 });
+    const page2 = await repo.listPledges({ q: "SP-1111", page: 2, pageSize: 2 });
+    expect(page1.total).toBe(3);
+    expect(page2.total).toBe(3);
+    expect(page1.pledges.map((pledge) => pledge.id)).toEqual([ids[2], ids[1]]);
+    expect(page2.pledges.map((pledge) => pledge.id)).toEqual([ids[0]]);
   });
 
   test("listPledges treats a non-reference-shaped q as a supporter-only search", async () => {
@@ -572,7 +637,7 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     const supporterRows = Array.from({ length: 1001 }, (_, i) =>
       supporterRow({ id: `supporter-${i}`, name: "陳小姐", email: `chan${i}@example.com` }),
     );
-    const { client } = createFakeClient({ pledgeRows: [], supporterRows });
+    const { client } = createFakeClient({ pledgeRows: [], supporterRows, serverRowCap: 1000 });
     const repo = createSupabaseSponsorshipAdminRepository(client);
 
     await expect(repo.listPledges({ q: "陳", page: 1, pageSize: 25 })).rejects.toThrow(
@@ -589,6 +654,7 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     );
     const { client } = createFakeClient({
       pledgeRows,
+      serverRowCap: 1000,
       supporterRows: [
         supporterRow({ id: "supporter-1", name: "陳小姐", email: "chan@example.com" }),
       ],

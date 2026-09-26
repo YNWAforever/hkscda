@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { z } from "zod";
+import { readBoundedFormData } from "../http/boundedFormData.server";
 import { createSupabaseServiceClient, requireAdmin } from "../donations/supabase.server";
 import { requireVerifiedVolunteer } from "../volunteers/policy/booking.repository.server";
 const metadata = z
@@ -9,8 +10,18 @@ const metadata = z
     idempotency_key: z.string().uuid(),
   })
   .strict();
-export async function internshipAttachment(request: Request) {
-  const client = createSupabaseServiceClient();
+const MAX_MULTIPART_BYTES = 11 * 1024 * 1024;
+const INTENT_LIFETIME_MS = 24 * 60 * 60 * 1000;
+
+export async function readBoundedInternshipFormData(request: Request): Promise<FormData | null> {
+  return readBoundedFormData(request, MAX_MULTIPART_BYTES);
+}
+export async function internshipAttachment(
+  request: Request,
+  createClient: typeof createSupabaseServiceClient = createSupabaseServiceClient,
+  now = () => new Date(),
+) {
+  const client = createClient();
   try {
     const actor = await requireVerifiedVolunteer(request, client);
     if (request.method === "GET") {
@@ -31,9 +42,8 @@ export async function internshipAttachment(request: Request) {
       if (signError) throw signError;
       return Response.json({ url: data.signedUrl }, { headers: { "cache-control": "no-store" } });
     }
-    if (Number(request.headers.get("content-length")) > 11 * 1024 * 1024)
-      return new Response(null, { status: 413 });
-    const form = await request.formData();
+    const form = await readBoundedInternshipFormData(request);
+    if (!form) return new Response(null, { status: 413 });
     const input = metadata.parse({
       application_id: form.get("application_id"),
       expected_revision: form.get("expected_revision"),
@@ -86,6 +96,26 @@ export async function internshipAttachment(request: Request) {
         !["submitted", "needs_information"].includes(app.status)
       )
         return Response.json({ error: "申請已變更，請重新載入" }, { status: 409 });
+      const { error: intentError } = await client
+        .from("internship_attachment_upload_intent")
+        .upsert(
+          {
+            storage_path: path,
+            application_id: app.id,
+            actor,
+            expires_at: new Date(now().getTime() + INTENT_LIFETIME_MS).toISOString(),
+          },
+          { onConflict: "storage_path", ignoreDuplicates: true },
+        );
+      if (intentError) throw intentError;
+      const { data: intent, error: intentReadError } = await client
+        .from("internship_attachment_upload_intent")
+        .select("cleanup_claimed_at")
+        .eq("storage_path", path)
+        .maybeSingle();
+      if (intentReadError) throw intentReadError;
+      if (!intent || intent.cleanup_claimed_at)
+        return Response.json({ error: "附件上載正在清理，請稍後重試" }, { status: 409 });
       const { error: uploadError } = await client.storage
         .from("internship-private")
         .upload(path, bytes, { contentType: file.type, upsert: false });

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { RequestBodyTooLargeError, readPublicJson } from "../../../../lib/http/publicJson.server";
 import { z } from "zod";
 
 import { validatePhotoDescriptor } from "../../../../lib/publicAdoption/schemas";
@@ -70,8 +71,10 @@ export function createPhotoUploadUrlsHandler({
 
     let body: unknown;
     try {
-      body = await request.json();
-    } catch {
+      body = await readPublicJson(request);
+    } catch (error) {
+      if (error instanceof RequestBodyTooLargeError)
+        return jsonNoStore({ error: "Request body too large" }, { status: 413 });
       return jsonNoStore({ error: "Invalid JSON body" }, { status: 400 });
     }
 

@@ -8,7 +8,7 @@ import {
   type AdminAccessArea,
   type AdminIdentity,
 } from "./access";
-import { adminIdentityQueryOptions } from "./identity";
+import { ADMIN_IDENTITY_QUERY_KEY, adminIdentityQueryOptions } from "./identity";
 import { supabase } from "../supabase";
 
 export type AdminMeResponse = {
@@ -132,7 +132,14 @@ export async function requireSignedInAdminIdentity(queryClient: QueryClient) {
   const {
     data: { session },
   } = await supabase.auth.getSession();
-  if (!session) throw redirect({ to: "/admin/login" });
+  if (!session) {
+    queryClient.removeQueries({ queryKey: ADMIN_IDENTITY_QUERY_KEY });
+    throw redirect({ to: "/admin/login" });
+  }
+  const cachedIdentity = queryClient.getQueryData<AdminMeResponse>(ADMIN_IDENTITY_QUERY_KEY);
+  if (cachedIdentity && cachedIdentity.admin.authUserId !== session.user.id) {
+    queryClient.removeQueries({ queryKey: ADMIN_IDENTITY_QUERY_KEY });
+  }
   // ensureQueryData is what makes AdminLayout's later useQuery a cache hit
   // instead of a second GET /api/admin/me.
   return queryClient.ensureQueryData(adminIdentityQueryOptions());

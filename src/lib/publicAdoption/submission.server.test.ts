@@ -4,6 +4,7 @@ import {
   SubmissionValidationError,
   parseAdoptionSubmission,
   persistPublicAdoptionJourney,
+  resumePublicAdoptionCase,
   sendAdoptionConfirmationEmail,
   type ParsedAdoptionMultipart,
   type PublicAdoptionSupabaseClient,
@@ -54,6 +55,13 @@ class FakeQuery {
 
   insert(payload: unknown, options?: unknown) {
     this.state.calls.push({ table: this.table, method: "insert", payload, options });
+    this.action = "insert";
+    this.mutationPayload = payload;
+    return this;
+  }
+
+  upsert(payload: unknown, options?: unknown) {
+    this.state.calls.push({ table: this.table, method: "upsert", payload, options });
     this.action = "insert";
     this.mutationPayload = payload;
     return this;
@@ -376,6 +384,43 @@ describe("parseAdoptionSubmission", () => {
   });
 });
 
+describe("resumePublicAdoptionCase", () => {
+  test("creates only the missing case and links the existing intake item", async () => {
+    const { client, state } = createFakeClient();
+    const coordinator = coordinatorService(state.calls);
+    const result = await resumePublicAdoptionCase({
+      client,
+      parsed: parsedSubmission(),
+      coordinatorService: coordinator.service,
+    });
+
+    expect(result).toEqual({ caseId });
+    expect(coordinator.calls).toContainEqual(
+      expect.objectContaining({
+        publicApplicationId: applicationId,
+        input: expect.objectContaining({
+          applicant_name: "Ada",
+          preferences: expect.objectContaining({ language: "en" }),
+        }),
+      }),
+    );
+    expect(callsFor(state.calls, "adoption_applications", "insert")).toHaveLength(0);
+    expect(callsFor(state.calls, "public_status_token", "insert")).toHaveLength(0);
+    expect(callsFor(state.calls, "adoption_intake_item", "upsert")).toContainEqual(
+      expect.objectContaining({
+        payload: expect.objectContaining({
+          public_application_id: applicationId,
+          adoption_case_id: caseId,
+        }),
+        options: { onConflict: "public_application_id", ignoreDuplicates: true },
+      }),
+    );
+    expect(callsFor(state.calls, "adoption_intake_item", "update")).toContainEqual(
+      expect.objectContaining({ payload: { adoption_case_id: caseId } }),
+    );
+  });
+});
+
 describe("persistPublicAdoptionJourney", () => {
   test("persists the expanded journey, private photos, status token, and coordinator case", async () => {
     const { client, state } = createFakeClient();
@@ -576,6 +621,32 @@ describe("persistPublicAdoptionJourney", () => {
       method: "eq",
       payload: { column: "entity_id", value: applicationId },
     });
+  });
+
+  test("preserves application data when the case creation outcome is uncertain", async () => {
+    const { client, state } = createFakeClient();
+
+    await expect(
+      persistPublicAdoptionJourney({
+        client,
+        parsed: parsedSubmission(),
+        coordinatorService: {
+          async createCaseFromPublicApplication() {
+            throw new Error("case committed but response lost");
+          },
+        },
+        now: () => new Date("2026-07-02T00:00:00.000Z"),
+        createStatusTokenPair: () => ({
+          rawToken: "raw-status-token",
+          tokenHash: "hashed-status-token",
+        }),
+        appUrl: "https://example.test",
+        logger: { error() {} },
+      }),
+    ).rejects.toThrow("Failed to save adoption application");
+
+    expect(callsFor(state.calls, "adoption_applications", "delete")).toHaveLength(0);
+    expect(callsFor(state.calls, "public_status_token", "delete")).toHaveLength(0);
   });
 
   test("does not fail after creating the coordinator case when intake link update fails", async () => {

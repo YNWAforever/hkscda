@@ -1,5 +1,6 @@
 import { describe, expect, mock, test } from "bun:test";
 
+import { volunteerRegistrationStatusLabels } from "./labels";
 import { createResendMailProvider } from "../notifications/provider.server";
 import { notifyVolunteerAdmins, sendVolunteerRegistrationEmail } from "./notifications.server";
 
@@ -18,11 +19,18 @@ const registration = {
 
 function fakeClient({
   conflictStatus,
+  existingUpdatedAt = new Date().toISOString(),
   sentPersistenceFails = false,
-}: { conflictStatus?: "queued" | "sent" | "failed"; sentPersistenceFails?: boolean } = {}) {
+  acceptedAfterCompetingFailure = false,
+}: {
+  conflictStatus?: "queued" | "sent" | "failed";
+  existingUpdatedAt?: string;
+  sentPersistenceFails?: boolean;
+  acceptedAfterCompetingFailure?: boolean;
+} = {}) {
   const operations: Array<{ action: string; payload?: Record<string, unknown> }> = [];
   const existing = conflictStatus
-    ? { id: "message-1", status: conflictStatus, updated_at: new Date().toISOString() }
+    ? { id: "message-1", status: conflictStatus, updated_at: existingUpdatedAt }
     : null;
   return {
     operations,
@@ -54,11 +62,24 @@ function fakeClient({
           },
           update(payload: Record<string, unknown>) {
             operations.push({ action: "update", payload });
+            let matchesTimeFilter = true;
+            let acceptsFailed = false;
             const builder = {
               eq() {
                 return builder;
               },
-              lt() {
+              lt(column: string, value: string) {
+                if (column === "updated_at" && existing)
+                  matchesTimeFilter = existing.updated_at < value;
+                return builder;
+              },
+              lte(column: string, value: string) {
+                if (column === "updated_at" && existing)
+                  matchesTimeFilter = existing.updated_at <= value;
+                return builder;
+              },
+              in(column: string, values: string[]) {
+                if (column === "status") acceptsFailed = values.includes("failed");
                 return builder;
               },
               select() {
@@ -66,7 +87,11 @@ function fakeClient({
               },
               maybeSingle: async () => ({
                 data:
-                  sentPersistenceFails && payload.status === "sent" ? null : { id: "message-1" },
+                  (sentPersistenceFails && payload.status === "sent") ||
+                  (acceptedAfterCompetingFailure && payload.status === "sent" && !acceptsFailed) ||
+                  !matchesTimeFilter
+                    ? null
+                    : { id: "message-1" },
                 error: null,
               }),
               then(resolve: (value: { error: null }) => unknown) {
@@ -90,6 +115,24 @@ const config = () => ({
 const input = { registration, statusUrl: "https://example.invalid/status/test" };
 
 describe("sendVolunteerRegistrationEmail", () => {
+  test("uses the Chinese status label in the registrant confirmation", async () => {
+    const { client } = fakeClient();
+    const sent: Array<{ subject: string; html: string }> = [];
+    const result = await sendVolunteerRegistrationEmail(client, input, {
+      getEmailConfig: config,
+      createMailProvider: async () => ({
+        send: async (email) => {
+          sent.push({ subject: email.subject, html: email.html });
+          return { kind: "accepted", providerMessageId: "email-localized" };
+        },
+      }),
+    });
+    expect(result).toBe("sent");
+    expect(sent[0].subject).toContain(volunteerRegistrationStatusLabels.pending);
+    expect(sent[0].html).toContain(volunteerRegistrationStatusLabels.pending);
+    expect(sent[0].subject).not.toContain(" pending");
+  });
+
   test.each([
     ["resolved rejection", async () => ({ data: null, error: { name: "rate_limit_exceeded" } })],
     [
@@ -127,6 +170,17 @@ describe("sendVolunteerRegistrationEmail", () => {
     });
   });
 
+  test("records acceptance after a competing sender marked the row failed", async () => {
+    const { client } = fakeClient({ acceptedAfterCompetingFailure: true });
+    const result = await sendVolunteerRegistrationEmail(client, input, {
+      getEmailConfig: config,
+      createMailProvider: async () => ({
+        send: async () => ({ kind: "accepted", providerMessageId: "email-accepted" }),
+      }),
+    });
+    expect(result).toBe("sent");
+  });
+
   test("throws when accepted delivery status cannot be persisted", async () => {
     const { client } = fakeClient({ sentPersistenceFails: true });
     await expect(
@@ -149,6 +203,48 @@ describe("sendVolunteerRegistrationEmail", () => {
       }),
     ).toBe("skipped");
     expect(send).not.toHaveBeenCalled();
+  });
+
+  test.each(["queued", "failed"] as const)(
+    "starts a fresh lease when reclaiming a %s message",
+    async (status) => {
+      const fixedNow = new Date("2040-01-01T00:05:00.000Z");
+      const { client, operations } = fakeClient({
+        conflictStatus: status,
+        existingUpdatedAt: "2039-12-31T23:59:00.000Z",
+      });
+      const result = await sendVolunteerRegistrationEmail(client, input, {
+        now: () => fixedNow,
+        getEmailConfig: config,
+        createMailProvider: async () => ({
+          send: async () => ({ kind: "accepted", providerMessageId: "email-lease" }),
+        }),
+      });
+
+      expect(result).toBe("sent");
+      expect(
+        operations.find((op) => op.action === "update" && op.payload?.status === "queued")?.payload,
+      ).toMatchObject({
+        status: "queued",
+        updated_at: "2040-01-01T00:05:00.000Z",
+      });
+    },
+  );
+
+  test("reclaims a queued message at the exact lease boundary", async () => {
+    const { client } = fakeClient({
+      conflictStatus: "queued",
+      existingUpdatedAt: "2040-01-01T00:00:00.000Z",
+    });
+    const result = await sendVolunteerRegistrationEmail(client, input, {
+      now: () => new Date("2040-01-01T00:05:00.000Z"),
+      getEmailConfig: config,
+      createMailProvider: async () => ({
+        send: async () => ({ kind: "accepted", providerMessageId: "email-boundary" }),
+      }),
+    });
+
+    expect(result).toBe("sent");
   });
 
   test("does not send while another fresh queued claim owns the lease", async () => {

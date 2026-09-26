@@ -30,3 +30,19 @@ test("preparation and publication share validation before public asset records",
   expect(prepare).toContain("from public.content_publish_request");
   expect(prepare).toContain("hashtextextended(p_idempotency_key,0)");
 });
+
+const afterCommit = readFileSync(
+  new URL(
+    "../../../supabase/migrations/20260926190000_content_publication_media_after_commit.sql",
+    import.meta.url,
+  ),
+  "utf8",
+);
+
+test("committed publication can omit pending media and replay its copy intent", () => {
+  expect(afterCommit).toContain("asset.media_id=(media->>'id')::uuid");
+  expect(afterCommit).toContain("asset.revision_id=new.published_revision_id");
+  expect(afterCommit).not.toContain("asset.media_id=(media->>'id')::uuid and asset.ready");
+  expect(afterCommit).toContain("return coalesce((select jsonb_agg(to_jsonb(asset)");
+  expect(afterCommit).toContain("claim_due_content_public_assets");
+});

@@ -47,7 +47,7 @@ const pairedRow = {
 
 type RowSource = unknown[] | ((selectedColumns: string) => unknown[]);
 
-function createBuilder(calls: unknown[], source: RowSource = [row]) {
+function createBuilder(calls: unknown[], source: RowSource = [row], serverRowCap?: number) {
   let selectedColumns = "";
   const builder: Record<string, unknown> = {
     select(columns: string, options?: unknown) {
@@ -70,7 +70,11 @@ function createBuilder(calls: unknown[], source: RowSource = [row]) {
     range(from: number, to: number) {
       const data = typeof source === "function" ? source(selectedColumns) : source;
       calls.push({ name: "range", from, to });
-      return Promise.resolve({ data, error: null, count: data.length });
+      return Promise.resolve({
+        data: data.slice(from, Math.min(to + 1, from + (serverRowCap ?? to - from + 1))),
+        error: null,
+        count: data.length,
+      });
     },
     upsert(payload: unknown) {
       calls.push({ name: "upsert", payload });
@@ -88,13 +92,13 @@ function createBuilder(calls: unknown[], source: RowSource = [row]) {
   return builder;
 }
 
-function createClient(data?: RowSource) {
+function createClient(data?: RowSource, serverRowCap?: number) {
   const calls: unknown[] = [];
   return {
     calls,
     from(table: string) {
       calls.push({ name: "from", table });
-      return createBuilder(calls, data);
+      return createBuilder(calls, data, serverRowCap);
     },
     rpc(name: string, args: unknown) {
       calls.push({ name: "rpc", functionName: name, args });
@@ -150,6 +154,28 @@ describe("Supabase knowledge repository", () => {
       column: "created_at",
       options: { ascending: false },
     });
+  });
+
+  test("reads all public posts when a server response is capped below the requested batch", async () => {
+    const pairPosts = ["pair-a", "pair-b", "pair-c"].map((id) => ({ ...pairedRow, id }));
+    const legacyPosts = ["legacy-a", "legacy-b", "legacy-c"].map((id) => ({ ...row, id }));
+    const client = createClient(
+      (selectedColumns) => (selectedColumns.includes("!inner") ? pairPosts : legacyPosts),
+      2,
+    );
+    const repo = createSupabaseKnowledgeRepository(client as never);
+
+    const result = await repo.listPublished();
+
+    expect(result.map(({ id }) => id)).toEqual([
+      "legacy-a",
+      "legacy-b",
+      "legacy-c",
+      "pair-a",
+      "pair-b",
+      "pair-c",
+    ]);
+    expect(client.calls).toContainEqual({ name: "range", from: 2, to: 1001 });
   });
 
   test("disambiguates the legacy document asset relationship after adding bilingual assets", async () => {
@@ -304,6 +330,11 @@ describe("Supabase knowledge repository", () => {
     const repo = createSupabaseKnowledgeRepository(client as never);
     await repo.listAdmin({ q: 'cat_%"', page: 1, pageSize: 50, status: "all" });
     expect(client.calls).toContainEqual({ name: "range", from: 0, to: 49 });
+    expect(client.calls).toContainEqual({
+      name: "order",
+      column: "id",
+      options: { ascending: true },
+    });
     const orCall = client.calls.find((call) => (call as { name?: unknown }).name === "or") as
       | { filter: string }
       | undefined;

@@ -78,6 +78,15 @@ function escapeLike(value: string) {
   return value.replaceAll("\\", "\\\\").replaceAll("%", "\\%").replaceAll("_", "\\_");
 }
 
+function postgrestLikeOperand(value: string) {
+  const escaped = value
+    .replaceAll("\\", "\\\\")
+    .replaceAll('"', '\\"')
+    .replaceAll("%", "\\%")
+    .replaceAll("_", "\\_");
+  return '"%' + escaped + '%"';
+}
+
 function toActivity(
   row: ActivityRow,
   counts: ActivityCounts = emptyCounts,
@@ -257,15 +266,30 @@ export function createSupabaseVolunteerRepository(client: SupabaseClient): Volun
   const publicIdentity = createPublicIdentityRepository(client);
   return {
     async listPublishedActivities() {
-      const { data, error } = await client
-        .from("volunteer_activity")
-        .select("*")
-        .eq("status", "published")
-        .is("policy_version_id", null)
-        .gte("starts_at", new Date().toISOString())
-        .order("starts_at", { ascending: true });
-      if (error) throw error;
-      const activities = await hydrateActivities(client, (data ?? []) as ActivityRow[]);
+      const activities: VolunteerActivitySummary[] = [];
+      const startsAt = new Date().toISOString();
+      let from = 0;
+      while (true) {
+        const { data, error, count } = await client
+          .from("volunteer_activity")
+          .select("*", { count: "exact" })
+          .eq("status", "published")
+          .is("policy_version_id", null)
+          .gte("starts_at", startsAt)
+          .order("starts_at", { ascending: true })
+          .order("id", { ascending: true })
+          .range(from, from + 999);
+        if (error) throw error;
+        const batch = (data ?? []) as ActivityRow[];
+        if (batch.length === 0) {
+          if (count !== null && count !== undefined && from < count)
+            throw new Error("Published volunteer activities were not returned");
+          break;
+        }
+        activities.push(...(await hydrateActivities(client, batch)));
+        from += batch.length;
+        if (count !== null && count !== undefined && from >= count) break;
+      }
       return activities.map((activity) => ({
         ...activity,
         publicRegistrationAvailable: false,
@@ -279,6 +303,7 @@ export function createSupabaseVolunteerRepository(client: SupabaseClient): Volun
         .from("volunteer_activity")
         .select("*", { count: "exact" })
         .order("starts_at", { ascending: false })
+        .order("id", { ascending: false })
         .range(from, from + input.pageSize - 1);
       if (input.status) query = query.eq("status", input.status);
       if (input.type) query = query.eq("type", input.type);
@@ -385,12 +410,13 @@ export function createSupabaseVolunteerRepository(client: SupabaseClient): Volun
         .from("volunteer_registration")
         .select("*", { count: "exact" })
         .order("created_at", { ascending: false })
+        .order("id", { ascending: false })
         .range(from, from + input.pageSize - 1);
       if (input.status) query = query.eq("status", input.status);
       if (input.attendanceStatus) query = query.eq("attendance_status", input.attendanceStatus);
       if (input.activityId) query = query.eq("activity_id", input.activityId);
       if (input.q) {
-        const like = `%${escapeLike(input.q)}%`;
+        const like = postgrestLikeOperand(input.q);
         query = query.or(
           `contact_name.ilike.${like},contact_email.ilike.${like},organization_name.ilike.${like}`,
         );

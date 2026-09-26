@@ -87,10 +87,20 @@ async function loadWithDeadline(
   }
 
   const timeout = setTimeout(() => requestController.abort(), remainingMs);
+  let onAbort: (() => void) | undefined;
+  const aborted = new Promise<never>((_, reject) => {
+    onAbort = () => reject(new DOMException("aborted", "AbortError"));
+    requestController.signal.addEventListener("abort", onAbort, { once: true });
+    if (requestController.signal.aborted) onAbort();
+  });
   try {
-    return await load(donationId, { signal: requestController.signal });
+    const loading = Promise.resolve().then(() =>
+      load(donationId, { signal: requestController.signal }),
+    );
+    return await Promise.race([loading, aborted]);
   } finally {
     clearTimeout(timeout);
+    if (onAbort) requestController.signal.removeEventListener("abort", onAbort);
     signal?.removeEventListener("abort", abortRequest);
   }
 }

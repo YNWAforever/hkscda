@@ -24,6 +24,7 @@ import { readFileSync, existsSync } from "node:fs";
 import path from "node:path";
 
 import { isProductionProjectRef, PRODUCTION_PROJECT_REF } from "./seed-admin.js";
+import { assertAnimalImportReady } from "./import-hkscda-animals.preflight.js";
 
 const JSON_FILE = path.join("data", "hkscda-animals.json");
 
@@ -107,23 +108,7 @@ function buildNotes(animal) {
   return parts.join("\n") || null;
 }
 
-// ── Check if source_url column exists ────────────────────────────────────────
-
-async function checkSourceUrlColumn() {
-  const { error } = await supabase.from("animals").select("source_url").limit(1);
-  if (error && error.message.toLowerCase().includes("source_url")) {
-    console.warn("\n⚠  source_url column not found. Run this SQL in Supabase SQL Editor:\n");
-    console.warn("   ALTER TABLE animals ADD COLUMN IF NOT EXISTS source_url text;");
-    console.warn("   CREATE UNIQUE INDEX IF NOT EXISTS animals_source_url_idx");
-    console.warn("     ON animals(source_url) WHERE source_url IS NOT NULL;\n");
-    console.warn("   Continuing without idempotent upsert — duplicates may be created.\n");
-    return false;
-  }
-  return true;
-}
-
-// ── Photo upload to Supabase Storage ─────────────────────────────────────────
-
+// Photo upload to Supabase Storage
 async function uploadPhoto(localRelPath, storageKey) {
   const localPath = localRelPath.replace(/^\//, "");
   if (!existsSync(localPath)) return null;
@@ -150,10 +135,8 @@ async function main() {
   }
 
   const raw = await fs.readFile(JSON_FILE, "utf8");
-  const animals = JSON.parse(raw);
+  const animals = await assertAnimalImportReady(supabase, JSON.parse(raw));
   console.log(`Loaded ${animals.length} animal(s) from ${JSON_FILE}\n`);
-
-  const hasSourceUrl = await checkSourceUrlColumn();
 
   let created = 0,
     updated = 0,
@@ -192,18 +175,16 @@ async function main() {
         image_url,
         updated_at: new Date().toISOString(),
       };
-      if (hasSourceUrl) record.source_url = animal.sourceUrl || null;
+      record.source_url = animal.sourceUrl;
 
       // Look for existing record by source_url (idempotent upsert)
-      let existingId = null;
-      if (hasSourceUrl && animal.sourceUrl) {
-        const { data: existing } = await supabase
-          .from("animals")
-          .select("id")
-          .eq("source_url", animal.sourceUrl)
-          .maybeSingle();
-        existingId = existing?.id ?? null;
-      }
+      const { data: existing, error: lookupError } = await supabase
+        .from("animals")
+        .select("id")
+        .eq("source_url", animal.sourceUrl)
+        .maybeSingle();
+      if (lookupError) throw lookupError;
+      const existingId = existing?.id ?? null;
 
       if (existingId) {
         const { error } = await supabase.from("animals").update(record).eq("id", existingId);

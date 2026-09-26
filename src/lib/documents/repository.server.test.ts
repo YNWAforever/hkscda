@@ -12,6 +12,7 @@ class FakeQuery {
   selectedColumns = "";
   filters: Filter[] = [];
   rangeArgs: [number, number] | null = null;
+  orders: Array<{ column: string; ascending: boolean }> = [];
   action: "select" | "insert" | "update" | "delete" = "select";
   payload: unknown;
   private countMode = false;
@@ -19,6 +20,7 @@ class FakeQuery {
   constructor(
     readonly table: string,
     private readonly rows: Record<string, unknown>[],
+    private readonly serverRowCap?: number,
   ) {}
 
   select(columns: string, options?: { count?: string; head?: boolean }) {
@@ -42,7 +44,8 @@ class FakeQuery {
     this.filters.push(["or", "", value]);
     return this;
   }
-  order() {
+  order(column: string, options?: { ascending?: boolean }) {
+    this.orders.push({ column, ascending: options?.ascending !== false });
     return this;
   }
   range(from: number, to: number) {
@@ -73,10 +76,16 @@ class FakeQuery {
     onfulfilled?: ((value: unknown) => TResult1 | PromiseLike<TResult1>) | null,
     onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null,
   ) {
+    const from = this.rangeArgs?.[0] ?? 0;
+    const to = this.rangeArgs?.[1] ?? this.rows.length - 1;
+    const data = this.rows.slice(
+      from,
+      Math.min(to + 1, from + (this.serverRowCap ?? to - from + 1)),
+    );
     const result =
       this.action === "delete"
         ? { data: null, error: null }
-        : { data: this.rows, error: null, count: this.countMode ? this.rows.length : null };
+        : { data, error: null, count: this.countMode ? this.rows.length : null };
     return Promise.resolve(result).then(onfulfilled, onrejected);
   }
 
@@ -120,12 +129,15 @@ function annualReportRow(overrides: Record<string, unknown> = {}) {
   };
 }
 
-function createFakeClient(rowsByTable: Record<string, Record<string, unknown>[]>) {
+function createFakeClient(
+  rowsByTable: Record<string, Record<string, unknown>[]>,
+  serverRowCap?: number,
+) {
   const queries: FakeQuery[] = [];
   const storageCalls: string[] = [];
   const client = {
     from(table: string) {
-      const query = new FakeQuery(table, rowsByTable[table] ?? []);
+      const query = new FakeQuery(table, rowsByTable[table] ?? [], serverRowCap);
       queries.push(query);
       return query;
     },
@@ -196,6 +208,67 @@ describe("createSupabaseDocumentRepository", () => {
     expect(reports[0]?.document.fileUrl).toBe(
       "https://cdn.test/site-documents/annual-reports/2025-26.pdf",
     );
+  });
+
+  test("public and admin annual reports read past a server row cap", async () => {
+    const ids = [
+      "22222222-3333-4444-8555-666666666666",
+      "33333333-4444-4555-8666-777777777777",
+      "44444444-5555-4666-8777-888888888888",
+    ];
+    const rows = ids.map((id) =>
+      annualReportRow({
+        id,
+        is_published: true,
+        document_assets: assetRow({ is_published: true }),
+      }),
+    );
+    const fake = createFakeClient({ annual_reports: rows }, 2);
+    const repository = createSupabaseDocumentRepository(fake.client);
+
+    const published = await repository.listPublishedAnnualReports();
+    const admin = await repository.listAnnualReports();
+
+    expect(published.map((report) => report.id)).toEqual(ids);
+    expect(admin.map((report) => report.id)).toEqual(ids);
+    expect(fake.queriesFor("annual_reports").map((query) => query.rangeArgs)).toEqual([
+      [0, 999],
+      [2, 1001],
+      [0, 999],
+      [2, 1001],
+    ]);
+  });
+
+  test("counts only published slots that reference the selected asset", async () => {
+    const fake = createFakeClient({ site_document_slots: [{ id: "slot-1" }] });
+    const repository = createSupabaseDocumentRepository(fake.client);
+
+    await expect(repository.hasPublishedSlotReference(assetId)).resolves.toBe(true);
+    expect(fake.queryFor("site_document_slots").filters).toEqual([
+      ["eq", "document_asset_id", assetId],
+      ["eq", "is_published", true],
+    ]);
+
+    const empty = createSupabaseDocumentRepository(createFakeClient({}).client);
+    await expect(empty.hasPublishedSlotReference(assetId)).resolves.toBe(false);
+  });
+
+  test("checks all published knowledge-post PDF reference columns", async () => {
+    const fake = createFakeClient({ knowledge_posts: [{ id: "post-1" }] });
+    const repository = createSupabaseDocumentRepository(fake.client);
+
+    await expect(repository.hasPublishedKnowledgeReference(assetId)).resolves.toBe(true);
+    expect(fake.queryFor("knowledge_posts").filters).toEqual([
+      ["eq", "is_published", true],
+      [
+        "or",
+        "",
+        `document_asset_id.eq.${assetId},zh_hk_document_asset_id.eq.${assetId},en_document_asset_id.eq.${assetId}`,
+      ],
+    ]);
+
+    const empty = createSupabaseDocumentRepository(createFakeClient({}).client);
+    await expect(empty.hasPublishedKnowledgeReference(assetId)).resolves.toBe(false);
   });
 
   test("public slots use an inner published asset join and requested slot keys", async () => {
@@ -294,6 +367,11 @@ describe("createSupabaseDocumentRepository", () => {
       ]),
     );
     expect(query.rangeArgs).toEqual([10, 19]);
+    expect(query.orders).toEqual([
+      { column: "sort_order", ascending: true },
+      { column: "created_at", ascending: false },
+      { column: "id", ascending: true },
+    ]);
     expect(result.total).toBe(1);
   });
 

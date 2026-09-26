@@ -228,7 +228,13 @@ export function GroupEnquiryManagement() {
           key={detail.id}
           detail={detail}
           pending={patch.isPending}
-          failed={patch.isError}
+          failed={
+            patch.isError
+              ? (patch.error as { status?: number } | null)?.status === 409
+                ? "資料已被其他職員更新，請重新整理頁面後再試。"
+                : "更新失敗，請稍後再試。"
+              : null
+          }
           onPatch={(body) => patch.mutate(body)}
         />
       ) : null}
@@ -253,7 +259,7 @@ function EnquiryDetailPanel({
 }: {
   detail: GroupEnquiry;
   pending: boolean;
-  failed: boolean;
+  failed: string | null;
   onPatch: (body: Record<string, unknown>) => void;
 }) {
   const [adminNotes, setAdminNotes] = useState(detail.adminNotes ?? "");
@@ -329,7 +335,14 @@ function EnquiryDetailPanel({
             key={next}
             type="button"
             disabled={pending}
-            onClick={() => onPatch({ id: detail.id, status: next, adminNotes })}
+            onClick={() =>
+              onPatch({
+                id: detail.id,
+                status: next,
+                adminNotes,
+                expectedUpdatedAt: detail.updatedAt,
+              })
+            }
             className={`${buttonBase} border border-[var(--color-border)] hover:bg-[var(--color-surface-offset)]`}
           >
             {groupEnquiryStatusLabels[next]}
@@ -349,7 +362,7 @@ function EnquiryDetailPanel({
       </div>
       {failed ? (
         <p role="alert" className="text-sm text-[var(--color-error)]">
-          更新失敗，請稍後再試。
+          {failed}
         </p>
       ) : null}
     </section>

@@ -1,6 +1,9 @@
 import { describe, expect, test } from "bun:test";
 import { hashStatusToken } from "../publicAdoption/statusToken.server";
-import { lookupSponsorshipPledgeRetry } from "./submission.server";
+import {
+  fingerprintSponsorshipSubmission,
+  lookupSponsorshipPledgeRetry,
+} from "./submission.server";
 
 const pledgeId = "cccccccc-dddd-4eee-8fff-000000000000";
 const statusToken = "A".repeat(43);
@@ -13,6 +16,7 @@ function clientFor(
     pledgeExists?: boolean;
     revokedAt?: string | null;
     expiresAt?: string;
+    fingerprint?: string | null;
   } = {},
 ) {
   const calls: Array<{ table: string; filters: Array<[string, unknown]> }> = [];
@@ -43,6 +47,7 @@ function clientFor(
                 entity_id: options.entityId ?? pledgeId,
                 expires_at: options.expiresAt ?? "2099-01-01T00:00:00.000Z",
                 revoked_at: options.revokedAt ?? null,
+                submission_fingerprint: options.fingerprint ?? "a".repeat(64),
               },
               error: null,
             };
@@ -64,6 +69,7 @@ describe("lookupSponsorshipPledgeRetry", () => {
         client,
         pledgeId,
         statusToken,
+        "a".repeat(64),
         "https://example.test",
         now,
       ),
@@ -77,6 +83,20 @@ describe("lookupSponsorshipPledgeRetry", () => {
     expect(JSON.stringify(calls)).not.toContain(statusToken);
   });
 
+  test("rejects a changed payload even when the original status token matches", async () => {
+    const { client } = clientFor({ storedToken: statusToken, pledgeExists: true });
+    expect(
+      await lookupSponsorshipPledgeRetry(
+        client,
+        pledgeId,
+        statusToken,
+        "b".repeat(64),
+        "https://example.test",
+        now,
+      ),
+    ).toEqual({ kind: "conflict" });
+  });
+
   test("rejects a different token for an existing pledge without revealing its link", async () => {
     const { client } = clientFor({ storedToken: statusToken, pledgeExists: true });
     expect(
@@ -84,6 +104,7 @@ describe("lookupSponsorshipPledgeRetry", () => {
         client,
         pledgeId,
         "B".repeat(43),
+        "a".repeat(64),
         "https://example.test",
         now,
       ),
@@ -97,6 +118,7 @@ describe("lookupSponsorshipPledgeRetry", () => {
         client,
         pledgeId,
         statusToken,
+        "a".repeat(64),
         "https://example.test",
         now,
       ),
@@ -114,6 +136,7 @@ describe("lookupSponsorshipPledgeRetry", () => {
         other.client,
         pledgeId,
         statusToken,
+        "a".repeat(64),
         "https://example.test",
         now,
       ),
@@ -128,9 +151,39 @@ describe("lookupSponsorshipPledgeRetry", () => {
         expired.client,
         pledgeId,
         statusToken,
+        "a".repeat(64),
         "https://example.test",
         now,
       ),
     ).toEqual({ kind: "expired" });
   });
+});
+
+test("sponsorship fingerprint survives server-derived animal type but detects changed amount", () => {
+  const parsed = {
+    statusToken,
+    payload: {
+      monthlyTier: "custom",
+      customAmountCents: 10000,
+      turnstileToken: "one",
+      animalPreferences: [{ animalId: "animal-1", animalType: "cat" }],
+    },
+  };
+  const original = fingerprintSponsorshipSubmission(parsed as never);
+  expect(
+    fingerprintSponsorshipSubmission({
+      ...parsed,
+      payload: {
+        ...parsed.payload,
+        turnstileToken: "two",
+        animalPreferences: [{ animalId: "animal-1", animalType: "dog" }],
+      },
+    } as never),
+  ).toBe(original);
+  expect(
+    fingerprintSponsorshipSubmission({
+      ...parsed,
+      payload: { ...parsed.payload, customAmountCents: 20000 },
+    } as never),
+  ).not.toBe(original);
 });

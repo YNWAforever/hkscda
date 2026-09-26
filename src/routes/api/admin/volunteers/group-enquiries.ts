@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import { readAdminJsonObject } from "../../../../lib/http/adminJson.server";
+import { RequestBodyTooLargeError } from "../../../../lib/http/publicJson.server";
 
 import type { AdminUser } from "../../../../lib/donations/supabase.server";
 import {
@@ -32,8 +34,10 @@ function jsonNoStore(body: unknown, init: ResponseInit = {}) {
 
 async function jsonBody(request: Request) {
   try {
-    return await request.json();
-  } catch {
+    return await readAdminJsonObject(request);
+  } catch (error) {
+    if (error instanceof RequestBodyTooLargeError)
+      throw jsonNoStore({ error: "Request body too large" }, { status: 413 });
     throw jsonNoStore({ error: "Invalid JSON body" }, { status: 400 });
   }
 }

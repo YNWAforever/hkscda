@@ -67,6 +67,8 @@ export type DocumentRepository = {
     actorUserId?: string | null,
   ): Promise<DocumentAsset>;
   countAssetReferences(id: string): Promise<number>;
+  hasPublishedSlotReference(id: string): Promise<boolean>;
+  hasPublishedKnowledgeReference(id: string): Promise<boolean>;
   deleteAsset(id: string, actorUserId?: string | null): Promise<void>;
   createSignedUploadUrl(objectPath: string): Promise<{ token: string; path: string }>;
   verifyObject(objectPath: string): Promise<boolean>;
@@ -287,7 +289,11 @@ export function createDocumentService({
       if (parsed.objectPath !== undefined || parsed.kind !== undefined) {
         const current = await repo.getAssetById(parsedAssetId);
         if (!current) throw new Error("Document asset not found");
-        if (current.isPublished && parsed.objectPath !== current.objectPath) {
+        if (
+          current.isPublished &&
+          parsed.objectPath !== undefined &&
+          parsed.objectPath !== current.objectPath
+        ) {
           throw new DocumentConflictError("Unpublish the document before changing its object path");
         }
         if (parsed.kind !== undefined && parsed.kind !== current.kind) {
@@ -326,6 +332,16 @@ export function createDocumentService({
     async unpublishAsset({ actorUserId, assetId }: AssetActionArgs) {
       const parsedAssetId = documentIdSchema.parse(assetId);
       await ensureAssetCanStopServingPublishedReports(parsedAssetId);
+      if (await repo.hasPublishedSlotReference(parsedAssetId)) {
+        throw new DocumentConflictError(
+          "Unpublish the site document slot before unpublishing its PDF asset",
+        );
+      }
+      if (await repo.hasPublishedKnowledgeReference(parsedAssetId)) {
+        throw new DocumentConflictError(
+          "Unpublish the knowledge post before unpublishing its PDF asset",
+        );
+      }
       const unpublished = await repo.setAssetPublished(parsedAssetId, false, actorUserId);
       await audit({
         actor_user_id: actorUserId,

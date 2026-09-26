@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { readAdminJson } from "../http/adminJson.server";
+import { RequestBodyTooLargeError } from "../http/publicJson.server";
 
 import {
   adoptionGuideDraftInputSchema,
@@ -111,6 +113,11 @@ async function withHttpErrors(operation: () => Promise<Response>) {
   try {
     return await operation();
   } catch (error) {
+    if (error instanceof RequestBodyTooLargeError)
+      return jsonNoStore(
+        { error: { code: "body_too_large", message: "Request body too large" } },
+        413,
+      );
     if (error instanceof z.ZodError) {
       return validationResponse(fieldErrors(error.issues));
     }
@@ -128,8 +135,9 @@ async function withHttpErrors(operation: () => Promise<Response>) {
 
 async function jsonBody(request: Request) {
   try {
-    return await request.json();
-  } catch {
+    return await readAdminJson(request);
+  } catch (error) {
+    if (error instanceof RequestBodyTooLargeError) throw error;
     throw new z.ZodError([
       {
         code: "custom",

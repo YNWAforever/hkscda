@@ -4,8 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useBlocker, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { supabase } from "../../lib/supabase";
 import { fetchAdminJson } from "../../lib/admin/http";
+import { AdminApiError } from "../../lib/admin/session";
 import {
   buildPublicProfile,
   PUBLIC_PROFILE_LABELS,
@@ -228,8 +228,8 @@ export function AnimalForm({ existing }: AnimalFormProps) {
 
     const previousImageUrl = savedImage;
     const image_url = previousImageUrl;
-    // Set only when this submission uploaded a new object, so a failed save can
-    // remove the orphan it created without ever touching the live photograph.
+    // A fresh private upload is tracked until a committed draft attaches it.
+    // An ambiguous save response cannot safely prove that the object is orphaned.
     let uploadedPath: string | null = null;
 
     // For a new animal the id is decided here and then written in the insert
@@ -252,7 +252,6 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       // Private draft object is promoted to an immutable public path only after publish.
     }
 
-    const galleryUploads: string[] = [];
     const preparedGallery: EditableGalleryItem[] = [];
     for (const [sort_order, item] of gallery.entries()) {
       let draft_path = item.draft_path;
@@ -264,7 +263,6 @@ export function AnimalForm({ existing }: AnimalFormProps) {
           return;
         }
         draft_path = uploaded.path;
-        galleryUploads.push(uploaded.path);
       }
       preparedGallery.push({
         id: item.id,
@@ -300,23 +298,6 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       gallery: preparedGallery,
     };
 
-    // A failed save leaves the freshly uploaded object referenced by nothing.
-    // Removing it is housekeeping, not recovery: the animal's existing photo is
-    // already safe because the upload went to a new path and overwrote nothing.
-    // Cleanup failure is therefore not worth surfacing over the save error the
-    // operator actually needs to see.
-    async function discardOrphanedUpload() {
-      const paths = [uploadedPath, ...galleryUploads].filter((path): path is string =>
-        Boolean(path),
-      );
-      if (paths.length === 0) return;
-      try {
-        await supabase.storage.from("animal-draft-images").remove(paths);
-      } catch {
-        /* orphan is unreferenced; delayed cleanup will collect it */
-      }
-    }
-
     try {
       const saved = await fetchAdminJson<{ kind: string; revision: number }>(
         "/api/admin/animals/publication/",
@@ -343,7 +324,6 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       setSaving(false);
       return;
     } catch {
-      await discardOrphanedUpload();
       setError(copy.form.saveError);
       setSaving(false);
       return;
@@ -371,19 +351,33 @@ export function AnimalForm({ existing }: AnimalFormProps) {
   async function publishDraft() {
     if (dirty || saving || !previewId || !publishReason.trim()) return;
     try {
-      await fetchAdminJson("/api/admin/animals/publication/", {
-        method: "POST",
-        body: JSON.stringify({
-          kind: "publish",
-          animal_id: animalId,
-          preview_id: previewId,
-          reason: publishReason.trim(),
-        }),
-      });
+      const result = await fetchAdminJson<{ media_pending?: boolean }>(
+        "/api/admin/animals/publication/",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            kind: "publish",
+            animal_id: animalId,
+            preview_id: previewId,
+            reason: publishReason.trim(),
+          }),
+        },
+      );
+      if (result.media_pending) {
+        setPreviewId(null);
+        setError("動物資料已發布，圖片仍在處理中；請稍後重新整理。");
+        return;
+      }
       navigate({ to: "/admin" });
-    } catch {
-      setError("草稿已變更或發布失敗，請重新預覽。");
-      setPreviewId(null);
+    } catch (error) {
+      if (error instanceof AdminApiError && [403, 404, 409, 422].includes(error.status)) {
+        setError("草稿已變更或發布失敗，請重新預覽。");
+        setPreviewId(null);
+      } else {
+        // A lost HTTP response may follow a committed publish. Keep the
+        // preview ID so the idempotent publish command can be retried.
+        setError("未能確認發布結果。請重試發布；不會建立重複版本。");
+      }
     }
   }
   const field =

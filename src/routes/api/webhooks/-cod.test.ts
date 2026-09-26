@@ -11,6 +11,25 @@ const request = () =>
   });
 
 describe("COD webhook response contract", () => {
+  test("rejects an oversized body before parsing or processing", async () => {
+    let processed = false;
+    const oversized = new Request("https://hkscda.example/api/webhooks/cod", {
+      method: "POST",
+      body: JSON.stringify({ data: "x".repeat(3 * 1024 * 1024) }),
+      headers: { "content-type": "application/json" },
+    });
+    expect(oversized.headers.has("content-length")).toBe(false);
+
+    const response = await handleCodWebhookRequest(oversized, {
+      enforce: async () => ({ ok: true }) as never,
+      process: async () => {
+        processed = true;
+        return { kind: "applied" } as never;
+      },
+    });
+    expect(response.status).toBe(413);
+    expect(processed).toBe(false);
+  });
   test("is registered in the generated server route tree", async () => {
     const routeTree = await Bun.file(new URL("../../../routeTree.gen.ts", import.meta.url)).text();
     expect(routeTree).toContain("./routes/api/webhooks/cod");

@@ -11,6 +11,12 @@ import type {
 } from "./types";
 import type { GroupEnquiryRepository } from "./service";
 
+export class GroupEnquiryIdempotencyConflictError extends Error {
+  constructor() {
+    super("Idempotency key reused with different enquiry");
+  }
+}
+
 type GroupEnquiryRow = {
   id: string;
   organisation: string;
@@ -47,6 +53,13 @@ function toInsert(input: GroupEnquiryInsert) {
     message: input.message,
     idempotency_key: input.idempotencyKey,
   };
+}
+
+function samePublicSubmission(existing: GroupEnquiry, input: GroupEnquiryInsert): boolean {
+  const stored = toInsert(existing);
+  return Object.entries(toInsert(input)).every(
+    ([key, value]) => stored[key as keyof typeof stored] === value,
+  );
 }
 
 function toDomain(row: GroupEnquiryRow): GroupEnquiry {
@@ -87,16 +100,13 @@ function toSummary(row: GroupEnquiryRow) {
   };
 }
 
-function escapeLike(value: string) {
-  return value.replaceAll("\\", "\\\\").replaceAll("%", "\\%").replaceAll("_", "\\_");
-}
-
-function toUpdate(input: GroupEnquiryAdminUpdate) {
-  const payload: Record<string, unknown> = {};
-  if (input.status !== undefined) payload.status = input.status;
-  if (input.assignedTo !== undefined) payload.assigned_to = input.assignedTo;
-  if (input.adminNotes !== undefined) payload.admin_notes = input.adminNotes;
-  return payload;
+function postgrestLikeOperand(value: string) {
+  const escaped = value
+    .replaceAll("\\", "\\\\")
+    .replaceAll('"', '\\"')
+    .replaceAll("%", "\\%")
+    .replaceAll("_", "\\_");
+  return '"%' + escaped + '%"';
 }
 
 function isDuplicateKeyError(error: unknown) {
@@ -130,7 +140,11 @@ export function createSupabaseGroupEnquiryRepository(
 
       for (let attempt = 0; attempt < 2; attempt += 1) {
         const existing = await loadByIdempotencyKey(input.idempotencyKey);
-        if (existing) return { enquiry: existing, created: false };
+        if (existing) {
+          if (!samePublicSubmission(existing, input))
+            throw new GroupEnquiryIdempotencyConflictError();
+          return { enquiry: existing, created: false };
+        }
       }
       throw new Error("Group enquiry duplicate could not be resolved");
     },
@@ -147,7 +161,8 @@ export function createSupabaseGroupEnquiryRepository(
       const { error } = await client
         .from("group_enquiries")
         .update({ notification_status: "failed", notification_error: safeError.slice(0, 300) })
-        .eq("id", id);
+        .eq("id", id)
+        .neq("notification_status", "sent");
       if (error) throw error;
     },
 
@@ -160,12 +175,13 @@ export function createSupabaseGroupEnquiryRepository(
           { count: "exact" },
         )
         .order("created_at", { ascending: false })
+        .order("id", { ascending: false })
         .range(from, from + input.pageSize - 1);
       if (input.status) query = query.eq("status", input.status);
       if (input.notificationStatus)
         query = query.eq("notification_status", input.notificationStatus);
       if (input.q) {
-        const like = `%${escapeLike(input.q)}%`;
+        const like = postgrestLikeOperand(input.q);
         query = query.or(
           `organisation.ilike.${like},contact_name.ilike.${like},contact_email.ilike.${like}`,
         );
@@ -185,15 +201,32 @@ export function createSupabaseGroupEnquiryRepository(
       return data ? toDomain(data as GroupEnquiryRow) : null;
     },
 
-    async update(id, input) {
-      const { data, error } = await client
-        .from("group_enquiries")
-        .update(toUpdate(input))
-        .eq("id", id)
-        .select("*")
-        .single();
+    async updateWithAudit({ id, input, actorUserId, expectedUpdatedAt }) {
+      const { data, error } = await client.rpc("update_group_enquiry_with_audit", {
+        p_enquiry_id: id,
+        p_actor_user_id: actorUserId,
+        p_expected_updated_at: expectedUpdatedAt,
+        p_patch: input,
+      });
       if (error) throw error;
-      return toDomain(data as GroupEnquiryRow);
+      const result = data as
+        | { kind: "updated"; enquiry: GroupEnquiryRow }
+        | { kind: "not_found" }
+        | { kind: "conflict" };
+      if (result.kind === "not_found")
+        throw new Response(JSON.stringify({ error: "Group enquiry not found" }), {
+          status: 404,
+          headers: { "content-type": "application/json", "cache-control": "no-store" },
+        });
+      if (result.kind === "conflict")
+        throw new Response(
+          JSON.stringify({ error: "Group enquiry changed; refresh and try again" }),
+          {
+            status: 409,
+            headers: { "content-type": "application/json", "cache-control": "no-store" },
+          },
+        );
+      return toDomain(result.enquiry);
     },
 
     async insertAuditLog(input) {

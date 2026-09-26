@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
+import { GroupEnquiryIdempotencyConflictError } from "../../../lib/groupEnquiries/repository.server";
 import { createGroupEnquiryRouteHandler } from "./group-enquiries";
 
 function request(body: unknown, init: RequestInit = {}) {
@@ -23,6 +24,19 @@ const payload = {
 };
 
 describe("group enquiry public route handler", () => {
+  test("rejects JSON null before reading the challenge token", async () => {
+    const handler = createGroupEnquiryRouteHandler({
+      submitPublicEnquiry: async () => {
+        throw new Error("service must not run");
+      },
+      verifyTurnstileToken: async () => {
+        throw new Error("challenge must not run");
+      },
+      enforceRateLimitForRequest: async () => ({ ok: true }),
+    });
+    const response = await handler({ request: request("null") });
+    expect(response.status).toBe(400);
+  });
   test("rejects unsupported methods and malformed JSON before service work", async () => {
     const calls: string[] = [];
     const handler = createGroupEnquiryRouteHandler({
@@ -66,6 +80,21 @@ describe("group enquiry public route handler", () => {
     const turnstileResponse = await unverified({ request: request(payload) });
     expect(turnstileResponse.status).toBe(403);
     expect(calls).toEqual([]);
+  });
+
+  test("returns a neutral conflict when an idempotency key is reused for changed content", async () => {
+    const handler = createGroupEnquiryRouteHandler({
+      submitPublicEnquiry: async () => {
+        throw new GroupEnquiryIdempotencyConflictError();
+      },
+      verifyTurnstileToken: async () => true,
+      enforceRateLimitForRequest: async () => ({ ok: true }),
+    });
+
+    const response = await handler({ request: request(payload) });
+    expect(response.status).toBe(409);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(await response.json()).toEqual({ error: "Enquiry changed; please submit again" });
   });
 
   test("returns neutral no-store success after service persistence", async () => {

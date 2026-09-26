@@ -167,3 +167,30 @@ describe("pollDonationSucceeded", () => {
     expect(receivedSignal?.aborted).toBe(true);
   });
 });
+
+test("donation polling returns at its deadline when a loader ignores abort", async () => {
+  const result = await Promise.race([
+    pollDonationSucceeded("donation", {
+      attempts: 1,
+      deadlineMs: 20,
+      load: () => new Promise(() => undefined),
+    }),
+    new Promise<"stuck">((resolve) => setTimeout(() => resolve("stuck"), 250)),
+  ]);
+  expect(result).toBe(false);
+});
+
+test("donation polling stops on external abort even when the loader ignores it", async () => {
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), 20);
+  const result = await Promise.race([
+    pollDonationSucceeded("donation", {
+      attempts: 1,
+      deadlineMs: 1000,
+      signal: controller.signal,
+      load: () => new Promise(() => undefined),
+    }),
+    new Promise<"stuck">((resolve) => setTimeout(() => resolve("stuck"), 250)),
+  ]);
+  expect(result).toBe(false);
+});

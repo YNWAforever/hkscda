@@ -91,31 +91,57 @@ export async function loadAdoptionUploadIntent(
   return data ? toIntent(data) : null;
 }
 
-export async function hasPersistedAdoptionApplication(
-  client: SupabaseClient,
-  applicationId: string,
-): Promise<boolean> {
-  const { data, error } = await client
-    .from("adoption_applications")
-    .select("id")
-    .eq("id", applicationId)
-    .maybeSingle();
-  if (error) throw error;
-  return Boolean(data);
-}
-
 /** A summary row is written before the rest of the journey, so it is not proof of completion. */
 export async function hasCompletedAdoptionApplication(
   client: SupabaseClient,
   applicationId: string,
-): Promise<boolean> {
+  statusToken: string,
+  expectedFingerprint: string,
+  now = new Date(),
+): Promise<
+  "new" | "processing" | "resumable" | "recovered" | "conflict" | "forbidden" | "expired"
+> {
   const { data, error } = await client
     .from("adoption_case")
     .select("id")
     .eq("public_application_id", applicationId)
     .maybeSingle();
   if (error) throw error;
-  return Boolean(data);
+  if (!data) {
+    const { data: application, error: applicationError } = await client
+      .from("adoption_applications")
+      .select("id")
+      .eq("id", applicationId)
+      .maybeSingle();
+    if (applicationError) throw applicationError;
+    if (!application) return "new";
+  }
+
+  const { data: token, error: tokenError } = await client
+    .from("public_status_token")
+    .select("submission_fingerprint,expires_at,revoked_at,created_at")
+    .eq("entity_type", "adoption_application")
+    .eq("entity_id", applicationId)
+    .eq("token_hash", hashStatusToken(statusToken))
+    .maybeSingle<{
+      submission_fingerprint: string | null;
+      expires_at: string;
+      revoked_at: string | null;
+      created_at: string;
+    }>();
+  if (tokenError) throw tokenError;
+  if (!token) return data ? "forbidden" : "processing";
+  const expiresAt = Date.parse(token.expires_at);
+  if (token.revoked_at || !Number.isFinite(expiresAt) || expiresAt <= now.getTime())
+    return "expired";
+  if (token.submission_fingerprint !== expectedFingerprint) return "conflict";
+  if (data) return "recovered";
+  // Let an in-flight first request finish before a bearer-authenticated retry
+  // attempts the uniquely constrained case creation again.
+  const createdAt = Date.parse(token.created_at);
+  return Number.isFinite(createdAt) && now.getTime() - createdAt >= 60_000
+    ? "resumable"
+    : "processing";
 }
 export async function markAdoptionUploadIntentSubmitted(
   client: SupabaseClient,
@@ -131,7 +157,7 @@ export async function markAdoptionUploadIntentSubmitted(
 
 export type AdoptionUploadCleanupPort = {
   listExpired(): Promise<AdoptionUploadIntent[]>;
-  hasApplication(applicationId: string): Promise<boolean>;
+  resolveExpiredApplication(applicationId: string): Promise<"completed" | "purged" | "defer">;
   removePhotos(paths: string[]): Promise<void>;
   deleteIntent(applicationId: string): Promise<void>;
   markSubmitted(applicationId: string): Promise<void>;
@@ -144,8 +170,13 @@ export async function cleanupExpiredAdoptionUploads(
   const summary = { removed: 0, preserved: 0, failed: 0 };
   for (const intent of await port.listExpired()) {
     try {
-      if (await port.hasApplication(intent.applicationId)) {
+      const outcome = await port.resolveExpiredApplication(intent.applicationId);
+      if (outcome === "completed") {
         await port.markSubmitted(intent.applicationId);
+        summary.preserved += 1;
+        continue;
+      }
+      if (outcome === "defer") {
         summary.preserved += 1;
         continue;
       }
@@ -180,7 +211,16 @@ export function createSupabaseAdoptionUploadCleanupPort(
       if (error) throw error;
       return ((data ?? []) as UploadIntentRow[]).map(toIntent);
     },
-    hasApplication: (applicationId) => hasPersistedAdoptionApplication(client, applicationId),
+    async resolveExpiredApplication(applicationId) {
+      const { data, error } = await client.rpc("cleanup_expired_adoption_application", {
+        p_application_id: applicationId,
+      });
+      if (error) throw error;
+      if (data !== "completed" && data !== "purged" && data !== "defer") {
+        throw new Error("Invalid expired adoption application cleanup result");
+      }
+      return data;
+    },
     async removePhotos(paths) {
       if (paths.length === 0) return;
       const { error } = await client.storage.from(ADOPTION_PHOTO_BUCKET).remove(paths);

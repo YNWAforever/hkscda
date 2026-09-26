@@ -1,6 +1,59 @@
 import { expect, test } from "bun:test";
 import { createSupabaseVolunteerRepository } from "./repository.server";
 
+test("admin volunteer lists use stable id tie-breakers across pages", async () => {
+  const orders: Record<string, string[]> = {};
+  const repo = createSupabaseVolunteerRepository({
+    from(table: string) {
+      orders[table] = [];
+      const query = {
+        select: () => query,
+        order(column: string) {
+          orders[table].push(column);
+          return query;
+        },
+        range: async () => ({ data: [], error: null, count: 0 }),
+      };
+      return query;
+    },
+  } as never);
+
+  await repo.listActivities({
+    status: undefined,
+    type: undefined,
+    q: undefined,
+    page: 1,
+    pageSize: 25,
+  });
+  await repo.listRegistrations({ page: 1, pageSize: 25 });
+
+  expect(orders.volunteer_activity).toEqual(["starts_at", "id"]);
+  expect(orders.volunteer_registration).toEqual(["created_at", "id"]);
+});
+
+test("volunteer registration search quotes punctuation inside PostgREST OR filters", async () => {
+  let filter = "";
+  const query = {
+    select: () => query,
+    order: () => query,
+    range: () => query,
+    or(value: string) {
+      filter = value;
+      return query;
+    },
+    then(resolve: (value: { data: never[]; error: null; count: number }) => unknown) {
+      return Promise.resolve({ data: [], error: null, count: 0 }).then(resolve);
+    },
+  };
+  const repo = createSupabaseVolunteerRepository({ from: () => query } as never);
+
+  await repo.listRegistrations({ q: "Care,(P4)", page: 1, pageSize: 25 });
+
+  expect(filter).toBe(
+    'contact_name.ilike."%Care,(P4)%",contact_email.ilike."%Care,(P4)%",organization_name.ilike."%Care,(P4)%"',
+  );
+});
+
 test("public volunteer identity resolution uses the preserving RPC", async () => {
   const calls: unknown[] = [];
   const client = {
@@ -131,29 +184,31 @@ test("a failed counts RPC propagates instead of degrading to zero participants",
     from: () => ({
       select: () => ({
         order: () => ({
-          range: async () => ({
-            data: [
-              {
-                id: "activity-1",
-                type: "shelter",
-                title: "貓舍清潔",
-                description: null,
-                starts_at: "2026-09-20T01:00:00.000Z",
-                ends_at: "2026-09-20T03:00:00.000Z",
-                location: "貓舍",
-                capacity: 12,
-                min_age: null,
-                underage_policy: "not_allowed",
-                auto_approve: false,
-                allow_waitlist: true,
-                status: "published",
-                registration_modes: ["individual"],
-                created_at: "2026-09-01T00:00:00.000Z",
-                updated_at: "2026-09-01T00:00:00.000Z",
-              },
-            ],
-            error: null,
-            count: 1,
+          order: () => ({
+            range: async () => ({
+              data: [
+                {
+                  id: "activity-1",
+                  type: "shelter",
+                  title: "貓舍清潔",
+                  description: null,
+                  starts_at: "2026-09-20T01:00:00.000Z",
+                  ends_at: "2026-09-20T03:00:00.000Z",
+                  location: "貓舍",
+                  capacity: 12,
+                  min_age: null,
+                  underage_policy: "not_allowed",
+                  auto_approve: false,
+                  allow_waitlist: true,
+                  status: "published",
+                  registration_modes: ["individual"],
+                  created_at: "2026-09-01T00:00:00.000Z",
+                  updated_at: "2026-09-01T00:00:00.000Z",
+                },
+              ],
+              error: null,
+              count: 1,
+            }),
           }),
         }),
       }),
@@ -219,7 +274,7 @@ test.each([
   });
 });
 
-test("public activity list marks legacy future activities as unavailable for anonymous booking", async () => {
+test("public activity list reads capped pages and marks legacy activities unavailable", async () => {
   const row = {
     id: "f43d0f00-aa4f-4bb9-856d-6fe2f9f13bd0",
     type: "cleaning_day",
@@ -238,6 +293,7 @@ test("public activity list marks legacy future activities as unavailable for ano
     created_at: "2026-01-01T00:00:00.000Z",
     updated_at: "2026-01-01T00:00:00.000Z",
   };
+  const rows = [0, 1, 2].map((index) => ({ ...row, id: "activity-" + index }));
   const query = {
     select() {
       return query;
@@ -251,18 +307,38 @@ test("public activity list marks legacy future activities as unavailable for ano
     gte() {
       return query;
     },
-    order: async () => ({ data: [row], error: null }),
+    order() {
+      return query;
+    },
+    range(from: number, to: number) {
+      return Promise.resolve({
+        data: rows.slice(from, Math.min(to + 1, from + 2)),
+        error: null,
+        count: rows.length,
+      });
+    },
+    then(resolve: (result: { data: typeof rows; error: null; count: number }) => unknown) {
+      return Promise.resolve({ data: rows.slice(0, 2), error: null, count: rows.length }).then(
+        resolve,
+      );
+    },
   };
   const repo = createSupabaseVolunteerRepository({
     from: () => query,
     rpc: async () => ({ data: [], error: null }),
   } as never);
   const activities = await repo.listPublishedActivities();
-  expect(activities[0]).toMatchObject({
-    id: row.id,
-    publicRegistrationAvailable: false,
-    publicRegistrationUnavailableReason: "current_policy_required",
-  });
+  expect(activities.map((activity) => activity.id)).toEqual([
+    "activity-0",
+    "activity-1",
+    "activity-2",
+  ]);
+  for (const activity of activities) {
+    expect(activity).toMatchObject({
+      publicRegistrationAvailable: false,
+      publicRegistrationUnavailableReason: "current_policy_required",
+    });
+  }
 });
 
 test("clone activity invokes one audited RPC without client-side writes", async () => {

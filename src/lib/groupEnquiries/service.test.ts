@@ -46,7 +46,7 @@ function createRepo(
     async getById() {
       return null;
     },
-    async update() {
+    async updateWithAudit() {
       return enquiry;
     },
     async insertAuditLog(input) {

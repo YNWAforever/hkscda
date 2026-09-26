@@ -45,9 +45,9 @@ function createRepo() {
       calls.push({ name: "get", input: id });
       return enquiry;
     },
-    async update(id, input) {
-      calls.push({ name: "update", input: { id, input } });
-      return { ...enquiry, ...input };
+    async updateWithAudit(args) {
+      calls.push({ name: "updateWithAudit", input: args });
+      return { ...enquiry, ...args.input };
     },
     async insertAuditLog(input) {
       calls.push({ name: "audit", input });
@@ -68,7 +68,7 @@ describe("group enquiry admin service", () => {
     await expect(
       service.updateGroupEnquiry({
         id: "enquiry-1",
-        input: { status: "resolved", adminNotes: " done " },
+        input: { status: "resolved", adminNotes: " done ", expectedUpdatedAt: enquiry.updatedAt },
         actorUserId,
       }),
     ).resolves.toMatchObject({ enquiry: { status: "resolved" } });
@@ -89,19 +89,40 @@ describe("group enquiry admin service", () => {
 
     await service.updateGroupEnquiry({
       id: "enquiry-1",
-      input: { status: "closed", adminNotes: "handled offline" },
+      input: {
+        status: "closed",
+        adminNotes: "handled offline",
+        expectedUpdatedAt: enquiry.updatedAt,
+      },
       actorUserId,
     });
 
-    expect(calls.map((call) => call.name)).toEqual(["update", "audit"]);
-    expect(calls[1].input).toEqual({
-      actor_user_id: actorUserId,
-      action: "group_enquiries.update",
-      entity: "group_enquiries",
-      entity_id: "enquiry-1",
-      timestamp: "2026-08-05T09:00:00.000Z",
-      detail: { fields: ["adminNotes", "status"], status: "closed" },
+    expect(calls.map((call) => call.name)).toEqual(["updateWithAudit"]);
+    expect(calls[0].input).toEqual({
+      id: "enquiry-1",
+      input: { status: "closed", adminNotes: "handled offline" },
+      actorUserId,
+      expectedUpdatedAt: enquiry.updatedAt,
     });
+  });
+
+  test("does not send a retry when its audit entry cannot be saved", async () => {
+    const { repo, calls } = createRepo();
+    repo.insertAuditLog = async () => {
+      throw new Error("audit unavailable");
+    };
+    const service = createGroupEnquiryService({
+      repo,
+      notifyAdmins: async () => {
+        calls.push({ name: "notify" });
+        return "sent";
+      },
+    });
+
+    await expect(
+      service.retryGroupEnquiryNotification({ id: "enquiry-1", actorUserId }),
+    ).rejects.toThrow("audit unavailable");
+    expect(calls.map((call) => call.name)).toEqual(["get"]);
   });
 
   test("retries notification from the stored row without creating another enquiry", async () => {
@@ -116,6 +137,6 @@ describe("group enquiry admin service", () => {
     await expect(
       service.retryGroupEnquiryNotification({ id: "enquiry-1", actorUserId }),
     ).resolves.toEqual({ ok: true });
-    expect(calls.map((call) => call.name)).toEqual(["get", "notify", "markSent", "audit"]);
+    expect(calls.map((call) => call.name)).toEqual(["get", "audit", "notify", "markSent"]);
   });
 });

@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { supabase } from "../../lib/supabase";
+import { fetchAdminJson } from "../../lib/admin/session";
 import { isArchivedAnimal } from "../../lib/animals/adminSearch";
 import {
   getAnimalListPage,
@@ -160,11 +160,12 @@ export function AnimalsTable({
    */
   async function handleArchive(id: string, archived: boolean) {
     setActionError(null);
-    const { error } = await supabase
-      .from("animals")
-      .update({ retired_at: archived ? null : new Date().toISOString() })
-      .eq("id", id);
-    if (error) {
+    try {
+      await fetchAdminJson("/api/admin/animals/" + encodeURIComponent(id) + "/archive", {
+        method: "POST",
+        body: JSON.stringify({ archived: !archived }),
+      });
+    } catch {
       setActionError(archived ? "無法取消封存，請重試。" : "無法封存，請重試。");
       return;
     }

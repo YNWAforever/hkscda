@@ -16,6 +16,7 @@ import {
 import { getAppUrl } from "../appUrl.server";
 import { getEmailConfig } from "../donations/config.server";
 import { verifyUploadedObjects } from "../publicUploads/signedUpload.server";
+import { submissionFingerprint } from "../publicUploads/submissionFingerprint.server";
 
 export const ADOPTION_PHOTO_BUCKET = "adoption-application-photos";
 export const MAX_ADOPTION_PHOTOS = 6;
@@ -39,6 +40,13 @@ export type ParsedAdoptionMultipart = {
   payload: ParsedAdoptionPayload;
   photos: ParsedAdoptionPhoto[];
 };
+
+export function fingerprintAdoptionSubmission(
+  parsed: ParsedAdoptionMultipart,
+  statusToken: string,
+): string {
+  return submissionFingerprint("adoption_application", parsed.payload, parsed.photos, statusToken);
+}
 
 export type PublicAdoptionPersistResult = {
   applicationId: string;
@@ -219,6 +227,57 @@ export function parseAdoptionSubmission(
   };
 }
 
+export async function resumePublicAdoptionCase({
+  client,
+  parsed,
+  coordinatorService,
+  logger = console,
+}: Pick<
+  PersistPublicAdoptionJourneyInput,
+  "client" | "parsed" | "coordinatorService" | "logger"
+>): Promise<{ caseId: string }> {
+  // The caller has checked the saved bearer token and fingerprint. Photo
+  // metadata and details preceded that token; the intake item is restored if
+  // its write was interrupted. The case has a unique application ID.
+  const caseResult = await coordinatorService.createCaseFromPublicApplication({
+    publicApplicationId: parsed.applicationId,
+    input: {
+      ...toAdoptionApplicationSummaryInsert(parsed.payload),
+      preferences: coordinatorPreferences(parsed.payload),
+    },
+  });
+  try {
+    // A token can have committed before the first request lost the intake
+    // insert response. Preserve an existing staff-edited item on conflict.
+    const { error: intakeError } = await client.from("adoption_intake_item").upsert(
+      {
+        public_application_id: parsed.applicationId,
+        adoption_case_id: caseResult.id,
+        lane: "new_adoption_application",
+        urgency: "normal",
+        summary: {
+          reference: referenceForApplication(parsed.applicationId),
+          applicantName: parsed.payload.contact.applicantName,
+          animalName: parsed.payload.animalPreferences[0]?.animalName ?? null,
+          photoCount: parsed.photos.length,
+          preferredContactMethod: parsed.payload.contact.preferredContactMethod,
+        },
+        due_at: intakeDueAt(parsed.payload),
+      },
+      { onConflict: "public_application_id", ignoreDuplicates: true },
+    );
+    if (intakeError) logger.error("Failed to restore resumed adoption intake item", intakeError);
+    const { error } = await client
+      .from("adoption_intake_item")
+      .update({ adoption_case_id: caseResult.id })
+      .eq("public_application_id", parsed.applicationId);
+    if (error) logger.error("Failed to link resumed adoption intake item", error);
+  } catch (error) {
+    logger.error("Failed to link resumed adoption intake item", error);
+  }
+  return { caseId: caseResult.id };
+}
+
 export async function persistPublicAdoptionJourney({
   client,
   parsed,
@@ -254,6 +313,7 @@ export async function persistPublicAdoptionJourney({
   }
 
   let applicationId: string | null = null;
+  let caseCreationStarted = false;
   const uploadedPaths: string[] = [];
 
   try {
@@ -309,6 +369,7 @@ export async function persistPublicAdoptionJourney({
         entity_type: "adoption_application",
         entity_id: applicationId,
         expires_at: expiresAt,
+        submission_fingerprint: fingerprintAdoptionSubmission(parsed, token.rawToken),
       }),
       "Failed to save public status token",
     );
@@ -335,6 +396,9 @@ export async function persistPublicAdoptionJourney({
       "Failed to save adoption intake item",
     ) as { id?: string } | null;
 
+    // The case insert may commit even if its response is lost. Once started,
+    // preserve the application so the route can recover the completed case.
+    caseCreationStarted = true;
     const caseResult = await coordinatorService.createCaseFromPublicApplication({
       publicApplicationId: applicationId,
       input: {
@@ -366,7 +430,9 @@ export async function persistPublicAdoptionJourney({
       expiresAt,
     };
   } catch (error) {
-    await cleanupFailedPersistence({ client, applicationId, uploadedPaths, logger });
+    if (!caseCreationStarted) {
+      await cleanupFailedPersistence({ client, applicationId, uploadedPaths, logger });
+    }
     logger.error("Failed to save public adoption application", error);
     throw new Error("Failed to save adoption application");
   }

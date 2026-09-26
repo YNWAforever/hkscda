@@ -19,6 +19,7 @@ import { buildIntakeSearchParams, intakeUrgencyLabel } from "./intakeInboxLogic"
 
 type IntakeItemsResponse = {
   items: AdoptionIntakeItem[];
+  total: number;
 };
 
 type LaneFilter = "all" | AdoptionIntakeLane;
@@ -39,6 +40,7 @@ const urgencyClasses: Record<AdoptionIntakeUrgency, string> = {
 };
 
 const EMPTY_ITEMS: AdoptionIntakeItem[] = [];
+const PAGE_SIZE = 25;
 
 function laneValue(lane: LaneFilter): AdoptionIntakeLane | undefined {
   return lane === "all" ? undefined : lane;
@@ -75,14 +77,17 @@ export function IntakeInbox() {
   const copy = pageCopy.intakeInbox;
   const [lane, setLane] = useState<LaneFilter>("all");
   const [openOnly, setOpenOnly] = useState(true);
+  const [page, setPage] = useState(1);
 
   const searchParams = useMemo(
     () =>
       buildIntakeSearchParams({
         lane: laneValue(lane),
         openOnly,
+        page,
+        pageSize: PAGE_SIZE,
       }),
-    [lane, openOnly],
+    [lane, openOnly, page],
   );
 
   const { data, error, isLoading, isFetching, refetch } = useQuery<IntakeItemsResponse, Error>({
@@ -94,6 +99,8 @@ export function IntakeInbox() {
   });
 
   const items = data?.items ?? EMPTY_ITEMS;
+  const total = data?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
     <div className="space-y-5 p-6">
@@ -119,7 +126,10 @@ export function IntakeInbox() {
                   type="button"
                   size="sm"
                   variant={selected ? "default" : "outline"}
-                  onClick={() => setLane(option)}
+                  onClick={() => {
+                    setLane(option);
+                    setPage(1);
+                  }}
                 >
                   {option === "all" ? copy.allLanes : copy.lanes[option]}
                 </Button>
@@ -130,7 +140,10 @@ export function IntakeInbox() {
             <span>{copy.openOnly}</span>
             <Switch
               checked={openOnly}
-              onCheckedChange={setOpenOnly}
+              onCheckedChange={(checked) => {
+                setOpenOnly(checked);
+                setPage(1);
+              }}
               aria-label={copy.openOnlyLabel}
             />
           </label>
@@ -141,7 +154,7 @@ export function IntakeInbox() {
         <div className="flex min-h-14 items-center justify-between gap-3 border-b border-[var(--color-border)] px-4">
           <div className="flex items-center gap-2 text-sm font-semibold text-[var(--color-panel)]">
             <Inbox className="h-4 w-4" />
-            <span>{error ? STAT_UNAVAILABLE : pageCopy.common.totalCount(items.length)}</span>
+            <span>{error ? STAT_UNAVAILABLE : pageCopy.common.totalCount(total)}</span>
           </div>
           {isFetching && (
             <span className="text-xs text-[var(--color-text-muted)]">
@@ -237,6 +250,31 @@ export function IntakeInbox() {
                 </article>
               );
             })}
+          </div>
+        )}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-end gap-2 border-t border-[var(--color-border)] px-4 py-3">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={page <= 1 || isFetching}
+              onClick={() => setPage((current) => Math.max(1, current - 1))}
+            >
+              {pageCopy.common.previous}
+            </Button>
+            <span className="text-xs text-[var(--color-text-muted)]">
+              {pageCopy.common.pageOf(page, totalPages)}
+            </span>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={page >= totalPages || isFetching}
+              onClick={() => setPage((current) => current + 1)}
+            >
+              {pageCopy.common.next}
+            </Button>
           </div>
         )}
       </section>

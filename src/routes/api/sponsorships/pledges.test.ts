@@ -55,6 +55,58 @@ async function invoke(dependencies: Record<string, unknown>) {
 }
 
 describe("sponsorship pledge submission retry", () => {
+  test("a verified proof intent permits persistence without reusing the Turnstile token", async () => {
+    const { calls, dependencies } = setup({
+      parse: () => ({
+        pledgeId,
+        statusToken,
+        payload: { animalPreferences: [{ animalId: "animal-1", animalType: "cat" }] },
+        proof: { storagePath: pledgeId + "/proof/receipt.jpg", proofIntent: "signed" },
+      }),
+      verify: async () => {
+        throw new Error("Turnstile must not be reused");
+      },
+      verifyProofIntent: () => {
+        calls.push("verifyProofIntent");
+        return true;
+      },
+    });
+    const response = await invoke(dependencies);
+    expect(response.status).toBe(201);
+    expect(calls).toEqual(["verifyProofIntent", "persist", "sendEmail"]);
+  });
+
+  test("a proof submission requires its signed upload intent before persistence", async () => {
+    const { calls, dependencies } = setup({
+      parse: () => ({
+        pledgeId,
+        statusToken,
+        payload: { animalPreferences: [{ animalId: "animal-1", animalType: "cat" }] },
+        proof: { storagePath: pledgeId + "/proof/receipt.jpg", proofIntent: "invalid" },
+      }),
+      verifyProofIntent: () => false,
+    });
+    const response = await invoke(dependencies);
+    expect(response.status).toBe(403);
+    expect(calls).toEqual([]);
+  });
+
+  test("rejects an oversized JSON body before submission work", async () => {
+    const { calls, dependencies } = setup();
+    const factory = (module as Record<string, unknown>).createSponsorshipPledgesHandler;
+    expect(factory).toBeFunction();
+    if (typeof factory !== "function") throw new Error("missing sponsorship handler");
+    const oversized = new Request("https://example.test/api/sponsorships/pledges", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ padding: "x".repeat(2 * 1024 * 1024) }),
+    });
+    expect(oversized.headers.has("content-length")).toBe(false);
+
+    const response = (await factory(dependencies)(oversized)) as Response;
+    expect(response.status).toBe(413);
+    expect(calls).toEqual([]);
+  });
   test("returns the original status link for a matching completed attempt without re-verifying or resending", async () => {
     const { calls, dependencies } = setup({
       lookupRetry: async () => ({
@@ -67,6 +119,13 @@ describe("sponsorship pledge submission retry", () => {
     const response = await invoke(dependencies);
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ pledgeId, reference: "SP-CCCCCCCC", statusUrl });
+    expect(calls).toEqual([]);
+  });
+
+  test("returns conflict without persisting a changed completed attempt", async () => {
+    const { calls, dependencies } = setup({ lookupRetry: async () => ({ kind: "conflict" }) });
+    const response = await invoke(dependencies);
+    expect(response.status).toBe(409);
     expect(calls).toEqual([]);
   });
 

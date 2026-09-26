@@ -65,6 +65,7 @@ type FakeState = {
   existingProfile: Record<string, unknown> | null;
   supporterRows: Record<string, unknown>[];
   auditRows: Record<string, unknown>[];
+  serverRowCap?: number;
   rpcResult: Record<string, unknown> | null;
   summaryCounts: SummaryCounts;
   followupRow: Record<string, unknown> | null;
@@ -342,7 +343,8 @@ class FakeQuery {
     const ranged = this.rangeBounds
       ? filtered.slice(this.rangeBounds.from, this.rangeBounds.to + 1)
       : filtered;
-    return { data: ranged, error: null, count };
+    const capped = this.state.serverRowCap ? ranged.slice(0, this.state.serverRowCap) : ranged;
+    return { data: capped, error: null, count };
   }
 
   private applyFilters(rows: Record<string, unknown>[]) {
@@ -420,6 +422,7 @@ function createFakeClient(
     existingProfile?: Record<string, unknown> | null;
     supporterRows?: Record<string, unknown>[];
     auditRows?: Record<string, unknown>[];
+    serverRowCap?: number;
     rpcResult?: Record<string, unknown> | null;
     summaryCounts?: Partial<SummaryCounts>;
     followupRow?: Record<string, unknown> | null;
@@ -450,6 +453,7 @@ function createFakeClient(
     existingProfile: options.existingProfile ?? null,
     supporterRows: options.supporterRows ?? [],
     auditRows: options.auditRows ?? [],
+    serverRowCap: options.serverRowCap,
     rpcResult: options.rpcResult ?? null,
     summaryCounts: {
       publicIntakeCases: 0,
@@ -803,38 +807,35 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     });
   });
 
-  test("searches manual intake identity candidates across adopters and supporters", async () => {
+  test("returns a globally paged identity result with an exact total", async () => {
+    const candidate = {
+      kind: "adopter" as const,
+      supporterId: existingSupporterId,
+      adopterProfileId: existingProfileId,
+      displayName: "Ada",
+      email: "ada@example.test",
+      phone: "61234567",
+      isBlacklisted: true,
+      latestCaseAt: null,
+    };
     const { repo, calls } = setupRepository({
-      adopterRows: [
-        adopterRow({
-          supporter: {
-            id: existingSupporterId,
-            name: "Ada",
-            email: "ada@example.test",
-            phone: "61234567",
-          },
-        }),
-      ],
-      supporterRows: [
-        { id: secondSupporterId, name: "Ben", email: "ben@example.test", phone: "69876543" },
-      ],
+      rpcResult: { candidates: [candidate], total: 21 },
     });
 
     const result = await repo.searchManualCaseIdentity({
-      q: "Ada",
-      page: 1,
+      q: "ada@example.test",
+      page: 2,
       pageSize: 10,
     });
 
-    expect(result.candidates).toEqual([
-      expect.objectContaining({
-        kind: "adopter",
-        adopterProfileId: existingProfileId,
-        displayName: "Ada",
-      }),
+    expect(result).toEqual({ candidates: [candidate], total: 21 });
+    expect(callsFor(calls, "rpc", "search_manual_case_identity")).toEqual([
+      {
+        table: "rpc",
+        method: "search_manual_case_identity",
+        payload: { p_query: "ada@example.test", p_page: 2, p_page_size: 10 },
+      },
     ]);
-    expect(callsFor(calls, "adopter_profile", "or")).toHaveLength(1);
-    expect(callsFor(calls, "supporter", "or")).toHaveLength(1);
   });
 
   test("creates manual cases through the transactional RPC", async () => {
@@ -876,11 +877,30 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     expect(calls).toContainEqual({
       table: "rpc",
       method: "create_manual_adoption_case",
-      schema: "private",
       payload: expect.objectContaining({
         p_actor_user_id: createdSupporterId,
       }),
     });
+  });
+
+  test("searches case list and export beyond a capped preliminary result", async () => {
+    const finalCaseId = "case-third";
+    const { repo } = setupRepository({
+      serverRowCap: 2,
+      caseRows: [
+        caseRow({ id: "case-first", applicant_name: "Ada" }),
+        caseRow({ id: "case-second", applicant_name: "Ada" }),
+        caseRow({ id: finalCaseId, applicant_name: "Ada" }),
+      ],
+    });
+    const search = { q: "Ada", openOnly: false, page: 3, pageSize: 1 };
+
+    const listed = await repo.listCases(search);
+    const exported = await repo.listCaseExportRows(search);
+
+    expect(listed.total).toBe(3);
+    expect(listed.cases.map((row) => row.id)).toEqual([finalCaseId]);
+    expect(exported.map((row) => row.caseId)).toEqual([finalCaseId]);
   });
 
   test("lists open intake items by lane", async () => {
@@ -901,8 +921,9 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     });
 
     await expect(
-      repo.listIntakeItems({ lane: "photos_to_review", openOnly: true }),
+      repo.listIntakeItems({ lane: "photos_to_review", openOnly: true, page: 1, pageSize: 25 }),
     ).resolves.toEqual({
+      total: 1,
       items: [
         {
           id: "intake-1",
@@ -935,8 +956,21 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     expect(calls).toContainEqual({
       table: "adoption_intake_item",
       method: "range",
-      payload: { from: 0, to: 99 },
+      payload: { from: 0, to: 24 },
     });
+  });
+
+  test("paginates intake items beyond the first page with an exact total", async () => {
+    const { repo } = setupRepository({
+      intakeRows: Array.from({ length: 26 }, (_, index) =>
+        intakeRow({ id: `intake-${index + 1}` }),
+      ),
+    });
+
+    const result = await repo.listIntakeItems({ openOnly: true, page: 2, pageSize: 25 });
+
+    expect(result.total).toBe(26);
+    expect(result.items.map((item) => item.id)).toEqual(["intake-26"]);
   });
 
   test("lists coordinator export history from audit log details", async () => {
@@ -1024,6 +1058,33 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
           filters: { openOnly: true },
         },
       ],
+    });
+  });
+
+  test("kind filtering finds matches beyond a capped first audit page", async () => {
+    const auditRows = Array.from({ length: 1000 }, (_, index) => ({
+      id: "adopters-" + String(index),
+      actor_user_id: createdSupporterId,
+      action: "coordinator_export.adopters",
+      entity_id: "adopters",
+      timestamp: "2026-06-28T02:00:00.000Z",
+      detail: { rowCount: 1 },
+    }));
+    auditRows.push({
+      id: "cases-after-cap",
+      actor_user_id: createdSupporterId,
+      action: "coordinator_export.cases",
+      entity_id: "cases",
+      timestamp: "2026-06-28T01:00:00.000Z",
+      detail: { rowCount: 2 },
+    });
+    const { repo } = setupRepository({ auditRows, serverRowCap: 1000 });
+
+    await expect(
+      repo.listCoordinatorExportHistory({ month: "2026-06", kind: "cases", page: 1, pageSize: 25 }),
+    ).resolves.toMatchObject({
+      total: 1,
+      exports: [expect.objectContaining({ id: "cases-after-cap", kind: "cases" })],
     });
   });
 
@@ -1249,6 +1310,74 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     ]);
   });
 
+  test("includes history beyond a capped response in adopter list and detail", async () => {
+    const { repo } = setupRepository({
+      serverRowCap: 2,
+      adopterRows: [adopterRow({ id: existingProfileId })],
+      caseRows: Array.from({ length: 3 }, (_, index) =>
+        caseRow({ id: `case-history-${index}`, adopter_profile_id: existingProfileId }),
+      ),
+      followupRows: Array.from({ length: 3 }, (_, index) =>
+        followupRow({
+          id: `task-history-${index}`,
+          adoption_case_id: null,
+          adopter_profile_id: existingProfileId,
+        }),
+      ),
+      successRows: Array.from({ length: 3 }, (_, index) =>
+        successfulAdoptionRow({
+          id: `success-history-${index}`,
+          adopter_profile_id: existingProfileId,
+        }),
+      ),
+      animalRows: [animalRow()],
+    });
+
+    const listed = await repo.listAdopters({
+      blacklisted: "all",
+      hasOpenCases: false,
+      hasOpenTasks: false,
+      page: 1,
+      pageSize: 25,
+    });
+    const detail = await repo.getAdopterDetail(existingProfileId);
+
+    expect(listed.adopters[0]).toMatchObject({
+      openCaseCount: 3,
+      openTaskCount: 3,
+      successfulAdoptionCount: 3,
+    });
+    expect(detail?.cases).toHaveLength(3);
+    expect(detail?.tasks).toHaveLength(3);
+    expect(detail?.successfulAdoptions).toHaveLength(3);
+  });
+
+  test("batches linked-case follow-up filters for long adopter histories", async () => {
+    const caseRows = Array.from({ length: 501 }, (_, index) =>
+      caseRow({ id: "case-history-" + index, adopter_profile_id: existingProfileId }),
+    );
+    const { repo, calls } = setupRepository({
+      adopterRows: [adopterRow({ id: existingProfileId })],
+      caseRows,
+      followupRows: [
+        followupRow({
+          id: "last-case-task",
+          adoption_case_id: "case-history-500",
+          adopter_profile_id: null,
+        }),
+      ],
+    });
+
+    const detail = await repo.getAdopterDetail(existingProfileId);
+
+    expect(detail?.tasks.map((task) => task.id)).toContain("last-case-task");
+    const caseFilters = callsFor(calls, "adoption_followup", "in")
+      .map((call) => call.payload as { column: string; value: string[] })
+      .filter((filter) => filter.column === "adoption_case_id");
+    expect(caseFilters).toHaveLength(2);
+    expect(caseFilters.every((filter) => filter.value.length <= 500)).toBe(true);
+  });
+
   test("searches adopters by supporter identity without cross-table or filters", async () => {
     const { repo, calls } = setupRepository({
       supporterRows: [
@@ -1430,6 +1559,7 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
 
   test("rejects oversized adopter candidate filters before building a large in query", async () => {
     const { repo, calls } = setupRepository({
+      serverRowCap: 1000,
       caseRows: Array.from({ length: 1001 }, (_, index) =>
         caseRow({
           id: `case-${index}`,
@@ -1459,6 +1589,7 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
 
   test("rejects broad supporter identity searches before building a large supporter id query", async () => {
     const { repo, calls } = setupRepository({
+      serverRowCap: 1000,
       supporterRows: Array.from({ length: 1001 }, (_, index) => ({
         id: `supporter-${index}`,
         name: `Ada ${index}`,
@@ -1488,6 +1619,7 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
 
   test("rejects broad case-linked task filters before building a large case id query", async () => {
     const { repo, calls } = setupRepository({
+      serverRowCap: 1000,
       followupRows: Array.from({ length: 1001 }, (_, index) =>
         followupRow({
           id: `task-${index}`,
@@ -2030,6 +2162,94 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     ).rejects.toThrow(/too many animal pipeline candidates/i);
   });
 
+  function tieOrderedExportClient(
+    primaryTable: string,
+    sourceRows: Array<Record<string, unknown>>,
+  ): SupabaseClient {
+    return {
+      from(table: string) {
+        let from = 0;
+        let to = Number.POSITIVE_INFINITY;
+        const filters: Array<(row: Record<string, unknown>) => boolean> = [];
+        const orders: Array<{ column: string; ascending: boolean }> = [];
+        const result = () => {
+          const rows = (table === primaryTable ? sourceRows : [])
+            .filter((row) => filters.every((filter) => filter(row)))
+            .sort((left, right) => {
+              for (const order of orders) {
+                const comparison = String(left[order.column]).localeCompare(
+                  String(right[order.column]),
+                );
+                if (comparison !== 0) return order.ascending ? comparison : -comparison;
+              }
+              return 0;
+            });
+          return { data: rows.slice(from, to + 1), count: rows.length, error: null };
+        };
+        const query = {
+          select: () => query,
+          in: (column: string, values: unknown[]) => {
+            filters.push((row) => values.includes(row[column]));
+            return query;
+          },
+          order: (column: string, options?: { ascending?: boolean }) => {
+            orders.push({ column, ascending: options?.ascending !== false });
+            return query;
+          },
+          range: (start: number, end: number) => {
+            from = start;
+            to = end;
+            return query;
+          },
+          then: (resolve: (value: ReturnType<typeof result>) => void) => resolve(result()),
+        };
+        return query;
+      },
+    } as unknown as SupabaseClient;
+  }
+
+  test("successful adoption export selects the same capped row when approval dates tie", async () => {
+    const rows = [
+      successfulAdoptionRow({ id: "success-b" }),
+      successfulAdoptionRow({ id: "success-a" }),
+    ];
+    const first = createSupabaseAdoptionCoordinatorRepository(
+      tieOrderedExportClient("successful_adoption", rows),
+    );
+    const second = createSupabaseAdoptionCoordinatorRepository(
+      tieOrderedExportClient("successful_adoption", [...rows].reverse()),
+    );
+
+    const a = await first.listSuccessfulAdoptionExportRows({ page: 1, pageSize: 1 });
+    const b = await second.listSuccessfulAdoptionExportRows({ page: 1, pageSize: 1 });
+    expect(a.map((row) => row.successfulAdoptionId)).toEqual(
+      b.map((row) => row.successfulAdoptionId),
+    );
+  });
+
+  test("animal export selects the same capped row when type and name tie", async () => {
+    const rows = [animalRow({ id: "animal-b" }), animalRow({ id: "animal-a" })];
+    const first = createSupabaseAdoptionCoordinatorRepository(
+      tieOrderedExportClient("animals", rows),
+    );
+    const second = createSupabaseAdoptionCoordinatorRepository(
+      tieOrderedExportClient("animals", [...rows].reverse()),
+    );
+    const input = {
+      status: "all" as const,
+      type: "all" as const,
+      adoptable: "all" as const,
+      supportPool: "all" as const,
+      positionId: "all" as const,
+      page: 1,
+      pageSize: 1,
+    };
+
+    const a = await first.listAnimalExportRows(input);
+    const b = await second.listAnimalExportRows(input);
+    expect(a.map((row) => row.animalId)).toEqual(b.map((row) => row.animalId));
+  });
+
   test("successful adoption export caps rows before mapping", async () => {
     const { repo, calls } = setupRepository({
       successRows: [successfulAdoptionRow()],
@@ -2098,6 +2318,65 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     const detail = await repo.getAdopterDetail(existingProfileId);
 
     expect(detail?.tasks.map((task) => task.id)).toEqual([caseLinkedTaskId, followupId]);
+  });
+
+  test("loads task case labels beyond a capped lookup response", async () => {
+    const { repo } = setupRepository({
+      serverRowCap: 2,
+      adopterRows: [adopterRow({ id: existingProfileId })],
+      caseRows: Array.from({ length: 3 }, (_, index) =>
+        caseRow({ id: `linked-case-${index}`, adopter_profile_id: existingProfileId }),
+      ),
+      followupRows: Array.from({ length: 3 }, (_, index) =>
+        followupRow({
+          id: `linked-task-${index}`,
+          adoption_case_id: `linked-case-${index}`,
+          adopter_profile_id: null,
+        }),
+      ),
+      taskCaseRows: Array.from({ length: 3 }, (_, index) =>
+        taskCaseRow({ id: `linked-case-${index}`, applicant_name: `Applicant ${index}` }),
+      ),
+    });
+
+    const detail = await repo.getAdopterDetail(existingProfileId);
+
+    expect(
+      detail?.tasks.find((task) => task.id === "linked-task-2")?.adoptionCase?.applicantName,
+    ).toBe("Applicant 2");
+  });
+
+  test("loads adopter and animal labels beyond a capped task lookup", async () => {
+    const profileIds = [existingProfileId, secondProfileId, unknownProfileId];
+    const { repo } = setupRepository({
+      serverRowCap: 2,
+      adopterRows: profileIds.map((id, index) =>
+        adopterRow({ id, supporter: { name: `Adopter ${index}` } }),
+      ),
+      caseRows: Array.from({ length: 3 }, (_, index) =>
+        caseRow({ id: `link-case-${index}`, adopter_profile_id: existingProfileId }),
+      ),
+      followupRows: Array.from({ length: 3 }, (_, index) =>
+        followupRow({
+          id: `link-task-${index}`,
+          adoption_case_id: `link-case-${index}`,
+          adopter_profile_id: profileIds[index],
+          animal_id: `link-animal-${index}`,
+        }),
+      ),
+      taskCaseRows: Array.from({ length: 3 }, (_, index) =>
+        taskCaseRow({ id: `link-case-${index}` }),
+      ),
+      animalRows: Array.from({ length: 3 }, (_, index) =>
+        animalRow({ id: `link-animal-${index}`, name: `Animal ${index}` }),
+      ),
+    });
+
+    const detail = await repo.getAdopterDetail(existingProfileId);
+    const lastTask = detail?.tasks.find((task) => task.id === "link-task-2");
+
+    expect(lastTask?.adopterProfile?.displayName).toBe("Adopter 2");
+    expect(lastTask?.animal?.name).toBe("Animal 2");
   });
 
   test("returns adopter detail with cases, successful adoptions, and tasks", async () => {

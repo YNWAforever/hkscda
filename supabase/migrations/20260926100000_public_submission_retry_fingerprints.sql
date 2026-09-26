@@ -1,0 +1,8 @@
+-- A bearer token recovers only the exact public submission that created it.
+-- Existing rows remain null and cannot falsely confirm a changed retry.
+alter table public.public_status_token
+  add column if not exists submission_fingerprint text;
+
+alter table public.public_status_token
+  add constraint public_status_token_submission_fingerprint_format
+  check (submission_fingerprint is null or submission_fingerprint ~ '^[0-9a-f]{64}$');

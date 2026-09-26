@@ -70,6 +70,7 @@ import { Route as ApiStoriesSlugRouteImport } from './routes/api/stories/$slug'
 import { Route as ApiSponsorshipsPledgesRouteImport } from './routes/api/sponsorships/pledges'
 import { Route as ApiJobsVolunteersRouteImport } from './routes/api/jobs/volunteers'
 import { Route as ApiJobsSponsorshipsRouteImport } from './routes/api/jobs/sponsorships'
+import { Route as ApiJobsPublicUploadsRouteImport } from './routes/api/jobs/public-uploads'
 import { Route as ApiJobsAdoptionUploadsRouteImport } from './routes/api/jobs/adoption-uploads'
 import { Route as ApiInternshipsAttachmentRouteImport } from './routes/api/internships/attachment'
 import { Route as ApiAdoptionApplicationsRouteImport } from './routes/api/adoption/applications'
@@ -200,6 +201,7 @@ import { Route as ApiAdminContentIdMediaRouteImport } from './routes/api/admin/c
 import { Route as ApiAdminContentIdLinksRouteImport } from './routes/api/admin/content/$id/links'
 import { Route as ApiAdminContentIdArchiveRouteImport } from './routes/api/admin/content/$id/archive'
 import { Route as ApiAdminAnnualReportsIdPublishRouteImport } from './routes/api/admin/annual-reports/$id/publish'
+import { Route as ApiAdminAnimalsIdArchiveRouteImport } from './routes/api/admin/animals/$id/archive'
 import { Route as ApiAdminAdoptionsTasksIdRouteImport } from './routes/api/admin/adoptions/tasks/$id'
 import { Route as ApiAdminAdoptionsStatusesIdRouteImport } from './routes/api/admin/adoptions/statuses/$id'
 import { Route as ApiAdminAdoptionsReportsSummaryRouteImport } from './routes/api/admin/adoptions/reports/summary'
@@ -550,6 +552,11 @@ const ApiJobsVolunteersRoute = ApiJobsVolunteersRouteImport.update({
 const ApiJobsSponsorshipsRoute = ApiJobsSponsorshipsRouteImport.update({
   id: '/api/jobs/sponsorships',
   path: '/api/jobs/sponsorships',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiJobsPublicUploadsRoute = ApiJobsPublicUploadsRouteImport.update({
+  id: '/api/jobs/public-uploads',
+  path: '/api/jobs/public-uploads',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiJobsAdoptionUploadsRoute = ApiJobsAdoptionUploadsRouteImport.update({
@@ -1273,6 +1280,12 @@ const ApiAdminAnnualReportsIdPublishRoute =
     path: '/publish',
     getParentRoute: () => ApiAdminAnnualReportsIdRoute,
   } as any)
+const ApiAdminAnimalsIdArchiveRoute =
+  ApiAdminAnimalsIdArchiveRouteImport.update({
+    id: '/api/admin/animals/$id/archive',
+    path: '/api/admin/animals/$id/archive',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdminAdoptionsTasksIdRoute =
   ApiAdminAdoptionsTasksIdRouteImport.update({
     id: '/$id',
@@ -1633,6 +1646,7 @@ export interface FileRoutesByFullPath {
   '/api/adoption/applications': typeof ApiAdoptionApplicationsRouteWithChildren
   '/api/internships/attachment': typeof ApiInternshipsAttachmentRoute
   '/api/jobs/adoption-uploads': typeof ApiJobsAdoptionUploadsRoute
+  '/api/jobs/public-uploads': typeof ApiJobsPublicUploadsRoute
   '/api/jobs/sponsorships': typeof ApiJobsSponsorshipsRoute
   '/api/jobs/volunteers': typeof ApiJobsVolunteersRoute
   '/api/sponsorships/pledges': typeof ApiSponsorshipsPledgesRouteWithChildren
@@ -1716,6 +1730,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/adoptions/reports/summary': typeof ApiAdminAdoptionsReportsSummaryRoute
   '/api/admin/adoptions/statuses/$id': typeof ApiAdminAdoptionsStatusesIdRoute
   '/api/admin/adoptions/tasks/$id': typeof ApiAdminAdoptionsTasksIdRoute
+  '/api/admin/animals/$id/archive': typeof ApiAdminAnimalsIdArchiveRoute
   '/api/admin/annual-reports/$id/publish': typeof ApiAdminAnnualReportsIdPublishRoute
   '/api/admin/content/$id/archive': typeof ApiAdminContentIdArchiveRoute
   '/api/admin/content/$id/links': typeof ApiAdminContentIdLinksRoute
@@ -1869,6 +1884,7 @@ export interface FileRoutesByTo {
   '/api/adoption/applications': typeof ApiAdoptionApplicationsRouteWithChildren
   '/api/internships/attachment': typeof ApiInternshipsAttachmentRoute
   '/api/jobs/adoption-uploads': typeof ApiJobsAdoptionUploadsRoute
+  '/api/jobs/public-uploads': typeof ApiJobsPublicUploadsRoute
   '/api/jobs/sponsorships': typeof ApiJobsSponsorshipsRoute
   '/api/jobs/volunteers': typeof ApiJobsVolunteersRoute
   '/api/sponsorships/pledges': typeof ApiSponsorshipsPledgesRouteWithChildren
@@ -1952,6 +1968,7 @@ export interface FileRoutesByTo {
   '/api/admin/adoptions/reports/summary': typeof ApiAdminAdoptionsReportsSummaryRoute
   '/api/admin/adoptions/statuses/$id': typeof ApiAdminAdoptionsStatusesIdRoute
   '/api/admin/adoptions/tasks/$id': typeof ApiAdminAdoptionsTasksIdRoute
+  '/api/admin/animals/$id/archive': typeof ApiAdminAnimalsIdArchiveRoute
   '/api/admin/annual-reports/$id/publish': typeof ApiAdminAnnualReportsIdPublishRoute
   '/api/admin/content/$id/archive': typeof ApiAdminContentIdArchiveRoute
   '/api/admin/content/$id/links': typeof ApiAdminContentIdLinksRoute
@@ -2107,6 +2124,7 @@ export interface FileRoutesById {
   '/api/adoption/applications': typeof ApiAdoptionApplicationsRouteWithChildren
   '/api/internships/attachment': typeof ApiInternshipsAttachmentRoute
   '/api/jobs/adoption-uploads': typeof ApiJobsAdoptionUploadsRoute
+  '/api/jobs/public-uploads': typeof ApiJobsPublicUploadsRoute
   '/api/jobs/sponsorships': typeof ApiJobsSponsorshipsRoute
   '/api/jobs/volunteers': typeof ApiJobsVolunteersRoute
   '/api/sponsorships/pledges': typeof ApiSponsorshipsPledgesRouteWithChildren
@@ -2190,6 +2208,7 @@ export interface FileRoutesById {
   '/api/admin/adoptions/reports/summary': typeof ApiAdminAdoptionsReportsSummaryRoute
   '/api/admin/adoptions/statuses/$id': typeof ApiAdminAdoptionsStatusesIdRoute
   '/api/admin/adoptions/tasks/$id': typeof ApiAdminAdoptionsTasksIdRoute
+  '/api/admin/animals/$id/archive': typeof ApiAdminAnimalsIdArchiveRoute
   '/api/admin/annual-reports/$id/publish': typeof ApiAdminAnnualReportsIdPublishRoute
   '/api/admin/content/$id/archive': typeof ApiAdminContentIdArchiveRoute
   '/api/admin/content/$id/links': typeof ApiAdminContentIdLinksRoute
@@ -2346,6 +2365,7 @@ export interface FileRouteTypes {
     | '/api/adoption/applications'
     | '/api/internships/attachment'
     | '/api/jobs/adoption-uploads'
+    | '/api/jobs/public-uploads'
     | '/api/jobs/sponsorships'
     | '/api/jobs/volunteers'
     | '/api/sponsorships/pledges'
@@ -2429,6 +2449,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/reports/summary'
     | '/api/admin/adoptions/statuses/$id'
     | '/api/admin/adoptions/tasks/$id'
+    | '/api/admin/animals/$id/archive'
     | '/api/admin/annual-reports/$id/publish'
     | '/api/admin/content/$id/archive'
     | '/api/admin/content/$id/links'
@@ -2582,6 +2603,7 @@ export interface FileRouteTypes {
     | '/api/adoption/applications'
     | '/api/internships/attachment'
     | '/api/jobs/adoption-uploads'
+    | '/api/jobs/public-uploads'
     | '/api/jobs/sponsorships'
     | '/api/jobs/volunteers'
     | '/api/sponsorships/pledges'
@@ -2665,6 +2687,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/reports/summary'
     | '/api/admin/adoptions/statuses/$id'
     | '/api/admin/adoptions/tasks/$id'
+    | '/api/admin/animals/$id/archive'
     | '/api/admin/annual-reports/$id/publish'
     | '/api/admin/content/$id/archive'
     | '/api/admin/content/$id/links'
@@ -2819,6 +2842,7 @@ export interface FileRouteTypes {
     | '/api/adoption/applications'
     | '/api/internships/attachment'
     | '/api/jobs/adoption-uploads'
+    | '/api/jobs/public-uploads'
     | '/api/jobs/sponsorships'
     | '/api/jobs/volunteers'
     | '/api/sponsorships/pledges'
@@ -2902,6 +2926,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/reports/summary'
     | '/api/admin/adoptions/statuses/$id'
     | '/api/admin/adoptions/tasks/$id'
+    | '/api/admin/animals/$id/archive'
     | '/api/admin/annual-reports/$id/publish'
     | '/api/admin/content/$id/archive'
     | '/api/admin/content/$id/links'
@@ -3032,6 +3057,7 @@ export interface RootRouteChildren {
   ApiAdoptionApplicationsRoute: typeof ApiAdoptionApplicationsRouteWithChildren
   ApiInternshipsAttachmentRoute: typeof ApiInternshipsAttachmentRoute
   ApiJobsAdoptionUploadsRoute: typeof ApiJobsAdoptionUploadsRoute
+  ApiJobsPublicUploadsRoute: typeof ApiJobsPublicUploadsRoute
   ApiJobsSponsorshipsRoute: typeof ApiJobsSponsorshipsRoute
   ApiJobsVolunteersRoute: typeof ApiJobsVolunteersRoute
   ApiSponsorshipsPledgesRoute: typeof ApiSponsorshipsPledgesRouteWithChildren
@@ -3087,6 +3113,7 @@ export interface RootRouteChildren {
   ApiAdminAdoptionsIntakeItemsRoute: typeof ApiAdminAdoptionsIntakeItemsRoute
   ApiAdminAdoptionsReportsExportsRoute: typeof ApiAdminAdoptionsReportsExportsRouteWithChildren
   ApiAdminAdoptionsReportsSummaryRoute: typeof ApiAdminAdoptionsReportsSummaryRoute
+  ApiAdminAnimalsIdArchiveRoute: typeof ApiAdminAnimalsIdArchiveRoute
   ApiAdminAnimalsDraftPhotoUploadUrlIndexRoute: typeof ApiAdminAnimalsDraftPhotoUploadUrlIndexRoute
   ApiAdminAnimalsPublicationIndexRoute: typeof ApiAdminAnimalsPublicationIndexRoute
   ApiAdminVolunteersAssessmentsIndexRoute: typeof ApiAdminVolunteersAssessmentsIndexRoute
@@ -3530,6 +3557,13 @@ declare module '@tanstack/react-router' {
       path: '/api/jobs/sponsorships'
       fullPath: '/api/jobs/sponsorships'
       preLoaderRoute: typeof ApiJobsSponsorshipsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/jobs/public-uploads': {
+      id: '/api/jobs/public-uploads'
+      path: '/api/jobs/public-uploads'
+      fullPath: '/api/jobs/public-uploads'
+      preLoaderRoute: typeof ApiJobsPublicUploadsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/jobs/adoption-uploads': {
@@ -4441,6 +4475,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/admin/annual-reports/$id/publish'
       preLoaderRoute: typeof ApiAdminAnnualReportsIdPublishRouteImport
       parentRoute: typeof ApiAdminAnnualReportsIdRoute
+    }
+    '/api/admin/animals/$id/archive': {
+      id: '/api/admin/animals/$id/archive'
+      path: '/api/admin/animals/$id/archive'
+      fullPath: '/api/admin/animals/$id/archive'
+      preLoaderRoute: typeof ApiAdminAnimalsIdArchiveRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/admin/adoptions/tasks/$id': {
       id: '/api/admin/adoptions/tasks/$id'
@@ -5504,6 +5545,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdoptionApplicationsRoute: ApiAdoptionApplicationsRouteWithChildren,
   ApiInternshipsAttachmentRoute: ApiInternshipsAttachmentRoute,
   ApiJobsAdoptionUploadsRoute: ApiJobsAdoptionUploadsRoute,
+  ApiJobsPublicUploadsRoute: ApiJobsPublicUploadsRoute,
   ApiJobsSponsorshipsRoute: ApiJobsSponsorshipsRoute,
   ApiJobsVolunteersRoute: ApiJobsVolunteersRoute,
   ApiSponsorshipsPledgesRoute: ApiSponsorshipsPledgesRouteWithChildren,
@@ -5569,6 +5611,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminAdoptionsReportsExportsRoute:
     ApiAdminAdoptionsReportsExportsRouteWithChildren,
   ApiAdminAdoptionsReportsSummaryRoute: ApiAdminAdoptionsReportsSummaryRoute,
+  ApiAdminAnimalsIdArchiveRoute: ApiAdminAnimalsIdArchiveRoute,
   ApiAdminAnimalsDraftPhotoUploadUrlIndexRoute:
     ApiAdminAnimalsDraftPhotoUploadUrlIndexRoute,
   ApiAdminAnimalsPublicationIndexRoute: ApiAdminAnimalsPublicationIndexRoute,

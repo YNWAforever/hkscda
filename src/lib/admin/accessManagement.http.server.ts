@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { readAdminJson } from "../http/adminJson.server";
+import { RequestBodyTooLargeError } from "../http/publicJson.server";
 
 import type { AdminAccessActor } from "./accessManagement.server";
 import { AdminAccessError } from "./accessManagement.server";
@@ -23,8 +25,13 @@ type CreateAdminAccessHandlersArgs = {
 
 async function jsonBody(request: Request) {
   try {
-    return await request.json();
-  } catch {
+    return await readAdminJson(request);
+  } catch (error) {
+    if (error instanceof RequestBodyTooLargeError)
+      throw new Response(JSON.stringify({ error: "Request body too large" }), {
+        status: 413,
+        headers: { "content-type": "application/json", "cache-control": "no-store" },
+      });
     throw new Response(JSON.stringify({ error: "Invalid JSON body" }), {
       status: 400,
       headers: { "content-type": "application/json", "cache-control": "no-store" },

@@ -2,7 +2,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
 import { safeFileName as sanitizeFileName } from "../../../../../lib/publicUploads/signedUpload.server";
-import { validateProofDescriptor } from "../../../../../lib/sponsorship/schemas";
+import { MAX_PROOF_BYTES, validateProofDescriptor } from "../../../../../lib/sponsorship/schemas";
+import { readBoundedFormData } from "../../../../../lib/http/boundedFormData.server";
 import { SPONSORSHIP_PROOF_BUCKET } from "../../../../../lib/sponsorship/submission.server";
 import { jsonResponse, withErrors } from "../../../../../lib/sponsorshipAdmin/http.server";
 import type { AdminUser } from "../../../../../lib/donations/supabase.server";
@@ -13,7 +14,7 @@ type SponsorshipAdminService = ReturnType<typeof createSponsorshipAdminService>;
 export type RecordPaymentUploadContext = {
   request: Request;
   pledgeId: string;
-  client: Pick<SupabaseClient, "storage">;
+  client: Pick<SupabaseClient, "storage" | "rpc">;
   service: Pick<SponsorshipAdminService, "assertRecordPaymentEligible" | "recordPayment">;
   requireCoordinator: (request: Request) => Promise<AdminUser>;
 };
@@ -32,8 +33,8 @@ export function safeFileName(fileName: string) {
  * `service.recordPayment`. Eligibility is checked *before* the upload (via
  * `assertRecordPaymentEligible`) so a pledge that is not eligible for a
  * recorded payment never leaves an orphaned file in the bucket. If the
- * upload succeeds but the subsequent `recordPayment` call still fails, the
- * uploaded file is removed so nothing is left behind.
+ * upload succeeds but `recordPayment` fails, a tracked intent lets the
+ * cleanup job remove the object after concurrent retries have settled.
  *
  * Error mapping (missing/invalid payload, domain conflicts, not-found, and
  * the "file required" bad-request case) is delegated to the shared
@@ -47,13 +48,14 @@ export async function handleRecordPaymentUpload({
   service,
   requireCoordinator,
 }: RecordPaymentUploadContext) {
-  let uploadedStoragePath: string | undefined;
-
   return withErrors(async () => {
     try {
       const admin = await requireCoordinator(request);
 
-      const formData = await request.formData();
+      const formData = await readBoundedFormData(request, MAX_PROOF_BYTES + 1024 * 1024);
+      if (!formData) {
+        return jsonResponse({ error: "Payment upload too large" }, { status: 413 });
+      }
       const payloadValue = formData.get("payload");
       if (typeof payloadValue !== "string") {
         return jsonResponse({ error: "Missing payment payload" }, { status: 400 });
@@ -88,6 +90,12 @@ export async function handleRecordPaymentUpload({
           .map((v) => v.toString(16).padStart(2, "0"))
           .join("");
         const storagePath = `${pledgeId}/staff-${submissionKey}-${digest}-${safeFileName(descriptor.fileName)}`;
+        const { error: intentError } = await client.rpc("reserve_staff_sponsorship_proof_upload", {
+          p_pledge_id: pledgeId,
+          p_storage_path: storagePath,
+        });
+        if (intentError) throw intentError;
+
         const upload = await client.storage
           .from(SPONSORSHIP_PROOF_BUCKET)
           .upload(storagePath, fileValue, { contentType: descriptor.mimeType, upsert: false });
@@ -102,7 +110,6 @@ export async function handleRecordPaymentUpload({
         )
           throw upload.error;
 
-        uploadedStoragePath = upload.error ? undefined : (upload.data?.path ?? storagePath);
         file = {
           storagePath,
           fileName: descriptor.fileName,
@@ -119,9 +126,6 @@ export async function handleRecordPaymentUpload({
 
       return jsonResponse({ proof: result }, { status: 201 });
     } catch (error) {
-      if (uploadedStoragePath) {
-        await client.storage.from(SPONSORSHIP_PROOF_BUCKET).remove([uploadedStoragePath]);
-      }
       if (error instanceof z.ZodError) {
         return jsonResponse({ error: "Invalid payment proof request" }, { status: 400 });
       }

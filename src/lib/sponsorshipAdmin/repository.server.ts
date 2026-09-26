@@ -144,6 +144,12 @@ type AssignmentRow = {
 const PLEDGE_SEARCH_CANDIDATE_LIMIT = 1000;
 const PLEDGE_SEARCH_TOO_BROAD_ERROR = "Pledge search matches too many records";
 
+function assertPledgeSearchCandidateCount(count: number | null) {
+  if (count === null || count > PLEDGE_SEARCH_CANDIDATE_LIMIT) {
+    throw new Error(PLEDGE_SEARCH_TOO_BROAD_ERROR);
+  }
+}
+
 function unique(values: Array<string | null | undefined>) {
   return [...new Set(values.filter(Boolean) as string[])];
 }
@@ -191,43 +197,74 @@ function referenceSearchHexPrefix(q: string): string | null {
  * and anchors the pattern to a prefix, since the reference only ever encodes
  * the id's first segment.
  */
+async function readPledgeSearchIds(
+  readPage: (from: number) => Promise<{ data: unknown; error: unknown; count: number | null }>,
+): Promise<string[]> {
+  const ids: string[] = [];
+  let from = 0;
+  let total = 0;
+  do {
+    const { data, error, count } = await readPage(from);
+    if (error) throw error;
+    assertPledgeSearchCandidateCount(count);
+    const batch = (data ?? []) as Array<{ id: string }>;
+    if (batch.length === 0 && from < (count ?? 0)) {
+      throw new Error("Pledge search candidates were not all returned");
+    }
+    ids.push(...batch.map((row) => row.id));
+    from += batch.length;
+    total = count ?? from;
+  } while (from < total);
+  return ids;
+}
+
 async function searchPledgeIds(client: SupabaseClient, q: string): Promise<string[]> {
   const like = `%${sanitizeOrLikeValue(q)}%`;
   const hexPrefix = referenceSearchHexPrefix(q);
 
-  const [directResult, supporterResult] = await Promise.all([
+  const [directIds, supporterIds] = await Promise.all([
     hexPrefix
-      ? client.from("sponsorship_pledge").select("id").filter("id::text", "ilike", `${hexPrefix}%`)
-      : Promise.resolve({ data: [] as Array<{ id: string }>, error: null }),
-    client.from("supporter").select("id").or(`name.ilike.${like},email.ilike.${like}`),
+      ? readPledgeSearchIds(
+          async (from) =>
+            await client
+              .from("sponsorship_pledge")
+              .select("id", { count: "exact" })
+              .filter("id::text", "ilike", hexPrefix + "%")
+              .order("id", { ascending: true })
+              .range(from, from + 999),
+        )
+      : Promise.resolve([] as string[]),
+    readPledgeSearchIds(
+      async (from) =>
+        await client
+          .from("supporter")
+          .select("id", { count: "exact" })
+          .or("name.ilike." + like + ",email.ilike." + like)
+          .order("id", { ascending: true })
+          .range(from, from + 999),
+    ),
   ]);
-  if (directResult.error) throw directResult.error;
-  if (supporterResult.error) throw supporterResult.error;
-
-  const directIds = ((directResult.data ?? []) as Array<{ id: string }>).map((row) => row.id);
-  const supporterIds = unique(
-    ((supporterResult.data ?? []) as Array<{ id: string }>).map((row) => row.id),
-  );
 
   if (supporterIds.length === 0) return unique(directIds);
-  if (supporterIds.length > PLEDGE_SEARCH_CANDIDATE_LIMIT) {
-    throw new Error(PLEDGE_SEARCH_TOO_BROAD_ERROR);
+
+  const pledgeIdsBySupporter: string[] = [];
+  for (let from = 0; from < supporterIds.length; from += 100) {
+    const ids = await readPledgeSearchIds(
+      async (offset) =>
+        await client
+          .from("sponsorship_pledge")
+          .select("id", { count: "exact" })
+          .in("supporter_id", supporterIds.slice(from, from + 100))
+          .order("id", { ascending: true })
+          .range(offset, offset + 999),
+    );
+    pledgeIdsBySupporter.push(...ids);
+    if (unique([...directIds, ...pledgeIdsBySupporter]).length > PLEDGE_SEARCH_CANDIDATE_LIMIT) {
+      throw new Error(PLEDGE_SEARCH_TOO_BROAD_ERROR);
+    }
   }
-
-  const pledgesBySupporterResult = await client
-    .from("sponsorship_pledge")
-    .select("id")
-    .in("supporter_id", supporterIds);
-  if (pledgesBySupporterResult.error) throw pledgesBySupporterResult.error;
-
-  const pledgeIdsBySupporter = ((pledgesBySupporterResult.data ?? []) as Array<{ id: string }>).map(
-    (row) => row.id,
-  );
 
   const merged = unique([...directIds, ...pledgeIdsBySupporter]);
-  if (merged.length > PLEDGE_SEARCH_CANDIDATE_LIMIT) {
-    throw new Error(PLEDGE_SEARCH_TOO_BROAD_ERROR);
-  }
   return merged;
 }
 
@@ -454,6 +491,7 @@ export function createSupabaseSponsorshipAdminRepository(
         .from("sponsorship_pledge")
         .select("*", { count: "exact" })
         .order("created_at", { ascending: false })
+        .order("id", { ascending: false })
         .range(from, from + input.pageSize - 1);
 
       if (input.status) query = query.eq("status", input.status);

@@ -253,6 +253,20 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("source = 'manual_intake'");
   });
 
+  test("exposes manual adoption intake through a service-role-only public RPC", () => {
+    const sql = readMigration("20260926133000_expose_manual_adoption_case_rpc.sql");
+    expect(sql).toContain("create or replace function public.create_manual_adoption_case(");
+    expect(sql).toContain("private.create_manual_adoption_case(");
+    expect(sql).toContain("set search_path = public, pg_temp");
+    expect(sql).toContain(
+      "revoke all on function public.create_manual_adoption_case(uuid,jsonb,jsonb,jsonb)",
+    );
+    expect(sql).toContain(
+      "grant execute on function public.create_manual_adoption_case(uuid,jsonb,jsonb,jsonb)",
+    );
+    expect(sql).toContain("to service_role");
+  });
+
   test("adds public adoption journey detail tables with private storage and explicit grants", () => {
     const sql = readMigrationBySuffix("_public_adoption_journey_phase_1.sql");
 
@@ -383,6 +397,68 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("auth.uid()");
   });
 
+  test("archives animals only through an atomic service-role audit mutation", () => {
+    const grants = readMigration("20260913071632_animal_public_column_boundary.sql");
+    const sql = readMigrationBySuffix("_animal_archive_atomic_audit.sql");
+
+    expect(grants).toContain("revoke insert,update,delete on public.animals from authenticated");
+    expect(sql).toContain("create or replace function public.set_animal_archived_with_audit(");
+    expect(sql).toContain("security invoker");
+    expect(sql).toContain("set search_path = ''");
+    expect(sql).toContain("for update");
+    expect(sql).toContain("update public.animals");
+    expect(sql).toContain("insert into public.audit_log");
+    expect(sql).toContain(
+      "revoke all on function public.set_animal_archived_with_audit(uuid, uuid, boolean) from public, anon, authenticated",
+    );
+    expect(sql).toContain(
+      "grant execute on function public.set_animal_archived_with_audit(uuid, uuid, boolean) to service_role",
+    );
+  });
+  test("provider denial transitions payment and donation together without downgrading paid state", () => {
+    const sql = readMigrationBySuffix("_guarded_provider_denial.sql");
+
+    expect(sql).toContain("create or replace function public.fail_pending_provider_payment(");
+    expect(sql).toContain("security invoker");
+    expect(sql).toContain("set search_path = ''");
+    expect((sql.match(/for update/g) ?? []).length).toBe(2);
+    expect(sql).toContain("v_payment.status not in ('pending', 'failed')");
+    expect(sql).toContain("v_donation.status not in ('pending', 'failed')");
+    expect(sql).toContain("update public.payment");
+    expect(sql).toContain("update public.donation");
+    expect(sql).toContain(
+      "revoke all on function public.fail_pending_provider_payment(uuid, uuid) from public, anon, authenticated",
+    );
+    expect(sql).toContain(
+      "grant execute on function public.fail_pending_provider_payment(uuid, uuid) to service_role",
+    );
+  });
+  test("provider refunds transition payment and donation together", () => {
+    const sql = readMigrationBySuffix("_guarded_provider_refund.sql");
+
+    expect(sql).toContain("create or replace function public.refund_provider_payment_atomically(");
+    expect(sql).toContain("security invoker");
+    expect(sql).toContain("set search_path = ''");
+    expect((sql.match(/for update/g) ?? []).length).toBe(2);
+    expect(sql).toContain("update public.payment");
+    expect(sql).toContain("update public.donation");
+    expect(sql).toContain(
+      "revoke all on function public.refund_provider_payment_atomically(uuid, uuid) from public, anon, authenticated",
+    );
+    expect(sql).toContain(
+      "grant execute on function public.refund_provider_payment_atomically(uuid, uuid) to service_role",
+    );
+  });
+  test("public database roles cannot truncate tables or create triggers and foreign keys", () => {
+    const sql = readMigrationBySuffix("_revoke_public_role_maintenance_privileges.sql");
+
+    expect(sql).toMatch(
+      /revoke truncate, references, trigger on all tables in schema public\s+from public, anon, authenticated/,
+    );
+    expect(sql).toMatch(
+      /alter default privileges for role postgres in schema public\s+revoke truncate, references, trigger on tables\s+from public, anon, authenticated/,
+    );
+  });
   test("skips service-role writes, since those routes already audit themselves", () => {
     const sql = readMigrationBySuffix("_audit_animal_mutations.sql");
 

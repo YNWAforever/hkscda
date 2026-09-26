@@ -7,6 +7,7 @@ import {
 
 class FakeSupabaseQuery {
   private filters: Array<[string, unknown]> = [];
+  private rangeBounds: [number, number] | null = null;
 
   constructor(
     private readonly table: string,
@@ -31,9 +32,16 @@ class FakeSupabaseQuery {
     return this;
   }
 
+  range(from: number, to: number) {
+    this.rangeBounds = [from, to];
+    return this;
+  }
+
   then(resolve: (value: unknown) => unknown) {
     this.calls.push(this.table);
-    return Promise.resolve({ data: this.rows(), error: null }).then(resolve);
+    const rows = this.rows();
+    const data = this.rangeBounds ? rows.slice(this.rangeBounds[0], this.rangeBounds[1] + 1) : rows;
+    return Promise.resolve({ data, error: null, count: rows.length }).then(resolve);
   }
 
   private rows() {

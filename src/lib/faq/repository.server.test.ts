@@ -47,6 +47,7 @@ function createFakeClient(
     faqRows?: ReturnType<typeof entryRow>[];
     rpcResult?: unknown;
     rpcError?: { message: string } | null;
+    cap?: number;
   } = {},
 ) {
   const faqRows = overrides.faqRows ?? [entryRow()];
@@ -57,25 +58,34 @@ function createFakeClient(
       from(table: string) {
         if (table !== "faq_entry") throw new Error(`Unexpected table: ${table}`);
         return {
-          select: () => ({
-            eq: (_col: string, value: boolean) => ({
-              order: () => ({
-                order: () => ({
-                  then: (resolve: (result: { data: unknown; error: unknown }) => void) =>
-                    resolve({
-                      data: faqRows.filter((row) => row.is_active === value),
-                      error: null,
-                    }),
-                }),
-              }),
-            }),
-            order: () => ({
-              order: () => ({
-                then: (resolve: (result: { data: unknown; error: unknown }) => void) =>
-                  resolve({ data: faqRows, error: null }),
-              }),
-            }),
-          }),
+          select: () => {
+            let active: boolean | null = null;
+            let from = 0;
+            let to = Number.POSITIVE_INFINITY;
+            const result = () => {
+              const rows =
+                active === null ? faqRows : faqRows.filter((row) => row.is_active === active);
+              return {
+                data: rows.slice(from, Math.min(to + 1, from + (overrides.cap ?? rows.length))),
+                count: rows.length,
+                error: null,
+              };
+            };
+            const query = {
+              eq: (_col: string, value: boolean) => {
+                active = value;
+                return query;
+              },
+              order: () => query,
+              range: (start: number, end: number) => {
+                from = start;
+                to = end;
+                return Promise.resolve(result());
+              },
+              then: (resolve: (value: ReturnType<typeof result>) => void) => resolve(result()),
+            };
+            return query;
+          },
         };
       },
       rpc: (fn: string, args: unknown) => {
@@ -122,6 +132,20 @@ describe("createSupabaseFaqRepository", () => {
     const repo = createSupabaseFaqRepository(client as never);
     const entries = await repo.listAdmin();
     expect(entries).toHaveLength(2);
+  });
+
+  test("public and admin lists include rows beyond a capped response", async () => {
+    const rows = [
+      entryRow({ id: "a" }),
+      entryRow({ id: "b" }),
+      entryRow({ id: "c" }),
+      entryRow({ id: "d", is_active: false }),
+    ];
+    const { client } = createFakeClient({ faqRows: rows, cap: 2 });
+    const repo = createSupabaseFaqRepository(client as never);
+
+    expect((await repo.listAdmin()).map((entry) => entry.id)).toEqual(["a", "b", "c", "d"]);
+    expect((await repo.listPublic()).map((entry) => entry.id)).toEqual(["a", "b", "c"]);
   });
 
   test("upsert calls the upsert_faq_entry_with_audit RPC with the actor id and mapped fields, including is_active", async () => {

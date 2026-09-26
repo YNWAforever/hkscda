@@ -42,6 +42,8 @@ const copy = {
     processing: "處理中",
     verifyRequired: "請先完成人機驗證",
     submitError: "暫時未能建立助養承諾，請稍後再試。",
+    retryConflict:
+      "這次助養承諾已按原有資料提交。請先查看確認電郵中的狀態連結，再決定是否建立新承諾。",
     successTitle: "多謝您的助養承諾！",
     successRef: "參考編號",
     viewStatus: "查看助養狀態",
@@ -70,6 +72,8 @@ const copy = {
     processing: "Processing",
     verifyRequired: "Please complete the verification first.",
     submitError: "Sponsorship pledge could not be created. Please try again later.",
+    retryConflict:
+      "This pledge was already submitted with the original details. Check the status link in your confirmation email before starting a new pledge.",
     successTitle: "Thank you for your sponsorship pledge!",
     successRef: "Reference",
     viewStatus: "View sponsorship status",
@@ -194,7 +198,7 @@ export function PledgeWizard() {
         pledgeId,
         statusToken,
         proof: uploadedProofReference,
-      } = await submissionAttempt.current.resolve(includeProof, proofFile);
+      } = await submissionAttempt.current.resolve(includeProof, proofFile, turnstileToken);
 
       const response = await fetch("/api/sponsorships/pledges", {
         method: "POST",
@@ -207,6 +211,10 @@ export function PledgeWizard() {
           turnstileToken,
         }),
       });
+      if (response.status === 409) {
+        setError(t.retryConflict);
+        return;
+      }
       if (!response.ok) throw new Error("Sponsorship pledge request failed");
       const data = (await response.json()) as SubmitResult;
 

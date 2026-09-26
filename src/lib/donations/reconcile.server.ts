@@ -20,6 +20,8 @@ export type ReconcileProviderArgs = {
   // e.g. the provider_ref write failed after checkout — so a genuinely paid
   // donation is reconciled instead of silently dropped.
   fallbackPaymentId?: string;
+  // Signed settlement details supplied by the provider success webhook.
+  providerSettlement?: { amountCents: number | null; currency: string | null };
 };
 
 type ReconcileManualArgs = {
@@ -79,6 +81,7 @@ type ApplyOptions = {
   actorUserId?: string;
   bankReference?: string;
   deps?: ReconcileDeps;
+  providerSettlement?: ReconcileProviderArgs["providerSettlement"];
 };
 
 const WEBHOOK_PROCESSING_LEASE_MS = 5 * 60 * 1000;
@@ -146,7 +149,7 @@ async function reserveWebhookEvent(args: ReconcileProviderArgs) {
 }
 
 async function markWebhookEventProcessed(args: ReconcileProviderArgs, processingOwner: string) {
-  const { error } = await args.client
+  const { data, error } = await args.client
     .from("webhook_event")
     .update({
       processed_at: new Date().toISOString(),
@@ -157,9 +160,12 @@ async function markWebhookEventProcessed(args: ReconcileProviderArgs, processing
     .eq("provider", args.provider)
     .eq("provider_event_id", args.providerEventId)
     .eq("processing_owner", processingOwner)
-    .is("processed_at", null);
+    .is("processed_at", null)
+    .select("id")
+    .maybeSingle();
 
   if (error) throw error;
+  if (!data) throw new WebhookEventInProgressError();
 }
 
 async function releaseWebhookEventReservation(
@@ -236,6 +242,7 @@ export async function issueReceiptIfNeeded(
   client: SupabaseClient,
   payment: PaymentWithDonation,
   deps: ReconcileDeps = {},
+  actorUserId?: string,
 ) {
   const donation = payment.donation;
   const now = deps.now ?? (() => new Date());
@@ -244,13 +251,17 @@ export async function issueReceiptIfNeeded(
   const issuedAt = now().toISOString();
   const taxYear = new Date(issuedAt).getFullYear();
 
-  const { data, error } = await client.rpc("issue_receipt", {
+  const receiptParams = {
     p_donation_id: donation.id,
     p_supporter_id: donation.supporter_id,
     p_amount_cents: donation.amount_cents - (donation.refunded_cents ?? 0),
     p_tax_year: taxYear,
     p_issued_at: issuedAt,
-  });
+  };
+  const { data, error } = await client.rpc(
+    actorUserId ? "issue_receipt_with_audit" : "issue_receipt",
+    actorUserId ? { ...receiptParams, p_actor: actorUserId } : receiptParams,
+  );
   if (error) throw error;
 
   const receipt = (Array.isArray(data) ? data[0] : data) as
@@ -361,6 +372,37 @@ async function applySucceededPayment(
     };
   }
 
+  if (options.providerSettlement) {
+    const { amountCents, currency } = options.providerSettlement;
+    if (
+      typeof amountCents !== "number" ||
+      !Number.isSafeInteger(amountCents) ||
+      amountCents <= 0 ||
+      amountCents !== payment.amount_cents ||
+      currency?.toUpperCase() !== "HKD"
+    ) {
+      const { error: auditError } = await client.from("audit_log").insert({
+        actor_user_id: null,
+        action: "payment.provider_settlement_mismatch",
+        entity: "payment",
+        entity_id: payment.id,
+        detail: {
+          donationId: payment.donation.id,
+          expectedCents: payment.amount_cents,
+          actualCents: amountCents,
+          expectedCurrency: "HKD",
+          actualCurrency: currency,
+        },
+      });
+      if (auditError) throw auditError;
+      return {
+        kind: "provider_settlement_mismatch" as const,
+        donationId: payment.donation.id,
+        paymentId: payment.id,
+      };
+    }
+  }
+
   const plan = buildReconciliationPlan({
     providerEventId: payment.provider_ref ?? payment.id,
     seenProviderEventIds: new Set(),
@@ -464,7 +506,12 @@ async function processProviderWebhook<T>(
   args: ReconcileProviderArgs,
   apply: (payment: PaymentWithDonation) => Promise<T>,
   onNotFound?: () => Promise<void>,
-): Promise<T | { kind: "duplicate" } | { kind: "not_found" }> {
+): Promise<
+  | T
+  | { kind: "duplicate" }
+  | { kind: "not_found" }
+  | { kind: "provider_ref_mismatch"; donationId: string; paymentId: string }
+> {
   const reservation = await reserveWebhookEvent(args);
   if (reservation.kind === "duplicate") return { kind: "duplicate" as const };
 
@@ -477,14 +524,43 @@ async function processProviderWebhook<T>(
     if (!payment && args.fallbackPaymentId) {
       const candidate = await findPaymentByIdMaybe(args.client, args.fallbackPaymentId);
       if (candidate && candidate.provider === args.provider) {
+        if (
+          candidate.provider_ref &&
+          args.providerRef &&
+          candidate.provider_ref !== args.providerRef
+        ) {
+          const { error: auditError } = await args.client.from("audit_log").insert({
+            actor_user_id: null,
+            action: "payment.provider_ref_mismatch",
+            entity: "payment",
+            entity_id: candidate.id,
+            detail: {
+              donationId: candidate.donation.id,
+              provider: args.provider,
+              providerEventId: args.providerEventId,
+              expectedProviderRef: candidate.provider_ref,
+              actualProviderRef: args.providerRef,
+            },
+          });
+          if (auditError) throw auditError;
+          await markWebhookEventProcessed(args, reservation.processingOwner);
+          return {
+            kind: "provider_ref_mismatch" as const,
+            donationId: candidate.donation.id,
+            paymentId: candidate.id,
+          };
+        }
         payment = candidate;
         if (!payment.provider_ref && args.providerRef) {
-          const { error } = await args.client
+          const { data: backfilled, error } = await args.client
             .from("payment")
             .update({ provider_ref: args.providerRef })
             .eq("id", payment.id)
-            .is("provider_ref", null);
+            .is("provider_ref", null)
+            .select("id")
+            .maybeSingle();
           if (error) throw error;
+          if (!backfilled) throw new Error("Payment provider reference backfill lost a race");
           payment.provider_ref = args.providerRef;
         }
       }
@@ -528,7 +604,10 @@ export async function reconcileProviderPayment(
   deps: ReconcileDeps = {},
 ) {
   return processProviderWebhook(args, (payment) =>
-    applySucceededPayment(args.client, payment, { deps }),
+    applySucceededPayment(args.client, payment, {
+      deps,
+      providerSettlement: args.providerSettlement,
+    }),
   );
 }
 
@@ -609,21 +688,44 @@ export async function failProviderPayment(args: ReconcileProviderArgs) {
   return processProviderWebhook(
     args,
     async (payment) => {
-      const { error: paymentError } = await args.client
-        .from("payment")
-        .update({ status: "failed" })
-        .eq("id", payment.id)
-        .eq("status", "pending");
-      if (paymentError) throw paymentError;
+      const { data, error } = await args.client.rpc("fail_pending_provider_payment", {
+        p_payment_id: payment.id,
+        p_donation_id: payment.donation.id,
+      });
+      if (error) throw error;
 
-      const { error: donationError } = await args.client
-        .from("donation")
-        .update({ status: "failed" })
-        .eq("id", payment.donation.id)
-        .eq("status", "pending");
-      if (donationError) throw donationError;
-
-      return { kind: "failed" as const, donationId: payment.donation.id };
+      const outcome = data as {
+        kind?: string;
+        payment_status?: string;
+        donation_status?: string;
+      } | null;
+      if (outcome?.kind === "failed" || outcome?.kind === "already_failed") {
+        return { kind: "failed" as const, donationId: payment.donation.id };
+      }
+      if (outcome?.kind === "state_conflict" || outcome?.kind === "not_found") {
+        const { error: auditError } = await args.client.from("audit_log").insert({
+          actor_user_id: null,
+          action: "payment.denial_state_conflict",
+          entity: "payment",
+          entity_id: payment.id,
+          detail: {
+            provider: args.provider,
+            providerEventId: args.providerEventId,
+            donationId: payment.donation.id,
+            reason: outcome.kind,
+            paymentStatus: outcome.payment_status ?? null,
+            donationStatus: outcome.donation_status ?? null,
+          },
+        });
+        if (auditError) throw auditError;
+        return {
+          kind: "manual_review" as const,
+          reason: outcome.kind,
+          donationId: payment.donation.id,
+          paymentId: payment.id,
+        };
+      }
+      throw new Error("Provider denial transition returned an invalid result");
     },
     () => auditUnmatchedFinancialEvent(args, "payment.denial_unreconciled"),
   );
@@ -633,34 +735,23 @@ export async function refundProviderPayment(args: ReconcileProviderArgs) {
   return processProviderWebhook(
     args,
     async (payment) => {
-      const transitionRefundStatus = async (
-        table: "payment" | "donation",
-        id: string,
-        currentStatus: string,
-      ) => {
-        if (currentStatus === "refunded") return true;
-        if (currentStatus !== "pending" && currentStatus !== "succeeded") return false;
+      const { data, error } = await args.client.rpc("refund_provider_payment_atomically", {
+        p_payment_id: payment.id,
+        p_donation_id: payment.donation.id,
+      });
+      if (error) throw error;
 
-        const { data, error } = await args.client
-          .from(table)
-          .update({ status: "refunded" })
-          .eq("id", id)
-          .in("status", ["pending", "succeeded"])
-          .select("id")
-          .maybeSingle<{ id: string }>();
-        if (error) throw error;
-        return Boolean(data);
-      };
-
-      const paymentRefunded = await transitionRefundStatus("payment", payment.id, payment.status);
-      const donationRefunded = await transitionRefundStatus(
-        "donation",
-        payment.donation.id,
-        payment.donation.status,
-      );
-
-      if (!paymentRefunded || !donationRefunded) {
-        const { error } = await args.client.from("audit_log").insert({
+      const outcome = data as {
+        kind?: string;
+        payment_status?: string;
+        donation_status?: string;
+      } | null;
+      if (outcome?.kind === "refunded" || outcome?.kind === "already_refunded") {
+        await voidIssuedReceiptsForDonation(args.client, payment.donation.id, { reason: "refund" });
+        return { kind: "refunded" as const, donationId: payment.donation.id };
+      }
+      if (outcome?.kind === "state_conflict" || outcome?.kind === "not_found") {
+        const { error: auditError } = await args.client.from("audit_log").insert({
           actor_user_id: null,
           action: "payment.refund_state_conflict",
           entity: "payment",
@@ -669,14 +760,14 @@ export async function refundProviderPayment(args: ReconcileProviderArgs) {
             provider: args.provider,
             providerEventId: args.providerEventId,
             donationId: payment.donation.id,
-            paymentStatus: payment.status,
-            donationStatus: payment.donation.status,
-            paymentRefunded,
-            donationRefunded,
+            reason: outcome.kind,
+            paymentStatus: outcome.payment_status ?? null,
+            donationStatus: outcome.donation_status ?? null,
           },
         });
-        if (error) throw error;
+        if (auditError) throw auditError;
 
+        // The provider says funds were returned even if local rows need review.
         await voidIssuedReceiptsForDonation(args.client, payment.donation.id, { reason: "refund" });
         return {
           kind: "manual_review" as const,
@@ -685,15 +776,11 @@ export async function refundProviderPayment(args: ReconcileProviderArgs) {
           paymentId: payment.id,
         };
       }
-
-      await voidIssuedReceiptsForDonation(args.client, payment.donation.id, { reason: "refund" });
-
-      return { kind: "refunded" as const, donationId: payment.donation.id };
+      throw new Error("Provider refund transition returned an invalid result");
     },
     () => auditUnmatchedFinancialEvent(args, "payment.refund_unreconciled"),
   );
 }
-
 export async function flagProviderWebhookForReview(
   args: ReconcileProviderArgs,
   review: { reason: string; detail?: Record<string, unknown> },
@@ -807,15 +894,11 @@ export async function issueReceiptForDonation(
     throw Response.json({ error: "Donation is not eligible for an IRD receipt" }, { status: 422 });
   }
 
-  const receiptNo = await issueReceiptIfNeeded(client, payment, deps);
-  const { error: auditError } = await client.from("audit_log").insert({
-    actor_user_id: actorUserId,
-    action: "receipt.issue",
-    entity: "donation",
-    entity_id: donationId,
-    detail: { receiptNo, supporterId: context.supporterId ?? null },
-  });
-  if (auditError) throw auditError;
+  if (context.supporterId && context.supporterId !== payment.donation.supporter_id) {
+    throw Response.json({ error: "Supporter does not match donation" }, { status: 422 });
+  }
+
+  const receiptNo = await issueReceiptIfNeeded(client, payment, deps, actorUserId);
   return { receiptNo };
 }
 
@@ -833,38 +916,15 @@ async function removeReceiptPdf(client: SupabaseClient, pdfUrl: string | null | 
 async function voidIssuedReceiptsForDonation(
   client: SupabaseClient,
   donationId: string,
-  options: { actorUserId?: string; reason?: string } = {},
+  options: { reason?: string } = {},
 ) {
-  const { data: receipts, error } = await client
-    .from("receipt")
-    .select("id,pdf_url")
-    .contains("donation_ids", [donationId])
-    .eq("status", "issued");
+  const { data, error } = await client.rpc("void_donation_receipts_with_audit", {
+    p_donation_id: donationId,
+    p_reason: options.reason ?? "refund",
+  });
   if (error) throw error;
-
-  for (const receipt of (receipts ?? []) as Array<{ id: string; pdf_url: string | null }>) {
-    const { error: updateError } = await client
-      .from("receipt")
-      .update({
-        status: "void",
-        voided_at: new Date().toISOString(),
-        voided_by: options.actorUserId ?? null,
-      })
-      .eq("id", receipt.id)
-      .eq("status", "issued");
-    if (updateError) throw updateError;
+  for (const receipt of (data ?? []) as Array<{ receipt_id: string; pdf_url: string | null }>) {
     await removeReceiptPdf(client, receipt.pdf_url);
-
-    // Audit-trail the void so a refund-driven void is not silent (mirrors the
-    // manual voidReceipt path). actor is null for system/webhook-driven voids.
-    const { error: auditError } = await client.from("audit_log").insert({
-      actor_user_id: options.actorUserId ?? null,
-      action: "receipt.void",
-      entity: "receipt",
-      entity_id: receipt.id,
-      detail: { reason: options.reason ?? "refund", donationId },
-    });
-    if (auditError) throw auditError;
   }
 }
 
@@ -874,31 +934,15 @@ export async function voidReceipt(
   actorUserId: string,
   context: ReceiptActionContext = {},
 ) {
-  const voidedAt = new Date().toISOString();
-  const { data, error } = await client
-    .from("receipt")
-    .update({
-      status: "void",
-      voided_at: voidedAt,
-      voided_by: actorUserId,
-    })
-    .eq("id", receiptId)
-    .eq("status", "issued")
-    .select("id,pdf_url")
-    .single();
-  if (error) throw error;
-  if (!data) throw new Error("Receipt not found or already voided");
-
-  await removeReceiptPdf(client, (data as { pdf_url: string | null }).pdf_url);
-
-  const { error: auditError } = await client.from("audit_log").insert({
-    actor_user_id: actorUserId,
-    action: "receipt.void",
-    entity: "receipt",
-    entity_id: receiptId,
-    detail: { voidedAt, supporterId: context.supporterId ?? null },
+  const { data, error } = await client.rpc("void_receipt_with_audit", {
+    p_receipt_id: receiptId,
+    p_actor: actorUserId,
+    p_supporter_id: context.supporterId ?? null,
   });
-  if (auditError) throw auditError;
+  if (error) throw error;
+  const row = (data as Array<{ receipt_id: string; pdf_url: string | null }> | null)?.[0];
+  if (!row) throw new Error("Receipt not found or already voided");
 
-  return { receiptId, status: "void" as const };
+  await removeReceiptPdf(client, row.pdf_url);
+  return { receiptId: row.receipt_id, status: "void" as const };
 }

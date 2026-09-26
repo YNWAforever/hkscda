@@ -209,6 +209,58 @@ describe("completeDonationSideEffects", () => {
 });
 
 describe("issueReceiptForDonation", () => {
+  test("audit failure cannot commit a manual receipt", async () => {
+    let receiptCommitted = false;
+    const rpcCalls: string[] = [];
+    const client = {
+      rpc(fn: string) {
+        rpcCalls.push(fn);
+        if (fn === "issue_receipt") {
+          receiptCommitted = true;
+          return Promise.resolve({
+            data: [
+              {
+                receipt_no: "HKSCDA-2026-000001",
+                receipt_id: "receipt-1",
+                pdf_url: "2026/HKSCDA-2026-000001.pdf",
+                tax_year: 2026,
+                issued_at: "2026-06-24T10:00:00.000Z",
+              },
+            ],
+            error: null,
+          });
+        }
+        return Promise.resolve({ data: null, error: new Error("audit failed") });
+      },
+      from(table: string) {
+        if (table === "audit_log")
+          return { insert: async () => ({ error: new Error("audit failed") }) };
+        return {
+          select() {
+            const builder = {
+              eq() {
+                return builder;
+              },
+              order() {
+                return builder;
+              },
+              limit() {
+                return builder;
+              },
+              maybeSingle: async () => ({ data: basePayment, error: null }),
+            };
+            return builder;
+          },
+        };
+      },
+    };
+
+    await expect(issueReceiptForDonation(client as never, "donation-1", "admin-1")).rejects.toThrow(
+      "audit failed",
+    );
+    expect(rpcCalls).toEqual(["issue_receipt_with_audit"]);
+    expect(receiptCommitted).toBe(false);
+  });
   test("rejects ineligible donations before calling the receipt RPC", async () => {
     const rpcCalls: string[] = [];
     const ineligiblePayment = {
@@ -286,6 +338,7 @@ function createWebhookFake({
   transitionMiss = false,
   succeededTransitionMiss = false,
   paymentAfterTransitionMiss,
+  providerRefBackfillMiss = false,
 }: {
   payment: typeof basePayment | null;
   // What the provider_ref lookup returns (defaults to `payment`). Set null to
@@ -295,6 +348,7 @@ function createWebhookFake({
   transitionMiss?: boolean;
   succeededTransitionMiss?: boolean;
   paymentAfterTransitionMiss?: typeof basePayment;
+  providerRefBackfillMiss?: boolean;
 }) {
   const operations: Array<{
     table: string;
@@ -330,6 +384,17 @@ function createWebhookFake({
         return Promise.resolve(readSingle(table, filters));
       },
       maybeSingle() {
+        if (table === "webhook_event" && mode === "update") {
+          operations.push({ table, action: mode, payload, filters });
+          return Promise.resolve({ data: { id: "webhook-event" }, error: null });
+        }
+        if (table === "payment" && mode === "update" && "provider_ref" in (payload as object)) {
+          operations.push({ table, action: mode, payload, filters });
+          return Promise.resolve({
+            data: providerRefBackfillMiss ? null : { id: "payment-1" },
+            error: null,
+          });
+        }
         if (mode === "update" && (payload as { status?: string })?.status === "refunded") {
           operations.push({ table, action: mode, payload, filters });
           return Promise.resolve({
@@ -374,6 +439,56 @@ function createWebhookFake({
   }
 
   const client = {
+    rpc(fn: string, args: Record<string, unknown>) {
+      operations.push({ table: fn, action: "rpc", payload: args, filters: [] });
+      if (fn === "void_donation_receipts_with_audit")
+        return Promise.resolve({
+          data: issuedReceipts.map((receipt) => ({
+            receipt_id: receipt.id,
+            pdf_url: receipt.pdf_url,
+          })),
+          error: null,
+        });
+      if (!payment) return Promise.resolve({ data: { kind: "not_found" }, error: null });
+      const statuses = [payment.status, payment.donation.status];
+      if (fn === "fail_pending_provider_payment") {
+        const compatible = statuses.every((status) => status === "pending" || status === "failed");
+        return Promise.resolve({
+          data: compatible
+            ? {
+                kind: statuses.every((status) => status === "failed") ? "already_failed" : "failed",
+              }
+            : {
+                kind: "state_conflict",
+                payment_status: payment.status,
+                donation_status: payment.donation.status,
+              },
+          error: null,
+        });
+      }
+      if (fn === "refund_provider_payment_atomically") {
+        const compatible =
+          !transitionMiss &&
+          statuses.every(
+            (status) => status === "pending" || status === "succeeded" || status === "refunded",
+          );
+        return Promise.resolve({
+          data: compatible
+            ? {
+                kind: statuses.every((status) => status === "refunded")
+                  ? "already_refunded"
+                  : "refunded",
+              }
+            : {
+                kind: "state_conflict",
+                payment_status: payment.status,
+                donation_status: payment.donation.status,
+              },
+          error: null,
+        });
+      }
+      return Promise.resolve({ data: null, error: new Error("Unexpected RPC") });
+    },
     storage: {
       from() {
         return {
@@ -450,11 +565,35 @@ describe("failProviderPayment", () => {
     });
 
     expect(result).toEqual({ kind: "failed", donationId: "donation-1" });
-    expect(statusUpdate(operations, "payment")?.status).toBe("failed");
-    expect(statusUpdate(operations, "donation")?.status).toBe("failed");
+    expect(operations.find((operation) => operation.action === "rpc")?.payload).toEqual({
+      p_payment_id: "payment-1",
+      p_donation_id: "donation-1",
+    });
+    expect(statusUpdate(operations, "payment")).toBeUndefined();
+    expect(statusUpdate(operations, "donation")).toBeUndefined();
+  });
+  test("a late denial cannot fail a donation after its payment succeeded", async () => {
+    const payment = {
+      ...basePayment,
+      status: "succeeded",
+      donation: { ...basePayment.donation, status: "pending" },
+    };
+    const { client, operations } = createWebhookFake({ payment });
 
-    const paymentUpdate = operations.find((o) => o.table === "payment" && o.action === "update");
-    expect(paymentUpdate?.filters).toContainEqual(["eq", "status", "pending"]);
+    const result = await failProviderPayment({
+      client: client as never,
+      provider: "stripe",
+      providerRef: "cs_test_123",
+      providerEventId: "evt_late_denial",
+      eventType: "checkout.session.async_payment_failed",
+      payload: {},
+    });
+
+    expect(result).toMatchObject({ kind: "manual_review" });
+    expect(statusUpdate(operations, "donation")).toBeUndefined();
+    expect(operations.find((operation) => operation.table === "audit_log")?.payload).toMatchObject({
+      action: "payment.denial_state_conflict",
+    });
   });
 });
 
@@ -477,14 +616,15 @@ describe("refundProviderPayment", () => {
     });
 
     expect(refund).toMatchObject({ kind: "refunded" });
-    const paymentUpdate = operations.find(
-      (operation) => operation.table === "payment" && operation.action === "update",
-    );
-    const donationUpdate = operations.find(
-      (operation) => operation.table === "donation" && operation.action === "update",
-    );
-    expect(paymentUpdate?.filters).toContainEqual(["in", "status", ["pending", "succeeded"]]);
-    expect(donationUpdate?.filters).toContainEqual(["in", "status", ["pending", "succeeded"]]);
+    expect(
+      operations.find((operation) => operation.table === "refund_provider_payment_atomically")
+        ?.payload,
+    ).toEqual({
+      p_payment_id: "payment-1",
+      p_donation_id: "donation-1",
+    });
+    expect(statusUpdate(operations, "payment")).toBeUndefined();
+    expect(statusUpdate(operations, "donation")).toBeUndefined();
 
     const terminal = {
       ...pendingCodPayment,
@@ -528,18 +668,44 @@ describe("refundProviderPayment", () => {
     });
 
     expect(result).toEqual({ kind: "refunded", donationId: "donation-1" });
-    expect(statusUpdate(operations, "payment")?.status).toBe("refunded");
-    expect(statusUpdate(operations, "donation")?.status).toBe("refunded");
+    expect(
+      operations.find((operation) => operation.table === "refund_provider_payment_atomically")
+        ?.action,
+    ).toBe("rpc");
+    expect(statusUpdate(operations, "payment")).toBeUndefined();
+    expect(statusUpdate(operations, "donation")).toBeUndefined();
 
-    const paymentUpdate = operations.find((o) => o.table === "payment" && o.action === "update");
-    expect(paymentUpdate?.filters).toContainEqual(["in", "status", ["pending", "succeeded"]]);
-
-    const receiptUpdate = operations.find((o) => o.table === "receipt" && o.action === "update");
-    expect((receiptUpdate?.payload as { status?: string }).status).toBe("void");
+    expect(
+      operations.find((o) => o.table === "void_donation_receipts_with_audit")?.payload,
+    ).toEqual({ p_donation_id: "donation-1", p_reason: "refund" });
+    expect(operations.some((o) => o.table === "receipt" && o.action === "update")).toBe(false);
     expect(removals).toEqual(["2026/HKSCDA-2026-000001.pdf"]);
   });
 });
 
+describe("refundProviderPayment conflicting state", () => {
+  test("a refund conflict cannot partially refund the donation", async () => {
+    const payment = {
+      ...basePayment,
+      status: "failed",
+      donation: { ...basePayment.donation, status: "succeeded" },
+    };
+    const { client, operations } = createWebhookFake({ payment });
+
+    const result = await refundProviderPayment({
+      client: client as never,
+      provider: "stripe",
+      providerRef: "cs_test_123",
+      providerEventId: "evt_refund_conflict",
+      eventType: "charge.refunded",
+      payload: {},
+    });
+
+    expect(result).toMatchObject({ kind: "manual_review" });
+    expect(statusUpdate(operations, "payment")).toBeUndefined();
+    expect(statusUpdate(operations, "donation")).toBeUndefined();
+  });
+});
 describe("flagProviderWebhookForReview", () => {
   test("audits and acknowledges a mapped payment without changing payment state", async () => {
     const codPayment = {
@@ -773,6 +939,48 @@ describe("reconcileProviderPayment success path", () => {
     expect(donationUpdate?.filters).toContainEqual(["eq", "status", "pending"]);
   });
 
+  test("quarantines mismatched or missing provider settlement before crediting", async () => {
+    for (const settlement of [
+      { amountCents: 19999, currency: "HKD" },
+      { amountCents: 20000, currency: "USD" },
+      { amountCents: null, currency: null },
+    ]) {
+      const { client, operations } = createWebhookFake({ payment: pendingPaymentNoReceipt });
+      const result = await reconcileProviderPayment({
+        client: client as never,
+        provider: "stripe",
+        providerRef: "cs_test_123",
+        providerEventId: "evt_provider_settlement",
+        eventType: "checkout.session.completed",
+        payload: {},
+        providerSettlement: settlement,
+      });
+
+      expect(result).toMatchObject({
+        kind: "provider_settlement_mismatch",
+        donationId: "donation-1",
+        paymentId: "payment-1",
+      });
+      expect(operations.some((o) => o.table === "payment" && o.action === "update")).toBe(false);
+      expect(operations.some((o) => o.table === "donation" && o.action === "update")).toBe(false);
+      expect(
+        operations.some(
+          (o) =>
+            o.table === "audit_log" &&
+            (o.payload as { action?: string }).action === "payment.provider_settlement_mismatch",
+        ),
+      ).toBe(true);
+      expect(
+        operations.some(
+          (o) =>
+            o.table === "webhook_event" &&
+            o.action === "update" &&
+            Boolean((o.payload as { processed_at?: string }).processed_at),
+        ),
+      ).toBe(true);
+    }
+  });
+
   test("quarantines an amount mismatch terminally: audits, acknowledges, does not credit", async () => {
     const mismatched: FakePayment = { ...pendingPaymentNoReceipt, amount_cents: 19999 };
     const { client, operations } = createWebhookFake({ payment: mismatched });
@@ -820,6 +1028,80 @@ describe("reconcileProviderPayment success path", () => {
 });
 
 describe("reconcileProviderPayment metadata fallback", () => {
+  test("quarantines metadata fallback when a different provider reference is already bound", async () => {
+    const conflicting: FakePayment = {
+      ...pendingPaymentNoReceipt,
+      provider: "paypal",
+      provider_ref: "order-original",
+    };
+    const { client, operations } = createWebhookFake({
+      payment: conflicting,
+      paymentByProvider: null,
+    });
+
+    const result = await reconcileProviderPayment({
+      client: client as never,
+      provider: "paypal",
+      providerRef: "order-unrelated",
+      fallbackPaymentId: "payment-1",
+      providerEventId: "evt_conflicting_fallback",
+      eventType: "PAYMENT.CAPTURE.COMPLETED",
+      payload: {},
+      providerSettlement: { amountCents: 20000, currency: "HKD" },
+    });
+
+    expect(result).toMatchObject({ kind: "provider_ref_mismatch", paymentId: "payment-1" });
+    expect(
+      operations.some(
+        (o) =>
+          o.table === "audit_log" &&
+          (o.payload as { action?: string }).action === "payment.provider_ref_mismatch",
+      ),
+    ).toBe(true);
+    expect(
+      operations.some(
+        (o) =>
+          (o.table === "payment" || o.table === "donation") &&
+          o.action === "update" &&
+          (o.payload as { status?: string }).status === "succeeded",
+      ),
+    ).toBe(false);
+  });
+
+  test("does not credit when provider-reference backfill loses its null guard", async () => {
+    const orphan: FakePayment = {
+      ...pendingPaymentNoReceipt,
+      provider: "paypal",
+      provider_ref: null,
+    };
+    const { client, operations } = createWebhookFake({
+      payment: orphan,
+      paymentByProvider: null,
+      providerRefBackfillMiss: true,
+    });
+
+    await expect(
+      reconcileProviderPayment({
+        client: client as never,
+        provider: "paypal",
+        providerRef: "order-xyz",
+        fallbackPaymentId: "payment-1",
+        providerEventId: "evt_backfill_race",
+        eventType: "PAYMENT.CAPTURE.COMPLETED",
+        payload: {},
+        providerSettlement: { amountCents: 20000, currency: "HKD" },
+      }),
+    ).rejects.toThrow("Payment provider reference backfill lost a race");
+    expect(
+      operations.some(
+        (o) =>
+          (o.table === "payment" || o.table === "donation") &&
+          o.action === "update" &&
+          (o.payload as { status?: string }).status === "succeeded",
+      ),
+    ).toBe(false);
+  });
+
   test("reconciles via fallbackPaymentId and backfills provider_ref when the provider_ref lookup misses", async () => {
     const orphan: FakePayment = {
       ...pendingPaymentNoReceipt,
@@ -893,6 +1175,13 @@ describe("voidReceipt", () => {
     const operations: Array<{ table: string; action: string; payload?: unknown }> = [];
     const removals: string[] = [];
     const client = {
+      rpc(fn: string, payload: unknown) {
+        operations.push({ table: fn, action: "rpc", payload });
+        return Promise.resolve({
+          data: [{ receipt_id: "receipt-1", pdf_url: "2026/HKSCDA-2026-000001.pdf" }],
+          error: null,
+        });
+      },
       storage: {
         from() {
           return {
@@ -903,32 +1192,6 @@ describe("voidReceipt", () => {
           };
         },
       },
-      from(table: string) {
-        return {
-          insert(payload: unknown) {
-            operations.push({ table, action: "insert", payload });
-            return Promise.resolve({ error: null });
-          },
-          update(payload: unknown) {
-            const builder = {
-              eq() {
-                return builder;
-              },
-              select() {
-                return builder;
-              },
-              single() {
-                operations.push({ table, action: "update", payload });
-                return Promise.resolve({
-                  data: { id: "receipt-1", pdf_url: "2026/HKSCDA-2026-000001.pdf" },
-                  error: null,
-                });
-              },
-            };
-            return builder;
-          },
-        };
-      },
     };
 
     const result = await voidReceipt(client as never, "receipt-1", "admin-1", {
@@ -937,6 +1200,12 @@ describe("voidReceipt", () => {
 
     expect(result).toEqual({ receiptId: "receipt-1", status: "void" });
     expect(removals).toEqual(["2026/HKSCDA-2026-000001.pdf"]);
-    expect(operations.some((o) => o.table === "audit_log" && o.action === "insert")).toBe(true);
+    expect(operations).toEqual([
+      {
+        table: "void_receipt_with_audit",
+        action: "rpc",
+        payload: { p_receipt_id: "receipt-1", p_actor: "admin-1", p_supporter_id: "supporter-1" },
+      },
+    ]);
   });
 });

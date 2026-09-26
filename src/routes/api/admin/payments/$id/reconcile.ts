@@ -1,5 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import { readAdminJson } from "../../../../../lib/http/adminJson.server";
+import {
+  InvalidRequestJsonError,
+  RequestBodyTooLargeError,
+} from "../../../../../lib/http/publicJson.server";
 
 import { reconcileManualPayment } from "../../../../../lib/donations/reconcile.server";
 import {
@@ -18,7 +23,7 @@ export const Route = createFileRoute("/api/admin/payments/$id/reconcile")({
         try {
           const client = createSupabaseServiceClient();
           const admin = await requireAdmin(request, ["treasurer", "admin"], client);
-          const body = reconcileSchema.parse(await request.json());
+          const body = reconcileSchema.parse(await readAdminJson(request));
           const result = await reconcileManualPayment({
             client,
             paymentId: params.id,
@@ -29,7 +34,10 @@ export const Route = createFileRoute("/api/admin/payments/$id/reconcile")({
           return Response.json(result);
         } catch (error) {
           if (error instanceof Response) return error;
-          if (error instanceof z.ZodError) {
+          if (error instanceof RequestBodyTooLargeError) {
+            return Response.json({ error: "Request body too large" }, { status: 413 });
+          }
+          if (error instanceof z.ZodError || error instanceof InvalidRequestJsonError) {
             return Response.json({ error: "Invalid reconciliation request" }, { status: 400 });
           }
           console.error(error);

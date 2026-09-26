@@ -1,5 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import { readAdminJson } from "../../../lib/http/adminJson.server";
+import {
+  InvalidRequestJsonError,
+  RequestBodyTooLargeError,
+} from "../../../lib/http/publicJson.server";
 
 import { issueReceiptForDonation } from "../../../lib/donations/reconcile.server";
 import { createSupabaseServiceClient, requireAdmin } from "../../../lib/donations/supabase.server";
@@ -10,11 +15,7 @@ const issueReceiptSchema = z.object({
 });
 
 async function jsonBody(request: Request) {
-  try {
-    return await request.json();
-  } catch {
-    throw new z.ZodError([]);
-  }
+  return readAdminJson(request);
 }
 
 function jsonResponse(body: unknown, init?: ResponseInit) {
@@ -38,7 +39,10 @@ export const Route = createFileRoute("/api/admin/receipts")({
           );
         } catch (error) {
           if (error instanceof Response) return error;
-          if (error instanceof z.ZodError) {
+          if (error instanceof RequestBodyTooLargeError) {
+            return jsonResponse({ error: "Request body too large" }, { status: 413 });
+          }
+          if (error instanceof z.ZodError || error instanceof InvalidRequestJsonError) {
             return jsonResponse({ error: "Invalid receipt request" }, { status: 400 });
           }
           console.error(error);

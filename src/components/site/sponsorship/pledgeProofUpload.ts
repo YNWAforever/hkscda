@@ -1,12 +1,13 @@
 import { getSupabaseClient } from "../../../lib/supabase";
 
-export type ProofUploadResult = { pledgeId: string; storagePath: string };
+export type ProofUploadResult = { pledgeId: string; storagePath: string; proofIntent: string };
 
 export type SponsorshipProofReference = {
   fileName: string;
   mimeType: string;
   sizeBytes: number;
   storagePath: string;
+  proofIntent: string;
 };
 
 export type PledgeSubmissionIds = {
@@ -18,21 +19,19 @@ export type PledgeSubmissionIds = {
 type ProofUploadUrlResponse = {
   pledgeId: string;
   upload: { path: string; token: string };
+  proofIntent: string;
 };
 
-/**
- * Requests a signed upload URL for one payment-proof file, then uploads the
- * file bytes directly to Supabase Storage (never through the Vercel
- * function). Intentionally does NOT send a `turnstileToken` — the
- * proof-upload-url endpoint doesn't check one (Turnstile tokens are
- * single-use; the token is verified exactly once, at the final
- * `POST /api/sponsorships/pledges` submission).
- */
-export async function uploadProofDirectly(proofFile: File): Promise<ProofUploadResult> {
+/** The upload URL consumes the single-use challenge; final submission uses the signed intent. */
+export async function uploadProofDirectly(
+  proofFile: File,
+  turnstileToken: string | null,
+): Promise<ProofUploadResult> {
   const urlResponse = await fetch("/api/sponsorships/pledges/proof-upload-url", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
+      turnstileToken,
       proof: {
         fileName: proofFile.name,
         mimeType: proofFile.type,
@@ -46,7 +45,7 @@ export async function uploadProofDirectly(proofFile: File): Promise<ProofUploadR
       typeof urlResult.error === "string" ? urlResult.error : "無法準備付款證明上傳。",
     );
   }
-  const { pledgeId, upload } = urlResult as ProofUploadUrlResponse;
+  const { pledgeId, upload, proofIntent } = urlResult as ProofUploadUrlResponse;
 
   const client = getSupabaseClient();
   const { error } = await client.storage
@@ -59,7 +58,7 @@ export async function uploadProofDirectly(proofFile: File): Promise<ProofUploadR
     throw new Error("付款證明上傳失敗，請重試。");
   }
 
-  return { pledgeId, storagePath: upload.path };
+  return { pledgeId, storagePath: upload.path, proofIntent };
 }
 
 /**
@@ -82,9 +81,10 @@ function createPledgeStatusToken() {
 export async function resolvePledgeSubmissionIds(
   includeProof: boolean,
   proofFile: File | null,
+  turnstileToken: string | null,
 ): Promise<PledgeSubmissionIds> {
   if (includeProof && proofFile) {
-    const uploadResult = await uploadProofDirectly(proofFile);
+    const uploadResult = await uploadProofDirectly(proofFile, turnstileToken);
     return {
       pledgeId: uploadResult.pledgeId,
       statusToken: createPledgeStatusToken(),
@@ -93,6 +93,7 @@ export async function resolvePledgeSubmissionIds(
         mimeType: proofFile.type,
         sizeBytes: proofFile.size,
         storagePath: uploadResult.storagePath,
+        proofIntent: uploadResult.proofIntent,
       },
     };
   }
@@ -108,12 +109,12 @@ export function createPledgeSubmissionAttempt() {
   } | null = null;
 
   return {
-    resolve(includeProof: boolean, proofFile: File | null) {
+    resolve(includeProof: boolean, proofFile: File | null, turnstileToken: string | null) {
       if (prepared && prepared.includeProof === includeProof && prepared.proofFile === proofFile) {
         return prepared.promise;
       }
 
-      const promise = resolvePledgeSubmissionIds(includeProof, proofFile);
+      const promise = resolvePledgeSubmissionIds(includeProof, proofFile, turnstileToken);
       prepared = { includeProof, proofFile, promise };
       // A failed upload must be prepared again on retry. Once prepared, a
       // failed pledge request keeps this id so it cannot create a second row.

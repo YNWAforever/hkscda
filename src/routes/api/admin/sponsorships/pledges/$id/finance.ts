@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { readAdminJson } from "../../../../../../lib/http/adminJson.server";
 import {
   createSupabaseServiceClient,
   requireAdmin,
@@ -29,8 +30,8 @@ export const Route = createFileRoute("/api/admin/sponsorships/pledges/$id/financ
       POST: ({ request, params }) =>
         withErrors(async () => {
           const id = requiredUuid(params, "id");
+          const input = financeCommandSchema.parse(await readAdminJson(request));
           const client = createSupabaseServiceClient();
-          const input = financeCommandSchema.parse(await request.json());
           const roles =
             input.action === "refund" ||
             input.action === "reconcile" ||

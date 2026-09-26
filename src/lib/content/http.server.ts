@@ -2,6 +2,9 @@ import { ContentLifecycleError } from "./lifecycle";
 import { z } from "zod";
 
 import type { AdminUser } from "../donations/supabase.server";
+import { MAX_ADMIN_JSON_BYTES, readAdminJson } from "../http/adminJson.server";
+import { readBoundedText } from "../http/boundedBody.server";
+import { RequestBodyTooLargeError } from "../http/publicJson.server";
 import { ContentValidationError, createContentService } from "./service";
 
 type ContentService = ReturnType<typeof createContentService>;
@@ -22,14 +25,17 @@ function searchParams(request: Request) {
 
 async function jsonBody(request: Request) {
   try {
-    return await request.json();
-  } catch {
+    return await readAdminJson(request);
+  } catch (error) {
+    if (error instanceof RequestBodyTooLargeError)
+      throw jsonResponse({ error: "Request body too large" }, { status: 413 });
     throw jsonResponse({ error: "Invalid JSON body" }, { status: 400 });
   }
 }
 
 async function optionalJsonBody(request: Request) {
-  const body = await request.text();
+  const body = await readBoundedText(request, MAX_ADMIN_JSON_BYTES);
+  if (body === null) throw jsonResponse({ error: "Request body too large" }, { status: 413 });
   if (!body.trim()) return {};
 
   try {

@@ -1,9 +1,5 @@
 import { supabase } from "../../lib/supabase";
-import {
-  ANIMAL_IMAGE_BUCKET,
-  ANIMAL_IMAGE_MAX_BYTES,
-  ANIMAL_IMAGE_MIME_TYPES,
-} from "../../lib/animals/photoUpload";
+import { ANIMAL_IMAGE_MAX_BYTES, ANIMAL_IMAGE_MIME_TYPES } from "../../lib/animals/photoUpload";
 import { fetchAdminJson } from "../../lib/admin/http";
 
 export type AnimalPhotoUploadResult = { ok: true; path: string; publicUrl: string } | { ok: false };
@@ -23,7 +19,6 @@ export type UploadAnimalPhotoDeps = {
     token: string,
     file: File,
   ) => Promise<{ error: unknown }>;
-  publicUrlFor?: (bucket: string, path: string) => string;
 };
 
 /**
@@ -66,11 +61,6 @@ export async function uploadAnimalPhoto(
     (async (bucket: string, path: string, token: string, f: File) =>
       supabase.storage.from(bucket).uploadToSignedUrl(path, token, f));
 
-  const publicUrlFor =
-    deps.publicUrlFor ??
-    ((bucket: string, path: string) =>
-      supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl);
-
   let target: UploadUrlResponse;
   try {
     target = await requestUploadUrl(animalId, file);
@@ -78,9 +68,11 @@ export async function uploadAnimalPhoto(
     return { ok: false };
   }
 
-  const bucket = "animal-draft-images";
-  const { error } = await uploadToSignedUrl(bucket, target.path, target.token, file);
-  if (error) return { ok: false };
-
-  return { ok: true, path: target.path, publicUrl: "" };
+  try {
+    const { error } = await uploadToSignedUrl(target.bucket, target.path, target.token, file);
+    if (error) return { ok: false };
+    return { ok: true, path: target.path, publicUrl: "" };
+  } catch {
+    return { ok: false };
+  }
 }

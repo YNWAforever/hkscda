@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { readAdminJson } from "../../http/adminJson.server";
+import { RequestBodyTooLargeError } from "../../http/publicJson.server";
 
 import type { AdminUser } from "../../donations/supabase.server";
 
@@ -33,8 +35,10 @@ export function csvResponse(csv: string, filename: string) {
 
 export async function jsonBody(request: Request) {
   try {
-    return await request.json();
-  } catch {
+    return await readAdminJson(request);
+  } catch (error) {
+    if (error instanceof RequestBodyTooLargeError)
+      throw jsonResponse({ error: "Request body too large" }, { status: 413 });
     throw jsonResponse({ error: "Invalid JSON body" }, { status: 400 });
   }
 }

@@ -1,5 +1,7 @@
 import { normalizeVolunteerResult } from "../apiResult";
 import { z } from "zod";
+import { readAdminJson } from "../../http/adminJson.server";
+import { RequestBodyTooLargeError } from "../../http/publicJson.server";
 import { createOperationService, type OperationCommand, type OperationResult } from "./operations";
 const envelope = z.object({ command: z.unknown(), turnstileToken: z.string().optional() }).strict();
 const messages: Record<string, string> = {
@@ -30,8 +32,10 @@ export function createOperationHandlers(deps: {
         const actor = await deps.authenticate(request);
         let raw: unknown;
         try {
-          raw = await request.json();
-        } catch {
+          raw = await readAdminJson(request);
+        } catch (error) {
+          if (error instanceof RequestBodyTooLargeError)
+            return json({ error: "Request body too large" }, 413);
           return json({ error: "無效的要求內容" }, 400);
         }
         if (deps.verify) {
