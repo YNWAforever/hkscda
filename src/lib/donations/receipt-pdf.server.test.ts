@@ -3,7 +3,7 @@ import fontkit from "@pdf-lib/fontkit";
 import { PDFDocument } from "pdf-lib";
 import { expect, test } from "bun:test";
 
-import { generateReceiptPdf, wrapReceiptDonorText } from "./receipt-pdf.server";
+import { formatReceiptDate, generateReceiptPdf, wrapReceiptDonorText } from "./receipt-pdf.server";
 
 test("receipt donor lines fit the printable page width without losing a long Chinese name", async () => {
   const pdf = await PDFDocument.create();
@@ -48,4 +48,10 @@ test("generates a one-page receipt with Chinese donor and signatory names", asyn
     if (originalSignatory === undefined) delete process.env.RECEIPT_SIGNATORY_NAME;
     else process.env.RECEIPT_SIGNATORY_NAME = originalSignatory;
   }
+});
+
+test("receipt date is the Hong Kong calendar date across midnight and year end", () => {
+  expect(formatReceiptDate("2026-09-26T16:30:00Z")).toBe("27/9/2026");
+  expect(formatReceiptDate("2026-12-31T16:30:00Z")).toBe("1/1/2027");
+  expect(formatReceiptDate("2026-09-26T15:59:59Z")).toBe("26/9/2026");
 });

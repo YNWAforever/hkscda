@@ -29,11 +29,18 @@ export function wrapReceiptDonorText(name: string, font: PDFFont, maxWidth: numb
   return lines;
 }
 
-async function loadFontBytes() {
-  const url = new URL(fontUrl, getAppUrl()).toString();
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`Failed to load receipt font: ${response.status}`);
-  return response.arrayBuffer();
+const hongKongDateFormatter = new Intl.DateTimeFormat("en-GB", {
+  timeZone: "Asia/Hong_Kong",
+  day: "numeric",
+  month: "numeric",
+  year: "numeric",
+});
+
+export function formatReceiptDate(issuedAt: string): string {
+  const parts = hongKongDateFormatter.formatToParts(new Date(issuedAt));
+  const part = (type: "day" | "month" | "year") =>
+    Number(parts.find((entry) => entry.type === type)?.value);
+  return `${part("day")}/${part("month")}/${part("year")}`;
 }
 
 export async function generateReceiptPdf(input: ReceiptPdfInput) {
@@ -80,7 +87,7 @@ export async function generateReceiptPdf(input: ReceiptPdfInput) {
     font: latinFont,
     color: black,
   });
-  page.drawText(`Date: ${new Date(input.issuedAt).toLocaleDateString("zh-HK")}`, {
+  page.drawText(`Date: ${formatReceiptDate(input.issuedAt)}`, {
     x: 72,
     y: 570 - donorOffset,
     size: 12,
