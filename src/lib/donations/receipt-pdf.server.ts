@@ -1,9 +1,8 @@
 import fontkit from "@pdf-lib/fontkit";
 import { PDFDocument, StandardFonts, rgb, type PDFFont } from "pdf-lib";
 
-import fontUrl from "../../assets/fonts/NotoSansHK-Regular.ttf?url";
-import { getAppUrl } from "../appUrl.server";
 import { getReceiptConfig } from "./config.server";
+import { loadReceiptFont } from "./receiptFont.server";
 import { centsToHkd } from "./domain";
 
 type ReceiptPdfInput = {
@@ -48,7 +47,7 @@ export async function generateReceiptPdf(input: ReceiptPdfInput) {
   const pdf = await PDFDocument.create();
   pdf.registerFontkit(fontkit);
   // This CJK font loses glyphs when pdf-lib/fontkit embeds it as a subset.
-  const font = await pdf.embedFont(await loadFontBytes(), { subset: false });
+  const font = await pdf.embedFont(await loadReceiptFont(), { subset: false });
   const latinFont = await pdf.embedFont(StandardFonts.Helvetica);
   const page = pdf.addPage([595.28, 841.89]);
   const donorLines = wrapReceiptDonorText(input.donorName, font, page.getWidth() - 144);

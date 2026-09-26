@@ -31,5 +31,5 @@ R06,待原子排序,T13,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b
 R07,待修 null Turnstile token,T07,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
 R08,待媒體 retry／queue 公平性,T19,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
 R09,待量測同區 server execution,T20,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
-R10,待收條香港日期,T06,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
-R11,待字型載入與收條大小優化,T06,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
+R10,待收條香港日期,T06,code-complete: explicit Asia/Hong_Kong formatting,yes,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,codex/audit-receipt-date-font-20260927,UTC midnight/year-end red-to-green; rendered before/after A4 PDF; 2822 pass/86 skip/0 fail; typecheck/lint/build exit 0,production release approval
+R11,待字型載入與收條大小優化,T06,partial: process cache done; size/glyph coverage open,partial,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,codex/audit-receipt-date-font-20260927,single-flight/retry tests; 100 PDF same-host benchmark 103335ms vs 104233ms; fetches 100 vs 1; size 4.34MB,approved font with U+20BB7 coverage and safe size plan
