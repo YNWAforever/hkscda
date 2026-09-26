@@ -55,6 +55,42 @@ async function invoke(dependencies: Record<string, unknown>) {
 }
 
 describe("sponsorship pledge submission retry", () => {
+  test("a verified proof intent permits persistence without reusing the Turnstile token", async () => {
+    const { calls, dependencies } = setup({
+      parse: () => ({
+        pledgeId,
+        statusToken,
+        payload: { animalPreferences: [{ animalId: "animal-1", animalType: "cat" }] },
+        proof: { storagePath: pledgeId + "/proof/receipt.jpg", proofIntent: "signed" },
+      }),
+      verify: async () => {
+        throw new Error("Turnstile must not be reused");
+      },
+      verifyProofIntent: () => {
+        calls.push("verifyProofIntent");
+        return true;
+      },
+    });
+    const response = await invoke(dependencies);
+    expect(response.status).toBe(201);
+    expect(calls).toEqual(["verifyProofIntent", "persist", "sendEmail"]);
+  });
+
+  test("a proof submission requires its signed upload intent before persistence", async () => {
+    const { calls, dependencies } = setup({
+      parse: () => ({
+        pledgeId,
+        statusToken,
+        payload: { animalPreferences: [{ animalId: "animal-1", animalType: "cat" }] },
+        proof: { storagePath: pledgeId + "/proof/receipt.jpg", proofIntent: "invalid" },
+      }),
+      verifyProofIntent: () => false,
+    });
+    const response = await invoke(dependencies);
+    expect(response.status).toBe(403);
+    expect(calls).toEqual([]);
+  });
+
   test("rejects an oversized JSON body before submission work", async () => {
     const { calls, dependencies } = setup();
     const factory = (module as Record<string, unknown>).createSponsorshipPledgesHandler;

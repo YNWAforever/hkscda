@@ -19,6 +19,7 @@ import {
   type RateLimitResult,
 } from "../../../lib/security/rate-limit.server";
 import { verifyTurnstile } from "../../../lib/security/turnstile.server";
+import { verifyProofUploadIntent } from "../../../lib/sponsorship/proofIntent.server";
 
 type Dependencies = {
   rateLimit(ip: string): Promise<RateLimitResult>;
@@ -26,6 +27,7 @@ type Dependencies = {
   createClient: typeof createSupabaseServiceClient;
   lookupRetry: typeof lookupSponsorshipPledgeRetry;
   verify: typeof verifyTurnstile;
+  verifyProofIntent: typeof verifyProofUploadIntent;
   readEligible: typeof readEligibleAnimals;
   persist: typeof persistSponsorshipPledge;
   sendEmail: typeof sendPledgeConfirmationEmail;
@@ -69,6 +71,7 @@ export function createSponsorshipPledgesHandler({
   createClient = createSupabaseServiceClient,
   lookupRetry = lookupSponsorshipPledgeRetry,
   verify = verifyTurnstile,
+  verifyProofIntent = verifyProofUploadIntent,
   readEligible = readEligibleAnimals,
   persist = persistSponsorshipPledge,
   sendEmail = sendPledgeConfirmationEmail,
@@ -101,9 +104,17 @@ export function createSponsorshipPledgesHandler({
       const existing = retryResponse(await lookup());
       if (existing) return existing;
 
-      if (!(await verify(parsed.payload.turnstileToken, ip))) {
-        // The first request may have completed while its single-use Turnstile
-        // token was being checked by this concurrent retry.
+      // Proof uploads use Turnstile when the Storage URL is issued. Validate
+      // that signed result here; proof-less submissions verify Turnstile here.
+      const challengeValid = parsed.proof
+        ? verifyProofIntent(parsed.proof.proofIntent, {
+            pledgeId: parsed.pledgeId,
+            path: parsed.proof.storagePath,
+          })
+        : await verify(parsed.payload.turnstileToken, ip);
+      if (!challengeValid) {
+        // The first request may have completed while its challenge
+        // was being checked by this concurrent retry.
         const completed = retryResponse(await lookup());
         if (completed) return completed;
         return jsonNoStore({ error: "Verification failed" }, { status: 403 });

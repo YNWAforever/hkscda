@@ -198,7 +198,7 @@ export function PledgeWizard() {
         pledgeId,
         statusToken,
         proof: uploadedProofReference,
-      } = await submissionAttempt.current.resolve(includeProof, proofFile);
+      } = await submissionAttempt.current.resolve(includeProof, proofFile, turnstileToken);
 
       const response = await fetch("/api/sponsorships/pledges", {
         method: "POST",

@@ -89,12 +89,12 @@ describe("parseSponsorshipSubmission", () => {
   });
 
   test("parses a payload with proof metadata and a proof reference", () => {
-    const body = submissionBody(
-      basePayload({ proofMetadata: proofMetadata() }),
-      proofRef("proof.jpg"),
-    );
+    const proof = proofRef("proof.jpg");
+    proof.proofIntent = "signed-intent";
+    const body = submissionBody(basePayload({ proofMetadata: proofMetadata() }), proof);
     const parsed = parseSponsorshipSubmission(body);
     expect(parsed.proof?.fileName).toBe("proof.jpg");
+    expect(parsed.proof?.proofIntent).toBe("signed-intent");
     expect(parsed.proof?.storagePath).toBe(`${pledgeId}/proof/proof.jpg`);
     expect(parsed.proof?.metadata.paymentMethod).toBe("fps");
   });

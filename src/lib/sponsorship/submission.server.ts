@@ -40,6 +40,7 @@ export type ParsedSponsorshipPayload = SponsorshipPledgeSubmission & {
 
 export type ParsedSponsorshipProof = SponsorshipProofDescriptor & {
   storagePath: string;
+  proofIntent?: string;
   metadata: SponsorshipPaymentProofMetadata;
 };
 
@@ -208,7 +209,12 @@ export function parseSponsorshipSubmission(
     if (entry.storagePath !== expectedPath) {
       throw new SubmissionValidationError("Payment proof path does not match this pledge");
     }
-    proof = { ...descriptor, storagePath: entry.storagePath, metadata: parsed.proofMetadata };
+    proof = {
+      ...descriptor,
+      storagePath: entry.storagePath,
+      proofIntent: typeof entry.proofIntent === "string" ? entry.proofIntent : undefined,
+      metadata: parsed.proofMetadata,
+    };
   }
 
   return {
