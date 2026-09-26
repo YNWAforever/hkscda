@@ -1,5 +1,5 @@
 import fontkit from "@pdf-lib/fontkit";
-import { PDFDocument, rgb } from "pdf-lib";
+import { PDFDocument, StandardFonts, rgb, type PDFFont } from "pdf-lib";
 
 import fontUrl from "../../assets/fonts/NotoSansHK-Regular.ttf?url";
 import { getAppUrl } from "../appUrl.server";
@@ -13,6 +13,22 @@ type ReceiptPdfInput = {
   issuedAt: string;
 };
 
+export function wrapReceiptDonorText(name: string, font: PDFFont, maxWidth: number): string[] {
+  const text = "Donor: " + name.replace(/\s+/gu, " ").trim();
+  const lines: string[] = [];
+  let line = "";
+  for (const character of text) {
+    if (line && font.widthOfTextAtSize(line + character, 12) > maxWidth) {
+      lines.push(line);
+      line = character;
+    } else {
+      line += character;
+    }
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
 async function loadFontBytes() {
   const url = new URL(fontUrl, getAppUrl()).toString();
   const response = await fetch(url);
@@ -24,49 +40,72 @@ export async function generateReceiptPdf(input: ReceiptPdfInput) {
   const config = getReceiptConfig();
   const pdf = await PDFDocument.create();
   pdf.registerFontkit(fontkit);
-  const font = await pdf.embedFont(await loadFontBytes(), { subset: true });
+  // This CJK font loses glyphs when pdf-lib/fontkit embeds it as a subset.
+  const font = await pdf.embedFont(await loadFontBytes(), { subset: false });
+  const latinFont = await pdf.embedFont(StandardFonts.Helvetica);
   const page = pdf.addPage([595.28, 841.89]);
+  const donorLines = wrapReceiptDonorText(input.donorName, font, page.getWidth() - 144);
+  const donorOffset = (donorLines.length - 1) * 20;
+  const signatoryFont = [...config.signatoryName].every(
+    (character) => character.charCodeAt(0) < 128,
+  )
+    ? latinFont
+    : font;
   const black = rgb(0.12, 0.14, 0.28);
   const rose = rgb(0.88, 0.36, 0.47);
 
   page.drawText(config.charityName, { x: 72, y: 760, size: 20, font, color: black });
-  page.drawText("Donation Receipt", { x: 72, y: 730, size: 16, font, color: rose });
-  page.drawText(`File No.: ${config.fileNo}`, { x: 72, y: 700, size: 11, font, color: black });
-  page.drawText(`Receipt No.: ${input.receiptNo}`, { x: 72, y: 660, size: 12, font, color: black });
-  page.drawText(`Donor: ${input.donorName}`, { x: 72, y: 630, size: 12, font, color: black });
+  page.drawText("Donation Receipt", { x: 72, y: 730, size: 16, font: latinFont, color: rose });
+  page.drawText(`File No.: ${config.fileNo}`, {
+    x: 72,
+    y: 700,
+    size: 11,
+    font: latinFont,
+    color: black,
+  });
+  page.drawText(`Receipt No.: ${input.receiptNo}`, {
+    x: 72,
+    y: 660,
+    size: 12,
+    font: latinFont,
+    color: black,
+  });
+  donorLines.forEach((line, index) => {
+    page.drawText(line, { x: 72, y: 630 - index * 20, size: 12, font, color: black });
+  });
   page.drawText(`Amount: ${centsToHkd(input.amountCents)}`, {
     x: 72,
-    y: 600,
+    y: 600 - donorOffset,
     size: 12,
-    font,
+    font: latinFont,
     color: black,
   });
   page.drawText(`Date: ${new Date(input.issuedAt).toLocaleDateString("zh-HK")}`, {
     x: 72,
-    y: 570,
+    y: 570 - donorOffset,
     size: 12,
-    font,
+    font: latinFont,
     color: black,
   });
   page.drawText("This receipt is issued for a donation to HKSCDA.", {
     x: 72,
-    y: 525,
+    y: 525 - donorOffset,
     size: 11,
-    font,
+    font: latinFont,
     color: black,
   });
   page.drawText("HK$100 or above may be tax deductible under IRD Section 88.", {
     x: 72,
-    y: 505,
+    y: 505 - donorOffset,
     size: 11,
-    font,
+    font: latinFont,
     color: black,
   });
   page.drawText(`Signature / Seal: ${config.signatoryName}`, {
     x: 72,
-    y: 420,
+    y: 420 - donorOffset,
     size: 12,
-    font,
+    font: signatoryFont,
     color: black,
   });
 
