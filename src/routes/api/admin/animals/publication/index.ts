@@ -93,7 +93,7 @@ export const Route = createFileRoute("/api/admin/animals/publication/")({
           }
           if (Array.isArray(body?.gallery)) {
             const publicationGallery = [];
-            for (const item of body.gallery) {
+            for (const [galleryIndex, item] of body.gallery.entries()) {
               const next = { ...item };
               if (
                 item.review_status === "approved" &&
@@ -110,7 +110,8 @@ export const Route = createFileRoute("/api/admin/animals/publication/")({
                   "/versions/" +
                   String(command.preview_id) +
                   "-" +
-                  String(item.id) +
+                  "gallery-" +
+                  galleryIndex +
                   "." +
                   ext;
                 const downloaded = await c.storage

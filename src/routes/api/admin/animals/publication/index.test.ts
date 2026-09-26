@@ -277,3 +277,68 @@ test("publication rejects null and oversized JSON before calling the RPC", async
   }
   expect(rpc).not.toHaveBeenCalled();
 });
+
+test("promotes distinct gallery images even when a saved draft has duplicate item IDs", async () => {
+  const upload = mock(async (_path: string) => ({ error: null }));
+  const rpc = mock(async (_name: string, args: { p_command: Record<string, unknown> }) => ({
+    data: { kind: "published" },
+    error: null,
+  }));
+  activeClient = {
+    from: (table: string) => {
+      if (table === "animal_publication_preview")
+        return queryRow({
+          body: {
+            publication_state: "published",
+            gallery: [
+              {
+                id: "duplicate",
+                draft_path: "animal-1/first.jpg",
+                review_status: "approved",
+                sort_order: 0,
+              },
+              {
+                id: "duplicate",
+                draft_path: "animal-1/second.jpg",
+                review_status: "approved",
+                sort_order: 1,
+              },
+            ],
+          },
+          draft_revision: 1,
+        });
+      if (table === "animal_draft") return queryRow({ revision: 1 });
+      if (table === "editorial_content_review") return queryRow({ classification: "approved" });
+      throw new Error("Unexpected table: " + table);
+    },
+    storage: {
+      from: (bucket: string) =>
+        bucket === "animal-draft-images"
+          ? { download: async () => ({ data: new Blob(["image"]), error: null }) }
+          : {
+              upload,
+              getPublicUrl: (path: string) => ({
+                data: { publicUrl: "https://example.test/" + path },
+              }),
+            },
+    },
+    rpc,
+  };
+  const handlers = Route.options.server?.handlers;
+  const handler = handlers && typeof handlers !== "function" ? handlers.POST : undefined;
+  if (!handler) throw new Error("Animal publication POST handler missing");
+  const response = await handler({
+    request: new Request("http://localhost/api/admin/animals/publication/", {
+      method: "POST",
+      body: JSON.stringify({ kind: "publish", preview_id: "preview-1", animal_id: "animal-1" }),
+    }),
+  } as never);
+  if (!(response instanceof Response)) throw new Error("Expected HTTP response");
+  expect(response.status).toBe(200);
+  const paths = upload.mock.calls.map(([path]) => path);
+  expect(paths).toHaveLength(2);
+  expect(paths).toEqual([
+    "animal-1/versions/preview-1-gallery-0.jpg",
+    "animal-1/versions/preview-1-gallery-1.jpg",
+  ]);
+});
