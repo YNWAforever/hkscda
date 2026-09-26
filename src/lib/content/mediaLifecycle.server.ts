@@ -155,12 +155,21 @@ export function createContentMediaLifecycle(ports: ContentMediaPorts, now = () =
           .parse(command.input),
       };
       const assets = await ports.preparePublication(input);
+      // The database publishes the reviewed revision and its copy intent atomically.
+      // Storage is public, so copying before this commit can expose rejected media.
+      const result = await ports.publish(input);
+      let mediaPending = 0;
       for (const asset of assets) {
         if (asset.ready) continue;
-        await ports.copyPublic(asset);
-        await ports.markPublicReady({ ...identity.parse(command), assetId: asset.id });
+        try {
+          await ports.copyPublic(asset);
+          await ports.markPublicReady({ ...identity.parse(command), assetId: asset.id });
+        } catch {
+          // The committed asset row is retried by the public-upload cron.
+          mediaPending += 1;
+        }
       }
-      return ports.publish(input);
+      return { ...result, mediaPending };
     },
   };
 }

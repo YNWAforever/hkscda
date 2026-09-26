@@ -57,7 +57,7 @@ type ContentEditorProps = {
 };
 
 type ContentDetailResponse = {
-  content: ContentDetail;
+  content: ContentDetail & { mediaPending?: number };
 };
 
 const statusLabels: Record<ContentStatus, string> = {
@@ -189,6 +189,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
   });
 
   const [validationIssues, setValidationIssues] = useState<PublishValidationIssue[]>([]);
+  const [pendingPublishedMedia, setPendingPublishedMedia] = useState(0);
   const [pendingCopyId, setPendingCopyId] = useState<string | null>(null);
   const [savingCopyId, setSavingCopyId] = useState<string | null>(null);
   const [pendingDraftId, setPendingDraftId] = useState<string | null>(null);
@@ -278,8 +279,9 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
 
   const publishContent = useMutation({
     mutationFn: () => publishWithValidation(contentId, content?.version, content?.revisionId),
-    onSuccess: () => {
+    onSuccess: (data) => {
       setValidationIssues([]);
+      setPendingPublishedMedia(data.content.mediaPending ?? 0);
       void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] });
       void queryClient.invalidateQueries({ queryKey: ["admin-content"] });
     },
@@ -594,6 +596,14 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
         disabled={editorActionPending || hasDirty || conflict}
         onRestore={(id) => restoreContent.mutateAsync(id).then(() => undefined)}
       />
+      {pendingPublishedMedia > 0 ? (
+        <p
+          role="status"
+          className="rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900"
+        >
+          內容已發布，{pendingPublishedMedia} 張圖片正在同步；系統會自動重試。
+        </p>
+      ) : null}
       {validationIssues.length > 0 ? <PublishValidationPanel issues={validationIssues} /> : null}
       <ActionErrors
         errors={[

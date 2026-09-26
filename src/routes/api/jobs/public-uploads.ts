@@ -23,6 +23,10 @@ import {
   createSupabaseSponsorshipProofCleanupPort,
   createSupabaseStaffSponsorshipProofCleanupPort,
 } from "../../../lib/sponsorship/proofCleanup.server";
+import {
+  repairContentPublicationMedia,
+  createSupabaseContentPublicationMediaRepairPort,
+} from "../../../lib/content/publicationMediaRepair.server";
 import { authorizedCron } from "../../../lib/volunteers/jobs/auth.server";
 
 type Dependencies = {
@@ -33,6 +37,7 @@ type Dependencies = {
   runInternship(client: SupabaseClient): ReturnType<typeof cleanupExpiredInternshipUploads>;
   runAnimalDraft(client: SupabaseClient): ReturnType<typeof cleanupExpiredAnimalDraftUploads>;
   runAnimalPublication(client: SupabaseClient): ReturnType<typeof repairAnimalPublicationMedia>;
+  runContentPublication(client: SupabaseClient): ReturnType<typeof repairContentPublicationMedia>;
   logger: Pick<Console, "error">;
 };
 
@@ -63,6 +68,8 @@ export function createPublicUploadCleanupHandler({
     cleanupExpiredAnimalDraftUploads(createSupabaseAnimalDraftUploadCleanupPort(client)),
   runAnimalPublication = (client) =>
     repairAnimalPublicationMedia(createSupabaseAnimalPublicationMediaRepairPort(client)),
+  runContentPublication = (client) =>
+    repairContentPublicationMedia(createSupabaseContentPublicationMediaRepairPort(client)),
   logger = console,
 }: Partial<Dependencies> = {}) {
   return async (request: Request): Promise<Response> => {
@@ -73,13 +80,14 @@ export function createPublicUploadCleanupHandler({
       );
     }
     const client = createClient();
-    const [adoption, sponsorship, internship, animalDraft, animalPublication] =
+    const [adoption, sponsorship, internship, animalDraft, animalPublication, contentPublication] =
       await Promise.allSettled([
         runAdoption(client),
         runSponsorship(client),
         runInternship(client),
         runAnimalDraft(client),
         runAnimalPublication(client),
+        runContentPublication(client),
       ]);
     if (adoption.status === "rejected")
       logger.error("Adoption upload cleanup failed", adoption.reason);
@@ -91,9 +99,16 @@ export function createPublicUploadCleanupHandler({
       logger.error("Animal draft upload cleanup failed", animalDraft.reason);
     if (animalPublication.status === "rejected")
       logger.error("Animal publication media repair failed", animalPublication.reason);
-    const failed = [adoption, sponsorship, internship, animalDraft, animalPublication].some(
-      (result) => result.status === "rejected" || result.value.failed > 0,
-    );
+    if (contentPublication.status === "rejected")
+      logger.error("Content publication media repair failed", contentPublication.reason);
+    const failed = [
+      adoption,
+      sponsorship,
+      internship,
+      animalDraft,
+      animalPublication,
+      contentPublication,
+    ].some((result) => result.status === "rejected" || result.value.failed > 0);
     return Response.json(
       {
         adoption: adoption.status === "fulfilled" ? adoption.value : null,
@@ -102,6 +117,8 @@ export function createPublicUploadCleanupHandler({
         animalDraft: animalDraft.status === "fulfilled" ? animalDraft.value : null,
         animalPublication:
           animalPublication.status === "fulfilled" ? animalPublication.value : null,
+        contentPublication:
+          contentPublication.status === "fulfilled" ? contentPublication.value : null,
       },
       { status: failed ? 500 : 200, headers: { "cache-control": "no-store" } },
     );

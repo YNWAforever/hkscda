@@ -36,6 +36,7 @@ describe("public upload cleanup cron", () => {
     const handler = createPublicUploadCleanupHandler({
       secret: () => "cron-secret",
       createClient: () => ({}) as never,
+      runContentPublication: async () => ({ copied: 0, failed: 0 }),
       runAnimalPublication: async () => {
         calls.push("animalPublication");
         return { copied: 0, failed: 0 };
@@ -66,6 +67,7 @@ describe("public upload cleanup cron", () => {
       internship: { removed: 3, preserved: 0, failed: 0 },
       animalDraft: { removed: 4, failed: 0 },
       animalPublication: { copied: 0, failed: 0 },
+      contentPublication: { copied: 0, failed: 0 },
     });
     expect(calls).toEqual([
       "adoption",
@@ -81,6 +83,7 @@ describe("public upload cleanup cron", () => {
     const handler = createPublicUploadCleanupHandler({
       secret: () => "cron-secret",
       createClient: () => ({}) as never,
+      runContentPublication: async () => ({ copied: 0, failed: 0 }),
       runAnimalPublication: async () => {
         calls.push("animalPublication");
         return { copied: 0, failed: 0 };
@@ -119,6 +122,7 @@ describe("public upload cleanup cron", () => {
     const handler = createPublicUploadCleanupHandler({
       secret: () => "cron-secret",
       createClient: () => ({}) as never,
+      runContentPublication: async () => ({ copied: 0, failed: 0 }),
       runAnimalPublication: async () => {
         calls.push("animalPublication");
         return { copied: 0, failed: 0 };
@@ -158,6 +162,7 @@ describe("public upload cleanup cron", () => {
     const handler = createPublicUploadCleanupHandler({
       secret: () => "cron-secret",
       createClient: () => ({}) as never,
+      runContentPublication: async () => ({ copied: 0, failed: 0 }),
       runAnimalPublication: async () => ({ copied: 0, failed: 0 }),
       runAdoption: async () => ({ removed: 0, preserved: 0, failed: 0 }),
       runSponsorship: async () => ({ removed: 0, preserved: 0, failed: 0 }),
@@ -178,9 +183,26 @@ test("reports pending publication media copy failures to the scheduler", async (
     runSponsorship: async () => ({ removed: 0, preserved: 0, failed: 0 }),
     runInternship: async () => ({ removed: 0, preserved: 0, failed: 0 }),
     runAnimalDraft: async () => ({ removed: 0, failed: 0 }),
+    runContentPublication: async () => ({ copied: 0, failed: 0 }),
     runAnimalPublication: async () => ({ copied: 0, failed: 1 }),
   });
   const response = await handler(request("cron-secret"));
   expect(response.status).toBe(500);
   expect((await response.json()).animalPublication).toEqual({ copied: 0, failed: 1 });
+});
+
+test("reports pending content publication media failures to the scheduler", async () => {
+  const handler = createPublicUploadCleanupHandler({
+    secret: () => "cron-secret",
+    createClient: () => ({}) as never,
+    runAdoption: async () => ({ removed: 0, preserved: 0, failed: 0 }),
+    runSponsorship: async () => ({ removed: 0, preserved: 0, failed: 0 }),
+    runInternship: async () => ({ removed: 0, preserved: 0, failed: 0 }),
+    runAnimalDraft: async () => ({ removed: 0, failed: 0 }),
+    runAnimalPublication: async () => ({ copied: 0, failed: 0 }),
+    runContentPublication: async () => ({ copied: 0, failed: 1 }),
+  });
+  const response = await handler(request("cron-secret"));
+  expect(response.status).toBe(500);
+  expect((await response.json()).contentPublication).toEqual({ copied: 0, failed: 1 });
 });

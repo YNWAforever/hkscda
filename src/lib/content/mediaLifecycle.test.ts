@@ -80,9 +80,50 @@ test("rejects invalid image bytes before finalization", async () => {
   ).rejects.toThrow();
   expect(ports.finalize).not.toHaveBeenCalled();
 });
-test("a failed public copy leaves the previous publication untouched", async () => {
+test("a failed public copy returns a confirmed publication with a repair pending", async () => {
   const { ports, service } = fixture();
   ports.copyPublic.mockRejectedValue(new Error("Synthetic copy failure"));
+  const published = await service.publish({
+    actorUserId,
+    contentId,
+    input: {
+      expectedVersion: 7,
+      revisionId: sessionId,
+      idempotencyKey: "publication-request-0001",
+    },
+  });
+  expect(published).toEqual({ ...result, mediaPending: 1 });
+  expect(ports.publish).toHaveBeenCalledTimes(1);
+  expect(ports.markPublicReady).not.toHaveBeenCalled();
+});
+
+test("public copies start only after the publication commit", async () => {
+  const { ports, service } = fixture();
+  let committed = false;
+  ports.publish.mockImplementation(async () => {
+    committed = true;
+    return result;
+  });
+  ports.copyPublic.mockImplementation(async () => {
+    expect(committed).toBe(true);
+  });
+  const published = await service.publish({
+    actorUserId,
+    contentId,
+    input: {
+      expectedVersion: 7,
+      revisionId: sessionId,
+      idempotencyKey: "publication-request-0001",
+    },
+  });
+  expect(published.mediaPending).toBe(0);
+  expect(ports.copyPublic).toHaveBeenCalledTimes(1);
+  expect(ports.markPublicReady).toHaveBeenCalledTimes(1);
+});
+
+test("a rejected publication never exposes its private media in the public bucket", async () => {
+  const { ports, service } = fixture();
+  ports.publish.mockRejectedValue(new Error("Editorial approval revoked"));
   await expect(
     service.publish({
       actorUserId,
@@ -93,24 +134,9 @@ test("a failed public copy leaves the previous publication untouched", async () 
         idempotencyKey: "publication-request-0001",
       },
     }),
-  ).rejects.toThrow();
-  expect(ports.publish).not.toHaveBeenCalled();
+  ).rejects.toThrow("Editorial approval revoked");
+  expect(ports.copyPublic).not.toHaveBeenCalled();
   expect(ports.markPublicReady).not.toHaveBeenCalled();
-});
-test("publishes only after approved public copies are ready", async () => {
-  const { ports, service } = fixture();
-  await service.publish({
-    actorUserId,
-    contentId,
-    input: {
-      expectedVersion: 7,
-      revisionId: sessionId,
-      idempotencyKey: "publication-request-0001",
-    },
-  });
-  expect(ports.copyPublic).toHaveBeenCalledTimes(1);
-  expect(ports.markPublicReady).toHaveBeenCalledTimes(1);
-  expect(ports.publish).toHaveBeenCalledTimes(1);
 });
 
 test("rejects an expired upload session before downloading", async () => {
@@ -155,21 +181,21 @@ test("finalization replay asks the database to compare the original payload with
     expect.objectContaining({ uploadSessionId: sessionId, sha256: null }),
   );
 });
-test("readiness persistence failure prevents publication after copying", async () => {
+test("readiness persistence failure keeps a committed publication repairable", async () => {
   const { ports, service } = fixture();
   ports.markPublicReady.mockRejectedValue(new Error("Synthetic DB failure"));
-  await expect(
-    service.publish({
-      actorUserId,
-      contentId,
-      input: {
-        expectedVersion: 7,
-        revisionId: sessionId,
-        idempotencyKey: "publication-request-0001",
-      },
-    }),
-  ).rejects.toThrow();
-  expect(ports.publish).not.toHaveBeenCalled();
+  const published = await service.publish({
+    actorUserId,
+    contentId,
+    input: {
+      expectedVersion: 7,
+      revisionId: sessionId,
+      idempotencyKey: "publication-request-0001",
+    },
+  });
+  expect(published.mediaPending).toBe(1);
+  expect(ports.publish).toHaveBeenCalledTimes(1);
+  expect(ports.copyPublic).toHaveBeenCalledTimes(1);
 });
 
 test("invalid preparation never copies private media or advances publication", async () => {
