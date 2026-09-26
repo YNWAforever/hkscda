@@ -5,7 +5,12 @@ import {
   type InternshipUploadCleanupPort,
 } from "./uploadCleanup.server";
 
-function setup(referenced: boolean, removeError?: Error, finishError?: Error) {
+function setup(
+  referenced: boolean,
+  removeError?: Error,
+  finishError?: Error,
+  referenceError?: Error,
+) {
   const calls: string[] = [];
   const row = {
     storagePath: "actor/application/upload-key",
@@ -15,6 +20,7 @@ function setup(referenced: boolean, removeError?: Error, finishError?: Error) {
     claim: async () => [row],
     isReferenced: async () => {
       calls.push("check");
+      if (referenceError) throw referenceError;
       return referenced;
     },
     remove: async () => {
@@ -56,13 +62,23 @@ describe("expired internship attachment cleanup", () => {
     expect(calls).toEqual(["check", "preserve"]);
   });
 
-  test("releases the claim if Storage removal fails", async () => {
+  test("releases the claim if reference lookup fails before any Storage delete", async () => {
+    const { port, calls } = setup(false, undefined, undefined, new Error("database unavailable"));
+    const errors: unknown[] = [];
+    expect(
+      await cleanupExpiredInternshipUploads(port, { error: (...args) => errors.push(args) }),
+    ).toEqual({ removed: 0, preserved: 0, failed: 1 });
+    expect(calls).toEqual(["check", "release"]);
+    expect(errors).toHaveLength(1);
+  });
+
+  test("keeps the claim after an ambiguous Storage removal failure", async () => {
     const { port, calls } = setup(false, new Error("storage unavailable"));
     const errors: unknown[] = [];
     expect(
       await cleanupExpiredInternshipUploads(port, { error: (...args) => errors.push(args) }),
     ).toEqual({ removed: 0, preserved: 0, failed: 1 });
-    expect(calls).toEqual(["check", "remove", "release"]);
+    expect(calls).toEqual(["check", "remove"]);
     expect(errors).toHaveLength(1);
   });
 

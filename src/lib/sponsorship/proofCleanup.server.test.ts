@@ -5,7 +5,12 @@ import {
   type SponsorshipProofCleanupPort,
 } from "./proofCleanup.server";
 
-function setup(referenced: boolean, removeError?: Error, finishError?: Error) {
+function setup(
+  referenced: boolean,
+  removeError?: Error,
+  finishError?: Error,
+  referenceError?: Error,
+) {
   const calls: string[] = [];
   const row = {
     pledgeId: "cccccccc-dddd-4eee-8fff-000000000000",
@@ -16,6 +21,7 @@ function setup(referenced: boolean, removeError?: Error, finishError?: Error) {
     claim: async () => [row],
     isReferenced: async () => {
       calls.push("check");
+      if (referenceError) throw referenceError;
       return referenced;
     },
     remove: async () => {
@@ -57,7 +63,21 @@ describe("expired sponsorship proof cleanup", () => {
     expect(calls).toEqual(["check", "preserve"]);
   });
 
-  test("releases a claim when Storage removal fails so a later run can retry", async () => {
+  test("releases a claim if reference lookup fails before any Storage delete", async () => {
+    const { port, calls } = setup(false, undefined, undefined, new Error("database unavailable"));
+    const errors: unknown[] = [];
+    expect(
+      await cleanupExpiredSponsorshipProofUploads(port, { error: (...args) => errors.push(args) }),
+    ).toEqual({
+      removed: 0,
+      preserved: 0,
+      failed: 1,
+    });
+    expect(calls).toEqual(["check", "release"]);
+    expect(errors).toHaveLength(1);
+  });
+
+  test("keeps the claim after an ambiguous Storage removal failure", async () => {
     const { port, calls } = setup(false, new Error("storage unavailable"));
     const errors: unknown[] = [];
     expect(
@@ -67,7 +87,7 @@ describe("expired sponsorship proof cleanup", () => {
       preserved: 0,
       failed: 1,
     });
-    expect(calls).toEqual(["check", "remove", "release"]);
+    expect(calls).toEqual(["check", "remove"]);
     expect(errors).toHaveLength(1);
   });
 

@@ -48,6 +48,10 @@ describe("public upload cleanup cron", () => {
         calls.push("internship");
         return { removed: 3, preserved: 0, failed: 0 };
       },
+      runAnimalDraft: async () => {
+        calls.push("animalDraft");
+        return { removed: 4, failed: 0 };
+      },
     });
     const response = await handler(request("cron-secret"));
     expect(response.status).toBe(200);
@@ -56,8 +60,9 @@ describe("public upload cleanup cron", () => {
       adoption: { removed: 1, preserved: 0, failed: 0 },
       sponsorship: { removed: 2, preserved: 1, failed: 0 },
       internship: { removed: 3, preserved: 0, failed: 0 },
+      animalDraft: { removed: 4, failed: 0 },
     });
-    expect(calls).toEqual(["adoption", "sponsorship", "internship"]);
+    expect(calls).toEqual(["adoption", "sponsorship", "internship", "animalDraft"]);
   });
 
   test("one failing cleanup does not suppress the other", async () => {
@@ -77,11 +82,45 @@ describe("public upload cleanup cron", () => {
         calls.push("internship");
         return { removed: 0, preserved: 0, failed: 0 };
       },
+      runAnimalDraft: async () => {
+        calls.push("animalDraft");
+        return { removed: 0, failed: 0 };
+      },
       logger: { error: () => {} },
     });
     const response = await handler(request("cron-secret"));
     expect(response.status).toBe(500);
-    expect(calls).toEqual(["adoption", "sponsorship", "internship"]);
+    expect(calls).toEqual(["adoption", "sponsorship", "internship", "animalDraft"]);
+  });
+
+  test("reports animal draft cleanup failure while other domains still run", async () => {
+    const calls: string[] = [];
+    const handler = createPublicUploadCleanupHandler({
+      secret: () => "cron-secret",
+      createClient: () => ({}) as never,
+      runAdoption: async () => {
+        calls.push("adoption");
+        return { removed: 0, preserved: 0, failed: 0 };
+      },
+      runSponsorship: async () => {
+        calls.push("sponsorship");
+        return { removed: 0, preserved: 0, failed: 0 };
+      },
+      runInternship: async () => {
+        calls.push("internship");
+        return { removed: 0, preserved: 0, failed: 0 };
+      },
+      runAnimalDraft: async () => {
+        calls.push("animalDraft");
+        throw new Error("storage unavailable");
+      },
+      logger: { error: () => {} },
+    });
+
+    const response = await handler(request("cron-secret"));
+    expect(response.status).toBe(500);
+    expect((await response.json()).animalDraft).toBeNull();
+    expect(calls).toEqual(["adoption", "sponsorship", "internship", "animalDraft"]);
   });
 
   test("reports item-level cleanup failures to the scheduler", async () => {
@@ -91,6 +130,7 @@ describe("public upload cleanup cron", () => {
       runAdoption: async () => ({ removed: 0, preserved: 0, failed: 0 }),
       runSponsorship: async () => ({ removed: 0, preserved: 0, failed: 0 }),
       runInternship: async () => ({ removed: 0, preserved: 0, failed: 1 }),
+      runAnimalDraft: async () => ({ removed: 0, failed: 0 }),
     });
     const response = await handler(request("cron-secret"));
     expect(response.status).toBe(500);

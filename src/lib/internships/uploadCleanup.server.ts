@@ -20,14 +20,16 @@ export async function cleanupExpiredInternshipUploads(
 ): Promise<{ removed: number; preserved: number; failed: number }> {
   const summary = { removed: 0, preserved: 0, failed: 0 };
   for (const row of await port.claim()) {
-    let removedFromStorage = false;
+    let storageRemovalAttempted = false;
     try {
       if (await port.isReferenced(row)) {
         await port.preserve(row);
         summary.preserved += 1;
       } else {
+        // A failed Storage response may follow a successful deletion. Keep
+        // the claim after any delete attempt to fence late attachments.
+        storageRemovalAttempted = true;
         await port.remove(row);
-        removedFromStorage = true;
         await port.finish(row);
         summary.removed += 1;
       }
@@ -36,7 +38,7 @@ export async function cleanupExpiredInternshipUploads(
         storagePath: row.storagePath,
         error,
       });
-      if (!removedFromStorage) {
+      if (!storageRemovalAttempted) {
         try {
           await port.release(row);
         } catch (releaseError) {
