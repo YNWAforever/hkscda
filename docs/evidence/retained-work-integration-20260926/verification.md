@@ -43,3 +43,5 @@ PRs: #131 stories/payment/evidence; #132 adoption CMS (draft pending migration a
 - Full brand sweep against the dev server was not green: TanStack's virtual client entry returned404, preventing hydration across routes. The production bundle builds successfully; this dev-server result is not treated as successful brand verification.
 
 Production-bundle targeted Chromium verification against the local HTTP fixture passed: adoption page HTTP200, English toggle functional, anonymous CMS GET HTTP401, authenticated preview redirects to login. No production database was accessed.
+
+Temporary browser servers were stopped. Final removal of disposable database adoption_cms_20260926 was blocked because Docker Desktop's Linux engine pipe was unavailable; the database may remain in the local policy-cluster volume until Docker restarts. Production is unaffected. The local SDD progress ledger is retained because automatic approval review rejected its deletion; it is separate from the five removed worktrees.
