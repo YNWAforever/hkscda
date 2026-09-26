@@ -1,0 +1,9 @@
+viewport,route,before_score_median,after_score_median,score_delta,before_lcp_ms_median,after_lcp_ms_median,before_tbt_ms_median,after_tbt_ms_median,before_cls_median,after_cls_median
+1440x900,/,99,99,0,753,730,0,2,0.0003,0.0003
+1440x900,/adoption/apply,100,100,0,572,573,0,0,0.0102,0.0102
+1440x900,/animals/cat,99,99,0,730,676,0,0,0.0001,0.0001
+1440x900,/donate,100,99,-1,638,607,0,0,0.0004,0.0004
+390x844,/,97,93,-4,2404,2545,43,60,0.0008,0.0008
+390x844,/adoption/apply,99,100,1,1710,1650,66,46,0.0176,0.0176
+390x844,/animals/cat,98,99,1,2010,1950,88,89,0,0
+390x844,/donate,99,99,0,1967,1964,39,64,0.0001,0.0001

@@ -1,0 +1,15 @@
+{
+  "task_count": 25,
+  "issue_count": 34,
+  "source_files": [
+    "HKSCDA_Audit_2026-09-27_zhHK.md",
+    "HKSCDA_Audit_2026-09-27_zhHK.html",
+    "HKSCDA_Reaudit_PR130_PR132_2026-09-27_zhHK.md",
+    "HKSCDA_Reaudit_PR130_PR132_2026-09-27_zhHK.html"
+  ],
+  "html_tables": 6,
+  "html_internal_links_valid": true,
+  "application_modified": false,
+  "full_application_tests_run": false,
+  "baseline_sha": "f8d5e5d5840d1775efb7d7f4ae2768f6557096b5"
+}
