@@ -7,7 +7,11 @@ import {
 import type { DocumentSlot } from "../documents/types";
 import { createSupabaseServiceClient } from "../donations/supabase.server";
 import { adoptionInstructionContentSchema } from "../adoptionInstructions/schemas";
-import { createSupabaseAdoptionInstructionRepository } from "../adoptionInstructions/repository.server";
+import {
+  AdoptionInstructionSchemaUnavailableError,
+  createSupabaseAdoptionInstructionRepository,
+} from "../adoptionInstructions/repository.server";
+import { initialAdoptionInstructionContent } from "../adoptionInstructions/content";
 import type { AdoptionInstructionContent } from "../adoptionInstructions/types";
 import { createSupabaseAdoptionInformationRepository } from "./repository.server";
 import type { AdoptionInformationRepository } from "./service";
@@ -130,11 +134,18 @@ export function createPublicAdoptionPageReaderFromClient(client: SupabaseClient)
     adoptionRepository: createSupabaseAdoptionInformationRepository(client),
     loadGuides: (slotKeys) => loadPublishedDocumentSlots(slotKeys, documentRepository),
     async loadCopy() {
-      const revision = await adoptionInstructionRepository.getPublished();
-      if (!revision || revision.state !== "published") {
-        throw new Error("Published adoption instructions were not found");
+      try {
+        const revision = await adoptionInstructionRepository.getPublished();
+        if (!revision || revision.state !== "published") {
+          throw new Error("Published adoption instructions were not found");
+        }
+        return adoptionInstructionContentSchema.parse(revision.content);
+      } catch (error) {
+        if (error instanceof AdoptionInstructionSchemaUnavailableError) {
+          return initialAdoptionInstructionContent;
+        }
+        throw error;
       }
-      return adoptionInstructionContentSchema.parse(revision.content);
     },
   });
 }
