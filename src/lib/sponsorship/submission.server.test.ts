@@ -212,7 +212,7 @@ type StorageCall = {
   options?: unknown;
 };
 type FakeClientOptions = {
-  failInsertTable?: string;
+  failPledgeTransaction?: boolean;
   failSentStatusUpdate?: boolean;
   supporterId?: string;
   storageObjects?: Array<{ fileName: string; sizeBytes: number; mimeType: string }>;
@@ -225,7 +225,7 @@ class FakeQuery {
   constructor(
     private readonly state: {
       calls: QueryCall[];
-      failInsertTable?: string;
+      failPledgeTransaction?: boolean;
       failSentStatusUpdate?: boolean;
       supporterId: string;
     },
@@ -271,7 +271,11 @@ class FakeQuery {
   }
 
   async single() {
-    if (this.action === "insert" && this.state.failInsertTable === this.table) {
+    if (
+      this.action === "insert" &&
+      this.state.failPledgeTransaction &&
+      this.table === "sponsorship_pledge"
+    ) {
       return { data: null, error: new Error(`insert failed: ${this.table}`) };
     }
     if (this.table === "supporter") return { data: { id: this.state.supporterId }, error: null };
@@ -287,7 +291,9 @@ class FakeQuery {
       (this.table === "message" &&
         this.state.failSentStatusUpdate &&
         (this.mutationPayload as { status?: string } | undefined)?.status === "sent") ||
-      (this.action === "insert" && this.state.failInsertTable === this.table)
+      (this.action === "insert" &&
+        this.state.failPledgeTransaction &&
+        this.table === "sponsorship_pledge")
         ? { data: null, error: new Error(`insert failed: ${this.table}`) }
         : { data: this.mutationPayload, error: null };
     return Promise.resolve(result).then(onfulfilled, onrejected);
@@ -303,7 +309,7 @@ function createFakeClient(options: FakeClientOptions = {}) {
     calls: [] as QueryCall[],
     storageCalls: [] as StorageCall[],
     rpcCalls: [] as { name: string; args: Record<string, unknown> }[],
-    failInsertTable: options.failInsertTable,
+    failPledgeTransaction: options.failPledgeTransaction,
     failSentStatusUpdate: options.failSentStatusUpdate,
     supporterId: options.supporterId ?? "supporter-1",
     storageObjects: options.storageObjects ?? DEFAULT_STORAGE_OBJECTS,
@@ -322,6 +328,12 @@ function createFakeClient(options: FakeClientOptions = {}) {
       state.rpcCalls.push({ name, args });
       if (name === "resolve_public_supporter_identity") {
         return { data: { supporterId: state.supporterId, kind: "existing" }, error: null };
+      }
+      if (name === "create_public_sponsorship_pledge") {
+        return {
+          data: null,
+          error: state.failPledgeTransaction ? new Error("atomic pledge transaction failed") : null,
+        };
       }
       return { data: null, error: new Error(`unexpected rpc: ${name}`) };
     },
@@ -368,22 +380,18 @@ describe("persistSponsorshipPledge", () => {
     expect(result.pledgeId).toBe(pledgeId);
     expect(result.reference).toMatch(/^SP-[A-Z0-9]{8}$/);
     expect(result.amountCents).toBe(30000);
-    expect(state.calls).toContainEqual({
-      table: "sponsorship_pledge",
-      method: "insert",
-      payload: expect.objectContaining({ id: pledgeId }),
+    const transaction = state.rpcCalls.find(
+      (call) => call.name === "create_public_sponsorship_pledge",
+    );
+    expect(transaction?.args).toMatchObject({
+      p_pledge_id: pledgeId,
+      p_pledge: { supporter_id: "supporter-1", status: "pending_payment" },
+      p_preferences: [expect.objectContaining({ pledge_id: pledgeId })],
+      p_proof: null,
+      p_token: { token_hash: hashStatusToken(statusToken) },
     });
-    expect(
-      state.calls.some((c) => c.table === "sponsorship_preference" && c.method === "insert"),
-    ).toBe(true);
-    expect(state.calls.some((c) => c.table === "sponsorship_payment_proof")).toBe(false);
+    expect(state.calls.some((call) => call.table === "sponsorship_pledge")).toBe(false);
     expect(state.storageCalls.some((c) => c.method === "list")).toBe(false);
-    expect(
-      state.calls.find((c) => c.table === "public_status_token" && c.method === "insert")?.payload,
-    ).toMatchObject({
-      token_hash: hashStatusToken(statusToken),
-      entity_id: pledgeId,
-    });
     expect(result.statusToken).toBe(statusToken);
   });
 
@@ -422,10 +430,10 @@ describe("persistSponsorshipPledge", () => {
 
     // A database trigger turns these flags into supporter_consent_intent rows so
     // staff can verify and promote them later.
-    const pledgeCall = state.calls.find(
-      (c) => c.table === "sponsorship_pledge" && c.method === "insert",
+    const pledgeCall = state.rpcCalls.find(
+      (call) => call.name === "create_public_sponsorship_pledge",
     );
-    expect(pledgeCall?.payload).toMatchObject({
+    expect(pledgeCall?.args.p_pledge).toMatchObject({
       consent_email_requested: true,
       consent_whatsapp_requested: false,
     });
@@ -476,13 +484,12 @@ describe("persistSponsorshipPledge", () => {
       }),
     );
     expect(state.storageCalls.some((c) => c.method === "upload")).toBe(false);
-    expect(state.calls).toContainEqual({
-      table: "sponsorship_payment_proof",
-      method: "insert",
-      payload: expect.objectContaining({
-        pledge_id: pledgeId,
-        storage_path: `${pledgeId}/proof/proof.jpg`,
-      }),
+    const transaction = state.rpcCalls.find(
+      (call) => call.name === "create_public_sponsorship_pledge",
+    );
+    expect(transaction?.args.p_proof).toMatchObject({
+      pledge_id: pledgeId,
+      storage_path: pledgeId + "/proof/proof.jpg",
     });
   });
 
@@ -500,21 +507,23 @@ describe("persistSponsorshipPledge", () => {
     );
   });
 
-  test("cleans up the pledge and status token when persistence fails mid-way", async () => {
-    const { client, state } = createFakeClient({ failInsertTable: "public_status_token" });
+  test("writes the pledge and bearer token in one transaction without deleting an uncertain commit", async () => {
+    const { client, state } = createFakeClient({ failPledgeTransaction: true });
     const parsed = parsedSubmission({ proofMetadata: proofMetadata() }, proofRef("proof.jpg"));
 
     await expect(
       persistSponsorshipPledge({ client, parsed, logger: { error() {} } }),
     ).rejects.toThrow("Failed to save sponsorship pledge");
 
-    // The server never uploads storage objects itself anymore (the client
-    // uploads directly via a signed URL before this call), so there is
-    // nothing for cleanup to remove from Storage on a mid-way failure.
-    expect(state.storageCalls.some((c) => c.method === "remove")).toBe(false);
-    expect(state.calls.some((c) => c.table === "sponsorship_pledge" && c.method === "delete")).toBe(
+    expect(state.rpcCalls.some((call) => call.name === "create_public_sponsorship_pledge")).toBe(
       true,
     );
+    expect(
+      state.calls.some((call) => call.table === "sponsorship_pledge" && call.method === "delete"),
+    ).toBe(false);
+    expect(
+      state.calls.some((call) => call.table === "public_status_token" && call.method === "delete"),
+    ).toBe(false);
   });
 });
 

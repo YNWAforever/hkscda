@@ -233,47 +233,6 @@ type PersistSponsorshipPledgeInput = {
   resolvePublicIdentity?: PublicIdentityRepository["resolve"];
 };
 
-async function cleanupFailedPersistence(input: {
-  client: PublicSponsorshipSupabaseClient;
-  pledgeId: string | null;
-  uploadedPaths: string[];
-  logger: Pick<Console, "error">;
-}) {
-  if (input.uploadedPaths.length > 0) {
-    try {
-      const { error } = await input.client.storage
-        .from(SPONSORSHIP_PROOF_BUCKET)
-        .remove(input.uploadedPaths);
-      if (error) input.logger.error("Failed to clean up sponsorship payment proof", error);
-    } catch (error) {
-      input.logger.error("Failed to clean up sponsorship payment proof", error);
-    }
-  }
-
-  if (input.pledgeId) {
-    try {
-      const { error } = await input.client
-        .from("public_status_token")
-        .delete()
-        .eq("entity_id", input.pledgeId)
-        .eq("entity_type", "sponsorship_pledge");
-      if (error) input.logger.error("Failed to clean up sponsorship status token", error);
-    } catch (error) {
-      input.logger.error("Failed to clean up sponsorship status token", error);
-    }
-
-    try {
-      const { error } = await input.client
-        .from("sponsorship_pledge")
-        .delete()
-        .eq("id", input.pledgeId);
-      if (error) input.logger.error("Failed to clean up sponsorship pledge row", error);
-    } catch (error) {
-      input.logger.error("Failed to clean up sponsorship pledge row", error);
-    }
-  }
-}
-
 export async function persistSponsorshipPledge({
   client,
   parsed,
@@ -312,16 +271,9 @@ export async function persistSponsorshipPledge({
     }
   }
 
-  let pledgeId: string | null = null;
-  const uploadedPaths: string[] = [];
-
   try {
-    // A pledge is an *unverified* public submission: nobody has proved they own
-    // this email address. Resolving through resolve_public_supporter_identity
-    // (`on conflict (email) do nothing`) means an existing supporter's name,
-    // phone, language and source survive untouched. The previous code here
-    // upserted on email, so a stranger could overwrite a real supporter's
-    // contact details just by typing their address into the public form.
+    // Resolve unverified public identity without overwriting an existing
+    // supporter. Explicit opt-outs are saved independently of pledge creation.
     const { supporterId } = await resolveIdentity({
       name: parsed.payload.contact.supporterName,
       email: parsed.payload.contact.email,
@@ -330,12 +282,6 @@ export async function persistSponsorshipPledge({
       source: "sponsorship_pledge_form",
     });
 
-    // Only opt_out is written from an unverified form -- matching donations
-    // (donations/service.ts) and volunteer registration (volunteers/service.ts).
-    // An opt-in tick here is a *request*: it is carried on the pledge row and
-    // recorded as a supporter_consent_intent by a database trigger, so staff can
-    // promote it to consent later. Writing opt_in directly would let an
-    // unverified submission silently reverse someone's existing opt_out.
     const consentRows = buildConsentRows({
       supporterId,
       source: "sponsorship_pledge_form",
@@ -350,69 +296,42 @@ export async function persistSponsorshipPledge({
     }
 
     const status: SponsorshipPledgeStatus = parsed.proof ? "provisional" : "pending_payment";
-
-    requireNoError(
-      await client
-        .from("sponsorship_pledge")
-        .insert({ id: parsed.pledgeId, ...toPledgeInsert(supporterId, status, parsed.payload) })
-        .select("id")
-        .single(),
-      "Failed to save sponsorship pledge",
-    );
-    pledgeId = parsed.pledgeId;
-
-    requireNoError(
-      await client
-        .from("sponsorship_preference")
-        .insert(toPreferenceInserts(pledgeId, parsed.payload)),
-      "Failed to save sponsorship animal preferences",
-    );
-
-    if (parsed.proof) {
-      requireNoError(
-        await client
-          .from("sponsorship_payment_proof")
-          .insert(
-            toPaymentProofInsert(
-              pledgeId,
-              parsed.proof.storagePath,
-              parsed.proof,
-              parsed.proof.metadata,
-            ),
-          ),
-        "Failed to save sponsorship payment proof",
-      );
-    }
-
-    const reference = pledgeReference(pledgeId);
-    const token = {
-      rawToken: parsed.statusToken,
-      tokenHash: hashStatusToken(parsed.statusToken),
-    };
+    const pledgeInsert = toPledgeInsert(supporterId, status, parsed.payload);
+    const proofInsert = parsed.proof
+      ? toPaymentProofInsert(
+          parsed.pledgeId,
+          parsed.proof.storagePath,
+          parsed.proof,
+          parsed.proof.metadata,
+        )
+      : null;
     const expiresAt = statusTokenExpiry(now);
-    requireNoError(
-      await client.from("public_status_token").insert({
-        token_hash: token.tokenHash,
-        entity_type: "sponsorship_pledge",
-        entity_id: pledgeId,
+    const { error } = await client.rpc("create_public_sponsorship_pledge", {
+      p_pledge_id: parsed.pledgeId,
+      p_pledge: pledgeInsert,
+      p_preferences: toPreferenceInserts(parsed.pledgeId, parsed.payload),
+      p_proof: proofInsert,
+      p_token: {
+        token_hash: hashStatusToken(parsed.statusToken),
         expires_at: expiresAt,
         submission_fingerprint: fingerprintSponsorshipSubmission(parsed),
-      }),
-      "Failed to save sponsorship status token",
-    );
+      },
+    });
+    if (error) throw error;
 
     return {
-      pledgeId,
+      pledgeId: parsed.pledgeId,
       supporterId,
-      reference,
+      reference: pledgeReference(parsed.pledgeId),
       status,
-      amountCents: toPledgeInsert(supporterId, status, parsed.payload).amount_cents,
-      statusToken: token.rawToken,
-      statusUrl: buildStatusUrl(appUrl, token.rawToken),
+      amountCents: pledgeInsert.amount_cents,
+      statusToken: parsed.statusToken,
+      statusUrl: buildStatusUrl(appUrl, parsed.statusToken),
       expiresAt,
     };
   } catch (error) {
-    await cleanupFailedPersistence({ client, pledgeId, uploadedPaths, logger });
+    // The RPC is atomic. Its response can be lost after commit, so deleting
+    // anything here could destroy a completed pledge and its bearer token.
     logger.error("Failed to save sponsorship pledge", error);
     throw new Error("Failed to save sponsorship pledge");
   }
