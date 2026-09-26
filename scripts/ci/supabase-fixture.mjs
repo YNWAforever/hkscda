@@ -235,11 +235,22 @@ const server = createServer((req, res) => {
   }
 
   if (path === "/rest/v1/adoption_fees") {
-    json(
-      res,
-      200,
-      applyOrder(applyFilters(ADOPTION_FEES, url.searchParams), url.searchParams.get("order")),
+    const filtered = applyOrder(
+      applyFilters(ADOPTION_FEES, url.searchParams),
+      url.searchParams.get("order"),
     );
+    const offset = Number(url.searchParams.get("offset") ?? 0);
+    const limit = Number(url.searchParams.get("limit") ?? filtered.length);
+    const page = filtered.slice(offset, offset + limit);
+    const wantsCount = String(req.headers["prefer"] ?? "").includes("count=exact");
+    const headers = wantsCount
+      ? {
+          "content-range": page.length
+            ? offset + "-" + (offset + page.length - 1) + "/" + filtered.length
+            : "*/" + filtered.length,
+        }
+      : {};
+    json(res, wantsCount ? 206 : 200, page, headers);
     return;
   }
 
