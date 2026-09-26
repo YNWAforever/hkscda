@@ -71,7 +71,10 @@ async function getPayPalAccessToken() {
     throw new Error(`PayPal token request failed with ${response.status}`);
   }
 
-  const data = (await response.json()) as { access_token: string };
+  const data: unknown = await response.json();
+  if (!isRecord(data) || typeof data.access_token !== "string" || !data.access_token.trim()) {
+    throw new Error("PayPal did not return an access token");
+  }
   return data.access_token;
 }
 
