@@ -8,6 +8,10 @@ import { parsePaymentInstructionSnapshot } from "../paymentPublicConfig/instruct
 import { DonationIdempotencyConflictError } from "./service";
 import { publicDonationStatuses, type PublicDonationStatus } from "./publicStatus";
 import type { PublicDonationStatusRepository } from "./publicStatus.server";
+import {
+  projectDonationEffectStatuses,
+  resolveCommittedPaymentStatus,
+} from "./publicStatusProjection";
 import type { DonationRepository } from "./service";
 
 export { createSupabaseServiceClient };
@@ -143,17 +147,82 @@ export function createSupabaseDonationStatusRepository(
   return {
     refreshPendingCod: dependencies.refreshPendingCod,
     async findStatus(donationId) {
-      const { data, error } = await client
-        .from("donation")
-        .select("status")
-        .eq("id", donationId)
-        .maybeSingle<{ status: string }>();
-
-      if (error) throw error;
-      if (!data || !publicDonationStatuses.includes(data.status as PublicDonationStatus)) {
+      const [donationResult, paymentResult] = await Promise.all([
+        client
+          .from("donation")
+          .select("status")
+          .eq("id", donationId)
+          .maybeSingle<{ status: string }>(),
+        client
+          .from("payment")
+          .select("status")
+          .eq("donation_id", donationId)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle<{ status: string }>(),
+      ]);
+      if (donationResult.error) throw donationResult.error;
+      if (paymentResult.error) throw paymentResult.error;
+      const donationStatus = donationResult.data?.status;
+      const paymentStatus = paymentResult.data?.status;
+      if (
+        !donationStatus ||
+        !publicDonationStatuses.includes(donationStatus as PublicDonationStatus)
+      )
         return null;
-      }
-      return data.status as PublicDonationStatus;
+      if (paymentStatus && !publicDonationStatuses.includes(paymentStatus as PublicDonationStatus))
+        return null;
+      return resolveCommittedPaymentStatus(
+        donationStatus as PublicDonationStatus,
+        (paymentStatus as PublicDonationStatus | undefined) ?? null,
+      );
+    },
+    async findEffects(donationId, status) {
+      const { data: donation, error: donationError } = await client
+        .from("donation")
+        .select("supporter_id,receipt_requested,amount_cents,refunded_cents")
+        .eq("id", donationId)
+        .single<{
+          supporter_id: string;
+          receipt_requested: boolean;
+          amount_cents: number;
+          refunded_cents: number | null;
+        }>();
+      if (donationError) throw donationError;
+      const [receiptResult, messageResult, jobResult] = await Promise.all([
+        client
+          .from("receipt")
+          .select("status,pdf_url")
+          .contains("donation_ids", [donationId])
+          .order("issued_at", { ascending: false })
+          .limit(1)
+          .maybeSingle<{ status: "issued" | "void"; pdf_url: string | null }>(),
+        client
+          .from("message")
+          .select("status")
+          .eq("supporter_id", donation.supporter_id)
+          .eq("channel", "email")
+          .contains("payload", { kind: "donation_acknowledgement", donationId })
+          .maybeSingle<{ status: "queued" | "sent" | "delivered" | "failed" }>(),
+        client
+          .from("donation_delivery_job")
+          .select("status")
+          .eq("donation_id", donationId)
+          .maybeSingle<{
+            status: "pending" | "processing" | "retryable" | "attention_required" | "complete";
+          }>(),
+      ]);
+      if (receiptResult.error) throw receiptResult.error;
+      if (messageResult.error) throw messageResult.error;
+      if (jobResult.error) throw jobResult.error;
+      return projectDonationEffectStatuses({
+        paymentStatus: status,
+        receiptRequested: donation.receipt_requested,
+        netAmountCents: donation.amount_cents - (donation.refunded_cents ?? 0),
+        receipt: receiptResult.data,
+        notification: messageResult.data?.status ?? null,
+        deliveryJob: jobResult.data?.status ?? null,
+      });
     },
   };
 }
