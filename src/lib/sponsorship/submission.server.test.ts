@@ -148,6 +148,33 @@ describe("parseSponsorshipSubmission", () => {
     );
   });
 
+  test("rejects proof objects outside the issued pledge and exact file path", () => {
+    for (const storagePath of [
+      "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee/proof/proof.jpg",
+      pledgeId + "/other/proof.jpg",
+      pledgeId + "/proof/another.jpg",
+    ]) {
+      expect(() =>
+        parseSponsorshipSubmission(
+          submissionBody(
+            basePayload({ proofMetadata: proofMetadata() }),
+            proofRef("proof.jpg", { storagePath }),
+          ),
+        ),
+      ).toThrow("Payment proof path does not match this pledge");
+    }
+  });
+
+  test("accepts a proof path using the signed upload file-name sanitizer", () => {
+    const parsed = parseSponsorshipSubmission(
+      submissionBody(
+        basePayload({ proofMetadata: proofMetadata() }),
+        proofRef("receipt A.jpg", { storagePath: pledgeId + "/proof/receipt_A.jpg" }),
+      ),
+    );
+    expect(parsed.proof?.storagePath).toBe(pledgeId + "/proof/receipt_A.jpg");
+  });
+
   test("rejects a missing payload field", () => {
     const body = submissionBody();
     delete (body as { payload?: unknown }).payload;

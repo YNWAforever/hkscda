@@ -22,7 +22,7 @@ import {
 } from "../supporters/publicIdentity.server";
 import { getAppUrl } from "../appUrl.server";
 import { getEmailConfig } from "../donations/config.server";
-import { verifyUploadedObjects } from "../publicUploads/signedUpload.server";
+import { safeFileName, verifyUploadedObjects } from "../publicUploads/signedUpload.server";
 import { submissionFingerprint } from "../publicUploads/submissionFingerprint.server";
 
 export const SPONSORSHIP_PROOF_BUCKET = "sponsorship-payment-proof";
@@ -203,6 +203,10 @@ export function parseSponsorshipSubmission(
     });
     if (typeof entry.storagePath !== "string" || !entry.storagePath) {
       throw new SubmissionValidationError("Missing storage path for the payment proof");
+    }
+    const expectedPath = raw.pledgeId + "/proof/" + safeFileName(descriptor.fileName);
+    if (entry.storagePath !== expectedPath) {
+      throw new SubmissionValidationError("Payment proof path does not match this pledge");
     }
     proof = { ...descriptor, storagePath: entry.storagePath, metadata: parsed.proofMetadata };
   }
