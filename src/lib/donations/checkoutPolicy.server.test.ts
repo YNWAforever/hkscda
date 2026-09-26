@@ -91,6 +91,15 @@ describe("loadPublicCheckoutState", () => {
       ],
     });
   });
+  test("an approved manual method with missing account details is unavailable", async () => {
+    const { client } = fakeClient({
+      policy: { data: { enabled: true, version: 2 }, error: null },
+      approvals: { data: [{ ...validApproval, method: "fps" }], error: null },
+      configs: { data: [{ ...validConfig, method: "fps", details: {} }], error: null },
+    });
+    expect(await loadPublicCheckoutState(client)).toEqual({ state: "unavailable", methods: [] });
+  });
+
   test("stale, hidden or malformed config makes availability unknown", async () => {
     for (const invalid of [
       { ...validConfig, version: 4 },

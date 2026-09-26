@@ -10,6 +10,8 @@ import {
   type PaymentProvider,
 } from "./domain";
 import { checkoutPurpose } from "./checkoutPolicy";
+import { resolvePaymentInstructions } from "../paymentPublicConfig/instructions";
+import type { CheckoutInstructionAdmission } from "../paymentPublicConfig/types";
 import type { CheckoutPurpose } from "./checkoutPolicy";
 import type { IdentityResolution, PublicContact } from "../supporters/publicIdentity.server";
 
@@ -45,7 +47,7 @@ export type DonationRepository = {
     method: DonationMethod;
     purpose: CheckoutPurpose;
     expectedConfigVersion: number;
-  }): Promise<void>;
+  }): Promise<CheckoutInstructionAdmission>;
   resolvePublicIdentity(contact: PublicContact): Promise<IdentityResolution>;
   ensureSupporterRole(input: { supporterId: string; role: "donor" }): Promise<void>;
   replaceConsents(rows: ReturnType<typeof buildConsentRows>): Promise<void>;
@@ -132,7 +134,7 @@ export type CreateDonationResult =
         payableTo: string;
         identifier: string;
         amountCents: number;
-      };
+      } | null;
     };
 
 export class DonationIdempotencyConflictError extends Error {
@@ -186,7 +188,7 @@ export async function createDonation({
   const requestKey = donationInput.idempotencyKey;
   const fingerprint = fingerprintRequest(donationInput);
 
-  await repository.admitNewCheckout({
+  const admission = await repository.admitNewCheckout({
     idempotencyKey: requestKey,
     fingerprint,
     method: donationInput.method,
@@ -269,20 +271,21 @@ export async function createDonation({
 
   if (donationInput.method === "fps" || donationInput.method === "payme") {
     const reference = createManualPaymentReference(donation.id);
+    const approved = resolvePaymentInstructions(admission, {
+      method: donationInput.method,
+      purpose: checkoutPurpose(donationInput.purpose),
+    });
     return {
       kind: "manual",
       donationId: donation.id,
       reference,
-      instructions: {
-        method: donationInput.method,
-        label: donationInput.method === "fps" ? "轉數快 FPS" : "PayMe Business",
-        payableTo: "香港拯救貓狗協會",
-        identifier:
-          donationInput.method === "fps"
-            ? "FPS ID 8727588"
-            : "WhatsApp 9864 1089 索取 PayMe QR Code",
-        amountCents: donationInput.amountCents,
-      },
+      instructions: approved
+        ? {
+            method: donationInput.method,
+            ...approved,
+            amountCents: donationInput.amountCents,
+          }
+        : null,
     };
   }
 
