@@ -36,6 +36,10 @@ describe("public upload cleanup cron", () => {
     const handler = createPublicUploadCleanupHandler({
       secret: () => "cron-secret",
       createClient: () => ({}) as never,
+      runAnimalPublication: async () => {
+        calls.push("animalPublication");
+        return { copied: 0, failed: 0 };
+      },
       runAdoption: async () => {
         calls.push("adoption");
         return { removed: 1, preserved: 0, failed: 0 };
@@ -61,8 +65,15 @@ describe("public upload cleanup cron", () => {
       sponsorship: { removed: 2, preserved: 1, failed: 0 },
       internship: { removed: 3, preserved: 0, failed: 0 },
       animalDraft: { removed: 4, failed: 0 },
+      animalPublication: { copied: 0, failed: 0 },
     });
-    expect(calls).toEqual(["adoption", "sponsorship", "internship", "animalDraft"]);
+    expect(calls).toEqual([
+      "adoption",
+      "sponsorship",
+      "internship",
+      "animalDraft",
+      "animalPublication",
+    ]);
   });
 
   test("one failing cleanup does not suppress the other", async () => {
@@ -70,6 +81,10 @@ describe("public upload cleanup cron", () => {
     const handler = createPublicUploadCleanupHandler({
       secret: () => "cron-secret",
       createClient: () => ({}) as never,
+      runAnimalPublication: async () => {
+        calls.push("animalPublication");
+        return { copied: 0, failed: 0 };
+      },
       runAdoption: async () => {
         calls.push("adoption");
         throw new Error("adoption unavailable");
@@ -90,7 +105,13 @@ describe("public upload cleanup cron", () => {
     });
     const response = await handler(request("cron-secret"));
     expect(response.status).toBe(500);
-    expect(calls).toEqual(["adoption", "sponsorship", "internship", "animalDraft"]);
+    expect(calls).toEqual([
+      "adoption",
+      "sponsorship",
+      "internship",
+      "animalDraft",
+      "animalPublication",
+    ]);
   });
 
   test("reports animal draft cleanup failure while other domains still run", async () => {
@@ -98,6 +119,10 @@ describe("public upload cleanup cron", () => {
     const handler = createPublicUploadCleanupHandler({
       secret: () => "cron-secret",
       createClient: () => ({}) as never,
+      runAnimalPublication: async () => {
+        calls.push("animalPublication");
+        return { copied: 0, failed: 0 };
+      },
       runAdoption: async () => {
         calls.push("adoption");
         return { removed: 0, preserved: 0, failed: 0 };
@@ -120,13 +145,20 @@ describe("public upload cleanup cron", () => {
     const response = await handler(request("cron-secret"));
     expect(response.status).toBe(500);
     expect((await response.json()).animalDraft).toBeNull();
-    expect(calls).toEqual(["adoption", "sponsorship", "internship", "animalDraft"]);
+    expect(calls).toEqual([
+      "adoption",
+      "sponsorship",
+      "internship",
+      "animalDraft",
+      "animalPublication",
+    ]);
   });
 
   test("reports item-level cleanup failures to the scheduler", async () => {
     const handler = createPublicUploadCleanupHandler({
       secret: () => "cron-secret",
       createClient: () => ({}) as never,
+      runAnimalPublication: async () => ({ copied: 0, failed: 0 }),
       runAdoption: async () => ({ removed: 0, preserved: 0, failed: 0 }),
       runSponsorship: async () => ({ removed: 0, preserved: 0, failed: 0 }),
       runInternship: async () => ({ removed: 0, preserved: 0, failed: 1 }),
@@ -136,4 +168,19 @@ describe("public upload cleanup cron", () => {
     expect(response.status).toBe(500);
     expect((await response.json()).internship.failed).toBe(1);
   });
+});
+
+test("reports pending publication media copy failures to the scheduler", async () => {
+  const handler = createPublicUploadCleanupHandler({
+    secret: () => "cron-secret",
+    createClient: () => ({}) as never,
+    runAdoption: async () => ({ removed: 0, preserved: 0, failed: 0 }),
+    runSponsorship: async () => ({ removed: 0, preserved: 0, failed: 0 }),
+    runInternship: async () => ({ removed: 0, preserved: 0, failed: 0 }),
+    runAnimalDraft: async () => ({ removed: 0, failed: 0 }),
+    runAnimalPublication: async () => ({ copied: 0, failed: 1 }),
+  });
+  const response = await handler(request("cron-secret"));
+  expect(response.status).toBe(500);
+  expect((await response.json()).animalPublication).toEqual({ copied: 0, failed: 1 });
 });

@@ -162,7 +162,7 @@ test("does not promote an unreviewed animal image before editorial approval reje
   expect(rpc).not.toHaveBeenCalled();
 });
 
-test("a failed publish keeps existing public animal images", async () => {
+test("a failed publish never copies private media into the public bucket", async () => {
   const remove = mock(async (_paths: string[]) => ({ error: null }));
   const upload = mock(async (_path: string) => ({
     error: { message: "The resource already exists" },
@@ -203,7 +203,7 @@ test("a failed publish keeps existing public animal images", async () => {
 
   if (!(response instanceof Response)) throw new Error("Expected HTTP response");
   expect(response.status).toBe(422);
-  expect(upload).toHaveBeenCalledTimes(1);
+  expect(upload).not.toHaveBeenCalled();
   expect(remove).not.toHaveBeenCalled();
 });
 
@@ -278,12 +278,19 @@ test("publication rejects null and oversized JSON before calling the RPC", async
   expect(rpc).not.toHaveBeenCalled();
 });
 
-test("promotes distinct gallery images even when a saved draft has duplicate item IDs", async () => {
-  const upload = mock(async (_path: string) => ({ error: null }));
-  const rpc = mock(async (_name: string, args: { p_command: Record<string, unknown> }) => ({
-    data: { kind: "published" },
-    error: null,
-  }));
+test("promotes distinct gallery images only after the publish transaction commits", async () => {
+  let published = false;
+  const upload = mock(async (_path: string) => {
+    expect(published).toBe(true);
+    return { error: null };
+  });
+  const rpc = mock(async (name: string, _args: { p_command: Record<string, unknown> }) => {
+    if (name === "animal_publication_command") {
+      published = true;
+      return { data: { kind: "published" }, error: null };
+    }
+    return { data: true, error: null };
+  });
   activeClient = {
     from: (table: string) => {
       if (table === "animal_publication_preview")
@@ -341,4 +348,68 @@ test("promotes distinct gallery images even when a saved draft has duplicate ite
     "animal-1/versions/preview-1-gallery-0.jpg",
     "animal-1/versions/preview-1-gallery-1.jpg",
   ]);
+  const publicationCommand = rpc.mock.calls[0]?.[1].p_command;
+  expect(
+    (publicationCommand?.publication_gallery as Array<{ draft_path: string }>)[0].draft_path,
+  ).toBe("animal-1/first.jpg");
+  expect(
+    (publicationCommand?.published_gallery as Array<{ draft_path: string | null }>)[0].draft_path,
+  ).toBeNull();
+});
+
+test("a committed publish reports pending media when Storage cannot copy immediately", async () => {
+  const upload = mock(async () => ({ error: new Error("storage unavailable") }));
+  const rpc = mock(async (name: string) =>
+    name === "animal_publication_command"
+      ? { data: { kind: "published" }, error: null }
+      : { data: true, error: null },
+  );
+  activeClient = {
+    from: (table: string) => {
+      if (table === "animal_publication_preview")
+        return queryRow({
+          body: {
+            publication_state: "published",
+            draft_image_path: "animal-1/private.jpg",
+          },
+          draft_revision: 1,
+        });
+      if (table === "animal_draft") return queryRow({ revision: 1 });
+      if (table === "editorial_content_review") return queryRow({ classification: "approved" });
+      throw new Error("Unexpected table: " + table);
+    },
+    storage: {
+      from: (bucket: string) =>
+        bucket === "animal-draft-images"
+          ? { download: async () => ({ data: new Blob(["image"]), error: null }) }
+          : {
+              upload,
+              getPublicUrl: (path: string) => ({
+                data: {
+                  publicUrl: "https://example.test/storage/v1/object/public/animal-images/" + path,
+                },
+              }),
+            },
+    },
+    rpc,
+  };
+  const handlers = Route.options.server?.handlers;
+  const handler = handlers && typeof handlers !== "function" ? handlers.POST : undefined;
+  if (!handler) throw new Error("Animal publication POST handler missing");
+  const previousError = console.error;
+  console.error = () => {};
+  try {
+    const response = await handler({
+      request: new Request("http://localhost/api/admin/animals/publication/", {
+        method: "POST",
+        body: JSON.stringify({ kind: "publish", preview_id: "preview-1", animal_id: "animal-1" }),
+      }),
+    } as never);
+    if (!(response instanceof Response)) throw new Error("Expected HTTP response");
+    expect(response.status).toBe(202);
+    expect(await response.json()).toEqual({ kind: "published", media_pending: true });
+    expect(upload).toHaveBeenCalledTimes(1);
+  } finally {
+    console.error = previousError;
+  }
 });

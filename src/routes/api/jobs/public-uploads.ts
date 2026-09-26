@@ -7,6 +7,10 @@ import {
   createSupabaseAnimalDraftUploadCleanupPort,
 } from "../../../lib/animals/draftUploadCleanup.server";
 import {
+  repairAnimalPublicationMedia,
+  createSupabaseAnimalPublicationMediaRepairPort,
+} from "../../../lib/animals/publicationMediaRepair.server";
+import {
   cleanupExpiredInternshipUploads,
   createSupabaseInternshipUploadCleanupPort,
 } from "../../../lib/internships/uploadCleanup.server";
@@ -28,6 +32,7 @@ type Dependencies = {
   runSponsorship(client: SupabaseClient): ReturnType<typeof cleanupExpiredSponsorshipProofUploads>;
   runInternship(client: SupabaseClient): ReturnType<typeof cleanupExpiredInternshipUploads>;
   runAnimalDraft(client: SupabaseClient): ReturnType<typeof cleanupExpiredAnimalDraftUploads>;
+  runAnimalPublication(client: SupabaseClient): ReturnType<typeof repairAnimalPublicationMedia>;
   logger: Pick<Console, "error">;
 };
 
@@ -56,6 +61,8 @@ export function createPublicUploadCleanupHandler({
     cleanupExpiredInternshipUploads(createSupabaseInternshipUploadCleanupPort(client)),
   runAnimalDraft = (client) =>
     cleanupExpiredAnimalDraftUploads(createSupabaseAnimalDraftUploadCleanupPort(client)),
+  runAnimalPublication = (client) =>
+    repairAnimalPublicationMedia(createSupabaseAnimalPublicationMediaRepairPort(client)),
   logger = console,
 }: Partial<Dependencies> = {}) {
   return async (request: Request): Promise<Response> => {
@@ -66,12 +73,14 @@ export function createPublicUploadCleanupHandler({
       );
     }
     const client = createClient();
-    const [adoption, sponsorship, internship, animalDraft] = await Promise.allSettled([
-      runAdoption(client),
-      runSponsorship(client),
-      runInternship(client),
-      runAnimalDraft(client),
-    ]);
+    const [adoption, sponsorship, internship, animalDraft, animalPublication] =
+      await Promise.allSettled([
+        runAdoption(client),
+        runSponsorship(client),
+        runInternship(client),
+        runAnimalDraft(client),
+        runAnimalPublication(client),
+      ]);
     if (adoption.status === "rejected")
       logger.error("Adoption upload cleanup failed", adoption.reason);
     if (sponsorship.status === "rejected")
@@ -80,7 +89,9 @@ export function createPublicUploadCleanupHandler({
       logger.error("Internship upload cleanup failed", internship.reason);
     if (animalDraft.status === "rejected")
       logger.error("Animal draft upload cleanup failed", animalDraft.reason);
-    const failed = [adoption, sponsorship, internship, animalDraft].some(
+    if (animalPublication.status === "rejected")
+      logger.error("Animal publication media repair failed", animalPublication.reason);
+    const failed = [adoption, sponsorship, internship, animalDraft, animalPublication].some(
       (result) => result.status === "rejected" || result.value.failed > 0,
     );
     return Response.json(
@@ -89,6 +100,8 @@ export function createPublicUploadCleanupHandler({
         sponsorship: sponsorship.status === "fulfilled" ? sponsorship.value : null,
         internship: internship.status === "fulfilled" ? internship.value : null,
         animalDraft: animalDraft.status === "fulfilled" ? animalDraft.value : null,
+        animalPublication:
+          animalPublication.status === "fulfilled" ? animalPublication.value : null,
       },
       { status: failed ? 500 : 200, headers: { "cache-control": "no-store" } },
     );

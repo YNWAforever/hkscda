@@ -1,6 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { readAdminJsonObject } from "../../../../../lib/http/adminJson.server";
 import {
+  copyPublishedAnimalMedia,
+  type AnimalPublicationMediaCopy,
+} from "../../../../../lib/animals/publicationMedia.server";
+import {
   InvalidRequestJsonError,
   RequestBodyTooLargeError,
 } from "../../../../../lib/http/publicJson.server";
@@ -35,8 +39,7 @@ export const Route = createFileRoute("/api/admin/animals/publication/")({
           delete command.publication_gallery;
           delete command.published_gallery;
         }
-        let promotedPath: string | null = null;
-        let draftPath: string | null = null;
+        const pendingCopies: AnimalPublicationMediaCopy[] = [];
         if (
           command.kind === "publish" &&
           typeof command.preview_id === "string" &&
@@ -114,43 +117,31 @@ export const Route = createFileRoute("/api/admin/animals/publication/")({
                   galleryIndex +
                   "." +
                   ext;
-                const downloaded = await c.storage
-                  .from("animal-draft-images")
-                  .download(item.draft_path);
-                if (downloaded.error) throw downloaded.error;
-                const uploaded = await c.storage
-                  .from("animal-images")
-                  .upload(path, downloaded.data, { upsert: false });
-                if (uploaded.error && uploaded.error.message !== "The resource already exists")
-                  throw uploaded.error;
+                // The publication transaction records the copy source. Public
+                // Storage receives bytes only after that transaction commits.
                 next.url = c.storage.from("animal-images").getPublicUrl(path).data.publicUrl;
-                next.draft_path = null;
+                pendingCopies.push({ sourcePath: item.draft_path, publicPath: path });
               }
               publicationGallery.push(next);
             }
             command.publication_gallery = publicationGallery;
             command.published_gallery = publicationGallery
               .filter((item) => item.review_status === "approved" && typeof item.url === "string")
-              .sort((left, right) => Number(left.sort_order) - Number(right.sort_order));
+              .sort((left, right) => Number(left.sort_order) - Number(right.sort_order))
+              .map((item) => ({ ...item, draft_path: null }));
           }
           if (typeof body?.draft_image_path === "string" && body.draft_image_path) {
-            draftPath = body.draft_image_path;
+            const draftPath = body.draft_image_path;
             const ext =
               draftPath
                 .split(".")
                 .pop()
                 ?.replace(/[^a-z0-9]/gi, "") || "jpg";
-            promotedPath = `${command.animal_id}/versions/${command.preview_id}.${ext}`;
-            const downloaded = await c.storage.from("animal-draft-images").download(draftPath);
-            if (downloaded.error) throw downloaded.error;
-            const uploaded = await c.storage
-              .from("animal-images")
-              .upload(promotedPath, downloaded.data, { upsert: false });
-            if (uploaded.error && uploaded.error.message !== "The resource already exists")
-              throw uploaded.error;
+            const publicPath = `${command.animal_id}/versions/${command.preview_id}.${ext}`;
             command.published_image_url = c.storage
               .from("animal-images")
-              .getPublicUrl(promotedPath).data.publicUrl;
+              .getPublicUrl(publicPath).data.publicUrl;
+            pendingCopies.push({ sourcePath: draftPath, publicPath });
           }
         }
         const { data, error } = await c.rpc("animal_publication_command", {
@@ -190,12 +181,39 @@ export const Route = createFileRoute("/api/admin/animals/publication/")({
             { status },
           );
         }
-        // A concurrent publish may already reference these public objects.
-        // Keep promoted objects until reference-aware cleanup can prove they are unused.
-        return Response.json(data, {
-          status: data?.kind === "conflict" ? 409 : data?.kind === "not_found" ? 404 : 200,
-          headers: { "cache-control": "no-store" },
-        });
+        let mediaPending = false;
+        if (data?.kind === "published") {
+          for (const copy of pendingCopies) {
+            try {
+              await copyPublishedAnimalMedia(c, copy);
+            } catch (copyError) {
+              // The committed copy intent lets the cron repair a failed or
+              // ambiguous Storage response without repeating the publish RPC.
+              console.error("Animal publication media copy pending", {
+                animalId: command.animal_id,
+                publicPath: copy.publicPath,
+                error: copyError,
+              });
+              mediaPending = true;
+            }
+          }
+        }
+        return Response.json(
+          mediaPending && data && typeof data === "object"
+            ? { ...data, media_pending: true }
+            : data,
+          {
+            status:
+              data?.kind === "conflict"
+                ? 409
+                : data?.kind === "not_found"
+                  ? 404
+                  : mediaPending
+                    ? 202
+                    : 200,
+            headers: { "cache-control": "no-store" },
+          },
+        );
       },
     },
   },

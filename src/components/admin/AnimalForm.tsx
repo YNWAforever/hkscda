@@ -350,15 +350,23 @@ export function AnimalForm({ existing }: AnimalFormProps) {
   async function publishDraft() {
     if (dirty || saving || !previewId || !publishReason.trim()) return;
     try {
-      await fetchAdminJson("/api/admin/animals/publication/", {
-        method: "POST",
-        body: JSON.stringify({
-          kind: "publish",
-          animal_id: animalId,
-          preview_id: previewId,
-          reason: publishReason.trim(),
-        }),
-      });
+      const result = await fetchAdminJson<{ media_pending?: boolean }>(
+        "/api/admin/animals/publication/",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            kind: "publish",
+            animal_id: animalId,
+            preview_id: previewId,
+            reason: publishReason.trim(),
+          }),
+        },
+      );
+      if (result.media_pending) {
+        setPreviewId(null);
+        setError("動物資料已發布，圖片仍在處理中；請稍後重新整理。");
+        return;
+      }
       navigate({ to: "/admin" });
     } catch {
       setError("草稿已變更或發布失敗，請重新預覽。");
