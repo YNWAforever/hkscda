@@ -42,6 +42,11 @@ async function withKnowledgeErrors(operation: () => Promise<Response>) {
       return jsonNoStore({ error: "Invalid knowledge request" }, { status: 400 });
     if (error && typeof error === "object" && "code" in error && error.code === "P0002")
       return jsonNoStore({ error: "Knowledge post not found" }, { status: 404 });
+    if (error && typeof error === "object" && "code" in error && error.code === "23514")
+      return jsonNoStore(
+        { error: "Knowledge post conflicts with document publication state" },
+        { status: 409 },
+      );
     console.error(error);
     return jsonNoStore({ error: "Could not process knowledge request" }, { status: 500 });
   }
