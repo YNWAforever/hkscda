@@ -1,3 +1,5 @@
+import { volunteerRegistrationStatusLabels } from "../../../lib/volunteers/labels";
+
 import type {
   VolunteerActivityStatus,
   VolunteerActivitySummary,
@@ -29,17 +31,7 @@ function addTrimmed(params: URLSearchParams, key: string, value: string) {
   if (trimmed) params.set(key, trimmed);
 }
 
-// The admin UI is Chinese throughout, but these values are English enums from
-// the database. Rendering them raw ("approved", "waitlisted") leaks schema
-// vocabulary into an operator-facing screen — and worse, put on buttons it
-// leaves the operator guessing what each one does.
-export const registrationStatusLabels: Record<VolunteerRegistrationStatus, string> = {
-  pending: "待審批",
-  approved: "已批准",
-  waitlisted: "候補中",
-  rejected: "已拒絕",
-  cancelled: "已取消",
-};
+export const registrationStatusLabels = volunteerRegistrationStatusLabels;
 
 export const attendanceStatusLabels: Record<VolunteerAttendanceStatus, string> = {
   not_marked: "未記錄",

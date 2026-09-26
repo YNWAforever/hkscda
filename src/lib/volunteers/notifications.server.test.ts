@@ -1,5 +1,6 @@
 import { describe, expect, mock, test } from "bun:test";
 
+import { volunteerRegistrationStatusLabels } from "./labels";
 import { createResendMailProvider } from "../notifications/provider.server";
 import { notifyVolunteerAdmins, sendVolunteerRegistrationEmail } from "./notifications.server";
 
@@ -114,6 +115,24 @@ const config = () => ({
 const input = { registration, statusUrl: "https://example.invalid/status/test" };
 
 describe("sendVolunteerRegistrationEmail", () => {
+  test("uses the Chinese status label in the registrant confirmation", async () => {
+    const { client } = fakeClient();
+    const sent: Array<{ subject: string; html: string }> = [];
+    const result = await sendVolunteerRegistrationEmail(client, input, {
+      getEmailConfig: config,
+      createMailProvider: async () => ({
+        send: async (email) => {
+          sent.push({ subject: email.subject, html: email.html });
+          return { kind: "accepted", providerMessageId: "email-localized" };
+        },
+      }),
+    });
+    expect(result).toBe("sent");
+    expect(sent[0].subject).toContain(volunteerRegistrationStatusLabels.pending);
+    expect(sent[0].html).toContain(volunteerRegistrationStatusLabels.pending);
+    expect(sent[0].subject).not.toContain(" pending");
+  });
+
   test.each([
     ["resolved rejection", async () => ({ data: null, error: { name: "rate_limit_exceeded" } })],
     [

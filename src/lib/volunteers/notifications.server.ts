@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { getEmailConfig } from "../donations/config.server";
+import { volunteerRegistrationStatusLabels } from "./labels";
 import { createResendMailProvider, type MailProvider } from "../notifications/provider.server";
 import type { VolunteerRegistrationDetail } from "./types";
 
@@ -39,9 +40,10 @@ function escapeHtml(value: string) {
 }
 
 function renderRegistrantEmail(registration: VolunteerRegistrationDetail, statusUrl: string) {
+  const statusLabel = volunteerRegistrationStatusLabels[registration.status];
   return {
-    subject: `HKSCDA 義工登記 ${registration.status}`,
-    html: `<p>${escapeHtml(registration.contactName)} 你好，</p><p>我們已收到你的義工登記：${escapeHtml(registration.activity.title)}。</p><p>目前狀態：<strong>${escapeHtml(registration.status)}</strong></p><p>你可在以下連結查看最新狀態：<a href="${escapeHtml(statusUrl)}">${escapeHtml(statusUrl)}</a></p>`,
+    subject: `HKSCDA 義工登記 ${statusLabel}`,
+    html: `<p>${escapeHtml(registration.contactName)} 你好，</p><p>我們已收到你的義工登記：${escapeHtml(registration.activity.title)}。</p><p>目前狀態：<strong>${escapeHtml(statusLabel)}</strong></p><p>你可在以下連結查看最新狀態：<a href="${escapeHtml(statusUrl)}">${escapeHtml(statusUrl)}</a></p>`,
   };
 }
 
