@@ -1,0 +1,226 @@
+-- New checkout admissions are disabled until a separate, approved activation.
+-- Existing payment callbacks, reconciliation and receipt jobs do not call this gate.
+create table public.checkout_policy (
+  singleton boolean primary key default true check (singleton),
+  enabled boolean not null default false,
+  version integer not null default 1 check (version > 0),
+  approved_by uuid references public.admin_user(id) on delete restrict,
+  approved_at timestamptz,
+  updated_at timestamptz not null default now()
+);
+insert into public.checkout_policy (singleton, enabled) values (true, false);
+
+create table public.checkout_method_approval (
+  method text not null check (method in ('stripe', 'payme', 'fps', 'paypal', 'alipayhk')),
+  purpose text not null check (purpose in ('donation', 'sponsorship')),
+  config_id uuid not null references public.payment_public_config(id) on delete restrict,
+  config_version integer not null check (config_version > 0),
+  enabled boolean not null default false,
+  approved_by uuid not null references public.admin_user(id) on delete restrict,
+  approved_at timestamptz not null default now(),
+  primary key (method, purpose)
+);
+
+create table public.checkout_admission (
+  idempotency_key uuid primary key,
+  request_fingerprint text not null check (request_fingerprint ~ '^[0-9a-f]{64}$'),
+  method text not null check (method in ('stripe', 'payme', 'fps', 'paypal', 'alipayhk')),
+  purpose text not null check (purpose in ('donation', 'sponsorship')),
+  config_id uuid not null references public.payment_public_config(id) on delete restrict,
+  config_version integer not null check (config_version > 0),
+  policy_version integer not null check (policy_version > 0),
+  admitted_at timestamptz not null default now()
+);
+
+alter table public.checkout_policy enable row level security;
+alter table public.checkout_method_approval enable row level security;
+alter table public.checkout_admission enable row level security;
+revoke all on public.checkout_policy, public.checkout_method_approval, public.checkout_admission from public, anon, authenticated;
+grant select, insert, update on public.checkout_policy to service_role;
+grant select, insert, update, delete on public.checkout_method_approval to service_role;
+grant select, insert on public.checkout_admission to service_role;
+
+create function public.admit_new_checkout(
+  p_idempotency_key uuid,
+  p_request_fingerprint text,
+  p_method text,
+  p_purpose text,
+  p_expected_config_version integer
+)
+returns jsonb
+language plpgsql
+security invoker
+set search_path = public, pg_temp
+as $$
+declare
+  prior public.checkout_admission%rowtype;
+  current_policy public.checkout_policy%rowtype;
+  approval public.checkout_method_approval%rowtype;
+  config public.payment_public_config%rowtype;
+begin
+  if p_idempotency_key is null or p_request_fingerprint !~ '^[0-9a-f]{64}$'
+    or p_method not in ('stripe', 'payme', 'fps', 'paypal', 'alipayhk')
+    or p_purpose not in ('donation', 'sponsorship')
+    or p_expected_config_version is null or p_expected_config_version < 1
+  then
+    raise exception 'Invalid checkout admission request' using errcode = '22023';
+  end if;
+
+  perform pg_advisory_xact_lock(hashtextextended(p_idempotency_key::text, 0));
+  select * into prior from public.checkout_admission
+    where idempotency_key = p_idempotency_key for update;
+  if found then
+    if prior.request_fingerprint <> p_request_fingerprint
+      or prior.method <> p_method or prior.purpose <> p_purpose
+      or prior.config_version <> p_expected_config_version
+    then
+      raise exception 'Checkout admission conflicts with an earlier intent' using errcode = 'P5104';
+    end if;
+    return jsonb_build_object('config_id', prior.config_id,
+      'config_version', prior.config_version, 'policy_version', prior.policy_version,
+      'existing', true);
+  end if;
+
+  select * into current_policy from public.checkout_policy
+    where singleton = true for share;
+  if not found or not current_policy.enabled then
+    raise exception 'New checkout is disabled' using errcode = 'P5101';
+  end if;
+
+  select * into approval from public.checkout_method_approval
+    where method = p_method and purpose = p_purpose for share;
+  if not found or not approval.enabled then
+    raise exception 'Checkout method is unavailable' using errcode = 'P5102';
+  end if;
+  if approval.config_version <> p_expected_config_version then
+    raise exception 'Checkout configuration has changed' using errcode = 'P5103';
+  end if;
+
+  select * into config from public.payment_public_config
+    where id = approval.config_id for share;
+  if not found or config.method <> p_method or config.state <> 'published'
+    or not config.is_publicly_visible or config.published_by is null then
+    raise exception 'Checkout method is unavailable' using errcode = 'P5102';
+  end if;
+  if config.version <> approval.config_version then
+    raise exception 'Checkout configuration has changed' using errcode = 'P5103';
+  end if;
+
+  insert into public.checkout_admission
+    (idempotency_key, request_fingerprint, method, purpose, config_id, config_version, policy_version)
+  values (p_idempotency_key, p_request_fingerprint, p_method, p_purpose,
+    config.id, config.version, current_policy.version);
+
+  return jsonb_build_object('config_id', config.id,
+    'config_version', config.version, 'policy_version', current_policy.version,
+    'existing', false);
+end;
+$$;
+
+revoke all on function public.admit_new_checkout(uuid, text, text, text, integer)
+  from public, anon, authenticated;
+grant execute on function public.admit_new_checkout(uuid, text, text, text, integer)
+  to service_role;
+
+-- App credentials can read policy but cannot mutate approval state without actor/audit checks.
+revoke insert, update, delete on public.checkout_policy, public.checkout_method_approval from service_role;
+
+create function public.set_checkout_policy_with_audit(
+  p_actor_user_id uuid, p_expected_version integer, p_enabled boolean
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  actor public.admin_user%rowtype;
+  prior public.checkout_policy%rowtype;
+  changed public.checkout_policy%rowtype;
+begin
+  select * into actor from public.admin_user
+    where auth_user_id = p_actor_user_id and status = 'active'
+      and role in ('treasurer', 'admin');
+  if not found then
+    raise exception 'Treasurer or admin approval required' using errcode = '42501';
+  end if;
+  select * into prior from public.checkout_policy where singleton = true for update;
+  if not found or prior.version <> p_expected_version then
+    raise exception 'Stale checkout policy version' using errcode = '40001';
+  end if;
+  update public.checkout_policy set enabled = p_enabled,
+    version = version + 1, approved_by = actor.id,
+    approved_at = now(), updated_at = now()
+  where singleton = true returning * into changed;
+  insert into public.audit_log (actor_user_id, action, entity, entity_id, detail)
+  values (p_actor_user_id, 'checkout_policy.set', 'checkout_policy', 'global',
+    jsonb_build_object('before_enabled', prior.enabled, 'after_enabled', changed.enabled,
+      'before_version', prior.version, 'after_version', changed.version));
+  return jsonb_build_object('enabled', changed.enabled, 'version', changed.version);
+end;
+$$;
+
+create function public.set_checkout_method_approval_with_audit(
+  p_actor_user_id uuid, p_method text, p_purpose text, p_config_id uuid,
+  p_expected_config_version integer, p_enabled boolean
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  actor public.admin_user%rowtype;
+  config public.payment_public_config%rowtype;
+  prior public.checkout_method_approval%rowtype;
+  changed public.checkout_method_approval%rowtype;
+begin
+  select * into actor from public.admin_user
+    where auth_user_id = p_actor_user_id and status = 'active'
+      and role in ('treasurer', 'admin');
+  if not found then
+    raise exception 'Treasurer or admin approval required' using errcode = '42501';
+  end if;
+  if p_purpose not in ('donation', 'sponsorship') or p_method not in
+    ('stripe', 'payme', 'fps', 'paypal', 'alipayhk') then
+    raise exception 'Invalid checkout method or purpose' using errcode = '22023';
+  end if;
+  select * into config from public.payment_public_config
+    where id = p_config_id for share;
+  if not found or config.method <> p_method or config.state <> 'published'
+    or not config.is_publicly_visible or config.published_by is null then
+    raise exception 'Published, staff-approved payment configuration required' using errcode = '23514';
+  end if;
+  if config.version <> p_expected_config_version then
+    raise exception 'Stale payment configuration version' using errcode = '40001';
+  end if;
+  select * into prior from public.checkout_method_approval
+    where method = p_method and purpose = p_purpose for update;
+  insert into public.checkout_method_approval
+    (method, purpose, config_id, config_version, enabled, approved_by, approved_at)
+  values (p_method, p_purpose, p_config_id, p_expected_config_version,
+    p_enabled, actor.id, now())
+  on conflict (method, purpose) do update set
+    config_id = excluded.config_id, config_version = excluded.config_version,
+    enabled = excluded.enabled, approved_by = excluded.approved_by,
+    approved_at = excluded.approved_at
+  returning * into changed;
+  insert into public.audit_log (actor_user_id, action, entity, entity_id, detail)
+  values (p_actor_user_id, 'checkout_method_approval.set', 'checkout_method_approval',
+    p_method || ':' || p_purpose,
+    jsonb_build_object('before_enabled', prior.enabled, 'after_enabled', changed.enabled,
+      'config_id', changed.config_id, 'config_version', changed.config_version));
+  return jsonb_build_object('method', changed.method, 'purpose', changed.purpose,
+    'enabled', changed.enabled, 'config_id', changed.config_id,
+    'config_version', changed.config_version);
+end;
+$$;
+
+revoke all on function public.set_checkout_policy_with_audit(uuid, integer, boolean)
+  from public, anon, authenticated;
+revoke all on function public.set_checkout_method_approval_with_audit(uuid, text, text, uuid, integer, boolean)
+  from public, anon, authenticated;
+grant execute on function public.set_checkout_policy_with_audit(uuid, integer, boolean)
+  to service_role;
+grant execute on function public.set_checkout_method_approval_with_audit(uuid, text, text, uuid, integer, boolean)
+  to service_role;

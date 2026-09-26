@@ -37,3 +37,9 @@ Status: **schema-ready = no**. This document is a review and rehearsal checklist
 ## Owners and remaining gates
 
 DB release owner: review exact SQL diffs, lock estimates, backfill, backup/restore and app compatibility; authorize production migration only after isolated rehearsal. Release owner: approve the tested app SHA and verify same-SHA CI, content smoke and rollback boundary. Finance owner: separately approve any payment method activation after sandbox evidence.
+
+## Second review slice addendum — T03 checkout policy migration
+
+Branch `codex/audit-payment-policy-20260927` adds a 35th ordered file, `20260927120000_checkout_policy_gate.sql` (SHA-256 in the manifest). It creates three private-by-RLS public-schema tables and a service-role-only admission RPC. The migration applied in the same unlinked loopback stack with `bunx supabase migration up --local`, exit 0. The isolated SQL test covered disabled policy, absent/disabled approval, stale/hidden/draft/archived config, revocation-before-admission lock race, admitted retry, intent conflict, legacy seed rejection, audited staff toggles, app-role write denial and forbidden anon/authenticated grants, exit 0. No payment was activated; the singleton defaults to disabled and method approvals are empty.
+
+Before any production release, repeat the data-bearing rehearsal, constraint/index/storage/grant inventory and backup/restore check against this 35-file manifest. T03 depends on `payment_public_config`, so a deployment to today's missing production catalog would fail closed rather than enable payment. Do not use this new migration as evidence that the earlier 34 files are production-ready.

@@ -24,7 +24,9 @@ import {
 import { loadDonationDocumentSlots } from "../lib/documents/donation.server";
 import { asContextFreeRouteLoader } from "../lib/documents/routeLoaders.server";
 import type { DocumentSlot } from "../lib/documents/types";
-import { getPublicPaymentMethods } from "../lib/paymentPublicConfig/public.functions";
+import { getPublicCheckoutState } from "../lib/donations/checkoutPolicy.functions";
+import { checkoutPurpose } from "../lib/donations/checkoutPolicy";
+import type { PublicCheckoutState } from "../lib/donations/checkoutPolicy.server";
 import type { PublicPaymentMethod } from "../lib/paymentPublicConfig/types";
 import {
   markDonationEventOnce,
@@ -47,11 +49,11 @@ import { TurnstileWidget, turnstileEnabled } from "../components/site/TurnstileW
 export const Route = createFileRoute("/donate")({
   validateSearch: donateSearchSchema,
   loader: asContextFreeRouteLoader(async () => {
-    const [slots, paymentMethods] = await Promise.all([
+    const [slots, checkoutState] = await Promise.all([
       loadDonationDocumentSlots(),
-      getPublicPaymentMethods().catch(() => []),
+      getPublicCheckoutState().catch(() => ({ state: "unavailable" as const, methods: [] as [] })),
     ]);
-    return { slots, paymentMethods };
+    return { slots, checkoutState };
   }),
   head: () => ({
     meta: [
@@ -103,6 +105,7 @@ export type DonationRequestPayload = {
   purpose: DonationPurpose;
   customPurpose: string;
   method: DonationMethod;
+  expectedConfigVersion: number;
   checkoutExperience: CheckoutExperience;
   receiptRequested: boolean;
   donor: { name: string; email: string; phone: string; language: Language };
@@ -146,6 +149,8 @@ const copy = {
     checkoutUnavailable:
       "網上捐款尚未完成正式啟用審批。現時請先聯絡職員核實可用捐款安排；請勿使用測試或未經確認的付款資料。",
     checkoutUnavailableButton: "網上捐款尚未啟用",
+    checkoutTemporarilyUnavailable: "付款資料暫時未能確認，請稍後再試或聯絡職員。",
+    checkoutNotConfigured: "目前沒有已核准的付款方式，請聯絡職員核實安排。",
     methodNotice: "付款服務完成正式審批後，系統才會在這裡顯示可用方式。",
   },
   en: {
@@ -187,6 +192,10 @@ const copy = {
     checkoutUnavailable:
       "Online donations have not completed production activation approval. Please contact staff to verify an approved donation arrangement; do not use test or unconfirmed payment details.",
     checkoutUnavailableButton: "Online donations are not active",
+    checkoutTemporarilyUnavailable:
+      "Payment details cannot be verified right now. Please try later or contact our team.",
+    checkoutNotConfigured:
+      "No payment method is approved yet. Please contact our team to verify arrangements.",
     methodNotice: "Approved payment methods will appear here only after production activation.",
   },
 } satisfies Record<Language, Record<string, string>>;
@@ -230,9 +239,6 @@ function methodsFromConfig(configured: PublicPaymentMethod[]) {
     Icon: METHOD_ICONS[entry.method],
   }));
 }
-
-export const publicDonationCheckoutEnabled =
-  import.meta.env.VITE_PUBLIC_DONATION_CHECKOUT_ENABLED === "true";
 
 export function createDonationRequest(
   input: Omit<DonationRequestPayload, "currency">,
@@ -288,7 +294,8 @@ function DonateRoute() {
   return (
     <DonatePage
       initialSlots={loaderData.slots}
-      initialMethods={loaderData.paymentMethods}
+      initialMethods={loaderData.checkoutState.methods}
+      checkoutState={loaderData.checkoutState}
       initialSearch={Route.useSearch()}
     />
   );
@@ -298,11 +305,13 @@ export function DonatePage({
   initialSlots,
   initialMethods,
   initialSearch,
-  checkoutEnabled = publicDonationCheckoutEnabled,
+  checkoutState,
+  checkoutEnabled = checkoutState?.state === "ready",
 }: {
   initialSlots: DocumentSlot[];
   initialMethods: PublicPaymentMethod[];
   initialSearch: DonateSearch;
+  checkoutState?: PublicCheckoutState;
   checkoutEnabled?: boolean;
 }) {
   const search = initialSearch;
@@ -328,11 +337,18 @@ export function DonatePage({
   const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const [returnState, setReturnState] = useState<DonationReturnState | null>(null);
   const checkoutIntentRef = useRef<{ fingerprint: string; key: string } | null>(null);
-  const methods = useMemo(() => methodsFromConfig(initialMethods), [initialMethods]);
+  const availableMethods = useMemo(
+    () =>
+      initialMethods.filter(
+        (entry) => !entry.purposes || entry.purposes.includes(checkoutPurpose(purpose)),
+      ),
+    [initialMethods, purpose],
+  );
+  const methods = useMemo(() => methodsFromConfig(availableMethods), [availableMethods]);
 
   useEffect(() => {
-    setMethod((selected) => reconcileDonationMethod(selected, initialMethods));
-  }, [initialMethods]);
+    setMethod((selected) => reconcileDonationMethod(selected, availableMethods));
+  }, [availableMethods]);
 
   useEffect(() => {
     if (!attribution) return;
@@ -390,7 +406,7 @@ export function DonatePage({
       return;
     }
 
-    if (!isDonationMethodAvailable(method, initialMethods)) {
+    if (!isDonationMethodAvailable(method, availableMethods)) {
       setError(t.methodNotice);
       return;
     }
@@ -405,7 +421,9 @@ export function DonatePage({
 
     try {
       const checkoutExperience = checkoutExperienceFromViewport(window.innerWidth);
+      const selectedConfig = availableMethods.find((entry) => entry.method === method);
       const intentDetails = {
+        expectedConfigVersion: selectedConfig?.configVersion ?? 0,
         amountCents: Math.round(amountHkd * 100),
         purpose,
         customPurpose,
@@ -601,7 +619,11 @@ export function DonatePage({
             {!checkoutEnabled && (
               <div className="mb-5 rounded-md border border-[var(--color-secondary)] bg-[var(--color-secondary-highlight)] p-4">
                 <p className="text-sm font-semibold leading-6 text-[var(--color-panel)]">
-                  {t.checkoutUnavailable}
+                  {checkoutState?.state === "unavailable"
+                    ? t.checkoutTemporarilyUnavailable
+                    : checkoutState?.state === "not_configured"
+                      ? t.checkoutNotConfigured
+                      : t.checkoutUnavailable}
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <a href={`mailto:${brand.org.donationEmail}`} className="btn-secondary min-h-11">

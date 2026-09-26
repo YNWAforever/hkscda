@@ -23,10 +23,21 @@ describe("loadPublicPaymentMethods", () => {
       { method: "fps", display_label_zh: "轉數快 FPS", display_label_en: "FPS", details: {} },
     ]);
     const result = await loadPublicPaymentMethods(client);
-    expect(result).toEqual([
-      { method: "stripe", displayLabelZh: "信用卡", displayLabelEn: "Card", details: {} },
-      { method: "fps", displayLabelZh: "轉數快 FPS", displayLabelEn: "FPS", details: {} },
-    ]);
+    expect(result).toEqual({
+      state: "ready",
+      methods: [
+        { method: "stripe", displayLabelZh: "信用卡", displayLabelEn: "Card", details: {} },
+        { method: "fps", displayLabelZh: "轉數快 FPS", displayLabelEn: "FPS", details: {} },
+      ],
+    });
+  });
+
+  test("reports a true empty configuration separately", async () => {
+    const { client } = fakeClient([]);
+    expect(await loadPublicPaymentMethods(client)).toEqual({
+      state: "not_configured",
+      methods: [],
+    });
   });
 
   test("filters on published state and public visibility via eq()", async () => {
@@ -36,17 +47,17 @@ describe("loadPublicPaymentMethods", () => {
     expect(eq).toHaveBeenCalledWith("is_publicly_visible", true);
   });
 
-  test("returns an empty array when the query errors, instead of throwing", async () => {
+  test("reports unavailable when the query errors", async () => {
     const { client } = fakeClient([], { message: "connection refused" });
     const result = await loadPublicPaymentMethods(client);
-    expect(result).toEqual([]);
+    expect(result).toEqual({ state: "unavailable", methods: [] });
   });
 
-  test("skips a row that fails to parse instead of throwing", async () => {
+  test("reports unavailable for a malformed published row", async () => {
     const { client } = fakeClient([
       { method: "not_a_real_method", display_label_zh: "x", display_label_en: "y", details: {} },
     ]);
     const result = await loadPublicPaymentMethods(client);
-    expect(result).toEqual([]);
+    expect(result).toEqual({ state: "unavailable", methods: [] });
   });
 });

@@ -37,6 +37,7 @@ function createFakeRepository(): DonationRepository & {
     donations,
     payments,
     resolvedContacts,
+    async admitNewCheckout() {},
     async resolvePublicIdentity(contact) {
       resolvedContacts.push(contact);
       return { supporterId: supporter.id, kind: "existing" };
@@ -122,6 +123,7 @@ const providers: PaymentProviders = {
 const baseInput = {
   idempotencyKey: "e15e9832-469b-4710-b2ea-244d8a39aa12",
   amountCents: 30000,
+  expectedConfigVersion: 1,
   currency: "HKD" as const,
   purpose: "medical" as const,
   receiptRequested: true,
@@ -135,6 +137,32 @@ const baseInput = {
 };
 
 describe("createDonation", () => {
+  test("disabled_policy_has_zero_side_effects", async () => {
+    const repository = Object.assign(createFakeRepository(), {
+      admitNewCheckout: async () => {
+        throw new Error("checkout disabled");
+      },
+    });
+    let providerCalls = 0;
+    await expect(
+      createDonation({
+        input: { ...baseInput, method: "stripe" as const, expectedConfigVersion: 1 },
+        repository,
+        providers: {
+          ...providers,
+          async createStripeCheckout(input) {
+            providerCalls += 1;
+            return providers.createStripeCheckout(input);
+          },
+        },
+      }),
+    ).rejects.toThrow("checkout disabled");
+    expect(repository.resolvedContacts).toHaveLength(0);
+    expect(repository.donations).toHaveLength(0);
+    expect(repository.payments).toHaveLength(0);
+    expect(providerCalls).toBe(0);
+  });
+
   test("replays the same checkout intent without a second donation, payment, or provider call", async () => {
     const repository = createFakeRepository();
     let checkoutCalls = 0;
