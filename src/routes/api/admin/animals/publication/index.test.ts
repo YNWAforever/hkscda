@@ -16,6 +16,152 @@ afterAll(() => {
   mock.module("../../../../../lib/donations/supabase.server", () => realSupabaseServerModule);
 });
 
+function queryRow(data: unknown) {
+  const query = {
+    eq: () => query,
+    gt: () => query,
+    maybeSingle: async () => ({ data, error: null }),
+  };
+  return { select: () => query };
+}
+
+test("does not expose a preview owned by another staff member before the publish RPC rejects it", async () => {
+  const download = mock(async () => ({ data: new Blob(["private image"]), error: null }));
+  const upload = mock(async () => ({ error: null }));
+  activeClient = {
+    from: (table: string) => {
+      expect(table).toBe("animal_publication_preview");
+      const filters = new Map<string, unknown>();
+      const query = {
+        eq(column: string, value: unknown) {
+          filters.set(column, value);
+          return query;
+        },
+        gt() {
+          return query;
+        },
+        async maybeSingle() {
+          return {
+            data:
+              filters.get("created_by") === "staff-user"
+                ? null
+                : { body: { draft_image_path: "animal-1/private-draft.jpg" } },
+            error: null,
+          };
+        },
+      };
+      return { select: () => query };
+    },
+    storage: {
+      from: (bucket: string) =>
+        bucket === "animal-draft-images"
+          ? { download }
+          : {
+              upload,
+              getPublicUrl: () => ({ data: { publicUrl: "https://example.test/leaked.jpg" } }),
+            },
+    },
+    rpc: async () => ({ data: { kind: "conflict" }, error: null }),
+  };
+
+  const handlers = Route.options.server?.handlers;
+  const handler = handlers && typeof handlers !== "function" ? handlers.POST : undefined;
+  if (!handler) throw new Error("Animal publication POST handler missing");
+  const response = await handler({
+    request: new Request("http://localhost/api/admin/animals/publication/", {
+      method: "POST",
+      body: JSON.stringify({ kind: "publish", preview_id: "preview-1", animal_id: "animal-1" }),
+    }),
+  } as never);
+
+  if (!(response instanceof Response)) throw new Error("Expected HTTP response");
+  expect(response.status).toBe(409);
+  expect(download).not.toHaveBeenCalled();
+  expect(upload).not.toHaveBeenCalled();
+});
+
+test("does not promote images from a preview of an older draft revision", async () => {
+  const download = mock(async () => ({ data: new Blob(["old image"]), error: null }));
+  const upload = mock(async () => ({ error: null }));
+  activeClient = {
+    from: (table: string) => {
+      if (table === "animal_publication_preview")
+        return queryRow({ body: { draft_image_path: "animal-1/old.jpg" }, draft_revision: 1 });
+      if (table === "animal_draft") return queryRow({ revision: 2 });
+      throw new Error("Unexpected table: " + table);
+    },
+    storage: {
+      from: (bucket: string) =>
+        bucket === "animal-draft-images"
+          ? { download }
+          : {
+              upload,
+              getPublicUrl: () => ({ data: { publicUrl: "https://example.test/old.jpg" } }),
+            },
+    },
+    rpc: async () => ({ data: { kind: "conflict" }, error: null }),
+  };
+
+  const handlers = Route.options.server?.handlers;
+  const handler = handlers && typeof handlers !== "function" ? handlers.POST : undefined;
+  if (!handler) throw new Error("Animal publication POST handler missing");
+  const response = await handler({
+    request: new Request("http://localhost/api/admin/animals/publication/", {
+      method: "POST",
+      body: JSON.stringify({ kind: "publish", preview_id: "preview-1", animal_id: "animal-1" }),
+    }),
+  } as never);
+
+  if (!(response instanceof Response)) throw new Error("Expected HTTP response");
+  expect(response.status).toBe(409);
+  expect(download).not.toHaveBeenCalled();
+  expect(upload).not.toHaveBeenCalled();
+});
+
+test("does not promote an unreviewed animal image before editorial approval rejects publish", async () => {
+  const download = mock(async () => ({ data: new Blob(["unreviewed image"]), error: null }));
+  const upload = mock(async () => ({ error: null }));
+  const rpc = mock(async () => ({ data: null, error: { code: "22023" } }));
+  activeClient = {
+    from: (table: string) => {
+      if (table === "animal_publication_preview")
+        return queryRow({
+          body: { publication_state: "published", draft_image_path: "animal-1/unreviewed.jpg" },
+          draft_revision: 1,
+        });
+      if (table === "animal_draft") return queryRow({ revision: 1 });
+      if (table === "editorial_content_review") return queryRow(null);
+      throw new Error("Unexpected table: " + table);
+    },
+    storage: {
+      from: (bucket: string) =>
+        bucket === "animal-draft-images"
+          ? { download }
+          : {
+              upload,
+              getPublicUrl: () => ({ data: { publicUrl: "https://example.test/unreviewed.jpg" } }),
+            },
+    },
+    rpc,
+  };
+
+  const handlers = Route.options.server?.handlers;
+  const handler = handlers && typeof handlers !== "function" ? handlers.POST : undefined;
+  if (!handler) throw new Error("Animal publication POST handler missing");
+  const response = await handler({
+    request: new Request("http://localhost/api/admin/animals/publication/", {
+      method: "POST",
+      body: JSON.stringify({ kind: "publish", preview_id: "preview-1", animal_id: "animal-1" }),
+    }),
+  } as never);
+
+  if (!(response instanceof Response)) throw new Error("Expected HTTP response");
+  expect(response.status).toBe(422);
+  expect(download).not.toHaveBeenCalled();
+  expect(upload).not.toHaveBeenCalled();
+  expect(rpc).not.toHaveBeenCalled();
+});
+
 test("a failed publish keeps existing public animal images", async () => {
   const remove = mock(async (_paths: string[]) => ({ error: null }));
   const upload = mock(async (_path: string) => ({
@@ -23,19 +169,14 @@ test("a failed publish keeps existing public animal images", async () => {
   }));
   activeClient = {
     from: (table: string) => {
-      expect(table).toBe("animal_publication_preview");
-      return {
-        select: () => ({
-          eq: () => ({
-            eq: () => ({
-              maybeSingle: async () => ({
-                data: { body: { draft_image_path: "draft-cover.jpg" } },
-                error: null,
-              }),
-            }),
-          }),
-        }),
-      };
+      if (table === "animal_publication_preview")
+        return queryRow({
+          body: { publication_state: "published", draft_image_path: "draft-cover.jpg" },
+          draft_revision: 1,
+        });
+      if (table === "animal_draft") return queryRow({ revision: 1 });
+      if (table === "editorial_content_review") return queryRow({ classification: "approved" });
+      throw new Error("Unexpected table: " + table);
     },
     storage: {
       from: (bucket: string) =>
@@ -72,18 +213,16 @@ test("publish ignores caller-supplied media that was not in the preview", async 
     error: null,
   }));
   activeClient = {
-    from: () => ({
-      select: () => ({
-        eq: () => ({
-          eq: () => ({
-            maybeSingle: async () => ({
-              data: { body: { image_url: "https://example.test/reviewed.jpg" } },
-              error: null,
-            }),
-          }),
-        }),
-      }),
-    }),
+    from: (table: string) => {
+      if (table === "animal_publication_preview")
+        return queryRow({
+          body: { publication_state: "published", image_url: "https://example.test/reviewed.jpg" },
+          draft_revision: 1,
+        });
+      if (table === "animal_draft") return queryRow({ revision: 1 });
+      if (table === "editorial_content_review") return queryRow({ classification: "approved" });
+      throw new Error("Unexpected table: " + table);
+    },
     storage: {
       from: () => {
         throw new Error("No upload was reviewed");

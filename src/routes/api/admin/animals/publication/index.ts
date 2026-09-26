@@ -42,19 +42,55 @@ export const Route = createFileRoute("/api/admin/animals/publication/")({
           typeof command.preview_id === "string" &&
           typeof command.animal_id === "string"
         ) {
+          // Check the publish RPC's ownership, expiry and revision gates before
+          // copying an already-invalid preview's private media to the public bucket.
           const { data: preview, error: previewError } = await c
             .from("animal_publication_preview")
-            .select("body")
+            .select("body,draft_revision")
             .eq("id", command.preview_id)
             .eq("animal_id", command.animal_id)
+            .eq("created_by", a.authUserId)
+            .gt("expires_at", new Date().toISOString())
             .maybeSingle();
           if (previewError) throw previewError;
-          const body = preview?.body as
+          const { data: draft, error: draftError } = preview
+            ? await c
+                .from("animal_draft")
+                .select("revision")
+                .eq("id", command.animal_id)
+                .maybeSingle()
+            : { data: null, error: null };
+          if (draftError) throw draftError;
+          const candidateBody = (
+            preview && draft && String(preview.draft_revision) === String(draft.revision)
+              ? preview.body
+              : undefined
+          ) as
             | {
+                publication_state?: unknown;
                 draft_image_path?: unknown;
                 gallery?: Array<Record<string, unknown>>;
               }
             | undefined;
+          // Only a version with an approved editorial review may expose its
+          // private drafts through the public image bucket.
+          let body: typeof candidateBody;
+          if (candidateBody?.publication_state === "published" && draft) {
+            const { data: review, error: reviewError } = await c
+              .from("editorial_content_review")
+              .select("classification")
+              .eq("entity_kind", "animal")
+              .eq("entity_id", command.animal_id)
+              .eq("revision_key", String(draft.revision))
+              .maybeSingle();
+            if (reviewError) throw reviewError;
+            if (review?.classification !== "approved")
+              return Response.json(
+                { error: "動物草稿資料無效" },
+                { status: 422, headers: { "cache-control": "no-store" } },
+              );
+            body = candidateBody;
+          }
           if (Array.isArray(body?.gallery)) {
             const publicationGallery = [];
             for (const item of body.gallery) {
