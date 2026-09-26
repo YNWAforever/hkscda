@@ -68,9 +68,11 @@ export async function uploadAnimalPhoto(
     return { ok: false };
   }
 
-  const bucket = target.bucket;
-  const { error } = await uploadToSignedUrl(bucket, target.path, target.token, file);
-  if (error) return { ok: false };
-
-  return { ok: true, path: target.path, publicUrl: "" };
+  try {
+    const { error } = await uploadToSignedUrl(target.bucket, target.path, target.token, file);
+    if (error) return { ok: false };
+    return { ok: true, path: target.path, publicUrl: "" };
+  } catch {
+    return { ok: false };
+  }
 }
