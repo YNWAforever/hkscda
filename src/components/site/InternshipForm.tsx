@@ -133,12 +133,17 @@ export function InternshipForm() {
                   key={file.id}
                   className="mr-3 underline"
                   onClick={async () => {
-                    const response = await fetch(`/api/internships/attachment?id=${file.id}`, {
-                      headers: { authorization: `Bearer ${token}` },
-                    });
-                    const data = await response.json();
-                    if (response.ok) window.open(data.url, "_blank", "noopener,noreferrer");
-                    else setError("未能開啟附件");
+                    try {
+                      const response = await fetch(`/api/internships/attachment?id=${file.id}`, {
+                        headers: { authorization: `Bearer ${token}` },
+                      });
+                      if (!response.ok) throw new Error("未能開啟附件");
+                      const data = (await response.json()) as { url?: string };
+                      if (typeof data?.url !== "string") throw new Error("附件連結無效");
+                      window.open(data.url, "_blank", "noopener,noreferrer");
+                    } catch {
+                      setError("未能開啟附件");
+                    }
                   }}
                 >
                   {file.label}

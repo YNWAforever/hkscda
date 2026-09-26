@@ -3,6 +3,10 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createSupabaseServiceClient } from "../../../lib/donations/supabase.server";
 import {
+  cleanupExpiredInternshipUploads,
+  createSupabaseInternshipUploadCleanupPort,
+} from "../../../lib/internships/uploadCleanup.server";
+import {
   cleanupExpiredAdoptionUploads,
   createSupabaseAdoptionUploadCleanupPort,
 } from "../../../lib/publicAdoption/uploadIntent.server";
@@ -17,6 +21,7 @@ type Dependencies = {
   createClient: typeof createSupabaseServiceClient;
   runAdoption(client: SupabaseClient): ReturnType<typeof cleanupExpiredAdoptionUploads>;
   runSponsorship(client: SupabaseClient): ReturnType<typeof cleanupExpiredSponsorshipProofUploads>;
+  runInternship(client: SupabaseClient): ReturnType<typeof cleanupExpiredInternshipUploads>;
   logger: Pick<Console, "error">;
 };
 
@@ -27,6 +32,8 @@ export function createPublicUploadCleanupHandler({
     cleanupExpiredAdoptionUploads(createSupabaseAdoptionUploadCleanupPort(client)),
   runSponsorship = (client) =>
     cleanupExpiredSponsorshipProofUploads(createSupabaseSponsorshipProofCleanupPort(client)),
+  runInternship = (client) =>
+    cleanupExpiredInternshipUploads(createSupabaseInternshipUploadCleanupPort(client)),
   logger = console,
 }: Partial<Dependencies> = {}) {
   return async (request: Request): Promise<Response> => {
@@ -37,19 +44,25 @@ export function createPublicUploadCleanupHandler({
       );
     }
     const client = createClient();
-    const [adoption, sponsorship] = await Promise.allSettled([
+    const [adoption, sponsorship, internship] = await Promise.allSettled([
       runAdoption(client),
       runSponsorship(client),
+      runInternship(client),
     ]);
     if (adoption.status === "rejected")
       logger.error("Adoption upload cleanup failed", adoption.reason);
     if (sponsorship.status === "rejected")
       logger.error("Sponsorship proof cleanup failed", sponsorship.reason);
-    const failed = adoption.status === "rejected" || sponsorship.status === "rejected";
+    if (internship.status === "rejected")
+      logger.error("Internship upload cleanup failed", internship.reason);
+    const failed = [adoption, sponsorship, internship].some(
+      (result) => result.status === "rejected" || result.value.failed > 0,
+    );
     return Response.json(
       {
         adoption: adoption.status === "fulfilled" ? adoption.value : null,
         sponsorship: sponsorship.status === "fulfilled" ? sponsorship.value : null,
+        internship: internship.status === "fulfilled" ? internship.value : null,
       },
       { status: failed ? 500 : 200, headers: { "cache-control": "no-store" } },
     );
