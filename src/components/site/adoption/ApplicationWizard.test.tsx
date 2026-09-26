@@ -46,6 +46,22 @@ describe("application wizard grouped visit state", () => {
     expect(restored.visit.catTimeWindows).toEqual(["weekday_evening"]);
   });
 
+  test("requires fresh consent when a restored draft uses an older terms version", () => {
+    const current = mergeDraftValues(
+      createDefaultValues(),
+      { terms: { agreed: true, version: createDefaultValues().terms.version } },
+      ["cat"],
+    );
+    expect(current.terms.agreed).toBe(true);
+
+    const outdated = mergeDraftValues(
+      createDefaultValues(),
+      { terms: { agreed: true, version: "adoption-terms-2025-01" } },
+      ["cat"],
+    );
+    expect(outdated.terms).toEqual({ agreed: false, version: createDefaultValues().terms.version });
+  });
+
   test("prunes only inapplicable windows after an explicit species change", () => {
     const nextVisit = normalizeApplicationVisitValues(
       {

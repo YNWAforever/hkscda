@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
+import { ADOPTION_TERMS_VERSION } from "../../../lib/publicAdoption/schemas";
 import { hashStatusToken } from "../../../lib/publicAdoption/statusToken.server";
 import { createAdoptionApplicationsHandler } from "./applications";
 
@@ -12,7 +13,10 @@ const parsed = {
   photos: [
     { category: "home", fileName: "home.jpg", mimeType: "image/jpeg", sizeBytes: 10, storagePath },
   ],
-  payload: { animalPreferences: [{ animalId: "animal-1", animalType: "cat" }] },
+  payload: {
+    animalPreferences: [{ animalId: "animal-1", animalType: "cat" }],
+    terms: { agreed: true, version: ADOPTION_TERMS_VERSION },
+  },
 };
 
 function request() {
@@ -78,6 +82,28 @@ describe("public adoption submission authorization and retry", () => {
     const response = await createAdoptionApplicationsHandler(dependencies)(request());
     expect(response.status).toBe(403);
     expect(calls).toEqual([]);
+  });
+
+  test("rejects an outdated terms version for a new application but preserves completed retries", async () => {
+    const outdated = {
+      ...parsed,
+      payload: {
+        ...parsed.payload,
+        terms: { agreed: true, version: "adoption-terms-2025-01" },
+      },
+    };
+    const fresh = deps({ parse: () => outdated as never });
+    const freshResponse = await createAdoptionApplicationsHandler(fresh.dependencies)(request());
+    expect(freshResponse.status).toBe(400);
+    expect(fresh.calls).toEqual([]);
+
+    const retry = deps({
+      parse: () => outdated as never,
+      hasCompleted: async () => "recovered" as const,
+    });
+    const retryResponse = await createAdoptionApplicationsHandler(retry.dependencies)(request());
+    expect(retryResponse.status).toBe(200);
+    expect(retry.calls).toEqual(["markSubmitted"]);
   });
 
   test("returns a saved application's status URL on same-ID retry", async () => {

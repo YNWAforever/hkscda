@@ -25,6 +25,7 @@ import {
   matchesAdoptionUploadIntent,
   validateAdoptionUploadIntent,
 } from "../../../lib/publicAdoption/uploadIntent.server";
+import { ADOPTION_TERMS_VERSION } from "../../../lib/publicAdoption/schemas";
 import type { RateLimitResult } from "../../../lib/security/rate-limit.server";
 import {
   enforceRateLimit,
@@ -175,6 +176,10 @@ export function createAdoptionApplicationsHandler({
       };
       const existingResponse = await completionResponse(await lookupCompletion());
       if (existingResponse) return existingResponse;
+
+      if (parsed.payload.terms.version !== ADOPTION_TERMS_VERSION) {
+        return jsonNoStore({ error: "請重新閱讀並同意最新的領養條款。" }, { status: 400 });
+      }
 
       if (!validateAdoptionUploadIntent(intent, intentInput)) {
         return jsonNoStore({ error: "Photo upload authorization expired" }, { status: 403 });

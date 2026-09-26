@@ -246,10 +246,8 @@ export function mergeDraftValues(
     readiness: { ...defaultValues.readiness, ...readiness },
     visit: normalizeApplicationVisitValues(mergedVisit, species),
     terms: {
-      ...defaultValues.terms,
-      ...terms,
-      version:
-        typeof terms.version === "string" && terms.version ? terms.version : ADOPTION_TERMS_VERSION,
+      agreed: terms.version === ADOPTION_TERMS_VERSION && terms.agreed === true,
+      version: ADOPTION_TERMS_VERSION,
     },
     animalPreferences: [],
     sourceMetadata: { ...defaultValues.sourceMetadata, ...sourceMetadata },
