@@ -9,7 +9,7 @@ test("release manifest covers every new public table, RPC, and additive column a
   const columns = releaseManifest
     .filter((item) => item.kind === "column")
     .map((item) => `${item.table}.${item.name}`);
-  expect(tables).toHaveLength(13);
+  expect(tables).toHaveLength(16);
   expect(functions.length).toBeGreaterThanOrEqual(45);
   expect(columns).toContain("public_status_token.submission_fingerprint");
   expect(columns).toContain("donation.idempotency_fingerprint");
@@ -35,6 +35,9 @@ test("release manifest covers every new public table, RPC, and additive column a
     "get_crm_tag_bulk_operation",
     "create_crm_tag_bulk_preview",
     "apply_crm_tag_bulk_item",
+    "get_volunteer_review_bulk_operation",
+    "create_volunteer_review_bulk_preview",
+    "apply_volunteer_review_bulk_item",
   ]) {
     expect(functions).toContain(name);
   }
