@@ -1,6 +1,6 @@
 # T16 / VOL-01, VOL-02 — volunteer availability and layout
 
-Draft PR: pending. Code commit: `6ac152e720b0b087919954ab83d1e3e94338a14f`. Branch `codex/audit-volunteer-availability-20260927`, stacked on T15 PR #150 at `040bc1b4137289816f12aca97eb3f71be6b413a7`.
+Draft PR #151. Code commit: `6ac152e720b0b087919954ab83d1e3e94338a14f`. Branch `codex/audit-volunteer-availability-20260927`, stacked on T15 PR #150 at `040bc1b4137289816f12aca97eb3f71be6b413a7`.
 
 ## Before and after
 
