@@ -170,8 +170,11 @@ function applyFilters(rows, params) {
     const value = rest.join(".");
     if (op === "eq") out = out.filter((row) => String(row[key]) === value);
     else if (op === "in") {
-      const set = new Set(value.replace(/^(|)$/g, "").split(","));
+      const list = value.startsWith("(") && value.endsWith(")") ? value.slice(1, -1) : value;
+      const set = new Set(list.split(","));
       out = out.filter((row) => set.has(String(row[key])));
+    } else if (op === "is" && value === "null") {
+      out = out.filter((row) => row[key] === null);
     }
   }
   return out;

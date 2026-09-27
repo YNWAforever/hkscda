@@ -84,3 +84,7 @@ T20 production metadata read-only: Vercel deployment dpl_Ggm7uaMZXqFFw7yqZyE7z8D
 | npm.cmd run build | 0 | Vercel client/server output built; separate from typecheck |
 | node --test scripts/ci/supabase-fixture.test.mjs | 0 | new RPC fixture returns valid second page and no notes |
 | Browser/paid transform/private preview | not-run | T18 browser launcher failure and external provider/preview gates |
+
+### T21 CI fixture correction on PR #155
+
+Initial GitHub Actions run 36329614637: verify, RLS matrix and performance passed; brand and a11y failed because public animal detail routes returned 404. A red fixture HTTP test reproduced 406 for the real published/id/status-in/retired-null/eligibility query. The fixture's in(...) parser retained parentheses, and its is.null predicate was absent. Both were corrected; node --test scripts/ci/supabase-fixture.test.mjs exits 0. Remote brand/a11y rerun is pending at this source SHA.

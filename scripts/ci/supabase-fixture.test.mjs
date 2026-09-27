@@ -63,6 +63,14 @@ test("CI fixture serves public catalogues and paginated adoption fees", async ()
     );
     assert.equal((await detail.json()).id, "00000000-0000-4000-8000-000000000001");
 
+    const publishedDetail = await fetch(
+      "http://127.0.0.1:" + port +
+        "/rest/v1/animals?publication_state=eq.published&id=eq.00000000-0000-4000-8000-000000000001&status=in.(available,fostered)&retired_at=is.null&adoption_eligible=eq.true&type=eq.cat",
+      { headers: { accept: "application/vnd.pgrst.object+json" } },
+    );
+    assert.equal(publishedDetail.status, 200);
+    assert.equal((await publishedDetail.json()).name, "測試貓 01");
+
     const feeUrl =
       "http://127.0.0.1:" + port + "/rest/v1/adoption_fees?is_published=eq.true&order=animal_type.asc,sort_order.asc,id.asc";
     const firstFeePage = await fetch(feeUrl + "&offset=0&limit=1", {
