@@ -163,6 +163,7 @@ import { Route as ApiAdminExportsDonationsDotcsvRouteImport } from './routes/api
 import { Route as ApiAdminDonationsManualRouteImport } from './routes/api/admin/donations/manual'
 import { Route as ApiAdminDocumentsUploadTargetRouteImport } from './routes/api/admin/documents/upload-target'
 import { Route as ApiAdminDocumentsIdRouteImport } from './routes/api/admin/documents/$id'
+import { Route as ApiAdminContentReviewBulkRouteImport } from './routes/api/admin/content/review-bulk'
 import { Route as ApiAdminContentLinkSearchRouteImport } from './routes/api/admin/content/link-search'
 import { Route as ApiAdminContentIdRouteImport } from './routes/api/admin/content/$id'
 import { Route as ApiAdminAnnualReportsIdRouteImport } from './routes/api/admin/annual-reports/$id'
@@ -1078,6 +1079,12 @@ const ApiAdminDocumentsIdRoute = ApiAdminDocumentsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => ApiAdminDocumentsRoute,
 } as any)
+const ApiAdminContentReviewBulkRoute =
+  ApiAdminContentReviewBulkRouteImport.update({
+    id: '/review-bulk',
+    path: '/review-bulk',
+    getParentRoute: () => ApiAdminContentRoute,
+  } as any)
 const ApiAdminContentLinkSearchRoute =
   ApiAdminContentLinkSearchRouteImport.update({
     id: '/link-search',
@@ -1831,6 +1838,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/annual-reports/$id': typeof ApiAdminAnnualReportsIdRouteWithChildren
   '/api/admin/content/$id': typeof ApiAdminContentIdRouteWithChildren
   '/api/admin/content/link-search': typeof ApiAdminContentLinkSearchRoute
+  '/api/admin/content/review-bulk': typeof ApiAdminContentReviewBulkRoute
   '/api/admin/documents/$id': typeof ApiAdminDocumentsIdRouteWithChildren
   '/api/admin/documents/upload-target': typeof ApiAdminDocumentsUploadTargetRoute
   '/api/admin/donations/manual': typeof ApiAdminDonationsManualRoute
@@ -2089,6 +2097,7 @@ export interface FileRoutesByTo {
   '/api/admin/annual-reports/$id': typeof ApiAdminAnnualReportsIdRouteWithChildren
   '/api/admin/content/$id': typeof ApiAdminContentIdRouteWithChildren
   '/api/admin/content/link-search': typeof ApiAdminContentLinkSearchRoute
+  '/api/admin/content/review-bulk': typeof ApiAdminContentReviewBulkRoute
   '/api/admin/documents/$id': typeof ApiAdminDocumentsIdRouteWithChildren
   '/api/admin/documents/upload-target': typeof ApiAdminDocumentsUploadTargetRoute
   '/api/admin/donations/manual': typeof ApiAdminDonationsManualRoute
@@ -2349,6 +2358,7 @@ export interface FileRoutesById {
   '/api/admin/annual-reports/$id': typeof ApiAdminAnnualReportsIdRouteWithChildren
   '/api/admin/content/$id': typeof ApiAdminContentIdRouteWithChildren
   '/api/admin/content/link-search': typeof ApiAdminContentLinkSearchRoute
+  '/api/admin/content/review-bulk': typeof ApiAdminContentReviewBulkRoute
   '/api/admin/documents/$id': typeof ApiAdminDocumentsIdRouteWithChildren
   '/api/admin/documents/upload-target': typeof ApiAdminDocumentsUploadTargetRoute
   '/api/admin/donations/manual': typeof ApiAdminDonationsManualRoute
@@ -2610,6 +2620,7 @@ export interface FileRouteTypes {
     | '/api/admin/annual-reports/$id'
     | '/api/admin/content/$id'
     | '/api/admin/content/link-search'
+    | '/api/admin/content/review-bulk'
     | '/api/admin/documents/$id'
     | '/api/admin/documents/upload-target'
     | '/api/admin/donations/manual'
@@ -2868,6 +2879,7 @@ export interface FileRouteTypes {
     | '/api/admin/annual-reports/$id'
     | '/api/admin/content/$id'
     | '/api/admin/content/link-search'
+    | '/api/admin/content/review-bulk'
     | '/api/admin/documents/$id'
     | '/api/admin/documents/upload-target'
     | '/api/admin/donations/manual'
@@ -3127,6 +3139,7 @@ export interface FileRouteTypes {
     | '/api/admin/annual-reports/$id'
     | '/api/admin/content/$id'
     | '/api/admin/content/link-search'
+    | '/api/admin/content/review-bulk'
     | '/api/admin/documents/$id'
     | '/api/admin/documents/upload-target'
     | '/api/admin/donations/manual'
@@ -4476,6 +4489,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminDocumentsIdRouteImport
       parentRoute: typeof ApiAdminDocumentsRoute
     }
+    '/api/admin/content/review-bulk': {
+      id: '/api/admin/content/review-bulk'
+      path: '/review-bulk'
+      fullPath: '/api/admin/content/review-bulk'
+      preLoaderRoute: typeof ApiAdminContentReviewBulkRouteImport
+      parentRoute: typeof ApiAdminContentRoute
+    }
     '/api/admin/content/link-search': {
       id: '/api/admin/content/link-search'
       path: '/link-search'
@@ -5515,6 +5535,7 @@ const ApiAdminContentIdRouteWithChildren =
 interface ApiAdminContentRouteChildren {
   ApiAdminContentIdRoute: typeof ApiAdminContentIdRouteWithChildren
   ApiAdminContentLinkSearchRoute: typeof ApiAdminContentLinkSearchRoute
+  ApiAdminContentReviewBulkRoute: typeof ApiAdminContentReviewBulkRoute
   ApiAdminContentNotificationDraftsIdRoute: typeof ApiAdminContentNotificationDraftsIdRoute
   ApiAdminContentSocialCopyIdRoute: typeof ApiAdminContentSocialCopyIdRoute
   ApiAdminContentUpdatesUpdateIdNotificationDraftsRoute: typeof ApiAdminContentUpdatesUpdateIdNotificationDraftsRoute
@@ -5523,6 +5544,7 @@ interface ApiAdminContentRouteChildren {
 const ApiAdminContentRouteChildren: ApiAdminContentRouteChildren = {
   ApiAdminContentIdRoute: ApiAdminContentIdRouteWithChildren,
   ApiAdminContentLinkSearchRoute: ApiAdminContentLinkSearchRoute,
+  ApiAdminContentReviewBulkRoute: ApiAdminContentReviewBulkRoute,
   ApiAdminContentNotificationDraftsIdRoute:
     ApiAdminContentNotificationDraftsIdRoute,
   ApiAdminContentSocialCopyIdRoute: ApiAdminContentSocialCopyIdRoute,

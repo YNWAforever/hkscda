@@ -50,3 +50,15 @@ test("animal bulk controls appear only to admins while staff keep the individual
   expect(admin).toContain("選取全部動物資料（最多 1000 筆）");
   role = "staff";
 });
+
+test("CMS bulk controls appear only to admins and do not remove individual review", () => {
+  role = "staff";
+  const staff = renderToStaticMarkup(<ContentReviewQueue initialKind="content" />);
+  expect(staff).not.toContain("批量送交 CMS 草稿來源審核");
+  expect(staff).toContain("開啟及核實來源");
+  role = "admin";
+  const admin = renderToStaticMarkup(<ContentReviewQueue initialKind="content" />);
+  expect(admin).toContain("批量送交 CMS 草稿來源審核");
+  expect(admin).toContain("選取全部宣傳內容（最多 1000 筆）");
+  role = "staff";
+});
