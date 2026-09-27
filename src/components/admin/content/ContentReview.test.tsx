@@ -47,7 +47,7 @@ test("animal bulk controls appear only to admins while staff keep the individual
   role = "admin";
   const admin = renderToStaticMarkup(<ContentReviewQueue initialKind="animal" />);
   expect(admin).toContain("批量送交動物草稿來源審核");
-  expect(admin).toContain("選取全部動物資料（最多 1000 筆）");
+  expect(admin).toContain("選取全部符合篩選的動物資料（最多 1000 筆）");
   role = "staff";
 });
 
@@ -59,6 +59,26 @@ test("CMS bulk controls appear only to admins and do not remove individual revie
   role = "admin";
   const admin = renderToStaticMarkup(<ContentReviewQueue initialKind="content" />);
   expect(admin).toContain("批量送交 CMS 草稿來源審核");
-  expect(admin).toContain("選取全部宣傳內容（最多 1000 筆）");
+  expect(admin).toContain("選取全部符合篩選的宣傳內容（最多 1000 筆）");
+  role = "staff";
+});
+
+test("CMS quality queue can open directly on the expired filter", () => {
+  role = "staff";
+  const html = renderToStaticMarkup(
+    <ContentReviewQueue initialKind="content" initialQuality="expired" />,
+  );
+  expect(html).toContain("品質隊列");
+  expect(html).toMatch(/<option value="expired" selected/);
+});
+
+test("filtered CMS quality queue cannot apply the draft bulk action", () => {
+  role = "admin";
+  const html = renderToStaticMarkup(
+    <ContentReviewQueue initialKind="content" initialQuality="demo" />,
+  );
+  expect(html).toContain("品質隊列供逐項核實");
+  expect(html).not.toContain("批量送交 CMS 草稿來源審核");
+  expect(html).not.toContain("選取本頁");
   role = "staff";
 });

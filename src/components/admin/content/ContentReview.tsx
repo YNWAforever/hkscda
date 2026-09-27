@@ -95,21 +95,29 @@ export function ContentReviewPanel({
 }
 export function ContentReviewQueue({
   initialKind = "content",
-}: { initialKind?: "animal" | "content" } = {}) {
+  initialQuality = "all",
+}: {
+  initialKind?: "animal" | "content";
+  initialQuality?: "all" | "demo" | "expired" | "missing_source";
+} = {}) {
   const [page, setPage] = useState(1);
   const [kind, setKind] = useState<"animal" | "content">(initialKind);
+  const [quality, setQuality] = useState<"all" | "demo" | "expired" | "missing_source">(
+    initialKind === "content" ? initialQuality : "all",
+  );
   const identity = useQuery(adminIdentityQueryOptions());
   const isAdmin = identity.data?.admin.role === "admin";
+  const canBulk = isAdmin && quality === "all";
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectionBusy, setSelectionBusy] = useState(false);
   const [selectionError, setSelectionError] = useState("");
-  const kindRef = useRef(kind);
-  kindRef.current = kind;
+  const filterRef = useRef(`${kind}:${quality}`);
+  filterRef.current = `${kind}:${quality}`;
   const query = useQuery({
-    queryKey: ["editorial-review", kind, page],
+    queryKey: ["editorial-review", kind, quality, page],
     queryFn: () =>
       fetchAdminJson<{ items: ReviewQueueRow[]; total: number }>(
-        `/api/admin/content-review?kind=${kind}&page=${page}`,
+        `/api/admin/content-review?kind=${kind}&quality=${quality}&page=${page}`,
       ),
   });
   const selectionDisabled =
@@ -148,14 +156,16 @@ export function ContentReviewQueue({
     setSelectionError("");
     try {
       const selectedKind = kind;
+      const selectedQuality = quality;
       const ids = await (selectedKind === "animal" ? collectAnimalReviewIds : collectCmsReviewIds)(
         query.data.total,
         async (nextPage) =>
           fetchAdminJson<{ items: ReviewQueueRow[]; total: number }>(
-            `/api/admin/content-review?kind=${selectedKind}&page=${nextPage}`,
+            `/api/admin/content-review?kind=${selectedKind}&quality=${selectedQuality}&page=${nextPage}`,
           ),
       );
-      if (kindRef.current !== selectedKind) throw new Error("資料類型已變更；請重新選取");
+      if (filterRef.current !== `${selectedKind}:${selectedQuality}`)
+        throw new Error("篩選已變更；請重新選取");
       setSelectedIds(ids);
     } catch (cause) {
       setSelectionError(cause instanceof Error ? cause.message : "無法固定選取範圍");
@@ -176,6 +186,7 @@ export function ContentReviewQueue({
           value={kind}
           onChange={(event) => {
             setKind(event.target.value as "animal" | "content");
+            setQuality("all");
             setPage(1);
             setSelectedIds([]);
             setSelectionError("");
@@ -185,12 +196,35 @@ export function ContentReviewQueue({
           <option value="animal">動物資料</option>
         </select>
       </label>
+      {kind === "content" && (
+        <label className="ml-3">
+          品質隊列
+          <select
+            className="ml-2 border p-2"
+            value={quality}
+            onChange={(event) => {
+              setQuality(event.target.value as typeof quality);
+              setPage(1);
+              setSelectedIds([]);
+              setSelectionError("");
+            }}
+          >
+            <option value="all">全部內容</option>
+            <option value="demo">示範內容</option>
+            <option value="expired">已過期內容</option>
+            <option value="missing_source">缺來源內容</option>
+          </select>
+        </label>
+      )}
+      {kind === "content" && quality !== "all" && (
+        <p>品質隊列供逐項核實；批量草稿送審請返回「全部內容」。</p>
+      )}
       {query.error && (
         <p role="alert">
           未能載入審核佇列。<button onClick={() => void query.refetch()}>重試</button>
         </p>
       )}
-      {isAdmin && (
+      {canBulk && (
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
@@ -208,7 +242,7 @@ export function ContentReviewQueue({
             }
             onClick={selectAllMatching}
           >
-            選取全部{kind === "animal" ? "動物資料" : "宣傳內容"}（最多 1000 筆）
+            選取全部符合篩選的{kind === "animal" ? "動物資料" : "宣傳內容"}（最多 1000 筆）
           </button>
           <button
             type="button"
@@ -229,7 +263,7 @@ export function ContentReviewQueue({
       <ul>
         {query.data?.items.map((row) => (
           <li key={row.entity_id} className="border-b py-3">
-            {isAdmin && (
+            {canBulk && (
               <label className="inline-flex min-h-11 items-center gap-2">
                 <input
                   type="checkbox"
@@ -245,6 +279,9 @@ export function ContentReviewQueue({
               {row.classification === "demo" && row.publication_state === "published"
                 ? " · 建議暫停公開（待授權）"
                 : ""}
+              {row.quality_reason === "demo" ? " · 示範內容待處理" : ""}
+              {row.quality_reason === "expired" ? " · 有效期已過" : ""}
+              {row.quality_reason === "missing_source" ? " · 來源未記錄" : ""}
             </p>
             {row.entity_kind === "content" ? (
               <Link
@@ -266,14 +303,14 @@ export function ContentReviewQueue({
           </li>
         ))}
       </ul>
-      {isAdmin && kind === "animal" && (
+      {canBulk && kind === "animal" && (
         <AnimalReviewBulkPanel
           selectedIds={selectedIds}
           filterKey={kind}
           selectionDisabled={selectionDisabled}
         />
       )}
-      {isAdmin && kind === "content" && (
+      {canBulk && kind === "content" && (
         <CmsReviewBulkPanel
           selectedIds={selectedIds}
           filterKey={kind}

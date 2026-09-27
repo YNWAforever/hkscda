@@ -79,8 +79,8 @@ const definitions: Record<TaskKey, TaskDefinition> = {
   },
   content_expired: {
     key: "content_expired",
-    label: "已過期公開內容",
-    href: "/admin/content",
+    label: "已過期內容",
+    href: "/admin/content?quality=expired",
   },
   media_failed: {
     key: "media_failed",
@@ -206,7 +206,7 @@ function specFor(key: Exclude<TaskKey, "media_failed">, now: string): CountSpec 
         table: "content_item",
         oldest: "effective_until",
         filters: [
-          { op: "eq", column: "status", value: "published" },
+          { op: "or", column: "", value: "status.eq.draft,status.eq.published" },
           { op: "lt", column: "effective_until", value: now },
         ],
       };

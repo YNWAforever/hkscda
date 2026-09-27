@@ -6,6 +6,16 @@ export const releaseManifest: SchemaRequirement[] = [
   {
     kind: "function",
     schema: "public",
+    name: "editorial_quality_queue",
+    feature: "cms-quality-queue",
+    required: true,
+    arguments: "p_actor uuid, p_page integer, p_quality text",
+    returns: "jsonb",
+    executeRoles: ["service_role"],
+  },
+  {
+    kind: "function",
+    schema: "public",
     name: "reconcile_manual_payment_atomic",
     feature: "manual-payment-atomic",
     required: true,

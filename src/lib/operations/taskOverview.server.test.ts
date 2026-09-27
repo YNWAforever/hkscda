@@ -12,6 +12,10 @@ test("each role receives only its own actionable 3-5 task destinations", () => {
   }
   expect(treasurer.map((card) => card.key)).not.toContain("adoption_unassigned");
   expect(staff.map((card) => card.key)).not.toContain("payment_pending");
+  expect(admin.find((card) => card.key === "content_expired")).toMatchObject({
+    label: "已過期內容",
+    href: "/admin/content?quality=expired",
+  });
 });
 
 test("failed source is unavailable, never zero, while other task counts remain", async () => {
