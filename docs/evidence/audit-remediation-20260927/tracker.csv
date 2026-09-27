@@ -14,7 +14,7 @@ SPON-03,待明確總額／偏好／月付性質,T08,open,no,no,no,no,f8d5e5d5840
 SPON-04,部分改善；補草稿及錯誤處理,T08、T09,partial,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
 ADOPT-01,待修本機草稿保存界線,T09,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
 ADOPT-02,待完善準備、恢復與七步流程,T09、T24,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
-CRM-01,產品缺口；先安全找回，再中心,T22,partial; recovery code-complete; portal pending,no,no,no,no,3b5941b2b37860f0cfdc33cfe20a8c9072e19346,PR #156; 3b5941b2b37860f0cfdc33cfe20a8c9072e19346,generic known/unknown response; challenge and rate limit; 9 focused pass and full 2836 pass; no provider email send,verified-record portal; hosted OTP config and test sink
+CRM-01,產品缺口；先安全找回，再中心,T22,partial; recovery and verified portal implemented; provider/browser and legacy status-link recovery pending,no,no,no,no,pending,PR #156 plus portal draft PR pending; portal commit pending,isolated portal focused tests 3 pass with rollback-only DB; full suite 2844 pass 89 skip; typecheck lint build exit 0; catalog 87 compatible on manually updated disposable DB,hosted OTP expiry and email sink; real browser/role flow; ambiguous historical identity and raw status-token recovery
 ADMIN-01,待修匯出狀態與錯誤,T14,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
 ADMIN-02,待修 supporter dialog 同步／衝突,T15,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
 ADMIN-03,待統一列表搜尋,T15,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,

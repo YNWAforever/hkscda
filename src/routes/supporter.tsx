@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 import { getSupabaseClient } from "../lib/supabase";
 import { TurnstileWidget, turnstileEnabled } from "../components/site/TurnstileWidget";
+import { SupporterPortal } from "../components/site/supporter/SupporterPortal";
 
 export const Route = createFileRoute("/supporter")({
   component: SupporterPage,
@@ -17,20 +18,30 @@ export function SupporterPage() {
   const [stage, setStage] = useState<"request" | "code" | "verified">("request");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [accessToken, setAccessToken] = useState("");
 
   useEffect(() => {
     const client = getSupabaseClient();
+    let disposed = false;
+    let authEventSeen = false;
     void client.auth.getSession().then(({ data }) => {
+      if (disposed || authEventSeen) return;
+      setAccessToken(data.session?.access_token ?? "");
       if (data.session) setStage("verified");
     });
     const { data } = client.auth.onAuthStateChange((_event, session) => {
+      authEventSeen = true;
+      setAccessToken(session?.access_token ?? "");
       setStage(session ? "verified" : "request");
       if (!session) {
         setCode("");
         setVerifiedEmail("");
       }
     });
-    return () => data.subscription.unsubscribe();
+    return () => {
+      disposed = true;
+      data.subscription.unsubscribe();
+    };
   }, []);
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
@@ -81,24 +92,13 @@ export function SupporterPage() {
         使用電郵驗證身份，以找回領養、助養及收條紀錄。如該電郵有關聯紀錄，請查看收件匣及垃圾郵件；我們不會在此頁確認帳戶是否存在。
       </p>
       {stage === "verified" ? (
-        <div role="status" className="mt-8 rounded-xl border p-6">
-          <h2 className="font-semibold">電郵已驗證</h2>
-          <p className="mt-2">紀錄入口正在準備中。現時可使用原有個案狀態連結，或聯絡職員協助。</p>
-          <button
-            className="btn-secondary mt-4 min-h-11"
-            type="button"
-            onClick={() => {
-              void getSupabaseClient()
-                .auth.signOut()
-                .finally(() => {
-                  setVerifiedEmail("");
-                  setStage("request");
-                });
-            }}
-          >
-            退出
-          </button>
-        </div>
+        accessToken ? (
+          <SupporterPortal accessToken={accessToken} />
+        ) : (
+          <p role="status" className="mt-8">
+            正在驗證登入狀態…
+          </p>
+        )
       ) : (
         <form className="mt-8 space-y-5" onSubmit={(event) => void submit(event)}>
           {stage === "request" ? (

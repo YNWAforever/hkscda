@@ -101,3 +101,12 @@ Environment: isolated worktree codex/audit-supporter-recovery-20260927; dedicate
 | npm.cmd run lint | 0 | 0 errors, 52 existing warnings |
 | npm.cmd run build | 0 | Vercel client/server output built |
 | Provider OTP delivery, expiry/replay, hosted Auth settings | not-run | Disposable auth stack lacks email test sink; no real email sent |
+
+## T22 supporter portal second PR (2026-09-28 HKT)
+
+- Worktree: audit-supporter-portal-20260928; base recovery #156 at 3e6b681. Source commit and PR pending at this evidence capture.
+- Reproduced red tests: ownership projection exposed two mismatched/legacy sponsorship snapshots, and the preference UI lacked explicit opt-in/out controls. Both passed after minimal edits.
+- Focused tests: bun test src/lib/supporters/portalRepository.server.test.ts src/components/site/supporter/SupporterPortal.test.tsx, exit 0, 2 pass. Direct records/receipt/preference handler and owner tests passed in full suite.
+- Disposable SQL: SUPPORTER_PORTAL_TEST_DATABASE_URL=postgresql://postgres:***@127.0.0.1:57322/postgres, SUPPORTER_PORTAL_TEST_ALLOW_LOCAL_FIXTURES=1 bun test src/lib/supporters/marketingPreference.database.test.ts src/lib/operations/releaseManifest.test.ts, exit 0, 3 pass. Fixture inserts rolled back. Wrong email, unconfirmed and banned user were denied; unchanged preference inserted no duplicate consent/audit. No production DB was touched.
+- CHECK_RELEASE_SCHEMA_DATABASE_URL on loopback 57322 bun scripts/check-release-schema.ts, exit 0, 87 requirements, zero issues. Latest local ledger reports 20260927150000; portal function was manually applied on the disposable stack without writing a ledger row. This is an object check, not a full ordered migration replay.
+- SUPABASE_LOCAL_URL=http://127.0.0.1:57321 bun test --isolate, exit 0, 2844 pass, 89 skip, 0 fail across 494 files. npm.cmd run typecheck, npm.cmd run lint, npm.cmd run build all exit 0; lint 52 warnings, 0 errors. Real OTP email sink, expiry/replay, browser session and private receipt download remain not-run.
