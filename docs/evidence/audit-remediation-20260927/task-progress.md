@@ -22,3 +22,6 @@ Ruling: Treat #133 adoption instructions as a narrowly restored public page and 
 - T23 overview: read-only role-based task cards in progress; direct API/access/UI tests 4 pass and 11 metric queries executed against dedicated local PostgREST. Cross-domain bulk and filter-preserving links remain open.
 
 - T23 overview verification: local typecheck/lint/build exit 0; isolated full suite 2849 pass 90 skip 0 fail after sequential rerun; 11 local PostgREST metric queries pass. An initial concurrent run timed out only in the unrelated migration safety scan (targeted rerun 1/1 pass).
+
+- T23 CRM bulk slice: code/schema prepared on branch `codex/audit-bulk-review-20260928`, PR pending. Supports 25 visible or up to 1000 filtered supporters, immutable preview, per-item role/version check, 25-at-a-time apply, skip/conflict/result CSV and tab recovery. Dedicated local DB tests 2 pass/16 assertions; focused selection/API/UI 6 pass/27 assertions; 92-item catalog compatible. All production and cross-domain bulk remain open. Full release gates pending at this point.
+- T23 CRM bulk dedicated-stack full suite: 2855 pass, 92 skip, 0 fail across 503 files. Initial default-old-stack run failed six unrelated RLS/document-slot assertions plus one CSV test edited concurrently; focused CSV and dedicated rerun pass. Final SQL checksum f106bf0 rehearsed in BEGIN/ROLLBACK.
