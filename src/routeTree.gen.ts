@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VolunteerRouteImport } from './routes/volunteer'
+import { Route as SupporterRouteImport } from './routes/supporter'
 import { Route as StoriesRouteImport } from './routes/stories'
 import { Route as SponsorsRouteImport } from './routes/sponsors'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -65,6 +66,7 @@ import { Route as ApiVolunteerPolicyRouteImport } from './routes/api/volunteer/p
 import { Route as ApiVolunteerOperationsRouteImport } from './routes/api/volunteer/operations'
 import { Route as ApiVolunteerGroupEnquiriesRouteImport } from './routes/api/volunteer/group-enquiries'
 import { Route as ApiVolunteerActivitiesRouteImport } from './routes/api/volunteer/activities'
+import { Route as ApiSupporterRecoveryRouteImport } from './routes/api/supporter/recovery'
 import { Route as ApiStoriesMapRouteImport } from './routes/api/stories/map'
 import { Route as ApiStoriesSlugRouteImport } from './routes/api/stories/$slug'
 import { Route as ApiSponsorshipsPledgesRouteImport } from './routes/api/sponsorships/pledges'
@@ -259,6 +261,11 @@ import { Route as ApiAdminSponsorshipsPledgesIdAssignmentsAssignmentIdEndRouteIm
 const VolunteerRoute = VolunteerRouteImport.update({
   id: '/volunteer',
   path: '/volunteer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SupporterRoute = SupporterRouteImport.update({
+  id: '/supporter',
+  path: '/supporter',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StoriesRoute = StoriesRouteImport.update({
@@ -536,6 +543,11 @@ const ApiVolunteerGroupEnquiriesRoute =
 const ApiVolunteerActivitiesRoute = ApiVolunteerActivitiesRouteImport.update({
   id: '/api/volunteer/activities',
   path: '/api/volunteer/activities',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSupporterRecoveryRoute = ApiSupporterRecoveryRouteImport.update({
+  id: '/api/supporter/recovery',
+  path: '/api/supporter/recovery',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiStoriesMapRoute = ApiStoriesMapRouteImport.update({
@@ -1622,6 +1634,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sponsors': typeof SponsorsRoute
   '/stories': typeof StoriesRouteWithChildren
+  '/supporter': typeof SupporterRoute
   '/volunteer': typeof VolunteerRouteWithChildren
   '/about/cccp': typeof AboutCccpRoute
   '/about/privacy': typeof AboutPrivacyRoute
@@ -1718,6 +1731,7 @@ export interface FileRoutesByFullPath {
   '/api/sponsorships/pledges': typeof ApiSponsorshipsPledgesRouteWithChildren
   '/api/stories/$slug': typeof ApiStoriesSlugRoute
   '/api/stories/map': typeof ApiStoriesMapRoute
+  '/api/supporter/recovery': typeof ApiSupporterRecoveryRoute
   '/api/volunteer/activities': typeof ApiVolunteerActivitiesRoute
   '/api/volunteer/group-enquiries': typeof ApiVolunteerGroupEnquiriesRoute
   '/api/volunteer/operations': typeof ApiVolunteerOperationsRoute
@@ -1870,6 +1884,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sponsors': typeof SponsorsRoute
   '/stories': typeof StoriesRouteWithChildren
+  '/supporter': typeof SupporterRoute
   '/volunteer': typeof VolunteerRouteWithChildren
   '/about/cccp': typeof AboutCccpRoute
   '/about/privacy': typeof AboutPrivacyRoute
@@ -1965,6 +1980,7 @@ export interface FileRoutesByTo {
   '/api/sponsorships/pledges': typeof ApiSponsorshipsPledgesRouteWithChildren
   '/api/stories/$slug': typeof ApiStoriesSlugRoute
   '/api/stories/map': typeof ApiStoriesMapRoute
+  '/api/supporter/recovery': typeof ApiSupporterRecoveryRoute
   '/api/volunteer/activities': typeof ApiVolunteerActivitiesRoute
   '/api/volunteer/group-enquiries': typeof ApiVolunteerGroupEnquiriesRoute
   '/api/volunteer/operations': typeof ApiVolunteerOperationsRoute
@@ -2118,6 +2134,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sponsors': typeof SponsorsRoute
   '/stories': typeof StoriesRouteWithChildren
+  '/supporter': typeof SupporterRoute
   '/volunteer': typeof VolunteerRouteWithChildren
   '/about/cccp': typeof AboutCccpRoute
   '/about/privacy': typeof AboutPrivacyRoute
@@ -2214,6 +2231,7 @@ export interface FileRoutesById {
   '/api/sponsorships/pledges': typeof ApiSponsorshipsPledgesRouteWithChildren
   '/api/stories/$slug': typeof ApiStoriesSlugRoute
   '/api/stories/map': typeof ApiStoriesMapRoute
+  '/api/supporter/recovery': typeof ApiSupporterRecoveryRoute
   '/api/volunteer/activities': typeof ApiVolunteerActivitiesRoute
   '/api/volunteer/group-enquiries': typeof ApiVolunteerGroupEnquiriesRoute
   '/api/volunteer/operations': typeof ApiVolunteerOperationsRoute
@@ -2368,6 +2386,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/sponsors'
     | '/stories'
+    | '/supporter'
     | '/volunteer'
     | '/about/cccp'
     | '/about/privacy'
@@ -2464,6 +2483,7 @@ export interface FileRouteTypes {
     | '/api/sponsorships/pledges'
     | '/api/stories/$slug'
     | '/api/stories/map'
+    | '/api/supporter/recovery'
     | '/api/volunteer/activities'
     | '/api/volunteer/group-enquiries'
     | '/api/volunteer/operations'
@@ -2616,6 +2636,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/sponsors'
     | '/stories'
+    | '/supporter'
     | '/volunteer'
     | '/about/cccp'
     | '/about/privacy'
@@ -2711,6 +2732,7 @@ export interface FileRouteTypes {
     | '/api/sponsorships/pledges'
     | '/api/stories/$slug'
     | '/api/stories/map'
+    | '/api/supporter/recovery'
     | '/api/volunteer/activities'
     | '/api/volunteer/group-enquiries'
     | '/api/volunteer/operations'
@@ -2863,6 +2885,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/sponsors'
     | '/stories'
+    | '/supporter'
     | '/volunteer'
     | '/about/cccp'
     | '/about/privacy'
@@ -2959,6 +2982,7 @@ export interface FileRouteTypes {
     | '/api/sponsorships/pledges'
     | '/api/stories/$slug'
     | '/api/stories/map'
+    | '/api/supporter/recovery'
     | '/api/volunteer/activities'
     | '/api/volunteer/group-enquiries'
     | '/api/volunteer/operations'
@@ -3112,6 +3136,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SponsorsRoute: typeof SponsorsRoute
   StoriesRoute: typeof StoriesRouteWithChildren
+  SupporterRoute: typeof SupporterRoute
   VolunteerRoute: typeof VolunteerRouteWithChildren
   AboutCccpRoute: typeof AboutCccpRoute
   AboutPrivacyRoute: typeof AboutPrivacyRoute
@@ -3180,6 +3205,7 @@ export interface RootRouteChildren {
   ApiJobsSponsorshipsRoute: typeof ApiJobsSponsorshipsRoute
   ApiJobsVolunteersRoute: typeof ApiJobsVolunteersRoute
   ApiSponsorshipsPledgesRoute: typeof ApiSponsorshipsPledgesRouteWithChildren
+  ApiSupporterRecoveryRoute: typeof ApiSupporterRecoveryRoute
   ApiVolunteerActivitiesRoute: typeof ApiVolunteerActivitiesRoute
   ApiVolunteerGroupEnquiriesRoute: typeof ApiVolunteerGroupEnquiriesRoute
   ApiVolunteerOperationsRoute: typeof ApiVolunteerOperationsRoute
@@ -3256,6 +3282,13 @@ declare module '@tanstack/react-router' {
       path: '/volunteer'
       fullPath: '/volunteer'
       preLoaderRoute: typeof VolunteerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/supporter': {
+      id: '/supporter'
+      path: '/supporter'
+      fullPath: '/supporter'
+      preLoaderRoute: typeof SupporterRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/stories': {
@@ -3641,6 +3674,13 @@ declare module '@tanstack/react-router' {
       path: '/api/volunteer/activities'
       fullPath: '/api/volunteer/activities'
       preLoaderRoute: typeof ApiVolunteerActivitiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/supporter/recovery': {
+      id: '/api/supporter/recovery'
+      path: '/api/supporter/recovery'
+      fullPath: '/api/supporter/recovery'
+      preLoaderRoute: typeof ApiSupporterRecoveryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/stories/map': {
@@ -5694,6 +5734,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SponsorsRoute: SponsorsRoute,
   StoriesRoute: StoriesRouteWithChildren,
+  SupporterRoute: SupporterRoute,
   VolunteerRoute: VolunteerRouteWithChildren,
   AboutCccpRoute: AboutCccpRoute,
   AboutPrivacyRoute: AboutPrivacyRoute,
@@ -5764,6 +5805,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiJobsSponsorshipsRoute: ApiJobsSponsorshipsRoute,
   ApiJobsVolunteersRoute: ApiJobsVolunteersRoute,
   ApiSponsorshipsPledgesRoute: ApiSponsorshipsPledgesRouteWithChildren,
+  ApiSupporterRecoveryRoute: ApiSupporterRecoveryRoute,
   ApiVolunteerActivitiesRoute: ApiVolunteerActivitiesRoute,
   ApiVolunteerGroupEnquiriesRoute: ApiVolunteerGroupEnquiriesRoute,
   ApiVolunteerOperationsRoute: ApiVolunteerOperationsRoute,
