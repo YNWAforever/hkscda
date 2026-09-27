@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "appSha": "0c92e7ff127e582b4393a8b40a6bd2031afdde09",
-  "appShaNote": "T23 CMS review bulk source freeze; following documentation commit has no runtime changes",
+  "appSha": "74c032aeb42fa335080ec582855f0e205abee3c1",
+  "appShaNote": "T23 manual finance atomic settlement source freeze; following documentation commit has no runtime changes",
   "productionAliasShaObserved": "f8d5e5d5840d1775efb7d7f4ae2768f6557096b5",
-  "schemaManifestHash": "79c495b4ba2d853740570305184962f3d50665c6f24cb7484ee35dbb72581428",
+  "schemaManifestHash": "f1ce409da0fd35cd95311a97dc00e5b658aa9962697da6a14cb14ce6f5f2540d",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
@@ -232,12 +232,17 @@
       "version": "20260927190000",
       "file": "20260927190000_cms_review_bulk.sql",
       "sha256": "ffbce79aa8220b3aa1105c84f81c6b1184986902b8a5a34b1189b1cd5b4a1764"
+    },
+    {
+      "version": "20260927201916",
+      "file": "20260927201916_manual_payment_atomic_reference.sql",
+      "sha256": "211ef805cb09d643ca4b04f1e0d0e6fa54601af65ea60cfeb637d6882b327b66"
     }
   ],
   "ciRun": {
-    "id": 36347166456,
-    "sha": "0c92e7ff127e582b4393a8b40a6bd2031afdde09",
-    "status": "in progress at package refresh; exact result pending"
+    "id": 36350007831,
+    "sha": "74c032aeb42fa335080ec582855f0e205abee3c1",
+    "status": "passed: verify, brand-verify, a11y-verify, rls-matrix, performance-verify (all five jobs); fixture CI only"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -246,7 +251,8 @@
     "docs/evidence/audit-remediation-20260927/verification.md",
     "docs/evidence/audit-remediation-20260927/ui-performance.md",
     "docs/evidence/audit-remediation-20260927/uat-results.md",
-    "docs/evidence/audit-remediation-20260927/t23-cms-review-bulk.md"
+    "docs/evidence/audit-remediation-20260927/t23-cms-review-bulk.md",
+    "docs/evidence/audit-remediation-20260927/t23-finance-atomic.md"
   ],
   "rollbackTarget": {
     "appSha": null,

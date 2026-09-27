@@ -7,7 +7,7 @@
 | Owner | Required action / evidence |
 |---|---|
 | Release owner + DBA | Confirm exact app SHA, migration manifest checksum, production backup/restore test, ordered catalog/signature/grants/RLS/seed gate, compatible rollback target and CI at same SHA. Approve private candidate, migration and main merge separately. |
-| Finance treasurer | Approve each payment method, public instructions/config version and account details; inspect sandbox callbacks, pending/uncertain reconciliation, receipt delivery and refund controls. Payment success remains committed even if PDF/email fails. Never bulk-refund or void without per-item review. |
+| Finance treasurer | Approve each payment method, public instructions/config version and account details; inspect sandbox callbacks, pending/uncertain reconciliation, receipt delivery and refund controls. Payment success remains committed even if PDF/email fails. For manual reconciliation, inspect the durable delivery job, retry only that job, and never credit the bank reference again. Never bulk-refund or void without per-item review. |
 | Content owner | Review exact live IDs, source classification, photo rights, animal mapping, terms/copy diffs and public impact before any publication/archive. #133 fallback is only for CMS revision read `PGRST205`/`42P01`; permission, unexpected, missing published revision and invalid content stay errors. |
 | Volunteer coordinator | Approve policy and 14/30-day activity coverage; review each bulk preview's scope, exceptions and capacity. Confirm notices separately. |
 | Admin lead | Exercise each actual role's direct API, export, private media/receipt and revoked-session behavior in private candidate. Train staff on 25 visible / up to 1000 matching selection, expiring snapshots, per-item result CSV, conflict refresh and failed-only retry. Do not assume a bulk job is one atomic multirow command. |
@@ -30,8 +30,8 @@
 
 ## Outstanding inputs for release owners
 
-- Current production catalog snapshot, grants/RLS/storage policies and sanitized data-bearing clone plus backup/restore rehearsal for 44 manifest files.
+- Current production catalog snapshot, grants/RLS/storage policies and sanitized data-bearing clone plus backup/restore rehearsal for 45 manifest files.
 - Approved payment policy/methods/instructions, provider sandbox credentials/account and webhook replay evidence; approved sponsorship terms PDF/hash, cancellation/refund copy.
 - Approved animal/story/photo ID list and rights, volunteer policy/session coverage, real content/seed diff, private candidate URL and test identities for every admin role.
 - Email test sink and hosted Auth OTP settings; monitoring/alert thresholds, five-minute worker/cron ownership, private regional benchmark, 390/768/1366 keyboard/200% UAT.
-- Remaining T23 domain implementations: sponsorship, finance, CMS expired/demo/missing-source queues and additional volunteer/adoption/animal/CRM safe actions. `tracker.csv` keeps ADMIN-04 partial.
+- Remaining T23 domain implementations: sponsorship, finance bank-file dry-run/candidate/group confirmation and receipt jobs, CMS expired/demo/missing-source queues and additional volunteer/adoption/animal/CRM safe actions. The manual finance atomic prerequisite is in draft #165; staff must not credit a duplicate normalized bank reference, and must handle post-commit receipt/email failure as a delivery recovery task. `tracker.csv` keeps ADMIN-04 partial.
