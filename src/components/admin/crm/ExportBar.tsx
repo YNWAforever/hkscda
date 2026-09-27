@@ -6,6 +6,7 @@ import { getAdminAccessToken } from "./api";
 
 type ExportBarProps = {
   search: URLSearchParams;
+  busy?: boolean;
 };
 
 async function downloadCsv(path: string, filename: string) {
@@ -26,7 +27,7 @@ async function downloadCsv(path: string, filename: string) {
   window.setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
-export function ExportBar({ search }: ExportBarProps) {
+export function ExportBar({ search, busy = false }: ExportBarProps) {
   const { pageCopy } = useAdminPageCopy();
   const query = search.toString();
   const suffix = query ? `?${query}` : "";
@@ -37,6 +38,7 @@ export function ExportBar({ search }: ExportBarProps) {
         type="button"
         variant="outline"
         size="sm"
+        disabled={busy}
         onClick={() => downloadCsv(`/api/admin/exports/supporters.csv${suffix}`, "supporters.csv")}
       >
         <Download className="h-4 w-4" />
@@ -46,6 +48,7 @@ export function ExportBar({ search }: ExportBarProps) {
         type="button"
         variant="outline"
         size="sm"
+        disabled={busy}
         onClick={() => downloadCsv(`/api/admin/exports/donations.csv${suffix}`, "donations.csv")}
       >
         <Download className="h-4 w-4" />

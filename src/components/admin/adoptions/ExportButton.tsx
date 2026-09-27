@@ -11,12 +11,14 @@ type ExportButtonProps = {
   kind: CoordinatorExportKind;
   searchParams?: URLSearchParams;
   label?: string;
+  busy?: boolean;
 };
 
 export function ExportButton({
   kind,
   searchParams = new URLSearchParams(),
   label,
+  busy = false,
 }: ExportButtonProps) {
   const { pageCopy } = useAdminPageCopy();
   const [isExporting, setIsExporting] = useState(false);
@@ -66,7 +68,7 @@ export function ExportButton({
         type="button"
         variant="outline"
         onClick={() => void handleExport()}
-        disabled={isExporting}
+        disabled={isExporting || busy}
       >
         <Download className="h-4 w-4" />
         {isExporting ? pageCopy.common.exporting : (label ?? pageCopy.common.export)}

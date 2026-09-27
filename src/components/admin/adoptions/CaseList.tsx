@@ -1,7 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { ListChecks, Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import type { AdoptionCaseSummary, CoordinatorStatus } from "../../../lib/adoptions/types";
 import { Button } from "../../ui/button";
@@ -22,6 +22,11 @@ import {
   formatFallback,
 } from "./caseWorkflowLogic";
 import { ExportButton } from "./ExportButton";
+import {
+  parseListPage,
+  useListQueryState,
+  type ListRouteState,
+} from "../../../lib/admin/useListQueryState";
 
 type CaseListResponse = {
   cases: AdoptionCaseSummary[];
@@ -48,15 +53,61 @@ export function CaseListStatusFilterError({ label, message }: { label: string; m
   );
 }
 
+type CaseFilters = {
+  statusId: string;
+  animalType: string;
+  openOnly: boolean;
+  pageSize: (typeof CASE_PAGE_SIZE_OPTIONS)[number];
+};
+const CASE_ROUTE: ListRouteState<CaseFilters> = {
+  key: "adoption-cases",
+  read(params) {
+    const status = params.get("status");
+    const animal = params.get("animal");
+    const size = Number(params.get("pageSize"));
+    return {
+      filters: {
+        statusId: status && /^[0-9a-f-]{36}$/i.test(status) ? status : "all",
+        animalType: ANIMAL_TYPE_OPTIONS.includes(animal as (typeof ANIMAL_TYPE_OPTIONS)[number])
+          ? animal!
+          : "all",
+        openOnly: params.get("open") !== "false",
+        pageSize: CASE_PAGE_SIZE_OPTIONS.includes(size as CaseFilters["pageSize"])
+          ? (size as CaseFilters["pageSize"])
+          : 25,
+      },
+      page: parseListPage(params.get("page")),
+    };
+  },
+  write(params, filters, page) {
+    if (filters.statusId === "all") params.delete("status");
+    else params.set("status", filters.statusId);
+    if (filters.animalType === "all") params.delete("animal");
+    else params.set("animal", filters.animalType);
+    if (filters.openOnly) params.delete("open");
+    else params.set("open", "false");
+    if (filters.pageSize === 25) params.delete("pageSize");
+    else params.set("pageSize", String(filters.pageSize));
+    if (page === 1) params.delete("page");
+    else params.set("page", String(page));
+  },
+};
+
 export function CaseList() {
   const { language, pageCopy } = useAdminPageCopy();
   const copy = pageCopy.caseList;
-  const [query, setQuery] = useState("");
-  const [statusId, setStatusId] = useState("all");
-  const [animalType, setAnimalType] = useState("all");
-  const [openOnly, setOpenOnly] = useState(true);
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState<(typeof CASE_PAGE_SIZE_OPTIONS)[number]>(25);
+  const listState = useListQueryState({
+    key: "adoption-cases",
+    initialFilters: {
+      statusId: "all",
+      animalType: "all",
+      openOnly: true,
+      pageSize: 25 as CaseFilters["pageSize"],
+    },
+    routeState: CASE_ROUTE,
+  });
+  const { query, page, setPage, filters, changeFilter } = listState;
+  const { statusId, animalType, openOnly, pageSize } = filters;
 
   const { data: statusesData, error: statusesError } = useQuery<StatusesResponse, Error>({
     queryKey: STATUSES_QUERY_KEY,
@@ -83,16 +134,16 @@ export function CaseList() {
 
   const { data, error, isLoading, isFetching, refetch } = useQuery<CaseListResponse, Error>({
     queryKey: ["adoption-cases", searchParams.toString()],
-    queryFn: () =>
-      fetchCoordinatorJson<CaseListResponse>(`/api/admin/adoptions/cases?${searchParams}`),
+    queryFn: ({ signal }) =>
+      fetchCoordinatorJson<CaseListResponse>("/api/admin/adoptions/cases?" + searchParams, {
+        signal,
+      }),
+    enabled: listState.hydrated,
+    placeholderData: keepPreviousData,
   });
 
   const cases = data?.cases ?? [];
   const total = data?.total ?? 0;
-
-  function resetToFirstPage() {
-    setPage(1);
-  }
 
   function animalTypeLabel(value: string | null | undefined) {
     const key =
@@ -193,7 +244,12 @@ export function CaseList() {
           <p className="text-sm text-[var(--color-text-muted)]">{copy.subtitle}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <ExportButton kind="cases" searchParams={searchParams} label={pageCopy.common.export} />
+          <ExportButton
+            kind="cases"
+            searchParams={searchParams}
+            label={pageCopy.common.export}
+            busy={isFetching || listState.isDebouncing}
+          />
           <Button type="button" variant="outline" onClick={() => refetch()} disabled={isFetching}>
             <ListChecks className="h-4 w-4" />
             {pageCopy.common.refresh}
@@ -206,11 +262,7 @@ export function CaseList() {
           <label className="relative block">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
             <Input
-              value={query}
-              onChange={(event) => {
-                setQuery(event.target.value);
-                resetToFirstPage();
-              }}
+              {...listState.queryInput}
               aria-label={copy.searchLabel}
               className="h-9 pl-9"
               placeholder={copy.searchPlaceholder}
@@ -220,8 +272,7 @@ export function CaseList() {
           <Select
             value={statusId}
             onValueChange={(value) => {
-              setStatusId(value);
-              resetToFirstPage();
+              changeFilter({ statusId: value });
             }}
           >
             <SelectTrigger aria-label={copy.statusLabel} className="h-9">
@@ -240,8 +291,7 @@ export function CaseList() {
           <Select
             value={animalType}
             onValueChange={(value) => {
-              setAnimalType(value);
-              resetToFirstPage();
+              changeFilter({ animalType: value });
             }}
           >
             <SelectTrigger aria-label={copy.animalTypeLabel} className="h-9">
@@ -260,8 +310,7 @@ export function CaseList() {
             <Checkbox
               checked={openOnly}
               onCheckedChange={(checked) => {
-                setOpenOnly(checked === true);
-                resetToFirstPage();
+                changeFilter({ openOnly: checked === true });
               }}
               aria-label={copy.openOnlyLabel}
             />
@@ -274,7 +323,7 @@ export function CaseList() {
       </section>
 
       <section
-        aria-busy={isLoading || isFetching}
+        aria-busy={isLoading || isFetching || listState.isDebouncing}
         className="overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]"
       >
         <div className="flex min-h-14 flex-wrap items-center justify-between gap-3 border-b border-[var(--color-border)] px-4">
@@ -295,8 +344,7 @@ export function CaseList() {
             <Select
               value={String(pageSize)}
               onValueChange={(value) => {
-                setPageSize(Number(value) as (typeof CASE_PAGE_SIZE_OPTIONS)[number]);
-                resetToFirstPage();
+                changeFilter({ pageSize: Number(value) as CaseFilters["pageSize"] });
               }}
             >
               <SelectTrigger id="case-page-size" className="h-8 w-20">
@@ -313,11 +361,16 @@ export function CaseList() {
           </div>
         </div>
 
+        {(isFetching || listState.isDebouncing) && data ? (
+          <p role="status" className="px-4 text-xs text-[var(--color-text-muted)]">
+            {pageCopy.common.loading}
+          </p>
+        ) : null}
         <DataTable<AdoptionCaseSummary>
           columns={caseColumns}
           rows={cases}
           getRowKey={(c) => c.id}
-          loading={isLoading}
+          loading={isLoading || !listState.hydrated}
           skeletonRows={5}
           empty={copy.empty}
           error={error}
@@ -331,7 +384,7 @@ export function CaseList() {
             pageSize={pageSize}
             total={error ? undefined : total}
             onPageChange={setPage}
-            busy={isFetching}
+            busy={isFetching || listState.isDebouncing}
             label={copy.tableTitle}
             failed={Boolean(error)}
           />

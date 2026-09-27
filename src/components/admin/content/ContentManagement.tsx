@@ -1,8 +1,8 @@
 import { ContentReviewQueue } from "./ContentReview";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type InputHTMLAttributes } from "react";
 import { Edit3, Filter, RefreshCw, Search } from "lucide-react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import type {
   ContentStatus,
@@ -11,6 +11,11 @@ import type {
   NotificationDraftStatus,
 } from "../../../lib/content/types";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import {
+  parseListPage,
+  useListQueryState,
+  type ListRouteState,
+} from "../../../lib/admin/useListQueryState";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { STAT_UNAVAILABLE } from "../LoadFailure";
 import { TablePager } from "../TablePager";
@@ -67,6 +72,67 @@ const toneMap: Record<ReturnType<typeof contentStatusTone>, StatusTone> = {
   muted: "neutral",
 };
 
+type ContentFilters = {
+  type: ContentType | "all";
+  status: ContentStatus | "all";
+  rescueRegion: string;
+  publishedFrom: string;
+  publishedTo: string;
+  mapVisibility: "all" | "on" | "off";
+  hasUpdate: "all" | "yes" | "no";
+  draftState: "all" | NotificationDraftStatus;
+};
+const CONTENT_ROUTE: ListRouteState<ContentFilters> = {
+  key: "admin-content",
+  read(params, defaults) {
+    const type = params.get("type");
+    const status = params.get("status");
+    const map = params.get("map");
+    const update = params.get("hasUpdate");
+    const draft = params.get("draftState");
+    const date = (value: string | null) =>
+      value && /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : "";
+    return {
+      filters: {
+        ...defaults,
+        type: contentTypeOptions.includes(type as ContentType) ? (type as ContentType) : "all",
+        status: contentStatusOptions.includes(status as ContentStatus)
+          ? (status as ContentStatus)
+          : "all",
+        publishedFrom: date(params.get("publishedFrom")),
+        publishedTo: date(params.get("publishedTo")),
+        mapVisibility: map === "on" || map === "off" ? map : "all",
+        hasUpdate: update === "yes" || update === "no" ? update : "all",
+        draftState:
+          draft === "draft" ||
+          draft === "copied" ||
+          draft === "sent_manually" ||
+          draft === "dismissed"
+            ? draft
+            : "all",
+      },
+      page: parseListPage(params.get("page")),
+    };
+  },
+  write(params, filters, page) {
+    for (const [key, value] of [
+      ["type", filters.type],
+      ["status", filters.status],
+      ["publishedFrom", filters.publishedFrom],
+      ["publishedTo", filters.publishedTo],
+      ["map", filters.mapVisibility],
+      ["hasUpdate", filters.hasUpdate],
+      ["draftState", filters.draftState],
+    ] as const) {
+      if (!value || value === "all") params.delete(key);
+      else params.set(key, value);
+    }
+    if (page === 1) params.delete("page");
+    else params.set("page", String(page));
+    params.delete("rescueRegion");
+  },
+};
+
 export function ContentManagement({ initialData }: ContentManagementProps) {
   if (initialData) {
     return <ContentManagementView data={initialData} loading={false} />;
@@ -99,26 +165,31 @@ function ContentManagementRuntime() {
       setCreating(false);
     }
   }
-  const [query, setQuery] = useState("");
-  const [type, setType] = useState<ContentType | "all">("all");
-  const [status, setStatus] = useState<ContentStatus | "all">("all");
-  const [rescueRegion, setRescueRegion] = useState("");
-  const [publishedFrom, setPublishedFrom] = useState("");
-  const [publishedTo, setPublishedTo] = useState("");
-  const [mapVisibility, setMapVisibility] = useState<"all" | "on" | "off">("all");
-  const [hasUpdate, setHasUpdate] = useState<"all" | "yes" | "no">("all");
-  const [draftState, setDraftState] = useState<"all" | NotificationDraftStatus>("all");
-  const [page, setPage] = useState(1);
-
-  // Narrowing the result set invalidates the page number — page 3 of a smaller
-  // set renders empty and reads as "no matches".
-  function withPageReset<T>(setter: (value: T) => void) {
-    return (value: T) => {
-      setter(value);
-      setPage(1);
-    };
-  }
-
+  const listState = useListQueryState({
+    key: "admin-content",
+    initialFilters: {
+      type: "all" as ContentFilters["type"],
+      status: "all" as ContentFilters["status"],
+      rescueRegion: "",
+      publishedFrom: "",
+      publishedTo: "",
+      mapVisibility: "all" as ContentFilters["mapVisibility"],
+      hasUpdate: "all" as ContentFilters["hasUpdate"],
+      draftState: "all" as ContentFilters["draftState"],
+    },
+    routeState: CONTENT_ROUTE,
+  });
+  const { query, page, setPage, filters, changeFilter } = listState;
+  const {
+    type,
+    status,
+    rescueRegion,
+    publishedFrom,
+    publishedTo,
+    mapVisibility,
+    hasUpdate,
+    draftState,
+  } = filters;
   const search = useMemo(
     () =>
       buildContentSearchParams({
@@ -149,12 +220,15 @@ function ContentManagementRuntime() {
 
   const contentQuery = useQuery({
     queryKey: ["admin-content", search],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const response = await fetchAdminJson<AdminContentListApiResponse>(
-        `/api/admin/content?${search}`,
+        "/api/admin/content?" + search,
+        { signal },
       );
       return normalizeListResponse(response, search);
     },
+    enabled: listState.hydrated,
+    placeholderData: keepPreviousData,
   });
 
   return (
@@ -163,8 +237,9 @@ function ContentManagementRuntime() {
       <CreateContentDraft onCreate={createDraft} busy={creating} error={createError} />
       <ContentManagementView
         data={contentQuery.data}
-        loading={contentQuery.isLoading}
-        query={query}
+        loading={contentQuery.isLoading || !listState.hydrated}
+        query={listState.draftQuery}
+        queryInput={listState.queryInput}
         type={type}
         status={status}
         rescueRegion={rescueRegion}
@@ -174,17 +249,17 @@ function ContentManagementRuntime() {
         hasUpdate={hasUpdate}
         draftState={draftState}
         error={contentQuery.error instanceof Error ? contentQuery.error.message : null}
-        onQueryChange={withPageReset(setQuery)}
-        onTypeChange={withPageReset(setType)}
-        onStatusChange={withPageReset(setStatus)}
-        onRescueRegionChange={withPageReset(setRescueRegion)}
-        onPublishedFromChange={withPageReset(setPublishedFrom)}
-        onPublishedToChange={withPageReset(setPublishedTo)}
-        onMapVisibilityChange={withPageReset(setMapVisibility)}
-        onHasUpdateChange={withPageReset(setHasUpdate)}
-        onDraftStateChange={withPageReset(setDraftState)}
+        onQueryChange={undefined}
+        onTypeChange={(value) => changeFilter({ type: value })}
+        onStatusChange={(value) => changeFilter({ status: value })}
+        onRescueRegionChange={(value) => changeFilter({ rescueRegion: value })}
+        onPublishedFromChange={(value) => changeFilter({ publishedFrom: value })}
+        onPublishedToChange={(value) => changeFilter({ publishedTo: value })}
+        onMapVisibilityChange={(value) => changeFilter({ mapVisibility: value })}
+        onHasUpdateChange={(value) => changeFilter({ hasUpdate: value })}
+        onDraftStateChange={(value) => changeFilter({ draftState: value })}
         onPageChange={setPage}
-        fetching={contentQuery.isFetching}
+        fetching={contentQuery.isFetching || listState.isDebouncing}
         onRefresh={() => void queryClient.invalidateQueries({ queryKey: ["admin-content"] })}
       />
     </>
@@ -195,6 +270,7 @@ type ContentManagementViewProps = {
   data?: ContentListResponse;
   loading: boolean;
   query?: string;
+  queryInput?: InputHTMLAttributes<HTMLInputElement>;
   type?: ContentType | "all";
   status?: ContentStatus | "all";
   rescueRegion?: string;
@@ -222,6 +298,7 @@ function ContentManagementView({
   data,
   loading,
   query = "",
+  queryInput,
   type = "all",
   status = "all",
   rescueRegion = "",
@@ -375,8 +452,11 @@ function ContentManagementView({
               搜尋
             </span>
             <input
-              value={query}
-              onChange={(event) => onQueryChange?.(event.target.value)}
+              {...(queryInput ?? {
+                value: query,
+                onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
+                  onQueryChange?.(event.target.value),
+              })}
               placeholder="標題、摘要或 slug"
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 text-sm font-normal"
             />
@@ -493,7 +573,7 @@ function ContentManagementView({
           error={error}
           onRetry={onRefresh}
         />
-        {data?.pagination && onPageChange ? (
+        {!failed && data?.pagination && onPageChange ? (
           <TablePager
             page={data.pagination.page}
             pageSize={data.pagination.pageSize}
