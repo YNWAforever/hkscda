@@ -15,7 +15,7 @@ SPON-04,部分改善；補草稿及錯誤處理,T08、T09,partial,no,no,no,no,f8
 ADOPT-01,待修本機草稿保存界線,T09,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
 ADOPT-02,待完善準備、恢復與七步流程,T09、T24,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
 CRM-01,產品缺口；先安全找回，再中心,T22,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
-ADMIN-01,待修匯出狀態與錯誤,T14,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
+ADMIN-01,待修匯出狀態與錯誤,T14,partial,no,no,no,no,04d425cdd614e31f4bfbd7cf8146b7066c5f01cf,#147 / 04d425c,docs/evidence/audit-remediation-20260927/t14-export-ui.md,Background job and private artifact authorization pending
 ADMIN-02,待修 supporter dialog 同步／衝突,T15,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
 ADMIN-03,待統一列表搜尋,T15,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
 ADMIN-04,待改善現有安全 bulk UI,T17、T23,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
