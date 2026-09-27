@@ -17,6 +17,7 @@ import {
   hkTimeLabel,
   type ActivityFilter,
 } from "../../../lib/volunteers/bulk/service";
+import { applyReviewedGroups, reviewBulkOperation } from "../../../lib/volunteers/bulk/review";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "../../ui/sheet";
 
 export type Row = {
@@ -227,6 +228,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
   const [attendance, setAttendance] = useState("attended");
   const [correction, setCorrection] = useState(false);
   const [reviewed, setReviewed] = useState<number[]>([]);
+  const [reviewAll, setReviewAll] = useState(false);
   const [localError, setLocalError] = useState("");
   const [showOperation, setShowOperation] = useState(false);
   const cache = useQueryClient();
@@ -267,6 +269,8 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
   useEffect(() => {
     if (restored.data) {
       setOperation(restored.data.operation);
+      setReviewed([]);
+      setReviewAll(false);
       setShowOperation(true);
     }
   }, [restored.data]);
@@ -350,6 +354,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
     onSuccess: (data) => {
       setOperation(data.operation);
       setReviewed([]);
+      setReviewAll(false);
       setShowOperation(true);
     },
   });
@@ -358,13 +363,37 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
       call<Reply>({ action: "apply", operation_id: operation?.id, group_index: index }),
     onSuccess: (data) => {
       setOperation(data.operation);
+      setReviewAll(false);
+      void cache.invalidateQueries({ queryKey: ["volunteer-workspace"] });
+      void cache.invalidateQueries({ queryKey: ["volunteer-workspace-detail"] });
+    },
+  });
+  const sequence = useMutation({
+    mutationFn: () =>
+      applyReviewedGroups(
+        operation!,
+        async (id, index) =>
+          (await call<Reply>({ action: "apply", operation_id: id, group_index: index })).operation,
+        async (id) => (await call<Reply>({ action: "status", operation_id: id })).operation,
+      ),
+    onSuccess: ({ operation: latest, halted }) => {
+      setOperation(latest);
+      setReviewAll(false);
+      setNotice(
+        halted
+          ? "順序執行已停止；請先更新進度。失敗組可按原操作重試，衝突組須重新預覽。"
+          : "所有已審閱草稿組已順序完成。",
+      );
       void cache.invalidateQueries({ queryKey: ["volunteer-workspace"] });
       void cache.invalidateQueries({ queryKey: ["volunteer-workspace-detail"] });
     },
   });
   const refresh = useMutation({
     mutationFn: () => call<Reply>({ action: "status", operation_id: operation?.id }),
-    onSuccess: (data) => setOperation(data.operation),
+    onSuccess: (data) => {
+      setOperation(data.operation);
+      setReviewAll(false);
+    },
   });
   const error =
     localError ||
@@ -374,12 +403,20 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
       choose.error,
       preview.error,
       apply.error,
+      sequence.error,
       refresh.error,
       restored.error,
     ].find(Boolean)?.message;
   const rows = list.isError ? [] : (list.data?.activities ?? []);
   const total = list.data?.total ?? 0;
   const listRefreshing = list.isFetching || listState.isDebouncing || list.isPlaceholderData;
+  const review = operation ? reviewBulkOperation(operation) : null;
+  const policyName = (item: Item) =>
+    templates.data?.templates.find(
+      (candidate) =>
+        candidate.version_id === item.policy_version_id ||
+        candidate.template_key === item.template_key,
+    )?.name ?? (item.policy_version_id ? "政策版本待核對" : "未綁定政策");
   function shift(days: number) {
     const start = filter.from ?? hkDate();
     updateFilter({
@@ -578,7 +615,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
       <p role="status">{notice}</p>
       <section aria-label="活動列表">
         <h2 ref={tableHeading} tabIndex={-1} className="text-lg font-bold">
-          活動（{list.isError ? "資料暫不可用" : total}）
+          1. 選範圍 · 活動（{list.isError ? "資料暫不可用" : total}）
         </h2>
         <div className="my-3 flex flex-wrap items-center gap-2">
           <button
@@ -615,6 +652,12 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
             清除選取
           </button>
           <span>已鎖定 {selection?.selection.length ?? 0} 場</span>
+          {selection && (
+            <span className="text-sm">
+              快照 {hkTimeLabel(selection.created_at)} 建立；{hkTimeLabel(selection.expires_at)}
+              前有效。新增符合條件的活動不會加入。
+            </span>
+          )}
         </div>
         {listRefreshing && list.data ? <p role="status">正在更新活動…</p> : null}
         {list.isPending ? (
@@ -670,7 +713,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
         className="space-y-3 rounded-lg border border-[var(--color-border)] p-4"
         aria-label="批量操作"
       >
-        <h2 className="text-lg font-bold">活動操作</h2>
+        <h2 className="text-lg font-bold">2. 預覽差異及例外</h2>
         <label>
           操作{" "}
           <select
@@ -757,6 +800,9 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
             </label>
             <button className={button} onClick={() => setUntil(addHkDays(from, 27))}>
               四星期
+            </button>
+            <button className={button} onClick={() => setUntil(addHkDays(from, 55))}>
+              八星期
             </button>
             <fieldset className="flex flex-wrap gap-3">
               <legend>星期</legend>
@@ -847,6 +893,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
           className={button}
           disabled={
             preview.isPending ||
+            sequence.isPending ||
             (mode !== "generate" && mode !== "copy" && !selection) ||
             (mode === "copy" && !selection)
           }
@@ -860,7 +907,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
         <section className="space-y-3" aria-label="操作進度">
           <div className="flex gap-2">
             <h2 className="text-lg font-bold">
-              已儲存操作 · {operationLabels[operation.action as keyof typeof operationLabels]}
+              3. 執行結果 · {operationLabels[operation.action as keyof typeof operationLabels]}
             </h2>
             <button className={button} onClick={() => setShowOperation((v) => !v)}>
               {showOperation ? "收起" : "展開"}預覽
@@ -870,21 +917,76 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
             </button>
           </div>
           <p>
-            操作編號 {operation.id}
-            。每組獨立交易，最多100場，同一天不拆組。關閉頁面後可用本頁網址返回；先更新進度再重試。通知及職員跟進結果顯示於下方，完成跟進不代表通知送達。
+            已儲存快照：{hkTimeLabel(operation.created_at)}；{hkTimeLabel(operation.expires_at)}
+            前有效。每組獨立交易，同一天不拆組；執行時會重新檢查權限、政策與版本。
+            關閉頁面後可用本頁網址返回；先更新進度再重試。
           </p>
+          <dl className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+            <div>
+              <dt>可執行項目</dt>
+              <dd className="font-bold">{review?.eligible ?? 0}</dd>
+            </div>
+            <div>
+              <dt>略過項目</dt>
+              <dd className="font-bold">{review?.skipped ?? 0}</dd>
+            </div>
+            <div>
+              <dt>版本衝突</dt>
+              <dd className="font-bold">{review?.conflicted ?? 0}</dd>
+            </div>
+            <div>
+              <dt>失敗項目／組</dt>
+              <dd className="font-bold">{review?.failed ?? 0}</dd>
+            </div>
+          </dl>
+          {review?.canRunSequentially ? (
+            <div className="rounded-lg border border-[var(--color-border)] p-3">
+              <label className="flex min-h-11 items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={reviewAll}
+                  onChange={(event) => setReviewAll(event.target.checked)}
+                />
+                已檢查餘下 {operation.groups.filter((group) => group.state === "pending").length}{" "}
+                組新草稿的日期、政策、容量和例外
+              </label>
+              <button
+                className={button}
+                disabled={!reviewAll || sequence.isPending || apply.isPending}
+                onClick={() => sequence.mutate()}
+              >
+                {sequence.isPending ? "順序執行中…" : "順序執行已審閱組"}
+              </button>
+              <p className="text-sm">
+                每組仍逐一呼叫既有交易；遇到衝突、失敗或網絡不確定會停止並讀取狀態。
+              </p>
+            </div>
+          ) : (
+            <p className="text-sm">取消、關閉、政策或容量影響、出席更正及有例外的組須逐組審閱。</p>
+          )}
+          {operation.groups.some((group) => group.state === "conflicted") && (
+            <p role="alert">有組別已變更，請重新鎖定範圍並預覽；不要重用舊預覽。</p>
+          )}
+          <details className="text-sm">
+            <summary className="cursor-pointer">操作技術詳情</summary>
+            <p>操作編號 {operation.id}；最多 100 場。同一天的項目在同一組。</p>
+          </details>
           <div aria-label="通知及跟進狀態">
             {operation.notifications?.length ? (
               operation.notifications.map((n) => (
                 <p key={n.id}>
                   {n.kind === "volunteer_operation_changed" ? "職員跟進" : "通知"}：
-                  {n.queue_status === "failed"
-                    ? "處理失敗"
-                    : n.follow_up === "completed"
-                      ? "已完成跟進"
-                      : n.provider_message_id
-                        ? "供應商已接收（未代表送達）"
-                        : "待跟進"}
+                  {n.queue_status === "delivered"
+                    ? "已送達"
+                    : n.queue_status === "failed"
+                      ? "處理失敗"
+                      : n.follow_up === "completed"
+                        ? "已完成跟進"
+                        : n.provider_message_id
+                          ? "供應商已接收（未代表送達）"
+                          : n.queue_status === "queued"
+                            ? "排隊中"
+                            : "待跟進"}
                   {n.completed_at ? ` · ${hkTimeLabel(n.completed_at)}` : ""}
                 </p>
               ))
@@ -902,23 +1004,53 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
                 {g.reason && <p role="alert">{volunteerErrorMessage({ reason: g.reason }, 409)}</p>}
                 <ul>
                   {g.items.map((i) => (
-                    <li key={i.item_key} className="border-b border-[var(--color-border)] py-2">
-                      {i.starts_at ? hkTimeLabel(i.starts_at) : i.date} ·{" "}
-                      {i.title ?? i.template_key} · {i.shelter_key ?? "待解析收容所"} · 政策{" "}
-                      {i.policy_version_id ?? "未能解析"} · {labels[i.state] ?? i.state}
-                      {i.preview.reason && ` · ${volunteerErrorMessage(i.preview, 422)}`}
-                      {i.preview.issues?.length
-                        ? ` · ${i.preview.issues.map((reason) => volunteerErrorMessage({ reason }, 422)).join("、")}`
-                        : ""}
-                      {i.preview.registrations &&
-                        ` · 出席可更新 ${i.preview.registrations.filter((r) => r.kind === "applied").length}、略過 ${i.preview.registrations.filter((r) => r.kind === "skipped").length}`}
-                      {i.approved !== undefined && ` · 已確認報名 ${i.approved}`}
+                    <li key={i.item_key} className="border-b border-[var(--color-border)] py-3">
+                      <p className="font-medium">
+                        {i.starts_at ? hkTimeLabel(i.starts_at) : i.date} ·{" "}
+                        {i.title ?? policyName(i)}
+                      </p>
+                      <p className="text-sm">
+                        政策：{policyName(i)} · {labels[i.state] ?? i.state} ·{" "}
+                        {i.approved === undefined
+                          ? "受影響報名人數待核對"
+                          : "受影響已確認報名 " + i.approved + " 人"}
+                      </p>
+                      <p className="text-sm">
+                        容量：{i.capacity ?? "未有現值"} →{" "}
+                        {i.preview.after?.capacity ?? i.capacity ?? "未有預覽值"}
+                      </p>
                       {i.preview.after && (
-                        <p>
-                          套用後：{i.preview.after.title} · {hkTimeLabel(i.preview.after.starts_at)}{" "}
+                        <p className="text-sm">
+                          套用後：{i.preview.after.title} · {hkTimeLabel(i.preview.after.starts_at)}
                           · {i.preview.after.shelter_key} · 容量 {i.preview.after.capacity}
                         </p>
                       )}
+                      {i.preview.reason && (
+                        <p role="alert">{volunteerErrorMessage(i.preview, 422)}</p>
+                      )}
+                      {i.preview.issues?.length ? (
+                        <p role="alert">
+                          {i.preview.issues
+                            .map((reason) => volunteerErrorMessage({ reason }, 422))
+                            .join("、")}
+                        </p>
+                      ) : null}
+                      {i.preview.registrations && (
+                        <p className="text-sm">
+                          出席可更新{" "}
+                          {i.preview.registrations.filter((r) => r.kind === "applied").length}
+                          、略過{" "}
+                          {i.preview.registrations.filter((r) => r.kind === "skipped").length}
+                        </p>
+                      )}
+                      <details className="text-sm">
+                        <summary className="cursor-pointer">項目技術詳情</summary>
+                        <p>
+                          項目 {i.item_key} · 模板 {i.template_key} · 政策版本{" "}
+                          {i.policy_version_id ?? "未綁定"}
+                        </p>
+                        {i.result && <p>交易結果：{labels[i.result.kind] ?? i.result.kind}</p>}
+                      </details>
                     </li>
                   ))}
                 </ul>
@@ -940,7 +1072,9 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
                     </label>
                     <button
                       className={button}
-                      disabled={!reviewed.includes(g.index) || apply.isPending}
+                      disabled={
+                        !reviewed.includes(g.index) || apply.isPending || sequence.isPending
+                      }
                       onClick={() => apply.mutate(g.index)}
                     >
                       {g.state === "failed" ? "以原操作重試" : "執行此組"}
