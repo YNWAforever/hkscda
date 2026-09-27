@@ -164,6 +164,7 @@ import { Route as ApiAdminAdoptionsAdoptersRouteImport } from './routes/api/admi
 import { Route as ApiAdminAdoptionInstructionsRestoreRouteImport } from './routes/api/admin/adoption-instructions/restore'
 import { Route as ApiAdminAdoptionInstructionsPublishRouteImport } from './routes/api/admin/adoption-instructions/publish'
 import { Route as ApiAdminAdoptionInstructionsPreviewRouteImport } from './routes/api/admin/adoption-instructions/preview'
+import { Route as ApiAdminAdoptionInstructionsHistoryRouteImport } from './routes/api/admin/adoption-instructions/history'
 import { Route as ApiAdminAdoptionInstructionsDraftRouteImport } from './routes/api/admin/adoption-instructions/draft'
 import { Route as ApiAdminAdoptionGuideReleasesIdRouteImport } from './routes/api/admin/adoption-guide-releases/$id'
 import { Route as ApiAdminAccessUsersRouteImport } from './routes/api/admin/access/users'
@@ -223,6 +224,7 @@ import { Route as ApiAdminAdoptionsExportsAdoptersDotcsvRouteImport } from './ro
 import { Route as ApiAdminAdoptionsCasesIdRouteImport } from './routes/api/admin/adoptions/cases/$id'
 import { Route as ApiAdminAdoptionsAnimalsPipelineRouteImport } from './routes/api/admin/adoptions/animals/pipeline'
 import { Route as ApiAdminAdoptionsAdoptersIdRouteImport } from './routes/api/admin/adoptions/adopters/$id'
+import { Route as ApiAdminAdoptionInstructionsRevisionsIdRouteImport } from './routes/api/admin/adoption-instructions/revisions/$id'
 import { Route as ApiAdminAdoptionGuideReleasesIdWithdrawRouteImport } from './routes/api/admin/adoption-guide-releases/$id/withdraw'
 import { Route as ApiAdminAdoptionGuideReleasesIdSubmitRouteImport } from './routes/api/admin/adoption-guide-releases/$id/submit'
 import { Route as ApiAdminAdoptionGuideReleasesIdReturnToDraftRouteImport } from './routes/api/admin/adoption-guide-releases/$id/return-to-draft'
@@ -1072,6 +1074,12 @@ const ApiAdminAdoptionInstructionsPreviewRoute =
     path: '/preview',
     getParentRoute: () => ApiAdminAdoptionInstructionsRoute,
   } as any)
+const ApiAdminAdoptionInstructionsHistoryRoute =
+  ApiAdminAdoptionInstructionsHistoryRouteImport.update({
+    id: '/history',
+    path: '/history',
+    getParentRoute: () => ApiAdminAdoptionInstructionsRoute,
+  } as any)
 const ApiAdminAdoptionInstructionsDraftRoute =
   ApiAdminAdoptionInstructionsDraftRouteImport.update({
     id: '/draft',
@@ -1418,6 +1426,12 @@ const ApiAdminAdoptionsAdoptersIdRoute =
     path: '/$id',
     getParentRoute: () => ApiAdminAdoptionsAdoptersRoute,
   } as any)
+const ApiAdminAdoptionInstructionsRevisionsIdRoute =
+  ApiAdminAdoptionInstructionsRevisionsIdRouteImport.update({
+    id: '/revisions/$id',
+    path: '/revisions/$id',
+    getParentRoute: () => ApiAdminAdoptionInstructionsRoute,
+  } as any)
 const ApiAdminAdoptionGuideReleasesIdWithdrawRoute =
   ApiAdminAdoptionGuideReleasesIdWithdrawRouteImport.update({
     id: '/withdraw',
@@ -1718,6 +1732,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/access/users': typeof ApiAdminAccessUsersRouteWithChildren
   '/api/admin/adoption-guide-releases/$id': typeof ApiAdminAdoptionGuideReleasesIdRouteWithChildren
   '/api/admin/adoption-instructions/draft': typeof ApiAdminAdoptionInstructionsDraftRoute
+  '/api/admin/adoption-instructions/history': typeof ApiAdminAdoptionInstructionsHistoryRoute
   '/api/admin/adoption-instructions/preview': typeof ApiAdminAdoptionInstructionsPreviewRoute
   '/api/admin/adoption-instructions/publish': typeof ApiAdminAdoptionInstructionsPublishRoute
   '/api/admin/adoption-instructions/restore': typeof ApiAdminAdoptionInstructionsRestoreRoute
@@ -1763,6 +1778,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/adoption-guide-releases/$id/return-to-draft': typeof ApiAdminAdoptionGuideReleasesIdReturnToDraftRoute
   '/api/admin/adoption-guide-releases/$id/submit': typeof ApiAdminAdoptionGuideReleasesIdSubmitRoute
   '/api/admin/adoption-guide-releases/$id/withdraw': typeof ApiAdminAdoptionGuideReleasesIdWithdrawRoute
+  '/api/admin/adoption-instructions/revisions/$id': typeof ApiAdminAdoptionInstructionsRevisionsIdRoute
   '/api/admin/adoptions/adopters/$id': typeof ApiAdminAdoptionsAdoptersIdRoute
   '/api/admin/adoptions/animals/pipeline': typeof ApiAdminAdoptionsAnimalsPipelineRoute
   '/api/admin/adoptions/cases/$id': typeof ApiAdminAdoptionsCasesIdRouteWithChildren
@@ -1962,6 +1978,7 @@ export interface FileRoutesByTo {
   '/api/admin/access/users': typeof ApiAdminAccessUsersRouteWithChildren
   '/api/admin/adoption-guide-releases/$id': typeof ApiAdminAdoptionGuideReleasesIdRouteWithChildren
   '/api/admin/adoption-instructions/draft': typeof ApiAdminAdoptionInstructionsDraftRoute
+  '/api/admin/adoption-instructions/history': typeof ApiAdminAdoptionInstructionsHistoryRoute
   '/api/admin/adoption-instructions/preview': typeof ApiAdminAdoptionInstructionsPreviewRoute
   '/api/admin/adoption-instructions/publish': typeof ApiAdminAdoptionInstructionsPublishRoute
   '/api/admin/adoption-instructions/restore': typeof ApiAdminAdoptionInstructionsRestoreRoute
@@ -2007,6 +2024,7 @@ export interface FileRoutesByTo {
   '/api/admin/adoption-guide-releases/$id/return-to-draft': typeof ApiAdminAdoptionGuideReleasesIdReturnToDraftRoute
   '/api/admin/adoption-guide-releases/$id/submit': typeof ApiAdminAdoptionGuideReleasesIdSubmitRoute
   '/api/admin/adoption-guide-releases/$id/withdraw': typeof ApiAdminAdoptionGuideReleasesIdWithdrawRoute
+  '/api/admin/adoption-instructions/revisions/$id': typeof ApiAdminAdoptionInstructionsRevisionsIdRoute
   '/api/admin/adoptions/adopters/$id': typeof ApiAdminAdoptionsAdoptersIdRoute
   '/api/admin/adoptions/animals/pipeline': typeof ApiAdminAdoptionsAnimalsPipelineRoute
   '/api/admin/adoptions/cases/$id': typeof ApiAdminAdoptionsCasesIdRouteWithChildren
@@ -2208,6 +2226,7 @@ export interface FileRoutesById {
   '/api/admin/access/users': typeof ApiAdminAccessUsersRouteWithChildren
   '/api/admin/adoption-guide-releases/$id': typeof ApiAdminAdoptionGuideReleasesIdRouteWithChildren
   '/api/admin/adoption-instructions/draft': typeof ApiAdminAdoptionInstructionsDraftRoute
+  '/api/admin/adoption-instructions/history': typeof ApiAdminAdoptionInstructionsHistoryRoute
   '/api/admin/adoption-instructions/preview': typeof ApiAdminAdoptionInstructionsPreviewRoute
   '/api/admin/adoption-instructions/publish': typeof ApiAdminAdoptionInstructionsPublishRoute
   '/api/admin/adoption-instructions/restore': typeof ApiAdminAdoptionInstructionsRestoreRoute
@@ -2253,6 +2272,7 @@ export interface FileRoutesById {
   '/api/admin/adoption-guide-releases/$id/return-to-draft': typeof ApiAdminAdoptionGuideReleasesIdReturnToDraftRoute
   '/api/admin/adoption-guide-releases/$id/submit': typeof ApiAdminAdoptionGuideReleasesIdSubmitRoute
   '/api/admin/adoption-guide-releases/$id/withdraw': typeof ApiAdminAdoptionGuideReleasesIdWithdrawRoute
+  '/api/admin/adoption-instructions/revisions/$id': typeof ApiAdminAdoptionInstructionsRevisionsIdRoute
   '/api/admin/adoptions/adopters/$id': typeof ApiAdminAdoptionsAdoptersIdRoute
   '/api/admin/adoptions/animals/pipeline': typeof ApiAdminAdoptionsAnimalsPipelineRoute
   '/api/admin/adoptions/cases/$id': typeof ApiAdminAdoptionsCasesIdRouteWithChildren
@@ -2455,6 +2475,7 @@ export interface FileRouteTypes {
     | '/api/admin/access/users'
     | '/api/admin/adoption-guide-releases/$id'
     | '/api/admin/adoption-instructions/draft'
+    | '/api/admin/adoption-instructions/history'
     | '/api/admin/adoption-instructions/preview'
     | '/api/admin/adoption-instructions/publish'
     | '/api/admin/adoption-instructions/restore'
@@ -2500,6 +2521,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoption-guide-releases/$id/return-to-draft'
     | '/api/admin/adoption-guide-releases/$id/submit'
     | '/api/admin/adoption-guide-releases/$id/withdraw'
+    | '/api/admin/adoption-instructions/revisions/$id'
     | '/api/admin/adoptions/adopters/$id'
     | '/api/admin/adoptions/animals/pipeline'
     | '/api/admin/adoptions/cases/$id'
@@ -2699,6 +2721,7 @@ export interface FileRouteTypes {
     | '/api/admin/access/users'
     | '/api/admin/adoption-guide-releases/$id'
     | '/api/admin/adoption-instructions/draft'
+    | '/api/admin/adoption-instructions/history'
     | '/api/admin/adoption-instructions/preview'
     | '/api/admin/adoption-instructions/publish'
     | '/api/admin/adoption-instructions/restore'
@@ -2744,6 +2767,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoption-guide-releases/$id/return-to-draft'
     | '/api/admin/adoption-guide-releases/$id/submit'
     | '/api/admin/adoption-guide-releases/$id/withdraw'
+    | '/api/admin/adoption-instructions/revisions/$id'
     | '/api/admin/adoptions/adopters/$id'
     | '/api/admin/adoptions/animals/pipeline'
     | '/api/admin/adoptions/cases/$id'
@@ -2944,6 +2968,7 @@ export interface FileRouteTypes {
     | '/api/admin/access/users'
     | '/api/admin/adoption-guide-releases/$id'
     | '/api/admin/adoption-instructions/draft'
+    | '/api/admin/adoption-instructions/history'
     | '/api/admin/adoption-instructions/preview'
     | '/api/admin/adoption-instructions/publish'
     | '/api/admin/adoption-instructions/restore'
@@ -2989,6 +3014,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoption-guide-releases/$id/return-to-draft'
     | '/api/admin/adoption-guide-releases/$id/submit'
     | '/api/admin/adoption-guide-releases/$id/withdraw'
+    | '/api/admin/adoption-instructions/revisions/$id'
     | '/api/admin/adoptions/adopters/$id'
     | '/api/admin/adoptions/animals/pipeline'
     | '/api/admin/adoptions/cases/$id'
@@ -4296,6 +4322,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminAdoptionInstructionsPreviewRouteImport
       parentRoute: typeof ApiAdminAdoptionInstructionsRoute
     }
+    '/api/admin/adoption-instructions/history': {
+      id: '/api/admin/adoption-instructions/history'
+      path: '/history'
+      fullPath: '/api/admin/adoption-instructions/history'
+      preLoaderRoute: typeof ApiAdminAdoptionInstructionsHistoryRouteImport
+      parentRoute: typeof ApiAdminAdoptionInstructionsRoute
+    }
     '/api/admin/adoption-instructions/draft': {
       id: '/api/admin/adoption-instructions/draft'
       path: '/draft'
@@ -4708,6 +4741,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/admin/adoptions/adopters/$id'
       preLoaderRoute: typeof ApiAdminAdoptionsAdoptersIdRouteImport
       parentRoute: typeof ApiAdminAdoptionsAdoptersRoute
+    }
+    '/api/admin/adoption-instructions/revisions/$id': {
+      id: '/api/admin/adoption-instructions/revisions/$id'
+      path: '/revisions/$id'
+      fullPath: '/api/admin/adoption-instructions/revisions/$id'
+      preLoaderRoute: typeof ApiAdminAdoptionInstructionsRevisionsIdRouteImport
+      parentRoute: typeof ApiAdminAdoptionInstructionsRoute
     }
     '/api/admin/adoption-guide-releases/$id/withdraw': {
       id: '/api/admin/adoption-guide-releases/$id/withdraw'
@@ -5128,21 +5168,27 @@ const ApiAdminAdoptionGuideReleasesRouteWithChildren =
 
 interface ApiAdminAdoptionInstructionsRouteChildren {
   ApiAdminAdoptionInstructionsDraftRoute: typeof ApiAdminAdoptionInstructionsDraftRoute
+  ApiAdminAdoptionInstructionsHistoryRoute: typeof ApiAdminAdoptionInstructionsHistoryRoute
   ApiAdminAdoptionInstructionsPreviewRoute: typeof ApiAdminAdoptionInstructionsPreviewRoute
   ApiAdminAdoptionInstructionsPublishRoute: typeof ApiAdminAdoptionInstructionsPublishRoute
   ApiAdminAdoptionInstructionsRestoreRoute: typeof ApiAdminAdoptionInstructionsRestoreRoute
+  ApiAdminAdoptionInstructionsRevisionsIdRoute: typeof ApiAdminAdoptionInstructionsRevisionsIdRoute
 }
 
 const ApiAdminAdoptionInstructionsRouteChildren: ApiAdminAdoptionInstructionsRouteChildren =
   {
     ApiAdminAdoptionInstructionsDraftRoute:
       ApiAdminAdoptionInstructionsDraftRoute,
+    ApiAdminAdoptionInstructionsHistoryRoute:
+      ApiAdminAdoptionInstructionsHistoryRoute,
     ApiAdminAdoptionInstructionsPreviewRoute:
       ApiAdminAdoptionInstructionsPreviewRoute,
     ApiAdminAdoptionInstructionsPublishRoute:
       ApiAdminAdoptionInstructionsPublishRoute,
     ApiAdminAdoptionInstructionsRestoreRoute:
       ApiAdminAdoptionInstructionsRestoreRoute,
+    ApiAdminAdoptionInstructionsRevisionsIdRoute:
+      ApiAdminAdoptionInstructionsRevisionsIdRoute,
   }
 
 const ApiAdminAdoptionInstructionsRouteWithChildren =
