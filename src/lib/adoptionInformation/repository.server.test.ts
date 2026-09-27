@@ -50,6 +50,7 @@ class FakeQuery {
               price_hkd: "0",
               sort_order: 1,
               is_published: true,
+              version: 1,
             },
             {
               id: "33333333-3333-4333-8333-333333333333",
@@ -58,6 +59,7 @@ class FakeQuery {
               price_hkd: "1",
               sort_order: 9,
               is_published: false,
+              version: 1,
             },
           ]
         : []);
@@ -114,6 +116,7 @@ describe("Supabase adoption information repository", () => {
           priceHkd: "0",
           sortOrder: 1,
           isPublished: true,
+          version: 1,
         },
       ],
       estates: [],
@@ -124,7 +127,7 @@ describe("Supabase adoption information repository", () => {
       table: "adoption_fees",
       method: "select",
       payload: {
-        columns: "id,animal_type,item_name,price_hkd,sort_order,is_published",
+        columns: "id,animal_type,item_name,price_hkd,sort_order,is_published,version",
         options: { count: "exact" },
       },
     });
@@ -585,5 +588,53 @@ describe("Supabase adoption information repository", () => {
       pageSize: 25,
     });
     expect(result.items).toEqual([]);
+  });
+  test("fee reorder maps the canonical two-row RPC and stale SQLSTATE", async () => {
+    const firstId = "22222222-2222-4222-8222-222222222222";
+    const secondId = "33333333-3333-4333-8333-333333333333";
+    const actor = "11111111-1111-4111-8111-111111111111";
+    const row = {
+      id: firstId,
+      animal_type: "dog",
+      item_name: "A",
+      price_hkd: "HK$1",
+      sort_order: 1,
+      is_published: true,
+      version: 3,
+    };
+    const { repo, rpcCalls } = setup({
+      rpcResponses: {
+        reorder_adoption_fees_with_audit: {
+          data: [row, { ...row, id: secondId, sort_order: 0, version: 2 }],
+          error: null,
+        },
+      },
+    });
+    const input = { firstId, secondId, expectedVersions: { first: 1, second: 1 } };
+    const result = await repo.reorderFees(input, actor);
+    expect(result.map((fee) => [fee.id, fee.sortOrder, fee.version])).toEqual([
+      [firstId, 1, 3],
+      [secondId, 0, 2],
+    ]);
+    expect(rpcCalls).toEqual([
+      {
+        fn: "reorder_adoption_fees_with_audit",
+        args: {
+          p_actor_user_id: actor,
+          p_first_id: firstId,
+          p_second_id: secondId,
+          p_first_version: 1,
+          p_second_version: 1,
+        },
+      },
+    ]);
+    const conflict = setup({
+      rpcResponses: {
+        reorder_adoption_fees_with_audit: { data: null, error: { code: "P4091" } },
+      },
+    });
+    await expect(conflict.repo.reorderFees(input, actor)).rejects.toThrow(
+      "Fee version or order conflict",
+    );
   });
 });

@@ -239,6 +239,28 @@ export const releaseManifest: SchemaRequirement[] = [
   {
     kind: "function",
     schema: "public",
+    name: "update_adoption_fee_content_with_audit",
+    feature: "adoption-cms",
+    required: true,
+    arguments:
+      "p_actor_user_id uuid, p_id uuid, p_expected_version integer, p_item_name text, p_price_hkd text",
+    returns: "jsonb",
+    executeRoles: ["service_role"],
+  },
+  {
+    kind: "function",
+    schema: "public",
+    name: "reorder_adoption_fees_with_audit",
+    feature: "adoption-cms",
+    required: true,
+    arguments:
+      "p_actor_user_id uuid, p_first_id uuid, p_second_id uuid, p_first_version integer, p_second_version integer",
+    returns: "jsonb",
+    executeRoles: ["service_role"],
+  },
+  {
+    kind: "function",
+    schema: "public",
     name: "mutate_dog_friendly_estate_with_audit",
     feature: "adoption-cms",
     required: true,
@@ -706,6 +728,15 @@ export const releaseManifest: SchemaRequirement[] = [
     arguments: "p_asset_id uuid, p_claimed_at timestamptz",
     returns: "boolean",
     executeRoles: ["service_role"],
+  },
+  {
+    kind: "column",
+    schema: "public",
+    table: "adoption_fees",
+    name: "version",
+    feature: "adoption-cms",
+    required: true,
+    type: "integer",
   },
   {
     kind: "column",
