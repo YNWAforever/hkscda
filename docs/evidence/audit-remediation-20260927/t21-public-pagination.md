@@ -25,3 +25,5 @@ This is a DB/client microbenchmark, not Hong Kong browser latency, cold starts o
 ## Release and rollback
 
 Inspect the exact production catalog, row counts and index/build lock estimates. Rehearse generated-column table rewrite and backfill, exact count/search query plans and backup/restore on a sanitized data-bearing clone before approved DDL. Deploy schema before app; old app continues selecting its existing columns with the additive schema. New app requires the RPC. Code rollback retains the generated column, indexes and RPC; do not drop them or alter historical data just to roll back code. The paid transform flag remains false until the project plan, quota and owner approve it. No production migration, region switch, image transformation, payment or public preview occurred.
+
+GitHub Actions rerun 36331436408 on PR #155 after the CI detail-filter fixture correction: verify, RLS, performance, brand and a11y all passed at source head 71580ed. The first run failed brand/a11y on a fixture-only detail 404 and is retained in verification.md.
