@@ -8,3 +8,5 @@
 Ruling: Treat #133 adoption instructions as a narrowly restored public page and R01 as partial because the same release still lacks other required schema. A 200 response cannot close CMS, upload, submission, or finance compatibility. Cost if wrong: premature release acceptance.
 
 - T18: code/schema implemented in draft PR #153, source commit 434ec6a38d2ddbd02e7250c18b2cf6b62413ba3c; exact seven-record read-only production review list, SQL eligibility/metadata, ended-event UI, photo queue and optional sponsor facts. Production classification, migration, replacement content and T21 filters remain open. See `t18-content-eligibility.md`.
+
+- T19: code and additive schema ready in draft PR #154 (9b40e5a), stacked on #153; R08 fairness/fencing and staff queue tested. Five-minute cron, production migration and live metrics are not enabled. See t19-media-repair.md.
