@@ -71,6 +71,7 @@ import { Route as ApiSponsorshipsPledgesRouteImport } from './routes/api/sponsor
 import { Route as ApiJobsVolunteersRouteImport } from './routes/api/jobs/volunteers'
 import { Route as ApiJobsSponsorshipsRouteImport } from './routes/api/jobs/sponsorships'
 import { Route as ApiJobsPublicUploadsRouteImport } from './routes/api/jobs/public-uploads'
+import { Route as ApiJobsPublicMediaRepairRouteImport } from './routes/api/jobs/public-media-repair'
 import { Route as ApiJobsAdoptionUploadsRouteImport } from './routes/api/jobs/adoption-uploads'
 import { Route as ApiInternshipsAttachmentRouteImport } from './routes/api/internships/attachment'
 import { Route as ApiAdoptionApplicationsRouteImport } from './routes/api/adoption/applications'
@@ -78,6 +79,7 @@ import { Route as ApiAdminSupportersRouteImport } from './routes/api/admin/suppo
 import { Route as ApiAdminReceiptsRouteImport } from './routes/api/admin/receipts'
 import { Route as ApiAdminPaymentsRouteImport } from './routes/api/admin/payments'
 import { Route as ApiAdminPaymentMethodsRouteImport } from './routes/api/admin/payment-methods'
+import { Route as ApiAdminMediaRepairsRouteImport } from './routes/api/admin/media-repairs'
 import { Route as ApiAdminMeRouteImport } from './routes/api/admin/me'
 import { Route as ApiAdminKnowledgeRouteImport } from './routes/api/admin/knowledge'
 import { Route as ApiAdminInternshipsRouteImport } from './routes/api/admin/internships'
@@ -566,6 +568,12 @@ const ApiJobsPublicUploadsRoute = ApiJobsPublicUploadsRouteImport.update({
   path: '/api/jobs/public-uploads',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiJobsPublicMediaRepairRoute =
+  ApiJobsPublicMediaRepairRouteImport.update({
+    id: '/api/jobs/public-media-repair',
+    path: '/api/jobs/public-media-repair',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiJobsAdoptionUploadsRoute = ApiJobsAdoptionUploadsRouteImport.update({
   id: '/api/jobs/adoption-uploads',
   path: '/api/jobs/adoption-uploads',
@@ -600,6 +608,11 @@ const ApiAdminPaymentsRoute = ApiAdminPaymentsRouteImport.update({
 const ApiAdminPaymentMethodsRoute = ApiAdminPaymentMethodsRouteImport.update({
   id: '/api/admin/payment-methods',
   path: '/api/admin/payment-methods',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminMediaRepairsRoute = ApiAdminMediaRepairsRouteImport.update({
+  id: '/api/admin/media-repairs',
+  path: '/api/admin/media-repairs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAdminMeRoute = ApiAdminMeRouteImport.update({
@@ -1690,6 +1703,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/internships': typeof ApiAdminInternshipsRoute
   '/api/admin/knowledge': typeof ApiAdminKnowledgeRoute
   '/api/admin/me': typeof ApiAdminMeRoute
+  '/api/admin/media-repairs': typeof ApiAdminMediaRepairsRoute
   '/api/admin/payment-methods': typeof ApiAdminPaymentMethodsRouteWithChildren
   '/api/admin/payments': typeof ApiAdminPaymentsRouteWithChildren
   '/api/admin/receipts': typeof ApiAdminReceiptsRouteWithChildren
@@ -1697,6 +1711,7 @@ export interface FileRoutesByFullPath {
   '/api/adoption/applications': typeof ApiAdoptionApplicationsRouteWithChildren
   '/api/internships/attachment': typeof ApiInternshipsAttachmentRoute
   '/api/jobs/adoption-uploads': typeof ApiJobsAdoptionUploadsRoute
+  '/api/jobs/public-media-repair': typeof ApiJobsPublicMediaRepairRoute
   '/api/jobs/public-uploads': typeof ApiJobsPublicUploadsRoute
   '/api/jobs/sponsorships': typeof ApiJobsSponsorshipsRoute
   '/api/jobs/volunteers': typeof ApiJobsVolunteersRoute
@@ -1935,6 +1950,7 @@ export interface FileRoutesByTo {
   '/api/admin/internships': typeof ApiAdminInternshipsRoute
   '/api/admin/knowledge': typeof ApiAdminKnowledgeRoute
   '/api/admin/me': typeof ApiAdminMeRoute
+  '/api/admin/media-repairs': typeof ApiAdminMediaRepairsRoute
   '/api/admin/payment-methods': typeof ApiAdminPaymentMethodsRouteWithChildren
   '/api/admin/payments': typeof ApiAdminPaymentsRouteWithChildren
   '/api/admin/receipts': typeof ApiAdminReceiptsRouteWithChildren
@@ -1942,6 +1958,7 @@ export interface FileRoutesByTo {
   '/api/adoption/applications': typeof ApiAdoptionApplicationsRouteWithChildren
   '/api/internships/attachment': typeof ApiInternshipsAttachmentRoute
   '/api/jobs/adoption-uploads': typeof ApiJobsAdoptionUploadsRoute
+  '/api/jobs/public-media-repair': typeof ApiJobsPublicMediaRepairRoute
   '/api/jobs/public-uploads': typeof ApiJobsPublicUploadsRoute
   '/api/jobs/sponsorships': typeof ApiJobsSponsorshipsRoute
   '/api/jobs/volunteers': typeof ApiJobsVolunteersRoute
@@ -2182,6 +2199,7 @@ export interface FileRoutesById {
   '/api/admin/internships': typeof ApiAdminInternshipsRoute
   '/api/admin/knowledge': typeof ApiAdminKnowledgeRoute
   '/api/admin/me': typeof ApiAdminMeRoute
+  '/api/admin/media-repairs': typeof ApiAdminMediaRepairsRoute
   '/api/admin/payment-methods': typeof ApiAdminPaymentMethodsRouteWithChildren
   '/api/admin/payments': typeof ApiAdminPaymentsRouteWithChildren
   '/api/admin/receipts': typeof ApiAdminReceiptsRouteWithChildren
@@ -2189,6 +2207,7 @@ export interface FileRoutesById {
   '/api/adoption/applications': typeof ApiAdoptionApplicationsRouteWithChildren
   '/api/internships/attachment': typeof ApiInternshipsAttachmentRoute
   '/api/jobs/adoption-uploads': typeof ApiJobsAdoptionUploadsRoute
+  '/api/jobs/public-media-repair': typeof ApiJobsPublicMediaRepairRoute
   '/api/jobs/public-uploads': typeof ApiJobsPublicUploadsRoute
   '/api/jobs/sponsorships': typeof ApiJobsSponsorshipsRoute
   '/api/jobs/volunteers': typeof ApiJobsVolunteersRoute
@@ -2430,6 +2449,7 @@ export interface FileRouteTypes {
     | '/api/admin/internships'
     | '/api/admin/knowledge'
     | '/api/admin/me'
+    | '/api/admin/media-repairs'
     | '/api/admin/payment-methods'
     | '/api/admin/payments'
     | '/api/admin/receipts'
@@ -2437,6 +2457,7 @@ export interface FileRouteTypes {
     | '/api/adoption/applications'
     | '/api/internships/attachment'
     | '/api/jobs/adoption-uploads'
+    | '/api/jobs/public-media-repair'
     | '/api/jobs/public-uploads'
     | '/api/jobs/sponsorships'
     | '/api/jobs/volunteers'
@@ -2675,6 +2696,7 @@ export interface FileRouteTypes {
     | '/api/admin/internships'
     | '/api/admin/knowledge'
     | '/api/admin/me'
+    | '/api/admin/media-repairs'
     | '/api/admin/payment-methods'
     | '/api/admin/payments'
     | '/api/admin/receipts'
@@ -2682,6 +2704,7 @@ export interface FileRouteTypes {
     | '/api/adoption/applications'
     | '/api/internships/attachment'
     | '/api/jobs/adoption-uploads'
+    | '/api/jobs/public-media-repair'
     | '/api/jobs/public-uploads'
     | '/api/jobs/sponsorships'
     | '/api/jobs/volunteers'
@@ -2921,6 +2944,7 @@ export interface FileRouteTypes {
     | '/api/admin/internships'
     | '/api/admin/knowledge'
     | '/api/admin/me'
+    | '/api/admin/media-repairs'
     | '/api/admin/payment-methods'
     | '/api/admin/payments'
     | '/api/admin/receipts'
@@ -2928,6 +2952,7 @@ export interface FileRouteTypes {
     | '/api/adoption/applications'
     | '/api/internships/attachment'
     | '/api/jobs/adoption-uploads'
+    | '/api/jobs/public-media-repair'
     | '/api/jobs/public-uploads'
     | '/api/jobs/sponsorships'
     | '/api/jobs/volunteers'
@@ -3142,6 +3167,7 @@ export interface RootRouteChildren {
   ApiAdminInternshipsRoute: typeof ApiAdminInternshipsRoute
   ApiAdminKnowledgeRoute: typeof ApiAdminKnowledgeRoute
   ApiAdminMeRoute: typeof ApiAdminMeRoute
+  ApiAdminMediaRepairsRoute: typeof ApiAdminMediaRepairsRoute
   ApiAdminPaymentMethodsRoute: typeof ApiAdminPaymentMethodsRouteWithChildren
   ApiAdminPaymentsRoute: typeof ApiAdminPaymentsRouteWithChildren
   ApiAdminReceiptsRoute: typeof ApiAdminReceiptsRouteWithChildren
@@ -3149,6 +3175,7 @@ export interface RootRouteChildren {
   ApiAdoptionApplicationsRoute: typeof ApiAdoptionApplicationsRouteWithChildren
   ApiInternshipsAttachmentRoute: typeof ApiInternshipsAttachmentRoute
   ApiJobsAdoptionUploadsRoute: typeof ApiJobsAdoptionUploadsRoute
+  ApiJobsPublicMediaRepairRoute: typeof ApiJobsPublicMediaRepairRoute
   ApiJobsPublicUploadsRoute: typeof ApiJobsPublicUploadsRoute
   ApiJobsSponsorshipsRoute: typeof ApiJobsSponsorshipsRoute
   ApiJobsVolunteersRoute: typeof ApiJobsVolunteersRoute
@@ -3658,6 +3685,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiJobsPublicUploadsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/jobs/public-media-repair': {
+      id: '/api/jobs/public-media-repair'
+      path: '/api/jobs/public-media-repair'
+      fullPath: '/api/jobs/public-media-repair'
+      preLoaderRoute: typeof ApiJobsPublicMediaRepairRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/jobs/adoption-uploads': {
       id: '/api/jobs/adoption-uploads'
       path: '/api/jobs/adoption-uploads'
@@ -3705,6 +3739,13 @@ declare module '@tanstack/react-router' {
       path: '/api/admin/payment-methods'
       fullPath: '/api/admin/payment-methods'
       preLoaderRoute: typeof ApiAdminPaymentMethodsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/media-repairs': {
+      id: '/api/admin/media-repairs'
+      path: '/api/admin/media-repairs'
+      fullPath: '/api/admin/media-repairs'
+      preLoaderRoute: typeof ApiAdminMediaRepairsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/me': {
@@ -5710,6 +5751,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminInternshipsRoute: ApiAdminInternshipsRoute,
   ApiAdminKnowledgeRoute: ApiAdminKnowledgeRoute,
   ApiAdminMeRoute: ApiAdminMeRoute,
+  ApiAdminMediaRepairsRoute: ApiAdminMediaRepairsRoute,
   ApiAdminPaymentMethodsRoute: ApiAdminPaymentMethodsRouteWithChildren,
   ApiAdminPaymentsRoute: ApiAdminPaymentsRouteWithChildren,
   ApiAdminReceiptsRoute: ApiAdminReceiptsRouteWithChildren,
@@ -5717,6 +5759,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdoptionApplicationsRoute: ApiAdoptionApplicationsRouteWithChildren,
   ApiInternshipsAttachmentRoute: ApiInternshipsAttachmentRoute,
   ApiJobsAdoptionUploadsRoute: ApiJobsAdoptionUploadsRoute,
+  ApiJobsPublicMediaRepairRoute: ApiJobsPublicMediaRepairRoute,
   ApiJobsPublicUploadsRoute: ApiJobsPublicUploadsRoute,
   ApiJobsSponsorshipsRoute: ApiJobsSponsorshipsRoute,
   ApiJobsVolunteersRoute: ApiJobsVolunteersRoute,
