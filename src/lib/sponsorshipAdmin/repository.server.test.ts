@@ -84,15 +84,17 @@ class FakeQuery {
   private orders: Array<{ column: string; ascending: boolean }> = [];
   private rangeBounds: [number, number] | null = null;
   private countMode: string | undefined;
+  private innerProofJoin = false;
 
   constructor(
     private readonly state: FakeState,
     private readonly table: string,
   ) {}
 
-  select(_columns: string, options?: { count?: string }) {
-    this.state.calls.push({ table: this.table, method: "select" });
+  select(columns: string, options?: { count?: string }) {
+    this.state.calls.push({ table: this.table, method: "select", payload: columns });
     this.countMode = options?.count;
+    this.innerProofJoin = columns.includes("sponsorship_payment_proof!inner");
     return this;
   }
 
@@ -166,6 +168,14 @@ class FakeQuery {
     let rows = this.rowsForTable();
     for (const filter of this.filters) {
       rows = rows.filter((row) => {
+        if (filter.column === "sponsorship_payment_proof.review_status") {
+          return (
+            this.innerProofJoin &&
+            this.state.proofRows.some(
+              (proof) => proof.pledge_id === row.id && proof.review_status === filter.value,
+            )
+          );
+        }
         if (Array.isArray(filter.value)) return filter.value.includes(row[filter.column]);
         return row[filter.column] === filter.value;
       });
@@ -483,6 +493,30 @@ describe("createSupabaseSponsorshipAdminRepository", () => {
     const result = await repo.listPledges({ status: "active", page: 1, pageSize: 25 });
     expect(result.pledges).toHaveLength(1);
     expect(result.pledges[0].status).toBe("active");
+  });
+
+  test("pending-proof queue includes active later months and excludes decided proofs before paging", async () => {
+    const { client } = createFakeClient({
+      pledgeRows: [
+        pledgeRow({ id: "pledge-a", status: "active" }),
+        pledgeRow({ id: "pledge-b", status: "provisional" }),
+        pledgeRow({ id: "pledge-c", status: "active" }),
+      ],
+      proofRows: [
+        proofRow({ pledge_id: "pledge-a", review_status: "pending" }),
+        proofRow({ id: "proof-b", pledge_id: "pledge-b", review_status: "approved" }),
+        proofRow({ id: "proof-c", pledge_id: "pledge-c", review_status: "pending" }),
+      ],
+    });
+    const repo = createSupabaseSponsorshipAdminRepository(client);
+
+    const page1 = await repo.listPledges({ proof: "pending", page: 1, pageSize: 1 });
+    const page2 = await repo.listPledges({ proof: "pending", page: 2, pageSize: 1 });
+
+    expect(page1.total).toBe(2);
+    expect(page1.pledges.map((row) => row.id)).toEqual(["pledge-c"]);
+    expect(page2.total).toBe(2);
+    expect(page2.pledges.map((row) => row.id)).toEqual(["pledge-a"]);
   });
 
   test("listPledges filters by q against supporter name and email", async () => {

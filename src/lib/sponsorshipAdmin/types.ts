@@ -154,6 +154,7 @@ export type PledgeDetail = PledgeSummary & {
 
 export type PledgeListSearch = {
   status?: PledgeStatus;
+  proof?: "pending";
   q?: string;
   page: number;
   pageSize: number;

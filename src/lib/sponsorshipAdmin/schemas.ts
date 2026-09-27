@@ -20,6 +20,7 @@ export const pledgeStatusSchema = z.enum([
 
 export const pledgeListSearchSchema = z.object({
   status: pledgeStatusSchema.optional(),
+  proof: z.enum(["pending"]).optional(),
   q: z
     .string()
     .trim()
