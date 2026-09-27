@@ -37,6 +37,7 @@ import { Route as AnimalsCatRouteImport } from './routes/animals/cat'
 import { Route as AdoptionInstructionsRouteImport } from './routes/adoption/instructions'
 import { Route as AdoptionApplyRouteImport } from './routes/adoption/apply'
 import { Route as AdminVolunteersRouteImport } from './routes/admin/volunteers'
+import { Route as AdminTasksRouteImport } from './routes/admin/tasks'
 import { Route as AdminSupportersRouteImport } from './routes/admin/supporters'
 import { Route as AdminSponsorshipsRouteImport } from './routes/admin/sponsorships'
 import { Route as AdminResetPasswordRouteImport } from './routes/admin/reset-password'
@@ -79,6 +80,7 @@ import { Route as ApiJobsPublicMediaRepairRouteImport } from './routes/api/jobs/
 import { Route as ApiJobsAdoptionUploadsRouteImport } from './routes/api/jobs/adoption-uploads'
 import { Route as ApiInternshipsAttachmentRouteImport } from './routes/api/internships/attachment'
 import { Route as ApiAdoptionApplicationsRouteImport } from './routes/api/adoption/applications'
+import { Route as ApiAdminTaskOverviewRouteImport } from './routes/api/admin/task-overview'
 import { Route as ApiAdminSupportersRouteImport } from './routes/api/admin/supporters'
 import { Route as ApiAdminReceiptsRouteImport } from './routes/api/admin/receipts'
 import { Route as ApiAdminPaymentsRouteImport } from './routes/api/admin/payments'
@@ -401,6 +403,11 @@ const AdminVolunteersRoute = AdminVolunteersRouteImport.update({
   path: '/admin/volunteers',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminTasksRoute = AdminTasksRouteImport.update({
+  id: '/admin/tasks',
+  path: '/admin/tasks',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminSupportersRoute = AdminSupportersRouteImport.update({
   id: '/admin/supporters',
   path: '/admin/supporters',
@@ -613,6 +620,11 @@ const ApiInternshipsAttachmentRoute =
 const ApiAdoptionApplicationsRoute = ApiAdoptionApplicationsRouteImport.update({
   id: '/api/adoption/applications',
   path: '/api/adoption/applications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminTaskOverviewRoute = ApiAdminTaskOverviewRouteImport.update({
+  id: '/api/admin/task-overview',
+  path: '/api/admin/task-overview',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAdminSupportersRoute = ApiAdminSupportersRouteImport.update({
@@ -1671,6 +1683,7 @@ export interface FileRoutesByFullPath {
   '/admin/reset-password': typeof AdminResetPasswordRoute
   '/admin/sponsorships': typeof AdminSponsorshipsRoute
   '/admin/supporters': typeof AdminSupportersRouteWithChildren
+  '/admin/tasks': typeof AdminTasksRoute
   '/admin/volunteers': typeof AdminVolunteersRouteWithChildren
   '/adoption/apply': typeof AdoptionApplyRoute
   '/adoption/instructions': typeof AdoptionInstructionsRoute
@@ -1740,6 +1753,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/payments': typeof ApiAdminPaymentsRouteWithChildren
   '/api/admin/receipts': typeof ApiAdminReceiptsRouteWithChildren
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
+  '/api/admin/task-overview': typeof ApiAdminTaskOverviewRoute
   '/api/adoption/applications': typeof ApiAdoptionApplicationsRouteWithChildren
   '/api/internships/attachment': typeof ApiInternshipsAttachmentRoute
   '/api/jobs/adoption-uploads': typeof ApiJobsAdoptionUploadsRoute
@@ -1923,6 +1937,7 @@ export interface FileRoutesByTo {
   '/admin/reset-password': typeof AdminResetPasswordRoute
   '/admin/sponsorships': typeof AdminSponsorshipsRoute
   '/admin/supporters': typeof AdminSupportersRouteWithChildren
+  '/admin/tasks': typeof AdminTasksRoute
   '/admin/volunteers': typeof AdminVolunteersRouteWithChildren
   '/adoption/apply': typeof AdoptionApplyRoute
   '/adoption/instructions': typeof AdoptionInstructionsRoute
@@ -1992,6 +2007,7 @@ export interface FileRoutesByTo {
   '/api/admin/payments': typeof ApiAdminPaymentsRouteWithChildren
   '/api/admin/receipts': typeof ApiAdminReceiptsRouteWithChildren
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
+  '/api/admin/task-overview': typeof ApiAdminTaskOverviewRoute
   '/api/adoption/applications': typeof ApiAdoptionApplicationsRouteWithChildren
   '/api/internships/attachment': typeof ApiInternshipsAttachmentRoute
   '/api/jobs/adoption-uploads': typeof ApiJobsAdoptionUploadsRoute
@@ -2177,6 +2193,7 @@ export interface FileRoutesById {
   '/admin/reset-password': typeof AdminResetPasswordRoute
   '/admin/sponsorships': typeof AdminSponsorshipsRoute
   '/admin/supporters': typeof AdminSupportersRouteWithChildren
+  '/admin/tasks': typeof AdminTasksRoute
   '/admin/volunteers': typeof AdminVolunteersRouteWithChildren
   '/adoption/apply': typeof AdoptionApplyRoute
   '/adoption/instructions': typeof AdoptionInstructionsRoute
@@ -2246,6 +2263,7 @@ export interface FileRoutesById {
   '/api/admin/payments': typeof ApiAdminPaymentsRouteWithChildren
   '/api/admin/receipts': typeof ApiAdminReceiptsRouteWithChildren
   '/api/admin/supporters': typeof ApiAdminSupportersRouteWithChildren
+  '/api/admin/task-overview': typeof ApiAdminTaskOverviewRoute
   '/api/adoption/applications': typeof ApiAdoptionApplicationsRouteWithChildren
   '/api/internships/attachment': typeof ApiInternshipsAttachmentRoute
   '/api/jobs/adoption-uploads': typeof ApiJobsAdoptionUploadsRoute
@@ -2432,6 +2450,7 @@ export interface FileRouteTypes {
     | '/admin/reset-password'
     | '/admin/sponsorships'
     | '/admin/supporters'
+    | '/admin/tasks'
     | '/admin/volunteers'
     | '/adoption/apply'
     | '/adoption/instructions'
@@ -2501,6 +2520,7 @@ export interface FileRouteTypes {
     | '/api/admin/payments'
     | '/api/admin/receipts'
     | '/api/admin/supporters'
+    | '/api/admin/task-overview'
     | '/api/adoption/applications'
     | '/api/internships/attachment'
     | '/api/jobs/adoption-uploads'
@@ -2684,6 +2704,7 @@ export interface FileRouteTypes {
     | '/admin/reset-password'
     | '/admin/sponsorships'
     | '/admin/supporters'
+    | '/admin/tasks'
     | '/admin/volunteers'
     | '/adoption/apply'
     | '/adoption/instructions'
@@ -2753,6 +2774,7 @@ export interface FileRouteTypes {
     | '/api/admin/payments'
     | '/api/admin/receipts'
     | '/api/admin/supporters'
+    | '/api/admin/task-overview'
     | '/api/adoption/applications'
     | '/api/internships/attachment'
     | '/api/jobs/adoption-uploads'
@@ -2937,6 +2959,7 @@ export interface FileRouteTypes {
     | '/admin/reset-password'
     | '/admin/sponsorships'
     | '/admin/supporters'
+    | '/admin/tasks'
     | '/admin/volunteers'
     | '/adoption/apply'
     | '/adoption/instructions'
@@ -3006,6 +3029,7 @@ export interface FileRouteTypes {
     | '/api/admin/payments'
     | '/api/admin/receipts'
     | '/api/admin/supporters'
+    | '/api/admin/task-overview'
     | '/api/adoption/applications'
     | '/api/internships/attachment'
     | '/api/jobs/adoption-uploads'
@@ -3191,6 +3215,7 @@ export interface RootRouteChildren {
   AdminResetPasswordRoute: typeof AdminResetPasswordRoute
   AdminSponsorshipsRoute: typeof AdminSponsorshipsRoute
   AdminSupportersRoute: typeof AdminSupportersRouteWithChildren
+  AdminTasksRoute: typeof AdminTasksRoute
   AdminVolunteersRoute: typeof AdminVolunteersRouteWithChildren
   AdoptionApplyRoute: typeof AdoptionApplyRoute
   AdoptionInstructionsRoute: typeof AdoptionInstructionsRoute
@@ -3234,6 +3259,7 @@ export interface RootRouteChildren {
   ApiAdminPaymentsRoute: typeof ApiAdminPaymentsRouteWithChildren
   ApiAdminReceiptsRoute: typeof ApiAdminReceiptsRouteWithChildren
   ApiAdminSupportersRoute: typeof ApiAdminSupportersRouteWithChildren
+  ApiAdminTaskOverviewRoute: typeof ApiAdminTaskOverviewRoute
   ApiAdoptionApplicationsRoute: typeof ApiAdoptionApplicationsRouteWithChildren
   ApiInternshipsAttachmentRoute: typeof ApiInternshipsAttachmentRoute
   ApiJobsAdoptionUploadsRoute: typeof ApiJobsAdoptionUploadsRoute
@@ -3511,6 +3537,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/volunteers'
       fullPath: '/admin/volunteers'
       preLoaderRoute: typeof AdminVolunteersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/tasks': {
+      id: '/admin/tasks'
+      path: '/admin/tasks'
+      fullPath: '/admin/tasks'
+      preLoaderRoute: typeof AdminTasksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/supporters': {
@@ -3805,6 +3838,13 @@ declare module '@tanstack/react-router' {
       path: '/api/adoption/applications'
       fullPath: '/api/adoption/applications'
       preLoaderRoute: typeof ApiAdoptionApplicationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/task-overview': {
+      id: '/api/admin/task-overview'
+      path: '/api/admin/task-overview'
+      fullPath: '/api/admin/task-overview'
+      preLoaderRoute: typeof ApiAdminTaskOverviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/supporters': {
@@ -5813,6 +5853,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminResetPasswordRoute: AdminResetPasswordRoute,
   AdminSponsorshipsRoute: AdminSponsorshipsRoute,
   AdminSupportersRoute: AdminSupportersRouteWithChildren,
+  AdminTasksRoute: AdminTasksRoute,
   AdminVolunteersRoute: AdminVolunteersRouteWithChildren,
   AdoptionApplyRoute: AdoptionApplyRoute,
   AdoptionInstructionsRoute: AdoptionInstructionsRoute,
@@ -5858,6 +5899,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminPaymentsRoute: ApiAdminPaymentsRouteWithChildren,
   ApiAdminReceiptsRoute: ApiAdminReceiptsRouteWithChildren,
   ApiAdminSupportersRoute: ApiAdminSupportersRouteWithChildren,
+  ApiAdminTaskOverviewRoute: ApiAdminTaskOverviewRoute,
   ApiAdoptionApplicationsRoute: ApiAdoptionApplicationsRouteWithChildren,
   ApiInternshipsAttachmentRoute: ApiInternshipsAttachmentRoute,
   ApiJobsAdoptionUploadsRoute: ApiJobsAdoptionUploadsRoute,

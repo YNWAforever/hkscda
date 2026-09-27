@@ -13,6 +13,7 @@ export type AdminDashboardSection =
   | "access";
 
 export type AdminAccessArea =
+  | "taskOverview"
   | "animals"
   | "adoptionCases"
   | "manualIntake"
@@ -43,6 +44,7 @@ export type AdminIdentity = {
 
 const ROLE_ACCESS: Record<AdminRole, ReadonlySet<AdminAccessArea>> = {
   staff: new Set([
+    "taskOverview",
     "animals",
     "adoptionCases",
     "manualIntake",
@@ -57,8 +59,15 @@ const ROLE_ACCESS: Record<AdminRole, ReadonlySet<AdminAccessArea>> = {
     "sponsorshipReview",
     "faqManagement",
   ]),
-  treasurer: new Set(["payments", "supporters", "sponsorshipRead", "sponsorshipFinance"]),
+  treasurer: new Set([
+    "taskOverview",
+    "payments",
+    "supporters",
+    "sponsorshipRead",
+    "sponsorshipFinance",
+  ]),
   admin: new Set([
+    "taskOverview",
     "animals",
     "adoptionCases",
     "manualIntake",
@@ -127,6 +136,7 @@ export function getAdminAreaForLocation(input: {
   pathname: string;
   section?: AdminDashboardSection;
 }): AdminAccessArea {
+  if (input.pathname === "/admin/tasks") return "taskOverview";
   if (input.pathname === "/admin") {
     return input.section === "payments" ? "payments" : "animals";
   }

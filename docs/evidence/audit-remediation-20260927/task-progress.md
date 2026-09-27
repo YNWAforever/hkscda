@@ -17,3 +17,8 @@ Ruling: Treat #133 adoption instructions as a narrowly restored public page and 
 - T22 recovery: draft PR #156, source 3b5941b2b37860f0cfdc33cfe20a8c9072e19346; generic OTP request and public entry tested. CRM-01 partial until verified-record portal; hosted OTP settings and email sink not-run.
 
 - T22 portal: verified records and private receipt authorization, explicit audited marketing preference. Source commit/PR pending. Full isolated suite 2844 pass, 89 skip, 0 fail; typecheck/lint/build exit 0; disposable catalog 87 compatible with manual unledgered local function. Real OTP email sink, hosted settings, status-link reissue and browser journey remain open; CRM-01 partial.
+
+- T22 portal: draft PR #157 source ef59ca34b885822b9837aae3beee6ef0ad994db8; verify, brand, a11y, RLS and performance CI passed at that SHA. CRM-01 remains partial for hosted OTP/email sink/browser and ambiguous legacy records.
+- T23 overview: read-only role-based task cards in progress; direct API/access/UI tests 4 pass and 11 metric queries executed against dedicated local PostgREST. Cross-domain bulk and filter-preserving links remain open.
+
+- T23 overview verification: local typecheck/lint/build exit 0; isolated full suite 2849 pass 90 skip 0 fail after sequential rerun; 11 local PostgREST metric queries pass. An initial concurrent run timed out only in the unrelated migration safety scan (targeted rerun 1/1 pass).
