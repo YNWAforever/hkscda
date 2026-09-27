@@ -37,3 +37,9 @@ Status: **schema-ready = no**. This document is a review and rehearsal checklist
 ## Owners and remaining gates
 
 DB release owner: review exact SQL diffs, lock estimates, backfill, backup/restore and app compatibility; authorize production migration only after isolated rehearsal. Release owner: approve the tested app SHA and verify same-SHA CI, content smoke and rollback boundary. Finance owner: separately approve any payment method activation after sandbox evidence.
+
+## T15 supporter version addendum
+
+Draft #149 introduces 20260927110000_crm_supporter_edit_version.sql with committed-byte SHA-256 d9756e0cb41dd7878e6046a0eab3db4b1f9dfb8a39751884d1cfd2b8df1fa80c. It adds a monotonic profile/role edit token and a new service-role RPC while retaining the old seven-argument RPC for old application code. Exact catalog, isolated concurrency and rollback evidence is in [T15 evidence](t15-supporter-edits.md).
+
+The schema must be applied before the #149 app code. Rehearse locks and triggers on a sanitized data-bearing clone and confirm real-role UAT plus release owner approval. On application rollback, retain the additive schema; the old app will again accept unversioned edits, so stop concurrent edit operations or explicitly manage that risk. Schema removal needs a separately approved compatibility check and cannot be inferred from an app rollback.

@@ -16,7 +16,7 @@ ADOPT-01,待修本機草稿保存界線,T09,open,,,,,,,,
 ADOPT-02,待完善準備、恢復與七步流程,T09、T24,open,,,,,,,,
 CRM-01,產品缺口；先安全找回，再中心,T22,open,,,,,,,,
 ADMIN-01,待修匯出狀態與錯誤,T14,open,,,,,,,,
-ADMIN-02,待修 supporter dialog 同步／衝突,T15,open,,,,,,,,
+ADMIN-02,待修 supporter dialog 同步／衝突,T15,schema-ready,yes,yes,no,no,115d0c65c09af2c26cbcfd28a1c7a9d39ce47c30,#149 115d0c6,T15 SQL 3 pass 13 assertions; full 2789 pass 88 skip; focused CRM 42 pass; synthetic mobile UI exit 0; typecheck lint build exit 0,Production migration and release approval; sanitized clone rehearsal; real role UAT
 ADMIN-03,待統一列表搜尋,T15,open,,,,,,,,
 ADMIN-04,待改善現有安全 bulk UI,T17、T23,open,,,,,,,,
 PERF-01,待 DB 篩選與分頁,T21,open,,,,,,,,
