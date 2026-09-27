@@ -4,7 +4,7 @@ import { spawn } from "node:child_process";
 import { createServer } from "node:net";
 import { once } from "node:events";
 
-test("CI fixture serves public catalogues and paginated adoption fees", async () => {
+test("CI fixture serves public catalogues and paginated adoption fees", { timeout: 20_000 }, async () => {
   const reservation = createServer();
   reservation.listen(0, "127.0.0.1");
   await once(reservation, "listening");
