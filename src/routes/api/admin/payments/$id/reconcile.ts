@@ -8,6 +8,11 @@ import {
 
 import { reconcileManualPayment } from "../../../../../lib/donations/reconcile.server";
 import {
+  createDonationDeliveryHandler,
+  createDonationDeliveryWorker,
+  createSupabaseDeliveryJobRepository,
+} from "../../../../../lib/donations/deliveryJobs.server";
+import {
   createSupabaseServiceClient,
   requireAdmin,
 } from "../../../../../lib/donations/supabase.server";
@@ -24,11 +29,16 @@ export const Route = createFileRoute("/api/admin/payments/$id/reconcile")({
           const client = createSupabaseServiceClient();
           const admin = await requireAdmin(request, ["treasurer", "admin"], client);
           const body = reconcileSchema.parse(await readAdminJson(request));
+          const deliveryWorker = createDonationDeliveryWorker({
+            repository: createSupabaseDeliveryJobRepository(client),
+            deliver: createDonationDeliveryHandler(client),
+          });
           const result = await reconcileManualPayment({
             client,
             paymentId: params.id,
             actorUserId: admin.authUserId,
             bankReference: body.bankReference,
+            runDeliveryJob: deliveryWorker.run,
           });
 
           return Response.json(result);

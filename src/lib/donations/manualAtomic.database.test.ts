@@ -73,6 +73,11 @@ test.skipIf(!url || process.env.MANUAL_FINANCE_TEST_ALLOW_LOCAL_FIXTURES !== "1"
       payments = [crypto.randomUUID(), crypto.randomUUID()];
     try {
       await db.begin(async (tx) => {
+        // The dedicated local DB can carry an untracked experimental trigger.
+        // Disable it only inside this rollback-only fixture so the RPC must queue its own job.
+        await tx.unsafe(
+          "do $$ begin if exists(select 1 from pg_trigger where tgrelid='public.donation'::regclass and tgname='donation_success_delivery_job') then execute 'alter table public.donation disable trigger donation_success_delivery_job'; end if; end $$",
+        );
         await tx.unsafe(
           "insert into auth.users(id,email,email_confirmed_at,created_at,updated_at) values($1::uuid,$2,now(),now(),now())",
           [actor, actor + "@example.invalid"],
@@ -114,6 +119,11 @@ test.skipIf(!url || process.env.MANUAL_FINANCE_TEST_ALLOW_LOCAL_FIXTURES !== "1"
         };
         expect((await call(payments[1]!, "FPS-MISMATCH"))[0]!.result.kind).toBe("amount_mismatch");
         expect((await call(payments[0]!, "  FPS-ATOMIC-01 "))[0]!.result.kind).toBe("applied");
+        const jobs = (await tx.unsafe(
+          "select count(*)::int n from public.donation_delivery_job where payment_id=$1::uuid",
+          [payments[0]],
+        )) as Array<{ n: number }>;
+        expect(jobs[0]!.n).toBe(1);
         expect((await call(payments[0]!, "FPS-ATOMIC-01"))[0]!.result.kind).toBe("state_conflict");
         await tx.unsafe("update public.payment set amount_cents=10000 where id=$1::uuid", [
           payments[1],
@@ -144,6 +154,11 @@ test.skipIf(!url || process.env.MANUAL_FINANCE_TEST_ALLOW_LOCAL_FIXTURES !== "1"
           [payments[1]],
         )) as Array<{ payment_status: string; donation_status: string }>;
         expect(state[0]).toEqual({ payment_status: "pending", donation_status: "pending" });
+        const failedJobs = (await tx.unsafe(
+          "select count(*)::int n from public.donation_delivery_job where payment_id=$1::uuid",
+          [payments[1]],
+        )) as Array<{ n: number }>;
+        expect(failedJobs[0]!.n).toBe(0);
         await tx.unsafe("drop trigger fail_manual_audit on public.audit_log");
         const audits = (await tx.unsafe(
           "select count(*)::int n from public.audit_log where actor_user_id=$1::uuid and action='payment.mark_received'",

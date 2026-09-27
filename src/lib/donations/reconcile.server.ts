@@ -7,6 +7,7 @@ import { buildReconciliationPlan } from "./reconciliation";
 import { generateReceiptPdf } from "./receipt-pdf.server";
 import { sendDonationAcknowledgement } from "./notifications.server";
 import type { OnlinePaymentProvider } from "./contracts";
+import type { DeliveryRunResult } from "./deliveryJobs.server";
 
 export type ReconcileProviderArgs = {
   client: SupabaseClient;
@@ -29,7 +30,7 @@ type ReconcileManualArgs = {
   paymentId: string;
   actorUserId: string;
   bankReference: string;
-  deps?: ReconcileDeps;
+  runDeliveryJob?: (jobId: string) => Promise<DeliveryRunResult>;
 };
 
 type PaymentWithDonation = {
@@ -838,6 +839,7 @@ export async function reconcileManualPayment(args: ReconcileManualArgs) {
   const result = (Array.isArray(data) ? data[0] : data) as {
     kind: "applied" | "state_conflict" | "amount_mismatch" | "provider_denied" | "not_found";
     donationId?: string;
+    deliveryJobId?: string;
     expectedCents?: number;
     actualCents?: number;
     paymentStatus?: string;
@@ -862,19 +864,27 @@ export async function reconcileManualPayment(args: ReconcileManualArgs) {
     throw Response.json({ error: "Provider requires its signed settlement path" }, { status: 422 });
   if (result.kind === "not_found")
     throw Response.json({ error: "Payment not found" }, { status: 404 });
-  if (result.kind !== "applied" || !result.donationId)
+  if (result.kind !== "applied" || !result.donationId || !result.deliveryJobId)
     throw new Error("Unexpected manual reconciliation result");
 
+  let deliveryStatus: "pending" | "processing" | "retryable" | "attention_required" | "complete" =
+    "pending";
   try {
-    const payment = await findPaymentById(args.client, args.paymentId);
-    const receiptNo = await completeDonationSideEffects(args.client, payment, args.deps);
-    return { kind: "applied" as const, donationId: result.donationId, receiptNo };
+    if (args.runDeliveryJob) {
+      const delivery = await args.runDeliveryJob(result.deliveryJobId);
+      deliveryStatus = delivery.kind === "busy" ? "processing" : delivery.kind;
+    }
   } catch {
-    // Settlement/audit already committed. A failed receipt or email must never
-    // make the status appear pending or invite a second bank-reference credit.
-    console.error("Manual payment committed; receipt or notification needs recovery");
-    return { kind: "applied" as const, donationId: result.donationId, sideEffectsFailed: true };
+    // The durable job committed with the money/audit. An attempt failure is a
+    // delivery concern, never a reason to retry the bank credit.
+    console.error("Manual payment committed; delivery job needs recovery");
   }
+  return {
+    kind: "applied" as const,
+    donationId: result.donationId,
+    deliveryJobId: result.deliveryJobId,
+    deliveryStatus,
+  };
 }
 
 export async function issueReceiptForDonation(

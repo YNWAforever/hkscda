@@ -62,8 +62,12 @@ function database() {
   return sql;
 }
 async function gift(requestId: string, payload: unknown = input) {
+  // Distinct synthetic gifts need distinct bank references under the production
+  // uniqueness rule; retries of one request keep the same reference and digest.
+  const command =
+    payload === input ? { ...input, bankReference: `LOCAL-CRM-FIXTURE-${requestId}` } : payload;
   const rows =
-    await database()`select public.record_manual_gift_with_audit(${requestId}::uuid,${actor}::uuid,${payload}::jsonb) result`;
+    await database()`select public.record_manual_gift_with_audit(${requestId}::uuid,${actor}::uuid,${command}::jsonb) result`;
   return rows[0].result as {
     donationId: string;
     paymentId: string;

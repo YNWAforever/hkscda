@@ -25,13 +25,14 @@ export function ReconcileDialog({
   const [open, setOpen] = useState(false);
   const [bankReference, setBankReference] = useState("");
   const [deliveryWarning, setDeliveryWarning] = useState("");
+  const [deliveryJobId, setDeliveryJobId] = useState<string | null>(null);
 
   const trimmed = bankReference.trim();
   const canSubmit = trimmed.length >= 1 && trimmed.length <= 120;
 
   const mutation = useMutation({
     mutationFn: () =>
-      fetchAdminJson<{ kind: string; sideEffectsFailed?: boolean }>(
+      fetchAdminJson<{ kind: string; deliveryJobId: string; deliveryStatus: string }>(
         `/api/admin/payments/${paymentId}/reconcile`,
         {
           method: "POST",
@@ -39,36 +40,50 @@ export function ReconcileDialog({
         },
       ),
     onSuccess: (result) => {
-      onReconciled();
       setBankReference("");
-      if (result.sideEffectsFailed) {
-        setDeliveryWarning(
-          "收款及稽核已記錄；收條或通知未完成，請到待處理工作重試，不要再次入帳。",
-        );
-      } else {
+      if (result.deliveryStatus === "complete") {
         setOpen(false);
+        onReconciled();
+      } else {
+        setDeliveryJobId(result.deliveryJobId);
+        setDeliveryWarning(
+          "收款及稽核已記錄；收條或電郵工作尚未完成。可重試或到待處理工作檢查，不要再次入帳。",
+        );
+      }
+    },
+  });
+  const retryDelivery = useMutation({
+    mutationFn: () =>
+      fetchAdminJson<{ deliveryStatus: string }>(
+        `/api/admin/donations/delivery/${deliveryJobId}/retry`,
+        { method: "POST" },
+      ),
+    onSuccess: (result) => {
+      if (result.deliveryStatus === "complete") {
+        setOpen(false);
+        onReconciled();
       }
     },
   });
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!canSubmit || mutation.isPending) return;
+    if (!canSubmit || mutation.isPending || deliveryJobId) return;
     mutation.mutate();
   }
 
+  function closeDialog() {
+    if (deliveryJobId) onReconciled();
+    setOpen(false);
+    mutation.reset();
+    retryDelivery.reset();
+    setBankReference("");
+    setDeliveryWarning("");
+    setDeliveryJobId(null);
+  }
+
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(nextOpen) => {
-        setOpen(nextOpen);
-        if (!nextOpen) {
-          mutation.reset();
-          setBankReference("");
-          setDeliveryWarning("");
-        }
-      }}
-    >
+    <Dialog open={open} onOpenChange={(nextOpen) => (nextOpen ? setOpen(true) : closeDialog())}>
       <DialogTrigger asChild>
         <Button type="button" size="sm">
           <CheckCircle2 className="h-4 w-4" />
@@ -101,13 +116,28 @@ export function ReconcileDialog({
               {deliveryWarning}
             </p>
           )}
+          {retryDelivery.error && (
+            <p role="alert" className="text-sm text-[var(--color-error)]">
+              {retryDelivery.error.message}
+            </p>
+          )}
           <div className="flex justify-end gap-2">
-            <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
-              取消
+            <Button type="button" variant="ghost" onClick={closeDialog}>
+              {deliveryJobId ? "關閉" : "取消"}
             </Button>
+            {deliveryJobId && (
+              <Button
+                type="button"
+                variant="outline"
+                disabled={retryDelivery.isPending}
+                onClick={() => retryDelivery.mutate()}
+              >
+                {retryDelivery.isPending ? "處理中…" : "重試收條及電郵"}
+              </Button>
+            )}
             <Button
               type="submit"
-              disabled={!canSubmit || mutation.isPending || Boolean(deliveryWarning)}
+              disabled={!canSubmit || mutation.isPending || Boolean(deliveryJobId)}
             >
               {mutation.isPending ? "處理中…" : "確認收款"}
             </Button>

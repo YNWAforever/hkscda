@@ -445,7 +445,12 @@ function createWebhookFake({
         return Promise.resolve({
           data:
             payment?.status === "pending"
-              ? { kind: "applied", donationId: payment.donation.id, paymentId: payment.id }
+              ? {
+                  kind: "applied",
+                  donationId: payment.donation.id,
+                  paymentId: payment.id,
+                  deliveryJobId: "delivery-job-1",
+                }
               : { kind: "state_conflict", paymentStatus: payment?.status ?? null },
           error: null,
         });
@@ -1149,9 +1154,18 @@ describe("reconcileManualPayment", () => {
       paymentId: "payment-1",
       actorUserId: "admin-1",
       bankReference: "FPS-123",
+      runDeliveryJob: async (jobId) => {
+        expect(jobId).toBe("delivery-job-1");
+        return { kind: "complete" };
+      },
     });
 
-    expect(result).toEqual({ kind: "applied", donationId: "donation-1", receiptNo: undefined });
+    expect(result).toEqual({
+      kind: "applied",
+      donationId: "donation-1",
+      deliveryJobId: "delivery-job-1",
+      deliveryStatus: "complete",
+    });
     const atomic = operations.find(
       (o) => o.table === "reconcile_manual_payment_atomic" && o.action === "rpc",
     );
@@ -1171,9 +1185,14 @@ describe("reconcileManualPayment", () => {
       paymentId: "payment-1",
       actorUserId: "admin-1",
       bankReference: "FPS-DELIVERY-FAIL",
-      deps: { sendAcknowledgement: async () => "failed" },
+      runDeliveryJob: async () => ({ kind: "retryable", code: "acknowledgement_failed" }),
     });
-    expect(result).toEqual({ kind: "applied", donationId: "donation-1", sideEffectsFailed: true });
+    expect(result).toEqual({
+      kind: "applied",
+      donationId: "donation-1",
+      deliveryJobId: "delivery-job-1",
+      deliveryStatus: "retryable",
+    });
     expect(operations.some((o) => o.table === "reconcile_manual_payment_atomic")).toBe(true);
     expect(operations.some((o) => o.table === "payment" && o.action === "update")).toBe(false);
   });

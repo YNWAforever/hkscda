@@ -6,12 +6,13 @@ create unique index payment_manual_bank_reference_unique
     and status='succeeded'
     and nullif(btrim(bank_reference),'') is not null;
 
-create function public.reconcile_manual_payment_atomic(
+create or replace function public.reconcile_manual_payment_atomic(
   p_actor uuid,p_payment uuid,p_reference text
 ) returns jsonb language plpgsql security definer set search_path='' as $$
 declare
   v_payment public.payment%rowtype;
   v_donation public.donation%rowtype;
+  v_job uuid;
   v_reference text:=btrim(p_reference);
 begin
   if not exists (
@@ -41,10 +42,22 @@ begin
   where id=p_payment;
   update public.donation set status='succeeded',updated_at=clock_timestamp()
   where id=v_donation.id;
+  -- The recovery job commits with the money and audit. An older local trigger may
+  -- already have queued the same donation; use its matching payment job.
+  insert into public.donation_delivery_job(donation_id,payment_id)
+    values(v_donation.id,p_payment) on conflict (donation_id) do nothing
+    returning id into v_job;
+  if v_job is null then
+    select id into v_job from public.donation_delivery_job
+      where donation_id=v_donation.id and payment_id=p_payment;
+  end if;
+  if v_job is null then
+    raise exception 'Delivery job conflicts with another payment' using errcode='23514';
+  end if;
   insert into public.audit_log(actor_user_id,action,entity,entity_id,detail)
   values(p_actor,'payment.mark_received','payment',p_payment::text,
     jsonb_build_object('donationId',v_donation.id,'bankReference',v_reference,'amountCents',v_payment.amount_cents));
-  return jsonb_build_object('kind','applied','paymentId',p_payment,'donationId',v_donation.id);
+  return jsonb_build_object('kind','applied','paymentId',p_payment,'donationId',v_donation.id,'deliveryJobId',v_job);
 end $$;
 revoke all on function public.reconcile_manual_payment_atomic(uuid,uuid,text)
   from public,anon,authenticated;
