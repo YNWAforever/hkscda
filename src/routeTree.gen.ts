@@ -171,6 +171,7 @@ import { Route as ApiAdminAnimalsListRouteImport } from './routes/api/admin/anim
 import { Route as ApiAdminAdoptionsTasksRouteImport } from './routes/api/admin/adoptions/tasks'
 import { Route as ApiAdminAdoptionsStatusesRouteImport } from './routes/api/admin/adoptions/statuses'
 import { Route as ApiAdminAdoptionsCasesRouteImport } from './routes/api/admin/adoptions/cases'
+import { Route as ApiAdminAdoptionsAssignmentBulkRouteImport } from './routes/api/admin/adoptions/assignment-bulk'
 import { Route as ApiAdminAdoptionsAdoptersRouteImport } from './routes/api/admin/adoptions/adopters'
 import { Route as ApiAdminAdoptionInstructionsRestoreRouteImport } from './routes/api/admin/adoption-instructions/restore'
 import { Route as ApiAdminAdoptionInstructionsPublishRouteImport } from './routes/api/admin/adoption-instructions/publish'
@@ -1119,6 +1120,12 @@ const ApiAdminAdoptionsCasesRoute = ApiAdminAdoptionsCasesRouteImport.update({
   path: '/api/admin/adoptions/cases',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminAdoptionsAssignmentBulkRoute =
+  ApiAdminAdoptionsAssignmentBulkRouteImport.update({
+    id: '/api/admin/adoptions/assignment-bulk',
+    path: '/api/admin/adoptions/assignment-bulk',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdminAdoptionsAdoptersRoute =
   ApiAdminAdoptionsAdoptersRouteImport.update({
     id: '/api/admin/adoptions/adopters',
@@ -1807,6 +1814,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/adoption-instructions/publish': typeof ApiAdminAdoptionInstructionsPublishRoute
   '/api/admin/adoption-instructions/restore': typeof ApiAdminAdoptionInstructionsRestoreRoute
   '/api/admin/adoptions/adopters': typeof ApiAdminAdoptionsAdoptersRouteWithChildren
+  '/api/admin/adoptions/assignment-bulk': typeof ApiAdminAdoptionsAssignmentBulkRoute
   '/api/admin/adoptions/cases': typeof ApiAdminAdoptionsCasesRouteWithChildren
   '/api/admin/adoptions/statuses': typeof ApiAdminAdoptionsStatusesRouteWithChildren
   '/api/admin/adoptions/tasks': typeof ApiAdminAdoptionsTasksRouteWithChildren
@@ -2063,6 +2071,7 @@ export interface FileRoutesByTo {
   '/api/admin/adoption-instructions/publish': typeof ApiAdminAdoptionInstructionsPublishRoute
   '/api/admin/adoption-instructions/restore': typeof ApiAdminAdoptionInstructionsRestoreRoute
   '/api/admin/adoptions/adopters': typeof ApiAdminAdoptionsAdoptersRouteWithChildren
+  '/api/admin/adoptions/assignment-bulk': typeof ApiAdminAdoptionsAssignmentBulkRoute
   '/api/admin/adoptions/cases': typeof ApiAdminAdoptionsCasesRouteWithChildren
   '/api/admin/adoptions/statuses': typeof ApiAdminAdoptionsStatusesRouteWithChildren
   '/api/admin/adoptions/tasks': typeof ApiAdminAdoptionsTasksRouteWithChildren
@@ -2321,6 +2330,7 @@ export interface FileRoutesById {
   '/api/admin/adoption-instructions/publish': typeof ApiAdminAdoptionInstructionsPublishRoute
   '/api/admin/adoption-instructions/restore': typeof ApiAdminAdoptionInstructionsRestoreRoute
   '/api/admin/adoptions/adopters': typeof ApiAdminAdoptionsAdoptersRouteWithChildren
+  '/api/admin/adoptions/assignment-bulk': typeof ApiAdminAdoptionsAssignmentBulkRoute
   '/api/admin/adoptions/cases': typeof ApiAdminAdoptionsCasesRouteWithChildren
   '/api/admin/adoptions/statuses': typeof ApiAdminAdoptionsStatusesRouteWithChildren
   '/api/admin/adoptions/tasks': typeof ApiAdminAdoptionsTasksRouteWithChildren
@@ -2580,6 +2590,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoption-instructions/publish'
     | '/api/admin/adoption-instructions/restore'
     | '/api/admin/adoptions/adopters'
+    | '/api/admin/adoptions/assignment-bulk'
     | '/api/admin/adoptions/cases'
     | '/api/admin/adoptions/statuses'
     | '/api/admin/adoptions/tasks'
@@ -2836,6 +2847,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoption-instructions/publish'
     | '/api/admin/adoption-instructions/restore'
     | '/api/admin/adoptions/adopters'
+    | '/api/admin/adoptions/assignment-bulk'
     | '/api/admin/adoptions/cases'
     | '/api/admin/adoptions/statuses'
     | '/api/admin/adoptions/tasks'
@@ -3093,6 +3105,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoption-instructions/publish'
     | '/api/admin/adoption-instructions/restore'
     | '/api/admin/adoptions/adopters'
+    | '/api/admin/adoptions/assignment-bulk'
     | '/api/admin/adoptions/cases'
     | '/api/admin/adoptions/statuses'
     | '/api/admin/adoptions/tasks'
@@ -3313,6 +3326,7 @@ export interface RootRouteChildren {
   ApiAdminAccessInvitesRoute: typeof ApiAdminAccessInvitesRouteWithChildren
   ApiAdminAccessUsersRoute: typeof ApiAdminAccessUsersRouteWithChildren
   ApiAdminAdoptionsAdoptersRoute: typeof ApiAdminAdoptionsAdoptersRouteWithChildren
+  ApiAdminAdoptionsAssignmentBulkRoute: typeof ApiAdminAdoptionsAssignmentBulkRoute
   ApiAdminAdoptionsCasesRoute: typeof ApiAdminAdoptionsCasesRouteWithChildren
   ApiAdminAdoptionsStatusesRoute: typeof ApiAdminAdoptionsStatusesRouteWithChildren
   ApiAdminAdoptionsTasksRoute: typeof ApiAdminAdoptionsTasksRouteWithChildren
@@ -4502,6 +4516,13 @@ declare module '@tanstack/react-router' {
       path: '/api/admin/adoptions/cases'
       fullPath: '/api/admin/adoptions/cases'
       preLoaderRoute: typeof ApiAdminAdoptionsCasesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/adoptions/assignment-bulk': {
+      id: '/api/admin/adoptions/assignment-bulk'
+      path: '/api/admin/adoptions/assignment-bulk'
+      fullPath: '/api/admin/adoptions/assignment-bulk'
+      preLoaderRoute: typeof ApiAdminAdoptionsAssignmentBulkRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/adoptions/adopters': {
@@ -5970,6 +5991,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminAccessInvitesRoute: ApiAdminAccessInvitesRouteWithChildren,
   ApiAdminAccessUsersRoute: ApiAdminAccessUsersRouteWithChildren,
   ApiAdminAdoptionsAdoptersRoute: ApiAdminAdoptionsAdoptersRouteWithChildren,
+  ApiAdminAdoptionsAssignmentBulkRoute: ApiAdminAdoptionsAssignmentBulkRoute,
   ApiAdminAdoptionsCasesRoute: ApiAdminAdoptionsCasesRouteWithChildren,
   ApiAdminAdoptionsStatusesRoute: ApiAdminAdoptionsStatusesRouteWithChildren,
   ApiAdminAdoptionsTasksRoute: ApiAdminAdoptionsTasksRouteWithChildren,

@@ -9,11 +9,12 @@ test("release manifest covers every new public table, RPC, and additive column a
   const columns = releaseManifest
     .filter((item) => item.kind === "column")
     .map((item) => `${item.table}.${item.name}`);
-  expect(tables).toHaveLength(16);
+  expect(tables).toHaveLength(18);
   expect(functions.length).toBeGreaterThanOrEqual(45);
   expect(columns).toContain("public_status_token.submission_fingerprint");
   expect(columns).toContain("donation.idempotency_fingerprint");
   expect(columns).toContain("payment.checkout_attempted_at");
+  expect(columns).toContain("adoption_case.bulk_row_version");
   for (const name of [
     "create_public_sponsorship_pledge",
     "issue_receipt_with_audit",
@@ -38,6 +39,9 @@ test("release manifest covers every new public table, RPC, and additive column a
     "get_volunteer_review_bulk_operation",
     "create_volunteer_review_bulk_preview",
     "apply_volunteer_review_bulk_item",
+    "get_adoption_assignment_bulk_operation",
+    "create_adoption_assignment_bulk_preview",
+    "apply_adoption_assignment_bulk_item",
   ]) {
     expect(functions).toContain(name);
   }
