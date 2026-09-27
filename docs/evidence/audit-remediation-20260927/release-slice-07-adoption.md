@@ -1,6 +1,6 @@
 # Release slice 07A — safe adoption drafts (T09 / ADOPT-01 / ADOPT-02)
 
-Branch `codex/audit-adoption-drafts-20260927`, stacked on draft PR #139 at `7f75e5b`. This PR contains the shared v2 draft contract and adoption form integration. The sponsorship integration is a separate dependent PR. No migration or production write was made.
+Branch `codex/audit-adoption-drafts-20260927`, stacked on draft PR #139 at `7f75e5b`. This PR contains the shared v2 draft contract and adoption form integration. The sponsorship integration is a separate dependent PR. Legacy parse/serialize exports remain temporarily so the unchanged sponsorship wizard compiles at this standalone PR head; the dependent PR removes them after migrating that wizard. No migration or production write was made.
 
 - Baseline defect: adoption silently auto-saved and auto-restored unversioned localStorage with no expiry or explicit choice. New red tests first failed because the v2 envelope, safe field picker and photo recovery helper did not exist.
 - Saving is now opt-in, default off, debounced 500 ms, limited to a seven-day v2 envelope and approved scalar answer fields. Old/malformed drafts never auto-restore and offer explicit clear/restart. Storage errors do not block the form; opt-out and successful submission clear the draft. Consent, files/photos, tokens, OTP, identity documents and unknown fields are excluded. Restore requires a button, fresh terms consent, and photo re-selection before final review.
