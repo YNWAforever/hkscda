@@ -1,0 +1,251 @@
+{
+  "schemaVersion": 1,
+  "appSha": "e3ebbb47aad2cb3de830dd7bb5e944cb4c79bc0e",
+  "appShaNote": "T23 animal bulk source freeze; T24 documentation commit is a descendant without runtime changes",
+  "productionAliasShaObserved": "f8d5e5d5840d1775efb7d7f4ae2768f6557096b5",
+  "schemaManifestHash": "b058493624d9216cb2cf1eb37a501ec78de24e4705f893ddc1aa34449df9d632",
+  "configVersions": {
+    "paymentPolicy": null,
+    "paymentMethodApprovals": null,
+    "sponsorshipTermsPdfSha256": null,
+    "volunteerPolicy": null,
+    "publishedContentRevision": null,
+    "reason": "Production-approved versions and private candidate config not supplied; do not enable writes"
+  },
+  "migrationChecksums": [
+    {
+      "version": "20260915120000",
+      "file": "20260915120000_content_admin_filters.sql",
+      "sha256": "404dfb0c6786d2a429164d3045066327cc4b7679beaff4a2a995d14377937f3f"
+    },
+    {
+      "version": "20260925040818",
+      "file": "20260925040818_featured_public_story_filter.sql",
+      "sha256": "91a433c90094115ebafb5da9df3229a097786519517dde29f31b59cb1828079a"
+    },
+    {
+      "version": "20260925053245",
+      "file": "20260925053245_cms_promotion_atomicity.sql",
+      "sha256": "38910624f9db3acd9ab2e3980af32158311eaae273fafcba40b24e51d524eb09"
+    },
+    {
+      "version": "20260925103900",
+      "file": "20260925103900_atomic_admin_content_audit.sql",
+      "sha256": "c8dc909d570956aaf8215ec61951ad44c4d19655aca072033e05342e18466376"
+    },
+    {
+      "version": "20260925103937",
+      "file": "20260925103937_atomic_crm_supporter_audit.sql",
+      "sha256": "fb645a5610d935d83ff0f696825157b57f04bf1251cd6bbe4398cbe72d13eff2"
+    },
+    {
+      "version": "20260925104012",
+      "file": "20260925104012_donation_checkout_idempotency.sql",
+      "sha256": "c4c1f4641a71928d3d9c56cf09bb18ae9a29c8622adf5638a28fb565fe66cc6f"
+    },
+    {
+      "version": "20260925104051",
+      "file": "20260925104051_volunteer_public_registration_idempotency.sql",
+      "sha256": "90854ca126dc25871da809ff9a9eafeab9031cb24ccccf1f5429a58acc35a1a4"
+    },
+    {
+      "version": "20260925104926",
+      "file": "20260925104926_atomic_adoption_coordinator_audit.sql",
+      "sha256": "042358ee2316c37d5b5c569f16a617f06ac0e5da6a5a8014aacb08d0b87eef52"
+    },
+    {
+      "version": "20260925110000",
+      "file": "20260925110000_admin_user_access_atomicity.sql",
+      "sha256": "b70ad0338c0d55a4b2538e3ecf30ed163674da6d0170383726f6046c1a03094d"
+    },
+    {
+      "version": "20260925123000",
+      "file": "20260925123000_adoption_upload_intents.sql",
+      "sha256": "c2050b994ad981a18a14da61b93a63999b4203a6bcc09887f827615bf2a22456"
+    },
+    {
+      "version": "20260925133500",
+      "file": "20260925133500_atomic_admin_invite_activation.sql",
+      "sha256": "36bafa9a964bebb4afdfa84499c71ee31f6fcbe9198bbd180c0742c9dcd860dc"
+    },
+    {
+      "version": "20260925141325",
+      "file": "20260925141325_animal_archive_atomic_audit.sql",
+      "sha256": "abccd9024b4ecac9d79b42b6020e848027dad485475bd0d03bca3e6b468fc926"
+    },
+    {
+      "version": "20260925143941",
+      "file": "20260925143941_guarded_provider_denial.sql",
+      "sha256": "aa60fdab2bb5ad2ed139f326c7d46d339c11d11082d9a91793792456041dd71a"
+    },
+    {
+      "version": "20260925144915",
+      "file": "20260925144915_guarded_provider_refund.sql",
+      "sha256": "4dfb12ed960f549567b21833590d8bed90e5c46487acd8bf39d774c48797a797"
+    },
+    {
+      "version": "20260925150722",
+      "file": "20260925150722_revoke_public_role_maintenance_privileges.sql",
+      "sha256": "28c0155046bdaf1b2688a5d43e0630ed3e3d717c6c20fb818476b8582f7ec98a"
+    },
+    {
+      "version": "20260926060314",
+      "file": "20260926060314_atomic_group_enquiry_audit.sql",
+      "sha256": "6dee675834e610f0e173d94bd332e38c789f50cd27a23470f5fc567bd4c0a4b7"
+    },
+    {
+      "version": "20260926070652",
+      "file": "20260926070652_sponsorship_proof_upload_cleanup.sql",
+      "sha256": "6e8b4eb998880726171e335222ff4e0a4eb7b86dad45cbf11e069d84060f032b"
+    },
+    {
+      "version": "20260926074203",
+      "file": "20260926074203_internship_attachment_upload_cleanup.sql",
+      "sha256": "84243ffbb35c2bc394bbf8888c829389b1620c0ba7fa9f060a17e10d8a99033f"
+    },
+    {
+      "version": "20260926082239",
+      "file": "20260926082239_atomic_receipt_void_audit.sql",
+      "sha256": "6c4e791b3ed2c43b7163934d2e2c9f41dc3739d2842dd56d89f222a215b6dd3a"
+    },
+    {
+      "version": "20260926083940",
+      "file": "20260926083940_atomic_manual_receipt_issue_audit.sql",
+      "sha256": "079dc9c28ad43922a3854d26865778b92e97e2ff48aa96848bb662e3c144507e"
+    },
+    {
+      "version": "20260926091057",
+      "file": "20260926091057_staff_sponsorship_proof_upload_cleanup.sql",
+      "sha256": "cd91efc51c846d401f25feaebd42a80d08cee98c138cfd60ae90e497413b9db0"
+    },
+    {
+      "version": "20260926100000",
+      "file": "20260926100000_public_submission_retry_fingerprints.sql",
+      "sha256": "1cd2601c57c3c761405fc3ff0578aada7c8bc26eb31860fef1c29f92c3f94a5a"
+    },
+    {
+      "version": "20260926110000",
+      "file": "20260926110000_manual_case_identity_search.sql",
+      "sha256": "f755fc4e3e428b0902472cc9959df57d248067e234d7da640383bcfdaa41b4f0"
+    },
+    {
+      "version": "20260926120000",
+      "file": "20260926120000_volunteer_notification_exhausted_claim_recovery.sql",
+      "sha256": "0f920648366cd26b9605346a380c784df58021df2988494b0c34eff57ab29e54"
+    },
+    {
+      "version": "20260926130000",
+      "file": "20260926130000_atomic_adoption_case_status_validation.sql",
+      "sha256": "e8bbb2bf22d78fea945e0ca9e9080db6f118e22b481dc93ba8bcb8f0663c3d01"
+    },
+    {
+      "version": "20260926133000",
+      "file": "20260926133000_expose_manual_adoption_case_rpc.sql",
+      "sha256": "ba9a4fcffb7c3746b297afaa4875f0183d5e84610b9574149aac574ce660553a"
+    },
+    {
+      "version": "20260926140000",
+      "file": "20260926140000_cleanup_expired_adoption_applications.sql",
+      "sha256": "f7b85de975da15d3592d96ebb0563827b072a4b2d357e952037e3d8caa1ef2e2"
+    },
+    {
+      "version": "20260926143000",
+      "file": "20260926143000_atomic_public_sponsorship_pledge.sql",
+      "sha256": "00018d736b2db687f614399f76a6ccdf18b14918615d081db289da022d1e0500"
+    },
+    {
+      "version": "20260926150000",
+      "file": "20260926150000_guard_published_document_slots.sql",
+      "sha256": "c94bf17c10a44fd48a8f5b041673da4094413367004da9f48c2d1ac1e7f48c06"
+    },
+    {
+      "version": "20260926152438",
+      "file": "20260926152438_adoption_instruction_page_cms.sql",
+      "sha256": "d22de4b2c37e40a8058d0a3238b6d56b03b7a4f768f21d42bb1c7f9d26fa1bcd"
+    },
+    {
+      "version": "20260926160000",
+      "file": "20260926160000_animal_draft_upload_cleanup.sql",
+      "sha256": "9776db188a7ce7891956cb7a24b13abbbb6759b7387b87e38a34b96419b2b750"
+    },
+    {
+      "version": "20260926170000",
+      "file": "20260926170000_animal_publication_media_copy.sql",
+      "sha256": "94e5f795a543860bb47e710561c2c679f811dcacc39ac6ab30d17c4d9ef08317"
+    },
+    {
+      "version": "20260926180000",
+      "file": "20260926180000_animal_publication_publish_receipt.sql",
+      "sha256": "e84dd5298fed3eca3b961b8dc0c0d08892f9d16bdf94cb700db63d7c7e9b5fdd"
+    },
+    {
+      "version": "20260926190000",
+      "file": "20260926190000_content_publication_media_after_commit.sql",
+      "sha256": "d0fcb0c6ebbcfbfaf2bd245964815d6052c30880919d5344b806f9c1f072c53f"
+    },
+    {
+      "version": "20260927122000",
+      "file": "20260927122000_content_publication_eligibility.sql",
+      "sha256": "bc021c0f63ddfa5b9bb4e81cfc83ba75bd9e828ef85483e739c282dce731ed1b"
+    },
+    {
+      "version": "20260927130000",
+      "file": "20260927130000_sponsor_public_profile_fields.sql",
+      "sha256": "fd209e458358fd899aabbda721bec471b1c00f0fc92ce360ce2ada43366ae147"
+    },
+    {
+      "version": "20260927140000",
+      "file": "20260927140000_media_repair_retry_schedule.sql",
+      "sha256": "dfe96f1a4f8d73a0e8f606e14fb2854d8c91c2b6818cc2917c279a0d85e1e429"
+    },
+    {
+      "version": "20260927143710",
+      "file": "20260927143710_public_animal_listing_page.sql",
+      "sha256": "e2320e10dc29949dacb218ddd46ff28ad6afb3e3bdc865a1416e5306487a518d"
+    },
+    {
+      "version": "20260927163302",
+      "file": "20260927163302_supporter_marketing_preference.sql",
+      "sha256": "3c945333e0ee484d61fcfca2c2e29e4dfef9805945d993b2409306eefdf2df89"
+    },
+    {
+      "version": "20260927172030",
+      "file": "20260927172030_crm_tag_bulk.sql",
+      "sha256": "f106bf021bcc557acf18300bc8a02ec102fb03f6ef677c4d00703cae3dc8fd00"
+    },
+    {
+      "version": "20260927181701",
+      "file": "20260927181701_volunteer_review_bulk.sql",
+      "sha256": "ab281bdd9c94b184772d4a59418f6563cb2b3f56fca53016a9d62fc8a9b3e3b0"
+    },
+    {
+      "version": "20260927183000",
+      "file": "20260927183000_adoption_assignment_bulk.sql",
+      "sha256": "575ffb9b9b60f59c3c02d0866bf666d28365d0d8eaff98f792a19bc30801f682"
+    },
+    {
+      "version": "20260927184500",
+      "file": "20260927184500_animal_review_bulk.sql",
+      "sha256": "cfbabd9a6bb393ec90200bdb05c2ff6314c035e7839661e99365872362a69e52"
+    }
+  ],
+  "ciRun": {
+    "id": 36345471697,
+    "sha": "e3ebbb47aad2cb3de830dd7bb5e944cb4c79bc0e",
+    "status": "verify, rls-matrix, performance-verify, a11y-verify passed; brand-verify pending at package capture"
+  },
+  "evidencePaths": [
+    "docs/evidence/audit-remediation-20260927/tracker.csv",
+    "docs/evidence/audit-remediation-20260927/migration-manifest.csv",
+    "docs/evidence/audit-remediation-20260927/migration-runbook.md",
+    "docs/evidence/audit-remediation-20260927/verification.md",
+    "docs/evidence/audit-remediation-20260927/ui-performance.md",
+    "docs/evidence/audit-remediation-20260927/uat-results.md"
+  ],
+  "rollbackTarget": {
+    "appSha": null,
+    "reason": "No tested prior app SHA is certified against the additive schema; stop new checkout and affected writers, preserve old webhook/reconciliation and durable events, then deploy only a compatibility-proven target"
+  },
+  "releaseDecision": "NO-GO",
+  "productionActionsPerformed": []
+}
