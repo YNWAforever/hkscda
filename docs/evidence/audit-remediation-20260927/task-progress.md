@@ -6,3 +6,7 @@
 - T03–T24: not yet implemented in this branch. No checkout/payment/content toggle was enabled.
 
 Ruling: Treat #133 adoption instructions as a narrowly restored public page and R01 as partial because the same release still lacks other required schema. A 200 response cannot close CMS, upload, submission, or finance compatibility. Cost if wrong: premature release acceptance.
+
+## T14 branch continuation
+
+Draft #147 contains the immediate-export UI repair. This branch adds the independent background-export job: actor-bound filter snapshot, private 24-hour artifact, 500-row atomic progress, role reauthorization, cancellation fencing and expiry cleanup. See [T14 evidence](t14-background-export.md). The local DB/schema and synthetic UI checks passed; production migration, cron activation, real role UAT and release approval remain open. Other task slices are in separate draft PR branches, so rows above describe their original T00 worktree snapshot rather than the whole remediation programme.

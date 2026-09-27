@@ -15,7 +15,7 @@ SPON-04,部分改善；補草稿及錯誤處理,T08、T09,partial,,,,,,,,
 ADOPT-01,待修本機草稿保存界線,T09,open,,,,,,,,
 ADOPT-02,待完善準備、恢復與七步流程,T09、T24,open,,,,,,,,
 CRM-01,產品缺口；先安全找回，再中心,T22,open,,,,,,,,
-ADMIN-01,待修匯出狀態與錯誤,T14,open,,,,,,,,
+ADMIN-01,待修匯出狀態與錯誤,T14,schema-ready,yes,yes,no,no,eeeb14419ae25808e946024761ffd4382e646084,#147 d6bf96b; #148 eeeb144,T14 SQL 3 pass 145 assertions; full 2799 pass 86 skip; typecheck lint build exit 0; synthetic mobile UI exit 0,Production migration and release approval; cron entitlement; real role UAT
 ADMIN-02,待修 supporter dialog 同步／衝突,T15,open,,,,,,,,
 ADMIN-03,待統一列表搜尋,T15,open,,,,,,,,
 ADMIN-04,待改善現有安全 bulk UI,T17、T23,open,,,,,,,,

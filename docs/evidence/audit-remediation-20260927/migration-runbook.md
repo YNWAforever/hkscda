@@ -37,3 +37,9 @@ Status: **schema-ready = no**. This document is a review and rehearsal checklist
 ## Owners and remaining gates
 
 DB release owner: review exact SQL diffs, lock estimates, backfill, backup/restore and app compatibility; authorize production migration only after isolated rehearsal. Release owner: approve the tested app SHA and verify same-SHA CI, content smoke and rollback boundary. Finance owner: separately approve any payment method activation after sandbox evidence.
+
+## T14 additive CRM export-job addendum
+
+The source manifest now includes 20260927090000_crm_private_export_jobs.sql in draft PR #148, based on #147. Its private artifact table and service-role-only RPCs were applied and then replayed as a single transaction in the dedicated local 57322 stack, without editing the migration ledger. Exact checksum, role tests and rollback boundary are in [T14 evidence](t14-background-export.md).
+
+The new job schema must precede the app code that offers background exports. Check function signatures, pinned search paths, RLS, forbidden grants and private table access after applying. A sanitized data-bearing rehearsal, actual Vercel cron entitlement, production backup and release owner sign-off are still required. Do not remove the schema while jobs or artifacts remain; keep an approved cleanup path when reverting the application. Existing webhook and reconciliation routes remain available.
