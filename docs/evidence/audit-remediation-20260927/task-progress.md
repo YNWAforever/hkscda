@@ -13,3 +13,5 @@ Ruling: Treat #133 adoption instructions as a narrowly restored public page and 
 
 - T20: production server iad1 and DB ap-southeast-1 verified; same-SHA private-region benchmark and switch not-run. See region-benchmark.md.
 - T21: public listing code/schema ready in draft PR #155, source 8352adfaa88ed6655f906571bb9c7397ec3f7329, with 10k parity/RLS and 30-sample local DB comparison. Production migration and paid image transforms remain disabled. See t21-public-pagination.md.
+
+- T22 recovery: draft PR #156, source 3b5941b2b37860f0cfdc33cfe20a8c9072e19346; generic OTP request and public entry tested. CRM-01 partial until verified-record portal; hosted OTP settings and email sink not-run.
