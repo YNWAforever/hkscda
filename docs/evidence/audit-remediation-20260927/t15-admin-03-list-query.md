@@ -1,6 +1,6 @@
 # T15 / ADMIN-03 — shared admin list search
 
-Branch: `codex/audit-list-query-20260927`, based on `758fc9ac5f6423379a9cd87318d969e6e940ee63` (T00–T02 draft PR #134).
+Draft PR #150; implementation commit `d7356d94af95bd48baff86dcea2b4e3d9331f6bc`. Branch: `codex/audit-list-query-20260927`, based on `758fc9ac5f6423379a9cd87318d969e6e940ee63` (T00–T02 draft PR #134).
 
 ## Scope and reproduction
 

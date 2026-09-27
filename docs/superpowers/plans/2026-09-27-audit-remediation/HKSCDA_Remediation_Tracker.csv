@@ -17,7 +17,7 @@ ADOPT-02,待完善準備、恢復與七步流程,T09、T24,open,,,,,,,,
 CRM-01,產品缺口；先安全找回，再中心,T22,open,,,,,,,,
 ADMIN-01,待修匯出狀態與錯誤,T14,open,,,,,,,,
 ADMIN-02,待修 supporter dialog 同步／衝突,T15,open,,,,,,,,
-ADMIN-03,待統一列表搜尋,T15,open,,,,,,,,
+ADMIN-03,待統一列表搜尋,T15,code-complete; isolated validation passed,yes,not-required,no,no,d7356d94af95bd48baff86dcea2b4e3d9331f6bc,PR #150 / d7356d94af95bd48baff86dcea2b4e3d9331f6bc,docs/evidence/audit-remediation-20260927/t15-admin-03-list-query.md; isolated bun 2787 pass 83 skip; Playwright 390px pass,real staff-role UAT; request URL logging review; release approval
 ADMIN-04,待改善現有安全 bulk UI,T17、T23,open,,,,,,,,
 PERF-01,待 DB 篩選與分頁,T21,open,,,,,,,,
 OPS-01,再審核版本已關閉；保留 release gate,T00、T24,verified-fixed-at-reaudit,,,,,,,,
