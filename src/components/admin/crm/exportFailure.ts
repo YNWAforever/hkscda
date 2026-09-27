@@ -16,12 +16,16 @@ export async function classifyExportFailure(
       typeof body?.total === "number" && Number.isSafeInteger(body.total)
         ? body.total.toLocaleString(language === "zh" ? "zh-HK" : "en-US")
         : null;
+    if (body?.limit === 20000)
+      return language === "zh"
+        ? "背景匯出最多 20,000 筆。請縮小篩選後重試。"
+        : "Background exports allow up to 20,000 rows. Narrow your filters and retry.";
     return language === "zh"
       ? "符合" +
           (total ? " " + total + " 筆" : "的") +
-          "資料超過 5,000 筆即時匯出上限。請縮小篩選後重試；背景匯出尚未啟用。"
+          "資料超過 5,000 筆即時匯出上限。請縮小篩選後重試；或建立背景匯出。"
       : (total ? total + " matching rows exceed" : "Results exceed") +
-          " the 5,000-row immediate export limit. Narrow your filters and retry; background export is not enabled yet.";
+          " the 5,000-row immediate export limit. Narrow your filters and retry; create a background export.";
   }
   if (response.status >= 500)
     return language === "zh"
