@@ -6,8 +6,8 @@ PAY-04,待區分 unavailable／not_configured,T02、T04,open,,,,,,,,
 PAY-05,待分拆付款與後續處理狀態,T05,open,,,,,,,,
 CONTENT-01,未能關閉；需再核對正式內容,T18,open,,,,,,,,
 CONTENT-02,待補相片工作流及助養卡資訊,T18、T21,open,,,,,,,,
-VOL-01,待提供覆蓋率／批准场次與空狀態,T16,open,,,,,,,,
-VOL-02,待修共用容器,T16,open,,,,,,,,
+VOL-01,待提供覆蓋率／批准场次與空狀態,T16,code-complete; live schedule approval pending,yes,not-required,no,no,6ac152e720b0b087919954ab83d1e3e94338a14f,draft PR pending / 6ac152e720b0b087919954ab83d1e3e94338a14f,docs/evidence/audit-remediation-20260927/t16-volunteer-coverage.md; isolated 2799 pass 83 skip; policy DB 6 pass; synthetic 390/768/1366/200% UI,approved live policy/session publication; real volunteer/staff UAT; release approval
+VOL-02,待修共用容器,T16,code-complete; isolated UI validation passed,yes,not-required,no,no,6ac152e720b0b087919954ab83d1e3e94338a14f,draft PR pending / 6ac152e720b0b087919954ab83d1e3e94338a14f,docs/evidence/audit-remediation-20260927/t16-volunteer-coverage.md; synthetic 390/768/1366/200% screenshots; no overflow,real device UAT; release approval
 SPON-01,待修付款選項反向,T08,open,,,,,,,,
 SPON-02,待提供可閱讀版本化條款,T08,open,,,,,,,,
 SPON-03,待明確總額／偏好／月付性質,T08,open,,,,,,,,
