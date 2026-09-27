@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "appSha": "e3ebbb47aad2cb3de830dd7bb5e944cb4c79bc0e",
-  "appShaNote": "T23 animal bulk source freeze; T24 documentation commit is a descendant without runtime changes",
+  "appSha": "0c92e7ff127e582b4393a8b40a6bd2031afdde09",
+  "appShaNote": "T23 CMS review bulk source freeze; following documentation commit has no runtime changes",
   "productionAliasShaObserved": "f8d5e5d5840d1775efb7d7f4ae2768f6557096b5",
-  "schemaManifestHash": "b058493624d9216cb2cf1eb37a501ec78de24e4705f893ddc1aa34449df9d632",
+  "schemaManifestHash": "79c495b4ba2d853740570305184962f3d50665c6f24cb7484ee35dbb72581428",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
@@ -227,12 +227,17 @@
       "version": "20260927184500",
       "file": "20260927184500_animal_review_bulk.sql",
       "sha256": "cfbabd9a6bb393ec90200bdb05c2ff6314c035e7839661e99365872362a69e52"
+    },
+    {
+      "version": "20260927190000",
+      "file": "20260927190000_cms_review_bulk.sql",
+      "sha256": "ffbce79aa8220b3aa1105c84f81c6b1184986902b8a5a34b1189b1cd5b4a1764"
     }
   ],
   "ciRun": {
-    "id": 36345471697,
-    "sha": "e3ebbb47aad2cb3de830dd7bb5e944cb4c79bc0e",
-    "status": "verify, rls-matrix, performance-verify, a11y-verify passed; brand-verify pending at package capture"
+    "id": 36347166456,
+    "sha": "0c92e7ff127e582b4393a8b40a6bd2031afdde09",
+    "status": "in progress at package refresh; exact result pending"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -240,7 +245,8 @@
     "docs/evidence/audit-remediation-20260927/migration-runbook.md",
     "docs/evidence/audit-remediation-20260927/verification.md",
     "docs/evidence/audit-remediation-20260927/ui-performance.md",
-    "docs/evidence/audit-remediation-20260927/uat-results.md"
+    "docs/evidence/audit-remediation-20260927/uat-results.md",
+    "docs/evidence/audit-remediation-20260927/t23-cms-review-bulk.md"
   ],
   "rollbackTarget": {
     "appSha": null,

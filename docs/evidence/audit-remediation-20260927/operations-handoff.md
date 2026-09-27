@@ -30,8 +30,8 @@
 
 ## Outstanding inputs for release owners
 
-- Current production catalog snapshot, grants/RLS/storage policies and sanitized data-bearing clone plus backup/restore rehearsal for 43 manifest files.
+- Current production catalog snapshot, grants/RLS/storage policies and sanitized data-bearing clone plus backup/restore rehearsal for 44 manifest files.
 - Approved payment policy/methods/instructions, provider sandbox credentials/account and webhook replay evidence; approved sponsorship terms PDF/hash, cancellation/refund copy.
 - Approved animal/story/photo ID list and rights, volunteer policy/session coverage, real content/seed diff, private candidate URL and test identities for every admin role.
 - Email test sink and hosted Auth OTP settings; monitoring/alert thresholds, five-minute worker/cron ownership, private regional benchmark, 390/768/1366 keyboard/200% UAT.
-- Remaining T23 domain implementations: sponsorship, finance, CMS and additional volunteer/adoption/animal/CRM safe actions. `tracker.csv` keeps ADMIN-04 partial.
+- Remaining T23 domain implementations: sponsorship, finance, CMS expired/demo/missing-source queues and additional volunteer/adoption/animal/CRM safe actions. `tracker.csv` keeps ADMIN-04 partial.
