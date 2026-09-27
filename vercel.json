@@ -15,7 +15,8 @@
       "feat/fostered-animal-public-visibility": false,
       "codex/admin-volunteer-settings-20260913": false,
       "fix/public-animal-gallery-compat": false,
-      "feat/volunteer-member-centre": false
+      "feat/volunteer-member-centre": false,
+      "codex/audit-*": false
     }
   },
   "crons": [
