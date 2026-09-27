@@ -104,6 +104,15 @@ describe("uploadProofDirectly", () => {
     });
   });
 
+  test("preserves the upload endpoint status for a rate-limited retry", async () => {
+    globalThis.fetch = mock(async () =>
+      Response.json({ error: "slow down" }, { status: 429 }),
+    ) as unknown as typeof fetch;
+    await expect(uploadProofDirectly(makeProofFile(), "challenge")).rejects.toMatchObject({
+      status: 429,
+    });
+  });
+
   test("throws using the server's error message when the upload-url request fails", async () => {
     const fetchSpy = mock(async () => Response.json({ error: "驗證已過期" }, { status: 403 }));
     globalThis.fetch = fetchSpy as unknown as typeof fetch;
