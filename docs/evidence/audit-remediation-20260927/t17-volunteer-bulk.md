@@ -1,6 +1,6 @@
 # T17 / ADMIN-04 volunteer bulk — planning and recovery
 
-Draft PR: pending. Code commit: `1bdb04ac26b5152c6b065a79b23755e6c55feefe`. Branch `codex/audit-volunteer-bulk-20260927`, stacked on T16 PR #151 at `01ecaa1f71d3a94d18bd012ca3e3879f1b2155aa`. ADMIN-04 remains partial because the cross-module queues and bulk work in T23 are separate.
+Draft PR #152. Code commit: `1bdb04ac26b5152c6b065a79b23755e6c55feefe`. Branch `codex/audit-volunteer-bulk-20260927`, stacked on T16 PR #151 at `01ecaa1f71d3a94d18bd012ca3e3879f1b2155aa`. ADMIN-04 remains partial because the cross-module queues and bulk work in T23 are separate.
 
 ## Before and after
 
