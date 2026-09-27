@@ -29,6 +29,7 @@ type ReconcileManualArgs = {
   paymentId: string;
   actorUserId: string;
   bankReference: string;
+  deps?: ReconcileDeps;
 };
 
 type PaymentWithDonation = {
@@ -818,24 +819,37 @@ export async function flagProviderWebhookForReview(
 }
 
 export async function reconcileManualPayment(args: ReconcileManualArgs) {
-  const payment = await findPaymentById(args.client, args.paymentId);
-
-  // Only a pending payment can be manually reconciled. A replay/double-click on
-  // an already-reconciled payment must not append a duplicate audit row or
-  // appear to record a fresh bank reference that was never written.
-  if (payment.status !== "pending") {
+  // The RPC locks payment/donation, reserves the normalized bank reference and
+  // writes the financial audit in one transaction. PDF/email delivery follows
+  // the committed payment and can be retried independently.
+  const { data, error } = await args.client.rpc("reconcile_manual_payment_atomic", {
+    p_actor: args.actorUserId,
+    p_payment: args.paymentId,
+    p_reference: args.bankReference,
+  });
+  if (error) {
+    if (error.code === "23505")
+      throw Response.json({ error: "Bank reference has already been credited" }, { status: 409 });
+    if (error.code === "42501") throw Response.json({ error: "Access denied" }, { status: 403 });
+    if (error.code === "22023")
+      throw Response.json({ error: "Invalid bank reference" }, { status: 400 });
+    throw error;
+  }
+  const result = (Array.isArray(data) ? data[0] : data) as {
+    kind: "applied" | "state_conflict" | "amount_mismatch" | "provider_denied" | "not_found";
+    donationId?: string;
+    expectedCents?: number;
+    actualCents?: number;
+    paymentStatus?: string;
+    donationStatus?: string;
+  } | null;
+  if (!result) throw new Error("Manual reconciliation returned no result");
+  if (result.kind === "state_conflict")
     throw Response.json(
-      { error: "Payment is not pending and cannot be reconciled", status: payment.status },
+      { error: "Payment is not pending and cannot be reconciled", status: result.paymentStatus },
       { status: 409 },
     );
-  }
-
-  const result = await applySucceededPayment(args.client, payment, {
-    actorUserId: args.actorUserId,
-    bankReference: args.bankReference,
-  });
-
-  if (result.kind === "amount_mismatch") {
+  if (result.kind === "amount_mismatch")
     throw Response.json(
       {
         error: "Payment amount does not match the donation amount",
@@ -844,22 +858,23 @@ export async function reconcileManualPayment(args: ReconcileManualArgs) {
       },
       { status: 422 },
     );
-  }
+  if (result.kind === "provider_denied")
+    throw Response.json({ error: "Provider requires its signed settlement path" }, { status: 422 });
+  if (result.kind === "not_found")
+    throw Response.json({ error: "Payment not found" }, { status: 404 });
+  if (result.kind !== "applied" || !result.donationId)
+    throw new Error("Unexpected manual reconciliation result");
 
-  // Only write the mark_received audit row for a genuine state change; a
-  // duplicate/skip changed nothing and must not pollute the financial trail.
-  if (result.kind === "applied") {
-    const { error: auditError } = await args.client.from("audit_log").insert({
-      actor_user_id: args.actorUserId,
-      action: "payment.mark_received",
-      entity: "payment",
-      entity_id: args.paymentId,
-      detail: { bankReference: args.bankReference, result },
-    });
-    if (auditError) throw auditError;
+  try {
+    const payment = await findPaymentById(args.client, args.paymentId);
+    const receiptNo = await completeDonationSideEffects(args.client, payment, args.deps);
+    return { kind: "applied" as const, donationId: result.donationId, receiptNo };
+  } catch {
+    // Settlement/audit already committed. A failed receipt or email must never
+    // make the status appear pending or invite a second bank-reference credit.
+    console.error("Manual payment committed; receipt or notification needs recovery");
+    return { kind: "applied" as const, donationId: result.donationId, sideEffectsFailed: true };
   }
-
-  return result;
 }
 
 export async function issueReceiptForDonation(

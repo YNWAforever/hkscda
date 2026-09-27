@@ -31,20 +31,18 @@ Status: **schema-ready = no**. This document is a review and rehearsal checklist
 
 - Merge to `main` deploys automatically; require a specific release approval. Production DDL, public preview, checkout enablement and content publication are separate approvals.
 - Prefer roll-forward repair once provider events or new financial data exist. A database restore from an older backup can erase post-backup payments and must not be used as a routine rollback.
-- The current `f8d5e5d` application can display the approved public instructions seed when revision tables are missing, but the other new paths need the missing schema. No older application SHA has been verified against both the current production catalog and recent payment/audit behavior, so **rollbackTarget = unverified**. Pausing affected *new* submissions must leave existing webhook intake, durable event handling and reconciliation available.
+- The current `f8d5e5d` application can display the approved public instructions seed when revision tables are missing, but the other new paths need the missing schema. No older application SHA has been verified against both the current production catalog and recent payment/audit behavior, so **rollbackTarget = unverified**. Pausing affected _new_ submissions must leave existing webhook intake, durable event handling and reconciliation available.
 - Preserve #130 atomic audit, signed proof intent, fingerprint/idempotency, body limits, suspended-user revalidation and commit-before-public media. Do not bypass those guards to regain compatibility.
 
 ## Owners and remaining gates
 
 DB release owner: review exact SQL diffs, lock estimates, backfill, backup/restore and app compatibility; authorize production migration only after isolated rehearsal. Release owner: approve the tested app SHA and verify same-SHA CI, content smoke and rollback boundary. Finance owner: separately approve any payment method activation after sandbox evidence.
 
-
 ## T19 media repair migration addendum
 
 Version 20260927140000, SHA-256 dfe96f1a4f8d73a0e8f606e14fb2854d8c91c2b6818cc2917c279a0d85e1e429. Additive columns and due indexes on animal_publication_media_copy and content_public_asset; bounded backfill updates existing rows. The animal claim return table gains lease_token and attempts; content claim retains setof content_public_asset with new columns. Legacy acknowledgement signatures remain. New token-acknowledgement, failure, staff backlog and audited retry functions are service-role only.
 
 Dry-run the full file in a transaction against a sanitized data-bearing clone, record row counts, lock waits, runtime, query plans and rollback time, then apply only after the DB release owner approves the full ordered manifest and backup. Re-check RLS, four constraints, two due indexes, all six new function signatures and forbidden-role EXECUTE grants; run the 84-requirement release checker and queue fixtures. A one-hour legacy lease can remain after code cutover; let it expire before the new worker reclaims. Keep the new cron off until hosting schedule/duration and schema deployment are verified. Restore application config or disable the new cron for an incident; retain queue schema and intents. Do not restore an old DB snapshot over newer payment or media events.
-
 
 ## T21 public listing migration addendum
 
@@ -56,13 +54,11 @@ Version 20260927163302, SHA-256 3c945333e0ee484d61fcfca2c2e29e4dfef9805945d993b2
 
 The function was rehearsed in a transaction on the unlinked loopback DB, then applied there for synthetic rollback-only tests. This local manual application did not fabricate a migration ledger row. Before release, rehearse the complete ordered migration file on both a fresh disposable DB and a sanitized data-bearing clone. Verify exact function signature, pinned search path, service-role-only EXECUTE, Auth/supporter/consent/audit dependencies, concurrent preference writes, and rollback. App promotion must follow schema verification. Keep the additive function during application rollback; no production DDL or consent mutation was authorized here.
 
-
 ## T23 CRM tag bulk migration addendum
 
 Version 20260927172030, SHA-256 f106bf021bcc557acf18300bc8a02ec102fb03f6ef677c4d00703cae3dc8fd00. This creates two RLS-enabled operation/item tables and three public-schema RPCs with service-role-only EXECUTE. The private actor guard checks current active treasurer/admin role, confirmed Auth identity and suspension on preview, read and every per-item apply. Preview stores at most 1000 unique IDs, immutable tag/version snapshots and a 15-minute expiry. Each apply locks the operation and supporter, checks version/tags, and writes the supporter tag plus audit in one transaction. It never changes identities, consent, payments, refunds or adoption approval. The UI limits each apply request to 25 items and keeps the operation ID in tab session storage for result recovery.
 
 Local rehearsal used only the dedicated unlinked loopback database at 127.0.0.1:57322. The final checksum file ran all statements successfully in a BEGIN/ROLLBACK transaction after the preview correction, then the function was manually updated to that disposable DB for synthetic rollback-only tests; no migration ledger row was fabricated. Catalog checker reports 92 compatible requirements, while the local ledger still ends at 20260927150000. Before release, apply the frozen file in order on a fresh disposable install and sanitized data-bearing clone, measure locks and timing, verify two RLS policies are intentionally absent for anon/authenticated, exact three public RPC signatures, private helper grant, forbidden table/RPC access, and audit-trigger rollback. The SQL creates no data backfill. Keep additive operation tables and RPCs during application rollback; disable the new UI/API path before any schema rollback. Do not restore an old database snapshot over newer financial or audit records.
-
 
 ## T23 volunteer reviewer bulk migration addendum
 
@@ -87,3 +83,21 @@ The exact file completed a BEGIN/ROLLBACK rehearsal and manual application only 
 Version 20260927190000, SHA-256 ffbce79aa8220b3aa1105c84f81c6b1184986902b8a5a34b1189b1cd5b4a1764. Two RLS operation/result tables and three service-role-only public RPCs snapshot 1–1000 CMS draft IDs for 15 minutes; one private guard requires an active confirmed non-banned admin. Apply locks the content item, rechecks draft revision UUID/status/classification and invokes `editorial_review_command` in the same transaction. Non-draft or already-classified rows are skipped or conflicted. No status, publication, media, body, notification or financial mutation occurs.
 
 The exact file completed BEGIN/ROLLBACK rehearsal, then manual application only on the named unlinked 127.0.0.1:57322 database. No migration ledger row was fabricated. Catalog checker reports 114 compatible requirements. Before release rehearse all 44 manifest files in order on fresh and sanitized data-bearing clones, inspect content-item lock/trigger effects and public visibility, verify service-only signatures and forbidden anon/authenticated grants, and prove backup/restore. During app rollback disable CMS bulk UI/API but retain additive operation results and existing publication/audit facts.
+
+## T23 manual finance atomic settlement addendum
+
+Version 20260927201916, SHA-256 df5f6a837d2c65759e51c7dde413bb34e780bbdcd34363eb3bb858c05d29327b. A partial unique index rejects duplicate nonblank normalized bank references on succeeded FPS, PayMe and manual payments. A service-role-only `reconcile_manual_payment_atomic(uuid,uuid,text)` function checks current treasurer/admin Auth state and commits payment, donation and `payment.mark_received` audit together. The app then runs receipt/email delivery independently and reports a committed payment even if delivery fails. Existing webhook intake and provider settlement are unchanged.
+
+Before a data-bearing rehearsal, run this read-only duplicate preflight against the clone and review every group with finance staff:
+
+```sql
+select lower(btrim(bank_reference)) normalized_reference, count(*) payment_count,
+       array_agg(id order by id) payment_ids
+from public.payment
+where provider in ('fps','payme','manual') and status='succeeded'
+  and nullif(btrim(bank_reference),'') is not null
+group by lower(btrim(bank_reference))
+having count(*) > 1;
+```
+
+The named unlinked loopback database at 127.0.0.1:57322 returned no duplicate groups. The exact file completed a BEGIN/ROLLBACK rehearsal, then was applied only there for rollback-only synthetic fixtures. No ledger row was fabricated. The local release checker reports 115 compatible requirements; the local ledger remains at 20260927150000. Supabase's local security advisor reported no error-level findings. A fresh **45-file** ordered migration rehearsal and sanitized data-bearing rehearsal, actual concurrent-connection finance test, index build lock estimate, backup/restore, provider sandbox, staff identity UAT and production catalog comparison remain open. On application rollback keep the index and RPC until older-app compatibility is proved; never restore an older DB over newer payments or audits.

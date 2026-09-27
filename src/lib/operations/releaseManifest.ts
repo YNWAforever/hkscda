@@ -4,6 +4,16 @@ import type { SchemaRequirement } from "./releaseSchema";
 // Regenerate only after reviewing migration SQL and source call sites.
 export const releaseManifest: SchemaRequirement[] = [
   {
+    kind: "function",
+    schema: "public",
+    name: "reconcile_manual_payment_atomic",
+    feature: "manual-payment-atomic",
+    required: true,
+    arguments: "p_actor uuid, p_payment uuid, p_reference text",
+    returns: "jsonb",
+    executeRoles: ["service_role"],
+  },
+  {
     kind: "table",
     schema: "public",
     name: "animal_review_bulk_operation",

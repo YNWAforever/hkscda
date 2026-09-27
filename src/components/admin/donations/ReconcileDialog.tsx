@@ -24,20 +24,30 @@ export function ReconcileDialog({
 }: ReconcileDialogProps) {
   const [open, setOpen] = useState(false);
   const [bankReference, setBankReference] = useState("");
+  const [deliveryWarning, setDeliveryWarning] = useState("");
 
   const trimmed = bankReference.trim();
   const canSubmit = trimmed.length >= 1 && trimmed.length <= 120;
 
   const mutation = useMutation({
     mutationFn: () =>
-      fetchAdminJson(`/api/admin/payments/${paymentId}/reconcile`, {
-        method: "POST",
-        body: JSON.stringify({ bankReference: trimmed }),
-      }),
-    onSuccess: () => {
+      fetchAdminJson<{ kind: string; sideEffectsFailed?: boolean }>(
+        `/api/admin/payments/${paymentId}/reconcile`,
+        {
+          method: "POST",
+          body: JSON.stringify({ bankReference: trimmed }),
+        },
+      ),
+    onSuccess: (result) => {
       onReconciled();
       setBankReference("");
-      setOpen(false);
+      if (result.sideEffectsFailed) {
+        setDeliveryWarning(
+          "收款及稽核已記錄；收條或通知未完成，請到待處理工作重試，不要再次入帳。",
+        );
+      } else {
+        setOpen(false);
+      }
     },
   });
 
@@ -55,6 +65,7 @@ export function ReconcileDialog({
         if (!nextOpen) {
           mutation.reset();
           setBankReference("");
+          setDeliveryWarning("");
         }
       }}
     >
@@ -85,11 +96,19 @@ export function ReconcileDialog({
           {mutation.error && (
             <p className="text-sm text-[var(--color-error)]">{mutation.error.message}</p>
           )}
+          {deliveryWarning && (
+            <p role="alert" className="text-sm text-[var(--color-error)]">
+              {deliveryWarning}
+            </p>
+          )}
           <div className="flex justify-end gap-2">
             <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
               取消
             </Button>
-            <Button type="submit" disabled={!canSubmit || mutation.isPending}>
+            <Button
+              type="submit"
+              disabled={!canSubmit || mutation.isPending || Boolean(deliveryWarning)}
+            >
               {mutation.isPending ? "處理中…" : "確認收款"}
             </Button>
           </div>
