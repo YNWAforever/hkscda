@@ -2,12 +2,18 @@ import {
   AdoptionInstructionsManagement,
   type AdoptionInstructionEditorHandle,
 } from "./AdoptionInstructionsManagement";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useBlocker } from "@tanstack/react-router";
 import { ChevronDown, ChevronUp, Plus, Search, Trash2 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
+import type {
+  CreateEstateInput,
+  EstateContentFields,
+  UpdateEstateInput,
+  SetEstatePublicationInput,
+} from "../../../lib/adoptionInformation/schemas";
 import type {
   AdminAdoptionInformationPage,
   AdoptionFee,
@@ -103,7 +109,9 @@ export function AdoptionContentTabs({
 
 type MutationInput =
   | { action: "fee"; input: AdoptionFee }
-  | { action: "estate"; input: DogFriendlyEstate }
+  | { action: "create-estate"; input: CreateEstateInput }
+  | { action: "update-estate"; input: UpdateEstateInput }
+  | { action: "publish-estate"; input: SetEstatePublicationInput }
   | { action: "delete-estate"; id: string }
   | { action: "move-fees"; inputs: AdoptionFee[]; temporarySortOrder: number };
 
@@ -159,15 +167,29 @@ function AdoptionInformationManagementRuntime() {
         }
         return results;
       }
-      return fetchAdminJson("/api/admin/adoption-information", {
+      return fetchAdminJson<{ estate: DogFriendlyEstate }>("/api/admin/adoption-information", {
         method: "POST",
-        body: JSON.stringify({
-          resource: operation.action === "estate" ? "estate" : "fee",
-          input: operation.input,
-        }),
+        body: JSON.stringify(
+          operation.action === "fee"
+            ? { resource: "fee", input: operation.input }
+            : {
+                resource: "estate",
+                command:
+                  operation.action === "create-estate"
+                    ? "create"
+                    : operation.action === "update-estate"
+                      ? "update"
+                      : "publication",
+                input: operation.input,
+              },
+        ),
       });
     },
     onSuccess: () => invalidateAdoptionInformationQueries(queryClient),
+    onError: (_error, operation) => {
+      if (operation.action === "update-estate" || operation.action === "publish-estate")
+        return invalidateAdoptionInformationQueries(queryClient);
+    },
   });
 
   const switchTab = (tab: AdoptionContentTab) => {
@@ -294,7 +316,27 @@ function AdoptionInformationManagementRuntime() {
         if (updates.length)
           mutation.mutate({ action: "move-fees", inputs: updates, temporarySortOrder });
       }}
-      onSaveEstate={(input) => mutation.mutate({ action: "estate", input })}
+      onCreateEstate={async (input) =>
+        (
+          (await mutation.mutateAsync({ action: "create-estate", input })) as {
+            estate: DogFriendlyEstate;
+          }
+        ).estate
+      }
+      onUpdateEstate={async (input) =>
+        (
+          (await mutation.mutateAsync({ action: "update-estate", input })) as {
+            estate: DogFriendlyEstate;
+          }
+        ).estate
+      }
+      onSetEstatePublication={async (input) =>
+        (
+          (await mutation.mutateAsync({ action: "publish-estate", input })) as {
+            estate: DogFriendlyEstate;
+          }
+        ).estate
+      }
       onDeleteEstate={(id) => {
         // Irreversible and triggered from an inline row button; name the estate
         // so the operator can confirm they hit the row they meant.
@@ -321,7 +363,9 @@ type ViewProps = {
   onPageChange?: (page: number) => void;
   onSaveFee?: (fee: AdoptionFee) => void;
   onMoveFee?: (fee: AdoptionFee, direction: -1 | 1) => void;
-  onSaveEstate?: (estate: DogFriendlyEstate) => void;
+  onCreateEstate?: (input: CreateEstateInput) => Promise<DogFriendlyEstate>;
+  onUpdateEstate?: (input: UpdateEstateInput) => Promise<DogFriendlyEstate>;
+  onSetEstatePublication?: (input: SetEstatePublicationInput) => Promise<DogFriendlyEstate>;
   onDeleteEstate?: (id: string) => void;
 };
 
@@ -338,7 +382,9 @@ export function AdoptionInformationManagementView({
   onPageChange,
   onSaveFee,
   onMoveFee,
-  onSaveEstate,
+  onCreateEstate,
+  onUpdateEstate,
+  onSetEstatePublication,
   onDeleteEstate,
 }: ViewProps) {
   const fees = data?.items.filter(isFee) ?? [];
@@ -411,14 +457,15 @@ export function AdoptionInformationManagementView({
 
       {!loading && activeTab === "estates" ? (
         <section className="space-y-4" aria-label="可養狗屋苑">
-          <EstateEditor pending={pending} onSave={onSaveEstate} />
+          <EstateEditor pending={pending} onCreate={onCreateEstate} />
           {estates.length ? (
             estates.map((estate) => (
               <EstateEditor
                 key={estate.id}
                 estate={estate}
                 pending={pending}
-                onSave={onSaveEstate}
+                onUpdate={onUpdateEstate}
+                onPublication={onSetEstatePublication}
                 onDelete={onDeleteEstate}
               />
             ))
@@ -483,49 +530,148 @@ function FeeEditor({
   );
 }
 
-function EstateEditor({
+function estateFields(estate: DogFriendlyEstate): EstateContentFields {
+  return {
+    estateName: estate.estateName,
+    district: estate.district,
+    notes: estate.notes,
+    sortOrder: estate.sortOrder,
+  };
+}
+
+export function EstateEditor({
   estate,
   pending,
-  onSave,
+  onCreate,
+  onUpdate,
+  onPublication,
   onDelete,
 }: {
   estate?: DogFriendlyEstate;
   pending: boolean;
-  onSave?: (estate: DogFriendlyEstate) => void;
+  onCreate?: (input: CreateEstateInput) => Promise<DogFriendlyEstate>;
+  onUpdate?: (input: UpdateEstateInput) => Promise<DogFriendlyEstate>;
+  onPublication?: (input: SetEstatePublicationInput) => Promise<DogFriendlyEstate>;
   onDelete?: (id: string) => void;
 }) {
-  const [draft, setDraft] = useState<DogFriendlyEstate>(
-    estate ?? {
-      id: crypto.randomUUID(),
-      estateName: "",
-      district: "",
-      notes: null,
-      sortOrder: 0,
-      isPublished: false,
-    },
+  const [createId, setCreateId] = useState(() => crypto.randomUUID());
+  const [draft, setDraft] = useState<EstateContentFields>(
+    estate ? estateFields(estate) : { estateName: "", district: "", notes: null, sortOrder: 0 },
   );
+  const [dirty, setDirty] = useState(false);
+  const [conflict, setConflict] = useState(false);
+  const [published, setPublished] = useState(estate?.isPublished ?? false);
+  const knownVersion = useRef(estate?.version ?? 0);
+
+  useEffect(() => {
+    if (!estate || estate.version < knownVersion.current) return;
+    if (dirty && estate.version !== knownVersion.current) {
+      setConflict(true);
+      return;
+    }
+    if (!dirty) {
+      knownVersion.current = estate.version;
+      setDraft(estateFields(estate));
+      setPublished(estate.isPublished);
+      setConflict(false);
+    }
+  }, [estate, dirty]);
+
+  const acceptCanonical = (saved: DogFriendlyEstate) => {
+    knownVersion.current = saved.version;
+    setDraft(estateFields(saved));
+    setPublished(saved.isPublished);
+    setDirty(false);
+    setConflict(false);
+  };
+
+  const save = async () => {
+    if (pending || conflict) return;
+    try {
+      if (estate) {
+        if (!onUpdate) return;
+        acceptCanonical(
+          await onUpdate({ id: estate.id, expectedVersion: knownVersion.current, fields: draft }),
+        );
+      } else {
+        if (!onCreate) return;
+        await onCreate({ id: createId, ...draft });
+        setCreateId(crypto.randomUUID());
+        setDraft({ estateName: "", district: "", notes: null, sortOrder: 0 });
+        setDirty(false);
+      }
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("Estate version conflict"))
+        setConflict(true);
+    }
+  };
+
+  const togglePublication = async () => {
+    if (!estate || !onPublication || pending || dirty || conflict) return;
+    try {
+      acceptCanonical(
+        await onPublication({
+          id: estate.id,
+          expectedVersion: knownVersion.current,
+          isPublished: !published,
+        }),
+      );
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("Estate version conflict"))
+        setConflict(true);
+    }
+  };
+
   return (
     <div className="space-y-2 border-b border-[var(--color-border)] pb-4">
       <h2 className="font-bold">{estate ? "編輯屋苑" : "新增屋苑"}</h2>
+      {conflict && estate ? (
+        <p role="alert" className="text-sm text-[var(--color-error)]">
+          此屋苑已由其他人更新。請先檢查最新版本，再重新輸入你的修改。
+          {estate.version <= knownVersion.current ? "最新資料暫未載入，請重新整理頁面。" : null}
+          <button
+            type="button"
+            disabled={estate.version <= knownVersion.current}
+            onClick={() => {
+              knownVersion.current = estate.version;
+              setDraft(estateFields(estate));
+              setPublished(estate.isPublished);
+              setDirty(false);
+              setConflict(false);
+            }}
+          >
+            載入最新版本
+          </button>
+        </p>
+      ) : null}
       <div className="grid gap-2 md:grid-cols-3">
         <input
           aria-label="屋苑名稱"
           value={draft.estateName}
-          onChange={(event) => setDraft({ ...draft, estateName: event.target.value })}
+          onChange={(event) => {
+            setDraft({ ...draft, estateName: event.target.value });
+            setDirty(true);
+          }}
           className={inputClass}
           placeholder="屋苑名稱"
         />
         <input
           aria-label="地區"
           value={draft.district}
-          onChange={(event) => setDraft({ ...draft, district: event.target.value })}
+          onChange={(event) => {
+            setDraft({ ...draft, district: event.target.value });
+            setDirty(true);
+          }}
           className={inputClass}
           placeholder="地區"
         />
         <input
           aria-label="備註"
           value={draft.notes ?? ""}
-          onChange={(event) => setDraft({ ...draft, notes: event.target.value || null })}
+          onChange={(event) => {
+            setDraft({ ...draft, notes: event.target.value || null });
+            setDirty(true);
+          }}
           className={inputClass}
           placeholder="備註（選填）"
         />
@@ -533,8 +679,8 @@ function EstateEditor({
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
-          disabled={pending || !draft.estateName.trim() || !draft.district.trim()}
-          onClick={() => onSave?.(draft)}
+          disabled={pending || conflict || !draft.estateName.trim() || !draft.district.trim()}
+          onClick={() => void save()}
         >
           {estate ? (
             "編輯"
@@ -548,12 +694,12 @@ function EstateEditor({
           <>
             <button
               type="button"
-              disabled={pending}
-              onClick={() => onSave?.({ ...draft, isPublished: !draft.isPublished })}
+              disabled={pending || dirty || conflict}
+              onClick={() => void togglePublication()}
             >
-              {draft.isPublished ? "取消發佈" : "發佈"}
+              {published ? "取消發佈" : "發佈"}
             </button>
-            <button type="button" disabled={pending} onClick={() => onDelete?.(draft.id)}>
+            <button type="button" disabled={pending} onClick={() => onDelete?.(estate.id)}>
               <Trash2 className="inline h-4 w-4" /> 刪除
             </button>
           </>

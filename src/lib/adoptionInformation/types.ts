@@ -15,6 +15,7 @@ export type AdoptionFee = {
 
 export type DogFriendlyEstate = {
   id: string;
+  version: number;
   estateName: string;
   district: string;
   notes: string | null;

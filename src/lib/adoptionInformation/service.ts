@@ -4,11 +4,15 @@ import {
   adoptionInformationIdSchema,
   adoptionRuleInputSchema,
   careTopicInputSchema,
-  estateInputSchema,
+  createEstateInputSchema,
+  updateEstateInputSchema,
+  setEstatePublicationInputSchema,
   type AdoptionFeeInput,
   type AdoptionRuleInput,
   type CareTopicInput,
-  type EstateInput,
+  type CreateEstateInput,
+  type UpdateEstateInput,
+  type SetEstatePublicationInput,
 } from "./schemas";
 import type {
   AdminAdoptionInformationPage,
@@ -47,7 +51,12 @@ export interface AdoptionInformationRepository {
   listPublic(): Promise<PublicAdoptionInformation>;
   listAdmin(input: AdminAdoptionInformationQuery): Promise<AdminAdoptionInformationPage>;
   upsertFee(input: AdoptionFeeInput, actorUserId?: string): Promise<AdoptionFee>;
-  upsertEstate(input: EstateInput, actorUserId?: string): Promise<DogFriendlyEstate>;
+  createEstate(input: CreateEstateInput, actorUserId: string): Promise<DogFriendlyEstate>;
+  updateEstate(input: UpdateEstateInput, actorUserId: string): Promise<DogFriendlyEstate>;
+  setEstatePublication(
+    input: SetEstatePublicationInput,
+    actorUserId: string,
+  ): Promise<DogFriendlyEstate>;
   deleteEstate(id: string, actorUserId?: string): Promise<void>;
   upsertRule(input: AdoptionRuleInput, actorUserId: string): Promise<AdoptionRuleContent>;
   upsertCareTopic(input: CareTopicInput, actorUserId: string): Promise<CareTopic>;
@@ -95,27 +104,19 @@ export function createAdoptionInformationService({
       return fee;
     },
 
-    async upsertEstate({ actorUserId, input }: { actorUserId: string; input: unknown }) {
-      const parsed = estateInputSchema.parse(input);
-      const estate = await repo.upsertEstate(parsed, actorUserId);
-      if (repo.usesAtomicAudit) return estate;
-      await audit({
-        actor_user_id: actorUserId,
-        action: parsed.id ? "dog_friendly_estate.update" : "dog_friendly_estate.create",
-        entity: "dog_friendly_estate",
-        entity_id: estate.id,
-        detail: parsed,
-      });
-      await audit({
-        actor_user_id: actorUserId,
-        action: parsed.isPublished
-          ? "dog_friendly_estate.publish"
-          : "dog_friendly_estate.unpublish",
-        entity: "dog_friendly_estate",
-        entity_id: estate.id,
-        detail: {},
-      });
-      return estate;
+    async createEstate({ actorUserId, input }: { actorUserId: string; input: unknown }) {
+      const parsed = createEstateInputSchema.parse(input);
+      return repo.createEstate(parsed, actorUserId);
+    },
+
+    async updateEstate({ actorUserId, input }: { actorUserId: string; input: unknown }) {
+      const parsed = updateEstateInputSchema.parse(input);
+      return repo.updateEstate(parsed, actorUserId);
+    },
+
+    async setEstatePublication({ actorUserId, input }: { actorUserId: string; input: unknown }) {
+      const parsed = setEstatePublicationInputSchema.parse(input);
+      return repo.setEstatePublication(parsed, actorUserId);
     },
 
     async deleteEstate({ actorUserId, estateId }: { actorUserId: string; estateId: string }) {
@@ -132,7 +133,7 @@ export function createAdoptionInformationService({
     },
 
     // upsertRule/upsertCareTopic don't call audit() themselves — unlike
-    // upsertFee/upsertEstate above, their underlying RPCs
+    // upsertFee above, their underlying RPCs
     // (upsert_adoption_rule_with_audit, upsert_care_topic_with_audit) already
     // insert their audit_log row atomically inside the same transaction as
     // the data change. A second, separate insertAuditLog call here would

@@ -12,6 +12,8 @@ test("release manifest covers every new public table, RPC, and additive column a
   expect(tables).toHaveLength(11);
   expect(functions.length).toBeGreaterThanOrEqual(45);
   expect(columns).toContain("public_status_token.submission_fingerprint");
+  expect(columns).toContain("dog_friendly_estates.version");
+  expect(functions).toContain("mutate_dog_friendly_estate_with_audit");
   expect(columns).toContain("donation.idempotency_fingerprint");
   expect(columns).toContain("payment.checkout_attempted_at");
   for (const name of [

@@ -158,6 +158,7 @@ describe("Supabase adoption information repository", () => {
       notes: null,
       sort_order: index,
       is_published: true,
+      version: 1,
     }));
     const { calls, repo } = setup({
       rowsByTable: { dog_friendly_estates: estates },
@@ -194,6 +195,91 @@ describe("Supabase adoption information repository", () => {
     expect(calls.find((call) => call.method === "or")?.payload as string).toContain("\\%");
     expect(calls.find((call) => call.method === "or")?.payload as string).toContain("\\_");
     expect(calls.find((call) => call.method === "or")?.payload as string).toContain("\\\\");
+  });
+
+  test("estate content and publication use separate atomic RPC payloads", async () => {
+    const id = "22222222-2222-4222-8222-222222222222";
+    const row = {
+      id,
+      estate_name: "Harbour View",
+      district: "Kowloon",
+      notes: null,
+      sort_order: 0,
+      is_published: true,
+      version: 3,
+    };
+    const { repo, rpcCalls } = setup({
+      rpcResponses: { mutate_dog_friendly_estate_with_audit: { data: row, error: null } },
+    });
+    const edited = await repo.updateEstate(
+      {
+        id,
+        expectedVersion: 2,
+        fields: { estateName: "Harbour View", district: "Kowloon", notes: null, sortOrder: 0 },
+      },
+      "actor-1",
+    );
+    const published = await repo.setEstatePublication(
+      {
+        id,
+        expectedVersion: 3,
+        isPublished: false,
+      },
+      "actor-1",
+    );
+    expect(edited).toMatchObject({ id, version: 3, isPublished: true });
+    expect(published.version).toBe(3);
+    expect(rpcCalls).toEqual([
+      {
+        fn: "mutate_dog_friendly_estate_with_audit",
+        args: {
+          p_actor_user_id: "actor-1",
+          p_command: "update",
+          p_id: id,
+          p_expected_version: 2,
+          p_payload: {
+            estate_name: "Harbour View",
+            district: "Kowloon",
+            notes: null,
+            sort_order: 0,
+          },
+        },
+      },
+      {
+        fn: "mutate_dog_friendly_estate_with_audit",
+        args: {
+          p_actor_user_id: "actor-1",
+          p_command: "publication",
+          p_id: id,
+          p_expected_version: 3,
+          p_payload: { is_published: false },
+        },
+      },
+    ]);
+  });
+
+  test("estate stale version SQLSTATE becomes a safe 409 conflict", async () => {
+    const { repo } = setup({
+      rpcResponses: {
+        mutate_dog_friendly_estate_with_audit: {
+          data: null,
+          error: { code: "P4090", message: "Estate version conflict" },
+        },
+      },
+    });
+    await expect(
+      repo.setEstatePublication(
+        {
+          id: "22222222-2222-4222-8222-222222222222",
+          expectedVersion: 1,
+          isPublished: true,
+        },
+        "actor-1",
+      ),
+    ).rejects.toMatchObject({
+      name: "AdoptionInformationConflictError",
+      message: "Estate version conflict; reload the latest row",
+    });
   });
 
   test("upsertRule calls the audited RPC with snake_case params and maps the returned row", async () => {

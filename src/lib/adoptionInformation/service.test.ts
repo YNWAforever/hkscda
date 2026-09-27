@@ -19,6 +19,7 @@ function setup() {
     notes: null,
     sortOrder: 0,
     isPublished: false,
+    version: 1,
   };
   const rule = {
     id: "33333333-3333-4333-8333-333333333333",
@@ -53,9 +54,17 @@ function setup() {
       calls.push({ name: "upsertFee", payload: input });
       return { ...fee, ...input, id: input.id ?? fee.id };
     },
-    async upsertEstate(input) {
-      calls.push({ name: "upsertEstate", payload: input });
-      return { ...estate, ...input, id: input.id ?? estate.id };
+    async createEstate(input) {
+      calls.push({ name: "createEstate", payload: input });
+      return { ...estate, ...input, version: 1 };
+    },
+    async updateEstate(input) {
+      calls.push({ name: "updateEstate", payload: input });
+      return { ...estate, ...input.fields, version: input.expectedVersion + 1 };
+    },
+    async setEstatePublication(input) {
+      calls.push({ name: "setEstatePublication", payload: input });
+      return { ...estate, isPublished: input.isPublished, version: input.expectedVersion + 1 };
     },
     async deleteEstate(id) {
       calls.push({ name: "deleteEstate", payload: id });
