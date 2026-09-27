@@ -16,14 +16,34 @@ describe("resilientPublicLoader", () => {
       throw new Error("supabase unreachable");
     });
     // The whole point: a rejected loader makes the document a 500.
-    expect(await loader()).toEqual({ status: "error" });
+    expect(await loader()).toMatchObject({ status: "error", referenceId: expect.any(String) });
   });
 
   test("never rejects when the read throws synchronously", async () => {
     const loader = resilientPublicLoader(() => {
       throw new Error("boom");
     });
-    expect(await loader()).toEqual({ status: "error" });
+    expect(await loader()).toMatchObject({ status: "error", referenceId: expect.any(String) });
+  });
+
+  test("links a safe public support reference to the private failure log", async () => {
+    const seen: unknown[] = [];
+    const original = console.error;
+    console.error = (...args: unknown[]) => void seen.push(args);
+    try {
+      const result = await resilientPublicLoader(
+        async () => {
+          throw Object.assign(new Error("private alice@example.test"), { code: "XX000" });
+        },
+        { createReferenceId: () => "synthetic-reference" },
+      )();
+      expect(result).toEqual({ status: "error", referenceId: "synthetic-reference" });
+    } finally {
+      console.error = original;
+    }
+    expect(JSON.stringify(seen)).toContain("synthetic-reference");
+    expect(JSON.stringify(seen)).toContain("XX000");
+    expect(JSON.stringify(seen)).not.toContain("alice@example.test");
   });
 
   test("does not log personal data from an upstream failure", async () => {

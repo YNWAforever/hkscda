@@ -101,7 +101,18 @@ function InstructionsPage() {
       <PublicStateShell
         role="alert"
         title="暫時未能載入領養資訊"
-        description="系統未能取得最新的領養流程與費用資料，請稍後再試。"
+        description={
+          <>
+            系統未能取得最新的領養流程與費用資料，請稍後再試。
+            <span className="mt-2 block">
+              如問題持續，請到{" "}
+              <a href="/help" className="underline">
+                支援中心
+              </a>{" "}
+              並提供參考編號 {result.referenceId}。
+            </span>
+          </>
+        }
         action={
           <a href="/adoption/instructions" className="btn-primary min-h-11 px-5">
             重新載入
