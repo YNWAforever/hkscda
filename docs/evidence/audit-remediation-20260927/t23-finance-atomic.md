@@ -23,3 +23,5 @@ Before applying this file to a data-bearing clone or production, list historical
 Promote schema before the app route. Keep the existing webhook and reconciliation workers active. On app rollback, retain the unique index and atomic RPC until a compatible older app is demonstrated; dropping the index could admit a second credit. A database restore over newer payment/audit facts is not an acceptable routine rollback. Production migration and payment activation require separate approval.
 
 Corrected source SHA `74c032aeb42fa335080ec582855f0e205abee3c1`: remote CI run `36350007831` completed with verify, brand, a11y, RLS matrix and performance all passing. The earlier `36348629849` RLS fixture failure remains recorded in the release checklist; it was a duplicate synthetic reference across distinct CRM gifts and was corrected in the source fixture.
+
+#166 release checksum audit: committed LF finance SQL blob SHA-256 `febcce8174711520ac3006f3462647a8448c10dddc14c694eba389aca3fd9537`; it was rehearsed as the exact Git blob inside rollback on the named local DB. The older #165 Windows CRLF working-tree checksum is superseded in the 46-file release manifest.

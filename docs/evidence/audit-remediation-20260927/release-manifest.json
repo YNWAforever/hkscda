@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "appSha": "74c032aeb42fa335080ec582855f0e205abee3c1",
-  "appShaNote": "T23 manual finance atomic settlement source freeze; following documentation commit has no runtime changes",
+  "appSha": "3b97aff8148d53b3e9b4dd6ee499ab5f6abd4951",
+  "appShaNote": "T23 CMS quality queue source freeze; following documentation commit has no runtime changes",
   "productionAliasShaObserved": "f8d5e5d5840d1775efb7d7f4ae2768f6557096b5",
-  "schemaManifestHash": "f1ce409da0fd35cd95311a97dc00e5b658aa9962697da6a14cb14ce6f5f2540d",
+  "schemaManifestHash": "2a30158023f0945a096b01697c870f5c74abf53f2a217e14101a10bd24ad62e2",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
@@ -236,13 +236,18 @@
     {
       "version": "20260927201916",
       "file": "20260927201916_manual_payment_atomic_reference.sql",
-      "sha256": "211ef805cb09d643ca4b04f1e0d0e6fa54601af65ea60cfeb637d6882b327b66"
+      "sha256": "febcce8174711520ac3006f3462647a8448c10dddc14c694eba389aca3fd9537"
+    },
+    {
+      "version": "20260927211801",
+      "file": "20260927211801_editorial_quality_queue.sql",
+      "sha256": "8c1b4550d4361f348246654bab356f3cd2366de48afb0eb384b90efb38526642"
     }
   ],
   "ciRun": {
-    "id": 36350007831,
-    "sha": "74c032aeb42fa335080ec582855f0e205abee3c1",
-    "status": "passed: verify, brand-verify, a11y-verify, rls-matrix, performance-verify (all five jobs); fixture CI only"
+    "id": 36353059091,
+    "sha": "3b97aff8148d53b3e9b4dd6ee499ab5f6abd4951",
+    "status": "passed: verify, brand-verify, a11y-verify, rls-matrix, performance-verify (five source jobs; fixture CI only)"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -252,7 +257,8 @@
     "docs/evidence/audit-remediation-20260927/ui-performance.md",
     "docs/evidence/audit-remediation-20260927/uat-results.md",
     "docs/evidence/audit-remediation-20260927/t23-cms-review-bulk.md",
-    "docs/evidence/audit-remediation-20260927/t23-finance-atomic.md"
+    "docs/evidence/audit-remediation-20260927/t23-finance-atomic.md",
+    "docs/evidence/audit-remediation-20260927/t23-cms-quality-queue.md"
   ],
   "rollbackTarget": {
     "appSha": null,
