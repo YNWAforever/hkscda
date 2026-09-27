@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "appSha": "f76af31c3a0f7882d05aa544337bb4e6d55c5375",
-  "appShaNote": "T23 sponsorship proof queue source freeze; following documentation commit has no runtime changes",
+  "appSha": "747d106d08dd7766c35fc8da6af6bb1cfcf861d1",
+  "appShaNote": "T02 protected readiness and safe public support reference source freeze; following documentation commit has no runtime changes",
   "productionAliasShaObserved": "f8d5e5d5840d1775efb7d7f4ae2768f6557096b5",
   "schemaManifestHash": "2a30158023f0945a096b01697c870f5c74abf53f2a217e14101a10bd24ad62e2",
   "configVersions": {
@@ -245,9 +245,9 @@
     }
   ],
   "ciRun": {
-    "id": 36355532588,
-    "sha": "f76af31c3a0f7882d05aa544337bb4e6d55c5375",
-    "status": "in progress at package preparation; source jobs not yet accepted"
+    "id": 36357778260,
+    "sha": "747d106d08dd7766c35fc8da6af6bb1cfcf861d1",
+    "status": "success; verify, rls-matrix, brand-verify, performance-verify and a11y-verify passed on amended source SHA"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -259,7 +259,8 @@
     "docs/evidence/audit-remediation-20260927/t23-cms-review-bulk.md",
     "docs/evidence/audit-remediation-20260927/t23-finance-atomic.md",
     "docs/evidence/audit-remediation-20260927/t23-cms-quality-queue.md",
-    "docs/evidence/audit-remediation-20260927/t23-sponsorship-proof-queue.md"
+    "docs/evidence/audit-remediation-20260927/t23-sponsorship-proof-queue.md",
+    "docs/evidence/audit-remediation-20260927/t02-readiness.md"
   ],
   "rollbackTarget": {
     "appSha": null,
