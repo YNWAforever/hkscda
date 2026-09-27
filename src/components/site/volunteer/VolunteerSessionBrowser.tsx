@@ -37,6 +37,15 @@ export function VolunteerSessionBrowser({
     return () => window.clearTimeout(timer);
   }, [query, shelter, date, filter, onFilter]);
   const visible = sessions;
+  const filtered = Boolean(
+    filter?.query.trim() || (filter?.shelter && filter.shelter !== "all") || filter?.date,
+  );
+  const clearFilters = () => {
+    setQuery("");
+    setShelter("all");
+    setDate("");
+    onFilter?.({ query: "", shelter: "all", date: "", page: 1 });
+  };
   const shelters = [
     ...new Set([
       "cat",
@@ -98,11 +107,28 @@ export function VolunteerSessionBrowser({
       ) : !sessions.length ? (
         <div className="volunteer-empty">
           <CalendarDays size={32} />
-          <h4>下一次相遇，值得期待</h4>
-          <p>目前未有已發布的核實義工場次。你仍可先登入及完成身份登記，待職員發布場次後再預約。</p>
-          <button className="btn-secondary" onClick={onRetry}>
-            重新查看場次
-          </button>
+          {filtered ? (
+            <>
+              <h4>沒有符合篩選條件的場次</h4>
+              <p>請調整搜尋條件；這不代表所有服務場次都已額滿或停辦。</p>
+              <button type="button" className="btn-secondary" onClick={clearFilters}>
+                清除篩選
+              </button>
+            </>
+          ) : (
+            <>
+              <h4>目前沒有已發布的服務場次</h4>
+              <p>
+                目前未有已發布的核實義工場次。你可先登入及完成身份登記；場次須由職員核准發布後才可預約。
+              </p>
+              <a className="btn-secondary" href="mailto:info@hkscda.com">
+                聯絡義工團隊
+              </a>
+              <button type="button" className="btn-secondary" onClick={onRetry}>
+                重新查看場次
+              </button>
+            </>
+          )}
         </div>
       ) : (
         <>

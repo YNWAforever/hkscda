@@ -1,9 +1,11 @@
 import { createSupabaseServiceClient, requireAdmin } from "../donations/supabase.server";
 import { createOverviewHandler } from "./overview";
+import { readVolunteerCoverage } from "./sessionCoverage.server";
 export async function handleVolunteerOverview(request: Request) {
   const client = createSupabaseServiceClient();
   return createOverviewHandler({
     authorize: (request) => requireAdmin(request, ["staff", "admin"], client),
+    readCoverage: (query) => readVolunteerCoverage(client, query),
     read: async (range) => {
       const results = await Promise.allSettled([
         client

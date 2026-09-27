@@ -1,7 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { ArrowRight, CalendarDays, ClipboardCheck, UserRoundSearch, Users } from "lucide-react";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import { hongKongDayRange, type OverviewData } from "../../../lib/volunteers/overview";
+import type { SessionCoverage } from "../../../lib/volunteers/sessionCoverage";
+import { formatSessionDate, shelterLabel } from "../../site/volunteer/centreModel";
 type TodayActivity = {
   id: string;
   title: string;
@@ -21,11 +24,79 @@ const time = (date: string) =>
     minute: "2-digit",
     hour12: false,
   }).format(new Date(date));
+function CoverageCard({ label, coverage }: { label: string; coverage: SessionCoverage }) {
+  const stateCopy: Record<SessionCoverage["state"], string> = {
+    covered: "已排妥已發布場次",
+    attention: "有待處理的場次",
+    off_day: "所選日期屬休息日或不開放服務",
+    no_approved_policy: "未有已核准政策，不能推斷應開場次",
+    policy_inapplicable: "部分日期未有適用政策",
+    unavailable: "覆蓋資料暫不可用",
+  };
+  return (
+    <article className="rounded-lg border border-[var(--color-border)] p-4">
+      <h3 className="font-bold">{label}</h3>
+      <p className="mt-1 text-sm">{stateCopy[coverage.state]}</p>
+      {coverage.scheduledSlots !== null ? (
+        <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
+          <div>
+            <dt>應開場次</dt>
+            <dd className="font-semibold tabular-nums">{coverage.scheduledSlots}</dd>
+          </div>
+          <div>
+            <dt>已發布</dt>
+            <dd className="font-semibold tabular-nums">{coverage.publishedSlots}</dd>
+          </div>
+          <div>
+            <dt>未發布／政策未綁定</dt>
+            <dd className="font-semibold tabular-nums">{coverage.unpublishedSlots}</dd>
+          </div>
+          <div>
+            <dt>尚未建立</dt>
+            <dd className="font-semibold tabular-nums">{coverage.missingSlots}</dd>
+          </div>
+          <div>
+            <dt>休息日</dt>
+            <dd className="font-semibold tabular-nums">{coverage.offDays}</dd>
+          </div>
+          <div>
+            <dt>未適用政策日</dt>
+            <dd className="font-semibold tabular-nums">{coverage.inapplicableDays}</dd>
+          </div>
+        </dl>
+      ) : null}
+      <p className="mt-3 text-sm">
+        {coverage.nextApprovedAt
+          ? "下一個已發布場次：" + formatSessionDate(coverage.nextApprovedAt)
+          : "暫無已核准的下次服務日期。"}
+      </p>
+      {coverage.blockers.length ? (
+        <ul className="mt-3 list-disc space-y-1 pl-5 text-sm">
+          {coverage.blockers.slice(0, 5).map((blocker) => (
+            <li key={blocker.date + blocker.templateKey}>
+              {blocker.date} · {blocker.policyName}：
+              {blocker.reason === "missing"
+                ? "尚未建立場次"
+                : blocker.reason === "unpublished"
+                  ? "尚未發布"
+                  : "政策未綁定或不適用"}
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </article>
+  );
+}
+
 export function VolunteerOverview() {
+  const [centre, setCentre] = useState("all");
   const range = hongKongDayRange(new Date());
   const stats = useQuery({
-    queryKey: ["volunteer-overview", range.date],
-    queryFn: () => fetchAdminJson<OverviewData>("/api/admin/volunteers/overview"),
+    queryKey: ["volunteer-overview", range.date, centre],
+    queryFn: () =>
+      fetchAdminJson<OverviewData>(
+        "/api/admin/volunteers/overview?" + new URLSearchParams({ centre }),
+      ),
     refetchInterval: 30000,
   });
   const calendar = useQuery({
@@ -107,6 +178,56 @@ export function VolunteerOverview() {
           </button>
         </div>
       )}
+      <section
+        aria-label="未來服務覆蓋"
+        className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5"
+      >
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-bold">未來 14／30 日服務覆蓋</h2>
+            <p className="text-sm text-[var(--color-text-muted)]">
+              按已核准政策及實際場次計算；休息日不列為缺場。發布或預約時仍會重新驗證。
+            </p>
+          </div>
+          <label className="text-sm">
+            服務地點
+            <select
+              className="ml-2 min-h-11 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-2"
+              value={centre}
+              onChange={(event) => setCentre(event.target.value)}
+            >
+              <option value="all">所有地點</option>
+              {(stats.data?.coverage?.centres ?? []).map((key) => (
+                <option key={key} value={key}>
+                  {shelterLabel(key)}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+        {stats.isLoading ? (
+          <p role="status" className="mt-4">
+            正在讀取服務覆蓋…
+          </p>
+        ) : stats.data?.coverage ? (
+          <div className="mt-4 grid gap-4 lg:grid-cols-2">
+            <CoverageCard label="未來 14 日" coverage={stats.data.coverage.next14} />
+            <CoverageCard label="未來 30 日" coverage={stats.data.coverage.next30} />
+          </div>
+        ) : (
+          <p role="status" className="mt-4">
+            覆蓋資料暫未能讀取；請勿把未知當作零場。
+          </p>
+        )}
+        <div className="mt-4 flex flex-wrap gap-4 text-sm">
+          <a className="min-h-11 py-2 underline" href="/admin/volunteers/activities">
+            前往場次工作台產生及預覽
+          </a>
+          <a className="min-h-11 py-2 underline" href="/admin/volunteers/settings">
+            檢查已核准政策
+          </a>
+        </div>
+      </section>
       <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
         <div className="mb-4 flex items-center justify-between gap-3">
           <div>
