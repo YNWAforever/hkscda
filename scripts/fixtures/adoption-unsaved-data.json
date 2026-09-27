@@ -1,0 +1,180 @@
+{
+  "page": {
+    "pageKey": "adoption-instructions",
+    "publishedRevisionId": "11111111-1111-4111-8111-111111111111",
+    "draftRevisionId": "22222222-2222-4222-8222-222222222222",
+    "version": 2,
+    "createdAt": "2026-09-27T00:00:00Z",
+    "updatedAt": "2026-09-27T00:00:00Z"
+  },
+  "published": {
+    "id": "11111111-1111-4111-8111-111111111111",
+    "pageKey": "adoption-instructions",
+    "revisionNumber": 1,
+    "state": "published",
+    "content": {
+      "hero": {
+        "eyebrow": "領養準備",
+        "title": "領養需知",
+        "description": "了解申請、家訪和日常照護，為你和動物做好長期準備。"
+      },
+      "fees": {
+        "sectionTitle": "領養費用",
+        "dogTitle": "狗隻領養費用",
+        "catTitle": "貓隻領養費用",
+        "itemLabel": "項目",
+        "amountLabel": "費用（HK$）",
+        "notice": "以上費用如有調整，恕不另行通知；香港拯救貓狗協會保留最終決定權。"
+      },
+      "estates": {
+        "sectionTitle": "可養狗屋苑參考名單",
+        "introduction": "以下名單僅供參考，請向屋苑管理處查詢最新規定。",
+        "estateLabel": "屋苑",
+        "districtLabel": "地區",
+        "notesLabel": "備註",
+        "emptyState": "暫時未有屋苑資料。如需最新資訊，請"
+      },
+      "guides": {
+        "sectionTitle": "領養後指南",
+        "catTitle": "貓隻領養後指南",
+        "dogTitle": "狗隻領養後指南",
+        "generalTitle": "領養後指南",
+        "zhHkActionLabel": "中文版",
+        "enActionLabel": "English"
+      },
+      "rules": {
+        "title": "領養規則"
+      },
+      "care": {
+        "cat": {
+          "title": "養貓需知"
+        },
+        "dog": {
+          "title": "養狗需知"
+        }
+      }
+    },
+    "version": 1,
+    "sourceRevisionId": null,
+    "createdBy": null,
+    "updatedBy": null,
+    "publishedBy": null,
+    "publishedAt": "2026-09-27T00:00:00Z",
+    "createdAt": "2026-09-27T00:00:00Z",
+    "updatedAt": "2026-09-27T00:00:00Z"
+  },
+  "draft": {
+    "id": "22222222-2222-4222-8222-222222222222",
+    "pageKey": "adoption-instructions",
+    "revisionNumber": 2,
+    "state": "draft",
+    "content": {
+      "hero": {
+        "eyebrow": "領養準備",
+        "title": "領養需知",
+        "description": "了解申請、家訪和日常照護，為你和動物做好長期準備。"
+      },
+      "fees": {
+        "sectionTitle": "領養費用",
+        "dogTitle": "狗隻領養費用",
+        "catTitle": "貓隻領養費用",
+        "itemLabel": "項目",
+        "amountLabel": "費用（HK$）",
+        "notice": "以上費用如有調整，恕不另行通知；香港拯救貓狗協會保留最終決定權。"
+      },
+      "estates": {
+        "sectionTitle": "可養狗屋苑參考名單",
+        "introduction": "以下名單僅供參考，請向屋苑管理處查詢最新規定。",
+        "estateLabel": "屋苑",
+        "districtLabel": "地區",
+        "notesLabel": "備註",
+        "emptyState": "暫時未有屋苑資料。如需最新資訊，請"
+      },
+      "guides": {
+        "sectionTitle": "領養後指南",
+        "catTitle": "貓隻領養後指南",
+        "dogTitle": "狗隻領養後指南",
+        "generalTitle": "領養後指南",
+        "zhHkActionLabel": "中文版",
+        "enActionLabel": "English"
+      },
+      "rules": {
+        "title": "領養規則"
+      },
+      "care": {
+        "cat": {
+          "title": "養貓需知"
+        },
+        "dog": {
+          "title": "養狗需知"
+        }
+      }
+    },
+    "version": 4,
+    "sourceRevisionId": null,
+    "createdBy": null,
+    "updatedBy": null,
+    "publishedBy": null,
+    "publishedAt": "2026-09-27T00:00:00Z",
+    "createdAt": "2026-09-27T00:00:00Z",
+    "updatedAt": "2026-09-27T00:00:00Z"
+  },
+  "history": [
+    {
+      "id": "11111111-1111-4111-8111-111111111111",
+      "pageKey": "adoption-instructions",
+      "revisionNumber": 1,
+      "state": "published",
+      "content": {
+        "hero": {
+          "eyebrow": "領養準備",
+          "title": "領養需知",
+          "description": "了解申請、家訪和日常照護，為你和動物做好長期準備。"
+        },
+        "fees": {
+          "sectionTitle": "領養費用",
+          "dogTitle": "狗隻領養費用",
+          "catTitle": "貓隻領養費用",
+          "itemLabel": "項目",
+          "amountLabel": "費用（HK$）",
+          "notice": "以上費用如有調整，恕不另行通知；香港拯救貓狗協會保留最終決定權。"
+        },
+        "estates": {
+          "sectionTitle": "可養狗屋苑參考名單",
+          "introduction": "以下名單僅供參考，請向屋苑管理處查詢最新規定。",
+          "estateLabel": "屋苑",
+          "districtLabel": "地區",
+          "notesLabel": "備註",
+          "emptyState": "暫時未有屋苑資料。如需最新資訊，請"
+        },
+        "guides": {
+          "sectionTitle": "領養後指南",
+          "catTitle": "貓隻領養後指南",
+          "dogTitle": "狗隻領養後指南",
+          "generalTitle": "領養後指南",
+          "zhHkActionLabel": "中文版",
+          "enActionLabel": "English"
+        },
+        "rules": {
+          "title": "領養規則"
+        },
+        "care": {
+          "cat": {
+            "title": "養貓需知"
+          },
+          "dog": {
+            "title": "養狗需知"
+          }
+        }
+      },
+      "version": 1,
+      "sourceRevisionId": null,
+      "createdBy": null,
+      "updatedBy": null,
+      "publishedBy": null,
+      "publishedAt": "2026-09-27T00:00:00Z",
+      "createdAt": "2026-09-27T00:00:00Z",
+      "updatedAt": "2026-09-27T00:00:00Z"
+    }
+  ]
+}
