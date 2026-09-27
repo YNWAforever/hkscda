@@ -23,3 +23,30 @@ Checkout base and production alias SHA: `f8d5e5d5840d1775efb7d7f4ae2768f6557096b
 | Provider sandbox / data-bearing DB | payment, concurrent retry, backup and rollback rehearsal | not-run | later tasks and external test inputs |
 
 Tests use synthetic fixture identities and local demo keys. The compatibility script only performs SELECT queries; it never applies migrations. Production catalog remains missing the audited objects. This record does not mark the release deployable.
+
+## T18 content eligibility (2026-09-27 HKT)
+
+Isolated worktree codex/audit-content-eligibility-20260927; dedicated synthetic Supabase stack REST 127.0.0.1:57321, DB 127.0.0.1:57322. Schema rehearsal and fixture writes were confined to that stack and rollback transactions.
+
+| Environment | Command | Exit | Result |
+|---|---|---:|---|
+| Dedicated isolated DB | bun test src/lib/content/publicationEligibility.integration.test.ts with CMS_LIFECYCLE_TEST_DATABASE_URL and local fixture flag | 0 | 1 pass, 13 assertions; metadata audit, eligibility, grants and public profile validation |
+| Isolated worktree | SUPABASE_LOCAL_URL=http://127.0.0.1:57321 bun test | 0 | 2,821 pass, 84 skip, 0 fail; before final archived-card follow-up |
+| Isolated worktree | bun test src/components/site/stories/StoryContentGrid.test.tsx | 1 then 0 | Red reproduces expired registration CTA; green 1 pass, 5 assertions |
+| Isolated worktree | npm.cmd run typecheck | 0 | Strict TypeScript; before final archived-card follow-up |
+| Isolated worktree | npm.cmd run lint | 0 | 0 errors, 52 existing warnings; before final archived-card follow-up |
+| Isolated worktree | npm.cmd run build | 0 | Client/server output; before final archived-card follow-up |
+| Local Chromium/Edge | Playwright browser visual acceptance | not-run | Browser launch timed out (180s Chromium, 20s Edge); desktop helper sandbox ACL failure |
+| Production public API | GET /api/stories?page=1&pageSize=50 | 0 | Read-only 7 exact demo-label candidates; no classification change |
+| Production content/catalog | migration, classification, upload, provider/payment/email | not-run | Awaiting owner and release approvals |
+
+The subsequent full-suite, lint, typecheck and build checks for the final source tree appear below.
+
+### T18 final source tree after archived-card fix
+
+| Environment | Command | Exit | Result |
+|---|---|---:|---|
+| Isolated worktree + dedicated stack | SUPABASE_LOCAL_URL=http://127.0.0.1:57321 bun test | 0 | 2,822 pass, 84 skip, 0 fail, 8,597 assertions, 2,906 tests across 476 files |
+| Isolated worktree | npm.cmd run typecheck | 0 | Strict TypeScript |
+| Isolated worktree | npm.cmd run lint | 0 | 0 errors, 52 existing warnings |
+| Isolated worktree | npm.cmd run build | 0 | Vercel client/server output built |
