@@ -1,8 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-import { buildPublicAnimalListing } from "./publicListing";
-
 const publicAnimalListingInput = z.object({
   type: z.enum(["cat", "dog"]),
   ageFilter: z.enum(["all", "bb", "adult", "senior"]),
@@ -15,32 +13,31 @@ const publicAnimalListingInput = z.object({
   pageSize: z.number().int().positive().max(48),
 });
 
-/**
- * Uses the existing public anonymous Supabase client, so the current RLS policy
- * remains authoritative. Age is free text in the existing schema; filtering
- * the complete RLS-approved set in this server function avoids a migration
- * while still applying filters before pagination.
- */
+/** Uses the bounded SQL page reader under the existing anonymous RLS policy. */
 export const getPublicAnimalListing = createServerFn({ method: "GET" })
   .inputValidator(publicAnimalListingInput)
   .handler(async ({ data }) => {
-    const { readPublicAnimals } = await import("./publicListing.server");
-    const animals = await readPublicAnimals({
-      type: data.type,
-      genderFilter: data.genderFilter,
-    });
-    return buildPublicAnimalListing({
-      animals,
-      withPhoto: data.withPhoto,
-      q: data.q,
+    const { listPublicAnimals } = await import("./publicListing.server");
+    const page = await listPublicAnimals({
+      purpose: "adoption",
+      species: data.type,
+      query: data.q,
+      hasPhoto: data.withPhoto,
+      ageBand: data.ageFilter,
+      gender: data.genderFilter,
       neutered: data.neutered,
       suitability: data.suitability,
-      type: data.type,
-      ageFilter: data.ageFilter,
-      genderFilter: data.genderFilter,
+      sort: "newest",
       page: data.page,
       pageSize: data.pageSize,
     });
+    return {
+      animals: page.items,
+      total: page.total,
+      page: page.page,
+      pageSize: data.pageSize,
+      totalPages: Math.ceil(page.total / data.pageSize),
+    };
   });
 
 const publicSponsorListingInput = z.object({
@@ -59,14 +56,20 @@ const publicSponsorListingInput = z.object({
 export const getPublicSponsorListing = createServerFn({ method: "GET" })
   .inputValidator(publicSponsorListingInput)
   .handler(async ({ data }) => {
-    const { readPublicAnimals } = await import("./publicListing.server");
-    const animals = await readPublicAnimals({ type: "sponsor", genderFilter: "all" });
-    return buildPublicAnimalListing({
-      animals,
-      type: "sponsor",
-      ageFilter: data.ageFilter,
-      genderFilter: "all",
+    const { listPublicAnimals } = await import("./publicListing.server");
+    const page = await listPublicAnimals({
+      purpose: "sponsorship",
+      ageBand: data.ageFilter,
+      gender: "all",
+      sort: "newest",
       page: data.page,
       pageSize: data.pageSize,
     });
+    return {
+      animals: page.items,
+      total: page.total,
+      page: page.page,
+      pageSize: data.pageSize,
+      totalPages: Math.ceil(page.total / data.pageSize),
+    };
   });

@@ -36,6 +36,25 @@ test("CI fixture serves public catalogues and paginated adoption fees", async ()
         new Set(["約 3 個月", "約 2 歲", "約 8 歲"]),
       );
     }
+    const listing = await fetch(
+      "http://127.0.0.1:" + port + "/rest/v1/rpc/public_animal_listing_page",
+      {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ p_filters: {
+          purpose: "adoption", species: "cat", ageBand: "all", gender: "all",
+          sort: "newest", page: 2, pageSize: 2,
+        } }),
+      },
+    );
+    assert.equal(listing.status, 200);
+    const listingPage = await listing.json();
+    assert.equal(listingPage.total, 6);
+    assert.equal(listingPage.page, 2);
+    assert.equal(listingPage.items.length, 2);
+    assert.ok(listingPage.items.every((item) => item.publication_state === "published"));
+    assert.ok(listingPage.items.every((item) => !Object.hasOwn(item, "notes")));
+
     const detail = await fetch(
       `http://127.0.0.1:${port}/rest/v1/animals?id=eq.00000000-0000-4000-8000-000000000001`,
       {
