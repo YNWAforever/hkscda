@@ -277,6 +277,26 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
     },
   });
 
+  const updatePublicationMetadata = useMutation({
+    mutationFn: (body: PublicationMetadataFormState) =>
+      fetchAdminJson(`/api/admin/content/${contentId}/publication-metadata`, {
+        method: "PUT",
+        body: JSON.stringify({
+          expectedVersion: expectedFor("metadata"),
+          contentClass: body.contentClass,
+          sourceReference: emptyToNull(body.sourceReference),
+          contentOwner: emptyToNull(body.contentOwner),
+          effectiveFrom: body.effectiveFrom ? parseDatetimeLocalToIso(body.effectiveFrom) : null,
+          effectiveUntil: body.effectiveUntil ? parseDatetimeLocalToIso(body.effectiveUntil) : null,
+        }),
+      }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] });
+      void queryClient.invalidateQueries({ queryKey: ["admin-content"] });
+      void queryClient.invalidateQueries({ queryKey: ["admin-content-revisions", contentId] });
+    },
+  });
+
   const publishContent = useMutation({
     mutationFn: () => publishWithValidation(contentId, content?.version, content?.revisionId),
     onSuccess: (data) => {
@@ -418,6 +438,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
 
   const editorActionPending =
     restoreContent.isPending ||
+    updatePublicationMetadata.isPending ||
     updateContent.isPending ||
     publishContent.isPending ||
     archiveContent.isPending ||
@@ -433,6 +454,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
 
   const conflict = [
     updateContent.error,
+    updatePublicationMetadata.error,
     publishContent.error,
     archiveContent.error,
     upsertStoryProfile.error,
@@ -608,6 +630,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
       <ActionErrors
         errors={[
           updateContent.error,
+          updatePublicationMetadata.error,
           publishContent.error,
           archiveContent.error,
           upsertStoryProfile.error,
@@ -632,6 +655,14 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
             content={content}
             pending={editorActionPending}
             onSave={(form) => runOperation("content", () => updateContent.mutateAsync(form))}
+          />
+
+          <PublicationMetadataForm
+            content={content}
+            pending={editorActionPending}
+            onSave={(form) =>
+              runOperation("metadata", () => updatePublicationMetadata.mutateAsync(form))
+            }
           />
 
           <ContentAuthoringPanels
@@ -688,6 +719,127 @@ type ContentFormState = {
   ogTitle: string;
   ogDescription: string;
 };
+
+type PublicationMetadataFormState = {
+  contentClass: NonNullable<ContentDetail["contentClass"]>;
+  sourceReference: string;
+  contentOwner: string;
+  effectiveFrom: string;
+  effectiveUntil: string;
+};
+
+function PublicationMetadataForm({
+  content,
+  pending,
+  onSave,
+}: {
+  content: ContentDetail;
+  pending: boolean;
+  onSave: (value: PublicationMetadataFormState) => Promise<void>;
+}) {
+  const panelState = useDirtyPanel("metadata");
+  const initial = useMemo<PublicationMetadataFormState>(
+    () => ({
+      contentClass: content.contentClass ?? "unreviewed",
+      sourceReference: content.sourceReference ?? "",
+      contentOwner: content.contentOwner ?? "",
+      effectiveFrom: content.effectiveFrom ? formatIsoForDatetimeLocal(content.effectiveFrom) : "",
+      effectiveUntil: content.effectiveUntil
+        ? formatIsoForDatetimeLocal(content.effectiveUntil)
+        : "",
+    }),
+    [content],
+  );
+  const [form, setForm] = useState(initial);
+  useEffect(() => {
+    if (!panelState.dirty) setForm(initial);
+  }, [initial, panelState.dirty]);
+  const update = <K extends keyof PublicationMetadataFormState>(
+    key: K,
+    value: PublicationMetadataFormState[K],
+  ) => {
+    panelState.mark();
+    setForm((current) => ({ ...current, [key]: value }));
+  };
+  return (
+    <form
+      className="space-y-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4"
+      onSubmit={async (event) => {
+        event.preventDefault();
+        try {
+          await onSave(form);
+          panelState.clear();
+        } catch {
+          /* Parent shows the error; preserve input. */
+        }
+      }}
+    >
+      <div>
+        <h2 className="text-lg font-bold text-[var(--color-panel)]">發布資格與來源</h2>
+        <p className="text-sm text-[var(--color-text-muted)]">
+          既有未分類內容維持可讀並列入待審。標記為示範或設定生效日期會立即影響公開位置；請先核對批准清單。
+        </p>
+      </div>
+      <div className="grid gap-3 md:grid-cols-3">
+        <Field label="內容分類">
+          <select
+            value={form.contentClass}
+            onChange={(event) =>
+              update(
+                "contentClass",
+                event.target.value as PublicationMetadataFormState["contentClass"],
+              )
+            }
+            className="w-full rounded-md border p-2"
+          >
+            <option value="unreviewed">待核實</option>
+            <option value="verified">已核實</option>
+            <option value="demo">示範（不公開）</option>
+          </select>
+        </Field>
+        <Field label="資料來源／批准記錄">
+          <input
+            value={form.sourceReference}
+            onChange={(event) => update("sourceReference", event.target.value)}
+            maxLength={500}
+            className="w-full rounded-md border p-2"
+          />
+        </Field>
+        <Field label="內容負責人">
+          <input
+            value={form.contentOwner}
+            onChange={(event) => update("contentOwner", event.target.value)}
+            maxLength={120}
+            className="w-full rounded-md border p-2"
+          />
+        </Field>
+        <Field label="生效時間">
+          <input
+            type="datetime-local"
+            value={form.effectiveFrom}
+            onChange={(event) => update("effectiveFrom", event.target.value)}
+            className="w-full rounded-md border p-2"
+          />
+        </Field>
+        <Field label="結束時間">
+          <input
+            type="datetime-local"
+            value={form.effectiveUntil}
+            onChange={(event) => update("effectiveUntil", event.target.value)}
+            className="w-full rounded-md border p-2"
+          />
+        </Field>
+      </div>
+      <button
+        type="submit"
+        disabled={pending || !panelState.dirty}
+        className="rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-semibold text-[var(--color-primary-foreground)] disabled:opacity-60"
+      >
+        儲存發布資格
+      </button>
+    </form>
+  );
+}
 
 type StoryProfileFormState = {
   animalType: AnimalStoryType;

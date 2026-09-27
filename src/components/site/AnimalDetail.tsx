@@ -141,6 +141,12 @@ export function AnimalDetail({
         [
           ["性格", profile?.personality],
           ["照顧與健康需要", profile?.health],
+          ...(intent === "sponsorship"
+            ? ([
+                ["助養用途", profile?.sponsorUse],
+                ["近況", profile?.recentProgress],
+              ] as const)
+            : []),
           ["牠的故事", profile?.story],
         ] as const
       ).map(([title, text]) =>

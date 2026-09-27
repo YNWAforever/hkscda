@@ -241,6 +241,11 @@ export function AnimalsTable({
       cell: (animal) => (
         <span className="font-medium">
           {animal.name}
+          {(animal.code ?? animal.public_profile?.code) ? (
+            <span className="ml-2 text-xs text-[var(--color-text-muted)]">
+              #{animal.code ?? animal.public_profile?.code}
+            </span>
+          ) : null}
           {animal.name_en && (
             <span className="ml-1 font-normal text-[var(--color-text-muted)]">
               {animal.name_en}

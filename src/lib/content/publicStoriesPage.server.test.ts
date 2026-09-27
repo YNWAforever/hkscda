@@ -125,6 +125,27 @@ describe("public stories page reader", () => {
     expect(error).toBeInstanceOf(Error);
     expect((error as Error).message).toBe("Could not load stories");
   });
+  test("drops explicitly classified demos and their map points at serialization", async () => {
+    const demo = story("demo", { contentClass: "demo" });
+    const read = createPublicStoriesPageReader({
+      async listPublicStoriesPage() {
+        return { items: [demo], total: 1, points: [{ ...point, id: "demo" }] };
+      },
+    });
+    expect(await read()).toEqual({ items: [], total: 0, points: [] });
+  });
+
+  test("excludes future content while retaining unreviewed historical articles", async () => {
+    const future = story("future", { effectiveFrom: "2999-01-01T00:00:00.000Z" });
+    const historical = story("historical", { contentClass: "unreviewed" });
+    const read = createPublicStoriesPageReader({
+      async listPublicStoriesPage() {
+        return { items: [future, historical], total: 2, points: [] };
+      },
+    });
+    expect((await read()).items.map((entry) => entry.id)).toEqual(["historical"]);
+  });
+
   test("drops leaked drafts and their map points at serialization", async () => {
     const leakedDraft = { ...item, status: "draft" as const };
     const read = createPublicStoriesPageReader({
@@ -147,6 +168,22 @@ describe("featured public story reader", () => {
   test("does not display an unfeatured row from an older database function", async () => {
     const read = createFeaturedStoryReader({
       listPublicStoriesPage: async () => ({ items: [story("recent")], total: 1, points: [] }),
+    });
+    expect(await read()).toBeNull();
+  });
+
+  test("never promotes an explicitly classified demo from an older RPC", async () => {
+    const read = createFeaturedStoryReader({
+      listPublicStoriesPage: async () => ({
+        items: [
+          story("demo", {
+            contentClass: "demo",
+            storyProfile: { isFeatured: true } as ContentSummary["storyProfile"],
+          }),
+        ],
+        total: 1,
+        points: [],
+      }),
     });
     expect(await read()).toBeNull();
   });

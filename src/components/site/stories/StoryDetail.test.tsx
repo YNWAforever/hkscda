@@ -132,6 +132,25 @@ describe("StoryDetail", () => {
     expect(markup).toContain("咪咪已找到家");
   });
 
+  test("marks an expired event as ended without inviting an obsolete action", async () => {
+    const { StoryDetail } = await import("./StoryDetail");
+    const markup = renderToStaticMarkup(
+      <StoryDetail
+        content={{
+          ...content,
+          type: "event",
+          storyProfile: null,
+          effectiveUntil: "2000-01-01T00:00:00.000Z",
+          ctaLabel: "報名活動",
+          ctaUrl: "/volunteer",
+        }}
+        related={[]}
+      />,
+    );
+    expect(markup).toContain("已結束");
+    expect(markup).not.toContain("報名活動");
+  });
+
   test("omits the related stories section when there are none", async () => {
     const { StoryDetail } = await import("./StoryDetail");
     const markup = renderToStaticMarkup(<StoryDetail content={content} related={[]} />);

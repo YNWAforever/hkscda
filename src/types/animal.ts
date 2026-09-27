@@ -20,6 +20,8 @@ export interface AnimalPublicProfile {
   suitability: "newbie" | "experienced" | null;
   personality: string | null;
   health: string | null;
+  sponsorUse?: string | null;
+  recentProgress?: string | null;
   story: string | null;
   recordDate: string | null;
 }
@@ -41,6 +43,8 @@ export interface AnimalGalleryItem {
 
 export interface Animal {
   id: string;
+  /** Admin list projection; public readers use public_profile.code. */
+  code?: string | null;
   public_profile?: AnimalPublicProfile | null;
   type: AnimalType;
   name: string;

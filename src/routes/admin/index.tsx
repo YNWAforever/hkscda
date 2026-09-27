@@ -248,6 +248,15 @@ function AdminDashboardContent({ section }: { section: DashboardSection }) {
             />{" "}
             待補相片
           </label>
+          {missingPhoto ? (
+            <p
+              role="status"
+              className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-3 text-sm text-[var(--color-panel)]"
+            >
+              待補相片：{animalsQuery.data?.total ?? 0}{" "}
+              筆。按編號核對動物，再進入「編輯」上載到草稿；儲存、預覽及批准發布前，原公開相片不會被替換。
+            </p>
+          ) : null}
           <AnimalsTable
             key={section}
             animals={animals}

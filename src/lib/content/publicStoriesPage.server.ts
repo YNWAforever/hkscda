@@ -3,6 +3,7 @@ import { createSupabaseServiceClient } from "../donations/supabase.server";
 import { createSupabaseContentRepository } from "./repository.server";
 import { createContentService } from "./service";
 import type { PublicStoriesPageData, PublicStorySummary } from "./publicStoriesPage.types";
+import { isPubliclyEligibleContent } from "./publicationEligibility";
 import type { AnimalStoryType, ContentSummary, ContentType, PublicStoryMapPoint } from "./types";
 
 export type { PublicStoriesPageData, PublicStorySummary } from "./publicStoriesPage.types";
@@ -43,11 +44,12 @@ type RelatedStoriesServiceFactory = () => RelatedStoriesService;
 const RELATED_STORIES_LIMIT = 3;
 
 export function projectPublicStory(item: ContentSummary): PublicStorySummary {
+  const { sourceReference: _sourceReference, contentOwner: _contentOwner, ...publicItem } = item;
   const profile = item.storyProfile;
-  if (!profile) return { ...item, storyProfile: null };
+  if (!profile) return { ...publicItem, storyProfile: null };
 
   return {
-    ...item,
+    ...publicItem,
     storyProfile: {
       contentItemId: profile.contentItemId,
       animalType: profile.animalType,
@@ -64,7 +66,8 @@ export function projectPublicStory(item: ContentSummary): PublicStorySummary {
 }
 
 function projectPublicStoriesPage(data: PublicStoriesPageSourceData): PublicStoriesPageData {
-  const publishedItems = data.items.filter((item) => item.status === "published");
+  const now = new Date();
+  const publishedItems = data.items.filter((item) => isPubliclyEligibleContent(item, now));
   const publishedIds = new Set(publishedItems.map((item) => item.id));
   return {
     items: publishedItems.map(projectPublicStory),
@@ -111,7 +114,8 @@ export function createFeaturedStoryReader(service: PublicStoriesPageService) {
       pageSize: 1,
     });
     const story = result.items[0];
-    return story?.status === "published" &&
+    return story &&
+      isPubliclyEligibleContent(story, new Date(), "promotion") &&
       story.type === "rescue_story" &&
       story.storyProfile?.isFeatured
       ? projectPublicStory(story)
@@ -158,7 +162,7 @@ export function createRelatedStoriesReader(service: RelatedStoriesService) {
     const append = (items: ContentSummary[]) => {
       for (const item of items) {
         if (selected.length >= RELATED_STORIES_LIMIT) return;
-        if (seen.has(item.id)) continue;
+        if (seen.has(item.id) || !isPubliclyEligibleContent(item, new Date())) continue;
         seen.add(item.id);
         selected.push(item);
       }

@@ -113,3 +113,33 @@ test("home distinguishes a failed animal read from an empty directory", async ()
   expect(markup).toContain("暫時未能載入領養資料");
   expect(markup).not.toContain("暫未有可顯示的領養資料");
 });
+
+test("sponsor card shows approved care, use and progress only when supplied", async () => {
+  const { AnimalCard } = await import("./AnimalCard");
+  const profile = {
+    code: "C017",
+    birthday: null,
+    neutered: null,
+    suitability: null,
+    personality: null,
+    health: "需要定期覆診",
+    story: null,
+    recordDate: null,
+    sponsorUse: "獸醫及糧食",
+    recentProgress: "本月復原穩定",
+  };
+  const markup = renderToStaticMarkup(
+    <ShortlistProvider>
+      <AnimalCard animal={{ ...animal, public_profile: profile }} intent="sponsorship" />
+    </ShortlistProvider>,
+  );
+  for (const text of ["照顧需要", "需要定期覆診", "助養用途", "獸醫及糧食", "近況", "本月復原穩定"])
+    expect(markup).toContain(text);
+  const empty = renderToStaticMarkup(
+    <ShortlistProvider>
+      <AnimalCard animal={animal} intent="sponsorship" />
+    </ShortlistProvider>,
+  );
+  expect(empty).not.toContain("助養用途");
+  expect(empty).not.toContain("近況");
+});

@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { CalendarDays, FileText, ShoppingBag } from "lucide-react";
 
+import { isPubliclyEligibleContent } from "../../../lib/content/publicationEligibility";
 import type { PublicStorySummary } from "../../../lib/content/publicStoriesPage.types";
 import type { ContentType } from "../../../lib/content/types";
 
@@ -18,7 +19,16 @@ const typeMeta: Record<
 };
 
 export function StoryContentGrid({ items }: StoryContentGridProps) {
-  const promotionItems = items.filter((item) => item.type !== "rescue_story");
+  const now = new Date();
+  const contentItems = items.filter((item) => item.type !== "rescue_story");
+  const promotionItems = contentItems.filter((item) =>
+    isPubliclyEligibleContent(item, now, "promotion"),
+  );
+  const endedItems = contentItems.filter(
+    (item) =>
+      (item.type === "event" || item.type === "charity_market") &&
+      !isPubliclyEligibleContent(item, now, "promotion"),
+  );
 
   return (
     <section className="bg-[var(--color-surface)] px-4 py-10 sm:py-12">
@@ -89,6 +99,27 @@ export function StoryContentGrid({ items }: StoryContentGridProps) {
             })}
           </div>
         )}
+        {endedItems.length > 0 ? (
+          <div className="border-t border-[var(--color-border)] pt-6">
+            <h3 className="font-display text-xl font-bold text-[var(--color-panel)]">
+              已結束活動與義賣
+            </h3>
+            <ul className="mt-3 space-y-2">
+              {endedItems.map((item) => (
+                <li key={item.id} className="text-sm">
+                  <Link
+                    to="/stories/$slug"
+                    params={{ slug: item.slug }}
+                    className="font-bold text-[var(--color-primary)]"
+                  >
+                    {item.title}
+                  </Link>
+                  <span className="ml-2 text-[var(--color-text-muted)]">已結束</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
       </div>
     </section>
   );
