@@ -28,6 +28,9 @@ for each row execute function public.inject_fee_reorder_failure();
 do $$
 declare
   actor uuid;
+  staff_id uuid := gen_random_uuid();
+  treasurer_id uuid := gen_random_uuid();
+  disabled_id uuid := gen_random_uuid();
   first_id uuid := gen_random_uuid();
   second_id uuid := gen_random_uuid();
   third_id uuid := gen_random_uuid();
@@ -126,7 +129,28 @@ begin
   update public.adoption_fees set item_name = 'Legacy writer' where id = first_id
     returning * into fee_row;
   if fee_row.version <> 5 then raise exception 'Legacy version bump failed'; end if;
-  raise notice 'stale, cross-species, nonadjacent, unauthorized, content and legacy-version checks passed';
+  insert into public.admin_user (auth_user_id, email, role, status)
+  values
+    (staff_id, 'fee-staff+' || staff_id || '@example.invalid', 'staff', 'active'),
+    (treasurer_id, 'fee-treasurer+' || treasurer_id || '@example.invalid', 'treasurer', 'active'),
+    (disabled_id, 'fee-disabled+' || disabled_id || '@example.invalid', 'staff', 'disabled');
+  begin
+    perform public.reorder_adoption_fees_with_audit(treasurer_id, first_id, second_id, 5, 2);
+    raise exception 'Expected treasurer rejection';
+  exception when sqlstate '42501' then null;
+  end;
+  begin
+    perform public.reorder_adoption_fees_with_audit(disabled_id, first_id, second_id, 5, 2);
+    raise exception 'Expected disabled staff rejection';
+  exception when sqlstate '42501' then null;
+  end;
+  result := public.reorder_adoption_fees_with_audit(staff_id, first_id, second_id, 5, 2);
+  if jsonb_array_length(result) <> 2
+    or (select count(*) from public.audit_log where action = 'adoption_fee.reorder'
+       and entity_id = first_id::text) <> 2 then
+    raise exception 'Active staff did not complete the audited swap';
+  end if;
+  raise notice 'stale, cross-species, nonadjacent, role matrix, content and legacy-version checks passed';
 end;
 $$;
 
