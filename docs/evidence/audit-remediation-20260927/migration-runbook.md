@@ -37,3 +37,15 @@ Status: **schema-ready = no**. This document is a review and rehearsal checklist
 ## Owners and remaining gates
 
 DB release owner: review exact SQL diffs, lock estimates, backfill, backup/restore and app compatibility; authorize production migration only after isolated rehearsal. Release owner: approve the tested app SHA and verify same-SHA CI, content smoke and rollback boundary. Finance owner: separately approve any payment method activation after sandbox evidence.
+
+## T12 / R05 additive estate migration delta
+
+File: supabase/migrations/20260927120000_estate_versioned_commands.sql; SHA-256: 733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d. This is a new candidate after the historical 34-file T01 inventory above. The T01 67-object result describes the earlier checkout; the T12 release manifest adds the estate version column and command RPC. The new source checker should be run only after this migration is present. The production catalog has not been changed.
+
+Preflight before any authorized application: verify public.dog_friendly_estates exists with the expected id, fields, RLS and grants; inspect row count, invalid field values, trigger order, exact mutate_admin_content_with_audit signature and active staff/admin actor model. Estimate the ADD COLUMN/trigger lock and choose an approved maintenance window. Review forbidden EXECUTE grants and audit_log insert viability. Rehearse on a data-bearing sanitized database; this local drill used one synthetic preexisting row, not a production-size backfill. Do not repair the migration ledger by hand.
+
+The migration adds version integer NOT NULL DEFAULT 1 with a positive check, a trigger that increments the version for legacy checkout writes, and a service_role-only audited command RPC. Apply it before deploying code that selects version or calls the RPC. Existing checkout reads and writes remain valid during the mixed-version window; its old audited upsert increments version through the trigger. New content edits cannot change publication, and stale expectedVersion returns P4090/HTTP 409. Creation is initially unpublished and a repeated create ID with identical unchanged content is idempotent.
+
+python scripts/rehearse-estate-version-local.py targets only the exact unlinked local container, seeds a synthetic old row, applies DDL, checks catalog/RLS/grants, creation/retry, publication, legacy write, stale conflict, actor denial and audit rollback, then rolls the entire transaction back. Exit 0 on 2026-09-27; after rollback the seeded row and version column both had count zero. This does not validate production lock time or a data-bearing migration at scale.
+
+Rollback boundary: if the new checkout fails, revert the app while leaving this additive column, trigger and RPC in place. Dropping the column after new writes would remove concurrency history; do not use that as a routine rollback. Any approved production DDL still needs backup, exact catalog/signature/grant/RLS comparison, migration ledger observation, smoke tests and a separate release approval. R01 remains open for the wider CMS/upload/submission/finance catalog.

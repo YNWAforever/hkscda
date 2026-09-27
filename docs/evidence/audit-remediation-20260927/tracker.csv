@@ -26,7 +26,7 @@ R01,公開需知已修；其餘相容性待查／修,T01、T02,partial,no,no,no,
 R02,待保留 error cause 與內容監控,T02,partial,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,9854087,Red-to-green error cause and private log tests; #133 12-case regression suite passed; readiness synthetic and SSR status pending,
 R03,待防 CMS tab 切換丟草稿,T10,code-complete; isolated-verified; awaiting review/release,yes,n/a,no,no,62e22692d69b41135f705672c940976825281b53,PR #143; 62e22692d69b41135f705672c940976825281b53,Red browser exit 1; green synthetic browser exit 0; focused 11 pass; isolated full 2787 pass 83 skip 0 fail; typecheck/lint/build exit 0,Draft PR review; release approval and authenticated staff UAT; no production change
 R04,待 CMS history 分頁及直接查版本,T11,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
-R05,待修屋苑 stale state／重用 ID,T12,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
+R05,待修屋苑 stale state／重用 ID,T12,code-complete; isolated-schema-ready; awaiting review/release,yes,yes (isolated rehearsal),no,no,60ed2d612d7b426d3d4641f6cbabf66f978d1486,PR #145; 60ed2d612d7b426d3d4641f6cbabf66f978d1486,Red estate commands 0/3 then green 3/3; focused 76 pass; full isolated 2794 pass 83 skip; SQL rollback drill exit 0; mobile synthetic browser exit 0; typecheck/lint/build exit 0,DB owner catalog/lock/backfill review and production migration approval; authenticated staff UAT and release approval
 R06,待原子排序,T13,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
 R07,待修 null Turnstile token,T07,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
 R08,待媒體 retry／queue 公平性,T19,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
