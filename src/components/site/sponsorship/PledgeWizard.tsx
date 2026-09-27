@@ -182,7 +182,6 @@ export function PledgeWizard() {
         consents: { email: emailConsent, whatsapp: whatsappConsent },
         notes: notes || undefined,
         terms: { agreed: true },
-        turnstileToken,
       };
       if (monthlyTier === "custom") payload.customAmountCents = amountCents;
       if (includeProof && proofFile) {
@@ -208,7 +207,7 @@ export function PledgeWizard() {
           pledgeId,
           statusToken,
           proof: uploadedProofReference,
-          turnstileToken,
+          ...(turnstileToken ? { turnstileToken } : {}),
         }),
       });
       if (response.status === 409) {

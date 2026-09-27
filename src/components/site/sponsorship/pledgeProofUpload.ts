@@ -31,7 +31,7 @@ export async function uploadProofDirectly(
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
-      turnstileToken,
+      ...(turnstileToken ? { turnstileToken } : {}),
       proof: {
         fileName: proofFile.name,
         mimeType: proofFile.type,

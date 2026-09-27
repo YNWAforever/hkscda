@@ -91,6 +91,24 @@ describe("sponsorship pledge submission retry", () => {
     expect(calls).toEqual([]);
   });
 
+  test("an already-submitted proof intent cannot create a second pledge for another bearer", async () => {
+    const { calls, dependencies } = setup({
+      parse: () => ({
+        pledgeId,
+        statusToken: "B".repeat(43),
+        payload: { animalPreferences: [{ animalId: "animal-1", animalType: "cat" }] },
+        proof: { storagePath: pledgeId + "/proof/receipt.jpg", proofIntent: "signed" },
+      }),
+      lookupRetry: async () => ({ kind: "forbidden" }),
+      verifyProofIntent: () => {
+        throw new Error("must stop before reusing intent");
+      },
+    });
+    const response = await invoke(dependencies);
+    expect(response.status).toBe(403);
+    expect(calls).toEqual([]);
+  });
+
   test("rejects an oversized JSON body before submission work", async () => {
     const { calls, dependencies } = setup();
     const factory = (module as Record<string, unknown>).createSponsorshipPledgesHandler;
