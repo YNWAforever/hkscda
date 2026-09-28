@@ -42,3 +42,7 @@ New CRM assignment and assignee UI/API are code-complete and schema-ready only. 
 ## Combined local candidate
 
 See [integration-candidate-20260928.md](integration-candidate-20260928.md) for merge conflicts, duplicate-version fixes, 170-file local replay, 145-item catalog checks, the failed and passing test commands, and remaining external gates. This local candidate is not a private preview or a release-approved app SHA.
+
+## T06 / R11 receipt font cost recheck
+
+Same-host synthetic 100-receipt before/after runs at #137 `97280b1` and integrated source `9130cb8` showed mock font fetches 100→1, but sample PDFs remained approximately 4.34 MB. Two paired wall timings were 67,189/66,851 ms and 65,073/67,821 ms; the measured CPU totals were 64,719/64,438 ms. The first-run A4 raster SHA-256 and extracted text were identical; the focused Hong Kong date, uncommon Han glyph, long mixed name and retry/cache suite exited 0 with six pass/19 assertions. No material PDF size or CPU win is claimed. R11 remains partial; a glyph-safe smaller font or accepted size exception, representative hosted batch and release approval are open. See [t06-receipt-benchmark-20260928.md](t06-receipt-benchmark-20260928.md).
