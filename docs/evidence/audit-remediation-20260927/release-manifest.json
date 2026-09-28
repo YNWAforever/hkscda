@@ -353,7 +353,8 @@
     "docs/evidence/audit-remediation-20260927/integration-candidate-20260928.md",
     "docs/evidence/audit-remediation-20260927/t06-receipt-benchmark-20260928.md",
     "docs/evidence/audit-remediation-20260927/performance-final-adoption-20260928.md",
-    "docs/evidence/audit-remediation-20260927/performance-final-adoption-20260928.csv"
+    "docs/evidence/audit-remediation-20260927/performance-final-adoption-20260928.csv",
+    "docs/evidence/audit-remediation-20260927/production-baseline-20260928.md"
   ],
   "rollbackTarget": {
     "appSha": null,

@@ -1,6 +1,6 @@
 # T24 local integration rehearsal, 2026-09-28 HKT
 
-Decision: **NO-GO**. This is a local-only integration candidate at source commit `72d0fda625791d974cd1fcd3d565360766b93bd8` on `codex/audit-integration-candidate-20260928`. It has not been pushed, opened as a PR, deployed, or run in remote CI. The focused remediation slices remain separate draft PRs. The last metadata-observed production alias and remote main are `f8d5e5d5840d1775efb7d7f4ae2768f6557096b5`.
+Decision: **NO-GO**. This is a local-only integration candidate at source commit `72d0fda625791d974cd1fcd3d565360766b93bd8` on `codex/audit-integration-candidate-20260928`. It has not been pushed, opened as a PR, deployed, or run in remote CI. The focused remediation slices remain separate draft PRs. Read-only Vercel/GitHub deployment metadata and refreshed remote main confirm the production alias and main are `f8d5e5d5840d1775efb7d7f4ae2768f6557096b5`.
 
 ## Composition and conflict resolution
 
