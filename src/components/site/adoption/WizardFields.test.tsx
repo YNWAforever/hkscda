@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 
 import {
+  AnimalRankingFields,
   ContactFields,
   ReadinessFields,
   VisitFields,
@@ -99,4 +100,23 @@ test("asks whether all household members agree with explicit Yes and No choices"
   expect(markup).toContain("All household members agree");
   expect(markup).toContain('value="yes"');
   expect(markup).toContain('value="no"');
+});
+
+test("lets applicants remove a shortlisted animal without leaving the wizard", () => {
+  const markup = renderToStaticMarkup(
+    <AnimalRankingFields
+      animals={[
+        {
+          animalId: "synthetic-cat-1",
+          animalName: "測試貓",
+          animalType: "cat",
+          imageUrl: null,
+          rank: 1,
+        },
+      ]}
+      onMove={() => {}}
+      onRemove={() => {}}
+    />,
+  );
+  expect(markup).toContain('aria-label="將 測試貓 從領養清單移除"');
 });

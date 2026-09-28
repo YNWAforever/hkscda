@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowDown, ArrowUp, Cat, Dog, GripVertical } from "lucide-react";
+import { ArrowDown, ArrowUp, Cat, Dog, GripVertical, X } from "lucide-react";
 import { cloneElement, isValidElement, type ReactElement, type ReactNode } from "react";
 import type { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
 import { z } from "zod";
@@ -131,9 +131,11 @@ function FormField({
 export function AnimalRankingFields({
   animals,
   onMove,
+  onRemove,
 }: {
   animals: RankedAnimalCard[];
   onMove: (animalId: string, direction: "up" | "down") => void;
+  onRemove: (animalId: string) => void;
 }) {
   return (
     <section className="space-y-3">
@@ -173,6 +175,15 @@ export function AnimalRankingFields({
                 <p className="text-xs text-[var(--color-text-muted)]">
                   {animal.animalType === "dog" ? "狗隻 Dog" : "貓隻 Cat"}
                 </p>
+                <button
+                  type="button"
+                  onClick={() => onRemove(animal.animalId)}
+                  className="mt-1 inline-flex min-h-11 items-center gap-1 text-xs font-medium text-[var(--color-primary)] underline-offset-2 hover:underline"
+                  aria-label={`將 ${animal.animalName} 從領養清單移除`}
+                >
+                  <X className="h-3 w-3" aria-hidden="true" />
+                  移除候選
+                </button>
               </div>
               <GripVertical className="hidden h-4 w-4 text-[var(--color-text-faint)] sm:block" />
               <div className="flex shrink-0 items-center gap-1">
