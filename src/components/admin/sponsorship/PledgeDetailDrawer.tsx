@@ -1,6 +1,7 @@
 import { AnimalPicker } from "./AnimalPicker";
 import { adminIdentityQueryOptions } from "../../../lib/admin/identity";
 import { FinancePanel } from "./FinancePanel";
+import { ReminderDraftPanel } from "./ReminderDraftPanel";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 
@@ -499,6 +500,8 @@ export function PledgeDetailDrawer({
                 )}
               </section>
             )}
+
+            {canMatch && <ReminderDraftPanel key={pledge.id} pledgeId={pledge.id} />}
 
             {canMatch && canRecordPayment(pledge.status) && (
               <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">

@@ -252,6 +252,7 @@ import { Route as ApiAdminVolunteersRegistrationsIdAttendanceRouteImport } from 
 import { Route as ApiAdminVolunteersJobsIdRetryRouteImport } from './routes/api/admin/volunteers/jobs/$id/retry'
 import { Route as ApiAdminVolunteersActivitiesIdCloneRouteImport } from './routes/api/admin/volunteers/activities/$id/clone'
 import { Route as ApiAdminSponsorshipsPledgesIdReviewRouteImport } from './routes/api/admin/sponsorships/pledges/$id/review'
+import { Route as ApiAdminSponsorshipsPledgesIdReminderDraftRouteImport } from './routes/api/admin/sponsorships/pledges/$id/reminder-draft'
 import { Route as ApiAdminSponsorshipsPledgesIdProofUrlRouteImport } from './routes/api/admin/sponsorships/pledges/$id/proof-url'
 import { Route as ApiAdminSponsorshipsPledgesIdProofRouteImport } from './routes/api/admin/sponsorships/pledges/$id/proof'
 import { Route as ApiAdminSponsorshipsPledgesIdFollowupAssignmentRouteImport } from './routes/api/admin/sponsorships/pledges/$id/followup-assignment'
@@ -1602,6 +1603,12 @@ const ApiAdminSponsorshipsPledgesIdReviewRoute =
     path: '/review',
     getParentRoute: () => ApiAdminSponsorshipsPledgesIdRoute,
   } as any)
+const ApiAdminSponsorshipsPledgesIdReminderDraftRoute =
+  ApiAdminSponsorshipsPledgesIdReminderDraftRouteImport.update({
+    id: '/reminder-draft',
+    path: '/reminder-draft',
+    getParentRoute: () => ApiAdminSponsorshipsPledgesIdRoute,
+  } as any)
 const ApiAdminSponsorshipsPledgesIdProofUrlRoute =
   ApiAdminSponsorshipsPledgesIdProofUrlRouteImport.update({
     id: '/proof-url',
@@ -1971,6 +1978,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/sponsorships/pledges/$id/followup-assignment': typeof ApiAdminSponsorshipsPledgesIdFollowupAssignmentRoute
   '/api/admin/sponsorships/pledges/$id/proof': typeof ApiAdminSponsorshipsPledgesIdProofRoute
   '/api/admin/sponsorships/pledges/$id/proof-url': typeof ApiAdminSponsorshipsPledgesIdProofUrlRoute
+  '/api/admin/sponsorships/pledges/$id/reminder-draft': typeof ApiAdminSponsorshipsPledgesIdReminderDraftRoute
   '/api/admin/sponsorships/pledges/$id/review': typeof ApiAdminSponsorshipsPledgesIdReviewRoute
   '/api/admin/volunteers/activities/$id/clone': typeof ApiAdminVolunteersActivitiesIdCloneRoute
   '/api/admin/volunteers/jobs/$id/retry': typeof ApiAdminVolunteersJobsIdRetryRoute
@@ -2234,6 +2242,7 @@ export interface FileRoutesByTo {
   '/api/admin/sponsorships/pledges/$id/followup-assignment': typeof ApiAdminSponsorshipsPledgesIdFollowupAssignmentRoute
   '/api/admin/sponsorships/pledges/$id/proof': typeof ApiAdminSponsorshipsPledgesIdProofRoute
   '/api/admin/sponsorships/pledges/$id/proof-url': typeof ApiAdminSponsorshipsPledgesIdProofUrlRoute
+  '/api/admin/sponsorships/pledges/$id/reminder-draft': typeof ApiAdminSponsorshipsPledgesIdReminderDraftRoute
   '/api/admin/sponsorships/pledges/$id/review': typeof ApiAdminSponsorshipsPledgesIdReviewRoute
   '/api/admin/volunteers/activities/$id/clone': typeof ApiAdminVolunteersActivitiesIdCloneRoute
   '/api/admin/volunteers/jobs/$id/retry': typeof ApiAdminVolunteersJobsIdRetryRoute
@@ -2499,6 +2508,7 @@ export interface FileRoutesById {
   '/api/admin/sponsorships/pledges/$id/followup-assignment': typeof ApiAdminSponsorshipsPledgesIdFollowupAssignmentRoute
   '/api/admin/sponsorships/pledges/$id/proof': typeof ApiAdminSponsorshipsPledgesIdProofRoute
   '/api/admin/sponsorships/pledges/$id/proof-url': typeof ApiAdminSponsorshipsPledgesIdProofUrlRoute
+  '/api/admin/sponsorships/pledges/$id/reminder-draft': typeof ApiAdminSponsorshipsPledgesIdReminderDraftRoute
   '/api/admin/sponsorships/pledges/$id/review': typeof ApiAdminSponsorshipsPledgesIdReviewRoute
   '/api/admin/volunteers/activities/$id/clone': typeof ApiAdminVolunteersActivitiesIdCloneRoute
   '/api/admin/volunteers/jobs/$id/retry': typeof ApiAdminVolunteersJobsIdRetryRoute
@@ -2765,6 +2775,7 @@ export interface FileRouteTypes {
     | '/api/admin/sponsorships/pledges/$id/followup-assignment'
     | '/api/admin/sponsorships/pledges/$id/proof'
     | '/api/admin/sponsorships/pledges/$id/proof-url'
+    | '/api/admin/sponsorships/pledges/$id/reminder-draft'
     | '/api/admin/sponsorships/pledges/$id/review'
     | '/api/admin/volunteers/activities/$id/clone'
     | '/api/admin/volunteers/jobs/$id/retry'
@@ -3028,6 +3039,7 @@ export interface FileRouteTypes {
     | '/api/admin/sponsorships/pledges/$id/followup-assignment'
     | '/api/admin/sponsorships/pledges/$id/proof'
     | '/api/admin/sponsorships/pledges/$id/proof-url'
+    | '/api/admin/sponsorships/pledges/$id/reminder-draft'
     | '/api/admin/sponsorships/pledges/$id/review'
     | '/api/admin/volunteers/activities/$id/clone'
     | '/api/admin/volunteers/jobs/$id/retry'
@@ -3292,6 +3304,7 @@ export interface FileRouteTypes {
     | '/api/admin/sponsorships/pledges/$id/followup-assignment'
     | '/api/admin/sponsorships/pledges/$id/proof'
     | '/api/admin/sponsorships/pledges/$id/proof-url'
+    | '/api/admin/sponsorships/pledges/$id/reminder-draft'
     | '/api/admin/sponsorships/pledges/$id/review'
     | '/api/admin/volunteers/activities/$id/clone'
     | '/api/admin/volunteers/jobs/$id/retry'
@@ -5166,6 +5179,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminSponsorshipsPledgesIdReviewRouteImport
       parentRoute: typeof ApiAdminSponsorshipsPledgesIdRoute
     }
+    '/api/admin/sponsorships/pledges/$id/reminder-draft': {
+      id: '/api/admin/sponsorships/pledges/$id/reminder-draft'
+      path: '/reminder-draft'
+      fullPath: '/api/admin/sponsorships/pledges/$id/reminder-draft'
+      preLoaderRoute: typeof ApiAdminSponsorshipsPledgesIdReminderDraftRouteImport
+      parentRoute: typeof ApiAdminSponsorshipsPledgesIdRoute
+    }
     '/api/admin/sponsorships/pledges/$id/proof-url': {
       id: '/api/admin/sponsorships/pledges/$id/proof-url'
       path: '/proof-url'
@@ -5898,6 +5918,7 @@ interface ApiAdminSponsorshipsPledgesIdRouteChildren {
   ApiAdminSponsorshipsPledgesIdFollowupAssignmentRoute: typeof ApiAdminSponsorshipsPledgesIdFollowupAssignmentRoute
   ApiAdminSponsorshipsPledgesIdProofRoute: typeof ApiAdminSponsorshipsPledgesIdProofRoute
   ApiAdminSponsorshipsPledgesIdProofUrlRoute: typeof ApiAdminSponsorshipsPledgesIdProofUrlRoute
+  ApiAdminSponsorshipsPledgesIdReminderDraftRoute: typeof ApiAdminSponsorshipsPledgesIdReminderDraftRoute
   ApiAdminSponsorshipsPledgesIdReviewRoute: typeof ApiAdminSponsorshipsPledgesIdReviewRoute
 }
 
@@ -5915,6 +5936,8 @@ const ApiAdminSponsorshipsPledgesIdRouteChildren: ApiAdminSponsorshipsPledgesIdR
       ApiAdminSponsorshipsPledgesIdProofRoute,
     ApiAdminSponsorshipsPledgesIdProofUrlRoute:
       ApiAdminSponsorshipsPledgesIdProofUrlRoute,
+    ApiAdminSponsorshipsPledgesIdReminderDraftRoute:
+      ApiAdminSponsorshipsPledgesIdReminderDraftRoute,
     ApiAdminSponsorshipsPledgesIdReviewRoute:
       ApiAdminSponsorshipsPledgesIdReviewRoute,
   }
