@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-export const SPONSORSHIP_TERMS_VERSION = "sponsorship-terms-2026-07";
 export const MAX_SPONSORSHIP_PREFERENCES = 10;
 export const MAX_PROOF_BYTES = 8 * 1024 * 1024;
 export const PROOF_MIME_TYPES = [
@@ -72,7 +71,7 @@ export const sponsorshipPledgeSubmissionSchema = z
     proofMetadata: sponsorshipPaymentProofMetadataSchema.optional(),
     terms: z.object({
       agreed: z.literal(true),
-      version: z.string().min(1).default(SPONSORSHIP_TERMS_VERSION),
+      version: z.string().regex(/^[a-f0-9]{64}$/),
     }),
   })
   .superRefine((value, context) => {
@@ -166,6 +165,7 @@ export function toPledgeInsert(
       ...input.contact,
       source: "public_sponsorship_submission",
       status: "unverified",
+      terms_version_seen: input.terms.version,
     },
     status,
     // The opt-in ticks are recorded as a *request* on the submission, not as
