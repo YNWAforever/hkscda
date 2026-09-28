@@ -159,6 +159,7 @@ import { Route as ApiAdminSponsorshipsFollowupAssigneesRouteImport } from './rou
 import { Route as ApiAdminSponsorshipsDeliveriesRouteImport } from './routes/api/admin/sponsorships/deliveries'
 import { Route as ApiAdminSponsorshipsAnimalsRouteImport } from './routes/api/admin/sponsorships/animals'
 import { Route as ApiAdminPaymentMethodsIdRouteImport } from './routes/api/admin/payment-methods/$id'
+import { Route as ApiAdminFinanceDeliveryJobsRouteImport } from './routes/api/admin/finance/delivery-jobs'
 import { Route as ApiAdminFinanceBankStatementPreviewRouteImport } from './routes/api/admin/finance/bank-statement-preview'
 import { Route as ApiAdminFinanceActivityRouteImport } from './routes/api/admin/finance/activity'
 import { Route as ApiAdminExportsSupportersDotcsvRouteImport } from './routes/api/admin/exports/supporters[.]csv'
@@ -1063,6 +1064,12 @@ const ApiAdminPaymentMethodsIdRoute =
     path: '/$id',
     getParentRoute: () => ApiAdminPaymentMethodsRoute,
   } as any)
+const ApiAdminFinanceDeliveryJobsRoute =
+  ApiAdminFinanceDeliveryJobsRouteImport.update({
+    id: '/api/admin/finance/delivery-jobs',
+    path: '/api/admin/finance/delivery-jobs',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdminFinanceBankStatementPreviewRoute =
   ApiAdminFinanceBankStatementPreviewRouteImport.update({
     id: '/api/admin/finance/bank-statement-preview',
@@ -1889,6 +1896,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/exports/supporters.csv': typeof ApiAdminExportsSupportersDotcsvRoute
   '/api/admin/finance/activity': typeof ApiAdminFinanceActivityRoute
   '/api/admin/finance/bank-statement-preview': typeof ApiAdminFinanceBankStatementPreviewRoute
+  '/api/admin/finance/delivery-jobs': typeof ApiAdminFinanceDeliveryJobsRoute
   '/api/admin/payment-methods/$id': typeof ApiAdminPaymentMethodsIdRouteWithChildren
   '/api/admin/sponsorships/animals': typeof ApiAdminSponsorshipsAnimalsRoute
   '/api/admin/sponsorships/deliveries': typeof ApiAdminSponsorshipsDeliveriesRoute
@@ -2154,6 +2162,7 @@ export interface FileRoutesByTo {
   '/api/admin/exports/supporters.csv': typeof ApiAdminExportsSupportersDotcsvRoute
   '/api/admin/finance/activity': typeof ApiAdminFinanceActivityRoute
   '/api/admin/finance/bank-statement-preview': typeof ApiAdminFinanceBankStatementPreviewRoute
+  '/api/admin/finance/delivery-jobs': typeof ApiAdminFinanceDeliveryJobsRoute
   '/api/admin/payment-methods/$id': typeof ApiAdminPaymentMethodsIdRouteWithChildren
   '/api/admin/sponsorships/animals': typeof ApiAdminSponsorshipsAnimalsRoute
   '/api/admin/sponsorships/deliveries': typeof ApiAdminSponsorshipsDeliveriesRoute
@@ -2421,6 +2430,7 @@ export interface FileRoutesById {
   '/api/admin/exports/supporters.csv': typeof ApiAdminExportsSupportersDotcsvRoute
   '/api/admin/finance/activity': typeof ApiAdminFinanceActivityRoute
   '/api/admin/finance/bank-statement-preview': typeof ApiAdminFinanceBankStatementPreviewRoute
+  '/api/admin/finance/delivery-jobs': typeof ApiAdminFinanceDeliveryJobsRoute
   '/api/admin/payment-methods/$id': typeof ApiAdminPaymentMethodsIdRouteWithChildren
   '/api/admin/sponsorships/animals': typeof ApiAdminSponsorshipsAnimalsRoute
   '/api/admin/sponsorships/deliveries': typeof ApiAdminSponsorshipsDeliveriesRoute
@@ -2689,6 +2699,7 @@ export interface FileRouteTypes {
     | '/api/admin/exports/supporters.csv'
     | '/api/admin/finance/activity'
     | '/api/admin/finance/bank-statement-preview'
+    | '/api/admin/finance/delivery-jobs'
     | '/api/admin/payment-methods/$id'
     | '/api/admin/sponsorships/animals'
     | '/api/admin/sponsorships/deliveries'
@@ -2954,6 +2965,7 @@ export interface FileRouteTypes {
     | '/api/admin/exports/supporters.csv'
     | '/api/admin/finance/activity'
     | '/api/admin/finance/bank-statement-preview'
+    | '/api/admin/finance/delivery-jobs'
     | '/api/admin/payment-methods/$id'
     | '/api/admin/sponsorships/animals'
     | '/api/admin/sponsorships/deliveries'
@@ -3220,6 +3232,7 @@ export interface FileRouteTypes {
     | '/api/admin/exports/supporters.csv'
     | '/api/admin/finance/activity'
     | '/api/admin/finance/bank-statement-preview'
+    | '/api/admin/finance/delivery-jobs'
     | '/api/admin/payment-methods/$id'
     | '/api/admin/sponsorships/animals'
     | '/api/admin/sponsorships/deliveries'
@@ -3443,6 +3456,7 @@ export interface RootRouteChildren {
   ApiAdminExportsSupportersDotcsvRoute: typeof ApiAdminExportsSupportersDotcsvRoute
   ApiAdminFinanceActivityRoute: typeof ApiAdminFinanceActivityRoute
   ApiAdminFinanceBankStatementPreviewRoute: typeof ApiAdminFinanceBankStatementPreviewRoute
+  ApiAdminFinanceDeliveryJobsRoute: typeof ApiAdminFinanceDeliveryJobsRoute
   ApiAdminSponsorshipsAnimalsRoute: typeof ApiAdminSponsorshipsAnimalsRoute
   ApiAdminSponsorshipsDeliveriesRoute: typeof ApiAdminSponsorshipsDeliveriesRoute
   ApiAdminSponsorshipsFollowupAssigneesRoute: typeof ApiAdminSponsorshipsFollowupAssigneesRoute
@@ -4541,6 +4555,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/admin/payment-methods/$id'
       preLoaderRoute: typeof ApiAdminPaymentMethodsIdRouteImport
       parentRoute: typeof ApiAdminPaymentMethodsRoute
+    }
+    '/api/admin/finance/delivery-jobs': {
+      id: '/api/admin/finance/delivery-jobs'
+      path: '/api/admin/finance/delivery-jobs'
+      fullPath: '/api/admin/finance/delivery-jobs'
+      preLoaderRoute: typeof ApiAdminFinanceDeliveryJobsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/admin/finance/bank-statement-preview': {
       id: '/api/admin/finance/bank-statement-preview'
@@ -6178,6 +6199,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminFinanceActivityRoute: ApiAdminFinanceActivityRoute,
   ApiAdminFinanceBankStatementPreviewRoute:
     ApiAdminFinanceBankStatementPreviewRoute,
+  ApiAdminFinanceDeliveryJobsRoute: ApiAdminFinanceDeliveryJobsRoute,
   ApiAdminSponsorshipsAnimalsRoute: ApiAdminSponsorshipsAnimalsRoute,
   ApiAdminSponsorshipsDeliveriesRoute: ApiAdminSponsorshipsDeliveriesRoute,
   ApiAdminSponsorshipsFollowupAssigneesRoute:

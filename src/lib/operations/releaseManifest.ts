@@ -6,6 +6,16 @@ export const releaseManifest: SchemaRequirement[] = [
   {
     kind: "function",
     schema: "public",
+    name: "retry_donation_delivery_job_with_audit",
+    feature: "finance-delivery-worklist",
+    required: true,
+    arguments: "p_job_id uuid, p_actor_user_id uuid",
+    returns: "boolean",
+    executeRoles: ["service_role"],
+  },
+  {
+    kind: "function",
+    schema: "public",
     name: "preview_manual_bank_matches",
     feature: "finance-bank-dryrun",
     required: true,

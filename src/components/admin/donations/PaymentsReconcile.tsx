@@ -16,6 +16,7 @@ import { DataTable, type DataTableColumn } from "../DataTable";
 import { StatFigure } from "../LoadFailure";
 import { StatusPill } from "../StatusBadge";
 import { BankStatementDryRunPanel } from "./BankStatementDryRunPanel";
+import { DonationDeliveryWorklist } from "./DonationDeliveryWorklist";
 import { ReconcileDialog } from "./ReconcileDialog";
 import {
   buildPaymentExportSearchParams,
@@ -350,6 +351,7 @@ export function PaymentsReconcile() {
       </section>
 
       {(adminRole === "treasurer" || adminRole === "admin") && <BankStatementDryRunPanel />}
+      {(adminRole === "treasurer" || adminRole === "admin") && <DonationDeliveryWorklist />}
 
       <section className="flex flex-wrap items-center gap-2">
         <Input
