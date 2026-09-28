@@ -1,6 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { ListChecks, Search } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { fetchCoordinatorJson } from "../adoptions/api";
 import { useAdminPageCopy } from "../adminPageCopy";
@@ -20,8 +20,14 @@ import {
   pledgeStatusTone,
 } from "./pledgeReviewLogic";
 import { PledgeDetailDrawer } from "./PledgeDetailDrawer";
+import { SponsorshipFollowupBulkPanel } from "./SponsorshipFollowupBulkPanel";
+import {
+  addPledgeSelection,
+  collectMatchingPledgeIds,
+} from "../../../lib/sponsorshipAdmin/followupBulkSelection";
 import { centsToHkd } from "../../../lib/donations/domain";
 import { useListQueryState } from "../../../lib/admin/useListQueryState";
+import { adminIdentityQueryOptions } from "../../../lib/admin/identity";
 import {
   PAGE_SIZE_OPTIONS,
   PLEDGE_ROUTE,
@@ -54,8 +60,23 @@ export function PledgeReviewLane() {
   });
   const { query, page, setPage, filters, changeFilter } = listState;
   const { status, proof, pageSize } = filters;
+  const identity = useQuery(adminIdentityQueryOptions());
+  const canAssign = identity.data?.admin.role === "staff" || identity.data?.admin.role === "admin";
   const reviewTrigger = useRef<HTMLElement | null>(null);
   const [selectedPledgeId, setSelectedPledgeId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedScope, setSelectedScope] = useState("");
+  const [selectionBusy, setSelectionBusy] = useState(false);
+  const [selectionError, setSelectionError] = useState("");
+  const filterKey = JSON.stringify([query, status, proof]);
+  const effectiveSelectedIds = selectedScope === filterKey ? selectedIds : [];
+  const filterKeyRef = useRef(filterKey);
+  filterKeyRef.current = filterKey;
+  useEffect(() => {
+    setSelectedIds([]);
+    setSelectedScope(filterKey);
+    setSelectionError("");
+  }, [filterKey]);
 
   const pledgeStatusOptions: Array<{ value: PledgeStatus | "all"; label: string }> = [
     { value: "all", label: copy.allStatuses },
@@ -91,8 +112,87 @@ export function PledgeReviewLane() {
 
   const pledges = data?.pledges ?? [];
   const total = data?.total ?? 0;
+  const selectionDisabled =
+    selectionBusy || isFetching || listState.isDebouncing || !data || Boolean(error);
+  function toggleSelected(id: string) {
+    setSelectedScope(filterKey);
+    setSelectionError("");
+    try {
+      setSelectedIds(
+        effectiveSelectedIds.includes(id)
+          ? effectiveSelectedIds.filter((item) => item !== id)
+          : addPledgeSelection(effectiveSelectedIds, [id]),
+      );
+    } catch (cause) {
+      setSelectionError(cause instanceof Error ? cause.message : "無法選取");
+    }
+  }
+  function selectVisible() {
+    if (selectionDisabled) return;
+    setSelectedScope(filterKey);
+    setSelectionError("");
+    try {
+      setSelectedIds(
+        addPledgeSelection(
+          effectiveSelectedIds,
+          pledges.filter((item) => item.status === "needs_followup").map((item) => item.id),
+        ),
+      );
+    } catch (cause) {
+      setSelectionError(cause instanceof Error ? cause.message : "無法選取");
+    }
+  }
+  async function selectAllMatching() {
+    if (selectionDisabled || status !== "needs_followup") return;
+    const scope = filterKey;
+    setSelectionBusy(true);
+    setSelectionError("");
+    try {
+      const ids = await collectMatchingPledgeIds(total, async (nextPage, limit) => {
+        const params = buildPledgeListSearchParams({
+          q: query,
+          status: "needs_followup",
+          proof: proof === "all" ? "" : proof,
+          page: nextPage,
+          pageSize: limit,
+        });
+        return fetchCoordinatorJson<PledgeListResponse>(
+          "/api/admin/sponsorships/pledges?" + params,
+        );
+      });
+      if (filterKeyRef.current !== scope) throw new Error("篩選條件已變更；請重新選取");
+      setSelectedScope(scope);
+      setSelectedIds(ids);
+    } catch (cause) {
+      setSelectionError(cause instanceof Error ? cause.message : "無法固定選取範圍");
+    } finally {
+      setSelectionBusy(false);
+    }
+  }
 
   const columns: DataTableColumn<PledgeSummary>[] = [
+    ...(canAssign
+      ? [
+          {
+            id: "followup-bulk-select",
+            header: "選取",
+            cell: (pledge) => (
+              <label
+                className="inline-flex min-h-11 min-w-11 items-center justify-center"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <input
+                  type="checkbox"
+                  aria-label={"選取跟進 " + pledge.supporterName}
+                  checked={effectiveSelectedIds.includes(pledge.id)}
+                  disabled={selectionDisabled || pledge.status !== "needs_followup"}
+                  onChange={() => toggleSelected(pledge.id)}
+                />
+              </label>
+            ),
+          } satisfies DataTableColumn<PledgeSummary>,
+        ]
+      : []),
     {
       id: "supporter",
       header: copy.columns.supporter,
@@ -149,6 +249,17 @@ export function PledgeReviewLane() {
   function renderCard(pledge: PledgeSummary) {
     return (
       <div className="space-y-2">
+        {canAssign && pledge.status === "needs_followup" && (
+          <label className="inline-flex min-h-11 items-center gap-2">
+            <input
+              type="checkbox"
+              checked={effectiveSelectedIds.includes(pledge.id)}
+              disabled={selectionDisabled}
+              onChange={() => toggleSelected(pledge.id)}
+            />
+            選取跟進
+          </label>
+        )}
         <div className="flex items-start justify-between gap-2">
           <div>
             <div className="font-semibold text-[var(--color-panel)]">{pledge.supporterName}</div>
@@ -223,6 +334,61 @@ export function PledgeReviewLane() {
           </Select>
         </div>
       </section>
+
+      {canAssign && (
+        <section
+          className="space-y-3 rounded-lg border border-[var(--color-border)] p-4"
+          aria-label="助養跟進選取"
+        >
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={selectVisible}
+              disabled={
+                selectionDisabled || !pledges.some((item) => item.status === "needs_followup")
+              }
+            >
+              選取本頁待跟進
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={selectAllMatching}
+              disabled={
+                selectionDisabled || status !== "needs_followup" || total < 1 || total > 1000
+              }
+            >
+              選取全部符合條件（最多 1000 筆）
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setSelectedIds([])}
+              disabled={selectionBusy || effectiveSelectedIds.length === 0}
+            >
+              清除選取
+            </Button>
+          </div>
+          {status !== "needs_followup" && (
+            <p role="status" className="text-sm">
+              選取全部前，請先篩選「待跟進」。
+            </p>
+          )}
+          {selectionBusy && <p role="status">正在固定選取範圍…</p>}
+          {selectionError && (
+            <p role="alert" className="text-[var(--color-error)]">
+              {selectionError}
+            </p>
+          )}
+          <SponsorshipFollowupBulkPanel
+            selectedIds={effectiveSelectedIds}
+            filterKey={filterKey}
+            selectionDisabled={selectionDisabled}
+            onApplied={() => void refetch()}
+          />
+        </section>
+      )}
 
       <section
         aria-busy={isLoading || isFetching || listState.isDebouncing}
