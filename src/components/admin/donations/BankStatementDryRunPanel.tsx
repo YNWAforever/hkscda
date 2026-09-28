@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
+import type { BankMatchOperation } from "../../../lib/donations/bankMatchConfirmation";
 import {
   BANK_STATEMENT_HEADER,
   BANK_STATEMENT_MAX_BYTES,
@@ -11,6 +12,7 @@ import { centsToHkd } from "../../../lib/donations/domain";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
+import { BankMatchOperationReview } from "./BankMatchOperationReview";
 
 const PAGE_SIZE = 25;
 
@@ -27,9 +29,13 @@ const statusCopy: Record<BankStatementPreviewRow["status"], string> = {
 export function BankStatementDryRunPreview({
   result,
   page,
+  selectedOrdinals = [],
+  onToggle,
 }: {
   result: BankStatementDryRunResult;
   page: number;
+  selectedOrdinals?: number[];
+  onToggle?: (ordinal: number) => void;
 }) {
   const start = (page - 1) * PAGE_SIZE;
   const rows = result.rows.slice(start, start + PAGE_SIZE);
@@ -49,6 +55,11 @@ export function BankStatementDryRunPreview({
           <caption className="sr-only">銀行對帳檔第 {page} 頁候選預覽</caption>
           <thead className="bg-[var(--color-surface)]">
             <tr>
+              {onToggle ? (
+                <th scope="col" className="p-2">
+                  選取
+                </th>
+              ) : null}
               <th scope="col" className="p-2">
                 行
               </th>
@@ -66,6 +77,20 @@ export function BankStatementDryRunPreview({
           <tbody>
             {rows.map((row) => (
               <tr key={row.ordinal} className="border-t border-[var(--color-border)] align-top">
+                {onToggle ? (
+                  <td className="p-2">
+                    {row.status === "candidate_exact" &&
+                    row.candidateCount === 1 &&
+                    row.candidates.length === 1 ? (
+                      <input
+                        type="checkbox"
+                        aria-label={`選取第 ${row.ordinal} 行作確認預覽`}
+                        checked={selectedOrdinals.includes(row.ordinal)}
+                        onChange={() => onToggle(row.ordinal)}
+                      />
+                    ) : null}
+                  </td>
+                ) : null}
                 <td className="p-2">{row.ordinal}</td>
                 <td className="p-2">
                   <span className="block break-all">{row.bankReference || "—"}</span>
@@ -96,16 +121,45 @@ export function BankStatementDryRunPreview({
   );
 }
 
+const operationStorageKey = "hkscda-finance-bank-match-operation";
+const operationUrl = "/api/admin/finance/bank-match-operations";
+
 export function BankStatementDryRunPanel() {
   const [file, setFile] = useState<File | null>(null);
+  const [csvText, setCsvText] = useState<string | null>(null);
   const [result, setResult] = useState<BankStatementDryRunResult | null>(null);
+  const [selectedOrdinals, setSelectedOrdinals] = useState<number[]>([]);
+  const [operation, setOperation] = useState<BankMatchOperation | null>(null);
   const [page, setPage] = useState(1);
   const [pending, setPending] = useState(false);
+  const [operationPending, setOperationPending] = useState(false);
+  const [applyingOrdinal, setApplyingOrdinal] = useState<number | null>(null);
   const [error, setError] = useState("");
+  const [operationError, setOperationError] = useState("");
+
+  useEffect(() => {
+    const operationId = sessionStorage.getItem(operationStorageKey);
+    if (!operationId) return;
+    let active = true;
+    void fetchAdminJson<BankMatchOperation>(
+      `${operationUrl}?operationId=${encodeURIComponent(operationId)}`,
+    )
+      .then((saved) => {
+        if (active) setOperation(saved);
+      })
+      .catch(() => {
+        if (active) setOperationError("未能恢復上次確認快照；請核對權限或重新預覽。");
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   async function preview() {
     if (!file) return;
     setResult(null);
+    setCsvText(null);
+    setSelectedOrdinals([]);
     setError("");
     if (file.size > BANK_STATEMENT_MAX_BYTES) {
       setError("檔案超過 256 KiB 上限。");
@@ -113,11 +167,12 @@ export function BankStatementDryRunPanel() {
     }
     setPending(true);
     try {
-      const csvText = await file.text();
+      const text = await file.text();
       const response = await fetchAdminJson<BankStatementDryRunResult>(
         "/api/admin/finance/bank-statement-preview",
-        { method: "POST", body: JSON.stringify({ csvText }) },
+        { method: "POST", body: JSON.stringify({ csvText: text }) },
       );
+      setCsvText(text);
       setResult(response);
       setPage(1);
     } catch {
@@ -127,12 +182,71 @@ export function BankStatementDryRunPanel() {
     }
   }
 
+  function toggle(ordinal: number) {
+    setSelectedOrdinals((current) =>
+      current.includes(ordinal)
+        ? current.filter((value) => value !== ordinal)
+        : [...current, ordinal],
+    );
+  }
+
+  async function createOperation() {
+    if (!csvText || selectedOrdinals.length === 0 || operationPending) return;
+    setOperationPending(true);
+    setOperationError("");
+    try {
+      const saved = await fetchAdminJson<BankMatchOperation>(operationUrl, {
+        method: "POST",
+        body: JSON.stringify({ csvText, selectedOrdinals }),
+      });
+      setOperation(saved);
+      sessionStorage.setItem(operationStorageKey, saved.operationId);
+    } catch {
+      setOperationError("無法建立確認預覽；請檢查所選項目、權限及目前付款狀態。");
+    } finally {
+      setOperationPending(false);
+    }
+  }
+
+  async function refreshOperation(operationId: string) {
+    const saved = await fetchAdminJson<BankMatchOperation>(
+      `${operationUrl}?operationId=${encodeURIComponent(operationId)}`,
+    );
+    setOperation(saved);
+    return saved;
+  }
+
+  async function applyOne(ordinal: number) {
+    const item = operation?.items.find((entry) => entry.ordinal === ordinal);
+    if (!operation || !item || item.status !== "pending" || applyingOrdinal !== null) return;
+    if (
+      !window.confirm(
+        `請核對銀行參考 ${item.bankReference}、付款 ${item.paymentId} 及 ${centsToHkd(item.amountCents)}，確定只確認此筆入帳？`,
+      )
+    )
+      return;
+    setApplyingOrdinal(ordinal);
+    setOperationError("");
+    try {
+      await fetchAdminJson(operationUrl, {
+        method: "PATCH",
+        body: JSON.stringify({ operationId: operation.operationId, ordinal }),
+      });
+      await refreshOperation(operation.operationId);
+    } catch {
+      setOperationError("未能確認或更新此筆結果；請先重新讀取快照，勿重複使用另一銀行參考入帳。");
+    } finally {
+      setApplyingOrdinal(null);
+    }
+  }
+
   return (
     <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
-      <h3 className="font-semibold text-[var(--color-panel)]">銀行對帳檔 dry-run</h3>
+      <h3 className="font-semibold text-[var(--color-panel)]">銀行對帳檔預覽與逐組確認</h3>
       <p className="text-sm text-[var(--color-text-muted)]">
-        只作預覽與候選搜尋，不會確認入帳、退款、發收條或發送通知。銀行原始格式須先轉成內部標準
-        CSV；每檔最多 1,000 筆，僅接受 HKD 入款。
+        第一步只作預覽與候選搜尋，不會確認入帳、退款或發送通知。銀行原始格式須先轉成內部標準
+        CSV；每檔最多 1,000 筆，僅接受 HKD
+        入款。只有建立快照後逐筆確認，才會記錄入帳及可恢復的收條工作。
       </p>
       <p className="break-all text-xs text-[var(--color-text-muted)]">
         標準欄位：<code>{BANK_STATEMENT_HEADER}</code>
@@ -145,7 +259,9 @@ export function BankStatementDryRunPanel() {
           accept=".csv,text/csv"
           onChange={(event) => {
             setFile(event.target.files?.[0] ?? null);
+            setCsvText(null);
             setResult(null);
+            setSelectedOrdinals([]);
             setError("");
           }}
         />
@@ -153,15 +269,31 @@ export function BankStatementDryRunPanel() {
       <Button type="button" variant="outline" disabled={!file || pending} onClick={preview}>
         {pending ? "正在核對…" : "產生唯讀預覽"}
       </Button>
-      {error && (
+      {error ? (
         <p role="alert" className="text-sm text-[var(--color-error)]">
           {error}
         </p>
-      )}
-      {result && (
+      ) : null}
+      {result ? (
         <>
-          <BankStatementDryRunPreview result={result} page={page} />
-          {result.rows.length > PAGE_SIZE && (
+          <BankStatementDryRunPreview
+            result={result}
+            page={page}
+            selectedOrdinals={selectedOrdinals}
+            onToggle={toggle}
+          />
+          <p role="status">
+            已選取 {selectedOrdinals.length} 筆付款參考相符候選；其他結果不能建立入帳快照。
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            disabled={selectedOrdinals.length === 0 || operationPending}
+            onClick={() => void createOperation()}
+          >
+            {operationPending ? "正在建立…" : "建立逐組確認預覽"}
+          </Button>
+          {result.rows.length > PAGE_SIZE ? (
             <nav aria-label="銀行預覽分頁" className="flex items-center gap-2">
               <Button
                 type="button"
@@ -183,9 +315,34 @@ export function BankStatementDryRunPanel() {
                 下一頁
               </Button>
             </nav>
-          )}
+          ) : null}
         </>
-      )}
+      ) : null}
+      {operationError ? (
+        <p role="alert" className="text-sm text-[var(--color-error)]">
+          {operationError}
+        </p>
+      ) : null}
+      {operation ? (
+        <>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() =>
+              void refreshOperation(operation.operationId).catch(() =>
+                setOperationError("未能重新讀取快照。"),
+              )
+            }
+          >
+            重新讀取確認結果
+          </Button>
+          <BankMatchOperationReview
+            operation={operation}
+            onApply={(ordinal) => void applyOne(ordinal)}
+            pendingOrdinal={applyingOrdinal}
+          />
+        </>
+      ) : null}
     </section>
   );
 }

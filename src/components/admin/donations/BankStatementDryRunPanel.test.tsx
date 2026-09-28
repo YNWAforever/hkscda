@@ -59,3 +59,19 @@ test("finance panel labels its strict template and dry-run boundary", () => {
   expect(html).toContain("只作預覽");
   expect(html).not.toContain(">確認入帳</button>");
 });
+
+test("only exact one-to-one candidate rows expose snapshot selection", () => {
+  const mixed = result(2);
+  mixed.rows[0]!.status = "candidate_exact";
+  mixed.rows[0]!.paymentHint = "HINT-1";
+  const html = renderToStaticMarkup(
+    <BankStatementDryRunPreview
+      result={mixed}
+      page={1}
+      selectedOrdinals={[]}
+      onToggle={() => {}}
+    />,
+  );
+  expect(html).toContain('aria-label="選取第 1 行作確認預覽"');
+  expect(html).not.toContain('aria-label="選取第 2 行作確認預覽"');
+});
