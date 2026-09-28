@@ -31,6 +31,9 @@ import {
 } from "./pledgeReviewLogic";
 
 type PledgeDetailResponse = { pledge: PledgeDetail };
+type FollowupAssigneesResponse = {
+  assignees: Array<{ authUserId: string; email: string; role: "staff" | "admin" }>;
+};
 
 const PAYMENT_METHOD_VALUES = ["fps", "bank_transfer", "payme", "paypal", "give_asia"] as const;
 
@@ -163,6 +166,7 @@ export function PledgeDetailDrawer({
   const queryClient = useQueryClient();
   const [submitting, setSubmitting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [followupAssigneeId, setFollowupAssigneeId] = useState("");
   const identity = useQuery(adminIdentityQueryOptions());
   const canMatch = identity.data?.admin.role === "staff" || identity.data?.admin.role === "admin";
   const canFinance =
@@ -190,11 +194,46 @@ export function PledgeDetailDrawer({
   });
 
   const pledge = data?.pledge ?? null;
+  const { data: followupChoices, error: followupChoicesError } = useQuery<
+    FollowupAssigneesResponse,
+    Error
+  >({
+    queryKey: ["sponsorship-followup-assignees"],
+    queryFn: () =>
+      fetchCoordinatorJson<FollowupAssigneesResponse>("/api/admin/sponsorships/followup-assignees"),
+    enabled: Boolean(canMatch && pledge?.status === "needs_followup"),
+    staleTime: 60_000,
+  });
 
   async function refreshAll() {
     await refetch();
     onChanged();
     queryClient.invalidateQueries({ queryKey: ["sponsorship-pledges"] });
+  }
+
+  async function submitFollowupAssignment() {
+    if (!pledge?.followupVersion || !followupAssigneeId) return;
+    setSubmitting(true);
+    setActionError(null);
+    try {
+      await fetchCoordinatorJson(
+        `/api/admin/sponsorships/pledges/${pledgeId}/followup-assignment`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            assigneeUserId: followupAssigneeId,
+            expectedVersion: pledge.followupVersion,
+          }),
+        },
+      );
+      setFollowupAssigneeId("");
+      await refreshAll();
+    } catch {
+      setActionError(copy.errors.followup);
+      await refetch();
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   async function submitReview(decision: "approve" | "reject") {
@@ -406,6 +445,59 @@ export function PledgeDetailDrawer({
               <p role="alert" className="text-sm text-[var(--color-error)]">
                 {actionError}
               </p>
+            )}
+
+            {canMatch && pledge.status === "needs_followup" && (
+              <section className="space-y-3 rounded-lg border border-[var(--color-border)] p-4">
+                <h3 className="text-sm font-semibold text-[var(--color-panel)]">
+                  {copy.followup.title}
+                </h3>
+                <p className="text-sm text-[var(--color-text-muted)]">
+                  {pledge.followupAssigneeUserId
+                    ? copy.followup.currentAssignee(
+                        followupChoices?.assignees.find(
+                          (item) => item.authUserId === pledge.followupAssigneeUserId,
+                        )?.email ?? pledge.followupAssigneeUserId,
+                      )
+                    : copy.followup.unassigned}
+                </p>
+                {followupChoicesError || !pledge.followupVersion ? (
+                  <p role="alert" className="text-sm text-[var(--color-error)]">
+                    {copy.followup.unavailable}
+                  </p>
+                ) : (
+                  <>
+                    <Label htmlFor="pledge-followup-assignee">{copy.followup.assigneeLabel}</Label>
+                    <Select
+                      value={followupAssigneeId || pledge.followupAssigneeUserId || undefined}
+                      onValueChange={setFollowupAssigneeId}
+                    >
+                      <SelectTrigger id="pledge-followup-assignee" className="h-9">
+                        <SelectValue placeholder={copy.followup.chooseAssignee} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(followupChoices?.assignees ?? []).map((item) => (
+                          <SelectItem key={item.authUserId} value={item.authUserId}>
+                            {item.email}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      type="button"
+                      onClick={submitFollowupAssignment}
+                      disabled={
+                        submitting ||
+                        !followupAssigneeId ||
+                        followupAssigneeId === pledge.followupAssigneeUserId ||
+                        !pledge.followupVersion
+                      }
+                    >
+                      {copy.followup.assign}
+                    </Button>
+                  </>
+                )}
+              </section>
             )}
 
             {canMatch && canRecordPayment(pledge.status) && (

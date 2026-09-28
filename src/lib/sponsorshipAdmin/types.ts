@@ -123,6 +123,8 @@ export type PledgeSummary = {
   currency: string;
   language: z.infer<typeof sponsorshipLanguageSchema>;
   status: PledgeStatus;
+  followupAssigneeUserId?: string | null;
+  followupVersion?: number | null;
   createdAt: string;
   updatedAt: string;
 };

@@ -154,6 +154,7 @@ import { Route as ApiAdminVolunteersActivitiesRouteImport } from './routes/api/a
 import { Route as ApiAdminSupportersTagBulkRouteImport } from './routes/api/admin/supporters/tag-bulk'
 import { Route as ApiAdminSupportersIdRouteImport } from './routes/api/admin/supporters/$id'
 import { Route as ApiAdminSponsorshipsPledgesRouteImport } from './routes/api/admin/sponsorships/pledges'
+import { Route as ApiAdminSponsorshipsFollowupAssigneesRouteImport } from './routes/api/admin/sponsorships/followup-assignees'
 import { Route as ApiAdminSponsorshipsDeliveriesRouteImport } from './routes/api/admin/sponsorships/deliveries'
 import { Route as ApiAdminSponsorshipsAnimalsRouteImport } from './routes/api/admin/sponsorships/animals'
 import { Route as ApiAdminPaymentMethodsIdRouteImport } from './routes/api/admin/payment-methods/$id'
@@ -252,6 +253,7 @@ import { Route as ApiAdminVolunteersActivitiesIdCloneRouteImport } from './route
 import { Route as ApiAdminSponsorshipsPledgesIdReviewRouteImport } from './routes/api/admin/sponsorships/pledges/$id/review'
 import { Route as ApiAdminSponsorshipsPledgesIdProofUrlRouteImport } from './routes/api/admin/sponsorships/pledges/$id/proof-url'
 import { Route as ApiAdminSponsorshipsPledgesIdProofRouteImport } from './routes/api/admin/sponsorships/pledges/$id/proof'
+import { Route as ApiAdminSponsorshipsPledgesIdFollowupAssignmentRouteImport } from './routes/api/admin/sponsorships/pledges/$id/followup-assignment'
 import { Route as ApiAdminSponsorshipsPledgesIdFinanceRouteImport } from './routes/api/admin/sponsorships/pledges/$id/finance'
 import { Route as ApiAdminSponsorshipsPledgesIdCancelRouteImport } from './routes/api/admin/sponsorships/pledges/$id/cancel'
 import { Route as ApiAdminSponsorshipsPledgesIdAssignmentsRouteImport } from './routes/api/admin/sponsorships/pledges/$id/assignments'
@@ -1028,6 +1030,12 @@ const ApiAdminSponsorshipsPledgesRoute =
     path: '/api/admin/sponsorships/pledges',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiAdminSponsorshipsFollowupAssigneesRoute =
+  ApiAdminSponsorshipsFollowupAssigneesRouteImport.update({
+    id: '/api/admin/sponsorships/followup-assignees',
+    path: '/api/admin/sponsorships/followup-assignees',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdminSponsorshipsDeliveriesRoute =
   ApiAdminSponsorshipsDeliveriesRouteImport.update({
     id: '/api/admin/sponsorships/deliveries',
@@ -1599,6 +1607,12 @@ const ApiAdminSponsorshipsPledgesIdProofRoute =
     path: '/proof',
     getParentRoute: () => ApiAdminSponsorshipsPledgesIdRoute,
   } as any)
+const ApiAdminSponsorshipsPledgesIdFollowupAssignmentRoute =
+  ApiAdminSponsorshipsPledgesIdFollowupAssignmentRouteImport.update({
+    id: '/followup-assignment',
+    path: '/followup-assignment',
+    getParentRoute: () => ApiAdminSponsorshipsPledgesIdRoute,
+  } as any)
 const ApiAdminSponsorshipsPledgesIdFinanceRoute =
   ApiAdminSponsorshipsPledgesIdFinanceRouteImport.update({
     id: '/finance',
@@ -1856,6 +1870,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/payment-methods/$id': typeof ApiAdminPaymentMethodsIdRouteWithChildren
   '/api/admin/sponsorships/animals': typeof ApiAdminSponsorshipsAnimalsRoute
   '/api/admin/sponsorships/deliveries': typeof ApiAdminSponsorshipsDeliveriesRoute
+  '/api/admin/sponsorships/followup-assignees': typeof ApiAdminSponsorshipsFollowupAssigneesRoute
   '/api/admin/sponsorships/pledges': typeof ApiAdminSponsorshipsPledgesRouteWithChildren
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
   '/api/admin/supporters/tag-bulk': typeof ApiAdminSupportersTagBulkRoute
@@ -1945,6 +1960,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/sponsorships/pledges/$id/assignments': typeof ApiAdminSponsorshipsPledgesIdAssignmentsRouteWithChildren
   '/api/admin/sponsorships/pledges/$id/cancel': typeof ApiAdminSponsorshipsPledgesIdCancelRoute
   '/api/admin/sponsorships/pledges/$id/finance': typeof ApiAdminSponsorshipsPledgesIdFinanceRoute
+  '/api/admin/sponsorships/pledges/$id/followup-assignment': typeof ApiAdminSponsorshipsPledgesIdFollowupAssignmentRoute
   '/api/admin/sponsorships/pledges/$id/proof': typeof ApiAdminSponsorshipsPledgesIdProofRoute
   '/api/admin/sponsorships/pledges/$id/proof-url': typeof ApiAdminSponsorshipsPledgesIdProofUrlRoute
   '/api/admin/sponsorships/pledges/$id/review': typeof ApiAdminSponsorshipsPledgesIdReviewRoute
@@ -2116,6 +2132,7 @@ export interface FileRoutesByTo {
   '/api/admin/payment-methods/$id': typeof ApiAdminPaymentMethodsIdRouteWithChildren
   '/api/admin/sponsorships/animals': typeof ApiAdminSponsorshipsAnimalsRoute
   '/api/admin/sponsorships/deliveries': typeof ApiAdminSponsorshipsDeliveriesRoute
+  '/api/admin/sponsorships/followup-assignees': typeof ApiAdminSponsorshipsFollowupAssigneesRoute
   '/api/admin/sponsorships/pledges': typeof ApiAdminSponsorshipsPledgesRouteWithChildren
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
   '/api/admin/supporters/tag-bulk': typeof ApiAdminSupportersTagBulkRoute
@@ -2205,6 +2222,7 @@ export interface FileRoutesByTo {
   '/api/admin/sponsorships/pledges/$id/assignments': typeof ApiAdminSponsorshipsPledgesIdAssignmentsRouteWithChildren
   '/api/admin/sponsorships/pledges/$id/cancel': typeof ApiAdminSponsorshipsPledgesIdCancelRoute
   '/api/admin/sponsorships/pledges/$id/finance': typeof ApiAdminSponsorshipsPledgesIdFinanceRoute
+  '/api/admin/sponsorships/pledges/$id/followup-assignment': typeof ApiAdminSponsorshipsPledgesIdFollowupAssignmentRoute
   '/api/admin/sponsorships/pledges/$id/proof': typeof ApiAdminSponsorshipsPledgesIdProofRoute
   '/api/admin/sponsorships/pledges/$id/proof-url': typeof ApiAdminSponsorshipsPledgesIdProofUrlRoute
   '/api/admin/sponsorships/pledges/$id/review': typeof ApiAdminSponsorshipsPledgesIdReviewRoute
@@ -2378,6 +2396,7 @@ export interface FileRoutesById {
   '/api/admin/payment-methods/$id': typeof ApiAdminPaymentMethodsIdRouteWithChildren
   '/api/admin/sponsorships/animals': typeof ApiAdminSponsorshipsAnimalsRoute
   '/api/admin/sponsorships/deliveries': typeof ApiAdminSponsorshipsDeliveriesRoute
+  '/api/admin/sponsorships/followup-assignees': typeof ApiAdminSponsorshipsFollowupAssigneesRoute
   '/api/admin/sponsorships/pledges': typeof ApiAdminSponsorshipsPledgesRouteWithChildren
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
   '/api/admin/supporters/tag-bulk': typeof ApiAdminSupportersTagBulkRoute
@@ -2467,6 +2486,7 @@ export interface FileRoutesById {
   '/api/admin/sponsorships/pledges/$id/assignments': typeof ApiAdminSponsorshipsPledgesIdAssignmentsRouteWithChildren
   '/api/admin/sponsorships/pledges/$id/cancel': typeof ApiAdminSponsorshipsPledgesIdCancelRoute
   '/api/admin/sponsorships/pledges/$id/finance': typeof ApiAdminSponsorshipsPledgesIdFinanceRoute
+  '/api/admin/sponsorships/pledges/$id/followup-assignment': typeof ApiAdminSponsorshipsPledgesIdFollowupAssignmentRoute
   '/api/admin/sponsorships/pledges/$id/proof': typeof ApiAdminSponsorshipsPledgesIdProofRoute
   '/api/admin/sponsorships/pledges/$id/proof-url': typeof ApiAdminSponsorshipsPledgesIdProofUrlRoute
   '/api/admin/sponsorships/pledges/$id/review': typeof ApiAdminSponsorshipsPledgesIdReviewRoute
@@ -2641,6 +2661,7 @@ export interface FileRouteTypes {
     | '/api/admin/payment-methods/$id'
     | '/api/admin/sponsorships/animals'
     | '/api/admin/sponsorships/deliveries'
+    | '/api/admin/sponsorships/followup-assignees'
     | '/api/admin/sponsorships/pledges'
     | '/api/admin/supporters/$id'
     | '/api/admin/supporters/tag-bulk'
@@ -2730,6 +2751,7 @@ export interface FileRouteTypes {
     | '/api/admin/sponsorships/pledges/$id/assignments'
     | '/api/admin/sponsorships/pledges/$id/cancel'
     | '/api/admin/sponsorships/pledges/$id/finance'
+    | '/api/admin/sponsorships/pledges/$id/followup-assignment'
     | '/api/admin/sponsorships/pledges/$id/proof'
     | '/api/admin/sponsorships/pledges/$id/proof-url'
     | '/api/admin/sponsorships/pledges/$id/review'
@@ -2901,6 +2923,7 @@ export interface FileRouteTypes {
     | '/api/admin/payment-methods/$id'
     | '/api/admin/sponsorships/animals'
     | '/api/admin/sponsorships/deliveries'
+    | '/api/admin/sponsorships/followup-assignees'
     | '/api/admin/sponsorships/pledges'
     | '/api/admin/supporters/$id'
     | '/api/admin/supporters/tag-bulk'
@@ -2990,6 +3013,7 @@ export interface FileRouteTypes {
     | '/api/admin/sponsorships/pledges/$id/assignments'
     | '/api/admin/sponsorships/pledges/$id/cancel'
     | '/api/admin/sponsorships/pledges/$id/finance'
+    | '/api/admin/sponsorships/pledges/$id/followup-assignment'
     | '/api/admin/sponsorships/pledges/$id/proof'
     | '/api/admin/sponsorships/pledges/$id/proof-url'
     | '/api/admin/sponsorships/pledges/$id/review'
@@ -3162,6 +3186,7 @@ export interface FileRouteTypes {
     | '/api/admin/payment-methods/$id'
     | '/api/admin/sponsorships/animals'
     | '/api/admin/sponsorships/deliveries'
+    | '/api/admin/sponsorships/followup-assignees'
     | '/api/admin/sponsorships/pledges'
     | '/api/admin/supporters/$id'
     | '/api/admin/supporters/tag-bulk'
@@ -3251,6 +3276,7 @@ export interface FileRouteTypes {
     | '/api/admin/sponsorships/pledges/$id/assignments'
     | '/api/admin/sponsorships/pledges/$id/cancel'
     | '/api/admin/sponsorships/pledges/$id/finance'
+    | '/api/admin/sponsorships/pledges/$id/followup-assignment'
     | '/api/admin/sponsorships/pledges/$id/proof'
     | '/api/admin/sponsorships/pledges/$id/proof-url'
     | '/api/admin/sponsorships/pledges/$id/review'
@@ -3379,6 +3405,7 @@ export interface RootRouteChildren {
   ApiAdminFinanceActivityRoute: typeof ApiAdminFinanceActivityRoute
   ApiAdminSponsorshipsAnimalsRoute: typeof ApiAdminSponsorshipsAnimalsRoute
   ApiAdminSponsorshipsDeliveriesRoute: typeof ApiAdminSponsorshipsDeliveriesRoute
+  ApiAdminSponsorshipsFollowupAssigneesRoute: typeof ApiAdminSponsorshipsFollowupAssigneesRoute
   ApiAdminSponsorshipsPledgesRoute: typeof ApiAdminSponsorshipsPledgesRouteWithChildren
   ApiAdminVolunteersActivitiesRoute: typeof ApiAdminVolunteersActivitiesRouteWithChildren
   ApiAdminVolunteersBulkRoute: typeof ApiAdminVolunteersBulkRoute
@@ -4439,6 +4466,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminSponsorshipsPledgesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/sponsorships/followup-assignees': {
+      id: '/api/admin/sponsorships/followup-assignees'
+      path: '/api/admin/sponsorships/followup-assignees'
+      fullPath: '/api/admin/sponsorships/followup-assignees'
+      preLoaderRoute: typeof ApiAdminSponsorshipsFollowupAssigneesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/sponsorships/deliveries': {
       id: '/api/admin/sponsorships/deliveries'
       path: '/api/admin/sponsorships/deliveries'
@@ -5123,6 +5157,13 @@ declare module '@tanstack/react-router' {
       path: '/proof'
       fullPath: '/api/admin/sponsorships/pledges/$id/proof'
       preLoaderRoute: typeof ApiAdminSponsorshipsPledgesIdProofRouteImport
+      parentRoute: typeof ApiAdminSponsorshipsPledgesIdRoute
+    }
+    '/api/admin/sponsorships/pledges/$id/followup-assignment': {
+      id: '/api/admin/sponsorships/pledges/$id/followup-assignment'
+      path: '/followup-assignment'
+      fullPath: '/api/admin/sponsorships/pledges/$id/followup-assignment'
+      preLoaderRoute: typeof ApiAdminSponsorshipsPledgesIdFollowupAssignmentRouteImport
       parentRoute: typeof ApiAdminSponsorshipsPledgesIdRoute
     }
     '/api/admin/sponsorships/pledges/$id/finance': {
@@ -5833,6 +5874,7 @@ interface ApiAdminSponsorshipsPledgesIdRouteChildren {
   ApiAdminSponsorshipsPledgesIdAssignmentsRoute: typeof ApiAdminSponsorshipsPledgesIdAssignmentsRouteWithChildren
   ApiAdminSponsorshipsPledgesIdCancelRoute: typeof ApiAdminSponsorshipsPledgesIdCancelRoute
   ApiAdminSponsorshipsPledgesIdFinanceRoute: typeof ApiAdminSponsorshipsPledgesIdFinanceRoute
+  ApiAdminSponsorshipsPledgesIdFollowupAssignmentRoute: typeof ApiAdminSponsorshipsPledgesIdFollowupAssignmentRoute
   ApiAdminSponsorshipsPledgesIdProofRoute: typeof ApiAdminSponsorshipsPledgesIdProofRoute
   ApiAdminSponsorshipsPledgesIdProofUrlRoute: typeof ApiAdminSponsorshipsPledgesIdProofUrlRoute
   ApiAdminSponsorshipsPledgesIdReviewRoute: typeof ApiAdminSponsorshipsPledgesIdReviewRoute
@@ -5846,6 +5888,8 @@ const ApiAdminSponsorshipsPledgesIdRouteChildren: ApiAdminSponsorshipsPledgesIdR
       ApiAdminSponsorshipsPledgesIdCancelRoute,
     ApiAdminSponsorshipsPledgesIdFinanceRoute:
       ApiAdminSponsorshipsPledgesIdFinanceRoute,
+    ApiAdminSponsorshipsPledgesIdFollowupAssignmentRoute:
+      ApiAdminSponsorshipsPledgesIdFollowupAssignmentRoute,
     ApiAdminSponsorshipsPledgesIdProofRoute:
       ApiAdminSponsorshipsPledgesIdProofRoute,
     ApiAdminSponsorshipsPledgesIdProofUrlRoute:
@@ -6069,6 +6113,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminFinanceActivityRoute: ApiAdminFinanceActivityRoute,
   ApiAdminSponsorshipsAnimalsRoute: ApiAdminSponsorshipsAnimalsRoute,
   ApiAdminSponsorshipsDeliveriesRoute: ApiAdminSponsorshipsDeliveriesRoute,
+  ApiAdminSponsorshipsFollowupAssigneesRoute:
+    ApiAdminSponsorshipsFollowupAssigneesRoute,
   ApiAdminSponsorshipsPledgesRoute:
     ApiAdminSponsorshipsPledgesRouteWithChildren,
   ApiAdminVolunteersActivitiesRoute:
