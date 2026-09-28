@@ -39,3 +39,16 @@ test("failed source is unavailable, never zero, while other task counts remain",
   });
   expect(cards.filter((card) => card.metric.state === "ready")).toHaveLength(4);
 });
+
+test("role guidance names the action and keeps proof separate from confirmed payment", () => {
+  const staff = selectTaskDefinitions("staff");
+  const treasurer = selectTaskDefinitions("treasurer");
+  const admin = selectTaskDefinitions("admin");
+  expect(staff.find((card) => card.key === "volunteer_pending")?.guidance).toContain("核對身份");
+  expect(treasurer.find((card) => card.key === "payment_pending")?.guidance).toContain("逐筆");
+  expect(treasurer.find((card) => card.key === "sponsorship_proof_pending")?.guidance).toContain(
+    "不等於已收款",
+  );
+  expect(admin.find((card) => card.key === "content_expired")?.guidance).toContain("公開影響");
+  expect([...staff, ...treasurer, ...admin].every((card) => card.guidance.length > 0)).toBe(true);
+});
