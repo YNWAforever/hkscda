@@ -93,6 +93,28 @@ describe("public adoption submission authorization and retry", () => {
     expect(calls).toEqual([]);
   });
 
+  test("rejects an expired photo upload intent before saving", async () => {
+    const { dependencies, calls } = deps({
+      loadIntent: async () => ({
+        applicationId,
+        photoPaths: [storagePath],
+        statusTokenHash: hashStatusToken(statusToken),
+        expiresAt: "2000-01-01T00:00:00.000Z",
+        submittedAt: null,
+      }),
+    });
+    const response = await createAdoptionApplicationsHandler(dependencies)(request());
+    expect(response.status).toBe(403);
+    expect(calls).toEqual([]);
+  });
+
+  test("rejects a withdrawn shortlisted animal before saving", async () => {
+    const { dependencies, calls } = deps({ readEligible: async () => [] });
+    const response = await createAdoptionApplicationsHandler(dependencies)(request());
+    expect(response.status).toBe(400);
+    expect(calls).toEqual([]);
+  });
+
   test("rejects an outdated terms version for a new application but preserves completed retries", async () => {
     const outdated = {
       ...parsed,

@@ -153,7 +153,13 @@ export function ExportBarView({
               {copy.retry}
             </Button>
             {state.overLimit && onBackground ? (
-              <Button type="button" variant="outline" size="sm" disabled={busy} onClick={onBackground}>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={busy}
+                onClick={onBackground}
+              >
                 {copy.backgroundExport}
               </Button>
             ) : null}
