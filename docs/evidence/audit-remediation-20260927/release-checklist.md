@@ -58,3 +58,9 @@ At source 72d0fda, CHECK_RELEASE_SCHEMA_DATABASE_URL on the other unlinked synth
 ## 2026-09-29 production abuse-control metadata
 
 Read-only Vercel metadata returned all four Turnstile/Upstash variable names with production target; command exit 0. Secret values and provider connectivity were not tested. See production-abuse-config-20260929.md. SEC-01 stays partial and release stays NO-GO while the private isolated candidate, live-ledger bridge, hosted UAT and other gates above remain open.
+
+## 2026-09-29 schema-only live-baseline bridge
+
+A schema-only private/public export from the live 79-version Supabase project was restored into an unlinked local database; six observed live storage policies were added for comparison. The corrected clone reproduced the live 139 missing requirements before migration. Sixty-one post-live-version SQL files matched manifest SHA-256 and applied one at a time on the local clone; the 145-item checker then returned compatible with zero issues. A full local catalog fingerprint and effective role-grant comparison found the live-only animals.source_url column/index, function definition hashes that normalize to zero differences after comment/whitespace removal, and 48 fresh-only effective EXECUTE grants on 16 private functions. No production rows or production migration were involved. See production-schema-local-bridge-20260929.md.
+
+This is schema-only evidence. The divergent 79-row migration ledger, sanitized data-bearing upgrade, backup/restore, old-app compatibility, integrated same-SHA CI, hosted role/provider UAT and policy/content approvals remain open. The release decision stays NO-GO; no PR was merged.
