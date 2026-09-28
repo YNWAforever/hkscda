@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "appSha": "413548069b7413606c395e2689acdc31aaf55243",
-  "appShaNote": "Local-only integrated source freeze; this SHA has not been pushed or run in remote CI",
+  "appSha": "72d0fda625791d974cd1fcd3d565360766b93bd8",
+  "appShaNote": "Integrated app source freeze; audit-only PR #180 head 9ac5ec70e497c0dd897b8bf96da88ee449d2e0f5 contains the same app tree and passed five remote CI jobs",
   "productionAliasShaObserved": "f8d5e5d5840d1775efb7d7f4ae2768f6557096b5",
   "schemaManifestHash": "dcdfbb4c71a9fb1587bed880b2b8fe3ad329d92400ec5fc3edf51ca93c9cffcf",
   "configVersions": {
@@ -320,9 +320,9 @@
     }
   ],
   "ciRun": {
-    "id": null,
-    "sha": null,
-    "status": "not-run for local integrated candidate; focused PR CI is recorded in their own PRs"
+    "id": 36468929574,
+    "sha": "9ac5ec70e497c0dd897b8bf96da88ee449d2e0f5",
+    "status": "success: 5/5 GitHub pull_request jobs on audit-only draft PR #180 against integration base 72d0fda; not main merge or hosted UAT"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -347,11 +347,21 @@
     "docs/evidence/audit-remediation-20260927/t23-role-guidance.md",
     "docs/evidence/audit-remediation-20260927/t23-finance-bank-confirmation.md",
     "docs/evidence/audit-remediation-20260927/production-catalog-recheck-20260928.md",
+    "docs/evidence/audit-remediation-20260927/production-catalog-145-report.json",
+    "docs/evidence/audit-remediation-20260927/supabase-grants-rls-recheck-20260928.md",
     "docs/evidence/audit-remediation-20260927/t23-crm-contact-format-preview.md",
     "docs/evidence/audit-remediation-20260927/t23-crm-version-fence.md",
     "docs/evidence/audit-remediation-20260927/t23-crm-assignment-bulk.md",
     "docs/evidence/audit-remediation-20260927/integration-candidate-20260928.md",
-    "docs/evidence/audit-remediation-20260927/t06-receipt-benchmark-20260928.md"
+    "docs/evidence/audit-remediation-20260927/t06-receipt-benchmark-20260928.md",
+    "docs/evidence/audit-remediation-20260927/performance-final-adoption-20260928.md",
+    "docs/evidence/audit-remediation-20260927/performance-final-adoption-20260928.csv",
+    "docs/evidence/audit-remediation-20260927/production-baseline-20260928.md",
+    "docs/evidence/audit-remediation-20260927/t24-gate-recovery-20260928.md",
+    "docs/evidence/audit-remediation-20260927/production-abuse-config-20260929.md",
+    "docs/evidence/audit-remediation-20260927/production-schema-local-bridge-20260929.md",
+    "docs/evidence/audit-remediation-20260927/migration-ledger-diff-20260929.csv",
+    "docs/evidence/audit-remediation-20260927/migration-ledger-name-pairs-20260929.csv"
   ],
   "rollbackTarget": {
     "appSha": null,
