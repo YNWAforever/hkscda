@@ -31,14 +31,19 @@
 
 ## Outstanding inputs for release owners
 
-- Current production catalog snapshot, grants/RLS/storage policies and sanitized data-bearing clone plus backup/restore rehearsal for 47 manifest files.
+- Current production catalog snapshot, grants/RLS/storage policies and sanitized data-bearing clone plus backup/restore rehearsal for 48 manifest files.
 - Approved payment policy/methods/instructions, provider sandbox credentials/account and webhook replay evidence; approved sponsorship terms PDF/hash, cancellation/refund copy.
 - Approved animal/story/photo ID list and rights, volunteer policy/session coverage, real content/seed diff, private candidate URL and test identities for every admin role.
 - Email test sink and hosted Auth OTP settings; monitoring/alert thresholds, five-minute worker/cron ownership, private regional benchmark, 390/768/1366 keyboard/200% UAT.
-- Remaining T23 domain implementations: sponsorship bulk assignment and reminder drafts, finance bank-file dry-run/candidate/group confirmation and receipt jobs, additional volunteer/adoption/animal/CRM safe actions. The manual finance atomic prerequisite is in draft #165; staff must not credit a duplicate normalized bank reference, and must handle post-commit receipt/email failure as a delivery recovery task. `tracker.csv` keeps ADMIN-04 partial.
+- Remaining T23 domain implementations: sponsorship reminder drafts, finance bank-file dry-run/candidate/group confirmation and receipt jobs, additional volunteer/adoption/animal/CRM safe actions. The manual finance atomic prerequisite is in draft #165; staff must not credit a duplicate normalized bank reference, and must handle post-commit receipt/email failure as a delivery recovery task. `tracker.csv` keeps ADMIN-04 partial.
 
 ## Sponsorship follow-up staff steps after approved schema and app deployment
 
 1. Open the sponsorship pledge queue filtered to `needs_followup`; inspect the pledge and proof history. A submitted proof or owner assignment does not confirm money.
 2. In the pledge drawer, choose the current active staff/admin owner and use **Assign follow-up**. The response updates only owner/version and records an audit fact. If the owner list is unavailable or the pledge version is missing, stop and ask the release owner to check schema/readiness; do not use a direct table edit.
 3. If the request reports a conflict, refresh and recheck status, payment and owner before retrying. Exact retries return the committed assignment without a second audit. Do not send a reminder from this control; reminder draft, recipient preview and any actual send require separate review and authorization.
+## Sponsorship bulk staff steps after approved release
+
+1. In the pledge queue, filter `needs_followup`; choose eligible rows on this page or all matching (maximum 1,000). Review the count and chosen staff member. Changing filters clears the selection.
+2. Create preview and inspect before/after owners plus skipped/conflict reasons. Confirm the selection; apply 25 at a time. The tab can recover the operation ID, and the per-item CSV is available from the result panel.
+3. If interrupted, refresh the saved operation and resume pending items only. For a conflict or expired preview, inspect current pledge/payment/proof facts and create a new snapshot for unresolved IDs. Never mark proof upload as payment, send reminders from this control or replay succeeded items.
