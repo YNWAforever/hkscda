@@ -6,6 +6,16 @@ export const releaseManifest: SchemaRequirement[] = [
   {
     kind: "function",
     schema: "public",
+    name: "preview_manual_bank_matches",
+    feature: "finance-bank-dryrun",
+    required: true,
+    arguments: "p_actor uuid, p_references text[], p_amounts integer[]",
+    returns: "jsonb",
+    executeRoles: ["service_role"],
+  },
+  {
+    kind: "function",
+    schema: "public",
     name: "editorial_quality_queue",
     feature: "cms-quality-queue",
     required: true,

@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { StatFigure } from "../LoadFailure";
 import { StatusPill } from "../StatusBadge";
+import { BankStatementDryRunPanel } from "./BankStatementDryRunPanel";
 import { ReconcileDialog } from "./ReconcileDialog";
 import {
   buildPaymentExportSearchParams,
@@ -347,6 +348,8 @@ export function PaymentsReconcile() {
           </div>
         ))}
       </section>
+
+      {(adminRole === "treasurer" || adminRole === "admin") && <BankStatementDryRunPanel />}
 
       <section className="flex flex-wrap items-center gap-2">
         <Input
