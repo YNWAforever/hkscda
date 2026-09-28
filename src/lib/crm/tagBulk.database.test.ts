@@ -4,7 +4,12 @@ import { expect, test } from "bun:test";
 const databaseUrl = process.env.CRM_TAG_BULK_TEST_DATABASE_URL;
 if (databaseUrl) {
   const url = new URL(databaseUrl);
-  if (url.hostname !== "127.0.0.1" || url.port !== "57322" || url.pathname !== "/postgres") {
+  if (
+    url.hostname !== "127.0.0.1" ||
+    !["57322", "60322", "64322"].includes(url.port) ||
+    url.pathname !== "/postgres" ||
+    (url.port !== "57322" && process.env.CRM_TAG_BULK_TEST_ALLOW_FRESH_SCHEMA !== "1")
+  ) {
     throw new Error("CRM tag bulk test requires the dedicated loopback database");
   }
 }
@@ -62,7 +67,7 @@ test.skipIf(!enabled)(
         )) as Array<{ result: { status: string } }>;
         expect(repeat[0]!.result.status).toBe("succeeded");
         await tx.unsafe(
-          "update public.supporter set tags=array['changed']::text[] where id=$1::uuid",
+          "update public.supporter set name='Edited after preview' where id=$1::uuid",
           [ids[1]],
         );
         const stale = (await tx.unsafe(
