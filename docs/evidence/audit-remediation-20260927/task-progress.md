@@ -93,3 +93,8 @@ Focused draft PR #179 source 958dfe9c and local integration 72d0fda hide the red
 ## T24 recovered exact-source DB and RLS gates
 
 At integrated source 72d0fda, the selected-fixture serial full suite on synthetic 57322 DB and 52321 API exited 0: 3076 pass / 114 skip / 0 fail / 9789 assertions across 574 files. After restarting only the disposable 52321 PostgREST container, the isolated RLS matrix exited 0 with 48 pass / 4 skip / 0 fail / 86 assertions; the skipped public-animal file then independently exited 0 with 2 pass / 9 assertions on the warmed API. These are two runs, not a single all-pass matrix. The earlier failed and skipped attempts remain recorded. The production migration bridge, hosted actual-role UAT, provider sandbox and combined remote CI are still not-run; decision remains NO-GO. See [t24-gate-recovery-20260928.md](t24-gate-recovery-20260928.md).
+
+
+## T01 / R01 current manifest versus live metadata
+
+A fresh read-only Supabase catalog/ledger query for the local integrated source 72d0fda selected only names in the 145-item release manifest. Local checkReleaseSchema evaluation returned incompatible: 139 required issues (28 missing tables, 86 functions, 25 columns); live ledger remains 79 versions. No application rows or mutations were involved. See [production-catalog-recheck-20260928.md](production-catalog-recheck-20260928.md). The full divergent migration bridge and sanitized data-bearing clone remain open; R01 stays partial and release NO-GO.
