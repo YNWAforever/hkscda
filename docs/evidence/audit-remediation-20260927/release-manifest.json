@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "appSha": "747d106d08dd7766c35fc8da6af6bb1cfcf861d1",
-  "appShaNote": "T02 protected readiness and safe public support reference source freeze; following documentation commit has no runtime changes",
+  "appSha": "05bb6f1b64fbf39c8f40944b27f446a38751e809",
+  "appShaNote": "T23 guarded sponsorship follow-up assignment source freeze; following documentation commit has no runtime changes",
   "productionAliasShaObserved": "f8d5e5d5840d1775efb7d7f4ae2768f6557096b5",
-  "schemaManifestHash": "2a30158023f0945a096b01697c870f5c74abf53f2a217e14101a10bd24ad62e2",
+  "schemaManifestHash": "b0f0ab28b6050fb23772430a48b7a85fb4e5938a150b99934c0f14d0b1861793",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
@@ -242,12 +242,17 @@
       "version": "20260927211801",
       "file": "20260927211801_editorial_quality_queue.sql",
       "sha256": "8c1b4550d4361f348246654bab356f3cd2366de48afb0eb384b90efb38526642"
+    },
+    {
+      "version": "20260928073000",
+      "file": "20260928073000_sponsorship_followup_assignment.sql",
+      "sha256": "c14423a65c843c99fe0b76b3c12ec2de7bb6891188f701eac9d86a1fe1a551ef"
     }
   ],
   "ciRun": {
-    "id": 36357778260,
-    "sha": "747d106d08dd7766c35fc8da6af6bb1cfcf861d1",
-    "status": "success; verify, rls-matrix, brand-verify, performance-verify and a11y-verify passed on amended source SHA"
+    "id": 36360874161,
+    "sha": "05bb6f1b64fbf39c8f40944b27f446a38751e809",
+    "status": "success; verify, rls-matrix, brand-verify, performance-verify and a11y-verify passed on #169 source SHA"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -260,7 +265,8 @@
     "docs/evidence/audit-remediation-20260927/t23-finance-atomic.md",
     "docs/evidence/audit-remediation-20260927/t23-cms-quality-queue.md",
     "docs/evidence/audit-remediation-20260927/t23-sponsorship-proof-queue.md",
-    "docs/evidence/audit-remediation-20260927/t02-readiness.md"
+    "docs/evidence/audit-remediation-20260927/t02-readiness.md",
+    "docs/evidence/audit-remediation-20260927/t23-sponsorship-followup.md"
   ],
   "rollbackTarget": {
     "appSha": null,

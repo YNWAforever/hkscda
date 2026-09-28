@@ -7,7 +7,7 @@
 | Owner | Required action / evidence |
 |---|---|
 | Release owner + DBA | Confirm exact app SHA, migration manifest checksum, production backup/restore test, ordered catalog/signature/grants/RLS/seed gate, compatible rollback target and CI at same SHA. Approve private candidate, migration and main merge separately. |
-| Sponsorship reviewer | Open the pending-proof task card to reach `?proof=pending`; inspect the current proof ID/revision in the drawer. An active pledge may have a new month awaiting review. Upload alone never confirms payment; approval uses the existing finance command. Resolve stale rows by refresh. |
+| Sponsorship reviewer | Open the pending-proof task card to reach `?proof=pending`; inspect the current proof ID/revision in the drawer. An active pledge may have a new month awaiting review. Upload alone never confirms payment; approval uses the existing finance command. For `needs_followup` pledges, choose an active staff/admin follow-up owner in the drawer and confirm the assignment. A 409/stale result means another update won: refresh before choosing again. No notice is sent by this assignment. |
 | Finance treasurer | Approve each payment method, public instructions/config version and account details; inspect sandbox callbacks, pending/uncertain reconciliation, receipt delivery and refund controls. Payment success remains committed even if PDF/email fails. For manual reconciliation, inspect the durable delivery job, retry only that job, and never credit the bank reference again. Never bulk-refund or void without per-item review. |
 | Content owner | Use the read-only CMS demo/expired/missing-source queues to inspect exact live IDs and source classification; filtered queues do not bulk publish or bulk review. Review photo rights, animal mapping, terms/copy diffs and public impact before any publication/archive. #133 fallback is only for CMS revision read `PGRST205`/`42P01`; permission, unexpected, missing published revision and invalid content stay errors. |
 | Volunteer coordinator | Approve policy and 14/30-day activity coverage; review each bulk preview's scope, exceptions and capacity. Confirm notices separately. |
@@ -31,8 +31,14 @@
 
 ## Outstanding inputs for release owners
 
-- Current production catalog snapshot, grants/RLS/storage policies and sanitized data-bearing clone plus backup/restore rehearsal for 46 manifest files.
+- Current production catalog snapshot, grants/RLS/storage policies and sanitized data-bearing clone plus backup/restore rehearsal for 47 manifest files.
 - Approved payment policy/methods/instructions, provider sandbox credentials/account and webhook replay evidence; approved sponsorship terms PDF/hash, cancellation/refund copy.
 - Approved animal/story/photo ID list and rights, volunteer policy/session coverage, real content/seed diff, private candidate URL and test identities for every admin role.
 - Email test sink and hosted Auth OTP settings; monitoring/alert thresholds, five-minute worker/cron ownership, private regional benchmark, 390/768/1366 keyboard/200% UAT.
-- Remaining T23 domain implementations: sponsorship follow-up assignment and reminder drafts, finance bank-file dry-run/candidate/group confirmation and receipt jobs, additional volunteer/adoption/animal/CRM safe actions. The manual finance atomic prerequisite is in draft #165; staff must not credit a duplicate normalized bank reference, and must handle post-commit receipt/email failure as a delivery recovery task. `tracker.csv` keeps ADMIN-04 partial.
+- Remaining T23 domain implementations: sponsorship bulk assignment and reminder drafts, finance bank-file dry-run/candidate/group confirmation and receipt jobs, additional volunteer/adoption/animal/CRM safe actions. The manual finance atomic prerequisite is in draft #165; staff must not credit a duplicate normalized bank reference, and must handle post-commit receipt/email failure as a delivery recovery task. `tracker.csv` keeps ADMIN-04 partial.
+
+## Sponsorship follow-up staff steps after approved schema and app deployment
+
+1. Open the sponsorship pledge queue filtered to `needs_followup`; inspect the pledge and proof history. A submitted proof or owner assignment does not confirm money.
+2. In the pledge drawer, choose the current active staff/admin owner and use **Assign follow-up**. The response updates only owner/version and records an audit fact. If the owner list is unavailable or the pledge version is missing, stop and ask the release owner to check schema/readiness; do not use a direct table edit.
+3. If the request reports a conflict, refresh and recheck status, payment and owner before retrying. Exact retries return the committed assignment without a second audit. Do not send a reminder from this control; reminder draft, recipient preview and any actual send require separate review and authorization.
