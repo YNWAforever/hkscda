@@ -39,3 +39,7 @@ Authenticated before/after screenshots at 390/768/1366 and same-environment CPU,
 ## T23 CRM version fence #177 performance boundary
 
 No UI or rendering path changed. Full fresh 161-file schema and synthetic 160-to-161 upgrade passed, but a same-environment before/after CRM bulk latency measurement and data-bearing supporter ALTER lock timing were not-run. Prior public/volunteer UI and T21 local performance evidence remains in earlier sections.
+
+## T23 CRM assignment #178 UI and performance boundary
+
+Before: the supporter list had tag bulk and read-only contact format preview, with no CRM follow-up owner picker or assignment panel. After: #178 adds a labelled assignee select, preview button, shared per-item review and 25-item apply with recovery. SSR list markup was checked in the isolated test. Authenticated before/after 390/768/1366 screenshots and same-environment CRM latency/Core Web Vitals measurements are not-run because the private candidate and test identities are unavailable; no numeric improvement is claimed. Existing public/volunteer captures and T21 measurements above remain scoped to their recorded environments.

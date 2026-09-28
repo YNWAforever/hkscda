@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "appSha": "8fd9310237e3ba94f91352f3ea713d1f012ac61b",
-  "appShaNote": "T23 CRM tag bulk fresh-schema version fence source freeze 8fd9310 stacked on #176; following evidence commit has no runtime changes",
+  "appSha": "a3dc126024267015a17939d6c5cd3715bbcce1f0",
+  "appShaNote": "T23 guarded CRM assignment source freeze a3dc126 stacked on #177; following evidence commit has no runtime changes",
   "productionAliasShaObserved": "f8d5e5d5840d1775efb7d7f4ae2768f6557096b5",
-  "schemaManifestHash": "d98d110aa9c6ec8680455ffd93b96753fe96e3ad66705506baed78beccefe24f",
+  "schemaManifestHash": "148405b49c2f978b3580fe42add27cc729c106ed4380a58d05baf3435c013fde",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
@@ -272,12 +272,17 @@
       "version": "20260928113000",
       "file": "20260928113000_crm_supporter_version_fence.sql",
       "sha256": "53e0875e30732534e795b94dde24b1e0c9442e4e3f93dbdd4b4b334a5b339a42"
+    },
+    {
+      "version": "20260928120000",
+      "file": "20260928120000_crm_assignment_bulk.sql",
+      "sha256": "07799b13c740c998b31b9e864c921771eb66044c58f0644f50a6a696813a4e34"
     }
   ],
   "ciRun": {
-    "id": 36388704067,
-    "sha": "8fd9310237e3ba94f91352f3ea713d1f012ac61b",
-    "status": "success; #177 source CI 36388704067 passed verify, RLS, brand, a11y and performance; evidence-head pending. #176 source/docs each passed five jobs"
+    "id": 36394352630,
+    "sha": "a3dc126024267015a17939d6c5cd3715bbcce1f0",
+    "status": "#178 source CI 36394352630 passed verify, RLS, brand, a11y and performance; evidence-head pending. #177 source CI 36388704067 and evidence-head CI 36389895803 passed five jobs each"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -303,7 +308,8 @@
     "docs/evidence/audit-remediation-20260927/t23-finance-bank-confirmation.md",
     "docs/evidence/audit-remediation-20260927/production-catalog-recheck-20260928.md",
     "docs/evidence/audit-remediation-20260927/t23-crm-contact-format-preview.md",
-    "docs/evidence/audit-remediation-20260927/t23-crm-version-fence.md"
+    "docs/evidence/audit-remediation-20260927/t23-crm-version-fence.md",
+    "docs/evidence/audit-remediation-20260927/t23-crm-assignment-bulk.md"
   ],
   "rollbackTarget": {
     "appSha": null,

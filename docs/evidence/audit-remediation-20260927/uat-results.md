@@ -62,3 +62,7 @@ Hosted actual treasurer/admin/nonstaff direct API, 390/768/1366 browser layout, 
 ## T23 CRM version fence #177 UAT boundary
 
 No UI changed in #177. Isolated synthetic CRM DB fixture covered name-only stale preview, duplicate apply, revoked actor, expiry and audit failure; 2 pass/16 assertions on the 161-file fresh stack. Hosted actual-role direct API and mobile/keyboard CRM journey remain not-run.
+
+## T23 CRM assignment #178 UAT boundary
+
+SSR supporter-list test verifies the labelled assignment controls render. Isolated API tests deny unauthenticated access before data read and bound duplicate/1001-ID previews. Synthetic DB tests cover actor/assignee downgrade, expiry, stale name-only edit, replay, audit rollback and actual two-connection winner/conflict. Actual-role direct API/export/private-file tests, 390/768/1366 captures, keyboard journey and hosted candidate assignment are not-run; staff cannot operationally use this draft until those gates and release approval.

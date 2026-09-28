@@ -77,4 +77,11 @@
 
 ## CRM tag bulk schema prerequisite after approved release
 
-Before staff use the existing CRM tag bulk panel on a released app, the release owner must confirm supporter.edit_version exists as bigint with default 1 and an enabled bump_supporter_edit_version trigger. If preview reports schema unavailable, stop the tag operation and escalate; do not manually add a column or fabricate a migration ledger entry. A name, contact or tag edit after preview must return conflict and requires a new snapshot. The #176 contact-format panel remains read-only, and CRM assignment has not been delivered.
+Before staff use the existing CRM tag bulk panel on a released app, the release owner must confirm supporter.edit_version exists as bigint with default 1 and an enabled bump_supporter_edit_version trigger. If preview reports schema unavailable, stop the tag operation and escalate; do not manually add a column or fabricate a migration ledger entry. A name, contact or tag edit after preview must return conflict and requires a new snapshot. The #176 contact-format panel remains read-only, and CRM assignment is draft #178 pending release.
+
+## CRM bulk assignment staff steps after approved schema and app release
+
+1. Active treasurer/admin filters the supporter list, selects this page or all matching (maximum 1,000), and chooses a currently eligible treasurer/admin. The assignee list is live; if no assignee appears, stop and ask the release owner to check current role/confirmation/ban state.
+2. Create a preview and inspect every before/after owner. Missing, deleted or already-assigned rows are skipped. Confirm the exact selection and use the shared review checkbox before applying the next 25 pending rows. Reopen a saved operation after refresh; it expires after 15 minutes.
+3. Check succeeded, skipped and conflict rows. A name/contact/tag edit, role change or expiry requires a new preview for unresolved rows. A failed request can leave earlier items succeeded; reload the operation before retrying. Never infer a notification was sent: this action sends none. Do not use it to merge identities, alter consent, refund or approve adoptions.
+4. Escalate schema unavailability, unexpected assignee access or audit errors. #178 is draft only; production use requires the full release bridge, actual-role UAT and approval.
