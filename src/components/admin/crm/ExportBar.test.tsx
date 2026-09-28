@@ -28,6 +28,35 @@ describe("CRM ExportBar state", () => {
     expect(markup).toContain('role="status"');
   });
 
+  test("disables immediate and retry exports while supporter filters are refreshing", () => {
+    const idle = renderToStaticMarkup(
+      <ExportBarView
+        copy={copy}
+        state={{ phase: "idle" }}
+        busy
+        onExport={() => undefined}
+        onRetry={() => undefined}
+      />,
+    );
+    expect(idle.match(/disabled=""/g) ?? []).toHaveLength(2);
+    const failed = renderToStaticMarkup(
+      <ExportBarView
+        copy={copy}
+        state={{
+          phase: "error",
+          kind: "supporters",
+          snapshot: "q=Ada",
+          message: "Too large",
+          overLimit: true,
+        }}
+        busy
+        onExport={() => undefined}
+        onRetry={() => undefined}
+        onBackground={() => undefined}
+      />,
+    );
+    expect(failed.match(/disabled=""/g) ?? []).toHaveLength(4);
+  });
   test("shows actionable 413 and a retry for the exact failed filter snapshot", async () => {
     const error = await classifyExportFailure(
       Response.json({ total: 5001, limit: 5000 }, { status: 413 }),
