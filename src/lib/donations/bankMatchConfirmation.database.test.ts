@@ -233,3 +233,99 @@ test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !==
   },
   30_000,
 );
+
+test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !== "1")(
+  "two finance snapshots racing the same payment settle only once",
+  async () => {
+    const db = new SQL(url!, { max: 3, prepare: false });
+    const actor = crypto.randomUUID();
+    const supporter = crypto.randomUUID();
+    const donation = crypto.randomUUID();
+    const payment = crypto.randomUUID();
+    const reference = "SYNTH-175-RACE-" + crypto.randomUUID();
+    const operationIds: string[] = [];
+    try {
+      await db.begin(async (tx) => {
+        await tx.unsafe(
+          "insert into auth.users(id,email,email_confirmed_at,created_at,updated_at) values($1::uuid,$2,now(),now(),now())",
+          [actor, actor + "@example.invalid"],
+        );
+        await tx.unsafe(
+          "insert into public.admin_user(id,auth_user_id,email,role,status) values($1::uuid,$2::uuid,$3,'treasurer','active')",
+          [crypto.randomUUID(), actor, actor + "@example.invalid"],
+        );
+        await tx.unsafe(
+          "insert into public.supporter(id,name,email) values($1::uuid,'Synthetic race donor',$2)",
+          [supporter, supporter + "@example.invalid"],
+        );
+        await tx.unsafe(
+          "insert into public.donation(id,supporter_id,amount_cents,purpose,method) values($1::uuid,$2::uuid,10000,'general','fps')",
+          [donation, supporter],
+        );
+        await tx.unsafe(
+          "insert into public.payment(id,donation_id,provider,provider_ref,amount_cents) values($1::uuid,$2::uuid,'fps',$3,10000)",
+          [payment, donation, "HINT-" + payment],
+        );
+      });
+      const selected = JSON.stringify([
+        { ordinal: 1, bankReference: reference, paymentId: payment, amountCents: 10000 },
+      ]);
+      for (let n = 0; n < 2; n++) {
+        const created = await db.unsafe(
+          "select public.create_finance_bank_match_preview($1::uuid,$2,$3::jsonb) result",
+          [actor, "b".repeat(64), selected],
+        );
+        operationIds.push(created[0]!.result.operationId);
+      }
+      const results = await Promise.all(
+        operationIds.map((operationId) =>
+          db.unsafe("select public.apply_finance_bank_match_item($1::uuid,$2::uuid,1) result", [
+            actor,
+            operationId,
+          ]),
+        ),
+      );
+      expect(results.map((row) => row[0]!.result.status).sort()).toEqual(["conflict", "succeeded"]);
+      const facts = await db.unsafe(
+        "select p.status,(select count(*)::int from public.audit_log a where a.action='payment.mark_received' and a.entity_id=p.id::text) audits,(select count(*)::int from public.donation_delivery_job j where j.payment_id=p.id) jobs from public.payment p where p.id=$1::uuid",
+        [payment],
+      );
+      expect(facts[0]).toMatchObject({ status: "succeeded", audits: 1, jobs: 1 });
+      const replay = await db.unsafe(
+        "select public.apply_finance_bank_match_item($1::uuid,$2::uuid,1) result",
+        [actor, operationIds[0]],
+      );
+      expect(["conflict", "succeeded"]).toContain(replay[0]!.result.status);
+      const afterReplay = await db.unsafe(
+        "select count(*)::int audits from public.audit_log where action='payment.mark_received' and entity_id=$1",
+        [payment],
+      );
+      expect(afterReplay[0]!.audits).toBe(1);
+    } finally {
+      try {
+        await db.begin(async (tx) => {
+          await tx.unsafe(
+            "delete from public.finance_bank_match_item where operation_id in (select id from public.finance_bank_match_operation where actor_user_id=$1::uuid)",
+            [actor],
+          );
+          await tx.unsafe(
+            "delete from public.finance_bank_match_operation where actor_user_id=$1::uuid",
+            [actor],
+          );
+          await tx.unsafe("delete from public.donation_delivery_job where payment_id=$1::uuid", [
+            payment,
+          ]);
+          await tx.unsafe("delete from public.audit_log where actor_user_id=$1::uuid", [actor]);
+          await tx.unsafe("delete from public.payment where id=$1::uuid", [payment]);
+          await tx.unsafe("delete from public.donation where id=$1::uuid", [donation]);
+          await tx.unsafe("delete from public.supporter where id=$1::uuid", [supporter]);
+          await tx.unsafe("delete from public.admin_user where auth_user_id=$1::uuid", [actor]);
+          await tx.unsafe("delete from auth.users where id=$1::uuid", [actor]);
+        });
+      } finally {
+        await db.close();
+      }
+    }
+  },
+  30_000,
+);
