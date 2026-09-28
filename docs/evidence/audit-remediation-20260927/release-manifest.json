@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "appSha": "9130cb846d7a876e0c867c1dddd1fcc33aa0c6ce",
+  "appSha": "413548069b7413606c395e2689acdc31aaf55243",
   "appShaNote": "Local-only integrated source freeze; this SHA has not been pushed or run in remote CI",
   "productionAliasShaObserved": "f8d5e5d5840d1775efb7d7f4ae2768f6557096b5",
   "schemaManifestHash": "dcdfbb4c71a9fb1587bed880b2b8fe3ad329d92400ec5fc3edf51ca93c9cffcf",

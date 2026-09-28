@@ -1,6 +1,6 @@
 # T24 local integration rehearsal, 2026-09-28 HKT
 
-Decision: **NO-GO**. This is a local-only integration candidate at source commit `9130cb846d7a876e0c867c1dddd1fcc33aa0c6ce` on `codex/audit-integration-candidate-20260928`. It has not been pushed, opened as a PR, deployed, or run in remote CI. The focused remediation slices remain separate draft PRs. The last metadata-observed production alias and remote main are `f8d5e5d5840d1775efb7d7f4ae2768f6557096b5`.
+Decision: **NO-GO**. This is a local-only integration candidate at source commit `413548069b7413606c395e2689acdc31aaf55243` on `codex/audit-integration-candidate-20260928`. It has not been pushed, opened as a PR, deployed, or run in remote CI. The focused remediation slices remain separate draft PRs. The last metadata-observed production alias and remote main are `f8d5e5d5840d1775efb7d7f4ae2768f6557096b5`.
 
 ## Composition and conflict resolution
 
@@ -19,7 +19,7 @@ Two unlinked, seed-disabled local stacks applied all 170 committed SQL files wit
 | `bun run build` | integrated worktree | exit 0; generated route tree committed |
 | `bun run typecheck` | integrated worktree | exit 0, independently from build |
 | `bun run lint -- --quiet` | integrated worktree | exit 0 |
-| `bun test --isolate --parallel=1 --timeout=60000` | 57321 API / 57322 DB, named synthetic finance/CRM/sponsorship fixture flags | exit 0, 3075 pass / 110 skip / 0 fail / 9793 assertions across 574 files |
+| `bun test --isolate --parallel=1 --timeout=60000` at source 9130cb8 | 57321 API / 57322 DB, named synthetic finance/CRM/sponsorship fixture flags | exit 0, 3075 pass / 110 skip / 0 fail / 9793 assertions across 574 files |
 | `bun test --isolate` | same integrated DB, default parallelism | exit 1, three DB fixture timeouts; retained as a failed run |
 | focused CRM assignment and checkout/delivery DB files | same integrated DB, run separately | exit 0, 7 pass / 65 assertions; includes two-connection assignment race, admitted checkout, and committed payment delivery recovery |
 | #178 evidence-head CI `36395704420` | source #178 only, **not** this integrated SHA | five jobs successful: verify, RLS, brand, a11y, performance |
@@ -41,3 +41,6 @@ The combined local source includes the #168 protected readiness endpoint, saniti
 ## CONTENT-02 / T18-T21 source recheck
 
 The already-reviewed #153 content classification/profile workflow and #155 public animal page RPC are present in the combined local source. `bun test --isolate --parallel=1 --timeout=60000` across six focused files initially exited 1: 23 unit/card tests passed, while both DB files timed out during connection startup before assertions. The same seed-disabled integrated 57322 Postgres remained healthy and accepted connections. Rerunning each DB file alone exited 0: T21 10k synthetic page/filter/private-column fixture 1 pass/20 assertions, and T18 public eligibility/metadata audit fixture 1 pass/13 assertions. Code and local schema are recorded ready; actual approved care/use/progress data, photos, production migrations, paid image transform opt-in and hosted browser UAT are not-run. CONTENT-02 remains partial, undeployed and not operationally enabled.
+## ADOPT-02 / T09 direct API regression recheck
+
+At local-only integrated source `413548069b7413606c395e2689acdc31aaf55243`, two new direct API regressions confirm an expired signed photo-upload intent returns 403 and a withdrawn shortlisted animal returns 400; neither enters persistence. Existing seven-day opt-in draft, legacy/invalid storage, photo re-selection, current terms, signed upload, duplicate and changed-payload retries, status-link expiry, partial-case resume, and email-failure-after-commit regressions remained green. `bun test --isolate` across seven named adoption files exited 0: 50 pass, 0 fail, 138 assertions. `bun run typecheck`, `bun run lint -- --quiet`, and `bun run build` each exited 0 separately. The lint run first exited 1 on a pre-existing merged CRM ExportBar Prettier line; a formatting-only edit cleared it. The earlier full integrated serial suite at `9130cb8` was 3075 pass/110 skip; a full suite at `4135480` is not-run. ADOPT-02 is code-complete in the tracker, while the actual hosted instructions-to-submit-to-staff journey, phone/keyboard UAT, email sink, approved seven-day draft policy, deployment and enablement remain open. No real application, upload or email was sent.
