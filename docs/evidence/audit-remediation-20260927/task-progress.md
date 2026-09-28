@@ -98,3 +98,7 @@ At integrated source 72d0fda, the selected-fixture serial full suite on syntheti
 ## T01 / R01 current manifest versus live metadata
 
 A fresh read-only Supabase catalog/ledger query for the local integrated source 72d0fda selected only names in the 145-item release manifest. Local checkReleaseSchema evaluation returned incompatible: 139 required issues (28 missing tables, 86 functions, 25 columns); live ledger remains 79 versions. No application rows or mutations were involved. See [production-catalog-recheck-20260928.md](production-catalog-recheck-20260928.md). The full divergent migration bridge and sanitized data-bearing clone remain open; R01 stays partial and release NO-GO.
+
+## T24 audit-only integrated CI recheck, 2026-09-29
+
+Draft PR #180 is docs/evidence only against the frozen integrated app source `72d0fda`; GitHub Actions run 36468929574 at head `9ac5ec7` passed verify, brand, a11y, RLS and performance (5/5), and `gh pr checks --watch` exited 0. `codex/audit-*` Vercel deployments are disabled, and the latest 20 deployment listing contains no audit integration branch deployment. Main/production alias remains `f8d5e5d` by read-only checks. This closes the combined-source remote CI gap for that app tree but does not clear the 79-ledger DBA bridge, hosted actual-role/provider UAT, approval or main merge gates. All 46 focused PRs remain draft/unmerged.
