@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "appSha": "620790d8ffb50618f15911c23bd4bf803247c4c7",
-  "appShaNote": "T23 read-only canonical bank-file dry-run source freeze; following documentation commit has no runtime changes",
+  "appSha": "732fd5cdc0175de5c6623d1b836b07f560efc348",
+  "appShaNote": "T23 failed finance delivery worklist and guarded retry source freeze; following documentation commit has no runtime changes",
   "productionAliasShaObserved": "f8d5e5d5840d1775efb7d7f4ae2768f6557096b5",
-  "schemaManifestHash": "c1a07be4f868c6ed71d0d76a9a9fdb39461082481da1332248e88c4cab383b9a",
+  "schemaManifestHash": "108bb9d96df37a2dd434ba323d935802b4e74107eb140bad48c46ebe4dcdefc8",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
@@ -257,12 +257,17 @@
       "version": "20260928090000",
       "file": "20260928090000_finance_bank_dryrun.sql",
       "sha256": "9f55dabaa7d884ab2fa40fdb465bd38bce10ac4f8eaec05025e66ecbc45857a0"
+    },
+    {
+      "version": "20260928100000",
+      "file": "20260928100000_finance_delivery_retry_guard.sql",
+      "sha256": "27a5e87e3175bd545b6fe0a03429933bb617dc4c7f30f5dd3538de61539ddf0a"
     }
   ],
   "ciRun": {
-    "id": 36369763776,
-    "sha": "620790d8ffb50618f15911c23bd4bf803247c4c7",
-    "status": "success; verify, rls-matrix, brand-verify, performance-verify and a11y-verify passed on #172 source SHA"
+    "id": 36373635875,
+    "sha": "732fd5cdc0175de5c6623d1b836b07f560efc348",
+    "status": "success; verify, rls-matrix, brand-verify, a11y-verify and performance-verify passed on corrected #173 source SHA"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -279,7 +284,8 @@
     "docs/evidence/audit-remediation-20260927/t23-sponsorship-followup.md",
     "docs/evidence/audit-remediation-20260927/t23-sponsorship-bulk.md",
     "docs/evidence/audit-remediation-20260927/t23-sponsorship-reminder.md",
-    "docs/evidence/audit-remediation-20260927/t23-finance-bank-dryrun.md"
+    "docs/evidence/audit-remediation-20260927/t23-finance-bank-dryrun.md",
+    "docs/evidence/audit-remediation-20260927/t23-finance-delivery-worklist.md"
   ],
   "rollbackTarget": {
     "appSha": null,
