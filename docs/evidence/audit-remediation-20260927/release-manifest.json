@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "appSha": "a3dc126024267015a17939d6c5cd3715bbcce1f0",
-  "appShaNote": "T23 guarded CRM assignment source freeze a3dc126 stacked on #177; following evidence commit has no runtime changes",
+  "appSha": "9130cb846d7a876e0c867c1dddd1fcc33aa0c6ce",
+  "appShaNote": "Local-only integrated source freeze; this SHA has not been pushed or run in remote CI",
   "productionAliasShaObserved": "f8d5e5d5840d1775efb7d7f4ae2768f6557096b5",
-  "schemaManifestHash": "148405b49c2f978b3580fe42add27cc729c106ed4380a58d05baf3435c013fde",
+  "schemaManifestHash": "dcdfbb4c71a9fb1587bed880b2b8fe3ad329d92400ec5fc3edf51ca93c9cffcf",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
@@ -184,6 +184,26 @@
       "sha256": "d0fcb0c6ebbcfbfaf2bd245964815d6052c30880919d5344b806f9c1f072c53f"
     },
     {
+      "version": "20260927090000",
+      "file": "20260927090000_crm_private_export_jobs.sql",
+      "sha256": "6665fcf0ef6ec9d783bca79ad7cd9769110a8a5c9a04f15c3a7a8463d4ade162"
+    },
+    {
+      "version": "20260927110000",
+      "file": "20260927110000_crm_supporter_edit_version.sql",
+      "sha256": "d9756e0cb41dd7878e6046a0eab3db4b1f9dfb8a39751884d1cfd2b8df1fa80c"
+    },
+    {
+      "version": "20260927120000",
+      "file": "20260927120000_checkout_policy_gate.sql",
+      "sha256": "81abffa79f775b6d5d1d35d961b97c0b40b8a216de41dbc6077ff1a9f8cbe091"
+    },
+    {
+      "version": "20260927120500",
+      "file": "20260927120500_estate_versioned_commands.sql",
+      "sha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
+    },
+    {
       "version": "20260927122000",
       "file": "20260927122000_content_publication_eligibility.sql",
       "sha256": "bc021c0f63ddfa5b9bb4e81cfc83ba75bd9e828ef85483e739c282dce731ed1b"
@@ -194,14 +214,34 @@
       "sha256": "fd209e458358fd899aabbda721bec471b1c00f0fc92ce360ce2ada43366ae147"
     },
     {
+      "version": "20260927130500",
+      "file": "20260927130500_atomic_adoption_fee_reorder.sql",
+      "sha256": "dd772676c88fda5614908ca1683637ab7922f04b1d5fe363995a7f689d9f9e23"
+    },
+    {
+      "version": "20260927131000",
+      "file": "20260927131000_payment_instruction_snapshots.sql",
+      "sha256": "ac1a74cad4fc0a1cd23ee0e017d3ce2e12154bf042d0a5090652707271a452fe"
+    },
+    {
       "version": "20260927140000",
       "file": "20260927140000_media_repair_retry_schedule.sql",
       "sha256": "dfe96f1a4f8d73a0e8f606e14fb2854d8c91c2b6818cc2917c279a0d85e1e429"
     },
     {
+      "version": "20260927141000",
+      "file": "20260927141000_donation_delivery_recovery.sql",
+      "sha256": "7368ea1052220be96c71b26f9003f26e259ea51a69f83dca031a79152d8913d3"
+    },
+    {
       "version": "20260927143710",
       "file": "20260927143710_public_animal_listing_page.sql",
       "sha256": "e2320e10dc29949dacb218ddd46ff28ad6afb3e3bdc865a1416e5306487a518d"
+    },
+    {
+      "version": "20260927150000",
+      "file": "20260927150000_sponsorship_terms_document_kind.sql",
+      "sha256": "1f32b4531134e117baf8ff236f2250ca839b2da27ce8560c08498db576b754b3"
     },
     {
       "version": "20260927163302",
@@ -271,7 +311,7 @@
     {
       "version": "20260928113000",
       "file": "20260928113000_crm_supporter_version_fence.sql",
-      "sha256": "53e0875e30732534e795b94dde24b1e0c9442e4e3f93dbdd4b4b334a5b339a42"
+      "sha256": "734e6409efebb0e723ba860ae1dabc052c86136f92722dbcfa3f3becd9a98cb6"
     },
     {
       "version": "20260928120000",
@@ -280,9 +320,9 @@
     }
   ],
   "ciRun": {
-    "id": 36394352630,
-    "sha": "a3dc126024267015a17939d6c5cd3715bbcce1f0",
-    "status": "#178 source CI 36394352630 passed verify, RLS, brand, a11y and performance; evidence-head pending. #177 source CI 36388704067 and evidence-head CI 36389895803 passed five jobs each"
+    "id": null,
+    "sha": null,
+    "status": "not-run for local integrated candidate; focused PR CI is recorded in their own PRs"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -309,7 +349,8 @@
     "docs/evidence/audit-remediation-20260927/production-catalog-recheck-20260928.md",
     "docs/evidence/audit-remediation-20260927/t23-crm-contact-format-preview.md",
     "docs/evidence/audit-remediation-20260927/t23-crm-version-fence.md",
-    "docs/evidence/audit-remediation-20260927/t23-crm-assignment-bulk.md"
+    "docs/evidence/audit-remediation-20260927/t23-crm-assignment-bulk.md",
+    "docs/evidence/audit-remediation-20260927/integration-candidate-20260928.md"
   ],
   "rollbackTarget": {
     "appSha": null,
