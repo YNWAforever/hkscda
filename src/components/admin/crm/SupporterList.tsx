@@ -19,6 +19,7 @@ import { fetchAdminJson } from "./api";
 import { ExportBar } from "./ExportBar";
 import { SupporterFormDialog } from "./SupporterFormDialog";
 import { CrmTagBulkPanel } from "./CrmTagBulkPanel";
+import { CrmContactFormatPreviewPanel } from "./CrmContactFormatPreviewPanel";
 
 type SupporterListResponse = {
   supporters: SupporterSummary[];
@@ -369,6 +370,12 @@ export function SupporterList() {
         )}
       </div>
       <CrmTagBulkPanel
+        selectedIds={effectiveSelectedIds}
+        query={query}
+        roleFilter={roleFilter}
+        selectionDisabled={selectionDisabled}
+      />
+      <CrmContactFormatPreviewPanel
         selectedIds={effectiveSelectedIds}
         query={query}
         roleFilter={roleFilter}

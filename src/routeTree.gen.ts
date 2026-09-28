@@ -152,6 +152,7 @@ import { Route as ApiAdminVolunteersCalendarRouteImport } from './routes/api/adm
 import { Route as ApiAdminVolunteersBulkRouteImport } from './routes/api/admin/volunteers/bulk'
 import { Route as ApiAdminVolunteersActivitiesRouteImport } from './routes/api/admin/volunteers/activities'
 import { Route as ApiAdminSupportersTagBulkRouteImport } from './routes/api/admin/supporters/tag-bulk'
+import { Route as ApiAdminSupportersFormatPreviewRouteImport } from './routes/api/admin/supporters/format-preview'
 import { Route as ApiAdminSupportersIdRouteImport } from './routes/api/admin/supporters/$id'
 import { Route as ApiAdminSponsorshipsPledgesRouteImport } from './routes/api/admin/sponsorships/pledges'
 import { Route as ApiAdminSponsorshipsFollowupBulkRouteImport } from './routes/api/admin/sponsorships/followup-bulk'
@@ -1022,6 +1023,12 @@ const ApiAdminSupportersTagBulkRoute =
   ApiAdminSupportersTagBulkRouteImport.update({
     id: '/tag-bulk',
     path: '/tag-bulk',
+    getParentRoute: () => ApiAdminSupportersRoute,
+  } as any)
+const ApiAdminSupportersFormatPreviewRoute =
+  ApiAdminSupportersFormatPreviewRouteImport.update({
+    id: '/format-preview',
+    path: '/format-preview',
     getParentRoute: () => ApiAdminSupportersRoute,
   } as any)
 const ApiAdminSupportersIdRoute = ApiAdminSupportersIdRouteImport.update({
@@ -1912,6 +1919,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/sponsorships/followup-bulk': typeof ApiAdminSponsorshipsFollowupBulkRoute
   '/api/admin/sponsorships/pledges': typeof ApiAdminSponsorshipsPledgesRouteWithChildren
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
+  '/api/admin/supporters/format-preview': typeof ApiAdminSupportersFormatPreviewRoute
   '/api/admin/supporters/tag-bulk': typeof ApiAdminSupportersTagBulkRoute
   '/api/admin/volunteers/activities': typeof ApiAdminVolunteersActivitiesRouteWithChildren
   '/api/admin/volunteers/bulk': typeof ApiAdminVolunteersBulkRoute
@@ -2179,6 +2187,7 @@ export interface FileRoutesByTo {
   '/api/admin/sponsorships/followup-bulk': typeof ApiAdminSponsorshipsFollowupBulkRoute
   '/api/admin/sponsorships/pledges': typeof ApiAdminSponsorshipsPledgesRouteWithChildren
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
+  '/api/admin/supporters/format-preview': typeof ApiAdminSupportersFormatPreviewRoute
   '/api/admin/supporters/tag-bulk': typeof ApiAdminSupportersTagBulkRoute
   '/api/admin/volunteers/activities': typeof ApiAdminVolunteersActivitiesRouteWithChildren
   '/api/admin/volunteers/bulk': typeof ApiAdminVolunteersBulkRoute
@@ -2448,6 +2457,7 @@ export interface FileRoutesById {
   '/api/admin/sponsorships/followup-bulk': typeof ApiAdminSponsorshipsFollowupBulkRoute
   '/api/admin/sponsorships/pledges': typeof ApiAdminSponsorshipsPledgesRouteWithChildren
   '/api/admin/supporters/$id': typeof ApiAdminSupportersIdRouteWithChildren
+  '/api/admin/supporters/format-preview': typeof ApiAdminSupportersFormatPreviewRoute
   '/api/admin/supporters/tag-bulk': typeof ApiAdminSupportersTagBulkRoute
   '/api/admin/volunteers/activities': typeof ApiAdminVolunteersActivitiesRouteWithChildren
   '/api/admin/volunteers/bulk': typeof ApiAdminVolunteersBulkRoute
@@ -2718,6 +2728,7 @@ export interface FileRouteTypes {
     | '/api/admin/sponsorships/followup-bulk'
     | '/api/admin/sponsorships/pledges'
     | '/api/admin/supporters/$id'
+    | '/api/admin/supporters/format-preview'
     | '/api/admin/supporters/tag-bulk'
     | '/api/admin/volunteers/activities'
     | '/api/admin/volunteers/bulk'
@@ -2985,6 +2996,7 @@ export interface FileRouteTypes {
     | '/api/admin/sponsorships/followup-bulk'
     | '/api/admin/sponsorships/pledges'
     | '/api/admin/supporters/$id'
+    | '/api/admin/supporters/format-preview'
     | '/api/admin/supporters/tag-bulk'
     | '/api/admin/volunteers/activities'
     | '/api/admin/volunteers/bulk'
@@ -3253,6 +3265,7 @@ export interface FileRouteTypes {
     | '/api/admin/sponsorships/followup-bulk'
     | '/api/admin/sponsorships/pledges'
     | '/api/admin/supporters/$id'
+    | '/api/admin/supporters/format-preview'
     | '/api/admin/supporters/tag-bulk'
     | '/api/admin/volunteers/activities'
     | '/api/admin/volunteers/bulk'
@@ -4519,6 +4532,13 @@ declare module '@tanstack/react-router' {
       path: '/tag-bulk'
       fullPath: '/api/admin/supporters/tag-bulk'
       preLoaderRoute: typeof ApiAdminSupportersTagBulkRouteImport
+      parentRoute: typeof ApiAdminSupportersRoute
+    }
+    '/api/admin/supporters/format-preview': {
+      id: '/api/admin/supporters/format-preview'
+      path: '/format-preview'
+      fullPath: '/api/admin/supporters/format-preview'
+      preLoaderRoute: typeof ApiAdminSupportersFormatPreviewRouteImport
       parentRoute: typeof ApiAdminSupportersRoute
     }
     '/api/admin/supporters/$id': {
@@ -5816,11 +5836,13 @@ const ApiAdminSupportersIdRouteWithChildren =
 
 interface ApiAdminSupportersRouteChildren {
   ApiAdminSupportersIdRoute: typeof ApiAdminSupportersIdRouteWithChildren
+  ApiAdminSupportersFormatPreviewRoute: typeof ApiAdminSupportersFormatPreviewRoute
   ApiAdminSupportersTagBulkRoute: typeof ApiAdminSupportersTagBulkRoute
 }
 
 const ApiAdminSupportersRouteChildren: ApiAdminSupportersRouteChildren = {
   ApiAdminSupportersIdRoute: ApiAdminSupportersIdRouteWithChildren,
+  ApiAdminSupportersFormatPreviewRoute: ApiAdminSupportersFormatPreviewRoute,
   ApiAdminSupportersTagBulkRoute: ApiAdminSupportersTagBulkRoute,
 }
 
