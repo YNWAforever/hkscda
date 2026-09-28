@@ -73,3 +73,8 @@
 1. As an active treasurer/admin, filter supporters and select this page or all matching results up to 1,000. Open the contact-format preview. Changing the filter or selection clears the old result; create a new preview instead of trusting an old screen.
 2. Review suggested whitespace changes and each manual identity-review case. A changed email is an identity decision, not a formatting command. The panel has no apply action and cannot merge supporters, grant consent or send a message.
 3. Missing/deleted rows are redacted. Reopen the current supporter record if needed; use the existing restricted export workflow for any approved export. Escalate unexpected PII, unavailable preview or authorization mismatch to the release owner. Hosted actual-role API and keyboard/mobile UAT are still required before enabling this branch.
+
+
+## CRM tag bulk schema prerequisite after approved release
+
+Before staff use the existing CRM tag bulk panel on a released app, the release owner must confirm supporter.edit_version exists as bigint with default 1 and an enabled bump_supporter_edit_version trigger. If preview reports schema unavailable, stop the tag operation and escalate; do not manually add a column or fabricate a migration ledger entry. A name, contact or tag edit after preview must return conflict and requires a new snapshot. The #176 contact-format panel remains read-only, and CRM assignment has not been delivered.

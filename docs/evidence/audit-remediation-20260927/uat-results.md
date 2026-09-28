@@ -57,3 +57,8 @@ Static finance panel/operation review and direct API tests cover exact-row-only 
 Isolated synthetic acceptance: 25 selected rows returned in order with explicit missing results, 1,000 selected rows accepted without truncation, duplicate/1,001 rejected; direct unauthorized request denied before PII read, no-store response, deleted row redaction and generic backend failure. Focused 9 pass/40 assertions and full 2961 pass/114 skip/0 fail at source 1511ee9. No real supporter data or mutation.
 
 Hosted actual treasurer/admin/nonstaff direct API, 390/768/1366 browser layout, keyboard pagination, stale in-flight selection and restricted export/private-file journey are not-run. Staff must treat all suggestions as review only; email identity, consent and merge remain separate guarded processes.
+
+
+## T23 CRM version fence #177 UAT boundary
+
+No UI changed in #177. Isolated synthetic CRM DB fixture covered name-only stale preview, duplicate apply, revoked actor, expiry and audit failure; 2 pass/16 assertions on the 161-file fresh stack. Hosted actual-role direct API and mobile/keyboard CRM journey remain not-run.

@@ -34,3 +34,8 @@ Before: #172 finance CSV generated a read-only candidate preview and could not s
 Before: the supporter list allowed selection, tag bulk and restricted export but had no format-cleanup review. After: selected supporters have a transient read-only panel with 25-result pages, before/after contact formatting suggestions, counts and explicit manual email-identity cases. Missing/deleted records show no contact fields; filter/selection changes discard old results. The route returns no-store data in 100-ID read batches. Focused static/API tests passed 9/9, and the full isolated suite passed 2961/2961 runnable tests.
 
 Authenticated before/after screenshots at 390/768/1366 and same-environment CPU, transfer, interaction or Core Web Vitals comparison are not-run without a private candidate and test identities. No performance improvement is claimed.
+
+
+## T23 CRM version fence #177 performance boundary
+
+No UI or rendering path changed. Full fresh 161-file schema and synthetic 160-to-161 upgrade passed, but a same-environment before/after CRM bulk latency measurement and data-bearing supporter ALTER lock timing were not-run. Prior public/volunteer UI and T21 local performance evidence remains in earlier sections.
