@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "appSha": "c683532b9f8539836f032a31fa17aa8c2a8494a8",
-  "appShaNote": "T23 read-only sponsorship reminder draft source freeze; following documentation commit has no runtime changes",
+  "appSha": "620790d8ffb50618f15911c23bd4bf803247c4c7",
+  "appShaNote": "T23 read-only canonical bank-file dry-run source freeze; following documentation commit has no runtime changes",
   "productionAliasShaObserved": "f8d5e5d5840d1775efb7d7f4ae2768f6557096b5",
-  "schemaManifestHash": "f2a4f30fc3409969416945d78323a5c0ac7588546663d4203f4c1feba040ff01",
+  "schemaManifestHash": "c1a07be4f868c6ed71d0d76a9a9fdb39461082481da1332248e88c4cab383b9a",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
@@ -252,12 +252,17 @@
       "version": "20260928080000",
       "file": "20260928080000_sponsorship_followup_bulk.sql",
       "sha256": "d70e5fc37a71a34a7513ee27b435e0f38585bf4ed314626212bb3f3032c2ffec"
+    },
+    {
+      "version": "20260928090000",
+      "file": "20260928090000_finance_bank_dryrun.sql",
+      "sha256": "9f55dabaa7d884ab2fa40fdb465bd38bce10ac4f8eaec05025e66ecbc45857a0"
     }
   ],
   "ciRun": {
-    "id": 36367078505,
-    "sha": "c683532b9f8539836f032a31fa17aa8c2a8494a8",
-    "status": "success; verify, rls-matrix, brand-verify, performance-verify and a11y-verify passed on #171 source SHA"
+    "id": 36369763776,
+    "sha": "620790d8ffb50618f15911c23bd4bf803247c4c7",
+    "status": "success; verify, rls-matrix, brand-verify, performance-verify and a11y-verify passed on #172 source SHA"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -273,7 +278,8 @@
     "docs/evidence/audit-remediation-20260927/t02-readiness.md",
     "docs/evidence/audit-remediation-20260927/t23-sponsorship-followup.md",
     "docs/evidence/audit-remediation-20260927/t23-sponsorship-bulk.md",
-    "docs/evidence/audit-remediation-20260927/t23-sponsorship-reminder.md"
+    "docs/evidence/audit-remediation-20260927/t23-sponsorship-reminder.md",
+    "docs/evidence/audit-remediation-20260927/t23-finance-bank-dryrun.md"
   ],
   "rollbackTarget": {
     "appSha": null,
