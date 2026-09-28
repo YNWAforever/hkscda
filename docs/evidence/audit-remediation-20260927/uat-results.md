@@ -51,3 +51,9 @@ Mobile homepage score regressed 4 points in that early comparison; investigate o
 ## T23 bank match confirmation #175
 
 Static finance panel/operation review and direct API tests cover exact-row-only selection, role denial, one pending-row action, result CSV and no-store responses. Isolated synthetic DB tests prove current actor, version, replay, conflict and durable audit/job. Actual hosted treasurer/admin/staff sessions, 390/768/1366 screenshots, keyboard/200% zoom, bank-specific file sample, export/private receipt access, provider sandbox and email test sink: not-run. No real money, mail, refund or production identity used.
+
+## T23 CRM contact format preview #176
+
+Isolated synthetic acceptance: 25 selected rows returned in order with explicit missing results, 1,000 selected rows accepted without truncation, duplicate/1,001 rejected; direct unauthorized request denied before PII read, no-store response, deleted row redaction and generic backend failure. Focused 9 pass/40 assertions and full 2961 pass/114 skip/0 fail at source 1511ee9. No real supporter data or mutation.
+
+Hosted actual treasurer/admin/nonstaff direct API, 390/768/1366 browser layout, keyboard pagination, stale in-flight selection and restricted export/private-file journey are not-run. Staff must treat all suggestions as review only; email identity, consent and merge remain separate guarded processes.

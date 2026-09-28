@@ -28,3 +28,9 @@ No production deploy, payment enablement, content publication or email send occu
 ## T23 bank match confirmation #175
 
 Before: #172 finance CSV generated a read-only candidate preview and could not settle. After: exact one-to-one rows expose selection; a persisted 15-minute operation shows 25 rows per page, per-item confirmation, partial results and CSV recovery. Static DOM/API/DB evidence is in t23-finance-bank-confirmation.md. Authenticated before/after screenshots and same-environment interaction or transfer measurements are not-run without private candidate/test identities; no performance improvement is claimed.
+
+## T23 CRM contact format preview #176
+
+Before: the supporter list allowed selection, tag bulk and restricted export but had no format-cleanup review. After: selected supporters have a transient read-only panel with 25-result pages, before/after contact formatting suggestions, counts and explicit manual email-identity cases. Missing/deleted records show no contact fields; filter/selection changes discard old results. The route returns no-store data in 100-ID read batches. Focused static/API tests passed 9/9, and the full isolated suite passed 2961/2961 runnable tests.
+
+Authenticated before/after screenshots at 390/768/1366 and same-environment CPU, transfer, interaction or Core Web Vitals comparison are not-run without a private candidate and test identities. No performance improvement is claimed.

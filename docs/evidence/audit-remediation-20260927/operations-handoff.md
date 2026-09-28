@@ -35,7 +35,7 @@
 - Approved payment policy/methods/instructions, provider sandbox credentials/account and webhook replay evidence; approved sponsorship terms PDF/hash, cancellation/refund copy.
 - Approved animal/story/photo ID list and rights, volunteer policy/session coverage, real content/seed diff, private candidate URL and test identities for every admin role.
 - Email test sink and hosted Auth OTP settings; monitoring/alert thresholds, five-minute worker/cron ownership, private regional benchmark, 390/768/1366 keyboard/200% UAT.
-- Remaining T23 domain implementations: approved reminder sending, bank-specific import adapter and sanitized sample, other safe domain actions. Read-only canonical bank dry-run/candidate preview is draft #172; guarded failed-delivery worklist and single-job retry are draft #173; role task guidance is draft #174; guarded exact bank confirmation is draft #175. The manual finance atomic prerequisite is draft #165. `tracker.csv` keeps ADMIN-04 partial.
+- Remaining T23 domain implementations: approved reminder sending, bank-specific import adapter and sanitized sample, other safe domain actions. Read-only canonical bank dry-run/candidate preview is draft #172; guarded failed-delivery worklist and single-job retry are draft #173; role task guidance is draft #174; guarded exact bank confirmation is draft #175; read-only CRM format preview is draft #176. The manual finance atomic prerequisite is draft #165. `tracker.csv` keeps ADMIN-04 partial.
 
 ## Sponsorship follow-up staff steps after approved schema and app deployment
 
@@ -67,3 +67,9 @@
 2. Select only one-to-one exact rows and create a 15-minute operation. Reopen the operation by its saved ID after refresh. Verify each displayed bank reference, exact payment hint, payment ID and HKD amount; confirm a single pending row at a time. The native confirmation applies only that row. There is no unattended apply-all.
 3. Inspect each succeeded, skipped or conflict result and download the per-item CSV. A changed version, reused reference, expiry or role change requires a new preview for unresolved rows. Do not replay succeeded rows, substitute a different reference, refund, or infer that a queued receipt/email has been sent. Failed delivery is handled separately by the guarded #173 worklist.
 4. Escalate adapter ambiguity, unavailable schema, unexpected duplicate references or missing durable delivery jobs. Keep old webhook/reconciliation active; only release owners can authorize production migration, payment enablement or notification sending.
+
+## T23 CRM format preview staff steps after approved app release
+
+1. As an active treasurer/admin, filter supporters and select this page or all matching results up to 1,000. Open the contact-format preview. Changing the filter or selection clears the old result; create a new preview instead of trusting an old screen.
+2. Review suggested whitespace changes and each manual identity-review case. A changed email is an identity decision, not a formatting command. The panel has no apply action and cannot merge supporters, grant consent or send a message.
+3. Missing/deleted rows are redacted. Reopen the current supporter record if needed; use the existing restricted export workflow for any approved export. Escalate unexpected PII, unavailable preview or authorization mismatch to the release owner. Hosted actual-role API and keyboard/mobile UAT are still required before enabling this branch.

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "appSha": "f9e3e00f5cd20cee984404b04adc5b0541deca88",
-  "appShaNote": "T23 exact bank-match confirmation runtime 6ecadd0, concurrency test 1f779cc and payment-hint fence source freeze f9e3e00; following evidence commit has no runtime changes",
+  "appSha": "1511ee99bdaad0b814e82ce8a259a68632f9b7bf",
+  "appShaNote": "T23 read-only CRM contact format preview source freeze 1511ee9 stacked on #175 bank confirmation; following evidence commit has no runtime changes",
   "productionAliasShaObserved": "f8d5e5d5840d1775efb7d7f4ae2768f6557096b5",
-  "schemaManifestHash": "3ba1a516b905579e53c6d1f013224e998a52fe7e8c290f171a2e3fb922398c5e",
+  "schemaManifestHash": "bb274c66aa557d5179b81e14eae3f1abfb263eabe4e91887fcf75484f3878ba6",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
@@ -270,9 +270,9 @@
     }
   ],
   "ciRun": {
-    "id": 36381052422,
-    "sha": "f9e3e00f5cd20cee984404b04adc5b0541deca88",
-    "status": "success; final source head 36381052422 and earlier source/test heads each passed verify, RLS, brand, a11y and performance; evidence-head pending"
+    "id": 36384803921,
+    "sha": "1511ee99bdaad0b814e82ce8a259a68632f9b7bf",
+    "status": "success; #176 source CI 36384803921 passed verify, RLS, brand, a11y and performance; evidence-head pending. Parent #175 source/docs each passed five jobs"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -296,7 +296,8 @@
     "docs/evidence/audit-remediation-20260927/t23-finance-delivery-worklist.md",
     "docs/evidence/audit-remediation-20260927/t23-role-guidance.md",
     "docs/evidence/audit-remediation-20260927/t23-finance-bank-confirmation.md",
-    "docs/evidence/audit-remediation-20260927/production-catalog-recheck-20260928.md"
+    "docs/evidence/audit-remediation-20260927/production-catalog-recheck-20260928.md",
+    "docs/evidence/audit-remediation-20260927/t23-crm-contact-format-preview.md"
   ],
   "rollbackTarget": {
     "appSha": null,
