@@ -31,11 +31,11 @@
 
 ## Outstanding inputs for release owners
 
-- Current production catalog snapshot, grants/RLS/storage policies and sanitized data-bearing clone plus backup/restore rehearsal for 48 manifest files.
+- Live 79-version ledger reconciliation (51 source-only and 21 live-only historical versions), complete production catalog/signatures/grants/RLS/storage policies and a sanitized data-bearing bridge rehearsal plus backup/restore. The 51 post-version source files alone are not a production migration path.
 - Approved payment policy/methods/instructions, provider sandbox credentials/account and webhook replay evidence; approved sponsorship terms PDF/hash, cancellation/refund copy.
 - Approved animal/story/photo ID list and rights, volunteer policy/session coverage, real content/seed diff, private candidate URL and test identities for every admin role.
 - Email test sink and hosted Auth OTP settings; monitoring/alert thresholds, five-minute worker/cron ownership, private regional benchmark, 390/768/1366 keyboard/200% UAT.
-- Remaining T23 domain implementations: approved reminder sending, bank-specific import adapter and sanitized sample, per-group finance confirmation, and other safe domain actions. Read-only canonical bank dry-run/candidate preview is draft #172; guarded failed-delivery worklist and single-job retry are draft #173; role task guidance is draft #174. The manual finance atomic prerequisite is draft #165. `tracker.csv` keeps ADMIN-04 partial.
+- Remaining T23 domain implementations: approved reminder sending, bank-specific import adapter and sanitized sample, other safe domain actions. Read-only canonical bank dry-run/candidate preview is draft #172; guarded failed-delivery worklist and single-job retry are draft #173; role task guidance is draft #174; guarded exact bank confirmation is draft #175. The manual finance atomic prerequisite is draft #165. `tracker.csv` keeps ADMIN-04 partial.
 
 ## Sponsorship follow-up staff steps after approved schema and app deployment
 
@@ -57,6 +57,13 @@
 ## Finance and task-guide staff steps after approved release
 
 1. In the role-gated task overview, use the numbered guidance as a route to the relevant workspace. Its count can be zero, positive or **未能讀取**; unavailable does not mean no work. The guide never approves, pays or sends anything.
-2. For an offline bank export, an approved bank-specific adapter must convert it to the canonical CSV columns `bank_reference,received_on,currency,amount_hkd,payment_hint`. Open finance as current treasurer/admin, choose the file and generate the **read-only** #172 preview. Check file hash, invalid rows, duplicate/credited references, candidate amount/hint and freshness. The preview cannot reserve or settle; refresh after payment facts change. A group confirmation path is not yet available.
+2. For an offline bank export, an approved bank-specific adapter must convert it to the canonical CSV columns `bank_reference,received_on,currency,amount_hkd,payment_hint`. Open finance as current treasurer/admin, choose the file and generate the **read-only** #172 preview. Check file hash, invalid rows, duplicate/credited references, candidate amount/hint and freshness. The preview cannot reserve or settle; refresh after payment facts change. #175 permits only a separate persisted exact-match snapshot and one-at-a-time staff confirmation after approval and deployment.
 3. In #173's failed-delivery list, inspect the existing successful payment/donation and recipient facts before each confirmed single-job retry. A retry requeues the same durable job with audit; it does not re-credit the payment. A 403 after role/ban change stops the action; a false/stale result requires refresh. Do not bulk retry, refund or void. Receipt/email delivery failure must never change a successful payment back to pending.
 4. Staff should escalate a missing private list, unavailable metric, schema-signature mismatch or unexpected duplicate reference to the release owner. Keep old webhook and reconciliation intake active even if **new** checkout is disabled. Only an approved operator may run production migrations, enable payment methods or send notifications.
+
+## T23 bank match staff steps after approved schema and app release
+
+1. Obtain an approved bank-specific adapter and sanitized sample. Convert the offline export to the canonical CSV; never upload the original bank file if its columns or meaning differ. Review the read-only preview, file hash, invalid/duplicate/credited references and exact candidate evidence.
+2. Select only one-to-one exact rows and create a 15-minute operation. Reopen the operation by its saved ID after refresh. Verify each displayed bank reference, exact payment hint, payment ID and HKD amount; confirm a single pending row at a time. The native confirmation applies only that row. There is no unattended apply-all.
+3. Inspect each succeeded, skipped or conflict result and download the per-item CSV. A changed version, reused reference, expiry or role change requires a new preview for unresolved rows. Do not replay succeeded rows, substitute a different reference, refund, or infer that a queued receipt/email has been sent. Failed delivery is handled separately by the guarded #173 worklist.
+4. Escalate adapter ambiguity, unavailable schema, unexpected duplicate references or missing durable delivery jobs. Keep old webhook/reconciliation active; only release owners can authorize production migration, payment enablement or notification sending.

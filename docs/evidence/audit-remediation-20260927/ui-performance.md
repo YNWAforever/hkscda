@@ -24,3 +24,7 @@ The verifier exited 0 on both builds: 4 routes × 2 viewports × 3 cold runs. Ra
 - All screenshots use the same synthetic fixture and browser with full-page capture. They do not contain production donor/adopter data.
 
 No production deploy, payment enablement, content publication or email send occurred.
+
+## T23 bank match confirmation #175
+
+Before: #172 finance CSV generated a read-only candidate preview and could not settle. After: exact one-to-one rows expose selection; a persisted 15-minute operation shows 25 rows per page, per-item confirmation, partial results and CSV recovery. Static DOM/API/DB evidence is in t23-finance-bank-confirmation.md. Authenticated before/after screenshots and same-environment interaction or transfer measurements are not-run without private candidate/test identities; no performance improvement is claimed.

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "appSha": "8f62d8a4ccd52803ebb8aea6929b8e9e7ee901ab",
-  "appShaNote": "T23 role-guided admin task overview source freeze; following documentation commit has no runtime changes",
+  "appSha": "f9e3e00f5cd20cee984404b04adc5b0541deca88",
+  "appShaNote": "T23 exact bank-match confirmation runtime 6ecadd0, concurrency test 1f779cc and payment-hint fence source freeze f9e3e00; following evidence commit has no runtime changes",
   "productionAliasShaObserved": "f8d5e5d5840d1775efb7d7f4ae2768f6557096b5",
-  "schemaManifestHash": "108bb9d96df37a2dd434ba323d935802b4e74107eb140bad48c46ebe4dcdefc8",
+  "schemaManifestHash": "3ba1a516b905579e53c6d1f013224e998a52fe7e8c290f171a2e3fb922398c5e",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
@@ -262,12 +262,17 @@
       "version": "20260928100000",
       "file": "20260928100000_finance_delivery_retry_guard.sql",
       "sha256": "27a5e87e3175bd545b6fe0a03429933bb617dc4c7f30f5dd3538de61539ddf0a"
+    },
+    {
+      "version": "20260928110000",
+      "file": "20260928110000_finance_bank_match_confirmation.sql",
+      "sha256": "e573522db17514869a39a62b090573ec458e1a5553cada3b8ef153b228cc6273"
     }
   ],
   "ciRun": {
-    "id": 36375345907,
-    "sha": "8f62d8a4ccd52803ebb8aea6929b8e9e7ee901ab",
-    "status": "success; #174 source verify, rls-matrix, brand-verify, a11y-verify and performance-verify passed; #173 source and docs-head also passed"
+    "id": 36381052422,
+    "sha": "f9e3e00f5cd20cee984404b04adc5b0541deca88",
+    "status": "success; final source head 36381052422 and earlier source/test heads each passed verify, RLS, brand, a11y and performance; evidence-head pending"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -289,7 +294,9 @@
     "docs/evidence/audit-remediation-20260927/t23-sponsorship-reminder.md",
     "docs/evidence/audit-remediation-20260927/t23-finance-bank-dryrun.md",
     "docs/evidence/audit-remediation-20260927/t23-finance-delivery-worklist.md",
-    "docs/evidence/audit-remediation-20260927/t23-role-guidance.md"
+    "docs/evidence/audit-remediation-20260927/t23-role-guidance.md",
+    "docs/evidence/audit-remediation-20260927/t23-finance-bank-confirmation.md",
+    "docs/evidence/audit-remediation-20260927/production-catalog-recheck-20260928.md"
   ],
   "rollbackTarget": {
     "appSha": null,
