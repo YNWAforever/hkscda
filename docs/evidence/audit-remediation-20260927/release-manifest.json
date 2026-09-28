@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "appSha": "732fd5cdc0175de5c6623d1b836b07f560efc348",
-  "appShaNote": "T23 failed finance delivery worklist and guarded retry source freeze; following documentation commit has no runtime changes",
+  "appSha": "8f62d8a4ccd52803ebb8aea6929b8e9e7ee901ab",
+  "appShaNote": "T23 role-guided admin task overview source freeze; following documentation commit has no runtime changes",
   "productionAliasShaObserved": "f8d5e5d5840d1775efb7d7f4ae2768f6557096b5",
   "schemaManifestHash": "108bb9d96df37a2dd434ba323d935802b4e74107eb140bad48c46ebe4dcdefc8",
   "configVersions": {
@@ -265,12 +265,15 @@
     }
   ],
   "ciRun": {
-    "id": 36373635875,
-    "sha": "732fd5cdc0175de5c6623d1b836b07f560efc348",
-    "status": "success; verify, rls-matrix, brand-verify, a11y-verify and performance-verify passed on corrected #173 source SHA"
+    "id": 36375345907,
+    "sha": "8f62d8a4ccd52803ebb8aea6929b8e9e7ee901ab",
+    "status": "success; #174 source verify, rls-matrix, brand-verify, a11y-verify and performance-verify passed; #173 source and docs-head also passed"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
+    "docs/evidence/audit-remediation-20260927/release-checklist.md",
+    "docs/evidence/audit-remediation-20260927/operations-handoff.md",
+    "docs/evidence/audit-remediation-20260927/task-progress.md",
     "docs/evidence/audit-remediation-20260927/migration-manifest.csv",
     "docs/evidence/audit-remediation-20260927/migration-runbook.md",
     "docs/evidence/audit-remediation-20260927/verification.md",
@@ -285,7 +288,8 @@
     "docs/evidence/audit-remediation-20260927/t23-sponsorship-bulk.md",
     "docs/evidence/audit-remediation-20260927/t23-sponsorship-reminder.md",
     "docs/evidence/audit-remediation-20260927/t23-finance-bank-dryrun.md",
-    "docs/evidence/audit-remediation-20260927/t23-finance-delivery-worklist.md"
+    "docs/evidence/audit-remediation-20260927/t23-finance-delivery-worklist.md",
+    "docs/evidence/audit-remediation-20260927/t23-role-guidance.md"
   ],
   "rollbackTarget": {
     "appSha": null,

@@ -35,7 +35,7 @@
 - Approved payment policy/methods/instructions, provider sandbox credentials/account and webhook replay evidence; approved sponsorship terms PDF/hash, cancellation/refund copy.
 - Approved animal/story/photo ID list and rights, volunteer policy/session coverage, real content/seed diff, private candidate URL and test identities for every admin role.
 - Email test sink and hosted Auth OTP settings; monitoring/alert thresholds, five-minute worker/cron ownership, private regional benchmark, 390/768/1366 keyboard/200% UAT.
-- Remaining T23 domain implementations: approved reminder sending, finance bank-file dry-run/candidate/group confirmation and receipt jobs, additional volunteer/adoption/animal/CRM safe actions. The manual finance atomic prerequisite is in draft #165; staff must not credit a duplicate normalized bank reference, and must handle post-commit receipt/email failure as a delivery recovery task. `tracker.csv` keeps ADMIN-04 partial.
+- Remaining T23 domain implementations: approved reminder sending, bank-specific import adapter and sanitized sample, per-group finance confirmation, and other safe domain actions. Read-only canonical bank dry-run/candidate preview is draft #172; guarded failed-delivery worklist and single-job retry are draft #173; role task guidance is draft #174. The manual finance atomic prerequisite is draft #165. `tracker.csv` keeps ADMIN-04 partial.
 
 ## Sponsorship follow-up staff steps after approved schema and app deployment
 
@@ -53,3 +53,10 @@
 1. Open the pledge drawer as staff/admin and choose **核對並產生草稿**. The server rereads current pledge, proof and month-allocation facts. Treasurer readers cannot access the direct draft API.
 2. Review the recipient, oldest eligible past month, internal outstanding commitment and generated time. An uploaded pending proof or refund adjustment blocks the draft; send these to proof/finance review first. The current month has no due-day in the schema and is not treated as overdue.
 3. Treat the subject/body as unapproved internal wording. Regenerate after any fact change. This panel cannot send, queue or mark a reminder as sent; a future send workflow needs approved copy, recipient preview, current-fact revalidation and explicit authorization.
+
+## Finance and task-guide staff steps after approved release
+
+1. In the role-gated task overview, use the numbered guidance as a route to the relevant workspace. Its count can be zero, positive or **未能讀取**; unavailable does not mean no work. The guide never approves, pays or sends anything.
+2. For an offline bank export, an approved bank-specific adapter must convert it to the canonical CSV columns `bank_reference,received_on,currency,amount_hkd,payment_hint`. Open finance as current treasurer/admin, choose the file and generate the **read-only** #172 preview. Check file hash, invalid rows, duplicate/credited references, candidate amount/hint and freshness. The preview cannot reserve or settle; refresh after payment facts change. A group confirmation path is not yet available.
+3. In #173's failed-delivery list, inspect the existing successful payment/donation and recipient facts before each confirmed single-job retry. A retry requeues the same durable job with audit; it does not re-credit the payment. A 403 after role/ban change stops the action; a false/stale result requires refresh. Do not bulk retry, refund or void. Receipt/email delivery failure must never change a successful payment back to pending.
+4. Staff should escalate a missing private list, unavailable metric, schema-signature mismatch or unexpected duplicate reference to the release owner. Keep old webhook and reconciliation intake active even if **new** checkout is disabled. Only an approved operator may run production migrations, enable payment methods or send notifications.
