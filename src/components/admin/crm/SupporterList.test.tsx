@@ -87,6 +87,8 @@ describe("SupporterList", () => {
     const markup = renderToStaticMarkup(<SupporterList />);
 
     expect(markup).toContain("Open");
+    expect(markup).toContain("批量指派跟進負責人");
+    expect(markup).toContain("批量跟進負責人");
     expect(markup).toContain('href="/admin/supporters/supporter-1"');
   });
 
