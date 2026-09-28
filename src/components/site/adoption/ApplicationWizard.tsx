@@ -276,7 +276,7 @@ function hasExpectedSubmissionResult(result: SubmissionResult) {
 }
 
 export function ApplicationWizard() {
-  const { items, clearIntent, reorderAdoptions } = useShortlist();
+  const { items, clearIntent, removeItem, reorderAdoptions } = useShortlist();
   const defaultValues = useMemo(() => createDefaultValues(), []);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [photos, setPhotos] = useState<SelectedPhoto[]>([]);
@@ -551,7 +551,9 @@ export function ApplicationWizard() {
   function renderStep() {
     switch (currentStep.id) {
       case "animals":
-        return <AnimalRankingFields animals={rankedAnimals} onMove={moveAnimal} />;
+        return (
+          <AnimalRankingFields animals={rankedAnimals} onMove={moveAnimal} onRemove={removeItem} />
+        );
       case "contact":
         return <ContactFields register={register} errors={errors} />;
       case "home":
