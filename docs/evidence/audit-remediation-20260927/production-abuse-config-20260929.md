@@ -1,0 +1,7 @@
+# Production abuse-control configuration metadata, 2026-09-29 HKT
+
+The release owner reported that the four required variables were set. A read-only Vercel metadata check confirmed that VITE_TURNSTILE_SITE_KEY, TURNSTILE_SECRET_KEY, UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN each exist with target production on the HKSCDA project. Command: vercel env ls production -F json --scope ynwaforevers-projects; exit code 0. Only names, target and encryption type were returned. No values were pulled, printed, sent to a provider or tested against a live form.
+
+This closes the missing-variable-name check for SEC-01. It does not prove that the Turnstile site/secret pair match, that the Upstash URL/token pair works, or that the next deployment has loaded them. A protected candidate with isolated data and provider sandbox, followed by enabled/disabled challenge and fail-closed journeys, is still required. The four new variables target production; this check does not establish preview-targeted sandbox configuration.
+
+The check does not change the release decision. At this point main and the production alias still reference f8d5e5d5840d1775efb7d7f4ae2768f6557096b5; #134 remains draft at 758fc9ac5f6423379a9cd87318d969e6e940ee63 with five successful GitHub CI jobs. The live Supabase ledger and catalog bridge, combined same-SHA CI, hosted role/private-file UAT, payment sandbox and approved content/policy versions remain open in release-checklist.md. No merge, deployment, migration or operational enablement was performed for this check.

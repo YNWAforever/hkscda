@@ -357,7 +357,8 @@
     "docs/evidence/audit-remediation-20260927/performance-final-adoption-20260928.md",
     "docs/evidence/audit-remediation-20260927/performance-final-adoption-20260928.csv",
     "docs/evidence/audit-remediation-20260927/production-baseline-20260928.md",
-    "docs/evidence/audit-remediation-20260927/t24-gate-recovery-20260928.md"
+    "docs/evidence/audit-remediation-20260927/t24-gate-recovery-20260928.md",
+    "docs/evidence/audit-remediation-20260927/production-abuse-config-20260929.md"
   ],
   "rollbackTarget": {
     "appSha": null,

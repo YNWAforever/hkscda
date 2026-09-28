@@ -54,3 +54,7 @@ The local combined source 72d0fda includes #179 after the 170-migration fresh re
 ## T24 exact-source local stack availability recheck
 
 At source 72d0fda, CHECK_RELEASE_SCHEMA_DATABASE_URL on the other unlinked synthetic DB 127.0.0.1:52322 and bun scripts/check-release-schema.ts exited 0: latest migration 20260928120000, 145 compatible requirements, zero issues. This is a catalog subset check, not the divergent production bridge. bun test --isolate supabase/rls-tests with SUPABASE_LOCAL_URL=127.0.0.1:52321 exited 0 but reported 0 pass / 56 skip because that local API was unreachable; it is not an RLS pass. The 57322 DB also failed a read-only five-second pg_stat_activity query after the interrupted DB-enabled full-suite attempts. No local stack was reset or migration ledger altered during this recheck. This was an earlier availability snapshot; the later exact-source DB and RLS recovery is recorded in [t24-gate-recovery-20260928.md](t24-gate-recovery-20260928.md). #179 remote RLS CI covers the focused PR only.
+
+## 2026-09-29 production abuse-control metadata
+
+Read-only Vercel metadata returned all four Turnstile/Upstash variable names with production target; command exit 0. Secret values and provider connectivity were not tested. See production-abuse-config-20260929.md. SEC-01 stays partial and release stays NO-GO while the private isolated candidate, live-ledger bridge, hosted UAT and other gates above remain open.
