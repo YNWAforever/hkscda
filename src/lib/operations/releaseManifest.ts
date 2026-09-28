@@ -30,6 +30,7 @@ export const releaseManifest: SchemaRequirement[] = [
       ordinal: "integer",
       payment_id: "uuid",
       bank_reference: "text",
+      payment_hint: "text",
       amount_cents: "integer",
       expected_payment_updated_at: "timestamptz",
       expected_donation_updated_at: "timestamptz",

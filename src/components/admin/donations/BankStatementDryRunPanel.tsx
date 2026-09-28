@@ -221,7 +221,7 @@ export function BankStatementDryRunPanel() {
     if (!operation || !item || item.status !== "pending" || applyingOrdinal !== null) return;
     if (
       !window.confirm(
-        `請核對銀行參考 ${item.bankReference}、付款 ${item.paymentId} 及 ${centsToHkd(item.amountCents)}，確定只確認此筆入帳？`,
+        `請核對銀行參考 ${item.bankReference}、付款 ${item.paymentId}、付款參考 ${item.paymentHint} 及 ${centsToHkd(item.amountCents)}，確定只確認此筆入帳？`,
       )
     )
       return;

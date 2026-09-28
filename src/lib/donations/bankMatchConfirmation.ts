@@ -4,6 +4,7 @@ export type ExactBankMatchItem = {
   ordinal: number;
   paymentId: string;
   bankReference: string;
+  paymentHint: string;
   amountCents: number;
 };
 
@@ -53,7 +54,9 @@ export function selectExactBankMatchItems(
       row.candidateCount !== 1 ||
       row.candidates.length !== 1 ||
       row.amountCents === null ||
-      row.amountCents <= 0
+      row.amountCents <= 0 ||
+      !row.paymentHint ||
+      row.candidates[0]?.providerRef?.trim().toLowerCase() !== row.paymentHint.toLowerCase()
     )
       throw new BankMatchSelectionError("Only one exact candidate may be selected per bank row");
     const payment = row.candidates[0]!;
@@ -66,6 +69,7 @@ export function selectExactBankMatchItems(
       ordinal,
       paymentId: payment.id,
       bankReference: row.bankReference,
+      paymentHint: row.paymentHint,
       amountCents: row.amountCents,
     };
   });

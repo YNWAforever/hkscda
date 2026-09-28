@@ -11,6 +11,7 @@ create table public.finance_bank_match_item (
   ordinal integer not null check (ordinal between 1 and 1000),
   payment_id uuid not null,
   bank_reference text not null check (length(btrim(bank_reference)) between 1 and 120),
+  payment_hint text not null check (length(btrim(payment_hint)) between 1 and 120 and payment_hint !~ '[[:cntrl:]]'),
   amount_cents integer not null check (amount_cents>0),
   expected_payment_updated_at timestamptz,
   expected_donation_updated_at timestamptz,
@@ -60,7 +61,7 @@ begin
   if not found then raise exception 'finance_bank_match_operation_forbidden' using errcode='42501'; end if;
   select coalesce(jsonb_agg(jsonb_build_object(
     'ordinal',i.ordinal,'paymentId',i.payment_id,'bankReference',i.bank_reference,
-    'amountCents',i.amount_cents,'status',i.status,'reasonCode',i.reason_code,
+    'paymentHint',i.payment_hint,'amountCents',i.amount_cents,'status',i.status,'reasonCode',i.reason_code,
     'deliveryJobId',i.delivery_job_id,'appliedAt',i.applied_at
   ) order by i.ordinal),'[]'::jsonb),
   count(*) filter(where i.status='pending'),count(*) filter(where i.status='succeeded')
@@ -85,6 +86,7 @@ declare
   v_ordinal integer;
   v_payment uuid;
   v_reference text;
+  v_hint text;
   v_amount integer;
   v_payment_row public.payment%rowtype;
   v_donation_row public.donation%rowtype;
@@ -107,8 +109,11 @@ begin
     v_ordinal:=(v_input->>'ordinal')::integer;
     v_payment:=(v_input->>'paymentId')::uuid;
     v_reference:=btrim(v_input->>'bankReference');
+    v_hint:=btrim(v_input->>'paymentHint');
     v_amount:=(v_input->>'amountCents')::integer;
     if v_ordinal not between 1 and 1000 or v_reference is null
+      or v_hint is null or length(v_hint) not between 1 and 120
+      or v_hint ~ '[[:cntrl:]]'
       or length(v_reference) not between 1 and 120
       or v_reference ~ '[[:cntrl:]]'
     then raise exception 'invalid_finance_bank_match_item' using errcode='22023'; end if;
@@ -125,6 +130,8 @@ begin
         or v_donation_row.amount_cents<>v_amount
         or v_donation_row.currency<>'HKD'
       then v_status:='skipped';v_reason:='payment_mismatch';
+      elsif lower(btrim(v_payment_row.provider_ref)) is distinct from lower(v_hint)
+      then v_status:='skipped';v_reason:='hint_changed';
       elsif exists(select 1 from public.payment p
         where p.status='succeeded' and p.provider in ('fps','payme','manual')
           and lower(btrim(p.bank_reference))=lower(v_reference))
@@ -133,9 +140,9 @@ begin
       end if;
     end if;
     insert into public.finance_bank_match_item(
-      operation_id,ordinal,payment_id,bank_reference,amount_cents,
+      operation_id,ordinal,payment_id,bank_reference,payment_hint,amount_cents,
       expected_payment_updated_at,expected_donation_updated_at,status,reason_code
-    ) values(v_op,v_ordinal,v_payment,v_reference,v_amount,
+    ) values(v_op,v_ordinal,v_payment,v_reference,v_hint,v_amount,
       v_payment_row.updated_at,v_donation_row.updated_at,v_status,v_reason);
   end loop;
   insert into public.audit_log(actor_user_id,action,entity,entity_id,detail)
@@ -182,6 +189,8 @@ begin
     elsif v_payment.updated_at is distinct from v_item.expected_payment_updated_at
       or v_donation.updated_at is distinct from v_item.expected_donation_updated_at
     then v_status:='conflict';v_reason:='version_changed';
+    elsif lower(btrim(v_payment.provider_ref)) is distinct from lower(btrim(v_item.payment_hint))
+    then v_status:='conflict';v_reason:='hint_changed';
     elsif v_payment.provider not in ('fps','payme','manual')
       or v_payment.amount_cents<>v_item.amount_cents
       or v_donation.amount_cents<>v_item.amount_cents

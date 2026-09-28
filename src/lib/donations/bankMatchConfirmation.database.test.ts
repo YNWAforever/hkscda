@@ -51,6 +51,7 @@ test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !==
           payments.map((paymentId, index) => ({
             ordinal: index + 1,
             bankReference: references[index],
+            paymentHint: "HINT-" + paymentId,
             paymentId,
             amountCents: (index + 1) * 10000,
           })),
@@ -82,9 +83,27 @@ test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !==
         };
         expect(preview.state).toBe("queued");
         expect(preview.items.map((item) => item.status)).toEqual(["pending", "pending"]);
+        const wrongHint = JSON.stringify([
+          {
+            ordinal: 2,
+            bankReference: "SYNTH-175-WRONG-" + crypto.randomUUID(),
+            paymentId: payments[1],
+            amountCents: 20000,
+            paymentHint: "OTHER-HINT",
+          },
+        ]);
+        const wrong = await tx.unsafe(
+          "select public.create_finance_bank_match_preview($1::uuid,$2,$3::jsonb) result",
+          [actor, fileSha, wrongHint],
+        );
+        expect(wrong[0]!.result.items[0]).toMatchObject({
+          status: "skipped",
+          reasonCode: "hint_changed",
+        });
         const operationId = preview.operationId;
         const expiredPreview = (await create())[0]!.result as { operationId: string };
         const competing = (await create())[0]!.result as { operationId: string };
+        const changedHint = (await create())[0]!.result as { operationId: string };
         await tx.unsafe(
           "update public.finance_bank_match_operation set expires_at=now()-interval '1 second' where id=$1::uuid",
           [expiredPreview.operationId],
@@ -102,8 +121,20 @@ test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !==
         await tx.unsafe("rollback to savepoint expired_apply");
         expect(expired).toBe("P0001");
         const duplicates = JSON.stringify([
-          { ordinal: 1, bankReference: references[0], paymentId: payments[0], amountCents: 10000 },
-          { ordinal: 2, bankReference: references[0], paymentId: payments[1], amountCents: 20000 },
+          {
+            ordinal: 1,
+            bankReference: references[0],
+            paymentHint: "HINT-" + payments[0],
+            paymentId: payments[0],
+            amountCents: 10000,
+          },
+          {
+            ordinal: 2,
+            bankReference: references[0],
+            paymentHint: "HINT-" + payments[1],
+            paymentId: payments[1],
+            amountCents: 20000,
+          },
         ]);
         await tx.unsafe("savepoint duplicate_reference");
         let duplicate: string | undefined;
@@ -143,6 +174,26 @@ test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !==
           reasonCode: "status_changed",
         });
         expect((await apply(1))[0]?.result?.status).toBe("succeeded");
+        // A provider reference change without a timestamp bump must still invalidate exact matching.
+        await tx.unsafe("set local session_replication_role=replica");
+        await tx.unsafe("update public.payment set provider_ref='OTHER-HINT' where id=$1::uuid", [
+          payments[1],
+        ]);
+        await tx.unsafe("set local session_replication_role=origin");
+        const changed = await tx.unsafe(
+          "select public.apply_finance_bank_match_item($1::uuid,$2::uuid,2) result",
+          [actor, changedHint.operationId],
+        );
+        expect(changed[0]?.result).toMatchObject({
+          status: "conflict",
+          reasonCode: "hint_changed",
+        });
+        await tx.unsafe("set local session_replication_role=replica");
+        await tx.unsafe("update public.payment set provider_ref=$2 where id=$1::uuid", [
+          payments[1],
+          "HINT-" + payments[1],
+        ]);
+        await tx.unsafe("set local session_replication_role=origin");
         // Simulate a separate committed edit: the payment stays pending, but its version changes.
         await tx.unsafe("set local session_replication_role=replica");
         await tx.unsafe(
@@ -268,7 +319,13 @@ test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !==
         );
       });
       const selected = JSON.stringify([
-        { ordinal: 1, bankReference: reference, paymentId: payment, amountCents: 10000 },
+        {
+          ordinal: 1,
+          bankReference: reference,
+          paymentHint: "HINT-" + payment,
+          paymentId: payment,
+          amountCents: 10000,
+        },
       ]);
       for (let n = 0; n < 2; n++) {
         const created = await db.unsafe(

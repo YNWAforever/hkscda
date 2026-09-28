@@ -78,5 +78,11 @@ test("release manifest covers every new public table, RPC, and additive column a
   expect(tables).toContain("sponsorship_followup_bulk_item");
   expect(tables).toContain("finance_bank_match_operation");
   expect(tables).toContain("finance_bank_match_item");
+  const bankItem = releaseManifest.find(
+    (item) => item.kind === "table" && item.name === "finance_bank_match_item",
+  );
+  expect(bankItem && bankItem.kind === "table" ? bankItem.columns?.payment_hint : null).toBe(
+    "text",
+  );
   expect(releaseManifest.every((item) => item.schema === "public" && item.required)).toBe(true);
 });

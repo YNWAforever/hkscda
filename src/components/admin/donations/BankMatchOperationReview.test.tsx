@@ -15,6 +15,7 @@ const operation: BankMatchOperation = {
       ordinal: 1,
       paymentId: "11111111-1111-4111-8111-111111111111",
       bankReference: "BANK-1",
+      paymentHint: "HINT-1",
       amountCents: 10000,
       status: "pending",
       reasonCode: null,
@@ -25,6 +26,7 @@ const operation: BankMatchOperation = {
       ordinal: 2,
       paymentId: "33333333-3333-4333-8333-333333333333",
       bankReference: "BANK-2",
+      paymentHint: "HINT-2",
       amountCents: 20000,
       status: "conflict",
       reasonCode: "version_changed",
@@ -40,6 +42,7 @@ test("finance match review exposes only per-pending-item confirmed action and do
   );
   expect(html).toContain("逐組確認");
   expect(html).toContain("BANK-1");
+  expect(html).toContain("HINT-1");
   expect(html).toContain("BANK-2");
   expect(html).toContain("version_changed");
   expect(html.match(/確認此筆入帳/g)).toHaveLength(1);

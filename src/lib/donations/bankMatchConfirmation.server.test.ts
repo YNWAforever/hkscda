@@ -48,6 +48,7 @@ const operation = {
       ordinal: 1,
       paymentId,
       bankReference: "BANK-1",
+      paymentHint: "HINT-1",
       amountCents: 10000,
       status: "pending" as const,
       reasonCode: null,
@@ -76,7 +77,15 @@ test("server re-previews CSV and persists only the selected exact match", async 
       "persist",
       "actor",
       preview.fileSha256,
-      [{ ordinal: 1, paymentId, bankReference: "BANK-1", amountCents: 10000 }],
+      [
+        {
+          ordinal: 1,
+          paymentId,
+          bankReference: "BANK-1",
+          paymentHint: "HINT-1",
+          amountCents: 10000,
+        },
+      ],
     ],
   ]);
 });
@@ -104,7 +113,7 @@ test("service RPCs forward actor and operation without direct table reads", asyn
   const repository = createSupabaseBankMatchRepository(client);
   expect(
     await repository.create("actor", preview.fileSha256, [
-      { ordinal: 1, paymentId, bankReference: "BANK-1", amountCents: 10000 },
+      { ordinal: 1, paymentId, bankReference: "BANK-1", paymentHint: "HINT-1", amountCents: 10000 },
     ]),
   ).toEqual(operation);
   expect(await repository.get("actor", operationId)).toEqual(operation);

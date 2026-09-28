@@ -23,6 +23,7 @@ const operationSchema = z
             ordinal: z.number().int().min(1).max(1000),
             paymentId: z.string().uuid(),
             bankReference: z.string().min(1).max(120),
+            paymentHint: z.string().min(1).max(120),
             amountCents: z.number().int().positive(),
             status: itemStatus,
             reasonCode: z.string().nullable(),

@@ -72,7 +72,7 @@ export function BankMatchOperationReview({
                   {item.ordinal} · {item.bankReference}
                 </td>
                 <td className="break-all p-2">
-                  {item.paymentId} · {centsToHkd(item.amountCents)}
+                  {item.paymentId} · {item.paymentHint} · {centsToHkd(item.amountCents)}
                 </td>
                 <td className="p-2">
                   {statusCopy[item.status]}
