@@ -43,3 +43,7 @@ No UI or rendering path changed. Full fresh 161-file schema and synthetic 160-to
 ## T23 CRM assignment #178 UI and performance boundary
 
 Before: the supporter list had tag bulk and read-only contact format preview, with no CRM follow-up owner picker or assignment panel. After: #178 adds a labelled assignee select, preview button, shared per-item review and 25-item apply with recovery. SSR list markup was checked in the isolated test. Authenticated before/after 390/768/1366 screenshots and same-environment CRM latency/Core Web Vitals measurements are not-run because the private candidate and test identities are unavailable; no numeric improvement is claimed. Existing public/volunteer captures and T21 measurements above remain scoped to their recorded environments.
+
+## Final-source adoption entry, 2026-09-28
+
+Clean main f8d5e5d versus local-only integration 72d0fda used the same read-only synthetic PostgREST fixture, Windows host, Lighthouse 13.4.1 / Chrome 148 and three cold runs per 390x844 and 1440x900 viewport. The /adoption/apply empty state was visually byte-identical. Median mobile LCP was 1663 to 1679 ms, score 99 to 99; desktop LCP was 564 to 576 ms, score 100 to 100. Total byte weight rose 1,462,126 to 1,470,485 bytes. This does not show a speed improvement or active seven-step performance. [Run-level data and scope](performance-final-adoption-20260928.md) and [focused #179 wizard screenshots](https://github.com/YNWAforever/hkscda/pull/179) are recorded separately.
