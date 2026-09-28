@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "appSha": "74669a48a7786f93cde5ebb4dd0118490f24a095",
-  "appShaNote": "T23 sponsorship follow-up bulk source freeze; following documentation commit has no runtime changes",
+  "appSha": "c683532b9f8539836f032a31fa17aa8c2a8494a8",
+  "appShaNote": "T23 read-only sponsorship reminder draft source freeze; following documentation commit has no runtime changes",
   "productionAliasShaObserved": "f8d5e5d5840d1775efb7d7f4ae2768f6557096b5",
   "schemaManifestHash": "f2a4f30fc3409969416945d78323a5c0ac7588546663d4203f4c1feba040ff01",
   "configVersions": {
@@ -255,9 +255,9 @@
     }
   ],
   "ciRun": {
-    "id": 36364156675,
-    "sha": "74669a48a7786f93cde5ebb4dd0118490f24a095",
-    "status": "success; verify, rls-matrix, brand-verify, performance-verify and a11y-verify passed on #170 source SHA"
+    "id": 36367078505,
+    "sha": "c683532b9f8539836f032a31fa17aa8c2a8494a8",
+    "status": "success; verify, rls-matrix, brand-verify, performance-verify and a11y-verify passed on #171 source SHA"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -272,7 +272,8 @@
     "docs/evidence/audit-remediation-20260927/t23-sponsorship-proof-queue.md",
     "docs/evidence/audit-remediation-20260927/t02-readiness.md",
     "docs/evidence/audit-remediation-20260927/t23-sponsorship-followup.md",
-    "docs/evidence/audit-remediation-20260927/t23-sponsorship-bulk.md"
+    "docs/evidence/audit-remediation-20260927/t23-sponsorship-bulk.md",
+    "docs/evidence/audit-remediation-20260927/t23-sponsorship-reminder.md"
   ],
   "rollbackTarget": {
     "appSha": null,
