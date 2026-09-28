@@ -47,6 +47,20 @@ test.skipIf(!url || process.env.DELIVERY_RETRY_TEST_ALLOW_LOCAL_FIXTURES !== "1"
           [job, donation, payment],
         );
 
+        const list = () =>
+          tx.unsafe("select public.list_failed_donation_delivery_jobs($1::uuid,1) result", [
+            actor,
+          ]) as Promise<Array<{ result: { total: number; jobs: Array<{ id: string }> } }>>;
+        await tx.unsafe("savepoint banned_list");
+        let listDenied: string | undefined;
+        try {
+          await list();
+        } catch (error) {
+          listDenied = (error as { errno?: string }).errno;
+        }
+        await tx.unsafe("rollback to savepoint banned_list");
+        expect(listDenied).toBe("42501");
+
         const call = () =>
           tx.unsafe(
             "select public.retry_donation_delivery_job_with_audit($1::uuid,$2::uuid) retried",
@@ -80,6 +94,18 @@ test.skipIf(!url || process.env.DELIVERY_RETRY_TEST_ALLOW_LOCAL_FIXTURES !== "1"
           "update public.admin_user set role='treasurer' where auth_user_id=$1::uuid",
           [actor],
         );
+        const listed = (await list())[0]!.result;
+        expect(listed.total).toBe(1);
+        expect(listed.jobs[0]?.id).toBe(job);
+        expect(JSON.stringify(listed)).not.toContain("@example.invalid");
+        const grants = (await tx.unsafe(
+          "select has_function_privilege('anon','public.list_failed_donation_delivery_jobs(uuid,integer)','EXECUTE') anon_allowed,has_function_privilege('authenticated','public.list_failed_donation_delivery_jobs(uuid,integer)','EXECUTE') auth_allowed,has_function_privilege('service_role','public.list_failed_donation_delivery_jobs(uuid,integer)','EXECUTE') service_allowed",
+        )) as Array<{ anon_allowed: boolean; auth_allowed: boolean; service_allowed: boolean }>;
+        expect(grants[0]).toEqual({
+          anon_allowed: false,
+          auth_allowed: false,
+          service_allowed: true,
+        });
         await tx.unsafe("update public.payment set status='refunded' where id=$1::uuid", [payment]);
         expect((await call())[0]?.retried).toBe(false);
         await tx.unsafe("update public.payment set status='succeeded' where id=$1::uuid", [

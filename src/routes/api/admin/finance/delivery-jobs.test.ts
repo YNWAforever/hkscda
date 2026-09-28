@@ -26,7 +26,8 @@ test("delivery worklist validates page, caps result and never maps failure to ze
   const calls: number[] = [];
   const handler = createDeliveryWorklistHandler({
     authorize: async () => "actor",
-    list: async (page) => {
+    list: async (actor, page) => {
+      expect(actor).toBe("actor");
       calls.push(page);
       return { jobs: [], total: 27, page, pageSize: 25 };
     },
@@ -48,4 +49,17 @@ test("delivery worklist validates page, caps result and never maps failure to ze
   const unavailable = await broken(request());
   expect(unavailable.status).toBe(503);
   expect(await unavailable.json()).toEqual({ error: "Delivery worklist unavailable" });
+});
+
+test("current SQL actor revocation returns forbidden without a job list", async () => {
+  const handler = createDeliveryWorklistHandler({
+    authorize: async () => "actor",
+    list: async () => {
+      throw Object.assign(new Error("revoked"), { code: "42501" });
+    },
+  });
+  const response = await handler(request());
+  expect(response.status).toBe(403);
+  expect(response.headers.get("cache-control")).toBe("no-store");
+  expect(await response.json()).toEqual({ error: "Access denied" });
 });

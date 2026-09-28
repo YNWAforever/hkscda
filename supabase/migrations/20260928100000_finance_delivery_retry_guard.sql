@@ -45,3 +45,50 @@ revoke all on function public.retry_donation_delivery_job_with_audit(uuid,uuid)
   from public,anon,authenticated;
 grant execute on function public.retry_donation_delivery_job_with_audit(uuid,uuid)
   to service_role;
+
+-- The private queue read uses the same current-identity fence as retry.
+create function public.list_failed_donation_delivery_jobs(
+  p_actor uuid,p_page integer
+) returns jsonb language plpgsql security definer set search_path='' as $$
+declare
+  v_total integer;
+  v_jobs jsonb;
+begin
+  perform 1 from public.admin_user a join auth.users u on u.id=a.auth_user_id
+  where a.auth_user_id=p_actor and a.status='active'
+    and a.role in ('treasurer','admin') and u.email_confirmed_at is not null
+    and (u.banned_until is null or u.banned_until<=clock_timestamp())
+  for share of a,u;
+  if not found then
+    raise exception 'delivery_worklist_forbidden' using errcode='42501';
+  end if;
+  if p_page is null or p_page<1 or p_page>1000 then
+    raise exception 'invalid_delivery_worklist_page' using errcode='22023';
+  end if;
+
+  select count(*)::integer into v_total
+  from public.donation_delivery_job j
+  where j.status in ('retryable','attention_required');
+  select coalesce(jsonb_agg(jsonb_build_object(
+    'id',q.id,'paymentId',q.payment_id,'status',q.status,
+    'attempts',q.attempts,'errorCode',q.error_code,
+    'createdAt',q.created_at,'nextAttemptAt',q.next_attempt_at,
+    'paymentStatus',q.payment_status,'donationStatus',q.donation_status
+  ) order by q.created_at,q.id),'[]'::jsonb) into v_jobs
+  from (
+    select j.id,j.payment_id,j.status,j.attempts,j.error_code,
+      j.created_at,j.next_attempt_at,p.status payment_status,d.status donation_status
+    from public.donation_delivery_job j
+      join public.payment p on p.id=j.payment_id
+      join public.donation d on d.id=j.donation_id and d.id=p.donation_id
+    where j.status in ('retryable','attention_required')
+    order by j.created_at,j.id
+    limit 25 offset (p_page-1)*25
+  ) q;
+  return jsonb_build_object('jobs',v_jobs,'total',v_total,
+    'page',p_page,'pageSize',25);
+end $$;
+revoke all on function public.list_failed_donation_delivery_jobs(uuid,integer)
+  from public,anon,authenticated;
+grant execute on function public.list_failed_donation_delivery_jobs(uuid,integer)
+  to service_role;
