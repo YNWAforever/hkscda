@@ -31,3 +31,7 @@ The integrated manifest now lists 61 source files newer than the last observed l
 ## Release boundary
 
 Before any approved release, the focused PR dependency graph and these local merge resolutions need a reviewable integration path, exact live catalog/signature/grant/RLS/index/storage comparison, sanitized clone rehearsal with measured locks and backup/restore, verified old-app compatibility, provider sandbox and actual-role UAT, same-SHA CI, and release approval. Keep existing webhook intake, reconciliation, delivery jobs, atomic audit, signed proof intent, fingerprint/idempotency, body limits, suspended-user revalidation, and media commit-before-public behavior. App rollback must stop only new entry points and preserve committed payment/audit facts; an older database restore is not a safe routine rollback.
+
+## SEC-01 / T07 regression recheck
+
+The combined local source already contains the T02 fail-closed limiter/Turnstile and #139 T07 proof-token normalization. A seven-file `bun test` batch without isolation exited 1 because `PledgeWizard.test.tsx` installed a process-global `@tanstack/react-router` mock that removed `createFileRoute` for the later proof route tests. The proof route file alone exited 0 (7 pass/19 assertions), and `bun test --isolate` across all seven files exited 0 (71 pass/161 assertions). Source code mitigation is recorded as code-complete; production site-key/secret metadata, actual challenge behavior, deployment and operational enablement remain unverified. No secret value was read or printed.
