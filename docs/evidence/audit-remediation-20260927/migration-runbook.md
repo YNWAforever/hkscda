@@ -168,3 +168,8 @@ Undeployed 20260927184500 now hashes to a2b689369ccb803e65d94e75db1f669dec6b9cf4
 Version 20260927190000, SHA-256 ffbce79aa8220b3aa1105c84f81c6b1184986902b8a5a34b1189b1cd5b4a1764. Two RLS operation/result tables and three service-role-only public RPCs snapshot 1–1000 CMS draft IDs for 15 minutes; one private guard requires an active confirmed non-banned admin. Apply locks the content item, rechecks draft revision UUID/status/classification and invokes `editorial_review_command` in the same transaction. Non-draft or already-classified rows are skipped or conflicted. No status, publication, media, body, notification or financial mutation occurs.
 
 The exact file completed BEGIN/ROLLBACK rehearsal, then manual application only on the named unlinked 127.0.0.1:57322 database. No migration ledger row was fabricated. Catalog checker reports 114 compatible requirements. Before release rehearse all 44 manifest files in order on fresh and sanitized data-bearing clones, inspect content-item lock/trigger effects and public visibility, verify service-only signatures and forbidden anon/authenticated grants, and prove backup/restore. During app rollback disable CMS bulk UI/API but retain additive operation results and existing publication/audit facts.
+
+
+## PR164 sequential candidate correction
+
+Undeployed20260927190000 now hashes79720b899eee34d673cef16f93e9ac1fba62ce7d21cb73039feb3851ee3499e5. SharedAuth/adminlocks fence actor eligibility; fullSQLBEGIN/ROLLBACK preserves1000synthetic content/revision pairs, no backfill,298ms. Production7content/7revisions/0draft-statusitems; candidateobjectsabsent. See sequential-merge-164-20260930.md for exactgate results/grants/RLS/backup/rollback. Retain review/audit andoperation history onapp rollback.

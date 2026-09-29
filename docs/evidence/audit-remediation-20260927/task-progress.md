@@ -82,3 +82,6 @@ Draft #149 addresses ADMIN-02 in an isolated branch: fresh supporter read on ope
 
 - T23 CMS draft review batch: missing-RPC red/green; dedicated DB 3 pass/18 assertions; focused UI/API/selection 6 pass/26; catalog 114 compatible. Full isolated suite 2875 pass/103 skip/0 fail across 516 files; build/typecheck/lint exit 0 after test UUID fixture correction. Draft PR and remote CI pending. #162 and #163 five CI jobs each passed. CMS public publication and remaining T23 domains stay open.
 - T23 CMS draft review PR #164 source 0c92e7f opened; remote run 36347166456 pending at package refresh. T24 manifest refreshed to 44 verified migration checksums and 114 compatible local catalog requirements; release NO-GO remains.
+
+### 2026-09-30 PR164 follow-up
+CMS bulk actor-lock/JSON/recovery/queue races repaired and independently reviewed. DB role/concurrency/audit and1000-item evidence,full SQL unchanged-row drill and3-width UI recorded in sequential-merge-164-20260930.md. Code complete for this slice; schema ready locally only;deployed/operationally-enabled no. #162 unmount backport integrated through#163.

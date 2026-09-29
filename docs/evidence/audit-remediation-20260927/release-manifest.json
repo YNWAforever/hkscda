@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "appSha": "f330d1f2c8d8286e0db66bad102b4035008dc53f",
-  "appShaNote": "Reviewed PR162 code; PR163 is a documentation-only descendant. Later PR164-179 candidates are not included in this source freeze.",
+  "appSha": "5793e12d6933ba06c58c226d29a4ca8931601398",
+  "appShaNote": "PR164 reviewed CMS bulk code and inherited animal queue repair; later PR165-179 candidates excluded.",
   "productionAliasShaObserved": "24196faf027998388eff3196a6979e23566e2443",
-  "schemaManifestHash": "4023e54be04e6c90a5984cbff4a8d89170da167e5b2e8ef7f914bce0adfb432e",
+  "schemaManifestHash": "a3519ee326b19427326b51cdb8606aa8792dc16b499af76622931d078a1892cf",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
@@ -267,12 +267,17 @@
       "version": "20260927184500",
       "file": "20260927184500_animal_review_bulk.sql",
       "sha256": "a2b689369ccb803e65d94e75db1f669dec6b9cf43f0132853c22b612b58db40f"
+    },
+    {
+      "version": "20260927190000",
+      "file": "20260927190000_cms_review_bulk.sql",
+      "sha256": "79720b899eee34d673cef16f93e9ac1fba62ce7d21cb73039feb3851ee3499e5"
     }
   ],
   "ciRun": {
     "id": null,
-    "sha": "ae80846bbde75f2bc0e995630c25436894b27d4a",
-    "status": "current-head PR162 remote CI pending at capture"
+    "sha": "5793e12d6933ba06c58c226d29a4ca8931601398",
+    "status": "PR164 final local verification; exact remote head CI pending"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -283,7 +288,9 @@
     "docs/evidence/audit-remediation-20260927/uat-results.md",
     "docs/evidence/audit-remediation-20260927/pr-status-20260930.json",
     "docs/evidence/audit-remediation-20260927/sequential-merge-162-20260930.md",
-    "docs/evidence/audit-remediation-20260927/sequential-merge-156-20260930.md"
+    "docs/evidence/audit-remediation-20260927/sequential-merge-156-20260930.md",
+    "docs/evidence/audit-remediation-20260927/sequential-merge-163-20260930.md",
+    "docs/evidence/audit-remediation-20260927/sequential-merge-164-20260930.md"
   ],
   "rollbackTarget": {
     "appSha": null,
@@ -582,7 +589,7 @@
   "productionDeploymentId": "dpl_DJpjHkmVayPsXZqwiA2CMJG43Ygk",
   "productionDeploymentState": "READY",
   "productionSchemaLedgerCountObserved": 95,
-  "migrationManifestNote": "51 unique source-file inventory entries; not a command to apply every file or rewrite provider ledger timestamps. Follow exact approved per-PR dependency runbooks and observed catalog.",
+  "migrationManifestNote": "52 unique source-file inventory entries; not a command to apply every file or rewrite provider ledger timestamps. Follow exact approved per-PR dependency runbooks and observed catalog.",
   "productionCiRun": {
     "id": 36624781016,
     "sha": "24196faf027998388eff3196a6979e23566e2443",
@@ -593,7 +600,8 @@
     "migration159": "exact approval requested; pending",
     "migration160": "exact approval requested; pending",
     "migration161": "exact approval requested; pending",
-    "migration162": "exact approval requested; pending; reviewed SQL unchanged by queue fix"
+    "migration162": "exact approval requested; pending; reviewed SQL unchanged by queue fix",
+    "migration164": "not requested; exact current-head CI pending"
   },
   "blockedGate": {
     "pr": 156,
