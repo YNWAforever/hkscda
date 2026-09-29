@@ -77,3 +77,5 @@ Draft #149 addresses ADMIN-02 in an isolated branch: fresh supporter read on ope
 - PR163 sequential release package refresh: live PR inventory confirms22/46merged (#134-#155); all22 main CI runs success, #155aliasREADY. Sourcefreeze#162ae80846b;51unique source checksums match committedbytes. Corrected stale deployed tracker fields and staff recovery workflow. #156actualAuth concurrency blocks nextrelease; exact later migration/activation approvals remain pending.
 
 - Release validation initially found23 stale plan-tracker rows. Synchronized current status/evidence from the live evidence tracker by issue ID, retaining original baseline labels. Repeat validates34 matching current-state rows,51 checksums and46PRs/22successful mainCI runs; exit0.
+
+- PR163 independent review identified stale R01 missing-object counts. Both trackers now label them as2026-09-27baseline, record later partial production dependencies/ledger95, and retain the fresh complete catalog gate; schema-ready remains no.
