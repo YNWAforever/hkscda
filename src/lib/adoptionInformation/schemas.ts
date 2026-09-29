@@ -24,14 +24,56 @@ export const adoptionFeeInputSchema = z.object({
   isPublished: z.boolean().default(true),
 });
 
-export const estateInputSchema = z.object({
-  id: optionalId,
-  estateName: z.string().trim().min(1).max(180),
-  district: z.string().trim().min(1).max(120),
-  notes: optionalNotes,
-  sortOrder,
-  isPublished: z.boolean().default(false),
-});
+export const estateContentFieldsSchema = z
+  .object({
+    estateName: z.string().trim().min(1).max(180),
+    district: z.string().trim().min(1).max(120),
+    notes: optionalNotes,
+    sortOrder,
+  })
+  .strict();
+export const createEstateInputSchema = estateContentFieldsSchema
+  .extend({
+    id: z.string().uuid(),
+  })
+  .strict();
+export const updateEstateInputSchema = z
+  .object({
+    id: adoptionInformationIdSchema,
+    expectedVersion: z.number().int().positive(),
+    fields: estateContentFieldsSchema,
+  })
+  .strict();
+export const setEstatePublicationInputSchema = z
+  .object({
+    id: adoptionInformationIdSchema,
+    expectedVersion: z.number().int().positive(),
+    isPublished: z.boolean(),
+  })
+  .strict();
+export const estateCommandRequestSchema = z.discriminatedUnion("command", [
+  z
+    .object({
+      resource: z.literal("estate"),
+      command: z.literal("create"),
+      input: createEstateInputSchema,
+    })
+    .strict(),
+  z
+    .object({
+      resource: z.literal("estate"),
+      command: z.literal("update"),
+      input: updateEstateInputSchema,
+    })
+    .strict(),
+  z
+    .object({
+      resource: z.literal("estate"),
+      command: z.literal("publication"),
+      input: setEstatePublicationInputSchema,
+    })
+    .strict(),
+]);
 
 export const adoptionRuleInputSchema = z.object({
   id: optionalId,
@@ -67,7 +109,6 @@ export const adminAdoptionInformationQuerySchema = z.object({
 
 export const adoptionInformationMutationSchema = z.discriminatedUnion("resource", [
   z.object({ resource: z.literal("fee"), input: adoptionFeeInputSchema }),
-  z.object({ resource: z.literal("estate"), input: estateInputSchema }),
   z.object({ resource: z.literal("rule"), input: adoptionRuleInputSchema }),
   z.object({ resource: z.literal("careTopic"), input: careTopicInputSchema }),
 ]);
@@ -75,6 +116,9 @@ export const adoptionInformationMutationSchema = z.discriminatedUnion("resource"
 export const deleteEstateRequestSchema = z.object({ id: adoptionInformationIdSchema });
 
 export type AdoptionFeeInput = z.infer<typeof adoptionFeeInputSchema>;
-export type EstateInput = z.infer<typeof estateInputSchema>;
+export type EstateContentFields = z.infer<typeof estateContentFieldsSchema>;
+export type CreateEstateInput = z.infer<typeof createEstateInputSchema>;
+export type UpdateEstateInput = z.infer<typeof updateEstateInputSchema>;
+export type SetEstatePublicationInput = z.infer<typeof setEstatePublicationInputSchema>;
 export type AdoptionRuleInput = z.infer<typeof adoptionRuleInputSchema>;
 export type CareTopicInput = z.infer<typeof careTopicInputSchema>;

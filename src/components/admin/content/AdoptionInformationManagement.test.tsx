@@ -36,6 +36,7 @@ const estates: AdminAdoptionInformationPage = {
   items: [
     {
       id: "66666666-7777-4888-9999-000000000000",
+      version: 1,
       estateName: "????",
       district: "??",
       notes: "????????",

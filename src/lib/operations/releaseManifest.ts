@@ -239,6 +239,17 @@ export const releaseManifest: SchemaRequirement[] = [
   {
     kind: "function",
     schema: "public",
+    name: "mutate_dog_friendly_estate_with_audit",
+    feature: "adoption-cms",
+    required: true,
+    arguments:
+      "p_actor_user_id uuid, p_command text, p_id uuid, p_expected_version integer, p_payload jsonb",
+    returns: "jsonb",
+    executeRoles: ["service_role"],
+  },
+  {
+    kind: "function",
+    schema: "public",
     name: "mutate_crm_supporter_with_audit",
     feature: "crm",
     required: true,
@@ -695,6 +706,15 @@ export const releaseManifest: SchemaRequirement[] = [
     arguments: "p_asset_id uuid, p_claimed_at timestamptz",
     returns: "boolean",
     executeRoles: ["service_role"],
+  },
+  {
+    kind: "column",
+    schema: "public",
+    table: "dog_friendly_estates",
+    name: "version",
+    feature: "adoption-cms",
+    required: true,
+    type: "integer",
   },
   {
     kind: "column",

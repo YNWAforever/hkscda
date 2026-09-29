@@ -12,6 +12,7 @@
 - T09: opt-in seven-day versioned drafts, explicit restore/clear, data whitelists, photo re-selection, preparation checklist and final review changes implemented on `codex/audit-safe-drafts-20260927`. Full isolated suite 2834 pass/86 skip/0 fail; synthetic 390px mobile restore/clear browser UAT exit 0. Full eligibility/submission UAT and seven-day policy approval remain open.
 - T10 / R03: code complete in draft PR #143, commit 62e22692d69b41135f705672c940976825281b53; synthetic browser and full isolated suite passed. No schema change or deployment. See t10-cms-unsaved.md.
 - T11 / R04: code complete in draft PR #144, commit 558f191c4ff8b801bf4a758aef37d38118b3b528; bounded summaries, direct revision reads, role/no-store and isolated DB rollback passed. No schema change or deployment. See t11-cms-history.md.
-- T12–T24: see separate PRs; not implemented in this branch. No checkout/payment/content toggle was enabled.
+- T12 / R05: versioned estate create/content/publication commands and additive audited SQL migration prepared in the independent branch codex/audit-estate-version-20260927. Red 0/3 to green 3/3, focused 76/76, full isolated 2794 pass/83 skip, rollback-only DB drill and synthetic mobile browser passed. Draft PR #145, source commit 60ed2d612d7b426d3d4641f6cbabf66f978d1486; release approval pending; no production DDL or deploy. See t12-estate-version.md.
+- T13–T24: see separate PRs; not implemented in this branch. No checkout/payment/content toggle was enabled.
 
 Ruling: Treat #133 adoption instructions as a narrowly restored public page and R01 as partial because the same release still lacks other required schema. A 200 response cannot close CMS, upload, submission, or finance compatibility. Cost if wrong: premature release acceptance.
