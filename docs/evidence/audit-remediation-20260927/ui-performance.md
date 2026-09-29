@@ -24,3 +24,8 @@ The verifier exited 0 on both builds: 4 routes × 2 viewports × 3 cold runs. Ra
 - All screenshots use the same synthetic fixture and browser with full-page capture. They do not contain production donor/adopter data.
 
 No production deploy, payment enablement, content publication or email send occurred.
+
+
+## PR169 preparation — 2026-09-30
+
+PR169 before/after screenshot pairs t23-followup-{before,after}-{390,768,1366}.png: actual response-loss UI; fixed shows saved.12isolated browser cases,Axe0. No before/after performance improvement claimed; one local DDL rehearsal8.59ms only.

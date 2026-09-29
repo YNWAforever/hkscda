@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "appSha": "b493b921e93fda6827101510d2d540ebbfbf5493",
-  "appShaNote": "PR168 repaired readiness/public reference slice plus verified predecessors; later PR169-179 excluded.",
+  "appSha": "b918ff918c98a2188335465237a6add66abfd0c7",
+  "appShaNote": "PR169 repaired individual sponsorship follow-up assignment plus verified predecessors; PR170-179 excluded.",
   "productionAliasShaObserved": "24196faf027998388eff3196a6979e23566e2443",
-  "schemaManifestHash": "47b9e3bd6959ca697af243af26002b1b17263676276a0911241549bc38be203d",
+  "schemaManifestHash": "39605d4280998afc3d9d934c5e33395e354c1b3449d26db70eab2025c53f3603",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
@@ -282,12 +282,17 @@
       "version": "20260927211801",
       "file": "20260927211801_editorial_quality_queue.sql",
       "sha256": "8c1b4550d4361f348246654bab356f3cd2366de48afb0eb384b90efb38526642"
+    },
+    {
+      "version": "20260928073000",
+      "file": "20260928073000_sponsorship_followup_assignment.sql",
+      "sha256": "c1eb28ad0953d0ae3f9d85c574c363ee2fe342ea68ddc5bd9f6b9b09baf04ef2"
     }
   ],
   "ciRun": {
     "id": null,
-    "sha": "b493b921e93fda6827101510d2d540ebbfbf5493",
-    "status": "final local typecheck/full tests/lint/build and real SSR/client navigation passed; remote CI pending"
+    "sha": "b918ff918c98a2188335465237a6add66abfd0c7",
+    "status": "local full suite/typecheck/lint/build, isolated service_role/migration and three-width UI passed; remote CI pending"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -304,7 +309,8 @@
     "docs/evidence/audit-remediation-20260927/sequential-merge-165-20260930.md",
     "docs/evidence/audit-remediation-20260927/sequential-merge-166-20260930.md",
     "docs/evidence/audit-remediation-20260927/sequential-merge-167-20260930.md",
-    "docs/evidence/audit-remediation-20260927/sequential-merge-168-20260930.md"
+    "docs/evidence/audit-remediation-20260927/sequential-merge-168-20260930.md",
+    "docs/evidence/audit-remediation-20260927/sequential-merge-169-20260930.md"
   ],
   "rollbackTarget": {
     "appSha": null,
@@ -599,11 +605,11 @@
       }
     }
   ],
-  "capturedAt": "2026-09-29T21:08:36.706158+00:00",
+  "capturedAt": "2026-09-29T23:23:03.537027+00:00",
   "productionDeploymentId": "dpl_DJpjHkmVayPsXZqwiA2CMJG43Ygk",
   "productionDeploymentState": "READY",
   "productionSchemaLedgerCountObserved": 95,
-  "migrationManifestNote": "54 unique source-file inventory entries; not a command to apply every file or rewrite provider ledger timestamps. Follow exact approved per-PR dependency runbooks and observed catalog.",
+  "migrationManifestNote": "55 unique source-file inventory entries; not an instruction to apply all files or rewrite provider ledger. Follow exact approved per-PR runbooks and observed catalog.",
   "productionCiRun": {
     "id": 36624781016,
     "sha": "24196faf027998388eff3196a6979e23566e2443",
@@ -618,7 +624,8 @@
     "migration164": "exact approval requested; pending",
     "migration165": "exact approval requested after five current-head CI gates succeeded; pending",
     "migration166": "exact approval requested after five current-head CI gates succeeded; pending",
-    "release156": "explicit disabled-feature exception requested; no answer received; original blocking gate retained"
+    "release156": "explicit disabled-feature exception requested; no answer received; original blocking gate retained",
+    "migration169": "exact approval not yet requested; repaired SQL/local rehearsal complete"
   },
   "blockedGate": {
     "pr": 156,

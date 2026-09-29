@@ -64,3 +64,8 @@ See sequential-merge-167-20260930.md for exact commands, source SHA, local Postg
 ## PR168 readiness verification (2026-09-30)
 
 See sequential-merge-168-20260930.md. Final3051pass/133skip, strict typecheck/lint/build0 and actual three-width SSR/client navigation/Axe0. Server-generated references correlate for client navigation; transport failures do not invent a reference. Stable section IDs tolerate approved CMS copy edits. No migration or schedule activation. #167 fivegreenCI36640615081; #168 freshCI pending; ordered #156 gate and predecessor schema approval questions remain.
+
+
+## PR169 preparation — 2026-09-30
+
+PR169 actual drawer at390/768/1366: keyboard selection; lost response reconciled; committed POST/failed GET stays saved; conflict requires new selection; unknown secondclick keepsversion1 after backgroundversion3.12cases,Axe0/errors0/nooverflow. Synthetic provider-free fixture stopped; hosted staff/full private-file journey not-run.

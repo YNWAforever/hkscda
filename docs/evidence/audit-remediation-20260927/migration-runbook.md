@@ -211,3 +211,8 @@ Checksum correction at #166 package refresh: the earlier #165 packet used a Wind
 ## PR166 reviewed candidate
 
 Exact unchanged SQL8c1b4550d4361f348246654bab356f3cd2366de48afb0eb384b90efb38526642. One stable read RPC/two partial indexes; no mutation/backfill.7-row full-file rollback253ms,1000-row read/grant fixtures. Production7rows,candidate absent; exact DDL approval and fresh preflight required. See sequential-merge-166-20260930.md.
+
+
+## PR169 preparation — 2026-09-30
+
+PR169 exact candidate20260928073000 SHA256 c1eb28ad0953d0ae3f9d85c574c363ee2fe342ea68ddc5bd9f6b9b09baf04ef2: owner/version trigger and assignment+eligible-picker RPCs. Full2row isolated rollback8.59ms,service_role4tests24assert. Production2pledges/0needs_followup/candidateabsent/ledger95. Exact approval pending; preserve additive schema on rollback.
