@@ -193,3 +193,7 @@ having count(*) > 1;
 ```
 
 The named unlinked loopback database at 127.0.0.1:57322 returned no duplicate groups. The exact revised file completed BEGIN/ROLLBACK rehearsal after dropping the already-installed local index inside the transaction; only its revised function was applied for rollback-only synthetic fixtures. The fixture disabled a non-repository experimental local donation trigger inside its own rollback transaction and still proved that the RPC queues exactly one job. No ledger row was fabricated. The local release checker reports 115 compatible requirements; the local ledger remains at 20260927150000. Supabase's local security advisor reported no error-level findings. A fresh **45-file** ordered migration rehearsal and sanitized data-bearing rehearsal, actual concurrent-connection finance test, index build lock estimate, backup/restore, provider sandbox, staff identity UAT and production catalog comparison remain open. On application rollback keep the index and RPC until older-app compatibility is proved; never restore an older DB over newer payments or audits.
+
+## PR165 reviewed candidate
+
+Exact SQL/hash and6-row unchanged-data/duplicate rejection drills: sequential-merge-165-20260930.md. The old finance hash in historical sections is superseded by d4f683821d1277d4d6b05d6d671fd63e66f6bc75d274e25496f29e4dc5c37b86. No production application. Fresh catalog/duplicate/lock/grant/RLS/backup checks and exact approval precede DDL; retain reference index and all audit/payment/job facts on rollback.

@@ -35,3 +35,7 @@
 - Approved animal/story/photo ID list and rights, volunteer policy/session coverage, real content/seed diff, private candidate URL and test identities for every admin role.
 - Supported Auth atomic OTP redemption fix and hosted parity; local Mailpit sink already exercised; monitoring/alert thresholds, five-minute worker/cron ownership, private regional benchmark, 390/768/1366 keyboard/200% UAT.
 - Remaining T23 domain implementations: sponsorship, finance, CMS and additional volunteer/adoption/animal/CRM safe actions. `tracker.csv` keeps ADMIN-04 partial.
+
+## Manual settlement recovery
+
+After a lost response retry the same payment and exact original reference. Only an identical committed request recovers its existing delivery job; a different reference is a conflict. Delivery busy reads its durable status, including complete/attention_required; retry from the job without another credit. Duplicate reference409 needs finance investigation. Keep new schedules disabled pending separate approval.

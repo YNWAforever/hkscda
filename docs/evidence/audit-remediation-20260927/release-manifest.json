@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "appSha": "5793e12d6933ba06c58c226d29a4ca8931601398",
-  "appShaNote": "PR165 manual finance candidate including parent PR164; final reviewed source freeze and verification pending.",
+  "appSha": "421bf7f790dd595fbc0161ea885605dde617f3f4",
+  "appShaNote": "Reviewed PR165 manual settlement and prior PR164 queue fixes; later PR166-179 excluded.",
   "productionAliasShaObserved": "24196faf027998388eff3196a6979e23566e2443",
   "schemaManifestHash": "a7340b9a9b832e427f990ac9b584c7278a06909cbdbb84992fddfb6e90202e12",
   "configVersions": {
@@ -281,8 +281,8 @@
   ],
   "ciRun": {
     "id": null,
-    "sha": "5793e12d6933ba06c58c226d29a4ca8931601398",
-    "status": "PR164 final local verification; exact remote head CI pending"
+    "sha": "421bf7f790dd595fbc0161ea885605dde617f3f4",
+    "status": "local gates passed; final exact remote head CI pending"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -295,7 +295,8 @@
     "docs/evidence/audit-remediation-20260927/sequential-merge-162-20260930.md",
     "docs/evidence/audit-remediation-20260927/sequential-merge-156-20260930.md",
     "docs/evidence/audit-remediation-20260927/sequential-merge-163-20260930.md",
-    "docs/evidence/audit-remediation-20260927/sequential-merge-164-20260930.md"
+    "docs/evidence/audit-remediation-20260927/sequential-merge-164-20260930.md",
+    "docs/evidence/audit-remediation-20260927/sequential-merge-165-20260930.md"
   ],
   "rollbackTarget": {
     "appSha": null,
@@ -606,7 +607,7 @@
     "migration160": "exact approval requested; pending",
     "migration161": "exact approval requested; pending",
     "migration162": "exact approval requested; pending; reviewed SQL unchanged by queue fix",
-    "migration164": "not requested; exact current-head CI pending",
+    "migration164": "exact approval requested; pending",
     "migration165": "not requested; review and exact-head CI pending"
   },
   "blockedGate": {

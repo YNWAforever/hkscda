@@ -44,3 +44,7 @@ Mobile homepage score regressed 4 points in that early comparison; investigate o
 - T23 final local animal source: `npm.cmd run typecheck` exit 0; `npm.cmd run lint` exit 0 (52 warnings); `npm.cmd run build` exit 0; `SUPABASE_LOCAL_URL=http://127.0.0.1:57321 bun test --isolate` exit 0, 2870 pass/100 skip/0 fail/8914 assertions across 513 files before final test-only role assertion.
 - Dedicated loopback DB after final role assertion: `ANIMAL_REVIEW_BULK_TEST_DATABASE_URL=postgresql://postgres:***@127.0.0.1:57322/postgres ANIMAL_REVIEW_BULK_TEST_ALLOW_LOCAL_FIXTURES=1 bun test --isolate src/lib/contentReview/animalBulk.database.test.ts` exit 0, 3 pass/18 assertions. Fixture rolls back. `CHECK_RELEASE_SCHEMA_DATABASE_URL` checker exit 0, 109 compatible, zero issues.
 - Same-source remote CI #162 run `36345471697`: verify, RLS, a11y and performance passed; brand pending at capture. Real provider, real email sink and hosted role/browser UAT: **not-run**.
+
+## PR165 isolated acceptance
+
+Actual commands/source/exit codes,4DBtests29assertions plusCRM17tests90assertions,6syntheticlegacyfullSQLdrill,three-width before/after and external not-run gates: sequential-merge-165-20260930.md. No hosted or provider success inferred.

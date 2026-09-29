@@ -87,3 +87,7 @@ Draft #149 addresses ADMIN-02 in an isolated branch: fresh supporter read on ope
 CMS bulk actor-lock/JSON/recovery/queue races repaired and independently reviewed. DB role/concurrency/audit and1000-item evidence,full SQL unchanged-row drill and3-width UI recorded in sequential-merge-164-20260930.md. Code complete for this slice; schema ready locally only;deployed/operationally-enabled no. #162 unmount backport integrated through#163.
 
 - Historical PR165 source74c032ae CI36350007831 five green; current sequential integration requires new verification. See t23-finance-atomic.md; prior Windows manifest hash superseded by committed LF hash.
+
+## 2026-09-30 PR165
+
+Reproduced/fixed actor revocation race, lost committed response recovery, CRM duplicate-reference409 and durable delivery status on busy. Four findings closed; local gates pass. Code complete for this slice; schema ready only locally;deployed/operationally-enabled no. Exact CI/schema approval pending; original overall task remains in progress.
