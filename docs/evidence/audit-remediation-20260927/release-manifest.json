@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "appSha": "c1f3ef7c2563b4a64c0007ef52c42e68f27cac6c",
-  "appShaNote": "PR167 pending-proof read queue and navigation plus reviewed predecessors; later PR168-179 excluded.",
+  "appSha": "b493b921e93fda6827101510d2d540ebbfbf5493",
+  "appShaNote": "PR168 repaired readiness/public reference slice plus verified predecessors; later PR169-179 excluded.",
   "productionAliasShaObserved": "24196faf027998388eff3196a6979e23566e2443",
   "schemaManifestHash": "47b9e3bd6959ca697af243af26002b1b17263676276a0911241549bc38be203d",
   "configVersions": {
@@ -286,8 +286,8 @@
   ],
   "ciRun": {
     "id": null,
-    "sha": "c1f3ef7c2563b4a64c0007ef52c42e68f27cac6c",
-    "status": "local full/typecheck/lint/build and PostgREST/browser acceptance passed; fresh remote CI pending"
+    "sha": "b493b921e93fda6827101510d2d540ebbfbf5493",
+    "status": "final local typecheck/full tests/lint/build and real SSR/client navigation passed; remote CI pending"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -303,7 +303,8 @@
     "docs/evidence/audit-remediation-20260927/sequential-merge-164-20260930.md",
     "docs/evidence/audit-remediation-20260927/sequential-merge-165-20260930.md",
     "docs/evidence/audit-remediation-20260927/sequential-merge-166-20260930.md",
-    "docs/evidence/audit-remediation-20260927/sequential-merge-167-20260930.md"
+    "docs/evidence/audit-remediation-20260927/sequential-merge-167-20260930.md",
+    "docs/evidence/audit-remediation-20260927/sequential-merge-168-20260930.md"
   ],
   "rollbackTarget": {
     "appSha": null,
