@@ -33,6 +33,10 @@ try {
       })),
     });
     let operation = make(ids(25));
+    let holdRead = false;
+    let releaseRead;
+    let readStarted;
+
     await page.route("**/api/admin/access/users", (route) =>
       route.fulfill({
         json: {
@@ -47,8 +51,15 @@ try {
         },
       }),
     );
-    await page.route("**/api/admin/volunteers/reviewer-bulk*", (route) => {
+    await page.route("**/api/admin/volunteers/reviewer-bulk*", async (route) => {
       if (route.request().method() === "GET") {
+        if (holdRead) {
+          readStarted();
+          await new Promise((resolve) => {
+            releaseRead = resolve;
+          });
+          return route.fulfill({ json: operation });
+        }
         if (firstRead) {
           firstRead = false;
           return route.fulfill({ status: 503, json: { error: "Synthetic temporary outage" } });
@@ -125,7 +136,19 @@ try {
     const noOverflow = await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth + 1,
     );
+    holdRead = true;
+    const pendingRecovery = new Promise((resolve) => {
+      readStarted = resolve;
+    });
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await pendingRecovery;
+    const recoveryBlocksPreview = await page
+      .getByRole("combobox", { name: "審核者", exact: true })
+      .isDisabled();
+    releaseRead();
+    await page.getByText("1 / 40", { exact: true }).waitFor();
     results.push({
+      recoveryBlocksPreview,
       width,
       recoveryPreserved,
       recoveryRetry,
@@ -141,6 +164,7 @@ try {
   assert.ok(
     results.every(
       (r) =>
+        r.recoveryBlocksPreview &&
         r.recoveryPreserved &&
         r.recoveryRetry &&
         r.partialRetryWrites === 25 &&
