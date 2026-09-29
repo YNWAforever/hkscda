@@ -69,3 +69,5 @@ Predecessor #153 main CI 36620897215 completed all five gates successfully. #154
 Postflight after every file passed. Final: three affected tables RLS true; both due indexes present; four retry constraints valid; ten inspected RPCs (including legacy acknowledgements) retain service EXECUTE, deny anon/authenticated, and pin search_path. Animal intents, publish receipts and content assets remain zero. Checkout remains false. No historical photo copy, notification or payment occurred. The new media-repair cron is absent from vercel.json; existing schedules retained.
 
 Merged 2026-09-29T19:59:49Z as `68352546b61c1a61b79fad4638640b2dddd30ac9`. Production alias READY on `dpl_ENhKwz8BYSjxEfEFMwmDbuUCPFJ9`, matching SHA. Main CI is pending at this checkpoint. Application deployed; schema ready; operational media repair activation remains gated by Storage acceptance, effective hosted duration and explicit schedule approval. Rollback boundaries above remain unchanged.
+
+Main release follow-up: CI 36623173950 completed all five gates successfully before #155 promotion.
