@@ -20,12 +20,24 @@ function basePayload(overrides: Record<string, unknown> = {}) {
     animalPreferences: [{ rank: 1, animalId: animalA, animalName: "白雪", animalType: "sponsor" }],
     contact: { supporterName: "陳小姐", email: "chan@example.com", phone: "91234567" },
     consents: { email: true, whatsapp: false },
-    terms: { agreed: true },
+    terms: { agreed: true, version: "a".repeat(64) },
     ...overrides,
   };
 }
 
 describe("sponsorshipPledgeSubmissionSchema", () => {
+  test("requires an explicit published terms version", () => {
+    expect(() =>
+      sponsorshipPledgeSubmissionSchema.parse(basePayload({ terms: { agreed: true } })),
+    ).toThrow();
+    const parsed = sponsorshipPledgeSubmissionSchema.parse(
+      basePayload({
+        terms: { agreed: true, version: "a".repeat(64) },
+      }),
+    );
+    expect(parsed.terms.version).toBe("a".repeat(64));
+  });
+
   test("parses a valid preset-tier payload without proof", () => {
     const result = sponsorshipPledgeSubmissionSchema.parse(basePayload());
     expect(result.monthlyTier).toBe("300");
@@ -73,6 +85,22 @@ describe("sponsorshipPledgeSubmissionSchema", () => {
         }),
       ),
     ).toThrow();
+  });
+
+  test("requires a preference and accepts the current maximum of ten", () => {
+    expect(() =>
+      sponsorshipPledgeSubmissionSchema.parse(basePayload({ animalPreferences: [] })),
+    ).toThrow();
+    const ten = Array.from({ length: 10 }, (_, index) => ({
+      rank: index + 1,
+      animalId: `33333333-0000-4000-8000-${String(index).padStart(12, "0")}`,
+      animalName: `Sponsor ${index}`,
+      animalType: "sponsor",
+    }));
+    expect(
+      sponsorshipPledgeSubmissionSchema.parse(basePayload({ animalPreferences: ten }))
+        .animalPreferences,
+    ).toHaveLength(10);
   });
 
   test("rejects more than 10 animal preferences", () => {
@@ -156,6 +184,7 @@ describe("insert mappers", () => {
         ...parsed.contact,
         source: "public_sponsorship_submission",
         status: "unverified",
+        terms_version_seen: "a".repeat(64),
       },
       monthly_tier: "300",
       amount_cents: 30000,

@@ -286,6 +286,18 @@ jobs:
       - name: Run database-backed transaction tests
         run: bun run test:db
 
+      - name: Run volunteer bulk database scenarios
+        run: bun test src/lib/volunteers/bulk/bulk.database.test.ts src/lib/volunteers/bulk/mandatoryScenarios.database.test.ts
+        env:
+          VOLUNTEER_TEST_ALLOW_LOCAL_FIXTURES: "1"
+          VOLUNTEER_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
+      - name: Run content publication eligibility database scenarios
+        run: bun test src/lib/content/publicationEligibility.integration.test.ts
+        env:
+          CMS_LIFECYCLE_TEST_ALLOW_LOCAL_FIXTURES: "1"
+          CMS_LIFECYCLE_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
       - name: Stop local Supabase stack
         if: always()
         run: bunx supabase stop

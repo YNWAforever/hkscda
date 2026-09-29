@@ -6,6 +6,7 @@ import {
   readPublicJson,
 } from "../../lib/http/publicJson.server";
 
+import { CheckoutPolicyError } from "../../lib/donations/checkoutPolicy";
 import { createPaymentProviders } from "../../lib/donations/providers.server";
 import {
   createDonation,
@@ -71,6 +72,17 @@ export const Route = createFileRoute("/api/donations")({
             return Response.json({ error: "Request body too large" }, { status: 413 });
           if (error instanceof InvalidRequestJsonError)
             return Response.json({ error: "Invalid JSON body" }, { status: 400 });
+          if (error instanceof CheckoutPolicyError) {
+            const status =
+              error.code === "stale_config" ? 409 : error.code === "method_unavailable" ? 422 : 503;
+            return Response.json(
+              {
+                error: "Checkout is not currently available. Please refresh or contact staff.",
+                code: error.code,
+              },
+              { status, headers: { "cache-control": "no-store" } },
+            );
+          }
           if (error instanceof DonationCheckoutRecoveryRequiredError) {
             return Response.json(
               {
