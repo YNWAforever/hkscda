@@ -50,3 +50,7 @@ Current production app is compatible with this additive unused RPC. New portal p
 Apply only this reviewed file after the earlier releases, a fresh catalog/hash/backup check and explicit production migration approval. Do not run db push, alter historical ledger rows or infer approval from this local rehearsal. Existing authorized CurrentUser-DPAPI backup is retained outside Git; its full restore is not-run and it excludes Storage object bytes.
 
 Application rollback retains the additive function and all consent/audit history; do not restore an old full DB snapshot over newer events. Recovery remains absent/false until #156's concurrent OTP failure is resolved and hosted configuration and sending are separately approved. Staff should review only their verified-email records, explicitly choose marketing preference, and log out before sharing a device. Ambiguous historical identity linking or record corrections require the existing staff process, not automatic merges.
+
+## Approval checkpoint — 2026-09-30
+
+User explicitly approved this single unchanged migration after the five CI jobs succeeded at 023795dc (run 36617364577). Approval is conditional on earlier PRs completing; payment and recovery delivery remain disabled. No production application has occurred.
