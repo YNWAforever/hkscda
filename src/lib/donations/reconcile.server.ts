@@ -7,7 +7,7 @@ import { buildReconciliationPlan } from "./reconciliation";
 import { generateReceiptPdf } from "./receipt-pdf.server";
 import { sendDonationAcknowledgement } from "./notifications.server";
 import type { OnlinePaymentProvider } from "./contracts";
-import type { DeliveryRunResult } from "./deliveryJobs.server";
+import type { DeliveryRunResult, DeliveryJobStatus } from "./deliveryJobs.server";
 
 export type ReconcileProviderArgs = {
   client: SupabaseClient;
@@ -31,6 +31,7 @@ type ReconcileManualArgs = {
   actorUserId: string;
   bankReference: string;
   runDeliveryJob?: (jobId: string) => Promise<DeliveryRunResult>;
+  getDeliveryStatus?: (jobId: string) => Promise<DeliveryJobStatus | null>;
 };
 
 type PaymentWithDonation = {
@@ -848,7 +849,13 @@ export async function reconcileManualPayment(args: ReconcileManualArgs) {
     throw error;
   }
   const result = (Array.isArray(data) ? data[0] : data) as {
-    kind: "applied" | "state_conflict" | "amount_mismatch" | "provider_denied" | "not_found";
+    kind:
+      | "applied"
+      | "duplicate"
+      | "state_conflict"
+      | "amount_mismatch"
+      | "provider_denied"
+      | "not_found";
     donationId?: string;
     deliveryJobId?: string;
     expectedCents?: number;
@@ -875,7 +882,11 @@ export async function reconcileManualPayment(args: ReconcileManualArgs) {
     throw Response.json({ error: "Provider requires its signed settlement path" }, { status: 422 });
   if (result.kind === "not_found")
     throw Response.json({ error: "Payment not found" }, { status: 404 });
-  if (result.kind !== "applied" || !result.donationId || !result.deliveryJobId)
+  if (
+    (result.kind !== "applied" && result.kind !== "duplicate") ||
+    !result.donationId ||
+    !result.deliveryJobId
+  )
     throw new Error("Unexpected manual reconciliation result");
 
   let deliveryStatus: "pending" | "processing" | "retryable" | "attention_required" | "complete" =
@@ -883,7 +894,10 @@ export async function reconcileManualPayment(args: ReconcileManualArgs) {
   try {
     if (args.runDeliveryJob) {
       const delivery = await args.runDeliveryJob(result.deliveryJobId);
-      deliveryStatus = delivery.kind === "busy" ? "processing" : delivery.kind;
+      deliveryStatus =
+        delivery.kind === "busy"
+          ? ((await args.getDeliveryStatus?.(result.deliveryJobId)) ?? "pending")
+          : delivery.kind;
     }
   } catch {
     // The durable job committed with the money/audit. An attempt failure is a
@@ -891,7 +905,7 @@ export async function reconcileManualPayment(args: ReconcileManualArgs) {
     console.error("Manual payment committed; delivery job needs recovery");
   }
   return {
-    kind: "applied" as const,
+    kind: result.kind,
     donationId: result.donationId,
     deliveryJobId: result.deliveryJobId,
     deliveryStatus,

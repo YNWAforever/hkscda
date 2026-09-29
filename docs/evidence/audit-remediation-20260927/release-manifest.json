@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "appSha": "5793e12d6933ba06c58c226d29a4ca8931601398",
-  "appShaNote": "PR164 reviewed CMS bulk code and inherited animal queue repair; later PR165-179 candidates excluded.",
+  "appShaNote": "PR165 manual finance candidate including parent PR164; final reviewed source freeze and verification pending.",
   "productionAliasShaObserved": "24196faf027998388eff3196a6979e23566e2443",
-  "schemaManifestHash": "a3519ee326b19427326b51cdb8606aa8792dc16b499af76622931d078a1892cf",
+  "schemaManifestHash": "a7340b9a9b832e427f990ac9b584c7278a06909cbdbb84992fddfb6e90202e12",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
@@ -272,6 +272,11 @@
       "version": "20260927190000",
       "file": "20260927190000_cms_review_bulk.sql",
       "sha256": "79720b899eee34d673cef16f93e9ac1fba62ce7d21cb73039feb3851ee3499e5"
+    },
+    {
+      "version": "20260927201916",
+      "file": "20260927201916_manual_payment_atomic_reference.sql",
+      "sha256": "d4f683821d1277d4d6b05d6d671fd63e66f6bc75d274e25496f29e4dc5c37b86"
     }
   ],
   "ciRun": {
@@ -589,7 +594,7 @@
   "productionDeploymentId": "dpl_DJpjHkmVayPsXZqwiA2CMJG43Ygk",
   "productionDeploymentState": "READY",
   "productionSchemaLedgerCountObserved": 95,
-  "migrationManifestNote": "52 unique source-file inventory entries; not a command to apply every file or rewrite provider ledger timestamps. Follow exact approved per-PR dependency runbooks and observed catalog.",
+  "migrationManifestNote": "53 unique source-file inventory entries; not a command to apply every file or rewrite provider ledger timestamps. Follow exact approved per-PR dependency runbooks and observed catalog.",
   "productionCiRun": {
     "id": 36624781016,
     "sha": "24196faf027998388eff3196a6979e23566e2443",
@@ -601,7 +606,8 @@
     "migration160": "exact approval requested; pending",
     "migration161": "exact approval requested; pending",
     "migration162": "exact approval requested; pending; reviewed SQL unchanged by queue fix",
-    "migration164": "not requested; exact current-head CI pending"
+    "migration164": "not requested; exact current-head CI pending",
+    "migration165": "not requested; review and exact-head CI pending"
   },
   "blockedGate": {
     "pr": 156,

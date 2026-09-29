@@ -436,6 +436,15 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
         p_input: command.input,
       });
       if (error) {
+        if (
+          error.code === "23505" &&
+          error.message.includes('"payment_manual_bank_reference_unique"')
+        ) {
+          throw Response.json(
+            { error: "Bank reference has already been credited" },
+            { status: 409 },
+          );
+        }
         if ((error as { message?: string }).message?.includes("manual_gift_payload_conflict")) {
           throw Response.json({ error: "requestId payload conflict" }, { status: 409 });
         }

@@ -1299,6 +1299,58 @@ describe("reconcileManualPayment", () => {
     }
   });
 
+  test("an unclaimed replay reports durable completed or attention status, not processing", async () => {
+    for (const status of [
+      "complete",
+      "attention_required",
+      "retryable",
+      "processing",
+      null,
+    ] as const) {
+      const result = await reconcileManualPayment({
+        client: {
+          rpc: async () => ({
+            data: { kind: "duplicate", donationId: "donation-1", deliveryJobId: "job-original" },
+            error: null,
+          }),
+        } as never,
+        paymentId: "payment-1",
+        actorUserId: "admin-1",
+        bankReference: "FPS-ORIGINAL",
+        runDeliveryJob: async () => ({ kind: "busy" }),
+        getDeliveryStatus: async (jobId) => {
+          expect(jobId).toBe("job-original");
+          return status;
+        },
+      });
+      expect(result.deliveryStatus).toBe(status ?? "pending");
+    }
+  });
+  test("same committed request recovers its job after a lost response without a second credit", async () => {
+    const jobs: string[] = [];
+    const result = await reconcileManualPayment({
+      client: {
+        rpc: async () => ({
+          data: { kind: "duplicate", donationId: "donation-1", deliveryJobId: "job-original" },
+          error: null,
+        }),
+      } as never,
+      paymentId: "payment-1",
+      actorUserId: "admin-1",
+      bankReference: "FPS-ORIGINAL",
+      runDeliveryJob: async (jobId) => {
+        jobs.push(jobId);
+        return { kind: "retryable", code: "synthetic_delivery_retry" };
+      },
+    });
+    expect(result).toEqual({
+      kind: "duplicate",
+      donationId: "donation-1",
+      deliveryJobId: "job-original",
+      deliveryStatus: "retryable",
+    });
+    expect(jobs).toEqual(["job-original"]);
+  });
   test("rejects (409) reconciling a payment that is not pending, without auditing", async () => {
     // basePayment is already 'succeeded' — a replay/double-click.
     const { client, operations } = createWebhookFake({ payment: basePayment });

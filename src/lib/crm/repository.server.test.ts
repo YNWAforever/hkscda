@@ -315,6 +315,26 @@ describe("recordManualGift", () => {
       },
     ]);
   });
+  test("duplicate manual bank reference is a permanent 409 while other unique errors remain failures", async () => {
+    for (const constraint of ["payment_manual_bank_reference_unique", "unrelated_unique"]) {
+      const failure = {
+        code: "23505",
+        message: `duplicate key value violates unique constraint "${constraint}"`,
+      };
+      const client = {
+        rpc: async () => ({ data: null, error: failure }),
+      } as unknown as SupabaseClient;
+      try {
+        await createSupabaseCrmRepository(client).recordManualGift(command);
+        throw new Error("Expected rejection");
+      } catch (error) {
+        if (constraint === "payment_manual_bank_reference_unique") {
+          expect(error).toBeInstanceOf(Response);
+          expect((error as Response).status).toBe(409);
+        } else expect(error).toBe(failure);
+      }
+    }
+  });
   test("payload conflicts become HTTP 409 while other database failures remain failures", async () => {
     const client = {
       rpc: async () => ({
