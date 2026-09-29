@@ -49,70 +49,83 @@ export const sponsorshipPaymentProofMetadataSchema = z.object({
 
 export type SponsorshipPaymentProofMetadata = z.infer<typeof sponsorshipPaymentProofMetadataSchema>;
 
-export const sponsorshipPledgeSubmissionSchema = z
-  .object({
-    language: sponsorshipLanguageSchema,
-    monthlyTier: monthlyTierSchema,
-    customAmountCents: z.number().int().min(1000).optional(),
-    animalPreferences: z
-      .array(sponsorshipAnimalPreferenceSchema)
-      .min(1)
-      .max(MAX_SPONSORSHIP_PREFERENCES),
-    contact: z.object({
-      supporterName: trimmed.min(1),
-      email: trimmed.email().transform((email) => email.toLowerCase()),
-      phone: optionalTrimmed,
-    }),
-    consents: z.object({
-      email: z.boolean(),
-      whatsapp: z.boolean(),
-    }),
-    notes: optionalTrimmed,
-    proofMetadata: sponsorshipPaymentProofMetadataSchema.optional(),
-    terms: z.object({
-      agreed: z.literal(true),
-      version: z.string().regex(/^[a-f0-9]{64}$/),
-    }),
-  })
-  .superRefine((value, context) => {
-    const ranks = new Set(value.animalPreferences.map((animal) => animal.rank));
-    if (ranks.size !== value.animalPreferences.length) {
-      context.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["animalPreferences"],
-        message: "Animal preference ranks must be unique",
-      });
-    }
+const createSponsorshipPledgeSchema = (termsVersion: z.ZodType<string, z.ZodTypeDef, unknown>) =>
+  z
+    .object({
+      language: sponsorshipLanguageSchema,
+      monthlyTier: monthlyTierSchema,
+      customAmountCents: z.number().int().min(1000).optional(),
+      animalPreferences: z
+        .array(sponsorshipAnimalPreferenceSchema)
+        .min(1)
+        .max(MAX_SPONSORSHIP_PREFERENCES),
+      contact: z.object({
+        supporterName: trimmed.min(1),
+        email: trimmed.email().transform((email) => email.toLowerCase()),
+        phone: optionalTrimmed,
+      }),
+      consents: z.object({
+        email: z.boolean(),
+        whatsapp: z.boolean(),
+      }),
+      notes: optionalTrimmed,
+      proofMetadata: sponsorshipPaymentProofMetadataSchema.optional(),
+      terms: z.object({
+        agreed: z.literal(true),
+        version: termsVersion,
+      }),
+    })
+    .superRefine((value, context) => {
+      const ranks = new Set(value.animalPreferences.map((animal) => animal.rank));
+      if (ranks.size !== value.animalPreferences.length) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["animalPreferences"],
+          message: "Animal preference ranks must be unique",
+        });
+      }
 
-    const animalIds = new Set(value.animalPreferences.map((animal) => animal.animalId));
-    if (animalIds.size !== value.animalPreferences.length) {
-      context.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["animalPreferences"],
-        message: "Each animal can only appear once",
-      });
-    }
+      const animalIds = new Set(value.animalPreferences.map((animal) => animal.animalId));
+      if (animalIds.size !== value.animalPreferences.length) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["animalPreferences"],
+          message: "Each animal can only appear once",
+        });
+      }
 
-    if (value.monthlyTier === "custom") {
-      if (!value.customAmountCents || value.customAmountCents <= 0) {
+      if (value.monthlyTier === "custom") {
+        if (!value.customAmountCents || value.customAmountCents <= 0) {
+          context.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["customAmountCents"],
+            message: "Custom amount must be a positive number of cents",
+          });
+        }
+      } else if (value.customAmountCents !== undefined) {
         context.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["customAmountCents"],
-          message: "Custom amount must be a positive number of cents",
+          message: "Custom amount must not be set for a preset tier",
         });
       }
-    } else if (value.customAmountCents !== undefined) {
-      context.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["customAmountCents"],
-        message: "Custom amount must not be set for a preset tier",
-      });
-    }
-  })
-  .transform((value) => ({
-    ...value,
-    animalPreferences: [...value.animalPreferences].sort((left, right) => left.rank - right.rank),
-  }));
+    })
+    .transform((value) => ({
+      ...value,
+      animalPreferences: [...value.animalPreferences].sort((left, right) => left.rank - right.rank),
+    }));
+
+export const sponsorshipPledgeSubmissionSchema = createSponsorshipPledgeSchema(
+  z.string().regex(/^[a-f0-9]{64}$/),
+);
+
+// Only the retry lookup may interpret the previous client's terms representation.
+// New submissions still have to match the current published content hash.
+export const sponsorshipPledgeRetrySchema = createSponsorshipPledgeSchema(
+  z
+    .union([z.string().regex(/^[a-f0-9]{64}$/), z.literal("sponsorship-terms-2026-07")])
+    .default("sponsorship-terms-2026-07"),
+);
 
 export type SponsorshipPledgeSubmission = z.infer<typeof sponsorshipPledgeSubmissionSchema>;
 export type SponsorshipPledgeStatus =
