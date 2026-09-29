@@ -4,9 +4,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { centsToHkd } from "../../../lib/donations/domain";
 import {
+  clearDraft,
+  readDraft,
+  writeDraft,
+  type DraftReadResult,
+} from "../../../lib/forms/localDraft";
+import {
   SPONSORSHIP_PLEDGE_DRAFT_STORAGE_KEY,
-  parseDraft,
-  serializeDraft,
+  pickSponsorshipDraftData,
 } from "../../../lib/sponsorship/draft";
 import { SPONSORSHIP_TIER_AMOUNTS_CENTS } from "../../../lib/sponsorship/schemas";
 import { TurnstileWidget, turnstileEnabled } from "../TurnstileWidget";
@@ -111,19 +116,23 @@ export function PledgeWizard() {
   const [phone, setPhone] = useState("");
   const [notes, setNotes] = useState("");
 
+  const [saveOnDevice, setSaveOnDevice] = useState(false);
+  const [draftOffer, setDraftOffer] = useState<DraftReadResult<Record<string, unknown>> | null>(
+    null,
+  );
+
   useEffect(() => {
     try {
-      const draft = parseDraft(window.localStorage.getItem(SPONSORSHIP_PLEDGE_DRAFT_STORAGE_KEY));
-      setMonthlyTier((draft.monthlyTier as MonthlyTier) ?? "300");
-      setCustomAmount((draft.customAmount as string) ?? "");
-      setSupporterName((draft.supporterName as string) ?? "");
-      setEmail((draft.email as string) ?? "");
-      setPhone((draft.phone as string) ?? "");
-      setNotes((draft.notes as string) ?? "");
+      const found = readDraft<Record<string, unknown>>(
+        window.localStorage,
+        SPONSORSHIP_PLEDGE_DRAFT_STORAGE_KEY,
+      );
+      setDraftOffer(found.state === "none" ? null : found);
     } catch {
-      // Keep the server-rendered defaults when storage is unavailable or invalid.
+      setDraftOffer({ state: "invalid" });
     }
   }, []);
+
   const [emailConsent, setEmailConsent] = useState(true);
   const [whatsappConsent, setWhatsappConsent] = useState(false);
   const [includeProof, setIncludeProof] = useState(false);
@@ -140,15 +149,61 @@ export function PledgeWizard() {
   const [result, setResult] = useState<SubmitResult | null>(null);
   const submissionAttempt = useRef(createPledgeSubmissionAttempt());
 
-  function saveDraft() {
+  useEffect(() => {
+    if (!saveOnDevice || result || draftOffer) return;
+    const timer = window.setTimeout(() => {
+      try {
+        writeDraft(
+          window.localStorage,
+          SPONSORSHIP_PLEDGE_DRAFT_STORAGE_KEY,
+          pickSponsorshipDraftData({
+            monthlyTier,
+            customAmount,
+            supporterName,
+            email,
+            phone,
+            notes,
+          }),
+          0,
+        );
+      } catch {
+        // Storage access is optional; the form remains usable.
+      }
+    }, 500);
+    return () => window.clearTimeout(timer);
+  }, [
+    saveOnDevice,
+    draftOffer,
+    result,
+    monthlyTier,
+    customAmount,
+    supporterName,
+    email,
+    phone,
+    notes,
+  ]);
+
+  function clearSavedDraft() {
     try {
-      window.localStorage.setItem(
-        SPONSORSHIP_PLEDGE_DRAFT_STORAGE_KEY,
-        serializeDraft({ monthlyTier, customAmount, supporterName, email, phone, notes }),
-      );
+      clearDraft(window.localStorage, SPONSORSHIP_PLEDGE_DRAFT_STORAGE_KEY);
     } catch {
-      // Draft persistence is best-effort; submission still proceeds.
+      /* Storage unavailable. */
     }
+    setDraftOffer(null);
+    setSaveOnDevice(false);
+  }
+
+  function restoreSavedDraft() {
+    if (draftOffer?.state !== "available") return;
+    const draft = pickSponsorshipDraftData(draftOffer.draft.data);
+    if (typeof draft.monthlyTier === "string") setMonthlyTier(draft.monthlyTier as MonthlyTier);
+    if (typeof draft.customAmount === "string") setCustomAmount(draft.customAmount);
+    if (typeof draft.supporterName === "string") setSupporterName(draft.supporterName);
+    if (typeof draft.email === "string") setEmail(draft.email);
+    if (typeof draft.phone === "string") setPhone(draft.phone);
+    if (typeof draft.notes === "string") setNotes(draft.notes);
+    setDraftOffer(null);
+    setSaveOnDevice(true);
   }
 
   const amountCents =
@@ -159,8 +214,6 @@ export function PledgeWizard() {
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     setError(null);
-    saveDraft();
-
     if (turnstileEnabled && !turnstileToken) {
       setError(t.verifyRequired);
       return;
@@ -218,7 +271,7 @@ export function PledgeWizard() {
       const data = (await response.json()) as SubmitResult;
 
       try {
-        window.localStorage.removeItem(SPONSORSHIP_PLEDGE_DRAFT_STORAGE_KEY);
+        clearDraft(window.localStorage, SPONSORSHIP_PLEDGE_DRAFT_STORAGE_KEY);
       } catch {
         // Ignore draft cleanup failure; the pledge already succeeded.
       }
@@ -292,6 +345,43 @@ export function PledgeWizard() {
             ))}
           </div>
         </div>
+
+        <section className="space-y-2 rounded-md border border-[var(--color-border)] p-3 text-sm">
+          {draftOffer && (
+            <div role="status" className="space-y-2">
+              <p>
+                {draftOffer.state === "available"
+                  ? "此裝置有未完成草稿；恢復前請先確認。相片、同意及付款證明須重新提供。"
+                  : "舊草稿已過期、格式不符或本機儲存不可用；請清除後重新開始。"}
+              </p>
+              {draftOffer.state === "available" && (
+                <button type="button" className="btn-secondary" onClick={restoreSavedDraft}>
+                  恢復草稿並繼續儲存
+                </button>
+              )}
+              <button type="button" className="underline" onClick={clearSavedDraft}>
+                清除草稿並重新開始
+              </button>
+            </div>
+          )}
+          <label className="flex items-start gap-2">
+            <input
+              type="checkbox"
+              aria-label="在此裝置保存草稿"
+              checked={saveOnDevice}
+              disabled={Boolean(draftOffer)}
+              onChange={(event) => {
+                if (event.target.checked) setSaveOnDevice(true);
+                else clearSavedDraft();
+              }}
+            />
+            <span>
+              {language === "zh-HK"
+                ? "在此裝置保存草稿（7 日後自動清除）"
+                : "Save a draft on this device (expires after 7 days)"}
+            </span>
+          </label>
+        </section>
 
         <ul className="space-y-2">
           {sponsorshipItems.map((item) => (
