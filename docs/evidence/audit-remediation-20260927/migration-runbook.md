@@ -75,7 +75,7 @@ Rollback boundary: if the new checkout fails, revert the app while leaving this 
 
 ## T13 / R06 additive fee reorder migration delta
 
-File: supabase/migrations/20260927130000_atomic_adoption_fee_reorder.sql; SHA-256: dd772676c88fda5614908ca1683637ab7922f04b1d5fe363995a7f689d9f9e23. This candidate follows the T12 estate migration in the review manifest. The earlier T01 67-object proof describes an older checkout. The current release manifest additionally requires adoption_fees.version and the two fee RPC signatures. Production catalog and migration ledger were not changed.
+File: supabase/migrations/20260927130500_atomic_adoption_fee_reorder.sql; SHA-256: dd772676c88fda5614908ca1683637ab7922f04b1d5fe363995a7f689d9f9e23. This candidate follows the T12 estate migration in the review manifest. The earlier T01 67-object proof describes an older checkout. The current release manifest additionally requires adoption_fees.version and the two fee RPC signatures. Production catalog and migration ledger were not changed.
 
 Preflight: inspect adoption_fees row count, unique(animal_type, sort_order), integer sort range, existing role and RLS policy, audit_log constraints, actor statuses, old mutate_admin_content_with_audit signature, and current table/RPC grants. Estimate ADD COLUMN lock and trigger behavior with a data-bearing sanitized copy. Verify the target does not already contain a different version column or same-name function. Apply T12 then T13 in reviewed migration order before deploying code that selects fee.version. Never fill the migration ledger manually.
 
