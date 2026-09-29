@@ -34,4 +34,27 @@ export type PublicPaymentMethod = {
   displayLabelZh: string;
   displayLabelEn: string;
   details: Record<string, string>;
+  configId?: string;
+  configVersion?: number;
+  purposes?: ("donation" | "sponsorship")[];
+};
+
+export type PaymentAvailability =
+  | { state: "ready"; methods: PublicPaymentMethod[] }
+  | { state: "not_configured" | "unavailable"; methods: [] };
+
+export type PaymentInstructionSnapshot = {
+  configId: string;
+  configVersion: number;
+  purpose: "donation" | "sponsorship";
+  method: PaymentPublicConfigMethod;
+  displayLabelZh: string;
+  displayLabelEn: string;
+  details: Record<string, string>;
+  capturedAt: string;
+};
+
+export type CheckoutInstructionAdmission = {
+  snapshot: PaymentInstructionSnapshot | null;
+  instructionsActive: boolean;
 };

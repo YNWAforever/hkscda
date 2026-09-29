@@ -1,5 +1,15 @@
 import { getSupabaseClient } from "../../../lib/supabase";
 
+export class ProofUploadRequestError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+  ) {
+    super(message);
+    this.name = "ProofUploadRequestError";
+  }
+}
+
 export type ProofUploadResult = { pledgeId: string; storagePath: string; proofIntent: string };
 
 export type SponsorshipProofReference = {
@@ -31,7 +41,7 @@ export async function uploadProofDirectly(
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
-      turnstileToken,
+      ...(turnstileToken ? { turnstileToken } : {}),
       proof: {
         fileName: proofFile.name,
         mimeType: proofFile.type,
@@ -41,8 +51,9 @@ export async function uploadProofDirectly(
   });
   const urlResult = await urlResponse.json().catch(() => ({}));
   if (!urlResponse.ok) {
-    throw new Error(
+    throw new ProofUploadRequestError(
       typeof urlResult.error === "string" ? urlResult.error : "無法準備付款證明上傳。",
+      urlResponse.status,
     );
   }
   const { pledgeId, upload, proofIntent } = urlResult as ProofUploadUrlResponse;

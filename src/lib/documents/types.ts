@@ -1,4 +1,8 @@
-export type DocumentKind = "annual_report" | "wedding_form" | "adoption_guide";
+export type DocumentKind =
+  | "annual_report"
+  | "wedding_form"
+  | "adoption_guide"
+  | "sponsorship_terms";
 
 export type DocumentLanguage = "zh-HK" | "en" | "bilingual";
 

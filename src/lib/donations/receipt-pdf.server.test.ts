@@ -3,7 +3,7 @@ import fontkit from "@pdf-lib/fontkit";
 import { PDFDocument } from "pdf-lib";
 import { expect, test } from "bun:test";
 
-import { generateReceiptPdf, wrapReceiptDonorText } from "./receipt-pdf.server";
+import { formatReceiptDate, generateReceiptPdf, wrapReceiptDonorText } from "./receipt-pdf.server";
 
 test("receipt donor lines fit the printable page width without losing a long Chinese name", async () => {
   const pdf = await PDFDocument.create();
@@ -48,4 +48,24 @@ test("generates a one-page receipt with Chinese donor and signatory names", asyn
     if (originalSignatory === undefined) delete process.env.RECEIPT_SIGNATORY_NAME;
     else process.env.RECEIPT_SIGNATORY_NAME = originalSignatory;
   }
+});
+
+test("receipt date is the Hong Kong calendar date across midnight and year end", () => {
+  expect(formatReceiptDate("2026-09-26T16:30:00Z")).toBe("27/9/2026");
+  expect(formatReceiptDate("2026-12-31T16:30:00Z")).toBe("1/1/2027");
+  expect(formatReceiptDate("2026-09-26T15:59:59Z")).toBe("26/9/2026");
+});
+
+test("wraps a supported uncommon Han glyph and a long mixed-script donor name", async () => {
+  const bytes = readFileSync(new URL("../../assets/fonts/NotoSansHK-Regular.ttf", import.meta.url));
+  const face = fontkit.create(bytes);
+  expect(face.hasGlyphForCodePoint("龘".codePointAt(0)!)).toBe(true);
+  const pdf = await PDFDocument.create();
+  pdf.registerFontkit(fontkit);
+  const font = await pdf.embedFont(bytes, { subset: false });
+  const name = "龘" + "王".repeat(80) + " Ada Chan";
+  const lines = wrapReceiptDonorText(name, font, 595.28 - 144);
+  expect(lines.length).toBeGreaterThan(1);
+  expect(lines.join("")).toBe("Donor: " + name);
+  expect(lines.every((line) => font.widthOfTextAtSize(line, 12) <= 595.28 - 144)).toBe(true);
 });
