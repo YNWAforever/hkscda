@@ -22,6 +22,7 @@ export interface DonationDeliveryWorker {
 }
 export interface DeliveryJobRepository {
   status(jobId: string): Promise<DeliveryJobStatus | null>;
+  listDue(limit: number): Promise<string[]>;
   claim(
     jobId: string,
     owner: string,
@@ -40,6 +41,13 @@ export function createSupabaseDeliveryJobRepository(
   now = () => new Date(),
 ): DeliveryJobRepository {
   return {
+    async listDue(limit) {
+      const { data, error } = await client.rpc("list_due_donation_delivery_jobs", {
+        p_limit: limit,
+      });
+      if (error) throw error;
+      return ((data ?? []) as Array<{ id: string }>).map((row) => row.id);
+    },
     async status(jobId) {
       const { data, error } = await client
         .from("donation_delivery_job")
@@ -190,12 +198,13 @@ export function createDonationDeliveryWorker(deps: {
         return { kind: "complete" };
       } catch (error) {
         const failure = classify(error);
-        const retryAt = failure.retryable
+        const retryable = failure.retryable && claim.attempts < 8;
+        const retryAt = retryable
           ? new Date(timestamp.getTime() + Math.min(60, 2 ** claim.attempts) * 60000).toISOString()
           : null;
-        if (!(await deps.repository.fail(jobId, owner, { ...failure, retryAt })))
+        if (!(await deps.repository.fail(jobId, owner, { code: failure.code, retryable, retryAt })))
           return { kind: "busy" };
-        return failure.retryable
+        return retryable
           ? { kind: "retryable", code: failure.code }
           : { kind: "attention_required", code: failure.code };
       }
