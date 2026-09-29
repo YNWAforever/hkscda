@@ -49,7 +49,9 @@ create function public.admit_new_checkout(
 )
 returns jsonb
 language plpgsql
-security invoker
+-- Row locks require owner privileges; only service_role may execute this RPC.
+-- Keep direct policy writes revoked so audited approval remains mandatory.
+security definer
 set search_path = public, pg_temp
 as $$
 declare
