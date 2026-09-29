@@ -29,7 +29,7 @@ R04,待 CMS history 分頁及直接查版本,T11,open,,,,,,,,
 R05,待修屋苑 stale state／重用 ID,T12,open,,,,,,,,
 R06,待原子排序,T13,open,,,,,,,,
 R07,待修 null Turnstile token,T07,open,,,,,,,,
-R08,待媒體 retry／queue 公平性,T19,code-complete; exact clone schema-ready; production approval pending,yes,yes (isolated exact clone),no,no,f1b28fb,PR #154 repaired; four-file schema bundle,2942 pass 94 skip; typecheck lint build 0; DB 2 pass 450 assertions; 500-row dry-run; before/after UI; sequential-merge-154-20260930.md,Four exact production migrations; hosted duration and Storage acceptance; real-role UAT; scheduler activation
+R08,待媒體 retry／queue 公平性,T19,code-complete and deployed; operational activation gated,yes,yes (#154 four approved files),yes (#154),no; new media cron disabled,68352546b61c1a61b79fad4638640b2dddd30ac9,PR #154 merged,PR CI 36621262620 five green; production ledger 94; postflight RLS grants constraints indexes pass; Vercel READY; main CI pending,Hosted duration and Storage acceptance; real-role UAT; separate scheduler activation
 R09,待量測同區 server execution,T20,open,,,,,,,,
 R10,待收條香港日期,T06,open,,,,,,,,
 R11,待字型載入與收條大小優化,T06,open,,,,,,,,
