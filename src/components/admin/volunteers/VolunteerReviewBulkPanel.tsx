@@ -30,11 +30,14 @@ export function VolunteerReviewBulkPanel({
   const [reviewerUserId, setReviewerUserId] = useState("");
   const [operation, setOperation] = useState<VolunteerReviewBulkOperation | null>(null);
   const [busy, setBusy] = useState(false);
+  const [recoveryId, setRecoveryId] = useState<string | null>(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
     const saved = sessionStorage.getItem(savedOperationKey);
     if (!saved || !/^[0-9a-f-]{36}$/i.test(saved)) return;
+    setRecoveryId(saved);
+    setBusy(true);
     let active = true;
     fetchAdminJson<VolunteerReviewBulkOperation>(
       endpoint + "?operationId=" + encodeURIComponent(saved),
@@ -43,12 +46,32 @@ export function VolunteerReviewBulkPanel({
         if (active) setOperation(result);
       })
       .catch(() => {
-        if (active) sessionStorage.removeItem(savedOperationKey);
+        if (active) setError("未能讀取已保存的操作，請重新讀取結果。");
+      })
+      .finally(() => {
+        if (active) setBusy(false);
       });
     return () => {
       active = false;
     };
   }, []);
+
+  async function reloadOperation() {
+    if (!recoveryId || busy) return;
+    setBusy(true);
+    setError("");
+    try {
+      setOperation(
+        await fetchAdminJson<VolunteerReviewBulkOperation>(
+          endpoint + "?operationId=" + encodeURIComponent(recoveryId),
+        ),
+      );
+    } catch {
+      setError("未能讀取已保存的操作，請稍後重新讀取結果。");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function preview() {
     if (
@@ -72,6 +95,7 @@ export function VolunteerReviewBulkPanel({
         body: JSON.stringify({ action: "preview", ids: selectedIds, reviewerUserId, filterHash }),
       });
       sessionStorage.setItem(savedOperationKey, result.operationId);
+      setRecoveryId(result.operationId);
       setOperation(result);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "無法建立預覽");
@@ -124,6 +148,7 @@ export function VolunteerReviewBulkPanel({
         <select
           aria-label="審核者"
           className="mt-1 min-h-11 w-full rounded-md border border-[var(--color-border)] px-3"
+          disabled={busy}
           value={reviewerUserId}
           onChange={(event) => setReviewerUserId(event.target.value)}
         >
@@ -152,6 +177,16 @@ export function VolunteerReviewBulkPanel({
       >
         {busy ? "處理中…" : "建立分派預覽"}
       </button>
+      {recoveryId && (
+        <button
+          type="button"
+          className="btn-secondary min-h-11"
+          disabled={busy}
+          onClick={reloadOperation}
+        >
+          重新讀取結果
+        </button>
+      )}
       {error && (
         <p role="alert" className="text-sm text-[var(--color-error)]">
           {error}

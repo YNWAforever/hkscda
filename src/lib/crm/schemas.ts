@@ -123,6 +123,7 @@ export const supporterInputSchema = z.object({
 });
 
 export const supporterUpdateSchema = z.object({
+  expectedVersion: z.number().int().positive().max(Number.MAX_SAFE_INTEGER),
   name: z.string().trim().min(1).max(120).optional(),
   phone: nullableTrimmed,
   language: z.enum(crmLanguages).optional(),

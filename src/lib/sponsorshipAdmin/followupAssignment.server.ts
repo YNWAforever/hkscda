@@ -63,6 +63,10 @@ export function createFollowupAssignmentHandler(deps: {
       const code = error && typeof error === "object" && "code" in error ? error.code : undefined;
       if (code === "42501")
         return Response.json({ error: "Access denied" }, { status: 403, headers });
+      const message =
+        error && typeof error === "object" && "message" in error ? error.message : undefined;
+      if (code === "P0002" && message === "Pledge unavailable")
+        return Response.json({ error: "Pledge not found" }, { status: 404, headers });
       if (code === "40001")
         return Response.json({ error: "Pledge changed; refresh" }, { status: 409, headers });
       if (code === "22023")
@@ -105,19 +109,21 @@ export type FollowupAssignee = z.infer<typeof assigneeSchema>;
 
 export function createFollowupAssigneesHandler(deps: {
   authorize: (request: Request) => Promise<string>;
-  list: () => Promise<FollowupAssignee[]>;
+  list: (actorUserId: string) => Promise<FollowupAssignee[]>;
 }) {
   return async (request: Request): Promise<Response> => {
     const headers = { "cache-control": "no-store" };
     if (request.method !== "GET")
       return Response.json({ error: "Method not allowed" }, { status: 405, headers });
     try {
-      await deps.authorize(request);
-      const assignees = z.array(assigneeSchema).parse(await deps.list());
+      const actorUserId = await deps.authorize(request);
+      const assignees = z.array(assigneeSchema).parse(await deps.list(actorUserId));
       return Response.json({ assignees }, { headers });
     } catch (error) {
       if (error instanceof Response)
         return Response.json({ error: "Access denied" }, { status: error.status, headers });
+      if (error && typeof error === "object" && "code" in error && error.code === "42501")
+        return Response.json({ error: "Access denied" }, { status: 403, headers });
       console.error("Sponsorship follow-up assignees unavailable");
       return Response.json(
         { error: "Assignees temporarily unavailable" },
@@ -128,21 +134,11 @@ export function createFollowupAssigneesHandler(deps: {
 }
 
 export function createSupabaseFollowupAssigneesPort(client: SupabaseClient) {
-  return async (): Promise<FollowupAssignee[]> => {
-    const { data, error } = await client
-      .from("admin_user")
-      .select("auth_user_id,email,role")
-      .eq("status", "active")
-      .in("role", ["staff", "admin"])
-      .order("email", { ascending: true })
-      .limit(1000);
+  return async (actorUserId: string): Promise<FollowupAssignee[]> => {
+    const { data, error } = await client.rpc("list_sponsorship_followup_assignees", {
+      p_actor: actorUserId,
+    });
     if (error) throw error;
-    return z.array(assigneeSchema).parse(
-      (data ?? []).map((row) => ({
-        authUserId: row.auth_user_id,
-        email: row.email,
-        role: row.role,
-      })),
-    );
+    return z.array(assigneeSchema).parse(data ?? []);
   };
 }

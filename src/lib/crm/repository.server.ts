@@ -29,6 +29,7 @@ type SupporterRow = {
   deleted_at: string | null;
   created_at: string;
   updated_at: string;
+  edit_version: number;
 };
 
 type ConsentRow = {
@@ -303,6 +304,7 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
         source: (supporterRow as SupporterRow).source,
         createdAt: (supporterRow as SupporterRow).created_at,
         updatedAt: (supporterRow as SupporterRow).updated_at,
+        editVersion: Number((supporterRow as SupporterRow).edit_version),
         donations,
         payments,
         receipts,
@@ -336,15 +338,25 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
               source: command.supporter?.source,
             }
           : toSupporterUpdatePayload(command.update ?? {});
-      const { data, error } = await client.rpc("mutate_crm_supporter_with_audit", {
-        p_operation: command.operation,
-        p_supporter_id: command.supporterId ?? null,
-        p_input: input,
-        p_roles: command.roles ?? null,
-        p_actor_user_id: command.audit.actor_user_id,
-        p_at: command.audit.timestamp ?? new Date().toISOString(),
-        p_detail: command.audit.detail,
-      });
+      const versioned = command.operation === "update";
+      if (versioned && !command.expectedVersion)
+        throw new Error("Expected supporter version is required");
+      const { data, error } = await client.rpc(
+        versioned
+          ? "mutate_crm_supporter_if_version_with_audit"
+          : "mutate_crm_supporter_with_audit",
+        {
+          ...(versioned
+            ? { p_expected_version: command.expectedVersion }
+            : { p_operation: command.operation }),
+          p_supporter_id: command.supporterId ?? null,
+          p_input: input,
+          p_roles: command.roles ?? null,
+          p_actor_user_id: command.audit.actor_user_id,
+          p_at: command.audit.timestamp ?? new Date().toISOString(),
+          p_detail: command.audit.detail,
+        },
+      );
       if (error) throw error;
       if (command.operation === "create") return data as { id: string; email: string };
     },
@@ -424,6 +436,15 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
         p_input: command.input,
       });
       if (error) {
+        if (
+          error.code === "23505" &&
+          error.message.includes('"payment_manual_bank_reference_unique"')
+        ) {
+          throw Response.json(
+            { error: "Bank reference has already been credited" },
+            { status: 409 },
+          );
+        }
         if ((error as { message?: string }).message?.includes("manual_gift_payload_conflict")) {
           throw Response.json({ error: "requestId payload conflict" }, { status: 409 });
         }

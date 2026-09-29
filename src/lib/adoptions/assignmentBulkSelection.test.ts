@@ -1,4 +1,5 @@
 import { expect, test } from "bun:test";
+import { buildCaseListSearchParams } from "../../components/admin/adoptions/caseWorkflowLogic";
 import { addCaseSelection, collectMatchingCaseIds } from "./assignmentBulkSelection";
 
 test("adoption assignment bulk selection freezes 25 or all 1000 and rejects changes", async () => {
@@ -25,4 +26,27 @@ test("manual selection rejects a 1001st case", () => {
   const current = Array.from({ length: 1000 }, (_, i) => "id-" + i);
   expect(addCaseSelection(current, ["id-1"])).toHaveLength(1000);
   expect(() => addCaseSelection(current, ["id-1000"])).toThrow();
+});
+
+test("select-all keeps the default all-animal scope across pages", async () => {
+  const cases = Array.from({ length: 51 }, (_, index) => ({
+    id: "case-" + index,
+    animalType: index % 2 ? "cat" : "dog",
+  }));
+  const ids = await collectMatchingCaseIds(cases.length, async (page, pageSize) => {
+    const params = buildCaseListSearchParams({
+      statusId: "open-stage",
+      animalType: "all",
+      openOnly: true,
+      page,
+      pageSize,
+    });
+    const animalType = params.get("animalType");
+    const matching = cases.filter((item) => !animalType || item.animalType === animalType);
+    return {
+      total: matching.length,
+      cases: matching.slice((page - 1) * pageSize, page * pageSize),
+    };
+  });
+  expect(ids).toEqual(cases.map((item) => item.id));
 });

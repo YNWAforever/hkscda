@@ -68,6 +68,109 @@ describe("proof-upload-url route", () => {
     expect(order).toEqual(["verify", "sign", "register"]);
   });
 
+  test("normalizes legacy null and omitted tokens for local disabled verification", async () => {
+    const { createProofUploadUrlHandler } = await import("./proof-upload-url");
+    const { verifyTurnstile } = await import("../../../../lib/security/turnstile.server");
+    let signed = 0;
+    const handler = createProofUploadUrlHandler({
+      rateLimit: async () => ({ ok: true }),
+      verify: (token, ip) => verifyTurnstile(token, ip, { secret: "", isProduction: false }),
+      createClient: () => ({}) as never,
+      signUploads: async () => {
+        signed += 1;
+        return [
+          {
+            category: "proof",
+            path: "pledge/proof/receipt.jpg",
+            signedUrl: "https://storage.test/upload",
+            token: "upload-token",
+          },
+        ];
+      },
+      issueIntent: () => "signed-intent",
+      registerIntent: async () => {},
+    });
+    for (const tokenField of [{}, { turnstileToken: null }]) {
+      const response = await handler(
+        new Request("https://example.test/api/sponsorships/pledges/proof-upload-url", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            ...tokenField,
+            proof: { fileName: "receipt.jpg", mimeType: "image/jpeg", sizeBytes: 5 },
+          }),
+        }),
+      );
+      expect(response.status).toBe(201);
+    }
+    expect(signed).toBe(2);
+  });
+
+  test("rejects absent tokens in production and configured challenge mode before signing", async () => {
+    const { createProofUploadUrlHandler } = await import("./proof-upload-url");
+    const { verifyTurnstile } = await import("../../../../lib/security/turnstile.server");
+    let signed = 0;
+    const handler = createProofUploadUrlHandler({
+      rateLimit: async () => ({ ok: true }),
+      verify: (token, ip) => verifyTurnstile(token, ip, { secret: "", isProduction: true }),
+      createClient: () => ({}) as never,
+      signUploads: async () => {
+        signed += 1;
+        return [];
+      },
+    });
+    const response = await handler(
+      new Request("https://example.test/api/sponsorships/pledges/proof-upload-url", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          proof: { fileName: "receipt.jpg", mimeType: "image/jpeg", sizeBytes: 5 },
+        }),
+      }),
+    );
+    expect(response.status).toBe(403);
+    expect(signed).toBe(0);
+    expect(
+      await verifyTurnstile(undefined, undefined, { secret: "configured", isProduction: false }),
+    ).toBe(false);
+  });
+
+  test("only signs once for a consumed configured challenge token", async () => {
+    const { createProofUploadUrlHandler } = await import("./proof-upload-url");
+    let checked = 0;
+    let signed = 0;
+    const handler = createProofUploadUrlHandler({
+      rateLimit: async () => ({ ok: true }),
+      verify: async (token) => token === "single-use" && ++checked === 1,
+      createClient: () => ({}) as never,
+      signUploads: async () => {
+        signed += 1;
+        return [
+          {
+            category: "proof",
+            path: "pledge/proof/receipt.jpg",
+            signedUrl: "https://storage.test/upload",
+            token: "upload-token",
+          },
+        ];
+      },
+      issueIntent: () => "signed-intent",
+      registerIntent: async () => {},
+    });
+    const request = () =>
+      new Request("https://example.test/api/sponsorships/pledges/proof-upload-url", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          turnstileToken: "single-use",
+          proof: { fileName: "receipt.jpg", mimeType: "image/jpeg", sizeBytes: 5 },
+        }),
+      });
+    expect((await handler(request())).status).toBe(201);
+    expect((await handler(request())).status).toBe(403);
+    expect(signed).toBe(1);
+  });
+
   test("does not return a signed URL when intent registration fails", async () => {
     const { createProofUploadUrlHandler } = await import("./proof-upload-url");
     const handler = createProofUploadUrlHandler({

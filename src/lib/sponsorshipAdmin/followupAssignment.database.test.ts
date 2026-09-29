@@ -5,9 +5,12 @@ const url = process.env.SPONSORSHIP_FOLLOWUP_TEST_DATABASE_URL;
 if (url) {
   const parsed = new URL(url);
   if (
+    parsed.protocol !== "postgresql:" ||
     parsed.hostname !== "127.0.0.1" ||
-    parsed.port !== "57322" ||
-    parsed.pathname !== "/postgres" ||
+    !(
+      (parsed.port === "57322" && parsed.pathname === "/postgres") ||
+      (parsed.port === "52322" && parsed.pathname === "/audit_pr135_20260929")
+    ) ||
     parsed.search ||
     parsed.hash
   ) {
@@ -78,8 +81,9 @@ test.skipIf(!enabled)(
           "insert into public.sponsorship_pledge(id,supporter_id,monthly_tier,amount_cents,language,status) values($1::uuid,$2::uuid,'100',10000,'zh-HK','needs_followup')",
           [pledge, supporter],
         );
-        const call = async (who: string, to: string, version: number) =>
-          (
+        const call = async (who: string, to: string, version: number) => {
+          await tx.unsafe("set local role service_role");
+          const result = (
             (await tx.unsafe(
               "select public.assign_sponsorship_followup($1::uuid,$2::uuid,$3::uuid,$4::bigint) result",
               [who, pledge, to, version],
@@ -92,6 +96,9 @@ test.skipIf(!enabled)(
               };
             }>
           )[0]!.result;
+          await tx.unsafe("reset role");
+          return result;
+        };
         const fail = async (action: () => Promise<unknown>, errno: string) => {
           await tx.unsafe("savepoint sponsorship_followup_failure");
           let received: unknown;
@@ -232,12 +239,15 @@ test.skipIf(!enabled)(
         );
       });
       const call = async (assignee: string) =>
-        (
-          (await db.unsafe(
-            "select public.assign_sponsorship_followup($1::uuid,$2::uuid,$3::uuid,1) result",
-            [actor, pledge, assignee],
-          )) as Array<{ result: { assigneeUserId: string; version: number; replayed: boolean } }>
-        )[0]!.result;
+        db.begin(async (tx) => {
+          await tx.unsafe("set local role service_role");
+          return (
+            (await tx.unsafe(
+              "select public.assign_sponsorship_followup($1::uuid,$2::uuid,$3::uuid,1) result",
+              [actor, pledge, assignee],
+            )) as Array<{ result: { assigneeUserId: string; version: number; replayed: boolean } }>
+          )[0]!.result;
+        });
       const outcomes = await Promise.allSettled([call(first), call(second)]);
       expect(outcomes.map((item) => item.status).sort()).toEqual(["fulfilled", "rejected"]);
       const winner = outcomes.find((item) => item.status === "fulfilled") as PromiseFulfilledResult<
@@ -279,4 +289,50 @@ test.skipIf(!enabled)(
     }
   },
   30000,
+);
+
+test.skipIf(!enabled)(
+  "picker excludes banned, unconfirmed, disabled and finance-only actors using service-role RPC",
+  async () => {
+    const db = new SQL(url!, { max: 1, prepare: false }),
+      rollback = new Error("synthetic picker rollback");
+    const ids = Array.from({ length: 6 }, () => crypto.randomUUID());
+    try {
+      await db.begin(async (tx) => {
+        for (let i = 0; i < ids.length; i++) {
+          await tx`insert into auth.users(id,email,email_confirmed_at,banned_until) values(${ids[i]},${ids[i] + "@example.invalid"},${i === 2 ? null : new Date().toISOString()},${i === 3 ? new Date(Date.now() + 86400000).toISOString() : null})`;
+          await tx`insert into admin_user(auth_user_id,email,role,status) values(${ids[i]},${ids[i] + "@example.invalid"},${i === 4 ? "treasurer" : i === 1 ? "admin" : "staff"},${i === 5 ? "disabled" : "active"})`;
+        }
+        await tx`set local role service_role`;
+        const rows =
+          await tx`select * from public.list_sponsorship_followup_assignees(${ids[0]}::uuid)`;
+        expect(rows.map((r: { authUserId: string }) => r.authUserId).sort()).toEqual(
+          ids.slice(0, 2).sort(),
+        );
+        await tx`reset role`;
+        for (const role of ["anon", "authenticated"])
+          expect(
+            (
+              await tx`select has_function_privilege(${role},'public.list_sponsorship_followup_assignees(uuid)','EXECUTE') allowed`
+            )[0].allowed,
+          ).toBe(false);
+        await tx`update auth.users set banned_until=now()+interval '1 day' where id=${ids[0]}`;
+        await tx`savepoint withdrawn_actor`;
+        let denied: unknown;
+        try {
+          await tx`set local role service_role`;
+          await tx`select * from public.list_sponsorship_followup_assignees(${ids[0]}::uuid)`;
+        } catch (error) {
+          denied = error;
+        }
+        await tx`rollback to savepoint withdrawn_actor`;
+        expect((denied as { errno?: string })?.errno).toBe("42501");
+        throw rollback;
+      });
+    } catch (error) {
+      if (error !== rollback) throw error;
+    } finally {
+      await db.close();
+    }
+  },
 );

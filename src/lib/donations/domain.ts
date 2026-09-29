@@ -43,6 +43,7 @@ export const donationRequestSchema = z.object({
     .optional()
     .transform((value) => value || undefined),
   method: z.enum(donationMethods),
+  expectedConfigVersion: z.number().int().positive(),
   checkoutExperience: z.enum(["wap", "desktop_qr"]).default("desktop_qr"),
   receiptRequested: z.boolean(),
   donor: z.object({

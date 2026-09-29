@@ -19,9 +19,13 @@ function reply(body: unknown, status: number, retryAfter?: number) {
 
 export function createRecoveryRouteHandler(
   dependencies: (request: Request) => RecoveryDependencies,
+  options: { enabled?: () => boolean; now?: () => number } = {},
 ) {
+  const enabled = options.enabled ?? (() => process.env.SUPPORTER_RECOVERY_ENABLED === "true");
+  const now = options.now ?? Date.now;
   return async ({ request }: { request: Request }): Promise<Response> => {
     if (request.method !== "POST") return reply({ error: "Method not allowed" }, 405);
+    if (!enabled()) return reply({ error: "Temporarily unavailable" }, 503, 60);
     let body: unknown;
     try {
       body = await readPublicJson(request);
@@ -61,20 +65,20 @@ export function createRecoveryRouteHandler(
       return reply(
         { error: "Too many requests" },
         429,
-        error.retryAfter ? Math.max(1, Math.ceil((error.retryAfter - Date.now()) / 1000)) : 60,
+        error.retryAfter ? Math.max(1, Math.ceil((error.retryAfter - now()) / 1000)) : 60,
       );
     }
   };
 }
 
-function createLiveHandler() {
+function createLiveDependencies(request: Request): RecoveryDependencies {
   const url = process.env.SUPABASE_URL ?? import.meta.env.VITE_SUPABASE_URL;
   const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
   if (!url || !anonKey) throw new Error("Public Supabase auth configuration is missing");
   const auth = createClient(url, anonKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
-  return createRecoveryRouteHandler((request) => ({
+  return {
     ip: getClientIp(request),
     rate: (key) =>
       enforceRateLimit(key, {
@@ -94,13 +98,13 @@ function createLiveHandler() {
       });
       if (error) throw error;
     },
-  }));
+  };
 }
 
 export const Route = createFileRoute("/api/supporter/recovery")({
   server: {
     handlers: {
-      POST: async (context) => createLiveHandler()(context),
+      POST: createRecoveryRouteHandler(createLiveDependencies),
     },
   },
 });

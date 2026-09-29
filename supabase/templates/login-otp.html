@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="zh-HK">
+  <body>
+    <h1>HKSCDA 電郵驗證</h1>
+    <p>請在剛才的登入頁面輸入以下一次性驗證碼：</p>
+    <p><strong>{{ .Token }}</strong></p>
+    <p>你亦可使用<a href="{{ .ConfirmationURL }}">登入連結</a>完成驗證。</p>
+    <p>驗證碼及連結在 15 分鐘後失效，使用後不能重用。請勿轉發。</p>
+    <p>如你沒有提出登入要求，可忽略這封電郵。</p>
+  </body>
+</html>
