@@ -51,3 +51,5 @@ Draft #149 addresses ADMIN-02 in an isolated branch: fresh supporter read on ope
 - T22 sequential #156: activation gate, challenge reset, pending verification lock and local OTP templates repaired. Full 2964 pass/96 skip/0 fail; typecheck/lint/build 0. Actual isolated Auth sink concurrent OTP check fails (two sessions). Recovery remains disabled and not merge-ready under all-tests-green. See sequential-merge-156-20260930.md.
 
 - T22 sequential #157: identity/unmount fencing, preference error statuses and withdrawal ordering repaired at 09a2d1c. Full 2975 pass/100 skip/0 fail; typecheck/lint 0; isolated service-role/atomic-audit/concurrency 5 tests pass; three-width UI/Axe pass. Production RPC absent and exact approval pending; #156 Auth concurrency remains blocked. See sequential-merge-157-20260930.md.
+
+- T23 sequential #158: current-identity query isolation repaired at 40a01915; full 2980 pass/101 skip/0 fail and typecheck/lint/build 0. Three-role isolated Auth/PostgREST API check, 11 metric queries, responsive browser and Axe checks passed. No schema change or deployment; exact filters and later bulk slices remain open. See sequential-merge-158-20260930.md.
