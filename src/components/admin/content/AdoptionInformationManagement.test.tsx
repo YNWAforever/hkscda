@@ -1,16 +1,12 @@
 import { describe, expect, mock, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import type {
-  AdoptionFee,
-  AdminAdoptionInformationPage,
-} from "../../../lib/adoptionInformation/types";
+import type { AdminAdoptionInformationPage } from "../../../lib/adoptionInformation/types";
 import {
   ADOPTION_INFORMATION_QUERY_KEY,
   AdoptionInformationManagement,
   AdoptionInformationManagementView,
   buildAdoptionInformationSearchParams,
-  buildFeeMoveSequence,
   invalidateAdoptionInformationQueries,
 } from "./AdoptionInformationManagement";
 
@@ -24,6 +20,7 @@ const fees: AdminAdoptionInformationPage = {
       priceHkd: "HK$1,500",
       sortOrder: 0,
       isPublished: true,
+      version: 1,
     },
   ],
   total: 1,
@@ -139,18 +136,11 @@ describe("AdoptionInformationManagement", () => {
     expect(markup).toContain("動物照顧須知");
   });
 
-  test("moves fees through a temporary sort order to avoid unique-key conflicts", () => {
-    const current: AdoptionFee = { ...(fees.items[0] as AdoptionFee), sortOrder: 1 };
-    const target: AdoptionFee = {
-      ...current,
-      id: "22222222-3333-4444-8555-666666666666",
-      sortOrder: 2,
-    };
-
-    expect(buildFeeMoveSequence([current, target], 3)).toEqual([
-      { ...current, sortOrder: 3 },
-      target,
-      current,
-    ]);
+  test("renders fee move controls from canonical versioned rows", () => {
+    const markup = renderToStaticMarkup(
+      <AdoptionInformationManagementView activeTab="fees" data={fees} query="" pending />,
+    );
+    expect(markup).toContain("HK$1,500");
+    expect(markup).toContain("disabled");
   });
 });

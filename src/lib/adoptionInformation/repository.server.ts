@@ -3,6 +3,8 @@ import { z } from "zod";
 
 import type {
   AdoptionFeeInput,
+  UpdateFeeContentInput,
+  ReorderFeesInput,
   AdoptionRuleInput,
   CareTopicInput,
   CreateEstateInput,
@@ -22,7 +24,7 @@ import type {
   DogFriendlyEstate,
 } from "./types";
 
-const FEE_COLUMNS = "id,animal_type,item_name,price_hkd,sort_order,is_published";
+const FEE_COLUMNS = "id,animal_type,item_name,price_hkd,sort_order,is_published,version";
 const ESTATE_COLUMNS = "id,estate_name,district,notes,sort_order,is_published,version";
 const RULE_COLUMNS = "id,content_zh,content_en,sort_order,is_published";
 const CARE_TOPIC_COLUMNS =
@@ -35,6 +37,7 @@ const feeRowSchema = z.object({
   price_hkd: z.string().min(1),
   sort_order: z.number().int().min(0),
   is_published: z.boolean(),
+  version: z.number().int().positive(),
 });
 const estateRowSchema = z.object({
   id: z.string().uuid(),
@@ -75,6 +78,7 @@ function mapFee(row: Row): AdoptionFee | null {
     priceHkd: parsed.data.price_hkd,
     sortOrder: parsed.data.sort_order,
     isPublished: parsed.data.is_published,
+    version: parsed.data.version,
   };
 }
 
@@ -117,6 +121,11 @@ function mapCareTopic(row: Row): CareTopic | null {
 }
 
 function throwRepositoryError(error: unknown): never {
+  if (error && typeof error === "object" && "code" in error && error.code === "P4091") {
+    throw new AdoptionInformationConflictError(
+      "Fee version or order conflict; reload the latest fees",
+    );
+  }
   if (error && typeof error === "object" && "code" in error && error.code === "P4090") {
     throw new AdoptionInformationConflictError("Estate version conflict; reload the latest row");
   }
@@ -291,6 +300,33 @@ export function createSupabaseAdoptionInformationRepository(
       });
       if (error) throwRepositoryError(error);
       return requireFee(data);
+    },
+
+    async updateFeeContent(input: UpdateFeeContentInput, actorUserId: string) {
+      const { data, error } = await client.rpc("update_adoption_fee_content_with_audit", {
+        p_actor_user_id: actorUserId,
+        p_id: input.id,
+        p_expected_version: input.expectedVersion,
+        p_item_name: input.itemName,
+        p_price_hkd: input.priceHkd,
+      });
+      if (error) throwRepositoryError(error);
+      return requireFee(data);
+    },
+
+    async reorderFees(input: ReorderFeesInput, actorUserId: string) {
+      const { data, error } = await client.rpc("reorder_adoption_fees_with_audit", {
+        p_actor_user_id: actorUserId,
+        p_first_id: input.firstId,
+        p_second_id: input.secondId,
+        p_first_version: input.expectedVersions.first,
+        p_second_version: input.expectedVersions.second,
+      });
+      if (error) throwRepositoryError(error);
+      if (!Array.isArray(data) || data.length !== 2) throw new Error("Invalid reordered fee rows");
+      const rows = data.map((row) => (row && typeof row === "object" ? mapFee(row as Row) : null));
+      if (rows.some((row) => !row)) throw new Error("Invalid reordered fee rows");
+      return rows as AdoptionFee[];
     },
 
     async createEstate(input: CreateEstateInput, actorUserId: string) {

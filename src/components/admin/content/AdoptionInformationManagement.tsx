@@ -9,6 +9,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type {
+  ReorderFeesInput,
+  UpdateFeeContentInput,
   CreateEstateInput,
   EstateContentFields,
   UpdateEstateInput,
@@ -108,12 +110,12 @@ export function AdoptionContentTabs({
 }
 
 type MutationInput =
-  | { action: "fee"; input: AdoptionFee }
+  | { action: "fee-content"; input: UpdateFeeContentInput }
   | { action: "create-estate"; input: CreateEstateInput }
   | { action: "update-estate"; input: UpdateEstateInput }
   | { action: "publish-estate"; input: SetEstatePublicationInput }
   | { action: "delete-estate"; id: string }
-  | { action: "move-fees"; inputs: AdoptionFee[]; temporarySortOrder: number };
+  | { action: "move-fees"; input: ReorderFeesInput };
 
 function AdoptionInformationManagementRuntime() {
   const queryClient = useQueryClient();
@@ -123,6 +125,7 @@ function AdoptionInformationManagementRuntime() {
   const [leaving, setLeaving] = useState(false);
   const [leaveProblem, setLeaveProblem] = useState<string | null>(null);
   const editorRef = useRef<AdoptionInstructionEditorHandle>(null);
+  const reorderInFlight = useRef(false);
   const blocker = useBlocker({
     withResolver: true,
     disabled: !pageDirty,
@@ -156,38 +159,39 @@ function AdoptionInformationManagementRuntime() {
         });
       }
       if (operation.action === "move-fees") {
-        const results = [];
-        for (const input of buildFeeMoveSequence(operation.inputs, operation.temporarySortOrder)) {
-          results.push(
-            await fetchAdminJson("/api/admin/adoption-information", {
-              method: "POST",
-              body: JSON.stringify({ resource: "fee", input }),
-            }),
-          );
-        }
-        return results;
+        return fetchAdminJson<{ fees: AdoptionFee[] }>("/api/admin/adoption-information", {
+          method: "POST",
+          body: JSON.stringify({ resource: "fee", command: "reorder", input: operation.input }),
+        });
+      }
+      if (operation.action === "fee-content") {
+        return fetchAdminJson<{ fee: AdoptionFee }>("/api/admin/adoption-information", {
+          method: "POST",
+          body: JSON.stringify({ resource: "fee", command: "content", input: operation.input }),
+        });
       }
       return fetchAdminJson<{ estate: DogFriendlyEstate }>("/api/admin/adoption-information", {
         method: "POST",
-        body: JSON.stringify(
-          operation.action === "fee"
-            ? { resource: "fee", input: operation.input }
-            : {
-                resource: "estate",
-                command:
-                  operation.action === "create-estate"
-                    ? "create"
-                    : operation.action === "update-estate"
-                      ? "update"
-                      : "publication",
-                input: operation.input,
-              },
-        ),
+        body: JSON.stringify({
+          resource: "estate",
+          command:
+            operation.action === "create-estate"
+              ? "create"
+              : operation.action === "update-estate"
+                ? "update"
+                : "publication",
+          input: operation.input,
+        }),
       });
     },
     onSuccess: () => invalidateAdoptionInformationQueries(queryClient),
     onError: (_error, operation) => {
-      if (operation.action === "update-estate" || operation.action === "publish-estate")
+      if (
+        operation.action === "update-estate" ||
+        operation.action === "publish-estate" ||
+        operation.action === "move-fees" ||
+        operation.action === "fee-content"
+      )
         return invalidateAdoptionInformationQueries(queryClient);
     },
   });
@@ -297,24 +301,27 @@ function AdoptionInformationManagementRuntime() {
         setPage(1);
       }}
       onPageChange={setPage}
-      onSaveFee={(input) => mutation.mutate({ action: "fee", input })}
+      onSaveFee={async (input) =>
+        ((await mutation.mutateAsync({ action: "fee-content", input })) as { fee: AdoptionFee }).fee
+      }
       onMoveFee={(input, direction) => {
-        const updates = moveFeeWithinSpecies(
-          informationQuery.data?.items ?? [],
-          input.id,
-          direction,
-        );
-        const temporarySortOrder =
-          Math.max(
-            -1,
-            ...(informationQuery.data?.items ?? [])
-              .filter(
-                (item): item is AdoptionFee => isFee(item) && item.animalType === input.animalType,
-              )
-              .map((fee) => fee.sortOrder),
-          ) + 1;
-        if (updates.length)
-          mutation.mutate({ action: "move-fees", inputs: updates, temporarySortOrder });
+        if (mutation.isPending || reorderInFlight.current) return;
+        const pair = moveFeeWithinSpecies(informationQuery.data?.items ?? [], input.id, direction);
+        if (pair.length !== 2 || !pair[0] || !pair[1]) return;
+        reorderInFlight.current = true;
+        void mutation
+          .mutateAsync({
+            action: "move-fees",
+            input: {
+              firstId: pair[0].id,
+              secondId: pair[1].id,
+              expectedVersions: { first: pair[0].version, second: pair[1].version },
+            },
+          })
+          .catch(() => undefined)
+          .finally(() => {
+            reorderInFlight.current = false;
+          });
       }}
       onCreateEstate={async (input) =>
         (
@@ -361,7 +368,7 @@ type ViewProps = {
   onTabChange?: (tab: AdoptionContentTab) => void;
   onQueryChange?: (value: string) => void;
   onPageChange?: (page: number) => void;
-  onSaveFee?: (fee: AdoptionFee) => void;
+  onSaveFee?: (input: UpdateFeeContentInput) => Promise<AdoptionFee>;
   onMoveFee?: (fee: AdoptionFee, direction: -1 | 1) => void;
   onCreateEstate?: (input: CreateEstateInput) => Promise<DogFriendlyEstate>;
   onUpdateEstate?: (input: UpdateEstateInput) => Promise<DogFriendlyEstate>;
@@ -497,34 +504,103 @@ function FeeEditor({
 }: {
   fee: AdoptionFee;
   pending: boolean;
-  onSave?: (fee: AdoptionFee) => void;
+  onSave?: (input: UpdateFeeContentInput) => Promise<AdoptionFee>;
   onMove?: (fee: AdoptionFee, direction: -1 | 1) => void;
 }) {
   const [draft, setDraft] = useState(fee);
+  const [dirty, setDirty] = useState(false);
+  const [conflict, setConflict] = useState(false);
+  const knownVersion = useRef(fee.version);
+  useEffect(() => {
+    if (fee.version < knownVersion.current) return;
+    if (dirty && fee.version !== knownVersion.current) {
+      setConflict(true);
+      return;
+    }
+    if (!dirty) {
+      knownVersion.current = fee.version;
+      setDraft(fee);
+      setConflict(false);
+    }
+  }, [fee, dirty]);
+  const save = async () => {
+    if (!onSave || pending || conflict) return;
+    try {
+      const canonical = await onSave({
+        id: fee.id,
+        expectedVersion: knownVersion.current,
+        itemName: draft.itemName,
+        priceHkd: draft.priceHkd,
+      });
+      knownVersion.current = canonical.version;
+      setDraft(canonical);
+      setDirty(false);
+      setConflict(false);
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("Fee version or order conflict"))
+        setConflict(true);
+    }
+  };
   return (
-    <div className="grid gap-2 md:grid-cols-[1fr_12rem_auto]">
-      <input
-        aria-label="費用項目"
-        value={draft.itemName}
-        onChange={(event) => setDraft({ ...draft, itemName: event.target.value })}
-        className={inputClass}
-      />
-      <input
-        aria-label="價格"
-        value={draft.priceHkd}
-        onChange={(event) => setDraft({ ...draft, priceHkd: event.target.value })}
-        className={inputClass}
-      />
-      <div className="flex gap-2">
-        <button type="button" aria-label="上移" onClick={() => onMove?.(draft, -1)}>
-          <ChevronUp className="h-4 w-4" /> 上移
-        </button>
-        <button type="button" aria-label="下移" onClick={() => onMove?.(draft, 1)}>
-          <ChevronDown className="h-4 w-4" /> 下移
-        </button>
-        <button type="button" disabled={pending} onClick={() => onSave?.(draft)}>
-          儲存
-        </button>
+    <div className="space-y-2">
+      {conflict ? (
+        <p role="alert" className="text-sm text-[var(--color-error)]">
+          領養費用已由其他人更新。請檢查最新版本後重新輸入。
+          {fee.version <= knownVersion.current ? "最新資料暫未載入，請重新整理頁面。" : null}
+          <button
+            type="button"
+            disabled={fee.version <= knownVersion.current}
+            onClick={() => {
+              knownVersion.current = fee.version;
+              setDraft(fee);
+              setDirty(false);
+              setConflict(false);
+            }}
+          >
+            載入最新費用
+          </button>
+        </p>
+      ) : null}
+      <div className="grid gap-2 md:grid-cols-[1fr_12rem_auto]">
+        <input
+          aria-label="費用項目"
+          value={draft.itemName}
+          onChange={(event) => {
+            setDraft({ ...draft, itemName: event.target.value });
+            setDirty(true);
+          }}
+          className={inputClass}
+        />
+        <input
+          aria-label="價格"
+          value={draft.priceHkd}
+          onChange={(event) => {
+            setDraft({ ...draft, priceHkd: event.target.value });
+            setDirty(true);
+          }}
+          className={inputClass}
+        />
+        <div className="flex gap-2">
+          <button
+            type="button"
+            aria-label="上移"
+            disabled={pending || dirty || conflict}
+            onClick={() => onMove?.(draft, -1)}
+          >
+            <ChevronUp className="h-4 w-4" /> 上移
+          </button>
+          <button
+            type="button"
+            aria-label="下移"
+            disabled={pending || dirty || conflict}
+            onClick={() => onMove?.(draft, 1)}
+          >
+            <ChevronDown className="h-4 w-4" /> 下移
+          </button>
+          <button type="button" disabled={pending || conflict} onClick={() => void save()}>
+            儲存
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -738,13 +814,6 @@ export function moveFeeWithinSpecies(
     { ...current, sortOrder: target.sortOrder },
     { ...target, sortOrder: current.sortOrder },
   ];
-}
-
-export function buildFeeMoveSequence(inputs: AdoptionFee[], temporarySortOrder: number) {
-  const [current, target] = inputs;
-  if (!current || !target) return [];
-
-  return [{ ...current, sortOrder: temporarySortOrder }, target, current];
 }
 
 const inputClass =

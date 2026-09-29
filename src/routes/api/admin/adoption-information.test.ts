@@ -13,6 +13,15 @@ function setup(options: { unauthorized?: boolean; conflict?: boolean } = {}) {
       if (options.conflict) throw new AdoptionInformationConflictError("Fee order conflicts");
       return { id: "fee-1" };
     },
+    async updateFeeContent() {
+      return { id: "fee-1", version: 2 };
+    },
+    async reorderFees() {
+      return [
+        { id: "fee-1", version: 3 },
+        { id: "fee-2", version: 2 },
+      ];
+    },
     async createEstate() {
       return { id: "estate-1", version: 1 };
     },

@@ -1,6 +1,8 @@
 import {
   adminAdoptionInformationQuerySchema,
   adoptionFeeInputSchema,
+  updateFeeContentInputSchema,
+  reorderFeesInputSchema,
   adoptionInformationIdSchema,
   adoptionRuleInputSchema,
   careTopicInputSchema,
@@ -8,6 +10,8 @@ import {
   updateEstateInputSchema,
   setEstatePublicationInputSchema,
   type AdoptionFeeInput,
+  type UpdateFeeContentInput,
+  type ReorderFeesInput,
   type AdoptionRuleInput,
   type CareTopicInput,
   type CreateEstateInput,
@@ -33,6 +37,7 @@ export type AdoptionInformationAuditLog = {
   action:
     | "adoption_fee.create"
     | "adoption_fee.update"
+    | "adoption_fee.reorder"
     | "adoption_fee.publish"
     | "adoption_fee.unpublish"
     | "dog_friendly_estate.create"
@@ -51,6 +56,8 @@ export interface AdoptionInformationRepository {
   listPublic(): Promise<PublicAdoptionInformation>;
   listAdmin(input: AdminAdoptionInformationQuery): Promise<AdminAdoptionInformationPage>;
   upsertFee(input: AdoptionFeeInput, actorUserId?: string): Promise<AdoptionFee>;
+  updateFeeContent(input: UpdateFeeContentInput, actorUserId: string): Promise<AdoptionFee>;
+  reorderFees(input: ReorderFeesInput, actorUserId: string): Promise<AdoptionFee[]>;
   createEstate(input: CreateEstateInput, actorUserId: string): Promise<DogFriendlyEstate>;
   updateEstate(input: UpdateEstateInput, actorUserId: string): Promise<DogFriendlyEstate>;
   setEstatePublication(
@@ -85,6 +92,8 @@ export function createAdoptionInformationService({
 
     async upsertFee({ actorUserId, input }: { actorUserId: string; input: unknown }) {
       const parsed = adoptionFeeInputSchema.parse(input);
+      if (parsed.id)
+        throw new AdoptionInformationConflictError("Use the versioned fee content command");
       const fee = await repo.upsertFee(parsed, actorUserId);
       if (repo.usesAtomicAudit) return fee;
       await audit({
@@ -102,6 +111,16 @@ export function createAdoptionInformationService({
         detail: {},
       });
       return fee;
+    },
+
+    async updateFeeContent({ actorUserId, input }: { actorUserId: string; input: unknown }) {
+      const parsed = updateFeeContentInputSchema.parse(input);
+      return repo.updateFeeContent(parsed, actorUserId);
+    },
+
+    async reorderFees({ actorUserId, input }: { actorUserId: string; input: unknown }) {
+      const parsed = reorderFeesInputSchema.parse(input);
+      return repo.reorderFees(parsed, actorUserId);
     },
 
     async createEstate({ actorUserId, input }: { actorUserId: string; input: unknown }) {

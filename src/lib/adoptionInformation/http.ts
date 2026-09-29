@@ -6,6 +6,7 @@ import {
   adoptionInformationMutationSchema,
   deleteEstateRequestSchema,
   estateCommandRequestSchema,
+  feeCommandRequestSchema,
 } from "./schemas";
 import { AdoptionInformationConflictError } from "./service";
 
@@ -14,6 +15,8 @@ type AdminIdentity = { authUserId: string };
 type HandlerService = {
   listAdmin(input: unknown): Promise<unknown>;
   upsertFee(input: { actorUserId: string; input: unknown }): Promise<unknown>;
+  updateFeeContent(input: { actorUserId: string; input: unknown }): Promise<unknown>;
+  reorderFees(input: { actorUserId: string; input: unknown }): Promise<unknown>;
   createEstate(input: { actorUserId: string; input: unknown }): Promise<unknown>;
   updateEstate(input: { actorUserId: string; input: unknown }): Promise<unknown>;
   setEstatePublication(input: { actorUserId: string; input: unknown }): Promise<unknown>;
@@ -113,6 +116,34 @@ export function createAdoptionInformationHandlers({
       return withErrors(request, async (id) => {
         const admin = await requireAdoptionInformationAdmin(request);
         const body = await jsonBody(request, id);
+        if (
+          body &&
+          typeof body === "object" &&
+          "resource" in body &&
+          body.resource === "fee" &&
+          "command" in body
+        ) {
+          const command = feeCommandRequestSchema.parse(body);
+          if (command.command === "content")
+            return jsonResponse(
+              {
+                fee: await service.updateFeeContent({
+                  actorUserId: admin.authUserId,
+                  input: command.input,
+                }),
+              },
+              id,
+            );
+          return jsonResponse(
+            {
+              fees: await service.reorderFees({
+                actorUserId: admin.authUserId,
+                input: command.input,
+              }),
+            },
+            id,
+          );
+        }
         if (body && typeof body === "object" && "resource" in body && body.resource === "estate") {
           const command = estateCommandRequestSchema.parse(body);
           const estate =

@@ -24,6 +24,30 @@ export const adoptionFeeInputSchema = z.object({
   isPublished: z.boolean().default(true),
 });
 
+export const updateFeeContentInputSchema = z
+  .object({
+    id: adoptionInformationIdSchema,
+    expectedVersion: z.number().int().positive(),
+    itemName: z.string().trim().min(1).max(180),
+    priceHkd: z.string().trim().min(1).max(40),
+  })
+  .strict();
+export const reorderFeesInputSchema = z
+  .object({
+    firstId: adoptionInformationIdSchema,
+    secondId: adoptionInformationIdSchema,
+    expectedVersions: z
+      .object({
+        first: z.number().int().positive(),
+        second: z.number().int().positive(),
+      })
+      .strict(),
+  })
+  .strict()
+  .refine((value) => value.firstId !== value.secondId, {
+    message: "Two distinct fee IDs required",
+  });
+
 export const estateContentFieldsSchema = z
   .object({
     estateName: z.string().trim().min(1).max(180),
@@ -51,6 +75,23 @@ export const setEstatePublicationInputSchema = z
     isPublished: z.boolean(),
   })
   .strict();
+export const feeCommandRequestSchema = z.discriminatedUnion("command", [
+  z
+    .object({
+      resource: z.literal("fee"),
+      command: z.literal("content"),
+      input: updateFeeContentInputSchema,
+    })
+    .strict(),
+  z
+    .object({
+      resource: z.literal("fee"),
+      command: z.literal("reorder"),
+      input: reorderFeesInputSchema,
+    })
+    .strict(),
+]);
+
 export const estateCommandRequestSchema = z.discriminatedUnion("command", [
   z
     .object({
@@ -116,6 +157,8 @@ export const adoptionInformationMutationSchema = z.discriminatedUnion("resource"
 export const deleteEstateRequestSchema = z.object({ id: adoptionInformationIdSchema });
 
 export type AdoptionFeeInput = z.infer<typeof adoptionFeeInputSchema>;
+export type UpdateFeeContentInput = z.infer<typeof updateFeeContentInputSchema>;
+export type ReorderFeesInput = z.infer<typeof reorderFeesInputSchema>;
 export type EstateContentFields = z.infer<typeof estateContentFieldsSchema>;
 export type CreateEstateInput = z.infer<typeof createEstateInputSchema>;
 export type UpdateEstateInput = z.infer<typeof updateEstateInputSchema>;
