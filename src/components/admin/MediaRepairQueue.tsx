@@ -104,7 +104,9 @@ export function MediaRepairQueue() {
                     {item.status === "failed" ? (
                       <button
                         type="button"
+                        disabled={retry.isPending}
                         onClick={() => {
+                          retry.reset();
                           setSelected(key);
                           setReason("");
                           setCorrected(false);
@@ -129,6 +131,7 @@ export function MediaRepairQueue() {
                         <label className="block">
                           已修復原因及重試理由
                           <textarea
+                            disabled={retry.isPending}
                             value={reason}
                             onChange={(event) => setReason(event.target.value)}
                             minLength={10}
@@ -140,6 +143,7 @@ export function MediaRepairQueue() {
                         <label className="flex items-center gap-2">
                           <input
                             type="checkbox"
+                            disabled={retry.isPending}
                             checked={corrected}
                             onChange={(event) => setCorrected(event.target.checked)}
                             required

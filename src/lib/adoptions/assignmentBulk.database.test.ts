@@ -2,8 +2,20 @@ import { SQL } from "bun";
 import { expect, test } from "bun:test";
 
 const url = process.env.ADOPTION_ASSIGNMENT_BULK_TEST_DATABASE_URL;
-if (url && (new URL(url).hostname !== "127.0.0.1" || new URL(url).port !== "57322")) {
-  throw new Error("Dedicated disposable adoption bulk database required");
+if (url) {
+  const target = new URL(url);
+  if (
+    target.protocol !== "postgresql:" ||
+    target.hostname !== "127.0.0.1" ||
+    target.search ||
+    target.hash ||
+    ![
+      "57322/postgres",
+      "52322/audit_pr135_20260929",
+      ...(process.env.CI ? ["55322/postgres"] : []),
+    ].includes(`${target.port}${target.pathname}`)
+  )
+    throw new Error("Dedicated disposable adoption bulk database required");
 }
 
 test.skipIf(!url || process.env.ADOPTION_ASSIGNMENT_BULK_TEST_ALLOW_LOCAL_FIXTURES !== "1")(
@@ -68,6 +80,7 @@ test.skipIf(!url || process.env.ADOPTION_ASSIGNMENT_BULK_TEST_ALLOW_LOCAL_FIXTUR
           "insert into public.adoption_case(id,status_id,applicant_name,applicant_phone) values($1::uuid,$2::uuid,'Recent synthetic adopter','90000001')",
           [recentId, status],
         );
+        await tx.unsafe("set local role service_role");
         const agePreview = (await tx.unsafe(
           "select public.create_adoption_assignment_bulk_preview($1::uuid,$2::uuid[],$3::uuid,$4::uuid,7,$5) result",
           [actor, "{" + recentId + "}", assignee, status, "a".repeat(64)],
@@ -76,6 +89,7 @@ test.skipIf(!url || process.env.ADOPTION_ASSIGNMENT_BULK_TEST_ALLOW_LOCAL_FIXTUR
           status: "skipped",
           reasonCode: "too_recent",
         });
+        await tx.unsafe("set local role service_role");
         const preview = (await tx.unsafe(
           "select public.create_adoption_assignment_bulk_preview($1::uuid,$2::uuid[],$3::uuid,$4::uuid,7,$5) result",
           [actor, "{" + cases.join(",") + "}", assignee, status, "a".repeat(64)],
@@ -87,15 +101,18 @@ test.skipIf(!url || process.env.ADOPTION_ASSIGNMENT_BULK_TEST_ALLOW_LOCAL_FIXTUR
           "pending",
           "pending",
         ]);
-        const apply = async (id: string) =>
-          (
+        const apply = async (id: string) => {
+          await tx.unsafe("set local role service_role");
+          return (
             (await tx.unsafe(
               "select public.apply_adoption_assignment_bulk_item($1::uuid,$2::uuid,$3::uuid) result",
               [actor, op, id],
             )) as Array<{ result: { status: string; reasonCode: string | null } }>
           )[0]!.result;
+        };
         expect((await apply(cases[0]!)).status).toBe("succeeded");
         expect((await apply(cases[0]!)).status).toBe("succeeded");
+        await tx.unsafe("reset role");
         await tx.unsafe(
           "update public.adoption_case set updated_at=clock_timestamp()+interval '1 second' where id=$1::uuid",
           [cases[1]],
@@ -104,6 +121,7 @@ test.skipIf(!url || process.env.ADOPTION_ASSIGNMENT_BULK_TEST_ALLOW_LOCAL_FIXTUR
           status: "conflict",
           reasonCode: "version_changed",
         });
+        await tx.unsafe("reset role");
         await tx.unsafe("update public.adoption_case set closed_at=now() where id=$1::uuid", [
           cases[2],
         ]);
@@ -111,6 +129,7 @@ test.skipIf(!url || process.env.ADOPTION_ASSIGNMENT_BULK_TEST_ALLOW_LOCAL_FIXTUR
           status: "skipped",
           reasonCode: "unavailable",
         });
+        await tx.unsafe("reset role");
         await tx.unsafe("update public.coordinator_status set is_closing=true where id=$1::uuid", [
           status,
         ]);
@@ -178,6 +197,7 @@ test.skipIf(!url || process.env.ADOPTION_ASSIGNMENT_BULK_TEST_ALLOW_LOCAL_FIXTUR
           await tx.unsafe("savepoint adoption_bulk_failure");
           let received: unknown;
           try {
+            await tx.unsafe("set local role service_role");
             await call();
           } catch (error) {
             received = error;
@@ -194,6 +214,7 @@ test.skipIf(!url || process.env.ADOPTION_ASSIGNMENT_BULK_TEST_ALLOW_LOCAL_FIXTUR
             ),
           "22023",
         );
+        await tx.unsafe("set local role service_role");
         const preview = (await tx.unsafe(
           "select public.create_adoption_assignment_bulk_preview($1::uuid,$2::uuid[],$3::uuid,$4::uuid,7,$5) result",
           [actor, "{" + caseId + "}", assignee, status, "a".repeat(64)],
@@ -204,33 +225,40 @@ test.skipIf(!url || process.env.ADOPTION_ASSIGNMENT_BULK_TEST_ALLOW_LOCAL_FIXTUR
             "select public.apply_adoption_assignment_bulk_item($1::uuid,$2::uuid,$3::uuid)",
             [actor, op, caseId],
           );
+        await tx.unsafe("reset role");
         await tx.unsafe(
           "update public.admin_user set status='disabled' where auth_user_id=$1::uuid",
           [actor],
         );
         await fail(apply, "42501");
+        await tx.unsafe("reset role");
         await tx.unsafe(
           "update public.admin_user set status='active' where auth_user_id=$1::uuid",
           [actor],
         );
+        await tx.unsafe("reset role");
         await tx.unsafe(
           "update public.admin_user set status='disabled' where auth_user_id=$1::uuid",
           [assignee],
         );
         await fail(apply, "42501");
+        await tx.unsafe("reset role");
         await tx.unsafe(
           "update public.admin_user set status='active' where auth_user_id=$1::uuid",
           [assignee],
         );
+        await tx.unsafe("reset role");
         await tx.unsafe(
           "update public.adoption_assignment_bulk_operation set expires_at=now()-interval '1 second' where id=$1::uuid",
           [op],
         );
         await fail(apply, "P0001");
+        await tx.unsafe("reset role");
         await tx.unsafe(
           "update public.adoption_assignment_bulk_operation set expires_at=now()+interval '15 minutes' where id=$1::uuid",
           [op],
         );
+        await tx.unsafe("reset role");
         await tx.unsafe(
           "create function pg_temp.fail_adoption_bulk_audit() returns trigger language plpgsql as $$ begin if new.action='adoption_case.bulk_assign_owner' then raise exception 'synthetic audit failure' using errcode='P0002';end if;return new;end $$",
         );
@@ -243,11 +271,251 @@ test.skipIf(!url || process.env.ADOPTION_ASSIGNMENT_BULK_TEST_ALLOW_LOCAL_FIXTUR
           [caseId],
         )) as Array<{ assigned_to: string | null }>;
         expect(assignment[0]!.assigned_to).toBeNull();
+        await tx.unsafe("reset role");
         await tx.unsafe("drop trigger fail_adoption_bulk_audit on public.audit_log");
         const grants = (await tx.unsafe(
           "select has_function_privilege('authenticated','public.create_adoption_assignment_bulk_preview(uuid,uuid[],uuid,uuid,integer,text)','EXECUTE') preview,has_function_privilege('anon','public.apply_adoption_assignment_bulk_item(uuid,uuid,uuid)','EXECUTE') apply,has_table_privilege('authenticated','public.adoption_assignment_bulk_item','SELECT') item",
         )) as Array<{ preview: boolean; apply: boolean; item: boolean }>;
         expect(grants[0]).toEqual({ preview: false, apply: false, item: false });
+        throw rollback;
+      });
+    } catch (error) {
+      if (error !== rollback) throw error;
+    } finally {
+      await db.close();
+    }
+  },
+  30000,
+);
+
+for (const mode of ["actor", "stage"] as const)
+  test.skipIf(!url || process.env.ADOPTION_ASSIGNMENT_BULK_TEST_ALLOW_LOCAL_FIXTURES !== "1")(
+    "adoption bulk holds " + mode + " eligibility through commit",
+    async () => {
+      const db = new SQL(url!, { max: 1, prepare: false }),
+        other = new SQL(url!, { max: 1, prepare: false });
+      const actor = crypto.randomUUID(),
+        assignee = crypto.randomUUID(),
+        stage = crypto.randomUUID(),
+        caseId = crypto.randomUUID();
+      let operation: string | undefined;
+      try {
+        expect(
+          (
+            await db.unsafe(
+              "select to_regprocedure('public.apply_adoption_assignment_bulk_item(uuid,uuid,uuid)') f",
+            )
+          )[0].f,
+        ).not.toBeNull();
+        for (const id of [actor, assignee])
+          await db.unsafe(
+            "insert into auth.users(id,email,email_confirmed_at,created_at,updated_at) values($1::uuid,$2,now(),now(),now())",
+            [id, id + "@example.invalid"],
+          );
+        for (const [id, role] of [
+          [actor, "admin"],
+          [assignee, "staff"],
+        ])
+          await db.unsafe(
+            "insert into public.admin_user(auth_user_id,email,role,status) values($1::uuid,$2,$3,'active')",
+            [id, id + "@example.invalid", role],
+          );
+        await db.unsafe(
+          "insert into public.coordinator_status(id,category,key,label_zh,label_en) values($1::uuid,'adoption_case',$2,'Synthetic lock stage','Synthetic lock stage')",
+          [stage, "bulk_" + stage.replaceAll("-", "")],
+        );
+        await db.unsafe(
+          "insert into public.adoption_case(id,status_id,applicant_name,applicant_phone,created_at) values($1::uuid,$2::uuid,'Synthetic lock adopter','90000000',now()-interval '10 days')",
+          [caseId, stage],
+        );
+        await db.begin(async (tx) => {
+          await tx.unsafe("set local role service_role");
+          operation = (
+            await tx.unsafe(
+              "select public.create_adoption_assignment_bulk_preview($1::uuid,$2::uuid[],$3::uuid,$4::uuid,7,$5) result",
+              [actor, "{" + caseId + "}", assignee, stage, "c".repeat(64)],
+            )
+          )[0].result.operationId;
+        });
+        const rewind = new Error("rewind adoption lock fixture");
+        try {
+          await db.begin(async (tx) => {
+            await tx.unsafe("set local role service_role");
+            await tx.unsafe(
+              "select public.apply_adoption_assignment_bulk_item($1::uuid,$2::uuid,$3::uuid)",
+              [actor, operation!, caseId],
+            );
+            const changes =
+              mode === "stage"
+                ? [
+                    [
+                      "update public.coordinator_status set is_closing=true where id=$1::uuid",
+                      stage,
+                    ],
+                  ]
+                : [actor, assignee].flatMap((id) => [
+                    [
+                      "update public.admin_user set status='disabled' where auth_user_id=$1::uuid",
+                      id,
+                    ],
+                    [
+                      "update auth.users set banned_until=now()+interval '1 day' where id=$1::uuid",
+                      id,
+                    ],
+                  ]);
+            for (const [query, id] of changes)
+              await expect(
+                other.begin(async (revoker) => {
+                  await revoker.unsafe("set local lock_timeout='150ms'");
+                  await revoker.unsafe(query, [id]);
+                }),
+              ).rejects.toMatchObject({ errno: "55P03" });
+            throw rewind;
+          });
+        } catch (error) {
+          if (error !== rewind) throw error;
+        }
+        const apply = (connection: SQL) =>
+          connection.begin(async (tx) => {
+            await tx.unsafe("set local role service_role");
+            return (
+              await tx.unsafe(
+                "select public.apply_adoption_assignment_bulk_item($1::uuid,$2::uuid,$3::uuid) result",
+                [actor, operation!, caseId],
+              )
+            )[0].result.status as string;
+          });
+        expect(await Promise.all([apply(db), apply(other)])).toEqual(["succeeded", "succeeded"]);
+        expect(
+          (
+            await db.unsafe(
+              "select count(*)::int n from public.audit_log where actor_user_id=$1::uuid and action='adoption_case.bulk_assign_owner'",
+              [actor],
+            )
+          )[0].n,
+        ).toBe(1);
+      } finally {
+        await db.unsafe("delete from public.audit_log where actor_user_id=$1::uuid", [actor]);
+        if (operation) {
+          await db.unsafe(
+            "delete from public.adoption_assignment_bulk_item where operation_id=$1::uuid",
+            [operation],
+          );
+          await db.unsafe(
+            "delete from public.adoption_assignment_bulk_operation where id=$1::uuid",
+            [operation],
+          );
+        }
+        await db.unsafe("delete from public.adoption_case where id=$1::uuid", [caseId]);
+        await db.unsafe("delete from public.coordinator_status where id=$1::uuid", [stage]);
+        await db.unsafe("delete from public.admin_user where auth_user_id=any($1::uuid[])", [
+          "{" + [actor, assignee].join(",") + "}",
+        ]);
+        await db.unsafe("delete from auth.users where id=any($1::uuid[])", [
+          "{" + [actor, assignee].join(",") + "}",
+        ]);
+        await other.close();
+        await db.close();
+      }
+    },
+    30000,
+  );
+
+test.skipIf(!url || process.env.ADOPTION_ASSIGNMENT_BULK_TEST_ALLOW_LOCAL_FIXTURES !== "1")(
+  "1000 adoption assignments preserve per-item versions and atomic results",
+  async () => {
+    const db = new SQL(url!, { max: 1, prepare: false }),
+      actor = crypto.randomUUID(),
+      assignee = crypto.randomUUID(),
+      stage = crypto.randomUUID();
+    const rollback = new Error("rollback thousand adoption fixture");
+    try {
+      await db.begin(async (tx) => {
+        for (const id of [actor, assignee])
+          await tx.unsafe(
+            "insert into auth.users(id,email,email_confirmed_at,created_at,updated_at) values($1::uuid,$2,now(),now(),now())",
+            [id, id + "@example.invalid"],
+          );
+        for (const [id, role] of [
+          [actor, "admin"],
+          [assignee, "staff"],
+        ])
+          await tx.unsafe(
+            "insert into public.admin_user(auth_user_id,email,role,status) values($1::uuid,$2,$3,'active')",
+            [id, id + "@example.invalid", role],
+          );
+        await tx.unsafe(
+          "insert into public.coordinator_status(id,category,key,label_zh,label_en) values($1::uuid,'adoption_case',$2,'Synthetic thousand stage','Synthetic thousand stage')",
+          [stage, "bulk_" + stage.replaceAll("-", "")],
+        );
+        const seeded = await tx.unsafe(
+          "insert into public.adoption_case(id,status_id,applicant_name,applicant_phone,created_at,assigned_to) select gen_random_uuid(),$1::uuid,'Synthetic thousand adopter','90000000',now()-interval '10 days',case when n<=100 then $2::uuid else null end from generate_series(1,1000) n returning id",
+          [stage, assignee],
+        );
+        const ids = seeded.map((r: { id: string }) => r.id);
+        await tx.unsafe("set local role service_role");
+        const op = (
+          await tx.unsafe(
+            "select public.create_adoption_assignment_bulk_preview($1::uuid,$2::uuid[],$3::uuid,$4::uuid,7,$5) result",
+            [actor, "{" + ids.join(",") + "}", assignee, stage, "d".repeat(64)],
+          )
+        )[0].result as { operationId: string; items: Array<{ entityId: string; status: string }> };
+        expect(op.items).toHaveLength(1000);
+        const pending = op.items.filter((i) => i.status === "pending");
+        expect(pending).toHaveLength(900);
+        await tx.unsafe("reset role");
+        await tx.unsafe(
+          "update public.adoption_case set applicant_name='Synthetic changed' where id=$1::uuid",
+          [pending[0].entityId],
+        );
+        await tx.unsafe("update public.adoption_case set closed_at=now() where id=$1::uuid", [
+          pending[1].entityId,
+        ]);
+        await tx.unsafe("set local role service_role");
+        const applied = await tx.unsafe(
+          "select public.apply_adoption_assignment_bulk_item($1::uuid,$2::uuid,case_id) result from public.adoption_assignment_bulk_item where operation_id=$2::uuid and status='pending' order by ordinal",
+          [actor, op.operationId],
+        );
+        const states = applied.map((r: { result: { status: string } }) => r.result.status);
+        expect(states.filter((s: string) => s === "succeeded")).toHaveLength(898);
+        expect(states.filter((s: string) => s === "conflict")).toHaveLength(1);
+        expect(states.filter((s: string) => s === "skipped")).toHaveLength(1);
+        await tx.unsafe(
+          "select public.apply_adoption_assignment_bulk_item($1::uuid,$2::uuid,$3::uuid)",
+          [actor, op.operationId, pending[2].entityId],
+        );
+        expect(
+          (
+            await tx.unsafe(
+              "select count(*)::int n from public.audit_log where actor_user_id=$1::uuid and action='adoption_case.bulk_assign_owner'",
+              [actor],
+            )
+          )[0].n,
+        ).toBe(898);
+        expect(
+          (
+            await tx.unsafe(
+              "select public.get_adoption_assignment_bulk_operation($1::uuid,$2::uuid) result",
+              [actor, op.operationId],
+            )
+          )[0].result.state,
+        ).toBe("done");
+        for (const role of ["anon", "authenticated"]) {
+          await tx.unsafe("reset role");
+          await tx.unsafe("savepoint denied_role");
+          await tx.unsafe("set local role " + role);
+          let error: unknown;
+          try {
+            await tx.unsafe(
+              "select public.get_adoption_assignment_bulk_operation($1::uuid,$2::uuid)",
+              [actor, op.operationId],
+            );
+          } catch (cause) {
+            error = cause;
+          }
+          await tx.unsafe("rollback to savepoint denied_role");
+          expect((error as { errno?: string } | undefined)?.errno).toBe("42501");
+        }
         throw rollback;
       });
     } catch (error) {

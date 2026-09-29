@@ -1,0 +1,7 @@
+# Receipt QA — same host, synthetic data
+
+The benchmark script runs 100 sequential PDF generations with the same synthetic mixed Chinese/English donor, local Noto Sans HK font bytes, and no external network. The baseline was commit `97280b1`; the after row is this review branch. Wall time increased by 898 ms (0.87%); this is measurement noise, **not** a demonstrated speed gain. Font fetches fell from 100 to 1. A4 PDF size remained about 4.34 MB. `subset:false` remains because the current font has missing-glyph risks under subsetting.
+
+For visual date validation, both sample PDFs were regenerated with `TZ=UTC` and `issuedAt=2026-12-31T16:30:00Z`, then rendered at 1200 px with Poppler. [Before](before-utc.png) shows 31/12/2026; [after](after-utc.png) shows the Hong Kong date 1/1/2027. Both are one-page A4, with legible Chinese and mixed-script donor text and no visible clipping. Poppler emitted display-font warnings but produced both renders. The underlying PDFs are retained locally under `output/pdf/` and excluded from Git because each is 4.34 MB.
+
+The bundled font supports representative rare Han glyphs `龘` and `𡃁`, but lacks `𠮷` (U+20BB7). The new wrapping test covers a supported rare glyph and a long mixed-script name; alternative glyph coverage and font-size reduction remain open for an approved font/content decision. The synthetic receipt number uses 2027; the production tax-year numbering rule was not changed.

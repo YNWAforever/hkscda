@@ -49,6 +49,7 @@ export type CrmRepository = {
     supporterId?: string;
     supporter?: SupporterInput;
     update?: SupporterUpdatePayload;
+    expectedVersion?: number;
     roles?: SupporterRole[];
     audit: AuditLogInsert;
   }): Promise<{ id: string; email: string } | void>;
@@ -124,7 +125,7 @@ export function createCrmService({ repo, now = () => new Date() }: CreateCrmServ
       input: unknown;
     }) {
       const input = supporterUpdateSchema.parse(args.input);
-      const { deleted, roles, ...rest } = input;
+      const { deleted, roles, expectedVersion, ...rest } = input;
       const update: SupporterUpdatePayload = { ...rest };
       if (deleted !== undefined) {
         update.deletedAt = deleted ? timestamp(now) : null;
@@ -135,6 +136,7 @@ export function createCrmService({ repo, now = () => new Date() }: CreateCrmServ
           operation: "update",
           supporterId: args.supporterId,
           update,
+          expectedVersion,
           roles,
           audit: {
             actor_user_id: args.actorUserId,
@@ -147,18 +149,7 @@ export function createCrmService({ repo, now = () => new Date() }: CreateCrmServ
         });
         return;
       }
-      await repo.updateSupporter(args.supporterId, update);
-      if (roles !== undefined) {
-        await repo.setSupporterRoles({ supporterId: args.supporterId, roles });
-      }
-      await repo.insertAuditLog({
-        actor_user_id: args.actorUserId,
-        action: "supporter.update",
-        entity: "supporter",
-        entity_id: args.supporterId,
-        timestamp: timestamp(now),
-        detail: input,
-      });
+      throw new Error("Atomic versioned supporter mutation is required");
     },
 
     async appendConsents(args: {
