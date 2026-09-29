@@ -40,3 +40,5 @@ Draft #149 addresses ADMIN-02 in an isolated branch: fresh supporter read on ope
 ## Sequential release continuation — 2026-09-30
 
 #134–#152 have merged sequentially (19/46), with each PR and its predecessor main CI checked before merge. #152 production READY; its main CI pending. T18/#153 archive leakage and migration identity collision repaired; local code/UI checks passed, current schema rehearsal and remote gates pending. See sequential-merge-153-20260930.md. Historical entries above are retained.
+
+- T22 sequential #156: activation gate, challenge reset, pending verification lock and local OTP templates repaired. Full 2964 pass/96 skip/0 fail; typecheck/lint/build 0. Actual isolated Auth sink concurrent OTP check fails (two sessions). Recovery remains disabled and not merge-ready under all-tests-green. See sequential-merge-156-20260930.md.
