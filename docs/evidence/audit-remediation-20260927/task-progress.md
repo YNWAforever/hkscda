@@ -61,3 +61,5 @@ Draft #149 addresses ADMIN-02 in an isolated branch: fresh supporter read on ope
 
 - T23 volunteer reviewer slice: in progress on `codex/audit-volunteer-review-bulk-20260928`. Narrow admin-only reviewer assignment, no eligibility/status changes. Dedicated local DB 2 pass/14 assertions; focused directory/selection/API 7 pass/30 assertions; 98-item catalog compatible. Full gates and PR pending; ADMIN-04 remains partial across other domains.
 - T23 volunteer reviewer final local verification: 8 focused pass/32 assertions after red-to-green 1001st-item selection guard; dedicated DB 2 pass/14 assertions; full isolated suite 2860 pass/94 skip/0 fail across 506 files; typecheck, lint, build exit 0 (lint 52 existing warnings). Draft PR #160 source d6b540d opened; remote CI pending. Parent CRM bulk #159 CI run 36339607930 passed verify, RLS, performance, brand and a11y.
+
+- PR160 sequential repair cf09870b: permission locks, JSON400 and durable recovery; 2993 pass/109 skip; typecheck/lint/build0; clone4tests30assertions; 3-width UI/Axe0. Current remote CI/review and exact production approval pending; #156 provider concurrency remains a predecessor gate.
