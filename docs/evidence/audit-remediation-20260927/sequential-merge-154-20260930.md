@@ -57,3 +57,7 @@ Staff: read safe queue/error code; correct the underlying storage/config/content
 ## Approved scope checkpoint
 
 User explicitly approved the four listed production migrations after #153 completes, with no historical photo backfill, new cron activation, email or payment. Removed the new `/api/jobs/public-media-repair` entry from `vercel.json` before release, so merging this PR will not install the new schedule. The protected handler remains available for later separately approved activation. Existing donation/volunteer/sponsorship/public-uploads/CRM schedules are retained. SQL checksums are unchanged. #153 exact production migration approval is still pending.
+
+## Predecessor checkpoint — 2026-09-30 HKT
+
+#153 exact two-file approval received and both migrations applied successfully; ledger 90. #153 merged as 4304127a and production READY. Main CI 36620897215 is running. #154 retargeted to main with only its own media repair changes remaining. The four approved #154 migrations have not yet been applied; wait for predecessor main gates.
