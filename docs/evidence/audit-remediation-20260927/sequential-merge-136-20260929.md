@@ -32,3 +32,7 @@ Before application verify the new column/table/capture RPC/guard are absent, pre
 Rollback: failed DDL rolls back atomically; after commit retain additive snapshot history and revert application code through a reviewed PR. #135 works with the extra snapshot column and replacement RPC. Do not drop financial evidence or re-enable payment as rollback. Existing encrypted backup precedes #135; recovering from it would require replaying the approved #135 schema and reconciling any later production writes, so a full restore is not the default rollback.
 
 Production #136 migration is not yet approved or executed. #136 is code-complete and isolated-schema-ready, not deployed or operationally enabled. #137-#179 remain unmerged.
+
+## Latest checkpoint
+
+#135 deployment dpl_7fvmzpYSd7VXHSqKPK6M67sh4FiU is READY at merge 9609756; read-only /donate GET is 200. Main run 36504234340 is in progress. #136's live snapshot table/column/capture RPC/guard are absent and checkout is still false. After merging current main locally and resolving only test-command/manifest/tracker conflicts, the full explicit fixture suite again passed 2810/83 skipped/0 failures (exit 0). Both corrected SQL checksums are retained in the manifest. The CI source now includes both DB suites.
