@@ -20,14 +20,24 @@ describe("loadPublicPaymentMethods", () => {
   test("maps published, publicly-visible rows in sort order", async () => {
     const { client } = fakeClient([
       { method: "stripe", display_label_zh: "信用卡", display_label_en: "Card", details: {} },
-      { method: "fps", display_label_zh: "轉數快 FPS", display_label_en: "FPS", details: {} },
+      {
+        method: "fps",
+        display_label_zh: "轉數快 FPS",
+        display_label_en: "FPS",
+        details: { payableTo: "Synthetic charity", identifier: "FPS TEST-123" },
+      },
     ]);
     const result = await loadPublicPaymentMethods(client);
     expect(result).toEqual({
       state: "ready",
       methods: [
         { method: "stripe", displayLabelZh: "信用卡", displayLabelEn: "Card", details: {} },
-        { method: "fps", displayLabelZh: "轉數快 FPS", displayLabelEn: "FPS", details: {} },
+        {
+          method: "fps",
+          displayLabelZh: "轉數快 FPS",
+          displayLabelEn: "FPS",
+          details: { payableTo: "Synthetic charity", identifier: "FPS TEST-123" },
+        },
       ],
     });
   });
@@ -51,6 +61,13 @@ describe("loadPublicPaymentMethods", () => {
     const { client } = fakeClient([], { message: "connection refused" });
     const result = await loadPublicPaymentMethods(client);
     expect(result).toEqual({ state: "unavailable", methods: [] });
+  });
+
+  test("reports unavailable for a published manual method without payment details", async () => {
+    const { client } = fakeClient([
+      { method: "fps", display_label_zh: "轉數快", display_label_en: "FPS", details: {} },
+    ]);
+    expect(await loadPublicPaymentMethods(client)).toEqual({ state: "unavailable", methods: [] });
   });
 
   test("reports unavailable for a malformed published row", async () => {

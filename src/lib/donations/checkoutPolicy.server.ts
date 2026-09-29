@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { donationMethods } from "./contracts";
 import type { CheckoutPurpose } from "./checkoutPolicy";
+import { hasPaymentInstructionDetails } from "../paymentPublicConfig/instructions";
 import type { PublicPaymentMethod } from "../paymentPublicConfig/types";
 
 const policyRow = z.object({ enabled: z.boolean(), version: z.number().int().positive() });
@@ -84,7 +85,9 @@ export async function loadPublicCheckoutState(
     if (
       !config ||
       config.version !== approval.config_version ||
-      config.method !== approval.method
+      config.method !== approval.method ||
+      ((approval.method === "fps" || approval.method === "payme") &&
+        !hasPaymentInstructionDetails(config.details))
     ) {
       return noMethods("unavailable");
     }

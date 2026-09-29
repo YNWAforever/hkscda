@@ -86,7 +86,7 @@ type ManualResult = {
     payableTo: string;
     identifier: string;
     amountCents: number;
-  };
+  } | null;
 };
 
 type RedirectResult = {
@@ -138,6 +138,8 @@ const copy = {
     cancelled: "付款尚未完成，您可以重新選擇付款方式。",
     paypalApproved: "PayPal 已授權，確認完成後會發出收據通知。",
     manualTitle: "請使用以下資料完成付款",
+    manualVerification:
+      "原付款指示已撤回或暫時未能核實。請聯絡職員，並提供以下參考編號；請勿沿用舊付款資料。",
     reference: "付款參考編號",
     submitError: "暫時未能建立捐款，請稍後再試。",
     checkoutRecoveryRequired: "付款建立結果未能確認。請聯絡職員核實，暫時不要重複付款。",
@@ -180,6 +182,8 @@ const copy = {
     cancelled: "Payment is not complete. You can choose a payment method again.",
     paypalApproved: "PayPal approval received. We will notify you after confirmation.",
     manualTitle: "Complete payment with these details",
+    manualVerification:
+      "The payment instructions were withdrawn or cannot be verified. Contact our team with the reference below; do not reuse old payment details.",
     reference: "Payment reference",
     submitError: "Donation could not be created. Please try again later.",
     checkoutRecoveryRequired:
@@ -867,17 +871,30 @@ export function DonatePage({
             {manualResult && (
               <div className="mt-6 rounded-2xl border border-dashed border-[var(--color-primary)] bg-[var(--color-primary-highlight)] p-4 text-sm">
                 <h2 className="mb-3 flex items-center gap-2 font-display text-lg font-bold text-[var(--color-panel)]">
-                  <ReceiptText className="h-5 w-5 text-[var(--color-primary)]" /> {t.manualTitle}
+                  <ReceiptText className="h-5 w-5 text-[var(--color-primary)]" />{" "}
+                  {manualResult.instructions ? t.manualTitle : t.manualVerification}
                 </h2>
                 <div className="space-y-2 text-[var(--color-text)]">
-                  <div className="flex items-center gap-2">
-                    <Building className="h-4 w-4 text-[var(--color-primary)]" />
-                    {manualResult.instructions.payableTo}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-[var(--color-primary)]" />
-                    {manualResult.instructions.identifier}
-                  </div>
+                  {manualResult.instructions && (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <Building className="h-4 w-4 text-[var(--color-primary)]" />
+                        {manualResult.instructions.payableTo}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Zap className="h-4 w-4 text-[var(--color-primary)]" />
+                        {manualResult.instructions.identifier}
+                      </div>
+                    </>
+                  )}
+                  {!manualResult.instructions && (
+                    <a
+                      href={`mailto:${brand.org.donationEmail}`}
+                      className="font-semibold underline"
+                    >
+                      {brand.org.donationEmail}
+                    </a>
+                  )}
                   <div className="flex items-center gap-2 font-bold">
                     <Check className="h-4 w-4 text-[var(--color-success)]" />
                     {t.reference}: {manualResult.reference}

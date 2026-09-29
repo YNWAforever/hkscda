@@ -1,8 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { z } from "zod";
 
 import { createSupabaseServiceClient } from "../supabase.server";
 import { createPublicIdentityRepository } from "../supporters/publicIdentity.server";
 import { CheckoutPolicyError } from "./checkoutPolicy";
+import { parsePaymentInstructionSnapshot } from "../paymentPublicConfig/instructions.server";
 import { DonationIdempotencyConflictError } from "./service";
 import { publicDonationStatuses, type PublicDonationStatus } from "./publicStatus";
 import type { PublicDonationStatusRepository } from "./publicStatus.server";
@@ -16,14 +18,24 @@ export function createSupabaseDonationRepository(client: SupabaseClient): Donati
   const publicIdentity = createPublicIdentityRepository(client);
   return {
     async admitNewCheckout(input) {
-      const { error } = await client.rpc("admit_new_checkout", {
+      const { data, error } = await client.rpc("admit_new_checkout", {
         p_idempotency_key: input.idempotencyKey,
         p_request_fingerprint: input.fingerprint,
         p_method: input.method,
         p_purpose: input.purpose,
         p_expected_config_version: input.expectedConfigVersion,
       });
-      if (!error) return;
+      if (!error) {
+        const row = z
+          .object({
+            instruction_snapshot: z.unknown(),
+            instructions_active: z.boolean(),
+          })
+          .safeParse(data);
+        if (!row.success) throw new CheckoutPolicyError("unavailable");
+        const snapshot = parsePaymentInstructionSnapshot(row.data.instruction_snapshot);
+        return { snapshot, instructionsActive: row.data.instructions_active };
+      }
       if (error.code === "P5101") throw new CheckoutPolicyError("disabled");
       if (error.code === "P5102") throw new CheckoutPolicyError("method_unavailable");
       if (error.code === "P5103") throw new CheckoutPolicyError("stale_config");

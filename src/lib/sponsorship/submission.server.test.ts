@@ -542,6 +542,79 @@ describe("sendPledgeConfirmationEmail", () => {
     };
   }
 
+  test("email test sink receives only the approved sponsorship snapshot", async () => {
+    const { client } = createFakeClient();
+    let deliveredHtml = "";
+    const result = await sendPledgeConfirmationEmail(
+      client,
+      parsedSubmission().payload,
+      fakeResult(),
+      {
+        getEmailConfig: () => ({
+          resendApiKey: "test-only",
+          from: "HKSCDA <noreply@hkscda.com>",
+          replyTo: "info@hkscda.com",
+          notificationEmail: "info@hkscda.com",
+        }),
+        loadPaymentInstructions: async () => [
+          {
+            instructionsActive: true,
+            snapshot: {
+              configId: "9a78c87c-1e3a-4c02-b551-71a9b69a5412",
+              configVersion: 2,
+              purpose: "sponsorship",
+              method: "fps",
+              displayLabelZh: "轉數快 FPS",
+              displayLabelEn: "FPS",
+              details: { payableTo: "Synthetic charity", identifier: "FPS SANDBOX-99" },
+              capturedAt: "2026-09-27T00:00:00Z",
+            },
+          },
+        ],
+        createEmailSender: () => ({
+          send: async ({ html }) => {
+            deliveredHtml = html;
+            return {};
+          },
+        }),
+      },
+    );
+    expect(result).toBe("sent");
+    expect(deliveredHtml).toContain("FPS SANDBOX-99");
+    expect(deliveredHtml).not.toContain("8727588");
+  });
+
+  test("instruction lookup failure sends verification text to the test sink", async () => {
+    const { client } = createFakeClient();
+    let deliveredHtml = "";
+    const result = await sendPledgeConfirmationEmail(
+      client,
+      parsedSubmission().payload,
+      fakeResult(),
+      {
+        getEmailConfig: () => ({
+          resendApiKey: "test-only",
+          from: "HKSCDA <noreply@hkscda.com>",
+          replyTo: "info@hkscda.com",
+          notificationEmail: "info@hkscda.com",
+        }),
+        loadPaymentInstructions: async () => {
+          throw new Error("synthetic database timeout");
+        },
+        createEmailSender: () => ({
+          send: async ({ html }) => {
+            deliveredHtml = html;
+            return {};
+          },
+        }),
+        logger: { error: () => {} },
+      },
+    );
+    expect(result).toBe("sent");
+    expect(deliveredHtml).toContain("聯絡");
+    expect(deliveredHtml).not.toContain("8727588");
+  });
+
   test("marks email failed when no Resend key is configured", async () => {
     const { client, state } = createFakeClient();
     const result = await sendPledgeConfirmationEmail(
@@ -549,6 +622,7 @@ describe("sendPledgeConfirmationEmail", () => {
       parsedSubmission().payload,
       fakeResult(),
       {
+        loadPaymentInstructions: async () => [],
         getEmailConfig: () => ({
           resendApiKey: undefined,
           from: "HKSCDA <noreply@hkscda.com>",
@@ -570,6 +644,7 @@ describe("sendPledgeConfirmationEmail", () => {
       parsedSubmission().payload,
       fakeResult(),
       {
+        loadPaymentInstructions: async () => [],
         getEmailConfig: () => ({
           resendApiKey: "key",
           from: "HKSCDA <noreply@hkscda.com>",
@@ -589,6 +664,7 @@ describe("sendPledgeConfirmationEmail", () => {
       parsedSubmission().payload,
       fakeResult(),
       {
+        loadPaymentInstructions: async () => [],
         getEmailConfig: () => ({
           resendApiKey: "key",
           from: "HKSCDA <noreply@hkscda.com>",
@@ -608,6 +684,7 @@ describe("sendPledgeConfirmationEmail", () => {
       parsedSubmission().payload,
       fakeResult(),
       {
+        loadPaymentInstructions: async () => [],
         getEmailConfig: () => ({
           resendApiKey: "key",
           from: "HKSCDA <noreply@hkscda.com>",
@@ -641,6 +718,7 @@ describe("sendPledgeConfirmationEmail", () => {
       parsedSubmission().payload,
       fakeResult(),
       {
+        loadPaymentInstructions: async () => [],
         getEmailConfig: () => ({
           resendApiKey: "key",
           from: "HKSCDA <noreply@hkscda.com>",

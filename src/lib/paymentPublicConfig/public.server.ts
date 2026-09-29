@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
 import { paymentPublicConfigMethodSchema } from "./schemas";
+import { hasPaymentInstructionDetails } from "./instructions";
 import type { PaymentAvailability, PublicPaymentMethod } from "./types";
 
 const publicPaymentMethodRowSchema = z.object({
@@ -29,7 +30,13 @@ export async function loadPublicPaymentMethods(
   const rows: PublicPaymentMethod[] = [];
   for (const raw of data ?? []) {
     const parsed = publicPaymentMethodRowSchema.safeParse(raw);
-    if (!parsed.success) return { state: "unavailable", methods: [] };
+    if (
+      !parsed.success ||
+      ((parsed.data.method === "fps" || parsed.data.method === "payme") &&
+        !hasPaymentInstructionDetails(parsed.data.details))
+    ) {
+      return { state: "unavailable", methods: [] };
+    }
     rows.push({
       method: parsed.data.method,
       displayLabelZh: parsed.data.display_label_zh,
