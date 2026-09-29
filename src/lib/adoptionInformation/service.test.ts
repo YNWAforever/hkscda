@@ -6,6 +6,7 @@ function setup() {
   const calls: Array<{ name: string; payload?: unknown }> = [];
   const fee = {
     id: "11111111-1111-4111-8111-111111111111",
+    version: 1,
     animalType: "dog" as const,
     itemName: "Mongrel 唐狗",
     priceHkd: "0",
@@ -19,6 +20,7 @@ function setup() {
     notes: null,
     sortOrder: 0,
     isPublished: false,
+    version: 1,
   };
   const rule = {
     id: "33333333-3333-4333-8333-333333333333",
@@ -53,9 +55,33 @@ function setup() {
       calls.push({ name: "upsertFee", payload: input });
       return { ...fee, ...input, id: input.id ?? fee.id };
     },
-    async upsertEstate(input) {
-      calls.push({ name: "upsertEstate", payload: input });
-      return { ...estate, ...input, id: input.id ?? estate.id };
+    async updateFeeContent(input, actorUserId) {
+      calls.push({ name: "updateFeeContent", payload: { input, actorUserId } });
+      return {
+        ...fee,
+        itemName: input.itemName,
+        priceHkd: input.priceHkd,
+        version: input.expectedVersion + 1,
+      };
+    },
+    async reorderFees(input, actorUserId) {
+      calls.push({ name: "reorderFees", payload: { input, actorUserId } });
+      return [
+        { ...fee, id: input.firstId, version: input.expectedVersions.first + 2 },
+        { ...fee, id: input.secondId, version: input.expectedVersions.second + 1 },
+      ];
+    },
+    async createEstate(input) {
+      calls.push({ name: "createEstate", payload: input });
+      return { ...estate, ...input, version: 1 };
+    },
+    async updateEstate(input) {
+      calls.push({ name: "updateEstate", payload: input });
+      return { ...estate, ...input.fields, version: input.expectedVersion + 1 };
+    },
+    async setEstatePublication(input) {
+      calls.push({ name: "setEstatePublication", payload: input });
+      return { ...estate, isPublished: input.isPublished, version: input.expectedVersion + 1 };
     },
     async deleteEstate(id) {
       calls.push({ name: "deleteEstate", payload: id });

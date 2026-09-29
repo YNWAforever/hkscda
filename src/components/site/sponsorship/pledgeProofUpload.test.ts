@@ -85,6 +85,34 @@ describe("uploadProofDirectly", () => {
     });
   });
 
+  test("omits the challenge field when a local proof upload has no token", async () => {
+    const fetchSpy = mock(async (_url: string, _options: RequestInit) =>
+      Response.json(
+        {
+          pledgeId: "pledge-1",
+          proofIntent: "signed-intent",
+          upload: { path: "pledge-1/proof/receipt.jpg", token: "tok" },
+        },
+        { status: 201 },
+      ),
+    );
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+    await uploadProofDirectly(makeProofFile(), null);
+    const options = fetchSpy.mock.calls[0]?.[1] as RequestInit;
+    expect(JSON.parse(String(options.body))).toEqual({
+      proof: { fileName: "receipt.jpg", mimeType: "image/jpeg", sizeBytes: 5 },
+    });
+  });
+
+  test("preserves the upload endpoint status for a rate-limited retry", async () => {
+    globalThis.fetch = mock(async () =>
+      Response.json({ error: "slow down" }, { status: 429 }),
+    ) as unknown as typeof fetch;
+    await expect(uploadProofDirectly(makeProofFile(), "challenge")).rejects.toMatchObject({
+      status: 429,
+    });
+  });
+
   test("throws using the server's error message when the upload-url request fails", async () => {
     const fetchSpy = mock(async () => Response.json({ error: "驗證已過期" }, { status: 403 }));
     globalThis.fetch = fetchSpy as unknown as typeof fetch;

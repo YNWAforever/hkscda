@@ -1,11 +1,15 @@
-import { useRef, useState } from "react";
+import { useEffect, useImperativeHandle, useRef, useState, type Ref } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { adminIdentityQueryOptions } from "../../../lib/admin/pageAccess";
 import { AdminApiError, fetchAdminJson } from "../../../lib/admin/session";
-import type { AdoptionInstructionAdminPage } from "../../../lib/adoptionInstructions/repository.server";
+import type {
+  AdoptionInstructionAdminPage,
+  AdoptionInstructionHistoryPage,
+} from "../../../lib/adoptionInstructions/repository.server";
 import type {
   AdoptionInstructionContent,
   AdoptionInstructionRevision,
+  AdoptionInstructionRevisionSummary,
 } from "../../../lib/adoptionInstructions/types";
 import { adoptionInstructionContentSchema } from "../../../lib/adoptionInstructions/schemas";
 
@@ -27,7 +31,15 @@ export function buildAdoptionInstructionMutation(operation: Operation) {
   };
 }
 
-export function AdoptionInstructionsManagement() {
+export type AdoptionInstructionEditorHandle = { saveDraft: () => Promise<boolean> };
+
+export function AdoptionInstructionsManagement({
+  onDirtyChange,
+  editorRef,
+}: {
+  onDirtyChange?: (dirty: boolean) => void;
+  editorRef?: Ref<AdoptionInstructionEditorHandle>;
+} = {}) {
   const client = useQueryClient();
   const identity = useQuery(adminIdentityQueryOptions());
   const query = useQuery({
@@ -51,7 +63,19 @@ export function AdoptionInstructionsManagement() {
       loading={query.isPending}
       error={query.error?.message}
       role={identity.data?.admin.role}
+      onDirtyChange={onDirtyChange}
+      editorRef={editorRef}
       onMutation={mutate}
+      onLoadHistory={(cursor) =>
+        fetchAdminJson<AdoptionInstructionHistoryPage>(
+          "/api/admin/adoption-instructions/history?cursor=" + encodeURIComponent(cursor),
+        )
+      }
+      onLoadRevision={(revisionId) =>
+        fetchAdminJson<AdoptionInstructionRevision>(
+          "/api/admin/adoption-instructions/revisions/" + encodeURIComponent(revisionId),
+        )
+      }
       onRefresh={async () => {
         await query.refetch();
       }}
@@ -72,6 +96,10 @@ type Props = {
   onMutation?: (operation: Operation) => Promise<AdoptionInstructionRevision>;
   onRefresh?: () => Promise<void>;
   onReload?: () => Promise<void>;
+  onLoadHistory?: (cursor: string) => Promise<AdoptionInstructionHistoryPage>;
+  onLoadRevision?: (revisionId: string) => Promise<AdoptionInstructionRevision>;
+  onDirtyChange?: (dirty: boolean) => void;
+  editorRef?: Ref<AdoptionInstructionEditorHandle>;
 };
 const labels: Record<string, string> = {
   hero: "頁首",
@@ -139,13 +167,67 @@ export function AdoptionInstructionsManagementView(props: Props) {
   // This editor is deliberately not keyed by query version: refetches must not erase local work.
   const [local, setLocal] = useState<AdoptionInstructionRevision | null>(null);
   const [saved, setSaved] = useState<AdoptionInstructionRevision | null>(null);
+  const [editingBase, setEditingBase] = useState<AdoptionInstructionRevision | null>(null);
   const [pending, setPending] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
   const [conflict, setConflict] = useState(false);
   const [serverFields, setServerFields] = useState<Record<string, string[]>>({});
+  const [historyExtra, setHistoryExtra] = useState<AdoptionInstructionRevisionSummary[]>([]);
+  const [historyCursor, setHistoryCursor] = useState<string | null | undefined>(undefined);
+  const [historyPending, setHistoryPending] = useState(false);
+  const [historyProblem, setHistoryProblem] = useState<string | null>(null);
+  const [selectedRevision, setSelectedRevision] = useState<AdoptionInstructionRevision | null>(
+    null,
+  );
+  const [detailPending, setDetailPending] = useState(false);
   const publishKey = useRef<string | null>(null);
+  const firstHistory = props.data?.history;
+  useEffect(() => {
+    setHistoryExtra([]);
+    setHistoryCursor(undefined);
+    setSelectedRevision(null);
+  }, [firstHistory]);
+  const allHistory = [
+    ...(firstHistory ?? []),
+    ...historyExtra.filter((item) => !firstHistory?.some((first) => first.id === item.id)),
+  ];
+  const nextHistoryCursor =
+    historyCursor === undefined ? (props.data?.historyNextCursor ?? null) : historyCursor;
+  async function loadMoreHistory() {
+    if (!nextHistoryCursor || !props.onLoadHistory || historyPending) return;
+    setHistoryPending(true);
+    setHistoryProblem(null);
+    try {
+      const page = await props.onLoadHistory(nextHistoryCursor);
+      setHistoryExtra((current) => [
+        ...current,
+        ...page.items.filter(
+          (item) =>
+            !current.some((existing) => existing.id === item.id) &&
+            !firstHistory?.some((first) => first.id === item.id),
+        ),
+      ]);
+      setHistoryCursor(page.nextCursor);
+    } catch (error) {
+      setHistoryProblem(error instanceof Error ? error.message : "未能載入更多版本。");
+    } finally {
+      setHistoryPending(false);
+    }
+  }
+  async function openRevision(revisionId: string) {
+    if (!props.onLoadRevision || detailPending) return;
+    setDetailPending(true);
+    setHistoryProblem(null);
+    try {
+      setSelectedRevision(await props.onLoadRevision(revisionId));
+    } catch (error) {
+      setHistoryProblem(error instanceof Error ? error.message : "未能載入版本內容。");
+    } finally {
+      setDetailPending(false);
+    }
+  }
   const revision = local ?? props.data?.draft ?? props.data?.published;
-  const base = saved ?? props.data?.draft ?? props.data?.published;
+  const base = saved ?? editingBase ?? props.data?.draft ?? props.data?.published;
   const content = revision?.content;
   const dirty = Boolean(local && JSON.stringify(local.content) !== JSON.stringify(base?.content));
   const validation = content ? adoptionInstructionContentSchema.safeParse(content) : null;
@@ -157,8 +239,19 @@ export function AdoptionInstructionsManagementView(props: Props) {
   const canEdit = props.role === "admin" || props.role === "staff";
   const blocked = pending || conflict || !draft || !canEdit;
   const valid = validation?.success && !Object.keys(issues).length;
-  async function run(operation: Operation) {
-    if (!props.onMutation || pending) return;
+  const onDirtyChange = props.onDirtyChange;
+  useEffect(() => {
+    onDirtyChange?.(dirty);
+    return () => onDirtyChange?.(false);
+  }, [dirty, onDirtyChange]);
+  useImperativeHandle(props.editorRef, () => ({
+    saveDraft: () =>
+      dirty && !blocked && valid && content && revision
+        ? run({ action: "save", expectedVersion: revision.version, content })
+        : Promise.resolve(false),
+  }));
+  async function run(operation: Operation): Promise<boolean> {
+    if (!props.onMutation || pending) return false;
     setPending(true);
     setProblem(null);
     setServerFields({});
@@ -167,12 +260,15 @@ export function AdoptionInstructionsManagementView(props: Props) {
       if (operation.action === "publish" || operation.action === "archive") {
         setLocal(null);
         setSaved(null);
+        setEditingBase(null);
         publishKey.current = null;
       } else {
         setLocal(result);
         setSaved(result);
+        setEditingBase(result);
         publishKey.current = null;
       }
+      return true;
     } catch (error) {
       if (error instanceof AdminApiError && error.status === 409) {
         setConflict(true);
@@ -188,6 +284,7 @@ export function AdoptionInstructionsManagementView(props: Props) {
             ]),
           ),
         );
+      return false;
     } finally {
       setPending(false);
     }
@@ -216,7 +313,33 @@ export function AdoptionInstructionsManagementView(props: Props) {
       {(problem || props.error) && <p role="alert">{problem ?? props.error}</p>}
       {conflict && (
         <div role="alert">
-          伺服器草稿版本 {props.data.draft?.version ?? "—"}
+          <p>
+            伺服器草稿版本 {props.data.draft?.version ?? "—"}
+            。請比較本機與伺服器內容，再決定是否採用。
+          </p>
+          {props.data.draft && content && (
+            <details>
+              <summary>比較本機與伺服器文字</summary>
+              <dl>
+                {fields(content)
+                  .filter(([path, value]) =>
+                    fields(props.data!.draft!.content).some(
+                      ([serverPath, serverValue]) => serverPath === path && serverValue !== value,
+                    ),
+                  )
+                  .map(([path, value]) => (
+                    <div key={path} className="my-2 border-b pb-2">
+                      <dt>{path}</dt>
+                      <dd>本機：{value}</dd>
+                      <dd>
+                        伺服器：
+                        {fields(props.data!.draft!.content).find(([key]) => key === path)?.[1]}
+                      </dd>
+                    </div>
+                  ))}
+              </dl>
+            </details>
+          )}
           <button
             type="button"
             disabled={pending}
@@ -231,7 +354,7 @@ export function AdoptionInstructionsManagementView(props: Props) {
               }
             }}
           >
-            放棄本機修改並重新載入
+            採用伺服器版本（放棄本機修改）
           </button>
         </div>
       )}
@@ -264,6 +387,7 @@ export function AdoptionInstructionsManagementView(props: Props) {
               aria-describedby={issues[path] ? path + "-error" : undefined}
               className="min-h-11 rounded border border-[var(--color-border)] p-2"
               onChange={(event) => {
+                if (!local) setEditingBase(base ?? revision);
                 setLocal({
                   ...revision,
                   content: setAdoptionCopyField(content, path, event.target.value),
@@ -329,7 +453,9 @@ export function AdoptionInstructionsManagementView(props: Props) {
           type="button"
           disabled={pending}
           onClick={() => {
-            setLocal(saved);
+            setLocal(null);
+            setSaved(null);
+            setEditingBase(null);
             setServerFields({});
           }}
         >
@@ -341,12 +467,19 @@ export function AdoptionInstructionsManagementView(props: Props) {
         <p>請先封存或發布目前草稿，才可將歷史版本還原為新草稿。</p>
       )}
       <ul>
-        {props.data.history
+        {allHistory
           .filter((item) => item.state !== "draft")
           .map((item) => (
             <li key={item.id} className="flex gap-3 py-2">
               修訂 {item.revisionNumber} · {item.state === "published" ? "已發布" : "已封存"} ·{" "}
               {item.publishedAt}
+              <button
+                type="button"
+                disabled={detailPending}
+                onClick={() => void openRevision(item.id)}
+              >
+                查看內容
+              </button>
               {props.role === "admin" && (
                 <button
                   type="button"
@@ -359,6 +492,28 @@ export function AdoptionInstructionsManagementView(props: Props) {
             </li>
           ))}
       </ul>
+      {historyProblem && <p role="alert">{historyProblem}</p>}
+      {nextHistoryCursor && props.onLoadHistory && (
+        <button type="button" disabled={historyPending} onClick={() => void loadMoreHistory()}>
+          {historyPending ? "載入版本中…" : "查看更多版本"}
+        </button>
+      )}
+      {selectedRevision && (
+        <section
+          aria-label={"修訂 " + selectedRevision.revisionNumber + " 內容"}
+          className="space-y-2"
+        >
+          <h4 className="font-semibold">修訂 {selectedRevision.revisionNumber} 內容</h4>
+          <dl className="space-y-2">
+            {fields(selectedRevision.content).map(([path, value]) => (
+              <div key={path}>
+                <dt className="font-semibold">{path}</dt>
+                <dd className="whitespace-pre-wrap">{value}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
     </section>
   );
 }

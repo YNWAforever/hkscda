@@ -50,6 +50,7 @@ class FakeQuery {
               price_hkd: "0",
               sort_order: 1,
               is_published: true,
+              version: 1,
             },
             {
               id: "33333333-3333-4333-8333-333333333333",
@@ -58,6 +59,7 @@ class FakeQuery {
               price_hkd: "1",
               sort_order: 9,
               is_published: false,
+              version: 1,
             },
           ]
         : []);
@@ -114,6 +116,7 @@ describe("Supabase adoption information repository", () => {
           priceHkd: "0",
           sortOrder: 1,
           isPublished: true,
+          version: 1,
         },
       ],
       estates: [],
@@ -124,7 +127,7 @@ describe("Supabase adoption information repository", () => {
       table: "adoption_fees",
       method: "select",
       payload: {
-        columns: "id,animal_type,item_name,price_hkd,sort_order,is_published",
+        columns: "id,animal_type,item_name,price_hkd,sort_order,is_published,version",
         options: { count: "exact" },
       },
     });
@@ -158,6 +161,7 @@ describe("Supabase adoption information repository", () => {
       notes: null,
       sort_order: index,
       is_published: true,
+      version: 1,
     }));
     const { calls, repo } = setup({
       rowsByTable: { dog_friendly_estates: estates },
@@ -194,6 +198,91 @@ describe("Supabase adoption information repository", () => {
     expect(calls.find((call) => call.method === "or")?.payload as string).toContain("\\%");
     expect(calls.find((call) => call.method === "or")?.payload as string).toContain("\\_");
     expect(calls.find((call) => call.method === "or")?.payload as string).toContain("\\\\");
+  });
+
+  test("estate content and publication use separate atomic RPC payloads", async () => {
+    const id = "22222222-2222-4222-8222-222222222222";
+    const row = {
+      id,
+      estate_name: "Harbour View",
+      district: "Kowloon",
+      notes: null,
+      sort_order: 0,
+      is_published: true,
+      version: 3,
+    };
+    const { repo, rpcCalls } = setup({
+      rpcResponses: { mutate_dog_friendly_estate_with_audit: { data: row, error: null } },
+    });
+    const edited = await repo.updateEstate(
+      {
+        id,
+        expectedVersion: 2,
+        fields: { estateName: "Harbour View", district: "Kowloon", notes: null, sortOrder: 0 },
+      },
+      "actor-1",
+    );
+    const published = await repo.setEstatePublication(
+      {
+        id,
+        expectedVersion: 3,
+        isPublished: false,
+      },
+      "actor-1",
+    );
+    expect(edited).toMatchObject({ id, version: 3, isPublished: true });
+    expect(published.version).toBe(3);
+    expect(rpcCalls).toEqual([
+      {
+        fn: "mutate_dog_friendly_estate_with_audit",
+        args: {
+          p_actor_user_id: "actor-1",
+          p_command: "update",
+          p_id: id,
+          p_expected_version: 2,
+          p_payload: {
+            estate_name: "Harbour View",
+            district: "Kowloon",
+            notes: null,
+            sort_order: 0,
+          },
+        },
+      },
+      {
+        fn: "mutate_dog_friendly_estate_with_audit",
+        args: {
+          p_actor_user_id: "actor-1",
+          p_command: "publication",
+          p_id: id,
+          p_expected_version: 3,
+          p_payload: { is_published: false },
+        },
+      },
+    ]);
+  });
+
+  test("estate stale version SQLSTATE becomes a safe 409 conflict", async () => {
+    const { repo } = setup({
+      rpcResponses: {
+        mutate_dog_friendly_estate_with_audit: {
+          data: null,
+          error: { code: "P4090", message: "Estate version conflict" },
+        },
+      },
+    });
+    await expect(
+      repo.setEstatePublication(
+        {
+          id: "22222222-2222-4222-8222-222222222222",
+          expectedVersion: 1,
+          isPublished: true,
+        },
+        "actor-1",
+      ),
+    ).rejects.toMatchObject({
+      name: "AdoptionInformationConflictError",
+      message: "Estate version conflict; reload the latest row",
+    });
   });
 
   test("upsertRule calls the audited RPC with snake_case params and maps the returned row", async () => {
@@ -499,5 +588,53 @@ describe("Supabase adoption information repository", () => {
       pageSize: 25,
     });
     expect(result.items).toEqual([]);
+  });
+  test("fee reorder maps the canonical two-row RPC and stale SQLSTATE", async () => {
+    const firstId = "22222222-2222-4222-8222-222222222222";
+    const secondId = "33333333-3333-4333-8333-333333333333";
+    const actor = "11111111-1111-4111-8111-111111111111";
+    const row = {
+      id: firstId,
+      animal_type: "dog",
+      item_name: "A",
+      price_hkd: "HK$1",
+      sort_order: 1,
+      is_published: true,
+      version: 3,
+    };
+    const { repo, rpcCalls } = setup({
+      rpcResponses: {
+        reorder_adoption_fees_with_audit: {
+          data: [row, { ...row, id: secondId, sort_order: 0, version: 2 }],
+          error: null,
+        },
+      },
+    });
+    const input = { firstId, secondId, expectedVersions: { first: 1, second: 1 } };
+    const result = await repo.reorderFees(input, actor);
+    expect(result.map((fee) => [fee.id, fee.sortOrder, fee.version])).toEqual([
+      [firstId, 1, 3],
+      [secondId, 0, 2],
+    ]);
+    expect(rpcCalls).toEqual([
+      {
+        fn: "reorder_adoption_fees_with_audit",
+        args: {
+          p_actor_user_id: actor,
+          p_first_id: firstId,
+          p_second_id: secondId,
+          p_first_version: 1,
+          p_second_version: 1,
+        },
+      },
+    ]);
+    const conflict = setup({
+      rpcResponses: {
+        reorder_adoption_fees_with_audit: { data: null, error: { code: "P4091" } },
+      },
+    });
+    await expect(conflict.repo.reorderFees(input, actor)).rejects.toThrow(
+      "Fee version or order conflict",
+    );
   });
 });

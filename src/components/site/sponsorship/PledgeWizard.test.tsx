@@ -35,6 +35,30 @@ const stubContext: ShortlistContextValue = {
 };
 
 describe("PledgeWizard", () => {
+  test("offers device-only draft saving as an unchecked choice", async () => {
+    const { PledgeWizard } = await import("./PledgeWizard");
+    const markup = renderToStaticMarkup(
+      <ShortlistContext.Provider value={stubContext}>
+        <PledgeWizard />
+      </ShortlistContext.Provider>,
+    );
+    expect(markup).toContain("在此裝置保存");
+    expect(markup).toMatch(/type="checkbox"[^>]*aria-label="在此裝置保存草稿"/);
+    expect(markup).not.toMatch(/aria-label="在此裝置保存草稿"[^>]*checked/);
+  });
+
+  test("offers explicit later and proof-uploaded payment choices", async () => {
+    const { PledgeWizard } = await import("./PledgeWizard");
+    const markup = renderToStaticMarkup(
+      <ShortlistContext.Provider value={stubContext}>
+        <PledgeWizard />
+      </ShortlistContext.Provider>,
+    );
+    expect(markup).toContain("稍後按核實安排付款");
+    expect(markup).toContain("已付款，上載證明");
+    expect(markup).toContain('type="radio"');
+  });
+
   test("renders exactly one h1 in the main pledge form", async () => {
     const { PledgeWizard } = await import("./PledgeWizard");
     const markup = renderToStaticMarkup(

@@ -1,9 +1,8 @@
 import fontkit from "@pdf-lib/fontkit";
 import { PDFDocument, StandardFonts, rgb, type PDFFont } from "pdf-lib";
 
-import fontUrl from "../../assets/fonts/NotoSansHK-Regular.ttf?url";
-import { getAppUrl } from "../appUrl.server";
 import { getReceiptConfig } from "./config.server";
+import { loadReceiptFont } from "./receiptFont.server";
 import { centsToHkd } from "./domain";
 
 type ReceiptPdfInput = {
@@ -29,11 +28,18 @@ export function wrapReceiptDonorText(name: string, font: PDFFont, maxWidth: numb
   return lines;
 }
 
-async function loadFontBytes() {
-  const url = new URL(fontUrl, getAppUrl()).toString();
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`Failed to load receipt font: ${response.status}`);
-  return response.arrayBuffer();
+const hongKongDateFormatter = new Intl.DateTimeFormat("en-GB", {
+  timeZone: "Asia/Hong_Kong",
+  day: "numeric",
+  month: "numeric",
+  year: "numeric",
+});
+
+export function formatReceiptDate(issuedAt: string): string {
+  const parts = hongKongDateFormatter.formatToParts(new Date(issuedAt));
+  const part = (type: "day" | "month" | "year") =>
+    Number(parts.find((entry) => entry.type === type)?.value);
+  return `${part("day")}/${part("month")}/${part("year")}`;
 }
 
 export async function generateReceiptPdf(input: ReceiptPdfInput) {
@@ -41,7 +47,7 @@ export async function generateReceiptPdf(input: ReceiptPdfInput) {
   const pdf = await PDFDocument.create();
   pdf.registerFontkit(fontkit);
   // This CJK font loses glyphs when pdf-lib/fontkit embeds it as a subset.
-  const font = await pdf.embedFont(await loadFontBytes(), { subset: false });
+  const font = await pdf.embedFont(await loadReceiptFont(), { subset: false });
   const latinFont = await pdf.embedFont(StandardFonts.Helvetica);
   const page = pdf.addPage([595.28, 841.89]);
   const donorLines = wrapReceiptDonorText(input.donorName, font, page.getWidth() - 144);
@@ -80,7 +86,7 @@ export async function generateReceiptPdf(input: ReceiptPdfInput) {
     font: latinFont,
     color: black,
   });
-  page.drawText(`Date: ${new Date(input.issuedAt).toLocaleDateString("zh-HK")}`, {
+  page.drawText(`Date: ${formatReceiptDate(input.issuedAt)}`, {
     x: 72,
     y: 570 - donorOffset,
     size: 12,
