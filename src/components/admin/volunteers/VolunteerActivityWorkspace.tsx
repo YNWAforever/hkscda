@@ -358,7 +358,12 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
       setShowOperation(true);
     },
   });
+  function resetOperationReview() {
+    setReviewed([]);
+    setReviewAll(false);
+  }
   const apply = useMutation({
+    onSettled: resetOperationReview,
     mutationFn: (index: number) =>
       call<Reply>({ action: "apply", operation_id: operation?.id, group_index: index }),
     onSuccess: (data) => {
@@ -369,6 +374,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
     },
   });
   const sequence = useMutation({
+    onSettled: resetOperationReview,
     mutationFn: () =>
       applyReviewedGroups(
         operation!,
@@ -389,6 +395,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
     },
   });
   const refresh = useMutation({
+    onSettled: resetOperationReview,
     mutationFn: () => call<Reply>({ action: "status", operation_id: operation?.id }),
     onSuccess: (data) => {
       setOperation(data.operation);

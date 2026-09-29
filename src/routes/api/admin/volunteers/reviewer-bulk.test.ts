@@ -103,3 +103,30 @@ test("volunteer reviewer bulk API checkpoints at 25 and resumes pending items", 
   expect((await apply()).status).toBe(200);
   expect(calls).toHaveLength(30);
 });
+
+test("volunteer reviewer bulk rejects malformed and oversized JSON without mutations", async () => {
+  let mutations = 0;
+  const handle = createVolunteerReviewBulkHandler({
+    authorize: async () => actor,
+    preview: async () => {
+      mutations++;
+      throw new Error("must not mutate");
+    },
+    read: async () => {
+      throw new Error("must not read");
+    },
+    applyItem: async () => {
+      mutations++;
+      throw new Error("must not mutate");
+    },
+  });
+  for (const [body, status] of [
+    ["{broken", 400],
+    ["x".repeat(128 * 1024 + 1), 413],
+  ] as const) {
+    const response = await handle(new Request(url, { method: "POST", body }));
+    expect(response.status).toBe(status);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+  }
+  expect(mutations).toBe(0);
+});

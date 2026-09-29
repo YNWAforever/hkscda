@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { readAdminJson } from "../http/adminJson.server";
-import { RequestBodyTooLargeError } from "../http/publicJson.server";
+import { InvalidRequestJsonError, RequestBodyTooLargeError } from "../http/publicJson.server";
 import type { createContentReviewService } from "./service";
 export function createContentReviewHttp(deps: {
   authenticate(request: Request): Promise<string>;
@@ -32,10 +32,18 @@ export function createContentReviewHttp(deps: {
             headers: { "cache-control": "no-store" },
           },
         );
+      const code = error && typeof error === "object" && "code" in error ? error.code : undefined;
       return Response.json(
         { error: "未能完成內容審核，請檢查資料及版本後重試。" },
         {
-          status: error instanceof z.ZodError || error instanceof SyntaxError ? 400 : 500,
+          status:
+            code === "42501"
+              ? 403
+              : error instanceof z.ZodError ||
+                  error instanceof SyntaxError ||
+                  error instanceof InvalidRequestJsonError
+                ? 400
+                : 500,
           headers: { "cache-control": "no-store" },
         },
       );

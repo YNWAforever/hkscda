@@ -454,6 +454,19 @@ function createWebhookFake({
               : { kind: "state_conflict", paymentStatus: payment?.status ?? null },
           error: null,
         });
+      if (fn === "issue_receipt")
+        return Promise.resolve({
+          data: [
+            {
+              receipt_no: "SYNTHETIC-0001",
+              receipt_id: "receipt-1",
+              pdf_url: null,
+              tax_year: 2026,
+              issued_at: "2026-09-27T00:00:00Z",
+            },
+          ],
+          error: null,
+        });
       if (fn === "void_donation_receipts_with_audit")
         return Promise.resolve({
           data: issuedReceipts.map((receipt) => ({
@@ -930,6 +943,73 @@ describe("reconcileProviderPayment success path", () => {
     ).toBe(false);
   });
 
+  test("committed success survives acknowledgement failure and leaves durable recovery pending", async () => {
+    const { client, operations } = createWebhookFake({ payment: pendingPaymentNoReceipt });
+    const result = await reconcileProviderPayment(
+      {
+        client: client as never,
+        provider: "stripe",
+        providerRef: "cs_test_123",
+        providerEventId: "evt_email_failure",
+        eventType: "checkout.session.completed",
+        payload: {},
+      },
+      {
+        sendAcknowledgement: async () => {
+          throw new Error("synthetic email outage");
+        },
+      },
+    );
+    expect(result).toMatchObject({
+      kind: "applied",
+      donationId: "donation-1",
+      deliveryPending: true,
+    });
+    expect(statusUpdate(operations, "payment")).toMatchObject({ status: "succeeded" });
+    expect(statusUpdate(operations, "donation")).toMatchObject({ status: "succeeded" });
+    expect(
+      operations.some(
+        (o) =>
+          o.table === "webhook_event" &&
+          o.action === "update" &&
+          Boolean((o.payload as { processed_at?: string }).processed_at),
+      ),
+    ).toBe(true);
+  });
+
+  test("committed success survives PDF failure without sending an acknowledgement", async () => {
+    const payment = {
+      ...basePayment,
+      status: "pending",
+      donation: { ...basePayment.donation, status: "pending" },
+    };
+    const { client, operations } = createWebhookFake({ payment });
+    let sends = 0;
+    const result = await reconcileProviderPayment(
+      {
+        client: client as never,
+        provider: "stripe",
+        providerRef: "cs_test_123",
+        providerEventId: "evt_pdf_failure",
+        eventType: "checkout.session.completed",
+        payload: {},
+      },
+      {
+        generatePdf: async () => {
+          throw Error("synthetic PDF failure");
+        },
+        sendAcknowledgement: async () => {
+          sends++;
+          return "sent";
+        },
+      },
+    );
+    expect(result).toMatchObject({ kind: "applied", deliveryPending: true });
+    expect(statusUpdate(operations, "payment")).toMatchObject({ status: "succeeded" });
+    expect(statusUpdate(operations, "donation")).toMatchObject({ status: "succeeded" });
+    expect(sends).toBe(0);
+  });
+
   test("applies pending->succeeded guarded on the pending status", async () => {
     const { client, operations } = createWebhookFake({ payment: pendingPaymentNoReceipt });
 
@@ -1219,6 +1299,58 @@ describe("reconcileManualPayment", () => {
     }
   });
 
+  test("an unclaimed replay reports durable completed or attention status, not processing", async () => {
+    for (const status of [
+      "complete",
+      "attention_required",
+      "retryable",
+      "processing",
+      null,
+    ] as const) {
+      const result = await reconcileManualPayment({
+        client: {
+          rpc: async () => ({
+            data: { kind: "duplicate", donationId: "donation-1", deliveryJobId: "job-original" },
+            error: null,
+          }),
+        } as never,
+        paymentId: "payment-1",
+        actorUserId: "admin-1",
+        bankReference: "FPS-ORIGINAL",
+        runDeliveryJob: async () => ({ kind: "busy" }),
+        getDeliveryStatus: async (jobId) => {
+          expect(jobId).toBe("job-original");
+          return status;
+        },
+      });
+      expect(result.deliveryStatus).toBe(status ?? "pending");
+    }
+  });
+  test("same committed request recovers its job after a lost response without a second credit", async () => {
+    const jobs: string[] = [];
+    const result = await reconcileManualPayment({
+      client: {
+        rpc: async () => ({
+          data: { kind: "duplicate", donationId: "donation-1", deliveryJobId: "job-original" },
+          error: null,
+        }),
+      } as never,
+      paymentId: "payment-1",
+      actorUserId: "admin-1",
+      bankReference: "FPS-ORIGINAL",
+      runDeliveryJob: async (jobId) => {
+        jobs.push(jobId);
+        return { kind: "retryable", code: "synthetic_delivery_retry" };
+      },
+    });
+    expect(result).toEqual({
+      kind: "duplicate",
+      donationId: "donation-1",
+      deliveryJobId: "job-original",
+      deliveryStatus: "retryable",
+    });
+    expect(jobs).toEqual(["job-original"]);
+  });
   test("rejects (409) reconciling a payment that is not pending, without auditing", async () => {
     // basePayment is already 'succeeded' — a replay/double-click.
     const { client, operations } = createWebhookFake({ payment: basePayment });

@@ -1,0 +1,22 @@
+# Release slice 04 — committed payment and durable delivery recovery (T05 / PAY-05)
+
+Branch `codex/audit-payment-lifecycle-20260927`, stacked on draft PR #136. Base SHA `05271c0`; production reference at T00 was `f8d5e5d5840d1775efb7d7f4ae2768f6557096b5`. No production migration, payment enablement, email, refund or public preview was performed.
+
+## Behavior
+
+- The public status response preserves `status` and adds `paymentStatus`, `receiptStatus`, and `notificationStatus`. Payment success comes from the committed payment row even if the donation row lags; refund/failure terminal donation states take precedence. Receipt and notification reads may be `unavailable` without changing a committed payment. `sent` maps to `provider_accepted`; only a delivery event maps to `delivered`. The return page explains that receipt and email processing are separate from payment success.
+- Successful donation status transition queues one `donation_delivery_job` and audit event in that transaction. The existing unique receipt RPC, message key, claim lease and owner fencing are reused. Receipt/PDF or email failure leaves the provider webhook acknowledged and the durable job available for retry. A `CRON_SECRET`-authorized GET runs at most five jobs per hour, two at a time, with per-item partial results. Eight failed automatic attempts require treasurer/admin review; authenticated manual retry resets the attempt window and writes audit.
+- Old already-successful donations without delivery jobs are **not automatically backfilled**. A scoped, approved historical replay must follow a read-only candidate inventory to avoid sending old notifications unexpectedly.
+
+## Verification
+
+- Red before fix: committed success shown as `pending` after COD side-effect failure; webhook threw after email failure; missing donation-success job; unbounded job retries. Each now has a focused passing regression test. PDF failure and no duplicate receipt path are covered with synthetic data and an in-memory mail sink.
+- `bunx supabase migration up --local` applied migration 37 to the dedicated unlinked `127.0.0.1:57322` database, exit 0. Synthetic transaction test: 1 pass, 5 expectations; exactly one job and audit, service-only due-list grants, test transaction rolled back. Fresh 37-migration rebuild with seed disabled: exit 0. The first checkout DB run hit Bun's default five-second timeout after five expectations; the dedicated DB was reset again. Sequential rerun with `bun test --timeout 30000`: checkout 1 pass/21 expectations, instruction snapshots 1 pass/16 expectations, delivery recovery 1 pass/5 expectations, all exit 0.
+- Focused donation lifecycle/status/UI suite: 93 pass, 0 fail, exit 0 before final regressions; email/PDF and public-field whitelist cases passed separately. `bun run typecheck`: exit 0. `bun run lint`: exit 0 with 52 existing warnings. `bun run build`: exit 0 with existing route/chunk warnings. First concurrent `bun test --isolate`: 2816 pass, 86 skip, 1 migration-safety timeout; that test alone passed 192 assertions. Standalone full rerun after public-field whitelist: 2818 pass, 86 skip, 0 fail, exit 0. Mutating DB tests were skipped there and run sequentially below.
+- Provider sandbox duplicate/out-of-order, bad signature, amount/currency mismatch, timeout, denial after success, partial refund and receipt void: existing unit paths were exercised where listed in focused suite; complete provider sandbox matrix **not-run**. Before/after browser screenshots and same-environment performance data for this slice **not-run**. Remote CI gates pending PR.
+
+## Compatibility, rollback and staff handoff
+
+This slice requires the 37-file migration manifest before app deployment. Current production catalog still lacks earlier required objects; PRs #134–#136 and this slice are not release-ready. Finance/release staff must review old succeeded payments missing receipt PDF or acknowledgement, approve any scoped replay, ensure `CRON_SECRET` and mail test sink/provider sandbox, and verify receipt uniqueness plus message delivery callback. Staff retry uses the existing treasurer/admin `/api/admin/donations/delivery/{jobId}/retry` endpoint; it must not be used to refund or reverse the payment.
+
+To stop new work, disable **new** checkout while keeping signed webhooks, reconciliation and queued delivery running. A code rollback that reintroduces `succeeded`→`pending` masking is unsafe. Preserve payment, receipt, message, job and audit history; a database restore is not the normal recovery path.

@@ -93,6 +93,7 @@ class FakeSupabaseQuery {
           price_hkd: "0",
           sort_order: 0,
           is_published: true,
+          version: 1,
         },
       ];
     }
