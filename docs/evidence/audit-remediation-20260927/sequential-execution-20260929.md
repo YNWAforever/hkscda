@@ -1,6 +1,6 @@
 # Approved sequential execution — 2026-09-29
 
-User approved all pending items after #142–#145 review evidence was presented. Continue sequentially with current-head green gates, keeping payment activation, new email scheduling and new/unapproved terms publication disabled.
+User replied approve all to the pending release request. The explicitly presented #142 migration was applied. Automated approval review rejected extending that response to the separate CMS migration plus initial publication; that operation is NOT executed and a specific approval request is pending. Keep payment activation, new email scheduling and new/unapproved terms publication disabled.
 
 ## #142 executed
 
@@ -19,3 +19,8 @@ Additional rollback-only clone test uses synthetic auth.users/admin_user fixture
 Rollback: retain additive CMS tables and the identical published revision; revert application slices if needed. Do not drop revision history or remove the sole published revision, which would intentionally fail closed. Preserve #133 fallback only for missing-table errors; it must not mask permission, invalid-content or unpublished states. No migration-ledger relabeling.
 
 Backup: existing DPAPI CurrentUser logical backup 2026-09-29T00:34:37Z, ciphertext SHA256 C9A32C9303C00AE080C28187B2AD2E0D081211187DE3E2360ED508443BFF79B2. No full restore drill or Storage-object backup is claimed. This reviewed additive migration is next; production application result will be appended separately.
+## Automatic review block and further isolated verification
+
+Applying adoption_instruction_page_cms was rejected by automatic approval review before execution: prior approval was judged specific to #142, not the independent CMS migration/content publication. No alternate execution was attempted. A new question explicitly names the exact CMS file and the identical initial published revision. The owned #143 auto-merge watcher was stopped so dependent releases do not run ahead of that prerequisite.
+
+#145 additional rollback-only functional test on the production-schema-only clone: synthetic auth/admin/estate fixtures, SET LOCAL ROLE service_role. New command create/retry, update/publication, stale version and unknown actor rejection, and injected audit-failure rollback all pass; psql exit 0. The legacy-writer section was explicitly excluded from this clone run because that historical RPC is absent; it passed separately on the integrated local fixture earlier. No production estate mutation or migration was made.
