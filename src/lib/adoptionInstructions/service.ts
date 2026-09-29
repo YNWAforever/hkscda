@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { adoptionInstructionContentSchema } from "./schemas";
+import { ADOPTION_INSTRUCTIONS_PAGE_KEY } from "./content";
 import {
   AdoptionInstructionConflictError,
   AdoptionInstructionError,
@@ -56,6 +57,34 @@ export function createAdoptionInstructionService({
     async getAdminPage({ actor }: { actor: AdoptionInstructionActor }) {
       requireActor(actor);
       return repository.getAdminPage();
+    },
+
+    async listHistory({
+      actor,
+      cursor,
+      limit = 25,
+    }: {
+      actor: AdoptionInstructionActor;
+      cursor?: string | null;
+      limit?: number;
+    }) {
+      requireActor(actor);
+      const boundedLimit = z.number().int().min(1).max(100).parse(limit);
+      return repository.listHistory({ cursor, limit: boundedLimit });
+    },
+
+    async getRevision({
+      actor,
+      revisionId,
+    }: {
+      actor: AdoptionInstructionActor;
+      revisionId: string;
+    }) {
+      requireActor(actor);
+      const revision = await repository.getRevision(revisionIdSchema.parse(revisionId));
+      if (!revision || revision.pageKey !== ADOPTION_INSTRUCTIONS_PAGE_KEY)
+        throw new AdoptionInstructionError("not_found", 404);
+      return revision;
     },
 
     async ensureDraft({
@@ -126,10 +155,13 @@ export function createAdoptionInstructionService({
 
     async restore({ actor, revisionId }: RestoreInput) {
       requirePublishingAdmin(actor);
-      const page = await repository.getAdminPage();
       const sourceRevisionId = revisionIdSchema.parse(revisionId);
-      const source = page.history.find((revision) => revision.id === sourceRevisionId);
-      if (!source) throw new AdoptionInstructionError("not_found", 404);
+      const [page, source] = await Promise.all([
+        repository.getAdminPage(),
+        repository.getRevision(sourceRevisionId),
+      ]);
+      if (!source || source.pageKey !== ADOPTION_INSTRUCTIONS_PAGE_KEY)
+        throw new AdoptionInstructionError("not_found", 404);
       adoptionInstructionContentSchema.parse(source.content);
       return repository.restore({
         actorUserId: actor.authUserId,
