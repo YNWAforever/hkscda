@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "appSha": "ae80846bbde75f2bc0e995630c25436894b27d4a",
+  "appSha": "f330d1f2c8d8286e0db66bad102b4035008dc53f",
   "appShaNote": "Reviewed PR162 code; PR163 is a documentation-only descendant. Later PR164-179 candidates are not included in this source freeze.",
   "productionAliasShaObserved": "24196faf027998388eff3196a6979e23566e2443",
   "schemaManifestHash": "4023e54be04e6c90a5984cbff4a8d89170da167e5b2e8ef7f914bce0adfb432e",
@@ -593,7 +593,7 @@
     "migration159": "exact approval requested; pending",
     "migration160": "exact approval requested; pending",
     "migration161": "exact approval requested; pending",
-    "migration162": "not yet requested; current-head CI pending"
+    "migration162": "exact approval requested; pending; reviewed SQL unchanged by queue fix"
   },
   "blockedGate": {
     "pr": 156,
