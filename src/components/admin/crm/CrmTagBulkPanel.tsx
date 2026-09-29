@@ -21,23 +21,42 @@ export function CrmTagBulkPanel({
   const [tag, setTag] = useState("");
   const [operation, setOperation] = useState<CrmTagBulkOperation | null>(null);
   const [busy, setBusy] = useState(false);
+  const [recoveryId, setRecoveryId] = useState<string | null>(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
     const saved = sessionStorage.getItem(savedOperationKey);
     if (!saved || !/^[0-9a-f-]{36}$/i.test(saved)) return;
+    setRecoveryId(saved);
     let active = true;
     fetchAdminJson<CrmTagBulkOperation>(endpoint + "?operationId=" + encodeURIComponent(saved))
       .then((result) => {
         if (active) setOperation(result);
       })
       .catch(() => {
-        if (active) sessionStorage.removeItem(savedOperationKey);
+        if (active) setError("未能讀取已保存的操作，請重新讀取結果。");
       });
     return () => {
       active = false;
     };
   }, []);
+
+  async function reloadOperation() {
+    if (!recoveryId || busy) return;
+    setBusy(true);
+    setError("");
+    try {
+      setOperation(
+        await fetchAdminJson<CrmTagBulkOperation>(
+          endpoint + "?operationId=" + encodeURIComponent(recoveryId),
+        ),
+      );
+    } catch {
+      setError("未能讀取已保存的操作，請稍後重新讀取結果。");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function preview() {
     if (busy || selectionDisabled || selectedIds.length < 1 || selectedIds.length > 1000) return;
@@ -56,6 +75,7 @@ export function CrmTagBulkPanel({
         body: JSON.stringify({ action: "preview", ids: selectedIds, tag, filterHash }),
       });
       sessionStorage.setItem(savedOperationKey, result.operationId);
+      setRecoveryId(result.operationId);
       setOperation(result);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "無法建立預覽");
@@ -126,6 +146,16 @@ export function CrmTagBulkPanel({
       >
         {busy ? "處理中…" : "建立預覽"}
       </button>
+      {recoveryId && (
+        <button
+          type="button"
+          className="btn-secondary min-h-11"
+          disabled={busy}
+          onClick={reloadOperation}
+        >
+          重新讀取結果
+        </button>
+      )}
       {error && (
         <p role="alert" className="text-sm text-[var(--color-error)]">
           {error}

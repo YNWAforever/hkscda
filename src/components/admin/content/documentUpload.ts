@@ -36,6 +36,13 @@ export async function uploadDocumentPdf({
     throw new Error("PDF 檔案不可超過 50 MiB");
   }
 
+  const checksumSha256 =
+    metadata.kind === "sponsorship_terms"
+      ? Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", await file.arrayBuffer())))
+          .map((byte) => byte.toString(16).padStart(2, "0"))
+          .join("")
+      : null;
+
   const target = await requestUploadTarget({
     bucketName: "site-documents",
     objectPath,
@@ -48,7 +55,7 @@ export async function uploadDocumentPdf({
     objectPath: target.path,
     mimeType: "application/pdf",
     byteSize: file.size,
-    checksumSha256: null,
+    checksumSha256,
     isPublished: false,
   });
 }

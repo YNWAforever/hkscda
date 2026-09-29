@@ -143,6 +143,7 @@ export function createSupabasePortalRepository(client: SupabaseClient): PortalRe
           .eq("supporter_id", id)
           .eq("channel", "email")
           .order("timestamp", { ascending: false })
+          .order("status", { ascending: false })
           .order("id", { ascending: false })
           .limit(1),
       ]);

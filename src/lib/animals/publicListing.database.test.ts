@@ -7,8 +7,18 @@ import { projectPublicAnimal } from "./publicProfile";
 const databaseUrl = process.env.PUBLIC_LISTING_TEST_DATABASE_URL;
 if (databaseUrl) {
   const target = new URL(databaseUrl);
-  if (target.hostname !== "127.0.0.1" || target.port !== "57322" || target.pathname !== "/postgres")
-    throw new Error("Public listing fixtures require the dedicated loopback DB");
+  const dedicated = target.port === "57322" && target.pathname === "/postgres";
+  const clone = target.port === "52322" && target.pathname === "/audit_pr135_20260929";
+  const ci =
+    process.env.CI === "true" && target.port === "55322" && target.pathname === "/postgres";
+  if (
+    target.hostname !== "127.0.0.1" ||
+    !["postgres:", "postgresql:"].includes(target.protocol) ||
+    target.search ||
+    target.hash ||
+    !(dedicated || clone || ci)
+  )
+    throw new Error("Public listing fixtures require an explicit dedicated loopback DB");
 }
 const enabled =
   Boolean(databaseUrl) && process.env.PUBLIC_LISTING_TEST_ALLOW_LOCAL_FIXTURES === "1";
@@ -171,6 +181,45 @@ test.skipIf(!enabled)(
         )) as { page: { items: Array<{ id: string }>; total: number } }[];
         expect(sponsors.page.total).toBe(2);
         expect(sponsors.page.items).toHaveLength(2);
+        throw rollback;
+      });
+    } catch (error) {
+      if (error !== rollback) throw error;
+    } finally {
+      await db.close();
+    }
+  },
+);
+
+test.skipIf(!enabled)(
+  "generated age preserves direct-write denial and service-role update compatibility",
+  async () => {
+    const db = new SQL(databaseUrl!);
+    const rollback = new Error("synthetic staff edit rollback");
+    try {
+      await db.begin(async (tx) => {
+        const actor = crypto.randomUUID(),
+          animal = crypto.randomUUID();
+        await tx`insert into auth.users(id,email) values(${actor}::uuid,${actor + "@example.invalid"})`;
+        await tx`insert into public.admin_user(auth_user_id,email,role,status) values(${actor}::uuid,${actor + "@example.invalid"},'staff','active')`;
+        await tx`insert into public.animals(id,type,name,gender,age,status) values(${animal}::uuid,'cat','Synthetic editable animal','female','2 years','available')`;
+        await tx`select set_config('request.jwt.claim.sub',${actor},true)`;
+        await tx`select set_config('request.jwt.claims',${JSON.stringify({ sub: actor, role: "authenticated" })},true)`;
+        await tx`set local role authenticated`;
+        await tx.unsafe("savepoint denied_direct_write");
+        let deniedCode: string | undefined;
+        try {
+          await tx`update public.animals set age='8 years' where id=${animal}::uuid`;
+        } catch (error) {
+          deniedCode = (error as { errno?: string }).errno;
+        }
+        expect(deniedCode).toBe("42501");
+        await tx.unsafe("rollback to savepoint denied_direct_write");
+        await tx`reset role`;
+        await tx`set local role service_role`;
+        const [updated] =
+          await tx`update public.animals set age='8 years' where id=${animal}::uuid returning age,public_age_band`;
+        expect(updated).toEqual({ age: "8 years", public_age_band: "senior" });
         throw rollback;
       });
     } catch (error) {
