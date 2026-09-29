@@ -92,6 +92,29 @@ export function AnimalCard({
             {profile.personality}
           </p>
         )}
+        {intent === "sponsorship" &&
+        (profile?.health || profile?.sponsorUse || profile?.recentProgress) ? (
+          <dl className="space-y-1 rounded-md bg-[var(--color-surface-offset)] p-3 text-sm text-[var(--color-text-muted)]">
+            {profile.health ? (
+              <div>
+                <dt className="font-semibold">照顧需要</dt>
+                <dd>{profile.health}</dd>
+              </div>
+            ) : null}
+            {profile.sponsorUse ? (
+              <div>
+                <dt className="font-semibold">助養用途</dt>
+                <dd>{profile.sponsorUse}</dd>
+              </div>
+            ) : null}
+            {profile.recentProgress ? (
+              <div>
+                <dt className="font-semibold">近況</dt>
+                <dd>{profile.recentProgress}</dd>
+              </div>
+            ) : null}
+          </dl>
+        ) : null}
         <span className="mt-auto inline-flex min-h-11 items-center text-sm font-bold text-[var(--color-primary)]">
           查看詳細資料{" "}
           <span className="ml-1" aria-hidden="true">

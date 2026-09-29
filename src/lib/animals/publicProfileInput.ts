@@ -4,7 +4,7 @@ import { parsePublicAnimalProfile } from "./publicProfile";
 /**
  * Writer side of `animals.public_profile`.
  *
- * The eight allowlisted fields are the only animal facts the public site
+ * The allowlisted fields are the only animal facts the public site
  * renders -- reference number, birthday, neutered, suitability, record date,
  * personality, care needs and story -- and until now none of them could be
  * edited anywhere in the admin. Staff could change a name and a photo and
@@ -34,6 +34,8 @@ export type PublicProfileFields = {
   recordDate: string;
   personality: string;
   health: string;
+  sponsorUse: string;
+  recentProgress: string;
   story: string;
 };
 
@@ -45,6 +47,8 @@ export const EMPTY_PUBLIC_PROFILE_FIELDS: PublicProfileFields = {
   recordDate: "",
   personality: "",
   health: "",
+  sponsorUse: "",
+  recentProgress: "",
   story: "",
 };
 
@@ -65,6 +69,8 @@ export function toPublicProfileFields(
     recordDate: parsed.recordDate ?? "",
     personality: parsed.personality ?? "",
     health: parsed.health ?? "",
+    sponsorUse: parsed.sponsorUse ?? "",
+    recentProgress: parsed.recentProgress ?? "",
     story: parsed.story ?? "",
   };
 }
@@ -75,7 +81,7 @@ export function toPublicProfileFields(
  *
  * Blank fields are omitted rather than written as null. The CHECK constraint
  * accepts either, and omitting keeps the stored object to what was actually
- * recorded instead of eight keys of mostly nothing.
+ * recorded instead of empty keys.
  */
 export function buildPublicProfile(fields: PublicProfileFields): PublicProfileBuildResult {
   const candidate: Record<string, string | boolean> = {};
@@ -88,6 +94,8 @@ export function buildPublicProfile(fields: PublicProfileFields): PublicProfileBu
   if (text(fields.recordDate)) candidate.recordDate = text(fields.recordDate);
   if (text(fields.personality)) candidate.personality = text(fields.personality);
   if (text(fields.health)) candidate.health = text(fields.health);
+  if (text(fields.sponsorUse)) candidate.sponsorUse = text(fields.sponsorUse);
+  if (text(fields.recentProgress)) candidate.recentProgress = text(fields.recentProgress);
   if (text(fields.story)) candidate.story = text(fields.story);
 
   const parsed = parsePublicAnimalProfile(candidate);
@@ -107,5 +115,7 @@ export const PUBLIC_PROFILE_LABELS: Record<keyof PublicProfileFields, string> = 
   recordDate: "記錄日期",
   personality: "性格",
   health: "照顧與健康需要",
+  sponsorUse: "助養用途",
+  recentProgress: "近況",
   story: "牠的故事",
 };

@@ -15,7 +15,7 @@ function publicText(value: unknown, limit: number): string | null {
   if (
     !text ||
     text.length > limit ||
-    /[<>]|https?:\/\/|www\.|[\w.+-]+@[\w.-]+\.[a-z]{2,}/i.test(text) ||
+    /[<>@]|https?:\/\/|www\./i.test(text) ||
     /[+\d][\d ()-]{6,}\d/.test(contactCheck)
   )
     return null;
@@ -39,6 +39,8 @@ export function parsePublicAnimalProfile(value: unknown): AnimalPublicProfile {
         : null,
     personality: publicText(input.personality, 1000),
     health: publicText(input.health, 2000),
+    sponsorUse: publicText(input.sponsorUse, 2000),
+    recentProgress: publicText(input.recentProgress, 2000),
     story: publicText(input.story, 8000),
     recordDate: validDate(input.recordDate),
   };

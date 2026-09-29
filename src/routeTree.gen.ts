@@ -206,6 +206,7 @@ import { Route as ApiAdminContentIdStoryProfileRouteImport } from './routes/api/
 import { Route as ApiAdminContentIdSocialCopyRouteImport } from './routes/api/admin/content/$id/social-copy'
 import { Route as ApiAdminContentIdRevisionsRouteImport } from './routes/api/admin/content/$id/revisions'
 import { Route as ApiAdminContentIdPublishRouteImport } from './routes/api/admin/content/$id/publish'
+import { Route as ApiAdminContentIdPublicationMetadataRouteImport } from './routes/api/admin/content/$id/publication-metadata'
 import { Route as ApiAdminContentIdMediaUploadTargetRouteImport } from './routes/api/admin/content/$id/media-upload-target'
 import { Route as ApiAdminContentIdMediaPreviewRouteImport } from './routes/api/admin/content/$id/media-preview'
 import { Route as ApiAdminContentIdMediaFinalizeRouteImport } from './routes/api/admin/content/$id/media-finalize'
@@ -1321,6 +1322,12 @@ const ApiAdminContentIdPublishRoute =
     path: '/publish',
     getParentRoute: () => ApiAdminContentIdRoute,
   } as any)
+const ApiAdminContentIdPublicationMetadataRoute =
+  ApiAdminContentIdPublicationMetadataRouteImport.update({
+    id: '/publication-metadata',
+    path: '/publication-metadata',
+    getParentRoute: () => ApiAdminContentIdRoute,
+  } as any)
 const ApiAdminContentIdMediaUploadTargetRoute =
   ApiAdminContentIdMediaUploadTargetRouteImport.update({
     id: '/media-upload-target',
@@ -1843,6 +1850,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/content/$id/media-finalize': typeof ApiAdminContentIdMediaFinalizeRoute
   '/api/admin/content/$id/media-preview': typeof ApiAdminContentIdMediaPreviewRoute
   '/api/admin/content/$id/media-upload-target': typeof ApiAdminContentIdMediaUploadTargetRoute
+  '/api/admin/content/$id/publication-metadata': typeof ApiAdminContentIdPublicationMetadataRoute
   '/api/admin/content/$id/publish': typeof ApiAdminContentIdPublishRoute
   '/api/admin/content/$id/revisions': typeof ApiAdminContentIdRevisionsRouteWithChildren
   '/api/admin/content/$id/social-copy': typeof ApiAdminContentIdSocialCopyRoute
@@ -2095,6 +2103,7 @@ export interface FileRoutesByTo {
   '/api/admin/content/$id/media-finalize': typeof ApiAdminContentIdMediaFinalizeRoute
   '/api/admin/content/$id/media-preview': typeof ApiAdminContentIdMediaPreviewRoute
   '/api/admin/content/$id/media-upload-target': typeof ApiAdminContentIdMediaUploadTargetRoute
+  '/api/admin/content/$id/publication-metadata': typeof ApiAdminContentIdPublicationMetadataRoute
   '/api/admin/content/$id/publish': typeof ApiAdminContentIdPublishRoute
   '/api/admin/content/$id/revisions': typeof ApiAdminContentIdRevisionsRouteWithChildren
   '/api/admin/content/$id/social-copy': typeof ApiAdminContentIdSocialCopyRoute
@@ -2349,6 +2358,7 @@ export interface FileRoutesById {
   '/api/admin/content/$id/media-finalize': typeof ApiAdminContentIdMediaFinalizeRoute
   '/api/admin/content/$id/media-preview': typeof ApiAdminContentIdMediaPreviewRoute
   '/api/admin/content/$id/media-upload-target': typeof ApiAdminContentIdMediaUploadTargetRoute
+  '/api/admin/content/$id/publication-metadata': typeof ApiAdminContentIdPublicationMetadataRoute
   '/api/admin/content/$id/publish': typeof ApiAdminContentIdPublishRoute
   '/api/admin/content/$id/revisions': typeof ApiAdminContentIdRevisionsRouteWithChildren
   '/api/admin/content/$id/social-copy': typeof ApiAdminContentIdSocialCopyRoute
@@ -2604,6 +2614,7 @@ export interface FileRouteTypes {
     | '/api/admin/content/$id/media-finalize'
     | '/api/admin/content/$id/media-preview'
     | '/api/admin/content/$id/media-upload-target'
+    | '/api/admin/content/$id/publication-metadata'
     | '/api/admin/content/$id/publish'
     | '/api/admin/content/$id/revisions'
     | '/api/admin/content/$id/social-copy'
@@ -2856,6 +2867,7 @@ export interface FileRouteTypes {
     | '/api/admin/content/$id/media-finalize'
     | '/api/admin/content/$id/media-preview'
     | '/api/admin/content/$id/media-upload-target'
+    | '/api/admin/content/$id/publication-metadata'
     | '/api/admin/content/$id/publish'
     | '/api/admin/content/$id/revisions'
     | '/api/admin/content/$id/social-copy'
@@ -3109,6 +3121,7 @@ export interface FileRouteTypes {
     | '/api/admin/content/$id/media-finalize'
     | '/api/admin/content/$id/media-preview'
     | '/api/admin/content/$id/media-upload-target'
+    | '/api/admin/content/$id/publication-metadata'
     | '/api/admin/content/$id/publish'
     | '/api/admin/content/$id/revisions'
     | '/api/admin/content/$id/social-copy'
@@ -4693,6 +4706,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminContentIdPublishRouteImport
       parentRoute: typeof ApiAdminContentIdRoute
     }
+    '/api/admin/content/$id/publication-metadata': {
+      id: '/api/admin/content/$id/publication-metadata'
+      path: '/publication-metadata'
+      fullPath: '/api/admin/content/$id/publication-metadata'
+      preLoaderRoute: typeof ApiAdminContentIdPublicationMetadataRouteImport
+      parentRoute: typeof ApiAdminContentIdRoute
+    }
     '/api/admin/content/$id/media-upload-target': {
       id: '/api/admin/content/$id/media-upload-target'
       path: '/media-upload-target'
@@ -5364,6 +5384,7 @@ interface ApiAdminContentIdRouteChildren {
   ApiAdminContentIdMediaFinalizeRoute: typeof ApiAdminContentIdMediaFinalizeRoute
   ApiAdminContentIdMediaPreviewRoute: typeof ApiAdminContentIdMediaPreviewRoute
   ApiAdminContentIdMediaUploadTargetRoute: typeof ApiAdminContentIdMediaUploadTargetRoute
+  ApiAdminContentIdPublicationMetadataRoute: typeof ApiAdminContentIdPublicationMetadataRoute
   ApiAdminContentIdPublishRoute: typeof ApiAdminContentIdPublishRoute
   ApiAdminContentIdRevisionsRoute: typeof ApiAdminContentIdRevisionsRouteWithChildren
   ApiAdminContentIdSocialCopyRoute: typeof ApiAdminContentIdSocialCopyRoute
@@ -5379,6 +5400,8 @@ const ApiAdminContentIdRouteChildren: ApiAdminContentIdRouteChildren = {
   ApiAdminContentIdMediaPreviewRoute: ApiAdminContentIdMediaPreviewRoute,
   ApiAdminContentIdMediaUploadTargetRoute:
     ApiAdminContentIdMediaUploadTargetRoute,
+  ApiAdminContentIdPublicationMetadataRoute:
+    ApiAdminContentIdPublicationMetadataRoute,
   ApiAdminContentIdPublishRoute: ApiAdminContentIdPublishRoute,
   ApiAdminContentIdRevisionsRoute: ApiAdminContentIdRevisionsRouteWithChildren,
   ApiAdminContentIdSocialCopyRoute: ApiAdminContentIdSocialCopyRoute,

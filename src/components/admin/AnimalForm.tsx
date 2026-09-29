@@ -84,7 +84,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
   const [draftLoad, setDraftLoad] = useState<"loading" | "ready" | "failed">(
     existing ? "loading" : "ready",
   );
-  // The eight allowlisted fields the public site actually renders. Kept in
+  // The allowlisted fields the public site actually renders. Kept in
   // local state rather than the react-hook-form schema because they are stored
   // as one jsonb column, validated as a whole, and rejected as a whole.
   const [profileFields, setProfileFields] = useState<PublicProfileFields>(() =>
@@ -98,6 +98,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
 
   const {
     register,
+    watch,
     handleSubmit,
     reset,
     formState: { errors },
@@ -738,6 +739,34 @@ export function AnimalForm({ existing }: AnimalFormProps) {
             申請人在提交申請前需要知道的照顧需要，請在此說明。
           </p>
         </div>
+        {watch("sponsorship_eligible") ? (
+          <div className="grid gap-3 md:grid-cols-2">
+            <div>
+              <label className="mb-1 block text-sm font-medium" htmlFor="profile-sponsor-use">
+                助養用途（經批准後公開）
+              </label>
+              <textarea
+                id="profile-sponsor-use"
+                rows={3}
+                className={field}
+                value={profileFields.sponsorUse}
+                onChange={(event) => setProfileField("sponsorUse", event.target.value)}
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium" htmlFor="profile-recent-progress">
+                近況（經批准後公開）
+              </label>
+              <textarea
+                id="profile-recent-progress"
+                rows={3}
+                className={field}
+                value={profileFields.recentProgress}
+                onChange={(event) => setProfileField("recentProgress", event.target.value)}
+              />
+            </div>
+          </div>
+        ) : null}
         <div>
           <label className="mb-1 block text-sm font-medium" htmlFor="profile-story">
             牠的故事（最多 8000 字）
@@ -771,6 +800,29 @@ export function AnimalForm({ existing }: AnimalFormProps) {
           onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
           className="text-sm"
         />
+        {imageFile || gallery.some((item) => item.file) ? (
+          <div
+            role="status"
+            className="mt-3 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-2)] p-3 text-sm"
+          >
+            <p className="font-semibold">上載前核對檔案 → 動物</p>
+            <p>
+              {existing?.public_profile?.code ? `#${existing.public_profile.code} · ` : ""}
+              {existing?.name ?? "新動物草稿"} · ID {animalId}
+            </p>
+            <ul className="mt-2 list-inside list-disc break-all">
+              {imageFile ? <li>{imageFile.name} → 主相片</li> : null}
+              {gallery
+                .filter((item) => item.file)
+                .map((item) => (
+                  <li key={item.id}>{item.file!.name} → 相片集</li>
+                ))}
+            </ul>
+            <p className="mt-2 text-[var(--color-text-muted)]">
+              先儲存草稿及預覽；只有已批准的相片在發布完成後公開。
+            </p>
+          </div>
+        ) : null}
         {existing?.image_url && !imageFile && (
           <img
             src={existing.image_url}

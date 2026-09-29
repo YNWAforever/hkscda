@@ -444,6 +444,66 @@ function ContentManagementView({
         <SummaryCard label="本頁救援故事" value={summary.rescueStories} failed={failed} />
       </div>
 
+      <section
+        className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4"
+        aria-labelledby="content-eligibility-queue"
+      >
+        <h2 id="content-eligibility-queue" className="font-semibold text-[var(--color-panel)]">
+          本頁內容資格待核對
+        </h2>
+        <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+          只讀清單；未分類內容保持現有公開狀態。正式下架或補上文案前，請逐項取得內容批准。
+        </p>
+        {failed ? (
+          <p role="alert" className="mt-3 text-sm">
+            無法載入待核對清單。
+          </p>
+        ) : (
+          <ul className="mt-3 space-y-2">
+            {rows
+              .filter(
+                (item) =>
+                  item.contentClass === "demo" ||
+                  (item.status === "published" && item.contentClass !== "verified"),
+              )
+              .map((item) => (
+                <li
+                  key={item.id}
+                  className="flex flex-wrap items-start justify-between gap-2 rounded-md border border-[var(--color-border)] p-3 text-sm"
+                >
+                  <div className="min-w-0">
+                    <p className="font-semibold">
+                      {item.title} · {item.contentClass === "demo" ? "示範" : "待核實"}
+                    </p>
+                    <p className="break-all text-xs text-[var(--color-text-muted)]">
+                      ID {item.id} · 公開位置 /stories/{item.slug}
+                      {item.storyProfile?.isFeatured ? " · 精選候選" : ""}
+                      {item.storyProfile?.showOnMap ? " · 地圖候選" : ""}
+                    </p>
+                    <p className="text-xs text-[var(--color-text-muted)]">
+                      建議：核對資料來源、負責人與生效日期，記錄批准後再更改分類。
+                    </p>
+                  </div>
+                  <Link
+                    to="/admin/content/$id"
+                    params={{ id: item.id }}
+                    className="shrink-0 font-semibold text-[var(--color-primary)] underline"
+                  >
+                    檢視
+                  </Link>
+                </li>
+              ))}
+            {rows.every(
+              (item) =>
+                item.contentClass !== "demo" &&
+                (item.status !== "published" || item.contentClass === "verified"),
+            ) ? (
+              <li className="text-sm text-[var(--color-text-muted)]">本頁沒有待核對內容。</li>
+            ) : null}
+          </ul>
+        )}
+      </section>
+
       <section className="space-y-3">
         <div className="grid gap-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <label className="space-y-1 text-sm font-semibold text-[var(--color-panel)]">
