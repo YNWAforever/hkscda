@@ -17,7 +17,7 @@ mock.module("@tanstack/react-router", () => ({
 }));
 
 mock.module("../../lib/adoptionInformation/publicPage.functions", () => ({
-  getPublicAdoptionPage: async () => data,
+  getPublicAdoptionPageResult: async () => ({ status: "ok", data }),
 }));
 
 const dogRows = [
@@ -160,9 +160,9 @@ describe("adoption instructions route", () => {
     let calls = 0;
     const loader = createAdoptionInstructionsLoader(async () => {
       calls += 1;
-      return data;
+      return { status: "ok", data };
     });
-    expect(await loader()).toBe(data);
+    expect(await loader()).toEqual({ status: "ok", data });
     expect(calls).toBe(1);
   });
 
@@ -256,4 +256,36 @@ describe("adoption instructions route", () => {
     expect(html).toContain('aria-pressed="false"');
     expect(html).toContain("English");
   });
+});
+
+test("readiness accepts valid edited CMS headings rendered in the actual page", async () => {
+  const { verifyLiveReadiness } = await import("../../../scripts/verify-live-readiness");
+  const { adoptionInstructionContentSchema } =
+    await import("../../lib/adoptionInstructions/schemas");
+  const { AdoptionInstructionsContent } = await import("./instructions");
+  const copy = structuredClone(initialAdoptionInstructionContent);
+  copy.fees.sectionTitle = "收費參考";
+  copy.rules.title = "申請守則";
+  copy.care.cat.title = "貓隻照顧";
+  copy.care.dog.title = "狗隻照顧";
+  copy.guides.sectionTitle = "領養後支援";
+  expect(adoptionInstructionContentSchema.safeParse(copy).success).toBe(true);
+  const html = renderToStaticMarkup(<AdoptionInstructionsContent data={{ ...data, copy }} />);
+  expect(
+    await verifyLiveReadiness({
+      baseUrl: "https://synthetic.invalid",
+      token: "synthetic",
+      fetcher: async (url) =>
+        url.pathname.includes("readiness")
+          ? Response.json({ state: "ready", releaseSha: "fixture" })
+          : new Response(html),
+    }),
+  ).toEqual({ state: "ready", releaseSha: "fixture" });
+});
+
+test("a transport failure keeps a retry shell without inventing a private server reference", async () => {
+  const loader = createAdoptionInstructionsLoader(async () => {
+    throw new Error("network unavailable");
+  });
+  expect(await loader()).toEqual({ status: "error", referenceId: null });
 });

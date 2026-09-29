@@ -1,19 +1,20 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { publicUrl } from "@/lib/publicOrigin";
-import { resilientPublicLoader } from "../../lib/routing/resilientLoader";
 import { PublicStateShell } from "../../components/site/PublicStateShell";
 import * as Tabs from "@radix-ui/react-tabs";
 import { SectionHeading } from "../../components/site/SectionHeading";
 import { PublicPageFrame } from "../../components/site/PublicPageFrame";
-import { getPublicAdoptionPage } from "../../lib/adoptionInformation/publicPage.functions";
+import { getPublicAdoptionPageResult } from "../../lib/adoptionInformation/publicPage.functions";
 import type { PublicAdoptionPageData } from "../../lib/adoptionInformation/publicPage.server";
 import { createAdoptionInstructionsLoader } from "../../lib/adoptionInformation/publicPage.loader";
 import type { AdoptionFee, AdoptionLanguage } from "../../lib/adoptionInformation/types";
 
-const loadAdoptionInstructions = createAdoptionInstructionsLoader(() => getPublicAdoptionPage());
+const loadAdoptionInstructions = createAdoptionInstructionsLoader(() =>
+  getPublicAdoptionPageResult(),
+);
 export const Route = createFileRoute("/adoption/instructions")({
-  loader: resilientPublicLoader(loadAdoptionInstructions),
+  loader: loadAdoptionInstructions,
   head: () => ({
     links: [{ rel: "canonical", href: publicUrl("/adoption/instructions") }],
   }),
@@ -109,7 +110,7 @@ function InstructionsPage() {
               <a href="/help" className="underline">
                 支援中心
               </a>{" "}
-              並提供參考編號 {result.referenceId}。
+              {result.referenceId ? <>並提供參考編號 {result.referenceId}。</> : "查詢。"}
             </span>
           </>
         }
@@ -178,8 +179,10 @@ export function AdoptionInstructionsContent({ data }: { data: PublicAdoptionPage
 
         <AdoptionInformationSections data={data} language={language} copy={copy} />
 
-        <section className="space-y-4">
-          <h2 className="font-display text-xl font-bold">{copy.rulesHeading}</h2>
+        <section className="space-y-4" aria-labelledby="adoption-rules-title">
+          <h2 id="adoption-rules-title" className="font-display text-xl font-bold">
+            {copy.rulesHeading}
+          </h2>
           <ol className="space-y-3">
             {data.rules.map((rule, i) => (
               <li key={rule.id} className="flex gap-3 text-[var(--color-text-muted)]">
@@ -192,8 +195,10 @@ export function AdoptionInstructionsContent({ data }: { data: PublicAdoptionPage
           </ol>
         </section>
 
-        <section className="space-y-4">
-          <h2 className="font-display text-xl font-bold">{copy.catCareHeading}</h2>
+        <section className="space-y-4" aria-labelledby="adoption-cat-care-title">
+          <h2 id="adoption-cat-care-title" className="font-display text-xl font-bold">
+            {copy.catCareHeading}
+          </h2>
           <Tabs.Root defaultValue={data.careTopics.cat[0]?.id}>
             <Tabs.List className="flex flex-wrap gap-1 border-b border-[var(--color-border)] mb-4">
               {data.careTopics.cat.map((topic) => (
@@ -218,8 +223,10 @@ export function AdoptionInstructionsContent({ data }: { data: PublicAdoptionPage
           </Tabs.Root>
         </section>
 
-        <section className="space-y-4">
-          <h2 className="font-display text-xl font-bold">{copy.dogCareHeading}</h2>
+        <section className="space-y-4" aria-labelledby="adoption-dog-care-title">
+          <h2 id="adoption-dog-care-title" className="font-display text-xl font-bold">
+            {copy.dogCareHeading}
+          </h2>
           <Tabs.Root defaultValue={data.careTopics.dog[0]?.id}>
             <Tabs.List className="flex flex-wrap gap-1 border-b border-[var(--color-border)] mb-4">
               {data.careTopics.dog.map((topic) => (

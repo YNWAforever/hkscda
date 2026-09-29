@@ -243,3 +243,22 @@ test("CMS readiness adapter reads only the published revision and preserves prov
     ["eq", "state", "published"],
   ]);
 });
+
+test("non-ASCII unauthorized bearer is denied without probing or escaping no-store", async () => {
+  let calls = 0;
+  const handler = createReadinessHandler({
+    secret: () => "x".repeat(32),
+    check: async () => {
+      calls++;
+      return checkReadiness(deps());
+    },
+  });
+  const response = await handler(
+    new Request("https://example.invalid/api/internal/readiness", {
+      headers: { authorization: "Bearer " + "é".repeat(32) },
+    }),
+  );
+  expect(response.status).toBe(401);
+  expect(response.headers.get("cache-control")).toBe("no-store");
+  expect(calls).toBe(0);
+});
