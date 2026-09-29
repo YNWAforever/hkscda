@@ -28,6 +28,7 @@ export function CrmTagBulkPanel({
     const saved = sessionStorage.getItem(savedOperationKey);
     if (!saved || !/^[0-9a-f-]{36}$/i.test(saved)) return;
     setRecoveryId(saved);
+    setBusy(true);
     let active = true;
     fetchAdminJson<CrmTagBulkOperation>(endpoint + "?operationId=" + encodeURIComponent(saved))
       .then((result) => {
@@ -35,6 +36,9 @@ export function CrmTagBulkPanel({
       })
       .catch(() => {
         if (active) setError("未能讀取已保存的操作，請重新讀取結果。");
+      })
+      .finally(() => {
+        if (active) setBusy(false);
       });
     return () => {
       active = false;

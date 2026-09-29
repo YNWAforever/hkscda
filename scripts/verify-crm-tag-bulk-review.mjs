@@ -32,8 +32,18 @@ try {
       })),
     });
     let operation = make(ids(25));
-    await page.route("**/api/admin/supporters/tag-bulk*", (route) => {
+    let holdRead = false,
+      releaseRead,
+      readStarted;
+    await page.route("**/api/admin/supporters/tag-bulk*", async (route) => {
       if (route.request().method() === "GET") {
+        if (holdRead) {
+          readStarted();
+          await new Promise((r) => {
+            releaseRead = r;
+          });
+          return route.fulfill({ json: operation });
+        }
         if (firstRead) {
           firstRead = false;
           return route.fulfill({ status: 503, json: { error: "Synthetic temporary outage" } });
@@ -103,7 +113,21 @@ try {
     const noOverflow = await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth + 1,
     );
+    holdRead = true;
+    const pendingRecovery = new Promise((r) => {
+      readStarted = r;
+    });
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await pendingRecovery;
+    const field = page.getByRole("textbox", { name: "批量標籤" });
+    if (!(await field.isDisabled())) await field.fill("new reviewed");
+    const recoveryBlocksPreview = await page
+      .getByRole("button", { name: "建立預覽", exact: true })
+      .isDisabled();
+    releaseRead();
+    await page.getByText("1 / 40", { exact: true }).waitFor();
     results.push({
+      recoveryBlocksPreview,
       width,
       recoveryPreserved,
       recoveryRetry,
@@ -119,6 +143,7 @@ try {
   assert.ok(
     results.every(
       (r) =>
+        r.recoveryBlocksPreview &&
         r.recoveryPreserved &&
         r.recoveryRetry &&
         r.partialRetryWrites === 25 &&
