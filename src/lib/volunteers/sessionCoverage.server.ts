@@ -49,7 +49,9 @@ export async function readVolunteerCoverage(
     versionResult.count === null ||
     activityResult.count === null ||
     versionResult.count > 500 ||
-    activityResult.count > 2000
+    activityResult.count > 2000 ||
+    (versionResult.data ?? []).length !== versionResult.count ||
+    (activityResult.data ?? []).length !== activityResult.count
   )
     throw new Error("coverage_read_truncated");
 

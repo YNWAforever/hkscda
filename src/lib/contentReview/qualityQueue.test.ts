@@ -50,3 +50,28 @@ test("quality lookup uses the restricted RPC while all-items preserves the old r
     },
   ]);
 });
+
+test("content-review HTTP reports malformed JSON and an RPC role recheck without masking them", async () => {
+  const http = createContentReviewHttp({
+    authenticate: async () => "actor",
+    service: {
+      review: async () => ({ kind: "reviewed" }),
+      list: async () => {
+        throw { code: "42501", message: "forbidden" };
+      },
+    },
+  });
+  const malformed = await http(
+    new Request("https://example.invalid/api/admin/content-review", {
+      method: "POST",
+      body: "{",
+      headers: { "content-type": "application/json" },
+    }),
+  );
+  expect(malformed.status).toBe(400);
+  const denied = await http(
+    new Request("https://example.invalid/api/admin/content-review?quality=demo"),
+  );
+  expect(denied.status).toBe(403);
+  expect(denied.headers.get("cache-control")).toBe("no-store");
+});

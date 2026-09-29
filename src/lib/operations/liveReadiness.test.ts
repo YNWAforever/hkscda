@@ -1,8 +1,15 @@
 import { expect, test } from "bun:test";
 import { verifyLiveReadiness } from "../../../scripts/verify-live-readiness";
 
-const healthyHtml =
-  "<html><body><h1>領養需知</h1><h2>領養費用</h2><h2>領養規則</h2><h2>養貓需知</h2><h2>養狗需知</h2><h2>領養後指南</h2></body></html>";
+const healthyHtml = [
+  "adoption-fees-title",
+  "adoption-rules-title",
+  "adoption-cat-care-title",
+  "adoption-dog-care-title",
+  "post-adoption-guides-title",
+]
+  .map((id) => `<h2 id="${id}">Published copy</h2>`)
+  .join("");
 
 function fixture(readiness: Response, page: Response = new Response(healthyHtml, { status: 200 })) {
   const calls: Array<{ url: string; authorization: string | null }> = [];
@@ -71,4 +78,20 @@ test("a 200 unavailable shell without public content fails the live gate", async
       fetcher,
     }),
   ).rejects.toThrow("PUBLIC_CONTENT_MISSING");
+});
+
+test("serialized headings and comments do not pass a rendered-content gate", async () => {
+  for (const html of [
+    `<script>${healthyHtml}</script>`,
+    `<!--${healthyHtml}-->`,
+    healthyHtml.replace('id="adoption-rules-title"', 'id="missing-section"'),
+  ]) {
+    const { fetcher } = fixture(
+      Response.json({ state: "ready", releaseSha: "synthetic-sha" }),
+      new Response(html),
+    );
+    await expect(
+      verifyLiveReadiness({ baseUrl: "https://synthetic.invalid", token: "synthetic", fetcher }),
+    ).rejects.toThrow("PUBLIC_CONTENT_MISSING");
+  }
 });

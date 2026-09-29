@@ -62,8 +62,6 @@ export function SupporterPage() {
         setVerifiedEmail(normalized);
         setStage("code");
         setCode("");
-        setChallengeToken("");
-        setChallengeKey((value) => value + 1);
       } else {
         const { data, error: verifyError } = await getSupabaseClient().auth.verifyOtp({
           email: verifiedEmail,
@@ -81,6 +79,11 @@ export function SupporterPage() {
           : "驗證碼無效或已過期，請重新取得登入電郵。",
       );
     } finally {
+      if (stage === "request") {
+        // Turnstile tokens are single-use even when a later request step fails.
+        setChallengeToken("");
+        setChallengeKey((value) => value + 1);
+      }
       setBusy(false);
     }
   }
@@ -154,8 +157,10 @@ export function SupporterPage() {
             <button
               className="btn-secondary ml-3 min-h-11"
               type="button"
+              disabled={busy}
               onClick={() => {
                 setStage("request");
+                setVerifiedEmail("");
                 setCode("");
                 setError("");
               }}

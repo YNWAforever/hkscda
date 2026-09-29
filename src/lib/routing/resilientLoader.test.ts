@@ -98,7 +98,14 @@ describe("public routes that read Supabase degrade instead of failing", () => {
   for (const route of routes) {
     test(`${route} wraps its loader and renders an error branch`, () => {
       const source = readFileSync(join(process.cwd(), route), "utf8");
-      expect(source).toContain("resilientPublicLoader");
+      if (route === "src/routes/adoption/instructions.tsx") {
+        expect(source).toContain("loader: loadAdoptionInstructions");
+        const server = readFileSync(
+          join(process.cwd(), "src/lib/adoptionInformation/publicPage.functions.ts"),
+          "utf8",
+        );
+        expect(server).toContain("resilientPublicLoader(loadPublicAdoptionPage)");
+      } else expect(source).toContain("resilientPublicLoader");
       expect(source).toContain('status === "error"');
     });
   }
