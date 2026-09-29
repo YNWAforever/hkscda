@@ -452,7 +452,9 @@ test.skipIf(!url || process.env.ANIMAL_REVIEW_BULK_TEST_ALLOW_LOCAL_FIXTURES !==
           "select public.apply_animal_review_bulk_item($1::uuid,$2::uuid,id) result from unnest($3::uuid[]) id",
           [actor, preview.operationId, packed],
         );
-        const statuses: string[] = results.map((r) => r.result.status);
+        const statuses: string[] = results.map(
+          (r: { result: { status: string } }) => r.result.status,
+        );
         expect(statuses.filter((s) => s === "succeeded")).toHaveLength(796);
         expect(statuses.filter((s) => s === "skipped")).toHaveLength(202);
         expect(statuses.filter((s) => s === "conflict")).toHaveLength(2);
