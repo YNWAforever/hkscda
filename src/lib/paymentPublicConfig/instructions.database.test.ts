@@ -46,7 +46,9 @@ describe.skipIf(!url)("payment instruction snapshots on isolated database", () =
       await db`insert into public.sponsorship_pledge
         (id,supporter_id,monthly_tier,amount_cents,language,status)
         values (${pledgeId}::uuid,${supporterId}::uuid,'300',30000,'zh-HK','pending_payment')`;
-      await db`update public.payment_public_config set published_by = ${actorId}::uuid where id = ${configId}::uuid`;
+      // Establish invalid instructions explicitly; a prior sandbox run may have valid details.
+      await db`update public.payment_public_config set details = '{}'::jsonb,
+        published_by = ${actorId}::uuid where id = ${configId}::uuid`;
       await expectSqlState(
         db`select public.set_checkout_method_approval_with_audit(
         ${actorAuthId}::uuid,'fps','donation',${configId}::uuid,${original.version},true)`,

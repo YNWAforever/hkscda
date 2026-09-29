@@ -35,6 +35,10 @@
     {
       "path": "/api/jobs/public-uploads",
       "schedule": "45 3 * * *"
+    },
+    {
+      "path": "/api/jobs/crm-exports",
+      "schedule": "*/5 * * * *"
     }
   ]
 }
