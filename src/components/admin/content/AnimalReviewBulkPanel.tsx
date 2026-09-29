@@ -27,11 +27,14 @@ export function AnimalReviewBulkPanel({
   const [evidence, setEvidence] = useState("");
   const [operation, setOperation] = useState<AnimalReviewBulkOperation | null>(null);
   const [busy, setBusy] = useState(false);
+  const [recoveryId, setRecoveryId] = useState<string | null>(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
     const saved = sessionStorage.getItem(savedOperationKey);
     if (!saved || !/^[0-9a-f-]{36}$/i.test(saved)) return;
+    setRecoveryId(saved);
+    setBusy(true);
     let active = true;
     fetchAdminJson<AnimalReviewBulkOperation>(
       endpoint + "?operationId=" + encodeURIComponent(saved),
@@ -40,12 +43,32 @@ export function AnimalReviewBulkPanel({
         if (active) setOperation(result);
       })
       .catch(() => {
-        if (active) sessionStorage.removeItem(savedOperationKey);
+        if (active) setError("未能讀取已保存的操作，請重新讀取結果。");
+      })
+      .finally(() => {
+        if (active) setBusy(false);
       });
     return () => {
       active = false;
     };
   }, []);
+
+  async function reloadOperation() {
+    if (!recoveryId || busy) return;
+    setBusy(true);
+    setError("");
+    try {
+      setOperation(
+        await fetchAdminJson<AnimalReviewBulkOperation>(
+          endpoint + "?operationId=" + encodeURIComponent(recoveryId),
+        ),
+      );
+    } catch {
+      setError("未能讀取已保存的操作，請稍後重新讀取結果。");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function preview() {
     if (
@@ -70,6 +93,7 @@ export function AnimalReviewBulkPanel({
         body: JSON.stringify({ action: "preview", ids: selectedIds, evidence, filterHash }),
       });
       sessionStorage.setItem(savedOperationKey, result.operationId);
+      setRecoveryId(result.operationId);
       setOperation(result);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "無法建立送審預覽");
@@ -115,6 +139,7 @@ export function AnimalReviewBulkPanel({
       <label className="block text-sm">
         送審來源及理由
         <textarea
+          disabled={busy}
           maxLength={2000}
           value={evidence}
           onChange={(event) => setEvidence(event.target.value)}
@@ -141,6 +166,16 @@ export function AnimalReviewBulkPanel({
         <p role="alert" className="text-sm text-[var(--color-error)]">
           {error}
         </p>
+      )}
+      {recoveryId && (
+        <button
+          type="button"
+          className="btn-secondary min-h-11"
+          disabled={busy}
+          onClick={reloadOperation}
+        >
+          重新讀取結果
+        </button>
       )}
       {operation && (
         <>

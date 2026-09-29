@@ -334,6 +334,12 @@ jobs:
           ADOPTION_ASSIGNMENT_BULK_TEST_ALLOW_LOCAL_FIXTURES: "1"
           ADOPTION_ASSIGNMENT_BULK_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
 
+      - name: Run animal review bulk database scenarios
+        run: bun test src/lib/contentReview/animalBulk.database.test.ts
+        env:
+          ANIMAL_REVIEW_BULK_TEST_ALLOW_LOCAL_FIXTURES: "1"
+          ANIMAL_REVIEW_BULK_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
       - name: Stop local Supabase stack
         if: always()
         run: bunx supabase stop
