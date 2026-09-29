@@ -2,7 +2,7 @@ import { SQL } from "bun";
 import { expect, test } from "bun:test";
 
 const url = process.env.CHECKOUT_POLICY_TEST_DATABASE_URL;
-if (url && !/^postgresql:\/\/postgres:postgres@127\.0\.0\.1:57322\/postgres$/.test(url))
+if (url && !/^postgresql:\/\/postgres:postgres@127\.0\.0\.1:(?:55322|57322)\/postgres$/.test(url))
   throw new Error("Donation delivery DB test requires the dedicated loopback rehearsal database");
 
 test.skipIf(!url)(
@@ -21,6 +21,7 @@ test.skipIf(!url)(
           values(${donation}::uuid,${supporter}::uuid,20000,'general','stripe',true)`;
           await tx`insert into public.payment(id,donation_id,provider,amount_cents)
           values(${payment}::uuid,${donation}::uuid,'stripe',20000)`;
+          await tx`set local role service_role`;
           await tx`update public.payment set status='succeeded',received_at=now() where id=${payment}::uuid`;
           await tx`update public.donation set status='succeeded' where id=${donation}::uuid`;
           const [job] =
