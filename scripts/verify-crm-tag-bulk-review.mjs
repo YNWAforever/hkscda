@@ -122,7 +122,7 @@ try {
     const field = page.getByRole("textbox", { name: "批量標籤" });
     if (!(await field.isDisabled())) await field.fill("new reviewed");
     const recoveryBlocksPreview = await page
-      .getByRole("button", { name: "建立預覽", exact: true })
+      .getByRole("button", { name: /^(建立預覽|處理中…)$/ })
       .isDisabled();
     releaseRead();
     await page.getByText("1 / 40", { exact: true }).waitFor();
