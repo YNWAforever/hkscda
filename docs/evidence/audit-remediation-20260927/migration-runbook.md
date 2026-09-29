@@ -113,3 +113,7 @@ The new job schema must precede the app code that offers background exports. Che
 Draft #149 introduces 20260927110000_crm_supporter_edit_version.sql with committed-byte SHA-256 d9756e0cb41dd7878e6046a0eab3db4b1f9dfb8a39751884d1cfd2b8df1fa80c. It adds a monotonic profile/role edit token and a new service-role RPC while retaining the old seven-argument RPC for old application code. Exact catalog, isolated concurrency and rollback evidence is in [T15 evidence](t15-supporter-edits.md).
 
 The schema must be applied before the #149 app code. Rehearse locks and triggers on a sanitized data-bearing clone and confirm real-role UAT plus release owner approval. On application rollback, retain the additive schema; the old app will again accept unversioned edits, so stop concurrent edit operations or explicitly manage that risk. Schema removal needs a separately approved compatibility check and cannot be inferred from an app rollback.
+
+## T22 sequential release checkpoint — 2026-09-30
+
+The exact unchanged 20260927163302 supporter preference RPC was rehearsed on the production-schema-only isolated clone, then checked as service_role with denied-role, audit rollback and concurrent idempotency fixtures. Production read-only inventory confirms the RPC is absent; no production DDL has occurred. Exact hash, catalog, commands, rollback and remaining approval are in [PR157 sequential evidence](sequential-merge-157-20260930.md). Recovery activation remains blocked by the separate #156 local Auth concurrent OTP failure.
