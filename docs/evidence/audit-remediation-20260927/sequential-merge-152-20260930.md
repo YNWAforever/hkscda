@@ -12,7 +12,7 @@ Integrated checkout 2a9efb1768edde80909b989a1fedfe78b539296f includes #151 repai
 - Focused review/service/notification sink: 12 pass / 42 assertions / 0 fail, exit 0. Default bulk follow-up never calls an email provider.
 - bun test --isolate --timeout 30000: exit 0, 2863 pass / 150 skip / 0 fail, 8799 assertions, 496 files, 24.09 seconds. Loopback API 52321 unavailable; DB URL not set because Docker/WSL startup is blocked. Skips are not passes.
 - bun run typecheck exit 0; bun run lint exit 0 (52 warnings); bun run build exit 0 with synthetic keys and loopback 54329. Generated route tree unchanged.
-- node scripts/verify-volunteer-bulk.mjs against loopback 56549: exit 0; actual workspace 390/768/1366, 200% CSS zoom at 768, no page errors or horizontal overflow, eight-week control, explicit review gate, partial failure and no automatic replay. Server stopped afterward. New screenshots t17-bulk-sequential-* preserve the historical images.
+- node scripts/verify-volunteer-bulk-review.mjs against loopback 56549: exit 0; actual workspace 390/768/1366, 200% CSS zoom at 768, no page errors or horizontal overflow, eight-week control, explicit review gate, partial failure and no automatic replay. Server stopped afterward. New screenshots t17-bulk-sequential-* preserve the historical images.
 - Production read-only catalog confirms volunteer_bulk_command(uuid,jsonb), anon/authenticated EXECUTE denied, service_role allowed, and operation event/outbox tables with RLS. The initial pg_class name query also returned indexes; their RLS=false flags are not table findings. No production bulk command was invoked.
 
 ## Required remote DB gate
