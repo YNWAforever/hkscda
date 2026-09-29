@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "appSha": "a50a09f581f7862ebf9ba2fdde53d58cdf65a307",
-  "appShaNote": "PR170 repaired sponsorship follow-up bulk plus verified predecessors; later PR171-179 excluded.",
+  "appSha": "7136ad049c536fe27fcc4823066d762c618b2c9b",
+  "appShaNote": "PR171 repaired ephemeral reminder preview plus verified predecessors; PR172-179 excluded.",
   "productionAliasShaObserved": "24196faf027998388eff3196a6979e23566e2443",
   "schemaManifestHash": "b24e8e7bd60f7aa0a0daf08955771f9a2fce8286582222e0477fe8f2fcae00dd",
   "configVersions": {
@@ -296,8 +296,8 @@
   ],
   "ciRun": {
     "id": null,
-    "sha": "a50a09f581f7862ebf9ba2fdde53d58cdf65a307",
-    "status": "local final full suite/typecheck/build and isolated DB/UI passed; lint passed pre-catalog-only merge; remote CI pending"
+    "sha": "7136ad049c536fe27fcc4823066d762c618b2c9b",
+    "status": "local full tests/typecheck/lint/build and real 15-case browser suite passed; remote CI pending"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -316,7 +316,8 @@
     "docs/evidence/audit-remediation-20260927/sequential-merge-167-20260930.md",
     "docs/evidence/audit-remediation-20260927/sequential-merge-168-20260930.md",
     "docs/evidence/audit-remediation-20260927/sequential-merge-169-20260930.md",
-    "docs/evidence/audit-remediation-20260927/sequential-merge-170-20260930.md"
+    "docs/evidence/audit-remediation-20260927/sequential-merge-170-20260930.md",
+    "docs/evidence/audit-remediation-20260927/sequential-merge-171-20260930.md"
   ],
   "rollbackTarget": {
     "appSha": null,
@@ -611,7 +612,7 @@
       }
     }
   ],
-  "capturedAt": "2026-09-29T23:43:03.553757+00:00",
+  "capturedAt": "2026-09-29T23:53:36.562357+00:00",
   "productionDeploymentId": "dpl_DJpjHkmVayPsXZqwiA2CMJG43Ygk",
   "productionDeploymentState": "READY",
   "productionSchemaLedgerCountObserved": 95,
@@ -631,7 +632,7 @@
     "migration165": "exact approval requested after five current-head CI gates succeeded; pending",
     "migration166": "exact approval requested after five current-head CI gates succeeded; pending",
     "release156": "explicit disabled-feature exception requested; no answer received; original blocking gate retained",
-    "migration169": "exact approval not yet requested; repaired SQL/local rehearsal complete",
+    "migration169": "exact approval requested after latest five CI gates succeeded; pending",
     "migration170": "exact approval not yet requested; isolated full SQL/1000item rehearsal passed"
   },
   "blockedGate": {

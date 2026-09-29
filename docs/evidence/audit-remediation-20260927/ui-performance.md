@@ -34,3 +34,8 @@ PR169 before/after screenshot pairs t23-followup-{before,after}-{390,768,1366}.p
 ## PR170 preparation — 2026-09-30
 
 PR1703widthbefore/afterrecovery screenshots and390mobilecheckbox pair;Axe0/errors0.1000snapshot localpreview51.41ms/apply900948.87ms currentonly;no same-environmentbefore/after improvementclaim.
+
+
+## PR171 preparation — 2026-09-30
+
+PR1713widthbefore/after t23-reminder screenshots;knowneligibilitychange now removesstaledraft.15caseactualbrowser,Axe0. Same-environmentperformancecomparisonnot-run;nospeedimprovementclaim.

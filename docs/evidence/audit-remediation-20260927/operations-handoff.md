@@ -63,3 +63,8 @@ PR169: saved indicates committed assignment; failed refresh never undoes it. Unk
 ## PR170 preparation — 2026-09-30
 
 PR170 recovery GET failure retains operationID; reload results before resuming pending items. Filters clear selection. Expired operation requires explicit fresh snapshot for unresolved items, keeping prior results. No proof/payment approval or notifications.
+
+
+## PR171 preparation — 2026-09-30
+
+PR171 draft is ephemeral: current status,recipient,proof or month/allocation changes clear it; regenerate after reviewing facts. Pending proof/adjustment requiresfinance review. No send action or approved payment instructions. Sending requires separate authorization.

@@ -74,3 +74,8 @@ PR169 actual drawer at390/768/1366: keyboard selection; lost response reconciled
 ## PR170 preparation — 2026-09-30
 
 PR170390/768/1366actualpanel: recovery preservation/busy fence,keyboard,25writes after10item interruptedresponse,1000preview40pages,CSV,Axe0/errors0/nooverflow;768at200%zoom. Actualmobilecheckbox no detaildrawer;filterABA no stale25selection. Hostedstaff/fullprivateexportsnot-run.
+
+
+## PR171 preparation — 2026-09-30
+
+PR171390/768/1366actualdrawer: cancel,recipientchange,pendingproof,settledledger andlateoldresponse eachclearcopyabledraft;15cases/Axe0/errors0/nooverflow. Synthetic GETs andsimulatedcancelonly;no provider/DBwrite. Hostedstaff/privatejourneysnot-run.

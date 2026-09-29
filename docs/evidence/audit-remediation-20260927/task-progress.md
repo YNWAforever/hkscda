@@ -115,3 +115,8 @@ PR169 individual sponsorship follow-up slice repaired/reviewed and locally verif
 ## PR170 preparation — 2026-09-30
 
 PR170six concretebugsred-to-green;reviewclosed.Individual+bulk sponsorshipfollowupslicescodecomplete;ADMIN-04partial. Production schemas/deploy/enablepending. Parent169cataloggateamendmentintegrated.
+
+
+## PR171 preparation — 2026-09-30
+
+PR171 read-only reminder preview repaired,reviewed andlocallyaccepted. No migration. ADMIN-04partial;codecomplete slice,not deployed/enabled. Continue172–179 while#156orderedmergegate remains.

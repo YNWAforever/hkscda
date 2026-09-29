@@ -67,3 +67,8 @@ PR169 local code/gates ready,production schema/deploy/enable not ready. Inventor
 ## PR170 preparation — 2026-09-30
 
 PR170 code/local gates complete;schema approved/applied=no,deployed=no,operationally enabled=no.56fileinventory. Full3074pass141skip9628assert;typecheck/build0;lint0beforecatalog-onlymerge;1000itemservice_role;3widthAxe0. Orderedmerge stillblocked#156;exact schema approval andlatestCIrequired.
+
+
+## PR171 preparation — 2026-09-30
+
+PR171 no new SQL;56inheritedmigrationinventory. Full3084pass141skip9676assert;typecheck/lint/build0;15browsercases/Axe0. Codecomplete slice only;deploy/enable=no. #169dd17c5fbfivegreen36646284540 andexactmigrationapprovalrequested;#170/#171CIpending;#156OTPgate blocksorderedmerge.

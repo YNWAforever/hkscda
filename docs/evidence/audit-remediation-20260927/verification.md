@@ -133,3 +133,8 @@ PR169 current application b918ff918c98a2188335465237a6add66abfd0c7:3065pass137sk
 ## PR170 preparation — 2026-09-30
 
 PR170 a50a09f581f7862ebf9ba2fdde53d58cdf65a307:full3074pass141skip0fail9628assert556files19.97s;typecheck/build0;lint52warnings0beforecatalog-onlyintegration;DB4tests22assert275ms;fullSQL2oldrows12.19ms/1000preview51.41ms/900apply948.87ms;rollback0. See sequential-merge-170-20260930.md.
+
+
+## PR171 preparation — 2026-09-30
+
+PR171 7136ad049c536fe27fcc4823066d762c618b2c9b:10focused46assert;full3084pass141skip0fail9676assert559files33.49s;typecheck/lint0(52warnings)/build0;3width15casebrowser0. Originalcancelstaledraft1ateachwidthred1;fixedstale0. See sequential-merge-171-20260930.md.
