@@ -98,8 +98,7 @@ export function ContentReviewQueue({
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectionBusy, setSelectionBusy] = useState(false);
   const [selectionError, setSelectionError] = useState("");
-  const kindRef = useRef(kind);
-  kindRef.current = kind;
+  const selectionGeneration = useRef(0);
   const query = useQuery({
     queryKey: ["editorial-review", kind, page],
     queryFn: () =>
@@ -140,12 +139,13 @@ export function ContentReviewQueue({
     setSelectionBusy(true);
     setSelectionError("");
     try {
+      const generation = selectionGeneration.current;
       const ids = await collectAnimalReviewIds(query.data.total, async (nextPage) =>
         fetchAdminJson<{ items: ReviewQueueRow[]; total: number }>(
           `/api/admin/content-review?kind=animal&page=${nextPage}`,
         ),
       );
-      if (kindRef.current !== "animal") throw new Error("資料類型已變更；請重新選取");
+      if (selectionGeneration.current !== generation) throw new Error("資料類型已變更；請重新選取");
       setSelectedIds(ids);
     } catch (cause) {
       setSelectionError(cause instanceof Error ? cause.message : "無法固定選取範圍");
@@ -165,6 +165,7 @@ export function ContentReviewQueue({
           className="ml-2 border p-2"
           value={kind}
           onChange={(event) => {
+            selectionGeneration.current++;
             setKind(event.target.value as "animal" | "content");
             setPage(1);
             setSelectedIds([]);
