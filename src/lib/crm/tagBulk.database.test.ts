@@ -4,7 +4,16 @@ import { expect, test } from "bun:test";
 const databaseUrl = process.env.CRM_TAG_BULK_TEST_DATABASE_URL;
 if (databaseUrl) {
   const url = new URL(databaseUrl);
-  if (url.hostname !== "127.0.0.1" || url.port !== "57322" || url.pathname !== "/postgres") {
+  const target =
+    ((url.port === "57322" || url.port === "55322") && url.pathname === "/postgres") ||
+    (url.port === "52322" && url.pathname === "/audit_pr135_20260929");
+  if (
+    url.protocol !== "postgresql:" ||
+    url.hostname !== "127.0.0.1" ||
+    !target ||
+    url.search ||
+    url.hash
+  ) {
     throw new Error("CRM tag bulk test requires the dedicated loopback database");
   }
 }
@@ -19,6 +28,12 @@ test.skipIf(!enabled)(
     const ids = [crypto.randomUUID(), crypto.randomUUID(), crypto.randomUUID()];
     try {
       await db.begin(async (tx) => {
+        const serviceCall = async (query: string, args: string[]) => {
+          await tx.unsafe("set local role service_role");
+          const rows = await tx.unsafe(query, args);
+          await tx.unsafe("reset role");
+          return rows;
+        };
         const email = "crm-bulk-" + actor + "@example.invalid";
         await tx.unsafe(
           "insert into auth.users(id,email,email_confirmed_at,created_at,updated_at) values($1::uuid,$2,now(),now(),now())",
@@ -34,7 +49,7 @@ test.skipIf(!enabled)(
             [id, id + "@example.invalid"],
           );
         }
-        const alreadyTagged = (await tx.unsafe(
+        const alreadyTagged = (await serviceCall(
           "select public.create_crm_tag_bulk_preview($1::uuid,$2::uuid[],$3,$4) result",
           [actor, "{" + ids[0] + "}", "old", "a".repeat(64)],
         )) as Array<{
@@ -45,18 +60,18 @@ test.skipIf(!enabled)(
           beforeTags: ["old"],
           afterTags: ["old"],
         });
-        const preview = (await tx.unsafe(
+        const preview = (await serviceCall(
           "select public.create_crm_tag_bulk_preview($1::uuid,$2::uuid[],$3,$4) result",
           [actor, "{" + ids.join(",") + "}", "reviewed", "a".repeat(64)],
         )) as Array<{ result: { operationId: string; items: Array<{ status: string }> } }>;
         const operationId = preview[0]!.result.operationId;
         expect(preview[0]!.result.items).toHaveLength(3);
-        const first = (await tx.unsafe(
+        const first = (await serviceCall(
           "select public.apply_crm_tag_bulk_item($1::uuid,$2::uuid,$3::uuid) result",
           [actor, operationId, ids[0]],
         )) as Array<{ result: { status: string } }>;
         expect(first[0]!.result.status).toBe("succeeded");
-        const repeat = (await tx.unsafe(
+        const repeat = (await serviceCall(
           "select public.apply_crm_tag_bulk_item($1::uuid,$2::uuid,$3::uuid) result",
           [actor, operationId, ids[0]],
         )) as Array<{ result: { status: string } }>;
@@ -65,7 +80,7 @@ test.skipIf(!enabled)(
           "update public.supporter set tags=array['changed']::text[] where id=$1::uuid",
           [ids[1]],
         );
-        const stale = (await tx.unsafe(
+        const stale = (await serviceCall(
           "select public.apply_crm_tag_bulk_item($1::uuid,$2::uuid,$3::uuid) result",
           [actor, operationId, ids[1]],
         )) as Array<{ result: { status: string; reasonCode: string } }>;
@@ -73,12 +88,12 @@ test.skipIf(!enabled)(
           status: "conflict",
           reasonCode: "version_changed",
         });
-        const third = (await tx.unsafe(
+        const third = (await serviceCall(
           "select public.apply_crm_tag_bulk_item($1::uuid,$2::uuid,$3::uuid) result",
           [actor, operationId, ids[2]],
         )) as Array<{ result: { status: string } }>;
         expect(third[0]!.result.status).toBe("succeeded");
-        const result = (await tx.unsafe(
+        const result = (await serviceCall(
           "select public.get_crm_tag_bulk_operation($1::uuid,$2::uuid) result",
           [actor, operationId],
         )) as Array<{ result: { state: string; items: Array<{ status: string }> } }>;
@@ -114,6 +129,12 @@ test.skipIf(!enabled)(
     const hash = "b".repeat(64);
     try {
       await db.begin(async (tx) => {
+        const serviceCall = async (query: string, args: string[]) => {
+          await tx.unsafe("set local role service_role");
+          const rows = await tx.unsafe(query, args);
+          await tx.unsafe("reset role");
+          return rows;
+        };
         const email = actor + "@example.invalid";
         await tx.unsafe(
           "insert into auth.users(id,email,email_confirmed_at,created_at,updated_at) values($1::uuid,$2,now(),now(),now())",
@@ -141,7 +162,7 @@ test.skipIf(!enabled)(
         const tooMany = Array.from({ length: 1001 }, () => crypto.randomUUID());
         await expectFailure(
           () =>
-            tx.unsafe("select public.create_crm_tag_bulk_preview($1::uuid,$2::uuid[],$3,$4)", [
+            serviceCall("select public.create_crm_tag_bulk_preview($1::uuid,$2::uuid[],$3,$4)", [
               actor,
               "{" + tooMany.join(",") + "}",
               "reviewed",
@@ -149,7 +170,7 @@ test.skipIf(!enabled)(
             ]),
           "22023",
         );
-        const preview = (await tx.unsafe(
+        const preview = (await serviceCall(
           "select public.create_crm_tag_bulk_preview($1::uuid,$2::uuid[],$3,$4) result",
           [actor, "{" + id + "}", "reviewed", hash],
         )) as Array<{ result: { operationId: string } }>;
@@ -160,7 +181,7 @@ test.skipIf(!enabled)(
         );
         await expectFailure(
           () =>
-            tx.unsafe("select public.apply_crm_tag_bulk_item($1::uuid,$2::uuid,$3::uuid)", [
+            serviceCall("select public.apply_crm_tag_bulk_item($1::uuid,$2::uuid,$3::uuid)", [
               actor,
               operationId,
               id,
@@ -171,13 +192,48 @@ test.skipIf(!enabled)(
           "update public.admin_user set status='active' where auth_user_id=$1::uuid",
           [actor],
         );
+        for (const [deny, restore] of [
+          [
+            "update public.admin_user set role='staff' where auth_user_id=$1::uuid",
+            "update public.admin_user set role='treasurer' where auth_user_id=$1::uuid",
+          ],
+          [
+            "update auth.users set banned_until=now()+interval '1 day' where id=$1::uuid",
+            "update auth.users set banned_until=null where id=$1::uuid",
+          ],
+          [
+            "update auth.users set email_confirmed_at=null where id=$1::uuid",
+            "update auth.users set email_confirmed_at=now() where id=$1::uuid",
+          ],
+        ]) {
+          await tx.unsafe(deny, [actor]);
+          await expectFailure(
+            () =>
+              serviceCall("select public.apply_crm_tag_bulk_item($1::uuid,$2::uuid,$3::uuid)", [
+                actor,
+                operationId,
+                id,
+              ]),
+            "42501",
+          );
+          await tx.unsafe(restore, [actor]);
+        }
+        for (const role of ["anon", "authenticated"]) {
+          await expectFailure(async () => {
+            await tx.unsafe("set local role " + role);
+            await tx.unsafe("select public.get_crm_tag_bulk_operation($1::uuid,$2::uuid)", [
+              actor,
+              operationId,
+            ]);
+          }, "42501");
+        }
         await tx.unsafe(
           "update public.crm_tag_bulk_operation set expires_at=now()-interval '1 second' where id=$1::uuid",
           [operationId],
         );
         await expectFailure(
           () =>
-            tx.unsafe("select public.apply_crm_tag_bulk_item($1::uuid,$2::uuid,$3::uuid)", [
+            serviceCall("select public.apply_crm_tag_bulk_item($1::uuid,$2::uuid,$3::uuid)", [
               actor,
               operationId,
               id,
@@ -196,7 +252,7 @@ test.skipIf(!enabled)(
         );
         await expectFailure(
           () =>
-            tx.unsafe("select public.apply_crm_tag_bulk_item($1::uuid,$2::uuid,$3::uuid)", [
+            serviceCall("select public.apply_crm_tag_bulk_item($1::uuid,$2::uuid,$3::uuid)", [
               actor,
               operationId,
               id,
@@ -207,8 +263,14 @@ test.skipIf(!enabled)(
           id,
         ])) as Array<{ tags: string[] }>;
         expect(rows[0]!.tags).toEqual(["old"]);
+        const unchanged = await tx.unsafe(
+          "select s.edit_version,i.status from public.supporter s join public.crm_tag_bulk_item i on i.supporter_id=s.id where s.id=$1::uuid and i.operation_id=$2::uuid",
+          [id, operationId],
+        );
+        expect(String(unchanged[0].edit_version)).toBe("1");
+        expect(unchanged[0].status).toBe("pending");
         await tx.unsafe("drop trigger fail_crm_bulk_audit on public.audit_log");
-        const applied = (await tx.unsafe(
+        const applied = (await serviceCall(
           "select public.apply_crm_tag_bulk_item($1::uuid,$2::uuid,$3::uuid) result",
           [actor, operationId, id],
         )) as Array<{ result: { status: string } }>;
@@ -217,6 +279,184 @@ test.skipIf(!enabled)(
           "select has_function_privilege('authenticated','public.create_crm_tag_bulk_preview(uuid,uuid[],text,text)','EXECUTE') preview, has_function_privilege('anon','public.apply_crm_tag_bulk_item(uuid,uuid,uuid)','EXECUTE') apply, has_table_privilege('authenticated','public.crm_tag_bulk_item','SELECT') item",
         )) as Array<{ preview: boolean; apply: boolean; item: boolean }>;
         expect(grants[0]).toEqual({ preview: false, apply: false, item: false });
+        throw rollback;
+      });
+    } catch (error) {
+      if (error !== rollback) throw error;
+    } finally {
+      await db.close();
+    }
+  },
+  30000,
+);
+
+test.skipIf(!enabled)(
+  "CRM bulk holds actor authorization until its transaction completes",
+  async () => {
+    const db = new SQL(databaseUrl!, { max: 2, prepare: false });
+    const other = new SQL(databaseUrl!, { max: 1, prepare: false });
+    const actor = crypto.randomUUID();
+    const supporter = crypto.randomUUID();
+    const email = "crm-bulk-lock-" + actor + "@example.invalid";
+    let operation: string | undefined;
+    try {
+      await db.unsafe(
+        "insert into auth.users(id,email,email_confirmed_at,created_at,updated_at) values($1::uuid,$2,now(),now(),now())",
+        [actor, email],
+      );
+      await db.unsafe(
+        "insert into public.admin_user(auth_user_id,email,role,status) values($1::uuid,$2,'treasurer','active')",
+        [actor, email],
+      );
+      await db.unsafe(
+        "insert into public.supporter(id,name,email,tags) values($1::uuid,'Synthetic lock fixture',$2,array['old'])",
+        [supporter, supporter + "@example.invalid"],
+      );
+      await db.begin(async (tx) => {
+        await tx.unsafe("set local role service_role");
+        const rows = await tx.unsafe(
+          "select public.create_crm_tag_bulk_preview($1::uuid,$2::uuid[],'reviewed',$3) result",
+          [actor, "{" + supporter + "}", "c".repeat(64)],
+        );
+        operation = rows[0].result.operationId;
+      });
+      const rewind = new Error("rewind permission lock probe");
+      try {
+        await db.begin(async (tx) => {
+          await tx.unsafe("set local role service_role");
+          await tx.unsafe("select public.apply_crm_tag_bulk_item($1::uuid,$2::uuid,$3::uuid)", [
+            actor,
+            operation!,
+            supporter,
+          ]);
+          for (const query of [
+            "update public.admin_user set status='disabled' where auth_user_id=$1::uuid",
+            "update auth.users set banned_until=now()+interval '1 day' where id=$1::uuid",
+          ]) {
+            await expect(
+              other.begin(async (revoker) => {
+                await revoker.unsafe("set local lock_timeout='150ms'");
+                await revoker.unsafe(query, [actor]);
+              }),
+            ).rejects.toMatchObject({ errno: "55P03" });
+          }
+          throw rewind;
+        });
+      } catch (error) {
+        if (error !== rewind) throw error;
+      }
+      const apply = (connection: SQL) =>
+        connection.begin(async (tx) => {
+          await tx.unsafe("set local role service_role");
+          const rows = await tx.unsafe(
+            "select public.apply_crm_tag_bulk_item($1::uuid,$2::uuid,$3::uuid) result",
+            [actor, operation!, supporter],
+          );
+          return rows[0].result.status as string;
+        });
+      expect(await Promise.all([apply(db), apply(other)])).toEqual(["succeeded", "succeeded"]);
+      const audited = await db.unsafe(
+        "select count(*)::int n from public.audit_log where actor_user_id=$1::uuid and action='supporter.bulk_tag_add'",
+        [actor],
+      );
+      expect(audited[0].n).toBe(1);
+      await other.unsafe(
+        "update public.admin_user set status='disabled' where auth_user_id=$1::uuid",
+        [actor],
+      );
+      await expect(
+        db.begin(async (tx) => {
+          await tx.unsafe("set local role service_role");
+          await tx.unsafe("select public.apply_crm_tag_bulk_item($1::uuid,$2::uuid,$3::uuid)", [
+            actor,
+            operation!,
+            supporter,
+          ]);
+        }),
+      ).rejects.toMatchObject({ errno: "42501" });
+    } finally {
+      await db.unsafe("delete from public.audit_log where actor_user_id=$1::uuid", [actor]);
+      if (operation) {
+        await db.unsafe("delete from public.crm_tag_bulk_item where operation_id=$1::uuid", [
+          operation,
+        ]);
+        await db.unsafe("delete from public.crm_tag_bulk_operation where id=$1::uuid", [operation]);
+      }
+      await db.unsafe("delete from public.supporter where id=$1::uuid", [supporter]);
+      await db.unsafe("delete from public.admin_user where auth_user_id=$1::uuid", [actor]);
+      await db.unsafe("delete from auth.users where id=$1::uuid", [actor]);
+      await other.close();
+      await db.close();
+    }
+  },
+  30000,
+);
+
+test.skipIf(!enabled)(
+  "1000-row snapshot preserves per-item conflicts and repeat results",
+  async () => {
+    const db = new SQL(databaseUrl!, { max: 1, prepare: false });
+    const actor = crypto.randomUUID();
+    const rollback = new Error("rollback 1000 synthetic bulk records");
+    try {
+      await db.begin(async (tx) => {
+        const email = actor + "@example.invalid";
+        await tx.unsafe(
+          "insert into auth.users(id,email,email_confirmed_at,created_at,updated_at) values($1::uuid,$2,now(),now(),now())",
+          [actor, email],
+        );
+        await tx.unsafe(
+          "insert into public.admin_user(auth_user_id,email,role,status) values($1::uuid,$2,'treasurer','active')",
+          [actor, email],
+        );
+        const seeded = await tx.unsafe(
+          "insert into public.supporter(id,name,email,tags) select id,'Synthetic bulk 1000',id::text||'@example.invalid',case when n<=100 then array['reviewed'] else array['old'] end from (select gen_random_uuid() id,n from generate_series(1,1000) n) f returning id",
+          [],
+        );
+        const ids = seeded.map((row: { id: string }) => row.id);
+        await tx.unsafe("set local role service_role");
+        const preview = await tx.unsafe(
+          "select public.create_crm_tag_bulk_preview($1::uuid,$2::uuid[],'reviewed',$3) result",
+          [actor, "{" + ids.join(",") + "}", "d".repeat(64)],
+        );
+        const operation = preview[0].result as {
+          operationId: string;
+          items: Array<{ entityId: string; status: string }>;
+        };
+        expect(operation.items).toHaveLength(1000);
+        const pending = operation.items.filter((item) => item.status === "pending");
+        expect(pending).toHaveLength(900);
+        await tx.unsafe("reset role");
+        await tx.unsafe("update public.supporter set tags=array['other'] where id=$1::uuid", [
+          pending[0].entityId,
+        ]);
+        await tx.unsafe("update public.supporter set deleted_at=now() where id=$1::uuid", [
+          pending[1].entityId,
+        ]);
+        await tx.unsafe("set local role service_role");
+        const applied = await tx.unsafe(
+          "select public.apply_crm_tag_bulk_item($1::uuid,$2::uuid,supporter_id) result from public.crm_tag_bulk_item where operation_id=$2::uuid and status='pending' order by ordinal",
+          [actor, operation.operationId],
+        );
+        const outcomes = applied.map((row: { result: { status: string } }) => row.result.status);
+        expect(outcomes.filter((status: string) => status === "succeeded")).toHaveLength(898);
+        expect(outcomes.filter((status: string) => status === "conflict")).toHaveLength(1);
+        expect(outcomes.filter((status: string) => status === "skipped")).toHaveLength(1);
+        await tx.unsafe("select public.apply_crm_tag_bulk_item($1::uuid,$2::uuid,$3::uuid)", [
+          actor,
+          operation.operationId,
+          pending[2].entityId,
+        ]);
+        const result = await tx.unsafe(
+          "select public.get_crm_tag_bulk_operation($1::uuid,$2::uuid) result",
+          [actor, operation.operationId],
+        );
+        expect(result[0].result.state).toBe("done");
+        const counts = await tx.unsafe(
+          "select count(*)::int n from public.audit_log where actor_user_id=$1::uuid and action='supporter.bulk_tag_add'",
+          [actor],
+        );
+        expect(counts[0].n).toBe(898);
         throw rollback;
       });
     } catch (error) {

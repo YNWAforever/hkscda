@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import * as module from "./pledges";
+import { ZodError } from "zod";
 
 const pledgeId = "cccccccc-dddd-4eee-8fff-000000000000";
 const statusToken = "A".repeat(43);
@@ -21,6 +22,7 @@ function setup(overrides: Record<string, unknown> = {}) {
     payload: {
       turnstileToken: "turnstile",
       animalPreferences: [{ animalId: "animal-1", animalType: "cat" }],
+      terms: { agreed: true, version: "current-version" },
     },
   };
   const dependencies = {
@@ -33,6 +35,7 @@ function setup(overrides: Record<string, unknown> = {}) {
       return true;
     },
     readEligible: async () => [{ id: "animal-1", type: "cat" }],
+    loadCurrentTerms: async () => ({ version: "current-version" }),
     persist: async () => {
       calls.push("persist");
       return { pledgeId, reference: "SP-CCCCCCCC", statusUrl };
@@ -55,12 +58,55 @@ async function invoke(dependencies: Record<string, unknown>) {
 }
 
 describe("sponsorship pledge submission retry", () => {
+  test("returns field reasons for a malformed submission without echoing its data", async () => {
+    const { dependencies } = setup({
+      parse: () => {
+        throw new ZodError([
+          { code: "custom", path: ["contact", "email"], message: "Invalid email" },
+        ]);
+      },
+    });
+    const response = await invoke(dependencies);
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({
+      error: "Invalid sponsorship pledge request",
+      fields: [{ field: "contact.email", reason: "Invalid email" }],
+    });
+  });
+
+  test("keeps new submissions closed without a published approved terms document", async () => {
+    const { calls, dependencies } = setup({ loadCurrentTerms: async () => null });
+    const response = await invoke(dependencies);
+    expect(response.status).toBe(503);
+    expect(calls).toEqual([]);
+  });
+
+  test("rejects a stale terms version before verification or persistence", async () => {
+    const { calls, dependencies } = setup({
+      loadCurrentTerms: async () => ({ version: "new-version" }),
+      parse: () => ({
+        pledgeId,
+        statusToken,
+        payload: {
+          terms: { agreed: true, version: "old-version" },
+          animalPreferences: [{ animalId: "animal-1", animalType: "cat" }],
+        },
+      }),
+    });
+    const response = await invoke(dependencies);
+    expect(response.status).toBe(409);
+    expect(calls).toEqual([]);
+  });
+
   test("a verified proof intent permits persistence without reusing the Turnstile token", async () => {
     const { calls, dependencies } = setup({
       parse: () => ({
         pledgeId,
         statusToken,
-        payload: { animalPreferences: [{ animalId: "animal-1", animalType: "cat" }] },
+        payload: {
+          terms: { agreed: true, version: "current-version" },
+          animalPreferences: [{ animalId: "animal-1", animalType: "cat" }],
+        },
         proof: { storagePath: pledgeId + "/proof/receipt.jpg", proofIntent: "signed" },
       }),
       verify: async () => {
@@ -81,10 +127,34 @@ describe("sponsorship pledge submission retry", () => {
       parse: () => ({
         pledgeId,
         statusToken,
-        payload: { animalPreferences: [{ animalId: "animal-1", animalType: "cat" }] },
+        payload: {
+          terms: { agreed: true, version: "current-version" },
+          animalPreferences: [{ animalId: "animal-1", animalType: "cat" }],
+        },
         proof: { storagePath: pledgeId + "/proof/receipt.jpg", proofIntent: "invalid" },
       }),
       verifyProofIntent: () => false,
+    });
+    const response = await invoke(dependencies);
+    expect(response.status).toBe(403);
+    expect(calls).toEqual([]);
+  });
+
+  test("an already-submitted proof intent cannot create a second pledge for another bearer", async () => {
+    const { calls, dependencies } = setup({
+      parse: () => ({
+        pledgeId,
+        statusToken: "B".repeat(43),
+        payload: {
+          terms: { agreed: true, version: "current-version" },
+          animalPreferences: [{ animalId: "animal-1", animalType: "cat" }],
+        },
+        proof: { storagePath: pledgeId + "/proof/receipt.jpg", proofIntent: "signed" },
+      }),
+      lookupRetry: async () => ({ kind: "forbidden" }),
+      verifyProofIntent: () => {
+        throw new Error("must stop before reusing intent");
+      },
     });
     const response = await invoke(dependencies);
     expect(response.status).toBe(403);

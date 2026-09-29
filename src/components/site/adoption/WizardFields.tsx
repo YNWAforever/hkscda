@@ -755,6 +755,16 @@ export function ReviewFields({
         <SummaryBlock title="環境相片" titleEn="Photos">
           <p>{photoCategories.length ? photoCategories.join("、") : "未選擇相片"}</p>
         </SummaryBlock>
+        <SummaryBlock title="費用及後續" titleEn="Fees and next steps">
+          <p>
+            領養費用及規則以已發布的{" "}
+            <Link to="/adoption/instructions" target="_blank" className="underline">
+              領養須知
+            </Link>{" "}
+            為準。
+          </p>
+          <p>提交後職員會按所填聯絡方式核實資料及協調面見；提交申請不代表已獲批准或完成配對。</p>
+        </SummaryBlock>
       </div>
 
       <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-offset)] px-4 py-3">

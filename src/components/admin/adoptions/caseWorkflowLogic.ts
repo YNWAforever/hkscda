@@ -48,7 +48,7 @@ export function buildCaseListSearchParams(filters: CaseListFilters) {
 
   if (q) params.set("q", q);
   if (statusId) params.set("statusId", statusId);
-  if (animalType) params.set("animalType", animalType);
+  if (animalType && animalType !== "all") params.set("animalType", animalType);
   if (filters.openOnly) params.set("openOnly", "true");
   params.set("page", String(normalizedPositiveInteger(filters.page, 1)));
   params.set("pageSize", String(normalizedPositiveInteger(filters.pageSize, 25)));

@@ -5,7 +5,11 @@ import {
   createSupabaseServiceClient,
   requireAdmin,
 } from "../../../../lib/donations/supabase.server";
-import { readBoundedJson, RequestBodyTooLargeError } from "../../../../lib/http/publicJson.server";
+import {
+  readBoundedJson,
+  RequestBodyTooLargeError,
+  InvalidRequestJsonError,
+} from "../../../../lib/http/publicJson.server";
 
 type BulkStatus = "pending" | "succeeded" | "skipped" | "conflict" | "failed";
 export type CrmTagBulkOperation = {
@@ -76,7 +80,15 @@ export function createCrmTagBulkHandler(deps: Dependencies) {
         }
         return Response.json(await deps.read(actor, id!), { headers });
       }
-      const raw = await readBoundedJson(request, 128 * 1024);
+      let raw: unknown;
+      try {
+        raw = await readBoundedJson(request, 128 * 1024);
+      } catch (error) {
+        if (error instanceof InvalidRequestJsonError) {
+          return Response.json({ error: "Invalid bulk request" }, { status: 400, headers });
+        }
+        throw error;
+      }
       const command = commandSchema.parse(raw);
       if (command.action === "preview") {
         return Response.json(

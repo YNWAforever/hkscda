@@ -50,7 +50,12 @@ export function useListQueryState<Filters extends object>({
       setFilters(restored.filters);
       setPage(restored.page);
     }
-    const stored = window.sessionStorage.getItem(storageKey) ?? "";
+    let stored = "";
+    try {
+      stored = window.sessionStorage.getItem(storageKey) ?? "";
+    } catch {
+      // Session persistence is optional when browser storage is unavailable.
+    }
     setDraftQuery(stored);
     setQuery(stored.trim());
     setHydrated(true);
@@ -91,7 +96,11 @@ export function useListQueryState<Filters extends object>({
     if (!hydrated || composing || draftQuery.trim() === query) return;
     const timer = window.setTimeout(() => {
       const next = draftQuery.trim();
-      window.sessionStorage.setItem(storageKey, next);
+      try {
+        window.sessionStorage.setItem(storageKey, next);
+      } catch {
+        // Keep searching in memory if storage is blocked or full.
+      }
       setQuery(next);
       if (page !== 1) historyMode.current = "push";
       setPage(1);

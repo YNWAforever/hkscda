@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
+import { adminIdentityQueryOptions } from "../../../lib/admin/identity";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type { TaskCard } from "../../../lib/operations/taskOverview.server";
 import { LoadFailure } from "../LoadFailure";
@@ -37,11 +38,19 @@ export function TaskOverviewView({ cards }: { cards: TaskCard[] }) {
 }
 
 export function TaskOverview() {
+  const identity = useQuery(adminIdentityQueryOptions());
+  const admin = identity.data?.admin;
+  const enabled = !identity.isError && admin?.status === "active";
   const query = useQuery({
-    queryKey: ["admin-task-overview"],
-    queryFn: () => fetchAdminJson<{ cards: TaskCard[] }>("/api/admin/task-overview"),
+    queryKey: ["admin-task-overview", admin?.authUserId, admin?.role, admin?.status],
+    queryFn: ({ signal }) =>
+      fetchAdminJson<{ cards: TaskCard[] }>("/api/admin/task-overview", { signal }),
+    enabled,
     staleTime: 30_000,
+    gcTime: 0,
   });
+  if (identity.isPending) return <p role="status">正在核對職員身份…</p>;
+  if (!enabled) return <p role="alert">未能確認有效職員身份，請重新登入。</p>;
   if (query.isLoading) return <p role="status">正在載入待辦…</p>;
   if (query.isError) {
     return (

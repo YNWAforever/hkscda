@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type { CmsReviewBulkOperation } from "../../../routes/api/admin/content/review-bulk";
@@ -27,23 +27,53 @@ export function CmsReviewBulkPanel({
   const [evidence, setEvidence] = useState("");
   const [operation, setOperation] = useState<CmsReviewBulkOperation | null>(null);
   const [busy, setBusy] = useState(false);
+  const [recoveryId, setRecoveryId] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const mounted = useRef(false);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     const saved = sessionStorage.getItem(savedOperationKey);
     if (!saved || !/^[0-9a-f-]{36}$/i.test(saved)) return;
+    setRecoveryId(saved);
+    setBusy(true);
     let active = true;
     fetchAdminJson<CmsReviewBulkOperation>(endpoint + "?operationId=" + encodeURIComponent(saved))
       .then((result) => {
         if (active) setOperation(result);
       })
       .catch(() => {
-        if (active) sessionStorage.removeItem(savedOperationKey);
+        if (active) setError("未能讀取已保存的操作，請重新讀取結果。");
+      })
+      .finally(() => {
+        if (active) setBusy(false);
       });
     return () => {
       active = false;
     };
   }, []);
+
+  async function reloadOperation() {
+    if (!recoveryId || busy) return;
+    setBusy(true);
+    setError("");
+    try {
+      setOperation(
+        await fetchAdminJson<CmsReviewBulkOperation>(
+          endpoint + "?operationId=" + encodeURIComponent(recoveryId),
+        ),
+      );
+    } catch {
+      setError("未能讀取已保存的操作，請稍後重新讀取結果。");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function preview() {
     if (
@@ -67,7 +97,9 @@ export function CmsReviewBulkPanel({
         method: "POST",
         body: JSON.stringify({ action: "preview", ids: selectedIds, evidence, filterHash }),
       });
+      if (!mounted.current) return;
       sessionStorage.setItem(savedOperationKey, result.operationId);
+      setRecoveryId(result.operationId);
       setOperation(result);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "無法建立送審預覽");
@@ -113,6 +145,7 @@ export function CmsReviewBulkPanel({
       <label className="block text-sm">
         送審來源及理由
         <textarea
+          disabled={busy}
           maxLength={2000}
           value={evidence}
           onChange={(event) => setEvidence(event.target.value)}
@@ -139,6 +172,16 @@ export function CmsReviewBulkPanel({
         <p role="alert" className="text-sm text-[var(--color-error)]">
           {error}
         </p>
+      )}
+      {recoveryId && (
+        <button
+          type="button"
+          className="btn-secondary min-h-11"
+          disabled={busy}
+          onClick={reloadOperation}
+        >
+          重新讀取結果
+        </button>
       )}
       {operation && (
         <>

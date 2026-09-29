@@ -5,14 +5,17 @@ const url = "https://example.invalid/api/supporter/recovery";
 
 test("recovery route is no-store and returns the same generic result", async () => {
   const emails: string[] = [];
-  const handle = createRecoveryRouteHandler(() => ({
-    ip: "203.0.113.4",
-    rate: async () => ({ ok: true }),
-    challenge: async () => true,
-    sendOtp: async (email) => {
-      emails.push(email);
-    },
-  }));
+  const handle = createRecoveryRouteHandler(
+    () => ({
+      ip: "203.0.113.4",
+      rate: async () => ({ ok: true }),
+      challenge: async () => true,
+      sendOtp: async (email) => {
+        emails.push(email);
+      },
+    }),
+    { enabled: () => true },
+  );
   for (const email of ["known@example.invalid", "unknown@example.invalid"]) {
     const response = await handle({
       request: new Request(url, {
@@ -29,14 +32,17 @@ test("recovery route is no-store and returns the same generic result", async () 
 });
 
 test("recovery route fails closed when the limiter is unavailable", async () => {
-  const handle = createRecoveryRouteHandler(() => ({
-    ip: "203.0.113.4",
-    rate: async () => ({ ok: false, unavailable: true }),
-    challenge: async () => true,
-    sendOtp: async () => {
-      throw new Error("should not send");
-    },
-  }));
+  const handle = createRecoveryRouteHandler(
+    () => ({
+      ip: "203.0.113.4",
+      rate: async () => ({ ok: false, unavailable: true }),
+      challenge: async () => true,
+      sendOtp: async () => {
+        throw new Error("should not send");
+      },
+    }),
+    { enabled: () => true },
+  );
   const response = await handle({
     request: new Request(url, {
       method: "POST",
