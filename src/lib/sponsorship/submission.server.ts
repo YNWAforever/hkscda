@@ -3,12 +3,14 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { hashStatusToken, statusTokenExpiry } from "../publicAdoption/statusToken.server";
 import { renderPledgeConfirmationEmail } from "./emailTemplates.server";
+import { loadSponsorshipPaymentInstructions } from "../paymentPublicConfig/instructions.server";
 import {
   type SponsorshipPaymentProofMetadata,
   type SponsorshipPledgeStatus,
   type SponsorshipPledgeSubmission,
   type SponsorshipProofDescriptor,
   sponsorshipPledgeSubmissionSchema,
+  sponsorshipPledgeRetrySchema,
   toPaymentProofInsert,
   toPledgeInsert,
   toPreferenceInserts,
@@ -160,6 +162,7 @@ export type SponsorshipSubmissionRequestBody = {
 
 export function parseSponsorshipSubmission(
   body: unknown,
+  schema = sponsorshipPledgeSubmissionSchema,
 ): ParsedSponsorshipMultipart & { pledgeId: string; statusToken: string } {
   if (typeof body !== "object" || body === null) {
     throw new SubmissionValidationError("Invalid sponsorship pledge request body");
@@ -179,7 +182,7 @@ export function parseSponsorshipSubmission(
     throw new SubmissionValidationError("Invalid sponsorship status token");
   }
 
-  const parsed = sponsorshipPledgeSubmissionSchema.parse(raw.payload);
+  const parsed = schema.parse(raw.payload);
   const turnstileToken = typeof raw.turnstileToken === "string" ? raw.turnstileToken : undefined;
 
   const rawProof = raw.proof;
@@ -223,6 +226,10 @@ export function parseSponsorshipSubmission(
     pledgeId: raw.pledgeId,
     statusToken: raw.statusToken,
   };
+}
+
+export function parseSponsorshipRetry(body: unknown) {
+  return parseSponsorshipSubmission(body, sponsorshipPledgeRetrySchema);
 }
 
 type PersistSponsorshipPledgeInput = {
@@ -359,6 +366,7 @@ type SendPledgeConfirmationEmailDeps = {
   getEmailConfig?: () => EmailConfig;
   createEmailSender?: (apiKey: string) => Promise<EmailSender> | EmailSender;
   logger?: Pick<Console, "error">;
+  loadPaymentInstructions?: typeof loadSponsorshipPaymentInstructions;
 };
 
 export type SponsorshipConfirmationEmailResult = "sent" | "failed";
@@ -376,9 +384,21 @@ export async function sendPledgeConfirmationEmail(
     getEmailConfig: loadEmailConfig = getEmailConfig,
     createEmailSender = defaultCreateEmailSender,
     logger = console,
+    loadPaymentInstructions = loadSponsorshipPaymentInstructions,
   }: SendPledgeConfirmationEmailDeps = {},
 ): Promise<SponsorshipConfirmationEmailResult> {
   const config = loadEmailConfig();
+  let paymentInstructions: Awaited<ReturnType<typeof loadSponsorshipPaymentInstructions>> = [];
+  if (result.status === "pending_payment") {
+    try {
+      paymentInstructions = await loadPaymentInstructions(client, result.pledgeId);
+    } catch (error) {
+      logger.error(
+        "Sponsorship payment instructions unavailable",
+        (error as { code?: string })?.code ?? "unknown",
+      );
+    }
+  }
   const email = renderPledgeConfirmationEmail({
     language: payload.language,
     supporterName: payload.contact.supporterName,
@@ -386,6 +406,7 @@ export async function sendPledgeConfirmationEmail(
     amountCents: result.amountCents,
     status: result.status === "provisional" ? "provisional" : "pending_payment",
     statusUrl: result.statusUrl,
+    paymentInstructions,
   });
 
   const messagePayload = {

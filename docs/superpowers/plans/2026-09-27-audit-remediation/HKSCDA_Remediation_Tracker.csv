@@ -1,13 +1,13 @@
-﻿issue_id,baseline_status,tasks,implementation_status,code_complete,schema_ready,deployed,operationally_enabled,current_sha,pr_commit,test_evidence,owner_blocker
+issue_id,baseline_status,tasks,implementation_status,code_complete,schema_ready,deployed,operationally_enabled,current_sha,pr_commit,test_evidence,owner_blocker
 PAY-01,待修未啟用體驗；正式開通待營運批准,T03、T24,open,,,,,,,,
 PAY-02,待修 server payment gate,T03,open,,,,,,,,
 PAY-03,待統一付款資料來源,T04,open,,,,,,,,
 PAY-04,待區分 unavailable／not_configured,T02、T04,open,,,,,,,,
 PAY-05,待分拆付款與後續處理狀態,T05,open,,,,,,,,
-CONTENT-01,未能關閉；需再核對正式內容,T18,open,,,,,,,,
-CONTENT-02,待補相片工作流及助養卡資訊,T18、T21,open,,,,,,,,
-VOL-01,待提供覆蓋率／批准场次與空狀態,T16,code-complete; live schedule approval pending,yes,not-required,no,no,6ac152e720b0b087919954ab83d1e3e94338a14f,PR #151 / 6ac152e720b0b087919954ab83d1e3e94338a14f,docs/evidence/audit-remediation-20260927/t16-volunteer-coverage.md; isolated 2799 pass 83 skip; policy DB 6 pass; synthetic 390/768/1366/200% UI,approved live policy/session publication; real volunteer/staff UAT; release approval
-VOL-02,待修共用容器,T16,code-complete; isolated UI validation passed,yes,not-required,no,no,6ac152e720b0b087919954ab83d1e3e94338a14f,PR #151 / 6ac152e720b0b087919954ab83d1e3e94338a14f,docs/evidence/audit-remediation-20260927/t16-volunteer-coverage.md; synthetic 390/768/1366/200% screenshots; no overflow,real device UAT; release approval
+CONTENT-01,未能關閉；需再核對正式內容,T18,code-complete; sequential schema rehearsal pending,yes,pending current rehearsal,no,no,0284de00cc17e6fe9df4f4e7404423384b88025e,PR #153 repaired; sequential verification,2883 pass 151 skip; typecheck lint build 0; actual before/after UI; see sequential-merge-153-20260930.md,Isolated current-schema rehearsal and CI; approved content/profiles; production migration scope verification
+CONTENT-02,待補相片工作流及助養卡資訊,T18、T21,partial; T18 code-complete; T21 pending,partial,pending current rehearsal,no,no,0284de00cc17e6fe9df4f4e7404423384b88025e,PR #153 repaired; sequential verification,2883 pass 151 skip; typecheck lint build 0; actual before/after UI; see sequential-merge-153-20260930.md,Isolated current-schema rehearsal and CI; approved content/profiles; production migration scope verification
+"VOL-01","義工覆蓋率及空狀態","T16","code-complete; current CI pending","yes","not-required; catalog present","no","no","e3f8e1782ccd263c4e940c85f2c2d0e38fe1dbc8","PR #151 repaired","2856 pass 150 skip; typecheck lint build exit 0; coverage 17 pass; synthetic mobile desktop keyboard zoom pass; see sequential-merge-151-20260930.md","Remote DB/RLS gate; approved session publication and real role UAT not-run"
+"VOL-02","義工共用容器","T16","code-complete; current CI pending","yes","not-required; catalog present","no","no","e3f8e1782ccd263c4e940c85f2c2d0e38fe1dbc8","PR #151 repaired","2856 pass 150 skip; typecheck lint build exit 0; coverage 17 pass; synthetic mobile desktop keyboard zoom pass; see sequential-merge-151-20260930.md","Remote DB/RLS gate; approved session publication and real role UAT not-run"
 SPON-01,待修付款選項反向,T08,open,,,,,,,,
 SPON-02,待提供可閱讀版本化條款,T08,open,,,,,,,,
 SPON-03,待明確總額／偏好／月付性質,T08,open,,,,,,,,
@@ -15,10 +15,10 @@ SPON-04,部分改善；補草稿及錯誤處理,T08、T09,partial,,,,,,,,
 ADOPT-01,待修本機草稿保存界線,T09,open,,,,,,,,
 ADOPT-02,待完善準備、恢復與七步流程,T09、T24,open,,,,,,,,
 CRM-01,產品缺口；先安全找回，再中心,T22,open,,,,,,,,
-ADMIN-01,待修匯出狀態與錯誤,T14,open,,,,,,,,
-ADMIN-02,待修 supporter dialog 同步／衝突,T15,open,,,,,,,,
-ADMIN-03,待統一列表搜尋,T15,code-complete; isolated validation passed,yes,not-required,no,no,d7356d94af95bd48baff86dcea2b4e3d9331f6bc,PR #150 / d7356d94af95bd48baff86dcea2b4e3d9331f6bc,docs/evidence/audit-remediation-20260927/t15-admin-03-list-query.md; isolated bun 2787 pass 83 skip; Playwright 390px pass,real staff-role UAT; request URL logging review; release approval
-ADMIN-04,待改善現有安全 bulk UI,T17、T23,partial: T17 volunteer bulk code-complete; T23 cross-module work pending,partial,not-required-for-T17,no,no,1bdb04ac26b5152c6b065a79b23755e6c55feefe,PR #152 / 1bdb04ac26b5152c6b065a79b23755e6c55feefe,docs/evidence/audit-remediation-20260927/t17-volunteer-bulk.md; isolated 2805 pass 83 skip; bulk DB 9 pass; synthetic UI,T23 cross-module bulk; real staff-role UAT; notification approval; release approval
+"ADMIN-01","待修匯出狀態與錯誤","T14","code-complete; production schema ready; worker gated","yes","yes (production 20260929160535)","yes","no","10db7f36315f780eed743b3182a60f1c3ae9c177","PR #147 / #148 merged","Both PR/main five gates passed; deployment READY; clone 145 assertions plus actual service_role lifecycle","CRON_SECRET absent; new jobs disabled; real identity UAT not-run"
+"ADMIN-02","待修 supporter dialog 同步／衝突","T15","code-complete; production schema ready","yes","yes (production 20260929162248)","merged; deployment verifying","no","020e03eeb1b7a54cce908babc5ec3bd271d370a5","PR #149 merged","PR five CI gates pass; 15 profile hashes unchanged; actual service_role DB 3 pass 13 assertions; see sequential-merge-150-20260930.md","Main CI/deployment verifying; real staff UAT not-run; legacy creation RPC remains R01"
+"ADMIN-03","列表搜尋","T15","code-complete; deployed; staff UAT pending","yes","n/a","yes","no","be4fcb642750e5a45839ce90ead6af1747a821f2","PR #150 merged","PR five jobs including isolated DB pass; typecheck lint build 0; mobile export/query regressions pass","Main CI verifying; real staff UAT not-run"
+ADMIN-04,跨模組批量工作台,T17、T23,partial; volunteer slice code-complete,partial,existing volunteer catalog present,partial (#152),no,2b718dc8adcc123707885d1827071448ae4cdc6e,PR #152 merged; later bulk modules pending,PR CI 36600411611 five jobs green; bulk DB 3 pass 272 assertions; Vercel READY; main CI pending,Later module PRs; real roles and 1000-selection not-run
 PERF-01,待 DB 篩選與分頁,T21,open,,,,,,,,
 OPS-01,再審核版本已關閉；保留 release gate,T00、T24,verified-fixed-at-reaudit,,,,,,,,
 SEC-01,條件風險；未證實正式 secret 缺失,T02、T07,open,,,,,,,,
@@ -29,7 +29,7 @@ R04,待 CMS history 分頁及直接查版本,T11,open,,,,,,,,
 R05,待修屋苑 stale state／重用 ID,T12,open,,,,,,,,
 R06,待原子排序,T13,open,,,,,,,,
 R07,待修 null Turnstile token,T07,open,,,,,,,,
-R08,待媒體 retry／queue 公平性,T19,open,,,,,,,,
+R08,待媒體 retry／queue 公平性,T19,code-complete; exact clone schema-ready; production approval pending,yes,yes (isolated exact clone),no,no,f1b28fb,PR #154 repaired; four-file schema bundle,2942 pass 94 skip; typecheck lint build 0; DB 2 pass 450 assertions; 500-row dry-run; before/after UI; sequential-merge-154-20260930.md,Four exact production migrations; hosted duration and Storage acceptance; real-role UAT; scheduler activation
 R09,待量測同區 server execution,T20,open,,,,,,,,
 R10,待收條香港日期,T06,open,,,,,,,,
 R11,待字型載入與收條大小優化,T06,open,,,,,,,,
