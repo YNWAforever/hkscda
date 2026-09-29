@@ -58,6 +58,7 @@ test("release manifest covers every new public table, RPC, and additive column a
     "get_sponsorship_followup_bulk_operation",
     "create_sponsorship_followup_bulk_preview",
     "apply_sponsorship_followup_bulk_item",
+    "list_sponsorship_followup_assignees",
   ]) {
     expect(functions).toContain(name);
   }
