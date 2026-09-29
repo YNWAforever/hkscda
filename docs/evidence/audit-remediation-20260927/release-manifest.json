@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "appSha": "f330d1f2c8d8286e0db66bad102b4035008dc53f",
+  "appSha": "c685b23b8ff18af8a73af858f51f48e7bb1f6f91",
   "appShaNote": "Reviewed PR162 code; PR163 is a documentation-only descendant. Later PR164-179 candidates are not included in this source freeze.",
   "productionAliasShaObserved": "24196faf027998388eff3196a6979e23566e2443",
   "schemaManifestHash": "4023e54be04e6c90a5984cbff4a8d89170da167e5b2e8ef7f914bce0adfb432e",
@@ -271,8 +271,8 @@
   ],
   "ciRun": {
     "id": null,
-    "sha": "ae80846bbde75f2bc0e995630c25436894b27d4a",
-    "status": "current-head PR162 remote CI pending at capture"
+    "sha": "c685b23b8ff18af8a73af858f51f48e7bb1f6f91",
+    "status": "PR162 selection backport local gates pass; fresh remote CI pending"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",

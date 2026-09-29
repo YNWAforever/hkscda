@@ -2,7 +2,7 @@
 
 ## Current sequential verification — 2026-09-30
 
-Current candidate source f330d1f2c8d8286e0db66bad102b4035008dc53f; production #155 at24196faf, READY. Current local source:3006pass121skip/9383assert/exit0; separate typecheck/lint/build0. PR162 six clone DBtests39assertions; 1000 animal outcomes796success202skip2conflict with unchanged animal fields. PR161 six clone DBtests38assertions and 1000 pre-version-row backfill; PR160 four/30; PR159 four/35. Actual service-role/denied-role, atomic audit, concurrency and three-width synthetic UI results are linked in their sequential-merge reports. These do not replace hosted actual-role/private-file UAT.
+Current candidate source c685b23b8ff18af8a73af858f51f48e7bb1f6f91; production #155 at24196faf, READY. Current local source:3006pass121skip/9383assert/exit0; separate typecheck/lint/build0. PR162 six clone DBtests39assertions; 1000 animal outcomes796success202skip2conflict with unchanged animal fields. PR161 six clone DBtests38assertions and 1000 pre-version-row backfill; PR160 four/30; PR159 four/35. Actual service-role/denied-role, atomic audit, concurrency and three-width synthetic UI results are linked in their sequential-merge reports. These do not replace hosted actual-role/private-file UAT.
 
 Actual local Supabase Auth v2.197.0 and Mailpit were tested for #156. Concurrent reuse of one OTP produced two sessions (expected one), exit1; this is the current release blocker. Sequential reuse, wrong identity, expiry and suspension checks passed. Recovery stays disabled. Payment provider sandbox, real refunds, hosted notification sending and complete hosted journeys are not-run.
 
@@ -44,3 +44,5 @@ Mobile homepage score regressed 4 points in that early comparison; investigate o
 - T23 final local animal source: `npm.cmd run typecheck` exit 0; `npm.cmd run lint` exit 0 (52 warnings); `npm.cmd run build` exit 0; `SUPABASE_LOCAL_URL=http://127.0.0.1:57321 bun test --isolate` exit 0, 2870 pass/100 skip/0 fail/8914 assertions across 513 files before final test-only role assertion.
 - Dedicated loopback DB after final role assertion: `ANIMAL_REVIEW_BULK_TEST_DATABASE_URL=postgresql://postgres:***@127.0.0.1:57322/postgres ANIMAL_REVIEW_BULK_TEST_ALLOW_LOCAL_FIXTURES=1 bun test --isolate src/lib/contentReview/animalBulk.database.test.ts` exit 0, 3 pass/18 assertions. Fixture rolls back. `CHECK_RELEASE_SCHEMA_DATABASE_URL` checker exit 0, 109 compatible, zero issues.
 - Same-source remote CI #162 run `36345471697`: verify, RLS, a11y and performance passed; brand pending at capture. Real provider, real email sink and hosted role/browser UAT: **not-run**.
+
+PR162 selection-generation backport61e8952f verified:3006pass121skip/9383assertions/45.61s;typecheck/lint/build0;actual queue delayed-kind-cycle regression red25 to green0;SQL unchanged. Current source/CI metadata supersede earlier capture; remote gates pending.
