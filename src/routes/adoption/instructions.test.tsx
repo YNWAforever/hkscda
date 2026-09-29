@@ -289,3 +289,16 @@ test("a transport failure keeps a retry shell without inventing a private server
   });
   expect(await loader()).toEqual({ status: "error", referenceId: null });
 });
+
+test("the unavailable adoption page retains one main landmark", async () => {
+  const { Route } = await import("./instructions");
+  const fixture = Route as unknown as {
+    component: () => import("react").ReactElement;
+    useLoaderData: () => unknown;
+  };
+  fixture.useLoaderData = () => ({ status: "error", referenceId: "synthetic-server-reference" });
+  const Page = fixture.component;
+  const html = renderToStaticMarkup(<Page />);
+  expect(html.match(/<main(?: |>)/g)).toHaveLength(1);
+  expect(html).toContain("synthetic-server-reference");
+});
