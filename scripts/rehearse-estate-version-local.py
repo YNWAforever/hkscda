@@ -5,7 +5,7 @@ import sys
 
 CONTAINER = "supabase_db_hkscda-audit-remediation-20260927"
 ROOT = Path(__file__).resolve().parents[1]
-migration = (ROOT / "supabase/migrations/20260927120000_estate_versioned_commands.sql").read_text(encoding="utf-8")
+migration = (ROOT / "supabase/migrations/20260927120500_estate_versioned_commands.sql").read_text(encoding="utf-8")
 tests = (ROOT / "scripts/test-estate-versioned-commands.sql").read_text(encoding="utf-8")
 seed = """
 insert into public.dog_friendly_estates

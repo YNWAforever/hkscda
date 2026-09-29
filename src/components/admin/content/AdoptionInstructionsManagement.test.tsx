@@ -74,6 +74,20 @@ describe("adoption page editor", () => {
     expect(html).toContain("hero.title");
     expect(html).toMatch(/<button[^>]*disabled=""[^>]*>發布頁面<\/button>/);
   });
+  test("shows paged summaries and loads full content only when selected", () => {
+    const html = renderToStaticMarkup(
+      <AdoptionInstructionsManagementView
+        data={{ ...page, historyNextCursor: "1:" + published.id }}
+        role="staff"
+        onLoadHistory={async () => ({ items: [], nextCursor: null })}
+        onLoadRevision={async () => published}
+      />,
+    );
+    expect(html).toContain("查看更多版本");
+    expect(html).toContain("查看內容");
+    expect(html).not.toContain("修訂 1 內容");
+  });
+
   test("builds exact mutation bodies without leaking actor fields", () => {
     expect(
       buildAdoptionInstructionMutation({ action: "save", expectedVersion: 4, content }),

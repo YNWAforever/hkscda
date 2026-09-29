@@ -16,6 +16,7 @@ describe("donation domain", () => {
     const parsed = donationRequestSchema.parse({
       idempotencyKey: "e15e9832-469b-4710-b2ea-244d8a39aa12",
       amountCents: 30000,
+      expectedConfigVersion: 1,
       currency: "HKD",
       purpose: "medical",
       method: "stripe",
@@ -42,6 +43,7 @@ describe("donation domain", () => {
     const input = {
       idempotencyKey: "e15e9832-469b-4710-b2ea-244d8a39aa12",
       amountCents: 30000,
+      expectedConfigVersion: 1,
       currency: "HKD" as const,
       purpose: "medical" as const,
       method: "alipayhk",
@@ -81,6 +83,7 @@ describe("donation domain", () => {
     const validRequest = {
       idempotencyKey: "e15e9832-469b-4710-b2ea-244d8a39aa12",
       amountCents: 30000,
+      expectedConfigVersion: 1,
       currency: "HKD",
       purpose: "medical",
       method: "stripe",
@@ -135,6 +138,7 @@ describe("donation domain", () => {
     const input = {
       idempotencyKey: "e15e9832-469b-4710-b2ea-244d8a39aa12",
       amountCents: 30000,
+      expectedConfigVersion: 1,
       currency: "HKD",
       purpose: "medical",
       method: "stripe",
