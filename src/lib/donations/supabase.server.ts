@@ -2,6 +2,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createSupabaseServiceClient } from "../supabase.server";
 import { createPublicIdentityRepository } from "../supporters/publicIdentity.server";
+import { CheckoutPolicyError } from "./checkoutPolicy";
+import { DonationIdempotencyConflictError } from "./service";
 import { publicDonationStatuses, type PublicDonationStatus } from "./publicStatus";
 import type { PublicDonationStatusRepository } from "./publicStatus.server";
 import type { DonationRepository } from "./service";
@@ -13,6 +15,24 @@ export { getAdminUserFromRequest, requireAdmin } from "../admin/session.server";
 export function createSupabaseDonationRepository(client: SupabaseClient): DonationRepository {
   const publicIdentity = createPublicIdentityRepository(client);
   return {
+    async admitNewCheckout(input) {
+      const { error } = await client.rpc("admit_new_checkout", {
+        p_idempotency_key: input.idempotencyKey,
+        p_request_fingerprint: input.fingerprint,
+        p_method: input.method,
+        p_purpose: input.purpose,
+        p_expected_config_version: input.expectedConfigVersion,
+      });
+      if (!error) return;
+      if (error.code === "P5101") throw new CheckoutPolicyError("disabled");
+      if (error.code === "P5102") throw new CheckoutPolicyError("method_unavailable");
+      if (error.code === "P5103") throw new CheckoutPolicyError("stale_config");
+      if (error.code === "P5104") throw new DonationIdempotencyConflictError();
+      if (["PGRST202", "PGRST205", "42883", "42P01"].includes(error.code)) {
+        throw new CheckoutPolicyError("unavailable");
+      }
+      throw error;
+    },
     resolvePublicIdentity(contact) {
       return publicIdentity.resolve(contact);
     },

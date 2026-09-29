@@ -9,6 +9,8 @@ import {
   type OnlinePaymentProvider,
   type PaymentProvider,
 } from "./domain";
+import { checkoutPurpose } from "./checkoutPolicy";
+import type { CheckoutPurpose } from "./checkoutPolicy";
 import type { IdentityResolution, PublicContact } from "../supporters/publicIdentity.server";
 
 type DonationRow = {
@@ -37,6 +39,13 @@ type PaymentRow = Omit<PaymentInsert, "status"> & {
 };
 
 export type DonationRepository = {
+  admitNewCheckout(input: {
+    idempotencyKey: string;
+    fingerprint: string;
+    method: DonationMethod;
+    purpose: CheckoutPurpose;
+    expectedConfigVersion: number;
+  }): Promise<void>;
   resolvePublicIdentity(contact: PublicContact): Promise<IdentityResolution>;
   ensureSupporterRole(input: { supporterId: string; role: "donor" }): Promise<void>;
   replaceConsents(rows: ReturnType<typeof buildConsentRows>): Promise<void>;
@@ -176,6 +185,14 @@ export async function createDonation({
   const donationInput = donationRequestSchema.parse(input);
   const requestKey = donationInput.idempotencyKey;
   const fingerprint = fingerprintRequest(donationInput);
+
+  await repository.admitNewCheckout({
+    idempotencyKey: requestKey,
+    fingerprint,
+    method: donationInput.method,
+    purpose: checkoutPurpose(donationInput.purpose),
+    expectedConfigVersion: donationInput.expectedConfigVersion,
+  });
 
   let donation = await repository.findDonationByIdempotencyKey(requestKey);
   if (!donation) {

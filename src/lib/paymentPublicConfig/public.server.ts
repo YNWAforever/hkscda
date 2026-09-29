@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
 import { paymentPublicConfigMethodSchema } from "./schemas";
-import type { PublicPaymentMethod } from "./types";
+import type { PaymentAvailability, PublicPaymentMethod } from "./types";
 
 const publicPaymentMethodRowSchema = z.object({
   method: paymentPublicConfigMethodSchema,
@@ -13,7 +13,7 @@ const publicPaymentMethodRowSchema = z.object({
 
 export async function loadPublicPaymentMethods(
   client: SupabaseClient,
-): Promise<PublicPaymentMethod[]> {
+): Promise<PaymentAvailability> {
   const { data, error } = await client
     .from("payment_public_config")
     .select("method,display_label_zh,display_label_en,details")
@@ -22,14 +22,14 @@ export async function loadPublicPaymentMethods(
     .order("sort_order", { ascending: true });
 
   if (error) {
-    console.error("Failed to load public payment methods", error);
-    return [];
+    console.error("Failed to load public payment methods", error.code ?? "unknown");
+    return { state: "unavailable", methods: [] };
   }
 
   const rows: PublicPaymentMethod[] = [];
   for (const raw of data ?? []) {
     const parsed = publicPaymentMethodRowSchema.safeParse(raw);
-    if (!parsed.success) continue;
+    if (!parsed.success) return { state: "unavailable", methods: [] };
     rows.push({
       method: parsed.data.method,
       displayLabelZh: parsed.data.display_label_zh,
@@ -37,5 +37,5 @@ export async function loadPublicPaymentMethods(
       details: parsed.data.details,
     });
   }
-  return rows;
+  return rows.length ? { state: "ready", methods: rows } : { state: "not_configured", methods: [] };
 }

@@ -48,6 +48,7 @@ for (const [name, path, functionName] of cases) {
       submitAdoptionApplication: fail,
       fetch: fail,
       isDonationMethodAvailable: () => true,
+      availableMethods: [{ method: "stripe", configVersion: 1 }],
       checkoutExperienceFromViewport: () => "desktop",
       createDonationRequest: (value: unknown) => value,
       buildVolunteerRegistrationPayload: (value: unknown) => value,
