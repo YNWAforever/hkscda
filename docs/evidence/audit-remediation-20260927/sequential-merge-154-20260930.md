@@ -57,3 +57,15 @@ Staff: read safe queue/error code; correct the underlying storage/config/content
 ## Approved scope checkpoint
 
 User explicitly approved the four listed production migrations after #153 completes, with no historical photo backfill, new cron activation, email or payment. Removed the new `/api/jobs/public-media-repair` entry from `vercel.json` before release, so merging this PR will not install the new schedule. The protected handler remains available for later separately approved activation. Existing donation/volunteer/sponsorship/public-uploads/CRM schedules are retained. SQL checksums are unchanged. #153 exact production migration approval is still pending.
+
+## Predecessor checkpoint — 2026-09-30 HKT
+
+#153 exact two-file approval received and both migrations applied successfully; ledger 90. #153 merged as 4304127a and production READY. Main CI 36620897215 is running. #154 retargeted to main with only its own media repair changes remaining. The four approved #154 migrations have not yet been applied; wait for predecessor main gates.
+
+## Production release checkpoint — 2026-09-30 04:00 HKT
+
+Predecessor #153 main CI 36620897215 completed all five gates successfully. #154 head `6a97d3ca8d7ae4499ec08a5e8281f2a31b751914` passed all five in CI 36621262620. Rechecked exact four canonical hashes and authorized DPAPI backup checksum before applying the approved files with lock_timeout 5s / statement_timeout 30s. All four apply calls succeeded in order; actual provider versions: `20260929195749` animal_publication_media_copy; `20260929195809` animal_publication_publish_receipt; `20260929195832` content_publication_media_after_commit; `20260929195857` media_repair_retry_schedule. Ledger 90 -> 94; no fabricated entries.
+
+Postflight after every file passed. Final: three affected tables RLS true; both due indexes present; four retry constraints valid; ten inspected RPCs (including legacy acknowledgements) retain service EXECUTE, deny anon/authenticated, and pin search_path. Animal intents, publish receipts and content assets remain zero. Checkout remains false. No historical photo copy, notification or payment occurred. The new media-repair cron is absent from vercel.json; existing schedules retained.
+
+Merged 2026-09-29T19:59:49Z as `68352546b61c1a61b79fad4638640b2dddd30ac9`. Production alias READY on `dpl_ENhKwz8BYSjxEfEFMwmDbuUCPFJ9`, matching SHA. Main CI is pending at this checkpoint. Application deployed; schema ready; operational media repair activation remains gated by Storage acceptance, effective hosted duration and explicit schedule approval. Rollback boundaries above remain unchanged.
