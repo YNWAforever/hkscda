@@ -41,6 +41,24 @@ export type ReminderDraftResult =
       body: string;
     };
 
+/** Remount an ephemeral preview whenever any fact used to generate it changes. */
+export function sponsorshipReminderFactsKey(pledge: ReminderPledge): string {
+  return JSON.stringify([
+    pledge.id,
+    pledge.supporterName,
+    pledge.supporterEmail,
+    pledge.language,
+    pledge.status,
+    pledge.proofHistory.map((proof) => proof.reviewStatus),
+    pledge.periods.map((period) => [
+      period.id,
+      period.periodMonth,
+      period.outstandingCents,
+      period.allocations.map((allocation) => allocation.amountCents),
+    ]),
+  ]);
+}
+
 const emailSchema = z.string().trim().email();
 
 function isMonthStart(value: string) {
