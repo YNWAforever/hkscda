@@ -36,12 +36,15 @@ async function version() {
 }
 
 async function update(expected: number, name: string, who = actor, at: string | null = timestamp) {
-  const [row] = await db()`select public.mutate_crm_supporter_if_version_with_audit(
-    ${supporter}::uuid,${expected}::bigint,${{ name }}::jsonb,
-    ${["donor", "volunteer"]}::jsonb,${who}::uuid,${at}::timestamptz,
-    ${{ source: "t15-synthetic" }}::jsonb
-  ) result`;
-  return row.result as { id: string; editVersion: number };
+  return db().begin(async (tx) => {
+    await tx`set local role service_role`;
+    const [row] = await tx`select public.mutate_crm_supporter_if_version_with_audit(
+      ${supporter}::uuid,${expected}::bigint,${{ name }}::jsonb,
+      ${["donor", "volunteer"]}::jsonb,${who}::uuid,${at}::timestamptz,
+      ${{ source: "t15-synthetic" }}::jsonb
+    ) result`;
+    return row.result as { id: string; editVersion: number };
+  });
 }
 
 describe.skipIf(!sql)("T15 versioned supporter edits on isolated Postgres", () => {
