@@ -78,5 +78,7 @@ Draft #149 addresses ADMIN-02 in an isolated branch: fresh supporter read on ope
 
 - Release validation initially found23 stale plan-tracker rows. Synchronized current status/evidence from the live evidence tracker by issue ID, retaining original baseline labels. Repeat validates34 matching current-state rows,51 checksums and46PRs/22successful mainCI runs; exit0.
 
+- PR163 independent review identified stale R01 missing-object counts. Both trackers now label them as2026-09-27baseline, record later partial production dependencies/ledger95, and retain the fresh complete catalog gate; schema-ready remains no.
+
 - T23 CMS draft review batch: missing-RPC red/green; dedicated DB 3 pass/18 assertions; focused UI/API/selection 6 pass/26; catalog 114 compatible. Full isolated suite 2875 pass/103 skip/0 fail across 516 files; build/typecheck/lint exit 0 after test UUID fixture correction. Draft PR and remote CI pending. #162 and #163 five CI jobs each passed. CMS public publication and remaining T23 domains stay open.
 - T23 CMS draft review PR #164 source 0c92e7f opened; remote run 36347166456 pending at package refresh. T24 manifest refreshed to 44 verified migration checksums and 114 compatible local catalog requirements; release NO-GO remains.
