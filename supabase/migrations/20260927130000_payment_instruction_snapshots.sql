@@ -12,7 +12,8 @@ create or replace function public.admit_new_checkout(
 )
 returns jsonb
 language plpgsql
-security invoker
+-- Admission locks policy rows while direct service policy writes stay revoked.
+security definer
 set search_path = public, pg_temp
 as $$
 declare

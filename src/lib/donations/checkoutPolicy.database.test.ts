@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { SQL } from "bun";
 
 const url = process.env.CHECKOUT_POLICY_TEST_DATABASE_URL;
-if (url && !/^postgresql:\/\/postgres:postgres@127\.0\.0\.1:57322\/postgres$/.test(url)) {
+if (url && !/^postgresql:\/\/postgres:postgres@127\.0\.0\.1:(?:55322|57322)\/postgres$/.test(url)) {
   throw new Error("Checkout policy DB tests require the dedicated loopback rehearsal database");
 }
 
@@ -35,7 +35,11 @@ describe.skipIf(!url)("checkout admission isolated database", () => {
         values (${actorId},${actorAuthId},${`checkout-${actorId}@example.test`},'treasurer','active')`;
       await db`update public.checkout_policy set enabled = false where singleton = true`;
       const admit = (intentKey: string, fp = fingerprint, version = configVersion!) =>
-        db`select public.admit_new_checkout(${intentKey}::uuid,${fp},'stripe','donation',${version}) as admission`;
+        db.begin(async (tx) => {
+          // Exercise the role used by PostgREST, not the fixture owner.
+          await tx`set local role service_role`;
+          return tx`select public.admit_new_checkout(${intentKey}::uuid,${fp},'stripe','donation',${version}) as admission`;
+        });
 
       await expectSqlState(admit(key), "P5101");
       const [zero] =
