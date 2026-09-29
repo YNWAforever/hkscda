@@ -27,6 +27,7 @@ export function StoryContentGrid({ items }: StoryContentGridProps) {
   const endedItems = contentItems.filter(
     (item) =>
       (item.type === "event" || item.type === "charity_market") &&
+      isPubliclyEligibleContent(item, now, "listing") &&
       !isPubliclyEligibleContent(item, now, "promotion"),
   );
 

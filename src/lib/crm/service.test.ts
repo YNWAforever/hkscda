@@ -118,7 +118,7 @@ describe("createCrmService", () => {
     await service.updateSupporter({
       actorUserId: null,
       supporterId: "8bda8e40-cf39-4659-8be8-f2d74f9d2046",
-      input: { name: "Ada Wong", roles: ["volunteer"] },
+      input: { name: "Ada Wong", expectedVersion: 4, roles: ["volunteer"] },
     });
     expect(repo.calls.map((call) => call.name)).toEqual(["mutateSupporterWithAudit"]);
     expect(repo.calls[0]?.payload).toMatchObject({ operation: "update", roles: ["volunteer"] });
@@ -133,6 +133,29 @@ describe("createCrmService", () => {
     });
     expect(repo.calls.map((call) => call.name)).toEqual(["appendConsentsWithAudit"]);
   });
+  test("passes the loaded supporter version to the atomic profile edit", async () => {
+    const repo = createFakeRepository();
+    let sent: unknown;
+    repo.mutateSupporterWithAudit = async (command) => {
+      sent = command;
+    };
+    const service = createCrmService({ repo });
+    await service.updateSupporter({
+      actorUserId: "11111111-2222-4333-8444-555555555555",
+      supporterId: "8bda8e40-cf39-4659-8be8-f2d74f9d2046",
+      input: {
+        name: "Ada New",
+        expectedVersion: 4,
+        roles: ["donor"],
+      },
+    });
+    expect(sent).toMatchObject({
+      operation: "update",
+      expectedVersion: 4,
+      roles: ["donor"],
+    });
+  });
+
   test("normalizes email when creating a supporter, stores selected roles, and audits", async () => {
     const repo = createFakeRepository();
     const service = createCrmService({
@@ -177,47 +200,17 @@ describe("createCrmService", () => {
     });
   });
 
-  test("updates supporter profile fields and roles together", async () => {
+  test("refuses an edit when the repository cannot commit a versioned audit atomically", async () => {
     const repo = createFakeRepository();
-    const service = createCrmService({
-      repo,
-      now: () => new Date("2026-06-24T09:00:00.000Z"),
-    });
-
-    await service.updateSupporter({
-      actorUserId: "11111111-2222-4333-8444-555555555555",
-      supporterId: "8bda8e40-cf39-4659-8be8-f2d74f9d2046",
-      input: {
-        name: "Ada Wong",
-        roles: ["volunteer", "foster"],
-        deleted: false,
-      },
-    });
-
-    expect(repo.calls.map((call) => call.name)).toEqual([
-      "updateSupporter",
-      "setSupporterRoles",
-      "insertAuditLog",
-    ]);
-    expect(repo.calls[0].payload).toEqual({
-      id: "8bda8e40-cf39-4659-8be8-f2d74f9d2046",
-      input: {
-        name: "Ada Wong",
-        deletedAt: null,
-      },
-    });
-    expect(repo.calls[1].payload).toEqual({
-      supporterId: "8bda8e40-cf39-4659-8be8-f2d74f9d2046",
-      roles: ["volunteer", "foster"],
-    });
-    expect(repo.calls[2].payload).toMatchObject({
-      action: "supporter.update",
-      detail: {
-        name: "Ada Wong",
-        roles: ["volunteer", "foster"],
-        deleted: false,
-      },
-    });
+    const service = createCrmService({ repo });
+    await expect(
+      service.updateSupporter({
+        actorUserId: "11111111-2222-4333-8444-555555555555",
+        supporterId: "8bda8e40-cf39-4659-8be8-f2d74f9d2046",
+        input: { name: "Ada Wong", expectedVersion: 4, roles: ["volunteer", "foster"] },
+      }),
+    ).rejects.toThrow("Atomic versioned supporter mutation is required");
+    expect(repo.calls).toEqual([]);
   });
 
   test("appends only provided consent channels and audits", async () => {

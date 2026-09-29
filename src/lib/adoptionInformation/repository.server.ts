@@ -1,7 +1,16 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
-import type { AdoptionFeeInput, AdoptionRuleInput, CareTopicInput, EstateInput } from "./schemas";
+import type {
+  AdoptionFeeInput,
+  UpdateFeeContentInput,
+  ReorderFeesInput,
+  AdoptionRuleInput,
+  CareTopicInput,
+  CreateEstateInput,
+  UpdateEstateInput,
+  SetEstatePublicationInput,
+} from "./schemas";
 import {
   AdoptionInformationConflictError,
   type AdoptionInformationAuditLog,
@@ -15,8 +24,8 @@ import type {
   DogFriendlyEstate,
 } from "./types";
 
-const FEE_COLUMNS = "id,animal_type,item_name,price_hkd,sort_order,is_published";
-const ESTATE_COLUMNS = "id,estate_name,district,notes,sort_order,is_published";
+const FEE_COLUMNS = "id,animal_type,item_name,price_hkd,sort_order,is_published,version";
+const ESTATE_COLUMNS = "id,estate_name,district,notes,sort_order,is_published,version";
 const RULE_COLUMNS = "id,content_zh,content_en,sort_order,is_published";
 const CARE_TOPIC_COLUMNS =
   "id,animal_type,label_zh,label_en,content_zh,content_en,sort_order,is_published";
@@ -28,6 +37,7 @@ const feeRowSchema = z.object({
   price_hkd: z.string().min(1),
   sort_order: z.number().int().min(0),
   is_published: z.boolean(),
+  version: z.number().int().positive(),
 });
 const estateRowSchema = z.object({
   id: z.string().uuid(),
@@ -36,6 +46,7 @@ const estateRowSchema = z.object({
   notes: z.string().nullable(),
   sort_order: z.number().int().min(0),
   is_published: z.boolean(),
+  version: z.number().int().positive(),
 });
 const ruleRowSchema = z.object({
   id: z.string().uuid(),
@@ -67,6 +78,7 @@ function mapFee(row: Row): AdoptionFee | null {
     priceHkd: parsed.data.price_hkd,
     sortOrder: parsed.data.sort_order,
     isPublished: parsed.data.is_published,
+    version: parsed.data.version,
   };
 }
 
@@ -80,6 +92,7 @@ function mapEstate(row: Row): DogFriendlyEstate | null {
     notes: parsed.data.notes,
     sortOrder: parsed.data.sort_order,
     isPublished: parsed.data.is_published,
+    version: parsed.data.version,
   };
 }
 
@@ -108,11 +121,19 @@ function mapCareTopic(row: Row): CareTopic | null {
 }
 
 function throwRepositoryError(error: unknown): never {
+  if (error && typeof error === "object" && "code" in error && error.code === "P4091") {
+    throw new AdoptionInformationConflictError(
+      "Fee version or order conflict; reload the latest fees",
+    );
+  }
+  if (error && typeof error === "object" && "code" in error && error.code === "P4090") {
+    throw new AdoptionInformationConflictError("Estate version conflict; reload the latest row");
+  }
   if (
     error &&
     typeof error === "object" &&
     "code" in error &&
-    ["23505", "23514"].includes(String((error as { code?: unknown }).code))
+    ["23505", "23514", "P4090"].includes(String((error as { code?: unknown }).code))
   ) {
     throw new AdoptionInformationConflictError("Adoption information conflicts with existing data");
   }
@@ -133,16 +154,6 @@ function feeRow(input: AdoptionFeeInput) {
     animal_type: input.animalType,
     item_name: input.itemName,
     price_hkd: input.priceHkd,
-    sort_order: input.sortOrder,
-    is_published: input.isPublished,
-  };
-}
-
-function estateRow(input: EstateInput) {
-  return {
-    estate_name: input.estateName,
-    district: input.district,
-    notes: input.notes,
     sort_order: input.sortOrder,
     is_published: input.isPublished,
   };
@@ -291,14 +302,74 @@ export function createSupabaseAdoptionInformationRepository(
       return requireFee(data);
     },
 
-    async upsertEstate(input: EstateInput, actorUserId?: string) {
-      if (!actorUserId) throw new Error("Actor user ID required");
-      const { data, error } = await client.rpc("mutate_admin_content_with_audit", {
+    async updateFeeContent(input: UpdateFeeContentInput, actorUserId: string) {
+      const { data, error } = await client.rpc("update_adoption_fee_content_with_audit", {
         p_actor_user_id: actorUserId,
-        p_entity: "dog_friendly_estate",
-        p_operation: "upsert",
-        p_id: input.id ?? null,
-        p_payload: estateRow(input),
+        p_id: input.id,
+        p_expected_version: input.expectedVersion,
+        p_item_name: input.itemName,
+        p_price_hkd: input.priceHkd,
+      });
+      if (error) throwRepositoryError(error);
+      return requireFee(data);
+    },
+
+    async reorderFees(input: ReorderFeesInput, actorUserId: string) {
+      const { data, error } = await client.rpc("reorder_adoption_fees_with_audit", {
+        p_actor_user_id: actorUserId,
+        p_first_id: input.firstId,
+        p_second_id: input.secondId,
+        p_first_version: input.expectedVersions.first,
+        p_second_version: input.expectedVersions.second,
+      });
+      if (error) throwRepositoryError(error);
+      if (!Array.isArray(data) || data.length !== 2) throw new Error("Invalid reordered fee rows");
+      const rows = data.map((row) => (row && typeof row === "object" ? mapFee(row as Row) : null));
+      if (rows.some((row) => !row)) throw new Error("Invalid reordered fee rows");
+      return rows as AdoptionFee[];
+    },
+
+    async createEstate(input: CreateEstateInput, actorUserId: string) {
+      const { data, error } = await client.rpc("mutate_dog_friendly_estate_with_audit", {
+        p_actor_user_id: actorUserId,
+        p_command: "create",
+        p_id: input.id,
+        p_expected_version: null,
+        p_payload: {
+          estate_name: input.estateName,
+          district: input.district,
+          notes: input.notes,
+          sort_order: input.sortOrder,
+        },
+      });
+      if (error) throwRepositoryError(error);
+      return requireEstate(data);
+    },
+
+    async updateEstate(input: UpdateEstateInput, actorUserId: string) {
+      const { data, error } = await client.rpc("mutate_dog_friendly_estate_with_audit", {
+        p_actor_user_id: actorUserId,
+        p_command: "update",
+        p_id: input.id,
+        p_expected_version: input.expectedVersion,
+        p_payload: {
+          estate_name: input.fields.estateName,
+          district: input.fields.district,
+          notes: input.fields.notes,
+          sort_order: input.fields.sortOrder,
+        },
+      });
+      if (error) throwRepositoryError(error);
+      return requireEstate(data);
+    },
+
+    async setEstatePublication(input: SetEstatePublicationInput, actorUserId: string) {
+      const { data, error } = await client.rpc("mutate_dog_friendly_estate_with_audit", {
+        p_actor_user_id: actorUserId,
+        p_command: "publication",
+        p_id: input.id,
+        p_expected_version: input.expectedVersion,
+        p_payload: { is_published: input.isPublished },
       });
       if (error) throwRepositoryError(error);
       return requireEstate(data);

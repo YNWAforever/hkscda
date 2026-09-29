@@ -286,6 +286,36 @@ jobs:
       - name: Run database-backed transaction tests
         run: bun run test:db
 
+      - name: Run volunteer bulk database scenarios
+        run: bun test src/lib/volunteers/bulk/bulk.database.test.ts src/lib/volunteers/bulk/mandatoryScenarios.database.test.ts
+        env:
+          VOLUNTEER_TEST_ALLOW_LOCAL_FIXTURES: "1"
+          VOLUNTEER_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
+      - name: Run content publication eligibility database scenarios
+        run: bun test src/lib/content/publicationEligibility.integration.test.ts
+        env:
+          CMS_LIFECYCLE_TEST_ALLOW_LOCAL_FIXTURES: "1"
+          CMS_LIFECYCLE_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
+      - name: Run media repair database scenarios
+        run: bun test src/lib/animals/publicationMediaRepair.database.test.ts src/lib/content/publicationMediaRepair.database.test.ts
+        env:
+          MEDIA_REPAIR_TEST_ALLOW_LOCAL_FIXTURES: "1"
+          MEDIA_REPAIR_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
+      - name: Run public listing database scenarios
+        run: bun test src/lib/animals/publicListing.database.test.ts
+        env:
+          PUBLIC_LISTING_TEST_ALLOW_LOCAL_FIXTURES: "1"
+          PUBLIC_LISTING_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
+      - name: Run supporter portal preference database scenarios
+        run: bun test src/lib/supporters/marketingPreference.database.test.ts
+        env:
+          SUPPORTER_PORTAL_TEST_ALLOW_LOCAL_FIXTURES: "1"
+          SUPPORTER_PORTAL_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55322/postgres
+
       - name: Stop local Supabase stack
         if: always()
         run: bunx supabase stop
