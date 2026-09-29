@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "appSha": "5793e12d6933ba06c58c226d29a4ca8931601398",
+  "appSha": "168cca319ef7c4c7931d3adcd024f176b3e95e56",
   "appShaNote": "PR164 reviewed CMS bulk code and inherited animal queue repair; later PR165-179 candidates excluded.",
   "productionAliasShaObserved": "24196faf027998388eff3196a6979e23566e2443",
   "schemaManifestHash": "a3519ee326b19427326b51cdb8606aa8792dc16b499af76622931d078a1892cf",
@@ -276,8 +276,8 @@
   ],
   "ciRun": {
     "id": null,
-    "sha": "5793e12d6933ba06c58c226d29a4ca8931601398",
-    "status": "PR164 final local verification; exact remote head CI pending"
+    "sha": "168cca319ef7c4c7931d3adcd024f176b3e95e56",
+    "status": "PR164 selection integration; fresh CI pending"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -601,7 +601,7 @@
     "migration160": "exact approval requested; pending",
     "migration161": "exact approval requested; pending",
     "migration162": "exact approval requested; pending; reviewed SQL unchanged by queue fix",
-    "migration164": "not requested; exact current-head CI pending"
+    "migration164": "exact approval requested; pending; SQL unchanged by selection fix"
   },
   "blockedGate": {
     "pr": 156,
