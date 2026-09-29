@@ -50,3 +50,18 @@ The subsequent full-suite, lint, typecheck and build checks for the final source
 | Isolated worktree | npm.cmd run typecheck | 0 | Strict TypeScript |
 | Isolated worktree | npm.cmd run lint | 0 | 0 errors, 52 existing warnings |
 | Isolated worktree | npm.cmd run build | 0 | Vercel client/server output built |
+
+
+## T19 media repair (2026-09-27 HKT)
+
+Environment: isolated worktree codex/audit-media-repair-20260927; disposable Supabase DB 127.0.0.1:57322 and REST 127.0.0.1:57321. No production mutation.
+
+| Command | Exit | Result |
+|---|---:|---|
+| bun test src/lib/animals/publicationMediaRepair.database.test.ts src/lib/content/publicationMediaRepair.database.test.ts with MEDIA_REPAIR_TEST_DATABASE_URL and local fixture flag | 0 | 2 pass, 450 assertions; rollback-only DB fixtures |
+| CHECK_RELEASE_SCHEMA_DATABASE_URL=local DB bun scripts/check-release-schema.ts | 0 | compatible, 84 requirements, zero issues |
+| SUPABASE_LOCAL_URL=local REST bun test | 0 | 2,828 pass, 86 skip, 0 fail, 8,674 assertions across 481 files |
+| npm.cmd run typecheck | 0 | strict TypeScript |
+| npm.cmd run lint | 0 | 0 errors, 52 existing warnings |
+| npm.cmd run build | 0 | Vercel client/server output built; separate from typecheck |
+| Browser UI and production media worker | not-run | Browser helper unavailable; no production schedule or copy |

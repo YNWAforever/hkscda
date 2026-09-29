@@ -11,6 +11,7 @@ import {
 
 import { AdminLayout } from "../../components/admin/AdminLayout";
 import { AnimalsTable } from "../../components/admin/AnimalsTable";
+import { MediaRepairQueue } from "../../components/admin/MediaRepairQueue";
 import { LoadFailure } from "../../components/admin/LoadFailure";
 import { fetchAdminJson } from "../../lib/admin/http";
 import type { Animal } from "../../types/animal";
@@ -269,6 +270,11 @@ function AdminDashboardContent({ section }: { section: DashboardSection }) {
           />
         </>
       )}
+      {isAnimalSection &&
+      identity != null &&
+      canRoleAccessAdminArea(identity.admin.role, "animals") ? (
+        <MediaRepairQueue />
+      ) : null}
     </div>
   );
 }

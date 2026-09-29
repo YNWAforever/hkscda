@@ -38,6 +38,12 @@ Status: **schema-ready = no**. This document is a review and rehearsal checklist
 
 DB release owner: review exact SQL diffs, lock estimates, backfill, backup/restore and app compatibility; authorize production migration only after isolated rehearsal. Release owner: approve the tested app SHA and verify same-SHA CI, content smoke and rollback boundary. Finance owner: separately approve any payment method activation after sandbox evidence.
 
+
+## T19 media repair migration addendum
+
+Version 20260927140000, SHA-256 dfe96f1a4f8d73a0e8f606e14fb2854d8c91c2b6818cc2917c279a0d85e1e429. Additive columns and due indexes on animal_publication_media_copy and content_public_asset; bounded backfill updates existing rows. The animal claim return table gains lease_token and attempts; content claim retains setof content_public_asset with new columns. Legacy acknowledgement signatures remain. New token-acknowledgement, failure, staff backlog and audited retry functions are service-role only.
+
+Dry-run the full file in a transaction against a sanitized data-bearing clone, record row counts, lock waits, runtime, query plans and rollback time, then apply only after the DB release owner approves the full ordered manifest and backup. Re-check RLS, four constraints, two due indexes, all six new function signatures and forbidden-role EXECUTE grants; run the 84-requirement release checker and queue fixtures. A one-hour legacy lease can remain after code cutover; let it expire before the new worker reclaims. Keep the new cron off until hosting schedule/duration and schema deployment are verified. Restore application config or disable the new cron for an incident; retain queue schema and intents. Do not restore an old DB snapshot over newer payment or media events.
 ## Second review slice addendum — T03 checkout policy migration
 
 Branch `codex/audit-payment-policy-20260927` adds a 35th ordered file, `20260927120000_checkout_policy_gate.sql` (SHA-256 in the manifest). It creates three private-by-RLS public-schema tables and a service-role-only admission RPC. The migration applied in the same unlinked loopback stack with `bunx supabase migration up --local`, exit 0. The isolated SQL test covered disabled policy, absent/disabled approval, stale/hidden/draft/archived config, revocation-before-admission lock race, admitted retry, intent conflict, legacy seed rejection, audited staff toggles, app-role write denial and forbidden anon/authenticated grants, exit 0. No payment was activated; the singleton defaults to disabled and method approvals are empty.

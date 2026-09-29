@@ -8,10 +8,9 @@ export type AnimalPublicationMediaCopy = {
   publicPath: string;
 };
 
-export async function copyPublishedAnimalMedia(
+export async function copyAnimalPublicationMediaBytes(
   client: SupabaseClient,
   copy: AnimalPublicationMediaCopy,
-  claimedAt: string | null = null,
 ): Promise<void> {
   const downloaded = await client.storage.from(DRAFT_BUCKET).download(copy.sourcePath);
   if (downloaded.error) throw downloaded.error;
@@ -21,7 +20,14 @@ export async function copyPublishedAnimalMedia(
     .upload(copy.publicPath, downloaded.data, { upsert: false });
   if (uploaded.error && uploaded.error.message !== "The resource already exists")
     throw uploaded.error;
+}
 
+export async function copyPublishedAnimalMedia(
+  client: SupabaseClient,
+  copy: AnimalPublicationMediaCopy,
+  claimedAt: string | null = null,
+): Promise<void> {
+  await copyAnimalPublicationMediaBytes(client, copy);
   const { data, error } = await client.rpc("mark_animal_publication_media_copied", {
     p_public_path: copy.publicPath,
     p_claimed_at: claimedAt,

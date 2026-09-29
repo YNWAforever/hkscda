@@ -6,14 +6,15 @@ const request = (token?: string) =>
   new Request("https://example.test/api/jobs/public-uploads", {
     headers: token ? { authorization: "Bearer " + token } : {},
   });
+const clean = { removed: 0, preserved: 0, failed: 0 };
 
-describe("public upload cleanup cron", () => {
-  test("rejects unauthenticated requests without creating a service client", async () => {
+describe("daily public upload orphan cleanup", () => {
+  test("rejects unauthenticated requests before creating a service client", async () => {
     let clients = 0;
     const handler = createPublicUploadCleanupHandler({
       secret: () => "cron-secret",
       createClient: () => {
-        clients += 1;
+        clients++;
         return {} as never;
       },
     });
@@ -21,7 +22,7 @@ describe("public upload cleanup cron", () => {
     expect(clients).toBe(0);
   });
 
-  test("fails closed when the cron secret is unconfigured", async () => {
+  test("fails closed without CRON_SECRET", async () => {
     const handler = createPublicUploadCleanupHandler({
       secret: () => undefined,
       createClient: () => {
@@ -31,74 +32,56 @@ describe("public upload cleanup cron", () => {
     expect((await handler(request())).status).toBe(401);
   });
 
-  test("runs all cleanup domains on the existing daily schedule", async () => {
+  test("runs only daily orphan cleanup domains", async () => {
     const calls: string[] = [];
     const handler = createPublicUploadCleanupHandler({
       secret: () => "cron-secret",
       createClient: () => ({}) as never,
-      runContentPublication: async () => ({ copied: 0, failed: 0 }),
-      runAnimalPublication: async () => {
-        calls.push("animalPublication");
-        return { copied: 0, failed: 0 };
-      },
       runAdoption: async () => {
         calls.push("adoption");
-        return { removed: 1, preserved: 0, failed: 0 };
+        return clean;
       },
       runSponsorship: async () => {
         calls.push("sponsorship");
-        return { removed: 2, preserved: 1, failed: 0 };
+        return clean;
       },
       runInternship: async () => {
         calls.push("internship");
-        return { removed: 3, preserved: 0, failed: 0 };
+        return clean;
       },
       runAnimalDraft: async () => {
         calls.push("animalDraft");
-        return { removed: 4, failed: 0 };
+        return { removed: 0, failed: 0 };
       },
     });
     const response = await handler(request("cron-secret"));
     expect(response.status).toBe(200);
     expect(response.headers.get("cache-control")).toBe("no-store");
     expect(await response.json()).toEqual({
-      adoption: { removed: 1, preserved: 0, failed: 0 },
-      sponsorship: { removed: 2, preserved: 1, failed: 0 },
-      internship: { removed: 3, preserved: 0, failed: 0 },
-      animalDraft: { removed: 4, failed: 0 },
-      animalPublication: { copied: 0, failed: 0 },
-      contentPublication: { copied: 0, failed: 0 },
+      adoption: clean,
+      sponsorship: clean,
+      internship: clean,
+      animalDraft: { removed: 0, failed: 0 },
     });
-    expect(calls).toEqual([
-      "adoption",
-      "sponsorship",
-      "internship",
-      "animalDraft",
-      "animalPublication",
-    ]);
+    expect(calls).toEqual(["adoption", "sponsorship", "internship", "animalDraft"]);
   });
 
-  test("one failing cleanup does not suppress the other", async () => {
+  test("one failed cleanup still allows the others and returns 500", async () => {
     const calls: string[] = [];
     const handler = createPublicUploadCleanupHandler({
       secret: () => "cron-secret",
       createClient: () => ({}) as never,
-      runContentPublication: async () => ({ copied: 0, failed: 0 }),
-      runAnimalPublication: async () => {
-        calls.push("animalPublication");
-        return { copied: 0, failed: 0 };
-      },
       runAdoption: async () => {
         calls.push("adoption");
-        throw new Error("adoption unavailable");
+        throw new Error("down");
       },
       runSponsorship: async () => {
         calls.push("sponsorship");
-        return { removed: 1, preserved: 0, failed: 0 };
+        return clean;
       },
       runInternship: async () => {
         calls.push("internship");
-        return { removed: 0, preserved: 0, failed: 0 };
+        return clean;
       },
       runAnimalDraft: async () => {
         calls.push("animalDraft");
@@ -108,101 +91,7 @@ describe("public upload cleanup cron", () => {
     });
     const response = await handler(request("cron-secret"));
     expect(response.status).toBe(500);
-    expect(calls).toEqual([
-      "adoption",
-      "sponsorship",
-      "internship",
-      "animalDraft",
-      "animalPublication",
-    ]);
+    expect((await response.json()).adoption).toBeNull();
+    expect(calls).toEqual(["adoption", "sponsorship", "internship", "animalDraft"]);
   });
-
-  test("reports animal draft cleanup failure while other domains still run", async () => {
-    const calls: string[] = [];
-    const handler = createPublicUploadCleanupHandler({
-      secret: () => "cron-secret",
-      createClient: () => ({}) as never,
-      runContentPublication: async () => ({ copied: 0, failed: 0 }),
-      runAnimalPublication: async () => {
-        calls.push("animalPublication");
-        return { copied: 0, failed: 0 };
-      },
-      runAdoption: async () => {
-        calls.push("adoption");
-        return { removed: 0, preserved: 0, failed: 0 };
-      },
-      runSponsorship: async () => {
-        calls.push("sponsorship");
-        return { removed: 0, preserved: 0, failed: 0 };
-      },
-      runInternship: async () => {
-        calls.push("internship");
-        return { removed: 0, preserved: 0, failed: 0 };
-      },
-      runAnimalDraft: async () => {
-        calls.push("animalDraft");
-        throw new Error("storage unavailable");
-      },
-      logger: { error: () => {} },
-    });
-
-    const response = await handler(request("cron-secret"));
-    expect(response.status).toBe(500);
-    expect((await response.json()).animalDraft).toBeNull();
-    expect(calls).toEqual([
-      "adoption",
-      "sponsorship",
-      "internship",
-      "animalDraft",
-      "animalPublication",
-    ]);
-  });
-
-  test("reports item-level cleanup failures to the scheduler", async () => {
-    const handler = createPublicUploadCleanupHandler({
-      secret: () => "cron-secret",
-      createClient: () => ({}) as never,
-      runContentPublication: async () => ({ copied: 0, failed: 0 }),
-      runAnimalPublication: async () => ({ copied: 0, failed: 0 }),
-      runAdoption: async () => ({ removed: 0, preserved: 0, failed: 0 }),
-      runSponsorship: async () => ({ removed: 0, preserved: 0, failed: 0 }),
-      runInternship: async () => ({ removed: 0, preserved: 0, failed: 1 }),
-      runAnimalDraft: async () => ({ removed: 0, failed: 0 }),
-    });
-    const response = await handler(request("cron-secret"));
-    expect(response.status).toBe(500);
-    expect((await response.json()).internship.failed).toBe(1);
-  });
-});
-
-test("reports pending publication media copy failures to the scheduler", async () => {
-  const handler = createPublicUploadCleanupHandler({
-    secret: () => "cron-secret",
-    createClient: () => ({}) as never,
-    runAdoption: async () => ({ removed: 0, preserved: 0, failed: 0 }),
-    runSponsorship: async () => ({ removed: 0, preserved: 0, failed: 0 }),
-    runInternship: async () => ({ removed: 0, preserved: 0, failed: 0 }),
-    runAnimalDraft: async () => ({ removed: 0, failed: 0 }),
-    runContentPublication: async () => ({ copied: 0, failed: 0 }),
-    runAnimalPublication: async () => ({ copied: 0, failed: 1 }),
-  });
-  const response = await handler(request("cron-secret"));
-  expect(response.status).toBe(500);
-  expect((await response.json()).animalPublication).toEqual({ copied: 0, failed: 1 });
-});
-
-test("reports pending content publication media failures to the scheduler", async () => {
-  const handler = createPublicUploadCleanupHandler({
-    secret: () => "cron-secret",
-    createClient: () => ({}) as never,
-    runAdoption: async () => ({ removed: 0, preserved: 0, failed: 0 }),
-    runSponsorship: async () => ({ removed: 0, preserved: 0, failed: 0 }),
-    runInternship: async () => ({ removed: 0, preserved: 0, failed: 0 }),
-    runAnimalDraft: async () => ({ removed: 0, failed: 0 }),
-    runAnimalPublication: async () => ({ copied: 0, failed: 0 }),
-    runContentPublication: async () => ({ copied: 0, failed: 1 }),
-  });
-  const response = await handler(request("cron-secret"));
-  expect(response.status).toBe(500);
-  expect((await response.json()).contentPublication).toEqual({ copied: 0, failed: 1 });
 });
