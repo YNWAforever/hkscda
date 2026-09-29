@@ -13,7 +13,7 @@
     "test:acceptance:all": "bun scripts/test-isolated-acceptance.ts --all",
     "test:acceptance:rls": "bun scripts/test-isolated-acceptance.ts --rls",
     "test:rls": "bun test supabase/rls-tests",
-    "test:db": "CRM_TEST_ALLOW_LOCAL_FIXTURES=1 CRM_TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:55322/postgres CMS_LIFECYCLE_TEST_ALLOW_LOCAL_FIXTURES=1 CMS_LIFECYCLE_TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:55322/postgres bun test src/lib/crm/manualGift.database.test.ts src/lib/supporters/publicIdentity.database.test.ts src/lib/content/lifecycle.integration.test.ts src/lib/content/contentRead.integration.test.ts",
+    "test:db": "CRM_TEST_ALLOW_LOCAL_FIXTURES=1 CRM_TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:55322/postgres CHECKOUT_POLICY_TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:55322/postgres CMS_LIFECYCLE_TEST_ALLOW_LOCAL_FIXTURES=1 CMS_LIFECYCLE_TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:55322/postgres bun test src/lib/crm/manualGift.database.test.ts src/lib/supporters/publicIdentity.database.test.ts src/lib/content/lifecycle.integration.test.ts src/lib/content/contentRead.integration.test.ts src/lib/donations/checkoutPolicy.database.test.ts src/lib/paymentPublicConfig/instructions.database.test.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src eslint.config.js vite.config.ts supabase/rls-tests",
     "format": "prettier --write .",
