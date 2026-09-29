@@ -1,0 +1,3 @@
+source,fixture,count,elapsed_ms,mean_ms,font_fetches,sample_pdf_bytes,total_pdf_bytes,runtime_tz
+97280b1,synthetic-mixed-name,100,103335,1033,100,4338654,433865419,default
+codex/audit-receipt-date-font-20260927,synthetic-mixed-name,100,104233,1042,1,4338654,433865412,default

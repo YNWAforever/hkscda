@@ -413,7 +413,13 @@ async function applySucceededPayment(
   });
 
   if (plan.kind === "duplicate") {
-    await completeDonationSideEffects(client, payment, deps);
+    try {
+      await completeDonationSideEffects(client, payment, deps);
+    } catch {
+      // A successful payment has its own durable delivery job. Provider replay
+      // is not the receipt/email retry mechanism.
+      return { kind: "duplicate" as const, donationId: payment.donation.id, deliveryPending: true };
+    }
     return { kind: "duplicate" as const, donationId: payment.donation.id };
   }
 
@@ -499,9 +505,14 @@ async function applySucceededPayment(
   }
   if (!donationTransitioned) return handleTransitionMiss();
 
-  const receiptNo = await completeDonationSideEffects(client, payment, deps);
-
-  return { kind: "applied" as const, donationId: payment.donation.id, receiptNo };
+  try {
+    const receiptNo = await completeDonationSideEffects(client, payment, deps);
+    return { kind: "applied" as const, donationId: payment.donation.id, receiptNo };
+  } catch {
+    // The succeeded donation transition queued durable delivery in its database
+    // transaction. PDF/email failure cannot reverse payment or reject the webhook.
+    return { kind: "applied" as const, donationId: payment.donation.id, deliveryPending: true };
+  }
 }
 
 async function processProviderWebhook<T>(

@@ -57,3 +57,5 @@ export interface AdoptionInstructionPageState {
   createdAt: string;
   updatedAt: string;
 }
+
+export type AdoptionInstructionRevisionSummary = Omit<AdoptionInstructionRevision, "content">;
