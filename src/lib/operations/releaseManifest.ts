@@ -1397,6 +1397,16 @@ export const releaseManifest: SchemaRequirement[] = [
   {
     kind: "function",
     schema: "public",
+    name: "list_sponsorship_followup_assignees",
+    feature: "sponsorship-followup",
+    required: true,
+    arguments: "p_actor uuid",
+    returns: 'TABLE("authUserId" uuid, email text, role text)',
+    executeRoles: ["service_role"],
+  },
+  {
+    kind: "function",
+    schema: "public",
     name: "assign_sponsorship_followup",
     feature: "sponsorship-followup",
     required: true,

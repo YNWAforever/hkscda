@@ -50,3 +50,7 @@ Rollback boundary: stop follow-up assignment writes and roll back compatible app
 #134–#155 merged22/46;main/production24196faf027998388eff3196a6979e23566e2443 READY. #168 current672d7845 has fiveSUCCESS gates in36642612271. #169 exact-head remoteCI awaits push. #156 real Auth concurrent OTP test remains blocking despite ordinary CI green; disabled-feature exception still unanswered. #157 exact migration approved; #159–#162/#164–#166 exact approvals pending; #169 approval not yet requested at report creation. Do not merge ahead of the sequence or enable recovery/payments/email.
 
 Staff: choose an eligible current staff/admin owner; saved means committed, refresh unavailable means reload details, unknown means retry the same frozen request, conflict means inspect the current owner then explicitly select a new assignment. A banned/deactivated actor or assignee is denied at the database write boundary even if an older picker was cached. Assignment is separate from proof/finance approval.
+
+## Final schema gate amendment
+
+Head60a3b0f7 passed all five CI gates in36644968703. Final catalog inventory review then found the newly added picker RPC missing from the application release checker. Reproduced releaseManifest.test.ts0pass/1fail and added its exact p_actor UUID/TABLE result/service_role signature; focused test now1pass54assertions. SQL checksum and runtime assignment behavior unchanged. Latest amendment CI must pass before merge; the earlier green run is not represented as the new head.
