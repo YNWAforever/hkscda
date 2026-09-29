@@ -146,13 +146,19 @@ export function SupporterRecordSummary({
 export function SupporterPortal({ accessToken }: { accessToken: string }) {
   const queryClient = useQueryClient();
   const currentToken = useRef(accessToken);
-  currentToken.current = accessToken;
+  const observedToken = useRef(accessToken);
+  if (observedToken.current !== accessToken) {
+    observedToken.current = accessToken;
+    currentToken.current = accessToken;
+  }
   const [loaded, setLoaded] = useState<{ token: string; records: PortalRecords } | null>(null);
   const [error, setError] = useState("");
   const [preferenceSaving, setPreferenceSaving] = useState(false);
   const records = loaded?.token === accessToken ? loaded.records : null;
 
   useEffect(() => {
+    currentToken.current = accessToken;
+    setPreferenceSaving(false);
     const controller = new AbortController();
     setLoaded(null);
     setError("");
@@ -172,12 +178,15 @@ export function SupporterPortal({ accessToken }: { accessToken: string }) {
         ) {
           throw new Error("records");
         }
-        if (!controller.signal.aborted) setLoaded({ token: accessToken, records: data });
+        if (!controller.signal.aborted && currentToken.current === accessToken)
+          setLoaded({ token: accessToken, records: data });
       })
       .catch(() => {
-        if (!controller.signal.aborted) setError("暫時無法載入紀錄，請稍後再試。");
+        if (!controller.signal.aborted && currentToken.current === accessToken)
+          setError("暫時無法載入紀錄，請稍後再試。");
       });
     return () => {
+      if (currentToken.current === accessToken) currentToken.current = "";
       controller.abort();
       queryClient.clear();
     };

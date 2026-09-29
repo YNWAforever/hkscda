@@ -21,6 +21,10 @@
   },
   "crons": [
     {
+      "path": "/api/jobs/donations",
+      "schedule": "5 * * * *"
+    },
+    {
       "path": "/api/jobs/volunteers",
       "schedule": "15 * * * *"
     },
@@ -33,7 +37,7 @@
       "schedule": "45 3 * * *"
     },
     {
-      "path": "/api/jobs/public-media-repair",
+      "path": "/api/jobs/crm-exports",
       "schedule": "*/5 * * * *"
     }
   ]

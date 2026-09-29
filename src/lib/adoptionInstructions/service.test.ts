@@ -69,6 +69,10 @@ function createRepository(page = adminPage()) {
   const repository: AdoptionInstructionRepository = {
     getAdminPage: async () => page,
     getPublished: async () => page.published,
+    getRevision: async (id) => {
+      const match = page.history.find((item) => item.id === id);
+      return match ? revision(match) : null;
+    },
     ensureDraft: async (input) => {
       calls.ensureDraft.push(input);
       const draft = revision({
@@ -114,7 +118,7 @@ function createRepository(page = adminPage()) {
       });
     },
     archiveDraft: async () => revision({ state: "archived" }),
-    listHistory: async () => page.history,
+    listHistory: async () => ({ items: page.history, nextCursor: null }),
   };
   return { repository, calls, getPage: () => page };
 }
@@ -278,4 +282,42 @@ test("only admins can archive a draft without publishing and the version is pass
     expectedVersion: 4,
     now: "2026-08-02T12:00:00.000Z",
   });
+});
+
+test("restore resolves a revision outside the current history page by direct ID", async () => {
+  const source = revision({ id: "44444444-4444-4444-8444-444444444444", state: "archived" });
+  const { repository, calls } = createRepository(adminPage({ history: [] }));
+  repository.getRevision = async (id) => (id === source.id ? source : null);
+  const service = createAdoptionInstructionService({ repository, now });
+  const restored = await service.restore({ actor: admin, revisionId: source.id });
+  expect(restored.sourceRevisionId).toBe(source.id);
+  expect(calls.restore).toHaveLength(1);
+  await expect(service.restore({ actor: staff, revisionId: source.id })).rejects.toMatchObject({
+    status: 403,
+  });
+  await expect(
+    service.restore({ actor: admin, revisionId: draftRevisionId }),
+  ).rejects.toMatchObject({ status: 404 });
+});
+
+test("history and revision detail authorize before repository reads and bound page size", async () => {
+  const { repository } = createRepository();
+  const seen: unknown[] = [];
+  repository.listHistory = async (input) => {
+    seen.push(input);
+    return { items: [], nextCursor: null };
+  };
+  const service = createAdoptionInstructionService({ repository, now });
+  await expect(service.listHistory({ actor: null as never })).rejects.toMatchObject({
+    status: 401,
+  });
+  await expect(
+    service.getRevision({ actor: null as never, revisionId: publishedRevisionId }),
+  ).rejects.toMatchObject({ status: 401 });
+  await expect(service.listHistory({ actor: staff, limit: 101 })).rejects.toThrow();
+  await service.listHistory({ actor: staff, cursor: "3:" + publishedRevisionId });
+  expect(seen).toEqual([{ cursor: "3:" + publishedRevisionId, limit: 25 }]);
+  expect((await service.getRevision({ actor: staff, revisionId: publishedRevisionId })).id).toBe(
+    publishedRevisionId,
+  );
 });
