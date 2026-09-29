@@ -67,6 +67,7 @@ import { Route as ApiVolunteerGroupEnquiriesRouteImport } from './routes/api/vol
 import { Route as ApiVolunteerActivitiesRouteImport } from './routes/api/volunteer/activities'
 import { Route as ApiStoriesMapRouteImport } from './routes/api/stories/map'
 import { Route as ApiStoriesSlugRouteImport } from './routes/api/stories/$slug'
+import { Route as ApiSponsorshipsTermsRouteImport } from './routes/api/sponsorships/terms'
 import { Route as ApiSponsorshipsPledgesRouteImport } from './routes/api/sponsorships/pledges'
 import { Route as ApiJobsVolunteersRouteImport } from './routes/api/jobs/volunteers'
 import { Route as ApiJobsSponsorshipsRouteImport } from './routes/api/jobs/sponsorships'
@@ -545,6 +546,11 @@ const ApiStoriesSlugRoute = ApiStoriesSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => ApiStoriesRoute,
+} as any)
+const ApiSponsorshipsTermsRoute = ApiSponsorshipsTermsRouteImport.update({
+  id: '/api/sponsorships/terms',
+  path: '/api/sponsorships/terms',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiSponsorshipsPledgesRoute = ApiSponsorshipsPledgesRouteImport.update({
   id: '/api/sponsorships/pledges',
@@ -1701,6 +1707,7 @@ export interface FileRoutesByFullPath {
   '/api/jobs/sponsorships': typeof ApiJobsSponsorshipsRoute
   '/api/jobs/volunteers': typeof ApiJobsVolunteersRoute
   '/api/sponsorships/pledges': typeof ApiSponsorshipsPledgesRouteWithChildren
+  '/api/sponsorships/terms': typeof ApiSponsorshipsTermsRoute
   '/api/stories/$slug': typeof ApiStoriesSlugRoute
   '/api/stories/map': typeof ApiStoriesMapRoute
   '/api/volunteer/activities': typeof ApiVolunteerActivitiesRoute
@@ -1946,6 +1953,7 @@ export interface FileRoutesByTo {
   '/api/jobs/sponsorships': typeof ApiJobsSponsorshipsRoute
   '/api/jobs/volunteers': typeof ApiJobsVolunteersRoute
   '/api/sponsorships/pledges': typeof ApiSponsorshipsPledgesRouteWithChildren
+  '/api/sponsorships/terms': typeof ApiSponsorshipsTermsRoute
   '/api/stories/$slug': typeof ApiStoriesSlugRoute
   '/api/stories/map': typeof ApiStoriesMapRoute
   '/api/volunteer/activities': typeof ApiVolunteerActivitiesRoute
@@ -2193,6 +2201,7 @@ export interface FileRoutesById {
   '/api/jobs/sponsorships': typeof ApiJobsSponsorshipsRoute
   '/api/jobs/volunteers': typeof ApiJobsVolunteersRoute
   '/api/sponsorships/pledges': typeof ApiSponsorshipsPledgesRouteWithChildren
+  '/api/sponsorships/terms': typeof ApiSponsorshipsTermsRoute
   '/api/stories/$slug': typeof ApiStoriesSlugRoute
   '/api/stories/map': typeof ApiStoriesMapRoute
   '/api/volunteer/activities': typeof ApiVolunteerActivitiesRoute
@@ -2441,6 +2450,7 @@ export interface FileRouteTypes {
     | '/api/jobs/sponsorships'
     | '/api/jobs/volunteers'
     | '/api/sponsorships/pledges'
+    | '/api/sponsorships/terms'
     | '/api/stories/$slug'
     | '/api/stories/map'
     | '/api/volunteer/activities'
@@ -2686,6 +2696,7 @@ export interface FileRouteTypes {
     | '/api/jobs/sponsorships'
     | '/api/jobs/volunteers'
     | '/api/sponsorships/pledges'
+    | '/api/sponsorships/terms'
     | '/api/stories/$slug'
     | '/api/stories/map'
     | '/api/volunteer/activities'
@@ -2932,6 +2943,7 @@ export interface FileRouteTypes {
     | '/api/jobs/sponsorships'
     | '/api/jobs/volunteers'
     | '/api/sponsorships/pledges'
+    | '/api/sponsorships/terms'
     | '/api/stories/$slug'
     | '/api/stories/map'
     | '/api/volunteer/activities'
@@ -3153,6 +3165,7 @@ export interface RootRouteChildren {
   ApiJobsSponsorshipsRoute: typeof ApiJobsSponsorshipsRoute
   ApiJobsVolunteersRoute: typeof ApiJobsVolunteersRoute
   ApiSponsorshipsPledgesRoute: typeof ApiSponsorshipsPledgesRouteWithChildren
+  ApiSponsorshipsTermsRoute: typeof ApiSponsorshipsTermsRoute
   ApiVolunteerActivitiesRoute: typeof ApiVolunteerActivitiesRoute
   ApiVolunteerGroupEnquiriesRoute: typeof ApiVolunteerGroupEnquiriesRoute
   ApiVolunteerOperationsRoute: typeof ApiVolunteerOperationsRoute
@@ -3629,6 +3642,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/stories/$slug'
       preLoaderRoute: typeof ApiStoriesSlugRouteImport
       parentRoute: typeof ApiStoriesRoute
+    }
+    '/api/sponsorships/terms': {
+      id: '/api/sponsorships/terms'
+      path: '/api/sponsorships/terms'
+      fullPath: '/api/sponsorships/terms'
+      preLoaderRoute: typeof ApiSponsorshipsTermsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/sponsorships/pledges': {
       id: '/api/sponsorships/pledges'
@@ -5719,6 +5739,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiJobsSponsorshipsRoute: ApiJobsSponsorshipsRoute,
   ApiJobsVolunteersRoute: ApiJobsVolunteersRoute,
   ApiSponsorshipsPledgesRoute: ApiSponsorshipsPledgesRouteWithChildren,
+  ApiSponsorshipsTermsRoute: ApiSponsorshipsTermsRoute,
   ApiVolunteerActivitiesRoute: ApiVolunteerActivitiesRoute,
   ApiVolunteerGroupEnquiriesRoute: ApiVolunteerGroupEnquiriesRoute,
   ApiVolunteerOperationsRoute: ApiVolunteerOperationsRoute,

@@ -44,6 +44,11 @@ for (const [name, path, functionName] of cases) {
       selectedActivity: { id: "activity" },
       photos: [new File(["fixture"], "photo.jpg")],
       sponsorshipItems: [{ rank: 1, id: "animal", name: "Fixture" }],
+      terms: { version: "a".repeat(64) },
+      termsAgreed: true,
+      includeProof: false,
+      ProofUploadRequestError: class ProofUploadRequestError extends Error {},
+      TypeError,
       expandedAdoptionApplicationSchema: { parse: (value: unknown) => value },
       submitAdoptionApplication: fail,
       fetch: fail,
@@ -122,6 +127,8 @@ for (const [name, path, functionName] of cases) {
     }
     const allowed = new Set([
       "setError",
+      "setProofErrors",
+      "setFieldErrors",
       "setServerError",
       "setSubmitError",
       "setLoading",

@@ -20,7 +20,7 @@ describe("adoption draft storage", () => {
         home: { housingType: "flat", accessToken: "secret" },
         readiness: { reason: "adopt", consent: true },
         visit: { notes: "weekends", proof: "secret" },
-        terms: { agreed: true },
+        terms: { agreed: true, version: "a".repeat(64) },
         photos: [{ name: "private.jpg" }],
         statusToken: "secret",
       }),

@@ -10,6 +10,7 @@ import {
   type SponsorshipPledgeSubmission,
   type SponsorshipProofDescriptor,
   sponsorshipPledgeSubmissionSchema,
+  sponsorshipPledgeRetrySchema,
   toPaymentProofInsert,
   toPledgeInsert,
   toPreferenceInserts,
@@ -161,6 +162,7 @@ export type SponsorshipSubmissionRequestBody = {
 
 export function parseSponsorshipSubmission(
   body: unknown,
+  schema = sponsorshipPledgeSubmissionSchema,
 ): ParsedSponsorshipMultipart & { pledgeId: string; statusToken: string } {
   if (typeof body !== "object" || body === null) {
     throw new SubmissionValidationError("Invalid sponsorship pledge request body");
@@ -180,7 +182,7 @@ export function parseSponsorshipSubmission(
     throw new SubmissionValidationError("Invalid sponsorship status token");
   }
 
-  const parsed = sponsorshipPledgeSubmissionSchema.parse(raw.payload);
+  const parsed = schema.parse(raw.payload);
   const turnstileToken = typeof raw.turnstileToken === "string" ? raw.turnstileToken : undefined;
 
   const rawProof = raw.proof;
@@ -224,6 +226,10 @@ export function parseSponsorshipSubmission(
     pledgeId: raw.pledgeId,
     statusToken: raw.statusToken,
   };
+}
+
+export function parseSponsorshipRetry(body: unknown) {
+  return parseSponsorshipSubmission(body, sponsorshipPledgeRetrySchema);
 }
 
 type PersistSponsorshipPledgeInput = {

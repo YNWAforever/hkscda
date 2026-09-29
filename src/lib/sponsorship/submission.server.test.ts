@@ -22,7 +22,7 @@ function basePayload(overrides: Record<string, unknown> = {}) {
     animalPreferences: [{ rank: 1, animalId, animalName: "白雪", animalType: "sponsor" }],
     contact: { supporterName: "陳小姐", email: "chan@example.com", phone: "91234567" },
     consents: { email: true, whatsapp: false },
-    terms: { agreed: true },
+    terms: { agreed: true, version: "a".repeat(64) },
     turnstileToken: "test-token",
     ...overrides,
   };
