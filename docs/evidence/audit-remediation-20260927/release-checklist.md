@@ -2,7 +2,7 @@
 
 Updated 2026-09-30 HKT. **Next sequential release: NO-GO** because #156's actual isolated Auth concurrent OTP check fails. #134–#155 have merged sequentially (22/46); their exact main CI runs were re-read and all conclude success. Current main/production alias is 24196faf027998388eff3196a6979e23566e2443, Vercel dpl_DJpjHkmVayPsXZqwiA2CMJG43Ygk READY, main CI 36624781016 all five gates green. See pr-status-20260930.json for each merge SHA, URL and CI. #156–#179 remain open; later reviews continue while this gate is blocked.
 
-Source freeze f330d1f2c8d8286e0db66bad102b4035008dc53f includes repaired #162, not later #164–#179. PR163 changes documentation only. release-manifest.json binds this source to 51 unique migration-file checksums; all 51 were compared against committed Git bytes with zero mismatches. Manifest SHA-256: 4023e54be04e6c90a5984cbff4a8d89170da167e5b2e8ef7f914bce0adfb432e. This is an inventory, not permission to apply files in CSV order. Configuration nulls are unverified activation versions. Both trackers separate code, schema, deployment and enablement; partial issues stay open.
+Source freeze c685b23b8ff18af8a73af858f51f48e7bb1f6f91 includes repaired #162, not later #164–#179. PR163 changes documentation only. release-manifest.json binds this source to 51 unique migration-file checksums; all 51 were compared against committed Git bytes with zero mismatches. Manifest SHA-256: 4023e54be04e6c90a5984cbff4a8d89170da167e5b2e8ef7f914bce0adfb432e. This is an inventory, not permission to apply files in CSV order. Configuration nulls are unverified activation versions. Both trackers separate code, schema, deployment and enablement; partial issues stay open.
 
 ## Gate register
 
@@ -41,3 +41,5 @@ Source freeze 5793e12d6933ba06c58c226d29a4ca8931601398 includes reviewed CMS bul
 ## PR165 source update
 
 Freeze 421bf7f790dd595fbc0161ea885605dde617f3f4;53 source SQL checksums and updated CSV hash. Local full3017pass131skip9445assertions/36.43s;typecheck/lint/build0,52warnings;manualDB4tests29assertions;CRM17tests90assertions;UI3widths/Axe0;full-file6-row rollback251ms. Four independent findings closed. Fresh CI pending; exact SQL approval not yet requested. Production remains#155;#156blocks next release.
+
+PR162 selection-generation backport61e8952f verified:3006pass121skip/9383assertions/45.61s;typecheck/lint/build0;actual queue delayed-kind-cycle regression red25 to green0;SQL unchanged. Current source/CI metadata supersede earlier capture; remote gates pending.

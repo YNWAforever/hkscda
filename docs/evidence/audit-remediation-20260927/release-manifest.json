@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "appSha": "421bf7f790dd595fbc0161ea885605dde617f3f4",
+  "appSha": "959b91b7d3bb2395f62f53ac13512149652133ec",
   "appShaNote": "Reviewed PR165 manual settlement and prior PR164 queue fixes; later PR166-179 excluded.",
   "productionAliasShaObserved": "24196faf027998388eff3196a6979e23566e2443",
   "schemaManifestHash": "a7340b9a9b832e427f990ac9b584c7278a06909cbdbb84992fddfb6e90202e12",
@@ -281,8 +281,8 @@
   ],
   "ciRun": {
     "id": null,
-    "sha": "421bf7f790dd595fbc0161ea885605dde617f3f4",
-    "status": "local gates passed; final exact remote head CI pending"
+    "sha": "959b91b7d3bb2395f62f53ac13512149652133ec",
+    "status": "PR165 unchanged finance plus parent selection fix; fresh remote CI pending"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",

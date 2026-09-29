@@ -2,7 +2,7 @@
 
 ## Current sequential verification — 2026-09-30
 
-Current candidate source f330d1f2c8d8286e0db66bad102b4035008dc53f; production #155 at24196faf, READY. Current local source:3006pass121skip/9383assert/exit0; separate typecheck/lint/build0. PR162 six clone DBtests39assertions; 1000 animal outcomes796success202skip2conflict with unchanged animal fields. PR161 six clone DBtests38assertions and 1000 pre-version-row backfill; PR160 four/30; PR159 four/35. Actual service-role/denied-role, atomic audit, concurrency and three-width synthetic UI results are linked in their sequential-merge reports. These do not replace hosted actual-role/private-file UAT.
+Current candidate source c685b23b8ff18af8a73af858f51f48e7bb1f6f91; production #155 at24196faf, READY. Current local source:3006pass121skip/9383assert/exit0; separate typecheck/lint/build0. PR162 six clone DBtests39assertions; 1000 animal outcomes796success202skip2conflict with unchanged animal fields. PR161 six clone DBtests38assertions and 1000 pre-version-row backfill; PR160 four/30; PR159 four/35. Actual service-role/denied-role, atomic audit, concurrency and three-width synthetic UI results are linked in their sequential-merge reports. These do not replace hosted actual-role/private-file UAT.
 
 Actual local Supabase Auth v2.197.0 and Mailpit were tested for #156. Concurrent reuse of one OTP produced two sessions (expected one), exit1; this is the current release blocker. Sequential reuse, wrong identity, expiry and suspension checks passed. Recovery stays disabled. Payment provider sandbox, real refunds, hosted notification sending and complete hosted journeys are not-run.
 
@@ -48,3 +48,5 @@ Mobile homepage score regressed 4 points in that early comparison; investigate o
 ## PR165 isolated acceptance
 
 Actual commands/source/exit codes,4DBtests29assertions plusCRM17tests90assertions,6syntheticlegacyfullSQLdrill,three-width before/after and external not-run gates: sequential-merge-165-20260930.md. No hosted or provider success inferred.
+
+PR162 selection-generation backport61e8952f verified:3006pass121skip/9383assertions/45.61s;typecheck/lint/build0;actual queue delayed-kind-cycle regression red25 to green0;SQL unchanged. Current source/CI metadata supersede earlier capture; remote gates pending.
