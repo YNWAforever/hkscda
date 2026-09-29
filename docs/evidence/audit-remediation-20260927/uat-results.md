@@ -1,6 +1,16 @@
 # T24 · UAT and before/after evidence matrix
 
-All results below are **isolated synthetic/local** unless explicitly named. The source freeze is `0c92e7ff127e582b4393a8b40a6bd2031afdde09`. Production and private candidate UAT were not performed. `not-run` is distinct from a passed unit/fixture test.
+## Current sequential verification — 2026-09-30
+
+Current candidate source ae80846bbde75f2bc0e995630c25436894b27d4a; production #155 at24196faf, READY. Current local source:3006pass121skip/9383assert/exit0; separate typecheck/lint/build0. PR162 six clone DBtests39assertions; 1000 animal outcomes796success202skip2conflict with unchanged animal fields. PR161 six clone DBtests38assertions and 1000 pre-version-row backfill; PR160 four/30; PR159 four/35. Actual service-role/denied-role, atomic audit, concurrency and three-width synthetic UI results are linked in their sequential-merge reports. These do not replace hosted actual-role/private-file UAT.
+
+Actual local Supabase Auth v2.197.0 and Mailpit were tested for #156. Concurrent reuse of one OTP produced two sessions (expected one), exit1; this is the current release blocker. Sequential reuse, wrong identity, expiry and suspension checks passed. Recovery stays disabled. Payment provider sandbox, real refunds, hosted notification sending and complete hosted journeys are not-run.
+
+Latest comparable #155 10k loopback run:p50/p95 221.73/306.33ms→17.56/29.49ms,11→1calls,4787800→15285bytes. This is not production or regional browser latency. Current #159–#162 component screenshots include before/after390/768/1366, keyboard/200%zoom, interrupted apply/recovery/CSV, zero Axe/page errors. Full final-source hosted Lighthouse comparison remains not-run.
+
+## Historical 2026-09-29 package snapshot
+
+The following original matrix and measurements describe the earlier e3ebbb47 source, not current release state. Later sequential reports above supersede its counts and pending-status claims; historical performance values remain valid only for their stated environment.
 
 | Journey / role | Executed result | Required acceptance still not-run / blocked |
 |---|---|---|
@@ -9,7 +19,7 @@ All results below are **isolated synthetic/local** unless explicitly named. The 
 | Volunteers | #151 14/30-day coverage plus honest empty state and container; #152 safe bulk preview and sequential draft generation; #160 reviewer assignment 2 local DB pass/14 assertions. | Approved 14/30-day sessions/policy, email sink, two concurrent bookings, real-role 30-day planning, 1000 select with hosted role revocation, worker crash/retry. |
 | Supporter | #156 generic recovery request; #157 ownership projection, receipt authorization and explicit audited preference; isolated SQL 3 pass and CI five gates passed at `ef59ca3`. #159 tag bulk 2 DB pass/16 assertions. | Hosted OTP settings/email sink, token expiry/reuse, real private receipt download and logout/cache, ambiguous legacy identities. |
 | Finance | #135 server checkout policy, #136 immutable instructions, #137 committed payment versus receipt/email states, #138 HKT date/font reuse. No live method enabled. | Every intended provider's actual sandbox signature/cancel/timeout/out-of-order/amount/refund/PDF/email failure and durable event replay. Credentials and approval missing. |
-| CMS / content | #143 dirty-tab guard; #144 paged history; #145 estate version; #146 atomic fee reorder; #153 classification/content eligibility; #162 animal draft review 3 DB pass/18; #164 CMS draft review 3 DB pass/18 including audit failure rollback. | Real staff preview/publish/restore and 1002 revisions; content owner ID-by-ID classification, media ownership, live visibility and real-role browser UAT. |
+| CMS / content | #143 dirty-tab guard; #144 paged history; #145 estate version; #146 atomic fee reorder; #153 classification/content eligibility; #162 draft review bulk 3 DB pass/18 assertions including audit failure rollback. | Real staff preview/publish/restore and 1002 revisions; content owner ID-by-ID classification, media ownership, live visibility and real-role browser UAT. |
 | Admin roles / direct API | #148 private export jobs 3 DB pass/145 assertions (5,001 synthetic supporters/donations, claim fence, grants); #149 stale edit 3 DB pass/13; #159–#162 admin/staff API and grant tests. | All actual roles in `src/lib/admin/access.ts` tested against hosted direct API, export and private files; role revocation/cache residual in real session. |
 | Bulk / worker | #159 CRM 25/1000 and per-item version checks; #160 reviewer role/retry; #161 adoption row-version and stage race; #162 animal publication/classification race, duplicate apply, actor downgrade, expiry and forced audit failure rollback. #154 media starvation/fencing has 2 DB pass/450 assertions. | Other T23 domain operations, 500 media jobs, 100 receipt jobs, worker crash/lease replay, 1000-selection across every domain and real notification recipient preview. |
 | Responsive / a11y | Synthetic T16 390/768/1366 and 200% zoom captures; T17 bulk captures; #142 sponsorship 390px overflow fixed. CI brand/a11y at #161 passed. | Real role/mobile/keyboard UAT at source freeze; shortlist/contact overlap, modal focus and error focus across complete journeys. |
@@ -31,6 +41,6 @@ Mobile homepage score regressed 4 points in that early comparison; investigate o
 
 ## Exit/status evidence
 
-- T23 final local animal source: `npm.cmd run typecheck` exit 0; `npm.cmd run lint` exit 0 (52 warnings); `npm.cmd run build` exit 0; `SUPABASE_LOCAL_URL=http://127.0.0.1:57321 bun test --isolate` exit 0, 2875 pass/103 skip/0 fail/8945 assertions across 516 files.
-- Dedicated loopback DB after final role assertion: `CMS_REVIEW_BULK_TEST_DATABASE_URL=postgresql://postgres:***@127.0.0.1:57322/postgres CMS_REVIEW_BULK_TEST_ALLOW_LOCAL_FIXTURES=1 bun test --isolate src/lib/contentReview/cmsBulk.database.test.ts` exit 0, 3 pass/18 assertions. Fixture rolls back. `CHECK_RELEASE_SCHEMA_DATABASE_URL` checker exit 0, 114 compatible, zero issues.
-- Same-source remote CI #164 run `36347166456`: pending at package refresh. Parent #162/#163 five CI jobs each passed. Real provider, real email sink and hosted role/browser UAT: **not-run**.
+- T23 final local animal source: `npm.cmd run typecheck` exit 0; `npm.cmd run lint` exit 0 (52 warnings); `npm.cmd run build` exit 0; `SUPABASE_LOCAL_URL=http://127.0.0.1:57321 bun test --isolate` exit 0, 2870 pass/100 skip/0 fail/8914 assertions across 513 files before final test-only role assertion.
+- Dedicated loopback DB after final role assertion: `ANIMAL_REVIEW_BULK_TEST_DATABASE_URL=postgresql://postgres:***@127.0.0.1:57322/postgres ANIMAL_REVIEW_BULK_TEST_ALLOW_LOCAL_FIXTURES=1 bun test --isolate src/lib/contentReview/animalBulk.database.test.ts` exit 0, 3 pass/18 assertions. Fixture rolls back. `CHECK_RELEASE_SCHEMA_DATABASE_URL` checker exit 0, 109 compatible, zero issues.
+- Same-source remote CI #162 run `36345471697`: verify, RLS, a11y and performance passed; brand pending at capture. Real provider, real email sink and hosted role/browser UAT: **not-run**.

@@ -4,8 +4,18 @@ import { expect, test } from "bun:test";
 const databaseUrl = process.env.MEDIA_REPAIR_TEST_DATABASE_URL;
 if (databaseUrl) {
   const target = new URL(databaseUrl);
-  if (target.hostname !== "127.0.0.1" || target.port !== "57322" || target.pathname !== "/postgres")
-    throw new Error("Media repair fixtures require the dedicated loopback DB");
+  const dedicated = target.port === "57322" && target.pathname === "/postgres";
+  const clone = target.port === "52322" && target.pathname === "/audit_pr135_20260929";
+  const ci =
+    process.env.CI === "true" && target.port === "55322" && target.pathname === "/postgres";
+  if (
+    target.hostname !== "127.0.0.1" ||
+    !["postgres:", "postgresql:"].includes(target.protocol) ||
+    target.search ||
+    target.hash ||
+    !(dedicated || clone || ci)
+  )
+    throw new Error("Media repair fixtures require an explicit dedicated loopback DB");
 }
 const enabled = Boolean(databaseUrl) && process.env.MEDIA_REPAIR_TEST_ALLOW_LOCAL_FIXTURES === "1";
 
@@ -48,6 +58,7 @@ test.skipIf(!enabled)(
             [animal],
           );
         }
+        await tx`set local role service_role`;
         const first = (await tx.unsafe(
           "select public_path,lease_token,attempts from public.claim_due_animal_publication_media_copies(now() - interval '5 minutes',50)",
         )) as { public_path: string; lease_token: string; attempts: number }[];

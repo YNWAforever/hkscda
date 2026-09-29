@@ -1,12 +1,12 @@
 # T24 · staff operations and rollback handoff
 
-**Current state: review only.** All remediation PRs remain drafts. Production alias still points to original main at last verification. Staff must continue the currently approved production procedures; none of the new bulk, checkout, portal or content functions has been enabled by this package.
+**Current state (2026-09-30):** #134–#155 merged/deployed (22/46), main/alias 24196faf027998388eff3196a6979e23566e2443 READY, main CI five green. #156 onward not merged: actual local Auth concurrent OTP failure blocks sequential release. New checkout remains disabled; new recovery delivery/media schedules and real content classification remain unenabled. Later #159–#162 bulk interfaces are verified locally but not deployed. Staff continue approved live procedures until the relevant new function is explicitly enabled.
 
 ## Staff roles and day-one checks after an approved release
 
 | Owner | Required action / evidence |
 |---|---|
-| Release owner + DBA | Confirm exact app SHA, migration manifest checksum, production backup/restore test, ordered catalog/signature/grants/RLS/seed gate, compatible rollback target and CI at same SHA. Approve private candidate, migration and main merge separately. |
+| Release owner + DBA | Confirm exact app SHA, migration manifest checksum, production backup/restore test, ordered catalog/signature/grants/RLS/seed gate, compatible rollback target and CI at same SHA. Sequential main release is already approved when gates pass; obtain only outstanding exact production migration and operational activation approvals. |
 | Finance treasurer | Approve each payment method, public instructions/config version and account details; inspect sandbox callbacks, pending/uncertain reconciliation, receipt delivery and refund controls. Payment success remains committed even if PDF/email fails. Never bulk-refund or void without per-item review. |
 | Content owner | Review exact live IDs, source classification, photo rights, animal mapping, terms/copy diffs and public impact before any publication/archive. #133 fallback is only for CMS revision read `PGRST205`/`42P01`; permission, unexpected, missing published revision and invalid content stay errors. |
 | Volunteer coordinator | Approve policy and 14/30-day activity coverage; review each bulk preview's scope, exceptions and capacity. Confirm notices separately. |
@@ -17,8 +17,8 @@
 
 1. Select a bounded list with its displayed filters; confirm **this page** versus **all matching** and the count. A changed filter invalidates selection. No generic table editor exists.
 2. Run preview and read eligible, skipped and conflict reasons, before/after data, expiry and public impact. Do not use an expired snapshot or bypass a version conflict.
-3. Apply 25 at a time. Each item rechecks current role and record version; success, skipped, conflict and failed are distinct. Save the per-item result and audit reference. A refreshed tab can recover an unexpired operation.
-4. Retry only failed/conflicted items after a new preview; never replay completed groups. Notification draft, recipient preview and actual sending are separate approved actions. No workflow automatically publishes an animal or approves an adoption/payment.
+3. Apply 25 at a time. Each item rechecks current role and record version; success, skipped, conflict and failed are distinct. Save the per-item result and audit reference. A refreshed tab retains the saved operation ID. Use read recovery after an outage; pending mount recovery blocks a replacement preview.
+4. On an uncertain response, first reload durable results and continue still-pending items in the same operation; completed items are idempotent. Re-preview conflicts, expired snapshots or changed scope; never blindly undo completed groups. Notification draft, recipient preview and actual sending are separate approved actions. No workflow automatically publishes an animal or approves an adoption/payment.
 
 ## Incident isolation and rollback
 
@@ -26,12 +26,12 @@
 - Bulk issue: stop the specific UI/API operation, keep operation/result/audit rows, let in-flight per-item transactions settle, inspect succeeded versus failed IDs and perform a new snapshot for unresolved items. Do not blindly replay all IDs.
 - Media worker issue: pause new claims, retain leases/checkpoints and committed-public invariant, inspect stuck/permanent failure counts, then resume with fencing intact. Do not expose uncommitted media.
 - App rollback: no old app SHA is certified against the complete additive schema. Prove compatibility in a private candidate, leave additive schema/data in place, and roll app/config only. Do not restore an older DB over newer payment/audit/events.
-- Production DDL/publishing/payment enablement/main merge require separate approvals; no such approval is recorded here.
+- Sequential main release approval is recorded; exact production DDL approvals apply only to their named files. Publishing, payment enablement, new schedules, sending and refunds remain separately gated.
 
 ## Outstanding inputs for release owners
 
-- Current production catalog snapshot, grants/RLS/storage policies and sanitized data-bearing clone plus backup/restore rehearsal for 44 manifest files.
+- Current production catalog snapshot, grants/RLS/storage policies and sanitized data-bearing clone for the remaining per-PR changes; 51 source files are inventoried. Existing restricted backup has no Storage bytes and full restore remains not-run.
 - Approved payment policy/methods/instructions, provider sandbox credentials/account and webhook replay evidence; approved sponsorship terms PDF/hash, cancellation/refund copy.
 - Approved animal/story/photo ID list and rights, volunteer policy/session coverage, real content/seed diff, private candidate URL and test identities for every admin role.
-- Email test sink and hosted Auth OTP settings; monitoring/alert thresholds, five-minute worker/cron ownership, private regional benchmark, 390/768/1366 keyboard/200% UAT.
-- Remaining T23 domain implementations: sponsorship, finance, CMS expired/demo/missing-source queues and additional volunteer/adoption/animal/CRM safe actions. `tracker.csv` keeps ADMIN-04 partial.
+- Supported Auth atomic OTP redemption fix and hosted parity; local Mailpit sink already exercised; monitoring/alert thresholds, five-minute worker/cron ownership, private regional benchmark, 390/768/1366 keyboard/200% UAT.
+- Remaining T23 domain implementations: sponsorship, finance, CMS and additional volunteer/adoption/animal/CRM safe actions. `tracker.csv` keeps ADMIN-04 partial.

@@ -194,3 +194,21 @@ test("apply checkpoints at 25 items and resumes only pending rows after an HTTP 
   expect((await command()).status).toBe(200);
   expect(applied).toHaveLength(30);
 });
+
+test("malformed CRM bulk JSON is a client error without mutation", async () => {
+  let calls = 0;
+  const unexpected = async (): Promise<never> => {
+    calls++;
+    throw new Error("unexpected mutation");
+  };
+  const handle = createCrmTagBulkHandler({
+    authorize: async () => actor,
+    preview: unexpected,
+    read: unexpected,
+    applyItem: unexpected,
+  });
+  const response = await handle(new Request(url, { method: "POST", body: "{broken" }));
+  expect(response.status).toBe(400);
+  expect(response.headers.get("cache-control")).toBe("no-store");
+  expect(calls).toBe(0);
+});

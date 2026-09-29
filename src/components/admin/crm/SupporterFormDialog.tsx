@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Edit, UserPlus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   supporterRoles,
@@ -21,6 +21,30 @@ type SupporterFormDialogProps =
   | { mode: "create" }
   | { mode: "edit"; supporter: SupporterDetail | SupporterSummary };
 
+type Draft = {
+  name: string;
+  email: string;
+  phone: string;
+  language: "zh-HK" | "en";
+  tags: string;
+  roles: SupporterRole[];
+};
+
+function emptyDraft(): Draft {
+  return { name: "", email: "", phone: "", language: "zh-HK", tags: "", roles: ["donor"] };
+}
+
+function fromSupporter(supporter: SupporterDetail): Draft {
+  return {
+    name: supporter.name,
+    email: supporter.email,
+    phone: supporter.phone ?? "",
+    language: supporter.language,
+    tags: supporter.tags.join(", "),
+    roles: supporter.roles,
+  };
+}
+
 function splitTags(value: string) {
   return value
     .split(",")
@@ -29,34 +53,77 @@ function splitTags(value: string) {
 }
 
 export function SupporterFormDialog(props: SupporterFormDialogProps) {
-  const { pageCopy } = useAdminPageCopy();
+  const { language, pageCopy } = useAdminPageCopy();
   const copy = pageCopy.supporters;
   const queryClient = useQueryClient();
-  const existing = props.mode === "edit" ? props.supporter : null;
+  const supporterId = props.mode === "edit" ? props.supporter.id : null;
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState(existing?.name ?? "");
-  const [email, setEmail] = useState(existing?.email ?? "");
-  const [phone, setPhone] = useState(existing?.phone ?? "");
-  const [language, setLanguage] = useState<"zh-HK" | "en">(existing?.language ?? "zh-HK");
-  const [tags, setTags] = useState(existing?.tags.join(", ") ?? "");
-  const [roles, setRoles] = useState<SupporterRole[]>(existing?.roles ?? ["donor"]);
+  const [draft, setDraft] = useState<Draft>(emptyDraft);
+  const [baseline, setBaseline] = useState<Draft>(emptyDraft);
+  const [loadedId, setLoadedId] = useState<string | null>(null);
+  const [editVersion, setEditVersion] = useState<number | null>(null);
+  const [loadError, setLoadError] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [reloadToken, setReloadToken] = useState(0);
+  const [discardPrompt, setDiscardPrompt] = useState(false);
+  const ready = open && loadedId === (supporterId ?? "create") && !loading && !loadError;
+  const dirty = ready && JSON.stringify(draft) !== JSON.stringify(baseline);
   const roleLabels = copy.roleLabels as Record<SupporterRole, string>;
 
-  function resetCreateForm() {
-    if (props.mode === "edit") return;
-    setName("");
-    setEmail("");
-    setPhone("");
-    setLanguage("zh-HK");
-    setTags("");
-    setRoles(["donor"]);
-  }
+  useEffect(() => {
+    if (!open) return;
+    if (!supporterId) {
+      const blank = emptyDraft();
+      setDraft(blank);
+      setBaseline(blank);
+      setEditVersion(null);
+      setLoadedId("create");
+      setLoading(false);
+      setLoadError(false);
+      return;
+    }
+    const controller = new AbortController();
+    let active = true;
+    setLoading(true);
+    setLoadError(false);
+    setLoadedId(null);
+    void fetchAdminJson<{ supporter: SupporterDetail }>("/api/admin/supporters/" + supporterId, {
+      signal: controller.signal,
+    })
+      .then(({ supporter }) => {
+        if (!active) return;
+        if (!Number.isSafeInteger(supporter.editVersion) || supporter.editVersion < 1)
+          throw new Error("Supporter edit version is missing");
+        const next = fromSupporter(supporter);
+        setDraft(next);
+        setBaseline(next);
+        setEditVersion(supporter.editVersion);
+        setLoadedId(supporterId);
+      })
+      .catch(() => {
+        if (active) {
+          setEditVersion(null);
+          setLoadError(true);
+        }
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [open, supporterId, reloadToken]);
 
   function toggleRole(role: SupporterRole, checked: boolean) {
-    setRoles((current) => {
-      if (checked) return current.includes(role) ? current : [...current, role];
-      const next = current.filter((currentRole) => currentRole !== role);
-      return next.length > 0 ? next : current;
+    setDraft((current) => {
+      if (checked)
+        return {
+          ...current,
+          roles: current.roles.includes(role) ? current.roles : [...current.roles, role],
+        };
+      const next = current.roles.filter((currentRole) => currentRole !== role);
+      return { ...current, roles: next.length > 0 ? next : current.roles };
     });
   }
 
@@ -66,25 +133,26 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
         return fetchAdminJson("/api/admin/supporters", {
           method: "POST",
           body: JSON.stringify({
-            name,
-            email,
-            phone,
-            language,
-            tags: splitTags(tags),
-            roles,
+            name: draft.name,
+            email: draft.email,
+            phone: draft.phone,
+            language: draft.language,
+            tags: splitTags(draft.tags),
+            roles: draft.roles,
             source: "admin_manual",
           }),
         });
       }
-
-      return fetchAdminJson(`/api/admin/supporters/${props.supporter.id}`, {
+      if (editVersion === null) throw new Error("Supporter has not loaded");
+      return fetchAdminJson("/api/admin/supporters/" + props.supporter.id, {
         method: "PATCH",
         body: JSON.stringify({
-          name,
-          phone,
-          language,
-          tags: splitTags(tags),
-          roles,
+          name: draft.name,
+          phone: draft.phone,
+          language: draft.language,
+          tags: splitTags(draft.tags),
+          roles: draft.roles,
+          expectedVersion: editVersion,
           deleted: false,
         }),
       });
@@ -94,19 +162,36 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
       if (props.mode === "edit") {
         queryClient.invalidateQueries({ queryKey: ["crm-supporter", props.supporter.id] });
       }
-      resetCreateForm();
+      setDiscardPrompt(false);
       setOpen(false);
     },
   });
 
+  function changeOpen(nextOpen: boolean) {
+    if (nextOpen) {
+      mutation.reset();
+      setDiscardPrompt(false);
+      setLoadedId(null);
+      setOpen(true);
+      return;
+    }
+    if (mutation.isPending) return;
+    if (dirty) {
+      setDiscardPrompt(true);
+      return;
+    }
+    mutation.reset();
+    setOpen(false);
+  }
+
+  const conflict =
+    mutation.error &&
+    typeof mutation.error === "object" &&
+    "status" in mutation.error &&
+    mutation.error.status === 409;
+
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(nextOpen) => {
-        setOpen(nextOpen);
-        if (!nextOpen) mutation.reset();
-      }}
-    >
+    <Dialog open={open} onOpenChange={changeOpen}>
       <DialogTrigger asChild>
         <Button type="button" variant={props.mode === "edit" ? "outline" : "default"}>
           {props.mode === "edit" ? <Edit className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
@@ -119,95 +204,172 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
             {props.mode === "edit" ? copy.editSupporter : copy.newSupporter}
           </DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="supporter-name">{copy.form.name}</Label>
-            <Input
-              id="supporter-name"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="supporter-email">{copy.form.email}</Label>
-            <Input
-              id="supporter-email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              disabled={props.mode === "edit"}
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="supporter-phone">{copy.form.phone}</Label>
-            <Input
-              id="supporter-phone"
-              value={phone}
-              onChange={(event) => setPhone(event.target.value)}
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="supporter-language">{copy.form.language}</Label>
-            <Select
-              value={language}
-              onValueChange={(value) => setLanguage(value as "zh-HK" | "en")}
+        {loading || (open && !ready && !loadError) ? (
+          <p role="status" className="text-sm text-[var(--color-text-muted)]">
+            {language === "zh" ? "正在載入最新支持者資料…" : "Loading latest supporter details…"}
+          </p>
+        ) : null}
+        {loadError ? (
+          <div role="alert" className="space-y-2 text-sm text-[var(--color-destructive)]">
+            <p>{copy.loadError}</p>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setReloadToken((value) => value + 1)}
             >
-              <SelectTrigger id="supporter-language" aria-label={copy.form.language}>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="zh-HK">繁體中文</SelectItem>
-                <SelectItem value="en">English</SelectItem>
-              </SelectContent>
-            </Select>
+              {language === "zh" ? "重試" : "Retry"}
+            </Button>
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="supporter-tags">{copy.form.tags}</Label>
-            <Input
-              id="supporter-tags"
-              value={tags}
-              onChange={(event) => setTags(event.target.value)}
-            />
-          </div>
-          <fieldset className="grid gap-2">
-            <legend className="text-sm font-medium text-[var(--color-panel)]">
-              {copy.form.roles}
-            </legend>
-            <div className="grid gap-2 sm:grid-cols-2">
-              {supporterRoles.map((role) => {
-                const id = `supporter-role-${props.mode}-${role}`;
-                return (
+        ) : null}
+        {ready ? (
+          <div className="grid gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="supporter-name">{copy.form.name}</Label>
+              <Input
+                id="supporter-name"
+                value={draft.name}
+                onChange={(event) =>
+                  setDraft((current) => ({ ...current, name: event.target.value }))
+                }
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="supporter-email">{copy.form.email}</Label>
+              <Input
+                id="supporter-email"
+                value={draft.email}
+                onChange={(event) =>
+                  setDraft((current) => ({ ...current, email: event.target.value }))
+                }
+                disabled={props.mode === "edit"}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="supporter-phone">{copy.form.phone}</Label>
+              <Input
+                id="supporter-phone"
+                value={draft.phone}
+                onChange={(event) =>
+                  setDraft((current) => ({ ...current, phone: event.target.value }))
+                }
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="supporter-language">{copy.form.language}</Label>
+              <Select
+                value={draft.language}
+                onValueChange={(value) =>
+                  setDraft((current) => ({ ...current, language: value as "zh-HK" | "en" }))
+                }
+              >
+                <SelectTrigger id="supporter-language" aria-label={copy.form.language}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="zh-HK">繁體中文</SelectItem>
+                  <SelectItem value="en">English</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="supporter-tags">{copy.form.tags}</Label>
+              <Input
+                id="supporter-tags"
+                value={draft.tags}
+                onChange={(event) =>
+                  setDraft((current) => ({ ...current, tags: event.target.value }))
+                }
+              />
+            </div>
+            <fieldset className="grid gap-2">
+              <legend className="text-sm font-medium text-[var(--color-panel)]">
+                {copy.form.roles}
+              </legend>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {supporterRoles.map((role) => (
                   <label
                     key={role}
-                    htmlFor={id}
+                    htmlFor={"supporter-role-" + props.mode + "-" + role}
                     className="flex min-h-11 items-center gap-2 rounded-md border border-[var(--color-border)] px-3 py-2 text-sm"
                   >
                     <Checkbox
-                      id={id}
-                      checked={roles.includes(role)}
+                      id={"supporter-role-" + props.mode + "-" + role}
+                      checked={draft.roles.includes(role)}
                       onCheckedChange={(checked) => toggleRole(role, checked === true)}
                     />
                     {roleLabels[role]}
                   </label>
-                );
-              })}
+                ))}
+              </div>
+            </fieldset>
+            {mutation.error && (
+              <div role="alert" className="space-y-2 text-sm text-[var(--color-destructive)]">
+                <p>
+                  {conflict
+                    ? language === "zh"
+                      ? "資料已由其他職員更新。你的修改尚未儲存；請重新載入最新版本再編輯。"
+                      : "Another staff member changed this supporter. Your edits were not saved. Reload the latest version before editing."
+                    : mutation.error.message}
+                </p>
+                {conflict && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      mutation.reset();
+                      setReloadToken((value) => value + 1);
+                    }}
+                  >
+                    {language === "zh" ? "放棄本次修改並重新載入" : "Discard edits and reload"}
+                  </Button>
+                )}
+              </div>
+            )}
+            {discardPrompt && (
+              <div
+                role="alert"
+                className="space-y-2 rounded-md border border-[var(--color-border)] p-3 text-sm"
+              >
+                <p>
+                  {language === "zh" ? "尚有未儲存更改，確定要放棄？" : "Discard unsaved changes?"}
+                </p>
+                <div className="flex gap-2">
+                  <Button type="button" variant="outline" onClick={() => setDiscardPrompt(false)}>
+                    {language === "zh" ? "繼續編輯" : "Keep editing"}
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      mutation.reset();
+                      setDiscardPrompt(false);
+                      setOpen(false);
+                    }}
+                  >
+                    {language === "zh" ? "放棄更改" : "Discard changes"}
+                  </Button>
+                </div>
+              </div>
+            )}
+            <div className="flex gap-2">
+              <Button type="button" variant="outline" onClick={() => changeOpen(false)}>
+                {language === "zh" ? "取消" : "Cancel"}
+              </Button>
+              <Button
+                type="button"
+                onClick={() => mutation.mutate()}
+                disabled={
+                  mutation.isPending ||
+                  !draft.name.trim() ||
+                  draft.roles.length === 0 ||
+                  (props.mode === "create" && !draft.email.trim()) ||
+                  (props.mode === "edit" && (!dirty || editVersion === null))
+                }
+              >
+                {copy.saveSupporter}
+              </Button>
             </div>
-          </fieldset>
-          {mutation.error && (
-            <p className="text-sm text-[var(--color-destructive)]">{mutation.error.message}</p>
-          )}
-          <Button
-            type="button"
-            onClick={() => mutation.mutate()}
-            disabled={
-              mutation.isPending ||
-              !name.trim() ||
-              roles.length === 0 ||
-              (props.mode === "create" && !email.trim())
-            }
-          >
-            {copy.saveSupporter}
-          </Button>
-        </div>
+          </div>
+        ) : null}
       </DialogContent>
     </Dialog>
   );

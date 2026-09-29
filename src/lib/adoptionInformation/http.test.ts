@@ -9,7 +9,14 @@ function createService(overrides: Record<string, unknown> = {}) {
   return {
     listAdmin: mock(async () => ({ items: [], total: 0 })),
     upsertFee: mock(async () => ({ id: "fee-1" })),
-    upsertEstate: mock(async () => ({ id: "estate-1" })),
+    updateFeeContent: mock(async () => ({ id: "fee-1", version: 2 })),
+    reorderFees: mock(async () => [
+      { id: "fee-1", version: 3 },
+      { id: "fee-2", version: 2 },
+    ]),
+    createEstate: mock(async () => ({ id: "estate-1", version: 1, isPublished: false })),
+    updateEstate: mock(async () => ({ id: "estate-1", version: 2, isPublished: true })),
+    setEstatePublication: mock(async () => ({ id: "estate-1", version: 2, isPublished: true })),
     deleteEstate: mock(async () => undefined),
     upsertRule: mock(async () => ({ id: "rule-1" })),
     upsertCareTopic: mock(async () => ({ id: "topic-1" })),
@@ -67,37 +74,82 @@ describe("createAdoptionInformationHandlers.upsert", () => {
     const body = await response.json();
     expect(body).toEqual({ fee: { id: "fee-1" } });
     expect(service.upsertFee).toHaveBeenCalledWith({ actorUserId: actorId, input });
-    expect(service.upsertEstate).not.toHaveBeenCalled();
+    expect(service.createEstate).not.toHaveBeenCalled();
     expect(service.upsertRule).not.toHaveBeenCalled();
     expect(service.upsertCareTopic).not.toHaveBeenCalled();
   });
 
-  test("resource=estate returns 201 with { estate } and calls service.upsertEstate", async () => {
+  test("estate create returns canonical unpublished row with 201", async () => {
     const service = createService();
-    const requireAdoptionInformationAdmin = mock(async () => admin);
     const handlers = createAdoptionInformationHandlers({
-      requireAdoptionInformationAdmin,
+      requireAdoptionInformationAdmin: async () => admin,
       service,
     });
-
     const input = {
+      id: "22222222-2222-4222-8222-222222222222",
       estateName: "Harbourview Estate",
       district: "Kowloon",
       notes: null,
       sortOrder: 1,
-      isPublished: false,
     };
     const response = await handlers.upsert({
       request: request("http://localhost/x", {
         method: "POST",
-        body: JSON.stringify({ resource: "estate", input }),
+        body: JSON.stringify({ resource: "estate", command: "create", input }),
       }),
     });
-
     expect(response.status).toBe(201);
-    const body = await response.json();
-    expect(body).toEqual({ estate: { id: "estate-1" } });
-    expect(service.upsertEstate).toHaveBeenCalledWith({ actorUserId: actorId, input });
+    expect(await response.json()).toEqual({
+      estate: { id: "estate-1", version: 1, isPublished: false },
+    });
+    expect(service.createEstate).toHaveBeenCalledWith({ actorUserId: actorId, input });
+  });
+
+  test("estate publication invokes only the publication command", async () => {
+    const service = createService();
+    const handlers = createAdoptionInformationHandlers({
+      requireAdoptionInformationAdmin: async () => admin,
+      service,
+    });
+    const input = {
+      id: "22222222-2222-4222-8222-222222222222",
+      expectedVersion: 1,
+      isPublished: true,
+    };
+    const response = await handlers.upsert({
+      request: request("http://localhost/x", {
+        method: "POST",
+        body: JSON.stringify({ resource: "estate", command: "publication", input }),
+      }),
+    });
+    expect(response.status).toBe(200);
+    expect(service.setEstatePublication).toHaveBeenCalledWith({ actorUserId: actorId, input });
+    expect(service.updateEstate).not.toHaveBeenCalled();
+  });
+
+  test("old estate upsert cannot bypass the versioned commands", async () => {
+    const service = createService();
+    const handlers = createAdoptionInformationHandlers({
+      requireAdoptionInformationAdmin: async () => admin,
+      service,
+    });
+    const response = await handlers.upsert({
+      request: request("http://localhost/x", {
+        method: "POST",
+        body: JSON.stringify({
+          resource: "estate",
+          input: {
+            estateName: "Old",
+            district: "Kowloon",
+            notes: null,
+            sortOrder: 0,
+            isPublished: true,
+          },
+        }),
+      }),
+    });
+    expect(response.status).toBe(400);
+    expect(service.createEstate).not.toHaveBeenCalled();
   });
 
   test("resource=rule returns 201 with { rule } and calls service.upsertRule", async () => {
@@ -230,5 +282,75 @@ describe("createAdoptionInformationHandlers.upsert", () => {
 
     expect(response.status).toBe(403);
     expect(service.upsertRule).not.toHaveBeenCalled();
+  });
+  test("fee reorder is one authenticated command and rejects injected sort fields", async () => {
+    const service = createService();
+    const handlers = createAdoptionInformationHandlers({
+      requireAdoptionInformationAdmin: async () => admin,
+      service,
+    });
+    const input = {
+      firstId: "22222222-2222-4222-8222-222222222222",
+      secondId: "33333333-3333-4333-8333-333333333333",
+      expectedVersions: { first: 1, second: 1 },
+    };
+    const response = await handlers.upsert({
+      request: request("http://localhost/x", {
+        method: "POST",
+        body: JSON.stringify({ resource: "fee", command: "reorder", input }),
+      }),
+    });
+    expect(response.status).toBe(200);
+    expect((await response.json()).fees).toHaveLength(2);
+    expect(service.reorderFees).toHaveBeenCalledTimes(1);
+    expect(service.reorderFees).toHaveBeenCalledWith({ actorUserId: actorId, input });
+    expect(service.upsertFee).not.toHaveBeenCalled();
+
+    const invalid = await handlers.upsert({
+      request: request("http://localhost/x", {
+        method: "POST",
+        body: JSON.stringify({
+          resource: "fee",
+          command: "reorder",
+          input: { ...input, sortOrder: 999 },
+        }),
+      }),
+    });
+    expect(invalid.status).toBe(400);
+    expect(service.reorderFees).toHaveBeenCalledTimes(1);
+  });
+
+  test("fee content command rejects publication and order fields", async () => {
+    const service = createService();
+    const handlers = createAdoptionInformationHandlers({
+      requireAdoptionInformationAdmin: async () => admin,
+      service,
+    });
+    const input = {
+      id: "22222222-2222-4222-8222-222222222222",
+      expectedVersion: 3,
+      itemName: "Edited",
+      priceHkd: "HK$100",
+    };
+    const response = await handlers.upsert({
+      request: request("http://localhost/x", {
+        method: "POST",
+        body: JSON.stringify({ resource: "fee", command: "content", input }),
+      }),
+    });
+    expect(response.status).toBe(200);
+    expect(service.updateFeeContent).toHaveBeenCalledWith({ actorUserId: actorId, input });
+    const invalid = await handlers.upsert({
+      request: request("http://localhost/x", {
+        method: "POST",
+        body: JSON.stringify({
+          resource: "fee",
+          command: "content",
+          input: { ...input, isPublished: false, sortOrder: 7 },
+        }),
+      }),
+    });
+    expect(invalid.status).toBe(400);
+    expect(service.updateFeeContent).toHaveBeenCalledTimes(1);
   });
 });
