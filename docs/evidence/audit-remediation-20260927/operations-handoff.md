@@ -39,3 +39,7 @@
 ## Manual settlement recovery
 
 After a lost response retry the same payment and exact original reference. Only an identical committed request recovers its existing delivery job; a different reference is a conflict. Delivery busy reads its durable status, including complete/attention_required; retry from the job without another credit. Duplicate reference409 needs finance investigation. Keep new schedules disabled pending separate approval.
+
+## CMS quality queues
+
+Demo/expired/missing-source queues are read-only and overlap. Review each source; changing filters clears selected draft IDs and invalidates unfinished selection. Quality errors allow return to all-items. No automatic classification/unpublication. Apply no production migration until exact approved dependency preflight.

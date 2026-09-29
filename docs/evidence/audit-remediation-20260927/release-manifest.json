@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "appSha": "959b91b7d3bb2395f62f53ac13512149652133ec",
-  "appShaNote": "Reviewed PR165 manual settlement and prior PR164 queue fixes; later PR166-179 excluded.",
+  "appSha": "4f3f2f7e22afc2d8d2bbdf4cb05044a6701df7ee",
+  "appShaNote": "Reviewed PR166 quality queue plus predecessor fixes; later PR167-179 excluded.",
   "productionAliasShaObserved": "24196faf027998388eff3196a6979e23566e2443",
-  "schemaManifestHash": "a7340b9a9b832e427f990ac9b584c7278a06909cbdbb84992fddfb6e90202e12",
+  "schemaManifestHash": "47b9e3bd6959ca697af243af26002b1b17263676276a0911241549bc38be203d",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
@@ -277,12 +277,17 @@
       "version": "20260927201916",
       "file": "20260927201916_manual_payment_atomic_reference.sql",
       "sha256": "d4f683821d1277d4d6b05d6d671fd63e66f6bc75d274e25496f29e4dc5c37b86"
+    },
+    {
+      "version": "20260927211801",
+      "file": "20260927211801_editorial_quality_queue.sql",
+      "sha256": "8c1b4550d4361f348246654bab356f3cd2366de48afb0eb384b90efb38526642"
     }
   ],
   "ciRun": {
     "id": null,
-    "sha": "959b91b7d3bb2395f62f53ac13512149652133ec",
-    "status": "PR165 unchanged finance plus parent selection fix; fresh remote CI pending"
+    "sha": "4f3f2f7e22afc2d8d2bbdf4cb05044a6701df7ee",
+    "status": "local gates passed on identical e229f46d runtime; exact remote CI pending"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -296,7 +301,8 @@
     "docs/evidence/audit-remediation-20260927/sequential-merge-156-20260930.md",
     "docs/evidence/audit-remediation-20260927/sequential-merge-163-20260930.md",
     "docs/evidence/audit-remediation-20260927/sequential-merge-164-20260930.md",
-    "docs/evidence/audit-remediation-20260927/sequential-merge-165-20260930.md"
+    "docs/evidence/audit-remediation-20260927/sequential-merge-165-20260930.md",
+    "docs/evidence/audit-remediation-20260927/sequential-merge-166-20260930.md"
   ],
   "rollbackTarget": {
     "appSha": null,
@@ -595,7 +601,7 @@
   "productionDeploymentId": "dpl_DJpjHkmVayPsXZqwiA2CMJG43Ygk",
   "productionDeploymentState": "READY",
   "productionSchemaLedgerCountObserved": 95,
-  "migrationManifestNote": "53 unique source-file inventory entries; not a command to apply every file or rewrite provider ledger timestamps. Follow exact approved per-PR dependency runbooks and observed catalog.",
+  "migrationManifestNote": "54 unique source-file inventory entries; not a command to apply every file or rewrite provider ledger timestamps. Follow exact approved per-PR dependency runbooks and observed catalog.",
   "productionCiRun": {
     "id": 36624781016,
     "sha": "24196faf027998388eff3196a6979e23566e2443",
@@ -608,7 +614,9 @@
     "migration161": "exact approval requested; pending",
     "migration162": "exact approval requested; pending; reviewed SQL unchanged by queue fix",
     "migration164": "exact approval requested; pending",
-    "migration165": "not requested; review and exact-head CI pending"
+    "migration165": "not requested; review and exact-head CI pending",
+    "migration166": "not requested; exact CI pending",
+    "release156": "explicit disabled-feature exception requested; no answer received; original blocking gate retained"
   },
   "blockedGate": {
     "pr": 156,

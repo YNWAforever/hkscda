@@ -91,3 +91,7 @@ CMS bulk actor-lock/JSON/recovery/queue races repaired and independently reviewe
 ## 2026-09-30 PR165
 
 Reproduced/fixed actor revocation race, lost committed response recovery, CRM duplicate-reference409 and durable delivery status on busy. Four findings closed; local gates pass. Code complete for this slice; schema ready only locally;deployed/operationally-enabled no. Exact CI/schema approval pending; original overall task remains in progress.
+
+## 2026-09-30 PR166
+
+Quality queue read regression complete: generation race and400/403mapping repaired;1000-row actual-role pagination preserves all content/audit. Code complete for this slice; schema ready locally only;not deployed or enabled. #162-#165 selection backport propagated. Independent #167 review proceeds.
