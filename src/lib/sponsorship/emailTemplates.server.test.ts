@@ -14,18 +14,79 @@ describe("renderPledgeConfirmationEmail", () => {
       amountCents: 30000,
       status: "pending_payment",
       statusUrl: "https://hkscda.com/sponsors/status/raw-token",
+      paymentInstructions: [
+        {
+          instructionsActive: true,
+          snapshot: {
+            configId: "9a78c87c-1e3a-4c02-b551-71a9b69a5412",
+            configVersion: 2,
+            purpose: "sponsorship",
+            method: "fps",
+            displayLabelZh: "轉數快 FPS",
+            displayLabelEn: "FPS",
+            details: { payableTo: "Synthetic charity", identifier: "FPS TEST-123" },
+            capturedAt: "2026-09-27T00:00:00Z",
+          },
+        },
+      ],
     });
     expect(email.subject).toContain("SP-ABCDEF12");
     expect(email.html).toContain("陳小姐");
     expect(email.html).toContain("SP-ABCDEF12");
     expect(email.html).toContain("HK$300");
     expect(email.html).toContain("轉數快");
-    expect(email.html).toContain("8727588");
-    expect(email.html).toContain("124-511320-838");
+    expect(email.html).toContain("FPS TEST-123");
+    expect(email.html).toContain("Synthetic charity");
+    expect(email.html).not.toContain("8727588");
+    expect(email.html).not.toContain("124-511320-838");
     expect(email.html).not.toContain("012-345-678901");
     expect(email.html).not.toContain("@hkscda");
     expect(email.html).toContain("https://hkscda.com/sponsors/status/raw-token");
     expect(email.html).toContain("查看助養狀態");
+  });
+
+  test("pending email without approved instructions requests staff verification and exposes no legacy account", () => {
+    const email = renderPledgeConfirmationEmail({
+      language: "zh-HK",
+      supporterName: "陳小姐",
+      reference: "SP-ABCDEF12",
+      amountCents: 30000,
+      status: "pending_payment",
+      statusUrl: "https://hkscda.com/sponsors/status/raw-token",
+    });
+    expect(email.html).toContain("聯絡");
+    expect(email.html).not.toContain("8727588");
+    expect(email.html).not.toContain("124-511320-838");
+    expect(email.html).not.toContain("goo.gl");
+  });
+
+  test("escapes approved account details in the email body", () => {
+    const email = renderPledgeConfirmationEmail({
+      language: "en",
+      supporterName: "Synthetic",
+      reference: "SP-TEST",
+      amountCents: 30000,
+      status: "pending_payment",
+      statusUrl: "https://example.test/status",
+      paymentInstructions: [
+        {
+          instructionsActive: true,
+          snapshot: {
+            configId: "9a78c87c-1e3a-4c02-b551-71a9b69a5412",
+            configVersion: 2,
+            purpose: "sponsorship",
+            method: "fps",
+            displayLabelZh: "轉數快 FPS",
+            displayLabelEn: "FPS",
+            details: { payableTo: "<img src=x>", identifier: "FPS <script>" },
+            capturedAt: "2026-09-27T00:00:00Z",
+          },
+        },
+      ],
+    });
+    expect(email.html).not.toContain("<img src=x>");
+    expect(email.html).not.toContain("<script>");
+    expect(email.html).toContain("&lt;img src=x&gt;");
   });
 
   test("renders en provisional email without payment instructions but with status link", () => {
