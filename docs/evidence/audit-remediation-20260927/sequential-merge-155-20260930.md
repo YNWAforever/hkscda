@@ -39,3 +39,8 @@ These are local DB/client measurements, not Hong Kong browser latency, deployed 
 Production migration: not applied; explicit exact-file approval required. Schema before code, preceded by catalog/hash/grant checks and backup verification; record actual provider migration identity, preserve ledger history. Postflight requires generated-column/index validity, public RPC grants, anon result/no-private-data checks and unchanged old-field row hash. Keep image transformations disabled until provider plan/quota and operational approval.
 
 Rollback application retains additive column/indexes/RPC and historical age text; the previous app can select its old columns. Do not drop the stored column or restore a stale full database over newer edits. Existing restricted DPAPI backup is documented in the preceding release packages; full restore and Storage bytes remain outside that evidence. Real staff/browser identity journeys and live thumbnail service remain not-run. Wider R01 compatibility is not closed by this page RPC.
+
+
+## Exact approval checkpoint — 2026-09-30 HKT
+
+User approved only `20260927143710_public_animal_listing_page.sql`, after #153 and #154 complete. Source SQL and SHA-256 above are unchanged. Current reviewed head 83779273d103271d117220aa16b3a32a32761e24: CI 36611872084 all five gates succeeded, including the public listing DB step. No production migration has been applied at this checkpoint; #153 exact approval is still pending. Existing animal content and paid image transform settings must remain unchanged.
