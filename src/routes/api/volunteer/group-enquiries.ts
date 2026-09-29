@@ -65,7 +65,12 @@ export function createGroupEnquiryRouteHandler({
   submitPublicEnquiry,
   verifyTurnstileToken = async (token, ip) => verifyTurnstile(token, ip),
   enforceRateLimitForRequest = async (request) =>
-    enforceRateLimit(getClientIp(request), { prefix: "volunteer-group", max: 5, window: "1 m" }),
+    enforceRateLimit(getClientIp(request), {
+      prefix: "volunteer-group",
+      max: 5,
+      window: "1 m",
+      requireAvailability: true,
+    }),
 }: CreateGroupEnquiryRouteHandlerArgs) {
   return async ({ request }: HandlerContext) => {
     if (request.method !== "POST") {
@@ -74,6 +79,12 @@ export function createGroupEnquiryRouteHandler({
 
     return withGroupEnquiryErrors(async () => {
       const rateLimit = await enforceRateLimitForRequest(request);
+      if (rateLimit.unavailable) {
+        return jsonNoStore(
+          { error: "Submission temporarily unavailable. Please try again later." },
+          { status: 503, headers: { "cache-control": "no-store", "retry-after": "60" } },
+        );
+      }
       if (!rateLimit.ok) {
         return jsonNoStore(
           { error: "Too many requests. Please try again shortly." },

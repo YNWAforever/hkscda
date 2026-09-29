@@ -150,10 +150,12 @@ export function createPublicAdoptionPageReaderFromClient(client: SupabaseClient)
   });
 }
 
-export async function loadPublicAdoptionPage() {
+export async function loadPublicAdoptionPage(
+  load = createPublicAdoptionPageReaderFromClient(createSupabaseServiceClient()),
+) {
   try {
-    return await createPublicAdoptionPageReaderFromClient(createSupabaseServiceClient())();
-  } catch {
-    throw new Error("Could not load adoption information");
+    return await load();
+  } catch (error) {
+    throw new Error("Could not load adoption information", { cause: error });
   }
 }

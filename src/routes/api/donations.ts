@@ -32,7 +32,14 @@ export const Route = createFileRoute("/api/donations")({
           prefix: "donations",
           max: 5,
           window: "1 m",
+          requireAvailability: true,
         });
+        if (limit.unavailable) {
+          return Response.json(
+            { error: "Submission temporarily unavailable. Please try again later." },
+            { status: 503, headers: { "cache-control": "no-store", "retry-after": "60" } },
+          );
+        }
         if (!limit.ok) {
           return Response.json(
             { error: "Too many requests. Please try again shortly." },

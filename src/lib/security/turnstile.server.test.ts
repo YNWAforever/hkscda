@@ -22,6 +22,15 @@ describe("verifyTurnstile", () => {
     expect(await verifyTurnstile("anything", "203.0.113.7", { secret: undefined })).toBe(true);
   });
 
+  test("fails closed in production when no secret is configured", async () => {
+    expect(
+      await verifyTurnstile("anything", "203.0.113.7", {
+        secret: "",
+        isProduction: true,
+      }),
+    ).toBe(false);
+  });
+
   test("fails closed when a secret is set but the token is missing", async () => {
     expect(await verifyTurnstile(undefined, "203.0.113.7", { secret: "sk" })).toBe(false);
     expect(await verifyTurnstile("", "203.0.113.7", { secret: "sk" })).toBe(false);

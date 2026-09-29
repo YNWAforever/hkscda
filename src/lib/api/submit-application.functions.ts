@@ -234,7 +234,12 @@ export const submitApplication = createServerFn({ method: "POST" })
     // leftmost x-forwarded-for entry, which is client-spoofable and would let
     // an attacker mint a fresh rate-limit bucket per request.
     const ip = clientIpFromHeaders((name) => getRequestHeader(name) ?? null);
-    const limit = await enforceRateLimit(ip, { prefix: "adoption", max: 5, window: "1 m" });
+    const limit = await enforceRateLimit(ip, {
+      prefix: "adoption",
+      max: 5,
+      window: "1 m",
+      requireAvailability: true,
+    });
     if (!limit.ok) {
       throw new Error("Too many requests. Please try again shortly.");
     }

@@ -22,7 +22,14 @@ export const Route = createFileRoute("/api/volunteer/registrations")({
           prefix: "volunteer",
           max: 5,
           window: "1 m",
+          requireAvailability: true,
         });
+        if (limit.unavailable) {
+          return jsonNoStore(
+            { error: "Submission temporarily unavailable. Please try again later." },
+            { status: 503, headers: { "cache-control": "no-store", "retry-after": "60" } },
+          );
+        }
         if (!limit.ok) {
           return jsonNoStore(
             { error: "Too many requests. Please try again shortly." },

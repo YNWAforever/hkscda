@@ -62,7 +62,8 @@ function recoveredStatusUrl(appUrl: string, statusToken: string) {
 }
 
 export function createAdoptionApplicationsHandler({
-  rateLimit = (ip) => enforceRateLimit(ip, { prefix: "adoption", max: 5, window: "1 m" }),
+  rateLimit = (ip) =>
+    enforceRateLimit(ip, { prefix: "adoption", max: 5, window: "1 m", requireAvailability: true }),
   parse = parseAdoptionSubmission,
   createClient = createSupabaseServiceClient,
   loadIntent = loadAdoptionUploadIntent,
@@ -82,6 +83,12 @@ export function createAdoptionApplicationsHandler({
   return async (request: Request) => {
     const ip = getClientIp(request);
     const limit = await rateLimit(ip);
+    if (limit.unavailable) {
+      return jsonNoStore(
+        { error: "Submission temporarily unavailable. Please try again later." },
+        { status: 503, headers: { "cache-control": "no-store", "retry-after": "60" } },
+      );
+    }
     if (!limit.ok) {
       return jsonNoStore(
         { error: "Too many requests. Please try again shortly." },

@@ -19,9 +19,16 @@ export function resilientPublicLoader<T>(
     try {
       return { status: "ok", data: await load() };
     } catch (error) {
-      // Logged rather than swallowed: the page degrades, but the cause still has
-      // to reach the server logs.
-      console.error("Public loader failed; rendering the unavailable state.", error);
+      // Database messages can contain private content. Log only a safe error code.
+      const candidate =
+        error instanceof Error || (typeof error === "object" && error !== null)
+          ? (error as { code?: unknown }).code
+          : undefined;
+      const code =
+        typeof candidate === "string" && /^[A-Z0-9_]{2,16}$/.test(candidate)
+          ? candidate
+          : "UNKNOWN";
+      console.error("Public loader failed; rendering the unavailable state.", { code });
       return { status: "error" };
     }
   };

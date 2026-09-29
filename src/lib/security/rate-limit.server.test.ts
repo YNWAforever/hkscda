@@ -76,6 +76,33 @@ describe("enforceRateLimit", () => {
     expect(result.ok).toBe(true);
   });
 
+  test("blocks a production public form when the limiter is unavailable", async () => {
+    const result = await enforceRateLimit(
+      "203.0.113.7",
+      { prefix: "public-form", max: 5, window: "1 m", requireAvailability: true },
+      { limiter: null, isProduction: true },
+    );
+    expect(result.ok).toBe(false);
+    expect(result.unavailable).toBe(true);
+  });
+
+  test("blocks a production public form when Redis fails", async () => {
+    const result = await enforceRateLimit(
+      "203.0.113.7",
+      { prefix: "public-form", max: 5, window: "1 m", requireAvailability: true },
+      {
+        limiter: {
+          async limit() {
+            throw new Error("private user detail");
+          },
+        },
+        isProduction: true,
+      },
+    );
+    expect(result.ok).toBe(false);
+    expect(result.unavailable).toBe(true);
+  });
+
   test("allows the request when the limiter reports success", async () => {
     const limiter: RateLimiter = {
       async limit() {

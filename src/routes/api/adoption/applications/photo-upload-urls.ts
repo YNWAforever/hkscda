@@ -51,7 +51,12 @@ function jsonNoStore(body: unknown, init: ResponseInit = {}) {
 
 export function createPhotoUploadUrlsHandler({
   enforceRateLimit: limit = (ip) =>
-    enforceRateLimit(ip, { prefix: "adoption-photo-upload-urls", max: 10, window: "1 m" }),
+    enforceRateLimit(ip, {
+      prefix: "adoption-photo-upload-urls",
+      max: 10,
+      window: "1 m",
+      requireAvailability: true,
+    }),
   verifyToken = verifyTurnstile,
   createClient = createSupabaseServiceClient,
   signUploads = createSignedUploadUrls,
@@ -62,6 +67,12 @@ export function createPhotoUploadUrlsHandler({
   return async (request: Request) => {
     const ip = getClientIp(request);
     const rateLimit = await limit(ip);
+    if (rateLimit.unavailable) {
+      return jsonNoStore(
+        { error: "Submission temporarily unavailable. Please try again later." },
+        { status: 503, headers: { "cache-control": "no-store", "retry-after": "60" } },
+      );
+    }
     if (!rateLimit.ok) {
       return jsonNoStore(
         { error: "Too many requests. Please try again shortly." },
