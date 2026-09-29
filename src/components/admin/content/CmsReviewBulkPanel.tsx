@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type { CmsReviewBulkOperation } from "../../../routes/api/admin/content/review-bulk";
@@ -29,6 +29,13 @@ export function CmsReviewBulkPanel({
   const [busy, setBusy] = useState(false);
   const [recoveryId, setRecoveryId] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const mounted = useRef(false);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     const saved = sessionStorage.getItem(savedOperationKey);
@@ -90,6 +97,7 @@ export function CmsReviewBulkPanel({
         method: "POST",
         body: JSON.stringify({ action: "preview", ids: selectedIds, evidence, filterHash }),
       });
+      if (!mounted.current) return;
       sessionStorage.setItem(savedOperationKey, result.operationId);
       setRecoveryId(result.operationId);
       setOperation(result);

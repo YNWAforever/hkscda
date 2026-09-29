@@ -343,12 +343,7 @@ for (const mode of ["actor", "draft"] as const)
                       actor,
                     ],
                   ]
-                : [
-                    [
-                      "update public.content_item set status='archived' where id=$1::uuid",
-                      animal,
-                    ],
-                  ];
+                : [["update public.content_item set status='archived' where id=$1::uuid", animal]];
             for (const [query, id] of changes)
               await expect(
                 other.begin(async (tx2) => {
@@ -474,10 +469,9 @@ test.skipIf(!url || process.env.CMS_REVIEW_BULK_TEST_ALLOW_LOCAL_FIXTURES !== "1
           "update public.content_item set draft_revision_id=$1::uuid where id=$2::uuid",
           [later, ids[200]],
         );
-        await tx.unsafe(
-          "update public.content_item set status='archived' where id=$1::uuid",
-          [ids[201]],
-        );
+        await tx.unsafe("update public.content_item set status='archived' where id=$1::uuid", [
+          ids[201],
+        ]);
         await tx.unsafe(
           "insert into public.editorial_content_review(entity_kind,entity_id,revision_key,classification,evidence,reviewed_by) values('content',$1::uuid,$2,'approved','concurrent synthetic review',$3::uuid)",
           [ids[202], revisions[202], actor],
