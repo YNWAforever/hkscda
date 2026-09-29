@@ -58,3 +58,8 @@ See sequential-merge-168-20260930.md. Final3051pass/133skip, strict typecheck/li
 ## PR169 preparation — 2026-09-30
 
 PR169: saved indicates committed assignment; failed refresh never undoes it. Unknown retry retains original owner/version; conflict requires inspecting current owner and explicit selection. Eligible staff/admin only; current Auth is rechecked by DB. No proof/payment approval, email, refund or schedule.
+
+
+## PR170 preparation — 2026-09-30
+
+PR170 recovery GET failure retains operationID; reload results before resuming pending items. Filters clear selection. Expired operation requires explicit fresh snapshot for unresolved items, keeping prior results. No proof/payment approval or notifications.

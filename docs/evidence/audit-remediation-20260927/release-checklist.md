@@ -62,3 +62,8 @@ See sequential-merge-168-20260930.md. Final3051pass/133skip, strict typecheck/li
 ## PR169 preparation — 2026-09-30
 
 PR169 local code/gates ready,production schema/deploy/enable not ready. Inventory55. Full3065pass137skip,typecheck/lint/build0;12browser cases/Axe0;exact source SQL rehearsal. Await exact-headCI,ordered predecessors and schema approval. #168 fivegatesSUCCESS36642612271;#156 actual OTP failure remains blocking.
+
+
+## PR170 preparation — 2026-09-30
+
+PR170 code/local gates complete;schema approved/applied=no,deployed=no,operationally enabled=no.56fileinventory. Full3074pass141skip9628assert;typecheck/build0;lint0beforecatalog-onlymerge;1000itemservice_role;3widthAxe0. Orderedmerge stillblocked#156;exact schema approval andlatestCIrequired.

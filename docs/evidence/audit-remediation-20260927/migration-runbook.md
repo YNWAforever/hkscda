@@ -216,3 +216,8 @@ Exact unchanged SQL8c1b4550d4361f348246654bab356f3cd2366de48afb0eb384b90efb38526
 ## PR169 preparation — 2026-09-30
 
 PR169 exact candidate20260928073000 SHA256 c1eb28ad0953d0ae3f9d85c574c363ee2fe342ea68ddc5bd9f6b9b09baf04ef2: owner/version trigger and assignment+eligible-picker RPCs. Full2row isolated rollback8.59ms,service_role4tests24assert. Production2pledges/0needs_followup/candidateabsent/ledger95. Exact approval pending; preserve additive schema on rollback.
+
+
+## PR170 preparation — 2026-09-30
+
+PR170 candidate20260928080000 SHA256 d70e5fc37a71a34a7513ee27b435e0f38585bf4ed314626212bb3f3032c2ffec unchanged.2private snapshot tables,3publicserviceRPCs. Requires169 schema. Full2oldrow SQL rehearsal12.19ms,1000item897success101skip2conflict,allrollback. Productioncandidateabsent/2pledges/ledger95;exact approval pending;retain durable results on rollback.

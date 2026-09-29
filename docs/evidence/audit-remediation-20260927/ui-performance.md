@@ -29,3 +29,8 @@ No production deploy, payment enablement, content publication or email send occu
 ## PR169 preparation — 2026-09-30
 
 PR169 before/after screenshot pairs t23-followup-{before,after}-{390,768,1366}.png: actual response-loss UI; fixed shows saved.12isolated browser cases,Axe0. No before/after performance improvement claimed; one local DDL rehearsal8.59ms only.
+
+
+## PR170 preparation — 2026-09-30
+
+PR1703widthbefore/afterrecovery screenshots and390mobilecheckbox pair;Axe0/errors0.1000snapshot localpreview51.41ms/apply900948.87ms currentonly;no same-environmentbefore/after improvementclaim.
