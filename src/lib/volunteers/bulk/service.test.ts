@@ -5,6 +5,14 @@ test("Hong Kong date conversion and four-week weekdays ignore device timezone", 
   expect(addHkDays("2026-12-31", 1)).toBe("2027-01-01");
   expect(generationDates("2026-09-15", "2026-10-12", [0, 1, 2, 3, 4, 5, 6], [])).toHaveLength(28);
   expect(generationDates("2026-09-15", "2026-10-12", [1], ["2026-09-21"])).toHaveLength(3);
+  expect(
+    generationDates(
+      "2026-09-15",
+      addHkDays("2026-09-15", 55),
+      [0, 1, 2, 3, 4, 5, 6],
+      ["2026-09-22"],
+    ),
+  ).toHaveLength(55);
   expect(hkTimeLabel("2026-09-14T16:30:00Z")).toContain("00:30");
 });
 test("invalid operation input and excess per-request selection rejected before repository", () => {
