@@ -46,6 +46,7 @@ describe("public adoption information page reader", () => {
             fees: [
               {
                 id: "fee-cat",
+                version: 1,
                 animalType: "cat" as const,
                 itemName: "Cat",
                 priceHkd: "500",
@@ -54,6 +55,7 @@ describe("public adoption information page reader", () => {
               },
               {
                 id: "fee-dog",
+                version: 1,
                 animalType: "dog" as const,
                 itemName: "Dog",
                 priceHkd: "1,000",

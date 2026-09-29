@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { readPublicJson } from "../../../lib/http/publicJson.server";
+import { RequestBodyTooLargeError, readPublicJson } from "../../../lib/http/publicJson.server";
 import { enforceRateLimit, type RateLimitResult } from "../../../lib/security/rate-limit.server";
 import { createSupabaseServiceClient } from "../../../lib/supabase.server";
 import {
@@ -31,7 +31,16 @@ export function createPreferenceHandler(deps: {
       if (!rate.ok) {
         return Response.json({ error: "Too many requests" }, { status: 429, headers });
       }
-      const body = (await readPublicJson(request)) as Record<string, unknown> | null;
+      let body: Record<string, unknown> | null;
+      try {
+        body = (await readPublicJson(request)) as Record<string, unknown> | null;
+      } catch (error) {
+        const oversized = error instanceof RequestBodyTooLargeError;
+        return Response.json(
+          { error: oversized ? "Request body too large" : "Invalid JSON" },
+          { status: oversized ? 413 : 400, headers },
+        );
+      }
       const status = body && !Array.isArray(body) ? body.marketingEmail : null;
       if (status !== "opt_in" && status !== "opt_out") {
         return Response.json({ error: "Invalid preference" }, { status: 400, headers });

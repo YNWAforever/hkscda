@@ -12,6 +12,11 @@ test("release manifest covers every new public table, RPC, and additive column a
   expect(tables).toHaveLength(24);
   expect(functions.length).toBeGreaterThanOrEqual(79);
   expect(columns).toContain("public_status_token.submission_fingerprint");
+  expect(columns).toContain("dog_friendly_estates.version");
+  expect(columns).toContain("adoption_fees.version");
+  expect(functions).toContain("update_adoption_fee_content_with_audit");
+  expect(functions).toContain("reorder_adoption_fees_with_audit");
+  expect(functions).toContain("mutate_dog_friendly_estate_with_audit");
   expect(columns).toContain("donation.idempotency_fingerprint");
   expect(columns).toContain("payment.checkout_attempted_at");
   expect(columns).toContain("adoption_case.bulk_row_version");

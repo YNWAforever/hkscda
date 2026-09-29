@@ -67,6 +67,8 @@ export async function applyReviewedGroups<T extends ReviewOperation>(
   let current = operation;
   for (const { index } of operation.groups) {
     if (current.groups.find((group) => group.index === index)?.state === "applied") continue;
+    if (!reviewBulkOperation(current).canRunSequentially)
+      return { operation: current, halted: "review_required" };
     try {
       current = await apply(operation.id, index);
     } catch {

@@ -31,18 +31,20 @@ Status: **schema-ready = no**. This document is a review and rehearsal checklist
 
 - Merge to `main` deploys automatically; require a specific release approval. Production DDL, public preview, checkout enablement and content publication are separate approvals.
 - Prefer roll-forward repair once provider events or new financial data exist. A database restore from an older backup can erase post-backup payments and must not be used as a routine rollback.
-- The current `f8d5e5d` application can display the approved public instructions seed when revision tables are missing, but the other new paths need the missing schema. No older application SHA has been verified against both the current production catalog and recent payment/audit behavior, so **rollbackTarget = unverified**. Pausing affected _new_ submissions must leave existing webhook intake, durable event handling and reconciliation available.
+- The current `f8d5e5d` application can display the approved public instructions seed when revision tables are missing, but the other new paths need the missing schema. No older application SHA has been verified against both the current production catalog and recent payment/audit behavior, so **rollbackTarget = unverified**. Pausing affected *new* submissions must leave existing webhook intake, durable event handling and reconciliation available.
 - Preserve #130 atomic audit, signed proof intent, fingerprint/idempotency, body limits, suspended-user revalidation and commit-before-public media. Do not bypass those guards to regain compatibility.
 
 ## Owners and remaining gates
 
 DB release owner: review exact SQL diffs, lock estimates, backfill, backup/restore and app compatibility; authorize production migration only after isolated rehearsal. Release owner: approve the tested app SHA and verify same-SHA CI, content smoke and rollback boundary. Finance owner: separately approve any payment method activation after sandbox evidence.
 
+
 ## T19 media repair migration addendum
 
 Version 20260927140000, SHA-256 dfe96f1a4f8d73a0e8f606e14fb2854d8c91c2b6818cc2917c279a0d85e1e429. Additive columns and due indexes on animal_publication_media_copy and content_public_asset; bounded backfill updates existing rows. The animal claim return table gains lease_token and attempts; content claim retains setof content_public_asset with new columns. Legacy acknowledgement signatures remain. New token-acknowledgement, failure, staff backlog and audited retry functions are service-role only.
 
 Dry-run the full file in a transaction against a sanitized data-bearing clone, record row counts, lock waits, runtime, query plans and rollback time, then apply only after the DB release owner approves the full ordered manifest and backup. Re-check RLS, four constraints, two due indexes, all six new function signatures and forbidden-role EXECUTE grants; run the 84-requirement release checker and queue fixtures. A one-hour legacy lease can remain after code cutover; let it expire before the new worker reclaims. Keep the new cron off until hosting schedule/duration and schema deployment are verified. Restore application config or disable the new cron for an incident; retain queue schema and intents. Do not restore an old DB snapshot over newer payment or media events.
+
 
 ## T21 public listing migration addendum
 
@@ -54,11 +56,80 @@ Version 20260927163302, SHA-256 3c945333e0ee484d61fcfca2c2e29e4dfef9805945d993b2
 
 The function was rehearsed in a transaction on the unlinked loopback DB, then applied there for synthetic rollback-only tests. This local manual application did not fabricate a migration ledger row. Before release, rehearse the complete ordered migration file on both a fresh disposable DB and a sanitized data-bearing clone. Verify exact function signature, pinned search path, service-role-only EXECUTE, Auth/supporter/consent/audit dependencies, concurrent preference writes, and rollback. App promotion must follow schema verification. Keep the additive function during application rollback; no production DDL or consent mutation was authorized here.
 
+
 ## T23 CRM tag bulk migration addendum
 
 Version 20260927172030, SHA-256 f106bf021bcc557acf18300bc8a02ec102fb03f6ef677c4d00703cae3dc8fd00. This creates two RLS-enabled operation/item tables and three public-schema RPCs with service-role-only EXECUTE. The private actor guard checks current active treasurer/admin role, confirmed Auth identity and suspension on preview, read and every per-item apply. Preview stores at most 1000 unique IDs, immutable tag/version snapshots and a 15-minute expiry. Each apply locks the operation and supporter, checks version/tags, and writes the supporter tag plus audit in one transaction. It never changes identities, consent, payments, refunds or adoption approval. The UI limits each apply request to 25 items and keeps the operation ID in tab session storage for result recovery.
 
 Local rehearsal used only the dedicated unlinked loopback database at 127.0.0.1:57322. The final checksum file ran all statements successfully in a BEGIN/ROLLBACK transaction after the preview correction, then the function was manually updated to that disposable DB for synthetic rollback-only tests; no migration ledger row was fabricated. Catalog checker reports 92 compatible requirements, while the local ledger still ends at 20260927150000. Before release, apply the frozen file in order on a fresh disposable install and sanitized data-bearing clone, measure locks and timing, verify two RLS policies are intentionally absent for anon/authenticated, exact three public RPC signatures, private helper grant, forbidden table/RPC access, and audit-trigger rollback. The SQL creates no data backfill. Keep additive operation tables and RPCs during application rollback; disable the new UI/API path before any schema rollback. Do not restore an old database snapshot over newer financial or audit records.
+## Second review slice addendum — T03 checkout policy migration
+
+Branch `codex/audit-payment-policy-20260927` adds a 35th ordered file, `20260927120000_checkout_policy_gate.sql` (SHA-256 in the manifest). It creates three private-by-RLS public-schema tables and a service-role-only admission RPC. The migration applied in the same unlinked loopback stack with `bunx supabase migration up --local`, exit 0. The isolated SQL test covered disabled policy, absent/disabled approval, stale/hidden/draft/archived config, revocation-before-admission lock race, admitted retry, intent conflict, legacy seed rejection, audited staff toggles, app-role write denial and forbidden anon/authenticated grants, exit 0. No payment was activated; the singleton defaults to disabled and method approvals are empty.
+
+Before any production release, repeat the data-bearing rehearsal, constraint/index/storage/grant inventory and backup/restore check against this 35-file manifest. T03 depends on `payment_public_config`, so a deployment to today's missing production catalog would fail closed rather than enable payment. Do not use this new migration as evidence that the earlier 34 files are production-ready.
+
+## Third review slice addendum — T04 instruction snapshots
+
+Branch `codex/audit-payment-instructions-20260927` adds the 36th ordered migration, `20260927130000_payment_instruction_snapshots.sql` (SHA-256 in the manifest). It adds an immutable-at-admission JSON snapshot, a pledge snapshot table, a service-only capture RPC, and an approval trigger rejecting missing manual account details. Applied on the verified unlinked `127.0.0.1:57322` stack using `bunx supabase migration up --local`, exit 0. The synthetic DB test proved approved FPS details flow to donor admission and the email renderer, then a changed version suppresses old details on replay/resend while both stored snapshots remain. Anon cannot read pledge snapshots or invoke capture; service role can invoke capture. No production migration or provider call was performed.
+
+The T04 app requires this migration to return donor snapshot fields. If schema is missing, new donation admission fails closed before supporter writes; sponsorship email uses verification text. Reverting to the T03 app while checkout is enabled would restore hard-coded manual instructions, so disable **new** checkout first, then roll back code if separately approved. Do not delete admission/pledge snapshots or payment history. Existing webhook intake and reconciliation are outside this gate. Real published instructions and their approved config versions must be reviewed by finance before any activation.
+
+## Fourth review slice addendum — T05 durable donation delivery
+
+Branch `codex/audit-payment-lifecycle-20260927` adds the 37th ordered migration, `20260927140000_donation_delivery_recovery.sql` (SHA-256 in manifest). The success-transition trigger inserts the recovery job and audit in the same database transaction; a duplicate status update cannot create a second job. The service-only due-list function uses the existing fenced claim RPC and RLS-protected delivery table. Staff retry is audited and resets the eight-attempt automatic retry window. The isolated loopback migration and synthetic transaction/grants test passed; the fixture transaction rolled back.
+
+Before production DDL, inventory existing succeeded payments with missing PDF or acknowledgement and no delivery job. **Do not automatically backfill or send notifications**: review the candidate count, message history and opt-in/business rules with staff, then approve a scoped replay. Do a data-bearing rehearsal and backup/restore proof before release. The new cron requires `CRON_SECRET` and must remain disabled until release approval; old webhook/reconciliation must continue if new checkout is stopped. Rolling back code after this migration must leave existing payment, receipt, message and delivery rows intact. An old app SHA that mishandles a committed payment is not a safe rollback target.
+
+## Ninth review slice addendum — T08 sponsorship terms document kind
+
+Branch `codex/audit-sponsorship-commitment-20260927` adds the 38th ordered migration, `20260927150000_sponsorship_terms_document_kind.sql` (SHA-256 in manifest). It extends the existing PDF asset kind constraint and requires a SHA-256 checksum for every `sponsorship_terms` asset. It creates no rows, publishes no content, and changes no grants or RLS policies. Applied only to the unlinked `127.0.0.1:57322` stack with `bunx supabase migration up --local`, exit 0. `scripts/test-sponsorship-terms-db.sql` ran in one rolled-back transaction: unversioned PDF rejected, published PDF/slot visible to anon, draft PDF hidden, anon write privileges absent, both tables RLS enabled, exit 0. Catalog confirmed both constraints and ledger version `20260927150000`.
+
+For a future approved release, staff must supply reviewed zh-HK and en sponsorship terms PDFs and approve the exact first-month, renewal, allocation and cancellation copy. The admin document upload can create versioned `sponsorship_terms` assets and computes the PDF checksum; the current admin UI does **not** assign `site_document_slots`. Do not interpret publishing an asset alone as enabling submission. A reviewed, audited, transactional slot assignment/replacement mechanism and content validation are still required before operational enablement. New pledges fail closed if the requested-language slot is absent or the terms checksum differs. Matching completed retries retain their original recovery link; existing webhook/reconciliation are unaffected. Do not roll back by deleting historical pledges or consent evidence. Disabling new sponsorship submissions is safer than serving an unreviewed or mismatched terms version.
+## T12 / R05 additive estate migration delta
+
+File: supabase/migrations/20260927120500_estate_versioned_commands.sql; SHA-256: 733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d. This is a new candidate after the historical 34-file T01 inventory above. The T01 67-object result describes the earlier checkout; the T12 release manifest adds the estate version column and command RPC. The new source checker should be run only after this migration is present. The production catalog has not been changed.
+
+Preflight before any authorized application: verify public.dog_friendly_estates exists with the expected id, fields, RLS and grants; inspect row count, invalid field values, trigger order, exact mutate_admin_content_with_audit signature and active staff/admin actor model. Estimate the ADD COLUMN/trigger lock and choose an approved maintenance window. Review forbidden EXECUTE grants and audit_log insert viability. Rehearse on a data-bearing sanitized database; this local drill used one synthetic preexisting row, not a production-size backfill. Do not repair the migration ledger by hand.
+
+The migration adds version integer NOT NULL DEFAULT 1 with a positive check, a trigger that increments the version for legacy checkout writes, and a service_role-only audited command RPC. Apply it before deploying code that selects version or calls the RPC. Existing checkout reads and writes remain valid during the mixed-version window; its old audited upsert increments version through the trigger. New content edits cannot change publication, and stale expectedVersion returns P4090/HTTP 409. Creation is initially unpublished and a repeated create ID with identical unchanged content is idempotent.
+
+python scripts/rehearse-estate-version-local.py targets only the exact unlinked local container, seeds a synthetic old row, applies DDL, checks catalog/RLS/grants, creation/retry, publication, legacy write, stale conflict, actor denial and audit rollback, then rolls the entire transaction back. Exit 0 on 2026-09-27; after rollback the seeded row and version column both had count zero. This does not validate production lock time or a data-bearing migration at scale.
+
+Rollback boundary: if the new checkout fails, revert the app while leaving this additive column, trigger and RPC in place. Dropping the column after new writes would remove concurrency history; do not use that as a routine rollback. Any approved production DDL still needs backup, exact catalog/signature/grant/RLS comparison, migration ledger observation, smoke tests and a separate release approval. R01 remains open for the wider CMS/upload/submission/finance catalog.
+
+## T13 / R06 additive fee reorder migration delta
+
+File: supabase/migrations/20260927130500_atomic_adoption_fee_reorder.sql; SHA-256: dd772676c88fda5614908ca1683637ab7922f04b1d5fe363995a7f689d9f9e23. This candidate follows the T12 estate migration in the review manifest. The earlier T01 67-object proof describes an older checkout. The current release manifest additionally requires adoption_fees.version and the two fee RPC signatures. Production catalog and migration ledger were not changed.
+
+Preflight: inspect adoption_fees row count, unique(animal_type, sort_order), integer sort range, existing role and RLS policy, audit_log constraints, actor statuses, old mutate_admin_content_with_audit signature, and current table/RPC grants. Estimate ADD COLUMN lock and trigger behavior with a data-bearing sanitized copy. Verify the target does not already contain a different version column or same-name function. Apply T12 then T13 in reviewed migration order before deploying code that selects fee.version. Never fill the migration ledger manually.
+
+The new service sends one reorder_adoption_fees_with_audit call with two IDs and expected versions. The transaction takes a species advisory lock, locks the two rows in UUID order, checks same species and adjacent sort positions, uses one spare sort position only inside the transaction, and writes one audit row. A trigger increments versions for legacy checkout writes. Content edits use update_adoption_fee_content_with_audit with an expected version and cannot alter order or publication. The old audited create path remains available. Both new RPCs grant EXECUTE only to service_role and recheck the active staff/admin actor; public, anon and authenticated grants are revoked.
+
+Isolated local evidence on 2026-09-27: the migration syntax ran in BEGIN/ROLLBACK first. It was then applied to unlinked loopback Supabase container supabase_db_hkscda-audit-remediation-20260927 for behavioral tests; the T12 prerequisite was also applied locally for the cumulative checker. No ledger entries were fabricated. The rollback-only SQL test passed three injected update failures, one successful swap/one audit, stale and cross-species/nonadjacent conflicts, unauthorized actor rejection, legacy version increment, and exact RPC grants. A two-connection synthetic test produced one success and one P4091 after a 3.66-second lock wait, with one audit and cleanup. The cumulative read-only release checker reported 72 requirements, compatible, zero issues. These local tests do not prove a production-size upgrade, lock duration or a reviewed backup.
+
+Rollback boundary: revert the new application while leaving the additive version column, trigger and RPCs in place. Legacy audited fee writes continue and bump version. A prior checkout still has its old multi-request reorder behavior, so staff should pause fee ordering after app rollback until the new command is restored. Do not drop version after writes, run blind db push, or use a database restore that could erase later data. Before production migration, a DB owner must approve the exact catalog/signature/grant/RLS diff, backup/restore and lock plan; release approval is separate.
+
+## T14 additive CRM export-job addendum
+
+The source manifest now includes 20260927090000_crm_private_export_jobs.sql in draft PR #148, based on #147. Its private artifact table and service-role-only RPCs were applied and then replayed as a single transaction in the dedicated local 57322 stack, without editing the migration ledger. Exact checksum, role tests and rollback boundary are in [T14 evidence](t14-background-export.md).
+
+The new job schema must precede the app code that offers background exports. Check function signatures, pinned search paths, RLS, forbidden grants and private table access after applying. A sanitized data-bearing rehearsal, actual Vercel cron entitlement, production backup and release owner sign-off are still required. Do not remove the schema while jobs or artifacts remain; keep an approved cleanup path when reverting the application. Existing webhook and reconciliation routes remain available.
+
+## T15 supporter version addendum
+
+Draft #149 introduces 20260927110000_crm_supporter_edit_version.sql with committed-byte SHA-256 d9756e0cb41dd7878e6046a0eab3db4b1f9dfb8a39751884d1cfd2b8df1fa80c. It adds a monotonic profile/role edit token and a new service-role RPC while retaining the old seven-argument RPC for old application code. Exact catalog, isolated concurrency and rollback evidence is in [T15 evidence](t15-supporter-edits.md).
+
+The schema must be applied before the #149 app code. Rehearse locks and triggers on a sanitized data-bearing clone and confirm real-role UAT plus release owner approval. On application rollback, retain the additive schema; the old app will again accept unversioned edits, so stop concurrent edit operations or explicitly manage that risk. Schema removal needs a separately approved compatibility check and cannot be inferred from an app rollback.
+
+## T22 sequential release checkpoint — 2026-09-30
+
+The exact unchanged 20260927163302 supporter preference RPC was rehearsed on the production-schema-only isolated clone, then checked as service_role with denied-role, audit rollback and concurrent idempotency fixtures. Production read-only inventory confirms the RPC is absent; no production DDL has occurred. Exact hash, catalog, commands, rollback and remaining approval are in [PR157 sequential evidence](sequential-merge-157-20260930.md). Recovery activation remains blocked by the separate #156 local Auth concurrent OTP failure.
+
+## T23 CRM bulk sequential candidate update — 2026-09-30
+
+The undeployed 20260927172030 candidate now holds shared locks on Auth/admin actor rows until transaction completion. Its canonical LF hash is d4a1a51db9b25feae7e440609ce5cfbb410e9e25e2f870f96df26618151489a6. The earlier f106bf hash describes the historical draft, not this release candidate. No deployed SQL or ledger was changed. Exact dry-run, 1000-row/concurrency/role/audit proof and rollback are in [PR159 sequential evidence](sequential-merge-159-20260930.md).
+
+
 
 ## T23 volunteer reviewer bulk migration addendum
 
@@ -66,11 +137,20 @@ Version 20260927181701, SHA-256 ab281bdd9c94b184772d4a59418f6563cb2b3f56fca53016
 
 All SQL statements completed in a BEGIN/ROLLBACK transaction on the named unlinked loopback DB at 127.0.0.1:57322, then the file was manually applied there for synthetic rollback-only tests; no migration ledger row was fabricated. The local catalog checker reports 98 compatible requirements while ledger remains at 20260927150000. Before an approved production migration, rehearse the full ordered manifest on a fresh disposable and sanitized data-bearing clone, verify three RLS tables, exact RPC signatures, two private helper grants, forbidden anon/authenticated SELECT/EXECUTE, indexes, FK/lock timing and audit-failure rollback. The tables have no data backfill. During app rollback, leave the additive reviewer assignment data intact and disable the new UI/API path; never restore an older DB snapshot over payment/audit facts.
 
+## PR160 sequential candidate correction
+
+Undeployed 20260927181701 now has canonical hash f1f908e3193bcbdab4472ac0681c72351121230083d72fba841a209fe22ae5cc. Both actor/reviewer guards hold shared authoritative Auth/admin locks through commit. Full exact clone rehearsal 221ms exit 0; four DB tests/30 assertions and 1000-item outcomes pass. Production absent/unapproved, no backfill. Use sequential-merge-160-20260930.md for current verification and rollback; older candidate hash above is historical.
+
 ## T23 adoption case assignment bulk migration addendum
 
 Version 20260927183000, SHA-256 575ffb9b9b60f59c3c02d0866bf666d28365d0d8eaff98f792a19bc30801f682. Adds `adoption_case.bulk_row_version bigint not null default 1` and a BEFORE UPDATE increment trigger, two RLS-enabled operation/result tables, two private actor/assignee guards, and three service-role-only public RPCs. The version trigger is necessary because transaction-time `updated_at` can alias multiple writes in one transaction; a red fixture reproduced this stale-write case. Preview fixes one open adoption stage, minimum waiting days, at most 1000 unique IDs, assignee and before/after. Each item rechecks actor and assignee Auth/admin status, expiry, current stage definition, case stage/age/open state and row version. Case assignment plus audit are one transaction; no approval, match, notification or content publication occurs.
 
 The exact file completed BEGIN/ROLLBACK rehearsal, then manual application only to the named unlinked 127.0.0.1:57322 DB; the local ledger remains at 20260927150000. Catalog checker reports 104 compatible requirements. Before approved release, rehearse the full ordered manifest on fresh and sanitized data-bearing clones, measure lock/trigger overhead and pre/post row-version counts, verify trigger enabled, exact RPC signatures, RLS, forbidden anon/authenticated grants and audit rollback. On app rollback leave the additive column, trigger, tables and operation results intact; disable this API/UI before considering schema removal. Never restore an older database over newer adoption/payment/audit facts.
+
+
+## PR161 sequential candidate correction
+
+Undeployed 20260927183000 canonical SHA-256 is 300e48d272ca1256bd2081e185c64adc29688a2dcc23641e5266c5baa76e62f1. Actor/assignee and stage shared locks remain held through commit. The earlier 575ffb9b hash is historical. Full SQL rehearsal on the production-schema-only clone backfilled 1000 synthetic old-shape cases without changing old fields; six DB tests/38 assertions pass. Production has six cases and no candidate objects; exact approval is pending. Retain version/trigger/history on app rollback. See sequential-merge-161-20260930.md for commands, grants/RLS, backup and boundaries.
 
 ## T23 animal draft review bulk migration addendum
 
@@ -78,15 +158,27 @@ Version 20260927184500, SHA-256 cfbabd9a6bb393ec90200bdb05c2ff6314c035e7839661e9
 
 The exact file completed a BEGIN/ROLLBACK rehearsal and manual application only in the named unlinked 127.0.0.1:57322 local DB; no migration ledger row was fabricated. Catalog checker reports 109 compatible requirements. Before approved production migration, rehearse the ordered file on fresh and sanitized data-bearing clones, verify the two RLS tables, exact three public RPC signatures and private guard, forbidden anon/authenticated table/function access, audit failure rollback, lock timing and backup/restore. Keep the additive operation/result tables during app rollback, disabling the new API/UI first. Existing public animal content remains subject to separate content-owner review.
 
+
+## PR162 sequential candidate correction
+
+Undeployed 20260927184500 now hashes to a2b689369ccb803e65d94e75db1f669dec6b9cf43f0132853c22b612b58db40f. Shared Auth/admin locks fence actor changes until commit. Full exact-file BEGIN/ROLLBACK rehearsal preserves 1000 synthetic old animal rows; no backfill. Production has 292 animals and zero drafts; new tables/RPC absent. Exact approval pending. Retain editorial review/audit and operation results on app rollback. See sequential-merge-162-20260930.md for actual gates and boundaries; earlier candidate hash is historical.
+
 ## T23 CMS draft review bulk migration addendum
 
 Version 20260927190000, SHA-256 ffbce79aa8220b3aa1105c84f81c6b1184986902b8a5a34b1189b1cd5b4a1764. Two RLS operation/result tables and three service-role-only public RPCs snapshot 1–1000 CMS draft IDs for 15 minutes; one private guard requires an active confirmed non-banned admin. Apply locks the content item, rechecks draft revision UUID/status/classification and invokes `editorial_review_command` in the same transaction. Non-draft or already-classified rows are skipped or conflicted. No status, publication, media, body, notification or financial mutation occurs.
 
 The exact file completed BEGIN/ROLLBACK rehearsal, then manual application only on the named unlinked 127.0.0.1:57322 database. No migration ledger row was fabricated. Catalog checker reports 114 compatible requirements. Before release rehearse all 44 manifest files in order on fresh and sanitized data-bearing clones, inspect content-item lock/trigger effects and public visibility, verify service-only signatures and forbidden anon/authenticated grants, and prove backup/restore. During app rollback disable CMS bulk UI/API but retain additive operation results and existing publication/audit facts.
 
+
+## PR164 sequential candidate correction
+
+Undeployed20260927190000 now hashes79720b899eee34d673cef16f93e9ac1fba62ce7d21cb73039feb3851ee3499e5. SharedAuth/adminlocks fence actor eligibility; fullSQLBEGIN/ROLLBACK preserves1000synthetic content/revision pairs, no backfill,298ms. Production7content/7revisions/0draft-statusitems; candidateobjectsabsent. See sequential-merge-164-20260930.md for exactgate results/grants/RLS/backup/rollback. Retain review/audit andoperation history onapp rollback.
+
+## Historical PR165 finance rehearsal (2026-09-29)
+
 ## T23 manual finance atomic settlement addendum
 
-Version 20260927201916, SHA-256 febcce8174711520ac3006f3462647a8448c10dddc14c694eba389aca3fd9537. A partial unique index rejects duplicate nonblank normalized bank references on succeeded FPS, PayMe and manual payments. A service-role-only `reconcile_manual_payment_atomic(uuid,uuid,text)` function checks current treasurer/admin Auth state and commits payment, donation, `payment.mark_received` audit and one durable delivery job together. The existing fenced worker then runs receipt/email delivery independently and reports a committed payment even if delivery fails. Existing webhook intake and provider settlement are unchanged.
+Version 20260927201916, SHA-256 211ef805cb09d643ca4b04f1e0d0e6fa54601af65ea60cfeb637d6882b327b66. A partial unique index rejects duplicate nonblank normalized bank references on succeeded FPS, PayMe and manual payments. A service-role-only `reconcile_manual_payment_atomic(uuid,uuid,text)` function checks current treasurer/admin Auth state and commits payment, donation, `payment.mark_received` audit and one durable delivery job together. The existing fenced worker then runs receipt/email delivery independently and reports a committed payment even if delivery fails. Existing webhook intake and provider settlement are unchanged.
 
 Before a data-bearing rehearsal, run this read-only duplicate preflight against the clone and review every group with finance staff:
 
@@ -102,6 +194,12 @@ having count(*) > 1;
 
 The named unlinked loopback database at 127.0.0.1:57322 returned no duplicate groups. The exact revised file completed BEGIN/ROLLBACK rehearsal after dropping the already-installed local index inside the transaction; only its revised function was applied for rollback-only synthetic fixtures. The fixture disabled a non-repository experimental local donation trigger inside its own rollback transaction and still proved that the RPC queues exactly one job. No ledger row was fabricated. The local release checker reports 115 compatible requirements; the local ledger remains at 20260927150000. Supabase's local security advisor reported no error-level findings. A fresh **45-file** ordered migration rehearsal and sanitized data-bearing rehearsal, actual concurrent-connection finance test, index build lock estimate, backup/restore, provider sandbox, staff identity UAT and production catalog comparison remain open. On application rollback keep the index and RPC until older-app compatibility is proved; never restore an older DB over newer payments or audits.
 
+## PR165 reviewed candidate
+
+Exact SQL/hash and6-row unchanged-data/duplicate rejection drills: sequential-merge-165-20260930.md. The old finance hash in historical sections is superseded by d4f683821d1277d4d6b05d6d671fd63e66f6bc75d274e25496f29e4dc5c37b86. No production application. Fresh catalog/duplicate/lock/grant/RLS/backup checks and exact approval precede DDL; retain reference index and all audit/payment/job facts on rollback.
+
+## Historical PR166 quality queue rehearsal
+
 ## T23 CMS quality queue migration addendum
 
 Version 20260927211801, SHA-256 8c1b4550d4361f348246654bab356f3cd2366de48afb0eb384b90efb38526642. The service-role-only, read-only `editorial_quality_queue(uuid,integer,text)` requires current active staff/admin, confirmed Auth identity and no suspension. It reads non-archived content by demo classification, expired effective_until or blank source_reference, with 25-row server paging. Two nonunique partial indexes support the classification and expiry paths; no publication, review classification, audit, notification or payment write occurs. The existing all-items review RPC stays available.
@@ -110,13 +208,11 @@ The exact file completed BEGIN/ROLLBACK rehearsal and was manually applied only 
 
 Checksum correction at #166 package refresh: the earlier #165 packet used a Windows CRLF working-tree SHA for the manual finance SQL and CSV. This packet hashes committed Git blob bytes (LF) because those are the bytes checked out by CI/deployment. The #165 SQL blob SHA is febcce8174711520ac3006f3462647a8448c10dddc14c694eba389aca3fd9537; the #166 CMS quality SQL blob SHA is 8c1b4550d4361f348246654bab356f3cd2366de48afb0eb384b90efb38526642. No SQL statement changed in this checksum correction. The 46-row CSV itself is committed with LF; its SHA-256 is 2a30158023f0945a096b01697c870f5c74abf53f2a217e14101a10bd24ad62e2.
 
-## T23 sponsorship follow-up assignment migration addendum
+## PR166 reviewed candidate
 
-Version `20260928073000`, committed Git-blob SHA-256 `c14423a65c843c99fe0b76b3c12ec2de7bb6891188f701eac9d86a1fe1a551ef`. Adds nullable `sponsorship_pledge.followup_assignee_user_id` (Auth FK), `followup_version bigint not null default 1`, a BEFORE UPDATE version trigger, a partial follow-up assignee index, and `assign_sponsorship_followup(uuid,uuid,uuid,bigint)`. The service-role-only SECURITY DEFINER RPC pins an empty search path, locks current staff/admin and Auth rows to fence downgrade/ban, locks the pledge, checks status/version, and writes assignment and audit atomically. It does not change proof, payment, receipt, notification or refund state. There is no data rewrite beyond initializing the new version default on existing pledges, but the ADD COLUMN/FK and trigger require lock/backfill timing on a data-bearing clone.
+Exact unchanged SQL8c1b4550d4361f348246654bab356f3cd2366de48afb0eb384b90efb38526642. One stable read RPC/two partial indexes; no mutation/backfill.7-row full-file rollback253ms,1000-row read/grant fixtures. Production7rows,candidate absent; exact DDL approval and fresh preflight required. See sequential-merge-166-20260930.md.
 
-The exact final file completed a `BEGIN/ROLLBACK` rehearsal in the named isolated 127.0.0.1:57322 database, and synthetic fixture tests ran against only that local DB. No migration ledger row was fabricated; local ledger still ends at `20260927150000`. Catalog checker reports 119 compatible requirements, zero issues; the DB tests assert active trigger, partial index, RLS, no authenticated UPDATE policy, forbidden RPC grants, direct authenticated UPDATE denial, stale version, suspended/unconfirmed users, single-winner concurrent update, replay and audit-failure rollback. Before production approval, rehearse **all 47 ordered manifest files** on both a fresh disposable install and sanitized data-bearing clone, compare current production catalog/signatures/grants/RLS/indexes, measure lock/constraint time, prove backup/restore and existing-app compatibility, then apply schema before the new API/UI. Keep additive assignee/version/audit facts during application rollback; disable this new path first. Never restore an older database over later payments or audits.
-## T23 sponsorship follow-up bulk migration addendum
 
-Version `20260928080000`, committed SQL SHA-256 `d70e5fc37a71a34a7513ee27b435e0f38585bf4ed314626212bb3f3032c2ffec`. Two additive RLS-enabled operation/item tables contain 15-minute actor-owned snapshots and per-pledge outcomes; three service-role-only public RPCs and one private guard check current active/confirmed/non-banned staff/admin. Preview accepts 1–1,000 unique IDs and hashes the filter; apply locks the operation/item/pledge, rechecks role/status/version, calls existing `assign_sponsorship_followup` and commits item result/audit atomically. It changes only the follow-up owner; payment, proof, receipt and notifications are untouched. No backfill of pledge rows.
+## PR169 preparation — 2026-09-30
 
-The exact final blob was applied only to the named 127.0.0.1:57322 unlinked DB, then replayed under `BEGIN/ROLLBACK` after dropping only this migration's already installed objects within that transaction. No ledger row was fabricated; local ledger still ends `20260927150000`. Checker: 124 compatible/zero issues. Before approval, rehearse all **48 ordered files** on fresh and sanitized data-bearing clones, inspect table/function signatures/search paths, RLS and forbidden grants, indexes, lock duration and audit rollback, prove backup/restore and old-app compatibility. Disable the new route/UI before app rollback; retain additive snapshots and all later payment/audit facts.
+PR169 exact candidate20260928073000 SHA256 c1eb28ad0953d0ae3f9d85c574c363ee2fe342ea68ddc5bd9f6b9b09baf04ef2: owner/version trigger and assignment+eligible-picker RPCs. Full2row isolated rollback8.59ms,service_role4tests24assert. Production2pledges/0needs_followup/candidateabsent/ledger95. Exact approval pending; preserve additive schema on rollback.

@@ -24,6 +24,7 @@ function supporter(overrides: Partial<SupporterDetail> = {}): SupporterDetail {
     source: "admin",
     createdAt: "2026-06-01T10:00:00.000Z",
     updatedAt: "2026-06-02T10:00:00.000Z",
+    editVersion: 4,
     donations: [],
     payments: [],
     receipts: [],

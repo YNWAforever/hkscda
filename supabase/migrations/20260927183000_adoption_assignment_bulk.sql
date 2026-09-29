@@ -45,12 +45,12 @@ grant select on public.adoption_assignment_bulk_operation, public.adoption_assig
 create function private.require_adoption_assignment_bulk_actor(p_actor uuid)
 returns void language plpgsql security definer set search_path='' as $$
 begin
-  if not exists (
-    select 1 from public.admin_user a join auth.users u on u.id=a.auth_user_id
+  perform 1 from public.admin_user a join auth.users u on u.id=a.auth_user_id
     where a.auth_user_id=p_actor and a.status='active' and a.role='admin'
       and u.email_confirmed_at is not null
       and (u.banned_until is null or u.banned_until<=now())
-  ) then raise exception 'Adoption assignment actor unavailable' using errcode='42501'; end if;
+  for share of a,u;
+  if not found then raise exception 'Adoption assignment actor unavailable' using errcode='42501'; end if;
 end $$;
 revoke all on function private.require_adoption_assignment_bulk_actor(uuid) from public,anon,authenticated,service_role;
 grant execute on function private.require_adoption_assignment_bulk_actor(uuid) to service_role;
@@ -58,12 +58,12 @@ grant execute on function private.require_adoption_assignment_bulk_actor(uuid) t
 create function private.require_adoption_assignment_bulk_assignee(p_assignee uuid)
 returns void language plpgsql security definer set search_path='' as $$
 begin
-  if not exists (
-    select 1 from public.admin_user a join auth.users u on u.id=a.auth_user_id
+  perform 1 from public.admin_user a join auth.users u on u.id=a.auth_user_id
     where a.auth_user_id=p_assignee and a.status='active' and a.role in ('staff','admin')
       and u.email_confirmed_at is not null
       and (u.banned_until is null or u.banned_until<=now())
-  ) then raise exception 'Adoption assignment assignee unavailable' using errcode='42501'; end if;
+  for share of a,u;
+  if not found then raise exception 'Adoption assignment assignee unavailable' using errcode='42501'; end if;
 end $$;
 revoke all on function private.require_adoption_assignment_bulk_assignee(uuid) from public,anon,authenticated,service_role;
 grant execute on function private.require_adoption_assignment_bulk_assignee(uuid) to service_role;
@@ -144,7 +144,7 @@ declare
   v_op public.adoption_assignment_bulk_operation%rowtype;
   v_item public.adoption_assignment_bulk_item%rowtype;
   v_case public.adoption_case%rowtype;
-  v_status text;v_reason text;
+  v_status text;v_reason text;v_stage_open boolean;
 begin
   perform private.require_adoption_assignment_bulk_actor(p_actor);
   select * into v_op from public.adoption_assignment_bulk_operation
@@ -158,12 +158,15 @@ begin
   if v_item.status<>'pending' then
     return jsonb_build_object('entityId',p_case,'status',v_item.status,'reasonCode',v_item.reason_code);
   end if;
+  perform 1 from public.coordinator_status s where s.id=v_op.status_id
+    and s.category='adoption_case' and s.is_active and not s.is_closing and not s.is_final
+    for share;
+  v_stage_open := found;
   select * into v_case from public.adoption_case where id=p_case for update;
   if v_case.id is null or v_case.closed_at is not null or v_case.processed then
     v_status:='skipped';v_reason:='unavailable';
   elsif v_case.status_id<>v_op.status_id then v_status:='conflict';v_reason:='stage_changed';
-  elsif not exists(select 1 from public.coordinator_status s where s.id=v_op.status_id
-      and s.category='adoption_case' and s.is_active and not s.is_closing and not s.is_final) then
+  elsif not v_stage_open then
     v_status:='conflict';v_reason:='stage_closed';
   elsif v_case.created_at>now()-(v_op.min_age_days * interval '1 day') then
     v_status:='conflict';v_reason:='too_recent';
