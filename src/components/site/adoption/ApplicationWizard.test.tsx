@@ -1,3 +1,4 @@
+import { pickAdoptionDraftData } from "../../../lib/publicAdoption/draft";
 import { describe, expect, test } from "bun:test";
 
 import {
@@ -5,6 +6,7 @@ import {
   draftHasRetiredAnswers,
   mergeDraftValues,
   normalizeApplicationVisitValues,
+  restoredAdoptionStep,
 } from "./ApplicationWizard";
 
 describe("application wizard grouped visit state", () => {
@@ -60,6 +62,21 @@ describe("application wizard grouped visit state", () => {
       ["cat"],
     );
     expect(outdated.terms).toEqual({ agreed: false, version: createDefaultValues().terms.version });
+  });
+
+  test("requires new terms consent after restoring any saved draft", () => {
+    const safe = pickAdoptionDraftData({
+      contact: { applicantName: "Ada" },
+      terms: { agreed: true, version: createDefaultValues().terms.version },
+    });
+    const restored = mergeDraftValues(createDefaultValues(), safe, ["cat"]);
+    expect(restored.contact.applicantName).toBe("Ada");
+    expect(restored.terms.agreed).toBe(false);
+  });
+
+  test("stops restored progress at photos so files must be selected again", () => {
+    expect(restoredAdoptionStep(6)).toBe(5);
+    expect(restoredAdoptionStep(4)).toBe(4);
   });
 
   test("prunes only inapplicable windows after an explicit species change", () => {

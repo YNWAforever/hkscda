@@ -14,6 +14,7 @@ const kindLabels: Record<DocumentKind, string> = {
   annual_report: "年度報告",
   wedding_form: "婚宴回禮表格",
   adoption_guide: "領養指南",
+  sponsorship_terms: "助養條款",
 };
 const languageLabels: Record<DocumentLanguage, string> = {
   "zh-HK": "中文",

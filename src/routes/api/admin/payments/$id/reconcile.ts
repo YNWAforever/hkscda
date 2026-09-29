@@ -29,8 +29,9 @@ export const Route = createFileRoute("/api/admin/payments/$id/reconcile")({
           const client = createSupabaseServiceClient();
           const admin = await requireAdmin(request, ["treasurer", "admin"], client);
           const body = reconcileSchema.parse(await readAdminJson(request));
+          const deliveryRepository = createSupabaseDeliveryJobRepository(client);
           const deliveryWorker = createDonationDeliveryWorker({
-            repository: createSupabaseDeliveryJobRepository(client),
+            repository: deliveryRepository,
             deliver: createDonationDeliveryHandler(client),
           });
           const result = await reconcileManualPayment({
@@ -39,6 +40,7 @@ export const Route = createFileRoute("/api/admin/payments/$id/reconcile")({
             actorUserId: admin.authUserId,
             bankReference: body.bankReference,
             runDeliveryJob: deliveryWorker.run,
+            getDeliveryStatus: deliveryRepository.status,
           });
 
           return Response.json(result);

@@ -112,6 +112,7 @@ describe.skipIf(!url)("manual gift real database transaction and leases", () => 
     for (const id of volunteerActivities)
       await sql`delete from public.volunteer_activity where id=${id}::uuid`;
     await sql`delete from public.admin_user where auth_user_id=${staffActor}::uuid`;
+    await sql`delete from auth.users where id=${staffActor}::uuid`;
     await sql`delete from public.donation where supporter_id=${supporter}::uuid`;
     await sql`delete from public.supporter where id=${supporter}::uuid`;
     await sql`delete from public.admin_user where auth_user_id=${actor}::uuid`;
