@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { ListChecks, Search } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 
@@ -21,6 +21,11 @@ import {
 } from "./pledgeReviewLogic";
 import { PledgeDetailDrawer } from "./PledgeDetailDrawer";
 import { centsToHkd } from "../../../lib/donations/domain";
+import {
+  parseListPage,
+  useListQueryState,
+  type ListRouteState,
+} from "../../../lib/admin/useListQueryState";
 
 type PledgeListResponse = {
   pledges: PledgeSummary[];
@@ -35,13 +40,53 @@ function amountLabel(pledge: PledgeSummary) {
   return `${centsToHkd(pledge.amountCents)}/月`;
 }
 
+type PledgeFilters = { status: PledgeStatus | "all"; pageSize: (typeof PAGE_SIZE_OPTIONS)[number] };
+const PLEDGE_STATUSES: Array<PledgeStatus | "all"> = [
+  "all",
+  "pending_payment",
+  "provisional",
+  "active",
+  "needs_followup",
+  "cancelled",
+];
+const PLEDGE_ROUTE: ListRouteState<PledgeFilters> = {
+  key: "sponsorship-pledges",
+  read(params) {
+    const status = params.get("status");
+    const size = Number(params.get("pageSize"));
+    return {
+      filters: {
+        status: PLEDGE_STATUSES.includes(status as PledgeStatus) ? (status as PledgeStatus) : "all",
+        pageSize: PAGE_SIZE_OPTIONS.includes(size as PledgeFilters["pageSize"])
+          ? (size as PledgeFilters["pageSize"])
+          : 25,
+      },
+      page: parseListPage(params.get("page")),
+    };
+  },
+  write(params, filters, page) {
+    if (filters.status === "all") params.delete("status");
+    else params.set("status", filters.status);
+    if (filters.pageSize === 25) params.delete("pageSize");
+    else params.set("pageSize", String(filters.pageSize));
+    if (page === 1) params.delete("page");
+    else params.set("page", String(page));
+  },
+};
+
 export function PledgeReviewLane() {
   const { pageCopy } = useAdminPageCopy();
   const copy = pageCopy.pledgeReview;
-  const [query, setQuery] = useState("");
-  const [status, setStatus] = useState<PledgeStatus | "all">("all");
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState<(typeof PAGE_SIZE_OPTIONS)[number]>(25);
+  const listState = useListQueryState({
+    key: "sponsorship-pledges",
+    initialFilters: {
+      status: "all" as PledgeStatus | "all",
+      pageSize: 25 as PledgeFilters["pageSize"],
+    },
+    routeState: PLEDGE_ROUTE,
+  });
+  const { query, page, setPage, filters, changeFilter } = listState;
+  const { status, pageSize } = filters;
   const reviewTrigger = useRef<HTMLElement | null>(null);
   const [selectedPledgeId, setSelectedPledgeId] = useState<string | null>(null);
 
@@ -68,16 +113,16 @@ export function PledgeReviewLane() {
 
   const { data, error, isLoading, isFetching, refetch } = useQuery<PledgeListResponse, Error>({
     queryKey: ["sponsorship-pledges", searchParams.toString()],
-    queryFn: () =>
-      fetchCoordinatorJson<PledgeListResponse>(`/api/admin/sponsorships/pledges?${searchParams}`),
+    queryFn: ({ signal }) =>
+      fetchCoordinatorJson<PledgeListResponse>("/api/admin/sponsorships/pledges?" + searchParams, {
+        signal,
+      }),
+    enabled: listState.hydrated,
+    placeholderData: keepPreviousData,
   });
 
   const pledges = data?.pledges ?? [];
   const total = data?.total ?? 0;
-
-  function resetToFirstPage() {
-    setPage(1);
-  }
 
   const columns: DataTableColumn<PledgeSummary>[] = [
     {
@@ -172,11 +217,7 @@ export function PledgeReviewLane() {
           <label className="relative block">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
             <Input
-              value={query}
-              onChange={(event) => {
-                setQuery(event.target.value);
-                resetToFirstPage();
-              }}
+              {...listState.queryInput}
               aria-label={copy.searchLabel}
               className="h-9 pl-9"
               placeholder={copy.searchPlaceholder}
@@ -186,8 +227,7 @@ export function PledgeReviewLane() {
           <Select
             value={status}
             onValueChange={(value) => {
-              setStatus(value as PledgeStatus | "all");
-              resetToFirstPage();
+              changeFilter({ status: value as PledgeStatus | "all" });
             }}
           >
             <SelectTrigger aria-label={copy.statusFilterLabel} className="h-9">
@@ -205,7 +245,7 @@ export function PledgeReviewLane() {
       </section>
 
       <section
-        aria-busy={isLoading || isFetching}
+        aria-busy={isLoading || isFetching || listState.isDebouncing}
         className="overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]"
       >
         <div className="flex min-h-14 flex-wrap items-center justify-between gap-3 border-b border-[var(--color-border)] px-4">
@@ -226,8 +266,7 @@ export function PledgeReviewLane() {
             <Select
               value={String(pageSize)}
               onValueChange={(value) => {
-                setPageSize(Number(value) as (typeof PAGE_SIZE_OPTIONS)[number]);
-                resetToFirstPage();
+                changeFilter({ pageSize: Number(value) as PledgeFilters["pageSize"] });
               }}
             >
               <SelectTrigger id="pledge-page-size" className="h-8 w-20">
@@ -248,11 +287,16 @@ export function PledgeReviewLane() {
           </div>
         </div>
 
+        {(isFetching || listState.isDebouncing) && data ? (
+          <p role="status" className="px-4 text-xs text-[var(--color-text-muted)]">
+            {pageCopy.common.loading}
+          </p>
+        ) : null}
         <DataTable<PledgeSummary>
           columns={columns}
           rows={pledges}
           getRowKey={(pledge) => pledge.id}
-          loading={isLoading}
+          loading={isLoading || !listState.hydrated}
           skeletonRows={5}
           empty={copy.empty}
           error={error}
@@ -267,7 +311,7 @@ export function PledgeReviewLane() {
             pageSize={pageSize}
             total={error ? undefined : total}
             onPageChange={setPage}
-            busy={isFetching}
+            busy={isFetching || listState.isDebouncing}
             label={copy.title}
             failed={Boolean(error)}
           />

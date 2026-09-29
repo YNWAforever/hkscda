@@ -6,7 +6,7 @@ import { useAdminPageCopy } from "../adminPageCopy";
 import { getAdminAccessToken } from "./api";
 import { classifyExportFailure, type ExportLanguage } from "./exportFailure";
 
-type ExportBarProps = { search: URLSearchParams };
+type ExportBarProps = { search: URLSearchParams; busy?: boolean };
 type ExportKind = "supporters" | "donations";
 export type ExportState =
   | { phase: "idle" }
@@ -103,8 +103,10 @@ export function ExportBarView({
   onExport,
   onRetry,
   onBackground,
+  busy = false,
 }: {
   copy: ExportCopy;
+  busy?: boolean;
   state: ExportState;
   onExport(kind: ExportKind): void;
   onRetry(): void;
@@ -120,7 +122,7 @@ export function ExportBarView({
             type="button"
             variant="outline"
             size="sm"
-            disabled={pending}
+            disabled={pending || busy}
             aria-busy={pending && state.kind === kind}
             onClick={() => onExport(kind)}
           >
@@ -147,11 +149,17 @@ export function ExportBarView({
         <div role="alert" className="space-y-2 text-sm text-[var(--color-error)]">
           <p>{state.message}</p>
           <div className="flex flex-wrap gap-2">
-            <Button type="button" variant="outline" size="sm" onClick={onRetry}>
+            <Button type="button" variant="outline" size="sm" disabled={busy} onClick={onRetry}>
               {copy.retry}
             </Button>
             {state.overLimit && onBackground ? (
-              <Button type="button" variant="outline" size="sm" onClick={onBackground}>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={busy}
+                onClick={onBackground}
+              >
                 {copy.backgroundExport}
               </Button>
             ) : null}
@@ -162,7 +170,7 @@ export function ExportBarView({
   );
 }
 
-export function ExportBar({ search }: ExportBarProps) {
+export function ExportBar({ search, busy = false }: ExportBarProps) {
   const { language, pageCopy } = useAdminPageCopy();
   const [state, setState] = useState<ExportState>({ phase: "idle" });
   const inFlight = useRef(false);
@@ -254,7 +262,7 @@ export function ExportBar({ search }: ExportBarProps) {
     backgroundExport: language === "zh" ? "建立背景匯出" : "Create background export",
   };
   async function run(kind: ExportKind, snapshot: string) {
-    if (inFlight.current) return;
+    if (busy || inFlight.current) return;
     inFlight.current = true;
     setState({ phase: "exporting", kind, snapshot });
     const suffix = snapshot ? "?" + snapshot : "";
@@ -285,7 +293,7 @@ export function ExportBar({ search }: ExportBarProps) {
     }
   }
   async function createBackground() {
-    if (state.phase !== "error" || !state.overLimit || inFlight.current) return;
+    if (busy || state.phase !== "error" || !state.overLimit || inFlight.current) return;
     const { kind, snapshot } = state;
     inFlight.current = true;
     setBackground({ phase: "creating" });
@@ -367,6 +375,7 @@ export function ExportBar({ search }: ExportBarProps) {
     <div className="space-y-2">
       <ExportBarView
         copy={copy}
+        busy={busy}
         state={state}
         onExport={(kind) => void run(kind, searchKey)}
         onBackground={() => void createBackground()}

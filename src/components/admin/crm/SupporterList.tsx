@@ -1,10 +1,14 @@
 import { TablePager } from "../TablePager";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { Search } from "lucide-react";
-import { useMemo, useState } from "react";
 
 import { supporterRoles, type SupporterRole, type SupporterSummary } from "../../../lib/crm/types";
+import {
+  parseListPage,
+  useListQueryState,
+  type ListRouteState,
+} from "../../../lib/admin/useListQueryState";
 import { Input } from "../../ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { useAdminPageCopy } from "../adminPageCopy";
@@ -30,18 +34,42 @@ function formatHkd(
   }).format(amountCents / 100);
 }
 
+type SupporterFilters = { roleFilter: SupporterRole | "all" };
+
+const SUPPORTER_ROUTE: ListRouteState<SupporterFilters> = {
+  key: "supporters",
+  read(params) {
+    const role = params.get("role");
+    return {
+      filters: {
+        roleFilter: supporterRoles.includes(role as SupporterRole)
+          ? (role as SupporterRole)
+          : "all",
+      },
+      page: parseListPage(params.get("page")),
+    };
+  },
+  write(params, filters, page) {
+    if (filters.roleFilter === "all") params.delete("role");
+    else params.set("role", filters.roleFilter);
+    if (page === 1) params.delete("page");
+    else params.set("page", String(page));
+  },
+};
+
 export function SupporterList() {
   const { language, pageCopy } = useAdminPageCopy();
   const copy = pageCopy.supporters;
-  const [page, setPage] = useState(1);
-  const [query, setQuery] = useState("");
-  const [roleFilter, setRoleFilter] = useState<SupporterRole | "all">("all");
-  const search = useMemo(() => {
-    const params = new URLSearchParams({ page: String(page), pageSize: "25" });
-    if (query.trim()) params.set("q", query.trim());
-    if (roleFilter !== "all") params.set("role", roleFilter);
-    return params;
-  }, [query, roleFilter, page]);
+  const listState = useListQueryState({
+    key: "supporters",
+    initialFilters: { roleFilter: "all" as SupporterRole | "all" },
+    routeState: SUPPORTER_ROUTE,
+  });
+  const { page, setPage, query, filters, changeFilter } = listState;
+  const roleFilter = filters.roleFilter;
+  const search = new URLSearchParams({ page: String(page), pageSize: "25" });
+  if (query) search.set("q", query);
+  if (roleFilter !== "all") search.set("role", roleFilter);
   const roleLabels = copy.roleLabels as Record<SupporterRole, string>;
 
   function renderRoles(roles: SupporterRole[]) {
@@ -61,10 +89,15 @@ export function SupporterList() {
     );
   }
 
-  const { data, error, isLoading } = useQuery({
+  const { data, error, isLoading, isFetching } = useQuery({
     queryKey: ["crm-supporters", search.toString()],
-    queryFn: () => fetchAdminJson<SupporterListResponse>(`/api/admin/supporters?${search}`),
+    queryFn: ({ signal }) =>
+      fetchAdminJson<SupporterListResponse>("/api/admin/supporters?" + search, { signal }),
+    enabled: listState.hydrated,
+    placeholderData: keepPreviousData,
   });
+
+  const visibleData = error ? undefined : data;
 
   const supporterColumns: DataTableColumn<SupporterSummary>[] = [
     {
@@ -174,7 +207,7 @@ export function SupporterList() {
           <p className="text-sm text-[var(--color-text-muted)]">{copy.subtitle}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <ExportBar search={search} />
+          <ExportBar search={search} busy={isFetching || listState.isDebouncing} />
           <SupporterFormDialog mode="create" />
         </div>
       </div>
@@ -183,11 +216,7 @@ export function SupporterList() {
         <label className="relative block flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" />
           <Input
-            value={query}
-            onChange={(event) => {
-              setQuery(event.target.value);
-              setPage(1);
-            }}
+            {...listState.queryInput}
             aria-label={copy.searchLabel}
             className="pl-9"
             placeholder={copy.searchPlaceholder}
@@ -196,8 +225,7 @@ export function SupporterList() {
         <Select
           value={roleFilter}
           onValueChange={(value) => {
-            setRoleFilter(value as SupporterRole | "all");
-            setPage(1);
+            changeFilter({ roleFilter: value as SupporterRole | "all" });
           }}
         >
           <SelectTrigger className="sm:w-48" aria-label={copy.roleFilterLabel}>
@@ -214,6 +242,11 @@ export function SupporterList() {
         </Select>
       </div>
 
+      {(isFetching || listState.isDebouncing) && data && (
+        <p role="status" className="text-xs text-[var(--color-text-muted)]">
+          {language === "zh" ? "正在更新搜尋結果…" : "Refreshing results…"}
+        </p>
+      )}
       {error && (
         <div
           role="alert"
@@ -226,26 +259,27 @@ export function SupporterList() {
       <div className="overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
         <DataTable<SupporterSummary>
           columns={supporterColumns}
-          rows={data?.supporters ?? []}
+          rows={visibleData?.supporters ?? []}
           getRowKey={(s) => s.id}
-          loading={isLoading}
+          loading={isLoading || !listState.hydrated}
           skeletonRows={5}
           empty={error ? null : copy.empty}
           renderMobileCard={renderSupporterCard}
         />
       </div>
-      {data && (
+      {visibleData && (
         <TablePager
           page={page}
           pageSize={25}
-          total={data.total}
+          total={visibleData.total}
           onPageChange={setPage}
+          busy={isFetching || listState.isDebouncing}
           label="支持者"
         />
       )}
-      {data && (
+      {visibleData && (
         <p className="text-xs text-[var(--color-text-muted)]">
-          {pageCopy.common.totalSupporters(data.total)}
+          {pageCopy.common.totalSupporters(visibleData.total)}
         </p>
       )}
     </div>

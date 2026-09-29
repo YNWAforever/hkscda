@@ -1,9 +1,14 @@
 import { ActivitySchedule } from "./ActivitySchedule";
 import { volunteerErrorMessage } from "../../../lib/volunteers/apiResult";
 import { VolunteerDraftForm } from "./VolunteerDraftForm";
-import { useEffect, useRef, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import {
+  parseListPage,
+  useListQueryState,
+  type ListRouteState,
+} from "../../../lib/admin/useListQueryState";
 import {
   activityFilterSchema,
   addHkDays,
@@ -73,8 +78,12 @@ type Template = {
   end_time: string;
 };
 type Reply = { kind: string; operation: Operation };
-const call = <T,>(body: unknown) =>
-  fetchAdminJson<T>("/api/admin/volunteers/bulk", { method: "POST", body: JSON.stringify(body) });
+const call = <T,>(body: unknown, signal?: AbortSignal) =>
+  fetchAdminJson<T>("/api/admin/volunteers/bulk", {
+    method: "POST",
+    body: JSON.stringify(body),
+    signal,
+  });
 const control =
   "min-h-11 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm";
 const button =
@@ -109,7 +118,7 @@ function initial() {
   const parsed = activityFilterSchema.safeParse({
     from: p.get("from") ?? hkDate(),
     until: p.get("until") ?? addHkDays(hkDate(), 30),
-    q: p.get("q") ?? "",
+    q: "",
     shelter: p.get("shelter") ?? "",
     template: p.get("template") ?? "",
     status: p.get("status") ?? "",
@@ -122,15 +131,72 @@ function initial() {
     filter: parsed.success
       ? parsed.data
       : { from: hkDate(), until: addHkDays(hkDate(), 30), sort: "asc" as const },
-    page: Math.max(1, Math.min(100000, Math.trunc(Number(p.get("page"))) || 1)),
+    page: parseListPage(p.get("page")),
     view: p.get("view") === "calendar" ? "calendar" : "table",
     selected: /^[0-9a-f-]{36}$/.test(p.get("selected") ?? "") ? p.get("selected")! : null,
     operation: /^[0-9a-f-]{36}$/.test(p.get("operation") ?? "") ? p.get("operation")! : null,
   };
 }
+const ACTIVITY_FILTER_KEYS = [
+  "from",
+  "until",
+  "shelter",
+  "template",
+  "status",
+  "scenario",
+  "readiness",
+  "shortage",
+  "sort",
+] as const;
+const ACTIVITY_ROUTE: ListRouteState<ActivityFilter> = {
+  key: "volunteer-workspace",
+  read: (params, defaults) => {
+    const parsed = activityFilterSchema.safeParse({
+      ...defaults,
+      from: params.get("from") ?? defaults.from,
+      until: params.get("until") ?? defaults.until,
+      q: "",
+      shelter: params.get("shelter") ?? "",
+      template: params.get("template") ?? "",
+      status: params.get("status") ?? "",
+      scenario: params.get("scenario") ?? "",
+      readiness: params.get("readiness") ?? "",
+      shortage: params.get("shortage") === "true",
+      sort: params.get("sort") ?? defaults.sort,
+    });
+    return {
+      filters: parsed.success ? parsed.data : defaults,
+      page: parseListPage(params.get("page")),
+    };
+  },
+  write: (params, filters, page) => {
+    for (const key of ACTIVITY_FILTER_KEYS) params.delete(key);
+    for (const key of ACTIVITY_FILTER_KEYS) {
+      const value = filters[key];
+      if (value !== undefined && value !== "" && value !== false) params.set(key, String(value));
+    }
+    params.set("page", String(page));
+  },
+};
 export function VolunteerActivityWorkspace({ initialView }: { initialView?: "calendar" } = {}) {
   const [state] = useState(initial);
-  const [filter, setFilter] = useState<ActivityFilter>(state.filter);
+  const listState = useListQueryState<ActivityFilter>({
+    key: "volunteer-workspace",
+    initialFilters: { ...state.filter, q: "" },
+    initialPage: state.page,
+    routeState: ACTIVITY_ROUTE,
+    onScopeChange: () => {
+      setIds([]);
+      setSelection(null);
+      setNotice("篩選已變更，已清除跨頁選取。");
+    },
+  });
+  const filter = useMemo(
+    () => ({ ...listState.filters, q: listState.query }),
+    [listState.filters, listState.query],
+  );
+  const page = listState.page;
+  const setPage = listState.setPage;
   const [advancedFiltersOpen, setAdvancedFiltersOpen] = useState(false);
   const activeAdvancedFilters = [
     filter.shelter,
@@ -140,7 +206,6 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
     filter.readiness,
     filter.shortage,
   ].filter(Boolean).length;
-  const [page, setPage] = useState(state.page);
   const [view, setView] = useState(initialView ?? state.view);
   const [selected, setSelected] = useState<string | null>(state.selected);
   const [detailPage, setDetailPage] = useState(1);
@@ -168,7 +233,10 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
   const tableHeading = useRef<HTMLHeadingElement>(null);
   const list = useQuery({
     queryKey: ["volunteer-workspace", filter, page],
-    queryFn: () => call<{ activities: Row[]; total: number }>({ action: "list", filter, page }),
+    enabled: listState.hydrated,
+    placeholderData: keepPreviousData,
+    queryFn: ({ signal }) =>
+      call<{ activities: Row[]; total: number }>({ action: "list", filter, page }, signal),
   });
   const templates = useQuery({
     queryKey: ["volunteer-workspace-templates"],
@@ -203,21 +271,30 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
     }
   }, [restored.data]);
   useEffect(() => {
-    const p = new URLSearchParams();
-    for (const [k, v] of Object.entries(filter))
-      if (v !== undefined && v !== "") p.set(k, String(v));
-    p.set("page", String(page));
-    p.set("view", view);
-    if (selected) p.set("selected", selected);
-    if (operation) p.set("operation", operation.id);
-    window.history.replaceState(null, "", window.location.pathname + "?" + p);
-  }, [filter, page, view, selected, operation]);
+    if (!listState.hydrated) return;
+    const params = new URLSearchParams(window.location.search);
+    params.set("view", view);
+    if (selected) params.set("selected", selected);
+    else params.delete("selected");
+    if (operation) params.set("operation", operation.id);
+    else params.delete("operation");
+    window.history.replaceState(
+      window.history.state,
+      "",
+      window.location.pathname + "?" + params.toString() + window.location.hash,
+    );
+  }, [listState.hydrated, view, selected, operation]);
+  useEffect(() => {
+    const onPopState = () => {
+      const restored = initial();
+      setView(restored.view);
+      setSelected(restored.selected);
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
   function updateFilter(next: Partial<ActivityFilter>) {
-    setFilter({ ...filter, ...next });
-    setPage(1);
-    setIds([]);
-    setSelection(null);
-    setNotice("篩選已變更，已清除跨頁選取。");
+    listState.changeFilter(next);
   }
   const choose = useMutation({
     mutationFn: (all: boolean) =>
@@ -300,8 +377,9 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
       refresh.error,
       restored.error,
     ].find(Boolean)?.message;
-  const rows = list.data?.activities ?? [];
+  const rows = list.isError ? [] : (list.data?.activities ?? []);
   const total = list.data?.total ?? 0;
+  const listRefreshing = list.isFetching || listState.isDebouncing || list.isPlaceholderData;
   function shift(days: number) {
     const start = filter.from ?? hkDate();
     updateFilter({
@@ -324,11 +402,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
       <section aria-label="活動篩選" className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         <label className="col-span-2 sm:col-span-1">
           搜尋名稱或地點
-          <input
-            className={control + " w-full"}
-            value={filter.q ?? ""}
-            onChange={(e) => updateFilter({ q: e.target.value })}
-          />
+          <input className={control + " w-full"} {...listState.queryInput} />
         </label>
         <label>
           由
@@ -504,12 +578,12 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
       <p role="status">{notice}</p>
       <section aria-label="活動列表">
         <h2 ref={tableHeading} tabIndex={-1} className="text-lg font-bold">
-          活動（{total}）
+          活動（{list.isError ? "資料暫不可用" : total}）
         </h2>
         <div className="my-3 flex flex-wrap items-center gap-2">
           <button
             className={button}
-            disabled={!rows.length}
+            disabled={!rows.length || listRefreshing}
             onClick={() => {
               setIds(Array.from(new Set([...ids, ...rows.map((r) => r.id)])));
               setSelection(null);
@@ -519,14 +593,14 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
           </button>
           <button
             className={button}
-            disabled={!ids.length || choose.isPending}
+            disabled={!ids.length || choose.isPending || listRefreshing || list.isError}
             onClick={() => choose.mutate(false)}
           >
             鎖定已選跨頁項目（{ids.length}）
           </button>
           <button
             className={button}
-            disabled={!total || choose.isPending}
+            disabled={!total || choose.isPending || listRefreshing || list.isError}
             onClick={() => choose.mutate(true)}
           >
             鎖定所有符合條件（{total}）
@@ -542,9 +616,12 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
           </button>
           <span>已鎖定 {selection?.selection.length ?? 0} 場</span>
         </div>
+        {listRefreshing && list.data ? <p role="status">正在更新活動…</p> : null}
         {list.isPending ? (
           <p role="status">正在載入活動…</p>
-        ) : !list.isError && !rows.length ? (
+        ) : list.isError ? (
+          <p>活動列表暫不可用，請重新載入。</p>
+        ) : !rows.length ? (
           <p>
             {filter.q || filter.shelter || filter.template
               ? "沒有符合篩選的活動，請調整條件。"
@@ -558,6 +635,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
             until={filter.until}
             ids={ids}
             onToggle={(id, checked) => {
+              if (listRefreshing) return;
               setIds(checked ? [...ids, id] : ids.filter((value) => value !== id));
               setSelection(null);
             }}
@@ -569,7 +647,11 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
           />
         )}
         <div className="mt-3 flex items-center gap-3">
-          <button className={button} disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
+          <button
+            className={button}
+            disabled={page === 1 || listRefreshing || list.isError}
+            onClick={() => setPage((p) => p - 1)}
+          >
             上一頁
           </button>
           <span>
@@ -577,7 +659,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
           </span>
           <button
             className={button}
-            disabled={page * 25 >= total}
+            disabled={page * 25 >= total || listRefreshing || list.isError}
             onClick={() => setPage((p) => p + 1)}
           >
             下一頁

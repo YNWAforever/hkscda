@@ -14,6 +14,25 @@ const copy = {
 };
 
 describe("CRM ExportBar state", () => {
+  test("blocks new exports and retries while list filters are pending", () => {
+    const markup = renderToStaticMarkup(
+      <ExportBarView
+        copy={copy}
+        busy
+        state={{
+          phase: "error",
+          kind: "supporters",
+          snapshot: "q=Ada",
+          message: "Too many rows",
+          overLimit: true,
+        }}
+        onExport={() => undefined}
+        onRetry={() => undefined}
+        onBackground={() => undefined}
+      />,
+    );
+    expect(markup.match(/disabled=""/g) ?? []).toHaveLength(4);
+  });
   test("renders progress and blocks both buttons while one export is pending", () => {
     const markup = renderToStaticMarkup(
       <ExportBarView
