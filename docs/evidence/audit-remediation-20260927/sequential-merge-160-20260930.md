@@ -43,3 +43,5 @@ Rollback removes access/reverts app while retaining assignments, operations, per
 ## Independent review follow-up
 
 Read-only reviewer examined full SQL/HTTP/UI around cf09870b and found one P2: mount GET(A) could overwrite a newer preview(B) after B had already replaced the saved ID. No further actionable SQL/HTTP/security findings. Delayed-GET browser regression was red at all three widths (recoveryBlocksPreview=false; exit 1). Mount read now sets busy and clears it in an active-guarded finally; regression and all earlier browser scenarios pass at all three widths (exit 0). SQL/checksum unchanged. Reviewer specifically checked actor/reviewer locks, duplicate apply, profile/version conflicts, audit rollback, interrupted response, permissions and operation bounds. Final current-head CI is required after this follow-up.
+
+Final review follow-up: reviewer closed P2 at a05d7e64; no remaining actionable findings. Integrated repeat: 2993 pass / 109 skip / 0 fail, 9309 assertions, 533 files, 27.84s / exit 0. Typecheck/lint/build repeated after both recovery fixes, all exit 0; lint still 52 warnings. SQL unchanged. New current-head CI pending.
