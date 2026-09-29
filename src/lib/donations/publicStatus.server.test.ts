@@ -9,7 +9,33 @@ describe("public donation status", () => {
       repository: { findStatus: async () => "succeeded" },
     });
 
-    expect(result).toEqual({ status: "succeeded" });
+    expect(result).toEqual({
+      status: "succeeded",
+      paymentStatus: "succeeded",
+      receiptStatus: "unavailable",
+      notificationStatus: "unavailable",
+    });
+  });
+
+  test("public status exposes only payment and effect states", async () => {
+    const result = await loadPublicDonationStatus({
+      donationId: "f8dce8fa-83f4-4d5f-b0b0-fbc3348efb7a",
+      repository: {
+        findStatus: async () => "succeeded",
+        findEffects: async () =>
+          ({
+            receiptStatus: "pending",
+            notificationStatus: "failed",
+            privateEmail: "secret@example.invalid",
+          }) as never,
+      },
+    });
+    expect(result).toEqual({
+      status: "succeeded",
+      paymentStatus: "succeeded",
+      receiptStatus: "pending",
+      notificationStatus: "failed",
+    });
   });
 
   test("hides invalid and missing donations", async () => {
@@ -61,10 +87,15 @@ describe("public donation status", () => {
       },
     });
 
-    expect(result).toEqual({ status: "pending" });
+    expect(result).toEqual({
+      status: "pending",
+      paymentStatus: "pending",
+      receiptStatus: "unavailable",
+      notificationStatus: "unavailable",
+    });
   });
 
-  test("does not expose succeeded while COD side-effect recovery is failing", async () => {
+  test("succeeded payment survives receipt or acknowledgement failure", async () => {
     const result = await loadPublicDonationStatus({
       donationId: "f8dce8fa-83f4-4d5f-b0b0-fbc3348efb7a",
       repository: {
@@ -75,6 +106,7 @@ describe("public donation status", () => {
       },
     });
 
-    expect(result).toEqual({ status: "pending" });
+    expect(result?.status).toBe("succeeded");
+    expect(result?.paymentStatus).toBe("succeeded");
   });
 });

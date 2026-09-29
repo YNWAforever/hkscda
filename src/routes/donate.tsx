@@ -133,7 +133,7 @@ const copy = {
     processing: "處理中",
     success: "多謝您的支持。付款確認後，系統會發出確認電郵及合資格收條。",
     paymentWaiting: "正在等待付款確認。付款狀態以本會系統為準，請勿重複付款。",
-    paymentConfirmed: "付款已確認。多謝您的支持。",
+    paymentConfirmed: "付款已確認。合資格收條及電郵會分開處理；尚未收到不代表付款失敗。",
     paymentUnavailable: "暫時未能確認付款狀態。請稍後再試或聯絡我們，請勿重複付款。",
     cancelled: "付款尚未完成，您可以重新選擇付款方式。",
     paypalApproved: "PayPal 已授權，確認完成後會發出收據通知。",
@@ -176,7 +176,8 @@ const copy = {
       "Thank you for your support. A confirmation email and eligible receipt will be sent after payment is confirmed.",
     paymentWaiting:
       "Waiting for payment confirmation. Our donation system is the source of truth; please do not pay again.",
-    paymentConfirmed: "Payment confirmed. Thank you for your support.",
+    paymentConfirmed:
+      "Payment confirmed. Eligible receipts and email updates are processed separately; a delay does not mean payment failed.",
     paymentUnavailable:
       "We cannot confirm the payment status yet. Please try again later or contact us; do not pay again.",
     cancelled: "Payment is not complete. You can choose a payment method again.",
