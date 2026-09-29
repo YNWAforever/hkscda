@@ -15,9 +15,14 @@ import { useShortlist } from "../ShortlistContext";
 import { TurnstileWidget, turnstileEnabled } from "../TurnstileWidget";
 import {
   ADOPTION_DRAFT_STORAGE_KEY,
-  parseDraft,
-  serializeDraft,
+  pickAdoptionDraftData,
 } from "../../../lib/publicAdoption/draft";
+import {
+  clearDraft,
+  readDraft,
+  writeDraft,
+  type DraftReadResult,
+} from "../../../lib/forms/localDraft";
 import {
   ADOPTION_TERMS_VERSION,
   expandedAdoptionApplicationSchema,
@@ -56,6 +61,11 @@ const WIZARD_STEPS = [
   { id: "photos", zh: "環境相片", en: "Photos" },
   { id: "review", zh: "檢查提交", en: "Review" },
 ] as const;
+
+export function restoredAdoptionStep(step: number): number {
+  const photoStep = WIZARD_STEPS.findIndex((item) => item.id === "photos");
+  return Math.min(Math.max(step, 0), photoStep);
+}
 
 type WizardStepId = (typeof WIZARD_STEPS)[number]["id"];
 
@@ -276,6 +286,10 @@ export function ApplicationWizard() {
   const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const [submission, setSubmission] = useState<SubmissionResult | null>(null);
   const [storageReady, setStorageReady] = useState(false);
+  const [saveOnDevice, setSaveOnDevice] = useState(false);
+  const [draftOffer, setDraftOffer] = useState<DraftReadResult<Record<string, unknown>> | null>(
+    null,
+  );
   const [draftNeedsUpdate, setDraftNeedsUpdate] = useState(false);
   const [draftStatus, setDraftStatus] = useState<"idle" | "restored" | "saved" | "unavailable">(
     "idle",
@@ -337,37 +351,66 @@ export function ApplicationWizard() {
   );
 
   const saveDraft = useCallback(() => {
-    if (!storageReady || submission) return;
+    if (!storageReady || !saveOnDevice || submission) return;
     try {
-      window.localStorage.setItem(ADOPTION_DRAFT_STORAGE_KEY, serializeDraft(getValues()));
-      setDraftStatus("saved");
+      const saved = writeDraft(
+        window.localStorage,
+        ADOPTION_DRAFT_STORAGE_KEY,
+        pickAdoptionDraftData(getValues()),
+        currentStepIndex,
+      );
+      setDraftStatus(saved ? "saved" : "unavailable");
     } catch {
       setDraftStatus("unavailable");
     }
-  }, [getValues, storageReady, submission]);
+  }, [currentStepIndex, getValues, saveOnDevice, storageReady, submission]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
       try {
-        const restoredDraft = parseDraft(window.localStorage.getItem(ADOPTION_DRAFT_STORAGE_KEY));
-        setDraftNeedsUpdate(draftHasRetiredAnswers(restoredDraft));
-        reset(
-          mergeDraftValues(
-            defaultValues,
-            restoredDraft,
-            rankedPreferences.map((animal) => animal.animalType),
-          ),
+        const found = readDraft<Record<string, unknown>>(
+          window.localStorage,
+          ADOPTION_DRAFT_STORAGE_KEY,
         );
-        setDraftStatus(Object.keys(restoredDraft).length > 0 ? "restored" : "idle");
+        setDraftOffer(found.state === "none" ? null : found);
+        if (found.state === "expired") setDraftStatus("idle");
       } catch {
         setDraftStatus("unavailable");
+        setDraftOffer({ state: "invalid" });
       } finally {
         setStorageReady(true);
       }
     }, 0);
-
     return () => window.clearTimeout(timer);
-  }, [defaultValues, rankedPreferences, reset]);
+  }, []);
+
+  function clearSavedDraft() {
+    try {
+      clearDraft(window.localStorage, ADOPTION_DRAFT_STORAGE_KEY);
+    } catch {
+      /* Storage unavailable. */
+    }
+    setDraftOffer(null);
+    setSaveOnDevice(false);
+    setDraftStatus("idle");
+  }
+
+  function restoreSavedDraft() {
+    if (draftOffer?.state !== "available") return;
+    const safe = pickAdoptionDraftData(draftOffer.draft.data);
+    setDraftNeedsUpdate(draftHasRetiredAnswers(safe));
+    reset(
+      mergeDraftValues(
+        defaultValues,
+        safe,
+        rankedPreferences.map((animal) => animal.animalType),
+      ),
+    );
+    setCurrentStepIndex(restoredAdoptionStep(draftOffer.draft.step));
+    setDraftOffer(null);
+    setSaveOnDevice(true);
+    setDraftStatus("restored");
+  }
 
   useEffect(() => {
     if (!storageReady) return;
@@ -392,10 +435,19 @@ export function ApplicationWizard() {
   }, [currentStep.id, getValues, rankedPreferences, setValue, storageReady]);
 
   useEffect(() => {
-    if (!storageReady || submission) return;
-    const subscription = watch(() => saveDraft());
-    return () => subscription.unsubscribe();
-  }, [saveDraft, storageReady, submission, watch]);
+    if (!storageReady || !saveOnDevice || submission || draftOffer) return;
+    let timer: number | undefined;
+    const schedule = () => {
+      if (timer) window.clearTimeout(timer);
+      timer = window.setTimeout(saveDraft, 500);
+    };
+    const subscription = watch(schedule);
+    schedule();
+    return () => {
+      subscription.unsubscribe();
+      if (timer) window.clearTimeout(timer);
+    };
+  }, [draftOffer, saveDraft, saveOnDevice, storageReady, submission, watch]);
 
   useEffect(() => {
     if (rankedAnimals.length === 0) setCurrentStepIndex(0);
@@ -428,7 +480,6 @@ export function ApplicationWizard() {
       .filter((animal): animal is (typeof rankedPreferences)[number] => Boolean(animal));
 
     setValue("animalPreferences", nextPreferences, { shouldDirty: true, shouldValidate: true });
-    saveDraft();
   }
 
   async function goToNextStep() {
@@ -440,13 +491,11 @@ export function ApplicationWizard() {
     const fields = STEP_FIELDS[currentStep.id];
     const valid = fields.length === 0 ? true : await trigger(fields, { shouldFocus: true });
     if (!valid) return;
-    saveDraft();
     setCurrentStepIndex((index) => Math.min(index + 1, WIZARD_STEPS.length - 1));
   }
 
   function goToPreviousStep() {
     setServerError(null);
-    saveDraft();
     setCurrentStepIndex((index) => Math.max(index - 1, 0));
   }
 
@@ -489,7 +538,8 @@ export function ApplicationWizard() {
     }
 
     try {
-      window.localStorage.removeItem(ADOPTION_DRAFT_STORAGE_KEY);
+      clearDraft(window.localStorage, ADOPTION_DRAFT_STORAGE_KEY);
+      setSaveOnDevice(false);
       setDraftStatus("idle");
     } catch {
       setDraftStatus("unavailable");
@@ -609,7 +659,10 @@ export function ApplicationWizard() {
             <p className="text-sm font-semibold text-[var(--color-primary)]">Public adoption</p>
             <h1 className="text-3xl font-bold text-[var(--color-panel)]">領養申請</h1>
             <p className="mt-2 max-w-2xl text-sm text-[var(--color-text-muted)]">
-              草稿會自動儲存在本機瀏覽器；環境相片不會被草稿保存，提交前請保持分頁開啟。
+              開始前請準備聯絡及住屋資料、照顧安排、可探望日期，以及家居安全相片；相片請勿包含證件或門牌。
+            </p>
+            <p className="mt-1 max-w-2xl text-sm text-[var(--color-text-muted)]">
+              草稿只會在你選擇後儲存於此裝置，7 日後自動清除；相片、同意及驗證資料不會保存。
             </p>
           </div>
           <p className="text-xs text-[var(--color-text-muted)]" role="status">
@@ -619,9 +672,44 @@ export function ApplicationWizard() {
                 ? "草稿已儲存"
                 : draftStatus === "unavailable"
                   ? "本機草稿暫時不可用"
-                  : "填寫後會自動儲存草稿"}
+                  : saveOnDevice
+                    ? "此裝置會保存草稿"
+                    : "草稿保存預設關閉"}
           </p>
         </header>
+
+        <section className="mb-4 space-y-3 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-sm">
+          {draftOffer && (
+            <div role="status" className="space-y-2">
+              <p>
+                {draftOffer.state === "available"
+                  ? "此裝置有未完成草稿。恢復後相片須重新選擇，條款須重新確認。"
+                  : "舊草稿已過期、格式不符或本機儲存不可用；不會自動載入。"}
+              </p>
+              {draftOffer.state === "available" && (
+                <button type="button" className="btn-secondary" onClick={restoreSavedDraft}>
+                  恢復草稿並在此裝置繼續儲存
+                </button>
+              )}
+              <button type="button" className="underline" onClick={clearSavedDraft}>
+                清除草稿並重新開始
+              </button>
+            </div>
+          )}
+          <label className="flex items-start gap-2">
+            <input
+              type="checkbox"
+              aria-label="在此裝置保存領養草稿"
+              checked={saveOnDevice}
+              disabled={Boolean(draftOffer)}
+              onChange={(event) => {
+                if (event.target.checked) setSaveOnDevice(true);
+                else clearSavedDraft();
+              }}
+            />
+            <span>在此裝置保存草稿（7 日後自動清除）</span>
+          </label>
+        </section>
 
         {draftNeedsUpdate ? (
           <p
