@@ -12,8 +12,8 @@ SPON-01,待修付款選項反向,T08,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae
 SPON-02,待提供可閱讀版本化條款,T08,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
 SPON-03,待明確總額／偏好／月付性質,T08,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
 SPON-04,部分改善；補草稿及錯誤處理,T08、T09,partial,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
-ADOPT-01,待修本機草稿保存界線,T09,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
-ADOPT-02,待完善準備、恢復與七步流程,T09、T24,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
+ADOPT-01,待修本機草稿保存界線,T09,code-complete: opt-in versioned TTL and data whitelist,yes,not applicable,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,codex/audit-safe-drafts-20260927,red-to-green TTL/legacy/storage-denied/whitelist; 22 focused isolated pass; full 2834 pass/86 skip/0 fail; mobile synthetic resume/clear exit 0,seven-day retention approval and browser UAT
+ADOPT-02,待完善準備、恢復與七步流程,T09、T24,partial: checklist/recovery/review code done; UAT open,partial,not applicable,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,codex/audit-safe-drafts-20260927,red-to-green photo reselect/fresh terms and focused 22 pass; mobile/keyboard synthetic resume/clear exit 0; full 2834 pass/86 skip/0 fail,T24 end-to-end UAT and retention approval
 CRM-01,產品缺口；先安全找回，再中心,T22,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
 ADMIN-01,待修匯出狀態與錯誤,T14,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
 ADMIN-02,待修 supporter dialog 同步／衝突,T15,open,no,no,no,no,f8d5e5d5840d1775efb7d7f4ae2768f6557096b5,,not-run for this issue,
