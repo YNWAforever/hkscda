@@ -35,10 +35,12 @@ test("release manifest covers every new public table, RPC, and additive column a
     "fail_content_public_asset_copy",
     "get_media_repair_backlog",
     "retry_failed_media_repair",
+    "public_animal_listing_page",
   ]) {
     expect(functions).toContain(name);
   }
   for (const column of [
+    "animals.public_age_band",
     "content_item.content_class",
     "content_item.source_reference",
     "content_item.content_owner",

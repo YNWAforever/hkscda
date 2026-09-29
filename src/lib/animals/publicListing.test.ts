@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
 import type { Animal } from "../../types/animal";
+import { parseAgeFilter } from "../../types/animal";
 import { buildPublicAnimalListing } from "./publicListing";
 
 function animal(
@@ -204,4 +205,12 @@ test("featured listing filters missing photos before its two-animal page", () =>
   expect(result.animals.map(({ id }) => id)).toEqual(["c", "d"]);
   expect(result.total).toBe(2);
   expect(buildPublicAnimalListing({ ...input, withPhoto: false }).total).toBe(4);
+});
+
+test("strict age normalization preserves unknown text and converts older month ages", () => {
+  expect(parseAgeFilter("rescue 2026")).toBe("unknown");
+  expect(parseAgeFilter("不詳")).toBe("unknown");
+  expect(parseAgeFilter("18 months")).toBe("adult");
+  expect(parseAgeFilter("約 8 個月")).toBe("bb");
+  expect(parseAgeFilter("約 10 歲")).toBe("senior");
 });

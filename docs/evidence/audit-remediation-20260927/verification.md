@@ -65,3 +65,26 @@ Environment: isolated worktree codex/audit-media-repair-20260927; disposable Sup
 | npm.cmd run lint | 0 | 0 errors, 52 existing warnings |
 | npm.cmd run build | 0 | Vercel client/server output built; separate from typecheck |
 | Browser UI and production media worker | not-run | Browser helper unavailable; no production schedule or copy |
+
+
+## T20/T21 region and public animal pagination (2026-09-27 HKT)
+
+T20 production metadata read-only: Vercel deployment dpl_Ggm7uaMZXqFFw7yqZyE7z8D3zg5m region iad1 and Supabase project ap-southeast-1 confirmed. Private same-SHA region candidate, cold/warm geographic benchmark and region switch: not-run.
+
+| Environment and command | Exit | Result |
+|---|---:|---|
+| Loopback DB, PUBLIC_LISTING_TEST_DATABASE_URL + local fixture flag, bun test src/lib/animals/publicListing.database.test.ts | 0 | 1 pass, 20 assertions; 1k/10k parity, anon RLS, sponsor/birthday, rollback-only |
+| Loopback DB, PUBLIC_LISTING_BENCH_DATABASE_URL + local fixture flag, bun scripts/bench-public-listing.ts | 0 | 30 warm samples; see t21-public-pagination.md |
+| Loopback DB, CHECK_RELEASE_SCHEMA_DATABASE_URL, bun scripts/check-release-schema.ts | 0 | 86 compatible requirements, zero issues |
+| bun test src/lib/animals/publicListing.server.test.ts src/lib/animals/publicAnimal.functions.test.ts | 0 | 3 pass; one-RPC adapter and detail-gallery compatibility |
+| bun test src/lib/animals/publicImageSources.test.ts src/components/site/AnimalCard.test.tsx | 0 | 7 pass; public-only variants and image layout |
+| SUPABASE_LOCAL_URL=loopback REST bun test | 0 | 2,829 pass, 87 skip, 0 fail, 8,692 assertions across 483 files |
+| npm.cmd run typecheck | 0 | strict TypeScript |
+| npm.cmd run lint | 0 | 0 errors, 52 existing warnings; first run exposed CRLF and was fixed |
+| npm.cmd run build | 0 | Vercel client/server output built; separate from typecheck |
+| node --test scripts/ci/supabase-fixture.test.mjs | 0 | new RPC fixture returns valid second page and no notes |
+| Browser/paid transform/private preview | not-run | T18 browser launcher failure and external provider/preview gates |
+
+### T21 CI fixture correction on PR #155
+
+Initial GitHub Actions run 36329614637: verify, RLS matrix and performance passed; brand and a11y failed because public animal detail routes returned 404. A red fixture HTTP test reproduced 406 for the real published/id/status-in/retired-null/eligibility query. The fixture's in(...) parser retained parentheses, and its is.null predicate was absent. Both were corrected; node --test scripts/ci/supabase-fixture.test.mjs exits 0. GitHub Actions rerun 36331436408 at head 71580ed: verify, RLS matrix, performance, brand and a11y all passed. This verifies the fixture build, not a deployed production schema or same-region browser benchmark.

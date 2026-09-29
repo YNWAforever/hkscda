@@ -73,6 +73,7 @@ function animal(index, type, gender, age) {
     notes: null,
     notes_en: null,
     status: "available",
+    publication_state: "published",
     adoption_eligible: type === "cat" || type === "dog",
     sponsorship_eligible: type === "sponsor",
     retired_at: null,
@@ -169,8 +170,11 @@ function applyFilters(rows, params) {
     const value = rest.join(".");
     if (op === "eq") out = out.filter((row) => String(row[key]) === value);
     else if (op === "in") {
-      const set = new Set(value.replace(/^(|)$/g, "").split(","));
+      const list = value.startsWith("(") && value.endsWith(")") ? value.slice(1, -1) : value;
+      const set = new Set(list.split(","));
       out = out.filter((row) => set.has(String(row[key])));
+    } else if (op === "is" && value === "null") {
+      out = out.filter((row) => row[key] === null);
     }
   }
   return out;
@@ -227,6 +231,56 @@ const server = createServer((req, res) => {
 
   if (req.method === "POST" && path === "/rest/v1/rpc/read_published_content_snapshots") {
     json(res, 200, { total: 0, rows: [] });
+    return;
+  }
+
+  if (req.method === "POST" && path === "/rest/v1/rpc/public_animal_listing_page") {
+    let body = "";
+    req.on("data", (chunk) => { body += chunk; });
+    req.on("end", () => {
+      try {
+        const filters = JSON.parse(body).p_filters;
+        const ageBand = (age) => {
+          const match = age.match(/^約\s*(\d+)\s*(個月|歲)$/u);
+          if (!match) return "unknown";
+          const months = Number(match[1]) * (match[2] === "歲" ? 12 : 1);
+          return months < 12 ? "bb" : months < 96 ? "adult" : "senior";
+        };
+        const query = String(filters.query ?? "").trim().toLowerCase();
+        const eligible = ANIMALS.filter((row) =>
+          row.publication_state === "published" &&
+          ["available", "fostered"].includes(row.status) &&
+          row.retired_at === null &&
+          (filters.purpose === "adoption"
+            ? row.adoption_eligible && row.type === filters.species
+            : row.sponsorship_eligible) &&
+          (filters.ageBand === "all" || ageBand(row.age) === filters.ageBand) &&
+          (filters.gender === "all" || row.gender === filters.gender) &&
+          (!filters.hasPhoto || Boolean(row.image_url?.trim())) &&
+          (!query || [row.name, row.name_en, row.public_profile.code].some((value) =>
+            String(value ?? "").toLowerCase().includes(query))) &&
+          (!filters.neutered || filters.neutered === "all" ||
+            (filters.neutered === "unknown"
+              ? row.public_profile.neutered === null
+              : row.public_profile.neutered === (filters.neutered === "yes"))) &&
+          (!filters.suitability || filters.suitability === "all" ||
+            (filters.suitability === "unknown"
+              ? row.public_profile.suitability === null
+              : row.public_profile.suitability === filters.suitability))
+        );
+        const ordered = filters.sort === "oldest" ? [...eligible].reverse() : eligible;
+        const page = Number(filters.page);
+        const pageSize = Number(filters.pageSize);
+        const items = ordered.slice((page - 1) * pageSize, page * pageSize).map(({ notes, notes_en, ...row }) => ({
+          ...row,
+          description: null,
+          description_en: null,
+        }));
+        json(res, 200, { items, total: eligible.length, page });
+      } catch {
+        json(res, 400, { code: "22023", message: "Invalid public listing filters" });
+      }
+    });
     return;
   }
 

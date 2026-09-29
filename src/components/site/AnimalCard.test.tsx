@@ -143,3 +143,16 @@ test("sponsor card shows approved care, use and progress only when supplied", as
   expect(empty).not.toContain("助養用途");
   expect(empty).not.toContain("近況");
 });
+
+test("first visible public card reserves image space and requests its photo eagerly", async () => {
+  const { AnimalCard } = await import("./AnimalCard");
+  const markup = renderToStaticMarkup(
+    <ShortlistProvider>
+      <AnimalCard animal={{ ...animal, image_url: "https://example.invalid/cat.jpg" }} priority />
+    </ShortlistProvider>,
+  );
+  expect(markup).toContain('width="800"');
+  expect(markup).toContain('height="600"');
+  expect(markup).toContain('loading="eager"');
+  expect(markup).toContain('sizes="(max-width: 640px) 100vw');
+});

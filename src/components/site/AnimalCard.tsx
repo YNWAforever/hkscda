@@ -8,11 +8,13 @@ import { AnimalPhoto } from "./AnimalPhoto";
 interface AnimalCardProps {
   animal: Animal;
   intent?: "adoption" | "sponsorship";
+  priority?: boolean;
 }
 
 export function AnimalCard({
   animal,
   intent = animal.type === "sponsor" ? "sponsorship" : "adoption",
+  priority = false,
 }: AnimalCardProps) {
   const detailHref =
     intent === "sponsorship"
@@ -29,7 +31,7 @@ export function AnimalCard({
             row as an 88px square beside the name, so the animal -- the whole
             reason someone is on this page -- occupied less area than its own
             caption. */}
-        <AnimalPhoto animal={animal} />
+        <AnimalPhoto animal={animal} priority={priority} />
         <div className="animal-profile-identity">
           <div className="min-w-0">
             {profile?.code && <p className="animal-profile-code">編號 {profile.code}</p>}

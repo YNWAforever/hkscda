@@ -810,6 +810,16 @@ export const releaseManifest: SchemaRequirement[] = [
     executeRoles: ["service_role"],
   },
   {
+    kind: "function",
+    schema: "public",
+    name: "public_animal_listing_page",
+    feature: "public-animals",
+    required: true,
+    arguments: "p_filters jsonb",
+    returns: "jsonb",
+    executeRoles: ["anon", "authenticated", "service_role"],
+  },
+  {
     kind: "column",
     schema: "public",
     table: "adoption_fees",
@@ -970,6 +980,15 @@ export const releaseManifest: SchemaRequirement[] = [
     feature: "media-repair",
     required: true,
     type: "uuid",
+  },
+  {
+    kind: "column",
+    schema: "public",
+    table: "animals",
+    name: "public_age_band",
+    feature: "public-animals",
+    required: true,
+    type: "text",
   },
   {
     kind: "column",

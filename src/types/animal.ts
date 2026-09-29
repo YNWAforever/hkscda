@@ -92,14 +92,19 @@ export interface AdoptionApplication {
 
 export function parseAgeFilter(age: string): AgeFilter | "unknown" {
   const normalized = age.trim().toLocaleLowerCase("en");
-  if (/個月|months?/.test(normalized)) return "bb";
-
-  const match = normalized.match(/(\d+(?:\.\d+)?)/);
-  if (!match) return "unknown";
-
-  const years = Number(match[1]);
-  if (!Number.isFinite(years)) return "unknown";
-  if (years < 1) return "bb";
-  if (years <= 7) return "adult";
-  return "senior";
+  if (normalized.length > 50) return "unknown";
+  const months = normalized.match(
+    /^(?:(?:約|大約)\s*|about\s+)?(\d+(?:\.\d+)?)\s*(?:個月|个月|月|months?|mos?)(?:\s+old)?$/,
+  );
+  if (months) {
+    const value = Number(months[1]);
+    if (!Number.isFinite(value) || value > 600) return "unknown";
+    return value < 12 ? "bb" : value < 96 ? "adult" : "senior";
+  }
+  const years = normalized.match(
+    /^(?:(?:約|大約)\s*|about\s+)?(\d+(?:\.\d+)?)\s*(?:歲|岁|years?|yrs?)(?:\s+old)?$/,
+  );
+  const value = Number(years?.[1] ?? (/^\d+(?:\.\d+)?$/.test(normalized) ? normalized : NaN));
+  if (!Number.isFinite(value) || value > 50) return "unknown";
+  return value < 1 ? "bb" : value < 8 ? "adult" : "senior";
 }

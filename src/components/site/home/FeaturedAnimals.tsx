@@ -33,8 +33,8 @@ export function FeaturedAnimals({
 
         {animals.length ? (
           <div className="animal-grid home-animal-grid">
-            {animals.map((animal) => (
-              <AnimalCard key={animal.id} animal={animal} />
+            {animals.map((animal, index) => (
+              <AnimalCard key={animal.id} animal={animal} priority={index === 0} />
             ))}
           </div>
         ) : (

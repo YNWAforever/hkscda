@@ -334,8 +334,8 @@ export function AnimalGrid({
         )
       ) : (
         <div className="animal-profile-grid">
-          {animals.map((animal) => (
-            <AnimalCard intent={intent} key={animal.id} animal={animal} />
+          {animals.map((animal, index) => (
+            <AnimalCard intent={intent} key={animal.id} animal={animal} priority={index === 0} />
           ))}
         </div>
       )}
