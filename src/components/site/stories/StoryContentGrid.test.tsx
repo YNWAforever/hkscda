@@ -38,3 +38,14 @@ test("ended event remains in archive without an active signup action", async () 
   expect(markup).not.toContain("立即報名");
   expect(markup).not.toContain("https://example.org/register");
 });
+
+test.each([
+  { name: "demo", patch: { contentClass: "demo" as const } },
+  { name: "draft", patch: { status: "draft" as const } },
+  { name: "future", patch: { effectiveFrom: "2999-01-01T00:00:00.000Z", effectiveUntil: null } },
+])("archive excludes $name content", async ({ patch }) => {
+  const { StoryContentGrid } = await import("./StoryContentGrid");
+  const markup = renderToStaticMarkup(<StoryContentGrid items={[{ ...endedEvent, ...patch }]} />);
+  expect(markup).not.toContain("舊活動");
+  expect(markup).not.toContain("old-event");
+});

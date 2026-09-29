@@ -29,3 +29,7 @@ Draft #147 contains the immediate-export UI repair. This branch adds the indepen
 ## T15 branch continuation
 
 Draft #149 addresses ADMIN-02 in an isolated branch: fresh supporter read on open, dirty-close guard, versioned atomic mutation and 409 conflict response. Its local synthetic browser and isolated DB tests passed; production schema, real test-identity UAT and release approval remain open. ADMIN-03 and later tasks remain separate. The original rows above describe this plan's T00 snapshot, not the whole remediation programme.
+
+## Sequential release continuation — 2026-09-30
+
+#134–#152 have merged sequentially (19/46), with each PR and its predecessor main CI checked before merge. #152 production READY; its main CI pending. T18/#153 archive leakage and migration identity collision repaired; local code/UI checks passed, current schema rehearsal and remote gates pending. See sequential-merge-153-20260930.md. Historical entries above are retained.
