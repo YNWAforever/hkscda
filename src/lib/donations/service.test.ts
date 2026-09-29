@@ -37,6 +37,24 @@ function createFakeRepository(): DonationRepository & {
     donations,
     payments,
     resolvedContacts,
+    async admitNewCheckout(input) {
+      return {
+        snapshot: {
+          configId: "9a78c87c-1e3a-4c02-b551-71a9b69a5412",
+          configVersion: input.expectedConfigVersion,
+          purpose: input.purpose,
+          method: input.method,
+          displayLabelZh: input.method === "fps" ? "轉數快 FPS" : "PayMe Business",
+          displayLabelEn: input.method,
+          details: {
+            payableTo: "Synthetic default charity",
+            identifier: input.method === "fps" ? "FPS TEST-123" : "PayMe TEST-123",
+          },
+          capturedAt: "2026-09-27T00:00:00Z",
+        },
+        instructionsActive: true,
+      };
+    },
     async resolvePublicIdentity(contact) {
       resolvedContacts.push(contact);
       return { supporterId: supporter.id, kind: "existing" };
@@ -122,6 +140,7 @@ const providers: PaymentProviders = {
 const baseInput = {
   idempotencyKey: "e15e9832-469b-4710-b2ea-244d8a39aa12",
   amountCents: 30000,
+  expectedConfigVersion: 1,
   currency: "HKD" as const,
   purpose: "medical" as const,
   receiptRequested: true,
@@ -135,6 +154,32 @@ const baseInput = {
 };
 
 describe("createDonation", () => {
+  test("disabled_policy_has_zero_side_effects", async () => {
+    const repository = Object.assign(createFakeRepository(), {
+      admitNewCheckout: async () => {
+        throw new Error("checkout disabled");
+      },
+    });
+    let providerCalls = 0;
+    await expect(
+      createDonation({
+        input: { ...baseInput, method: "stripe" as const, expectedConfigVersion: 1 },
+        repository,
+        providers: {
+          ...providers,
+          async createStripeCheckout(input) {
+            providerCalls += 1;
+            return providers.createStripeCheckout(input);
+          },
+        },
+      }),
+    ).rejects.toThrow("checkout disabled");
+    expect(repository.resolvedContacts).toHaveLength(0);
+    expect(repository.donations).toHaveLength(0);
+    expect(repository.payments).toHaveLength(0);
+    expect(providerCalls).toBe(0);
+  });
+
   test("replays the same checkout intent without a second donation, payment, or provider call", async () => {
     const repository = createFakeRepository();
     let checkoutCalls = 0;
@@ -263,6 +308,58 @@ describe("createDonation", () => {
     expect(checkoutCalls).toBe(1);
     expect(repository.donations).toHaveLength(1);
   });
+  test("manual instructions come from an admitted config snapshot, never a hard-coded account", async () => {
+    const repository = Object.assign(createFakeRepository(), {
+      admitNewCheckout: async () => ({
+        configId: "9a78c87c-1e3a-4c02-b551-71a9b69a5412",
+        configVersion: 1,
+        snapshot: {
+          configId: "9a78c87c-1e3a-4c02-b551-71a9b69a5412",
+          configVersion: 1,
+          purpose: "donation" as const,
+          method: "fps" as const,
+          displayLabelZh: "轉數快 FPS",
+          displayLabelEn: "FPS",
+          details: { payableTo: "Synthetic charity", identifier: "FPS ID SANDBOX-321" },
+          capturedAt: "2026-09-27T00:00:00Z",
+        },
+        instructionsActive: true,
+      }),
+    });
+    const result = await createDonation({
+      input: { ...baseInput, method: "fps" as const },
+      repository,
+      providers,
+    });
+    expect(result.kind).toBe("manual");
+    if (result.kind !== "manual") throw new Error("expected manual instructions");
+    expect(result.instructions).toMatchObject({
+      payableTo: "Synthetic charity",
+      identifier: "FPS ID SANDBOX-321",
+    });
+    expect(JSON.stringify(result)).not.toContain("8727588");
+  });
+
+  test("withdrawn manual config keeps the admitted reference but hides old payment details", async () => {
+    const repository = createFakeRepository();
+    const originalAdmission = repository.admitNewCheckout;
+    repository.admitNewCheckout = async (input) => ({
+      ...(await originalAdmission(input)),
+      instructionsActive: false,
+    });
+    const result = await createDonation({
+      input: { ...baseInput, method: "fps" as const },
+      repository,
+      providers,
+    });
+    expect(result).toMatchObject({
+      kind: "manual",
+      reference: "HKSCDA-F8DCE8FA",
+      instructions: null,
+    });
+    expect(JSON.stringify(result)).not.toContain("FPS TEST-123");
+  });
+
   test("creates pending manual FPS donations with a unique reference", async () => {
     const repository = createFakeRepository();
 
@@ -280,8 +377,8 @@ describe("createDonation", () => {
       instructions: {
         method: "fps",
         label: "轉數快 FPS",
-        payableTo: "香港拯救貓狗協會",
-        identifier: "FPS ID 8727588",
+        payableTo: "Synthetic default charity",
+        identifier: "FPS TEST-123",
         amountCents: 30000,
       },
     });

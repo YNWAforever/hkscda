@@ -16,6 +16,12 @@ function readMigrationBySuffix(suffix: string) {
 }
 
 describe("supabase migration safety", () => {
+  test("migration version identifiers are unique across merged release slices", () => {
+    const versions = readdirSync(join(process.cwd(), "supabase", "migrations"))
+      .filter((file) => /^\d+_.+\.sql$/.test(file))
+      .map((file) => file.split("_")[0]);
+    expect(new Set(versions).size).toBe(versions.length);
+  });
   test("extends donation payment checks for COD AlipayHK without rewriting rows", () => {
     const sql = readMigration("20260720100000_cod_alipayhk_payment_support.sql");
 
