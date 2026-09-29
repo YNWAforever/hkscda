@@ -124,3 +124,7 @@ The schema must be applied before the #149 app code. Rehearse locks and triggers
 ## T22 sequential release checkpoint — 2026-09-30
 
 The exact unchanged 20260927163302 supporter preference RPC was rehearsed on the production-schema-only isolated clone, then checked as service_role with denied-role, audit rollback and concurrent idempotency fixtures. Production read-only inventory confirms the RPC is absent; no production DDL has occurred. Exact hash, catalog, commands, rollback and remaining approval are in [PR157 sequential evidence](sequential-merge-157-20260930.md). Recovery activation remains blocked by the separate #156 local Auth concurrent OTP failure.
+
+## T23 CRM bulk sequential candidate update — 2026-09-30
+
+The undeployed 20260927172030 candidate now holds shared locks on Auth/admin actor rows until transaction completion. Its canonical LF hash is d4a1a51db9b25feae7e440609ce5cfbb410e9e25e2f870f96df26618151489a6. The earlier f106bf hash describes the historical draft, not this release candidate. No deployed SQL or ledger was changed. Exact dry-run, 1000-row/concurrency/role/audit proof and rollback are in [PR159 sequential evidence](sequential-merge-159-20260930.md).
