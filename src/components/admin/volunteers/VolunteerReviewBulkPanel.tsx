@@ -37,6 +37,7 @@ export function VolunteerReviewBulkPanel({
     const saved = sessionStorage.getItem(savedOperationKey);
     if (!saved || !/^[0-9a-f-]{36}$/i.test(saved)) return;
     setRecoveryId(saved);
+    setBusy(true);
     let active = true;
     fetchAdminJson<VolunteerReviewBulkOperation>(
       endpoint + "?operationId=" + encodeURIComponent(saved),
@@ -46,6 +47,9 @@ export function VolunteerReviewBulkPanel({
       })
       .catch(() => {
         if (active) setError("未能讀取已保存的操作，請重新讀取結果。");
+      })
+      .finally(() => {
+        if (active) setBusy(false);
       });
     return () => {
       active = false;
