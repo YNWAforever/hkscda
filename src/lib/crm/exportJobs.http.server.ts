@@ -18,6 +18,7 @@ const requestSchema = z.object({
 
 type Dependencies = {
   client: SupabaseClient;
+  isEnabled?: () => boolean;
   requireTreasurer(request: Request): Promise<AdminUser>;
 };
 
@@ -40,12 +41,21 @@ async function guarded(operation: () => Promise<Response>) {
   }
 }
 
-export function createCrmExportJobHandlers({ client, requireTreasurer }: Dependencies) {
+export function createCrmExportJobHandlers({
+  client,
+  requireTreasurer,
+  isEnabled = () => false,
+}: Dependencies) {
   return {
     create(request: Request) {
       return guarded(async () => {
         const actor = await requireTreasurer(request);
         const body = requestSchema.parse(await readAdminJson(request));
+        if (!isEnabled())
+          return json(
+            { error: "Background exports are temporarily unavailable", code: "export_unavailable" },
+            503,
+          );
         const job = await enqueueCrmExportJob(client, actor.authUserId, body.kind, body.filters);
         return json(job, 201);
       });

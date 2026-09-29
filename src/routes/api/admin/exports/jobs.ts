@@ -10,6 +10,7 @@ export const Route = createFileRoute("/api/admin/exports/jobs")({
         const client = createSupabaseServiceClient();
         return createCrmExportJobHandlers({
           client,
+          isEnabled: () => Boolean(process.env.CRON_SECRET?.trim()),
           requireTreasurer: (input) => requireAdmin(input, ["treasurer", "admin"], client),
         }).create(request);
       },

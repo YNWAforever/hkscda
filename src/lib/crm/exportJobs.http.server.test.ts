@@ -63,7 +63,11 @@ test("job creation validates body and role before writing", async () => {
       return { data: { id, kind: "donations", total: 1, status: "pending" }, error: null };
     },
   } as unknown as SupabaseClient;
-  const handlers = createCrmExportJobHandlers({ client, requireTreasurer: async () => actor });
+  const handlers = createCrmExportJobHandlers({
+    client,
+    requireTreasurer: async () => actor,
+    isEnabled: () => true,
+  });
   const invalid = await handlers.create(
     new Request("https://example.invalid/api/admin/exports/jobs", {
       method: "POST",
@@ -82,4 +86,32 @@ test("job creation validates body and role before writing", async () => {
   );
   expect(accepted.status).toBe(201);
   expect(writes).toBe(1);
+});
+
+test("disabled background worker rejects creation before any RPC", async () => {
+  let calls = 0;
+  const client = {
+    rpc: async () => {
+      calls++;
+      return { data: { id, status: "pending" }, error: null };
+    },
+  } as unknown as SupabaseClient;
+  const handlers = createCrmExportJobHandlers({
+    client,
+    requireTreasurer: async () => actor,
+    isEnabled: () => false,
+  });
+  const response = await handlers.create(
+    new Request("https://example.invalid/api/admin/exports/jobs", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ kind: "supporters", filters: {} }),
+    }),
+  );
+  expect(response.status).toBe(503);
+  expect(calls).toBe(0);
+  expect(await response.json()).toEqual({
+    error: "Background exports are temporarily unavailable",
+    code: "export_unavailable",
+  });
 });
