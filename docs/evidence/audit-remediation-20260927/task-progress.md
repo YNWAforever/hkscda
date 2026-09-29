@@ -20,3 +20,7 @@ Ruling: Treat #133 adoption instructions as a narrowly restored public page and 
 ## T14 branch continuation
 
 Draft #147 contains the immediate-export UI repair. This branch adds the independent background-export job: actor-bound filter snapshot, private 24-hour artifact, 500-row atomic progress, role reauthorization, cancellation fencing and expiry cleanup. See [T14 evidence](t14-background-export.md). The local DB/schema and synthetic UI checks passed; production migration, cron activation, real role UAT and release approval remain open. Other task slices are in separate draft PR branches, so rows above describe their original T00 worktree snapshot rather than the whole remediation programme.
+
+## T15 branch continuation
+
+Draft #149 addresses ADMIN-02 in an isolated branch: fresh supporter read on open, dirty-close guard, versioned atomic mutation and 409 conflict response. Its local synthetic browser and isolated DB tests passed; production schema, real test-identity UAT and release approval remain open. ADMIN-03 and later tasks remain separate. The original rows above describe this plan's T00 snapshot, not the whole remediation programme.

@@ -90,3 +90,9 @@ Rollback boundary: revert the new application while leaving the additive version
 The source manifest now includes 20260927090000_crm_private_export_jobs.sql in draft PR #148, based on #147. Its private artifact table and service-role-only RPCs were applied and then replayed as a single transaction in the dedicated local 57322 stack, without editing the migration ledger. Exact checksum, role tests and rollback boundary are in [T14 evidence](t14-background-export.md).
 
 The new job schema must precede the app code that offers background exports. Check function signatures, pinned search paths, RLS, forbidden grants and private table access after applying. A sanitized data-bearing rehearsal, actual Vercel cron entitlement, production backup and release owner sign-off are still required. Do not remove the schema while jobs or artifacts remain; keep an approved cleanup path when reverting the application. Existing webhook and reconciliation routes remain available.
+
+## T15 supporter version addendum
+
+Draft #149 introduces 20260927110000_crm_supporter_edit_version.sql with committed-byte SHA-256 d9756e0cb41dd7878e6046a0eab3db4b1f9dfb8a39751884d1cfd2b8df1fa80c. It adds a monotonic profile/role edit token and a new service-role RPC while retaining the old seven-argument RPC for old application code. Exact catalog, isolated concurrency and rollback evidence is in [T15 evidence](t15-supporter-edits.md).
+
+The schema must be applied before the #149 app code. Rehearse locks and triggers on a sanitized data-bearing clone and confirm real-role UAT plus release owner approval. On application rollback, retain the additive schema; the old app will again accept unversioned edits, so stop concurrent edit operations or explicitly manage that risk. Schema removal needs a separately approved compatibility check and cannot be inferred from an app rollback.

@@ -18,6 +18,7 @@ function supporterRow(overrides: Record<string, unknown> = {}) {
     deleted_at: null,
     created_at: "2026-06-01T00:00:00.000Z",
     updated_at: "2026-06-01T00:00:00.000Z",
+    edit_version: 4,
     ...overrides,
   };
 }
@@ -184,6 +185,12 @@ describe("getSupporterDetail", () => {
     const repo = createSupabaseCrmRepository(client);
 
     expect(await repo.getSupporterDetail(supporterId)).toBeNull();
+  });
+
+  test("includes the current edit version from the supporter row", async () => {
+    const { client } = createFakeClient();
+    const repo = createSupabaseCrmRepository(client);
+    expect((await repo.getSupporterDetail(supporterId))?.editVersion).toBe(4);
   });
 
   test("includes donation-entity audit rows in the timeline (existing behavior)", async () => {
@@ -433,6 +440,7 @@ describe("atomic CRM repository mutations", () => {
         operation: "update",
         supporterId,
         update: { name: "Ada" },
+        expectedVersion: 4,
         roles: ["donor"],
         audit: {
           actor_user_id: null,
@@ -444,6 +452,8 @@ describe("atomic CRM repository mutations", () => {
       }),
     ).rejects.toThrow("audit unavailable");
     expect(calls).toHaveLength(1);
-    expect(calls[0]?.name).toBe("mutate_crm_supporter_with_audit");
+    expect(calls[0]?.name).toBe("mutate_crm_supporter_if_version_with_audit");
+    expect(calls[0]?.args).toMatchObject({ p_expected_version: 4 });
+    expect(calls[0]?.args).not.toHaveProperty("p_operation");
   });
 });
