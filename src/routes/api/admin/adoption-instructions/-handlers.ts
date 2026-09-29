@@ -46,6 +46,10 @@ async function withComposition(
 export function createAdoptionInstructionRouteDelegates(factory: HandlerFactory = createHandlers) {
   return {
     get: (request: Request) => withComposition(factory, (handlers) => handlers.get(request)),
+    history: (request: Request) =>
+      withComposition(factory, (handlers) => handlers.history(request)),
+    revision: (request: Request, revisionId: string) =>
+      withComposition(factory, (handlers) => handlers.revision(request, revisionId)),
     ensureDraft: (request: Request) =>
       withComposition(factory, (handlers) => handlers.ensureDraft(request)),
     updateDraft: (request: Request) =>

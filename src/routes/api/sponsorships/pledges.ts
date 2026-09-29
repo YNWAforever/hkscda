@@ -1,4 +1,5 @@
 import { readEligibleAnimals } from "../../../lib/animals/eligibility.server";
+import { ZodError } from "zod";
 import { createFileRoute } from "@tanstack/react-router";
 import { RequestBodyTooLargeError, readPublicJson } from "../../../lib/http/publicJson.server";
 
@@ -8,6 +9,7 @@ import {
   isSubmissionValidationError,
   lookupSponsorshipPledgeRetry,
   parseSponsorshipSubmission,
+  parseSponsorshipRetry,
   persistSponsorshipPledge,
   sendPledgeConfirmationEmail,
   type SponsorshipPledgeRetry,
@@ -20,6 +22,7 @@ import {
 } from "../../../lib/security/rate-limit.server";
 import { verifyTurnstile } from "../../../lib/security/turnstile.server";
 import { verifyProofUploadIntent } from "../../../lib/sponsorship/proofIntent.server";
+import { loadCurrentSponsorshipTerms } from "../../../lib/sponsorship/terms.server";
 
 type Dependencies = {
   rateLimit(ip: string): Promise<RateLimitResult>;
@@ -29,6 +32,7 @@ type Dependencies = {
   verify: typeof verifyTurnstile;
   verifyProofIntent: typeof verifyProofUploadIntent;
   readEligible: typeof readEligibleAnimals;
+  loadCurrentTerms: typeof loadCurrentSponsorshipTerms;
   persist: typeof persistSponsorshipPledge;
   sendEmail: typeof sendPledgeConfirmationEmail;
   logger: Pick<Console, "error">;
@@ -73,12 +77,13 @@ export function createSponsorshipPledgesHandler({
       window: "1 m",
       requireAvailability: true,
     }),
-  parse = parseSponsorshipSubmission,
+  parse = parseSponsorshipRetry,
   createClient = createSupabaseServiceClient,
   lookupRetry = lookupSponsorshipPledgeRetry,
   verify = verifyTurnstile,
   verifyProofIntent = verifyProofUploadIntent,
   readEligible = readEligibleAnimals,
+  loadCurrentTerms = loadCurrentSponsorshipTerms,
   persist = persistSponsorshipPledge,
   sendEmail = sendPledgeConfirmationEmail,
   logger = console,
@@ -115,6 +120,23 @@ export function createSponsorshipPledgesHandler({
       const lookup = () => lookupRetry(client, parsed.pledgeId, parsed.statusToken, fingerprint);
       const existing = retryResponse(await lookup());
       if (existing) return existing;
+
+      const currentTerms = await loadCurrentTerms(parsed.payload.language);
+      if (!currentTerms) {
+        return jsonNoStore(
+          { error: "Approved sponsorship terms are not published" },
+          { status: 503 },
+        );
+      }
+      if (parsed.payload.terms.version !== currentTerms.version) {
+        return jsonNoStore(
+          {
+            error: "Sponsorship terms have changed; review the current version before retrying",
+            code: "TERMS_CHANGED",
+          },
+          { status: 409 },
+        );
+      }
 
       // Proof uploads use Turnstile when the Storage URL is issued. Validate
       // that signed result here; proof-less submissions verify Turnstile here.
@@ -172,7 +194,16 @@ export function createSponsorshipPledgesHandler({
       );
     } catch (error) {
       if (isSubmissionValidationError(error)) {
-        return jsonNoStore({ error: "Invalid sponsorship pledge request" }, { status: 400 });
+        const fields =
+          error instanceof ZodError
+            ? error.issues
+                .slice(0, 8)
+                .map((issue) => ({ field: issue.path.join("."), reason: issue.message }))
+            : [];
+        return jsonNoStore(
+          { error: "Invalid sponsorship pledge request", fields },
+          { status: 400 },
+        );
       }
       logger.error(error);
       return jsonNoStore({ error: "Sponsorship pledge could not be created" }, { status: 500 });
