@@ -1,6 +1,16 @@
 # T24 · UAT and before/after evidence matrix
 
-All results below are **isolated synthetic/local** unless explicitly named. The source freeze is `e3ebbb47aad2cb3de830dd7bb5e944cb4c79bc0e`. Production and private candidate UAT were not performed. `not-run` is distinct from a passed unit/fixture test.
+## Current sequential verification — 2026-09-30
+
+Current candidate source ae80846bbde75f2bc0e995630c25436894b27d4a; production #155 at24196faf, READY. Current local source:3006pass121skip/9383assert/exit0; separate typecheck/lint/build0. PR162 six clone DBtests39assertions; 1000 animal outcomes796success202skip2conflict with unchanged animal fields. PR161 six clone DBtests38assertions and 1000 pre-version-row backfill; PR160 four/30; PR159 four/35. Actual service-role/denied-role, atomic audit, concurrency and three-width synthetic UI results are linked in their sequential-merge reports. These do not replace hosted actual-role/private-file UAT.
+
+Actual local Supabase Auth v2.197.0 and Mailpit were tested for #156. Concurrent reuse of one OTP produced two sessions (expected one), exit1; this is the current release blocker. Sequential reuse, wrong identity, expiry and suspension checks passed. Recovery stays disabled. Payment provider sandbox, real refunds, hosted notification sending and complete hosted journeys are not-run.
+
+Latest comparable #155 10k loopback run:p50/p95 221.73/306.33ms→17.56/29.49ms,11→1calls,4787800→15285bytes. This is not production or regional browser latency. Current #159–#162 component screenshots include before/after390/768/1366, keyboard/200%zoom, interrupted apply/recovery/CSV, zero Axe/page errors. Full final-source hosted Lighthouse comparison remains not-run.
+
+## Historical 2026-09-29 package snapshot
+
+The following original matrix and measurements describe the earlier e3ebbb47 source, not current release state. Later sequential reports above supersede its counts and pending-status claims; historical performance values remain valid only for their stated environment.
 
 | Journey / role | Executed result | Required acceptance still not-run / blocked |
 |---|---|---|

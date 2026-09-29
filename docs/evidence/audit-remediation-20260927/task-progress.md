@@ -73,3 +73,7 @@ Draft #149 addresses ADMIN-02 in an isolated branch: fresh supporter read on ope
 - PR162 sequential repair 1fec4ea6: actor lock, JSON400 and durable read recovery. Full3006pass121skip/9383assert; clone6tests39assertions; 1000-item partial results preserve animal fields; full SQL rollback253ms; 3-width UI/Axe0. Independent review closed. Current CI/production approval and #156 provider gate remain open.
 
 - T23 animal review draft PR #162 source e3ebbb4 opened; run 36345471697 verify/RLS/performance/a11y passed, brand pending at capture. T24 review package prepared on separate branch: 34 issue statuses and 43 migration checksums validated; release NO-GO pending domain, provider, real-role and schema approval gates.
+
+- PR163 sequential release package refresh: live PR inventory confirms22/46merged (#134-#155); all22 main CI runs success, #155aliasREADY. Sourcefreeze#162ae80846b;51unique source checksums match committedbytes. Corrected stale deployed tracker fields and staff recovery workflow. #156actualAuth concurrency blocks nextrelease; exact later migration/activation approvals remain pending.
+
+- Release validation initially found23 stale plan-tracker rows. Synchronized current status/evidence from the live evidence tracker by issue ID, retaining original baseline labels. Repeat validates34 matching current-state rows,51 checksums and46PRs/22successful mainCI runs; exit0.
