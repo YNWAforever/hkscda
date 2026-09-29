@@ -44,6 +44,7 @@ test.skipIf(!enabled)(
           values('content',${item.id}::uuid,${revision.id},'approved','Synthetic eligibility test only',${actor}::uuid)`;
           await tx`update public.content_item set status='published',published_at=now(),published_revision_id=${revision.id}::uuid,published_slug=${`${marker}-${name}`} where id=${item.id}::uuid`;
         }
+        await tx`set local role service_role`;
         const [list] =
           await tx`select public.read_published_content_snapshots(${{ q: marker, pageSize: 50 }}::jsonb) as result`;
         expect(list.result.total).toBe(2);

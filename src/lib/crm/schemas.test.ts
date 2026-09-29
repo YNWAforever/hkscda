@@ -107,6 +107,7 @@ describe("crm schemas", () => {
 
   test("normalizes supporter updates", () => {
     const parsed = supporterUpdateSchema.parse({
+      expectedVersion: 4,
       name: "  Ada Wong  ",
       phone: "  9123 4567 ",
       language: "en",
@@ -116,6 +117,7 @@ describe("crm schemas", () => {
     });
 
     expect(parsed).toEqual({
+      expectedVersion: 4,
       name: "Ada Wong",
       phone: "9123 4567",
       language: "en",
@@ -125,9 +127,26 @@ describe("crm schemas", () => {
     });
   });
 
+  test("requires a safe expected version for supporter edits", () => {
+    expect(supporterUpdateSchema.safeParse({ name: "Ada" }).success).toBe(false);
+    expect(supporterUpdateSchema.safeParse({ name: "Ada", expectedVersion: 0 }).success).toBe(
+      false,
+    );
+    expect(
+      supporterUpdateSchema.safeParse({ name: "Ada", expectedVersion: Number.MAX_SAFE_INTEGER + 1 })
+        .success,
+    ).toBe(false);
+  });
+
   test("normalizes explicit empty supporter update phone to null", () => {
-    expect(supporterUpdateSchema.parse({ phone: "" })).toEqual({ phone: null });
-    expect(supporterUpdateSchema.parse({ phone: null })).toEqual({ phone: null });
+    expect(supporterUpdateSchema.parse({ expectedVersion: 4, phone: "" })).toEqual({
+      expectedVersion: 4,
+      phone: null,
+    });
+    expect(supporterUpdateSchema.parse({ expectedVersion: 4, phone: null })).toEqual({
+      expectedVersion: 4,
+      phone: null,
+    });
   });
 
   test("dedupes supporter input tags", () => {

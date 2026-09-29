@@ -7,12 +7,15 @@ import type {
   AdoptionInstructionContent,
   AdoptionInstructionPageState,
   AdoptionInstructionRevision,
+  AdoptionInstructionRevisionSummary,
 } from "./types";
 
 const PAGE_COLUMNS =
   "page_key,published_revision_id,draft_revision_id,version,created_at,updated_at";
 const REVISION_COLUMNS =
   "id,page_key,revision_number,state,content,source_revision_id,version,created_by,updated_by,published_by,published_at,created_at,updated_at";
+const REVISION_SUMMARY_COLUMNS =
+  "id,page_key,revision_number,state,source_revision_id,version,created_by,updated_by,published_by,published_at,created_at,updated_at";
 
 export type AdoptionInstructionErrorCode =
   | "unauthorized"
@@ -62,7 +65,13 @@ export type AdoptionInstructionAdminPage = {
   page: AdoptionInstructionPageState;
   published: AdoptionInstructionRevision | null;
   draft: AdoptionInstructionRevision | null;
-  history: AdoptionInstructionRevision[];
+  history: AdoptionInstructionRevisionSummary[];
+  historyNextCursor?: string | null;
+};
+
+export type AdoptionInstructionHistoryPage = {
+  items: AdoptionInstructionRevisionSummary[];
+  nextCursor: string | null;
 };
 
 export type AdoptionInstructionPublishResult = {
@@ -74,6 +83,7 @@ export type AdoptionInstructionPublishResult = {
 export type AdoptionInstructionRepository = {
   getAdminPage(): Promise<AdoptionInstructionAdminPage>;
   getPublished(): Promise<AdoptionInstructionRevision | null>;
+  getRevision(id: string): Promise<AdoptionInstructionRevision | null>;
   ensureDraft(input: {
     actorUserId: string;
     expectedPageVersion: number;
@@ -102,7 +112,10 @@ export type AdoptionInstructionRepository = {
     expectedPageVersion: number;
     now: string;
   }): Promise<AdoptionInstructionRevision>;
-  listHistory(): Promise<AdoptionInstructionRevision[]>;
+  listHistory(input?: {
+    cursor?: string | null;
+    limit?: number;
+  }): Promise<AdoptionInstructionHistoryPage>;
 };
 
 const pageRowSchema = z.object({
@@ -129,6 +142,8 @@ const revisionRowSchema = z.object({
   created_at: z.string().datetime({ offset: true }),
   updated_at: z.string().datetime({ offset: true }),
 });
+
+const revisionSummaryRowSchema = revisionRowSchema.omit({ content: true });
 
 const publishResultSchema = z.object({
   page_key: z.literal(ADOPTION_INSTRUCTIONS_PAGE_KEY),
@@ -171,6 +186,42 @@ function mapRevision(value: unknown): AdoptionInstructionRevision | null {
   };
 }
 
+function requireRevisionSummary(value: unknown): AdoptionInstructionRevisionSummary {
+  const result = revisionSummaryRowSchema.safeParse(value);
+  if (!result.success) throw new AdoptionInstructionError("internal", 500);
+  const row = result.data;
+  return {
+    id: row.id,
+    pageKey: row.page_key,
+    revisionNumber: row.revision_number,
+    state: row.state,
+    sourceRevisionId: row.source_revision_id,
+    version: row.version,
+    createdBy: row.created_by,
+    updatedBy: row.updated_by,
+    publishedBy: row.published_by,
+    publishedAt: row.published_at,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+export function encodeRevisionCursor(summary: AdoptionInstructionRevisionSummary): string {
+  return summary.revisionNumber + ":" + summary.id;
+}
+
+export function parseRevisionCursor(cursor: string | null | undefined) {
+  if (cursor == null) return null;
+  const match = /^(\d{1,10}):([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i.exec(
+    cursor,
+  );
+  if (!match) throw new AdoptionInstructionError("validation", 422);
+  const revisionNumber = Number(match[1]);
+  if (!Number.isSafeInteger(revisionNumber) || revisionNumber < 1)
+    throw new AdoptionInstructionError("validation", 422);
+  return { revisionNumber, id: match[2].toLowerCase() };
+}
+
 function requirePage(value: unknown) {
   const page = mapPage(value);
   if (!page) throw new AdoptionInstructionError("internal", 500);
@@ -205,40 +256,76 @@ function throwRepositoryError(error: unknown): never {
 export function createSupabaseAdoptionInstructionRepository(
   client: SupabaseClient,
 ): AdoptionInstructionRepository {
-  async function listHistory() {
+  async function getRevision(id: string) {
     const { data, error } = await client
       .from("adoption_instruction_revisions")
       .select(REVISION_COLUMNS)
       .eq("page_key", ADOPTION_INSTRUCTIONS_PAGE_KEY)
-      .order("revision_number", { ascending: false });
+      .eq("id", id)
+      .maybeSingle();
     if (error) throwRepositoryError(error);
-    return (data ?? []).map(requireRevision);
+    return data ? requireRevision(data) : null;
+  }
+
+  async function listHistory(input: { cursor?: string | null; limit?: number } = {}) {
+    const limit = input.limit ?? 25;
+    if (!Number.isInteger(limit) || limit < 1 || limit > 100)
+      throw new AdoptionInstructionError("validation", 422);
+    const cursor = parseRevisionCursor(input.cursor);
+    let query = client
+      .from("adoption_instruction_revisions")
+      .select(REVISION_SUMMARY_COLUMNS)
+      .eq("page_key", ADOPTION_INSTRUCTIONS_PAGE_KEY);
+    if (cursor)
+      query = query.or(
+        "revision_number.lt." +
+          cursor.revisionNumber +
+          ",and(revision_number.eq." +
+          cursor.revisionNumber +
+          ",id.lt." +
+          cursor.id +
+          ")",
+      );
+    const { data, error } = await query
+      .order("revision_number", { ascending: false })
+      .order("id", { ascending: false })
+      .limit(limit + 1);
+    if (error) throwRepositoryError(error);
+    const rows = (data ?? []).map(requireRevisionSummary);
+    const items = rows.slice(0, limit);
+    return {
+      items,
+      nextCursor: rows.length > limit ? encodeRevisionCursor(items[items.length - 1]) : null,
+    };
   }
 
   return {
     async getAdminPage() {
-      const [{ data: pageData, error: pageError }, history] = await Promise.all([
-        client
-          .from("adoption_instruction_pages")
-          .select(PAGE_COLUMNS)
-          .eq("page_key", ADOPTION_INSTRUCTIONS_PAGE_KEY)
-          .maybeSingle(),
-        listHistory(),
-      ]);
+      const { data: pageData, error: pageError } = await client
+        .from("adoption_instruction_pages")
+        .select(PAGE_COLUMNS)
+        .eq("page_key", ADOPTION_INSTRUCTIONS_PAGE_KEY)
+        .maybeSingle();
       if (pageError) throwRepositoryError(pageError);
       if (!pageData) throw new AdoptionInstructionError("not_found", 404);
       const page = requirePage(pageData);
-      const published = page.publishedRevisionId
-        ? (history.find((revision) => revision.id === page.publishedRevisionId) ?? null)
-        : null;
-      const draft = page.draftRevisionId
-        ? (history.find((revision) => revision.id === page.draftRevisionId) ?? null)
-        : null;
-      if ((page.publishedRevisionId && !published) || (page.draftRevisionId && !draft)) {
+      const [published, draft, historyPage] = await Promise.all([
+        page.publishedRevisionId ? getRevision(page.publishedRevisionId) : Promise.resolve(null),
+        page.draftRevisionId ? getRevision(page.draftRevisionId) : Promise.resolve(null),
+        listHistory(),
+      ]);
+      if ((page.publishedRevisionId && !published) || (page.draftRevisionId && !draft))
         throw new AdoptionInstructionError("internal", 500);
-      }
-      return { page, published, draft, history };
+      return {
+        page,
+        published,
+        draft,
+        history: historyPage.items,
+        historyNextCursor: historyPage.nextCursor,
+      };
     },
+
+    getRevision,
 
     async getPublished() {
       const { data, error } = await client

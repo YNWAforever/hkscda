@@ -97,6 +97,54 @@ describe("createCrmHandlers", () => {
     expect(service.calls).toEqual(["exportSupporters"]);
   });
 
+  test("rejects a direct PATCH without expectedVersion before any write", async () => {
+    const service = createService();
+    const handlers = createCrmHandlers({
+      requireTreasurer: async () => admin,
+      service,
+    });
+    const response = await handlers.updateSupporter({
+      request: new Request(
+        "https://example.com/api/admin/supporters/8bda8e40-cf39-4659-8be8-f2d74f9d2046",
+        {
+          method: "PATCH",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ name: "Unversioned" }),
+        },
+      ),
+      params: { id: "8bda8e40-cf39-4659-8be8-f2d74f9d2046" },
+    });
+    expect(response.status).toBe(400);
+    expect(service.calls).toEqual([]);
+  });
+
+  test("returns 409 when an edit lost the supporter version race", async () => {
+    const service = createService({
+      async updateSupporter() {
+        throw { code: "P4090", message: "supporter_version_conflict" };
+      },
+    });
+    const handlers = createCrmHandlers({
+      requireTreasurer: async () => admin,
+      service,
+    });
+    const response = await handlers.updateSupporter({
+      request: new Request(
+        "https://example.com/api/admin/supporters/8bda8e40-cf39-4659-8be8-f2d74f9d2046",
+        {
+          method: "PATCH",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ name: "Ada New", expectedVersion: 4 }),
+        },
+      ),
+      params: { id: "8bda8e40-cf39-4659-8be8-f2d74f9d2046" },
+    });
+    expect(response.status).toBe(409);
+    expect(await response.json()).toEqual({
+      error: { code: "version_conflict", message: "Supporter changed. Reload before saving." },
+    });
+  });
+
   test("maps Zod errors to a 400 JSON response", async () => {
     const service = createService({
       async createSupporter() {
