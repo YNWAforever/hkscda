@@ -54,3 +54,8 @@ PR162 selection-generation backport61e8952f verified:3006pass121skip/9383asserti
 ## PR166 isolated acceptance
 
 See sequential-merge-166-20260930.md for exact source/commands/exit codes, actual-role DB/pagination/unchanged-data proof,3-width before-after and current query timings. Hosted/provider/fullrestore remain not-run.
+
+
+## PR167 verified read queue (2026-09-30)
+
+See sequential-merge-167-20260930.md for exact commands, source SHA, local PostgREST and three-width browser evidence. No new migration; not deployed. Pending proofs are filtered before count/page, including active pledges with later proofs. Staff review each current proof; no bulk money approval. Earlier #156 OTP release blocker remains. #165/#166 exact schema questions now pending after five green CI gates.

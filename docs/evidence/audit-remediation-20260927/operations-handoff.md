@@ -43,3 +43,8 @@ After a lost response retry the same payment and exact original reference. Only 
 ## CMS quality queues
 
 Demo/expired/missing-source queues are read-only and overlap. Review each source; changing filters clears selected draft IDs and invalidates unfinished selection. Quality errors allow return to all-items. No automatic classification/unpublication. Apply no production migration until exact approved dependency preflight.
+
+
+## PR167 verified read queue (2026-09-30)
+
+See sequential-merge-167-20260930.md for exact commands, source SHA, local PostgREST and three-width browser evidence. No new migration; not deployed. Pending proofs are filtered before count/page, including active pledges with later proofs. Staff review each current proof; no bulk money approval. Earlier #156 OTP release blocker remains. #165/#166 exact schema questions now pending after five green CI gates.

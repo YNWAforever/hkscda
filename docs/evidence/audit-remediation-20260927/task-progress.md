@@ -95,3 +95,8 @@ Reproduced/fixed actor revocation race, lost committed response recovery, CRM du
 ## 2026-09-30 PR166
 
 Quality queue read regression complete: generation race and400/403mapping repaired;1000-row actual-role pagination preserves all content/audit. Code complete for this slice; schema ready locally only;not deployed or enabled. #162-#165 selection backport propagated. Independent #167 review proceeds.
+
+
+## PR167 verified read queue (2026-09-30)
+
+See sequential-merge-167-20260930.md for exact commands, source SHA, local PostgREST and three-width browser evidence. No new migration; not deployed. Pending proofs are filtered before count/page, including active pledges with later proofs. Staff review each current proof; no bulk money approval. Earlier #156 OTP release blocker remains. #165/#166 exact schema questions now pending after five green CI gates.

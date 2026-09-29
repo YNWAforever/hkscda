@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "appSha": "4f3f2f7e22afc2d8d2bbdf4cb05044a6701df7ee",
-  "appShaNote": "Reviewed PR166 quality queue plus predecessor fixes; later PR167-179 excluded.",
+  "appSha": "c1f3ef7c2563b4a64c0007ef52c42e68f27cac6c",
+  "appShaNote": "PR167 pending-proof read queue and navigation plus reviewed predecessors; later PR168-179 excluded.",
   "productionAliasShaObserved": "24196faf027998388eff3196a6979e23566e2443",
   "schemaManifestHash": "47b9e3bd6959ca697af243af26002b1b17263676276a0911241549bc38be203d",
   "configVersions": {
@@ -286,8 +286,8 @@
   ],
   "ciRun": {
     "id": null,
-    "sha": "4f3f2f7e22afc2d8d2bbdf4cb05044a6701df7ee",
-    "status": "local gates passed on identical e229f46d runtime; exact remote CI pending"
+    "sha": "c1f3ef7c2563b4a64c0007ef52c42e68f27cac6c",
+    "status": "local full/typecheck/lint/build and PostgREST/browser acceptance passed; fresh remote CI pending"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -302,7 +302,8 @@
     "docs/evidence/audit-remediation-20260927/sequential-merge-163-20260930.md",
     "docs/evidence/audit-remediation-20260927/sequential-merge-164-20260930.md",
     "docs/evidence/audit-remediation-20260927/sequential-merge-165-20260930.md",
-    "docs/evidence/audit-remediation-20260927/sequential-merge-166-20260930.md"
+    "docs/evidence/audit-remediation-20260927/sequential-merge-166-20260930.md",
+    "docs/evidence/audit-remediation-20260927/sequential-merge-167-20260930.md"
   ],
   "rollbackTarget": {
     "appSha": null,
@@ -614,8 +615,8 @@
     "migration161": "exact approval requested; pending",
     "migration162": "exact approval requested; pending; reviewed SQL unchanged by queue fix",
     "migration164": "exact approval requested; pending",
-    "migration165": "not requested; review and exact-head CI pending",
-    "migration166": "not requested; exact CI pending",
+    "migration165": "exact approval requested after five current-head CI gates succeeded; pending",
+    "migration166": "exact approval requested after five current-head CI gates succeeded; pending",
     "release156": "explicit disabled-feature exception requested; no answer received; original blocking gate retained"
   },
   "blockedGate": {
