@@ -108,7 +108,7 @@ export function ExportBar({ search }: ExportBarProps) {
     setState((current) =>
       current.phase === "error" && current.snapshot !== searchKey ? { phase: "idle" } : current,
     );
-  }, [searchKey]);
+  }, [searchKey, state]);
   const copy: ExportCopy = {
     supportersCsv: pageCopy.common.supportersCsv,
     donationsCsv: pageCopy.common.donationsCsv,

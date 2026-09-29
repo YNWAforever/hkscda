@@ -24,6 +24,7 @@ try {
         "content-disposition": 'attachment; filename="supporters.csv"',
       }, body: "name\nAda\n" });
     }
+    await new Promise((resolve) => setTimeout(resolve, 350));
     return route.fulfill({ status: 403, json: { error: "Private server detail" } });
   });
   await page.goto(origin + "/scripts/fixtures/export-bar.html", { waitUntil: "domcontentloaded" });
@@ -57,6 +58,14 @@ try {
   assert.equal(calls.length, 3);
   await page.getByRole("textbox", { name: "搜尋" }).fill("Bob");
   await page.waitForFunction(() => !document.querySelector('[role="alert"]'));
+  // A response for an old filter must not leave an unusable retry after filters change in flight.
+  await page.getByRole("button", { name: "捐款 CSV" }).click();
+  await page.getByRole("status").getByText("匯出中").waitFor();
+  await page.getByRole("textbox", { name: "搜尋" }).fill("Charlie");
+  await page.getByRole("status").waitFor({ state: "detached" });
+  await page.waitForFunction(() => !document.querySelector('[role="alert"]'));
+  assert.equal(calls.length, 4);
+  assert.equal(new URLSearchParams(calls[3].query).get("q"), "Bob");
   console.log("PASS T14 mobile 413/permission, pending guard, same-filter retry and complete CSV download");
 } finally {
   await browser.close();
