@@ -22,6 +22,49 @@ describe("volunteer overview", () => {
     expect((await handler(new Request("https://example.invalid"))).status).toBe(403);
     expect(read).toBe(false);
   });
+  test("authorizes before reading private coverage and keeps read failure unknown", async () => {
+    let coverageReads = 0;
+    const denied = createOverviewHandler({
+      authorize: async () => {
+        throw new Response("Forbidden", { status: 403 });
+      },
+      read: async () => ({ pendingProfiles: 0, pendingRegistrations: 0, todayActivities: 0 }),
+      readCoverage: async () => {
+        coverageReads++;
+        throw new Error("should not read");
+      },
+    });
+    expect((await denied(new Request("https://example.invalid"))).status).toBe(403);
+    expect(coverageReads).toBe(0);
+
+    const allowed = createOverviewHandler({
+      authorize: async () => {},
+      read: async () => ({ pendingProfiles: 0, pendingRegistrations: 0, todayActivities: 0 }),
+      readCoverage: async () => {
+        coverageReads++;
+        throw new Error("isolated coverage read failed");
+      },
+    });
+    const response = await allowed(new Request("https://example.invalid?centre=cat"));
+    expect(response.status).toBe(200);
+    expect((await response.json()).coverage).toBeNull();
+    expect(coverageReads).toBe(1);
+  });
+
+  test("rejects malformed centre after authorization without reading data", async () => {
+    let reads = 0;
+    const handler = createOverviewHandler({
+      authorize: async () => {},
+      read: async () => {
+        reads++;
+        return { pendingProfiles: 0, pendingRegistrations: 0, todayActivities: 0 };
+      },
+    });
+    const response = await handler(new Request("https://example.invalid?centre=cat%2Cdog"));
+    expect(response.status).toBe(400);
+    expect(reads).toBe(0);
+  });
+
   test("keeps unavailable counts distinct from zero", async () => {
     const handler = createOverviewHandler(
       {
