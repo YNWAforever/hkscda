@@ -8,7 +8,16 @@ const databaseUrl = process.env.PUBLIC_LISTING_BENCH_DATABASE_URL;
 if (!databaseUrl || process.env.PUBLIC_LISTING_BENCH_ALLOW_LOCAL_FIXTURES !== "1")
   throw new Error("Explicit local public listing benchmark opt-in is required");
 const target = new URL(databaseUrl);
-if (target.hostname !== "127.0.0.1" || target.port !== "57322" || target.pathname !== "/postgres")
+if (
+  target.hostname !== "127.0.0.1" ||
+  !["postgres:", "postgresql:"].includes(target.protocol) ||
+  target.search ||
+  target.hash ||
+  !(
+    (target.port === "57322" && target.pathname === "/postgres") ||
+    (target.port === "52322" && target.pathname === "/audit_pr135_20260929")
+  )
+)
   throw new Error("Public listing benchmark requires the dedicated loopback DB");
 
 const db = new SQL(databaseUrl, { max: 1, prepare: false });

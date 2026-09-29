@@ -146,6 +146,10 @@ export const adminPageCopy = {
         currentAssignee: (email: string) => `目前由 ${email} 跟進`,
         unassigned: "尚未分派跟進職員",
         unavailable: "未能載入可分派職員，請稍後重試。",
+        saved: "分派已儲存。",
+        savedRefreshFailed: "分派已儲存；最新資料未能載入，請重新整理。",
+        conflict: "跟進資料已有更新，請核對目前職員後再分派。",
+        unknown: "未能確認分派結果；請重新整理或重試原有分派。",
       },
       errors: {
         review: "審核失敗",
@@ -707,6 +711,11 @@ export const adminPageCopy = {
         currentAssignee: (email: string) => `Currently assigned to ${email}`,
         unassigned: "No follow-up staff member assigned",
         unavailable: "Could not load staff choices. Please try again.",
+        saved: "Assignment saved.",
+        savedRefreshFailed: "Assignment saved; the latest details could not load. Please refresh.",
+        conflict: "Follow-up details changed. Check the current owner before assigning again.",
+        unknown:
+          "The assignment result could not be confirmed. Refresh or retry the original assignment.",
       },
       errors: {
         review: "Review failed",

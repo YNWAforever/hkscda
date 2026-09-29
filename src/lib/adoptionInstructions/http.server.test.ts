@@ -71,6 +71,8 @@ function createService() {
   const adminPage = page();
   return {
     getAdminPage: mock(async () => adminPage),
+    listHistory: mock(async () => ({ items: [], nextCursor: null })),
+    getRevision: mock(async () => adminPage.published!),
     ensureDraft: mock(async () => adminPage.draft!),
     updateDraft: mock(async () => ({ ...adminPage.draft!, version: 3 })),
     preview: mock(async () => adminPage.draft!),
@@ -271,4 +273,44 @@ test("archive draft rejects staff and forwards an admin version token without ca
   expect(response.status).toBe(200);
   expect(response.headers.get("cache-control")).toBe("no-store");
   expect(service.archiveDraft).toHaveBeenCalledWith({ actor: admin, expectedVersion: 2 });
+});
+
+test("history and detail routes require staff identity and send no-store responses", async () => {
+  const unauthorized = createHandlers(createService(), async () => {
+    throw new Response("auth detail", { status: 401 });
+  });
+  const forbidden = createHandlers(createService(), async () => {
+    throw new Response("role detail", { status: 403 });
+  });
+  for (const handlers of [unauthorized.handlers, forbidden.handlers]) {
+    for (const response of [
+      await handlers.history(new Request("https://test/api/admin/adoption-instructions/history")),
+      await handlers.revision(
+        new Request("https://test/api/admin/adoption-instructions/revisions/" + revisionId),
+        revisionId,
+      ),
+    ]) {
+      expect(response.headers.get("cache-control")).toBe("no-store");
+      expect([401, 403]).toContain(response.status);
+    }
+  }
+  const { handlers, service } = createHandlers();
+  const history = await handlers.history(
+    new Request("https://test/api/admin/adoption-instructions/history?limit=50"),
+  );
+  const detail = await handlers.revision(
+    new Request("https://test/api/admin/adoption-instructions/revisions/" + revisionId),
+    revisionId,
+  );
+  expect(history.status).toBe(200);
+  expect(detail.status).toBe(200);
+  expect(history.headers.get("cache-control")).toBe("no-store");
+  expect(detail.headers.get("cache-control")).toBe("no-store");
+  expect(service.listHistory).toHaveBeenCalledWith({ actor: staff, cursor: null, limit: 50 });
+  expect(service.getRevision).toHaveBeenCalledWith({ actor: staff, revisionId });
+  const invalidLimit = await handlers.history(
+    new Request("https://test/api/admin/adoption-instructions/history?limit=101"),
+  );
+  expect(invalidLimit.status).toBe(422);
+  expect(invalidLimit.headers.get("cache-control")).toBe("no-store");
 });

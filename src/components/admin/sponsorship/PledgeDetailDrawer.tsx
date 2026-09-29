@@ -168,10 +168,16 @@ export function PledgeDetailDrawer({
   const [submitting, setSubmitting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [followupAssigneeId, setFollowupAssigneeId] = useState("");
+  const [followupNotice, setFollowupNotice] = useState<string | null>(null);
   const identity = useQuery(adminIdentityQueryOptions());
   const canMatch = identity.data?.admin.role === "staff" || identity.data?.admin.role === "admin";
   const canFinance =
     identity.data?.admin.role === "treasurer" || identity.data?.admin.role === "admin";
+  const followupRetry = useRef<{
+    pledgeId: string;
+    assigneeUserId: string;
+    expectedVersion: number;
+  } | null>(null);
   const reviewRetry = useRef<{ fingerprint: string; key: string } | null>(null);
   const [reviewNote, setReviewNote] = useState("");
   const [assignAnimalId, setAssignAnimalId] = useState("");
@@ -214,24 +220,62 @@ export function PledgeDetailDrawer({
 
   async function submitFollowupAssignment() {
     if (!pledge?.followupVersion || !followupAssigneeId) return;
+    if (
+      followupRetry.current?.pledgeId !== pledgeId ||
+      followupRetry.current.assigneeUserId !== followupAssigneeId
+    )
+      followupRetry.current = {
+        pledgeId,
+        assigneeUserId: followupAssigneeId,
+        expectedVersion: pledge.followupVersion,
+      };
+    const { assigneeUserId, expectedVersion } = followupRetry.current;
+    const attempt = { assigneeUserId, expectedVersion };
     setSubmitting(true);
     setActionError(null);
+    setFollowupNotice(null);
+    let confirmed = false;
     try {
-      await fetchCoordinatorJson(
-        `/api/admin/sponsorships/pledges/${pledgeId}/followup-assignment`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            assigneeUserId: followupAssigneeId,
-            expectedVersion: pledge.followupVersion,
-          }),
-        },
-      );
-      setFollowupAssigneeId("");
-      await refreshAll();
-    } catch {
-      setActionError(copy.errors.followup);
-      await refetch();
+      try {
+        await fetchCoordinatorJson(
+          `/api/admin/sponsorships/pledges/${pledgeId}/followup-assignment`,
+          { method: "POST", body: JSON.stringify(attempt) },
+        );
+        confirmed = true;
+      } catch {
+        // A lost response is not proof that the transaction failed. Reconcile
+        // only this frozen owner/version; never silently submit a newer version.
+      }
+      const refreshed = await refetch().catch(() => null);
+      const current = refreshed?.error ? null : refreshed?.data?.pledge;
+      if (
+        !confirmed &&
+        current?.id === pledgeId &&
+        current.status === "needs_followup" &&
+        current.followupAssigneeUserId === attempt.assigneeUserId &&
+        current.followupVersion === attempt.expectedVersion + 1
+      )
+        confirmed = true;
+      if (confirmed) {
+        followupRetry.current = null;
+        setFollowupAssigneeId("");
+        setFollowupNotice(current ? copy.followup.saved : copy.followup.savedRefreshFailed);
+        onChanged();
+        void queryClient.invalidateQueries({ queryKey: ["sponsorship-pledges"] }).catch(() => {});
+      } else {
+        const conflict = Boolean(
+          current &&
+          (current.followupVersion !== attempt.expectedVersion ||
+            current.status !== "needs_followup"),
+        );
+        if (conflict) {
+          // A fresh assignment requires an explicit selection after the user
+          // sees the current owner. Unknown outcomes retain the original attempt.
+          followupRetry.current = null;
+          setFollowupAssigneeId("");
+        }
+        setActionError(conflict ? copy.followup.conflict : copy.followup.unknown);
+      }
     } finally {
       setSubmitting(false);
     }
@@ -401,6 +445,11 @@ export function PledgeDetailDrawer({
           </Button>
         </div>
 
+        {followupNotice && (
+          <p role="status" className="mt-4 text-sm">
+            {followupNotice}
+          </p>
+        )}
         {isLoading && (
           <p className="mt-6 text-sm text-[var(--color-text-muted)]">{pageCopy.common.loading}</p>
         )}
@@ -470,6 +519,7 @@ export function PledgeDetailDrawer({
                   <>
                     <Label htmlFor="pledge-followup-assignee">{copy.followup.assigneeLabel}</Label>
                     <Select
+                      disabled={submitting}
                       value={followupAssigneeId || pledge.followupAssigneeUserId || undefined}
                       onValueChange={setFollowupAssigneeId}
                     >

@@ -70,8 +70,9 @@ export function PledgeReviewLane() {
   const [selectionError, setSelectionError] = useState("");
   const filterKey = JSON.stringify([query, status, proof]);
   const effectiveSelectedIds = selectedScope === filterKey ? selectedIds : [];
-  const filterKeyRef = useRef(filterKey);
-  filterKeyRef.current = filterKey;
+  const selectionScope = useRef({ filterKey, generation: 0 });
+  if (selectionScope.current.filterKey !== filterKey)
+    selectionScope.current = { filterKey, generation: selectionScope.current.generation + 1 };
   useEffect(() => {
     setSelectedIds([]);
     setSelectedScope(filterKey);
@@ -145,6 +146,7 @@ export function PledgeReviewLane() {
   async function selectAllMatching() {
     if (selectionDisabled || status !== "needs_followup") return;
     const scope = filterKey;
+    const generation = selectionScope.current.generation;
     setSelectionBusy(true);
     setSelectionError("");
     try {
@@ -160,7 +162,8 @@ export function PledgeReviewLane() {
           "/api/admin/sponsorships/pledges?" + params,
         );
       });
-      if (filterKeyRef.current !== scope) throw new Error("篩選條件已變更；請重新選取");
+      if (selectionScope.current.generation !== generation)
+        throw new Error("篩選條件已變更；請重新選取");
       setSelectedScope(scope);
       setSelectedIds(ids);
     } catch (cause) {
@@ -250,7 +253,10 @@ export function PledgeReviewLane() {
     return (
       <div className="space-y-2">
         {canAssign && pledge.status === "needs_followup" && (
-          <label className="inline-flex min-h-11 items-center gap-2">
+          <label
+            className="inline-flex min-h-11 items-center gap-2"
+            onClick={(event) => event.stopPropagation()}
+          >
             <input
               type="checkbox"
               checked={effectiveSelectedIds.includes(pledge.id)}

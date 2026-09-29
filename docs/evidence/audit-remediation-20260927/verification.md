@@ -123,14 +123,13 @@ Environment: isolated worktree codex/audit-supporter-recovery-20260927; dedicate
 ## T23 sponsorship follow-up source #169
 
 Source `05bb6f1b64fbf39c8f40944b27f446a38751e809`: `SUPABASE_LOCAL_URL=http://127.0.0.1:57321 bun test --isolate` exit 0, 2910 pass/109 skip/0 fail/9057 assertions across 523 files. The first concurrent gate run had one 5-second RLS setup timeout; the same RLS file passed 39/39 alone, then the sequential full suite passed. `npm.cmd run typecheck`, `npm.cmd run lint -- --quiet`, `npm.cmd run build` each exited 0. Dedicated 127.0.0.1:57322 sponsorship database tests exited 0, 3 pass/20 assertions including direct authenticated UPDATE denial and two-connection one-winner/one-audit; final exact migration file BEGIN/ROLLBACK succeeded. Local release catalog check exited 0 with 119 compatible requirements and no issues, with no forged ledger row. Remote source CI `36360874161` passed all five jobs. See `t23-sponsorship-followup.md`. Hosted staff browser, same-SHA private preview, 47-file fresh/data-bearing rehearsal and release approval remain not-run.
-## T23 sponsorship follow-up bulk source #170
 
-Source `74669a48a7786f93cde5ebb4dd0118490f24a095`: `SUPABASE_LOCAL_URL=http://127.0.0.1:57321 bun test --isolate` with dedicated bulk DB fixture enabled exited 0 (2918 pass/109 skip/0 fail/9109 assertions across 526 files), before a final test-only competing-preview assertion. That DB file then passed 3/19 focused. `npm.cmd run typecheck`, `npm.cmd run lint -- --quiet`, `npm.cmd run build` each exited 0. Catalog checker on 57322 exited 0 with 124 compatible/zero issues; ledger unchanged. API checkpoint 2/13, selection 2/6 and role UI 5/10 focused passed. Exact SQL BEGIN/ROLLBACK passed. See `t23-sponsorship-bulk.md`. Hosted identity/browser, 48-file fresh/data-bearing upgrade, same-environment performance and production approval are not-run.
 
-Remote source CI run `36364156675` at `74669a4` passed all five jobs (verify, RLS matrix, brand, a11y, performance). This fixture CI does not substitute for hosted staff-session UAT.
+## PR169 preparation — 2026-09-30
 
-## T23 sponsorship reminder draft source #171
+PR169 current application b918ff918c98a2188335465237a6add66abfd0c7:3065pass137skip0fail9587assert552files32.75s;typecheck0/lint0(52warnings)/build0;isolated service_role4tests24assert0;exact fullmigration2row8.59ms rollback0;three-width12casebrowser0. RemoteCI pending. See sequential-merge-169-20260930.md.
 
-Source `c683532b9f8539836f032a31fa17aa8c2a8494a8`: red absent-module/route/UI tests preceded the minimal read-only draft implementation. Focused 9 pass/38 assertions. `SUPABASE_LOCAL_URL=http://127.0.0.1:57321 bun test --isolate` with existing loopback bulk DB fixture enabled exited 0: 2927 pass/109 skip/0 fail/9149 assertions across 529 files. `npm.cmd run typecheck`, `npm.cmd run lint -- --quiet`, `npm.cmd run build` each exited 0 after route generation. No new SQL; the prior 48-file schema manifest is unchanged. Direct route factory tests deny unauthenticated/treasurer requests before private reads, and assert no-store, invalid ID, missing row and POST refusal. See `t23-sponsorship-reminder.md`. Hosted real-role API/browser, same-environment before/after UI/performance, approved wording and send sandbox are not-run.
 
-Remote source CI run `36367078505` at `c683532` passed all five jobs (verify, RLS matrix, brand, a11y, performance). This fixture CI does not replace hosted staff-session UAT.
+## PR170 preparation — 2026-09-30
+
+PR170 a50a09f581f7862ebf9ba2fdde53d58cdf65a307:full3074pass141skip0fail9628assert556files19.97s;typecheck/build0;lint52warnings0beforecatalog-onlyintegration;DB4tests22assert275ms;fullSQL2oldrows12.19ms/1000preview51.41ms/900apply948.87ms;rollback0. See sequential-merge-170-20260930.md.

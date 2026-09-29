@@ -1,36 +1,69 @@
-# T24 · audit remediation release checklist (review package)
+# T24 · audit remediation release checklist
 
-Captured 2026-09-28 HKT. **Decision: NO-GO.** All remediation branches remain draft and stacked; none has been merged to `main`, deployed, migrated in production, or operationally enabled by this work. The production alias was last metadata-verified at `f8d5e5d5840d1775efb7d7f4ae2768f6557096b5`; `git ls-remote origin refs/heads/main` returned the same SHA at package capture. Main CI run `36258190910` passed its five jobs. Source freeze `c683532b9f8539836f032a31fa17aa8c2a8494a8` is PR #171, stacked on #170 and preceding draft PRs. The documentation-only package refresh follows that source SHA.
+Updated 2026-09-30 HKT. **Next sequential release: NO-GO** because #156's actual isolated Auth concurrent OTP check fails. #134–#155 have merged sequentially (22/46); their exact main CI runs were re-read and all conclude success. Current main/production alias is 24196faf027998388eff3196a6979e23566e2443, Vercel dpl_DJpjHkmVayPsXZqwiA2CMJG43Ygk READY, main CI 36624781016 all five gates green. See pr-status-20260930.json for each merge SHA, URL and CI. #156–#179 remain open; later reviews continue while this gate is blocked.
 
-The machine-readable `release-manifest.json` binds source SHA, 48 ordered migration file checksums, manifest SHA-256 `f2a4f30fc3409969416945d78323a5c0ac7588546663d4203f4c1feba040ff01`, config-version blanks, CI run, evidence paths and the compatibility rollback rule. Blank config versions are **missing approvals**, not default values. The per-issue `tracker.csv` lists all 34 IDs and separately records code complete, schema ready, deployed and operationally enabled. At capture: 25 code complete, 16 schema ready, 12 schema not applicable, 1 issue with partial schema readiness, 33 not deployed, and no new remediation operationally enabled. Partial IDs stay open.
+Source freeze c685b23b8ff18af8a73af858f51f48e7bb1f6f91 includes repaired #162, not later #164–#179. PR163 changes documentation only. release-manifest.json binds this source to 51 unique migration-file checksums; all 51 were compared against committed Git bytes with zero mismatches. Manifest SHA-256: 4023e54be04e6c90a5984cbff4a8d89170da167e5b2e8ef7f914bce0adfb432e. This is an inventory, not permission to apply files in CSV order. Configuration nulls are unverified activation versions. Both trackers separate code, schema, deployment and enablement; partial issues stay open.
 
 ## Gate register
 
-| Gate | State | Evidence / boundary |
-|---|---|---|
-| Branch isolation and remote main | pass | Independent draft PRs #134–#171; `origin/main` `f8d5e5d` at capture. Original dirty checkout preserved. |
-| Strict typecheck, lint, build | pass on #171 source | `npm.cmd run typecheck`, `npm.cmd run lint -- --quiet`, `npm.cmd run build`: exit 0 on #171 source. Lint warnings were suppressed for the final error gate; build success is not used as typecheck proof. |
-| Full isolated tests | pass on exact source | `SUPABASE_LOCAL_URL=http://127.0.0.1:57321 bun test --isolate`: final exit 0, 2927 pass, 109 skip, 0 fail, 9149 assertions across 529 files. #169 local DB 3 pass/20 assertions, two-connection one-winner/one-audit, direct authenticated UPDATE denial; the first concurrently loaded full run timed out one existing RLS hook, which passed 39/39 alone before the sequential full green rerun. #168 R02/#133/loader focused tests 38 pass; #167 proof queue focused tests 96 pass and direct API/service/UI tests 65 pass. #170 bulk DB 3 pass/19 assertions, API checkpoint 2/13, 25/1000 selection 2/6 and staff/treasurer UI 5/10. #171 read-only reminder focused 9 pass/38 assertions, with direct role denial and no-send UI. The named local 57321/57322 PostgREST synthetic 3-pledge test returned 2 pending results over two pages; all synthetic rows were removed and the preservation trigger confirmed enabled. Dedicated CMS quality and finance fixtures retain prior evidence. #167 docs-head CI run `36355946788` and #168 first-source run `36357083332` passed all five jobs; amended #168 source run `36357778260` and #169 source run `36360874161` passed all five jobs. |
-| Schema/catalog/RLS | partial | Named unlinked loopback DB `127.0.0.1:57322`: 124 catalog requirements compatible, zero checker issues; latest local ledger `20260927150000`. Later files were manually rehearsed/applied locally without forged ledger rows. Forbidden grants and audit rollback tested in domain fixtures. Full 48-file ordered fresh and sanitized data-bearing upgrade rehearsal, storage policies, backup/restore and lock timing are not-run. |
-| Brand/a11y/performance CI | #171 source passed | #171 source run 36367078505 passed all five jobs; #165 corrected source run `36350007831` passed all five; documentation-head run `36350805228` first failed RLS before tests because GitHub runner port 55324 was occupied, then passed all five jobs on attempt 2. #166 source run `36353059091` passed verify, brand, a11y, RLS matrix and performance. #167 docs-head run `36355946788` and #168 first-source run `36357083332` and amended-source run `36357778260` and #169 source run `36360874161` passed all five jobs; #167 earlier source run was cancelled by a later same-branch docs push. Inspect every job, not the overall workflow conclusion. This is fixture CI, not hosted role UAT. |
-| Before/after UI and performance | partial | `ui-performance.md`, `performance-comparison.csv`, T16/T17 synthetic captures, sponsorship 390px overflow regression and T21 10k loopback comparison. No same-SHA private hosted comparison or staff-login recording. |
-| Direct API, export, private file access | partial | Isolated test roles, RLS and API denial tests in #148/#157/#160–#162; #167 proof query requires the existing reader role and preserves no-store; #169 direct authenticated pledge UPDATE is RLS-denied and the service-only RPC rechecks current staff/Auth state; #171 direct reminder draft route tests deny unauthenticated/treasurer before recipient read and use no-store. No real hosted role identities or private receipt download browser UAT. |
-| Provider sandbox and event replay | not-run | No provider sandbox credentials/test account or approved payment methods. No real payment, email, refund or notification. Existing webhook and reconciliation must remain active. |
-| Public adoption/sponsorship/volunteer/CRM journeys | partial | #168 protected readiness, 200-shell content synthetic and public support reference passed locally; hosted candidate not-run. Focused synthetic and DB tests in respective PRs; complete real-role mobile/keyboard journeys and email test sink not-run. |
-| Production catalog, migrations, alias smoke | blocked | Requires reviewed current catalog, fresh/data-bearing rehearsal, backup proof, release approval and controlled maintenance. No production mutation attempted. |
+| Gate | Actual state and evidence |
+| --- | --- |
+| Isolation / main | Separate worktrees and PRs; unrelated original work retained. Main/alias verified at #155. |
+| Typecheck / lint / build | PR162 typecheck initially failed on new test implicit-any; explicit type repair passed. Lint exit0, 52 warnings. Parallel builds collided in shared node_modules/.nitro (exit1); a serial synthetic build repeat passed exit0. Build is not typecheck proof. |
+| Full isolated tests | PR162 repair: 3006 pass /121 skip /0 fail;9383assertions/540files/33.55s, exit0. Loopback checkout DB57322 and AuthAPI52321. Repeated after the queue unmount persistence repair on e9352e56. |
+| Schema / RLS / atomic audit | PR162 schema-only production clone52322:6tests39assertions, actual service/denied roles, audit rollback and concurrent retry, exit0. 1000-item result796success202skip2conflict, animal fields unchanged. Full SQL rollback253ms, no backfill. Each preceding release has its own exact rehearsal/postflight. |
+| Remote CI | #159 run36626877044, #160 run36627282399, #161 run36629148497 all five green. Current-head #162 and documentation #163 gates pending at this capture. |
+| Supporter recovery | Actual isolated Auth v2.197.0 + Mailpit fails one-time concurrent redemption (two sessions), exit1. Known/unknown/wrong identity/expiry/sequential replay/suspension checks pass; no supported provider/config fix verified. Recovery remains disabled. |
+| UI / keyboard / a11y | #159–#162 actual components at390/768/1366, 200% zoom, recovery/partial failure/CSV/pagination; synthetic APIs, zero Axe/page errors. Hosted actual-role full journeys not-run. |
+| Same-environment performance | #155 10k loopback: p50/p95 221.73/306.33ms→17.56/29.49ms, 11→1calls, 4787800→15285bytes. #138 font fetch100→1 with no proven CPU/size benefit. Hosted regional T20 not-run. |
+| Provider sandbox / email | Actual payment-provider sandbox, refund and hosted sending not-run. Local Auth email test sink was run. No real payment/refund/notification was tested or enabled. |
+| Production schema / backup | Ledger95; #134–#155 required approved schema applied and verified. #157/#159–#162 candidate schema not applied. Restricted CurrentUser-DPAPI logical backup exists; checksum/ACL/roundtrip verified earlier; full restore not-run and Storage bytes absent. |
 
-## Migration and compatibility boundary
+## Approval and compatibility boundaries
 
-The original T01 fresh/upgrade rehearsal covered 34 source migrations to ledger `20260926190000`; fourteen later additive files bring this review manifest to 48. Those fourteen were individually rehearsed and used only on the named unlinked loopback DB; they were not run as one ordered data-bearing migration chain. `migration-runbook.md` records each later addendum. Before promotion, compare exact production catalog/signatures/grants/RLS/indexes/storage policies with the 48-file manifest, rehearse a fresh install and sanitized data-bearing clone, record lock/backfill estimates, and verify backup plus restore. Run the checker and role/API fixtures against both. Do not `db push` blindly or insert migration ledger rows by hand.
+Sequential main releases when green are already authorized. Do not ask for the same release approval again. Exact production migration approvals remain separate: #157 approved; #159/#160/#161/#162 exact requests pending; #162 SQL hash unchanged by the later queue fix. Production #153/#154/#155 exact approved migrations are complete. No paid Supabase branch is authorized.
 
-New app functions depend on additive RPCs, while the old app's compatibility with the final schema has not been proven as a rollback target. Stop **new** checkout/adoption/other affected submissions on schema fault, retain durable incoming webhooks and reconciliation, preserve committed payment/audit facts, and use only a measured compatible app rollback. Never restore an older DB image over newer events. See `operations-handoff.md`.
+Payment activation, new sending/media schedules, public preview, real content classification/publication, notices and refunds remain separately gated. Preserve existing webhook/reconciliation intake while new checkout is disabled. Receipt/email failure never changes succeeded payment to pending. Retain #130 proof intent, fingerprint/idempotency, body limit, suspended-user recheck and commit-before-public media behavior; #133 fallback remains limited to CMS revision-read PGRST205/42P01.
 
-## Promotion sequence requiring separate approval
+Before each next approved schema change: verify the reviewed source hash, current catalog/signature/grants/RLS/indexes, backup inventory, exact per-PR rehearsal and unchanged-row assertions. Observe provider ledger identifiers; never fabricate historical entries or run blind db push. No end-to-end full restore or one-shot 51-file production upgrade has been certified. Revert only to a compatibility-proven app/config while retaining additive versions, operations and audit/payment facts; never restore an old snapshot over later events.
 
-1. Release owner reviews exact PR stack, issue tracker, unresolved content/terms/policy and provider scope. Resolve or explicitly exclude every partial issue.
-2. DBA confirms backup/restore, current catalog, ordered migrations, fresh and data-bearing rehearsal, grants/RLS/seed assertions and migration manifest checksum.
-3. Create an authorized private candidate at the **same tested app SHA** and approved config versions. Run the full gate suite, real-role direct API/export/private file checks, mobile/keyboard UAT, same-environment performance, and each intended provider's real sandbox callback/replay/refund/receipt failure matrix. Record pass/fail at that SHA.
-4. Only after each required approval: apply schema, verify catalog and real content, deploy the tested app, smoke GET and old event intake, then enable only approved checkout methods. Main merge is an automatic deployment and is therefore a separate release decision.
-5. Monitor alias SHA, error rate, payment pending, webhook/worker backlog and last success, receipt failures, content visibility and staff queue counts; exercise the compatible rollback/disable path on failure.
+## Next concrete work
 
-This package requests review, not a merge, public preview, production DDL, payment enablement, publication, notification or refund.
+1. Keep #156 disabled/draft until supported atomic OTP consumption passes every redemption path and hosted parity is verified. Continue independent repairs/reviews of later PRs.
+2. Finish exact-head CI and outstanding exact migration approvals; apply and merge only in the authorized sequence after the predecessor's main gates and alias postflight.
+3. Obtain approved terms/payment methods/content/session policy and role identities; complete provider sandbox, hosted API/export/private-file and mobile/keyboard journeys before those operations are enabled.
+4. Hand staff the per-domain preview/apply/result/recovery instructions and rollback boundaries below. Existing merged code is not proof of all operational activation.
+
+## PR164 source update
+
+Source freeze 5793e12d6933ba06c58c226d29a4ca8931601398 includes reviewed CMS bulk and both queue unmount guards. Inventory now52unique SQL files, all committed LF hashes verified; CSV SHA256 a3519ee326b19427326b51cdb8606aa8792dc16b499af76622931d078a1892cf. Historical #163 freeze above remains labelled. CMS clone6tests39assertions,1000items796success202skip2conflict,unchanged content/revisions,full SQL rollback298ms;actual queue/component UI passes. Typecheck/lint/serial build exit0,52lint warnings; final full suite3012pass127skip0fail/9419assertions/543files/33.81s/exit0; exact remote CI pending. Production unchanged at#155, #156stillNO-GO; #164 exact SQL approval not yet requested.
+
+## PR165 source update
+
+Freeze 421bf7f790dd595fbc0161ea885605dde617f3f4;53 source SQL checksums and updated CSV hash. Local full3017pass131skip9445assertions/36.43s;typecheck/lint/build0,52warnings;manualDB4tests29assertions;CRM17tests90assertions;UI3widths/Axe0;full-file6-row rollback251ms. Four independent findings closed. Fresh CI pending; exact SQL approval not yet requested. Production remains#155;#156blocks next release.
+
+PR162 selection-generation backport61e8952f verified:3006pass121skip/9383assertions/45.61s;typecheck/lint/build0;actual queue delayed-kind-cycle regression red25 to green0;SQL unchanged. Current source/CI metadata supersede earlier capture; remote gates pending.
+
+## PR166 current source update
+
+Freeze 4f3f2f7e22afc2d8d2bbdf4cb05044a6701df7ee;54 committed SQL hashes verified. Runtime identical to tested e229f46d:3022pass133skip9462assertions/40.72s;typecheck/lint/build0,52warnings;DB2tests122assertions;UI3widths/Axe0;SQL7rowsrollback253ms. Fresh remote CI pending. #156 remains blocked; requested disabled-feature exception unanswered, not an approval.
+
+
+## PR167 verified read queue (2026-09-30)
+
+See sequential-merge-167-20260930.md for exact commands, source SHA, local PostgREST and three-width browser evidence. No new migration; not deployed. Pending proofs are filtered before count/page, including active pledges with later proofs. Staff review each current proof; no bulk money approval. Earlier #156 OTP release blocker remains. #165/#166 exact schema questions now pending after five green CI gates.
+
+
+## PR168 readiness verification (2026-09-30)
+
+See sequential-merge-168-20260930.md. Final3051pass/133skip, strict typecheck/lint/build0 and actual three-width SSR/client navigation/Axe0. Server-generated references correlate for client navigation; transport failures do not invent a reference. Stable section IDs tolerate approved CMS copy edits. No migration or schedule activation. #167 fivegreenCI36640615081; #168 freshCI pending; ordered #156 gate and predecessor schema approval questions remain.
+
+
+## PR169 preparation — 2026-09-30
+
+PR169 local code/gates ready,production schema/deploy/enable not ready. Inventory55. Full3065pass137skip,typecheck/lint/build0;12browser cases/Axe0;exact source SQL rehearsal. Await exact-headCI,ordered predecessors and schema approval. #168 fivegatesSUCCESS36642612271;#156 actual OTP failure remains blocking.
+
+
+## PR170 preparation — 2026-09-30
+
+PR170 code/local gates complete;schema approved/applied=no,deployed=no,operationally enabled=no.56fileinventory. Full3074pass141skip9628assert;typecheck/build0;lint0beforecatalog-onlymerge;1000itemservice_role;3widthAxe0. Orderedmerge stillblocked#156;exact schema approval andlatestCIrequired.
