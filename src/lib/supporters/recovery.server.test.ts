@@ -65,3 +65,21 @@ test("invalid email does not invoke the provider", async () => {
   await expect(requestRecovery({ email: "bad" }, deps(sent))).rejects.toBeInstanceOf(RecoveryError);
   expect(sent).toEqual([]);
 });
+
+test("rate keys contain only stable normalized email and IP hashes", async () => {
+  const keys: string[] = [];
+  const service = {
+    ...deps(),
+    rate: async (key: string) => {
+      keys.push(key);
+      return { ok: true };
+    },
+  };
+  await requestRecovery({ email: " SAME@example.invalid " }, service);
+  await requestRecovery({ email: "same@example.invalid" }, service);
+  expect(keys.slice(0, 2)).toEqual(keys.slice(2));
+  expect(keys[0]).toMatch(/^ip:[0-9a-f]{64}$/);
+  expect(keys[1]).toMatch(/^email:[0-9a-f]{64}$/);
+  expect(keys.join()).not.toContain("same@example.invalid");
+  expect(keys.join()).not.toContain(service.ip);
+});
