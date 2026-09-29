@@ -6,7 +6,7 @@ import {
   adoptionInformationMutationSchema,
   adoptionRuleInputSchema,
   careTopicInputSchema,
-  estateInputSchema,
+  createEstateInputSchema,
 } from "./schemas";
 
 describe("adoption information schemas", () => {
@@ -43,12 +43,12 @@ describe("adoption information schemas", () => {
 
   test("trims estate fields while retaining optional notes", () => {
     expect(
-      estateInputSchema.parse({
+      createEstateInputSchema.parse({
+        id: "22222222-2222-4222-8222-222222222222",
         estateName: "  Harbour View  ",
         district: "  Sai Kung  ",
         notes: "  Ask management  ",
         sortOrder: 1,
-        isPublished: false,
       }),
     ).toMatchObject({ estateName: "Harbour View", district: "Sai Kung", notes: "Ask management" });
   });

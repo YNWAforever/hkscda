@@ -1,0 +1,12 @@
+{
+  "environment": "isolated Auth v2.197.0 + local Mailpit 52324",
+  "expirySeconds": 900,
+  "productionRequests": 0,
+  "knownWrongEmailWrongCodeSuccessReplay": true,
+  "unknownConfirmedWithoutSupporterLinking": true,
+  "expiredAfterSynthetic16Minutes": true,
+  "concurrentSuccessfulSessions": 2,
+  "concurrentSingleUse": false,
+  "suspendedRefused": true,
+  "fixtureUsers": 5
+}

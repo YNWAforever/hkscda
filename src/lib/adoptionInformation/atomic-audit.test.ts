@@ -33,6 +33,7 @@ describe("admin content atomic audit RPCs", () => {
       price_hkd: "0",
       sort_order: 1,
       is_published: true,
+      version: 1,
     });
     const service = createAdoptionInformationService({
       repo: createSupabaseAdoptionInformationRepository(client as never),
