@@ -1,5 +1,9 @@
-import { AdoptionInstructionsManagement } from "./AdoptionInstructionsManagement";
-import { useMemo, useState } from "react";
+import {
+  AdoptionInstructionsManagement,
+  type AdoptionInstructionEditorHandle,
+} from "./AdoptionInstructionsManagement";
+import { useMemo, useRef, useState } from "react";
+import { useBlocker } from "@tanstack/react-router";
 import { ChevronDown, ChevronUp, Plus, Search, Trash2 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -15,6 +19,15 @@ import type {
 import { AdoptionRulesManagement } from "./AdoptionRulesManagement";
 import { CareTopicsManagement } from "./CareTopicsManagement";
 import { TablePager } from "../TablePager";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "../../ui/alert-dialog";
 
 export const ADOPTION_INFORMATION_QUERY_KEY = ["admin-adoption-information"] as const;
 
@@ -97,6 +110,17 @@ type MutationInput =
 function AdoptionInformationManagementRuntime() {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<AdoptionContentTab>("fees");
+  const [pageDirty, setPageDirty] = useState(false);
+  const [pendingTab, setPendingTab] = useState<AdoptionContentTab | null>(null);
+  const [leaving, setLeaving] = useState(false);
+  const [leaveProblem, setLeaveProblem] = useState<string | null>(null);
+  const editorRef = useRef<AdoptionInstructionEditorHandle>(null);
+  const blocker = useBlocker({
+    withResolver: true,
+    disabled: !pageDirty,
+    enableBeforeUnload: pageDirty,
+    shouldBlockFn: ({ current, next }) => current.pathname !== next.pathname,
+  });
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
   const search = useMemo(
@@ -146,17 +170,82 @@ function AdoptionInformationManagementRuntime() {
     onSuccess: () => invalidateAdoptionInformationQueries(queryClient),
   });
 
-  const handleTabChange = (tab: AdoptionContentTab) => {
+  const switchTab = (tab: AdoptionContentTab) => {
     setActiveTab(tab);
     setQuery("");
     setPage(1);
   };
+  const handleTabChange = (tab: AdoptionContentTab) => {
+    if (tab === activeTab) return;
+    if (pageDirty) {
+      setLeaveProblem(null);
+      setPendingTab(tab);
+      return;
+    }
+    switchTab(tab);
+  };
+  const cancelLeave = () => {
+    if (leaving) return;
+    setPendingTab(null);
+    setLeaveProblem(null);
+    if (blocker.status === "blocked") blocker.reset();
+  };
+  const completeLeave = () => {
+    if (blocker.status === "blocked") blocker.proceed();
+    else if (pendingTab) switchTab(pendingTab);
+    setPendingTab(null);
+    setLeaveProblem(null);
+  };
+  const decideLeave = async (decision: "save" | "discard" | "cancel") => {
+    if (decision === "cancel") return cancelLeave();
+    if (decision === "discard") return completeLeave();
+    if (leaving) return;
+    setLeaving(true);
+    try {
+      if (await editorRef.current?.saveDraft()) completeLeave();
+      else setLeaveProblem("儲存未成功，仍留在原頁。請關閉此對話框檢查草稿錯誤。");
+    } catch (error) {
+      setLeaveProblem(error instanceof Error ? error.message : "儲存未成功，仍留在原頁。");
+    } finally {
+      setLeaving(false);
+    }
+  };
+  const leaveDialog = (
+    <AlertDialog
+      open={pendingTab !== null || blocker.status === "blocked"}
+      onOpenChange={(open) => {
+        if (!open) cancelLeave();
+      }}
+    >
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>尚有未儲存的頁面內容</AlertDialogTitle>
+          <AlertDialogDescription>
+            你可以先儲存草稿、捨棄本機修改，或取消並繼續編輯。
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        {leaveProblem && <p role="alert">{leaveProblem}</p>}
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={leaving} onClick={() => cancelLeave()}>
+            取消
+          </AlertDialogCancel>
+          <button type="button" disabled={leaving} onClick={() => void decideLeave("discard")}>
+            捨棄並離開
+          </button>
+          <button type="button" disabled={leaving} onClick={() => void decideLeave("save")}>
+            儲存並離開
+          </button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
 
   if (activeTab === "page") {
     return (
       <div>
         <AdoptionContentTabs activeTab={activeTab} onTabChange={handleTabChange} />
-        <AdoptionInstructionsManagement />
+        <AdoptionInstructionsManagement onDirtyChange={setPageDirty} editorRef={editorRef} />
+        {leaveDialog}
       </div>
     );
   }

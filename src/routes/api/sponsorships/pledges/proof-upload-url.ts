@@ -21,7 +21,10 @@ import { verifyTurnstile } from "../../../../lib/security/turnstile.server";
 export const SPONSORSHIP_PROOF_BUCKET = "sponsorship-payment-proof";
 
 const requestSchema = z.object({
-  turnstileToken: z.string().optional(),
+  turnstileToken: z.preprocess(
+    (value) => (value === null ? undefined : value),
+    z.string().optional(),
+  ),
   proof: z.object({
     fileName: z.unknown(),
     mimeType: z.unknown(),

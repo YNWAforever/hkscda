@@ -206,6 +206,7 @@ describe("AlipayHK donation checkout", () => {
       createDonationRequest({
         idempotencyKey: "e15e9832-469b-4710-b2ea-244d8a39aa12",
         amountCents: 30_000,
+        expectedConfigVersion: 1,
         purpose: "general",
         customPurpose: "",
         method: "alipayhk",
@@ -354,6 +355,7 @@ test("donation contacts use the donation inbox without WhatsApp options", async 
   const payload = createDonationRequest({
     idempotencyKey: "9d6b79b5-5a2b-4b76-8a93-c2e6cf1a7d0a",
     amountCents: 30000,
+    expectedConfigVersion: 1,
     purpose: "general",
     customPurpose: "",
     method: "stripe",
