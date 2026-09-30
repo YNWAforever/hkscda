@@ -78,3 +78,27 @@ The existing restricted CurrentUser DPAPI backup was rechecked without decryptio
 Screenshots: `ui/t22-broker-after-{390,768,1366}.png`; earlier `ui/t22-recovery-before-*` remain historical baseline captures. They are synthetic UI evidence, not hosted-provider proof. No new same-environment Lighthouse before/after measurement is claimed for this authentication repair.
 
 Primary references: [generateLink](https://supabase.com/docs/reference/javascript/auth-admin-generatelink), [verifyOtp](https://supabase.com/docs/reference/javascript/auth-verifyotp), [setSession](https://supabase.com/docs/reference/javascript/auth-setsession), [Auth v2.197.0 release](https://github.com/supabase/auth/releases/tag/v2.197.0). Installed SDK source and actual runtime tests determined its session behavior.
+
+## Final session and logout review checkpoint, 2026-09-30
+
+Reviewed code SHA: `ccfca5444dead96d94195e346c15fdfcf2751a7e`. This supersedes the browser-session counts at the earlier checkpoint; the server broker and exact SQL bytes are unchanged. Production main/alias remains `24196faf027998388eff3196a6979e23566e2443`, deployment READY; five main CI jobs passed. No production mutation, activation or merge occurred during this repair.
+
+Reproduced before repair: a successful delayed logout deleted a newer actor; cleanup followed by a newer password/OTP login emitted an old signed-out notification; same-session refresh prevented logout; refreshed logout refusal was hidden; a same-task actor change showed an old error before React rendered. Each reproduction returned exit 1 or the independently recorded incorrect SDK outcome. The fixes coordinate whole SDK operations and public session writers through the same Web Lock, retain revision fencing, and rebase logout only on the exact provider-returned token pair with matching user/sub/nonempty session ID and unchanged storage. UI failure ownership follows the session across refresh, with refs updated synchronously in Auth callbacks.
+
+| Command | Exit | Environment and observed result |
+| --- | --- | --- |
+| `bun test` | 0 | Bun1.3.14; isolated checkout Postgres57322 and Auth52321; 3004 pass,96 skip,0 fail,9298 assertions,515 files,42.29s |
+| `bun run typecheck` | 0 | Strict TypeScript; independent of build |
+| `bun run lint` | 0 | 0 errors;52 existing warnings |
+| `bun run build` | 0 | Synthetic loopback URL/ci-placeholder keys; Vercel client/server output; run serially |
+| `bun test --isolate src/lib/supporters/recoverySession.test.ts` | 0 | Independent review: actual installed SDK/synthetic transport;22 pass,66 assertions |
+| `node scripts/verify-supporter-session-browser.mjs` | 0 | Actual application factory in two Chromium tabs: setSession/password order, HTTP-wait actor change, logout notification, same-session refresh, quota and missing-lock cases |
+| `node scripts/verify-supporter-recovery-logout.mjs` | 0 | Same-task refresh/refusal visible with retry; new actor and new same-user session hide old failure;3 cases;`t22-logout-ui.json` |
+| `node scripts/verify-supporter-broker-ui.mjs` | 0 | Actual page390/768/1366px; keyboard/full journey; Axe0; no overflow/page errors |
+| `node scripts/verify-supporter-recovery-migration.mjs` | 0 | Empty task-owned Postgres52322; whole exact-file transaction rollback; signatures/grants/RLS and Auth/supporter/ledger catalog unchanged;`t22-migration-rehearsal.json` |
+
+An initial concurrent worktree build returned exit1 because both linked node_modules wrote the same Nitro cache and one asset disappeared. The final build ran serially and returned0. Future builds must serialize shared dependency-cache writers. All96 skipped scenarios remain not-run. Prior real broker concurrency and role results retain their exact server/SQL SHA applicability; hosted provider redemption, live staff UAT, full backup restore and same-environment production before/after performance remain not-run.
+
+The pinned auth-js2.108.1 supports the opt-in custom lock but some public writers bypass it; the factory wraps password/OTP/sign-up/anonymous/ID-token/Web3/passkey sign-in and identity-linking public methods without modifying SDK internals. Current app Auth callbacks are synchronous and make no awaited SDK calls. Nested experimental passkey APIs are not enabled or used in this app; older already-open tabs may not participate in the new coordinator. Do not infer a cross-version guarantee: re-run these actual SDK/browser gates before dependency changes and staff recovery activation. Lock acquisition fails after5s without stealing a held lock. Ordinary unsupported-storage authentication retains SDK fallback; recovery installation fails closed.
+
+Independent final review found no remaining actionable findings and reran six same-task cases across #156 and #157. The latest draft-branch CI must be checked against its exact head after publication; earlier green CI36728088549 for5d8fd313 is historical. Exact production migration approval and server-only key/sandbox activation remain outstanding, with recovery/payments/new schedules disabled.
