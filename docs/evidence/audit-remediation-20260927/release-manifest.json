@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "appSha": "7be2da1a9e9dba41983542a9da777c7449afcecd",
-  "appShaNote": "PR175 live Auth actor/request binding followup and predecessors through174; later slices excluded.",
+  "appSha": "99d94f2eccf0dcd7c0bdd1e356cb6e0059e756d2",
+  "appShaNote": "PR175 deadline wrapper repair on BASE5e64bd64; exact local source99d94f2e; predecessor integration and current remote review/CI remain root-owned.",
   "productionAliasShaObserved": "24196faf027998388eff3196a6979e23566e2443",
   "schemaManifestHash": "0d9cf0d2200002bdc6de64dc3b071bd6450b49b660960fecc62e5c36d983142a",
   "configVersions": {
@@ -311,8 +311,8 @@
   ],
   "ciRun": {
     "id": null,
-    "sha": "7136ad049c536fe27fcc4823066d762c618b2c9b",
-    "status": "local full tests/typecheck/lint/build and real 15-case browser suite passed; remote CI pending"
+    "sha": "99d94f2eccf0dcd7c0bdd1e356cb6e0059e756d2",
+    "status": "Task175 final source: full3139pass143skip0fail; strict typecheck0; lint0/52warnings; serial loopback placeholderbuild0; UI unchanged and prior captures historical; remote CI not-run"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
