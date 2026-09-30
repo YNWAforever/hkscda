@@ -113,16 +113,21 @@ test("in-flight recovery disables creating a competing preview", () => {
 });
 test("unmounted preview cannot overwrite saved recovery ID", async () => {
   let finish!: (v: unknown) => void;
+  let markRequestStarted!: () => void;
+  const requestStarted = new Promise<void>((resolve) => {
+    markRequestStarted = resolve;
+  });
   request = () =>
     new Promise((resolve) => {
       finish = resolve;
+      markRequestStarted();
     });
   const n = render();
   walk(n).find((x) => x.type === "select")!.props.onChange!({
     target: { value: "22222222-2222-4222-8222-222222222222" },
   });
   const pending = walk(render()).find((x) => x.type === "button")!.props.onClick!();
-  await flush();
+  await requestStarted;
   for (const c of cleanups) c();
   finish({ operationId: saved, assigneeUserId: "22222222-2222-4222-8222-222222222222", items: [] });
   await pending;
