@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "appSha": "04d673b8ef64d690ed75bf47cdc0175aefed5b02",
-  "appShaNote": "PR175 guarded bank confirmation and actor recovery plus verified predecessors; PR176-179 excluded.",
+  "appSha": "7be2da1a9e9dba41983542a9da777c7449afcecd",
+  "appShaNote": "PR175 live Auth actor/request binding followup and predecessors through174; later slices excluded.",
   "productionAliasShaObserved": "24196faf027998388eff3196a6979e23566e2443",
   "schemaManifestHash": "2f4340872f7d1b9ea61dd15d0996c0c97b69b06c98e93e8ad247a20e0d31ec56",
   "configVersions": {
@@ -651,7 +651,7 @@
     "migration170": "exact approval requested after five CI gates green; pending",
     "migration172": "exact approval requested after five CI gates green; pending",
     "migration173": "exact approval requested after five CI gates green; pending",
-    "migration175": "not yet requested; isolated fullSQL/1000item/concurrency/auditrollback passed"
+    "migration175": "exact approval requested after prior five green gates; pending; SQL unchanged by actor fix"
   },
   "blockedGate": {
     "pr": 156,
