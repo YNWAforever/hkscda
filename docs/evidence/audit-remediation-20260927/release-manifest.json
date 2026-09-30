@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "appSha": "c685b23b8ff18af8a73af858f51f48e7bb1f6f91",
-  "appShaNote": "Reviewed PR162 code; PR163 is a documentation-only descendant. Later PR164-179 candidates are not included in this source freeze.",
-  "productionAliasShaObserved": "24196faf027998388eff3196a6979e23566e2443",
-  "schemaManifestHash": "4023e54be04e6c90a5984cbff4a8d89170da167e5b2e8ef7f914bce0adfb432e",
+  "appSha": "4d1289e50c9ffe694ff3dab9a2ac74cd9d59c17b",
+  "appShaNote": "Reviewed and combined-source verified PR162 candidate. PR163 is documentation-only; later PR164-179 source is excluded.",
+  "productionAliasShaObserved": "07e4c881863b715342ed0757aad7bd691a272738",
+  "schemaManifestHash": "907e5e3d06d87d685d08299ccc886ea705823cc4a130feada7545ce31ac084e7",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
@@ -251,28 +251,33 @@
     {
       "version": "20260927172030",
       "file": "20260927172030_crm_tag_bulk.sql",
-      "sha256": "d4a1a51db9b25feae7e440609ce5cfbb410e9e25e2f870f96df26618151489a6"
+      "sha256": "15ca57d14f074a933bdba9001ad3758fe1f6340765321fa0054d032428611522"
     },
     {
       "version": "20260927181701",
       "file": "20260927181701_volunteer_review_bulk.sql",
-      "sha256": "f1f908e3193bcbdab4472ac0681c72351121230083d72fba841a209fe22ae5cc"
+      "sha256": "96149a16e41cdf9fdf2e246b700033877fc91c3c00403a2b2efcd39d12cb3164"
     },
     {
       "version": "20260927183000",
       "file": "20260927183000_adoption_assignment_bulk.sql",
-      "sha256": "300e48d272ca1256bd2081e185c64adc29688a2dcc23641e5266c5baa76e62f1"
+      "sha256": "cd14343255b0e9c5901beed3952de6da03bcade1e56284994f5edc7e92cce238"
     },
     {
       "version": "20260927184500",
       "file": "20260927184500_animal_review_bulk.sql",
-      "sha256": "a2b689369ccb803e65d94e75db1f669dec6b9cf43f0132853c22b612b58db40f"
+      "sha256": "8f5eceb8b99aecd8914f131b1a44be4eaf1a5ad3e5e6f13239d2137cbc253c41"
+    },
+    {
+      "version": "20260930120000",
+      "file": "20260930120000_supporter_recovery_single_use.sql",
+      "sha256": "a136cc18848d9e927f57b1840c0a7058fdffba92701df4cf50fb18931cabc91e"
     }
   ],
   "ciRun": {
     "id": null,
-    "sha": "c685b23b8ff18af8a73af858f51f48e7bb1f6f91",
-    "status": "PR162 selection backport local gates pass; fresh remote CI pending"
+    "sha": "4d1289e50c9ffe694ff3dab9a2ac74cd9d59c17b",
+    "status": "Final local combined-source gates passed; new exact-head PR162 remote CI pending at this capture"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
@@ -283,13 +288,16 @@
     "docs/evidence/audit-remediation-20260927/uat-results.md",
     "docs/evidence/audit-remediation-20260927/pr-status-20260930.json",
     "docs/evidence/audit-remediation-20260927/sequential-merge-162-20260930.md",
-    "docs/evidence/audit-remediation-20260927/sequential-merge-156-20260930.md"
+    "docs/evidence/audit-remediation-20260927/sequential-merge-156-20260930.md",
+    "docs/evidence/audit-remediation-20260927/sequential-execution-20261001.md",
+    "docs/evidence/audit-remediation-20260927/sequential-merge-161-20260930.md",
+    "docs/evidence/audit-remediation-20260927/pr-status-20261001.json"
   ],
   "rollbackTarget": {
     "appSha": null,
     "reason": "No tested prior app SHA is certified against the additive schema; stop new checkout and affected writers, preserve old webhook/reconciliation and durable events, then deploy only a compatibility-proven target"
   },
-  "releaseDecision": "NO-GO for next sequential merge; PR156 actual Auth concurrency failure",
+  "releaseDecision": "HOLD next sequential #160 release for named production migration approval; later code preparation continues. #156 defect repaired and released; payments/new sending remain off.",
   "productionActionsPerformed": [
     {
       "action": "sequential approved merge and automatic deployment",
@@ -576,29 +584,112 @@
         "url": "https://github.com/YNWAforever/hkscda/actions/runs/36624781016",
         "workflowName": "CI"
       }
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 156,
+      "effectiveMainPr": 156,
+      "mergeSha": "5b3c1e6b19c741d287c0b538b5db423c187346e0",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36744827478,
+        "headSha": "5b3c1e6b19c741d287c0b538b5db423c187346e0",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36744827478",
+        "workflowName": "CI"
+      }
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 157,
+      "effectiveMainPr": 181,
+      "mergeSha": "da3d06b1d462fb6c86d800c4825edeba9823092d",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36750331821,
+        "headSha": "da3d06b1d462fb6c86d800c4825edeba9823092d",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36750331821",
+        "workflowName": "CI"
+      },
+      "correction": "Original #157 targeted its dependency branch. Corrective #181 released identical reviewed code to main without migration replay."
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 158,
+      "effectiveMainPr": 158,
+      "mergeSha": "d507340491dc50a780c7031dbcd459b85ebfff38",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36753543456,
+        "headSha": "d507340491dc50a780c7031dbcd459b85ebfff38",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36753543456",
+        "workflowName": "CI"
+      }
+    },
+    {
+      "action": "sequential approved main merge and automatic deployment",
+      "pr": 159,
+      "effectiveMainPr": 159,
+      "mergeSha": "07e4c881863b715342ed0757aad7bd691a272738",
+      "mainCi": {
+        "conclusion": "success",
+        "databaseId": 36758558621,
+        "headSha": "07e4c881863b715342ed0757aad7bd691a272738",
+        "status": "completed",
+        "url": "https://github.com/YNWAforever/hkscda/actions/runs/36758558621",
+        "workflowName": "CI"
+      }
     }
   ],
-  "capturedAt": "2026-09-29T21:08:36.706158+00:00",
-  "productionDeploymentId": "dpl_DJpjHkmVayPsXZqwiA2CMJG43Ygk",
+  "capturedAt": "2026-09-30T19:55:37.086189+00:00",
+  "productionDeploymentId": "dpl_D6goofbM7umWWoTqQVGtBxHzkvVP",
   "productionDeploymentState": "READY",
-  "productionSchemaLedgerCountObserved": 95,
-  "migrationManifestNote": "51 unique source-file inventory entries; not a command to apply every file or rewrite provider ledger timestamps. Follow exact approved per-PR dependency runbooks and observed catalog.",
+  "productionSchemaLedgerCountObserved": 98,
+  "migrationManifestNote": "52 unique source-file checksums; source inventory only. Provider ledger98 was observed in #159 postflight; no source-order db push or fabricated ledger.",
   "productionCiRun": {
-    "id": 36624781016,
-    "sha": "24196faf027998388eff3196a6979e23566e2443",
+    "id": 36758558621,
+    "sha": "07e4c881863b715342ed0757aad7bd691a272738",
     "status": "success; all five gates"
   },
   "remainingApprovals": {
-    "migration157": "approved; waits for predecessors",
-    "migration159": "exact approval requested; pending",
-    "migration160": "exact approval requested; pending",
-    "migration161": "exact approval requested; pending",
-    "migration162": "exact approval requested; pending; reviewed SQL unchanged by queue fix"
+    "migration160": "named single migration approval requested; pending",
+    "migration161": "explicit filename/schema/backfill approval already received; operative after stricter guards, per recorded ruling; waits for predecessor and fresh preflight",
+    "migration162": "new exact named migration approval pending",
+    "laterActivation": "approved terms/methods/provider sandbox/hosted identities/content and schedules remain separately gated"
   },
   "blockedGate": {
-    "pr": 156,
-    "environment": "isolated Supabase Auth v2.197.0 and Mailpit",
-    "result": "one OTP redeemed concurrently issued two sessions; expected one; exit1",
+    "pr": 160,
+    "environment": "production release authorization",
+    "result": "latest exact-head five PR gates and predecessor main gates pass; single production migration approval still pending",
     "enabled": false
-  }
+  },
+  "sequentialProgress": {
+    "requestedPrRange": [
+      134,
+      179
+    ],
+    "requestedCount": 46,
+    "actualMainReleasedCount": 26,
+    "throughPr": 159,
+    "note": "#157 actual main release is corrective #181; #180 remains explicitly do-not-merge evidence branch."
+  },
+  "approvedMigrationReceipts": [
+    {
+      "sourceFile": "20260930120000_supporter_recovery_single_use.sql",
+      "sha256": "a136cc18848d9e927f57b1840c0a7058fdffba92701df4cf50fb18931cabc91e",
+      "providerVersion": "20260930163010"
+    },
+    {
+      "sourceFile": "20260927163302_supporter_marketing_preference.sql",
+      "sha256": "3c945333e0ee484d61fcfca2c2e29e4dfef9805945d993b2409306eefdf2df89",
+      "providerVersion": "20260930165057"
+    },
+    {
+      "sourceFile": "20260927172030_crm_tag_bulk.sql",
+      "sha256": "15ca57d14f074a933bdba9001ad3758fe1f6340765321fa0054d032428611522",
+      "providerVersion": "20260930180311"
+    }
+  ]
 }
