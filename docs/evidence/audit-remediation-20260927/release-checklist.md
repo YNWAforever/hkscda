@@ -92,3 +92,8 @@ See [sequential-merge-176-20260930.md](sequential-merge-176-20260930.md): app `8
 ## PR177 current preparation — 2026-09-30
 
 See [sequential-merge-177-20260930.md](sequential-merge-177-20260930.md): app `c75ea7510cdd86c9b0489de7dd3ced78d7e2dac9`. Production version fence is already provided by149; duplicate177DDL reproduced42701 and replaced with narrow direct-EXECUTE revoke.15-row preservation/grant/trigger rehearsal0;5focused101assertions;full3140pass141skip;type/lint/build0.60-file manifest. Grant change not applied in production. #161 single migration approval received; ordered release remains blocked at156.
+
+
+## PR178 current preparation — 2026-09-30
+
+See [sequential-merge-178-20260930.md](sequential-merge-178-20260930.md): app `79838107c738854a28ac5a977b0e9fa6c3c6f5c2`, direct-column privilege bypass and recovery/live-actor races repaired. Full3159pass145skip10026assertions; typecheck/lint/build0; actual role DB5pass31assertions; exact SQL preserves15rows and reports898success101skip1conflict for1000items with audit rollback/retry;12browsercases/Axe0 and six before/after screenshots.61-file inventory; exact approval awaits five current-head CI gates. Code-complete/local-schema-ready, not deployed or enabled; #156 ordered-release blocker retained. Shared actor fix is backported separately to175.

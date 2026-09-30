@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "appSha": "c75ea7510cdd86c9b0489de7dd3ced78d7e2dac9",
-  "appShaNote": "PR177 existing version fence compatibility and restricted trigger execution plus predecessors; PR178-179 excluded.",
+  "appSha": "79838107c738854a28ac5a977b0e9fa6c3c6f5c2",
+  "appShaNote": "PR178 current verified assignment, recovery and live-actor fixes with predecessors; PR179 excluded.",
   "productionAliasShaObserved": "24196faf027998388eff3196a6979e23566e2443",
-  "schemaManifestHash": "697d0f55bc97e05ef35441a3ac356e8d5b135447e4588c319e96e59387a71b3d",
+  "schemaManifestHash": "acd63f2edaf8f686043b9cafd71e42d982a37e0b278d996bd122e4c231620a76",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
@@ -184,16 +184,6 @@
       "sha256": "d0fcb0c6ebbcfbfaf2bd245964815d6052c30880919d5344b806f9c1f072c53f"
     },
     {
-      "version": "20260927122000",
-      "file": "20260927122000_content_publication_eligibility.sql",
-      "sha256": "bc021c0f63ddfa5b9bb4e81cfc83ba75bd9e828ef85483e739c282dce731ed1b"
-    },
-    {
-      "version": "20260927130600",
-      "file": "20260927130600_sponsor_public_profile_fields.sql",
-      "sha256": "fd209e458358fd899aabbda721bec471b1c00f0fc92ce360ce2ada43366ae147"
-    },
-    {
       "version": "20260927090000",
       "file": "20260927090000_crm_private_export_jobs.sql",
       "sha256": "6665fcf0ef6ec9d783bca79ad7cd9769110a8a5c9a04f15c3a7a8463d4ade162"
@@ -214,6 +204,11 @@
       "sha256": "733363d843f9d46d182305480c9e941ad4143d46a9fd36cf6da967ea0587882d"
     },
     {
+      "version": "20260927122000",
+      "file": "20260927122000_content_publication_eligibility.sql",
+      "sha256": "bc021c0f63ddfa5b9bb4e81cfc83ba75bd9e828ef85483e739c282dce731ed1b"
+    },
+    {
       "version": "20260927130000",
       "file": "20260927130000_payment_instruction_snapshots.sql",
       "sha256": "aceef86734c3616688fcdb7da6cf27e7fef31ffd0bd46524d896fb05b87e2758"
@@ -224,14 +219,14 @@
       "sha256": "dd772676c88fda5614908ca1683637ab7922f04b1d5fe363995a7f689d9f9e23"
     },
     {
+      "version": "20260927130600",
+      "file": "20260927130600_sponsor_public_profile_fields.sql",
+      "sha256": "fd209e458358fd899aabbda721bec471b1c00f0fc92ce360ce2ada43366ae147"
+    },
+    {
       "version": "20260927140000",
       "file": "20260927140000_donation_delivery_recovery.sql",
       "sha256": "7368ea1052220be96c71b26f9003f26e259ea51a69f83dca031a79152d8913d3"
-    },
-    {
-      "version": "20260927150000",
-      "file": "20260927150000_sponsorship_terms_document_kind.sql",
-      "sha256": "1f32b4531134e117baf8ff236f2250ca839b2da27ce8560c08498db576b754b3"
     },
     {
       "version": "20260927140500",
@@ -242,6 +237,11 @@
       "version": "20260927143710",
       "file": "20260927143710_public_animal_listing_page.sql",
       "sha256": "e2320e10dc29949dacb218ddd46ff28ad6afb3e3bdc865a1416e5306487a518d"
+    },
+    {
+      "version": "20260927150000",
+      "file": "20260927150000_sponsorship_terms_document_kind.sql",
+      "sha256": "1f32b4531134e117baf8ff236f2250ca839b2da27ce8560c08498db576b754b3"
     },
     {
       "version": "20260927163302",
@@ -312,6 +312,11 @@
       "version": "20260928113000",
       "file": "20260928113000_crm_supporter_version_fence.sql",
       "sha256": "cd7ee888e94bf365533d006567a8c1b25dc0a092ee874918053669a7bebfbf62"
+    },
+    {
+      "version": "20260928120000",
+      "file": "20260928120000_crm_assignment_bulk.sql",
+      "sha256": "f848a5a3b955178b54c864cabd8611ada12ac63b9cbafba7b2eef8c9731f4297"
     }
   ],
   "ciRun": {
@@ -632,11 +637,11 @@
       }
     }
   ],
-  "capturedAt": "2026-09-30T00:53:48.625730+00:00",
+  "capturedAt": "2026-09-30T02:06:33.003219+00:00",
   "productionDeploymentId": "dpl_DJpjHkmVayPsXZqwiA2CMJG43Ygk",
   "productionDeploymentState": "READY",
   "productionSchemaLedgerCountObserved": 95,
-  "migrationManifestNote": "59 source inventory entries; apply only specifically approved files after catalog checks, never rewrite historical ledger.",
+  "migrationManifestNote": "61 source inventory entries; apply only specifically approved files after catalog checks; never rewrite historical ledger.",
   "productionCiRun": {
     "id": 36624781016,
     "sha": "24196faf027998388eff3196a6979e23566e2443",
@@ -646,7 +651,7 @@
     "migration157": "approved; waits for predecessors",
     "migration159": "exact approval requested; pending",
     "migration160": "exact approval requested; pending",
-    "migration161": "exact approval requested; pending",
+    "migration161": "approved exact single migration; waits for predecessors",
     "migration162": "exact approval requested; pending; reviewed SQL unchanged by queue fix",
     "migration164": "exact approval requested; pending",
     "migration165": "exact approval requested after five current-head CI gates succeeded; pending",
@@ -656,7 +661,9 @@
     "migration170": "exact approval requested after five CI gates green; pending",
     "migration172": "exact approval requested after five CI gates green; pending",
     "migration173": "exact approval requested after five CI gates green; pending",
-    "migration175": "not yet requested; isolated fullSQL/1000item/concurrency/auditrollback passed"
+    "migration175": "exact approval requested after five green gates; pending; actor followup retains SQL checksum",
+    "migration177": "exact grant-only approval requested after five green gates; pending",
+    "migration178": "not requested; exact SQL/1000item/roles/concurrency/audit rollback verified; waits current-head CI"
   },
   "blockedGate": {
     "pr": 156,
