@@ -13,6 +13,8 @@ Ruling: Treat #133 adoption instructions as a narrowly restored public page and 
 
 - T20: production server iad1 and DB ap-southeast-1 verified; same-SHA private-region benchmark and switch not-run. See region-benchmark.md.
 - T21: public listing code/schema ready in draft PR #155, source 8352adfaa88ed6655f906571bb9c7397ec3f7329, with 10k parity/RLS and 30-sample local DB comparison. Production migration and paid image transforms remain disabled. See t21-public-pagination.md.
+
+- T22 recovery: draft PR #156, source 3b5941b2b37860f0cfdc33cfe20a8c9072e19346; generic OTP request and public entry tested. CRM-01 partial until verified-record portal; hosted OTP settings and email sink not-run.
 - T03: server admission and donor projection implemented on `codex/audit-payment-policy-20260927`; migration applied only to dedicated loopback DB. New policy defaults disabled, with zero approved methods. Focused and isolated grant/replay tests pass; provider sandbox success/cancel/delay and operational approval remain not-run. PR is a review slice, not a release approval.
 - T04: code-complete on `codex/audit-payment-instructions-20260927`: donation admission and sponsorship pledge instruction snapshots are durable; both API and email use approved purpose/version data; changed or revoked config suppresses old instructions while keeping evidence. Hard-coded account/link output removed. Dedicated isolated DB and email sink pass. Real approved content, provider sandbox and release activation remain external gates.
 - T05: partial on `codex/audit-payment-lifecycle-20260927`: committed payment status and receipt/notification status are separate; a new donation-success trigger queues durable delivery with audit, protected hourly cron runs bounded batches, and PDF/email failures leave payment succeeded. Isolated DB trigger/grant test passes. Provider sandbox and historical data-bearing recovery rehearsal remain not-run; no operational enablement.
@@ -38,3 +40,14 @@ Draft #149 addresses ADMIN-02 in an isolated branch: fresh supporter read on ope
 ## Sequential release continuation — 2026-09-30
 
 #134–#152 have merged sequentially (19/46), with each PR and its predecessor main CI checked before merge. #152 production READY; its main CI pending. T18/#153 archive leakage and migration identity collision repaired; local code/UI checks passed, current schema rehearsal and remote gates pending. See sequential-merge-153-20260930.md. Historical entries above are retained.
+
+- T22 sequential #156: activation gate, challenge reset, pending verification lock and local OTP templates repaired. Full 2964 pass/96 skip/0 fail; typecheck/lint/build 0. Actual isolated Auth sink concurrent OTP check fails (two sessions). Recovery remains disabled and not merge-ready under all-tests-green. See sequential-merge-156-20260930.md.
+
+
+## T22 recovery broker continuation, 2026-09-30
+
+Implemented the approved purpose-bound/hashed/single-use15-minute fallback after native Auth concurrency failed. Code SHA `4a4eef8e2c5b146c401b442d8b9a8af494049ce2`, local gates and isolated schema ready; production DDL/deployment/enablement remain no. CRM-01 stays partial for #157 portal and external UAT. #134-#155 remain22/46 merged; no new merge or production mutation in this checkpoint. Trackers and manifest updated; [concrete release evidence](sequential-merge-156-broker-20260930.md).
+
+## T22 session review completion, 2026-09-30
+
+Code `ccfca5444dead96d94195e346c15fdfcf2751a7e`: full3004 pass/96 skip/0 fail; typecheck/lint/build exit0; SDK22/66; real two-tab factory,3 recovery logout same-task cases and3width keyboard/Axe0 journey pass. Independent review has no remaining findings. Exact SQL unchanged and re-rehearsed with catalog equality. #156 production DDL remains unapproved; #157 integration code/schema locally verified separately. Still22/46 merged; production main/alias24196faf and recovery/payment/new schedules remain disabled. [Final checkpoint](sequential-merge-156-broker-20260930.md).

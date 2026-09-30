@@ -44,3 +44,11 @@ Rollback application retains additive column/indexes/RPC and historical age text
 ## Exact approval checkpoint — 2026-09-30 HKT
 
 User approved only `20260927143710_public_animal_listing_page.sql`, after #153 and #154 complete. Source SQL and SHA-256 above are unchanged. Current reviewed head 83779273d103271d117220aa16b3a32a32761e24: CI 36611872084 all five gates succeeded, including the public listing DB step. No production migration has been applied at this checkpoint; #153 exact approval is still pending. Existing animal content and paid image transform settings must remain unchanged.
+
+## Production release checkpoint — 2026-09-30 04:13 HKT
+
+#154 main CI 36623173950 completed five gates successfully. Exact #155 head `26cc56466e492994906afad587c11ef1131cde0e` passed five gates in 36623433675. Applied the approved unchanged SQL with lock_timeout 5s / statement_timeout 30s; provider-generated version `20260929201203`, name public_animal_listing_page, success. Ledger 94 -> 95.
+
+Production postflight: 292 rows retained. Canonical old-field aggregate `md5(string_agg(to_jsonb(a)::text,'' order by id))` before versus `md5(string_agg((to_jsonb(a)-'public_age_band')::text,'' order by id))` after both `9affd7a59668b247c0bdd09a0f119c64`. Earlier report hash used a different aggregate; no data-drift claim is made across algorithms. Generated column stored, both new indexes valid, animals RLS true; RPC security invoker with pinned public/pg_temp, anon/authenticated/service EXECUTE. Actual anon read returned 16 rows/page: cats total 100, dogs 108, sponsors 115; inspected 48 records contain only published public projection and no notes/medical_notes fields. An initial inspection expression lacked parentheses around JSON array concatenation and returned null; corrected expression returned true. Checkout false; image transforms not enabled.
+
+Merged `2026-09-29T20:13:05Z` as `24196faf027998388eff3196a6979e23566e2443`. Production READY `dpl_DJpjHkmVayPsXZqwiA2CMJG43Ygk`, alias matches SHA. HTTP smoke `/animals/cat`, `/animals/dog`, `/sponsors`, `/stories`, `/donate`, `/adoption/instructions`: all 200, command exit 0. Main CI 36624781016 is running at this checkpoint. Application/schema deployed; paid images and broader staff UAT remain gated. Rollback retains additive objects and original animal fields.
