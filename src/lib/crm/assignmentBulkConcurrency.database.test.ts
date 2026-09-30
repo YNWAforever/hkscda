@@ -147,7 +147,7 @@ for (const heldRow of ["operation", "supporter"] as const) {
         );
         const state = () =>
           db.unsafe(
-            "select e.crm_assignee_user_id as assignee,e.edit_version::text as version,i.status,i.reason_code,i.applied_at from public.supporter e join public.crm_assignment_bulk_item i on i.supporter_id=e.id where e.id=$1::uuid and i.operation_id=$2::uuid",
+            "select e.crm_assignee_user_id as assignee,e.edit_version::text as version,to_jsonb(i) as item from public.supporter e join public.crm_assignment_bulk_item i on i.supporter_id=e.id where e.id=$1::uuid and i.operation_id=$2::uuid",
             [entity, operation],
           );
         const before = [...(await state())];
@@ -160,12 +160,22 @@ for (const heldRow of ["operation", "supporter"] as const) {
         expect(before[0]).toMatchObject({
           assignee: null,
           version: "1",
-          status: "pending",
-          reason_code: null,
-          applied_at: null,
+          item: {
+            operation_id: operation,
+            supporter_id: entity,
+            ordinal: 1,
+            expected_version: 1,
+            before_assignee: null,
+            after_assignee: assignee,
+            status: "pending",
+            reason_code: null,
+            applied_at: null,
+          },
         });
-        let lockReady = () => {};
-        const ready = new Promise<void>((resolve) => {
+        let lockReady = (value: number) => {
+          void value;
+        };
+        const ready = new Promise<number>((resolve) => {
           lockReady = resolve;
         });
         const release = new Promise<void>((resolve) => {
@@ -177,10 +187,10 @@ for (const heldRow of ["operation", "supporter"] as const) {
           await tx.unsafe(`select id from ${table} where id=$1::uuid for update`, [
             heldRow === "operation" ? operation! : entity,
           ]);
-          lockReady();
+          lockReady((await tx.unsafe("select pg_backend_pid() pid"))[0].pid as number);
           await release;
         });
-        await ready;
+        const blockerPid = await ready;
         let pidReady = (value: number) => {
           void value;
         };
@@ -205,10 +215,11 @@ for (const heldRow of ["operation", "supporter"] as const) {
         let blocked = false;
         for (let attempt = 0; attempt < 100; attempt++) {
           const [row] = await db.unsafe(
-            "select cardinality(pg_blocking_pids($1::int))>0 blocked,expires_at>clock_timestamp() live from public.crm_assignment_bulk_operation where id=$2::uuid",
+            "select pg_blocking_pids($1::int) blockers,expires_at>clock_timestamp() live from public.crm_assignment_bulk_operation where id=$2::uuid",
             [pid, operation],
           );
-          if (row.blocked) {
+          if ((row.blockers as number[]).includes(blockerPid)) {
+            expect(row.blockers).toContain(blockerPid);
             expect(row.live).toBe(true);
             blocked = true;
             break;
@@ -221,10 +232,11 @@ for (const heldRow of ["operation", "supporter"] as const) {
           [operation],
         );
         const [expired] = await db.unsafe(
-          "select expires_at<=clock_timestamp() expired,cardinality(pg_blocking_pids($1::int))>0 blocked from public.crm_assignment_bulk_operation where id=$2::uuid",
+          "select expires_at<=clock_timestamp() expired,pg_blocking_pids($1::int) blockers from public.crm_assignment_bulk_operation where id=$2::uuid",
           [pid, operation],
         );
-        expect(expired).toEqual({ expired: true, blocked: true });
+        expect(expired.expired).toBe(true);
+        expect(expired.blockers).toContain(blockerPid);
         releaseLock();
         await held;
         const outcome = await applying;
