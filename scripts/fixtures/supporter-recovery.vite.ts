@@ -7,6 +7,7 @@ import { execFileSync } from "node:child_process";
 export default defineConfig({
   root: path.resolve(import.meta.dirname, "../.."),
   cacheDir: "node_modules/.cache/hkscda-supporter-recovery",
+  optimizeDeps: { include: ["@supabase/supabase-js"] },
   define: {
     "import.meta.env.VITE_SUPABASE_URL": JSON.stringify("http://127.0.0.1:1"),
     "import.meta.env.VITE_SUPABASE_ANON_KEY": JSON.stringify("synthetic-anon"),
