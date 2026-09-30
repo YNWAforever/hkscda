@@ -15,12 +15,12 @@ declare
   v_job uuid;
   v_reference text:=btrim(p_reference);
 begin
-  if not exists (
-    select 1 from public.admin_user a join auth.users u on u.id=a.auth_user_id
+  perform 1 from public.admin_user a join auth.users u on u.id=a.auth_user_id
     where a.auth_user_id=p_actor and a.status='active' and a.role in ('treasurer','admin')
       and u.email_confirmed_at is not null
       and (u.banned_until is null or u.banned_until<=clock_timestamp())
-  ) then raise exception 'Manual finance actor unavailable' using errcode='42501';end if;
+    for share of a,u;
+  if not found then raise exception 'Manual finance actor unavailable' using errcode='42501';end if;
   if v_reference is null or length(v_reference) not between 1 and 120
   then raise exception 'Invalid bank reference' using errcode='22023';end if;
 
@@ -30,6 +30,17 @@ begin
     return jsonb_build_object('kind','provider_denied');
   end if;
   select * into v_donation from public.donation where id=v_payment.donation_id for update;
+  -- Lost responses recover only the exact committed payment/reference and its
+  -- existing durable job. Never credit twice or backfill unrelated legacy jobs.
+  if v_payment.status='succeeded' and v_donation.status='succeeded'
+    and lower(btrim(v_payment.bank_reference))=lower(v_reference) then
+    select id into v_job from public.donation_delivery_job
+      where donation_id=v_donation.id and payment_id=p_payment;
+    if v_job is not null then
+      return jsonb_build_object('kind','duplicate','paymentId',p_payment,
+        'donationId',v_donation.id,'deliveryJobId',v_job);
+    end if;
+  end if;
   if v_payment.status<>'pending' or v_donation.status<>'pending' then
     return jsonb_build_object('kind','state_conflict','paymentStatus',v_payment.status,'donationStatus',v_donation.status);
   end if;

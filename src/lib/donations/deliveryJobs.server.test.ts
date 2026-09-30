@@ -3,6 +3,7 @@ import { createDonationDeliveryWorker, type DeliveryJobRepository } from "./deli
 function repository(overrides: Partial<DeliveryJobRepository> = {}): DeliveryJobRepository {
   return {
     status: async () => "pending",
+    listDue: async () => [],
     claim: async () => ({ paymentId: "payment-1", attempts: 1 }),
     complete: async () => true,
     fail: async () => true,
@@ -308,4 +309,25 @@ test("crash after PDF upload retries the same receipt path before one acknowledg
   expect(sends).toBe(1);
   expect(uploads).toEqual(["2026/LOCAL-0001.pdf", "2026/LOCAL-0001.pdf"]);
   expect<string | null>(pdfPath).toBe("2026/LOCAL-0001.pdf");
+});
+
+test("exhausted automatic delivery attempts require staff review", async () => {
+  let failure: unknown;
+  const worker = createDonationDeliveryWorker({
+    repository: repository({
+      claim: async () => ({ paymentId: "payment-1", attempts: 8 }),
+      fail: async (_id, _owner, input) => {
+        failure = input;
+        return true;
+      },
+    }),
+    deliver: async () => {
+      throw new Error("provider down");
+    },
+  });
+  expect(await worker.run("job-1")).toEqual({
+    kind: "attention_required",
+    code: "delivery_failed",
+  });
+  expect(failure).toEqual({ code: "delivery_failed", retryable: false, retryAt: null });
 });

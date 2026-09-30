@@ -4,6 +4,7 @@ import { RequestBodyTooLargeError } from "../http/publicJson.server";
 
 import type { AdminUser } from "../donations/supabase.server";
 import { createCrmService } from "./service";
+import { supporterUpdateSchema } from "./schemas";
 
 type CrmService = ReturnType<typeof createCrmService>;
 
@@ -61,6 +62,14 @@ async function withCrmErrors(operation: () => Promise<Response>) {
     if (error instanceof z.ZodError) {
       return jsonResponse({ error: "Invalid CRM request" }, { status: 400 });
     }
+    if (error && typeof error === "object" && "code" in error && error.code === "P4090") {
+      return jsonResponse(
+        {
+          error: { code: "version_conflict", message: "Supporter changed. Reload before saving." },
+        },
+        { status: 409 },
+      );
+    }
 
     console.error(error);
     return jsonResponse({ error: "Could not process CRM request" }, { status: 500 });
@@ -116,7 +125,7 @@ export function createCrmHandlers({ requireTreasurer, service }: CreateCrmHandle
         await service.updateSupporter({
           actorUserId: admin.authUserId,
           supporterId,
-          input: await jsonBody(request),
+          input: supporterUpdateSchema.parse(await jsonBody(request)),
         });
         return jsonResponse({ ok: true });
       });

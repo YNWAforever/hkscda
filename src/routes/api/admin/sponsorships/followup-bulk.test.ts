@@ -105,3 +105,24 @@ test("sponsorship bulk API applies 25 at a time and resumes from durable item st
   expect((await apply()).status).toBe(200);
   expect(calls).toHaveLength(30);
 });
+
+test("malformed JSON is a no-store 400 before any bulk mutation", async () => {
+  let writes = 0;
+  const handle = createSponsorshipFollowupBulkHandler({
+    authorize: async () => actor,
+    preview: async () => {
+      writes++;
+      throw Error("unexpected");
+    },
+    read: async () => {
+      throw Error("unexpected");
+    },
+    applyItem: async () => {
+      writes++;
+    },
+  });
+  const response = await handle(new Request(url, { method: "POST", body: "{" }));
+  expect(response.status).toBe(400);
+  expect(response.headers.get("cache-control")).toBe("no-store");
+  expect(writes).toBe(0);
+});

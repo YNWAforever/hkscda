@@ -5,7 +5,11 @@ import {
   createSupabaseServiceClient,
   requireAdmin,
 } from "../../../../lib/donations/supabase.server";
-import { readBoundedJson, RequestBodyTooLargeError } from "../../../../lib/http/publicJson.server";
+import {
+  InvalidRequestJsonError,
+  readBoundedJson,
+  RequestBodyTooLargeError,
+} from "../../../../lib/http/publicJson.server";
 
 type BulkStatus = "pending" | "succeeded" | "skipped" | "conflict" | "failed";
 export type VolunteerReviewBulkOperation = {
@@ -97,7 +101,7 @@ export function createVolunteerReviewBulkHandler(deps: Dependencies) {
       if (error instanceof RequestBodyTooLargeError) {
         return Response.json({ error: "Request too large" }, { status: 413, headers });
       }
-      if (error instanceof z.ZodError) {
+      if (error instanceof z.ZodError || error instanceof InvalidRequestJsonError) {
         return Response.json({ error: "Invalid bulk request" }, { status: 400, headers });
       }
       const code = error && typeof error === "object" && "code" in error ? error.code : null;

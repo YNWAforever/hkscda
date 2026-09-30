@@ -104,3 +104,30 @@ revoke all on function public.assign_sponsorship_followup(uuid,uuid,uuid,bigint)
   from public,anon,authenticated;
 grant execute on function public.assign_sponsorship_followup(uuid,uuid,uuid,bigint)
   to service_role;
+
+
+-- The picker uses the same current Auth/role eligibility as the write command.
+create function public.list_sponsorship_followup_assignees(p_actor uuid)
+returns table("authUserId" uuid,email text,role text)
+language plpgsql stable security definer set search_path=''
+as $$
+begin
+  if not exists (
+    select 1 from public.admin_user a join auth.users u on u.id=a.auth_user_id
+    where a.auth_user_id=p_actor and a.status='active' and a.role in ('staff','admin')
+      and u.email_confirmed_at is not null
+      and (u.banned_until is null or u.banned_until<=now())
+  ) then
+    raise exception 'Follow-up actor unavailable' using errcode='42501';
+  end if;
+  return query
+    select a.auth_user_id,a.email::text,a.role::text
+    from public.admin_user a join auth.users u on u.id=a.auth_user_id
+    where a.status='active' and a.role in ('staff','admin')
+      and u.email_confirmed_at is not null
+      and (u.banned_until is null or u.banned_until<=now())
+    order by a.email,a.auth_user_id
+    limit 1000;
+end $$;
+revoke all on function public.list_sponsorship_followup_assignees(uuid) from public,anon,authenticated;
+grant execute on function public.list_sponsorship_followup_assignees(uuid) to service_role;

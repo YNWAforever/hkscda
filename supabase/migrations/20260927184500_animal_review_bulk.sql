@@ -31,12 +31,12 @@ grant select on public.animal_review_bulk_operation, public.animal_review_bulk_i
 create function private.require_animal_review_bulk_actor(p_actor uuid)
 returns void language plpgsql security definer set search_path='' as $$
 begin
-  if not exists (
-    select 1 from public.admin_user a join auth.users u on u.id=a.auth_user_id
+  perform 1 from public.admin_user a join auth.users u on u.id=a.auth_user_id
     where a.auth_user_id=p_actor and a.status='active' and a.role='admin'
       and u.email_confirmed_at is not null
       and (u.banned_until is null or u.banned_until<=now())
-  ) then raise exception 'Animal review actor unavailable' using errcode='42501';end if;
+    for share of a,u;
+  if not found then raise exception 'Animal review actor unavailable' using errcode='42501';end if;
 end $$;
 revoke all on function private.require_animal_review_bulk_actor(uuid) from public,anon,authenticated,service_role;
 grant execute on function private.require_animal_review_bulk_actor(uuid) to service_role;

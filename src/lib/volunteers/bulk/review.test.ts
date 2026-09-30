@@ -96,3 +96,20 @@ test("failed and conflicted groups are not reported as eligible or double-counte
   conflicted.groups[0].items[0].state = "conflicted";
   expect(reviewBulkOperation(conflicted).conflicted).toBe(1);
 });
+
+test("halts when the latest response invalidates another reviewed group", async () => {
+  const calls: number[] = [];
+  const result = await applyReviewedGroups(
+    operation(),
+    async (_, index) => {
+      calls.push(index);
+      const next = operation();
+      next.groups[0].state = "applied";
+      next.groups[1].state = "conflicted";
+      return next;
+    },
+    async () => operation(),
+  );
+  expect(calls).toEqual([0]);
+  expect(result.halted).toBe("review_required");
+});

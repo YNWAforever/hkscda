@@ -2,13 +2,20 @@ import { SQL } from "bun";
 import { expect, test } from "bun:test";
 
 const url = process.env.BANK_DRY_RUN_TEST_DATABASE_URL;
-if (
-  url &&
-  (new URL(url).hostname !== "127.0.0.1" ||
-    new URL(url).port !== "57322" ||
-    new URL(url).pathname !== "/postgres")
-)
-  throw new Error("Dedicated local bank dry-run database required");
+if (url) {
+  const target = new URL(url);
+  if (
+    target.protocol !== "postgresql:" ||
+    target.hostname !== "127.0.0.1" ||
+    target.search ||
+    target.hash ||
+    !(
+      (target.port === "57322" && target.pathname === "/postgres") ||
+      (target.port === "52322" && target.pathname === "/audit_pr135_20260929")
+    )
+  )
+    throw new Error("Dedicated local bank dry-run database required");
+}
 
 test.skipIf(!url || process.env.BANK_DRY_RUN_TEST_ALLOW_LOCAL_FIXTURES !== "1")(
   "bank dry-run reads current manual finance facts with finance role and no mutation",
@@ -49,19 +56,23 @@ test.skipIf(!url || process.env.BANK_DRY_RUN_TEST_ALLOW_LOCAL_FIXTURES !== "1")(
           "update public.payment set status='succeeded',bank_reference='  FPS-OLD  ' where id=$1::uuid",
           [payments[2]],
         );
-        const call = (refs: string[], amounts: number[]) =>
-          tx.unsafe(
-            "select public.preview_manual_bank_matches($1::uuid,$2::text[],$3::integer[]) result",
-            [actor, "{" + refs.join(",") + "}", "{" + amounts.join(",") + "}"],
-          ) as Promise<
-            Array<{
+        const call = async (refs: string[], amounts: number[]) => {
+          await tx.unsafe("set local role service_role");
+          try {
+            return (await tx.unsafe(
+              "select public.preview_manual_bank_matches($1::uuid,$2::text[],$3::integer[]) result",
+              [actor, "{" + refs.join(",") + "}", "{" + amounts.join(",") + "}"],
+            )) as Array<{
               result: {
                 kind: string;
                 creditedReferences: string[];
                 pendingPayments: Array<{ id: string; amountCents: number }>;
               };
-            }>
-          >;
+            }>;
+          } finally {
+            await tx.unsafe("reset role").catch(() => {});
+          }
+        };
         const preview = (await call(["fps-old", "fps-new"], [10_000, 20_000]))[0]!.result;
         expect(preview.kind).toBe("ok");
         expect(preview.creditedReferences).toEqual(["fps-old"]);
@@ -89,6 +100,7 @@ test.skipIf(!url || process.env.BANK_DRY_RUN_TEST_ALLOW_LOCAL_FIXTURES !== "1")(
             code = (error as { errno?: string }).errno;
           }
           await tx.unsafe("rollback to savepoint bank_preview_deny");
+          await tx.unsafe("reset role");
           expect(code).toBe(expected);
         };
         await tx.unsafe("update public.admin_user set role='staff' where auth_user_id=$1::uuid", [
