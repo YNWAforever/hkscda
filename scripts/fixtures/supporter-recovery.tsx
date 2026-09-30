@@ -1,4 +1,10 @@
 import { createRoot } from "react-dom/client";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SupporterPage } from "../../src/routes/supporter";
 import "../../src/styles.css";
-createRoot(document.getElementById("root")!).render(<SupporterPage />);
+const queryClient = new QueryClient();
+createRoot(document.getElementById("root")!).render(
+  <QueryClientProvider client={queryClient}>
+    <SupporterPage />
+  </QueryClientProvider>,
+);

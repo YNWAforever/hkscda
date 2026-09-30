@@ -74,7 +74,10 @@ test("provider and unexpected failures never leak input or provider details", as
     request: request(),
   });
   expect(response.status).toBe(202);
-  expect(await response.json()).toEqual({ accepted: true });
+  expect(await response.json()).toEqual({
+    accepted: true,
+    challengeId: expect.stringMatching(/^[0-9a-f-]{36}$/),
+  });
   const unavailable = await createRecoveryRouteHandler(
     () => {
       throw new Error("SECRET_PROVIDER_DETAIL");
