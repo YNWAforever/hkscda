@@ -1,5 +1,6 @@
 import { SQL } from "bun";
 import { expect, test } from "bun:test";
+import { createBankMatchOperationHandler } from "../../routes/api/admin/finance/bank-match-operations";
 
 const url = process.env.BANK_MATCH_CONFIRM_TEST_DATABASE_URL;
 if (url) {
@@ -15,6 +16,261 @@ if (url) {
     )
   )
     throw new Error("Dedicated local bank match database required");
+}
+
+// Missing a deadline check after an entity lock or normalized-reference index
+// wait must fail these tests: a live preview cannot authorize a late settlement.
+for (const contention of ["payment", "donation", "bank reference"] as const) {
+  test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !== "1")(
+    `bank match rejects expiry while blocked on unchanged ${contention}`,
+    async () => {
+      const db = new SQL(url!, { max: 1, prepare: false });
+      const blocker = new SQL(url!, { max: 1, prepare: false });
+      const worker = new SQL(url!, { max: 1, prepare: false });
+      const actor = crypto.randomUUID();
+      const supporter = crypto.randomUUID();
+      const donations = [crypto.randomUUID(), crypto.randomUUID()];
+      const payments = [crypto.randomUUID(), crypto.randomUUID()];
+      const reference = `SYNTH-175-DEADLINE-${crypto.randomUUID()}`;
+      const rollback = new Error("rollback unchanged blocker after preview expiry");
+      let operationId: string | undefined;
+      let blockerPid = 0;
+      let workerPid = 0;
+      let completed = false;
+      let releaseBlocker = () => {};
+      let blockerReady = () => {};
+      const release = new Promise<void>((resolve) => {
+        releaseBlocker = resolve;
+      });
+      const ready = new Promise<void>((resolve) => {
+        blockerReady = resolve;
+      });
+      let blocking: Promise<unknown> | undefined;
+      let applying: Promise<{ result?: unknown; errno?: string; message?: string }> | undefined;
+      const facts = async () =>
+        (
+          await db.unsafe(
+            `
+        select jsonb_build_object(
+          'auth', (select to_jsonb(u) from auth.users u where id=$1::uuid),
+          'admin', (select to_jsonb(a) from public.admin_user a where auth_user_id=$1::uuid),
+          'supporter', (select to_jsonb(s) from public.supporter s where id=$2::uuid),
+          'payments', (select jsonb_agg(to_jsonb(p) order by id) from public.payment p where id in ($3::uuid,$4::uuid)),
+          'donations', (select jsonb_agg(to_jsonb(d) order by id) from public.donation d where id in ($5::uuid,$6::uuid)),
+          'operation', (select to_jsonb(o) from public.finance_bank_match_operation o where id=$7::uuid),
+          'items', (select jsonb_agg(to_jsonb(i) order by ordinal) from public.finance_bank_match_item i where operation_id=$7::uuid),
+          'jobs', (select coalesce(jsonb_agg(to_jsonb(j) order by id),'[]'::jsonb) from public.donation_delivery_job j where payment_id in ($3::uuid,$4::uuid)),
+          'audits', (select coalesce(jsonb_agg(to_jsonb(a) order by id),'[]'::jsonb) from public.audit_log a
+            where actor_user_id=$1::uuid or entity_id in ($3::text,$4::text,$5::text,$6::text,$7::text)
+              or detail->>'paymentId' in ($3::text,$4::text) or detail->>'donationId' in ($5::text,$6::text))
+        ) state`,
+            [actor, supporter, ...payments, ...donations, operationId],
+          )
+        )[0]!.state;
+      const observe = async () =>
+        (
+          await db.unsafe(
+            `
+        select clock_timestamp() observed_at, expires_at,
+          expires_at>clock_timestamp() live,
+          $2::integer=any(pg_blocking_pids($3::integer)) blocked,
+          (select wait_event from pg_stat_activity where pid=$3::integer) wait_event
+        from public.finance_bank_match_operation where id=$1::uuid`,
+            [operationId, blockerPid, workerPid],
+          )
+        )[0]!;
+      const waitUntil = async (condition: () => Promise<boolean>, reason: string) => {
+        const end = performance.now() + 10_000;
+        while (performance.now() < end) {
+          if (await condition()) return;
+          await Bun.sleep(20);
+        }
+        throw new Error(reason);
+      };
+      try {
+        await db.begin(async (tx) => {
+          await tx.unsafe(
+            "insert into auth.users(id,email,email_confirmed_at,created_at,updated_at) values($1::uuid,$2,now(),now(),now())",
+            [actor, `${actor}@example.invalid`],
+          );
+          await tx.unsafe(
+            "insert into public.admin_user(id,auth_user_id,email,role,status) values($1::uuid,$2::uuid,$3,'treasurer','active')",
+            [crypto.randomUUID(), actor, `${actor}@example.invalid`],
+          );
+          await tx.unsafe(
+            "insert into public.supporter(id,name,email) values($1::uuid,'Synthetic deadline donor',$2)",
+            [supporter, `${supporter}@example.invalid`],
+          );
+          for (let n = 0; n < 2; n++) {
+            await tx.unsafe(
+              "insert into public.donation(id,supporter_id,amount_cents,purpose,method) values($1::uuid,$2::uuid,10000,'general','fps')",
+              [donations[n], supporter],
+            );
+            await tx.unsafe(
+              "insert into public.payment(id,donation_id,provider,provider_ref,amount_cents) values($1::uuid,$2::uuid,'fps',$3,10000)",
+              [payments[n], donations[n], `HINT-${payments[n]}`],
+            );
+          }
+          await tx.unsafe("set local role service_role");
+          const [preview] = await tx.unsafe(
+            "select public.create_finance_bank_match_preview($1::uuid,$2,$3::jsonb) result",
+            [
+              actor,
+              "c".repeat(64),
+              JSON.stringify([
+                {
+                  ordinal: 1,
+                  paymentId: payments[0],
+                  paymentHint: `HINT-${payments[0]}`,
+                  bankReference: reference,
+                  amountCents: 10000,
+                },
+              ]),
+            ],
+          );
+          operationId = preview!.result.operationId;
+          expect(preview!.result.items[0].status).toBe("pending");
+        });
+        // The operation is saved while live before either transaction takes locks.
+        await db.unsafe(
+          "update public.finance_bank_match_operation set expires_at=clock_timestamp()+interval '4 seconds' where id=$1::uuid",
+          [operationId],
+        );
+        const before = await facts();
+        blocking = blocker
+          .begin(async (tx) => {
+            blockerPid = (await tx.unsafe("select pg_backend_pid() pid"))[0]!.pid;
+            if (contention === "bank reference") {
+              await tx.unsafe("set local role service_role");
+              const [settled] = await tx.unsafe(
+                "select public.reconcile_manual_payment_atomic($1::uuid,$2::uuid,$3) result",
+                [actor, payments[1], `  ${reference.toLowerCase()}  `],
+              );
+              expect(settled!.result.kind).toBe("applied");
+            } else {
+              await tx.unsafe(`select id from public.${contention} where id=$1::uuid for update`, [
+                contention === "payment" ? payments[0] : donations[0],
+              ]);
+            }
+            blockerReady();
+            await release;
+            throw rollback;
+          })
+          .catch((error: unknown) => {
+            if (error !== rollback) throw error;
+          });
+        await Promise.race([
+          ready,
+          blocking.then(() => {
+            throw new Error("blocker exited before ready");
+          }),
+        ]);
+        expect((await observe()).live).toBe(true);
+        applying = worker
+          .begin(async (tx) => {
+            workerPid = (await tx.unsafe("select pg_backend_pid() pid"))[0]!.pid;
+            await tx.unsafe("set local statement_timeout='12s'");
+            await tx.unsafe("set local role service_role");
+            const [row] = await tx.unsafe(
+              "select public.apply_finance_bank_match_item($1::uuid,$2::uuid,1) result",
+              [actor, operationId],
+            );
+            return { result: row!.result };
+          })
+          .catch((error: unknown) => ({
+            errno: (error as { errno?: string }).errno,
+            message: (error as Error).message,
+          }))
+          .finally(() => {
+            completed = true;
+          });
+        await waitUntil(
+          async () => (await observe()).blocked === true,
+          "target never waited on exact blocker",
+        );
+        expect((await observe()).live).toBe(true);
+        await waitUntil(
+          async () => (await observe()).live === false,
+          "database deadline did not expire while blocked",
+        );
+        const expired = await observe();
+        expect(expired.blocked).toBe(true);
+        expect(completed).toBe(false);
+        console.log("Task175 live-start/exact-blocker/deadline", {
+          contention,
+          blockerPid,
+          workerPid,
+          ...expired,
+        });
+        releaseBlocker();
+        await blocking;
+        const outcome = await applying;
+        console.log("Task175 outcome", contention, outcome);
+        expect(outcome).toMatchObject({
+          errno: "P0001",
+          message: "finance_bank_match_preview_expired",
+        });
+        const handler = createBankMatchOperationHandler({
+          authorize: async () => actor,
+          create: async () => {
+            throw new Error("unexpected create");
+          },
+          get: async () => {
+            throw new Error("unexpected get");
+          },
+          apply: async () => {
+            throw { code: outcome.errno, message: outcome.message };
+          },
+        });
+        const response = await handler(
+          new Request("https://example.invalid/api/admin/finance/bank-match-operations", {
+            method: "PATCH",
+            body: JSON.stringify({ operationId, ordinal: 1 }),
+          }),
+        );
+        expect(response.status).toBe(409);
+        expect(response.headers.get("cache-control")).toBe("no-store");
+        expect(await response.json()).toEqual({ error: "Snapshot expired or changed; refresh" });
+        // This compares original versions, timestamps, references, pending item,
+        // both payments/donations, actor, jobs and every generated fixture audit.
+        expect(await facts()).toEqual(before);
+      } finally {
+        releaseBlocker();
+        await Promise.allSettled([blocking, applying]);
+        try {
+          await db.begin(async (tx) => {
+            await tx.unsafe(
+              "delete from public.finance_bank_match_item where operation_id in (select id from public.finance_bank_match_operation where actor_user_id=$1::uuid)",
+              [actor],
+            );
+            await tx.unsafe(
+              "delete from public.finance_bank_match_operation where actor_user_id=$1::uuid",
+              [actor],
+            );
+            await tx.unsafe(
+              "delete from public.donation_delivery_job where payment_id in ($1::uuid,$2::uuid)",
+              payments,
+            );
+            await tx.unsafe("delete from public.payment where id in ($1::uuid,$2::uuid)", payments);
+            await tx.unsafe(
+              "delete from public.donation where id in ($1::uuid,$2::uuid)",
+              donations,
+            );
+            await tx.unsafe("delete from public.supporter where id=$1::uuid", [supporter]);
+            await tx.unsafe("delete from public.admin_user where auth_user_id=$1::uuid", [actor]);
+            await tx.unsafe("delete from auth.users where id=$1::uuid", [actor]);
+            await tx.unsafe(
+              "delete from public.audit_log where actor_user_id=$1::uuid or entity_id in ($2,$3,$4,$5,$6) or detail->>'paymentId' in ($2,$3) or detail->>'donationId' in ($4,$5)",
+              [actor, ...payments, ...donations, operationId],
+            );
+          });
+        } finally {
+          await Promise.all([db.close(), blocker.close(), worker.close()]);
+        }
+      }
+    },
+    30_000,
+  );
 }
 
 // All synthetic money, jobs and audit facts roll back together.
@@ -267,6 +523,21 @@ test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !==
           audits: 0,
         });
 
+        // A completed financial outcome remains recoverable after expiry.
+        await tx.unsafe(
+          "update public.finance_bank_match_operation set expires_at=clock_timestamp()-interval '1 second' where id=$1::uuid",
+          [operationId],
+        );
+        expect((await apply(1))[0]?.result?.status).toBe("succeeded");
+        expect(
+          (
+            await tx.unsafe(
+              "select count(*)::int n from public.audit_log where action='payment.mark_received' and entity_id=$1",
+              [payments[0]],
+            )
+          )[0]?.n,
+        ).toBe(1);
+
         await tx.unsafe("update public.admin_user set role='staff' where auth_user_id=$1::uuid", [
           actor,
         ]);
@@ -399,7 +670,10 @@ test.skipIf(!url || process.env.BANK_MATCH_CONFIRM_TEST_ALLOW_LOCAL_FIXTURES !==
           await tx.unsafe("delete from public.donation_delivery_job where payment_id=$1::uuid", [
             payment,
           ]);
-          await tx.unsafe("delete from public.audit_log where actor_user_id=$1::uuid", [actor]);
+          await tx.unsafe(
+            "delete from public.audit_log where actor_user_id=$1::uuid or detail->>'paymentId'=$2 or detail->>'donationId'=$3",
+            [actor, payment, donation],
+          );
           await tx.unsafe("delete from public.payment where id=$1::uuid", [payment]);
           await tx.unsafe("delete from public.donation where id=$1::uuid", [donation]);
           await tx.unsafe("delete from public.supporter where id=$1::uuid", [supporter]);

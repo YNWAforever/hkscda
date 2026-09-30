@@ -3,7 +3,7 @@
   "appSha": "7be2da1a9e9dba41983542a9da777c7449afcecd",
   "appShaNote": "PR175 live Auth actor/request binding followup and predecessors through174; later slices excluded.",
   "productionAliasShaObserved": "24196faf027998388eff3196a6979e23566e2443",
-  "schemaManifestHash": "2f4340872f7d1b9ea61dd15d0996c0c97b69b06c98e93e8ad247a20e0d31ec56",
+  "schemaManifestHash": "0d9cf0d2200002bdc6de64dc3b071bd6450b49b660960fecc62e5c36d983142a",
   "configVersions": {
     "paymentPolicy": null,
     "paymentMethodApprovals": null,
@@ -306,7 +306,7 @@
     {
       "version": "20260928110000",
       "file": "20260928110000_finance_bank_match_confirmation.sql",
-      "sha256": "e573522db17514869a39a62b090573ec458e1a5553cada3b8ef153b228cc6273"
+      "sha256": "e858846491f534c204a8626406a988542d47d5540f28744491af258cf65ca1a3"
     }
   ],
   "ciRun": {
@@ -651,7 +651,7 @@
     "migration170": "exact approval requested after five CI gates green; pending",
     "migration172": "exact approval requested after five CI gates green; pending",
     "migration173": "exact approval requested after five CI gates green; pending",
-    "migration175": "exact approval requested after prior five green gates; pending; SQL unchanged by actor fix"
+    "migration175": "previous checksum approval request superseded by Task175 deadline repair; exact new checksum review/approval pending"
   },
   "blockedGate": {
     "pr": 156,
