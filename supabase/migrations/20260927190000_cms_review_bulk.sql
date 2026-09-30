@@ -114,7 +114,7 @@ begin
   select * into v_op from public.cms_review_bulk_operation
   where id=p_operation and actor_user_id=p_actor for update;
   if not found then raise exception 'CMS review operation unavailable' using errcode='42501';end if;
-  if v_op.expires_at<=now() then raise exception 'CMS review preview expired' using errcode='P0001';end if;
+  if v_op.expires_at<=pg_catalog.clock_timestamp() then raise exception 'CMS review preview expired' using errcode='P0001';end if;
   select * into v_item from public.cms_review_bulk_item
   where operation_id=p_operation and content_id=p_content for update;
   if not found then raise exception 'CMS review item unavailable' using errcode='42501';end if;
@@ -122,6 +122,8 @@ begin
     return jsonb_build_object('entityId',p_content,'status',v_item.status,'reasonCode',v_item.reason_code);
   end if;
   select draft_revision_id,status into v_revision,v_publication from public.content_item where id=p_content for update;
+  -- Lock waits can outlive the snapshot; reject before any classification/result/audit write.
+  if v_op.expires_at<=pg_catalog.clock_timestamp() then raise exception 'CMS review preview expired' using errcode='P0001';end if;
   select * into v_review from public.editorial_content_review
   where entity_kind='content' and entity_id=p_content and revision_key=v_revision::text;
   if v_revision is null then v_status:='skipped';v_reason:='missing_draft';
