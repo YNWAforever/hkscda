@@ -1,0 +1,79 @@
+{
+  "beforeSource": "79838107c738854a28ac5a977b0e9fa6c3c6f5c2",
+  "afterSource": "c0da836ee5f3e3a47bd2d61f4cb83d7e52ec436a",
+  "environment": "Windows loopback built Nitro previews; read-only synthetic PostgREST",
+  "browser": "148.0.7778.96",
+  "fixtureSha256": "1515dea29e49e96a61c869945acdeb44000589fc433adbc950d96619592ed40c",
+  "measurementNote": "Single unthrottled navigation CLS sample per viewport; not a median or hosted performance claim.",
+  "results": [
+    {
+      "mode": "before",
+      "width": 390,
+      "tray": 1,
+      "removeCount": 0,
+      "overflow": false,
+      "cls": 0.10471917435897436,
+      "axe": [
+        "color-contrast",
+        "landmark-unique"
+      ],
+      "errors": []
+    },
+    {
+      "mode": "before",
+      "width": 768,
+      "tray": 1,
+      "removeCount": 0,
+      "overflow": false,
+      "cls": 0.011590104166666667,
+      "axe": [
+        "color-contrast",
+        "landmark-unique"
+      ],
+      "errors": []
+    },
+    {
+      "mode": "before",
+      "width": 1440,
+      "tray": 1,
+      "removeCount": 0,
+      "overflow": false,
+      "cls": 0.07042097800925926,
+      "axe": [
+        "color-contrast",
+        "landmark-unique"
+      ],
+      "errors": []
+    },
+    {
+      "mode": "after",
+      "width": 390,
+      "tray": 0,
+      "removeCount": 3,
+      "overflow": false,
+      "cls": 0.0008614948717948718,
+      "axe": [],
+      "errors": []
+    },
+    {
+      "mode": "after",
+      "width": 768,
+      "tray": 0,
+      "removeCount": 3,
+      "overflow": false,
+      "cls": 0,
+      "axe": [],
+      "errors": []
+    },
+    {
+      "mode": "after",
+      "width": 1440,
+      "tray": 0,
+      "removeCount": 3,
+      "overflow": false,
+      "cls": 0.07042097800925926,
+      "axe": [],
+      "errors": []
+    }
+  ]
+}

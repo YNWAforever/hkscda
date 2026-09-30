@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "appSha": "79838107c738854a28ac5a977b0e9fa6c3c6f5c2",
-  "appShaNote": "PR178 current verified assignment, recovery and live-actor fixes with predecessors; PR179 excluded.",
+  "appSha": "c0da836ee5f3e3a47bd2d61f4cb83d7e52ec436a",
+  "appShaNote": "PR179 integrated candidate through178 and focused wizard UI;175 shared actor repair present identically.",
   "productionAliasShaObserved": "24196faf027998388eff3196a6979e23566e2443",
   "schemaManifestHash": "acd63f2edaf8f686043b9cafd71e42d982a37e0b278d996bd122e4c231620a76",
   "configVersions": {
@@ -637,7 +637,7 @@
       }
     }
   ],
-  "capturedAt": "2026-09-30T02:06:33.003219+00:00",
+  "capturedAt": "2026-09-30T02:22:58.476220+00:00",
   "productionDeploymentId": "dpl_DJpjHkmVayPsXZqwiA2CMJG43Ygk",
   "productionDeploymentState": "READY",
   "productionSchemaLedgerCountObserved": 95,
@@ -663,7 +663,7 @@
     "migration173": "exact approval requested after five CI gates green; pending",
     "migration175": "exact approval requested after five green gates; pending; actor followup retains SQL checksum",
     "migration177": "exact grant-only approval requested after five green gates; pending",
-    "migration178": "not requested; exact SQL/1000item/roles/concurrency/audit rollback verified; waits current-head CI"
+    "migration178": "exact approval requested after five current-head green gates; pending"
   },
   "blockedGate": {
     "pr": 156,

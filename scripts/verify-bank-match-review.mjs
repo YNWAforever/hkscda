@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { chromium } from "playwright";
 import AxeBuilder from "@axe-core/playwright";
+const capturePrefix = process.env.BANK_MATCH_CAPTURE_PREFIX ?? "t23-bank-match";
 const before = process.argv.includes("--before"),
   browser = await chromium.launch(),
   results = [],
@@ -159,7 +160,7 @@ try {
         overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth);
       if (mode === "page")
         await page.screenshot({
-          path: `docs/evidence/audit-remediation-20260927/ui/t23-bank-match-${before ? "before" : "after"}-${width}.png`,
+          path: `docs/evidence/audit-remediation-20260927/ui/${capturePrefix}-${before ? "before" : "after"}-${width}.png`,
           fullPage: true,
         });
       const keys = await page.evaluate(
