@@ -17,10 +17,10 @@ test("known and unknown valid emails have the same public response and no member
   const service = deps(sent);
   expect(
     await requestRecovery({ email: " KNOWN@EXAMPLE.INVALID ", challengeToken: "ok" }, service),
-  ).toEqual({ accepted: true });
+  ).toEqual({ accepted: true, challengeId: expect.stringMatching(/^[0-9a-f-]{36}$/) });
   expect(
     await requestRecovery({ email: "unknown@example.invalid", challengeToken: "ok" }, service),
-  ).toEqual({ accepted: true });
+  ).toEqual({ accepted: true, challengeId: expect.stringMatching(/^[0-9a-f-]{36}$/) });
   expect(sent).toEqual(["known@example.invalid", "unknown@example.invalid"]);
 });
 
@@ -57,13 +57,36 @@ test("provider failure stays indistinguishable from absent membership", async ()
       },
     },
   );
-  expect(result).toEqual({ accepted: true });
+  expect(result).toEqual({ accepted: true, challengeId: expect.stringMatching(/^[0-9a-f-]{36}$/) });
 });
 
 test("invalid email does not invoke the provider", async () => {
   const sent: string[] = [];
   await expect(requestRecovery({ email: "bad" }, deps(sent))).rejects.toBeInstanceOf(RecoveryError);
   expect(sent).toEqual([]);
+});
+
+test("recovery returns a fresh opaque correlation even when delivery fails", async () => {
+  const first = await requestRecovery({ email: "a@example.invalid" }, deps());
+  const second = await requestRecovery(
+    { email: "unknown@example.invalid" },
+    {
+      ...deps(),
+      sendOtp: async () => {
+        throw new Error("unavailable");
+      },
+    },
+  );
+  expect(first).toMatchObject({
+    accepted: true,
+    challengeId: expect.stringMatching(/^[0-9a-f-]{36}$/),
+  });
+  expect(second).toMatchObject({
+    accepted: true,
+    challengeId: expect.stringMatching(/^[0-9a-f-]{36}$/),
+  });
+  expect(first).not.toEqual(second);
+  expect(JSON.stringify(first)).not.toContain("a@example.invalid");
 });
 
 test("rate keys contain only stable normalized email and IP hashes", async () => {
