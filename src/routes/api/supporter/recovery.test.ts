@@ -26,7 +26,10 @@ test("recovery route is no-store and returns the same generic result", async () 
     });
     expect(response.status).toBe(202);
     expect(response.headers.get("cache-control")).toBe("no-store");
-    expect(await response.json()).toEqual({ accepted: true });
+    expect(await response.json()).toEqual({
+      accepted: true,
+      challengeId: expect.stringMatching(/^[0-9a-f-]{36}$/),
+    });
   }
   expect(emails).toEqual(["known@example.invalid", "unknown@example.invalid"]);
 });
