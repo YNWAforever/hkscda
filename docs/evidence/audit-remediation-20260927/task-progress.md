@@ -136,3 +136,5 @@ Staff: existing deployed overview/CRMtag bulk use stored snapshot→preview→pe
 Task164 root integration verified2026-10-01HKT: independent review approved; 3093pass97skip0fail9830assertions546files115.91s; strictType/lint/serialBuild0;52oldwarnings;fixture0; hashb564a09a preserved. Source/deployment/enablement separate; remoteCI/schemaapproval/sequence pending.
 
 Task165 CODE-ONLY COMPLETE2026-10-01HKT: unchanged reviewed finance source; root3102pass97skip0fail9885assertions547files106.06s; targetedCRM/strictType/lint/serialBuild0;24fixturetables0. RemoteCI/namedDDL/sequence/hosted/provider gates pending. Invalid shared CRM target attempt retained, guard unchanged.
+
+Task166 root2026-10-01: quality source/SQL unchanged; latest165+approved160proof integrated; focused5pass63assertions/finalstrictType0; freshcombinedremoteCIpending; fulllocal/lint/build/DB rerunnot-run, prior evidence retained. No deployment/enablement.
