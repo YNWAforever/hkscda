@@ -17,6 +17,11 @@ Ruling: Treat #133 adoption instructions as a narrowly restored public page and 
 - T22 recovery: draft PR #156, source 3b5941b2b37860f0cfdc33cfe20a8c9072e19346; generic OTP request and public entry tested. CRM-01 partial until verified-record portal; hosted OTP settings and email sink not-run.
 
 - T22 portal: verified records and private receipt authorization, explicit audited marketing preference. Source commit/PR pending. Full isolated suite 2844 pass, 89 skip, 0 fail; typecheck/lint/build exit 0; disposable catalog 87 compatible with manual unledgered local function. Real OTP email sink, hosted settings, status-link reissue and browser journey remain open; CRM-01 partial.
+
+- T22 portal: draft PR #157 source ef59ca34b885822b9837aae3beee6ef0ad994db8; verify, brand, a11y, RLS and performance CI passed at that SHA. CRM-01 remains partial for hosted OTP/email sink/browser and ambiguous legacy records.
+- T23 overview: read-only role-based task cards in progress; direct API/access/UI tests 4 pass and 11 metric queries executed against dedicated local PostgREST. Cross-domain bulk and filter-preserving links remain open.
+
+- T23 overview verification: local typecheck/lint/build exit 0; isolated full suite 2849 pass 90 skip 0 fail after sequential rerun; 11 local PostgREST metric queries pass. An initial concurrent run timed out only in the unrelated migration safety scan (targeted rerun 1/1 pass).
 - T03: server admission and donor projection implemented on `codex/audit-payment-policy-20260927`; migration applied only to dedicated loopback DB. New policy defaults disabled, with zero approved methods. Focused and isolated grant/replay tests pass; provider sandbox success/cancel/delay and operational approval remain not-run. PR is a review slice, not a release approval.
 - T04: code-complete on `codex/audit-payment-instructions-20260927`: donation admission and sponsorship pledge instruction snapshots are durable; both API and email use approved purpose/version data; changed or revoked config suppresses old instructions while keeping evidence. Hard-coded account/link output removed. Dedicated isolated DB and email sink pass. Real approved content, provider sandbox and release activation remain external gates.
 - T05: partial on `codex/audit-payment-lifecycle-20260927`: committed payment status and receipt/notification status are separate; a new donation-success trigger queues durable delivery with audit, protected hourly cron runs bounded batches, and PDF/email failures leave payment succeeded. Isolated DB trigger/grant test passes. Provider sandbox and historical data-bearing recovery rehearsal remain not-run; no operational enablement.
@@ -47,6 +52,8 @@ Draft #149 addresses ADMIN-02 in an isolated branch: fresh supporter read on ope
 
 - T22 sequential #157: identity/unmount fencing, preference error statuses and withdrawal ordering repaired at 09a2d1c. Full 2975 pass/100 skip/0 fail; typecheck/lint 0; isolated service-role/atomic-audit/concurrency 5 tests pass; three-width UI/Axe pass. Production RPC absent and exact approval pending; #156 Auth concurrency remains blocked. See sequential-merge-157-20260930.md.
 
+- T23 sequential #158: current-identity query isolation repaired at 40a01915; full 2980 pass/101 skip/0 fail and typecheck/lint/build 0. Three-role isolated Auth/PostgREST API check, 11 metric queries, responsive browser and Axe checks passed. No schema change or deployment; exact filters and later bulk slices remain open. See sequential-merge-158-20260930.md.
+
 
 ## T22 recovery broker continuation, 2026-09-30
 
@@ -59,3 +66,7 @@ Code `ccfca5444dead96d94195e346c15fdfcf2751a7e`: full3004 pass/96 skip/0 fail; t
 ## T22 broker/portal final integration, 2026-09-30
 
 Code 9d829324fe639dda8c832c279deac5feee16c5d5 includes reviewed #156 head edd13112. Full3019 pass/96 skip/0 fail/9355 assertions; typecheck/lint/build exit0; actual service-role audit rollback/concurrent preference checks, real two-tab SDK and3width recovery-to-portal UI pass; Axe0. Same-task logout failures remain visible only for the owning session. Independent review clear. #156 exact-head five CI gates green; #157 latest CI requires publication/check. Still22/46 merged. Code-complete=yes; schema-ready=isolated only; deployed=no; operationally-enabled=no. Exact #156 production migration approval pending; #157 preference migration already approved. See sequential-merge-157-20260930.md for commands/environments, screenshots, rollback and not-run gates. This integration manifest has48 entries; no production DDL or ledger mutation occurred.
+
+## T23 dependency continuation, 2026-10-01 HKT
+
+Code7b426c61ab9bfb1085fe5cfad02b83b709d880a5 includes final #157/#156 recovery and portal. T23 source unchanged; routes preserved. Full3024 pass/97 skip/0 fail/9384 assertions; typecheck/lint/build exit0; actual local Auth three-role/API/status checks and3width keyboard/Axe0 task overview pass. Independent review clear. New integrated captures preserve older before/after images. No T23 migration; combined manifest48. Still22/46 merged; exact #156 production schema approval pending; #157 migration already approved. #158 code-complete for overview only, ADMIN-04 partial for later bulk/filter slices; deployed=no, operationally-enabled=no. See sequential-merge-158-20260930.md for exact commands/environments/rollback and not-run gates.

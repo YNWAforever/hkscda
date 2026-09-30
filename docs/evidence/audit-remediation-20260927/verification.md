@@ -111,6 +111,15 @@ Environment: isolated worktree codex/audit-supporter-recovery-20260927; dedicate
 - CHECK_RELEASE_SCHEMA_DATABASE_URL on loopback 57322 bun scripts/check-release-schema.ts, exit 0, 87 requirements, zero issues. Latest local ledger reports 20260927150000; portal function was manually applied on the disposable stack without writing a ledger row. This is an object check, not a full ordered migration replay.
 - SUPABASE_LOCAL_URL=http://127.0.0.1:57321 bun test --isolate, exit 0, 2844 pass, 89 skip, 0 fail across 494 files. npm.cmd run typecheck, npm.cmd run lint, npm.cmd run build all exit 0; lint 52 warnings, 0 errors. Real OTP email sink, expiry/replay, browser session and private receipt download remain not-run.
 
+## T23 role task overview slice (2026-09-28 HKT)
+
+- Source branch: codex/audit-task-overview-20260928, stacked on T22 portal ef59ca3. PR/source commit pending at capture.
+- Red before implementation: task overview imports absent; role-specific 3-5 cards, unknown-vs-zero, direct API 401 and static UI tests later passed 4/4.
+- Dedicated unlinked PostgREST at 127.0.0.1:57321: all 11 task count queries executed read-only with a local service key kept out of logs; 1 pass, 22 assertions. No synthetic write or production connection.
+- npm.cmd run typecheck exit 0; npm.cmd run lint exit 0 with 52 existing warnings and no errors; npm.cmd run build exit 0.
+- Concurrent build + full bun test --isolate: 2848 pass, 90 skip, 1 fail: unrelated migration-safety scan exceeded Bun's 5-second test timeout at 6112 ms. The targeted scan alone passed 1/1 in 109 ms. Repeating the full suite alone exited 0: 2849 pass, 90 skip, 0 fail across 498 files.
+- Browser with real role identities, exact filter-preserving links, schema/worker readiness, and bulk mutation UAT are not-run / open.
+
 
 ## T22 broker repair verification, 2026-09-30
 
@@ -119,3 +128,7 @@ Code SHA `4a4eef8e2c5b146c401b442d8b9a8af494049ce2`: full suite2991 pass/96 skip
 ## T22 broker/portal final integration, 2026-09-30
 
 Code 9d829324fe639dda8c832c279deac5feee16c5d5 includes reviewed #156 head edd13112. Full3019 pass/96 skip/0 fail/9355 assertions; typecheck/lint/build exit0; actual service-role audit rollback/concurrent preference checks, real two-tab SDK and3width recovery-to-portal UI pass; Axe0. Same-task logout failures remain visible only for the owning session. Independent review clear. #156 exact-head five CI gates green; #157 latest CI requires publication/check. Still22/46 merged. Code-complete=yes; schema-ready=isolated only; deployed=no; operationally-enabled=no. Exact #156 production migration approval pending; #157 preference migration already approved. See sequential-merge-157-20260930.md for commands/environments, screenshots, rollback and not-run gates. This integration manifest has48 entries; no production DDL or ledger mutation occurred.
+
+## T23 dependency continuation, 2026-10-01 HKT
+
+Code7b426c61ab9bfb1085fe5cfad02b83b709d880a5 includes final #157/#156 recovery and portal. T23 source unchanged; routes preserved. Full3024 pass/97 skip/0 fail/9384 assertions; typecheck/lint/build exit0; actual local Auth three-role/API/status checks and3width keyboard/Axe0 task overview pass. Independent review clear. New integrated captures preserve older before/after images. No T23 migration; combined manifest48. Still22/46 merged; exact #156 production schema approval pending; #157 migration already approved. #158 code-complete for overview only, ADMIN-04 partial for later bulk/filter slices; deployed=no, operationally-enabled=no. See sequential-merge-158-20260930.md for exact commands/environments/rollback and not-run gates.

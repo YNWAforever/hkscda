@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { LogOut, Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { ListTodo, LogOut, Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode, type MouseEvent } from "react";
 
 import { supabase } from "../../lib/supabase";
@@ -29,12 +29,28 @@ function NavList({
   collapsed: boolean;
   onNavigate?: (event: MouseEvent<HTMLAnchorElement>, to: string) => void;
 }) {
-  const { copy } = useAdminLanguage();
+  const { copy, language } = useAdminLanguage();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
   return (
     <nav
       aria-label={copy.layout.primaryNavigation}
       className="flex-1 space-y-1 overflow-y-auto p-2"
     >
+      <Link
+        to="/admin/tasks"
+        onClick={onNavigate ? (event) => onNavigate(event, "/admin/tasks") : undefined}
+        aria-label={language === "zh" ? "待辦總覽" : "Task overview"}
+        aria-current={pathname === "/admin/tasks" ? "page" : undefined}
+        className={cn(
+          "mb-2 flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm text-[var(--color-text-inverse)] hover:bg-[var(--color-panel-2)]",
+          collapsed && "md:justify-center md:px-0",
+        )}
+      >
+        <ListTodo className="h-[18px] w-[18px] shrink-0" aria-hidden />
+        <span className={cn(collapsed && "md:hidden")}>
+          {language === "zh" ? "待辦總覽" : "Task overview"}
+        </span>
+      </Link>
       {groups.map((group) => {
         const Icon = group.icon;
         const label = copy.navGroups[group.id];

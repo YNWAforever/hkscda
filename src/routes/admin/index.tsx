@@ -23,7 +23,7 @@ import { canRoleAccessAdminArea, getAdminAreaForLocation } from "../../lib/admin
 import { adminIdentityQueryOptions } from "../../lib/admin/identity";
 import { requireAdminPageAccess } from "../../lib/admin/pageAccess";
 
-type DashboardSection = Exclude<AdminSection, "supporters" | "access">;
+type DashboardSection = Exclude<AdminSection, "supporters" | "access" | "tasks">;
 
 export const Route = createFileRoute("/admin/")({
   validateSearch: adminListSearchSchema,
