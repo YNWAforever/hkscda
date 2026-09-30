@@ -165,7 +165,7 @@ export function previewBankStatement(
 ): BankStatementPreviewRow[] {
   const referenceCounts = new Map<string, number>();
   for (const row of rows) {
-    if (row.invalidReason) continue;
+    // Invalid date/currency/amount does not make a repeated bank reference unique.
     referenceCounts.set(row.referenceKey, (referenceCounts.get(row.referenceKey) ?? 0) + 1);
   }
   const credited = new Set(
