@@ -53,3 +53,16 @@ Draft #149 addresses ADMIN-02 in an isolated branch: fresh supporter read on ope
 - T22 sequential #157: identity/unmount fencing, preference error statuses and withdrawal ordering repaired at 09a2d1c. Full 2975 pass/100 skip/0 fail; typecheck/lint 0; isolated service-role/atomic-audit/concurrency 5 tests pass; three-width UI/Axe pass. Production RPC absent and exact approval pending; #156 Auth concurrency remains blocked. See sequential-merge-157-20260930.md.
 
 - T23 sequential #158: current-identity query isolation repaired at 40a01915; full 2980 pass/101 skip/0 fail and typecheck/lint/build 0. Three-role isolated Auth/PostgREST API check, 11 metric queries, responsive browser and Axe checks passed. No schema change or deployment; exact filters and later bulk slices remain open. See sequential-merge-158-20260930.md.
+
+
+## T22 recovery broker continuation, 2026-09-30
+
+Implemented the approved purpose-bound/hashed/single-use15-minute fallback after native Auth concurrency failed. Code SHA `4a4eef8e2c5b146c401b442d8b9a8af494049ce2`, local gates and isolated schema ready; production DDL/deployment/enablement remain no. CRM-01 stays partial for #157 portal and external UAT. #134-#155 remain22/46 merged; no new merge or production mutation in this checkpoint. Trackers and manifest updated; [concrete release evidence](sequential-merge-156-broker-20260930.md).
+
+## T22 session review completion, 2026-09-30
+
+Code `ccfca5444dead96d94195e346c15fdfcf2751a7e`: full3004 pass/96 skip/0 fail; typecheck/lint/build exit0; SDK22/66; real two-tab factory,3 recovery logout same-task cases and3width keyboard/Axe0 journey pass. Independent review has no remaining findings. Exact SQL unchanged and re-rehearsed with catalog equality. #156 production DDL remains unapproved; #157 integration code/schema locally verified separately. Still22/46 merged; production main/alias24196faf and recovery/payment/new schedules remain disabled. [Final checkpoint](sequential-merge-156-broker-20260930.md).
+
+## T22 broker/portal final integration, 2026-09-30
+
+Code 9d829324fe639dda8c832c279deac5feee16c5d5 includes reviewed #156 head edd13112. Full3019 pass/96 skip/0 fail/9355 assertions; typecheck/lint/build exit0; actual service-role audit rollback/concurrent preference checks, real two-tab SDK and3width recovery-to-portal UI pass; Axe0. Same-task logout failures remain visible only for the owning session. Independent review clear. #156 exact-head five CI gates green; #157 latest CI requires publication/check. Still22/46 merged. Code-complete=yes; schema-ready=isolated only; deployed=no; operationally-enabled=no. Exact #156 production migration approval pending; #157 preference migration already approved. See sequential-merge-157-20260930.md for commands/environments, screenshots, rollback and not-run gates. This integration manifest has48 entries; no production DDL or ledger mutation occurred.

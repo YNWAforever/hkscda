@@ -53,3 +53,14 @@ Keep `SUPPORTER_RECOVERY_ENABLED` absent or false. Before any activation: resolv
 Rollback keeps delivery disabled and reverts the application changes; no database migration/ledger change is involved. Do not replace any existing hosted email templates without preserving their reviewed prior versions. Existing sessions are not forcibly revoked by this code rollback. Real staff identities, historical identity linking, records, private receipt files and cross-user query-cache clearing belong to #157 and remain not-run in this recovery slice.
 
 References consulted: [Supabase passwordless email](https://supabase.com/docs/guides/auth/auth-email-passwordless), [local email templates](https://supabase.com/docs/guides/local-development/customizing-email-templates), [Mailpit API](https://mailpit.axllent.org/docs/api-v1/). Changelog markdown fetch was attempted but the web tool rejected its content type; no claim of a provider changelog fix.
+
+## Sequential checkpoint — 2026-09-30 04:17 HKT
+
+#134–#155 are now merged (22/46). #155 production READY at 24196faf, main CI 36624781016 pending. Integrated main documentation into this worktree without changing recovery code. #156 remains draft and blocked by the unchanged real-provider concurrent OTP assertion; no waiver or operational activation.
+
+Refreshed upstream release metadata: latest published release remains v2.197.0 (2026-09-09). Source inspection shows verifyUserAndToken reads a user/token before later confirmation/issuance, consistent with the reproduced race; this is an inference from source and local results, not hosted-provider evidence. Existing upstream OTP signup race issues concern a different failure and are not a verified fix for concurrent token consumption. No provider configuration or Auth schema was changed. Sources: https://github.com/supabase/auth/releases/tag/v2.197.0 and https://github.com/supabase/auth/blob/v2.197.0/internal/api/verify.go. A provider fix or reviewed replacement token flow is still required before this PR meets the requested merge condition.
+
+
+## Follow-up: approved T22 fallback implemented
+
+The historical native-provider failure above remains unchanged. The later application-owned single-use recovery broker replaces that public redemption path; actual SDK race fixes, exact new migration, current status and activation/rollback supersede the earlier recovery handoff. See [2026-09-30 broker repair evidence](sequential-merge-156-broker-20260930.md). No hosted OTP templates/configuration were changed.

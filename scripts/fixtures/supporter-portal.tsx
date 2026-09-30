@@ -6,6 +6,7 @@ import "../../src/styles.css";
 const client = new QueryClient();
 function Fixture() {
   const [token, setToken] = useState("synthetic-a");
+  Object.assign(window, { setSyntheticToken: setToken });
   const [mounted, setMounted] = useState(true);
   return (
     <QueryClientProvider client={client}>

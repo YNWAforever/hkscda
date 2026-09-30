@@ -24,3 +24,12 @@ The verifier exited 0 on both builds: 4 routes × 2 viewports × 3 cold runs. Ra
 - All screenshots use the same synthetic fixture and browser with full-page capture. They do not contain production donor/adopter data.
 
 No production deploy, payment enablement, content publication or email send occurred.
+
+
+## T22 broker UI and SDK evidence, 2026-09-30
+
+Actual page screenshots `ui/t22-broker-after-{390,768,1366}.png` use synthetic HTTP/Auth/Turnstile on loopback56553; keyboard, fresh challenge after failure, wrong/valid code, late actor change and logout pass; Axe0/no overflow/no page errors. `t22-session-browser.json` separately uses the actual application Supabase factory and SDK with real browser Web Locks/localStorage and intercepted Auth transport to prove cross-tab/HTTP-wait fencing and quota behavior; synchronous UI stubs do not prove this invariant. Earlier before screenshots remain historical. No new same-environment Lighthouse before/after or production-performance claim is made for this auth repair. CI fixture performance is a separate release gate. [Full evidence](sequential-merge-156-broker-20260930.md).
+
+## T22 broker/portal final integration, 2026-09-30
+
+Code 9d829324fe639dda8c832c279deac5feee16c5d5 includes reviewed #156 head edd13112. Full3019 pass/96 skip/0 fail/9355 assertions; typecheck/lint/build exit0; actual service-role audit rollback/concurrent preference checks, real two-tab SDK and3width recovery-to-portal UI pass; Axe0. Same-task logout failures remain visible only for the owning session. Independent review clear. #156 exact-head five CI gates green; #157 latest CI requires publication/check. Still22/46 merged. Code-complete=yes; schema-ready=isolated only; deployed=no; operationally-enabled=no. Exact #156 production migration approval pending; #157 preference migration already approved. See sequential-merge-157-20260930.md for commands/environments, screenshots, rollback and not-run gates. This integration manifest has48 entries; no production DDL or ledger mutation occurred.
