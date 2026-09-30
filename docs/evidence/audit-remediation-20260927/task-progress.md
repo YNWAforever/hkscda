@@ -145,3 +145,66 @@ See [sequential-merge-175-20260930.md](sequential-merge-175-20260930.md): app `0
 ## PR176 current preparation — 2026-09-30
 
 See [sequential-merge-176-20260930.md](sequential-merge-176-20260930.md): app `82c62c7a46994f12f413b946d099a6e7a8bc263b`, stale response/invalid JSON/keyboard fixes. Full 3136 pass / 145 skip; 13 focused / 52 assertions; typecheck/lint/build exit 0. Actual isolated Auth/PostgREST 1000-selection role/read-only verification and three-width before/after UI, Axe0. No new SQL; 59 inherited migration files. Code-complete slice, not deployed or enabled; #156 release blocker remains. #175 exact-head five gates green.
+## T22 recovery broker continuation, 2026-09-30
+
+Implemented the approved purpose-bound/hashed/single-use15-minute fallback after native Auth concurrency failed. Code SHA `4a4eef8e2c5b146c401b442d8b9a8af494049ce2`, local gates and isolated schema ready; production DDL/deployment/enablement remain no. CRM-01 stays partial for #157 portal and external UAT. #134-#155 remain22/46 merged; no new merge or production mutation in this checkpoint. Trackers and manifest updated; [concrete release evidence](sequential-merge-156-broker-20260930.md).
+
+## T22 session review completion, 2026-09-30
+
+Code `ccfca5444dead96d94195e346c15fdfcf2751a7e`: full3004 pass/96 skip/0 fail; typecheck/lint/build exit0; SDK22/66; real two-tab factory,3 recovery logout same-task cases and3width keyboard/Axe0 journey pass. Independent review has no remaining findings. Exact SQL unchanged and re-rehearsed with catalog equality. #156 production DDL remains unapproved; #157 integration code/schema locally verified separately. Still22/46 merged; production main/alias24196faf and recovery/payment/new schedules remain disabled. [Final checkpoint](sequential-merge-156-broker-20260930.md).
+
+## T22 broker/portal final integration, 2026-09-30
+
+Code 9d829324fe639dda8c832c279deac5feee16c5d5 includes reviewed #156 head edd13112. Full3019 pass/96 skip/0 fail/9355 assertions; typecheck/lint/build exit0; actual service-role audit rollback/concurrent preference checks, real two-tab SDK and3width recovery-to-portal UI pass; Axe0. Same-task logout failures remain visible only for the owning session. Independent review clear. #156 exact-head five CI gates green; #157 latest CI requires publication/check. Still22/46 merged. Code-complete=yes; schema-ready=isolated only; deployed=no; operationally-enabled=no. Exact #156 production migration approval pending; #157 preference migration already approved. See sequential-merge-157-20260930.md for commands/environments, screenshots, rollback and not-run gates. This integration manifest has48 entries; no production DDL or ledger mutation occurred.
+
+## T23 dependency continuation, 2026-10-01 HKT
+
+Code7b426c61ab9bfb1085fe5cfad02b83b709d880a5 includes final #157/#156 recovery and portal. T23 source unchanged; routes preserved. Full3024 pass/97 skip/0 fail/9384 assertions; typecheck/lint/build exit0; actual local Auth three-role/API/status checks and3width keyboard/Axe0 task overview pass. Independent review clear. New integrated captures preserve older before/after images. No T23 migration; combined manifest48. Still22/46 merged; exact #156 production schema approval pending; #157 migration already approved. #158 code-complete for overview only, ADMIN-04 partial for later bulk/filter slices; deployed=no, operationally-enabled=no. See sequential-merge-158-20260930.md for exact commands/environments/rollback and not-run gates.
+
+
+## 2026-10-01 HKT Task161 integration / #159 release checkpoint
+
+Task161 independently approved and final combined source gates passed:3065pass97skip0fail; strict typecheck/lint/serialbuild0,52existing warnings; scope census0. Repaired SQL hashcd143432 preserved. Source predecessor#1609d1feed9 integrated; manifest51/trackers34unique. #159 actual main07e4c881/mainCI36758558621 all5SUCCESS/aliasREADY;26of46released. #160 and changed-byte#161 production approval/deployment remain pending; Task162/164 independently approved before integration. See sequential-merge-161-20260930.md and sequential-execution-20261001.md for actual environment/limits.
+
+
+Task162 root integration verified2026-10-01HKT: independent review approved; 3079pass97skip0fail9739assertions543files113.24s; strictType/lint/serialBuild0;52oldwarnings;fixture0; hash8f5eceb8 preserved. Source/deployment/enablement separate; remoteCI/schemaapproval/sequence pending.
+
+
+## 2026-10-01 HKT current sequential checkpoint (supersedes prior status)
+
+26/46requested PRs released through#159; main/production07e4c881863b715342ed0757aad7bd691a272738, mainCI36758558621 all5SUCCESS, READY dpl_D6goofbM7umWWoTqQVGtBxHzkvVP. #157 main publication used corrective#181 after its original dependency-base merge; no migration replay. #156 now uses the reviewed application-owned single-use recovery broker; prior isolated provider OTP race is historical, not the current source blocker. Recovery/sending activation remains separately gated.
+
+Source freeze is reviewed combined PR162 `4d1289e50c9ffe694ff3dab9a2ac74cd9d59c17b`; this PR changes documentation only and excludes later164–179source. Manifest52unique migration files recomputed against actual canonical LF SQL with0mismatches. Updated release-manifest.json and pr-status-20261001.json distinguish source, actual main releases, isolated schema and enablement. Prior20260930report remains historical. Fresh exact-head PR162/PR163 remote gates are pending at this capture; no fresh local full/type/build rerun for identical source in this documentation-only descendant.
+
+Next sequential release holds only at #160's pending single production migration approval. #161's explicit named-file schema/backfill approval remains operative after two strictly narrower wall-clock expiry checks; exact new hashcd143432 disclosed, schema/grants/backfill unchanged. Fresh predecessor main/alias, catalog/signature/grants/RLS/checksum/backup and postflight remain mandatory. #162 and later unapproved production migrations await named approvals; no blanket schema rollout.
+
+Restricted backup refreshed2026-09-30T16:29:12Z: encrypted1,913,782bytes, SHAae4c855334e4685cfc10c289c0be50ae960dc047934128eb8b98da209afb755d. Schema/data/roles were separate in-memory dump processes, not one cross-dump snapshot; CurrentUser DPAPI roundtrip and restricted ACL checked. Full restore, off-machine copy and Storage object bytes remain not-run. Backup precedes156/157/159additive changes; replay exact approved empty-object migrations if recovery requires those objects. Preserve later financial/audit facts and additive history on app rollback; no older snapshot restore over new facts.
+
+Staff: existing deployed overview/CRMtag bulk use stored snapshot→preview→per-item permission/version checks→apply→result/recovery. Expired/stale items require new preview; retry unknown outcomes from the saved operation. Reviewer/adoption/animal/CMS controls remain release-gated in later candidates. No blind refunds/adoption approvals/identity merge. Payments/new recovery/delivery/media schedules remain disabled; existing signed webhook/reconciliation remains compatible. Hosted staff-role API/export/private-file journeys, approved terms/content, provider sandbox/full journeys and same-region hosted T20 are not-run/unverified; null configuration versions remain null.
+
+
+Task164 root integration verified2026-10-01HKT: independent review approved; 3093pass97skip0fail9830assertions546files115.91s; strictType/lint/serialBuild0;52oldwarnings;fixture0; hashb564a09a preserved. Source/deployment/enablement separate; remoteCI/schemaapproval/sequence pending.
+
+Task165 CODE-ONLY COMPLETE2026-10-01HKT: unchanged reviewed finance source; root3102pass97skip0fail9885assertions547files106.06s; targetedCRM/strictType/lint/serialBuild0;24fixturetables0. RemoteCI/namedDDL/sequence/hosted/provider gates pending. Invalid shared CRM target attempt retained, guard unchanged.
+
+Task166 root2026-10-01: quality source/SQL unchanged; latest165+approved160proof integrated; focused5pass63assertions/finalstrictType0; freshcombinedremoteCIpending; fulllocal/lint/build/DB rerunnot-run, prior evidence retained. No deployment/enablement.
+
+Task167 root combinedcheckpoint2026-10-01: reviewedown77e06cd4,predecessor91953ffa;sourceconflicts0;canonicalSQL55;focused2pass54assertions/strictType0;freshcombinedCIpending;localfull/lint/build/DBnot-run;no production mutation.
+
+Task168 root combinedcheckpoint2026-10-01: reviewedown672d7845,predecessor3e021d7a;sourceconflicts0;canonicalSQL55;focused2pass54assertions/strictType0;freshcombinedCIpending;localfull/lint/build/DBnot-run;no production mutation.
+
+Task169 root combinedcheckpoint2026-10-01: reviewedowndd17c5fb,predecessor9d063e5d;sourceconflicts0;canonicalSQL56;focused2pass55assertions/strictType0;freshcombinedCIpending;localfull/lint/build/DBnot-run;no production mutation.
+
+Task170 root combinedcheckpoint2026-10-01: reviewedown70182bef,predecessorbb34bfc2;sourceconflicts0;canonicalSQL57;focused2pass60assertions/strictType0;freshcombinedCIpending;localfull/lint/build/DBnot-run;no production mutation.
+
+Task171 root combinedcheckpoint2026-10-01: reviewedownd496a793,predecessor6cd2ded7;sourceconflicts0;canonicalSQL57;focused2pass60assertions/strictType0;freshcombinedCIpending;localfull/lint/build/DBnot-run;no production mutation.
+
+Task172 root combinedcheckpoint2026-10-01: reviewedownb9a0c889,predecessorb115fcda;sourceconflicts0;canonicalSQL58;focused2pass60assertions/strictType0;freshcombinedCIpending;localfull/lint/build/DBnot-run;no production mutation.
+
+Task173 root combinedcheckpoint2026-10-01: reviewedownec1a7131,predecessorf0294436;sourceconflicts0;canonicalSQL59;focused2pass60assertions/strictType0;freshcombinedCIpending;localfull/lint/build/DBnot-run;no production mutation.
+
+Task174 root combinedcheckpoint2026-10-01: reviewedown0e7e4e75,predecessorda2d9b85;sourceconflicts0;canonicalSQL59;focused2pass60assertions/strictType0;freshcombinedCIpending;localfull/lint/build/DBnot-run;no production mutation.
+
+Task175 root combinedcheckpoint2026-10-01: reviewedownb4fbe9bd,predecessore42378e8;sourceconflicts0;canonicalSQL60;focused2pass66assertions/strictType0;freshcombinedCIpending;localfull/lint/build/DBnot-run;no production mutation.
+
+Task176 root combinedcheckpoint2026-10-01: reviewedown30d16463,predecessor66663ba8;sourceconflicts0;canonicalSQL60;focused2pass66assertions/strictType0;freshcombinedCIpending;localfull/lint/build/DBnot-run;no production mutation.

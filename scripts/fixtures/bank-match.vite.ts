@@ -21,7 +21,7 @@ export default defineConfig({
             { encoding: "utf8" },
           );
         if (file.endsWith("/src/lib/supabase.ts"))
-          return `export const supabase={auth:{getSession:async()=>({data:{session:{access_token:"synthetic-finance"}}})}};`;
+          return `export const supabase={auth:{getSession:async()=>({data:{session:{access_token:"synthetic-finance",user:{id:new URL(location.href).searchParams.get("actor")??"synthetic-finance"}}}})}};`;
       },
     },
     react(),
