@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "appSha": null,
-  "appShaNote": "Final combined PR164 source freeze pending local integration gates; reviewed source parents599a4da8 and6ca3e338. Later165-179 excluded.",
+  "appSha": "4fe3668a0f54fe9a71f68d8ccbff7f27e1b1024c",
+  "appShaNote": "Final combined-source verified PR164 source; following metadata commit changes documentation only. Later165-179 source excluded.",
   "productionAliasShaObserved": "07e4c881863b715342ed0757aad7bd691a272738",
   "schemaManifestHash": "e74e20c9a144b37d5704ee3431a7b4a08b886477001dbb5d8d9f1b7c7ef82fbe",
   "configVersions": {
@@ -281,8 +281,8 @@
   ],
   "ciRun": {
     "id": null,
-    "sha": null,
-    "status": "Combined PR164 gates pending; no completion claim"
+    "sha": "4fe3668a0f54fe9a71f68d8ccbff7f27e1b1024c",
+    "status": "Local combined3093pass97skip0fail9830assert546files115.91s/typecheck/lint/serialbuild0; fresh exact-head remoteCI pending"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
