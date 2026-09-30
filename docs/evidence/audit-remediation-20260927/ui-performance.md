@@ -24,3 +24,8 @@ The verifier exited 0 on both builds: 4 routes × 2 viewports × 3 cold runs. Ra
 - All screenshots use the same synthetic fixture and browser with full-page capture. They do not contain production donor/adopter data.
 
 No production deploy, payment enablement, content publication or email send occurred.
+
+
+## T22 broker UI and SDK evidence, 2026-09-30
+
+Actual page screenshots `ui/t22-broker-after-{390,768,1366}.png` use synthetic HTTP/Auth/Turnstile on loopback56553; keyboard, fresh challenge after failure, wrong/valid code, late actor change and logout pass; Axe0/no overflow/no page errors. `t22-session-browser.json` separately uses the actual application Supabase factory and SDK with real browser Web Locks/localStorage and intercepted Auth transport to prove cross-tab/HTTP-wait fencing and quota behavior; synchronous UI stubs do not prove this invariant. Earlier before screenshots remain historical. No new same-environment Lighthouse before/after or production-performance claim is made for this auth repair. CI fixture performance is a separate release gate. [Full evidence](sequential-merge-156-broker-20260930.md).

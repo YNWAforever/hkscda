@@ -101,3 +101,8 @@ Environment: isolated worktree codex/audit-supporter-recovery-20260927; dedicate
 | npm.cmd run lint | 0 | 0 errors, 52 existing warnings |
 | npm.cmd run build | 0 | Vercel client/server output built |
 | Provider OTP delivery, expiry/replay, hosted Auth settings | not-run | Disposable auth stack lacks email test sink; no real email sent |
+
+
+## T22 broker repair verification, 2026-09-30
+
+Code SHA `4a4eef8e2c5b146c401b442d8b9a8af494049ce2`: full suite2991 pass/96 skip/0 fail/9255 assertions, typecheck/lint/build exit0 (52 existing lint warnings). Actual local Auth20 concurrent broker attempts yield1session/1carrier exchange; real SDK9tests/23assertions, Chromium cross-tab/HTTP-wait/quota fallback/logout and actual page3widths pass. Exact SQL whole-file rollback/grants/RLS pass. Historical direct-provider concurrent OTP diagnostic remains failed and preserved; it is no longer the public application redemption path. Hosted redemption/configuration, real Turnstile/SMTP, full backup restore and actual staff UAT remain not-run. New production migration, key provision and activation remain gated. [Commands, exits, environments and rollback](sequential-merge-156-broker-20260930.md).
