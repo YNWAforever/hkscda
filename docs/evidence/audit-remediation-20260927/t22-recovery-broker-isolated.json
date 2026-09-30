@@ -1,0 +1,23 @@
+{
+  "status": "passed",
+  "environment": "isolated Supabase API 52321 / Postgres 52322 / Mailpit 52324",
+  "productionRequests": 0,
+  "migrationSha256": "a136cc18848d9e927f57b1840c0a7058fdffba92701df4cf50fb18931cabc91e",
+  "authVersion": "v2.197.0",
+  "publicRoleRpcRefusals": 6,
+  "standardSessionPassesServerGetUser": true,
+  "knownWrongEmailWrongCodeSuccessReplay": true,
+  "unknownIdentityVerifiedWithoutSupporterLinking": true,
+  "concurrentAttempts": 20,
+  "concurrentSuccessfulSessions": 1,
+  "concurrentCarrierExchanges": 1,
+  "fiveWrongCodesInvalidateCarrier": true,
+  "expiredChallengeRefused": true,
+  "expiryWhileWaitingForRowLockRefused": true,
+  "suspendedRefusedAndNotRevived": true,
+  "failureAfterConsumeDoesNotReviveCode": true,
+  "deliveryFailureInvalidatesCode": true,
+  "ledgerUnchanged": true,
+  "remainingFixtureChallenges": 0,
+  "cleanedFixtureUsers": 9
+}
