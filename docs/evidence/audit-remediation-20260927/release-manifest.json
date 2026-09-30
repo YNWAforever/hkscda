@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "appSha": null,
-  "appShaNote": "PR166 integration of reviewed efb8aba8 and predecessor0a37ae0f; local combined gates pending; later167-179excluded.",
+  "appSha": "9103998811a1aa2badd99c0013bbde555e796484",
+  "appShaNote": "PR166combinedsource9103998811a1aa2badd99c0013bbde555e796484; final scoped local contracts/typecheck0, unchanged prior owned gates retained; fresh combined exact-headCI required. Later167-179excluded.",
   "productionAliasShaObserved": "07e4c881863b715342ed0757aad7bd691a272738",
   "schemaManifestHash": "07108d158d504bcc5ab295ae22f0584caeae27c429181ec45340dce3ac4377b2",
   "configVersions": {
@@ -290,7 +290,7 @@
     }
   ],
   "ciRun": {
-    "status": "fresh exact-head CI pending; combined verification pending"
+    "status": "freshcombinedexact-headCIpending; localfocused5pass/typecheck0; localcombinedfull/lint/buildnot-run"
   },
   "evidencePaths": [
     "docs/evidence/audit-remediation-20260927/tracker.csv",
